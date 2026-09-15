@@ -23,6 +23,7 @@ import {
   APP_CODENAME, fetchLatestRelease, isNewer, currentVersion,
   isDismissed, dismissTag, type ReleaseInfo,
 } from "../lib/update.js";
+import { runProbeMatrix, type ProbeResult } from "./probe.js";
 
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
@@ -35,6 +36,9 @@ export function SettingsPage() {
   // 首页布局恢复：点击后短暂显示「已恢复默认」，到点回位
   const [homeResetAt, setHomeResetAt] = useState(0);
   const [eidMsg, setEidMsg] = useState<string | null>(null);
+  // dev2 管线验收探针（lib 单管线 DoD）
+  const [probeRunning, setProbeRunning] = useState(false);
+  const [probeResults, setProbeResults] = useState<ProbeResult[] | null>(null);
   // 云同步（清华邮箱 CalDAV 日历）
   const cloud = useCloudCal();
   const [calEmail, setCalEmail] = useState("");
@@ -98,6 +102,44 @@ export function SettingsPage() {
           </div>
           <button className="btn" onClick={() => void logout()}>
             退出登录
+          </button>
+        </div>
+      </Card>
+
+      <SectionHead title="管线验收（dev2 移植）" />
+      <Card>
+        <div className="setting-row" style={{ alignItems: "flex-start" }}>
+          <div>
+            <div className="setting-title">thu-info-lib 单管线验收矩阵</div>
+            <div className="setting-desc">
+              登录后运行：逐项调用 thu-info-lib 公开 API（个人信息/校历/课表/图书馆/新闻/校园卡），
+              每项都走「包装域 + wengine SSO + 共享 jar」完整管线。任何一项红 = 该链路适配有缺口。
+            </div>
+            {probeResults ? (
+              <div style={{ marginTop: 10, fontSize: 13, display: "grid", gap: 4 }}>
+                {probeResults.map((r) => (
+                  <div key={r.name} style={{ display: "flex", gap: 8 }}>
+                    <span style={{ color: r.ok ? "#2e9e5b" : "#d0453c", fontWeight: 600 }}>{r.ok ? "✓" : "✗"}</span>
+                    <span style={{ color: "var(--text-1)" }}>{r.name}</span>
+                    <span style={{ color: "var(--text-2)", marginLeft: "auto", whiteSpace: "nowrap" }}>
+                      {r.detail} · {r.ms}ms
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <button
+            className="btn"
+            disabled={probeRunning}
+            onClick={() => {
+              setProbeRunning(true);
+              void runProbeMatrix()
+                .then(setProbeResults)
+                .finally(() => setProbeRunning(false));
+            }}
+          >
+            {probeRunning ? "运行中…" : "运行验收"}
           </button>
         </div>
       </Card>

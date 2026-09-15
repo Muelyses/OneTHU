@@ -61,5 +61,6 @@
   },
   "devDependencies": {
     "typescript": "5.5.3"
-  }
+  },
+  "type": "module"
 }

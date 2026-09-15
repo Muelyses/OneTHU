@@ -36,7 +36,15 @@ export function logTabErr(tag: string, err: unknown, retry?: () => void): void {
       .catch(() => undefined);
     return;
   }
-  void session.keepalive().catch(() => undefined);
+  // lib 单管线：探活 + 死则静默重登（原 session.keepalive）
+  void (async () => {
+    try {
+      const { libEnsureSession } = await import("../../lib/infoLib.js");
+      await libEnsureSession();
+    } catch {
+      /* 静默 */
+    }
+  })();
 }
 
 /** 瞬时网络错误：传输层抛出的纯网络故障（超时/连不上/DNS），页面状态无恙，重试即愈 */

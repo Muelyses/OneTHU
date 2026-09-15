@@ -23,10 +23,15 @@ export function softRecover(scope: string): Promise<boolean> {
   if (now - lastAttempt < 20_000) return Promise.resolve(false);
   recoverInflight = (async () => {
     try {
-      const { session, persist, logLine } = await import("./clients.js");
+      const { persist, logLine, session } = await import("./clients.js");
       const t0 = Date.now();
-      const ok = await session.softRelogin();
-      if (ok) await persist().catch(() => undefined);   // 重建后的快照落盘，重启直接续
+      // lib 单管线：会话守卫（探活→死则内存凭据完整重登，受信凭据免 2FA）
+      const { libEnsureSession } = await import("./infoLib.js");
+      const ok = await libEnsureSession();
+      if (ok) {
+        session.state = "ready";
+        await persist().catch(() => undefined);   // 重建后的快照落盘，重启直接续
+      }
       await logLine(`SOFT-RECOVER[${scope}] ${ok ? "ok" : "fail"} (${Date.now() - t0}ms)`).catch(() => undefined);
       lastAttempt = Date.now();
       return ok;
@@ -64,8 +69,14 @@ export function installKeepalive(): void {
   setInterval(() => {
     void (async () => {
       try {
-        const { session } = await import("../lib/clients.js");
-        await session.keepalive();
+        // lib 单管线：探活 + 死则内存凭据静默重登（受信凭据免 2FA）
+        const { libEnsureSession } = await import("./infoLib.js");
+        const { persist, session } = await import("./clients.js");
+        const ok = await libEnsureSession();
+        if (ok) {
+          session.state = "ready";
+          await persist().catch(() => undefined);
+        }
       } catch { /* 静默：保活失败不影响前台 */ }
     })();
   }, 10 * 60_000);

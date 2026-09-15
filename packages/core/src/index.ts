@@ -33,7 +33,7 @@ export {
 } from "./auth/cas.js";
 export type { CasCredential, CasFormInfo, CasSubmitResult, TwoFactorMethod } from "./auth/cas.js";
 export { CampusSession } from "./auth/session.js";
-export type { SessionState, LoginResult, CampusSessionOptions } from "./auth/session.js";
+export type { SessionState, CampusSessionOptions } from "./auth/session.js";
 
 // 网络学堂
 export { LearnClient, parseLearnTime } from "./learn/client.js";

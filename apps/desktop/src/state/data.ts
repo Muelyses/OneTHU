@@ -205,14 +205,14 @@ export function invalidateLearnCache(): void {
   cache = null;
 }
 
-/** 会话失效后的免密重漫游去重：learn 漫游会话约 8 分钟过期是常态，
- *  同一时刻多个数据钩子（useLearnData 各子页 / useCampusData）一起撞上
- *  AuthRequiredError 时只漫游一次（此前并发各自漫游，幂等但浪费且拉长 loading 空窗）。 */
+/** 会话失效后的免密重建去重：lib 单管线里 learn 经 wengine 透明 SSO，无独立
+ *  「漫游」可重做——会话死即整条 webvpn 死，走 lib 会话守卫（探活+静默重登）。
+ *  同一时刻多个数据钩子一起撞上 AuthRequiredError 时只重建一次。 */
 let roamInflight: Promise<boolean> | null = null;
 function relearnRoamOnce(): Promise<boolean> {
   if (!roamInflight) {
-    roamInflight = session
-      .relearnRoam()
+    roamInflight = import("../lib/infoLib.js")
+      .then((m) => m.libEnsureSession())
       .catch(() => false)
       .finally(() => {
         roamInflight = null;

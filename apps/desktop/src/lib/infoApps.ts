@@ -301,6 +301,9 @@ export const INFO_APP_CATS: string[] = ["在线服务", "学习", "科研", "人
   INFO_APPS.some((a) => a.cat === c),
 );
 
-/** 漫游跳转链：门户 SSO 兑付后落到目标应用 */
+/** 漫游跳转链：门户 SSO 兑付后落到目标应用。
+ *  lib 单管线（P3）：info 直连退役，恒走包装域——系统浏览器打开时 wengine
+ *  会自行走登录壳（无应用会话时的预期行为），校内/校外表现一致。 */
 export const infoAppUrl = (id: string): string =>
-  "https://info.tsinghua.edu.cn/f/info/portal_fg/teacher/roamingToApp?yyfwid=" + encodeURIComponent(id);
+  "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421f9f9479369247b59700f81b9991b2631506205de/f/info/portal_fg/teacher/roamingToApp?yyfwid=" +
+  encodeURIComponent(id);

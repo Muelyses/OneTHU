@@ -1,5 +1,8 @@
 /** 信息门户 / 教务端点（验证自 thu-info-lib，docs/API-NOTES.md §3） */
-export const INFO_PREFIX = "https://info.tsinghua.edu.cn";
+// lib 单管线（P3）：info2021 门户经 webvpn 包装（thu-info-lib USER_DATA_URL 同款 hex）。
+// 直连 info.tsinghua.edu.cn 退役——校外不可达正是双环境不适配的根源。
+export const INFO_PREFIX =
+  "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421f9f9479369247b59700f81b9991b2631506205de";
 /** 教务网关只监听 80 端口（webvpn 走 /http/ 段，与 thu-info-lib 一致） */
 export const ZHJW_PREFIX = "http://zhjw.cic.tsinghua.edu.cn";
 

@@ -190,11 +190,35 @@ export const session = new CampusSession({
   fetchLike: universalFetch,
 });
 
-// HttpClient 实例级透明重放（稳定性专项 2026-09-11）：响应带 id 登录页特征
-// （#looksLoggedOut）→ softRelogin（WebVPN 全链重建，单飞在 CampusSession）→
-// 原请求自动重放一次。此前实例回调从未被注册——登录页 HTML 一路裸抛到 UI 层。
+// InfoClient 会话过期续约：lib 会话守卫（探活+静默重登）替代 demo roam-id 链
+// ——登录链已统一到 thu-info-lib（单管线），demo 链退役后其漫游钩子不再可用。
+session.info.setRenewers({
+  info: () => libSoftRelogin(),
+  card: () => libSoftRelogin(),
+});
+
+// HttpClient 实例级透明重放：响应带登录页特征（#looksLoggedOut）→ lib 会话守卫
+// （探活 → 死则内存凭据完整重登，受信凭据免 2FA）→ 原请求自动重放一次。
+// 指数冷却（30s 起步、封顶 10min）防风控连锤。
+let libSoftFailStreak = 0;
+let libSoftCooldownUntil = 0;
+async function libSoftRelogin(): Promise<boolean> {
+  if (Date.now() < libSoftCooldownUntil) return false;
+  try {
+    const { libEnsureSession } = await import("./infoLib.js");
+    const ok = await libEnsureSession();
+    libSoftFailStreak = ok ? 0 : libSoftFailStreak + 1;
+    libSoftCooldownUntil = Date.now() + Math.min(30_000 * 2 ** libSoftFailStreak, 10 * 60_000);
+    void logLine(`SOFT-RELOGIN ${ok ? "ok" : "fail"} streak=${libSoftFailStreak}`).catch(() => undefined);
+    return ok;
+  } catch {
+    libSoftFailStreak += 1;
+    libSoftCooldownUntil = Date.now() + Math.min(30_000 * 2 ** libSoftFailStreak, 10 * 60_000);
+    return false;
+  }
+}
 http.onAuthRequired(async () => {
-  await session.softRelogin();
+  await libSoftRelogin();
 });
 
 /** 诊断落盘（UI 各处复用；写 /tmp/onethu-debug.log） */
@@ -230,143 +254,84 @@ async function dumpDebug(err: unknown): Promise<void> {
   }
 }
 
-/** UI 只管喂账密；2FA 状态机在 session 上继续走。
+/** UI 只管喂账密；登录链 = thu-info-lib（SM2 + 2FA hooks + roam-id，
+ *  docs/INFOLIB-PIPELINE-REVIEW.md P2）。单一 webvpn 管线：不再有直连/webvpn
+ *  降级舞蹈——webvpn 从校内校外都可达，拓扑唯一才是双环境适配的本质。
  *  opts.remember（默认 true）：成功后把密码混淆存本机，boot 恢复失败时静默重登。 */
 export async function login(
   username: string,
   password: string,
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
+  const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
   const fingerprint = await currentFingerprint();
-  session.fingerprint = fingerprint;
-  session.finger3 = await loadFinger3();
-
   const remember = opts.remember ?? true;
   pendingSecret = { username, password, remember };
   if (!remember) await clearRemembered().catch(() => undefined);
 
-  let savedMode = globalThis.localStorage?.getItem(TRANSPORT_KEY) ?? "direct";
-  // 回切探测（#4）：持久化的 webvpn 模式没有回切机制，回校园网后仍全量绕道
-  // webvpn → 会话互踢死循环。登录前探测内网专属 host（usereg 公网不可达），
-  // 可达 = 在校园网 → 本次直接走 direct 并清掉持久化降级标记。
-  if (savedMode === "webvpn" && (await directReachable())) {
-    globalThis.localStorage?.removeItem(TRANSPORT_KEY);
-    savedMode = "direct";
-    await logLine("TRANSPORT webvpn→direct 回切：直连可达（在校园网），不再绕道 WebVPN");
-  }
+  setLibFinger3(session.finger3);
+  helper.fingerprint = fingerprint;
   try {
-    const result = await attempt(username, password, savedMode === "webvpn");
-    if (result.state === "ready") {
+    const r = await libLogin(username, password, fingerprint);
+    if (r.state === "ready") {
+      session.username = username;
+      session.state = "ready";
+      // SAVE_FINGER 可能新发受信凭据；没有则保留旧值
+      session.finger3 = helper.fingerGenPrint || session.finger3;
+      session.injectCredentials(username, password);
       await persist();
-      await logLine("LOGIN-OK\n" + session.debugLog.join("\n"));
+      await logLine("LOGIN-OK (lib 链，单管线)");
+    } else {
+      session.username = username;
+      session.state = "need-2fa";
+      await logLine("LOGIN need-2fa methods=" + r.methods.map((m) => m.type).join(","));
     }
-    return result;
+    return r.state === "need-2fa" ? { ...r, debugHtml: "" } : r;
   } catch (err) {
-    // 直连不可达（不在校园网/校内VPN）→ 自动改走 WebVPN 重试一次；用户无感
-    if (savedMode !== "webvpn" && isNetworkError(err)) {
-      http.jar.clear();
-      const result = await attempt(username, password, true);
-      globalThis.localStorage?.setItem(TRANSPORT_KEY, "webvpn");
-      if (result.state === "ready") await persist();
-      return result;
-    }
-    // 对称反向降级（#4）：webvpn 链路网络错误 → 试一次 direct，成功则回切
-    if (savedMode === "webvpn" && isNetworkError(err)) {
-      http.jar.clear();
-      try {
-        const result = await attempt(username, password, false);
-        globalThis.localStorage?.removeItem(TRANSPORT_KEY);
-        await logLine("TRANSPORT webvpn→direct 反向降级：webvpn 网络错误，直连重试成功");
-        if (result.state === "ready") await persist();
-        return result;
-      } catch {
-        /* direct 也不通：落回原错误 */
-      }
-    }
     if (err instanceof Error) await dumpDebug(err);
-    await logLine("LOGIN-ERR\n" + session.debugLog.join("\n"));
+    await logLine("LOGIN-ERR " + String(err));
     throw err;
   }
-}
-
-/**
- * 直连可达性探测（#4 回切判据）：取内网专属 host（usereg 仅校园网内可直连，
- * 公网/WebVPN 场景必然超时），no-cors 只关心连接成败，不读响应。
- * 系统代理（TUN/全局）下探测包也会进代理：代理转发不了内网 → 判不可达 →
- * 维持 webvpn，宁可保守不误切。
- */
-async function directReachable(): Promise<boolean> {
-  try {
-    await fetch("https://usereg.tsinghua.edu.cn/", {
-      mode: "no-cors",
-      signal: AbortSignal.timeout(2500),
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-const TRANSPORT_KEY = "onethu.transport";
-
-function isNetworkError(err: unknown): boolean {
-  return err instanceof Error && /网络错误|timeout|timed? ?out|error sending request|connect/i.test(err.message);
-}
-
-async function attempt(
-  username: string,
-  password: string,
-  viaWebVPN: boolean,
-): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
-  http.withWebVPN(viaWebVPN);
-  return session.login(username, password);
 }
 
 export async function send2FA(type: string): Promise<void> {
+  const { libSend2FA } = await import("./infoLib.js");
   try {
-    await session.send2FA(type);
-    await logLine("SEND-OK " + type + "\n" + session.debugLog.join("\n"));
+    await libSend2FA(type);
+    await logLine("SEND-OK " + type);
   } catch (err) {
     await dumpDebug(err);
-    await logLine("SEND-ERR " + type + "\n" + session.debugLog.join("\n"));
+    await logLine("SEND-ERR " + type + " " + String(err));
     throw err;
   }
 }
 
+/** learn 二轮 2FA（直连 learn 时代的产物）：lib 单管线里 learn 经 wengine SSO
+ *  透明建立，不存在第二轮——保留签名兼容 UI，永不触发（round2 恒 null）。 */
 export async function sendLearn2FA(type: string): Promise<void> {
-  try {
-    await session.sendLearn2FA(type);
-    await logLine("LEARN-SEND-OK " + type + "\n" + session.debugLog.join("\n"));
-  } catch (err) {
-    await dumpDebug(err);
-    await logLine("LEARN-SEND-ERR " + type + "\n" + session.debugLog.join("\n"));
-    throw err;
-  }
+  return send2FA(type);
 }
 
-export async function verifyLearn2FA(code: string): Promise<void> {
+export async function verifyLearn2FA(_code: string): Promise<void> {
+  /* no-op：见 sendLearn2FA 注释 */
+}
+
+export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
+  const { libVerify2FA, helper } = await import("./infoLib.js");
   try {
-    await session.verifyLearn2FA(code);
+    await libVerify2FA(type, code, trust);
+    session.state = "ready";
+    // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘
+    session.finger3 = helper.fingerGenPrint || session.finger3;
+    if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
-    await logLine("LEARN2FA-OK\n" + session.debugLog.join("\n"));
+    await logLine("VERIFY-OK (lib 链完成)");
+    return null;
   } catch (err) {
-    await dumpDebug(err);
-    await logLine("LEARN2FA-ERR\n" + session.debugLog.join("\n"));
-    throw err;
-  }
-}
-
-export async function verify2FA(_type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
-  try {
-    const round2 = await session.verify2FA(code, trust);
-    if (!round2) await persist();
-    await logLine("VERIFY-OK round2=" + (round2 ? "yes" : "no") + "\n" + session.debugLog.join("\n"));
-    return round2;
-  } catch (err) {
-    // 即使 learn 建立失败也持久化：finger3（受信凭据）必须保住，下次登录免 2FA
+    // finger3 必须保住：即使验证失败也不能丢受信凭据
     await persist().catch(() => undefined);
     await dumpDebug(err);
-    await logLine("VERIFY-ERR\n" + session.debugLog.join("\n"));
+    await logLine("VERIFY-ERR " + String(err));
     throw err;
   }
 }
@@ -379,9 +344,6 @@ export async function persist(): Promise<void> {
     username: session.username,
     fingerprint: session.fingerprint,
     cookiesJson: http.jar.serialize(),
-    demoCookies: session.demoSnapshot,
-    idJsid: session.idJsidSnapshot,
-    infoCookies: session.infoEraSnapshot,
     finger3: session.finger3,
     savedAt: Date.now(),
   };
@@ -446,50 +408,43 @@ export async function resumeSession(): Promise<boolean> {
       }
     }
   }
-  if (!saved) {
+  if (!saved || !saved.cookiesJson || saved.cookiesJson === "{}") {
     await logLine("RESUME no-saved-session");
     return false;
   }
-  http.withWebVPN(globalThis.localStorage?.getItem(TRANSPORT_KEY) === "webvpn");
   http.jar.hydrate(saved.cookiesJson);
   session.username = saved.username;
   session.fingerprint = saved.fingerprint;
   session.finger3 = saved.finger3 ?? "";
-  session.restoreDemo(saved.demoCookies ?? "", saved.idJsid ?? "");
-  session.restoreInfoCookies(saved.infoCookies ?? "");
-  // 记住的密码（仅内存）：cookie 会话过期时 renewInfo/dorm-library 直登才有凭据可用
+  {
+    const { setLibFinger3, helper } = await import("./infoLib.js");
+    setLibFinger3(session.finger3);
+    helper.fingerprint = saved.fingerprint;
+  }
+  // 记住的密码（仅内存）：dorm/library 的 id 直登与静默重登都要用
   const remembered = await loadRemembered();
   if (remembered) session.injectCredentials(remembered.username, remembered.password);
-  session.reseed();
-  // [dev 分支计时探针] 启动各阶段毫秒级分解——数据驱动定位蜗牛环节
+  // [启动计时] 阶段毫秒分解——数据驱动定位蜗牛环节
   const T = Date.now();
   const mark = (label: string): void => {
     void logLine(`BOOT-T ${label} +${Date.now() - T}ms`).catch(() => undefined);
   };
   mark("水合完成(0网络)");
-  let okLearn = await learn.resume().catch((e) => {
+  // lib 单管线：webvpn 会话在 jar 里，learn/info 都经包装域 wengine SSO 透明建立——
+  // resume 只需探活：learn 拿得到 _csrf = webvpn 会话活 + learn 可达。
+  const okLearn = await learn.resume().catch((e) => {
     logLine("RESUME learn-error " + String(e)).catch(() => undefined);
     return false;
   });
   mark(okLearn ? "learn.resume(会话活)" : "learn.resume(过期)");
   if (!okLearn) {
-    // learn 漫游会话约 8 分钟过期是常态：用持久化的 id CAS 主会话重新发票→漫游（免密）
-    await logLine("RESUME learn 直连失效 → 尝试 id 主会话重漫游").catch(() => undefined);
-    okLearn = await session.relearnRoam();
-    mark(`relearnRoam(${okLearn ? "成功" : "失败"})`);
-    if (okLearn) {
-      await persist(); // 重漫游刷新了 demo 字符串（新 learn 会话），回写供下次 resume
-    }
-  }
-  if (!okLearn) {
-    await logLine("RESUME fail (learn.csrf 不可用，重漫游也未成)" + "\n" + session.debugLog.join("\n"));
-    mark("RESUME-FAIL(总耗时)");
+    await logLine("RESUME fail (learn 探活失败——boot 将走静默重登)");
     return false;
   }
   session.state = "ready";
   await info.resume().catch(() => false);
   mark("info.resume");
-  await logLine("RESUME ok\n" + session.debugLog.join("\n"));
+  await logLine("RESUME ok (lib 单管线)");
   mark("READY(总耗时)");
   return true;
 }
@@ -539,6 +494,9 @@ export async function logout(): Promise<void> {
   venueLogout();
   // R10：图书馆静态 token 同步清空（防串账号/防旧 token 撞新会话）
   info.resetStaticSessionCaches();
+  // lib 链登出（webvpn LOGOUT + 共享 jar 清空）
+  const { libLogout } = await import("./infoLib.js");
+  await libLogout().catch(() => undefined);
   // demo（thu-app-desktop auth slice）语义：登出只清凭据，fingerprint 与 finger3
   // 属设备信任、跨登出保留——否则下次登录指纹重随机 → 信任失效 → 每次被迫 2FA
   // （17:40 存档丢失 → 指纹重随机的教训）。
@@ -570,7 +528,10 @@ export async function logout(): Promise<void> {
 export function withLearnCsrf(url: string): string {
   try {
     const u = new URL(url);
-    if (u.hostname !== "learn.tsinghua.edu.cn" && !u.hostname.endsWith(".learn.tsinghua.edu.cn")) return url;
+    // lib 单管线：learn URL 是 webvpn 包装形态，解码出真实域再判断
+    const decoded = webvpnDecodeUrl(url);
+    const realHost = decoded ? new URL(decoded).hostname : u.hostname;
+    if (realHost !== "learn.tsinghua.edu.cn" && !realHost.endsWith(".learn.tsinghua.edu.cn")) return url;
     const token = learn.csrfToken;
     if (!token || u.searchParams.has("_csrf")) return url;
     u.searchParams.set("_csrf", token);
@@ -625,11 +586,10 @@ export async function fetchImageAsDataUrl(url: string): Promise<string> {
 /** 校内 host 分流（HttpClient.request 同名单）：公网站点直连，其余（seat.lib 等
  *  校内网关域名）校外不可达，恒经 WebVPN 包装——与图书馆 api.php 请求同轨。 */
 const CAMPUS_PUBLIC_HOSTS = new Set([
-  "learn.tsinghua.edu.cn",
+  // lib 单管线（P3）：info/learn 全量走包装域，不再公网直连
   "webvpn.tsinghua.edu.cn",
   "id.tsinghua.edu.cn",
   "oauth.tsinghua.edu.cn",
-  "info.tsinghua.edu.cn",
   "card.tsinghua.edu.cn",
 ]);
 

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@onethu/core": "workspace:*",
+    "@onethu/info-lib": "workspace:*",
     "@onethu/ui": "workspace:*",
     "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-dialog": "^2.7.3",

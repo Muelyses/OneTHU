@@ -49,6 +49,10 @@
     "./network": {
       "import": "./dist/utils/network.js",
       "types": "./dist/utils/network.d.ts"
+    },
+    "./utils/sm2": {
+      "import": "./dist/utils/sm2.js",
+      "types": "./dist/utils/sm2.d.ts"
     }
   },
   "scripts": {

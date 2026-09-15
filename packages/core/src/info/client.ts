@@ -516,7 +516,8 @@ export class InfoClient {
     const res = await this.#http.request(urls.GET_COOKIE_URL()).catch(() => null);
     if (!res) return;
     const bodyText = await res.text().catch(() => "");
-    const targets = ["https://webvpn.tsinghua.edu.cn/", "https://info.tsinghua.edu.cn/"];
+    // 单管线：info 走包装域，cookie 全并 webvpn 桶（直连 info 桶已退役）
+    const targets = ["https://webvpn.tsinghua.edu.cn/"];
     for (const pair of bodyText.split(/;|\n/)) {
       const t = pair.trim();
       if (/^[A-Za-z0-9_.-]+=/.test(t)) {

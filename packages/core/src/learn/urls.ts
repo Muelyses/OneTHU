@@ -1,5 +1,8 @@
 /** 网络学堂端点（验证自 thu-learn-lib，docs/API-NOTES.md §2） */
-export const LEARN_PREFIX = "https://learn.tsinghua.edu.cn";
+// lib 单管线（P3）：learn 经 webvpn 包装（thu-info-lib HOST_MAP.learn 同款 hex）。
+// wengine 服务端透明完成 learn 的 CAS 认证，LearnClient 无需漫游/直连登录链。
+export const LEARN_PREFIX =
+  "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421fcf2408e297e7c4377068ea48d546d30ca8cc97bcc";
 
 export const LEARN_COURSE_LIST_PAGE = () => `${LEARN_PREFIX}/f/wlxt/index/course/student/`;
 

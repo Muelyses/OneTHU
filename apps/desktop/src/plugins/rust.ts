@@ -115,7 +115,10 @@ async function ensureRpcListener(): Promise<void> {
         console.error("[plugin-rpc] 回执写回失败", replyCmd, pluginId, id, e);
       });
   };
-  await listen("plugin-rpc", (ev) => void handleRpc(ev.payload));
+  // Tauri Event 回调的 payload 静态类型是 unknown；通道报文形状由 Rust 侧契约保证
+  await listen("plugin-rpc", (ev) =>
+    void handleRpc(ev.payload as { pluginId: string; id: number; method: string; params: any }),
+  );
   // 内嵌长轮询泵：一次取走整批待处理调用，并发执行，消灭每调用事件往返
   void (async () => {
     for (;;) {

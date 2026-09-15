@@ -17,6 +17,9 @@ importers:
       '@onethu/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@onethu/info-lib':
+        specifier: workspace:*
+        version: link:../../packages/info-lib
       '@onethu/ui':
         specifier: workspace:*
         version: link:../../packages/ui

@@ -144,7 +144,7 @@ export const http = new HttpClient({ fetch: universalFetch }).withWebVPN(false);
 http.webVPNEncoder = webvpnWrap;
 http.debug = (line) => void logLine(line);
 // 重定向链逐跳日志：定位教务漫游链在哪一跳断掉（CAS 票据流/登录页）
-setHopLogger((hopUrl, status) => void logLine(`[HOP] ${status} ${hopUrl.slice(0, 220)}`));
+setHopLogger((hopUrl, status, ck) => void logLine(`[HOP] ${status} ${hopUrl.slice(0, 150)} ck=${ck ?? "(无)"}`));
 // 选课现场取证（zhjwxkDebug 钩子此前未接线——SM2 失败只有异常没有现场）
 void (async () => {
   try {

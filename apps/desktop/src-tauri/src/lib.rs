@@ -857,6 +857,100 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
     })
 }
 
+/// 原生浏览器语义通道（2026-09-17 上游对齐）：共享 reqwest client，
+/// cookie_store 原生分域 cookie 仓（等价 RN 的 okhttp 原生仓）+
+/// 原生跟随重定向（limited 25，等价 okhttp 默认跟随）。
+/// thu-info-lib 的全部请求走此通道——重定向跟随/cookie 收发全部由原生层
+/// 完成，TS 侧零介入（此前 TS 手搓跳循环+分域 jar+舞步 break 制造了
+/// 「登录成功但永远匿名」「405」「超限」全家桶）。
+#[tauri::command]
+async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
+    let method: reqwest::Method = input
+        .method
+        .to_uppercase()
+        .parse()
+        .map_err(|e| format!("非法 HTTP 方法: {e}"))?;
+
+    static NATIVE_CLIENT: std::sync::LazyLock<reqwest::Client> = std::sync::LazyLock::new(|| {
+        reqwest::Client::builder()
+            .cookie_store(true)
+            .redirect(reqwest::redirect::Policy::limited(25))
+            // 同 http_request：清华域直连，绕系统代理（详见其注释）
+            .no_proxy()
+            .build()
+            .expect("native client build")
+    });
+
+    let mut req = NATIVE_CLIENT.request(method, &input.url);
+    for (k, v) in &input.headers {
+        let lower = k.to_lowercase();
+        // Cookie 由原生仓管理，手动传入反而跨跳污染
+        if matches!(lower.as_str(), "host" | "content-length" | "cookie") {
+            continue;
+        }
+        req = req.header(k, v);
+    }
+    let body_bytes: Option<Vec<u8>> = if let Some(b64) = &input.body_b64 {
+        use base64::Engine as _;
+        Some(
+            base64::engine::general_purpose::STANDARD
+                .decode(b64)
+                .map_err(|e| format!("请求体 base64 解码失败: {e}"))?,
+        )
+    } else {
+        input.body.clone().map(|s| s.into_bytes())
+    };
+    if let Some(b) = body_bytes {
+        req = req.body(b);
+    }
+
+    let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+    let status = resp.status();
+    let final_url = resp.url().to_string();
+    let mut headers = HashMap::new();
+    let mut set_cookies = Vec::new();
+    for (name, value) in resp.headers().iter() {
+        let v = value.to_str().unwrap_or("").to_string();
+        if name.as_str().eq_ignore_ascii_case("set-cookie") {
+            set_cookies.push(v);
+        } else {
+            headers.insert(name.as_str().to_lowercase(), v);
+        }
+    }
+    let body_bytes = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?;
+    let ctype = headers.get("content-type").cloned().unwrap_or_default();
+    let looks_text = ctype.starts_with("text/")
+        || ctype.contains("html")
+        || ctype.contains("json")
+        || ctype.contains("xml");
+    let (body, body_b64) = if looks_text {
+        let charset = ctype
+            .split(';')
+            .rev()
+            .find_map(|part| {
+                let part = part.trim();
+                part.strip_prefix("charset=").map(|c| c.trim_matches('"').trim().to_string())
+            });
+        let decoded = match charset.as_deref().and_then(|c| encoding_rs::Encoding::for_label(c.as_bytes())) {
+            Some(enc) => enc.decode(&body_bytes).0.into_owned(),
+            None => String::from_utf8_lossy(&body_bytes).into_owned(),
+        };
+        (decoded, None)
+    } else {
+        use base64::Engine as _;
+        (String::new(), Some(base64::engine::general_purpose::STANDARD.encode(&body_bytes)))
+    };
+    Ok(HttpOutput {
+        status: status.as_u16(),
+        status_text: status.canonical_reason().unwrap_or("").to_string(),
+        url: final_url,
+        headers,
+        set_cookies,
+        body,
+        body_b64,
+    })
+}
+
 #[tauri::command]
 async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
     let method: reqwest::Method = input
@@ -1326,7 +1420,7 @@ tauri::Builder::default()
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
+            log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
             open_external,open_eid_window,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])

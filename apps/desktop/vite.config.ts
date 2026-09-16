@@ -21,6 +21,10 @@ export default defineConfig({
     // → 白屏（2026-09-02 实锤：两份产物源路径 ../../node_modules vs node_modules）。
     // dedupe 强制全部解析到单一实例。
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+    // buffer 真实现：jspdf→fflate 的 browser 字段把 "buffer" 映射为 false →
+    // 模块求值期读空对象的 .Buffer.prototype 直接炸 → 整包白屏（2026-09-16
+    // dev2 真机实录）。alias 到 feross/buffer，浏览器语义完整。
+    alias: [{ find: /^buffer$/, replacement: "buffer/" }],
   },
   server: {
     host: "127.0.0.1",

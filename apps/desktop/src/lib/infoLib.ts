@@ -13,12 +13,12 @@
  * - 2FA futures：lib 的同步 hooks 桥接 OneTHU 的两段式 UI（选方式→发码→输码）
  * - 登录/验证/登出/会话守卫（libEnsureSession：lib verifyAndReLogin 语义）
  */
-import { tauriFetch } from "./transport.js";
+import { nativeFetch, tauriFetch } from "./transport.js";
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
 import { setSm2Encryptor } from "@onethu/info-lib/utils/sm2";
 import { InfoHelper } from "@onethu/info-lib";
-import { sm2crypto, makeFingerprint, type TwoFactorMethod } from "@onethu/core";
+import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
 
 let initialized = false;
 
@@ -27,15 +27,67 @@ async function log(line: string): Promise<void> {
   await logLine(line).catch(() => undefined);
 }
 
+/** 合并种子 Cookie（HttpClient.#cookieHeaderFor 同语义）：包装 URL 须同时携带
+ *  webvpn 物理域桶（wengine_vpn_ticket 等）与解码真实域桶（各应用会话）——
+ *  缺 webvpn 桶时 wengine 视为未登录把请求踢回裸 /login（2026-09-16 真机实录：
+ *  lib 登录链 portal 落地成功但 roam-id 被踢回登录页，症状「重定向次数超限」）。 */
+function cookieSeed(url: string): string | undefined {
+  let decoded: string | null = null;
+  try {
+    decoded = webvpnDecodeUrl(url);
+  } catch {
+    /* 非 webvpn 包装 URL */
+  }
+  const buckets = [url, decoded ?? "", "https://webvpn.tsinghua.edu.cn/"];
+  const seen = new Set<string>();
+  const pairs: string[] = [];
+  for (const b of buckets) {
+    if (!b) continue;
+    try {
+      for (const c of http.jar.getCookies(new URL(b))) {
+        if (seen.has(c.name)) continue;
+        seen.add(c.name);
+        pairs.push(`${c.name}=${c.value}`);
+      }
+    } catch {
+      /* 坏 URL 跳过 */
+    }
+  }
+  return pairs.length ? pairs.join("; ") : undefined;
+}
+
 /** 注入平台传输（幂等） */
 export function initInfoLib(): InfoHelper {
   if (!initialized) {
     setPlatformFetch(async (url, init) => {
-      const res = await tauriFetch(url, {
+      // 上游对齐（2026-09-17 定案）：nativeFetch = Rust 共享 reqwest client
+      // （原生分域 cookie 仓 + 原生跟随重定向）——等价 RN 的 okhttp。lib 的
+      // 全部请求（登录链/数据）都走它；TS 侧不再 seed/逐跳/舞步干预。
+      const res = await nativeFetch(url, {
         method: init.method ?? "GET",
         body: init.body,
         headers: init.headers as Record<string, string> | undefined,
+        timeoutMs: init.timeoutMs,
       });
+      // JAR 透视（真机联调期）：每次平台请求入账后，dump 三个关键桶的 cookie 名单
+      // （含 wengine 票据前 8 位，用于识别主票/应用票/陈旧票互踩）
+      try {
+        const names = (bucket: string): string => {
+          try {
+            return http.jar
+              .getCookies(new URL(bucket))
+              .map((c) => `${c.name}=${c.value.slice(0, 26)}`)
+              .join(",");
+          } catch {
+            return "?";
+          }
+        };
+        void log(
+          `JAR webvpn=[${names("https://webvpn.tsinghua.edu.cn/")}] info=[${names("https://info2021.tsinghua.edu.cn/")}] learn=[${names("https://learn.tsinghua.edu.cn/")}]`,
+        );
+      } catch {
+        /* 透视失败不影响主链 */
+      }
       // 每跳 Set-Cookie 回灌共享 jar（x-onethu-set-cookie-hops 由 tauriFetch 逐跳
       // 记录；jar.setFromResponse 消费同名头并按真实域分桶）——lib 会话进 jar，
       // OneTHU 客户端即刻可见；反之旧会话 cookie 也随 hopCookieProvider 供应给 lib。
@@ -68,10 +120,18 @@ export function initInfoLib(): InfoHelper {
       };
     });
     setPlatformClearCookies(() => {
-      http.jar.clear();
+      // 上游对齐（2026-09-17，thu-info-lib 原源实读）：RN 的 clearCookies() 只清
+      // lib 内部的 JS cookie 表——而 RN 模式下那张表根本不参与收发（Cookie 头只在
+      // Node 模式才手动设置），okhttp 原生 cookie 仓从不被清。id/oauth/webvpn 会话
+      // 因此跨登录存活，oauth 回调走活会话路径每次发新鲜 code。
+      // 此前 jar.clear() 全清后，回调落入「按 sig 查缓存授权」路径返回同一个已消费
+      // code（真机实锤：code=21d148… 跨轮恒定，兑付 302 只回修饰 cookie 不发会话票）
+      // → 永远匿名。故此处对齐上游：不清任何桶。
+      void 0;
     });
-    // SM2 密码加密（OneTHU 自有实现；未注入时 lib 回退明文=上游 MIT 边界原行为）
+    // SM2 密码加密（OneTHU 自有实现注入；MIT 边界库的扩展点）
     setSm2Encryptor((password, publicKey) => sm2crypto.encryptPassword(password, publicKey));
+    // SM2 密码加密（OneTHU 自有实现；未注入时 lib 回退明文=上游 MIT 边界原行为）
     initialized = true;
   }
   return helper;
@@ -264,3 +324,8 @@ export function libCredentials(): { username: string; password: string } | null 
   if (!inflight?.username || !inflight?.password) return null;
   return { username: inflight.username, password: inflight.password };
 }
+
+// 模块加载即完成平台注入（幂等）：首次动态 import 本模块的任何路径
+// （login/resume/探针）都自动就绪——显式调用遗漏曾致真机白屏级故障
+// （2026-09-16 实录：initInfoLib 导入未调用 → platformFetch 未注入）。
+initInfoLib();

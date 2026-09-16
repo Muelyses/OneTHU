@@ -27,8 +27,8 @@ export function setHopUrlWrapper(fn: (url: string) => string): void {
 }
 
 /** 每跳日志（clients.ts 注入 logLine）：记录重定向链每一跳的 URL+状态码 */
-let hopLogger: ((hopUrl: string, status: number) => void) | null = null;
-export function setHopLogger(fn: (hopUrl: string, status: number) => void): void {
+let hopLogger: ((hopUrl: string, status: number, cookies?: string) => void) | null = null;
+export function setHopLogger(fn: (hopUrl: string, status: number, cookies?: string) => void): void {
   hopLogger = fn;
 }
 
@@ -64,6 +64,59 @@ async function invokeHttp(
   } finally {
     if (timer) clearTimeout(timer);
   }
+}
+
+/**
+ * 原生浏览器语义通道（2026-09-17 上游对齐）：Rust 共享 reqwest client
+ * （cookie_store 原生分域仓 + 原生跟随重定向 limited 25）——等价 RN 的
+ * okhttp。重定向跟随/cookie 收发全在原生层，TS 零介入。thu-info-lib
+ * 的 platformFetch 走此通道。
+ */
+export async function nativeFetch(
+  url: string,
+  init: { method?: string; body?: string; headers?: Record<string, string>; timeoutMs?: number } = {},
+): Promise<Response> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  const p = invoke<HttpOutput>("http_native", {
+    input: {
+      url,
+      method: init.method ?? "GET",
+      headers: init.headers ?? {},
+      body: init.body ?? null,
+      body_b64: null,
+    },
+  });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const guard = new Promise<never>((_, rej) => {
+    timer = setTimeout(() => rej(new Error(`请求超时（90s）：${url.slice(0, 120)}`)), 90_000);
+  });
+  let res: HttpOutput;
+  try {
+    res = await Promise.race([p, guard]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+  const respHeaders = new Headers(res.headers as HeadersInit);
+  for (const sc of res.set_cookies) {
+    try {
+      respHeaders.append("set-cookie", sc);
+    } catch {
+      /* 容忍非法头值 */
+    }
+  }
+  respHeaders.set("x-onethu-final-url", res.url);
+  respHeaders.set("x-onethu-set-cookie", JSON.stringify(res.set_cookies));
+  const bodyInit: BodyInit | null =
+    res.status === 204 || res.status === 205 || res.status === 304
+      ? null
+      : res.body_b64
+        ? b64ToBytes(res.body_b64)
+        : res.body;
+  return new Response(bodyInit, {
+    status: res.status,
+    statusText: res.status_text,
+    headers: respHeaders,
+  });
 }
 
 function collectHeaders(init: RequestInit): Record<string, string> {
@@ -153,7 +206,15 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
     headers["Content-Type"] ??= serialized.contentType;
   }
   const redirect = init.redirect ?? "follow";
-  const maxHops = 10;
+  // 上游对齐（2026-09-17，读 thu-info-app/packages/thu-info-lib 原源）：RN 的
+  // okhttp 原生跟随一切重定向——包括被 302 引回 webvpn 登录页的「舞步」：带着
+  // 活会话 cookie 透明转完 wengine→id→oauth 自动回到原 URL 拿数据（透明 SSO）。
+  // lib 管线必须走这个语义；dance-break 是 OneTHU 旧管线的蜂窝防互踢补丁，
+  // 对 lib 请求关闭（followLoginDance），旧 HttpClient 路径保持不变。
+  const followLoginDance = (init as RequestInit & { followLoginDance?: boolean }).followLoginDance === true;
+  // lib 登录链（webvpn→oauth→id CAS→check→回调落地）实测 12+ 跳；对齐 vendored
+  // lib 的 webvpnRequest maxHops 25（10 曾在链中段打爆：重定向次数超限）
+  const maxHops = 25;
 
   // 逐跳 cookie 记忆（demo webvpnRequest 的做法）：302 中间跳下发的会话 Cookie 绝不能丢。
   // 三层优先级：初始头(seed) < 本跳真实域会话(provider) < 链内新发(chain)。
@@ -195,7 +256,11 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
     }
 
     const res = await invokeHttp(currentUrl, method, headers, body, bodyB64);
-    hopLogger?.(currentUrl, res.status);
+    hopLogger?.(
+      currentUrl,
+      res.status,
+      [...pairs.keys()].join(",") + " ←新发[" + (res.set_cookies ?? []).map((sc) => sc.replace(/;.*$/, "").slice(0, 46)).join(" | ") + "]",
+    );
 
     for (const sc of res.set_cookies) {
       allSetCookies.push(sc);
@@ -232,7 +297,15 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
         // 进 webvpn 登录舞 → N 条并行舞各自落地新 wengine 票据互烧 → 会话永远半死
         // （每 2s 一轮 XK-DANCE、恢复成功 43s 又死）。停跳打标交上层单飞重建；
         // 合法舞者（demoLogin）走 manual 逐跳不受影响。
-        if (nextUrl.startsWith("https://webvpn.tsinghua.edu.cn/login")) {
+        // lib 登录链例外（2026-09-16 真机实录）：oauth 兑付落点
+        // /login?oauth_login=true&code=… 是登录流程本身的最后一跳（服务端兑付
+        // code 后再 302 到门户落地页）——误判成死舞步会把登录链掐死在半空
+        // （症状：GET 重定向次数超限，末跳=…code=…）。带 code= 视为合法落点继续跟随。
+        if (
+          !followLoginDance &&
+          nextUrl.startsWith("https://webvpn.tsinghua.edu.cn/login") &&
+          !/[?&]code=/.test(nextUrl)
+        ) {
           respHeaders.set("x-onethu-auth-dance", "webvpn-login");
           currentUrl = nextUrl;
           break;
@@ -266,7 +339,7 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
     });
   }
 
-  throw new Error("重定向次数超限（10）");
+  throw new Error(`重定向次数超限（${maxHops}）末跳=${currentUrl.slice(0, 140)}`);
 }
 
 /** base64 → 字节（二进制响应体通道；Response(string) 会把 0x89 等

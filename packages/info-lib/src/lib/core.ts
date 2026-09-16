@@ -226,8 +226,11 @@ export const roam = async (helper: InfoHelper, policy: RoamingPolicy, payload: s
     case "card":
     case "cab":
     case "id": {
-        const idBaseUrl = policy === "card" ? ID_BASE_URL : WEB_VPN_ID_BASE_URL;
-        const idLoginUrl = policy === "card" ? ID_LOGIN_URL : WEB_VPN_ID_LOGIN_URL;
+        // OneTHU 适配（2026-09-17）：id/cab 走直连 id.tsinghua.edu.cn（公网
+        // 可达，主登录本就直连它）。wrapped POST 到 check 会被 wengine 405
+        // ——服务器侧行为变更，直连是现行正确做法。
+        const idBaseUrl = ID_BASE_URL;
+        const idLoginUrl = ID_LOGIN_URL;
         let response = "";
         for (let i = 0; i < 2; i++) {
             // OneTHU 适配：表单页即含 #sm2publicKey，逐次提取加密
@@ -249,8 +252,16 @@ export const roam = async (helper: InfoHelper, policy: RoamingPolicy, payload: s
         if (!response.includes("登录成功。正在重定向到")) {
             throw new IdAuthError();
         }
-        const redirectUrl = cheerio("a", response).attr().href;
-
+        // OneTHU 适配（2026-09-17）：成功页锚点经 oauth lb-auth/lbredirect
+        // 包装后取回——重定向列车由原生传输透明跟完，落地即完成绑定。
+        let redirectUrl = cheerio("a", response).attr().href;
+        if (!redirectUrl.includes("oauth.tsinghua.edu.cn")) {
+            const u = new URL(redirectUrl);
+            const scheme = u.protocol.replace(":", "");
+            const port = u.port || (scheme === "https" ? "443" : "80");
+            const uri = u.pathname + (u.search || "") + (u.hash || "");
+            redirectUrl = `https://oauth.tsinghua.edu.cn/lb-auth/lbredirect?scheme=${scheme}&host=${u.hostname}&port=${port}&uri=${uri}`;
+        }
         return await uFetch(redirectUrl);
     }
     case "gitlab": {

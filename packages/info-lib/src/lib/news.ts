@@ -15,7 +15,7 @@ import {
     SYSC_PDF_NEWS_PREFIX,
 } from "../constants/strings";
 import { newsHtml } from "../mocks/news";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import { decode } from "he";
 import {MOCK_NEWS_LIST} from "../mocks/news";
 
@@ -100,7 +100,7 @@ export const searchNewsList =
                 const data: { object: { resultsList: { bt: string, url: string, xxid: string, time: string, dwmc_show: string, yxzd: null, lmid: ChannelTag, sfsc: boolean }[] } } = JSON.parse(json);
                 data.object.resultsList.forEach(element => {
                     newsList.push({
-                        name: cheerio.load(decode(element.bt)).root().text(),
+                        name: cheerio.load(decode(element.bt)).text(),
                         xxid: (element.xxid),
                         url: decode(element.url),
                         date: element.time,
@@ -289,7 +289,7 @@ const policyList: [string, [string, string]][] = [
         "77726476706e69737468656265737421fcfe43d23323615e79009cadd6502720703f47",
         [
             "h2",
-            "#vsb_content_2",
+            ".concon",
         ],
     ],
     [
@@ -323,6 +323,10 @@ const handleNewApiNews = async (url: string): Promise<[string, string, string]> 
             const fileId = redirectUrl.substring(fileIdPos + 7);
             return await handlePdfNews(fileId);
         } else {
+            const redirectUrl = await getRedirectUrl(url);
+            if (redirectUrl.endsWith(".pdf")) {
+                return ["PdF", html, "PdF"];
+            }
             return await getNewsDetailOld(await getRedirectUrl(url), false);
         }
     }
@@ -358,9 +362,9 @@ const getNewsDetailOld = async (
     const [title, content] = getNewsDetailPolicy(url);
     const html = mocked ? newsHtml[url] ?? "" : await uFetch(url);
     if (title !== undefined && content && !mocked) {
-        const r = cheerio(content, html);
+        const r = cheerio.load(html)(content);
         return [
-            cheerio(title, html).text(),
+            cheerio.load(html)(title).text(),
             r.html() ?? "",
             r.text().replace(/\s/g, ""),
         ];

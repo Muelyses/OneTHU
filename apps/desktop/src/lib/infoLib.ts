@@ -16,7 +16,6 @@
 import { nativeFetch, tauriFetch } from "./transport.js";
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
-import { setSm2Encryptor } from "@onethu/info-lib/utils/sm2";
 import { InfoHelper } from "@onethu/info-lib";
 import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
 
@@ -129,8 +128,6 @@ export function initInfoLib(): InfoHelper {
       // → 永远匿名。故此处对齐上游：不清任何桶。
       void 0;
     });
-    // SM2 密码加密（OneTHU 自有实现注入；MIT 边界库的扩展点）
-    setSm2Encryptor((password, publicKey) => sm2crypto.encryptPassword(password, publicKey));
     // SM2 密码加密（OneTHU 自有实现；未注入时 lib 回退明文=上游 MIT 边界原行为）
     initialized = true;
   }
@@ -197,7 +194,7 @@ function startLoginRaw(username: string, password: string): {
   p: Promise<void>;
   methodsPromise: Promise<TwoFactorMethod[]>;
 } {
-  helper.fingerGenPrint = sessionFinger3 ?? "";
+  // 新版 lib 已移除 fingerGenPrint 字段；受信凭据由 session.finger3 自管
   let methodsResolve!: (m: TwoFactorMethod[]) => void;
   const methodsPromise = new Promise<TwoFactorMethod[]>((res) => (methodsResolve = res));
   methodsNotify = (m) => {
@@ -217,7 +214,7 @@ function startLoginRaw(username: string, password: string): {
 let sessionFinger3: string | null = null;
 export function setLibFinger3(finger3: string): void {
   sessionFinger3 = finger3;
-  helper.fingerGenPrint = finger3;
+  // helper.fingerGenPrint 已移除（新版 lib）
 }
 
 export type LibLoginResult =

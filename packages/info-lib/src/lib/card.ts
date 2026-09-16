@@ -10,7 +10,6 @@ import {
     CARD_MOD_MAX_CONSUME_URL,
     CARD_PHOTO_URL, CARD_RECHARGE_FROM_ALIPAY_URL,
     CARD_RECHARGE_FROM_BANK_URL,
-    CARD_RECHARGE_FROM_WECHAT_URL,
     CARD_REPORT_LOSS_URL,
     CARD_TRANSACTION_URL,
     CARD_USER_BY_TOKEN_URL,
@@ -19,9 +18,9 @@ import {
 import {CardInfo} from "../models/card/info";
 import {CardTransaction, CardTransactionType} from "../models/card/transaction";
 import {MOCK_CARD_INFO} from "../mocks/card";
-import {LoginError} from "../utils/error";
+import {LibError, LoginError} from "../utils/error";
 
-const CARD_API_VERSION = 1;
+const CARD_API_VERSION = 2;
 
 const accountBaseInfo = {
     user: "",
@@ -219,11 +218,14 @@ export const cardRechargeFromBank = async (helper: InfoHelper, transactionPasswo
     }
     await assureLoginValid(helper);
 
-    await fetchWithParse(CARD_RECHARGE_FROM_BANK_URL,
+    const {returncode} = await fetchWithParse(CARD_RECHARGE_FROM_BANK_URL,
         {
             idserial: accountBaseInfo.user,
             txamt: Math.floor(amount * 100),
         });
+    if (returncode === "ERROR") {
+        throw new LibError("圈存失败。请使用其他支付方式，或在 6:00~20:40 进行银行卡圈存。");
+    }
 };
 
 const enum CardRechargeType {
@@ -262,62 +264,24 @@ export const cardRechargeFromWechatAlipay = async (helper: InfoHelper, amount: n
     }
 
     else {
-        const data = await fetchWithParse(CARD_RECHARGE_FROM_WECHAT_URL,
+        const rawResponse = await fetchWithParse(CARD_RECHARGE_FROM_ALIPAY_URL,
             {
                 idserial: accountBaseInfo.user,
                 transamt: amount,
+                txamt: amount,
+                openid: "",
+                orgid: 2,
                 paytype: 2,
                 txcode: "1824",
                 productdesc: CardRechargeType.Wechat,
-                method: "trade.pay.wap",
-                tradetype: "weixin.wap",
+                method: "trade.pay.qrcode",
+                tradetype: "weixin.qrcode",
             });
 
-        const paymentApiHtml = data.rechargeHtml3;
-
-        const searchResult = /var id = '(.*)?';\s*?var token = '(.*)?';/.exec(paymentApiHtml);
-        if (searchResult === null) {
-            throw new Error("API id and token not found");
+        if (rawResponse.success !== true) {
+            throw new Error(rawResponse.message);
         }
 
-        const check = JSON.parse(await uFetch("https://fa-online.tsinghua.edu.cn/zjjsfw/zjjs/check.do", {
-            id: searchResult[1],
-            token: searchResult[2],
-        }));
-
-        if (check.code !== "0") {
-            throw new Error(check.message);
-        }
-
-        const paymentRedirectHtml = await uFetch("https://fa-online.tsinghua.edu.cn/zjjsfw/zjjs/phonePay.do", {
-            channelId: alipay ? "0102" : "0202",
-            id: searchResult[1],
-        });
-
-        const paymentRedirectUrl = /window.location.href='(.*)?';/.exec(paymentRedirectHtml);
-
-        if (paymentRedirectUrl === null) {
-            throw new Error("Payment redirect url not found");
-        }
-
-        const paymentResponse = await fetch(paymentRedirectUrl[1], {
-            headers: {
-                Referer: "https://fa-online.tsinghua.edu.cn/",
-            }
-        });
-
-        if (paymentResponse.status != 200) {
-            throw new Error("Payment check failed");
-        }
-
-        const paymentResponseText = await paymentResponse.text();
-
-        const wechatPaymentUri = /"weixin:\/\/(.*)?"/.exec(paymentResponseText);
-
-        if (wechatPaymentUri === null) {
-            throw new Error("Wechat payment uri not found");
-        }
-
-        return "weixin://" + wechatPaymentUri[1];
+        return JSON.parse(rawResponse.response).bizContent.webUrl;
     }
 };

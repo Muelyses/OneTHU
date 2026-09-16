@@ -7,7 +7,9 @@ import {
     APP_LATEST_VERSION_URL,
     APP_PRIVACY_URL,
     APP_QRCODE_URL,
+    APP_STARTUP_STAT_URL,
     APP_SUBMIT_FEEDBACK_URL,
+    APP_USAGE_STAT_URL,
 } from "../constants/strings";
 import {Announcement} from "../models/app/announcement";
 import {Version} from "../models/app/version";
@@ -20,16 +22,54 @@ import {
 } from "../mocks/app";
 import {Feedback} from "../models/app/feedback";
 
-export const getLatestAnnounces = async (helper: InfoHelper): Promise<Announcement[]> =>
+export const appStartupStat = async (helper: InfoHelper, uuid: string): Promise<void> =>
     roamingWrapperWithMocks(
         helper,
         undefined,
         "",
-        () => uFetch(APP_ANNOUNCEMENT_URL).then(JSON.parse).then((r: any[]) => r.map((e) => ({
+        async () => {
+            await uFetch(
+                APP_STARTUP_STAT_URL,
+                JSON.stringify({Uuid: uuid}) as never as object,
+                60000,
+                "UTF-8",
+                true,
+                "application/json",
+            );
+        },
+        undefined,
+    );
+
+export const appUsageStat = async (helper: InfoHelper, usage: number, uuid: string): Promise<void> =>
+    roamingWrapperWithMocks(
+        helper,
+        undefined,
+        "",
+        async () => {
+            await uFetch(
+                `${APP_USAGE_STAT_URL}`,
+                JSON.stringify({Uuid: uuid, Function: usage}) as never as object,
+                60000,
+                "UTF-8",
+                true,
+                "application/json",
+            );
+        },
+        undefined,
+    );
+
+export const getLatestAnnounces = async (helper: InfoHelper, version?: string): Promise<Announcement[]> =>
+    roamingWrapperWithMocks(
+        helper,
+        undefined,
+        "",
+        () => uFetch(APP_ANNOUNCEMENT_URL + (version ?? "0.0.0")).then(JSON.parse).then((r: any[]) => r.map((e) => ({
             id: e.id,
             title: e.title,
             content: e.content,
             createdAt: Date.parse(e.createdTime),
+            visibleNotAfter: e.visibleNotAfter,
+            visibleExact: e.visibleExact
         }))),
         MOCK_LATEST_ANNOUNCEMENTS,
     );

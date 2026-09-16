@@ -7,115 +7,69 @@ export enum ScheduleType {
 	CUSTOM,
 }
 
-const beginMap: {[key: string]: number} = {
-    "08:00": 1,
-    "08:50": 2,
-    "09:50": 3,
-    "10:40": 4,
-    "11:30": 5,
-    "13:30": 6,
-    "14:20": 7,
-    "15:20": 8,
-    "16:10": 9,
-    "17:05": 10,
-    "17:55": 11,
-    "19:20": 12,
-    "20:10": 13,
-    "21:00": 14,
-};
-
-const endMap: {[key: string]: number} = {
-    "08:45": 1,
-    "09:35": 2,
-    "10:35": 3,
-    "11:25": 4,
-    "12:15": 5,
-    "14:15": 6,
-    "15:05": 7,
-    "16:05": 8,
-    "16:55": 9,
-    "17:50": 10,
-    "18:40": 11,
-    "20:05": 12,
-    "20:55": 13,
-    "21:45": 14,
-};
-
 export const MAX_WEEK_LIST = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     11, 12, 13, 14, 15, 16, 17, 18,
 ];
 
-/**
- * 区分两个概念。
- * 时间块：指的是指明星期数、周几、从第几节开始到第几节结束的一段时间。
- * 时间片：指的是给定周几、从第几节开始到第几节结束后，额外指定在哪些星期活跃的几段时间。
- * - 可以用仅有某一周活跃的时间片表示一个时间块
- */
 export interface TimeSlice {
     dayOfWeek: number,
-    begin: number,
-    end: number,
-    activeWeeks: number[], // 请尽量保持该数组有序
-}
-
-export interface ExamTimeSlice {
-    dayOfWeek: number,
-    weekNumber: number,
-    begin: string,  // HH:mm
-    end: string,    // HH:mm
+    beginTime: dayjs.Dayjs,
+    endTime: dayjs.Dayjs,
+    id?: number,
 }
 
 // TimeSlice methods BEGIN
 
 /**
- * 确定两个时间片发生时间块重叠的星期数
- * @param slice 一个时间片
- * @param other 另一个时间片
- * @return 数字数组，表示发生重叠的星期数
+ * 从 dayjs 时间对象计算开始节数
+ * @param beginTime dayjs 时间对象
+ * @returns 节数（1-14），如果无法匹配则返回 0
  */
-export const overlappedWeeks = (slice: TimeSlice, other: TimeSlice): number[] => {
-    if (slice.dayOfWeek === other.dayOfWeek && !(
-        slice.end < other.begin || slice.begin > other.end
-    )) {
-        return (
-            slice.activeWeeks.filter((week) => other.activeWeeks.indexOf(week) > -1)
-        );
-    } else {
-        return [];
-    }
+export const getBeginPeriod = (beginTime: dayjs.Dayjs): number => {
+    const beginTimes = [
+        "", "08:00", "08:50", "09:50", "10:40", "11:30",
+        "13:30", "14:20", "15:20", "16:10", "17:05", "17:55",
+        "19:20", "20:10", "21:00"
+    ];
+    const timeStr = beginTime.format("HH:mm");
+    const index = beginTimes.indexOf(timeStr);
+    return index > 0 ? index : 0;
 };
 
 /**
- * 确定两个时间片发生时间块相邻的星期数
- * @param slice 一个时间片
- * @param other 另一个时间片
- * @return 数字数组，表示发生相邻的星期数
+ * 从 dayjs 时间对象计算结束节数
+ * @param endTime dayjs 时间对象
+ * @returns 节数（1-14），如果无法匹配则返回 0
  */
-export const adjacentWeeks = (slice: TimeSlice, other: TimeSlice): number[] => {
-    if (slice.dayOfWeek === other.dayOfWeek && (
-        slice.end + 1 === other.begin ||
-            other.end + 1 === slice.begin
-    )) {
-        return (
-            slice.activeWeeks.filter((week) => other.activeWeeks.indexOf(week) > -1)
-        );
-    } else {
-        return [];
-    }
+export const getEndPeriod = (endTime: dayjs.Dayjs): number => {
+    const endTimes = [
+        "", "08:45", "09:35", "10:35", "11:25", "12:15",
+        "14:15", "15:05", "16:05", "16:55", "17:50", "18:40",
+        "20:05", "20:55", "21:45"
+    ];
+    const timeStr = endTime.format("HH:mm");
+    const index = endTimes.indexOf(timeStr);
+    return index > 0 ? index : 0;
 };
 
 /**
- * 时间块的比较函数
- * 不考虑 activeWeeks，其余三个属性优先级从高到低是 dayOfWeek > begin > end
- * @param slice 一个时间片
- * @param other 另一个时间块
- * @returns 数字类型，负数表示前者小，正数表示前者大，零表示相等
+ * 从 dayjs 时间对象和学期开始日期计算周次
+ * @param time dayjs 时间对象
+ * @param semesterFirstDay 学期第一天（YYYY-MM-DD格式）
+ * @returns 周次（1开始），如果无法计算则返回 0
  */
-export const timeSliceComp = (slice: TimeSlice, other: TimeSlice): number => {
-    const a: number = 10000 * slice.dayOfWeek + 100 * slice.begin + slice.end;
-    const b: number = 10000 * other.dayOfWeek + 100 * other.begin + other.end;
-    return a - b;
+export const getWeekFromTime = (time: dayjs.Dayjs, semesterFirstDay: string): number => {
+    const semesterStart = dayjs(semesterFirstDay).startOf("day");
+    // Dayjs truncates fractional differences toward zero: the Sunday before
+    // term must not become week 1 just because its time is later than midnight.
+    const diffDays = time.startOf("day").diff(semesterStart, "day");
+    return Math.floor(diffDays / 7) + 1;
+};
+
+export const isInSemester = (time: dayjs.Dayjs, firstDay: string, weekCount: number): boolean => {
+    const week = getWeekFromTime(time, firstDay);
+    return week >= 1 && week <= weekCount;
 };
 
 // TimeSlice methods END
@@ -124,139 +78,36 @@ export interface ScheduleTime {
     // 添加新方法时，请始终保持这个数组是有序的、时间块不重叠、不存在相邻未合并时间块的
     // @warning 请勿通过除了 scheduleTimeAdd, scheduleTimeRemove 函数之外的任何方式修改该数组！
     base: TimeSlice[];
-
-    // 仅用于存储考试类型的时间信息
-    exams?: ExamTimeSlice[];
 }
 
 // ScheduleTime methods BEGIN
 
 /**
- * 为 time.base 连接上新的时间片列表，不对外开放
- * 完成连接之后会清洗 time.base，保证其有序、时间块不重叠、不存在相邻未合并时间块
- * @param time 接受新时间片的列表
- * @param newList 需要合并到 time.base 的列表
- */
-const wrappedConcat = (time: ScheduleTime, newList: TimeSlice[]): void => {
-    time.base = time.base.concat(newList);
-    time.base.sort((a, b) => timeSliceComp(a, b)); // 排序
-
-    // 注意到合并操作可能会产生起止时间相同但是 activeWeeks 不交且未合并的时间片
-    // 此处在有序性的基础上合并
-    const mergedList: TimeSlice[] = [];
-    time.base.forEach((val) => {
-        if (!mergedList.length) {
-            mergedList.push(val);
-            return;
-        }
-
-        const tail: TimeSlice = mergedList[mergedList.length - 1];
-        if (tail.begin === val.begin && tail.end === val.end && tail.dayOfWeek === val.dayOfWeek) {
-            tail.activeWeeks = tail.activeWeeks.concat(val.activeWeeks);
-            tail.activeWeeks.sort((a, b) => a - b);
-        } else {
-            mergedList.push(val);
-        }
-    });
-
-    time.base = mergedList;
-};
-
-/**
- * 查询该计划时间在给定的星期是否有安排
- * @param time 计划时间
- * @param week 要查询的星期数
- * @returns 布尔值，表示是否安排
- */
-export const activeWeek = (time: ScheduleTime, week: number): boolean => {
-    const baseIsActive = time.base.reduce((prev: boolean, curr: TimeSlice) => (
-        prev || (curr.activeWeeks.indexOf(week) > -1)
-    ), false);
-    const examIsActive = time.exams?.reduce((prev: boolean, curr: ExamTimeSlice) => (
-        prev || (curr.weekNumber === week)
-    ), false) ?? false;
-    return baseIsActive || examIsActive;
-};
-
-/**
- * 给计划时间插入新的时间片，如果发生时间块相邻，则自动合并
- * @note 必须保证插入的时间块和已有的不重叠，若重叠，插入失败
+ * 给计划时间插入新的时间片，
  * @param time 接受新时间片的计划时间
  * @param elem 需要插入的时间片
+ * @param mergeAdjacent 如果发生时间块相邻，则自动合并
  * @return 布尔类型，表示插入是否成功
  */
-export const scheduleTimeAdd = (time: ScheduleTime, elem: TimeSlice): boolean => {
-    const overlap: boolean = time.base.reduce((prev: boolean, curr: TimeSlice) => (
-        prev || (overlappedWeeks(elem, curr).length > 0)
-    ), false);
-
-    if (overlap) {
-        return false;
-    }
-
-    // 对 base 为空特殊处理，否则下面的 forEach 失效
-    if (time.base.length === 0) {
-        time.base.push(elem);
-        return true;
-    }
-
-    // 初始化合并记录，将原 time.base 中可以和 elem 合并的记录到其中
-    // mergeRecord[2] = [1, 2] 表示合并后第 3 周的某一天 elem 从当天第 1 节持续到第 2 节
-    // 合并记录不记录 dayOfWeek
-    const mergeRecord: [number, number][] = MAX_WEEK_LIST.map(() => [-1, -1]);
-    elem.activeWeeks.forEach((val) => mergeRecord[val - 1] = [elem.begin, elem.end]);
-
-    for (let i = 0; i < 18; ++i) {
-        const week: number = i + 1;
-
-        // 遍历所有在第 week 周活跃的时间片
-        time.base
-            .filter((val) => val.activeWeeks.indexOf(week) > -1)
-            .forEach((val) => {
-                const weeks: number[] = adjacentWeeks(val, elem);
-                if (!weeks.length || weeks.indexOf(week) === -1) return;
-
-                // 取出这些时间片中与 elem 在这一周相邻的并将其合并
-                mergeRecord[i] = [
-                    val.begin < mergeRecord[i][0] ? val.begin : mergeRecord[i][0],
-                    val.end > mergeRecord[i][1] ? val.end : mergeRecord[i][1]
-                ];
-
-                // 更新 time.base 中的 activeWeeks 记录
-                val.activeWeeks = val.activeWeeks.filter((w) => w != week);
-            });
-    }
-
-    // 根据合并记录计算需要 TimeSlice
-    const newTimeSlice: TimeSlice[] = [];
-    mergeRecord.forEach((val, ind) => {
-        const week: number = ind + 1;
-
-        // 查找同样起止时间的合并记录是否已经构建了时间片
-        let index = 0;
-        for (; index < newTimeSlice.length; ++index) {
-            const slice = newTimeSlice[index];
-            if (slice.begin === val[0] && slice.end === val[1]) {
-                // 如果已经构建，则将星期数增添进列表
-                slice.activeWeeks.push(week);
+export const scheduleTimeAdd = (time: ScheduleTime, elem: TimeSlice, mergeAdjacent = false): boolean => {
+    let isAdjacent = false;
+    // 合并相邻的时间片
+    if (mergeAdjacent) {
+        for (const val of time.base) {
+            if (elem.beginTime.isAfter(val.endTime) && elem.beginTime.diff(val.endTime, "minutes") <= 15) {
+                val.endTime = elem.endTime;
+                isAdjacent = true;
+                break;
+            } else if (val.beginTime.isAfter(elem.endTime) && val.beginTime.diff(elem.endTime, "minutes") <= 15) {
+                val.beginTime = elem.beginTime;
+                isAdjacent = true;
                 break;
             }
         }
-
-        // 如果没有构建，则新构建一个时间片，注意 -1 表示的是无效合并记录
-        if (index === newTimeSlice.length && val[0] > 0 && val[1] > 0) {
-            newTimeSlice.push({
-                dayOfWeek: elem.dayOfWeek,
-                begin: val[0],
-                end: val[1],
-                activeWeeks:[week]
-            });
-        }
-    });
-
-    // 合并操作可能导致部分时间片活跃星期消失，将这些时间片删去
-    time.base = time.base.filter((val) => val.activeWeeks.length > 0);
-    wrappedConcat(time, newTimeSlice); // 合并
+    }
+    if (!isAdjacent) {
+        time.base.push(elem);
+    }
 
     return true;
 };
@@ -265,39 +116,21 @@ export const scheduleTimeAdd = (time: ScheduleTime, elem: TimeSlice): boolean =>
  * 从 time.base 中删除一个时间片
  * @param time 需要删除时间片的计划时间
  * @param elem 要删除的时间片
- * @note 本函数实际是保证操作后的 time.base 中对应的时间片的 activeWeeks 不包含 elem 中所指定的星期数
- *       所以 elem 的 activeWeeks 可以冗余
- * @returns 实际上 time.base 中对应的时间片中 activeWeeks 被删除掉的星期数构成的列表
- *          如果删除失败（time.base 中没有 elem 对应的时间片），返回空列表
+ * @returns 如果删除成功返回 true，否则返回 false
  */
-export const scheduleTimeRemove = (time: ScheduleTime, elem: TimeSlice): number[] => {
-    let index = 0;
-    for (; index < time.base.length; ++index) {
-        const slice: TimeSlice = time.base[index];
-        if (slice.begin === elem.begin && slice.end === elem.end) {
-            break;
-        }
+export const scheduleTimeRemove = (time: ScheduleTime, elem: TimeSlice): boolean => {
+    const index = time.base.findIndex((slice: TimeSlice) => 
+        slice.dayOfWeek === elem.dayOfWeek && 
+        slice.beginTime.isSame(elem.beginTime, "minute") && 
+        slice.endTime.isSame(elem.endTime, "minute")
+    );
+
+    if (index === -1) {
+        return false;
     }
 
-    if (index === time.base.length) {
-        return [];
-    }
-
-    const removedWeeks: number[] = [];
-    const remainWeeks: number[] = [];
-    time.base[index].activeWeeks.forEach((val) => {
-        if (elem.activeWeeks.indexOf(val) === -1) {
-            remainWeeks.push(val);
-        } else {
-            removedWeeks.push(val);
-        }
-    });
-    time.base[index].activeWeeks = remainWeeks;
-
-    // 删除操作可能导致部分时间片活跃星期消失，将这些时间片删去
-    time.base = time.base.filter((val) => val.activeWeeks.length > 0);
-
-    return removedWeeks;
+    time.base.splice(index, 1);
+    return true;
 };
 
 // ScheduleTime methods END
@@ -307,82 +140,39 @@ export interface Schedule {
     location: string,
     hash: string,
     type: ScheduleType,
+    category?: string,
     activeTime: ScheduleTime,
     delOrHideTime: ScheduleTime,
 }
 
 /**
- * 返回计划的深拷贝
- * @param schedule 需要拷贝的计划
- * @returns 拷贝得到的计划
- * @note 这个函数的是为了触发 redux 的重新渲染，仅仅修改内部成员无法触发
- *       如果有更好的解决方法，欢迎废弃该函数
- */
-export const scheduleDeepCopy = (schedule: Schedule): Schedule => {
-    const res: Schedule = {
-        name: schedule.name,
-        location: schedule.location,
-        hash: schedule.hash,
-        type: schedule.type,
-        activeTime: {base: []},
-        delOrHideTime: {base: []},
-    };
-
-    schedule.activeTime.base.forEach((val) => {
-        const weeks: number[] = [];
-        val.activeWeeks.forEach((num) => weeks.push(num));
-        res.activeTime.base.push({
-            dayOfWeek: val.dayOfWeek,
-            begin: val.begin,
-            end: val.end,
-            activeWeeks: weeks,
-        });
-    });
-
-    schedule.delOrHideTime.base.forEach((val) => {
-        const weeks: number[] = [];
-        val.activeWeeks.forEach((num) => weeks.push(num));
-        res.delOrHideTime.base.push({
-            dayOfWeek: val.dayOfWeek,
-            begin: val.begin,
-            end: val.end,
-            activeWeeks: weeks,
-        });
-    });
-
-    return res;
-};
-
-/**
  * 用于删除或隐藏某一个时间片
  * @param schedule 需要操作的计划
  * @param elem 需要删除或隐藏的时间片
- * @returns 实际删除或隐藏的星期数列表
+ * @returns 如果删除成功返回 true，否则返回 false
  * @note 允许传入的 elem 有冗余甚至不存在于活跃时间列表中
  */
-export const delOrHide = (schedule: Schedule, elem: TimeSlice): number[] => {
-    const weeks: number[] = scheduleTimeRemove(schedule.activeTime, elem);
-    scheduleTimeAdd(schedule.delOrHideTime, {
-        ...elem,
-        activeWeeks: weeks
-    });
-    return weeks;
+export const delOrHide = (schedule: Schedule, elem: TimeSlice): boolean => {
+    const removed = scheduleTimeRemove(schedule.activeTime, elem);
+    if (removed && schedule.category !== "个人日历" && schedule.type !== ScheduleType.CUSTOM) {
+        scheduleTimeAdd(schedule.delOrHideTime, elem);
+    }
+    return removed;
 };
 
 /**
  * 用于取消删除或隐藏某一个时间片
  * @param schedule 需要操作的计划
  * @param elem 需要取消删除或隐藏的时间片
- * @returns 实际取消删除或隐藏的星期数列表
+ * @returns 如果取消成功返回 true，否则返回 false
  * @note 允许传入的 elem 有冗余甚至不存在于已删除或隐藏时间列表中
  */
-export const removeDelOrHide = (schedule: Schedule, elem: TimeSlice): number[] => {
-    const weeks: number[] = scheduleTimeRemove(schedule.delOrHideTime, elem);
-    scheduleTimeAdd(schedule.activeTime, {
-        ...elem,
-        activeWeeks: weeks
-    });
-    return weeks;
+export const removeDelOrHide = (schedule: Schedule, elem: TimeSlice): boolean => {
+    const removed = scheduleTimeRemove(schedule.delOrHideTime, elem);
+    if (removed) {
+        scheduleTimeAdd(schedule.activeTime, elem);
+    }
+    return removed;
 };
 
 /**
@@ -394,14 +184,14 @@ export const mergeSchedules = (base: Schedule[]) => {
     const existName: string[] = [];
     const processedScheduleList: Schedule[] = [];
     base.forEach((schedule) => {
-        const nameLocation = `${schedule.name}.${schedule.location}`;
+        const nameLocation = JSON.stringify([schedule.type, schedule.name, schedule.location, schedule.category]);
         const index = existName.indexOf(nameLocation);
         if (index === -1) {
             existName.push(nameLocation);
             processedScheduleList.push(schedule);
         } else {
             schedule.activeTime.base.forEach((time) => {
-                scheduleTimeAdd(processedScheduleList[index].activeTime, time);
+                scheduleTimeAdd(processedScheduleList[index].activeTime, time, schedule.category !== "个人日历");
             });
         }
     });
@@ -414,7 +204,6 @@ export const mergeSchedules = (base: Schedule[]) => {
  * @param base 计划列表
  * @return 返回类型为 [string, ScheduleType, TimeSlice] 的元组的列表
  *         元组三项的含义分别为计划名称、计划类型、发生重叠的时间块
- * @note 由于这里判定冲突的量级是时间块而不是时间片，所以 TimeSlice 的 activeWeeks 必然只有一项
  */
 export const getOverlappedBlock = (
     tester: Schedule,
@@ -424,69 +213,49 @@ export const getOverlappedBlock = (
     base.forEach((schedule) => {
         schedule.activeTime.base.forEach((a) => {
             tester.activeTime.base.forEach((b) => {
-                const weeks: number[] = overlappedWeeks(a, b);
-                weeks.forEach((week) => res.push([
-                    schedule.name,
-                    schedule.type,
-                    {...a, activeWeeks: [week]}
-                ]));
+                const overlap =
+                    a.endTime >= b.beginTime && a.beginTime <= b.endTime;
+                if (overlap) {
+                    res.push([
+                        schedule.name,
+                        schedule.type,
+                        a
+                    ]);
+                }
             });
         });
     });
     return res;
 };
 
-export const parseJSON = (json: any[], firstDay: string): Schedule[] => {
+export const parseJSON = (json: any[]): Schedule[] => {
     const scheduleList: Schedule[] = [];
     json.forEach((o) => {
         try {
             const current = dayjs(o.nq);
-            const weekNumber = Math.floor(current.diff(firstDay) / 604800000) + 1;
             const dayOfWeek = current.day() === 0 ? 7 : current.day();
-            switch (o.fl) {
-            case "上课":
-            case "实验": {
-                const lessonList = scheduleList.filter((val) => val.name === o.nr && val.location === (o.dd || ""));
-                let lesson: Schedule;
-                if (lessonList.length) {
-                    lesson = lessonList[0];
-                } else {
-                    scheduleList.push({
-                        name: o.nr,
-                        location: o.dd || "",
-                        hash: o.nr + "@" +o.dd,
-                        type: ScheduleType.PRIMARY,
-                        activeTime: {base: []},
-                        delOrHideTime: {base: []}
-                    });
-                    lesson = scheduleList[scheduleList.length - 1];
-                }
-                scheduleTimeAdd(lesson.activeTime, {
-                    dayOfWeek,
-                    begin: beginMap[o.kssj],
-                    end: endMap[o.jssj],
-                    activeWeeks: [weekNumber],
-                });
-                break;
-            }
-            case "考试": {
+            const lessonList = scheduleList.filter((val) => val.name === o.nr && val.location === (o.dd || "") && val.category === o.fl);
+            let lesson: Schedule;
+            if (lessonList.length) {
+                lesson = lessonList[0];
+            } else {
                 scheduleList.push({
-                    name: "[考试]" + o.nr,
+                    name: o.nr,
                     location: o.dd || "",
                     hash: o.nr + "@" +o.dd,
-                    type: ScheduleType.EXAM,
+                    type: ScheduleType.PRIMARY,
+                    category: o.fl,
                     activeTime: {base: []},
                     delOrHideTime: {base: []}
                 });
-                scheduleList[scheduleList.length - 1].activeTime.exams = [{
-                    dayOfWeek,
-                    begin: o.kssj.replace("：", ":"),
-                    end: o.jssj.replace("：", ":"),
-                    weekNumber,
-                }];
-                break;
+                lesson = scheduleList[scheduleList.length - 1];
             }
-            }
+            scheduleTimeAdd(lesson.activeTime, {
+                id: o.grrlID,
+                dayOfWeek,
+                beginTime: dayjs(`${o.nq} ${o.kssj.replace("：", ":")}`),
+                endTime: dayjs(`${o.nq} ${o.jssj.replace("：", ":")}`),
+            }, lesson.category !== "个人日历");
         } catch (e) {
             console.error(e);
         }
@@ -530,13 +299,14 @@ export const parseSecondaryWeek = (
 // Note: no '}' at the end.
 export const parseScript = (
     script: string,
+    firstDay: string,
     verbose = false,
 ): Schedule[] | [string, string, boolean][] => {
     const result: Schedule[] = [];
     const verboseResult: [string, string, boolean][] = [];
     const segments = script.split("strHTML =").slice(1);
-    const beginList = [1, 3, 6, 8, 10, 12];
-    const endList = [2, 5, 7, 9, 11, 14];
+    const beginList = ["08:00", "09:50", "13:30", "15:20", "17:05", "19:20"];
+    const endList = ["09:35", "12:15", "15:05", "16:55", "18:40", "21:45"];
     const reg = /"<span onmouseover=\\"return overlib\('(.+?)'\);\\" onmouseout='return nd\(\);'>(.+?)<\/span>";[ \n\t\r]+?document.getElementById\('(.+?)'\).innerHTML \+= strHTML\+"<br>";/;
     segments.forEach((seg) => {
         reg.test(seg);
@@ -568,11 +338,11 @@ export const parseScript = (
                 });
                 lesson = result[result.length - 1];
             }
+            const date = dayjs(firstDay).add((week - 1) * 7 + dayOfWeek - 1, "day").format("YYYY-MM-DD");
             scheduleTimeAdd(lesson.activeTime, {
                 dayOfWeek,
-                begin,
-                end,
-                activeWeeks: [week],
+                beginTime: dayjs(`${date} ${begin}`),
+                endTime: dayjs(`${date} ${end}`),
             });
         };
 
@@ -614,4 +384,185 @@ export const parseScript = (
         }
     });
     return verbose ? verboseResult : result;
+};
+
+/**
+ * 统一的周次模式解析器，支持以下格式：
+ * - 范围表达式："8-11周"、"第3,5-7周"、"1-3,5,7-9"
+ * - 特殊关键词："全周"、"单周"、"双周"、"前八周"/"前8周"、"后八周"/"后8周"
+ * @param pattern  周次描述字符串
+ * @param weekCount  学期总周数（用于"全周"、"后八周"等需要知道总周数的模式）
+ * @returns  排序去重后的周次数组
+ */
+export const parseWeekPattern = (pattern: string, weekCount: number): number[] => {
+    const normalized = pattern.replace(/第|周/g, "").trim();
+    if (normalized.length === 0) {
+        return [];
+    }
+
+    // 全周（normalized 后为 "全"）
+    if (normalized === "全") {
+        return Array.from({length: weekCount}, (_, i) => i + 1);
+    }
+    // 单周（normalized 后为 "单"）
+    if (normalized === "单") {
+        return Array.from({length: weekCount}, (_, i) => i + 1).filter((w) => w % 2 === 1);
+    }
+    // 双周（normalized 后为 "双"）
+    if (normalized === "双") {
+        return Array.from({length: weekCount}, (_, i) => i + 1).filter((w) => w % 2 === 0);
+    }
+    // 前八周 / 前8周（normalized 后为 "前八" / "前8"）
+    if (/^前(?:八|8)$/.test(normalized)) {
+        return Array.from({length: Math.min(8, weekCount)}, (_, i) => i + 1);
+    }
+    // 后八周 / 后8周（normalized 后为 "后八" / "后8"）
+    if (/^后(?:八|8)$/.test(normalized)) {
+        const start = Math.max(1, weekCount - 7);
+        return Array.from({length: weekCount - start + 1}, (_, i) => start + i);
+    }
+
+    // 兜底：逗号分隔的范围表达式
+    const weeks: number[] = [];
+    parseSecondaryWeek(normalized, (w) => weeks.push(w));
+    return [...new Set(weeks)].sort((a, b) => a - b);
+};
+
+/**
+ * 解析 CR 选课系统的一级课表页面（m=kbSearch），
+ * 提取 setInitValue 函数中的课程安排数据。
+ *
+ * CR 系统的 setInitValue 结构：
+ * ```
+ * strHTML = "";
+ * var strHTML1 = "";
+ * strHTML += "...<b>课程名</b>..."
+ * strHTML1 += "；教师"
+ * strHTML1 += "；课程属性"
+ * strHTML1 += "；周次模式"
+ * strHTML1 += "；上课地点"
+ * getElementById('a{session}_{day}').innerHTML += strHTML+"<br>";
+ * ```
+ *
+ * @param html  CR kbSearch 页面的完整 HTML
+ * @param firstDay  学期第一天（YYYY-MM-DD）
+ * @param weekCount  学期总周数
+ * @returns  解析后的 Schedule[]
+ */
+export const parseCRSchedule = (
+    html: string,
+    firstDay: string,
+    weekCount: number,
+): Schedule[] => {
+    // session → [beginTime, endTime] 映射（a1～a6）
+    const sessionTimes: [string, string][] = [
+        ["", ""],
+        ["08:00", "09:35"],   // a1: 第1节
+        ["09:50", "12:15"],   // a2: 第2节
+        ["13:30", "15:05"],   // a3: 第3节
+        ["15:20", "16:55"],   // a4: 第4节
+        ["17:05", "18:40"],   // a5: 第5节
+        ["19:20", "21:45"],   // a6: 第6节
+    ];
+
+    const scheduleList: Schedule[] = [];
+
+    // 定位 setInitValue 函数体
+    const funcStart = html.indexOf("function setInitValue");
+    if (funcStart === -1) {
+        return [];
+    }
+    const funcEnd = html.indexOf("initTopLocal", funcStart);
+    if (funcEnd === -1) {
+        return [];
+    }
+    const body = html.substring(funcStart, funcEnd);
+
+    // 匹配每个课程时间槽赋值块：
+    // strHTML = ""; var strHTML1 = ""; ...(课程名+详情)... getElementById('a{session}_{day}')
+    const blockRegex =
+        /strHTML\s*=\s*"";\s+var strHTML1\s*=\s*"";([\s\S]*?)getElementById\('a(\d+)_(\d+)'\)/g;
+
+    let match: RegExpExecArray | null;
+    while ((match = blockRegex.exec(body)) !== null) {
+        try {
+            const blockContent = match[1];
+            const session = parseInt(match[2], 10);
+            const dayOfWeek = parseInt(match[3], 10);
+
+            // 提取课程名
+            const nameMatch = /<b>(.+?)<\/b>/.exec(blockContent);
+            if (!nameMatch) {
+                continue;
+            }
+            const name = nameMatch[1];
+
+            // 提取 strHTML1 各行中的分号分隔字段
+            const fields: string[] = [];
+            const fieldRegex = /strHTML1\s*\+=\s*["']；(.+?)["']/g;
+            let fieldMatch: RegExpExecArray | null;
+            while ((fieldMatch = fieldRegex.exec(blockContent)) !== null) {
+                fields.push(fieldMatch[1]);
+            }
+
+            if (fields.length < 3) {
+                // 至少需要：教师、课程属性、周次模式
+                continue;
+            }
+
+            const category = fields[1];                     // 必修/限选/任选
+            const weekPattern = fields[2];                  // 8-11周 / 全周 / 单周...
+            const location = fields.length >= 4 ? fields[3] : "";
+
+            // 解析周次
+            const weeks = parseWeekPattern(weekPattern, weekCount);
+            if (weeks.length === 0) {
+                continue;
+            }
+
+            // session 有效性检查
+            if (session < 1 || session > 6) {
+                continue;
+            }
+            const [begin, end] = sessionTimes[session];
+
+            // 查找或创建 Schedule（按 name + location + category 分组）
+            const hash = name + "@" + location;
+            let lesson = scheduleList.find(
+                (s) => s.hash === hash && s.category === category,
+            );
+            if (!lesson) {
+                scheduleList.push({
+                    name,
+                    location,
+                    hash,
+                    type: ScheduleType.PRIMARY,
+                    category,
+                    activeTime: {base: []},
+                    delOrHideTime: {base: []},
+                });
+                lesson = scheduleList[scheduleList.length - 1];
+            }
+
+            // 为每个周次生成 TimeSlice
+            for (const week of weeks) {
+                const date = dayjs(firstDay)
+                    .add((week - 1) * 7 + dayOfWeek - 1, "day")
+                    .format("YYYY-MM-DD");
+                scheduleTimeAdd(
+                    lesson.activeTime,
+                    {
+                        dayOfWeek,
+                        beginTime: dayjs(`${date} ${begin}`),
+                        endTime: dayjs(`${date} ${end}`),
+                    },
+                    true,  // mergeAdjacent: CR 同一门课多天分开展示
+                );
+            }
+        } catch {
+            // 单条解析失败不影响其他课程
+        }
+    }
+
+    return scheduleList;
 };

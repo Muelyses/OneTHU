@@ -1,5 +1,5 @@
 import {Form, InputTag, Overall, Person} from "../models/home/assessment";
-import {BankPaymentByMonth} from "../models/home/bank";
+import {BankPaymentByMonth, GraduateIncome} from "../models/home/bank";
 import {CalendarData} from "../models/schedule/calendar";
 import {Invoice} from "../models/home/invoice";
 import {ClassroomStateResult} from "../models/home/classroom";
@@ -84,7 +84,7 @@ export const MOCK_REPORT = [
     },
 ];
 
-export const MOCK_ASSESSMENT_LIST = [
+export const MOCK_ASSESSMENT_LIST: [string, boolean, string][] = [
     ["微积分A(2)", true, "Mr. Z"],
     ["高等线性代数选讲", true, "Mr. L"],
     ["大学物理B(1)", true, "Mr. L"],
@@ -338,10 +338,20 @@ export const MOCK_BANK_PAYMENT = [{
     }],
 }] as BankPaymentByMonth[];
 
+export const MOCK_GRADUATE_INCOME = [
+] as GraduateIncome[];
+
 export const MOCK_CALENDAR_DATA: CalendarData = {
-    firstDay: "2023-02-20",
-    semesterId: "2022-2023-2",
-    weekCount: 18,
+    firstDay: "2023-07-01",
+    semesterId: "2023-2024-3",
+    semesterName: "2023-2024夏季学期",
+    weekCount: 10,
+    nextSemesterList: [{
+        firstDay: "2024-09-09",
+        semesterId: "2024-2025-1",
+        semesterName: "2024-2025秋季学期",
+        weekCount: 23,
+    }],
 };
 
 export const MOCK_COUNTDOWN_DATA = [

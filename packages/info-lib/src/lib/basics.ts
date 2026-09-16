@@ -1,4 +1,6 @@
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
+import type {ElementType} from "domelementtype";
+import type {AnyNode, DataNode, Element} from "domhandler";
 import {getCsrfToken, roamingWrapperWithMocks} from "./core";
 import {
     ASSESSMENT_BASE_URL,
@@ -6,7 +8,7 @@ import {
     ASSESSMENT_SUBMIT_URL,
     BANK_PAYMENT_SEARCH_URL,
     BKS_REPORT_BXR_URL,
-    CALENDAR_URL,
+    SEMESTER_LIST_URL,
     CLASSROOM_LIST_URL,
     CLASSROOM_STATE_MIDDLE,
     CLASSROOM_STATE_PREFIX,
@@ -20,6 +22,10 @@ import {
     PHYSICAL_EXAM_URL,
     SWITCH_LANG_URL,
     CALENDAR_IMAGE_URL,
+    CALENDAR_YEAR_URL,
+    LEARN_HOME_URL,
+    YJS_REPORT_BXR_URL,
+    GRADUATE_INCOME_URL,
 } from "../constants/strings";
 import {getCheerioText} from "../utils/cheerio";
 import {Course} from "../models/home/report";
@@ -39,6 +45,7 @@ import {
     MOCK_CLASSROOM_LIST,
     MOCK_CLASSROOM_STATE,
     MOCK_COUNTDOWN_DATA,
+    MOCK_GRADUATE_INCOME,
     MOCK_INVOICE_DATA,
     MOCK_PHYSICAL_EXAM_RESULT,
     MOCK_REPORT,
@@ -51,17 +58,12 @@ import {
     ReportError,
     UserInfoError,
 } from "../utils/error";
-import {BankPayment, BankPaymentByMonth} from "../models/home/bank";
-import {CalendarData} from "../models/schedule/calendar";
+import {BankPayment, BankPaymentByMonth, GraduateIncome} from "../models/home/bank";
+import {CalendarData, Semester} from "../models/schedule/calendar";
 import {Invoice} from "../models/home/invoice";
 import {Classroom, ClassroomState, ClassroomStateResult, ClassroomStatus} from "../models/home/classroom";
+import dayjs from "dayjs";
 
-// OneTHU 适配：字符串字面量 "tag" 与 domelementtype 枚举成员求交会归约 never，
-// 改用枚举成员本身（语义不变）。
-import {ElementType} from "domelementtype";
-
-type Cheerio = ReturnType<typeof cheerio>;
-type Element = Cheerio[number];
 type TagElement = Element & {type: ElementType.Tag};
 
 export const webVPNTitle = "<title>清华大学WebVPN</title>";
@@ -105,7 +107,7 @@ export const naiveSendMail = async (helper: InfoHelper, subject: string, content
             if (param === undefined) {
                 throw new LibError();
             } else {
-                const composeUrl = EMAIL_BASE_URL + cheerio.load(param)(".compose").attr().href;
+                const composeUrl = EMAIL_BASE_URL + cheerio.load(param)(".compose").attr()!.href;
                 const composeHtml = await uFetch(composeUrl);
                 const $ = cheerio.load(composeHtml);
                 const form: {[key: string]: string} = {};
@@ -127,7 +129,7 @@ export const naiveSendMail = async (helper: InfoHelper, subject: string, content
                 form.btnAddAttach = "0";
                 form.btnCreateImg = "0";
                 form.signSet = "-1";
-                const result = await uFetch(EMAIL_BASE_URL + "compose/" + $("#sendmail").attr().action + "&action=deliver&needAudit=undefined&smsAddrs=", form);
+                const result = await uFetch(EMAIL_BASE_URL + "compose/" + $("#sendmail").attr()!.action + "&action=deliver&needAudit=undefined&smsAddrs=", form);
                 if (!result.includes("savercpt.jsp")) {
                     throw new LibError();
                 }
@@ -160,29 +162,29 @@ export const getReport = (
         helper.graduate() ? "E35232808C08C8C5F199F13BF6B7F5D0": "B7EF0ADF9406335AD7905B30CD7B49B1",
         () => Promise.all([
             uFetch(helper.graduate() ? GET_YJS_REPORT_URL : (`${GET_BKS_REPORT_URL}&flag=di${flag}`)),
-            bx && flag === 1 && !helper.graduate() ? uFetch(BKS_REPORT_BXR_URL) : undefined,
+            bx && flag === 1 ? uFetch(helper.graduate() ? YJS_REPORT_BXR_URL : BKS_REPORT_BXR_URL) : undefined,
         ]).then(([str, bxStr]: [string, string | undefined]) => {
             const bxSet = new Set<string>();
             if (bxStr) {
-                const childrenOriginal = cheerio(".table-striped tr", bxStr);
-                const children = childrenOriginal.slice(1, childrenOriginal.length - 1);
-                children.each((index, element) => {
-                    if (element.type === "tag" && element.children.length === 25) {
-                        const transformedElement = cheerio(element);
-                        const type = getCheerioText(
-                            transformedElement.children()[8],
-                            0,
-                        );
-                        if (type === "必修" || type === "限选") {
-                            bxSet.add(
-                                getCheerioText(transformedElement.children()[0], 0),
+                cheerio.load(bxStr)(".table-striped tr").each((index, element) => {
+                    if (element.type === "tag") {
+                        const transformedElement = cheerio.load(element)("td");
+                        if (transformedElement.length > 8) {
+                            const type = getCheerioText(
+                                transformedElement[8],
+                                0,
                             );
+                            if (type === "必修" || type === "限选" || type === "是") {
+                                bxSet.add(
+                                    getCheerioText(transformedElement[0], 0),
+                                );
+                            }
                         }
                     }
                 });
             }
             const graduate = helper.graduate();
-            const result = cheerio("[cellspacing=1] tr", str)
+            const result = cheerio.load(str)("[cellspacing=1] tr")
                 .slice(1)
                 .map((_, element) => {
                     const grade = getCheerioText(element, graduate ? 9 : 7);
@@ -190,13 +192,7 @@ export const getReport = (
                     if (!newGPA) {
                         point = gradeToOldGPA.get(grade) ?? point;
                     }
-                    let filter: boolean;
-                    if (graduate) {
-                        filter = !bx || getCheerioText(element, 7) === "是";
-                    } else {
-                        filter = bxStr === undefined || bxSet.has(getCheerioText(element, 1));
-                    }
-                    if (filter) {
+                    if (bxStr === undefined || bxSet.has(getCheerioText(element, 1))) {
                         return {
                             name: getCheerioText(element, 3),
                             credit: Number(getCheerioText(element, 5)),
@@ -226,7 +222,7 @@ export const getReport = (
 export const getAssessmentList = (
     helper: InfoHelper,
 ): Promise<[string, boolean, string][]> =>
-    roamingWrapperWithMocks<[string, boolean, string][]>(
+    roamingWrapperWithMocks(
         helper,
         "default",
         "0D8B99BA23FD2BA22428D9C8AA0AB508",
@@ -234,7 +230,7 @@ export const getAssessmentList = (
             if (str.includes("对不起，现在不是填写问卷时间")) {
                 throw new AssessmentError("对不起，现在不是填写问卷时间");
             }
-            const result = cheerio("tbody", str)
+            const result = cheerio.load(str)("tbody")
                 .children()
                 .map((index, element) => {
                     const onclick = (((element as TagElement)
@@ -248,24 +244,23 @@ export const getAssessmentList = (
                             getCheerioText(element, 5),
                             getCheerioText(element, 9) === "是",
                             href,
-                        ],
+                        ] as [string, boolean, string],
                     ];
                 })
                 .get();
-            const typed = result as unknown as [string, boolean, string][];
-            if (typed.length === 0) {
+            if (result.length === 0) {
                 throw new AssessmentError();
             }
-            return typed;
+            return result;
         }),
-        MOCK_ASSESSMENT_LIST as unknown as [string, boolean, string][],
+        MOCK_ASSESSMENT_LIST,
     );
 
 export const getAssessmentForm = (
     helper: InfoHelper,
     url: string,
 ): Promise<Form> =>
-    roamingWrapperWithMocks<Form>(
+    roamingWrapperWithMocks(
         helper,
         "default",
         "0D8B99BA23FD2BA22428D9C8AA0AB508",
@@ -294,7 +289,7 @@ export const postAssessmentForm = (
     helper: InfoHelper,
     form: Form,
 ): Promise<void> =>
-    roamingWrapperWithMocks<void>(
+    roamingWrapperWithMocks(
         helper,
         "default",
         "0D8B99BA23FD2BA22428D9C8AA0AB508",
@@ -414,7 +409,7 @@ export const getClassroomState = (
             const validWeekNumbers = $("#weeknumber option").map((_, element) => Number((element as TagElement).attribs.value)).get();
             const datesOfCurrentWeek = $("[colspan=6]").map((i, element) => {
                 if (i >= 7) return "";
-                const text = cheerio(element).text();
+                const text = cheerio.load(element).text();
                 const r = /\((.+?)\)/g.exec(text);
                 if (r === null || r[1] === undefined) {
                     throw new ClassroomStateError("r === null || r[1] === undefined");
@@ -430,7 +425,7 @@ export const getClassroomState = (
                         .filter((it) => it.type === "tag" && it.tagName === "tr")
                         .map((tr) => {
                             const name =
-                                (((tr as TagElement).children[1] as TagElement).children[2] as {data?: string}).data?.trim() ??
+                                (((tr as TagElement).children[1] as TagElement).children[2] as DataNode).data?.trim() ??
                                 "";
                             const status = (tr as TagElement).children
                                 .slice(3)
@@ -496,18 +491,19 @@ export const getInvoiceList = (helper: InfoHelper, page: number): Promise<{data:
         MOCK_INVOICE_DATA,
     );
 
-export const getInvoicePDF = (helper: InfoHelper, busNumber: string): Promise<string> =>
+export const getInvoicePDF = (helper: InfoHelper, uuid: string): Promise<string> =>
     roamingWrapperWithMocks(
         helper,
         "default",
         "625B81A7A9D148B01DA59185CC4074E1",
-        () => uFetch(INVOICE_CONTENT_URL + busNumber),
+        () => uFetch(INVOICE_CONTENT_URL + uuid),
         SAMPLE_INVOICE_BASE64,
     );
 
 export const getBankPayment = async (
     helper: InfoHelper,
     foundation: boolean,
+    loadPartial: boolean = false,
 ): Promise<BankPaymentByMonth[]> =>
     roamingWrapperWithMocks(
         helper,
@@ -517,72 +513,188 @@ export const getBankPayment = async (
             if (s === undefined) {
                 throw new LibError();
             }
-            const options = cheerio("option", s).map((_, e) => (e as TagElement).attribs.value).get();
+            const options = cheerio.load(s)("option").map((_, e) => (e as TagElement).attribs.value).get();
             if (options.length === 0) {
                 return [];
             }
-            const form = options.map((o) => `year=${encodeURIComponent(o)}`).join("&");
+            const form = (loadPartial ? options.slice(0, Math.min(3, options.length)) : options).map((o) => `year=${encodeURIComponent(o)}`).join("&");
             const result = await uFetch(foundation ? FOUNDATION_BANK_PAYMENT_SEARCH_URL : BANK_PAYMENT_SEARCH_URL, form as never as object, 60000, "UTF-8", true);
-            const $ = cheerio.load(result);
-            const titles = $("div strong")
-                .map((_, e) => {
-                    const text = ((e as TagElement).children[0] as {data?: string}).data?.trim();
-                    if (text === undefined) {
-                        return undefined;
-                    }
-                    const res = /(\d+年\d+月)银行代发结果/g.exec(text);
-                    if (res === null || res[1] === undefined) {
-                        return undefined;
-                    }
-                    return res[1];
-                })
-                .get()
-                .filter((text) => text !== undefined) as string[];
-            return $("div table tbody")
-                .filter(index => index < titles.length)
-                .map((index, e) => {
-                    const rows = cheerio(e).children();
-                    const data = rows.slice(1, rows.length - 1);
-                    return {
-                        month: titles[index],
-                        payment: data.map((_, row) => {
-                            const columns = cheerio(row).children();
-                            return {
-                                department: getCheerioText(columns[1], 0),
-                                project: getCheerioText(columns[2], 0),
-                                usage: getCheerioText(columns[3], 0),
-                                description: getCheerioText(columns[4], 0),
-                                bank: getCheerioText(columns[5], 0),
-                                time: getCheerioText(columns[6], 0),
-                                total: getCheerioText((columns[7] as TagElement).children[0], 0),
-                                deduction: getCheerioText((columns[8] as TagElement).children[0], 0),
-                                actual: getCheerioText((columns[9] as TagElement).children[0], 0),
-                                deposit: getCheerioText((columns[10] as TagElement).children[0], 0),
-                                cash: getCheerioText((columns[11] as TagElement).children[0], 0),
-                            } as BankPayment;
-                        }).get(),
-                    };
-                })
-                .get() as BankPaymentByMonth[];
+
+            return parseAndFilterBankPayment(result);
         },
         MOCK_BANK_PAYMENT,
     );
 
+export const getBankPaymentParellize = async (
+    helper: InfoHelper,
+    foundation: boolean,
+    loadPartial: boolean = false,
+): Promise<BankPaymentByMonth[]> => {
+    const PARTIAL_NUM = 3;
+    const MAX_PARALLEL_TASKS = 3;
+    return roamingWrapperWithMocks(
+        helper,
+        "default",
+        foundation ? "C1ADD6B60D050B64E0C7B8F195CE89EC" : "2A5182CB3F36E80395FC2091001BDEA6",
+        async (s) => {
+            if (s === undefined) {
+                throw new LibError();
+            }
+            const options = cheerio.load(s)("option").map((_, e) => (e as TagElement).attribs.value).get();
+            if (options.length === 0) {
+                return [];
+            }
+
+            const loadOptions = (loadPartial ? options.slice(0, PARTIAL_NUM) : options).map(o => `year=${encodeURIComponent(o)}`);
+            const jointOptions = [];
+            if (loadPartial) {
+                jointOptions.push(loadOptions.join("&"));
+            } else {
+                for (let i = 0; i < MAX_PARALLEL_TASKS; i++) {
+                    jointOptions.push(loadOptions.slice(i * Math.ceil(loadOptions.length / MAX_PARALLEL_TASKS), (i + 1) * Math.ceil(loadOptions.length / MAX_PARALLEL_TASKS)).join("&"));
+                }
+            }
+
+            const requests = jointOptions.filter(it => it !== "").map((o) => {
+                return uFetch(foundation ? FOUNDATION_BANK_PAYMENT_SEARCH_URL : BANK_PAYMENT_SEARCH_URL, o as never as object, 60000, "UTF-8", true);
+            });
+            const results = await Promise.all(requests);
+            const parsedResults = results.map((result) => {
+                return parseAndFilterBankPayment(result);
+            }).flatMap((it) => it);
+            return parsedResults;
+        },
+        MOCK_BANK_PAYMENT,
+    );
+};
+
+const parseAndFilterBankPayment = (html: string) => {
+    const $ = cheerio.load(html);
+    const titleElements = $("div strong");
+    return titleElements.map((_, e) => {
+        const titleElement = e as TagElement;
+        const text = (titleElement.children[0] as DataNode).data?.trim();
+        if (text === undefined) {
+            return undefined;
+        }
+        const res = /(\d+年\d+月)银行代发结果/g.exec(text);
+        if (res === null || res[1] === undefined) {
+            return undefined;
+        }
+        if (((titleElement.parentNode?.next?.next as TagElement)?.firstChild as TagElement)?.name !== "table") {
+            return undefined;
+        }
+        const data = cheerio.load((titleElement.parent?.next?.next as TagElement)?.firstChild as AnyNode)("tbody tr").slice(1, -1);
+        const payment = data.map((__, row) => {
+            const columns = cheerio.load(row)("td");
+            return {
+                department: getCheerioText(columns[1], 0),
+                project: getCheerioText(columns[2], 0),
+                usage: getCheerioText(columns[3], 0),
+                description: getCheerioText(columns[4], 0),
+                bank: getCheerioText(columns[5], 0),
+                time: getCheerioText(columns[6], 0),
+                total: getCheerioText((columns[7] as TagElement).children[0], 0),
+                deduction: getCheerioText((columns[8] as TagElement).children[0], 0),
+                actual: getCheerioText((columns[9] as TagElement).children[0], 0),
+                deposit: getCheerioText((columns[10] as TagElement).children[0], 0),
+                cash: getCheerioText((columns[11] as TagElement).children[0], 0),
+            } as BankPayment;
+        }).get().reverse();
+        return {
+            month: res[1],
+            payment,
+        };
+    }).get().filter((it) => it !== undefined) as BankPaymentByMonth[];
+};
+
+export const getGraduateIncome = async (
+    helper: InfoHelper,
+    begin: string,  // YYYYMMDD
+    end: string,    // YYYYMMDD
+): Promise<GraduateIncome[]> =>
+    roamingWrapperWithMocks(
+        helper,
+        "default",
+        "C0AE458CEACD0912982A09DDF0C136DA",
+        () => uFetch(GRADUATE_INCOME_URL, {
+            ffkssj: begin,
+            ffjssj: end,
+            _search: false,
+            nd: Date.now(),
+            rows: 1000,
+            page: 1,
+            sidx: "id",
+            sord: "asc",
+        }).then((r) => {
+            const {object: {rows}} = JSON.parse(r);
+            return rows.map((row: any) => ({
+                id: row.id,
+                year: row.ffnf,
+                month: row.ffyf,
+                date: row.ffrq,
+                ym: row.ffrqChs,
+                name: row.dfytmc,
+                department: row.xmssbmmc,
+                beforeTax: row.yfje,
+                afterTax: row.sfje,
+                tax: row.ksje,
+            }));
+        }),
+        MOCK_GRADUATE_INCOME,
+    );
+
+const parseCalendarData = ({kssj, jssj, id, xnxqmc}: {xnxqmc: string; kssj: string; jssj: string; id: string}): Semester => {
+    const weekday = dayjs(kssj).day(); // 0 (Sun) - 6 (Sat)
+    // Align to the Monday of the teaching week: Tue–Fri -> previous Monday (negative delta), Mon -> 0, Sat/Sun -> next Monday.
+    const delta = (() => {
+        if (weekday === 0) {
+            return 1; // Sunday -> next Monday
+        }
+        if (weekday === 6) {
+            return 2; // Saturday -> next Monday
+        }
+        return 1 - weekday; // Tuesday–Friday -> previous Monday, Monday -> 0
+    })();
+    const firstDay = dayjs(kssj).add(delta, "day");
+    return {
+        firstDay: firstDay.format("YYYY-MM-DD"),
+        semesterId: id,
+        semesterName: xnxqmc,
+        weekCount: dayjs(jssj).diff(firstDay, "week") + 1,
+    };
+};
+
+export const __parseCalendarDataForTest = parseCalendarData;
+
 export const getCalendar = async (helper: InfoHelper): Promise<CalendarData> =>
     roamingWrapperWithMocks(
         helper,
-        undefined,
-        "",
-        async () => {
-            const {object} = await uFetch(`${CALENDAR_URL}?_csrf=${await getCsrfToken()}`).then(JSON.parse);
-            const firstDay = object.jyzdyt === "2023-06-27" ? "2023-06-26" : object.jyzdyt;  // 难得两遇的周二开学
-            const semesterId = object.xnxq;
-            const semesterCode = semesterId[semesterId.length - 1];
-            const weekCount = semesterCode === "3" ? 12 : 18;
-            return {firstDay, semesterId, weekCount};
+        "default",
+        "3E401364BDD7AEA7EBF1EDE3F15ED4B7",
+        async (param) => {
+            const str = param ?? await uFetch(LEARN_HOME_URL);
+            const q = /_csrf=([\w-]+)/.exec(str);
+            if (q === null || q[1] === undefined) {
+                throw new Error("Failed to get csrf token.");
+            }
+            const {message, result, resultList} = await uFetch(SEMESTER_LIST_URL + q[1]).then(JSON.parse);
+            if (message !== "success") {
+                throw new LibError();
+            }
+            const currentSemester = parseCalendarData(result);
+            const nextSemesterList = resultList.map((o: any) => parseCalendarData(o));
+            return {
+                ...currentSemester,
+                nextSemesterList,
+            };
         },
         MOCK_CALENDAR_DATA,
     );
+
+export const getSchoolCalendarYear = async (): Promise<number> => {
+    return (await uFetch(CALENDAR_YEAR_URL).then(JSON.parse))["year"];
+};
 
 export const getCalendarImageUrl = async (helper: InfoHelper, year: number, semester: "spring" | "autumn", lang: "zh" | "en"): Promise<string> =>
     roamingWrapperWithMocks(
@@ -590,12 +702,21 @@ export const getCalendarImageUrl = async (helper: InfoHelper, year: number, seme
         undefined,
         "",
         async () => {
-            // It seems that the calendar image is named differently here
-            if (lang == "en" && year < 2023) {
-                return `${CALENDAR_IMAGE_URL}${year-1}-${year}_${semester === "spring" ? 2 : 1}_en.jpg`;
-            }
+            return `${CALENDAR_IMAGE_URL}/${lang}/${year}-${semester === "spring" ? 2 : 1}.jpg`;
+        },
+        "",
+    );
 
-            return `${CALENDAR_IMAGE_URL}${year-1}-${year}-${semester === "spring" ? 2 : 1}-${lang === "zh" ? "cn" : "en"}.jpg`;
+export const getMadModelToken = async (helper: InfoHelper): Promise<string> =>
+    roamingWrapperWithMocks(
+        helper,
+        "default",
+        "19D04E39D96B36C494F2E48A1A4741FD",
+        async (param) => {
+            if (param === undefined) {
+                throw new LibError("Please retry.");
+            }
+            return JSON.parse(param).data;
         },
         "",
     );
@@ -611,7 +732,7 @@ export const countdown = async (helper: InfoHelper): Promise<string[]> =>
             if (data.html() === null) {
                 throw new LibError();
             }
-            return data.map((_, e) => cheerio(e).text()).get();
+            return data.map((_, e) => cheerio.load(e).text()).get();
         },
         MOCK_COUNTDOWN_DATA
     );

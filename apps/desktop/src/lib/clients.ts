@@ -277,7 +277,7 @@ export async function login(
       session.username = username;
       session.state = "ready";
       // SAVE_FINGER 可能新发受信凭据；没有则保留旧值
-      session.finger3 = helper.fingerGenPrint || session.finger3;
+      session.finger3 = session.finger3; // 新版 lib 无 fingerGenPrint
       session.injectCredentials(username, password);
       await persist();
       await logLine("LOGIN-OK (lib 链，单管线)");
@@ -322,7 +322,7 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
     await libVerify2FA(type, code, trust);
     session.state = "ready";
     // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘
-    session.finger3 = helper.fingerGenPrint || session.finger3;
+    session.finger3 = session.finger3; // 新版 lib 无 fingerGenPrint
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
     await logLine("VERIFY-OK (lib 链完成)");

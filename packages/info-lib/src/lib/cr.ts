@@ -15,11 +15,11 @@ import {
     CR_ZYTJB_URL,
     CR_ZYTJB_YJS_URL,
     DEADLINE_URL,
-    KCXX_BKS_URL,
-    KCXX_YJS_URL,
 } from "../constants/strings";
 import {uFetch} from "../utils/network";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
+import type {ElementType} from "domelementtype";
+import type {DataNode, Element} from "domhandler";
 import {
     CoursePlan,
     CrPrimaryOpenInfo,
@@ -36,6 +36,7 @@ import {
     SearchParams,
     SelectedCourse,
 } from "../models/cr/cr";
+import {parseCRSchedule, Schedule} from "../models/schedule/schedule";
 import {getCheerioText} from "../utils/cheerio";
 import {getCsrfToken, roamingWrapperWithMocks} from "./core";
 import {CrError, CrTimeoutError, LibError} from "../utils/error";
@@ -51,16 +52,11 @@ import {
     MOCK_SEARCH_COURSE_PRIORITY_INFO_RESULT,
     MOCK_SEARCH_COURSE_PRIORITY_META,
     MOCK_SELECTED_COURSES,
+    MOCK_CR_SCHEDULE,
 } from "../mocks/cr";
-// OneTHU 适配：cheerio rc.12 已移除 TagElement/Element/TextElement 命名空间导出，
-// 以 domhandler 类型重建等价定义（cheerio.Root → ReturnType<typeof cheerio.load>）。
-import type {Element as DomElement, Text as TextElementT} from "domhandler";
-import {ElementType} from "domelementtype";
-
-type TagElement = DomElement & {type: ElementType.Tag};
-type Element = DomElement;
-type TextElement = TextElementT;
+type TagElement = Element & {type: ElementType.Tag};
 import dayjs from "dayjs";
+import {CheerioAPI} from "cheerio";
 
 export const getCrTimetable = (helper: InfoHelper): Promise<CrTimetable[]> => roamingWrapperWithMocks(
     helper,
@@ -103,18 +99,7 @@ export const loginCr = async (helper: InfoHelper) => roamingWrapperWithMocks(
     undefined,
     "",
     async () => {
-        let ok = false;
-        for (let i = 0; i < 3; i++) {
-            const r = await uFetch(helper.graduate() ? KCXX_YJS_URL : KCXX_BKS_URL);
-            if (!r.includes("jsp.timeout.bodyMessage")) {
-                ok = true;
-                break;
-            }
-            await new Promise((resolve) => setTimeout(resolve, 300));
-        }
-        if (!ok) {
-            throw new LibError("time out用户登陆超时或访问内容不存在。请重试，如访问仍然失败，请与系统管理员联系。");
-        }
+        throw new LibError("The method `loginCr' is obsolete.");
     },
     undefined,
 );
@@ -157,7 +142,7 @@ export const getCrAvailableSemesters = async (helper: InfoHelper): Promise<CrSem
         const $ = await crFetch((helper.graduate() ? CR_TREE_YJS_URL : CR_TREE_URL) + baseSemIdRes[1]).then(cheerio.load);
         return $("option").toArray().map((e) => ({
             id: (e as TagElement).attribs.value,
-            name: ((e as TagElement).children[0] as TextElement).data?.trim(),
+            name: ((e as TagElement).children[0] as DataNode).data?.trim(),
         } as CrSemester));
     },
     MOCK_AVAILABLE_SEMESTERS,
@@ -169,11 +154,11 @@ export const getCoursePlan = async (helper: InfoHelper, semester: string) => roa
     "",
     async () => {
         const data = await crFetch(helper.graduate() ? COURSE_PLAN_YJS_URL : COURSE_PLAN_URL_PREFIX + semester);
-        const courses = cheerio(".trr2", data);
+        const courses = cheerio.load(data)(".trr2");
         const result: CoursePlan[] = [];
         courses.each((_, element) => {
             if (element.type === "tag") {
-                const rawItems = cheerio(element).children();
+                const rawItems = cheerio.load(element)("td");
                 const items = rawItems.length === 7 ? rawItems.slice(2) : rawItems;
                 if (helper.graduate()) {
                     result.push({
@@ -186,7 +171,7 @@ export const getCoursePlan = async (helper: InfoHelper, semester: string) => roa
                 } else {
                     result.push({
                         id: getCheerioText(items[0], 1),
-                        name: cheerio(cheerio(cheerio(cheerio(items[1]).children()[0]).children()[0]).children()[0]).text().trim(),
+                        name: cheerio.load(items[1]).text().trim(),
                         property: getCheerioText(items[2], 1),
                         credit: Number(getCheerioText(items[3], 1)),
                         group: getCheerioText(items[4], 1),
@@ -199,12 +184,16 @@ export const getCoursePlan = async (helper: InfoHelper, semester: string) => roa
     MOCK_COURSE_PLAN,
 );
 
-const getText = (e: Element, index: number) => {
-    return cheerio((e as TagElement).children[index]).text().trim();
+const getText = (e: Element) => {
+    return cheerio.load(e).text().trim();
 };
 
-const parseFooter = ($: ReturnType<typeof cheerio.load>) => {
-    const footerText = ((($("p.yeM").toArray()[0] as TagElement).children[5] as {data?: string}).data as string).trim().replace(/,/g, "");
+const parseFooter = ($: CheerioAPI) => {
+    const footer = $("p.yeM").toArray()[0] as TagElement;
+    if (!footer) {
+        return [0, 0, 0];
+    }
+    const footerText = ((footer.children[5] as DataNode).data as string).trim().replace(/,/g, "");
     const regResult = /第 (\d+) ?页 \/ 共 (\d+) 页（共 (\d+) 条记录）/.exec(footerText);
     if (regResult === null || regResult.length !== 4) {
         throw new CrError("cannot parse cr remaining footer data");
@@ -242,15 +231,17 @@ export const searchCrRemaining = async (helper: InfoHelper, {
         }, "GBK").then(cheerio.load);
         const [currPage, totalPage, totalCount] = parseFooter($);
         const courses = $(".trr2").toArray().map((e) => {
+            const items = cheerio.load(e)("td");
+            const hasQueueInfo = items.length == 8;
             return {
-                id: getText(e, 1),
-                seq: Number(getText(e, 3)),
-                name: getText(e, 5),
-                capacity: Number(getText(e, 7)),
-                remaining: Number(getText(e, 9)),
-                queue: Number(getText(e, 11)),
-                teacher: getText(e, 13),
-                time: getText(e, 15),
+                id: getText(items[0]),
+                seq: Number(getText(items[1])),
+                name: getText(items[2]),
+                capacity: Number(getText(items[3])),
+                remaining: Number(getText(items[4])),
+                queue: hasQueueInfo ? Number(getText(items[5])) : 0,
+                teacher: getText(items[hasQueueInfo ? 6 : 5]),
+                time: getText(items[hasQueueInfo ? 7 : 6]),
             } as CrRemainingInfo;
         });
         return {
@@ -300,23 +291,24 @@ export const searchCrPrimaryOpen = async (helper: InfoHelper, {
         }, "GBK").then(cheerio.load);
         const [currPage, totalPage, totalCount] = parseFooter($);
         const courses = $(".trr2").toArray().map((e) => {
+            const items = cheerio.load(e)("td");
             return {
-                department: getText(e, 1),
-                id: getText(e, 3),
-                seq: Number(getText(e, 5)),
-                name: getText(e, 7),
-                credits: Number(getText(e, 9)),
-                teacher: getText(e, 11),
-                bksCap: Number(getText(e, 13)),
-                yjsCap: Number(getText(e, 17)),
-                time: getText(e, 21),
-                note: getText(e, 23),
-                feature: getText(e, 25),
-                year: getText(e, 27),
-                secondary: getText(e, 29),
-                reUseCap: getText(e, 33),
-                restrict: getText(e, 35),
-                culture: getText(e, 37),
+                department: getText(items[0]),
+                id: getText(items[1]),
+                seq: Number(getText(items[2])),
+                name: getText(items[3]),
+                credits: Number(getText(items[4])),
+                teacher: getText(items[5]),
+                bksCap: Number(getText(items[6])),
+                yjsCap: Number(getText(items[8])),
+                time: getText(items[10]),
+                note: getText(items[11]),
+                feature: getText(items[12]),
+                year: getText(items[13]),
+                secondary: getText(items[14]),
+                reUseCap: getText(items[16]),
+                restrict: getText(items[17]),
+                culture: getText(items[18]),
             } as CrPrimaryOpenInfo;
         });
         return {
@@ -336,15 +328,18 @@ export const searchCrCourses = async (helper: InfoHelper, params: SearchParams):
     async () => {
         const [remaining, primaryOpen] = await Promise.all([searchCrRemaining(helper, params), searchCrPrimaryOpen(helper, params)]);
         return {
-            currPage: remaining.currPage,
-            totalPage: remaining.totalPage,
-            totalCount: remaining.totalCount,
-            courses: primaryOpen.courses.map((e, i) => ({
-                ...e,
-                capacity: remaining.courses[i].capacity,
-                remaining: remaining.courses[i].remaining,
-                queue: remaining.courses[i].queue,
-            })),
+            currPage: primaryOpen.currPage,
+            totalPage: primaryOpen.totalPage,
+            totalCount: primaryOpen.totalCount,
+            courses: primaryOpen.courses.map((e) => {
+                const remainingInfo = remaining.courses.find((r) => r.id === e.id);
+                return {
+                    ...e,
+                    capacity: remainingInfo?.capacity ?? NaN,
+                    remaining: remainingInfo?.remaining ?? NaN,
+                    queue: remainingInfo?.queue ?? NaN,
+                };
+            }),
         };
     },
     MOCK_CR_SEARCH_RESULT,
@@ -360,7 +355,7 @@ export const selectCourse = async (helper: InfoHelper, semesterId: string, prior
         const mainHtml = await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=${priority}Search&p_xnxq=${semesterId}&tokenPriFlag=${priority}`);
         const $ = cheerio.load(mainHtml);
         const m = `save${priority[0].toUpperCase()}${priority[1]}Kc`;
-        const token = $("input[name=token]").attr().value;
+        const token = $("input[name=token]").attr()!.value;
         const post: { [key: string]: string | number } = {
             m,
             token,
@@ -389,7 +384,7 @@ export const deleteCourse = async (helper: InfoHelper, semesterId: string, cours
         const $ = cheerio.load(yxHtml);
         const post: { [key: string]: string | number } = {
             m: "deleteYxk",
-            token: $("input[name=token]").attr().value,
+            token: $("input[name=token]").attr()!.value,
             p_xnxq: semesterId,
             tokenPriFlag: "yx",
         };
@@ -423,17 +418,17 @@ export const getSelectedCourses = async (helper: InfoHelper, semesterId: string)
         const yxHtml = await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=yxSearchTab&p_xnxq=${semesterId}&tokenPriFlag=yx`);
         const $ = cheerio.load(yxHtml);
         return $(".trr2").map((_, e) => {
-            const tds = cheerio(e).find(".tdd2");
+            const tds = cheerio.load(e)(".tdd2");
             return {
-                type: cheerio(tds[1]).text(),
-                will: willStringToNumber(cheerio(tds[2]).text()),
-                id: cheerio(tds[3]).text(),
-                seq: cheerio(tds[5]).text(),
-                name: cheerio(tds[4]).text().trim(),
-                time: cheerio(tds[6]).text(),
-                teacher: cheerio(tds[7]).text(),
-                credit: Number(cheerio(tds[8]).text()),
-                secondary: cheerio(tds[9]).text() === "是",
+                type: cheerio.load(tds[1]).text(),
+                will: willStringToNumber(cheerio.load(tds[2]).text()),
+                id: cheerio.load(tds[3]).text(),
+                seq: cheerio.load(tds[5]).text(),
+                name: cheerio.load(tds[4]).text().trim(),
+                time: cheerio.load(tds[6]).text(),
+                teacher: cheerio.load(tds[7]).text(),
+                credit: Number(cheerio.load(tds[8]).text()),
+                secondary: cheerio.load(tds[9]).text() === "是",
             } as SelectedCourse;
         }).get();
     },
@@ -449,7 +444,7 @@ export const changeCourseWill = async (helper: InfoHelper, semesterId: string, c
         const $ = cheerio.load(yxHtml);
         const responseHtml = await crFetch(helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL, {
             m: "changeZY",
-            token: $("input[name=token]").attr().value,
+            token: $("input[name=token]").attr()!.value,
             p_xnxq: semesterId,
             tokenPriFlag: "yx",
             jhzy_kch: courseId,
@@ -505,7 +500,7 @@ export const searchCoursePriorityMeta = async (
         const pad = $(".pad");
         return {
             curr: pad.find("font").text(),
-            next: ((pad[0] as TagElement).children[5] as {data?: string}).data?.trim() ?? "",
+            next: ((pad[0] as TagElement).children[5] as DataNode).data?.trim() ?? "",
         };
     },
     MOCK_SEARCH_COURSE_PRIORITY_META,
@@ -525,15 +520,14 @@ export const searchCoursePriorityInformation = async (
             if (query.selected) {
                 return await crFetch(`${helper.graduate() ? CR_ZYTJB_YJS_URL : CR_ZYTJB_URL}?m=tbzySearch${tag}&p_xnxq=${semesterId}&type=GR`);
             } else {
-                // OneTHU 适配：上游 WIP 快照未收窄联合类型（TS 在此无法自动窄化），
-                // 用 Extract 显式取出未选课分支。
-                const q = query as Extract<SearchCoursePriorityQuery, {selected: false}>;
+                // OneTHU 适配：联合类型闭包内不收窄，显式 Extract
+                const q = query as Extract<SearchCoursePriorityQuery, { selected: false }>;
                 const xkHtml = await crFetch(`${helper.graduate() ? CR_ZYTJB_YJS_URL : CR_ZYTJB_URL}?m=tbzySearch${tag}&p_xnxq=${semesterId}`);
                 const $ = cheerio.load(xkHtml);
                 return await crFetch(helper.graduate() ? CR_ZYTJB_YJS_URL : CR_ZYTJB_URL, {
                     m: `tbzySearch${tag}`,
                     page: q.page ?? -1,
-                    token: $("input[name=token]").attr().value,
+                    token: $("input[name=token]").attr()!.value,
                     p_xnxq: semesterId,
                     tokenPriFlag: query.isSports ? undefined : "yx",
                     p_kch: q.courseId ?? "",
@@ -554,16 +548,16 @@ export const searchCoursePriorityInformation = async (
             return [pri, Number(data[1]), Number(data[2]), Number(data[3])];
         };
         return $("#content_1 tr").map((_, e) => {
-            const tds = cheerio(e).find("td");
+            const tds = cheerio.load(e)("td");
             return {
-                courseId: cheerio(tds[0]).text(),
-                courseSeq: cheerio(tds[1]).text(),
-                courseName: cheerio(tds[2]).text(),
-                departmentName: query.isSports ? "" : cheerio(tds[3]).text(),
-                capacity: Number(cheerio(tds[query.isSports ? 3 : 4]).text()),
-                bxSelected: query.isSports ? [0, 0, 0, 0] : parseSelectedCount(cheerio(tds[6]).text()),
-                xxSelected: query.isSports ? [0, 0, 0, 0] : parseSelectedCount(cheerio(tds[7]).text()),
-                rxSelected: parseSelectedCount(cheerio(tds[query.isSports ? 5 : 8]).text()),
+                courseId: cheerio.load(tds[0]).text(),
+                courseSeq: cheerio.load(tds[1]).text(),
+                courseName: cheerio.load(tds[2]).text(),
+                departmentName: query.isSports ? "" : cheerio.load(tds[3]).text(),
+                capacity: Number(cheerio.load(tds[query.isSports ? 3 : 4]).text()),
+                bxSelected: query.isSports ? [0, 0, 0, 0] : parseSelectedCount(cheerio.load(tds[6]).text()),
+                xxSelected: query.isSports ? [0, 0, 0, 0] : parseSelectedCount(cheerio.load(tds[7]).text()),
+                rxSelected: parseSelectedCount(cheerio.load(tds[query.isSports ? 5 : 8]).text()),
             } as SearchCoursePriorityResult;
         }).get();
     },
@@ -579,20 +573,20 @@ export const getQueueInfo = async (
     "",
     async () => {
         const data = await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=dlSearch&p_xnxq=${semesterId}&pathContent=%B6%D3%C1%D0%D0%C5%CF%A2%B2%E9%D1%AF`);
-        const courses = cheerio(".trr2", data);
+        const courses = cheerio.load(data)(".trr2");
         const result: QueueInfo[] = [];
         courses.each((_, e) => {
-            const tds = cheerio(e).find("td");
+            const tds = cheerio.load(e)("td");
             result.push({
-                property: cheerio(tds[0]).text().trim(),
-                will: willStringToNumber(cheerio(tds[1]).text()),
-                courseId: cheerio(tds[2]).text(),
-                courseSeq: cheerio(tds[4]).text(),
-                courseName: cheerio(tds[3]).text().trim(),
-                inQueue: Number(cheerio(tds[5]).text()),
-                position: Number(cheerio(tds[6]).text()),
-                time: cheerio(tds[7]).text(),
-                teacher: cheerio(tds[8]).text(),
+                property: cheerio.load(tds[0]).text().trim(),
+                will: willStringToNumber(cheerio.load(tds[1]).text()),
+                courseId: cheerio.load(tds[2]).text(),
+                courseSeq: cheerio.load(tds[4]).text(),
+                courseName: cheerio.load(tds[3]).text().trim(),
+                inQueue: Number(cheerio.load(tds[5]).text()),
+                position: Number(cheerio.load(tds[6]).text()),
+                time: cheerio.load(tds[7]).text(),
+                teacher: cheerio.load(tds[8]).text(),
             });
         });
         return result;
@@ -612,10 +606,10 @@ export const cancelCoursePF = async (
         await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=pfkcxz&p_xnxq=${semesterId}`);
         const pfHtml = await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=yxpfxz&p_xnxq=${semesterId}&tokenPriFlag=yx`);
         const $ = cheerio.load(pfHtml);
-        const token = $("input[name=token]").attr().value;
+        const token = $("input[name=token]").attr()!.value;
         const availableCourses = $(".xinXi2 > #content_1 .table1 tr");
         for (const course of availableCourses) {
-            const items = cheerio(course).children("td");
+            const items = cheerio.load(course)("td");
             if (getCheerioText(items[1], 0) === courseId) {
                 const post: { [key: string]: string } = {};
                 $("form[name=frm] input[type=hidden]").each((_, e) => {
@@ -650,12 +644,12 @@ export const setCoursePF = async (
         await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=pfkcxz&p_xnxq=${semesterId}`);
         const pfHtml = await crFetch(`${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}?m=yxpfxz&p_xnxq=${semesterId}&tokenPriFlag=yx`);
         const $ = cheerio.load(pfHtml);
-        const token = $("input[name=token]").attr().value;
+        const token = $("input[name=token]").attr()!.value;
         const availableCourses = $(".tabdiv #content_1 .table1 tr");
         for (const course of availableCourses) {
-            const items = cheerio(course).children("td");
+            const items = cheerio.load(course)("td");
             if (getCheerioText(items[2], 0) === courseId) {
-                const pfRadio = cheerio(items[0]).children("input[type=radio]");
+                const pfRadio = cheerio.load(items[0])("input[type=radio]");
                 if (pfRadio.length === 0) {
                     throw new CrError(`Course #${courseId} cannot be set PF`);
                 }
@@ -665,7 +659,7 @@ export const setCoursePF = async (
                         post[e.attribs.name] = e.attribs.value;
                     }
                 });
-                post.p_pf_id = pfRadio.first().attr().value;
+                post.p_pf_id = pfRadio.first().attr()!.value;
                 post.token = token;
                 post.m = "editpfyes";
                 const result = await crFetch(helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL, post);
@@ -679,3 +673,34 @@ export const setCoursePF = async (
     },
     undefined,
 );
+
+/**
+ * 从选课系统获取一级课表。
+ * 通过 CR 系统的一级课表页面（m=kbSearch）获取课程安排，
+ * 复用已有的 CR SSO 认证链路（policy: "cr"）。
+ *
+ * @param helper
+ * @param semesterId  学期 ID（如 "2025-2026-3"）
+ * @param firstDay  学期第一天（YYYY-MM-DD）
+ * @param weekCount  学期总周数
+ * @returns  解析后的 Schedule[]
+ */
+export const getCRSchedule = async (
+    helper: InfoHelper,
+    semesterId: string,
+    firstDay: string,
+    weekCount: number,
+): Promise<Schedule[]> =>
+    roamingWrapperWithMocks(
+        helper,
+        "cr",
+        "",
+        async () => {
+            const url =
+                `${helper.graduate() ? CR_SELECT_YJS_URL : CR_SELECT_URL}` +
+                `?m=kbSearch&p_xnxq=${semesterId}&pathContent=${encodeURI("一级课表")}`;
+            const html = await crFetch(url);
+            return parseCRSchedule(html, firstDay, weekCount);
+        },
+        MOCK_CR_SCHEDULE,
+    );

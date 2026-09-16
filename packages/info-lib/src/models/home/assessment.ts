@@ -1,11 +1,8 @@
-import cheerio from "cheerio";
+import type {Cheerio} from "cheerio";
+import type {ElementType} from "domelementtype";
+import type {Element} from "domhandler";
 import {AssessmentError} from "../../utils/error";
 
-// OneTHU 适配：同 basics.ts——枚举成员代替字符串字面量。
-import {ElementType} from "domelementtype";
-
-type Cheerio = ReturnType<typeof cheerio>;
-type Element = Cheerio[number];
 type TagElement = Element & {type: ElementType.Tag};
 
 const flatMap = <T, R>(arr: T[], transform: (item: T, index: number) => R[]) =>
@@ -163,7 +160,7 @@ const assert = (exp: boolean) => {
 /**
  * Read persons data from their corresponding html tables.
  */
-export const toPersons = (tables: Cheerio) => {
+export const toPersons = (tables: Cheerio<Element>) => {
     const persons: Person[] = [];
     let table = tables.children("table").first();
     while (table.children().length > 0) {

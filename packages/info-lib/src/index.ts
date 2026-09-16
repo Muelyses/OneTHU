@@ -8,15 +8,18 @@ import {
     getPhysicalExamResult,
     getReport,
     postAssessmentForm,
-    getBankPayment,
+    // getBankPayment,
     getCalendar,
     getInvoiceList,
     getInvoicePDF,
     switchLang,
     naiveSendMail,
-    getCalendarImageUrl,
+    getCalendarImageUrl, getSchoolCalendarYear,
+    getGraduateIncome,
+    getBankPaymentParellize,
+    getMadModelToken,
 } from "./lib/basics";
-import {login, logout} from "./lib/core";
+import {forgetDevice, login, logout} from "./lib/core";
 import {getDormScore, getElePayRecord, getEleRechargePayCode, getEleRemainder, resetDormPassword} from "./lib/dorm";
 import {
     LibBookRecord,
@@ -57,7 +60,7 @@ import {
     removeNewsFromFavor, removeNewsSubscription,
     searchNewsList,
 } from "./lib/news";
-import {getSchedule} from "./lib/schedule";
+import {getSchedule, saveCustomSchedule, deleteCustomSchedule} from "./lib/schedule";
 import {Course} from "./models/home/report";
 import {Form} from "./models/home/assessment";
 import {NewsSlice, NewsSubscription, ChannelTag} from "./models/news/news";
@@ -93,7 +96,7 @@ import {
     setCoursePF,
 } from "./lib/cr";
 import {CrTimetable, SearchCoursePriorityQuery, SearchParams} from "./models/cr/cr";
-import {BankPaymentByMonth} from "./models/home/bank";
+import {BankPaymentByMonth, GraduateIncome} from "./models/home/bank";
 import {
     getNamespaces,
     getPersonalProjects,
@@ -114,6 +117,8 @@ import {LoginError} from "./utils/error";
 import {getDegreeProgramCompletion, getFullDegreeProgram} from "./lib/program";
 import {Classroom, ClassroomStateResult} from "./models/home/classroom";
 import {
+    appStartupStat,
+    appUsageStat,
     getFeedbackReplies,
     getLatestAnnounces,
     getLatestVersion,
@@ -122,10 +127,18 @@ import {
     submitFeedback,
 } from "./lib/app";
 import {MOCK_LATEST_VERSION} from "./mocks/app";
-import {APP_STARTUP_STAT_URL, APP_USAGE_STAT_URL} from "./constants/strings";
-import {uFetch} from "./utils/network";
-import { getNetworkBalance, getNetworkDetail, getOnlineDevices, loginNetwork, logoutNetwork } from "./lib/network";
+import {
+    getNetworkBalance,
+    getNetworkAccountInfo,
+    getNetworkVerificationImageUrl,
+    getOnlineDevices,
+    loginNetwork,
+    logoutNetwork,
+    loginUsereg,
+} from "./lib/network";
 import {getScoreByCourseId} from "./lib/thos";
+import {prepareThosSession, getThosTasks, getThosServices} from "./lib/thos-services";
+import type {ThosTaskKind} from "./models/home/thos-services";
 import {
     canRechargeCampusCard,
     cardCancelLoss, cardChangeTransactionPassword,
@@ -140,18 +153,12 @@ import {CardTransactionType} from "./models/card/transaction";
 import {CardRechargeType} from "./models/card/recharge";
 import { Device } from "./models/network/device";
 import { SportsReservationRecord } from "./models/home/sports";
+import { Schedule } from "./models/schedule/schedule";
 
 export class InfoHelper {
     public userId = "";
     public password = "";
     public fingerprint = "";
-    /**
-     * OneTHU 适配：受信设备凭据（SAVE_FINGER 成功后服务端下发/本地保存的
-     * fingerGenPrint，即 OneTHU 的 finger3）。回填此字段后，登录 POST 会
-     * 携带它——服务端命中受信记录即可跳过二次认证，静默重登不再撞 2FA 墙。
-     * 上游 lib 无此概念（其 App 端依赖原生存储自动携带），不影响上游语义。
-     */
-    public fingerGenPrint = "";
 
     /**
      * Mock account and password.
@@ -206,7 +213,7 @@ export class InfoHelper {
      *
      * Override this value to customize.
      */
-    public twoFactorMethodHook: ((hasWeChatBool: boolean, phone: string | null, hasTotp?: boolean) => Promise<"wechat" | "mobile" | "totp" | undefined>) | undefined = undefined;
+    public twoFactorMethodHook: ((hasWeChatBool: boolean, phone: string | null, hasTotp: boolean) => Promise<"wechat" | "mobile" | "totp" | undefined>) | undefined = undefined;
 
     /**
      * Invoked when 2FA is required.
@@ -216,6 +223,13 @@ export class InfoHelper {
     public twoFactorAuthHook: (() => Promise<string | undefined>) | undefined = undefined;
 
     /**
+     * Invoked when 2FA over limit is detected.
+     *
+     * Override this value to customize.
+     */
+    public twoFactorAuthLimitHook: (() => Promise<void>) | undefined = undefined;
+
+    /**
      * Invoked when it has to be decided whether to trust the current fingerprint.
      *
      * Override this value to customize.
@@ -223,15 +237,11 @@ export class InfoHelper {
     public trustFingerprintHook: (() => Promise<boolean>) | undefined = undefined;
 
     /**
-     * OneTHU 适配：受信设备在服务端登记的设备名（SAVE_FINGER deviceName）。
+     * Invoked to get a trusted device name for the fingerprint.
+     *
+     * Override this value to customize.
      */
-    public trustFingerprintNameHook: (() => Promise<string>) | undefined = undefined;
-
-    /**
-     * OneTHU 适配：受信设备数量达上限（SAVE_FINGER 失败且 msg 含"上限/limit"）时
-     * 通知 UI（登录继续，不因信任失败而失败）。
-     */
-    public twoFactorAuthLimitHook: (() => Promise<void>) | undefined = undefined;
+    public trustFingerprintNameHook: (() => Promise<string>) = async () => "THU Info Lib";
 
     /**
      * Login with userId and password.
@@ -250,10 +260,15 @@ export class InfoHelper {
 
     /**
      * THIS METHOD IS INTENDED FOR APP USE ONLY.
+     */
+    public forgetDevice = async (): Promise<void> => forgetDevice(this);
+
+    /**
+     * THIS METHOD IS INTENDED FOR APP USE ONLY.
      *
      * ANY BREAKING CHANGES SHALL NOT BE DOCUMENTED.
      */
-    public appStartUp = async (platform: "ios" | "android") => {
+    public appStartUp = async (platform: "ios" | "android", uuid: string, version?: string) => {
         if (this.userId === "") {
             return {
                 bookingRecords: [],
@@ -264,42 +279,29 @@ export class InfoHelper {
                 latestVersion: MOCK_LATEST_VERSION,
             };
         }
-        const latestAnnounces = await getLatestAnnounces(this);
+        const latestAnnounces = await getLatestAnnounces(this, version);
         const latestVersion = await getLatestVersion(this, platform);
         let bookingRecords: LibBookRecord[] = [];
-        try {
-            bookingRecords = await getBookingRecords(this);
-        } catch {
-            // no-op
-        }
-        let sportsReservationRecords: SportsReservationRecord[] = [];
-        try {
-            sportsReservationRecords = await getSportsReservationRecords(this);
-        } catch {
-            // no-op
-        }
+        const sportsReservationRecords: SportsReservationRecord[] = [];
         let balance: number = 0;
-        try {
-            balance = (await cardGetInfo(this)).balance;
-        } catch {
-            // no-op
-        }
-        uFetch(APP_STARTUP_STAT_URL).catch(() => {
-        });
         let crTimetable: CrTimetable[] = [];
         try {
+            bookingRecords = await getBookingRecords(this);
+            balance = (await cardGetInfo(this)).balance;
             crTimetable = await getCrTimetable(this);
         } catch {
             // no-op
         }
+        appStartupStat(this, uuid).catch(() => {
+        });
         return {bookingRecords, sportsReservationRecords, crTimetable, balance, latestAnnounces, latestVersion};
     };
 
-    public appUsageStat = async (usage: number) => {
-        await uFetch(`${APP_USAGE_STAT_URL}/${usage}`);
+    public appUsageStat = async (usage: number, uuid: string) => {
+        await appUsageStat(this, usage, uuid);
     };
 
-    public getLatestAnnounces = async () => getLatestAnnounces(this);
+    public getLatestAnnounces = async (version?: string) => getLatestAnnounces(this, version);
 
     public getLatestVersion = async (platform: "ios" | "android") => getLatestVersion(this, platform);
 
@@ -425,18 +427,35 @@ export class InfoHelper {
     /**
      * Get the invoice PDF in base64 format.
      */
-    public getInvoicePDF = async (busNumber: string): Promise<string> => getInvoicePDF(this, busNumber);
+    public getInvoicePDF = async (uuid: string): Promise<string> => getInvoicePDF(this, uuid);
 
     /**
      * Get the bank payment records of the user.
      * @param foundation  whether to get bank payment result by 基金会 or not
+     * @param loadPartial whether to load only the recent three months
      */
-    public getBankPayment = async (foundation = false): Promise<BankPaymentByMonth[]> => getBankPayment(this, foundation);
+    public getBankPayment = async (foundation = false, loadPartial = false): Promise<BankPaymentByMonth[]> => getBankPaymentParellize(this, foundation, loadPartial);
+
+    /**
+     * Get the graduate income records of the user according to the date range
+     * @param begin  YYYYMMDD
+     * @param end    YYYYMMDD
+     */
+    public getGraduateIncome = async (
+        begin: string,  // YYYYMMDD
+        end: string,    // YYYYMMDD
+    ): Promise<GraduateIncome[]> => getGraduateIncome(this, begin, end);
 
     /**
      * Get the school calendar data.
      */
     public getCalendar = async (): Promise<CalendarData> => getCalendar(this);
+
+    /**
+     * Get the latest school calendar year (from THUInfo backend).
+     * `2024` means that 2024-2025 school year is available.
+     */
+    public getCalendarYear = async (): Promise<number> => getSchoolCalendarYear();
 
     /**
      * Get the school calendar image url
@@ -449,11 +468,13 @@ export class InfoHelper {
      */
     public getCountdown = async (): Promise<string[]> => countdown(this);
 
+    public getMadModelToken = async (): Promise<string> =>
+        getMadModelToken(this);
+
     /**
      * Get the dorm score image, in base64 format.
-     * @param dormPassword  password for myhome.tsinghua.edu.cn
      */
-    public getDormScore = async (dormPassword: string): Promise<string> => getDormScore(this, dormPassword);
+    public getDormScore = async (): Promise<string> => getDormScore(this);
 
     /**
      * Make an electricity recharge payment order, and get the pay-code of the
@@ -469,8 +490,12 @@ export class InfoHelper {
      * @param money  a number representing the amount of money to be paid
      *               <b>(in yuan, must be integer)</b>
      */
-    public getEleRechargePayCode = async (money: number): Promise<string> =>
-        getEleRechargePayCode(this, money);
+    public getEleRechargePayCode = async (money: number): Promise<string> => {
+        if (!await canRechargeCampusCard(this)) {
+            throw new Error("暂不支持宿舍电费充值，请升级应用程序。");
+        }
+        return getEleRechargePayCode(this, money);
+    };
 
     /**
      * Get the recent ele-recharge records.
@@ -719,10 +744,15 @@ export class InfoHelper {
 
     /**
      * Get the schedules of the user.
+     * @param nextSemesterIndex if provided, specifies a semester from the `nextSemesterList`
      * @return  Returns `Schedule[]`, containing all the schedules(including
      *          exams) of the user.
      */
-    public getSchedule = async () => getSchedule(this);
+    public getSchedule = async (nextSemesterIndex?: number) => getSchedule(this, nextSemesterIndex);
+
+    public saveCustomSchedule = async (schedules: Schedule[]) => saveCustomSchedule(this, schedules);
+
+    public deleteCustomSchedule = async (schedules: Schedule[]) => deleteCustomSchedule(this, schedules);
 
     /**
      * Gets the timetable for course registration.
@@ -973,17 +1003,24 @@ export class InfoHelper {
 
     public getFullDegreeProgram = async (degreeId?: number, skippedSet?: string[]) => getFullDegreeProgram(this, degreeId, skippedSet);
 
-    public getNetworkDetail = async (year: number, month: number) => getNetworkDetail(this, year, month);
+    public getNetworkVerificationImageUrl = async () => getNetworkVerificationImageUrl(this);
+
+    public loginUsereg = async (code: string) => loginUsereg(this, code);
 
     public getOnlineDevices = async () => getOnlineDevices(this);
 
     public getNetworkBalance = async () => getNetworkBalance(this);
+
+    public getNetworkAccountInfo = async () => getNetworkAccountInfo(this);
 
     public logoutNetworkDevice = async (device: Device) => logoutNetwork(device);
 
     public loginNetworkDevice = async (ip: string, internet: boolean) => loginNetwork(this, ip, internet);
 
     public getScoreByCourseId = async (courseId: string) => getScoreByCourseId(this, courseId);
+    public prepareThosSession = async () => prepareThosSession(this);
+    public getThosTasks = async (kind: ThosTaskKind) => getThosTasks(this, kind);
+    public getThosServices = async () => getThosServices(this);
 
     public loginCampusCard = async () => cardLogin(this);
 

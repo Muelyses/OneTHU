@@ -18,12 +18,10 @@ import {
 } from "../constants/strings";
 import {SportsIdInfo, SportsReservationRecord, SportsResource, SportsResourcesInfo} from "../models/home/sports";
 import {MOCK_RECORDS, MOCK_RESOURCES} from "../mocks/sports";
-import cheerio from "cheerio";
-// OneTHU 适配：cheerio rc.12 移除命名空间类型导出，用 domhandler 重建
-import type {Element as DomElement} from "domhandler";
-import {ElementType} from "domelementtype";
-
-type TagElement = DomElement & {type: ElementType.Tag};
+import * as cheerio from "cheerio";
+import type {ElementType} from "domelementtype";
+import type {Element} from "domhandler";
+type TagElement = Element & {type: ElementType.Tag};
 import {generalGetPayCode} from "../utils/alipay";
 import {getCheerioText} from "../utils/cheerio";
 import {LibError, SportsError} from "../utils/error";
@@ -187,7 +185,7 @@ export const makeSportsReservation = async (
         allFieldTime: `${resHashId}#${date}`,
     }, 60000, "GBK").then((s) => cheerio.load(s)("form"));
     const paymentApiHtml = await uFetch(
-        paymentResultForm.attr().action, // TODO found a bug here: attr() returns undefined
+        paymentResultForm.attr()!.action, // TODO found a bug here: attr() returns undefined
         paymentResultForm.serialize() as never as object,
         60000,
         "UTF-8",
@@ -217,7 +215,7 @@ export const makeSportsReservation = async (
 const getSportsReservationPaidRecords = async (): Promise<SportsReservationRecord[]> => {
     const $ = await uFetch(SPORTS_PAID_URL).then(cheerio.load);
     return $("tr[style='display:none']").toArray().map((e) => {
-        const contentRow = cheerio(e).find("tbody tr").first();
+        const contentRow = cheerio.load(e)("tbody tr").first();
         const items = contentRow.find("td");
         return {
             name: getCheerioText(items[2]),
@@ -250,7 +248,7 @@ export const getSportsReservationRecords = async (
             const time = getCheerioText(e, 5);
             const price = getCheerioText(e, 7);
             const method = getCheerioText(e, 9);
-            const bookTimestampString = cheerio((e as TagElement).children[11]).find("span[time]").attr("time");
+            const bookTimestampString = cheerio.load((e as TagElement).children[11])("span[time]").attr("time");
             const bookTimestamp = bookTimestampString === undefined ? undefined : Number(bookTimestampString);
             let payId: string | undefined;
             let bookId: string | undefined;
@@ -300,7 +298,7 @@ export const paySportsReservation = async (
         xm: receiptTitle ?? "清华大学",
     }, 60000, "GBK").then((s) => cheerio.load(s)("form"));
     const paymentApiHtml = await uFetch(
-        paymentResultForm.attr().action,
+        paymentResultForm.attr()!.action,
         paymentResultForm.serialize() as never as object,
         60000,
         "UTF-8",

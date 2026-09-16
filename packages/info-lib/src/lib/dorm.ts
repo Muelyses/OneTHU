@@ -6,40 +6,31 @@ import {
     ELE_REMAINDER_URL,
     DORM_SCORE_URL,
     WEB_VPN_ROOT_URL,
-    DORM_LOGIN_URL_PREFIX,
     CHANGE_HOME_PASSWORD_URL,
 } from "../constants/strings";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
+import type {ElementType} from "domelementtype";
+import type {Element} from "domhandler";
 import {generalGetPayCode} from "../utils/alipay";
 import {getCheerioText} from "../utils/cheerio";
 import {InfoHelper} from "../index";
 import {uFetch} from "../utils/network";
 import {MOCK_DORM_SCORE_BASE64, MOCK_ELE_PAY_RECORD, MOCK_ELE_REMAINDER} from "../mocks/dorm";
 import {DormAuthError, EleError} from "../utils/error";
-type Cheerio = ReturnType<typeof cheerio>;
-type Element = Cheerio[number];
-type TagElement = Element & {type: import("domelementtype").ElementType.Tag};
+type TagElement = Element & {type: ElementType.Tag};
 
-export const getDormScore = (helper: InfoHelper, dormPassword: string): Promise<string> =>
+export const getDormScore = (helper: InfoHelper): Promise<string> =>
     roamingWrapperWithMocks(
         helper,
-        undefined,
-        "",
+        "id",
+        "0a993de7e533cd43a594459abdcab27d/0",
         async () => {
-            await uFetch(DORM_LOGIN_URL_PREFIX, {
-                __VIEWSTATE: "/wEPDwUKLTEzNDQzMjMyOGRkBAc4N3HClJjnEWfrw0ASTb/U6Ev/SwndECOSr8NHmdI=",
-                __VIEWSTATEGENERATOR: "7FA746C3",
-                __EVENTVALIDATION: "/wEWBgK41bCLBQKPnvPTAwLXmu9LAvKJ/YcHAsSg1PwGArrUlUcttKZxxZPSNTWdfrBVquy6KRkUYY9npuyVR3kB+BCrnQ==",
-                weixin_user_authenticateCtrl1$txtUserName: helper.userId,
-                weixin_user_authenticateCtrl1$txtPassword: dormPassword,
-                weixin_user_authenticateCtrl1$btnLogin: "登录",
-            });
             const response = await uFetch(DORM_SCORE_URL);
-            const chart = cheerio("#weixin_health_linechartCtrl1_Chart1", response);
+            const chart = cheerio.load(response)("#weixin_health_linechartCtrl1_Chart1");
             if (chart.length !== 1) {
                 throw new DormAuthError();
             }
-            const url = WEB_VPN_ROOT_URL + chart.attr().src;
+            const url = WEB_VPN_ROOT_URL + chart.attr()!.src;
             return await uFetch(url);
         },
         MOCK_DORM_SCORE_BASE64,
@@ -49,34 +40,34 @@ export const getEleRechargePayCode = async (
     helper: InfoHelper,
     money: number,
 ): Promise<string> => {
-    await roam(helper, "id", "051bb58cba58a1c5f67857606497387f");
+    await roam(helper, "id", "0a993de7e533cd43a594459abdcab27d/1");
 
     const $ = await uFetch(RECHARGE_ELE_URL).then(cheerio.load);
 
     const redirect = await uFetch(RECHARGE_PAY_ELE_URL, {
         __EVENTTARGET: "",
         __EVENTARGUMENT: "",
-        __VIEWSTATE: $("#__VIEWSTATE").attr().value,
-        __VIEWSTATEGENERATOR: $("#__VIEWSTATEGENERATOR").attr().value,
+        __VIEWSTATE: $("#__VIEWSTATE").attr()!.value,
+        __VIEWSTATEGENERATOR: $("#__VIEWSTATEGENERATOR").attr()!.value,
         recharge_eleCtrl1$RadioButtonList1: "支付宝支付",
         write_money: money,
-        username: $("input[name=username]").attr().value,
-        louhao: $("input[name=louhao]").attr().value,
-        room: $("input[name=room]").attr().value,
-        student_id: $("input[name=student_id]").attr().value,
+        username: $("input[name=username]").attr()!.value,
+        louhao: $("input[name=louhao]").attr()!.value,
+        room: $("input[name=room]").attr()!.value,
+        student_id: $("input[name=student_id]").attr()!.value,
         banktype: "alipay",
-    }, 60000, "GBK").then((s) => cheerio("#banksubmit", s));
+    }, 60000, "GBK").then((s) => cheerio.load(s)("#banksubmit"));
 
-    return await generalGetPayCode(await uFetch(redirect.attr().action, redirect.serialize() as never as object, 60000, "UTF-8", true));
+    return await generalGetPayCode(await uFetch(redirect.attr()!.action, redirect.serialize() as never as object, 60000, "UTF-8", true));
 };
 
 export const getElePayRecord = async (
     helper: InfoHelper,
 ): Promise<[string, string, string, string, string, string][]> =>
-    roamingWrapperWithMocks<[string, string, string, string, string, string][]>(
+    roamingWrapperWithMocks(
         helper,
         "id",
-        "051bb58cba58a1c5f67857606497387f",
+        "0a993de7e533cd43a594459abdcab27d/1",
         async () => {
             const data = (await uFetch(ELE_PAY_RECORD_URL).then(cheerio.load))(".myTable tr");
             if (data.length === 0) throw new EleError();
@@ -85,11 +76,11 @@ export const getElePayRecord = async (
                 .map((index, element) => [
                     (element as TagElement).children
                         .filter((it) => it.type === "tag" && it.tagName === "td")
-                        .map((it) => getCheerioText(it, 1)),
+                        .map((it) => getCheerioText(it, 1)) as [string, string, string, string, string, string],
                 ])
-                .get() as unknown as [string, string, string, string, string, string][];
+                .get();
         },
-        MOCK_ELE_PAY_RECORD as unknown as [string, string, string, string, string, string][],
+        MOCK_ELE_PAY_RECORD,
     );
 
 export const getEleRemainder = async (
@@ -98,7 +89,7 @@ export const getEleRemainder = async (
     roamingWrapperWithMocks(
         helper,
         "id",
-        "051bb58cba58a1c5f67857606497387f",
+        "0a993de7e533cd43a594459abdcab27d/1",
         async () => {
             const $ = await uFetch(ELE_REMAINDER_URL).then(cheerio.load);
             if ($("#net_Default_LoginCtrl1_txtUserName").length === 1) throw new EleError();

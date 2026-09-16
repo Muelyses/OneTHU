@@ -1,4 +1,4 @@
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import {FULL_PROGRAM_URL_PREFIX, PROGRAM_LIST_URL, PROGRAM_URL} from "../constants/strings";
 import {InfoHelper} from "../index";
 import {MOCK_PROGRAM} from "../mocks/program";
@@ -16,6 +16,7 @@ import {ProgramError} from "../utils/error";
 import {uFetch} from "../utils/network";
 import {systemMessage} from "./basics";
 import {roamingWrapper, roamingWrapperWithMocks} from "./core";
+import type {Element} from "domhandler";
 
 export const getDegreeProgramCompletion = async (helper: InfoHelper) =>
     roamingWrapperWithMocks(
@@ -87,7 +88,7 @@ export const getDegreeProgramCompletion = async (helper: InfoHelper) =>
              * 每个课组的第一个课程 - 1
              * 其余课程 - 0
              */
-            const parseCourse = (element: any, level: 2 | 1 | 0): CourseItemCompletion | undefined => {
+            const parseCourse = (element: Element, level: 2 | 1 | 0): CourseItemCompletion | undefined => {
                 let courseName = getTrimmedData(element, [level + 1, 1, 0]);
                 if (courseName === "") { // 未修完的课程会显示蓝名，导致标签层次不同
                     courseName = getTrimmedData(element, [level + 1, 1, 1, 0]);
@@ -128,7 +129,7 @@ export const getDegreeProgramCompletion = async (helper: InfoHelper) =>
              * 每个课程属性部分的第一个课程 - 1
              * 每个课组的第一个课程 - 0
              */
-            const parseCourseSet = (element: any, level: 1 | 0): CourseSetCompletion => {
+            const parseCourseSet = (element: Element, level: 1 | 0): CourseSetCompletion => {
                 let name = getTrimmedData(element, [level, 1, 1, 2]);
                 if (name === "") { // 未修完的课组会显示红名，导致标签层次不同
                     name = getTrimmedData(element, [level, 1, 1, 1, 1]);
@@ -151,7 +152,7 @@ export const getDegreeProgramCompletion = async (helper: InfoHelper) =>
             let courseTypeNow = -1;
             let illegalCourseLevelFlag = false;
 
-            cheerio(".table-striped tr", str)
+            cheerio.load(str)(".table-striped tr")
                 .slice(1) // 跳过表头
                 .each((index, element) => {
                     if (element.type === "tag") {
@@ -265,7 +266,7 @@ export const getFullDegreeProgram = async (
             const program: ProgramFull = {
                 courseSet: [],
             };
-            cheerio("#content_1 table tbody tr.trr2", str)
+            cheerio.load(str)("#content_1 table tbody tr.trr2")
                 .each((index, element) => {
                     if (element.type === "tag") {
                         if (element.children.length === 11) {

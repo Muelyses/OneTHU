@@ -40,7 +40,9 @@ import {
     SocketStatus,
     weightedValidityAndId,
 } from "../models/home/library";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
+import type {ElementType} from "domelementtype";
+import type {Element} from "domhandler";
 import {getCheerioText} from "../utils/cheerio";
 import dayjs from "dayjs";
 import {InfoHelper} from "../index";
@@ -58,9 +60,7 @@ import {
     LoginError,
 } from "../utils/error";
 
-type Cheerio = ReturnType<typeof cheerio>;
-type Element = Cheerio[number];
-type TagElement = Element & {type: import("domelementtype").ElementType.Tag};
+type TagElement = Element & {type: ElementType.Tag};
 
 const fetchJson = (
     url: string,
@@ -290,6 +290,7 @@ export const bookLibrarySeat = async (
                     userid: helper.userId,
                     segment: segmentId,
                     type,
+                    operateChannel: 2,
                 }),
             ),
         ),
@@ -306,7 +307,7 @@ export const getBookingRecords = async (
         async (): Promise<LibBookRecord[]> => {
             await getAccessToken(helper);
             const html = await uFetch(LIBRARY_BOOK_RECORD_URL);
-            const result = cheerio("tbody", html)
+            const result = cheerio.load(html)("tbody")
                 .children()
                 .map((index, element) => {
                     const delOnclick = (((element as TagElement).children[15] as TagElement)
@@ -346,6 +347,7 @@ export const cancelBooking = async (
                 id,
                 userid: helper.userId,
                 access_token: token,
+                operateChannel: 2,
             }))
             .then(JSON.parse)
             .then((data: any) => {
@@ -373,7 +375,7 @@ const cabFetch = async (
         } else {
             result = JSON.parse(await uFetch(url, JSON.stringify(jsonStruct) as any, undefined, undefined, true, CONTENT_TYPE_JSON));
         }
-    } catch (e) {
+    } catch {
         throw new Error("Failed to parse cabFetch result");
     }
     if (result.code !== 0) {
@@ -411,7 +413,7 @@ export const cabLogin = async (helper: InfoHelper): Promise<void> => {
         return;
     }
     const authAddress: string = await cabFetch(LIBRARY_ROOM_BOOKING_QUERY_AUTH_ADDRESS_URL);
-    const loginUrl = await getRedirectUrl(authAddress.replace("http://cab.lib.tsinghua.edu.cn", LIBRARY_ROOM_BOOKING_ROOT_URL));
+    const loginUrl = await getRedirectUrl(authAddress.replace("https://cab.lib.tsinghua.edu.cn", LIBRARY_ROOM_BOOKING_ROOT_URL));
     const payload = /\/login\/form\/(.+)$/.exec(loginUrl)?.[1];
     if (payload === undefined) {
         throw new Error("Failed to get payload in cabLogin. Retry later.");

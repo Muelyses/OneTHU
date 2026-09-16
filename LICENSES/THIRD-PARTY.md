@@ -3,24 +3,26 @@
 ## packages/info-lib（thu-info-lib 移植版）
 
 - 上游：https://github.com/thu-info-community/thu-info-app（`packages/thu-info-lib`）
-- 许可：MIT © 2020-present UNIDY2002（全文见下）
-- **Vendored 边界提交：`06dc3cf0`（2024-07-10，上游 MIT 期快照）**
-- 移植方式：业务逻辑保留上游 MIT 源码；`src/utils/network.ts` 为 OneTHU 自有的
-  platformFetch 适配层（Rust 原生传输：cookie 仓 + 重定向跟随，语义对齐 RN/okhttp）。
-  标注 `OneTHU 适配` 的段落为 OneTHU 自有实现（含依据服务器现行行为的等价重写，
-  如 roam-id 直连、oauth lbredirect 落地），非上游代码文本。
-- 上游在边界提交之后已转为 Business Source License 1.1（Additional Use Grant: None；
-  Change Date 为各版本首发满四年，Change License: MIT）。OneTHU 分发版**仅包含
-  MIT 边界提交的代码与 OneTHU 自有实现**，不包含 BSL 期代码文本。
+- 上游许可：MIT（≤06dc3cf0）→ Business Source License 1.1（其后；Change Date 各版本
+  首发满四年，Change License: MIT）
+- **分发授权：作者 UNIDY2002 于 2026-09-17 邮件亲授——非商业用途分发许可，
+  有效期十年**（原始邮件请存档于本目录 `AUTHOR-GRANT-2026-09-17.eml`，随仓库保管）
+- Vendored 基线：上游 3.17.0（2026-09-16, Release 3.17.0）
+- OneTHU 适配层（自有代码，标注 `OneTHU 适配`）：
+  - `src/utils/network.ts`：platformFetch 注入——Rust 原生传输（reqwest cookie
+    仓 + 原生重定向跟随，语义对齐上游 RN/okhttp）
+  - `src/lib/core.ts`：剔除 OpenHarmony `rtn-network-utils` require 块（vite
+    无法静态解析）
+  - `src/lib/cr.ts`：联合类型闭包收窄修复
 
 ## 其他
 
-- cheerio / iconv-lite 等 npm 依赖：各自 MIT 许可，随包分发。
+- cheerio / iconv-lite / sm-crypto 等 npm 依赖：各自 MIT 许可，随包分发。
 - OneTHU 自有代码（apps/desktop、packages/core 等）：见仓库主 LICENSE。
 
 ---
 
-MIT License（thu-info-lib，06dc3cf0 边界）
+MIT License（thu-info-lib 历史版本适用）
 
 Copyright (c) 2020-present UNIDY2002
 

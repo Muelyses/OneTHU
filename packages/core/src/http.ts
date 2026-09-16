@@ -361,6 +361,14 @@ export class HttpClient {
           cookies = [...appCookies, ...cookies.filter((c) => !names.has(c.name))];
         }
       }
+      // OneTHU 适配（2026-09-17）：webvpn 物理域的 wengine 票不外发——陈旧
+      // 匿名票（wrdvpn1-）会被服务器优先采信，把已登录 IP 的请求弹回登录页，
+      // 旧跳循环不认门户落地 → 重定向 25 超限（宿舍/选课/工资页全军覆没）。
+      // 裸发让 wengine 按 IP 续会话（与 lib/rust 世界同语义）；新发票照常入账。
+      const targetHost = new URL(targetUrl).hostname;
+      if (targetHost === "webvpn.tsinghua.edu.cn") {
+        cookies = cookies.filter((c) => c.name !== "wengine_vpn_ticket" && !c.name.startsWith("show_") && c.name !== "heartbeat" && c.name !== "refresh");
+      }
       if (!cookies.length) return null;
       return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
     } catch {
@@ -386,6 +394,8 @@ export class HttpClient {
 
   /** 宿主可注入的调试通道（桌面端写 /tmp/onethu-debug.log） */
   debug?: (line: string) => void;
+  /** 引导页票种同时播种到原生仓（jar→rust 桥；fetch 走原生通道的实例必接） */
+  nativeSeedHook?: (url: string, cookiePair: string) => void;
   /** wengine 注入页（含 __vpn_*）时把较完整 body 送调试通道——定位引导页 vs 被代理登录页 */
   #emitDebug(body: string): void {
     if (!this.debug) return;
@@ -487,6 +497,7 @@ export class HttpClient {
           for (const d of targets) {
             try {
               this.jar.setRaw(new URL(d), `${t}; Path=/`);
+              this.nativeSeedHook?.(d, t);
               merged++;
             } catch {
               /* 容忍个别坏值 */

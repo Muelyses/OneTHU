@@ -39,6 +39,9 @@ struct HttpOutput {
     headers: HashMap<String, String>,
     /// Set-Cookie 单独回传（多值，顺序保留）
     set_cookies: Vec<String>,
+    /// 逐跳 Set-Cookie（http_native 专用）：(所在跳 URL, 原始 Set-Cookie 行)，
+    /// 供 TS 侧按真实域分桶入账——两套 cookie 世界（Rust 原生仓/TS jar）的桥。
+    set_cookie_hops: Option<Vec<(String, String)>>,
     /// 最终 URL（跟随内部无重定向，此处即请求 URL）
     url: String,
     body: String,
@@ -857,12 +860,68 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
     })
 }
 
-/// 原生浏览器语义通道（2026-09-17 上游对齐）：共享 reqwest client，
-/// cookie_store 原生分域 cookie 仓（等价 RN 的 okhttp 原生仓）+
-/// 原生跟随重定向（limited 25，等价 okhttp 默认跟随）。
-/// thu-info-lib 的全部请求走此通道——重定向跟随/cookie 收发全部由原生层
-/// 完成，TS 侧零介入（此前 TS 手搓跳循环+分域 jar+舞步 break 制造了
-/// 「登录成功但永远匿名」「405」「超限」全家桶）。
+/// 自管 cookie 仓（2026-09-17）：reqwest 内建仓不可外部读写——两套世界
+/// （rust 仓 / TS jar）的桥需要 jar→rust 播种（wengine 引导页的票种在响应
+/// 体里，不经 Set-Cookie，rust 侧永远收不到）。host 精确匹配 + 过期忽略。
+#[derive(Default)]
+struct SharedNativeJar(std::sync::Mutex<std::collections::HashMap<String, Vec<(String, String)>>>);
+
+impl SharedNativeJar {
+    fn seed_line(&self, url: &str, line: &str) {
+        let Ok(u) = reqwest::Url::parse(url) else { return };
+        // 精确 host 匹配（host-only cookie）：清华各子域的会话互不可见——
+        // 主域归并会让 id/learn/webvpn 的同名票互踩（wengine 引导页死循环实录）
+        let main = u.host_str().unwrap_or("").to_lowercase();
+        let body = line.split(';').next().unwrap_or("").trim().to_string();
+        let Some(eq) = body.find('=') else { return };
+        let (name, value) = (body[..eq].trim().to_string(), body[eq + 1..].trim().to_string());
+        if name.is_empty() { return; }
+        let mut g = self.0.lock().unwrap();
+        let v = g.entry(main).or_default();
+        v.retain(|(n, _)| n != &name);
+        v.push((name, value));
+    }
+}
+
+impl reqwest::cookie::CookieStore for SharedNativeJar {
+    fn set_cookies(&self, cookie_headers: &mut dyn Iterator<Item = &reqwest::header::HeaderValue>, url: &reqwest::Url) {
+        for h in cookie_headers {
+            if let Ok(line) = h.to_str() {
+                self.seed_line(url.as_str(), line);
+            }
+        }
+    }
+    fn cookies(&self, url: &reqwest::Url) -> Option<reqwest::header::HeaderValue> {
+        let main = url.host_str()?.to_lowercase();
+        let g = self.0.lock().unwrap();
+        let cookies = g.get(&main)?;
+        if cookies.is_empty() { return None; }
+        let header = cookies.iter().map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join("; ");
+        reqwest::header::HeaderValue::from_str(&header).ok()
+    }
+}
+
+static NATIVE_JAR: std::sync::LazyLock<std::sync::Arc<SharedNativeJar>> =
+    std::sync::LazyLock::new(|| std::sync::Arc::new(SharedNativeJar::default()));
+
+fn build_native_client() -> reqwest::Client {
+    reqwest::Client::builder()
+        .cookie_provider(std::sync::Arc::clone(&*NATIVE_JAR))
+        .redirect(reqwest::redirect::Policy::none())
+        // 同 http_request：清华域直连，绕系统代理
+        .no_proxy()
+        .build()
+        .expect("native client build")
+}
+
+static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<reqwest::Client>> =
+    std::sync::LazyLock::new(|| std::sync::RwLock::new(build_native_client()));
+
+/// 原生浏览器语义通道（2026-09-17）：共享 reqwest client（cookie_store 原生
+/// 分域仓，等价 RN okhttp 仓）+ Rust 手动跳循环（等价原生重定向跟随）。
+/// thu-info-lib 全部请求走此通道。手动跳而非 Policy::limited 的原因：
+/// 要把每一跳的 Set-Cookie（含中间跳）按 (所在跳URL, 原始行) 回传 TS——
+/// Rust 原生仓与 TS jar 两套 cookie 世界的桥（TS 侧按真实域分桶入账）。
 #[tauri::command]
 async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
     let method: reqwest::Method = input
@@ -871,26 +930,10 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
         .parse()
         .map_err(|e| format!("非法 HTTP 方法: {e}"))?;
 
-    static NATIVE_CLIENT: std::sync::LazyLock<reqwest::Client> = std::sync::LazyLock::new(|| {
-        reqwest::Client::builder()
-            .cookie_store(true)
-            .redirect(reqwest::redirect::Policy::limited(25))
-            // 同 http_request：清华域直连，绕系统代理（详见其注释）
-            .no_proxy()
-            .build()
-            .expect("native client build")
-    });
 
-    let mut req = NATIVE_CLIENT.request(method, &input.url);
-    for (k, v) in &input.headers {
-        let lower = k.to_lowercase();
-        // Cookie 由原生仓管理，手动传入反而跨跳污染
-        if matches!(lower.as_str(), "host" | "content-length" | "cookie") {
-            continue;
-        }
-        req = req.header(k, v);
-    }
-    let body_bytes: Option<Vec<u8>> = if let Some(b64) = &input.body_b64 {
+    let mut url: reqwest::Url = input.url.parse().map_err(|e| format!("非法 URL: {e}"))?;
+    let mut method_cur = method;
+    let mut body_bytes: Option<Vec<u8>> = if let Some(b64) = &input.body_b64 {
         use base64::Engine as _;
         Some(
             base64::engine::general_purpose::STANDARD
@@ -900,25 +943,68 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
     } else {
         input.body.clone().map(|s| s.into_bytes())
     };
-    if let Some(b) = body_bytes {
-        req = req.body(b);
+
+    let mut hops_out: Vec<(String, String)> = Vec::new();
+    let mut final_status = reqwest::StatusCode::OK;
+    let mut final_headers: HashMap<String, String> = HashMap::new();
+    let mut final_set_cookies: Vec<String> = Vec::new();
+    let mut final_body: Vec<u8> = Vec::new();
+    let mut final_url = url.to_string();
+
+    for _hop in 0..=25u32 {
+        let client = NATIVE_CLIENT.read().unwrap().clone();
+        let mut req = client.request(method_cur.clone(), url.clone());
+        for (k, v) in &input.headers {
+            let lower = k.to_lowercase();
+            // Cookie 由原生仓管理，手动传入反而跨跳污染
+            if matches!(lower.as_str(), "host" | "content-length" | "cookie") {
+                continue;
+            }
+            req = req.header(k, v);
+        }
+        if let Some(b) = &body_bytes {
+            req = req.body(b.clone());
+        }
+        let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+        let status = resp.status();
+        final_status = status;
+        final_url = resp.url().to_string();
+
+        let mut headers = HashMap::new();
+        let mut set_cookies = Vec::new();
+        for (name, value) in resp.headers().iter() {
+            let v = value.to_str().unwrap_or("").to_string();
+            if name.as_str().eq_ignore_ascii_case("set-cookie") {
+                set_cookies.push(v.clone());
+                hops_out.push((resp.url().to_string(), v));
+            } else {
+                headers.insert(name.as_str().to_lowercase(), v);
+            }
+        }
+
+        // 跟随重定向（浏览器语义：303 一律 GET；301/302 的 POST 转 GET）
+        if status.is_redirection() {
+            if let Some(loc) = headers.get("location").cloned() {
+                let next = url.join(&loc).map_err(|e| format!("重定向地址解析失败: {e}"))?;
+                if status.as_u16() == 303
+                    || ((status.as_u16() == 301 || status.as_u16() == 302)
+                        && method_cur == reqwest::Method::POST)
+                {
+                    method_cur = reqwest::Method::GET;
+                    body_bytes = None;
+                }
+                url = next;
+                continue;
+            }
+        }
+
+        final_headers = headers;
+        final_set_cookies = set_cookies;
+        final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?.to_vec();
+        break;
     }
 
-    let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
-    let status = resp.status();
-    let final_url = resp.url().to_string();
-    let mut headers = HashMap::new();
-    let mut set_cookies = Vec::new();
-    for (name, value) in resp.headers().iter() {
-        let v = value.to_str().unwrap_or("").to_string();
-        if name.as_str().eq_ignore_ascii_case("set-cookie") {
-            set_cookies.push(v);
-        } else {
-            headers.insert(name.as_str().to_lowercase(), v);
-        }
-    }
-    let body_bytes = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?;
-    let ctype = headers.get("content-type").cloned().unwrap_or_default();
+    let ctype = final_headers.get("content-type").cloned().unwrap_or_default();
     let looks_text = ctype.starts_with("text/")
         || ctype.contains("html")
         || ctype.contains("json")
@@ -932,23 +1018,41 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
                 part.strip_prefix("charset=").map(|c| c.trim_matches('"').trim().to_string())
             });
         let decoded = match charset.as_deref().and_then(|c| encoding_rs::Encoding::for_label(c.as_bytes())) {
-            Some(enc) => enc.decode(&body_bytes).0.into_owned(),
-            None => String::from_utf8_lossy(&body_bytes).into_owned(),
+            Some(enc) => enc.decode(&final_body).0.into_owned(),
+            None => String::from_utf8_lossy(&final_body).into_owned(),
         };
         (decoded, None)
     } else {
         use base64::Engine as _;
-        (String::new(), Some(base64::engine::general_purpose::STANDARD.encode(&body_bytes)))
+        (String::new(), Some(base64::engine::general_purpose::STANDARD.encode(&final_body)))
     };
     Ok(HttpOutput {
-        status: status.as_u16(),
-        status_text: status.canonical_reason().unwrap_or("").to_string(),
+        status: final_status.as_u16(),
+        status_text: final_status.canonical_reason().unwrap_or("").to_string(),
         url: final_url,
-        headers,
-        set_cookies,
+        headers: final_headers,
+        set_cookies: final_set_cookies,
+        set_cookie_hops: Some(hops_out),
         body,
         body_b64,
     })
+}
+
+/// 原生 cookie 仓清空（换新匿名身份）。2026-09-17 实录：登录风暴后 id 服务器
+/// 按会话 cookie 封锁设备（同 IP 的无 cookie 客户端正常）——被封锁时唯一解法。
+#[tauri::command]
+fn http_native_clear_cookies() -> Result<(), String> {
+    NATIVE_JAR.0.lock().map_err(|e| e.to_string())?.clear();
+    Ok(())
+}
+
+/// jar → rust 播种（wengine 引导页票种等不经 Set-Cookie 的会话）
+#[tauri::command]
+fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
+    for l in &lines {
+        NATIVE_JAR.seed_line(&url, l);
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -1045,6 +1149,7 @@ async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
         status_text: status.canonical_reason().unwrap_or("").to_string(),
         headers,
         set_cookies,
+        set_cookie_hops: None,
         url: input.url,
         body,
         body_b64,
@@ -1420,6 +1525,8 @@ tauri::Builder::default()
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            http_native_clear_cookies,
+            http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
             open_external,open_eid_window,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,

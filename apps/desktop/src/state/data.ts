@@ -33,6 +33,9 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
   logPageError(`TEACHER-ODD ${code}_${seq}`, new Error(`teacher="${teacher}" rawRow=${rawRow}`));
 };
 import { http, info, learn, logLine, session } from "../lib/clients.js";
+// lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
+// 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
+import { helper as infoHelper } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, isSportsCourse } from "../lib/xklogic.js";
@@ -81,20 +84,48 @@ async function loadReal(): Promise<CampusData> {
   const semester = await learn.getCurrentSemester();
   const courses = await learn.getCourseList(semester.id);
   const ids = courses.map((c) => c.id);
+  const start = new Date();
+  start.setDate(start.getDate() - 7);
+  const end = new Date();
+  end.setDate(end.getDate() + 14);
+  const from = fmtDate(start);
+  const to = fmtDate(end);
   const [homework, notifications, files, schedule, user] = await Promise.all([
     learn.getAllHomework(ids),
     learn.getAllNotifications(ids),
     Promise.all(ids.slice(0, 8).map((id) => learn.getFileList(id).catch(() => [])))
       .then((rs) => rs.flat())
       .catch(() => [] as CourseFile[]),
+    // lib getSchedule：整学期 Schedule[]（activeTime.base 时间片）→ 展平映射
+    // 为本应用 ScheduleEntry（date/startTime/endTime 供首页时间轴与网格）。
     (async () => {
-      const start = new Date();
-      start.setDate(start.getDate() - 7);
-      const end = new Date();
-      end.setDate(end.getDate() + 14);
-      return info.getSchedule(fmtDate(start), fmtDate(end)).catch(() => [] as ScheduleEntry[]);
-    })(),
-    info.getUserInfo().catch(() => null),
+      const lib = await infoHelper.getSchedule(undefined);
+      const out: ScheduleEntry[] = [];
+      for (const c of lib.schedule) {
+        for (const sl of c.activeTime.base) {
+          const date = sl.beginTime.format("YYYY-MM-DD");
+          if (date < from || date > to) continue;
+          out.push({
+            courseName: c.name,
+            location: c.location || undefined,
+            category: c.category,
+            date,
+            dayOfWeek: sl.dayOfWeek,
+            startTime: sl.beginTime.format("HH:mm"),
+            endTime: sl.endTime.format("HH:mm"),
+            raw: { name: c.name, hash: c.hash },
+          });
+        }
+      }
+      return out;
+    })().catch(() => [] as ScheduleEntry[]),
+    infoHelper.getUserInfo()
+      .then((u: { fullName: string; emailName: string }) => ({
+        name: u.fullName,
+        studentId: "",
+        email: u.emailName ? `${u.emailName}@mails.tsinghua.edu.cn` : undefined,
+      }))
+      .catch(() => null),
   ]);
   return { courses, homework, notifications, files, schedule, user };
 }
@@ -212,7 +243,13 @@ let roamInflight: Promise<boolean> | null = null;
 function relearnRoamOnce(): Promise<boolean> {
   if (!roamInflight) {
     roamInflight = import("../lib/infoLib.js")
-      .then((m) => m.libEnsureSession())
+      .then(async (m) => {
+        const ok = await m.libEnsureSession();
+        if (!ok) return false;
+        // 主会话活了 ≠ learn 会话活了：learn csrf 经 webvpn 透明 SSO 另行建立
+        // （2026-09-17 实录：缺此步 loadReal 的 learn.* 预请求即抛 → 无限循环）
+        return await learn.resume().catch(() => false);
+      })
       .catch(() => false)
       .finally(() => {
         roamInflight = null;
@@ -2097,8 +2134,8 @@ export function useCard(days = 30) {
       start.setDate(start.getDate() - days);
       // 余额与流水并行（此前串行等两跳，页首余额被流水拖慢）
       const [cardInfo, transactions] = await Promise.all([
-        info.getCardInfo(),
-        info.getCardTransactions(fmtDate(start), fmtDate(end)).catch((err: unknown) => {
+        infoHelper.getCampusCardInfo(),
+        infoHelper.getCampusCardTransactions(fmtDate(start), fmtDate(end), -1 /* CardTransactionType.Any */).catch((err: unknown) => {
           // 余额正常但流水失败时必须有日志可查（此前静默吞掉导致无法诊断）
           logPageError("CARD-TX", err);
           return [] as CardTransaction[];
@@ -2344,7 +2381,7 @@ export function useTodayCalendar() {
       return;
     }
     try {
-      const nodes2 = calendarNodes(await cacheFetch(TODAYCAL_KEY, () => learn.getCalendarData()));
+      const nodes2 = calendarNodes(await cacheFetch(TODAYCAL_KEY, () => infoHelper.getCalendar()));
       setNodes(nodes2);
       setState("ready");
     } catch (err) {
@@ -2689,7 +2726,17 @@ export function useTodayDeadlines() {
       return;
     }
     try {
-      const items = await cacheFetch(DEADLINES_KEY, () => info.getDeadlines());
+      const items = await cacheFetch(DEADLINES_KEY, async () => {
+        const tt = await infoHelper.getCrTimetable();
+        return tt.flatMap((sem) =>
+          sem.events.map((e) => ({
+            title: e.stage,
+            begin: e.begin,
+            end: e.end,
+            url: e.messages[0],
+          })),
+        );
+      });
       setList(items);
       setState("ready");
     } catch (err) {
@@ -2754,7 +2801,7 @@ export function useTodayNewsFeed(subs: string[]) {
       if (status === "demo") {
         return { list: DEMO_NEWS.slice(0, 5), from: "latest", subCount: subList.length };
       }
-      const items = await info.getNews(1, 20);
+      const items = await infoHelper.getNewsList(1, 20);
       return { list: items.slice(0, 5), from: "latest", subCount: subList.length };
     };
     if (status === "demo") {
@@ -2773,13 +2820,13 @@ export function useTodayNewsFeed(subs: string[]) {
     try {
       if (subList.length > 0) {
         // 服务端订阅条件（权威）→ 来源名映射条件 id（本地无对应服务端条件的来源跳过）
-        const conds: Array<{ id: string; source?: string }> = await info
+        const conds: Array<{ id: string; source?: string }> = await infoHelper
           .getNewsSubscriptionList()
           .catch(() => []);
         const ids = subList
           .map((s) => conds.find((c) => c.source === s)?.id ?? "")
           .filter(Boolean);
-        const results = await Promise.allSettled(ids.map((id) => info.getNewsListBySubscription(1, id)));
+        const results = await Promise.allSettled(ids.map((id) => infoHelper.getNewsListBySubscription(1, id)));
         const pooled: NewsItem[] = [];
         for (const r of results) if (r.status === "fulfilled") pooled.push(...r.value.slice(0, 5));
         const seen = new Set<string>();

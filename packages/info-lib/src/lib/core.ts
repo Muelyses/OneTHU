@@ -190,7 +190,16 @@ export const login = async (
                         }
                         sm2PublicKey = cheerio.load(await uFetch(idUrl))("#sm2publicKey").text();
                     } else {
-                        sm2PublicKey = cheerio.load(await uFetch(WEB_VPN_OAUTH_LOGIN_URL))("#sm2publicKey").text();
+                        // OneTHU 适配（2026-09-17 真机实录）：校园网/同 IP 场景下
+                        // webvpn 服务端会话仍活时，此 URL 对无 cookie 客户端直接
+                        // 200 落「WebVPN - 资源站点」门户页（无 #sm2publicKey）——
+                        // 会话已在，跳过 id 重登与漫游，登录即成功。
+                        const landingPage = await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
+                        if (landingPage.includes("资源站点")) {
+                            outstandingLoginPromise = undefined;
+                            return;
+                        }
+                        sm2PublicKey = cheerio.load(landingPage)("#sm2publicKey").text();
                     }
                     if (sm2PublicKey === "") {
                         throw new LoginError("Failed to get public key.");
@@ -285,7 +294,7 @@ export const roam = async (helper: InfoHelper, policy: RoamingPolicy, payload: s
                     username: helper.userId,
                     password:  SM2_MAGIC_NUMBER + sm2.doEncrypt(helper.password, sm2PublicKey),
                     fingerPrint: helper.fingerprint,
-                    fingerGenPrint: "",
+                    fingerGenPrint: helper.fingerGenPrint ?? "",
                     i_captcha: "",
                 });
             } else {
@@ -293,7 +302,7 @@ export const roam = async (helper: InfoHelper, policy: RoamingPolicy, payload: s
                     i_user: helper.userId,
                     i_pass:  SM2_MAGIC_NUMBER + sm2.doEncrypt(helper.password, sm2PublicKey),
                     fingerPrint: helper.fingerprint,
-                    fingerGenPrint: "",
+                    fingerGenPrint: helper.fingerGenPrint ?? "",
                     i_captcha: "",
                 });
             }

@@ -3,6 +3,7 @@
  * 登录 = CAS ticket 漫游 → 课程列表页抓 _csrf；接口失效自动重登录（retryAfterLogin）。
  */
 import { AuthRequiredError, HttpClient } from "../http.js";
+import { encryptPassword } from "../crypto/sm2.js";
 import * as urls from "./urls.js";
 import type {
   CalendarData,
@@ -448,11 +449,84 @@ export class LearnClient {
     this.#csrf = csrf;
   }
 
-  /** 手动恢复已保存会话（CookieJar hydrate 后调用） */
+  /** 手动恢复已保存会话（CookieJar hydrate 后调用）。
+   *  OneTHU 适配（2026-09-17）：直取失败 → 经 /f/login（learn 的服务端 302
+   *  CAS 入口，demo 路径一同源）静默重登——id 会话活则整条 SSO 由重定向链
+   *  自动走完（原生通道跟随），无需账密重 POST。 */
   async resume(): Promise<boolean> {
     const csrf = await this.#fetchCsrf();
-    this.#csrf = csrf;
-    return csrf !== null;
+    if (csrf) {
+      this.#csrf = csrf;
+      return true;
+    }
+    return this.silentRelogin();
+  }
+
+  /** 账密供应（clients.ts 注入，本模块不持密码） */
+  credentialProvider: (() => {
+    username: string;
+    password: string;
+    fingerprint: string;
+    finger3?: string;
+  } | null) | null = null;
+
+  /** 经 CAS 入口静默重建 learn 会话：路径一免密（id 会话活→重定向链自动 SSO），
+   *  路径二账密全链（demo demoEnterLearn 同源；finger3 受信免 2FA）。
+   *  失败返回 false 不抛错。 */
+  async silentRelogin(): Promise<boolean> {
+    const wrap = (u: string): string =>
+      this.#http.webVPNEncoder ? this.#http.webVPNEncoder(u) : u;
+    // 路径一：/f/login 是 learn 的服务端 302 CAS 入口
+    try {
+      await this.#http.text(wrap("https://learn.tsinghua.edu.cn/f/login"));
+      const csrf1 = await this.#fetchCsrf();
+      this.#http.debug?.(`LEARN-SILENT 路径一 csrf=${csrf1 ? "ok" : "无"} final=${this.#http.lastFinalUrl.slice(0, 110)}`);
+      if (csrf1) {
+        this.#csrf = csrf1;
+        return true;
+      }
+    } catch (e) {
+      this.#http.debug?.(`LEARN-SILENT 路径一异常 ${String(e).slice(0, 120)}`);
+    }
+    // 路径二：账密全链
+    const cred = this.credentialProvider?.();
+    if (!cred) return false;
+    try {
+      const CAS_FORM =
+        "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/bb5df85216504820be7bba2b0ae1535b/0";
+      const CAS_CHECK = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/check";
+      const formHtml = await this.#http.text(wrap(CAS_FORM));
+      const key = /id="sm2publicKey"[^>]*>\s*([0-9a-fA-F]{100,})\s*</.exec(formHtml)?.[1] ?? "";
+      if (!key) return false;
+      const checkHtml = await this.#http
+        .request(wrap(CAS_CHECK), {
+          method: "POST",
+          body: new URLSearchParams({
+            i_user: cred.username,
+            i_pass: encryptPassword(cred.password, key),
+            fingerPrint: cred.fingerprint,
+            fingerGenPrint: cred.finger3 ?? "",
+            i_captcha: "",
+          }),
+        })
+        .then((r) => r.text());
+      this.#http.debug?.(
+        `LEARN-SILENT 路径二 check=${checkHtml.includes("登录成功") ? "成功" : checkHtml.slice(0, 80).replace(/\s+/g, " ")}`,
+      );
+      // 成功页锚点（漫游入口带 ticket）；拿不到就再走一次 /f/login
+      const anchor =
+        /href=['"]([^'"]+)['"]/i.exec(checkHtml)?.[1] ?? "";
+      if (anchor) {
+        await this.#http.text(anchor.startsWith("http") ? wrap(anchor) : wrap("https://learn.tsinghua.edu.cn/f/login"));
+      } else {
+        await this.#http.text(wrap("https://learn.tsinghua.edu.cn/f/login"));
+      }
+      const csrf = await this.#fetchCsrf();
+      this.#csrf = csrf;
+      return csrf !== null;
+    } catch {
+      return false;
+    }
   }
 
   /** 诊断现场：最后一次课程页内容（csrf 提取失败时用于定位） */
@@ -469,7 +543,9 @@ export class LearnClient {
 
   async #fetchCsrf(): Promise<string | null> {
     try {
-      const html = await this.#http.text(this.#withCsrf(urls.LEARN_COURSE_LIST_PAGE()));
+      // 抓 csrf 的请求本身不能要求已有 csrf（原 #withCsrf 写法 =
+      // 「无 csrf 即抛」死锁，learn 会话从未真正建立——2026-09-17 实录）
+      const html = await this.#http.text(urls.LEARN_COURSE_LIST_PAGE());
       this.lastDebug = html.slice(0, 1200);
       const m = /_csrf=([^&"\x27\s<]+)/.exec(html);
       return m?.[1] ?? null;

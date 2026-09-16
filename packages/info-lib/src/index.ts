@@ -159,6 +159,10 @@ export class InfoHelper {
     public userId = "";
     public password = "";
     public fingerprint = "";
+    // OneTHU 适配（2026-09-17）：受信凭据（SAVE_FINGER 下发的 finger3）。
+    // 上游 roam POST 硬编码空串——服务端对无受信凭据的漫游一律要求二次认证；
+    // 有它则免 2FA（与老客户端信任链一致）。
+    public fingerGenPrint = "";
 
     /**
      * Mock account and password.

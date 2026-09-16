@@ -16,7 +16,8 @@ import {
   type SessionData,
   type TwoFactorMethod,
 } from "@onethu/core";
-import { universalFetch, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
+import { universalFetch, nativeFetch, nativeSeedCookies, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
+import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug } from "@onethu/core";
 
 export type { TwoFactorMethod };
@@ -172,7 +173,13 @@ setHopUrlWrapper((u: string): string => {
     return u;
   }
 });
-    const cookies = http.jar.getCookies(new URL(origin));
+    let cookies = http.jar.getCookies(new URL(origin));
+    // OneTHU 适配（2026-09-17）：webvpn 物理域跳不外发 jar 里的 wengine 票
+    // （陈旧匿名票会被服务器采信 → 弹登录 → 门户 200 旧循环不认 → 25 跳爆）。
+    // 裸发 = wengine 按 IP 续会话（与 rust 原生世界同语义）。
+    if (new URL(origin).hostname === "webvpn.tsinghua.edu.cn") {
+      cookies = cookies.filter((c) => c.name !== "wengine_vpn_ticket" && !c.name.startsWith("show_") && c.name !== "heartbeat" && c.name !== "refresh");
+    }
     if (!cookies.length) return null;
     return cookies.map((c) => `${c.name}=${c.value}`).join("; ");
   } catch {
@@ -180,7 +187,33 @@ setHopUrlWrapper((u: string): string => {
   }
 });
 
-export const learn = new LearnClient(http);
+// learn 专线（2026-09-17 挪移）：fetch 切原生通道（Rust 跳循环+原生 cookie 仓），
+// 与 lib 同一个会话世界——旧 tauriFetch 跳循环不认「门户落地=已登录」，撞
+// 重定向超限；jar 仍共享（csrf 视图/诊断不变，Set-Cookie 桥照常入账）。
+const learnHttp = new HttpClient({ fetch: (u, init) => nativeFetch(String(u), init as Parameters<typeof nativeFetch>[1]) });
+learnHttp.webVPNEncoder = webvpnWrap;
+learnHttp.withWebVPN(false);
+// 诊断可见性（2026-09-17 教训：专线没接 debug 钩子，整条链路在日志里隐形）
+learnHttp.debug = (line) => void logLine(line);
+// wengine 引导页票种同步播种进 rust 仓（jar→rust 桥：learn 专线走原生通道，
+// 只进 jar 的票 rust 侧永远看不到——引导页死循环的根因）
+learnHttp.nativeSeedHook = (url, pair) => {
+  void nativeSeedCookies(url, [`${pair}; Path=/`]);
+};
+export const learn = new LearnClient(learnHttp);
+// learn 静默重登的账密供应（路径二兜底）：login() 后内存中即有（pendingSecret），
+// 设备指纹信任链随 session——不需要再碰 infoLib 的凭据箱。
+learn.credentialProvider = () => {
+  if (!pendingSecret) return null;
+  // 全局登录冷却期（loginGate）：账密链也停，防恢复环风暴
+  if (loginCooldownLeftMs() > 0) return null;
+  return {
+    username: pendingSecret.username,
+    password: pendingSecret.password,
+    fingerprint: session.fingerprint,
+    finger3: session.finger3,
+  };
+};
 export const info = new InfoClient(http);
 
 export const session = new CampusSession({
@@ -281,6 +314,14 @@ export async function login(
       session.injectCredentials(username, password);
       await persist();
       await logLine("LOGIN-OK (lib 链，单管线)");
+      // lib 主会话活了 → learn 客户端经 webvpn 透明 SSO 抓 _csrf（2026-09-17
+      // 实录：缺此步则 loadReal 的 learn.* 预请求即抛 AuthRequiredError →
+      // CAMPUS-AUTH 无限循环；resume 内部抓不到就保持未登录，不抛错）
+      const okLearn = await learn.resume().catch(() => false);
+      await logLine(
+        "LOGIN learn-resume " + (okLearn ? "ok" : "fail ") +
+        (okLearn ? "" : ` lastDebug=${learn.lastDebug.slice(0, 260).replace(/\s+/g, " ")}`),
+      ).catch(() => undefined);
     } else {
       session.username = username;
       session.state = "need-2fa";
@@ -290,6 +331,8 @@ export async function login(
   } catch (err) {
     if (err instanceof Error) await dumpDebug(err);
     await logLine("LOGIN-ERR " + String(err));
+    // 封锁页特征（2026-09-17 实录）：下次 libLogin 前清原生仓换新身份
+    if (String(err).includes("public key")) markLoginFailedPublicKey();
     throw err;
   }
 }
@@ -326,6 +369,8 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
     await logLine("VERIFY-OK (lib 链完成)");
+    // 同 login()：2FA 完成即主会话活，learn 透明 SSO 建 csrf
+    await learn.resume().catch(() => false);
     return null;
   } catch (err) {
     // finger3 必须保住：即使验证失败也不能丢受信凭据
@@ -423,7 +468,11 @@ export async function resumeSession(): Promise<boolean> {
   }
   // 记住的密码（仅内存）：dorm/library 的 id 直登与静默重登都要用
   const remembered = await loadRemembered();
-  if (remembered) session.injectCredentials(remembered.username, remembered.password);
+  if (remembered) {
+    session.injectCredentials(remembered.username, remembered.password);
+    // learn 静默重登（路径二）的账密源：首轮 resume 即可用，不必等静默重登
+    pendingSecret = { username: remembered.username, password: remembered.password, remember: true };
+  }
   // [启动计时] 阶段毫秒分解——数据驱动定位蜗牛环节
   const T = Date.now();
   const mark = (label: string): void => {
@@ -444,6 +493,19 @@ export async function resumeSession(): Promise<boolean> {
   session.state = "ready";
   await info.resume().catch(() => false);
   mark("info.resume");
+  // lib 凭据注入（2026-09-17）：快路径（learn 会话活）不跑 libLogin，
+  // helper.userId 恒空 → card/日历/新闻等 lib 数据调用秒抛 Please login.
+  // 有记住的密码就补上（roamingWrapper 需要账密才能按需漫游）。
+  if (remembered) {
+    const { helper } = await import("./infoLib.js");
+    if (!helper.userId) {
+      helper.userId = remembered.username;
+      helper.password = remembered.password;
+      helper.fingerprint = saved.fingerprint;
+      helper.fingerGenPrint = saved.finger3 ?? "";
+      await logLine("RESUME lib-凭据注入(快路径)").catch(() => undefined);
+    }
+  }
   await logLine("RESUME ok (lib 单管线)");
   mark("READY(总耗时)");
   return true;

@@ -13,7 +13,8 @@
  * - 2FA futures：lib 的同步 hooks 桥接 OneTHU 的两段式 UI（选方式→发码→输码）
  * - 登录/验证/登出/会话守卫（libEnsureSession：lib verifyAndReLogin 语义）
  */
-import { nativeFetch, tauriFetch } from "./transport.js";
+import { nativeFetch, nativeCookieClear, tauriFetch } from "./transport.js";
+import { markLoginAttempt, loginCooldownLeftMs, consumeLoginFailedPublicKey } from "./loginGate.js";
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
 import { InfoHelper } from "@onethu/info-lib";
@@ -96,6 +97,8 @@ export function initInfoLib(): InfoHelper {
       } catch {
         /* 忽略畸形 URL */
       }
+      // 桥（2026-09-17）：逐跳 Set-Cookie 已由 setFromResponse①按真实域入账
+      // （含包装域解码），同名键直接覆盖陈旧票——Rust 原生仓为权威源。
       // lib uFetch 契约：image/pdf/octet-stream 以 base64 文本回传
       const ctype = res.headers.get("content-type") ?? "";
       let text: string;
@@ -214,7 +217,8 @@ function startLoginRaw(username: string, password: string): {
 let sessionFinger3: string | null = null;
 export function setLibFinger3(finger3: string): void {
   sessionFinger3 = finger3;
-  // helper.fingerGenPrint 已移除（新版 lib）
+  // 受信凭据信任链：roam 等处免二次认证
+  helper.fingerGenPrint = finger3;
 }
 
 export type LibLoginResult =
@@ -227,7 +231,13 @@ export async function libLogin(
   password: string,
   fingerprint: string,
 ): Promise<LibLoginResult> {
+  markLoginAttempt();
   helper.fingerprint = fingerprint || makeFingerprint();
+  // 被封锁检测：上一轮登录以「public key」失败 = 落地封锁页（2026-09-17 实录：
+  // id 按会话 cookie 封设备，同 IP 无 cookie 客户端正常）→ 清原生仓换新身份
+  if (consumeLoginFailedPublicKey()) {
+    await nativeCookieClear().catch(() => undefined);
+  }
   const { p, methodsPromise } = startLoginRaw(username, password);
   const settled = await Promise.race([
     p.then(
@@ -290,8 +300,10 @@ export async function libLogout(): Promise<void> {
  *  探测门户会话；死且内存有凭据 → 完整重登（受信凭据在 → 免 2FA）。 */
 export async function libEnsureSession(): Promise<boolean> {
   try {
-    const probe = await tauriFetch(
-      "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=info2021.tsinghua.edu.cn&scheme=https&path=/f/info/gxfw_fg/common/index",
+    // 探针走原生通道（Rust 仓=权威会话，重定向透明跟完）+ 现行 info 域
+    // （info2021 已被服务端弃用，旧探针永远探死 → 每轮误触发重登循环）
+    const probe = await nativeFetch(
+      "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=info.tsinghua.edu.cn&scheme=https&path=/f/info/gxfw_fg/common/index",
       { method: "GET" },
     );
     const body = await probe.text();
@@ -308,6 +320,8 @@ export async function libEnsureSession(): Promise<boolean> {
   }
   if (!inflight || inflight.settled) {
     if (!inflight?.username || !inflight?.password) return false;
+    // 冷却期内不再自动重登（防恢复环风暴把设备拉黑）
+    if (loginCooldownLeftMs() > 0) return false;
     const r = await libLogin(inflight.username, inflight.password, helper.fingerprint).catch(() => null);
     if (r?.state === "ready") return true;
     return false; // need-2fa：静默重登撞墙，等人工

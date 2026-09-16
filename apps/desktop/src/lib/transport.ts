@@ -37,6 +37,8 @@ interface HttpOutput {
   status_text: string;
   headers: Record<string, string>;
   set_cookies: string[];
+  /** 逐跳 Set-Cookie（http_native）：[所在跳URL, 原始行] —— 供按真实域分桶入账 */
+  set_cookie_hops?: Array<[string, string]>;
   url: string;
   body: string;
   body_b64?: string | null;
@@ -72,6 +74,27 @@ async function invokeHttp(
  * okhttp。重定向跟随/cookie 收发全在原生层，TS 零介入。thu-info-lib
  * 的 platformFetch 走此通道。
  */
+/** 原生 cookie 仓清空（换新匿名身份）——被 id 服务器按会话封锁时的自愈 */
+/** jar → rust 仓播种：wengine 引导页等「票种在响应体里」的会话（不经
+ *  Set-Cookie，rust 侧收不到）。url 为该 cookie 的归属域。 */
+export async function nativeSeedCookies(url: string, lines: string[]): Promise<void> {
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("http_native_seed", { url, lines });
+  } catch {
+    /* 非 tauri 环境忽略 */
+  }
+}
+
+export async function nativeCookieClear(): Promise<void> {
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("http_native_clear_cookies");
+  } catch {
+    /* 非 tauri 环境忽略 */
+  }
+}
+
 export async function nativeFetch(
   url: string,
   init: { method?: string; body?: string; headers?: Record<string, string>; timeoutMs?: number } = {},
@@ -106,6 +129,11 @@ export async function nativeFetch(
   }
   respHeaders.set("x-onethu-final-url", res.url);
   respHeaders.set("x-onethu-set-cookie", JSON.stringify(res.set_cookies));
+  if (res.set_cookie_hops) {
+    respHeaders.set("x-onethu-set-cookie-hops", JSON.stringify(
+      res.set_cookie_hops.map(([u, l]) => ({ u, l })),
+    ));
+  }
   const bodyInit: BodyInit | null =
     res.status === 204 || res.status === 205 || res.status === 304
       ? null

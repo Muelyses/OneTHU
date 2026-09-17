@@ -234,6 +234,18 @@ async function ensure(
       // 的真正机制（2026-09-17 现场实锤）。主 jar 会话健康 → xklogin 直达选课页。
       html = await s.http.text(ZHJWXK + "/xklogin.do");
       zhjwxkDebug?.(`[XK-RELOGIN] ${/checkSingle/.test(html) ? "仍checkSingle" : "非checkSingle"} len=${html.length} head=${html.slice(0, 90).replace(/\s+/g, " ")}`);
+      if (/checkSingle/.test(html)) {
+        // 确认+兑付一轮后仍 checkSingle = id 会话卡死在"待确认"态（pending 票
+        // 永不消费，确认 POST 无法解除——ticket=pm8EK 恒定不变实锤）。唯一出路：
+        // 清两 jar 的 id/oauth 会话强制回到全新登录表单，走账密直登重置会话
+        //（"刚打开时可以"正是无残留上下文的状态）。
+        zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
+        for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
+          try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
+        }
+        html = await s.http.text(ID_PREFIX + "/do/off/ui/auth/login/index");
+        zhjwxkDebug?.(`[XK-REFRESH] ${/sm2publicKey/.test(html) ? "全新表单✓" : "仍异常"} len=${html.length}`);
+      }
     }
     const form = parseCasFormHtml(html, true);
     const enc = encryptPassword(s.password, form.publicKey);

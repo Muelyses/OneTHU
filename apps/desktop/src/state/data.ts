@@ -82,7 +82,9 @@ function fmtDate(d: Date): string {
 
 async function loadReal(): Promise<CampusData> {
   const semester = await learn.getCurrentSemester();
+  void logLine(`LR-STAGE 学期=${semester.id}`).catch(() => undefined);
   const courses = await learn.getCourseList(semester.id);
+  void logLine(`LR-STAGE 课程数=${courses.length}`).catch(() => undefined);
   const ids = courses.map((c) => c.id);
   const start = new Date();
   start.setDate(start.getDate() - 7);
@@ -127,6 +129,7 @@ async function loadReal(): Promise<CampusData> {
       }))
       .catch(() => null),
   ]);
+  void logLine(`LR-STAGE 完成 hw=${homework.length} ntf=${notifications.length} files=${files.length}`).catch(() => undefined);
   return { courses, homework, notifications, files, schedule, user };
 }
 

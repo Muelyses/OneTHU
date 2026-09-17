@@ -711,7 +711,10 @@ export class LearnClient {
       courseIds.map((courseId) =>
         Promise.all(
           (["new", "submitted", "graded"] as const).map((kind) =>
-            this.#fetchHomeworkKind(courseId, kind).catch(() => []),
+            this.#fetchHomeworkKind(courseId, kind).catch((e) => {
+              this.#http.debug?.(`LEARN-HW 单项失败 course=${courseId} kind=${kind} ${String(e).slice(0, 90)}`);
+              return [] as Homework[];
+            }),
           ),
         ),
       ),
@@ -721,11 +724,21 @@ export class LearnClient {
 
   async #fetchHomeworkKind(courseId: string, kind: "new" | "submitted" | "graded"): Promise<Homework[]> {
     return this.#withRelogin(async () => {
+      this.#http.debug?.(`LEARN-HW 入口 course=${courseId} kind=${kind} csrf=${this.#csrf ? "有" : "无"}`);
       const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_HOMEWORK_LIST[kind]), {
         method: "POST",
         body: this.#aoData({ wlkcid: courseId }),
-        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          // learn Tomcat 对裸 POST 回 400（真机实录）——jQuery 网页请求特征补齐
+          "X-Requested-With": "XMLHttpRequest",
+          Referer: "https://learn.tsinghua.edu.cn/f/wlxt/index/course/student/index",
+        },
       });
+      // OneTHU 诊断：200 里可能是 error/分页包裹/HTML——首段落日志一轮定案
+      this.#http.debug?.(
+        `LEARN-API 作业 kind=${kind} course=${courseId} → ${JSON.stringify(json).slice(0, 180)}`,
+      );
       return asArray(json.object ?? json.resultList).map((raw) => {
         const d = raw as Record<string, unknown>;
         const baseId = str(d.zyid);
@@ -990,8 +1003,13 @@ export class LearnClient {
           const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_NOTIFICATION_LIST(expired)), {
             method: "POST",
             body: this.#aoData({ wlkcid: courseId, iDisplayStart: 0, iDisplayLength: 50 }),
-            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+              "X-Requested-With": "XMLHttpRequest",
+              Referer: "https://learn.tsinghua.edu.cn/f/wlxt/index/course/student/index",
+            },
           });
+          this.#http.debug?.(`LEARN-API 通知 → ${JSON.stringify(json).slice(0, 180)}`);
           return asArray(json.object ?? json.resultList).map((raw) => {
             const d = raw as Record<string, unknown>;
             const cid = str(d.wlkcid) || courseId;

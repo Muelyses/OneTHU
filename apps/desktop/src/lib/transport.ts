@@ -97,15 +97,34 @@ export async function nativeCookieClear(): Promise<void> {
 
 export async function nativeFetch(
   url: string,
-  init: { method?: string; body?: string; headers?: Record<string, string>; timeoutMs?: number } = {},
+  init: { method?: string; body?: string | URLSearchParams; headers?: Record<string, string>; timeoutMs?: number } = {},
 ): Promise<Response> {
   const { invoke } = await import("@tauri-apps/api/core");
+  // body 统一压成 string（2026-09-17 实录：URLSearchParams 直接传会被 invoke
+  // 序列化成 map，Rust HttpInput.body 要 string——learn 作业/通知 POST 全灭根因）
+  let bodyStr: string | null = null;
+  if (typeof init.body === "string") bodyStr = init.body;
+  else if (init.body instanceof URLSearchParams) bodyStr = init.body.toString();
+  else if (init.body != null) bodyStr = String(init.body);
+  // headers 归一化（2026-09-17 定案）：HttpClient.request 传的是 Headers 类实例，
+  // invoke 的 JSON 序列化把它变 {}——Content-Type 全丢，learn 的 Tomcat 对
+  // 无 Content-Type 的 POST body 回 400（作业/通知全灭根因）。
+  let plainHeaders: Record<string, string> = {};
+  if (init.headers) {
+    if (typeof Headers !== "undefined" && init.headers instanceof Headers) {
+      plainHeaders = Object.fromEntries([...init.headers.entries()]);
+    } else if (typeof init.headers === "object") {
+      plainHeaders = Object.fromEntries(
+        Object.entries(init.headers as Record<string, string>).filter(([, v]) => typeof v === "string"),
+      );
+    }
+  }
   const p = invoke<HttpOutput>("http_native", {
     input: {
       url,
       method: init.method ?? "GET",
-      headers: init.headers ?? {},
-      body: init.body ?? null,
+      headers: plainHeaders,
+      body: bodyStr,
       body_b64: null,
     },
   });

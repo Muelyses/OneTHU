@@ -970,7 +970,7 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
-        println!("[NATIVE-HOP{}] {} {}", _hop, status.as_u16(), resp.url().as_str().chars().take(120).collect::<String>());
+        println!("[NATIVE-HOP{}] {} {} {}", _hop, status.as_u16(), method_cur.as_str(), resp.url().as_str().chars().take(210).collect::<String>());
 
         let mut headers = HashMap::new();
         let mut set_cookies = Vec::new();
@@ -1002,7 +1002,25 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
 
         final_headers = headers;
         final_set_cookies = set_cookies;
+        let body_url_tag = resp.url().as_str().to_string();
         final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?.to_vec();
+        // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
+        if body_url_tag.contains("kczy") && method_cur.as_str() == "POST" {
+            let mut hdr_dump = String::new();
+            for (k, v) in &input.headers {
+                hdr_dump.push_str(&format!("{}={:?}; ", k, v));
+            }
+            let body_str = body_bytes.as_ref().map(|b| String::from_utf8_lossy(b).chars().take(180).collect::<String>()).unwrap_or_default();
+            println!("[NATIVE-REQ] {} HEADERS[{}] BODY[{}]", &body_url_tag[..body_url_tag.len().min(130)], hdr_dump, body_str);
+        }
+        // learn 域响应体首段（2026-09-17：200 装 HTML 的会话死法专诊）
+        {
+            let u = &body_url_tag;
+            if u.contains("wlxt") {
+                let head = String::from_utf8_lossy(&final_body[..final_body.len().min(520)]).replace(['\n', '\r', '\t'], " ");
+                println!("[NATIVE-BODY] {} | {}", &u[u.len().saturating_sub(70)..], head);
+            }
+        }
         break;
     }
 

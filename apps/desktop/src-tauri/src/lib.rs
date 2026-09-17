@@ -1213,18 +1213,21 @@ async fn webview_probe(webview: &tauri::Webview) -> Option<String> {
         .ok()
 }
 
-/// id OAuth 表单自动填表脚本（open_eid_window 同款：页面自带 SM2 + submitForm）
-/// 【已停用】严格借票架构下 webview 绝不自动登录（互踢源头），留档备用。
+/// 统一认证登录页（id.tsinghua.edu.cn）自动填表脚本。
+/// 页面真实结构（用户存档 HTML 实证）：字段 i_user/i_pass、验证码 i_code
+/// （#c_code hidden 时免）、SM2 公钥 #sm2publicKey、提交函数 doLogin()
+/// （内部完成 sm2Util.doEncryptStr + 指纹 + theform.submit）。
+/// 上游 open_eid_window 的 username/password 字段属于电子身份 OAuth 另一页面，
+/// 直接照抄从未咬合——这就是 THOS 自动登录一直失败的根因。
 #[cfg(target_os = "android")]
-#[allow(dead_code)]
 fn eid_fill_script(username: &str, password: &str) -> String {
     format!(
         r#"(function() {{
   try {{
     if (window.__ONETHU_EID_DONE) return;
     function fill() {{
-      var u = document.getElementById("username");
-      var p = document.getElementById("password");
+      var u = document.getElementById("i_user");
+      var p = document.getElementById("i_pass");
       if (!u || !p) return;
       window.__ONETHU_EID_DONE = true;
       function setv(el, v) {{
@@ -1235,14 +1238,13 @@ fn eid_fill_script(username: &str, password: &str) -> String {
       }}
       setv(u, {u:?});
       setv(p, {p:?});
-      var cap = document.getElementById("i_code");
-      var capBox = cap && cap.offsetParent !== null;
-      if (!capBox) {{
-        setTimeout(function() {{
-          var b = document.querySelector("button[onclick*='submitForm']");
-          b && b.click();
-        }}, 400);
-      }}
+      setTimeout(function() {{
+        try {{
+          if (typeof doLogin === "function") {{ doLogin(); return; }}
+        }} catch (e) {{}}
+        var b = document.querySelector("a[onclick*='doLogin'],button[onclick*='doLogin']");
+        b && b.click();
+      }}, 600);
     }}
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fill);
     else fill();
@@ -1428,14 +1430,16 @@ async fn thos_open_portal(
             .eval("location.href = \"https://webvpn.tsinghua.edu.cn/\"")
             .ok();
         let mut portal_ok = false;
-        for round in 0..24 {
+        let mut diag_done = false;
+        for round in 0..40 {
             tokio::time::sleep(std::time::Duration::from_millis(500)).await;
             let v = match webview_probe(&webview).await {
                 Some(v) => v,
                 None => continue,
             };
             let is_login = v.contains("\"l\":true");
-            let on_webvpn = v.contains("webvpn.tsinghua.edu.cn");
+            let on_webvpn = v.contains("webvpn.tsinghua.edu.cn")
+                && !v.contains("wengine-vpn/cookie");
             let cur_host = if let Some(p) = v.find("https://") {
                 let rest = &v[p + 8..];
                 let end = rest.find('"').unwrap_or(rest.len());
@@ -1460,6 +1464,38 @@ async fn thos_open_portal(
                 continue;
             }
             if cur_host.contains("id.tsinghua") {
+                // 诊断：form 页真实 DOM（字段 id/name、iframe、按钮）——
+                // 跳转刚发生时 document 还空着，拿到非空结构才停
+                if !diag_done {
+                    let (tx, rx) = tokio::sync::oneshot::channel::<String>();
+                    let tx = std::sync::Arc::new(std::sync::Mutex::new(Some(tx)));
+                    let tx2 = tx.clone();
+                    let diag = r#"JSON.stringify({u:!!document.getElementById("username"),p:!!document.getElementById("password"),inputs:Array.from(document.querySelectorAll("input")).slice(0,8).map(i=>i.id+"|"+i.name+"|"+i.type),iframes:document.querySelectorAll("iframe").length,btns:Array.from(document.querySelectorAll("button,[onclick],input[type=submit]")).slice(0,5).map(b=>(b.getAttribute("onclick")||b.tagName)+":"+((b.innerText||"").slice(0,10)))})"#;
+                    let ok = webview
+                        .eval_with_callback(diag, move |v| {
+                            if let Ok(mut g) = tx2.lock() {
+                                if let Some(t) = g.take() {
+                                    let _ = t.send(v);
+                                }
+                            }
+                        })
+                        .is_ok();
+                    if ok {
+                        match tokio::time::timeout(std::time::Duration::from_millis(1200), rx).await {
+                            Ok(Ok(v)) => {
+                                let filled = v.contains("inputs\":[{");
+                                if filled {
+                                    diag_done = true;
+                                }
+                                println!(
+                                    "[THOS-SEED] ID-FORM 诊断: {}",
+                                    v.chars().take(400).collect::<String>()
+                                );
+                            }
+                            _ => println!("[THOS-SEED] ID-FORM 诊断: <无回调>"),
+                        }
+                    }
+                }
                 let eid = eid_fill_script(&username, &password);
                 webview.eval(&eid).ok();
                 continue;
@@ -1471,8 +1507,11 @@ async fn thos_open_portal(
         //      （webvpn 单会话互踢所致：第一次点击链路已把票落地 webview，
         //      第二次点击必过——把"退出去再点一下"自动化）
         if !portal_ok {
-            webview.eval("history.back()").ok();
-            return Err("在线服务会话建立超时（webvpn 单会话互踢），请再点一次".into());
+            // history.back() 只退到 OAuth 链的中间页（白屏）——直接强跳回 app
+            webview
+                .eval("location.href = 'http://tauri.localhost/#/thos'")
+                .ok();
+            return Err("在线服务会话未建立，请再点一次".into());
         }
 
         // 4) 带会话进目标页

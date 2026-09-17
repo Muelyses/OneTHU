@@ -192,7 +192,10 @@ async function ensure(
     // → 解析炸「无法从登录页获取 SM2 公钥」→ 选课整模块红条。浏览器靠 JS 自动
     // POST 它；手动兑付：POST checkSingle → 跟 302/锚点票据 → 重走 xklogin 落地。
     let csRounds = 0;
-    while (/checkSingle/.test(html) && csRounds < 3) {
+    while (/checkSingle/.test(html) && csRounds < 1) {
+      // 只确认一轮：反复 POST checkSingle 会把 id 会话彻底搞死（2026-09-17
+      // 18:18 全局会话死+全服务红实录）；兑付失败即退出走表单链/报错。
+
       csRounds += 1;
       // 2026-09-13 桶一致修复：去掉 direct:true——webvpn 模式下表单链在 webvpn 桶
       // 建立会话，POST 却送直连桶 cookie（空/脏）→ id 不认识 → gb2312 错误页。
@@ -216,7 +219,9 @@ async function ensure(
       const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
       // 兑付现场（此前 catch 吞错——票从未消费、循环空转全靠猜，2026-09-17 桌面实录）
       const tgtResp = await s.http.text(tgt).catch((e) => `ERR:${String(e).slice(0, 120)}`);
-      zhjwxkDebug?.(`[XK-CONSUME] tgt=${tgt.slice(0, 90)} resp=${String(tgtResp).slice(0, 110).replace(/\s+/g, " ")}`);
+      const t = String(tgtResp);
+      const title = /<title>([^<]*)<\/title>/i.exec(t)?.[1] ?? "(无title)";
+      zhjwxkDebug?.(`[XK-CONSUME] tgt=${tgt.slice(0, 90)} title=${title.slice(0, 40)} len=${t.length} feature=${(t.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 90))}`);
       // 教务会话 cookie 落在主 jar：拷进隔离罐，xklogin 探测继续走隔离通道
       try {
         const zUrl = new URL(ZHJWXK + "/");
@@ -224,7 +229,10 @@ async function ensure(
           http.jar.setRaw(zUrl, `${c.name}=${c.value}; Path=/`);
         }
       } catch { /* 拷贝失败不阻断 */ }
-      html = await http.text(ZHJWXK + "/xklogin.do");
+      // RELOGIN 也走主 jar：隔离 jar 的 id cookie 是拷贝时的旧快照（半死态），
+      // 用它探测 xklogin 会让 id 再弹 checkSingle——两 jar 会话不同步 = 死循环
+      // 的真正机制（2026-09-17 现场实锤）。主 jar 会话健康 → xklogin 直达选课页。
+      html = await s.http.text(ZHJWXK + "/xklogin.do");
       zhjwxkDebug?.(`[XK-RELOGIN] ${/checkSingle/.test(html) ? "仍checkSingle" : "非checkSingle"} len=${html.length} head=${html.slice(0, 90).replace(/\s+/g, " ")}`);
     }
     const form = parseCasFormHtml(html, true);

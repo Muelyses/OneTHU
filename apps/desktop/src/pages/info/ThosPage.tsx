@@ -190,15 +190,13 @@ export function ThosPage() {
         window.open(routeThosUrl(url), "_blank");
         return;
       }
+      // 无记住凭据也可走链：账密传空，id 表单出现时用户在 webview 内手动输入
+      // 一次（链继续自动完成）——桌面首次/未开记住密码时的必经路径
       const remembered = await loadRemembered();
-      if (!remembered) {
-        setError("没有记住的密码（设置里开启记住密码后重试）");
-        return;
-      }
       await invoke("thos_open_portal", {
         url: routeThosUrl(url),
-        username: remembered.username,
-        password: remembered.password,
+        username: remembered?.username ?? "",
+        password: remembered?.password ?? "",
       });
     } catch (e) {
       setError(`打开官方页失败：${String(e)}`);

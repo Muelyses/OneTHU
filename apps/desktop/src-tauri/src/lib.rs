@@ -1192,7 +1192,6 @@ fn throwable_to_string(env: &mut jni::JNIEnv) -> String {
 }
 
 /// probe 当前 webview 页面：href + 是否 wengine 登录壳（页面含 OAUTH 字样）
-#[cfg(target_os = "android")]
 async fn webview_probe(webview: &tauri::Webview) -> Option<String> {
     let (tx, rx) = tokio::sync::oneshot::channel::<String>();
     let tx = std::sync::Arc::new(std::sync::Mutex::new(Some(tx)));
@@ -1219,7 +1218,6 @@ async fn webview_probe(webview: &tauri::Webview) -> Option<String> {
 /// （内部完成 sm2Util.doEncryptStr + 指纹 + theform.submit）。
 /// 上游 open_eid_window 的 username/password 字段属于电子身份 OAuth 另一页面，
 /// 直接照抄从未咬合——这就是 THOS 自动登录一直失败的根因。
-#[cfg(target_os = "android")]
 fn eid_fill_script(username: &str, password: &str) -> String {
     format!(
         r#"(function() {{
@@ -1236,6 +1234,8 @@ fn eid_fill_script(username: &str, password: &str) -> String {
         el.dispatchEvent(new Event("input", {{ bubbles: true }}));
         el.dispatchEvent(new Event("change", {{ bubbles: true }}));
       }}
+      var hasCred = "{u}" !== "" && "{p}" !== "";
+      if (!hasCred) {{ window.__ONETHU_EID_DONE = true; return; }}   // 无凭据：用户手输
       setv(u, {u:?});
       setv(p, {p:?});
       setTimeout(function() {{
@@ -1262,6 +1262,22 @@ fn eid_fill_script(username: &str, password: &str) -> String {
 /// webview 线程的 JNIEnv + WebView 对象，见 tauri 2.11 webview/mod.rs:2359）。
 /// 注入后 webview 加载 webvpn/thos URL 即带完整会话——用户零二次登录，
 /// 与上游 thu-info-app #950（RN WebView 共享平台 CookieManager）同构。
+/// THOS 链日志直写 /tmp/onethu-debug.log（println 的 stdout 在 wrapper 下落点不明）
+fn thos_log(line: &str) {
+    use std::io::Write;
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open("/tmp/onethu-debug.log")
+    {
+        let _ = writeln!(f, "THOS-LOG {} | {}", ts, line);
+    }
+}
+
 #[tauri::command]
 async fn thos_open_portal(
     app: tauri::AppHandle,
@@ -1304,8 +1320,26 @@ async fn thos_open_portal(
     //    实锤），改用 webview eval 在目标 origin 的 document 上写
     //    document.cookie（脚本写非 httpOnly 会话票合法且服务器照常受理，
     //    与上游 RN「WebView 与网络层共享平台 cookie」目标同构）。
-    #[cfg(target_os = "android")]
     {
+        // 记录来路：链完成后跳回 app 页面（dev=5180，prod=tauri.localhost，通用）
+        let origin_url = {
+            let (tx, rx) = tokio::sync::oneshot::channel::<String>();
+            let tx = std::sync::Arc::new(std::sync::Mutex::new(Some(tx)));
+            let _ = webview.eval_with_callback("location.origin + location.hash", move |v| {
+                if let Ok(mut g) = tx.lock() {
+                    if let Some(t) = g.take() {
+                        let _ = t.send(v);
+                    }
+                }
+            });
+            tokio::time::timeout(std::time::Duration::from_millis(700), rx)
+                .await
+                .ok()
+                .and_then(|r| r.ok())
+                .map(|v| v.trim_matches('"').to_string())
+                .unwrap_or_else(|| "http://tauri.localhost/#/thos".to_string())
+        };
+        thos_log(&format!("[THOS-SEED] 链启动 url={} 来路={}", &url[..url.len().min(60)], origin_url));
         let (seed_host, seed_header) = {
             // 目标 URL 的域决定在哪个 origin 种 cookie（webvpn 模式=webvpn 域，
             // 直连模式=thos 域）；webvpn 域优先级最高——全程代理域
@@ -1509,22 +1543,45 @@ async fn thos_open_portal(
         if !portal_ok {
             // history.back() 只退到 OAuth 链的中间页（白屏）——直接强跳回 app
             webview
-                .eval("location.href = 'http://tauri.localhost/#/thos'")
+                .eval(&format!("location.href = {}", serde_json::to_string(&origin_url).unwrap_or_default()))
                 .ok();
             return Err("在线服务会话未建立，请再点一次".into());
+        }
+
+        // 3.8) webview 会话回灌主 jar（桌面 id checkSingle 死结的总解）：THOS
+        //      链在 webview 里建立的 webvpn/id 会话是活的，主 jar 的会话被账
+        //      号级确认态卡死且登录链无法解除。cookies_for_url 读回灌进主 jar，
+        //      全服务立即恢复（id 域无 wengine 指纹绑定，跨客户端搬运安全）。
+        {
+            let jar = &*NATIVE_JAR_ARC;
+            for dom in ["https://webvpn.tsinghua.edu.cn/", "https://id.tsinghua.edu.cn/"] {
+                let du = match url::Url::parse(dom) {
+                    Ok(u) => u,
+                    Err(_) => continue,
+                };
+                match webview.cookies_for_url(du.clone()) {
+                    Ok(cookies) if !cookies.is_empty() => {
+                        for c in &cookies {
+                            jar.seed_line(du.as_str(), &format!("{}={}", c.name(), c.value()));
+                        }
+                        thos_log(&format!("[THOS-SEED] 回灌 {} → {} 条", dom, cookies.len()));
+                    }
+                    _ => thos_log(&format!("[THOS-SEED] 回灌 {} → 空", dom)),
+                }
+            }
         }
 
         // 4) 带会话进目标页
         webview
             .eval(&format!("location.href = {}", serde_json::to_string(&url).unwrap_or_default()))
             .map_err(|e| format!("导航目标: {e}"))?;
-        println!("[THOS-SEED] 会话链完成 → {url}");
+        thos_log(&format!("[THOS-SEED] 会话链完成 → {}", &url[..url.len().min(60)]));
+        // 5) 桌面统一：跳回 app 页面（THOS 官方页由系统浏览器打开的需求后续再议）
+        webview
+            .eval(&format!("location.href = {}", serde_json::to_string(&origin_url).unwrap_or_default()))
+            .ok();
+        thos_log(&format!("[THOS-SEED] 已跳回 {}", origin_url));
         Ok(())
-    }
-    #[cfg(not(target_os = "android"))]
-    {
-        let _ = &webview;
-        crate::open_external(app, url)
     }
 }
 

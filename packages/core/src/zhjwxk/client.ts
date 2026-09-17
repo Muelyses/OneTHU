@@ -211,8 +211,11 @@ async function ensure(
       zhjwxkDebug?.(`[XK-CHECKSINGLE] st=${res.status} loc=${loc.slice(0, 80)} target=${target.slice(0, 90)}`);
       if (!target) break;   // 无票据可兑付：走表单链
       const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
-      await http.text(tgt).catch(() => {});   // 兑付票据（失败不阻断：回落表单链）
+      // 兑付现场（此前 catch 吞错——票从未消费、循环空转全靠猜，2026-09-17 桌面实录）
+      const tgtResp = await http.text(tgt).catch((e) => `ERR:${String(e).slice(0, 120)}`);
+      zhjwxkDebug?.(`[XK-CONSUME] tgt=${tgt.slice(0, 90)} resp=${String(tgtResp).slice(0, 110).replace(/\s+/g, " ")}`);
       html = await http.text(ZHJWXK + "/xklogin.do");
+      zhjwxkDebug?.(`[XK-RELOGIN] ${/checkSingle/.test(html) ? "仍checkSingle" : "非checkSingle"} len=${html.length} head=${html.slice(0, 90).replace(/\s+/g, " ")}`);
     }
     const form = parseCasFormHtml(html, true);
     const enc = encryptPassword(s.password, form.publicKey);

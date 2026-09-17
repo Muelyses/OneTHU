@@ -1060,7 +1060,7 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
         let body_url_tag = resp.url().as_str().to_string();
         final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?.to_vec();
         // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
-        if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList")) && method_cur.as_str() == "POST" {
+        if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList") || body_url_tag.contains("checkSingle")) && method_cur.as_str() == "POST" {
             let mut hdr_dump = String::new();
             for (k, v) in &input.headers {
                 hdr_dump.push_str(&format!("{}={:?}; ", k, v));

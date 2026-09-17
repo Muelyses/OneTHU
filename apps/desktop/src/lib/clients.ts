@@ -141,9 +141,22 @@ export async function clearRemembered(): Promise<void> {
   await fileDelete(SECRET_FILE);
 }
 
-export const http = new HttpClient({ fetch: universalFetch }).withWebVPN(false);
+// 2026-09-17 大迁移定案：info 全家（家园/宿舍/图书馆/选课/工资/发票/场馆…）
+// 与 learn/lib 同一条原生管线（Rust 跳循环 + 真 cookie 引擎）。tauriFetch 跳循环
+// 不认门户落地、hopCookie 供票逻辑与 rust 仓互踩——全部退役。
+export const http = new HttpClient({
+  fetch: (u, init) => nativeFetch(String(u), init as Parameters<typeof nativeFetch>[1]),
+}).withWebVPN(false);
 http.webVPNEncoder = webvpnWrap;
 http.debug = (line) => void logLine(line);
+// jar→rust 播种桥（wengine 引导页票种同步进原生仓；learn 同款，基础设施票过滤）
+http.nativeSeedHook = (url, pair) => {
+  const name = pair.split("=")[0]!.trim();
+  if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") {
+    return;
+  }
+  void nativeSeedCookies(url, [`${pair}; Path=/`]);
+};
 // 重定向链逐跳日志：定位教务漫游链在哪一跳断掉（CAS 票据流/登录页）
 setHopLogger((hopUrl, status, ck) => void logLine(`[HOP] ${status} ${hopUrl.slice(0, 150)} ck=${ck ?? "(无)"}`));
 // 选课现场取证（zhjwxkDebug 钩子此前未接线——SM2 失败只有异常没有现场）
@@ -224,7 +237,7 @@ export const session = new CampusSession({
   http,
   learn,
   info,
-  fetchLike: universalFetch,
+  fetchLike: (u, init) => nativeFetch(String(u), init as Parameters<typeof nativeFetch>[1]),
 });
 
 // InfoClient 会话过期续约：lib 会话守卫（探活+静默重登）替代 demo roam-id 链

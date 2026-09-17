@@ -6,7 +6,7 @@
  * - onVenueAuthRequired：token 失效时各调用点走统一的「重新授权」路径。
  */
 import { DOUBLE_AUTH_URL, list2FAMethods, trustDevice, VenueApiError, VenueAuthRequiredError, VenueClient, venueTokenExpiresAt, type VenueScene, type TwoFactorMethod } from "@onethu/core";
-import { isTauri, universalFetch } from "./transport.js";
+import { isTauri, nativeFetch } from "./transport.js";
 import { logLine } from "./clients.js";
 
 const TOKEN_KEY = "onethu.venueToken";
@@ -24,7 +24,7 @@ function readStoredToken(): string | null {
 }
 
 export const venueClient = new VenueClient({
-  fetch: universalFetch,
+  fetch: (u, init) => nativeFetch(String(u), init as Parameters<typeof nativeFetch>[1]),
   log: (line) => void logLine(line),
 });
 venueClient.setToken(readStoredToken());

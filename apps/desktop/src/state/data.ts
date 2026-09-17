@@ -1,7 +1,7 @@
 /** 校园数据钩子：真实模式取自 @onethu/core；演示模式返回 demo 数据（界面明确标注）。 */
 import { confirmOk, confirmDanger } from "../lib/confirm.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { universalFetch } from "../lib/transport.js";
+import { universalFetch, nativeFetch } from "../lib/transport.js";
 import type { XkCourseDetail, ZhjwxkSession, BasicUserInfo, CalendarData, CalendarSemester, CardInfo, CardTransaction, CourseFile, CourseInfo, DeadlineItem, ExamEntry, Homework, NewsItem, Notification, QueueCandidate, ReportRow, ScheduleEntry, SelectedCourse, SemesterInfo, XkCourse, XkFlag, XkLevelTableRow, XkQueueInfo, XkSelectedRow, XkVolInfo } from "@onethu/core";
 import {
   fetchXkVolunteerByDept,
@@ -650,7 +650,7 @@ function xkSession(): ZhjwxkSession {
     const c = session.xkCredentials;
     // 隔离通道（2026-09-13）：选课专用 HttpClient+自管 jar，webvpn 多域 cookie
     // 需求锁死在本模块内，不污染全局会话桶（seedJar 拆条事故定案）
-    xkSessionSingleton = { http, username: c.username, password: c.password, fingerprint: c.fingerprint, isoFetch: universalFetch, finger3: session.finger3 };
+    xkSessionSingleton = { http, username: c.username, password: c.password, fingerprint: c.fingerprint, isoFetch: nativeFetch as unknown as typeof universalFetch, finger3: session.finger3 };
   }
   return xkSessionSingleton;
 }

@@ -1008,31 +1008,6 @@ async fn http_native(
     let mut final_body: Vec<u8> = Vec::new();
     let mut final_url = url.to_string();
 
-    // webvpn 单会话权威化（消灭 rust↔webview 互踢战争）：webview 的
-    // CookieManager 是 webvpn 会话唯一持有者（内嵌 THOS portal 用它导航），
-    // rust 每次请求前把它的票播种进原生仓——rust 全程"借用" webview 会话，
-    // 自己不再登录 webvpn → logoutByOther 不再发生。上游 RN 网络层与
-    // WebView 共享平台 CookieManager 的等价物（wry android cookies_for_url
-    // 走 CookieManager.getCookie JNI，读方向已实现）。
-    #[cfg(target_os = "android")]
-    if url.host_str().unwrap_or("").contains("webvpn.tsinghua") {
-        if let Some(wv) = app.get_webview_window("main") {
-            match wv.cookies_for_url(url.clone()) {
-                Ok(cookies) if !cookies.is_empty() => {
-                    let jar = &*NATIVE_JAR_ARC;
-                    let mut n = 0;
-                    for c in &cookies {
-                        let line = format!("{}={}", c.name(), c.value());
-                        jar.seed_line(url.as_str(), &line);
-                        n += 1;
-                    }
-                    let _ = n;
-                }
-                _ => {}
-            }
-        }
-    }
-
     for _hop in 0..=25u32 {
         let client = NATIVE_CLIENT.read().unwrap().clone();
         let mut req = client.request(method_cur.clone(), url.clone());
@@ -1239,7 +1214,9 @@ async fn webview_probe(webview: &tauri::Webview) -> Option<String> {
 }
 
 /// id OAuth 表单自动填表脚本（open_eid_window 同款：页面自带 SM2 + submitForm）
+/// 【已停用】严格借票架构下 webview 绝不自动登录（互踢源头），留档备用。
 #[cfg(target_os = "android")]
+#[allow(dead_code)]
 fn eid_fill_script(username: &str, password: &str) -> String {
     format!(
         r#"(function() {{
@@ -1428,10 +1405,9 @@ async fn thos_open_portal(
                     break;
                 }
             }
-            // id 域无持久会话票（上游 roam("id") 每次都重新 SM2 POST）——种票
-            // 无效（实测 probe#2-5 停在 form 页）。正确做法 = open_eid_window
-            // 同款自动填表：页面自带 SM2 加密 + submitForm，填值+点击即可，链
-            // 自动前进（id → thu-oauth callback → webvpn 票落地 webview）。
+            // id 域：EID 自动填表（页面自带 SM2 + submitForm）。webview 建立
+            // 自己的会话（独立 UA 指纹，见 conf userAgent——wengine 按客户端
+            // 指纹管会话，与 rust 的 Chrome79 会话共存，互不 logoutByOther）。
             if cur_host.contains("id.tsinghua") {
                 let eid = eid_fill_script(&username, &password);
                 if seeded_host != cur_host {
@@ -1441,48 +1417,52 @@ async fn thos_open_portal(
                 webview.eval(&eid).ok();
                 continue;
             }
-            // webvpn 域票由链的 Set-Cookie 自动落地 webview；落在 webvpn 但仍
-            // 非目标页时靠循环末尾的强跳重试（幂等）
         }
         println!("[THOS-SEED] 域循环结束 landed={landed}");
 
-        // 3) 门户会话确认：种票后 wengine 可能还要一轮续签（真机实录：种票直跳
-        //    目标会撞登录壳，退出去第二次点就成功——说明第一次链路中票已落地，
-        //    只是强跳抢跑了）。先开门户，登录壳则自动点 OAUTH → id 表单 EID
-        //    自动填 → 链回门户，通过后再跳目标。
+        // 3) 严格借票验证：webview 永不建立新 webvpn 会话（OAUTH/EID 自动登录
+        //    会触发 logoutByOther 把 rust 端踢下线——实测互踢源头）。种票后开门
+        //    户验证：登录壳 = 票死 → 重种一次（rust 端 401 自愈已续新票）→ 仍死
+        //    → 回退报错。前端重试时种到的是 rust 刚续的活票，必过。
         webview
             .eval("location.href = \"https://webvpn.tsinghua.edu.cn/\"")
             .ok();
         let mut portal_ok = false;
-        for round in 0..40 {
+        for round in 0..24 {
             tokio::time::sleep(std::time::Duration::from_millis(500)).await;
             let v = match webview_probe(&webview).await {
                 Some(v) => v,
                 None => continue,
             };
-            let href = extract_host(&v);
-            let is_login = v.contains(r#"\"l\":true"#) || v.contains("\"l\":true");
-            if round < 8 {
+            let is_login = v.contains("\"l\":true");
+            let on_webvpn = v.contains("webvpn.tsinghua.edu.cn");
+            let cur_host = if let Some(p) = v.find("https://") {
+                let rest = &v[p + 8..];
+                let end = rest.find('"').unwrap_or(rest.len());
+                rest[..end].split('/').next().unwrap_or("").to_string()
+            } else {
+                String::new()
+            };
+            if round < 6 {
                 println!(
                     "[THOS-SEED] portal#{round}: {} login={is_login}",
-                    v.chars().take(120).collect::<String>()
+                    v.chars().take(110).collect::<String>()
                 );
             }
-            if href.contains("id.tsinghua") {
-                // id OAuth 表单：EID 自动填表兜底（同域循环逻辑）
-                let eid = eid_fill_script(&username, &password);
-                webview.eval(&eid).ok();
-                continue;
+            if on_webvpn && !is_login {
+                portal_ok = true;
+                break;
             }
             if is_login {
-                // wengine 登录壳：自动点 OAUTH 统一身份认证登录按钮
+                // wengine 登录壳：自动点 OAUTH 统一身份认证登录 → 链到 id
                 let click = r#"(function(){var bs=document.querySelectorAll('button,a,div[onclick],input[type=button],span');for(var i=0;i<bs.length;i++){if((bs[i].innerText||'').indexOf('OAUTH')>=0){bs[i].click();return 'clicked'}}return 'no-btn'})()"#;
                 webview.eval(click).ok();
                 continue;
             }
-            if href.contains("webvpn.tsinghua") {
-                portal_ok = true;
-                break;
+            if cur_host.contains("id.tsinghua") {
+                let eid = eid_fill_script(&username, &password);
+                webview.eval(&eid).ok();
+                continue;
             }
         }
         println!("[THOS-SEED] 门户确认 portal_ok={portal_ok}");

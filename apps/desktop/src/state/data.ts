@@ -240,14 +240,20 @@ export function invalidateLearnCache(): void {
  *  「漫游」可重做——会话死即整条 webvpn 死，走 lib 会话守卫（探活+静默重登）。
  *  同一时刻多个数据钩子一起撞上 AuthRequiredError 时只重建一次。 */
 let roamInflight: Promise<boolean> | null = null;
+let lastRelearnAt = 0;
 function relearnRoamOnce(): Promise<boolean> {
+  // 20s 节流（2026-09-17）：恢复环每秒一轮 learn 重链（/f/login+账密全链）
+  // 也是风暴源——与 softRecover 同窗口；loginGate 冷却只管 libLogin 本身。
+  if (Date.now() - lastRelearnAt < 20_000) return Promise.resolve(false);
   if (!roamInflight) {
+    lastRelearnAt = Date.now();
     roamInflight = import("../lib/infoLib.js")
       .then(async (m) => {
         const ok = await m.libEnsureSession();
         if (!ok) return false;
-        // 主会话活了 ≠ learn 会话活了：learn csrf 经 webvpn 透明 SSO 另行建立
-        // （2026-09-17 实录：缺此步 loadReal 的 learn.* 预请求即抛 → 无限循环）
+        // 主会话活了 ≠ learn 会话活了：先 roam("id", learn 表单) 建 learn 会话
+        // （card/info 同款 id-漫游，2026-09-17 定案；/f/login 路径全部作废）
+        await m.libRoamLearn().catch(() => false);
         return await learn.resume().catch(() => false);
       })
       .catch(() => false)
@@ -2147,17 +2153,10 @@ export function useCard(days = 30) {
       setState("ready");
     } catch (err) {
       logPageError("CARD", err);
-      // 登录态丢失：softRelogin 透明全链重建（含 WebVPN 层）→ 原地重拉
-      // （THU Info 语义，绝不整页刷新）；仍失败才页内亮 ErrorNote（不踢回登录页）
-      if (isAuthError(err) && (await softRecover("card"))) return load();
-      // softRecover 失败/节流 → 落回数据级恢复兜底（forceEnsure 应用级重建）
-      if (isAuthError(err) && recover.current < 1) {
-        recover.current += 1;
-        await info.forceEnsure("card").catch((renewErr: unknown) => {
-          logPageError("CARD-RENEW", renewErr);
-        });
-        return load();
-      }
+      // 2026-09-17 定案：剪掉 softRecover/forceEnsure 级联——旧客户端的
+      // forceEnsure 是整套 id 舞（表单+check+锚点），失败后连环 public key
+      // 风暴把全局会话拖红（真机实录）。lib 钩子失败一律走 SWR 旧值/页内
+      // 错误，恢复交给全局看门狗与下次手动刷新。
       // SWR 语义（极限稳定目标）：已有旧值时刷新失败不闪红，旧数据继续展示——
       // 红条只在「一无所获」时才允许露脸（useWeekSchedule 同款）
       if (data !== null) return;
@@ -2286,7 +2285,12 @@ export function useTodayReservations() {
   useEffect(() => {
     if (status !== "ready" && status !== "demo") return;
     const cached = cacheGet<TodayReservation[]>(TODAYRESV_KEY);
-    if (!cached) void load(false);
+    if (!cached) {
+      // 错峰（2026-09-17）：旧 venue 客户端的 id 舞与登录/漫游抢第一秒会
+      // 互相拖死；无缓存时推迟 90s 再首拉（有旧值则照常静默刷新）
+      const t = setTimeout(() => void load(false), 90_000);
+      return () => clearTimeout(t);
+    }
     else if (Date.now() - cached.at > TODAYRESV_TTL) void load(true);
   }, [status, load]);
 

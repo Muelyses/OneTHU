@@ -196,8 +196,14 @@ learnHttp.withWebVPN(false);
 // 诊断可见性（2026-09-17 教训：专线没接 debug 钩子，整条链路在日志里隐形）
 learnHttp.debug = (line) => void logLine(line);
 // wengine 引导页票种同步播种进 rust 仓（jar→rust 桥：learn 专线走原生通道，
-// 只进 jar 的票 rust 侧永远看不到——引导页死循环的根因）
+// 只进 jar 的票 rust 侧永远看不到）。但 wengine 基础设施票（wengine_vpn_ticket/
+// show_*/heartbeat/refresh）绝不播种——2026-09-17 实录：铸好的真票被引导页
+// 回放的陈旧匿名票覆盖，首页瞬间全绿→几秒后死。只播种目标应用域会话票。
 learnHttp.nativeSeedHook = (url, pair) => {
+  const name = pair.split("=")[0]!.trim();
+  if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") {
+    return;
+  }
   void nativeSeedCookies(url, [`${pair}; Path=/`]);
 };
 export const learn = new LearnClient(learnHttp);
@@ -205,8 +211,6 @@ export const learn = new LearnClient(learnHttp);
 // 设备指纹信任链随 session——不需要再碰 infoLib 的凭据箱。
 learn.credentialProvider = () => {
   if (!pendingSecret) return null;
-  // 全局登录冷却期（loginGate）：账密链也停，防恢复环风暴
-  if (loginCooldownLeftMs() > 0) return null;
   return {
     username: pendingSecret.username,
     password: pendingSecret.password,
@@ -317,7 +321,14 @@ export async function login(
       // lib 主会话活了 → learn 客户端经 webvpn 透明 SSO 抓 _csrf（2026-09-17
       // 实录：缺此步则 loadReal 的 learn.* 预请求即抛 AuthRequiredError →
       // CAMPUS-AUTH 无限循环；resume 内部抓不到就保持未登录，不抛错）
-      const okLearn = await learn.resume().catch(() => false);
+      let okLearn = await learn.resume().catch(() => false);
+      if (!okLearn) {
+        // learn 会话没随主登录活：用 lib 的 id-漫游（card/info 同款）建它
+        const { libRoamLearn } = await import("./infoLib.js");
+        if (await libRoamLearn()) {
+          okLearn = await learn.resume().catch(() => false);
+        }
+      }
       await logLine(
         "LOGIN learn-resume " + (okLearn ? "ok" : "fail ") +
         (okLearn ? "" : ` lastDebug=${learn.lastDebug.slice(0, 260).replace(/\s+/g, " ")}`),

@@ -513,14 +513,18 @@ export class LearnClient {
       this.#http.debug?.(
         `LEARN-SILENT 路径二 check=${checkHtml.includes("登录成功") ? "成功" : checkHtml.slice(0, 80).replace(/\s+/g, " ")}`,
       );
-      // 成功页锚点（漫游入口带 ticket）；拿不到就再走一次 /f/login
-      const anchor =
-        /href=['"]([^'"]+)['"]/i.exec(checkHtml)?.[1] ?? "";
-      if (anchor) {
-        await this.#http.text(anchor.startsWith("http") ? wrap(anchor) : wrap("https://learn.tsinghua.edu.cn/f/login"));
-      } else {
-        await this.#http.text(wrap("https://learn.tsinghua.edu.cn/f/login"));
-      }
+      // 成功页锚点：必须是 learn 漫游入口（带 ticket 的 roaming_entry）——
+      // 抓第一个 <a> 会拿到 oauth 回调死链（2026-09-17 逐跳实录：callback?
+      // ticket 200 死胡同，不铸会话）。没有漫游锚点=认证没成，直接放弃路径二。
+      const anchorMatch =
+        /href=['"]([^'"]*(?:roaming_entry|j_spring)[^'"]*ticket[^'"]*)['"]/i.exec(checkHtml) ??
+        /href=['"](https?:\/\/learn\.tsinghua\.edu\.cn[^'"]+)['"]/i.exec(checkHtml);
+      const anchor = anchorMatch?.[1] ?? "";
+      this.#http.debug?.(
+        `LEARN-SILENT 路径二锚点 ${anchor ? anchor.slice(0, 120) : "未找到（放弃）"}`,
+      );
+      if (!anchor) return false;
+      await this.#http.text(anchor.startsWith("http") ? wrap(anchor) : wrap("https://learn.tsinghua.edu.cn" + anchor));
       const csrf = await this.#fetchCsrf();
       this.#csrf = csrf;
       return csrf !== null;

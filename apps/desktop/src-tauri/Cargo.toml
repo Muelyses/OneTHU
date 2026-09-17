@@ -35,6 +35,8 @@ rustls-connector = { version = "0.23", default-features = false, features = ["we
 mail-parser = "0.9"
 lettre = { version = "0.11", default-features = false, features = ["builder", "smtp-transport", "rustls", "ring", "webpki-roots"] }
 url = "2"
+# reqwest 内建仓的同一实现（RFC6265 全语义）——替换手搓 HashMap 仓
+cookie_store = "0.22"
 # 已在依赖树中（reqwest 传递依赖 0.22.1），直连引用无新增下载
 base64 = "0.22"
 # OneTHU Harness 内嵌（移动端）：Rust 骨干核心直接编进 App（桌面端仍走 sidecar 进程）

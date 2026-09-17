@@ -190,15 +190,12 @@ export const login = async (
                         }
                         sm2PublicKey = cheerio.load(await uFetch(idUrl))("#sm2publicKey").text();
                     } else {
-                        // OneTHU 适配（2026-09-17 真机实录）：校园网/同 IP 场景下
-                        // webvpn 服务端会话仍活时，此 URL 对无 cookie 客户端直接
-                        // 200 落「WebVPN - 资源站点」门户页（无 #sm2publicKey）——
-                        // 会话已在，跳过 id 重登与漫游，登录即成功。
+                        // OneTHU 适配（2026-09-17 定案）：库外层（infoLib.libLogin）
+                        // 已在登录前清空原生 cookie 仓——干净客户端总是走完整
+                        // OAuth 舞（表单带 sig → check → 302 webvpn/login?code=
+                        // → 铸真票）。带陈旧匿名票才会被 IP 续会拦成门户页
+                        // （无 key），此处保持「无 key 即报错」，由外层自愈重试。
                         const landingPage = await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
-                        if (landingPage.includes("资源站点")) {
-                            outstandingLoginPromise = undefined;
-                            return;
-                        }
                         sm2PublicKey = cheerio.load(landingPage)("#sm2publicKey").text();
                     }
                     if (sm2PublicKey === "") {

@@ -17,7 +17,7 @@ import { nativeFetch, nativeCookieClear, tauriFetch } from "./transport.js";
 import { markLoginAttempt, loginCooldownLeftMs, consumeLoginFailedPublicKey } from "./loginGate.js";
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
-import { InfoHelper } from "@onethu/info-lib";
+import { InfoHelper, roam } from "@onethu/info-lib";
 import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
 
 let initialized = false;
@@ -232,6 +232,11 @@ export async function libLogin(
   fingerprint: string,
 ): Promise<LibLoginResult> {
   markLoginAttempt();
+  // 永远从干净仓开始（2026-09-17 定案）：仓里残留的匿名票（wrdvpn1-）+
+  // IP 续会 = login?oauth 被拦成门户页，永远铸不出真票；清仓后服务端总是
+  // 走完整 OAuth 舞（表单带 sig → check → 302 webvpn/login?code= → 铸票），
+  // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
+  await nativeCookieClear().catch(() => undefined);
   helper.fingerprint = fingerprint || makeFingerprint();
   // 被封锁检测：上一轮登录以「public key」失败 = 落地封锁页（2026-09-17 实录：
   // id 按会话 cookie 封设备，同 IP 无 cookie 客户端正常）→ 清原生仓换新身份
@@ -298,6 +303,19 @@ export async function libLogout(): Promise<void> {
 
 /** 会话守卫（lib verifyAndReLogin 语义，供 InfoClient renewers / auth-dance 重连）：
  *  探测门户会话；死且内存有凭据 → 完整重登（受信凭据在 → 免 2FA）。 */
+/** learn 会话漫游（2026-09-17）：复用 lib 的 roam("id")——card/info 同款
+ *  （表单→check→锚点→包装跟随），payload=learn 的 id 表单。此前手搓的
+ * /f/login 与账密路径二全部作废。 */
+export async function libRoamLearn(): Promise<boolean> {
+  try {
+    await roam(helper, "id", "bb5df85216504820be7bba2b0ae1535b/0");
+    return true;
+  } catch (e) {
+    void e;
+    return false;
+  }
+}
+
 export async function libEnsureSession(): Promise<boolean> {
   try {
     // 探针走原生通道（Rust 仓=权威会话，重定向透明跟完）+ 现行 info 域

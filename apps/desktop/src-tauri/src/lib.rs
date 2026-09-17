@@ -860,59 +860,53 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
     })
 }
 
-/// 自管 cookie 仓（2026-09-17）：reqwest 内建仓不可外部读写——两套世界
-/// （rust 仓 / TS jar）的桥需要 jar→rust 播种（wengine 引导页的票种在响应
-/// 体里，不经 Set-Cookie，rust 侧永远收不到）。host 精确匹配 + 过期忽略。
-#[derive(Default)]
-struct SharedNativeJar(std::sync::Mutex<std::collections::HashMap<String, Vec<(String, String)>>>);
+/// 真·cookie 引擎（2026-09-17 定案）：cookie_store crate——reqwest 内建仓
+/// 背后的同一实现（RFC6265 域/路径/过期全语义，okHttp 级）。手搓 HashMap 仓
+/// 的主域归并/属性忽略是当晚一切串票怪病的根因。种子/清仓走本类型真 API。
+struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>);
 
 impl SharedNativeJar {
     fn seed_line(&self, url: &str, line: &str) {
         let Ok(u) = reqwest::Url::parse(url) else { return };
-        // 精确 host 匹配（host-only cookie）：清华各子域的会话互不可见——
-        // 主域归并会让 id/learn/webvpn 的同名票互踩（wengine 引导页死循环实录）
-        let main = u.host_str().unwrap_or("").to_lowercase();
-        let body = line.split(';').next().unwrap_or("").trim().to_string();
-        let Some(eq) = body.find('=') else { return };
-        let (name, value) = (body[..eq].trim().to_string(), body[eq + 1..].trim().to_string());
-        if name.is_empty() { return; }
-        let mut g = self.0.lock().unwrap();
-        let v = g.entry(main).or_default();
-        v.retain(|(n, _)| n != &name);
-        v.push((name, value));
+        let _ = self.0.write().unwrap().parse(line, &u);
+    }
+    fn clear(&self) {
+        self.0.write().unwrap().clear();
     }
 }
 
 impl reqwest::cookie::CookieStore for SharedNativeJar {
     fn set_cookies(&self, cookie_headers: &mut dyn Iterator<Item = &reqwest::header::HeaderValue>, url: &reqwest::Url) {
+        let mut g = self.0.write().unwrap();
         for h in cookie_headers {
             if let Ok(line) = h.to_str() {
-                self.seed_line(url.as_str(), line);
+                let _ = g.parse(line, url);
             }
         }
     }
     fn cookies(&self, url: &reqwest::Url) -> Option<reqwest::header::HeaderValue> {
-        let main = url.host_str()?.to_lowercase();
-        let g = self.0.lock().unwrap();
-        let cookies = g.get(&main)?;
-        if cookies.is_empty() { return None; }
-        let header = cookies.iter().map(|(n, v)| format!("{n}={v}")).collect::<Vec<_>>().join("; ");
-        reqwest::header::HeaderValue::from_str(&header).ok()
+        let g = self.0.read().unwrap();
+        let header = g
+            .get_request_values(url)
+            .map(|(n, v)| format!("{n}={v}"))
+            .collect::<Vec<_>>()
+            .join("; ");
+        if header.is_empty() { None } else { reqwest::header::HeaderValue::from_str(&header).ok() }
     }
 }
 
-static NATIVE_JAR: std::sync::LazyLock<std::sync::Arc<SharedNativeJar>> =
-    std::sync::LazyLock::new(|| std::sync::Arc::new(SharedNativeJar::default()));
-
 fn build_native_client() -> reqwest::Client {
     reqwest::Client::builder()
-        .cookie_provider(std::sync::Arc::clone(&*NATIVE_JAR))
+        .cookie_provider(std::sync::Arc::clone(&*NATIVE_JAR_ARC))
         .redirect(reqwest::redirect::Policy::none())
         // 同 http_request：清华域直连，绕系统代理
         .no_proxy()
         .build()
         .expect("native client build")
 }
+
+static NATIVE_JAR_ARC: std::sync::LazyLock<std::sync::Arc<SharedNativeJar>> =
+    std::sync::LazyLock::new(|| std::sync::Arc::new(SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()))));
 
 static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<reqwest::Client>> =
     std::sync::LazyLock::new(|| std::sync::RwLock::new(build_native_client()));
@@ -954,6 +948,13 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
     for _hop in 0..=25u32 {
         let client = NATIVE_CLIENT.read().unwrap().clone();
         let mut req = client.request(method_cur.clone(), url.clone());
+        // 诊断：首跳外发 cookie 名单 + 逐跳 URL/状态（铸票断链定位）
+        if _hop == 0 {
+            let sent = reqwest::cookie::CookieStore::cookies(NATIVE_JAR_ARC.as_ref(), &url)
+                .and_then(|c: reqwest::header::HeaderValue| c.to_str().ok().map(|s: &str| s.to_string()))
+                .unwrap_or_else(|| "(无)".into());
+            println!("[NATIVE-STORE] {} → {}", url.host_str().unwrap_or("?"), sent);
+        }
         for (k, v) in &input.headers {
             let lower = k.to_lowercase();
             // Cookie 由原生仓管理，手动传入反而跨跳污染
@@ -969,6 +970,7 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
+        println!("[NATIVE-HOP{}] {} {}", _hop, status.as_u16(), resp.url().as_str().chars().take(120).collect::<String>());
 
         let mut headers = HashMap::new();
         let mut set_cookies = Vec::new();
@@ -1042,7 +1044,7 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
 /// 按会话 cookie 封锁设备（同 IP 的无 cookie 客户端正常）——被封锁时唯一解法。
 #[tauri::command]
 fn http_native_clear_cookies() -> Result<(), String> {
-    NATIVE_JAR.0.lock().map_err(|e| e.to_string())?.clear();
+    NATIVE_JAR_ARC.clear();
     Ok(())
 }
 
@@ -1050,7 +1052,7 @@ fn http_native_clear_cookies() -> Result<(), String> {
 #[tauri::command]
 fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
     for l in &lines {
-        NATIVE_JAR.seed_line(&url, l);
+        NATIVE_JAR_ARC.seed_line(&url, l);
     }
     Ok(())
 }

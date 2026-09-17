@@ -19,7 +19,7 @@ import {
     getBankPaymentParellize,
     getMadModelToken,
 } from "./lib/basics";
-import {forgetDevice, login, logout} from "./lib/core";
+import {forgetDevice, login, logout, roam} from "./lib/core";
 import {getDormScore, getElePayRecord, getEleRechargePayCode, getEleRemainder, resetDormPassword} from "./lib/dorm";
 import {
     LibBookRecord,
@@ -1068,3 +1068,5 @@ export class InfoHelper {
         return cardRechargeFromWechatAlipay(this, amount, type === CardRechargeType.Alipay);
     };
 }
+
+export {roam};

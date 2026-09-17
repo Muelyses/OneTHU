@@ -2699,6 +2699,7 @@ dependencies = [
  "base64 0.22.1",
  "cc",
  "chrono",
+ "cookie_store",
  "encoding_rs",
  "imap",
  "lettre",

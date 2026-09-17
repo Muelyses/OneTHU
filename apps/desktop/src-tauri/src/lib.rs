@@ -1005,7 +1005,7 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
         let body_url_tag = resp.url().as_str().to_string();
         final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?.to_vec();
         // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
-        if body_url_tag.contains("kczy") && method_cur.as_str() == "POST" {
+        if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList")) && method_cur.as_str() == "POST" {
             let mut hdr_dump = String::new();
             for (k, v) in &input.headers {
                 hdr_dump.push_str(&format!("{}={:?}; ", k, v));
@@ -1017,7 +1017,7 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
         {
             let u = &body_url_tag;
             if u.contains("wlxt") {
-                let head = String::from_utf8_lossy(&final_body[..final_body.len().min(520)]).replace(['\n', '\r', '\t'], " ");
+                let head = String::from_utf8_lossy(&final_body[..final_body.len().min(1400)]).replace(['\n', '\r', '\t'], " ");
                 println!("[NATIVE-BODY] {} | {}", &u[u.len().saturating_sub(70)..], head);
             }
         }

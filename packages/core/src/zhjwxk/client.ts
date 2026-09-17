@@ -197,7 +197,10 @@ async function ensure(
       // 2026-09-13 桶一致修复：去掉 direct:true——webvpn 模式下表单链在 webvpn 桶
       // 建立会话，POST 却送直连桶 cookie（空/脏）→ id 不认识 → gb2312 错误页。
       // 跟随传输模式：webvpn=包装桶，直连=直连桶（PUBLIC_HOSTS 含 id 自动直连）。
-      const res = await http.request(`${ID_PREFIX}/do/off/ui/auth/login/checkSingle`, {
+      // 2026-09-17 定案：checkSingle 确认走【主会话 http】——隔离 jar 只拷了
+      // 少量 id cookie，残缺会话确认出的票天然无效（兑付 200 拒、ticket 永不
+      // 消费、循环空转，桌面实录）。id 确认 = 主会话的事。
+      const res = await s.http.request(`${ID_PREFIX}/do/off/ui/auth/login/checkSingle`, {
         method: "POST",
         // fingerGenPrint 必须带 finger3（持久化指纹；2026-09-17 桌面实录：传空
       // 确认不生效 → 每轮重新弹 checkSingle → 2 轮耗尽 → 公钥解析假报错）
@@ -212,8 +215,15 @@ async function ensure(
       if (!target) break;   // 无票据可兑付：走表单链
       const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
       // 兑付现场（此前 catch 吞错——票从未消费、循环空转全靠猜，2026-09-17 桌面实录）
-      const tgtResp = await http.text(tgt).catch((e) => `ERR:${String(e).slice(0, 120)}`);
+      const tgtResp = await s.http.text(tgt).catch((e) => `ERR:${String(e).slice(0, 120)}`);
       zhjwxkDebug?.(`[XK-CONSUME] tgt=${tgt.slice(0, 90)} resp=${String(tgtResp).slice(0, 110).replace(/\s+/g, " ")}`);
+      // 教务会话 cookie 落在主 jar：拷进隔离罐，xklogin 探测继续走隔离通道
+      try {
+        const zUrl = new URL(ZHJWXK + "/");
+        for (const c of s.http.jar.getCookies(zUrl)) {
+          http.jar.setRaw(zUrl, `${c.name}=${c.value}; Path=/`);
+        }
+      } catch { /* 拷贝失败不阻断 */ }
       html = await http.text(ZHJWXK + "/xklogin.do");
       zhjwxkDebug?.(`[XK-RELOGIN] ${/checkSingle/.test(html) ? "仍checkSingle" : "非checkSingle"} len=${html.length} head=${html.slice(0, 90).replace(/\s+/g, " ")}`);
     }

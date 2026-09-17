@@ -258,9 +258,12 @@ export function ThosPage() {
           <Empty text="演示模式：8888 账号的在线服务数据为虚构，官方页动作已禁用。" />
         </Card>
       ) : null}
-      <div className="dim" style={{ fontSize: 12, lineHeight: 1.5 }}>
-        首次选择服务会自动填充账号密码后跳转到服务大厅，可以在服务大厅选择自己的业务。后续在本页面选择服务会自动跳转到对应服务，无需在服务大厅选择。
-      </div>
+      <Card>
+        <div className="dim" style={{ fontSize: 12.5, lineHeight: 1.7, padding: "6px 2px" }}>
+          <div>· 首次选择服务：自动填充账号密码后跳转到服务大厅，可在服务大厅选择业务。</div>
+          <div>· 后续在本页面选择服务：自动跳转到对应服务，无需再经服务大厅。</div>
+        </div>
+      </Card>
       <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
         {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
         {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>

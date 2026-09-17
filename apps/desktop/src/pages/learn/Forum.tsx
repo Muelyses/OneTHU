@@ -290,7 +290,10 @@ export function ForumThreadPage() {
         setHead(h);
         setPosts(h.posts); // 首屏回复在 viewTlById HTML 里服务端渲染
         setPage(0); // 0 = 已消费 HTML 首屏；ajax 分页从 1 起
-        setHasMore(h.posts.length < h.replyCount);
+        // 站点主回复分页 myPageSize=15（loadpage 实录）——首屏满页即可能有下一页；
+        // replyCount 的 loadpage2 正则匹配不上今日页面（真机实录 n=NaN），改数据驱动：
+        // 按钮常驻，空页/全重复页自动收口
+        setHasMore(h.posts.length >= 15 || h.posts.length < h.replyCount);
         setState("ready");
       })
       .catch((e: unknown) => {
@@ -307,11 +310,15 @@ export function ForumThreadPage() {
     if (status === "demo") return;
     const next = page + 1; // ajax 分页页码从 1 起（0 是服务端渲染首屏，接口无效页）
     learn
-      .getBbsThreadPosts(courseId, threadId, next)
+      .getBbsThreadPosts(courseId, threadId, next, bqid)
       .then((p) => {
-        setPosts((old) => [...old, ...p]);
+        // 去重追加（ajax 第 1 页可能与 HTML 首屏同源重复；页大小差异全靠
+        // hhid 去重兜底）；空页或全重复 = 到底，按钮收口
+        const seen = new Set(posts.map((x) => x.hhid));
+        const fresh = p.filter((x) => !seen.has(x.hhid));
+        setPosts((old) => [...old, ...fresh]);
         setPage(next);
-        setHasMore(p.length > 0 && posts.length + p.length < (head?.replyCount ?? 0));
+        setHasMore(fresh.length > 0);
       })
       .catch((e: unknown) => setError(explainNetworkError(e)));
   };

@@ -1182,7 +1182,27 @@ export class LearnClient {
         replyCount: (() => {
           const n = parseInt(span(/loadpage2\([^,]+,\s*(\d+)\s*,/), 10);
           // 回复 ≤8 时页面无分页器，loadpage2 不存在 → 用首屏渲染数兜底
-          return Number.isFinite(n) && n > 0 ? n : main ? parseBbsReplyBlocks(html).length : 0;
+          const fallback = main ? parseBbsReplyBlocks(html).length : 0;
+          // OneTHU 诊断（2026-09-17 回复翻页失灵）：全部 loadpage 形态 + 分页器标记
+          {
+            const chunks: string[] = [];
+            let at = html.indexOf("loadpage");
+            while (at >= 0 && chunks.length < 6) {
+              chunks.push(JSON.stringify(html.slice(at, at + 90)));
+              at = html.indexOf("loadpage", at + 1);
+            }
+            const pagerAt = html.search(/下一页|上一页|pagination|pager|pagebox|countindex/);
+            const pagerChunk = pagerAt >= 0 ? JSON.stringify(html.slice(Math.max(0, pagerAt - 80), pagerAt + 260)) : "无标记";
+            const itemMarks = (html.match(/item_[0-9a-f]{8,}/g) ?? []).length;
+            // loadpage(num) 主分页函数体（真实 ajax 姿势在此）——全量输出
+            const fnAt = html.search(/function loadpage\(/);
+            const fnBody = fnAt >= 0 ? html.slice(fnAt, fnAt + 900).replace(/\s+/g, " ") : "无";
+            this.#http.debug?.(
+              `BBS-REPLY n=${n} fallback=${fallback} item数=${itemMarks} pager=${pagerChunk.slice(0, 80)}`,
+            );
+            this.#http.debug?.(`BBS-LOADPAGE ${fnBody}`);
+          }
+          return Number.isFinite(n) && n > 0 ? n : fallback;
         })(),
         tabbh: span(/tabbh=(\d+)/),
         tabid: span(/[?&]tabid=([0-9a-f]{16,40})/),
@@ -1191,21 +1211,31 @@ export class LearnClient {
     });
   }
 
-  /** 回复分页（pageViewTlById JSON；每页 8 条，hhbDtoList 为楼中楼）。
-   *  ⚠️ pageNum 从 1 起：0 是无效页（服务器回 total:0，2026-09-02 诊断实测）——
-   *  首屏回复已由 getBbsThread 的 posts（HTML 渲染）提供，这里只负责第 9 条起。 */
-  async getBbsThreadPosts(wlkcid: string, threadId: string, pageNum: number): Promise<LearnBbsPost[]> {
+  /** 回复分页（2026-09-17 HAR 定案）：站点「下一页」= 重新 GET viewTlById 帖子页
+   *  带 pageNum（0 起），服务端渲染那一页的 15 条回复——不走 JSON ajax
+   *  （pageViewTlById 对主楼层恒回 total:0，只服务楼中楼）。UI 端按 hhid 去重
+   *  追加，空页/全重复即收口。 */
+  async getBbsThreadPosts(wlkcid: string, threadId: string, pageNum: number, bqid?: string): Promise<LearnBbsPost[]> {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
-      const json = await this.#http.json<{ result?: string; object?: { list?: unknown[] } }>(
-        this.#withCsrf(urls.LEARN_BBS_POSTS_PAGE(wlkcid, threadId, pageNum)),
-      );
-      const list = json?.object?.list;
-      const posts = Array.isArray(list) ? list.map(parseBbsPostJson) : [];
+      const viewUrl =
+        urls.LEARN_BBS_THREAD_VIEW(wlkcid, threadId, bqid) +
+        `&sfqb=1&pageNum=${pageNum}`; // HAR 实录：站点翻页 = viewTlById?...&sfqb=1&pageNum=N
+      const html = await this.#http
+        .request(viewUrl, {
+          headers: {
+            Referer: urls.LEARN_BBS_LIST_REFERER(wlkcid),
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          },
+        })
+        .then((r) => r.text());
+      if (looksLikeLearnLoginShell(html)) {
+        this.lastBbsThreadDebug = `POSTS-PAGE(page=${pageNum}) 登录壳 len=${html.length}`;
+        throw new AuthRequiredError("网络学堂会话已失效（回复分页返回登录壳）");
+      }
+      const posts = parseBbsReplyBlocks(html);
       this.lastBbsThreadDebug =
-        posts.length === 0
-          ? `POSTS-PAGE RESP(page=${pageNum}):\n` + JSON.stringify(json).slice(0, 1200)
-          : "";
+        posts.length === 0 ? `POSTS-PAGE(page=${pageNum}) 空回复 len=${html.length}` : "";
       return posts;
     });
   }

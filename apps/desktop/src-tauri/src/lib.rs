@@ -863,16 +863,66 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
 /// 真·cookie 引擎（2026-09-17 定案）：cookie_store crate——reqwest 内建仓
 /// 背后的同一实现（RFC6265 域/路径/过期全语义，okHttp 级）。手搓 HashMap 仓
 /// 的主域归并/属性忽略是当晚一切串票怪病的根因。种子/清仓走本类型真 API。
-struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>);
+struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>, std::sync::atomic::AtomicBool);
 
+/// cookie 仓落盘（2026-09-17：纯内存仓每次进程重启丢光 id 信任票据 →
+/// 服务器反复索要 2FA；持久化后冷启动直接带票复用，登录/2FA 频率大幅下降）。
+/// 行格式：domain<TAB>path<TAB>secure<TAB>name=value（Domain/Path 显式回种，
+/// 不存 Expires——加载即会话票，运行期由服务器重新盖章续命）。
 impl SharedNativeJar {
     fn seed_line(&self, url: &str, line: &str) {
         let Ok(u) = reqwest::Url::parse(url) else { return };
         let _ = self.0.write().unwrap().parse(line, &u);
+        self.1.store(true, std::sync::atomic::Ordering::Relaxed);
     }
     fn clear(&self) {
         self.0.write().unwrap().clear();
+        self.1.store(true, std::sync::atomic::Ordering::Relaxed);
     }
+    fn save_to_file(&self, path: &std::path::Path) {
+        let g = self.0.read().unwrap();
+        let mut out = String::new();
+        for c in g.iter_unexpired() {
+            let domain = c.domain().unwrap_or("");
+            let path = c.path().unwrap_or("/");
+            let host = domain.trim_start_matches('.');
+            if host.is_empty() { continue; }
+            let line = format!(
+                "{domain}\t{path}\t{}\t{}={}",
+                if c.secure().unwrap_or(false) { "1" } else { "0" },
+                c.name(),
+                c.value()
+            );
+            out.push_str(&line);
+            out.push('\n');
+        }
+        let _ = std::fs::write(path, out);
+        self.1.store(false, std::sync::atomic::Ordering::Relaxed);
+    }
+    fn load_from_file(&self, path: &std::path::Path) {
+        let Ok(text) = std::fs::read_to_string(path) else { return };
+        let mut g = self.0.write().unwrap();
+        for line in text.lines() {
+            let parts: Vec<&str> = line.split('\t').collect();
+            if parts.len() != 4 { continue; }
+            let (domain, cpath, secure, kv) = (parts[0], parts[1], parts[2], parts[3]);
+            let host = domain.trim_start_matches('.');
+            let scheme = if secure == "1" { "https" } else { "http" };
+            let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
+            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
+            let _ = g.parse(&set_cookie, &u);
+        }
+        self.1.store(false, std::sync::atomic::Ordering::Relaxed);
+    }
+    fn save_if_dirty(&self, path: &std::path::Path) {
+        if self.1.load(std::sync::atomic::Ordering::Relaxed) {
+            self.save_to_file(path);
+        }
+    }
+}
+
+fn jar_store_path(app: &tauri::AppHandle) -> std::path::PathBuf {
+    app.path().app_data_dir().unwrap_or_else(|_| std::path::PathBuf::from(".")).join("native-jar.tsv")
 }
 
 impl reqwest::cookie::CookieStore for SharedNativeJar {
@@ -883,6 +933,7 @@ impl reqwest::cookie::CookieStore for SharedNativeJar {
                 let _ = g.parse(line, url);
             }
         }
+        self.1.store(true, std::sync::atomic::Ordering::Relaxed);
     }
     fn cookies(&self, url: &reqwest::Url) -> Option<reqwest::header::HeaderValue> {
         let g = self.0.read().unwrap();
@@ -905,8 +956,12 @@ fn build_native_client() -> reqwest::Client {
         .expect("native client build")
 }
 
-static NATIVE_JAR_ARC: std::sync::LazyLock<std::sync::Arc<SharedNativeJar>> =
-    std::sync::LazyLock::new(|| std::sync::Arc::new(SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()))));
+static NATIVE_JAR_ARC: std::sync::LazyLock<std::sync::Arc<SharedNativeJar>> = std::sync::LazyLock::new(|| {
+    std::sync::Arc::new(SharedNativeJar(
+        std::sync::RwLock::new(cookie_store::CookieStore::default()),
+        std::sync::atomic::AtomicBool::new(false),
+    ))
+});
 
 static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<reqwest::Client>> =
     std::sync::LazyLock::new(|| std::sync::RwLock::new(build_native_client()));
@@ -1535,6 +1590,18 @@ tauri::Builder::default()
             });
         })
         .setup(|app| {
+            // cookie 仓持久化：启动回种 + 30s 周期落盘（dirty 才写）
+            {
+                let handle = app.handle().clone();
+                let path = jar_store_path(&handle);
+                NATIVE_JAR_ARC.load_from_file(&path);
+                tauri::async_runtime::spawn(async move {
+                    loop {
+                        tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+                        NATIVE_JAR_ARC.save_if_dirty(&path);
+                    }
+                });
+            }
             #[cfg(debug_assertions)]
             {
                 use tauri::LogicalPosition;

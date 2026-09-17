@@ -19,7 +19,7 @@ import {
     getBankPaymentParellize,
     getMadModelToken,
 } from "./lib/basics";
-import {forgetDevice, login, logout, roam} from "./lib/core";
+import {clearOutstandingLogin, forgetDevice, login, logout, roam} from "./lib/core";
 import {getDormScore, getElePayRecord, getEleRechargePayCode, getEleRemainder, resetDormPassword} from "./lib/dorm";
 import {
     LibBookRecord,
@@ -1069,4 +1069,4 @@ export class InfoHelper {
     };
 }
 
-export {roam};
+export {roam, clearOutstandingLogin};

@@ -218,10 +218,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // 恢复失败（learn/id 会话过期是常态）且勾选了记住密码 → 静默重登一次，免输密码
       // 同款看门狗 15s：重登链悬挂时放行到登录页（用户手点也不至于困死）
       const TS = Date.now();
-      const silent = await Promise.race([
-        clients.trySilentRelogin().catch(() => false),
-        new Promise<false>((res) => setTimeout(() => res(false), 15_000)),
+      type SilentResult = Awaited<ReturnType<typeof clients.trySilentRelogin>>;
+      const silentResult: SilentResult = await Promise.race([
+        clients.trySilentRelogin().catch((): SilentResult => ({ ok: false })),
+        new Promise<SilentResult>((res) => setTimeout(() => res({ ok: false }), 15_000)),
       ]);
+      const silent = silentResult.ok === true;
       void import("../lib/clients.js").then(({ logLine }) =>
         logLine(`BOOT-T trySilentRelogin(${silent ? "成功" : "失败"}) +${Date.now() - TS}ms`),
       ).catch(() => undefined);
@@ -230,6 +232,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const saved = await clients.store.loadSession();
         setUser({ username: saved?.username ?? "" });
         setStatus("ready");
+      } else if (silentResult.twoFactor) {
+        // 静默重登撞 2FA：直接弹 2FA 界面（凭据已在链上）——否则登录链停在
+        // 半路成僵尸，用户手点「登录」只会 await 僵尸（Login timeout 实录）
+        setTwoFactor({
+          username: silentResult.twoFactor.username,
+          password: silentResult.twoFactor.password,
+          methods: silentResult.twoFactor.methods,
+        });
+        setStatus("2fa");
       } else {
         setStatus("logged-out");
       }

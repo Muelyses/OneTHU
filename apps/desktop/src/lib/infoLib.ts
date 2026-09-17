@@ -243,6 +243,9 @@ export async function libLogin(
   if (consumeLoginFailedPublicKey()) {
     await nativeCookieClear().catch(() => undefined);
   }
+  // 弃掉 2FA 挂起的僵尸链（lib 的 outstandingLoginPromise 单例——见 core.ts 注释）
+  const { clearOutstandingLogin } = await import("@onethu/info-lib");
+  clearOutstandingLogin();
   const { p, methodsPromise } = startLoginRaw(username, password);
   const settled = await Promise.race([
     p.then(

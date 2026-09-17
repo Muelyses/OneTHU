@@ -237,6 +237,14 @@ export const login = async (
     }
 };
 
+/** OneTHU 适配（2026-09-17）：2FA 挂起的登录链（等验证码的 futures）永不清
+ *  outstandingLoginPromise——后续 login() 全都 await 这具僵尸，3 分钟后集体
+ *  "Login timeout"（真机实录：开机 need-2fa 后手点登录全部无响应）。
+ *  外层每次发起全新 libLogin 前调用本函数弃掉旧链（旧 futures 无人等，可 GC）。 */
+export const clearOutstandingLogin = (): void => {
+    outstandingLoginPromise = undefined;
+};
+
 export const logout = async (helper: InfoHelper): Promise<void> => {
     if (!helper.mocked()) {
         helper.userId = "";

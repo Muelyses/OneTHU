@@ -540,24 +540,33 @@ async function hasLiveSnapshot(): Promise<boolean> {
 
 /** boot 恢复失败时的静默重登（记住密码）：成功 true；无存档/需 2FA/失败 false。
  *  显式登出后无会话快照 → 不触发，保证「退出登录」不被自动顶掉。 */
-export async function trySilentRelogin(): Promise<boolean> {
-  if (!(await hasLiveSnapshot())) return false;
+export async function trySilentRelogin(): Promise<
+  { ok: true } | { ok: false; twoFactor?: { username: string; password: string; methods: TwoFactorMethod[] } }
+> {
+  if (!(await hasLiveSnapshot())) return { ok: false };
   const remembered = await loadRemembered();
   if (!remembered) {
     await logLine("SILENT-RELOGIN skip: 无记住的密码").catch(() => undefined);
-    return false;
+    return { ok: false };
   }
   try {
     const result = await login(remembered.username, remembered.password, { remember: true });
     if (result.state === "ready") {
       await logLine("SILENT-RELOGIN ok").catch(() => undefined);
-      return true;
+           return { ok: true };
     }
     await logLine("SILENT-RELOGIN need-2fa").catch(() => undefined);
-    return false;
+    return {
+      ok: false,
+      twoFactor: {
+        username: remembered.username,
+        password: remembered.password,
+        methods: result.methods,
+      },
+    };
   } catch (err) {
     await logLine("SILENT-RELOGIN fail " + String(err)).catch(() => undefined);
-    return false;
+    return { ok: false };
   }
 }
 

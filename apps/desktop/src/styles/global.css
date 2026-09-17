@@ -4148,6 +4148,33 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   background: var(--surface-1);
   color: var(--text-1);
 }
+.thos-note {
+  margin: 2px 0 var(--gap-3);
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--text-3) 7%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.thos-note .thos-note-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--text-2);
+}
+.thos-note .thos-note-tag {
+  flex: none;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-3) 14%, transparent);
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
 .thos-partial {
   color: var(--text-3);
   font-size: 12px;

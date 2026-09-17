@@ -1950,11 +1950,24 @@ export class InfoClient {
     });
     const location = res.headers.get("location") ?? "";
     if (res.status >= 300 && res.status < 400 && location) {
-      return this.#consumeIdTicketUrl(location, action);
+      const confirmed = await this.#consumeIdTicketUrl(location, action);
+      if (confirmed) {
+        // checkSingle 兑付的只是 id 单点确认票（id 上下文），不是目标服务的
+        // CAS 票——确认完成后必须回头重新 GET 服务表单走 SSO 快路径，才能
+        // 拿到真服务票完成兑付。此前直接返回 ok=true，调用方探针必失败且
+        // 每次重试都空转（"会话未能建立（现场: checkSingle ok=true）"难恢复
+        // 的根因，2026-09-17 实录）。
+        return await this.#roamIdTicket(formUrlEff);
+      }
+      return false;
     }
     const html = await res.text().catch(() => "");
     const anchor = /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(html)?.[1];
-    if (anchor) return this.#consumeIdTicketUrl(anchor, action);
+    if (anchor) {
+      const confirmed = await this.#consumeIdTicketUrl(anchor, action);
+      if (confirmed) return await this.#roamIdTicket(formUrlEff);
+      return false;
+    }
     this.lastDebug = `checkSingle status=${res.status} loc=${location.slice(0, 80)} resp=${html.slice(0, 140).replace(/\s+/g, " ")}`;
     return false;
   }

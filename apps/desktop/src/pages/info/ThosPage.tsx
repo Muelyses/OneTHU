@@ -258,12 +258,16 @@ export function ThosPage() {
           <Empty text="演示模式：8888 账号的在线服务数据为虚构，官方页动作已禁用。" />
         </Card>
       ) : null}
-      <Card>
-        <div className="dim" style={{ fontSize: 12.5, lineHeight: 1.7, padding: "6px 2px" }}>
-          <div>· 首次选择服务：自动填充账号密码后跳转到服务大厅，可在服务大厅选择业务。</div>
-          <div>· 后续在本页面选择服务：自动跳转到对应服务，无需再经服务大厅。</div>
+      <div className="thos-note">
+        <div className="thos-note-row">
+          <span className="thos-note-tag">首次</span>
+          <span>自动填充账号密码登录，随后进入服务大厅，可在大厅里选择业务。</span>
         </div>
-      </Card>
+        <div className="thos-note-row">
+          <span className="thos-note-tag">之后</span>
+          <span>点选服务直接跳转对应页面，不再经过服务大厅。</span>
+        </div>
+      </div>
       <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
         {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
         {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>

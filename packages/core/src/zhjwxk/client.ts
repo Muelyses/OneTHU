@@ -192,14 +192,16 @@ async function ensure(
     // → 解析炸「无法从登录页获取 SM2 公钥」→ 选课整模块红条。浏览器靠 JS 自动
     // POST 它；手动兑付：POST checkSingle → 跟 302/锚点票据 → 重走 xklogin 落地。
     let csRounds = 0;
-    while (/checkSingle/.test(html) && csRounds < 2) {
+    while (/checkSingle/.test(html) && csRounds < 3) {
       csRounds += 1;
       // 2026-09-13 桶一致修复：去掉 direct:true——webvpn 模式下表单链在 webvpn 桶
       // 建立会话，POST 却送直连桶 cookie（空/脏）→ id 不认识 → gb2312 错误页。
       // 跟随传输模式：webvpn=包装桶，直连=直连桶（PUBLIC_HOSTS 含 id 自动直连）。
       const res = await http.request(`${ID_PREFIX}/do/off/ui/auth/login/checkSingle`, {
         method: "POST",
-        body: new URLSearchParams({ i_rememberme: "on", fingerPrint: s.fingerprint, fingerGenPrint: "", fingerGenPrint3: "" }),
+        // fingerGenPrint 必须带 finger3（持久化指纹；2026-09-17 桌面实录：传空
+      // 确认不生效 → 每轮重新弹 checkSingle → 2 轮耗尽 → 公钥解析假报错）
+      body: new URLSearchParams({ i_rememberme: "on", fingerPrint: s.fingerprint, fingerGenPrint: s.finger3 ?? "", fingerGenPrint3: s.finger3 ?? "" }),
         headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
         redirect: "manual",
       });

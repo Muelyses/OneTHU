@@ -192,22 +192,14 @@ async function ensure(
     // → 解析炸「无法从登录页获取 SM2 公钥」→ 选课整模块红条。浏览器靠 JS 自动
     // POST 它；手动兑付：POST checkSingle → 跟 302/锚点票据 → 重走 xklogin 落地。
     let csRounds = 0;
-    while (/checkSingle/.test(html) && csRounds < 1) {
-      // 只确认一轮：反复 POST checkSingle 会把 id 会话彻底搞死（2026-09-17
-      // 18:18 全局会话死+全服务红实录）；兑付失败即退出走表单链/报错。
-
+    while (/checkSingle/.test(html) && csRounds < 2) {
       csRounds += 1;
       // 2026-09-13 桶一致修复：去掉 direct:true——webvpn 模式下表单链在 webvpn 桶
       // 建立会话，POST 却送直连桶 cookie（空/脏）→ id 不认识 → gb2312 错误页。
       // 跟随传输模式：webvpn=包装桶，直连=直连桶（PUBLIC_HOSTS 含 id 自动直连）。
-      // 2026-09-17 定案：checkSingle 确认走【主会话 http】——隔离 jar 只拷了
-      // 少量 id cookie，残缺会话确认出的票天然无效（兑付 200 拒、ticket 永不
-      // 消费、循环空转，桌面实录）。id 确认 = 主会话的事。
-      const res = await s.http.request(`${ID_PREFIX}/do/off/ui/auth/login/checkSingle`, {
+      const res = await http.request(`${ID_PREFIX}/do/off/ui/auth/login/checkSingle`, {
         method: "POST",
-        // fingerGenPrint 必须带 finger3（持久化指纹；2026-09-17 桌面实录：传空
-      // 确认不生效 → 每轮重新弹 checkSingle → 2 轮耗尽 → 公钥解析假报错）
-      body: new URLSearchParams({ i_rememberme: "on", fingerPrint: s.fingerprint, fingerGenPrint: s.finger3 ?? "", fingerGenPrint3: s.finger3 ?? "" }),
+        body: new URLSearchParams({ i_rememberme: "on", fingerPrint: s.fingerprint, fingerGenPrint: "", fingerGenPrint3: "" }),
         headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
         redirect: "manual",
       });
@@ -217,35 +209,8 @@ async function ensure(
       zhjwxkDebug?.(`[XK-CHECKSINGLE] st=${res.status} loc=${loc.slice(0, 80)} target=${target.slice(0, 90)}`);
       if (!target) break;   // 无票据可兑付：走表单链
       const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
-      // 兑付现场（此前 catch 吞错——票从未消费、循环空转全靠猜，2026-09-17 桌面实录）
-      const tgtResp = await s.http.text(tgt).catch((e) => `ERR:${String(e).slice(0, 120)}`);
-      const t = String(tgtResp);
-      const title = /<title>([^<]*)<\/title>/i.exec(t)?.[1] ?? "(无title)";
-      zhjwxkDebug?.(`[XK-CONSUME] tgt=${tgt.slice(0, 90)} title=${title.slice(0, 40)} len=${t.length} feature=${(t.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 90))}`);
-      // 教务会话 cookie 落在主 jar：拷进隔离罐，xklogin 探测继续走隔离通道
-      try {
-        const zUrl = new URL(ZHJWXK + "/");
-        for (const c of s.http.jar.getCookies(zUrl)) {
-          http.jar.setRaw(zUrl, `${c.name}=${c.value}; Path=/`);
-        }
-      } catch { /* 拷贝失败不阻断 */ }
-      // RELOGIN 也走主 jar：隔离 jar 的 id cookie 是拷贝时的旧快照（半死态），
-      // 用它探测 xklogin 会让 id 再弹 checkSingle——两 jar 会话不同步 = 死循环
-      // 的真正机制（2026-09-17 现场实锤）。主 jar 会话健康 → xklogin 直达选课页。
-      html = await s.http.text(ZHJWXK + "/xklogin.do");
-      zhjwxkDebug?.(`[XK-RELOGIN] ${/checkSingle/.test(html) ? "仍checkSingle" : "非checkSingle"} len=${html.length} head=${html.slice(0, 90).replace(/\s+/g, " ")}`);
-      if (/checkSingle/.test(html)) {
-        // 确认+兑付一轮后仍 checkSingle = id 会话卡死在"待确认"态（pending 票
-        // 永不消费，确认 POST 无法解除——ticket=pm8EK 恒定不变实锤）。唯一出路：
-        // 清两 jar 的 id/oauth 会话强制回到全新登录表单，走账密直登重置会话
-        //（"刚打开时可以"正是无残留上下文的状态）。
-        zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
-        for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
-          try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
-        }
-        html = await s.http.text(ID_PREFIX + "/do/off/ui/auth/login/index");
-        zhjwxkDebug?.(`[XK-REFRESH] ${/sm2publicKey/.test(html) ? "全新表单✓" : "仍异常"} len=${html.length}`);
-      }
+      await http.text(tgt).catch(() => {});   // 兑付票据（失败不阻断：回落表单链）
+      html = await http.text(ZHJWXK + "/xklogin.do");
     }
     const form = parseCasFormHtml(html, true);
     const enc = encryptPassword(s.password, form.publicKey);

@@ -13,6 +13,8 @@ tauri-build = { version = "2", features = [] }
 cc = "1"
 
 [dependencies]
+jni = "0.21"
+
 encoding_rs = "0.8"
 tauri = { version = "2", features = ["devtools"] }
 # 外链走系统浏览器：webview 内 window.open/<a target=_blank> 均无效

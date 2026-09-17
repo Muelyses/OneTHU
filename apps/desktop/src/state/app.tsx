@@ -15,6 +15,7 @@ export type Page =
   | "life" // 生活聚合页（宿舍电费/订水 · 洗衣机 · 校园卡）
   | "reserve" // 预约（图书馆座位；游泳/健身房等场馆陆续接入）
   | "zhjwxk" // 选课系统（已选课程 / 候补队列；不可拆分原子）
+  | "thos" // 在线服务（THOS 服务大厅原生化：事项列表 + 服务目录）
   | "mail" // 邮箱（IMAP 收 / SMTP 发，复用云日历凭据）
   | "cloud" // 清华云盘（Seafile Web API）
   | "folder" // 用户收藏夹页（navParams.folderId 指向具体收藏夹）
@@ -103,7 +104,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "info", "life", "reserve", "zhjwxk", "plugins", "folder", "settings"] as const; // trace 漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "info", "life", "reserve", "zhjwxk", "thos", "plugins", "folder", "settings"] as const; // trace 漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /** 子页归属的一级页（侧栏高亮 / hash 用） */
 export function topLevelPage(p: Page): Page {

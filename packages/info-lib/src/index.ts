@@ -138,7 +138,10 @@ import {
 } from "./lib/network";
 import {getScoreByCourseId} from "./lib/thos";
 import {prepareThosSession, getThosTasks, getThosServices} from "./lib/thos-services";
-import type {ThosTaskKind} from "./models/home/thos-services";
+import {routeThosUrl, THOS_BASE} from "./lib/thos-services";
+export {routeThosUrl, THOS_BASE};
+import type {ThosCounts, ThosPage, ThosService, ThosTask, ThosTaskKind} from "./models/home/thos-services";
+export type {ThosCounts, ThosPage, ThosService, ThosTask, ThosTaskKind};
 import {
     canRechargeCampusCard,
     cardCancelLoss, cardChangeTransactionPassword,

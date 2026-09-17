@@ -2702,6 +2702,7 @@ dependencies = [
  "cookie_store",
  "encoding_rs",
  "imap",
+ "jni",
  "lettre",
  "mail-parser",
  "onethu-harness-core",

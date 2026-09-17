@@ -950,6 +950,11 @@ fn build_native_client() -> reqwest::Client {
     reqwest::Client::builder()
         .cookie_provider(std::sync::Arc::clone(&*NATIVE_JAR_ARC))
         .redirect(reqwest::redirect::Policy::none())
+        // UA 必须与主 webview（tauri.conf.json windows[].userAgent）完全一致：
+        // wengine webvpn 会话票绑定 UA 指纹，rust 与 webview 不一致时票被判无效
+        // → THOS portal webview 打开即跳登录页（上游 thu-info-app 同构问题，
+        // 它用 lib USER_AGENT 常量喂 RN WebView userAgent 解决）。
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36")
         // 同 http_request：清华域直连，绕系统代理
         .no_proxy()
         .build()
@@ -972,7 +977,10 @@ static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<reqwest::Client>> =
 /// 要把每一跳的 Set-Cookie（含中间跳）按 (所在跳URL, 原始行) 回传 TS——
 /// Rust 原生仓与 TS jar 两套 cookie 世界的桥（TS 侧按真实域分桶入账）。
 #[tauri::command]
-async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
+async fn http_native(
+    app: tauri::AppHandle,
+    input: HttpInput,
+) -> Result<HttpOutput, String> {
     let method: reqwest::Method = input
         .method
         .to_uppercase()
@@ -999,6 +1007,31 @@ async fn http_native(input: HttpInput) -> Result<HttpOutput, String> {
     let mut final_set_cookies: Vec<String> = Vec::new();
     let mut final_body: Vec<u8> = Vec::new();
     let mut final_url = url.to_string();
+
+    // webvpn 单会话权威化（消灭 rust↔webview 互踢战争）：webview 的
+    // CookieManager 是 webvpn 会话唯一持有者（内嵌 THOS portal 用它导航），
+    // rust 每次请求前把它的票播种进原生仓——rust 全程"借用" webview 会话，
+    // 自己不再登录 webvpn → logoutByOther 不再发生。上游 RN 网络层与
+    // WebView 共享平台 CookieManager 的等价物（wry android cookies_for_url
+    // 走 CookieManager.getCookie JNI，读方向已实现）。
+    #[cfg(target_os = "android")]
+    if url.host_str().unwrap_or("").contains("webvpn.tsinghua") {
+        if let Some(wv) = app.get_webview_window("main") {
+            match wv.cookies_for_url(url.clone()) {
+                Ok(cookies) if !cookies.is_empty() => {
+                    let jar = &*NATIVE_JAR_ARC;
+                    let mut n = 0;
+                    for c in &cookies {
+                        let line = format!("{}={}", c.name(), c.value());
+                        jar.seed_line(url.as_str(), &line);
+                        n += 1;
+                    }
+                    let _ = n;
+                }
+                _ => {}
+            }
+        }
+    }
 
     for _hop in 0..=25u32 {
         let client = NATIVE_CLIENT.read().unwrap().clone();
@@ -1128,6 +1161,352 @@ fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
         NATIVE_JAR_ARC.seed_line(&url, l);
     }
     Ok(())
+}
+
+/// JNI 诊断辅助：当前线程名（不炸线程，失败返回 ?）
+#[cfg(target_os = "android")]
+fn thread_name(env: &mut jni::JNIEnv) -> String {
+    use jni::objects::JString;
+    let tc = match env.find_class("java/lang/Thread") {
+        Ok(c) => c,
+        Err(_) => return "?".into(),
+    };
+    let cur = match env.call_static_method(tc, "currentThread", "()Ljava/lang/Thread;", &[]) {
+        Ok(v) => v,
+        Err(_) => return "?".into(),
+    };
+    let cur = match cur.l() {
+        Ok(o) => o,
+        Err(_) => return "?".into(),
+    };
+    let nm = match env.call_method(&cur, "getName", "()Ljava/lang/String;", &[]) {
+        Ok(v) => v,
+        Err(_) => return "?".into(),
+    };
+    let nm = match nm.l() {
+        Ok(o) => o,
+        Err(_) => return "?".into(),
+    };
+    let js = JString::from(nm);
+    env.get_string(&js)
+        .map(|cs| cs.to_string_lossy().to_string())
+        .unwrap_or_else(|_| "?".into())
+}
+
+/// JNI 诊断辅助：当前 pending 异常的 toString（调用方先 exception_check）
+#[cfg(target_os = "android")]
+fn throwable_to_string(env: &mut jni::JNIEnv) -> String {
+    use jni::objects::JString;
+    let t = match env.exception_occurred() {
+        Ok(t) => t,
+        Err(_) => return "?".into(),
+    };
+    let _ = env.exception_clear();
+    let m = match env.call_method(&t, "toString", "()Ljava/lang/String;", &[]) {
+        Ok(v) => v,
+        Err(_) => return "?".into(),
+    };
+    let m = match m.l() {
+        Ok(o) => o,
+        Err(_) => return "?".into(),
+    };
+    let js = JString::from(m);
+    env.get_string(&js)
+        .map(|cs| cs.to_string_lossy().to_string())
+        .unwrap_or_else(|_| "?".into())
+}
+
+/// probe 当前 webview 页面：href + 是否 wengine 登录壳（页面含 OAUTH 字样）
+#[cfg(target_os = "android")]
+async fn webview_probe(webview: &tauri::Webview) -> Option<String> {
+    let (tx, rx) = tokio::sync::oneshot::channel::<String>();
+    let tx = std::sync::Arc::new(std::sync::Mutex::new(Some(tx)));
+    let tx2 = tx.clone();
+    let probe = r#"JSON.stringify({h: location.href, l: !!(document.body && document.body.innerText && document.body.innerText.indexOf('OAUTH') >= 0)})"#;
+    webview
+        .eval_with_callback(probe, move |v| {
+            if let Ok(mut g) = tx2.lock() {
+                if let Some(t) = g.take() {
+                    let _ = t.send(v);
+                }
+            }
+        })
+        .ok()?;
+    tokio::time::timeout(std::time::Duration::from_millis(700), rx)
+        .await
+        .ok()?
+        .ok()
+}
+
+/// id OAuth 表单自动填表脚本（open_eid_window 同款：页面自带 SM2 + submitForm）
+#[cfg(target_os = "android")]
+fn eid_fill_script(username: &str, password: &str) -> String {
+    format!(
+        r#"(function() {{
+  try {{
+    if (window.__ONETHU_EID_DONE) return;
+    function fill() {{
+      var u = document.getElementById("username");
+      var p = document.getElementById("password");
+      if (!u || !p) return;
+      window.__ONETHU_EID_DONE = true;
+      function setv(el, v) {{
+        var d = Object.getOwnPropertyDescriptor(el.__proto__, "value");
+        d && d.set ? d.set.call(el, v) : (el.value = v);
+        el.dispatchEvent(new Event("input", {{ bubbles: true }}));
+        el.dispatchEvent(new Event("change", {{ bubbles: true }}));
+      }}
+      setv(u, {u:?});
+      setv(p, {p:?});
+      var cap = document.getElementById("i_code");
+      var capBox = cap && cap.offsetParent !== null;
+      if (!capBox) {{
+        setTimeout(function() {{
+          var b = document.querySelector("button[onclick*='submitForm']");
+          b && b.click();
+        }}, 400);
+      }}
+    }}
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fill);
+    else fill();
+    setTimeout(fill, 1200);
+  }} catch (e) {{}}
+}})();"#,
+        u = username,
+        p = password
+    )
+}
+
+/// ── 在线服务（THOS）内嵌官方页：rust 仓 cookie → 系统 WebView CookieManager ──
+/// wry 0.55 的 set_cookie 在 Android 是空壳（Unsupported），只能走 JNI 直调
+/// android.webkit.CookieManager.setCookie（tauri Webview::jni_handle 提供
+/// webview 线程的 JNIEnv + WebView 对象，见 tauri 2.11 webview/mod.rs:2359）。
+/// 注入后 webview 加载 webvpn/thos URL 即带完整会话——用户零二次登录，
+/// 与上游 thu-info-app #950（RN WebView 共享平台 CookieManager）同构。
+#[tauri::command]
+async fn thos_open_portal(
+    app: tauri::AppHandle,
+    webview: tauri::Webview,
+    url: String,
+    username: String,
+    password: String,
+) -> Result<(), String> {
+    // 1) 从原生仓收集三大域的未过期 cookie。
+    //    注意：不能用 c.domain() 过滤——host-only cookie（服务器 Set-Cookie 不带
+    //    Domain 属性，wengine_vpn_ticket 正是）的 domain() 返回 None，会全军覆没。
+    //    用 CookieStore::matches(url)（RFC6265 域+路径匹配，host-only 也正确命中）。
+    let seeds: Vec<(String, String)> = {
+        let jar = NATIVE_JAR_ARC.0.read().unwrap();
+        let mut out: Vec<(String, String)> = Vec::new();
+        for base in [
+            "https://webvpn.tsinghua.edu.cn/",
+            "https://thos.tsinghua.edu.cn/",
+            "https://id.tsinghua.edu.cn/",
+        ] {
+            let u: url::Url = base.parse().map_err(|e| format!("base url: {e}"))?;
+            let header = jar
+                .matches(&u)
+                .iter()
+                .map(|c| format!("{}={}", c.name(), c.value()))
+                .collect::<Vec<_>>()
+                .join("; ");
+            if !header.is_empty() {
+                out.push((base.to_string(), header));
+            }
+        }
+        out
+    };
+    if seeds.is_empty() {
+        return Err("本机会话为空：请先在 OneTHU 登录再打开在线服务".into());
+    }
+
+    // 2) 注入 + 导航（Android）：纯 JS 方案——JNI CookieManagerAdapter 的
+    //    setCookie 签名在华为新版 chromium glue 里已变（NoSuchMethodError
+    //    实锤），改用 webview eval 在目标 origin 的 document 上写
+    //    document.cookie（脚本写非 httpOnly 会话票合法且服务器照常受理，
+    //    与上游 RN「WebView 与网络层共享平台 cookie」目标同构）。
+    #[cfg(target_os = "android")]
+    {
+        let (seed_host, seed_header) = {
+            // 目标 URL 的域决定在哪个 origin 种 cookie（webvpn 模式=webvpn 域，
+            // 直连模式=thos 域）；webvpn 域优先级最高——全程代理域
+            let u = url::Url::parse(&url).map_err(|e| format!("target url: {e}"))?;
+            let host = u.host_str().unwrap_or("").to_string();
+            let base = format!("https://{host}/");
+            match seeds.iter().find(|(b, _)| b.contains(&host)) {
+                Some((b, h)) => (b.clone(), h.clone()),
+                None => (base, String::new()),
+            }
+        };
+        if seed_header.is_empty() {
+            return Err("本机无该域会话票：请先在 OneTHU 内打开一次在线服务列表".into());
+        }
+
+        // 2a) 第一跳：wengine-vpn/cookie 端点（wengine 自有路径，不被 auth
+        //     filter 重定向 → 200 直达 webvpn origin，拿到可写 document.cookie
+        //     的同源 document）。直接跳域根会被甩到 id OAuth form（probe 实锤）。
+        let land_url = format!(
+            "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=thos.tsinghua.edu.cn&scheme=https&path=%2F"
+        );
+        webview
+            .eval(&format!("location.href = {:?}", land_url))
+            .map_err(|e| format!("导航落点: {e}"))?;
+
+        // 2b) 域驱动注入循环：webview 无票时 webvpn 会把 OAuth 链甩到
+        //     id.tsinghua.edu.cn（probe 实锤：auth/login/form 页）。策略 =
+        //     probe 当前 document 的域 → 把仓里该域的会话票种上去（幂等）→
+        //     reload 让请求带票重来 → id 有票则 302 回 webvpn callback →
+        //     webvpn 票落地 → 继续前进，直到落在目标域。
+        let extract_host = |v: &str| -> String {
+            // v 形如 {"h":"https://id.x/y","r":"complete"}——取 h 值里 scheme://host
+            if let Some(p) = v.find("https://") {
+                let rest = &v[p + 8..];
+                let end = rest.find('"').unwrap_or(rest.len());
+                rest[..end].split('/').next().unwrap_or("").to_string()
+            } else {
+                String::new()
+            }
+        };
+        let target_host = url::Url::parse(&url)
+            .ok()
+            .and_then(|u| u.host_str().map(|h| h.to_string()))
+            .unwrap_or_default();
+        let mut seeded_host = String::new();
+        let mut landed = false;
+        for round in 0..30 {
+            tokio::time::sleep(std::time::Duration::from_millis(400)).await;
+            let (tx, rx) = tokio::sync::oneshot::channel::<String>();
+            let probe = r#"JSON.stringify({h: location.href, r: document.readyState})"#;
+            let tx = std::sync::Arc::new(std::sync::Mutex::new(Some(tx)));
+            let tx2 = tx.clone();
+            if webview
+                .eval_with_callback(probe, move |v| {
+                    if let Ok(mut g) = tx2.lock() {
+                        if let Some(t) = g.take() {
+                            let _ = t.send(v);
+                        }
+                    }
+                })
+                .is_err()
+            {
+                continue;
+            }
+            let v = match tokio::time::timeout(std::time::Duration::from_millis(350), rx).await {
+                Ok(Ok(v)) => v,
+                _ => {
+                    if round < 4 {
+                        println!("[THOS-SEED] probe#{round}: <无回调/超时>");
+                    }
+                    continue;
+                }
+            };
+            if round < 6 {
+                println!("[THOS-SEED] probe#{round}: {}", v.chars().take(150).collect::<String>());
+            }
+            let cur_host = extract_host(&v);
+            // webvpn 域：种 rust 仓的会话票（一次），让后续导航全部带票
+            // （必须先于 landed 判断——wengine 落点页本身就在 webvpn 域，
+            //  先 landed 会直接 break 导致种票永不执行）
+            if cur_host.contains("webvpn.tsinghua") && seeded_host != cur_host {
+                let hdr = seeds
+                    .iter()
+                    .find(|(b, _)| b.contains("webvpn.tsinghua"))
+                    .map(|(_, h)| h.clone());
+                if let Some(hdr) = hdr {
+                    let mut inject = String::from("(function(){try{");
+                    for pair in hdr.split("; ") {
+                        inject.push_str(&format!(
+                            "document.cookie={:?};",
+                            format!("{pair}; Path=/")
+                        ));
+                    }
+                    inject.push_str("}catch(e){}})()");
+                    webview.eval(&inject).ok();
+                    seeded_host = cur_host.clone();
+                    println!("[THOS-SEED] 已种 webvpn 会话票（{} 条）", hdr.split("; ").count());
+                    // 落点页本身不需要前进；直接进入 3) 强跳目标
+                    break;
+                }
+            }
+            // id 域无持久会话票（上游 roam("id") 每次都重新 SM2 POST）——种票
+            // 无效（实测 probe#2-5 停在 form 页）。正确做法 = open_eid_window
+            // 同款自动填表：页面自带 SM2 加密 + submitForm，填值+点击即可，链
+            // 自动前进（id → thu-oauth callback → webvpn 票落地 webview）。
+            if cur_host.contains("id.tsinghua") {
+                let eid = eid_fill_script(&username, &password);
+                if seeded_host != cur_host {
+                    println!("[THOS-SEED] id 表单页 → 注入 EID 自动填表");
+                    seeded_host = cur_host.clone();
+                }
+                webview.eval(&eid).ok();
+                continue;
+            }
+            // webvpn 域票由链的 Set-Cookie 自动落地 webview；落在 webvpn 但仍
+            // 非目标页时靠循环末尾的强跳重试（幂等）
+        }
+        println!("[THOS-SEED] 域循环结束 landed={landed}");
+
+        // 3) 门户会话确认：种票后 wengine 可能还要一轮续签（真机实录：种票直跳
+        //    目标会撞登录壳，退出去第二次点就成功——说明第一次链路中票已落地，
+        //    只是强跳抢跑了）。先开门户，登录壳则自动点 OAUTH → id 表单 EID
+        //    自动填 → 链回门户，通过后再跳目标。
+        webview
+            .eval("location.href = \"https://webvpn.tsinghua.edu.cn/\"")
+            .ok();
+        let mut portal_ok = false;
+        for round in 0..40 {
+            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+            let v = match webview_probe(&webview).await {
+                Some(v) => v,
+                None => continue,
+            };
+            let href = extract_host(&v);
+            let is_login = v.contains(r#"\"l\":true"#) || v.contains("\"l\":true");
+            if round < 8 {
+                println!(
+                    "[THOS-SEED] portal#{round}: {} login={is_login}",
+                    v.chars().take(120).collect::<String>()
+                );
+            }
+            if href.contains("id.tsinghua") {
+                // id OAuth 表单：EID 自动填表兜底（同域循环逻辑）
+                let eid = eid_fill_script(&username, &password);
+                webview.eval(&eid).ok();
+                continue;
+            }
+            if is_login {
+                // wengine 登录壳：自动点 OAUTH 统一身份认证登录按钮
+                let click = r#"(function(){var bs=document.querySelectorAll('button,a,div[onclick],input[type=button],span');for(var i=0;i<bs.length;i++){if((bs[i].innerText||'').indexOf('OAUTH')>=0){bs[i].click();return 'clicked'}}return 'no-btn'})()"#;
+                webview.eval(click).ok();
+                continue;
+            }
+            if href.contains("webvpn.tsinghua") {
+                portal_ok = true;
+                break;
+            }
+        }
+        println!("[THOS-SEED] 门户确认 portal_ok={portal_ok}");
+
+        // 3.5) 会话没通过：不把用户撂在登录壳——退回 app 让用户重试一次
+        //      （webvpn 单会话互踢所致：第一次点击链路已把票落地 webview，
+        //      第二次点击必过——把"退出去再点一下"自动化）
+        if !portal_ok {
+            webview.eval("history.back()").ok();
+            return Err("在线服务会话建立超时（webvpn 单会话互踢），请再点一次".into());
+        }
+
+        // 4) 带会话进目标页
+        webview
+            .eval(&format!("location.href = {}", serde_json::to_string(&url).unwrap_or_default()))
+            .map_err(|e| format!("导航目标: {e}"))?;
+        println!("[THOS-SEED] 会话链完成 → {url}");
+        Ok(())
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = &webview;
+        crate::open_external(app, url)
+    }
 }
 
 #[tauri::command]
@@ -1613,6 +1992,7 @@ tauri::Builder::default()
         })
         .invoke_handler(tauri::generate_handler![
             http_native_clear_cookies,
+            thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
             open_external,open_eid_window,open_sports_window,venue_sso_set,

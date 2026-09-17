@@ -4117,3 +4117,108 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   background: var(--primary);
   vertical-align: 1px;
 }
+
+/* ── 在线服务（THOS，上游 5774b4a9 移植）── */
+.thos-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.thos-tabs button {
+  border: 1px solid var(--surface-3);
+  background: var(--surface-2);
+  color: var(--text-1);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.thos-tabs button.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.thos-search {
+  width: 100%;
+  border: 1px solid var(--surface-3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 4px 0 12px;
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+.thos-partial {
+  color: var(--text-3);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.thos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+.thos-service-card .row {
+  align-items: center;
+}
+.thos-service-open {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--text-1);
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  font: inherit;
+}
+.thos-service-open:hover strong {
+  color: var(--primary);
+}
+.thos-fav {
+  font-size: 18px;
+  line-height: 1;
+  padding: 6px 8px;
+}
+.thos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.thos-task-open {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.thos-task-open:disabled {
+  cursor: default;
+}
+.thos-task-open .row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.thos-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.thos-progress-bar {
+  flex: 1;
+  max-width: 320px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  overflow: hidden;
+  display: inline-block;
+}
+.thos-progress-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}

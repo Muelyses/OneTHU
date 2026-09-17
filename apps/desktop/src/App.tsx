@@ -26,6 +26,7 @@ import { OtherInfoPage } from "./pages/OtherInfoPage.js";
 import { InfoPage } from "./pages/info/InfoPage.js";
 import { LifePage } from "./pages/info/LifePage.js";
 import { ReservePage } from "./pages/info/ReservePage.js";
+import { ThosPage } from "./pages/info/ThosPage.js";
 import { ZhjwxkCoursesPage } from "./pages/zhjwxk/Courses.js";
 import { FolderPage } from "./pages/FolderPage.js";
 import { AppProvider } from "./state/app.js";
@@ -89,6 +90,7 @@ function Routed() {
         {page === "info" && <InfoPage />}
         {page === "life" && <LifePage />}
         {page === "reserve" && <ReservePage />}
+        {page === "thos" && <ThosPage />}
         {page === "zhjwxk" && <ZhjwxkCoursesPage />}
         {page === "folder" && <FolderPage />}
         {page === "settings" && <SettingsPage />}

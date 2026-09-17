@@ -3,7 +3,7 @@ import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, ty
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type Page } from "../state/app.js";
-import { IconChevron, IconDemo, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPlug, IconSchedule, IconSettings, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconTrace, IconMail, IconCloud,} from "./Icons.js";
+import { IconChevron, IconDemo, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPlug, IconSchedule, IconSettings, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud,} from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { showToast } from "../state/toast.js";
 import { checkUpdateSilently } from "../lib/update.js";
@@ -24,6 +24,7 @@ const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> 
   { page: "life", label: "生活", icon: IconCard },
   { page: "reserve", label: "预约", icon: IconCalendar },
   { page: "zhjwxk", label: "选课", icon: IconXk },
+  { page: "thos", label: "在线服务", icon: IconThos },
   { page: "otherinfo", label: "其他 Info 应用", icon: IconExternal },
 ];
 

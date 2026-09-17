@@ -167,6 +167,16 @@ export const IconXk = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** 在线服务（THOS 服务大厅）：四格服务窗格 */
+export const IconThos = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="4" y="4" width="6.6" height="6.6" rx="1.4" />
+    <rect x="13.4" y="4" width="6.6" height="6.6" rx="1.4" />
+    <rect x="4" y="13.4" width="6.6" height="6.6" rx="1.4" />
+    <path d="M16.7 13.9v5.6M13.9 16.7h5.6" />
+  </svg>
+);
+
 export const IconInfo = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <rect x="3" y="4.5" width="18" height="15" rx="2" />
@@ -232,6 +242,7 @@ export const FOLDER_ICONS: Record<string, (p: SVGProps<SVGSVGElement>) => ReactE
   refresh: IconRefresh,
   external: IconExternal,
   xk: IconXk,
+  thos: IconThos,
   download: IconDownload,
   inbox: IconIn,
 };

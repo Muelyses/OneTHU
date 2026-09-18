@@ -10,6 +10,7 @@ import { useApp } from "../state/context.js";
 import { CollectStar } from "../components/Collect.js";
 import { enc } from "../state/atoms.js";
 import { useLearnData } from "../state/data.js";
+import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { fmtRemindOffset, setHwDefault, useHwDefault } from "../state/hwRemind.js";
 import { HwRemindPop, semesterText } from "./learn/shared.js";
 
@@ -65,14 +66,18 @@ export function LearnPage() {
     void reload();
   }, [wantedSemester, data, reload]);
 
+  // 外部作业（雨课堂/TUOJ/Tyche）与学期无关，全量计入「未交作业」；未配置凭据时 extHw 恒为空（零回归）
+  const ext = useExternalHomework();
+  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+
   const stats = useMemo(() => {
-    const hw = data?.homework ?? [];
+    const hw = [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted);
     return {
-      unfinished: hw.filter((h) => !h.submitted).length,
+      unfinished: hw.length,
       notifications: (data?.notifications ?? []).length,
       files: (data?.files ?? []).length,
     };
-  }, [data]);
+  }, [data, extHw]);
 
   const courseStats = useMemo(() => {
     const m = new Map<string, { hw: number; notices: number; files: number }>();

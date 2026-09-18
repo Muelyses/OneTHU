@@ -73,6 +73,9 @@ export const PUBLIC_DIRECT_HOSTS = new Set([
   "webvpn.tsinghua.edu.cn",
   "id.tsinghua.edu.cn",
   "oauth.tsinghua.edu.cn",
+  // TUOJ（ai.tuoj.thusaac.com）是公网域，清华统一认证漫游与后续只读拉取一律直连，
+  // 绝不能经 webvpn 包装（2026-09-18 TUOJ CAS 接入）
+  "ai.tuoj.thusaac.com",
   // ⚠ seat.lib.tsinghua.edu.cn 故意不在名单：webvpn 模式下座位系统全链（callback/
   //   home/book）必须同走包装通道；2026-09-07 实测加白名单反而通道分裂连累记录页。
   // card 退出直连（2026-09-06 真机实录）：oauth lbredirect 兑票落点恒为 webvpn

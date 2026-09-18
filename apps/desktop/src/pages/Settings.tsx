@@ -1,6 +1,7 @@
 declare const __APP_VERSION__: string;
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import { Card, PageHead, SectionHead } from "../components/Layout.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -24,6 +25,8 @@ import {
   isDismissed, dismissTag, type ReleaseInfo,
 } from "../lib/update.js";
 import { runProbeMatrix, type ProbeResult } from "./probe.js";
+import { ensureExtHwCredsLoaded, extHwLogin, saveExtHwCreds, refreshExtHw, useExternalHomework } from "../state/exthw.js";
+import type { ExtHwCreds, YktQrPhase } from "@onethu/core";
 
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
@@ -374,6 +377,9 @@ export function SettingsPage() {
           </div>
         )}
       </Card>
+      <SectionHead title="外部作业源" />
+      <ExtHwSection />
+
       <SectionHead title="首页" />
       <Card>
         <div className="setting-row">
@@ -490,7 +496,7 @@ export function SettingsPage() {
             <div className="setting-title">记住的密码</div>
             <div className="setting-desc">
               {hasSaved
-                ? "已在本机保存（混淆存储，应用数据目录，非明文）；刷新/重启后自动登录。"
+                ? "已在本机保存；刷新/重启后自动登录。"
                 : "未保存。登录页勾选「记住密码」即可启用。"}
             </div>
           </div>
@@ -502,6 +508,419 @@ export function SettingsPage() {
         </div>
       </Card>
     </>
+  );
+}
+
+/* ── 外部作业源（雨课堂 / TUOJ / Tyche）── */
+function ExtHwSection() {
+  const ext = useExternalHomework();
+  const [yktPhone, setYktPhone] = useState("");
+  const [yktCode, setYktCode] = useState("");
+  const [yktCookie, setYktCookie] = useState("");
+  const [yktQrOpen, setYktQrOpen] = useState(false);
+  const [yktSmsOpen, setYktSmsOpen] = useState(false);
+  const [tuojUser, setTuojUser] = useState("");
+  const [tuojPwd, setTuojPwd] = useState("");
+  const [tuojCookie, setTuojCookie] = useState("");
+  const [tuojVia, setTuojVia] = useState<"cas" | "password" | undefined>(undefined);
+  const [tuojPwdOpen, setTuojPwdOpen] = useState(false);
+  const [tycheUser, setTycheUser] = useState("");
+  const [tychePwd, setTychePwd] = useState("");
+  const [tycheCookie, setTycheCookie] = useState("");
+  const [days, setDays] = useState("30");
+  const [advanced, setAdvanced] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  // 凭据在 localStorage 里是密文：首次挂载异步解密后回填表单
+  useEffect(() => {
+    let alive = true;
+    void ensureExtHwCredsLoaded().then((c) => {
+      if (!alive) return;
+      setYktPhone(c.yuketang?.phone ?? "");
+      setYktCookie(c.yuketang?.cookie ?? "");
+      setTuojUser(c.tuoj?.username ?? "");
+      setTuojCookie(c.tuoj?.cookie ?? "");
+      setTuojVia(c.tuoj?.via);
+      setTycheUser(c.tyche?.username ?? "");
+      setTycheCookie(c.tyche?.cookie ?? "");
+      setDays(String(c.days ?? 30));
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
+
+  /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用） */
+  const credsWith = (o: { ykt?: string; tuoj?: string; tuojVia?: "cas" | "password"; tyche?: string } = {}): ExtHwCreds => {
+    const yk = (o.ykt ?? yktCookie).trim();
+    const tj = (o.tuoj ?? tuojCookie).trim();
+    const tc = (o.tyche ?? tycheCookie).trim();
+    return {
+      yuketang: yk ? { cookie: yk, phone: yktPhone.trim() || undefined } : undefined,
+      tuoj: tj ? { cookie: tj, username: tuojUser.trim() || undefined, via: o.tuojVia ?? tuojVia } : undefined,
+      tyche: tc ? { cookie: tc, username: tycheUser.trim() || undefined } : undefined,
+      days: Math.max(1, Number(days) || 30),
+    };
+  };
+
+  const onSave = () => {
+    void saveExtHwCreds(credsWith()).then(() => setMsg("已保存到本机。"));
+  };
+
+  const onRefresh = () => {
+    setBusy("refresh");
+    setMsg(null);
+    void saveExtHwCreds(credsWith())
+      .then(() => refreshExtHw())
+      .then(() => setMsg("刷新完成。"))
+      .catch((e: unknown) => setMsg(`刷新失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onYktSend = () => {
+    setBusy("ykt-send");
+    setMsg(null);
+    void extHwLogin
+      .yuketangSendSms(yktPhone)
+      .then(() => setMsg("验证码已发送，请查收短信（若收不到，可能被风控拦截）。"))
+      .catch((e: unknown) => setMsg(`发送验证码失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onYktLogin = () => {
+    setBusy("ykt-login");
+    setMsg(null);
+    void extHwLogin
+      .yuketangVerify(yktPhone, yktCode)
+      .then(async (r) => {
+        setYktCookie(r.cookie);
+        setYktCode("");
+        await saveExtHwCreds(credsWith({ ykt: r.cookie }));
+        setMsg("雨课堂登录成功，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`雨课堂登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /** TUOJ 主路径：清华统一认证漫游（零凭据） */
+  const onTuojCasLogin = () => {
+    setBusy("tuoj-cas");
+    setMsg(null);
+    void extHwLogin
+      .tuojCas()
+      .then(async (r) => {
+        setTuojCookie(r.cookie);
+        setTuojVia("cas");
+        await saveExtHwCreds(credsWith({ tuoj: r.cookie, tuojVia: "cas" }));
+        setMsg("TUOJ 已通过清华统一认证登录，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`TUOJ 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onTuojLogin = () => {
+    setBusy("tuoj-login");
+    setMsg(null);
+    void extHwLogin
+      .tuoj(tuojUser, tuojPwd)
+      .then(async (r) => {
+        setTuojCookie(r.cookie);
+        setTuojVia("password");
+        setTuojPwd("");
+        await saveExtHwCreds(credsWith({ tuoj: r.cookie, tuojVia: "password" }));
+        setMsg("TUOJ 登录成功，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`TUOJ 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onTycheLogin = () => {
+    setBusy("tyche-login");
+    setMsg(null);
+    void extHwLogin
+      .tyche(tycheUser, tychePwd)
+      .then(async (r) => {
+        setTycheCookie(r.cookie);
+        setTychePwd("");
+        await saveExtHwCreds(credsWith({ tyche: r.cookie }));
+        setMsg("Tyche 登录成功，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`Tyche 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const srcRows: Array<{ id: "yuketang" | "tuoj" | "tyche"; label: string; logged: boolean }> = [
+    { id: "yuketang", label: "雨课堂", logged: Boolean(yktCookie.trim()) },
+    { id: "tuoj", label: "TUOJ", logged: Boolean(tuojCookie.trim()) },
+    { id: "tyche", label: "Tyche", logged: Boolean(tycheCookie.trim()) },
+  ];
+  const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--mono, monospace)", fontSize: 12 } as const;
+  const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
+
+  return (
+    <Card>
+      <div className="setting-row" style={{ alignItems: "flex-start" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="setting-title">外部作业源</div>
+          <div className="setting-desc">
+            把雨课堂 / TUOJ / Tyche 的作业 DDL 合并到「全部作业」与「今日」。只读拉取（标题 + 课程 +
+            截止时间），不提交、不抓题目。用各平台账号登录即可，凭据以 AES-GCM 加盐混淆后存本机
+            localStorage。
+          </div>
+
+          <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
+            {/* 雨课堂：主路径 = 微信 / 雨豆APP 扫码；短信为折叠备选 */}
+            <div>
+              <div className="setting-title" style={{ fontSize: 13 }}>
+                雨课堂 <span className="setting-desc" style={{ display: "inline" }}>（微信 / 雨豆APP 扫码）</span>
+              </div>
+              <div style={fieldStyle}>
+                <button className="btn btn-primary" disabled={busy !== null} onClick={() => setYktQrOpen((v) => !v)}>
+                  {yktQrOpen ? "收起扫码登录" : "微信扫码登录"}
+                </button>
+                <span className="setting-desc" style={{ alignSelf: "center" }}>
+                  {yktQrOpen ? "打开微信或雨豆APP 扫描二维码" : yktCookie.trim() ? "已登录" : "未登录"}
+                </span>
+              </div>
+              {yktQrOpen ? (
+                <YktQrPanel
+                  onCancel={() => setYktQrOpen(false)}
+                  onSuccess={(cookie) => {
+                    setYktCookie(cookie);
+                    setYktQrOpen(false);
+                    void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
+                      setMsg("雨课堂扫码登录成功，已保存。");
+                      void refreshExtHw();
+                    });
+                  }}
+                />
+              ) : null}
+              <div>
+                <button className="btn btn-ghost" style={{ padding: "2px 0", marginTop: 4 }} onClick={() => setYktSmsOpen((v) => !v)}>
+                  {yktSmsOpen ? "▾" : "▸"} 备选：手机号 + 短信验证码
+                </button>
+                {yktSmsOpen ? (
+                  <>
+                    <div style={fieldStyle}>
+                      <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="tel" placeholder="手机号" value={yktPhone} onChange={(e) => setYktPhone(e.target.value.trim())} />
+                      <button className="btn" disabled={busy !== null || !yktPhone.trim()} onClick={onYktSend}>
+                        {busy === "ykt-send" ? "发送中…" : "发送验证码"}
+                      </button>
+                    </div>
+                    <div style={fieldStyle}>
+                      <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={yktCode} onChange={(e) => setYktCode(e.target.value.trim())} />
+                      <button className="btn btn-primary" disabled={busy !== null || !yktPhone.trim() || !yktCode.trim()} onClick={onYktLogin}>
+                        {busy === "ykt-login" ? "登录中…" : "登录"}
+                      </button>
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            </div>
+
+            {/* TUOJ：主路径 = 清华统一认证漫游（一键，零凭据）；账号密码为折叠备选 */}
+            <div>
+              <div className="setting-title" style={{ fontSize: 13 }}>
+                TUOJ <span className="setting-desc" style={{ display: "inline" }}>（清华统一认证，一键登录）</span>
+              </div>
+              <div style={fieldStyle}>
+                <button className="btn btn-primary" disabled={busy !== null} onClick={onTuojCasLogin}>
+                  {busy === "tuoj-cas" ? "登录中…" : "用清华统一认证登录"}
+                </button>
+                <span className="setting-desc" style={{ alignSelf: "center" }}>
+                  {tuojCookie.trim()
+                    ? `已登录${tuojVia === "cas" ? "（统一认证）" : "（账号密码）"}`
+                    : "未登录"}
+                </span>
+              </div>
+              <div>
+                <button
+                  className="btn btn-ghost"
+                  style={{ padding: "2px 0", marginTop: 4 }}
+                  onClick={() => setTuojPwdOpen((v) => !v)}
+                >
+                  {tuojPwdOpen ? "▾" : "▸"} 备选：TUOJ 账号密码登录
+                </button>
+                {tuojPwdOpen ? (
+                  <div style={fieldStyle}>
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tuojUser} onChange={(e) => setTuojUser(e.target.value.trim())} />
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tuojPwd} onChange={(e) => setTuojPwd(e.target.value)} />
+                    <button className="btn" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={onTuojLogin}>
+                      {busy === "tuoj-login" ? "登录中…" : "登录"}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Tyche：用户名 + 密码 */}
+            <div>
+              <div className="setting-title" style={{ fontSize: 13 }}>
+                Tyche <span className="setting-desc" style={{ display: "inline" }}>（用户名 + 密码；校内或 sslvpn，勿用 webvpn）</span>
+              </div>
+              <div style={fieldStyle}>
+                <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tycheUser} onChange={(e) => setTycheUser(e.target.value.trim())} />
+                <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tychePwd} onChange={(e) => setTychePwd(e.target.value)} />
+                <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
+                  {busy === "tyche-login" ? "登录中…" : "登录"}
+                </button>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="setting-title" style={{ fontSize: 13 }}>只保留未来</span>
+              <input className="input" style={{ width: 80 }} inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value.replace(/[^0-9]/g, ""))} />
+              <span className="setting-desc">天（已过期的仍显示）</span>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button className="btn btn-primary" onClick={onSave}>保存</button>
+              <button className="btn" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>
+                {busy === "refresh" || ext.state === "loading" ? "刷新中…" : "立即刷新"}
+              </button>
+            </div>
+
+            {/* 高级：手动粘贴 Cookie（一般用户用不到） */}
+            <div>
+              <button className="btn btn-ghost" style={{ padding: "2px 0" }} onClick={() => setAdvanced((v) => !v)}>
+                {advanced ? "▾" : "▸"} 高级：手动粘贴 Cookie
+              </button>
+              {advanced ? (
+                <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
+                  <textarea className="input" style={taStyle} placeholder="雨课堂 Cookie（sessionid / csrftoken / uv_id …）" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
+                  <textarea className="input" style={taStyle} placeholder="TUOJ Cookie（session / session.sig）" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
+                  <textarea className="input" style={taStyle} placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(e) => setTycheCookie(e.target.value)} />
+                  <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点上方「保存」生效。</div>
+                </div>
+              ) : null}
+            </div>
+
+            <div style={{ display: "grid", gap: 4 }}>
+              {srcRows.map(({ id, label, logged }) => {
+                const count = ext.items.filter((it) => it.source === id).length;
+                const err = ext.errors[id];
+                return (
+                  <div key={id} style={{ fontSize: 13, color: "var(--text-2)" }}>
+                    {label}：{logged ? "已登录" : "未登录"} · {err ? <span style={{ color: "var(--danger, #c04848)" }}>错误 · {err}</span> : `${count} 条`}
+                  </div>
+                );
+              })}
+              {msg ? <div style={{ fontSize: 13, color: "var(--text-2)" }}>{msg}</div> : null}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* ── 雨课堂扫码登录面板（微信 / 雨豆APP）── */
+function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string) => void; onCancel: () => void }) {
+  const [qr, setQr] = useState<{ qrContent: string; expireAt: number } | null>(null);
+  const [status, setStatus] = useState<"loading" | "waiting" | "expired" | "error">("loading");
+  const [err, setErr] = useState<string | null>(null);
+  const [nonce, setNonce] = useState(0);
+  const runId = useRef(0);
+  // onSuccess 由父组件内联传入、每次渲染都会变 —— 用 ref 固定，避免 effect 反复重启
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
+
+  useEffect(() => {
+    const id = ++runId.current;
+    const ctrl = new AbortController();
+    setStatus("loading");
+    setErr(null);
+    setQr(null);
+    void extHwLogin
+      .yuketangQr({
+        signal: ctrl.signal,
+        onPhase: (p: YktQrPhase) => {
+          if (id !== runId.current) return;
+          if (p.phase === "qr") {
+            setQr({ qrContent: p.qrContent, expireAt: p.expireAt });
+            setStatus("waiting");
+          } else if (p.phase === "expired") {
+            setStatus("expired");
+          }
+        },
+      })
+      .then((r) => {
+        if (id !== runId.current || r.aborted) return;
+        if (r.done && r.cookie) {
+          onSuccessRef.current(r.cookie);
+          return;
+        }
+        setStatus("error");
+        setErr(r.message ?? "登录未完成");
+      });
+    return () => {
+      // 卸载 / 刷新 / 取消：中止长轮询，不留悬挂请求
+      ctrl.abort();
+    };
+  }, [nonce]);
+
+  const statusText =
+    status === "loading"
+      ? "正在获取二维码…"
+      : status === "expired"
+        ? "二维码已过期，正在刷新…"
+        : status === "error"
+          ? null
+          : "请用微信或雨豆APP 扫描二维码";
+
+  return (
+    <div
+      style={{
+        marginTop: 10,
+        padding: 12,
+        border: "1px solid var(--border, #e5e5e5)",
+        borderRadius: 10,
+        background: "var(--bg-2, rgba(0,0,0,0.02))",
+      }}
+    >
+      <div style={{ textAlign: "center" }}>
+        {qr ? (
+          <div style={{ background: "#fff", display: "inline-block", padding: 10, borderRadius: 10 }}>
+            <QRCodeSVG value={qr.qrContent} size={176} level="M" />
+          </div>
+        ) : (
+          <div
+            style={{
+              width: 196,
+              height: 196,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "#fff",
+              borderRadius: 10,
+              color: "var(--text-2)",
+            }}
+          >
+            {status === "error" ? "—" : "加载中…"}
+          </div>
+        )}
+        {statusText ? <div style={{ fontSize: 13, marginTop: 8 }}>{statusText}</div> : null}
+        {qr && status === "waiting" ? (
+          <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>二维码约 5 分钟有效，过期自动刷新</div>
+        ) : null}
+        {err ? <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
+      </div>
+      <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
+        <button className="btn" onClick={() => setNonce((n) => n + 1)}>
+          刷新二维码
+        </button>
+        <button className="btn btn-ghost" onClick={onCancel}>
+          取消
+        </button>
+      </div>
+    </div>
   );
 }
 

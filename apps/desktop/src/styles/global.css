@@ -255,6 +255,23 @@
 
 .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
 
+/* 外部作业来源徽标（雨课堂 / TUOJ / Tyche）：标题旁的小灰标签 */
+.src-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  margin-right: 6px;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 500;
+  vertical-align: 1px;
+  flex: none;
+}
+
 /* ---------- 统计卡 ---------- */
 
 /* 统计卡网格：1fr = minmax(auto,1fr)，内容一宽就撑破容器把页面顶出横向滚动
@@ -492,6 +509,12 @@
   font-size: var(--text-xs);
   line-height: 18px;
 }
+
+/* 外部作业源引导横幅（复用 browser-hint 的 amber 底）：右侧放跳转 / 关闭按钮 */
+.ext-hw-hint { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ext-hw-hint-text { flex: 1 1 260px; min-width: 0; }
+.ext-hw-hint .btn-ghost { color: var(--amber); }
+.ext-hw-hint .btn-ghost:hover { background: color-mix(in srgb, var(--amber) 14%, transparent); color: var(--amber); }
 
 .login-error {
   padding: 9px 12px;

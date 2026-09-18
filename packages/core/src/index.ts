@@ -195,6 +195,11 @@ export { VenueClient, VenueAuthRequiredError, VenueApiError, VENUE_BASE, fmtVenu
 export { md5hex, buildVenueSign, venueSignQuery, VENUE_APP_ID, VENUE_SIGN_KEY } from "./venue/sign.js";
 export type { VenueBuilding, VenueDevKind, VenueSameLevel, VenueScene, VenueSession, VenueSite, VenueRecord, VenueUser } from "./venue/types.js";
 
+/* 外部作业源（雨课堂 / TUOJ / Tyche）—— 只读拉取，凭据由宿主注入 */
+export * as exthw from "./exthw/index.js";
+export { createExternalSources, SOURCE_NAMES, yuketangSendSmsCode, yuketangVerifyLogin, tuojLogin, tuojRoam, TuojCasError, tycheLogin, captureCookies, yuketangBuildCookie, yuketangQrStart, yuketangQrPoll, runYuketangQrLogin } from "./exthw/index.js";
+export type { ExternalHomework, ExtHwCreds, ExtHwSourceId, ExtHwLoginResult, HomeworkSource, CreateExternalSourcesDeps, TuojRoamResult, YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } from "./exthw/index.js";
+
 // 日程云同步（CalDAV / iCalendar）
 export * as caldav from "./caldav/index.js";
 export { CalDavClient, CalDavError } from "./caldav/client.js";

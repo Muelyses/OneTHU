@@ -332,10 +332,15 @@ async function ensure(
   // 一张即清空 pending，重放的 xklogin 就能拿到直达 302（16:03 实录：两轮
   // 重放全烧在中转页上，兑付链断）
   if (attempt < 2 && /用户电子身份服务系统/.test(html)) {
-    const hop = [...html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>/gi)]
+    const aLinks = [...html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>/gi)]
       .map((m) => m[1])
-      .filter((x): x is string => !!x)
-      .find((a) => /ticket=/.test(a));
+      .filter((x): x is string => !!x);
+    // id 中转页的跳转除 <a> 外还有 JS location / meta refresh（16:48 实录：
+    // 页内无 <a> ticket 锚点，兑付链断在 JS 跳转上）
+    const jsLoc =
+      /(?:location\.href|location\.replace|window\.location)\s*=\s*["']([^"']+)["']/.exec(html)?.[1] ??
+      /<meta[^>]+http-equiv=["']refresh["'][^>]+url=([^"'>]+)/i.exec(html)?.[1];
+    const hop = aLinks.find((a) => /ticket=/.test(a)) ?? (jsLoc && /ticket=/.test(jsLoc) ? jsLoc : undefined);
     if (hop) {
       let t = hop.startsWith("http") ? hop : new URL(hop, ID_PREFIX).toString();
       if (t.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
@@ -405,11 +410,10 @@ async function proxyZhjwxkApi(s: ZhjwxkSession, entry: ZhjwxkEntry, zhjwxkPath: 
   }
   // 乐观自愈（dormPage 同构）：jar 会话真死 → 静默重走登录链并重试一次，用户无感；
   // 重试仍死则原样返回，由 assertNotDenied 抛 AuthRequiredError 走 softRecover/看门狗链。
-  // 合流护栏：60 秒内已有别的请求重登过（entry 缓存即新鲜），不再删缓存起新链——
-  // 并发数据路同时弹回时各自重登纯属浪费且易互相踩。原 8s：落地成功 10s 后
-  // 缓存过期 → 新请求重走全套 id 流程 → 风暴重启（16:33 实录：14.3s 落地成功、
-  // 24.9s 又死结）。60s 内死页由 isXkDeadHtml 静默重登兜底，不靠频繁重 ensure。
-  if (Date.now() - lastXkReloginAt > 60_000) entryCache.delete(s);
+  // 合流护栏：60s 内重登成功过（缓存存在且新鲜）→ 不删缓存防风暴；【失败场景
+  // 无缓存，必须放行重试】——16:33 实录 5s 后第三路救回靠的就是重试，60s
+  // 无条件护栏曾把这条救回路挡死（16:48 失败后无人再试）。3s 失败冷却挡风暴。
+  if (entryCache.get(s) && Date.now() - lastXkReloginAt > 60_000) entryCache.delete(s);
   await ensure(s);
   const retried = await xkHttp(s).text(ZHJWXK + zhjwxkPath);
   entry.at = Date.now();

@@ -203,9 +203,11 @@ async function ensure(
       // 2026-09-13 桶一致修复：去掉 direct:true——webvpn 模式下表单链在 webvpn 桶
       // 建立会话，POST 却送直连桶 cookie（空/脏）→ id 不认识 → gb2312 错误页。
       // 跟随传输模式：webvpn=包装桶，直连=直连桶（PUBLIC_HOSTS 含 id 自动直连）。
+      zhjwxkDebug?.(`[XK-CHECKSINGLE] 指纹现场 fp=${s.fingerprint?.length ?? 0} f3=${s.finger3?.length ?? 0}`);
       const res = await http.request(`${ID_PREFIX}/do/off/ui/auth/login/checkSingle`, {
         method: "POST",
-        body: new URLSearchParams({ i_rememberme: "on", fingerPrint: s.fingerprint, fingerGenPrint: "", fingerGenPrint3: "" }),
+        // 受信 finger3：传空 = 确认永不被接受（pending 票恒不消费 → 死结）
+        body: new URLSearchParams({ i_rememberme: "on", fingerPrint: s.fingerprint, fingerGenPrint: s.finger3 ?? "", fingerGenPrint3: s.finger3 ?? "" }),
         headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
         redirect: "manual",
       });
@@ -263,8 +265,9 @@ async function ensure(
       i_pass: enc,
       sm2pass: enc,
       fingerPrint: s.fingerprint,
-      fingerGenPrint: "",
-      fingerGenPrint3: "",
+      // 受信 finger3（登录时持久化）：传空 = id 判新设备 → 2FA/会话怪态
+      fingerGenPrint: s.finger3 ?? "",
+      fingerGenPrint3: s.finger3 ?? "",
       i_captcha: "",
     });
     // 同上桶一致修复：check 跟随传输模式（原 direct:true 在 webvpn 模式送空桶

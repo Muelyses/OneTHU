@@ -16,9 +16,9 @@ import {
   type SessionData,
   type TwoFactorMethod,
 } from "@onethu/core";
-import { universalFetch, nativeFetch, nativeSeedCookies, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
+import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
 import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
-import { setWebvpnLog, setZhjwxkDebug } from "@onethu/core";
+import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear } from "@onethu/core";
 
 export type { TwoFactorMethod };
 
@@ -169,6 +169,7 @@ void (async () => {
 })();
 
 setZhjwxkDebug((line) => void logLine(line));
+setZhjwxkNativeClear(nativeCookieClear);
 setWebvpnLog((line) => void logLine(line));
 
 // 逐跳 cookie 供应：包装 URL 解码出真实域（wrapped id 跳带 id 桶会话、wrapped zhjw

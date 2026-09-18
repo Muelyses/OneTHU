@@ -35,6 +35,12 @@ const ZHJWXK = "http://zhjwxk.cic.tsinghua.edu.cn";
 
 /** 调试钩子（桌面端接 /tmp/onethu-debug.log）：zhjwxk 页面抓取现场 */
 let zhjwxkDebug: ((line: string) => void) | null = null;
+/** 原生 cookie 仓清空钩子（desktop 注入 http_native_clear_cookies；rust 仓与
+ *  TS jar 双轨，只清 TS jar 时 rust 仍按旧 cookie 认出上下文——死结清不动的根因） */
+let nativeCookieClearHook: (() => Promise<void>) | null = null;
+export function setZhjwxkNativeClear(fn: () => Promise<void>): void {
+  nativeCookieClearHook = fn;
+}
 export function setZhjwxkDebug(fn: (line: string) => void): void {
   zhjwxkDebug = fn;
 }
@@ -217,6 +223,7 @@ async function ensure(
         // 强制回到全新登录表单，走账密直登重置会话（直登带受信 finger3，不触发
         // 2FA——传空指纹才是 2FA 根因）。
         zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
+        try { await nativeCookieClearHook?.(); } catch { /* 钩子未注入/失败不阻断 */ }
         for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
           try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
         }

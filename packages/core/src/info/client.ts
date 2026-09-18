@@ -471,6 +471,9 @@ export class InfoClient {
       // 跳过重漫游，JSONP 恒吐登录页 → 永远撞同一死会话。置 false 让重试真正
       // 重漫游（roam 幂等；仅当后续有 zhjw 操作时才多一次请求）。
       this.#zhjwRoamed = false;
+      // 用户实录「放一会突然会好」：renew 后立即重试会撞上 id/learn 的会话
+      // 建立窗口（选课自愈刚清过仓时尤甚）——缓冲 2.5s 再试，让会话稳下来
+      await new Promise<void>((r) => setTimeout(r, 2500));
       const out = await op();
       lastCampusOkAt = Date.now();
       return out;

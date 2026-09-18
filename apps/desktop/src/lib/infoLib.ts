@@ -297,7 +297,21 @@ export async function libSend2FA(type: string): Promise<void> {
     r(type as "wechat" | "mobile" | "totp");
     return;
   }
-  void log("2FA 方式已选定（重复发送忽略）: " + type);
+  // resolver 为空 = 用户手里的 UI 挂在已死的旧链上（keepalive 的 libEnsure
+  // Session 在僵尸 settle 后抢起新链）——照 libVerify2FA 的自愈：重启链并
+  // 自动应答方式选择，用户这次点击直接生效（码正常发出）
+  void log("2FA 方式选定但链已死 → 自动重启链并应答: " + type);
+  const username = inflight?.username ?? "";
+  const password = inflight?.password ?? "";
+  if (!username || !password) {
+    void log("2FA 重启失败：无内存凭据");
+    return;
+  }
+  const { p, methodsPromise } = startLoginRaw(username, password);
+  void methodsPromise.then(() => {
+    resolveMethod?.(type as "wechat" | "mobile" | "totp");
+  });
+  void p.catch(() => undefined);
 }
 
 ''/** 提交验证码（+是否信任设备）。lib 链在此续完：VERITY → SAVE_FINGER → 落地 → roam-id。

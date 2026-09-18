@@ -248,13 +248,28 @@ async function ensure(
         // 清仓前抢救健康域票据（webvpn/learn）：rust clear 是全清，全清会让
         // webvpn 票陪葬 → 日程/各页集体无票爆掉，逐页自愈转圈才恢复（2026-09-18
         // 实录）。死结只在 id/oauth 域——健康票救回、只重建死域。
+        // 全量快照抢救：id/oauth 外全部保命。原按 webvpn/learn 根 URL 捞会漏掉
+        // path 限定的 wengine app-host 票（Path=/http/<hash>/ 不是根路径前缀，
+        // getCookies(根) 捞不到）→ 清后包装请求无票 → 引导壳（「教务返回异常页」，
+        // 强制刷新实录）
         const rescue: Array<[string, string]> = [];
-        for (const dom of ["https://webvpn.tsinghua.edu.cn/", "https://learn.tsinghua.edu.cn/"]) {
-          try {
-            for (const c of s.http.jar.getCookies(new URL(dom))) {
-              rescue.push([dom, `${c.name}=${c.value}`]);
-            }
-          } catch { /* 忽略 */ }
+        try {
+          const snap = JSON.parse(s.http.jar.serialize() || "[]") as Array<{ domain?: string; path?: string; name?: string; value?: string }>;
+          for (const c of snap) {
+            if (!c.domain || !c.name || !c.value) continue;
+            if (/id\.tsinghua|oauth\.tsinghua/.test(c.domain)) continue; // 死域不救
+            const physical = `https://${c.domain.replace(/^\./, "")}${c.path || "/"}`;
+            rescue.push([physical, `${c.name}=${c.value}`]);
+          }
+        } catch { /* 快照失败退回旧粒度 */ }
+        if (rescue.length === 0) {
+          for (const dom of ["https://webvpn.tsinghua.edu.cn/", "https://learn.tsinghua.edu.cn/"]) {
+            try {
+              for (const c of s.http.jar.getCookies(new URL(dom))) {
+                rescue.push([dom, `${c.name}=${c.value}`]);
+              }
+            } catch { /* 忽略 */ }
+          }
         }
         try { await nativeCookieClearHook?.(); } catch { /* 钩子未注入/失败不阻断 */ }
         for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {

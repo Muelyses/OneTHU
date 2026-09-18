@@ -327,8 +327,12 @@ export async function login(
     if (r.state === "ready") {
       session.username = username;
       session.state = "ready";
-      // SAVE_FINGER 可能新发受信凭据；没有则保留旧值
-      session.finger3 = session.finger3; // 新版 lib 无 fingerGenPrint
+      // SAVE_FINGER 可能新发受信凭据；没有则保留旧值（lib 链写 helper.fingerGenPrint）
+      {
+        const { helper } = await import("./infoLib.js");
+        const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+        session.finger3 = fresh || session.finger3 || "";
+      }
       session.injectCredentials(username, password);
       await persist();
       await logLine("LOGIN-OK (lib 链，单管线)");
@@ -389,8 +393,14 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
   try {
     await libVerify2FA(type, code, trust);
     session.state = "ready";
-    // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘
-    session.finger3 = session.finger3; // 新版 lib 无 fingerGenPrint
+    // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘：
+    // lib 链写入 helper.fingerGenPrint（infoLib 392 注释），此前自赋值空转
+    // → session.finger3 恒空 → checkSingle 确认传空 → 死结（2026-09-18 实录 f3=0）
+    {
+      const { helper } = await import("./infoLib.js");
+      const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+      session.finger3 = fresh || session.finger3 || "";
+    }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
     await logLine("VERIFY-OK (lib 链完成)");

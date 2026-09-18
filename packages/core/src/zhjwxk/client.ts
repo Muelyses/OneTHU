@@ -286,10 +286,12 @@ async function ensure(
     // 过期票排前面），抓第一个 = 烧在别的服务的死票上 → 两次重试全废 → 报错
     // （15:58 实录：第1次 learn 票落 id 页、第2次 oauth 票落门户页，隔离通道
     // 才救回——UI 已红条）。过滤后一步兑付正主票。
-    const anchors = [...checkHtml.matchAll(/<a[^>]+href="([^"]+)"/gi)].map((m) => m[1]);
-    const anchor = anchors.find((a) => /zhjwxk|j_acegi/.test(a)) ?? anchors[0];
+    const anchors = [...checkHtml.matchAll(/<a[^>]+href="([^"]+)"/gi)]
+      .map((m) => m[1])
+      .filter((x): x is string => !!x);
+    const anchor = anchors.find((a) => /zhjwxk|j_acegi/.test(a));
     if (anchor) {
-      let target = anchor.startsWith("http") ? anchor : new URL(anchor, ID_PREFIX).toString();
+      let target = (anchor.startsWith("http") ? anchor : new URL(anchor, ID_PREFIX).toString()) as string;
       // id 锚点是 https://zhjwxk...（直连或 /https/ 包装），但 zhjwxk 是 http 应用
       //（引导页 __vpn_app_protocol_data="http"）：/https/ 包装会让 wengine 代理到
       // 443 → "访问内容不存在"（票据白烧、会话建不成）。按真实协议改写后兑付。

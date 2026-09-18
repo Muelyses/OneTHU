@@ -315,7 +315,14 @@ export async function login(
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
   const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
-  const fingerprint = await currentFingerprint();
+  let fingerprint = await currentFingerprint();
+  // 死锁破解（2026-09-18）：设备 fp 已被 id 信任 → 免 2FA → 永不签发 finger3；
+  // finger3 空 → checkSingle 确认/直登全传空 → 死结复发。唯一出路：轮换 fp
+  // 强制 id 走一次 2FA，用户选信任 → SAVE_FINGER 签发 finger3 落盘。一次性。
+  if (await store.loadSession().then((sv) => !sv?.finger3).catch(() => false)) {
+    fingerprint = makeFingerprint();
+    await logLine("FINGER3 空 → 设备指纹轮换（本轮登录将触发 2FA，请选信任设备）").catch(() => undefined);
+  }
   const remember = opts.remember ?? true;
   pendingSecret = { username, password, remember };
   if (!remember) await clearRemembered().catch(() => undefined);
@@ -331,10 +338,7 @@ export async function login(
       {
         const { helper, libEnsureTrustFingerprint } = await import("./infoLib.js");
         let fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
-        if (!fresh && !session.finger3) {
-          // 直登（无 2FA）路径 lib 不签发 finger3：主动补签，否则确认/直登永远空指纹
-          fresh = await libEnsureTrustFingerprint(fingerprint);
-        }
+        if (!fresh) fresh = await libEnsureTrustFingerprint(fingerprint).catch(() => "");
         session.finger3 = fresh || session.finger3 || "";
         await logLine(`FINGER3 ${fresh ? "新签发" : session.finger3 ? "沿用旧值" : "仍为空"} len=${session.finger3.length}`).catch(() => undefined);
       }

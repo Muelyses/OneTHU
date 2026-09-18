@@ -652,6 +652,9 @@ function xkSession(): ZhjwxkSession {
     // 需求锁死在本模块内，不污染全局会话桶（seedJar 拆条事故定案）
     xkSessionSingleton = { http, username: c.username, password: c.password, fingerprint: c.fingerprint, isoFetch: nativeFetch as unknown as typeof universalFetch, finger3: session.finger3 };
   }
+  // finger3 动态取最新：单例在旧登录时创建、值拷贝定死——verify 后落盘的新
+  // finger3 传不进选课（15:53 落盘 len=32 而 15:54 选课 f3=0 实录）
+  xkSessionSingleton.finger3 = session.finger3 || xkSessionSingleton.finger3;
   return xkSessionSingleton;
 }
 

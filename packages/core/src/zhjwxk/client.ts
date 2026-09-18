@@ -56,7 +56,8 @@ export interface ZhjwxkSession {
    *  选课的多域 cookie 需求只能在自己罐子里满足，爆炸半径锁死本模块）。 */
   readonly isoFetch?: (url: string, init?: RequestInit) => Promise<Response>;
   /** 受信设备三段指纹（demoLogin 免 2FA 用；缺省时隔离通道可能被要求 2FA */
-  readonly finger3?: string;
+  /** 可更新：desktop 侧 verify 签发后动态刷新（单例值拷贝会定死旧空值） */
+  finger3?: string;
 }
 
 /** 已选课程（demo /api/courses 的 courses 项，字段一一对应） */

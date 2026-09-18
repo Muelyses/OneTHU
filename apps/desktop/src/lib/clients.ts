@@ -329,9 +329,14 @@ export async function login(
       session.state = "ready";
       // SAVE_FINGER 可能新发受信凭据；没有则保留旧值（lib 链写 helper.fingerGenPrint）
       {
-        const { helper } = await import("./infoLib.js");
-        const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+        const { helper, libEnsureTrustFingerprint } = await import("./infoLib.js");
+        let fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+        if (!fresh && !session.finger3) {
+          // 直登（无 2FA）路径 lib 不签发 finger3：主动补签，否则确认/直登永远空指纹
+          fresh = await libEnsureTrustFingerprint(fingerprint);
+        }
         session.finger3 = fresh || session.finger3 || "";
+        await logLine(`FINGER3 ${fresh ? "新签发" : session.finger3 ? "沿用旧值" : "仍为空"} len=${session.finger3.length}`).catch(() => undefined);
       }
       session.injectCredentials(username, password);
       await persist();

@@ -17,6 +17,7 @@ import { nativeFetch, nativeCookieClear } from "./transport.js";
 import { markLoginAttempt, loginCooldownLeftMs, consumeLoginFailedPublicKey } from "./loginGate.js";
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
+const SAVE_FINGER_URL = "https://id.tsinghua.edu.cn/b/doubleAuth/personal/saveFinger";
 import { InfoHelper, roam } from "@onethu/info-lib";
 import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
 
@@ -226,6 +227,23 @@ export type LibLoginResult =
   | { state: "need-2fa"; methods: TwoFactorMethod[] };
 
 /** 登录：ready 或 need-2fa（lib 链挂起等待 futures；verify2FA 续完） */
+/** 直登（无 2FA）路径的受信凭据补签：lib 只在 2FA 链里做 SAVE_FINGER，
+ *  直登 ready 永远不签发 → session.finger3 恒空 → checkSingle 确认传空 →
+ *  id 死结（2026-09-18 f3=0 实录）。登录成功后主动补一次 SAVE_FINGER。 */
+export async function libEnsureTrustFingerprint(fingerprint: string): Promise<string> {
+  try {
+    const res = await nativeFetch(SAVE_FINGER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fingerprint, deviceName: "OneTHU", radioVal: "是" }),
+    });
+    const j = JSON.parse(await res.text()) as { result?: string; object?: unknown };
+    return j?.result === "success" && typeof j.object === "string" && j.object !== "[object Object]" ? j.object : "";
+  } catch {
+    return "";
+  }
+}
+
 export async function libLogin(
   username: string,
   password: string,
@@ -238,6 +256,11 @@ export async function libLogin(
   // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
   await nativeCookieClear().catch(() => undefined);
   helper.fingerprint = fingerprint || makeFingerprint();
+  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER——接 pendingTrust
+  (helper as unknown as { trustFingerprintHook?: () => Promise<boolean> }).trustFingerprintHook =
+    async () => pendingTrust;
+  (helper as unknown as { trustFingerprintNameHook?: () => Promise<string> }).trustFingerprintNameHook =
+    async () => "OneTHU";
   // 被封锁检测：上一轮登录以「public key」失败 = 落地封锁页（2026-09-17 实录：
   // id 按会话 cookie 封设备，同 IP 无 cookie 客户端正常）→ 清原生仓换新身份
   if (consumeLoginFailedPublicKey()) {

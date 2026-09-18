@@ -220,7 +220,9 @@ async function ensure(
         for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
           try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
         }
-        html = await s.http.text(ID_PREFIX + "/do/off/ui/auth/login/index");
+        // 正确的登录表单 URL（cas.ts CAS_LOGIN_FORM，带 form hash；/index 是
+        // 不存在的路径 → Tomcat 500 Error report → parseCasFormHtml 假报结构变更）
+        html = await s.http.text(ID_PREFIX + "/do/off/ui/auth/login/form/bb5df85216504820be7bba2b0ae1535b/0");
         zhjwxkDebug?.(`[XK-REFRESH] ${/sm2publicKey/.test(html) ? "全新表单✓" : "仍异常"} len=${html.length}`);
       }
     }

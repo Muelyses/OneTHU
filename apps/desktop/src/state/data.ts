@@ -1356,6 +1356,9 @@ export function useXkWorkbench(): XkWorkbench {
   }, []);
 
   refreshVolRef.current = refreshVol;
+  // 搜索落地失败的自动重试入口（failSearch 引用）
+  const refreshRef = useRef<((fresh?: boolean) => Promise<void>) | null>(null);
+  refreshRef.current = refresh as unknown as (fresh?: boolean) => Promise<void>;
   const [searchState, setSearchState] = useState<DataState | "idle" | "loadingMore">("idle");
   const [searchPage, setSearchPage] = useState(1);
   const [searchHasMore, setSearchHasMore] = useState(false);
@@ -1406,9 +1409,18 @@ export function useXkWorkbench(): XkWorkbench {
 
   const failSearch = useCallback((err: unknown, seq: number): void => {
     if (seq !== searchSeqRef.current) return;
+    const msg = explainNetworkError(err);
     logPageError("XK-SEARCH", err);
+    // 落地类失败自动重试一次：首刷撞自愈窗口（16:33/16:48 实录第二波必成），
+    // 等 4.2s（选课侧 3s 冷却 + 余量）后自动重跑 refresh——成功则黄条自愈，
+    // 不再让用户手动点重试
+    if (/登录未落地|恢复冷却中/.test(msg)) {
+      setTimeout(() => {
+        if (seq === searchSeqRef.current) void refreshRef.current?.(false);
+      }, 4200);
+    }
     // 失登不整页重载：错误条 + 重试（proxyZhjwxkApi 内部已带 relogin 自愈），保住搜索现场
-    setSearchError(explainNetworkError(err));
+    setSearchError(msg);
     setSearchState("error");
   }, []);
 

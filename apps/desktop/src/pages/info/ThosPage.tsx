@@ -178,6 +178,10 @@ export function ThosPage() {
    *  SM2 提交 → thu-oauth callback → webvpn 票落地 webview cookie），随后
    *  top-level 导航到目标页——零二次登录。桌面走系统浏览器。 */
   const openOfficial = async (url: string) => {
+    try {
+      const { logLine } = await import("../../lib/clients.js");
+      await logLine(`[THOS-UI] openOfficial 入口 demo=${demo} url=${url.slice(0, 60)}`);
+    } catch { /* noop */ }
     if (demo || !url) return;
     try {
       const [{ routeThosUrl }, { invoke }, { isTauri }, { loadRemembered }] = await Promise.all([

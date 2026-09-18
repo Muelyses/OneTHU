@@ -682,10 +682,13 @@ export async function fetchImageAsDataUrl(url: string): Promise<string> {
  *  校内网关域名）校外不可达，恒经 WebVPN 包装——与图书馆 api.php 请求同轨。 */
 const CAMPUS_PUBLIC_HOSTS = new Set([
   // lib 单管线（P3）：info/learn 全量走包装域，不再公网直连
+  // card.tsinghua.edu.cn 移出（2026-09-17）：9-06 已定案 card 会话建在包装
+  // 通道（oauth lbredirect 兑票落点恒为包装 URL），直连探测永远看不见会话
+  // → 校外圈存直连超时报「请确认校园网/WebVPN 可达」。与 core 的
+  // PUBLIC_DIRECT_HOSTS 同步（9-06 已退出直连），webvpnWrap 可编任意域。
   "webvpn.tsinghua.edu.cn",
   "id.tsinghua.edu.cn",
   "oauth.tsinghua.edu.cn",
-  "card.tsinghua.edu.cn",
 ]);
 
 /** 任意校内图片 URL → dataURL（fetchImageAsDataUrl 的「会话 + 包装」版）：

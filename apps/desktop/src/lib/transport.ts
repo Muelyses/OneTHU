@@ -6,6 +6,7 @@
  * 浏览器预览：退回 window.fetch（仅 UI 开发；登录会被 CORS 拦截并给出明确提示）。
  */
 import type { FetchLike } from "@onethu/core";
+import { webvpnWrap } from "@onethu/core";
 
 export const isTauri =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -128,9 +129,31 @@ export async function nativeFetch(
   if (bodyStr != null && wasFormEncoded && !Object.keys(plainHeaders).some((k) => k.toLowerCase() === "content-type")) {
     plainHeaders["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
   }
+  // lib 原始请求的域名分流（2026-09-17 三案同源定案）：nativeFetch 此前 URL
+  // 原样进 rust = 校内域（card/seat.lib/info2021/zhjwxk…）校外直连超时——
+  // 圈存「请确认校园网/WebVPN 可达」、图书馆极慢、选课部分链路全栽这里。
+  // 包装域名单外的一切 *.tsinghua.edu.cn 统一 webvpnWrap（与 roam 兑付落点
+  // 同轨——9-06 已定案 card 会话建在包装通道）；公网可达域直连不动。
+  let wireUrl = url;
+  try {
+    const h = new URL(url).hostname;
+    if (
+      h.endsWith("tsinghua.edu.cn") &&
+      h !== "webvpn.tsinghua.edu.cn" &&
+      h !== "id.tsinghua.edu.cn" &&
+      h !== "oauth.tsinghua.edu.cn" &&
+      h !== "learn.tsinghua.edu.cn" &&
+      h !== "mails.tsinghua.edu.cn" &&
+      !url.startsWith("https://webvpn.tsinghua.edu.cn/")
+    ) {
+      wireUrl = webvpnWrap(url);
+    }
+  } catch {
+    /* 畸形 URL 原样 */
+  }
   const p = invoke<HttpOutput>("http_native", {
     input: {
-      url,
+      url: wireUrl,
       method: init.method ?? "GET",
       headers: plainHeaders,
       body: bodyStr,

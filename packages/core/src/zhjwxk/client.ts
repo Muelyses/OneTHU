@@ -224,7 +224,19 @@ async function ensure(
       const target = res.status >= 300 && res.status < 400 && loc ? loc : (/href="([^"]*ticket=[^"]*)"/i.exec(pageHtml)?.[1] ?? "");
       zhjwxkDebug?.(`[XK-CHECKSINGLE] st=${res.status} loc=${loc.slice(0, 80)} target=${target.slice(0, 90)}`);
       if (!target) break;   // 无票据可兑付：走表单链
-      const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
+      let tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
+      // 协议改写（check 块同款教训）：zhjwxk 是 http 应用，https 锚点原样兑付
+      // 会让 /https/ 包装代理到 443 →「访问内容不存在」票据白烧 → 误判死结 →
+      // 清仓殃及日程（17:38 快速往返双输实录）——必须改写为直连 http。
+      if (tgt.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+        tgt = ZHJWXK + tgt.slice("https://zhjwxk.cic.tsinghua.edu.cn".length);
+      } else {
+        const dec = decodeUrl(tgt);
+        if (dec?.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+          tgt = webvpnWrap(dec.replace("https://zhjwxk.cic.tsinghua.edu.cn", ZHJWXK));
+        }
+      }
+      zhjwxkDebug?.(`[XK-CHECKSINGLE] 兑付=${tgt.slice(0, 110)}`);
       await http.text(tgt).catch(() => {});   // 兑付票据（失败不阻断：回落表单链）
       html = await http.text(ZHJWXK + "/xklogin.do");
       if (/checkSingle/.test(html)) {

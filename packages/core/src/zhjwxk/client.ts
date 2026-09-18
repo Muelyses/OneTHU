@@ -282,7 +282,12 @@ async function ensure(
       zhjwxkDebug?.(`[XK-BOUNCE] 未成功 全页=${checkHtml.slice(0, 1500).replace(/\s+/g, " ")}`);
       throw new AuthRequiredError("选课系统身份确认失败，请重新登录后重试");
     }
-    const anchor = /<a[^>]+href="([^"]+)"/i.exec(checkHtml)?.[1];
+    // 锚点必须选 zhjwxk 的：id 成功页会罗列全部 pending 票锚点（learn/oauth 的
+    // 过期票排前面），抓第一个 = 烧在别的服务的死票上 → 两次重试全废 → 报错
+    // （15:58 实录：第1次 learn 票落 id 页、第2次 oauth 票落门户页，隔离通道
+    // 才救回——UI 已红条）。过滤后一步兑付正主票。
+    const anchors = [...checkHtml.matchAll(/<a[^>]+href="([^"]+)"/gi)].map((m) => m[1]);
+    const anchor = anchors.find((a) => /zhjwxk|j_acegi/.test(a)) ?? anchors[0];
     if (anchor) {
       let target = anchor.startsWith("http") ? anchor : new URL(anchor, ID_PREFIX).toString();
       // id 锚点是 https://zhjwxk...（直连或 /https/ 包装），但 zhjwxk 是 http 应用

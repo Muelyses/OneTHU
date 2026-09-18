@@ -1414,7 +1414,8 @@ export function useXkWorkbench(): XkWorkbench {
     // 落地类失败自动重试一次：首刷撞自愈窗口（16:33/16:48 实录第二波必成），
     // 等 4.2s（选课侧 3s 冷却 + 余量）后自动重跑 refresh——成功则黄条自愈，
     // 不再让用户手动点重试
-    if (/登录未落地|恢复冷却中/.test(msg)) {
+    // 引导壳型异常页（htmlHead 带 __vpn_hostname_data）同为可自愈态
+    if (/登录未落地|恢复冷却中|__vpn_hostname_data/.test(msg)) {
       setTimeout(() => {
         if (seq === searchSeqRef.current) void refreshRef.current?.(false);
       }, 4200);

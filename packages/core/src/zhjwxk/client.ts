@@ -369,10 +369,12 @@ async function ensure(
   lastXkReloginAt = Date.now();
   // wengine app-host 预热：隔离通道的直连兑付绕过了 wengine，落地后走 webvpn
   // 包装的数据请求会撞引导壳（__vpn_hostname_data →「教务返回异常页」，选课
-  // 操作实录）——主动 GET 一次包装首页建立 wengine 对 zhjwxk 的主机级会话。
+  // 操作实录）。wengine 的放行节奏 = 第一次给壳+种 cookie、第二次才真页面
+  //（强制刷新后仍撞壳实证）——双 GET：第一遍拿壳种 cookie，第二遍验证通过。
   try {
-    await s.http.text(webvpnWrap(ZHJWXK)).catch(() => "");
-    zhjwxkDebug?.("[XK-WARMUP] webvpn app-host 预热完成");
+    const w1 = await s.http.text(webvpnWrap(ZHJWXK)).catch(() => "");
+    const w2 = await s.http.text(webvpnWrap(ZHJWXK)).catch(() => "");
+    zhjwxkDebug?.(`[XK-WARMUP] 双预热 ${/__vpn_hostname_data/.test(w1) ? "壳→" : "直"}${/__vpn_hostname_data/.test(w2) ? "仍壳" : "通"}`);
   } catch { /* 预热失败不阻断（后续 isXkDeadHtml 兜底） */ }
   entryCache.set(s, entry);
   return entry;

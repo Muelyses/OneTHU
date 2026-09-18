@@ -1372,7 +1372,9 @@ export function useXkWorkbench(): XkWorkbench {
       const rows = buildRows(searchRaw, volMap, queueMap, selected, candidates, levelTypes);
       // 教师空值诊断（悬案收口）：搜索格有名字但行上没有 → 覆盖层嫌疑人
       const odd = searchRaw.length > 0 ? rows.filter((r) => r.selected && (!r.teacher || /^\d{1,3}$/.test(r.teacher))).slice(0, 3) : [];
-      for (const r of odd) logPageError("ROW-DIAG", new Error(`code=${r.c.code}_${r.c.seq} cTeacher="${r.c.teacher}" selTeacher="${r.sel?.teacher ?? ""}" selTime="${r.sel?.time ?? ""}"`));
+      // 教师空值诊断（悬案收口）：诊断信息误走 PAGE-ERR 通道会被当错误红条吓人
+      //（数据实际已到——SEARCH-ROW/XK-PLAN 都正常）——降级为 debug 日志
+      for (const r of odd) void logLine(`ROW-DIAG code=${r.c.code}_${r.c.seq} cTeacher="${r.c.teacher}" selTeacher="${r.sel?.teacher ?? ""}" selTime="${r.sel?.time ?? ""}"`).catch(() => undefined);
       return rows;
     },
     [searchRaw, volMap, queueMap, selected, candidates, levelTypes],

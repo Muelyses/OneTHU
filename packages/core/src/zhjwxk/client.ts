@@ -405,10 +405,11 @@ async function proxyZhjwxkApi(s: ZhjwxkSession, entry: ZhjwxkEntry, zhjwxkPath: 
   }
   // 乐观自愈（dormPage 同构）：jar 会话真死 → 静默重走登录链并重试一次，用户无感；
   // 重试仍死则原样返回，由 assertNotDenied 抛 AuthRequiredError 走 softRecover/看门狗链。
-  // 合流护栏：8 秒内已有别的请求重登过（entry 缓存即新鲜），不再删缓存起新链——
-  // 并发数据路同时弹回时各自重登纯属浪费且易互相踩（singleLogin 已除，链本身无害，
-  // 但一帧内 3-4 条链仍拖慢自愈）
-  if (Date.now() - lastXkReloginAt > 8_000) entryCache.delete(s);
+  // 合流护栏：60 秒内已有别的请求重登过（entry 缓存即新鲜），不再删缓存起新链——
+  // 并发数据路同时弹回时各自重登纯属浪费且易互相踩。原 8s：落地成功 10s 后
+  // 缓存过期 → 新请求重走全套 id 流程 → 风暴重启（16:33 实录：14.3s 落地成功、
+  // 24.9s 又死结）。60s 内死页由 isXkDeadHtml 静默重登兜底，不靠频繁重 ensure。
+  if (Date.now() - lastXkReloginAt > 60_000) entryCache.delete(s);
   await ensure(s);
   const retried = await xkHttp(s).text(ZHJWXK + zhjwxkPath);
   entry.at = Date.now();

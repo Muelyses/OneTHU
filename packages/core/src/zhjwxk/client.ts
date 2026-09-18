@@ -367,6 +367,13 @@ async function ensure(
   }
   const entry: ZhjwxkEntry = { semester, at: Date.now() };
   lastXkReloginAt = Date.now();
+  // wengine app-host 预热：隔离通道的直连兑付绕过了 wengine，落地后走 webvpn
+  // 包装的数据请求会撞引导壳（__vpn_hostname_data →「教务返回异常页」，选课
+  // 操作实录）——主动 GET 一次包装首页建立 wengine 对 zhjwxk 的主机级会话。
+  try {
+    await s.http.text(webvpnWrap(ZHJWXK)).catch(() => "");
+    zhjwxkDebug?.("[XK-WARMUP] webvpn app-host 预热完成");
+  } catch { /* 预热失败不阻断（后续 isXkDeadHtml 兜底） */ }
   entryCache.set(s, entry);
   return entry;
   })().catch((e) => {

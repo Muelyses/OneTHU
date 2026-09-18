@@ -158,12 +158,19 @@ const ENTRY_TTL_MS = 10 * 60_000;
 const entryCache = new WeakMap<ZhjwxkSession, ZhjwxkEntry>();
 /** 最近一次成功重登时刻（合流护栏：8 秒窗口内的并发弹回共用新会话，不起重复链） */
 let lastXkReloginAt = 0;
+/** 兑付失败冷却：失败后短期内不再打 id（并发数据路各自全跑 = 自踢风暴，
+ *  用户实录「放一会突然会好」= 风暴平息；主动放缓让 id 喘息） */
+let xkFailCooldownUntil = 0;
+const xkSleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const entryInflight = new WeakMap<ZhjwxkSession, Promise<ZhjwxkEntry>>();
 
 async function ensure(
   s: ZhjwxkSession,
   semesterOverride?: string,
 ): Promise<{ entry: ZhjwxkEntry; semester: string }> {
+  if (Date.now() < xkFailCooldownUntil) {
+    throw new AuthRequiredError("选课会话恢复冷却中，请稍候重试");
+  }
   const hit = entryCache.get(s);
   if (hit && Date.now() - hit.at < ENTRY_TTL_MS) {
     return { entry: hit, semester: semesterOverride ?? hit.semester ?? semesterFromDate() };
@@ -346,9 +353,11 @@ async function ensure(
     }
   }
   if (attempt < 2) {
-    zhjwxkDebug?.(`[XK-RETRY] 未落地（可能 webvpn 重登劫持），重放 xklogin`);
+    zhjwxkDebug?.(`[XK-RETRY] 未落地（可能 webvpn 重登劫持），1.5s 后重放 xklogin`);
+    await xkSleep(1500);
     continue;
   }
+  xkFailCooldownUntil = Date.now() + 3000;
   throw new AuthRequiredError("选课系统登录未落地，请重新登录后重试");
   }
   const entry: ZhjwxkEntry = { semester, at: Date.now() };

@@ -320,6 +320,31 @@ async function ensure(
   // 但兑付落在电子身份页/webvpn门户页——缓存这种毒 entry 会让合流窗口内所有请求
   // 吃死页。不缓存；webvpn 劫持场景重放一次，二次仍未落地才抛失登。
   if (semester) break;
+  // id 中转页跟随：pending 清空后 check 成功页无锚点可抓，xklogin 302 落在
+  // id 的「用户电子身份服务系统」中转页——页内 <a> 是 pending 票链，兑付任意
+  // 一张即清空 pending，重放的 xklogin 就能拿到直达 302（16:03 实录：两轮
+  // 重放全烧在中转页上，兑付链断）
+  if (attempt < 2 && /用户电子身份服务系统/.test(html)) {
+    const hop = [...html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>/gi)]
+      .map((m) => m[1])
+      .filter((x): x is string => !!x)
+      .find((a) => /ticket=/.test(a));
+    if (hop) {
+      let t = hop.startsWith("http") ? hop : new URL(hop, ID_PREFIX).toString();
+      if (t.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+        t = ZHJWXK + t.slice("https://zhjwxk.cic.tsinghua.edu.cn".length);
+      } else {
+        const dec = decodeUrl(t);
+        if (dec?.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+          t = webvpnWrap(dec.replace("https://zhjwxk.cic.tsinghua.edu.cn", ZHJWXK));
+        }
+      }
+      zhjwxkDebug?.(`[XK-HOP] 中转兑付=${t.slice(0, 130)}`);
+      const landed = await http.text(t).catch(() => "");
+      zhjwxkDebug?.(`[XK-HOP] 落地 len=${landed.length} 页首=${landed.slice(0, 150).replace(/\s+/g, " ")}`);
+      if (landed) html = landed;
+    }
+  }
   if (attempt < 2) {
     zhjwxkDebug?.(`[XK-RETRY] 未落地（可能 webvpn 重登劫持），重放 xklogin`);
     continue;

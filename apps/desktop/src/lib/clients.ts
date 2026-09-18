@@ -318,10 +318,18 @@ export async function login(
   let fingerprint = await currentFingerprint();
   // 死锁破解（2026-09-18）：设备 fp 已被 id 信任 → 免 2FA → 永不签发 finger3；
   // finger3 空 → checkSingle 确认/直登全传空 → 死结复发。唯一出路：轮换 fp
-  // 强制 id 走一次 2FA，用户选信任 → SAVE_FINGER 签发 finger3 落盘。一次性。
-  if (await store.loadSession().then((sv) => !sv?.finger3).catch(() => false)) {
-    fingerprint = makeFingerprint();
-    await logLine("FINGER3 空 → 设备指纹轮换（本轮登录将触发 2FA，请选信任设备）").catch(() => undefined);
+  // 强制 id 走一次 2FA，用户选信任 → SAVE_FINGER 签发 finger3 落盘。
+  // 【只轮换一次】：轮换后立刻持久化新 fp——finger3 未拿到前的重复登录
+  // 沿用同一 fp（否则 fp 每次变 = id 每次当新设备 = 2FA 无限循环，14:25/14:27 实录）
+  {
+    const saved = await store.loadSession().catch(() => null);
+    if (saved && !saved.finger3 && !(saved as SessionData)._fpRotated) {
+      fingerprint = makeFingerprint();
+      (saved as SessionData)._fpRotated = true;
+      saved.fingerprint = fingerprint;
+      await store.saveSession(saved).catch(() => undefined);
+      await logLine("FINGER3 空 → 设备指纹轮换（仅此一次；完成 2FA 请选信任设备）").catch(() => undefined);
+    }
   }
   const remember = opts.remember ?? true;
   pendingSecret = { username, password, remember };

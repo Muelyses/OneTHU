@@ -15,6 +15,8 @@ export interface SessionData {
   infoCookies?: string;
   /** id CAS 主会话（JSESSIONID，SSO 主凭据）——learn 会话过期后用它重新漫游 */
   idJsid?: string;
+  /** 设备指纹已轮换过（finger3 签发破解的一次性标记——防 2FA 无限循环） */
+  _fpRotated?: boolean;
   savedAt: number;
 }
 

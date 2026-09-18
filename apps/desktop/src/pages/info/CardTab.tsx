@@ -76,6 +76,16 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
   const submit = async () => {
     setBusy(true);
     setErr("");
+    // 圈存时段本地预检（6:00~20:40，2026-09-17 21 点实测窗外必拒）：
+    // 窗外直接提示，不浪费一次服务端往返
+    if (channel === "bank") {
+      const h = new Date().getHours() + new Date().getMinutes() / 60;
+      if (h < 6 || h >= 20 + 40 / 60) {
+        setErr("当前不在银行卡圈存时段（6:00~20:40）。请改用扫码充值，或明天 6:00 后再试。");
+        setBusy(false);
+        return;
+      }
+    }
     try {
       if (channel === "bank") {
         await info.cardRechargeFromBank(amt);

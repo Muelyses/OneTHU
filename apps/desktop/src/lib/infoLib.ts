@@ -232,12 +232,15 @@ export type LibLoginResult =
  *  id 死结（2026-09-18 f3=0 实录）。登录成功后主动补一次 SAVE_FINGER。 */
 export async function libEnsureTrustFingerprint(fingerprint: string): Promise<string> {
   try {
+    // 编码必须 form-urlencoded（对齐 info-lib core.ts:134 的 uFetch 调用——
+    // JSON 编码 id 不认，result 恒非 success，2026-09-18 实录补签失败）
     const res = await nativeFetch(SAVE_FINGER_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fingerprint, deviceName: "OneTHU", radioVal: "是" }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ fingerprint, deviceName: "OneTHU", radioVal: "是" }).toString(),
     });
-    const j = JSON.parse(await res.text()) as { result?: string; object?: unknown };
+    const j = JSON.parse(await res.text()) as { result?: string; msg?: string; object?: unknown };
+    void log(`SAVE_FINGER resp=${j?.result ?? "?"} ${String(j?.msg ?? "").slice(0, 60)}`);
     return j?.result === "success" && typeof j.object === "string" && j.object !== "[object Object]" ? j.object : "";
   } catch {
     return "";

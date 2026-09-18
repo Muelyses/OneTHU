@@ -223,10 +223,27 @@ async function ensure(
         // 强制回到全新登录表单，走账密直登重置会话（直登带受信 finger3，不触发
         // 2FA——传空指纹才是 2FA 根因）。
         zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
+        // 清仓前抢救健康域票据（webvpn/learn）：rust clear 是全清，全清会让
+        // webvpn 票陪葬 → 日程/各页集体无票爆掉，逐页自愈转圈才恢复（2026-09-18
+        // 实录）。死结只在 id/oauth 域——健康票救回、只重建死域。
+        const rescue: Array<[string, string]> = [];
+        for (const dom of ["https://webvpn.tsinghua.edu.cn/", "https://learn.tsinghua.edu.cn/"]) {
+          try {
+            for (const c of s.http.jar.getCookies(new URL(dom))) {
+              rescue.push([dom, `${c.name}=${c.value}`]);
+            }
+          } catch { /* 忽略 */ }
+        }
         try { await nativeCookieClearHook?.(); } catch { /* 钩子未注入/失败不阻断 */ }
         for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
           try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
         }
+        // 健康票种回（rust 仓走 nativeSeedHook，TS jar 走 setRaw）
+        for (const [dom, pair] of rescue) {
+          try { s.http.nativeSeedHook?.(dom, pair); } catch { /* rust 种子失败不阻断 */ }
+          try { s.http.jar.setRaw(new URL(dom), `${pair}; Path=/`); } catch { /* 忽略 */ }
+        }
+        zhjwxkDebug?.(`[XK-CHECKSINGLE] 健康票抢救 ${rescue.length} 条完成`);
         // 正确的登录表单 URL（cas.ts CAS_LOGIN_FORM，带 form hash；/index 是
         // 不存在的路径 → Tomcat 500 Error report → parseCasFormHtml 假报结构变更）
         html = await s.http.text(ID_PREFIX + "/do/off/ui/auth/login/form/bb5df85216504820be7bba2b0ae1535b/0");

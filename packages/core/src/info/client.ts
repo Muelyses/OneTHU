@@ -1961,7 +1961,7 @@ export class InfoClient {
 
   async #idLoginAttempt(
     formUrl: string,
-    creds: { username: string; password: string; fingerprint: string },
+    creds: { username: string; password: string; fingerprint: string; finger3?: string },
     variant: "zhjwxk" | "lib",
   ): Promise<{ ok: boolean; fatal: boolean; diag: string }> {
     let effUrl = formUrl;

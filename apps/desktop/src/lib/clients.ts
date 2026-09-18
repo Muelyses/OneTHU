@@ -585,6 +585,16 @@ export async function trySilentRelogin(): Promise<
   { ok: true } | { ok: false; twoFactor?: { username: string; password: string; methods: TwoFactorMethod[] } }
 > {
   if (!(await hasLiveSnapshot())) return { ok: false };
+  // 【互斥】用户正在 2FA 界面（lib 登录链未 settled）时静默重登必须停手：
+  // login() 会 clearOutstandingLogin 杀掉用户的 2FA 会话 → 验证码永远失效 →
+  // 无限重发循环（2026-09-18 14:28-14:30 每 30s 一轮实录）
+  try {
+    const { libLoginPending } = await import("./infoLib.js");
+    if (libLoginPending()) {
+      await logLine("SILENT-RELOGIN skip: 用户 2FA 进行中").catch(() => undefined);
+      return { ok: false };
+    }
+  } catch { /* import 失败按原流程 */ }
   const remembered = await loadRemembered();
   if (!remembered) {
     await logLine("SILENT-RELOGIN skip: 无记住的密码").catch(() => undefined);

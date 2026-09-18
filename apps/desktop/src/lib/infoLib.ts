@@ -377,6 +377,11 @@ export async function libEnsureSession(): Promise<boolean> {
   return true;
 }
 
+/** 登录链是否挂起（用户正在 2FA 界面）——静默重登互斥判据 */
+export function libLoginPending(): boolean {
+  return !!inflight && !inflight.settled;
+}
+
 /** 内存凭据访问（静默重登用） */
 export function libCredentials(): { username: string; password: string } | null {
   if (!inflight?.username || !inflight?.password) return null;

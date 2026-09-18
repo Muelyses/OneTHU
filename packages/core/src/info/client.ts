@@ -2002,12 +2002,14 @@ export class InfoClient {
       i_user: creds.username,
       i_pass: enc,
       fingerPrint: creds.fingerprint,
-      fingerGenPrint: "",
+      // 受信 finger3（持久化指纹）：传空 = id 判新设备 → 2FA/会话怪态——
+      // info 侧反复直登是 id 会话反复死结、殃及选课的元凶（2026-09-18 实录）
+      fingerGenPrint: creds.finger3 ?? "",
       i_captcha: "",
     };
     const body = new URLSearchParams(
       variant === "zhjwxk"
-        ? { ...form.hiddenFields, ...base, sm2pass: enc, singleLogin: "on", fingerGenPrint3: "" }
+        ? { ...form.hiddenFields, ...base, sm2pass: enc, singleLogin: "on", fingerGenPrint3: creds.finger3 ?? "" }
         : base,
     );
     const checkUrl = form.action

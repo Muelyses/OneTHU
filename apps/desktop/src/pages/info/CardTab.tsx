@@ -62,7 +62,10 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
   if (!open) return null;
 
   const amt = Number(amount);
-  const valid = Number.isFinite(amt) && amt >= 1 && amt <= 1000 && Math.round(amt * 100) === amt * 100;
+  // 银行卡圈存服务端下限 10 元（cardpay.inputtxamtgreater10，2026-09-17 实录）；
+  // 微信/支付宝扫码充值无此限制
+  const minAmt = channel === "bank" ? 10 : 1;
+  const valid = Number.isFinite(amt) && amt >= minAmt && amt <= 1000 && Math.round(amt * 100) === amt * 100;
   const close = () => {
     setStep("form");
     setErr("");
@@ -116,7 +119,10 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
               {RCH_CHANNELS.map((c) => (
                 <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13 }}>
-                  <input type="radio" checked={channel === c.key} onChange={() => setChannel(c.key)} />
+                  <input type="radio" checked={channel === c.key} onChange={() => {
+                    setChannel(c.key);
+                    if (c.key === "bank" && Number(amount) < 10) setAmount("20");
+                  }} />
                   <span>
                     <b>{c.label}</b>
                     <span style={{ opacity: 0.6 }}> · {c.hint}</span>
@@ -128,7 +134,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             <button className="btn btn-primary" style={{ width: "100%" }} disabled={!valid || busy} onClick={() => setStep("confirm")}>
               下一步
             </button>
-            {!valid ? <div style={{ fontSize: 11, opacity: 0.55, marginTop: 6 }}>金额需为 1 ~ 1000 元（最多两位小数）</div> : null}
+            {!valid ? <div style={{ fontSize: 11, opacity: 0.55, marginTop: 6 }}>{channel === "bank" ? "银行卡圈存最低 10 元；金额需 1 ~ 1000 元（最多两位小数）" : "金额需为 1 ~ 1000 元（最多两位小数）"}</div> : null}
           </>
         ) : null}
 

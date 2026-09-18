@@ -406,17 +406,18 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 }
 
 export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
-  const { libVerify2FA, helper } = await import("./infoLib.js");
+  const { libVerify2FA, helper, getSelfFinger3 } = await import("./infoLib.js");
   try {
     await libVerify2FA(type, code, trust);
     session.state = "ready";
     // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘：
-    // lib 链写入 helper.fingerGenPrint（infoLib 392 注释），此前自赋值空转
-    // → session.finger3 恒空 → checkSingle 确认传空 → 死结（2026-09-18 实录 f3=0）
+    // hook 自签路径写 selfFinger3（lib 内置路径丢 object）；lib 的 helper.
+    // fingerGenPrint 作后备。此前两处都空 → f3=0 → 死结（2026-09-18 实录）
     {
-      const { helper } = await import("./infoLib.js");
-      const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+      const fresh = getSelfFinger3() ||
+        (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
       session.finger3 = fresh || session.finger3 || "";
+      await logLine(`FINGER3 verify 落盘 len=${session.finger3.length}`).catch(() => undefined);
     }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();

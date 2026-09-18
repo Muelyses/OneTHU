@@ -153,6 +153,11 @@ let methodsNotify: ((methods: TwoFactorMethod[]) => void) | null = null;
 let resolveMethod: ((t: "wechat" | "mobile" | "totp") => void) | null = null;
 let resolveCode: ((code: string) => void) | null = null;
 let pendingTrust = false;
+/** hook 自签拿到的 finger3（lib 内置路径会丢 object——这里接住） */
+let selfFinger3 = "";
+export function getSelfFinger3(): string {
+  return selfFinger3;
+}
 
 helper.twoFactorMethodHook = (hasWeChatBool, phone, hasTotp) => {
   const methods: TwoFactorMethod[] = [];
@@ -259,9 +264,28 @@ export async function libLogin(
   // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
   await nativeCookieClear().catch(() => undefined);
   helper.fingerprint = fingerprint || makeFingerprint();
-  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER——接 pendingTrust
+  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER。
+  // 【自签自接】lib 内置调用成功后把响应 object（=finger3）丢掉了（core.ts:134
+  // 只看 result），helper.fingerGenPrint 永远空——hook 里自己签、自己接住
+  // object，返回 false 让 lib 跳过内置调用。2FA 链内上下文已证可签成功
+  //（14:27/14:30/15:12 三次 "已增加" 实录）。
   (helper as unknown as { trustFingerprintHook?: () => Promise<boolean> }).trustFingerprintHook =
-    async () => pendingTrust;
+    async () => {
+      try {
+        const res = await nativeFetch(SAVE_FINGER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ fingerprint: helper.fingerprint, deviceName: "OneTHU", radioVal: "是" }).toString(),
+        });
+        const j = JSON.parse(await res.text()) as { result?: string; msg?: string; object?: unknown };
+        void log(`SAVE_FINGER(hook) resp=${j?.result ?? "?"} ${String(j?.msg ?? "").slice(0, 40)}`);
+        if (j?.result === "success" && typeof j.object === "string" && j.object !== "[object Object]") {
+          selfFinger3 = j.object;
+          return false;   // 已自签，lib 跳过内置调用
+        }
+      } catch { /* 失败回落 lib 内置 */ }
+      return pendingTrust;
+    };
   (helper as unknown as { trustFingerprintNameHook?: () => Promise<string> }).trustFingerprintNameHook =
     async () => "OneTHU";
   // 被封锁检测：上一轮登录以「public key」失败 = 落地封锁页（2026-09-17 实录：

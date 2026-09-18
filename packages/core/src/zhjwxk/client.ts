@@ -367,14 +367,16 @@ async function ensure(
   }
   const entry: ZhjwxkEntry = { semester, at: Date.now() };
   lastXkReloginAt = Date.now();
-  // wengine app-host 预热：隔离通道的直连兑付绕过了 wengine，落地后走 webvpn
-  // 包装的数据请求会撞引导壳（__vpn_hostname_data →「教务返回异常页」，选课
-  // 操作实录）。wengine 的放行节奏 = 第一次给壳+种 cookie、第二次才真页面
-  //（强制刷新后仍撞壳实证）——双 GET：第一遍拿壳种 cookie，第二遍验证通过。
+  // wengine 票预热 v2：壳的根源是包装请求无 wengine 票（隔离通道拷的全局桶
+  // 里没有 zhjwxk 票——全局会话从没访问过 zhjwxk；双 GET 仍壳实证壳靠 JS
+  // 无头拿不到票）。改走 wengine 的票获取接口（libEnsureSession 同款探针），
+  // nativeFetch 底座自动把签发的票种进 rust 权威仓，后续包装请求带上票。
   try {
-    const w1 = await s.http.text(webvpnWrap(ZHJWXK)).catch(() => "");
-    const w2 = await s.http.text(webvpnWrap(ZHJWXK)).catch(() => "");
-    zhjwxkDebug?.(`[XK-WARMUP] 双预热 ${/__vpn_hostname_data/.test(w1) ? "壳→" : "直"}${/__vpn_hostname_data/.test(w2) ? "仍壳" : "通"}`);
+    const probe = await s.isoFetch?.(
+      "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=zhjwxk.cic.tsinghua.edu.cn&scheme=http&path=/",
+    );
+    const body = await probe?.text().catch(() => "");
+    zhjwxkDebug?.(`[XK-WARMUP] 票接口 len=${body?.length ?? 0} 票=${/ticket|wrdvpn/i.test(body ?? "") ? "✓" : "?"}`);
   } catch { /* 预热失败不阻断（后续 isXkDeadHtml 兜底） */ }
   entryCache.set(s, entry);
   return entry;

@@ -211,6 +211,18 @@ async function ensure(
       const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
       await http.text(tgt).catch(() => {});   // 兑付票据（失败不阻断：回落表单链）
       html = await http.text(ZHJWXK + "/xklogin.do");
+      if (/checkSingle/.test(html)) {
+        // 确认+兑付一轮后仍 checkSingle = id 会话卡死在"待确认"态（pending 票
+        // 永不消费，桌面 2026-09-17 实录）。唯一出路：清两 jar 的 id/oauth 会话
+        // 强制回到全新登录表单，走账密直登重置会话（直登带受信 finger3，不触发
+        // 2FA——传空指纹才是 2FA 根因）。
+        zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
+        for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
+          try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
+        }
+        html = await s.http.text(ID_PREFIX + "/do/off/ui/auth/login/index");
+        zhjwxkDebug?.(`[XK-REFRESH] ${/sm2publicKey/.test(html) ? "全新表单✓" : "仍异常"} len=${html.length}`);
+      }
     }
     const form = parseCasFormHtml(html, true);
     const enc = encryptPassword(s.password, form.publicKey);

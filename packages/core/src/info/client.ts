@@ -1929,11 +1929,11 @@ export class InfoClient {
     return false;
   }
 
-  /** 单次账密登录尝试；2FA 抛 AuthRequiredError，其余失败返回诊断现场。 */
-  /** id SSO 确认页兑付（checkSingle）：POST 指纹确认 → 302 ticket → 正常兑付。
+  /** id SSO 确认页取票（checkSingle）：POST 指纹确认 → 302 ticket / 成功页锚点。
+   *  只取票不兑付（兑付由调用方 #idLoginAttempt 统一处理）。
    *  fingerGenPrint 喝持久化的 finger3（SAVE_FINGER 受信凭据；页面 JS 从
    *  localStorage 取同款值）。会话 cookie 驱动授权，指纹只做 remember-me 跟踪。 */
-  async #idCheckSingle(formUrlEff: string, viaWrap: boolean): Promise<boolean> {
+  async #idCheckSingle(formUrlEff: string, viaWrap: boolean): Promise<{ ticketUrl: string | null; diag: string }> {
     const creds = this.#idCredentials?.();
     const action = new URL("/do/off/ui/auth/login/checkSingle", ID_PREFIX).toString();
     const body = new URLSearchParams({
@@ -1950,20 +1950,63 @@ export class InfoClient {
     });
     const location = res.headers.get("location") ?? "";
     if (res.status >= 300 && res.status < 400 && location) {
-      return this.#consumeIdTicketUrl(location, action);
+      return { ticketUrl: new URL(location, action).toString(), diag: `checkSingle status=${res.status}` };
     }
     const html = await res.text().catch(() => "");
     const anchor = /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(html)?.[1];
-    if (anchor) return this.#consumeIdTicketUrl(anchor, action);
+    if (anchor) return { ticketUrl: new URL(anchor, action).toString(), diag: "checkSingle anchor" };
     this.lastDebug = `checkSingle status=${res.status} loc=${location.slice(0, 80)} resp=${html.slice(0, 140).replace(/\s+/g, " ")}`;
+    return { ticketUrl: null, diag: `checkSingle status=${res.status} ticket=no` };
+  }
+
+  /**
+   * exthw（TUOJ 统一认证）前置：账密直登 id，建立**直连** id 会话（lib roam("id")
+   * 正门，凭据由 CampusSession 经 #idCredentials 注入，零用户输入）。
+   * 只建立 id 会话、**不兑付服务票据**——调用方随后自行请求目标服务表单，CAS 会
+   * 用新会话重新发票。返回 true = id 直连会话已建立；无内存凭据或直登失败返回 false；
+   * 2FA 由底层抛 AuthRequiredError（调用方自行转可操作文案）。
+   */
+  async ensureDirectIdLogin(formUrl: string): Promise<boolean> {
+    const creds = this.#idCredentials?.();
+    if (!creds?.username || !creds?.password) {
+      this.lastDebug = `id-login skip（无内存凭据） ${formUrl.slice(0, 120)}`;
+      return false;
+    }
+    let diag = "";
+    for (const variant of ["zhjwxk", "lib"] as const) {
+      const out = await this.#idLoginProbe(formUrl, creds, variant);
+      diag += out.diag + " | ";
+      if (out.ticketUrl) {
+        this.lastDebug = diag.replace(/\s+/g, " ").slice(0, 400);
+        return true;
+      }
+      if (out.fatal) break;
+    }
+    this.lastDebug = diag.replace(/\s+/g, " ").slice(0, 400);
     return false;
   }
 
+  /** 单次账密登录尝试：取票（#idLoginProbe）→ 兑付（#consumeIdTicketUrl）。2FA 抛
+   *  AuthRequiredError，其余失败返回诊断现场。 */
   async #idLoginAttempt(
     formUrl: string,
     creds: { username: string; password: string; fingerprint: string; finger3?: string },
     variant: "zhjwxk" | "lib",
   ): Promise<{ ok: boolean; fatal: boolean; diag: string }> {
+    const probe = await this.#idLoginProbe(formUrl, creds, variant);
+    if (!probe.ticketUrl) return { ok: false, fatal: probe.fatal, diag: probe.diag };
+    const ok = await this.#consumeIdTicketUrl(probe.ticketUrl, formUrl);
+    return { ok, fatal: probe.fatal, diag: `${probe.diag} consume=${ok}` };
+  }
+
+  /** 账密直登 id 的取票段（lib roam("id") 正门）：成功返回服务票据 URL（**不兑付**，
+   *  兑付方式由调用方决定——dorm/library 走 oauth lbredirect，exthw TUOJ 只借它建
+   *  直连 id 会话、票据弃用）。 */
+  async #idLoginProbe(
+    formUrl: string,
+    creds: { username: string; password: string; fingerprint: string; finger3?: string },
+    variant: "zhjwxk" | "lib",
+  ): Promise<{ ticketUrl: string | null; fatal: boolean; diag: string }> {
     let effUrl = formUrl;
     let viaWrap = false;
     let formHtml: string;
@@ -1979,12 +2022,12 @@ export class InfoClient {
     // 无 sm2publicKey，2026-09-06 校外实操实录）：id 会话活着时不再要密码，只 POST
     // 指纹确认继续。快路径不认（非 302）、SM2 路径解析不到公钥——两路全瞎的第三形态。
     if (/checkSingle/.test(formHtml)) {
-      const ok = await this.#idCheckSingle(effUrl, viaWrap);
-      return { ok, fatal: false, diag: `id-login checkSingle ok=${ok}` };
+      const out = await this.#idCheckSingle(effUrl, viaWrap);
+      return { ticketUrl: out.ticketUrl, fatal: false, diag: `id-login ${out.diag}` };
     }
     // 已认证会话下该 URL 可能直接返回成功页 —— 锚点兜底
     const preAnchor = /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(formHtml)?.[1];
-    if (preAnchor) return this.#consumeIdTicketUrl(preAnchor, formUrl).then((ok) => ({ ok, fatal: false, diag: "form-anchor" }));
+    if (preAnchor) return { ticketUrl: new URL(preAnchor, formUrl).toString(), fatal: false, diag: "form-anchor" };
     let form: ReturnType<typeof parseCasFormHtml>;
     try {
       form = parseCasFormHtml(formHtml, false);
@@ -1992,7 +2035,7 @@ export class InfoClient {
       // 公钥提取失败：把页内 sm2publicKey 原文前 32 字符（可能为空/非 hex）带进现场
       const rawPk = /id=["']sm2publicKey["'][^>]*>([^<]*)/.exec(formHtml)?.[1]?.trim() ?? "";
       return {
-        ok: false,
+        ticketUrl: null,
         fatal: false,
         diag: `id-login form(${variant}) ${formUrl.slice(0, 90)} pk缺失 raw=${rawPk.slice(0, 32) || "(空)"} → ${formHtml.slice(0, 120).replace(/\s+/g, " ")}`,
       };
@@ -2037,9 +2080,8 @@ export class InfoClient {
     const reqNote = `cookie=${this.#http.lastCookieNames || "(none)"} fields=${[...body.keys()].join("+")} i_pass.len=${enc.length} pk=${form.publicKey.slice(0, 32)}`;
     const respNote = `status=${status} ct=${res.headers.get("content-type") ?? ""} loc=${location.slice(0, 80)} resp=${checkHtml.slice(0, 120).replace(/\s+/g, " ") || "(空)"}`;
     if (status >= 300 && status < 400 && location) {
-      // check 直接 302：Location 即服务兑付地址（含 ticket）——手动兑付，绝不自动跟跳
-      const ok = await this.#consumeIdTicketUrl(location, checkUrl);
-      return { ok, fatal: false, diag: `id-login 302-consume(${variant}) ok=${ok} ${respNote}` };
+      // check 直接 302：Location 即服务票据地址（含 ticket）——只取票，兑付由调用方决定
+      return { ticketUrl: new URL(location, checkUrl).toString(), fatal: false, diag: `id-login 302(${variant}) ${respNote}` };
     }
     if (/二次认证|双因素|二次验证|双因子/.test(checkHtml)) {
       this.lastDebug = `id-login 2fa ${checkUrl.slice(0, 90)}`;
@@ -2050,12 +2092,11 @@ export class InfoClient {
     if (checkHtml.includes("登录成功")) {
       const anchor = /<a[^>]+href="([^"]+)"/i.exec(checkHtml)?.[1];
       if (anchor) {
-        const ok = await this.#consumeIdTicketUrl(anchor, checkUrl);
-        return { ok, fatal: false, diag: `id-login success(${variant}) consume=${ok}` };
+        return { ticketUrl: new URL(anchor, checkUrl).toString(), fatal: false, diag: `id-login success(${variant})` };
       }
     }
     return {
-      ok: false,
+      ticketUrl: null,
       fatal: false,
       diag: `id-login check(${variant}) ${checkUrl.slice(0, 80)} req{${reqNote}} resp{${respNote}}`,
     };

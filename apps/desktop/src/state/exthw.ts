@@ -34,7 +34,7 @@ import type {
   YktQrPollResult,
 } from "@onethu/core";
 import { universalFetch } from "../lib/transport.js";
-import { http, persist } from "../lib/clients.js";
+import { http, info, persist } from "../lib/clients.js";
 
 export const EXTHW_KEY = "onethu.exthw.v1";
 export const EXTHW_SALT_KEY = "onethu.exthw.salt.v1";
@@ -235,10 +235,11 @@ export const extHwLogin = {
       onPhase: opts.onPhase,
       pollTimeoutMs: opts.pollTimeoutMs,
     }),
-  /** TUOJ 清华统一认证漫游（零凭据）：会话落在共享 HttpClient 的 jar 里，
-   *  随后 persist() 把整个 jar（含 TUOJ 会话）快照进本机会话存档。 */
+  /** TUOJ 清华统一认证漫游（零凭据）：无直连 id 会话时先按内存账密直登 id
+   *  （InfoClient.ensureDirectIdLogin，凭据来自 CampusSession，零用户输入），再走
+   *  漫游表单；会话落在共享 HttpClient 的 jar 里，随后 persist() 快照进本机会话存档。 */
   tuojCas: async (): Promise<{ cookie: string }> => {
-    const r = await tuojRoam(http);
+    const r = await tuojRoam(http, { ensureIdSession: (u) => info.ensureDirectIdLogin(u) });
     await persist().catch(() => undefined);
     return { cookie: r.cookie };
   },

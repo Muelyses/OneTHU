@@ -4,7 +4,7 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
-import { fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import { fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { PageHead } from "../components/Layout.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -107,7 +107,7 @@ export function PluginsPage(): ReactNode {
             </button>
           ))}
         </div>
-        <button className="btn btn-primary" onClick={() => setInstOpen((o) => !o)}>
+        <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
           {instOpen ? "收起安装" : "安装插件"}
         </button>
       </div>
@@ -307,6 +307,25 @@ function PluginCard({
           </div>
         </div>
         <div className="plg-ops">
+          {rec.repo ? (
+            <button
+              className="plg-repo-btn"
+              title={`打开源码仓库：${rec.repo}`}
+              aria-label="打开源码仓库"
+              onClick={() => void (async () => {
+                try {
+                  const { openUrl } = await import("@tauri-apps/plugin-opener");
+                  await openUrl(rec.repo!);
+                } catch {
+                  window.open(rec.repo!, "_blank");
+                }
+              })()}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+              </svg>
+            </button>
+          ) : null}
           {m.category === "theme" ? <ThemeApplyButton themePluginId={m.id} onMsg={setRunMsg} /> : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
           <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>
@@ -604,7 +623,7 @@ function MarketView(): ReactNode {
     try {
       const text = await fetchEntryFromMarket(item);
       const { installPlugin } = await import("../plugins/loader.js");
-      const m = await installPlugin(text);
+      const m = await installPlugin(text, { repo: normalizeRepoUrl(item.repo) });
       setMsg(`已安装并激活：${m.name} v${m.version}——切回「我的插件」查看。`);
     } catch (e) {
       setMsg(`安装失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
@@ -732,7 +751,10 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
   const installFromRepoText = async (input: string, entry?: string): Promise<void> => {
     const ref = parseRepoInput(input);
     const text = await fetchEntryFromRepo(ref, entry);
-    await install(text);
+    const { installPlugin } = await import("../plugins/loader.js");
+    const m = await installPlugin(text, { repo: normalizeRepoUrl(input) });
+    setMsg(`已安装并激活：${m.name} v${m.version}`);
+    setRepoInput("");
   };
 
   const installRust = async (): Promise<void> => {
@@ -878,12 +900,12 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
             value={repoInput}
             onChange={(e) => setRepoInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !busy && repoInput.trim()) void installFromRepoText(repoInput);
+              if (e.key === "Enter" && !busy && repoInput.trim()) void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`));
             }}
           />
           <div className="plg-install-foot">
             <span className="plg-hint">从仓库根目录拉取 plugin.js（或 index.js / main.js），与粘贴安装同一校验管线。</span>
-            <button className="btn btn-primary" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput)}>
+            <button className="btn btn-primary" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`))}>
               {busy ? "安装中…" : "安装"}
             </button>
           </div>

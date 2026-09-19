@@ -90,6 +90,8 @@ export interface PluginManifest {
   version: string;
   author?: string;
   description?: string;
+  /** 源码仓库地址（可选）：管理页据此提供「仓库」跳转 */
+  repo?: string;
   permissions: PluginPermission[];
   settings?: PluginSettingField[];
   /** 插件类别（2026-09-13 主题系统立项）：theme=主题插件（导出 theme 定义，
@@ -365,6 +367,8 @@ export interface PluginRecord {
   manifest: PluginManifest;
   /** js 插件的模块文本；rust 插件为空串 */
   code: string;
+  /** 来源仓库（市场/GitHub 直装时记录；清单自声明 repo 亦可） */
+  repo?: string;
   /** rust 插件：二进制绝对路径（manifest 在其同目录 manifest.json） */
   binPath?: string;
   /** 内置插件（OH）：App 的一部分，管理页不可卸载 */

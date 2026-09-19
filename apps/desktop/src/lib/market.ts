@@ -92,6 +92,12 @@ export function parseRepoInput(input: string): RepoRef {
   return { owner, repo, branch, subPath };
 }
 
+/** 规范化仓库地址为 https://github.com/owner/repo（作为安装来源记录与跳转目标）。 */
+export function normalizeRepoUrl(input: string): string {
+  const ref = parseRepoInput(input);
+  return `https://github.com/${ref.owner}/${ref.repo}`;
+}
+
 /** 入口模块候选（顺序即优先级）；分支缺省依次尝试 main、master。 */
 const ENTRY_CANDIDATES = ["plugin.js", "index.js", "main.js"];
 const DEFAULT_BRANCHES = ["main", "master"];

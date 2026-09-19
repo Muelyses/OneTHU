@@ -53,7 +53,10 @@ function validateManifest(m: unknown): m is PluginManifest {
 }
 
 /** 安装（或更新）插件：校验 → 落库 → 立即激活 */
-export async function installPlugin(code: string): Promise<PluginManifest> {
+export async function installPlugin(
+  code: string,
+  meta?: { repo?: string },
+): Promise<PluginManifest> {
   const blobUrl = URL.createObjectURL(new Blob([code], { type: "text/javascript" }));
   let mod: any;
   try {
@@ -82,6 +85,7 @@ export async function installPlugin(code: string): Promise<PluginManifest> {
     enabled: true,
     settings: prev?.settings ?? defaultsOf(manifest),
     installedAt: Date.now(),
+    repo: meta?.repo ?? manifest.repo,
   });
   await activate(manifest.id, mod, blobUrl);
   await logLine(`[PLUGIN] 安装并激活 ${manifest.id}@${manifest.version}（${manifest.name}）`);

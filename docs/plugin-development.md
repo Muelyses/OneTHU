@@ -78,6 +78,7 @@ export default async function activate(ctx) {
 | `author` | string | 否 | 作者 |
 | `description` | string | 否 | 描述 |
 | `permissions` | string[] | 是 | 权限清单，安装时由用户逐项确认 |
+| `repo` | string | 否 | 源码仓库地址；插件管理页据此展示「仓库」跳转按钮。经市场或 GitHub 直装安装时，安装来源会自动记录并覆盖此字段 |
 | `settings` | SettingField[] | 否 | 设置表单，由应用渲染 |
 | `commands` | Command[] | 否 | 命令按钮；Rust 插件也可在激活应答中返回 |
 

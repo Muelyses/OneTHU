@@ -1782,7 +1782,13 @@ fn open_eid_window(
  * 「手机号 + 图形验证码 + 短信」登录；随后主窗口点「我已登录，读取会话」→
  * read_ykt_cookies 从同一 webview 数据目录读取 Cookie（含 HttpOnly，wry/tauri
  * 的 cookies_for_url 支持），前端经 yuketangBuildCookie 补齐清华字段后保存。
- * 读不到（浏览器预览 / 未登录 / 平台不支持）→ 前端回退「高级：手动粘贴 Cookie」。 */
+ * 读不到（浏览器预览 / 未登录 / 平台不支持）→ 前端回退「高级：手动粘贴 Cookie」。
+ *
+ * R18b 25.3.2：原先裸 WebviewWindowBuilder（无注入脚本、无回传通道）在 Windows
+ * 实测白屏、缩放不重绘、关不掉（主线程卡死）。改为复用 open_eid_window /
+ * open_sports_window 已验证的窗口套路：注入脚本 + document.title 回传 + 后台
+ * 线程轮询（远程页无 IPC 权限，title 是最稳的回传通道）；cookie 读取在后台线程
+ * 走 cookies_for_url（Windows 主线程读会死锁），不占主线程。 */
 
 #[cfg(desktop)]
 #[tauri::command]
@@ -1794,7 +1800,26 @@ fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
         let _ = w.set_focus();
         return Ok("exists".into());
     }
-    // 窗口内不注入任何脚本：登录全程由用户操作，读取动作由主窗口按钮触发（避免与页面跳转竞态）。
+    // 初始化脚本：远程登录页右下角注入固定「我已登录，读取会话」按钮，点击后把
+    // 标记写进 document.title（与 open_sports_window 同款 title 回传通道）。
+    // 仅注入一次；登录后跳转的页面不再重复注入（用 window 标记守卫）。
+    let script = r#"(function() {
+  if (window.__ONETHU_YKT_BTN) return;
+  window.__ONETHU_YKT_BTN = true;
+  function mount() {
+    try {
+      if (!document.body || document.getElementById("onethu-ykt-read")) return;
+      var b = document.createElement("button");
+      b.id = "onethu-ykt-read";
+      b.textContent = "我已登录，读取会话";
+      b.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:2147483647;padding:10px 16px;border:0;border-radius:8px;background:#1a6fd4;color:#fff;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.3)";
+      b.onclick = function() { document.title = "ONETHU_YKT_READY"; };
+      document.body.appendChild(b);
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
+})();"#;
     let win = WebviewWindowBuilder::new(
         &app,
         label,
@@ -1802,9 +1827,42 @@ fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
     )
     .title("雨课堂 · 官方网页登录")
     .inner_size(480.0, 760.0)
+    .initialization_script(script)
     .build()
     .map_err(|e| e.to_string())?;
     let _ = win.set_focus();
+    // 轮询窗口标题：发现「我已登录」标记 → 在**后台线程**用 cookies_for_url 读
+    // Cookie（Windows 主线程读会死锁）→ 拿到 sessionid 就 emit + 关窗；没拿到
+    // 则复位标题让用户重试。最长 10 分钟（与 open_sports_window 一致）。
+    std::thread::spawn(move || {
+        for _ in 0..600 {
+            std::thread::sleep(std::time::Duration::from_millis(1000));
+            let Some(w) = app.get_webview_window(label) else {
+                return; // 用户已关窗
+            };
+            if w.title().unwrap_or_default() != "ONETHU_YKT_READY" {
+                continue;
+            }
+            let header = url::Url::parse("https://pro.yuketang.cn/")
+                .ok()
+                .and_then(|u| w.cookies_for_url(u).ok())
+                .map(|cs| {
+                    cs.iter()
+                        .map(|c| format!("{}={}", c.name(), c.value()))
+                        .collect::<Vec<_>>()
+                        .join("; ")
+                })
+                .unwrap_or_default();
+            if header.contains("sessionid=") {
+                let _ = w.close();
+                use tauri::Emitter;
+                let _ = app.emit("ykt-cookie", header);
+                return;
+            }
+            // 尚未登录：复位标题，注入按钮可再次点击
+            let _ = w.eval("document.title='雨课堂 · 官方网页登录'");
+        }
+    });
     Ok("opened".into())
 }
 
@@ -1919,10 +1977,16 @@ async fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0
         .clone();
-    let _: serde_json::Value = handle
-        .run_mobile_plugin("openYktWebLogin", serde_json::json!({}))
+    // R18b 25.3.1：全屏 Dialog 内的「我已登录，读取会话」直接读回 Cookie 原文并
+    // 在此 resolve；用户直接关闭则为空串。用 async 版本等待，不阻塞工作线程。
+    let r: serde_json::Value = handle
+        .run_mobile_plugin_async("openYktWebLogin", serde_json::json!({}))
+        .await
         .map_err(|e| e.to_string())?;
-    Ok("opened".into())
+    Ok(r.get("cookie")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .to_string())
 }
 
 #[cfg(mobile)]

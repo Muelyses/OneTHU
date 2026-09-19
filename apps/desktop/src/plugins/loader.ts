@@ -209,6 +209,11 @@ export async function disablePlugin(id: string): Promise<void> {
   await deactivate(id).catch(() => undefined);
 }
 export async function uninstallPlugin(id: string): Promise<void> {
+  const rec = getPlugin(id);
+  // 内核守卫：OH 是 App 的一部分（sidecar / 内嵌），任何路径不可卸载
+  if (id === "onethu.harness" || rec?.builtin || rec?.embedded) {
+    throw new Error("内置插件不可卸载——它是 OneTHU 应用的一部分");
+  }
   await deactivate(id).catch(() => undefined);
   removePlugin(id);
   // 插件目录一并清理（内置插件在 UI 层不可删，不会走到这里）
@@ -318,13 +323,13 @@ export async function seedBuiltinHarness(): Promise<void> {
     // （新设置字段/权限），老注册表不清则设置 sheet 永远看不到新字段。
     const prev = getPlugin("onethu.harness");
     if (!prev) {
-      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", { embedded: true, builtin: true });
       await logLine("[PLUGIN] 内嵌 OH 已种入").catch(() => undefined);
     } else if (JSON.stringify(prev.manifest) !== JSON.stringify(EMBEDDED_HARNESS_MANIFEST)) {
       // 用户 settings 全程保留（历史实锤：removePlugin 会连 settings 一起清）
       const prevSettings = { ...prev.settings };
       removePlugin("onethu.harness");
-      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", { embedded: true, builtin: true });
       if (Object.keys(prevSettings).length > 0) {
         updatePlugin("onethu.harness", { settings: prevSettings });
       }
@@ -342,9 +347,11 @@ export async function seedBuiltinHarness(): Promise<void> {
     }
     const rec = getPlugin("onethu.harness");
     if (!rec) {
-      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, binPath);
+      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, binPath, { builtin: true });
       await logLine(`[PLUGIN] 内置 OH 已注册：${binPath}`);
     } else {
+      // 旧记录自愈：历史版本注册 OH 时未打 builtin 标，导致管理页出现删除键
+      if (!rec.builtin) updatePlugin("onethu.harness", { builtin: true });
       // 权限快照自愈：装机清单缺新权限（如 learn:read/xk:read）时以内置清单为准并入，
       // 免「重装才能用新功能」（R10 实录：扩展权限后 dock 报未获授权）
       const perms = new Set(rec.manifest.permissions ?? []);

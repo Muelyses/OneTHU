@@ -338,7 +338,7 @@ function PluginCard({
               日志
             </button>
           ) : null}
-          {rec.embedded || rec.builtin ? null : (
+          {rec.embedded || rec.builtin || m.id === "onethu.harness" ? null : (
             <button className="btn btn-ghost plg-danger" onClick={() => void uninstallPlugin(id)}>
               删除
             </button>

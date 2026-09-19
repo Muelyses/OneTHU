@@ -61,6 +61,7 @@ import {
     searchNewsList,
 } from "./lib/news";
 import {getSchedule, saveCustomSchedule, deleteCustomSchedule} from "./lib/schedule";
+export {getSecondarySchedules} from "./lib/schedule";
 import {Course} from "./models/home/report";
 import {Form} from "./models/home/assessment";
 import {NewsSlice, NewsSubscription, ChannelTag} from "./models/news/news";

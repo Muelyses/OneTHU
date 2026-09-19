@@ -430,10 +430,9 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
 /** 删除主题（内置同权可删；删内置记入名单不复活） */
 export function removeTheme(id: string): void {
   const def = state.installed.find((t) => t.id === id);
+  // 内置主题不可删除（用户始终有可用外观）；仅插件主题可移除
+  if (def?.source === "builtin") return;
   state.installed = state.installed.filter((t) => t.id !== id);
-  if (def?.source === "builtin" && !state.deletedBuiltins.includes(id)) {
-    state.deletedBuiltins.push(id);
-  }
   if (state.activeId === id) {
     state.activeId = null;
     applyTheme(null);

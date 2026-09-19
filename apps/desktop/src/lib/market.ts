@@ -134,6 +134,29 @@ export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<
   );
 }
 
+/** 拉取一批仓库的 GitHub star 数（无 token 限额 60/h/IP，条目量级足够）。
+ *  失败的条目返回 null，排序时沉底。结果并入注册表缓存。 */
+export async function fetchStarMap(items: MarketEntry[]): Promise<Record<string, number | null>> {
+  const out: Record<string, number | null> = {};
+  await Promise.all(
+    items.map(async (item) => {
+      try {
+        const ref = parseRepoInput(item.repo);
+        const res = await externalFetch(`https://api.github.com/repos/${ref.owner}/${ref.repo}`);
+        if (!res.ok) {
+          out[item.id] = null;
+          return;
+        }
+        const j = (await res.json()) as { stargazers_count?: number };
+        out[item.id] = typeof j.stargazers_count === "number" ? j.stargazers_count : null;
+      } catch {
+        out[item.id] = null;
+      }
+    }),
+  );
+  return out;
+}
+
 function marketUrl(): string {
   try {
     return localStorage.getItem(MARKET_URL_KEY) || DEFAULT_MARKET_URL;

@@ -4,7 +4,7 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
-import { fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import { fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { PageHead } from "../components/Layout.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -36,6 +36,7 @@ function monogram(name: string, id: string): string {
 export function PluginsPage(): ReactNode {
   const allPlugins = useSyncExternalStore(subscribe, installedPlugins);
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
+  const [view, setView] = useState<"mine" | "market">("mine");
   const [cat, setCat] = useState<"all" | "theme" | "general">("all");
   const [instOpen, setInstOpen] = useState(false);
   const themesSnap = useThemes();
@@ -55,9 +56,20 @@ export function PluginsPage(): ReactNode {
           </span>
         }
         actions={
-          <button className="btn btn-primary" onClick={() => setInstOpen((o) => !o)}>
-            {instOpen ? "收起安装" : "安装插件"}
-          </button>
+          <>
+            <div className="seg-track" style={{ marginRight: 10 }}>
+              {([["mine", "我的插件"], ["market", "插件市场"]] as const).map(([k, lbl]) => (
+                <button key={k} className={"seg-item" + (view === k ? " is-active" : "")} onClick={() => setView(k)}>
+                  {lbl}
+                </button>
+              ))}
+            </div>
+            {view === "mine" ? (
+              <button className="btn btn-primary" onClick={() => setInstOpen((o) => !o)}>
+                {instOpen ? "收起安装" : "安装插件"}
+              </button>
+            ) : null}
+          </>
         }
       />
 
@@ -97,6 +109,10 @@ export function PluginsPage(): ReactNode {
 
       {/* 主题管理区：主题即插件，管理面就在插件页（主题页签下展开；用户定案
           2026-09-13：设置页不放，避免双头管理） */}
+      {view === "market" ? (
+        <MarketView />
+      ) : (
+        <>
       {cat === "theme" || cat === "all" ? <ThemeManagerSection /> : null}
 
       {plugins.length === 0 && cat !== "theme" ? (
@@ -121,6 +137,8 @@ export function PluginsPage(): ReactNode {
       )}
 
       {sheet ? <PluginSheet id={sheet.id} mode={sheet.mode} onClose={() => setSheet(null)} /> : null}
+        </>
+      )}
     </div>
   );
 }
@@ -554,14 +572,144 @@ function LogBody({ id }: { id: string }): ReactNode {
   );
 }
 
+/* ═══════════════ 插件市场视图：热度排序 · 搜索 · 一键安装 ═══════════════ */
+
+function MarketView(): ReactNode {
+  const [items, setItems] = useState<MarketEntry[] | null>(null);
+  const [stars, setStars] = useState<Record<string, number | null>>({});
+  const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"stars" | "name">("stars");
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const load = async (force = false): Promise<void> => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const reg = await fetchRegistry(force);
+      setItems(reg.plugins);
+      setLoaded(true);
+      // star 数动态拉取（失败沉底），不阻塞列表展示
+      fetchStarMap(reg.plugins).then(setStars).catch(() => setStars({}));
+    } catch (e) {
+      setMsg(`市场名单拉取失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const install = async (item: MarketEntry): Promise<void> => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const text = await fetchEntryFromMarket(item);
+      const { installPlugin } = await import("../plugins/loader.js");
+      const m = await installPlugin(text);
+      setMsg(`已安装并激活：${m.name} v${m.version}——切回「我的插件」查看。`);
+    } catch (e) {
+      setMsg(`安装失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const q = query.trim().toLowerCase();
+  const hits = (items ?? [])
+    .filter((x) => !q || [x.name, x.description, x.author, ...(x.tags ?? [])].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)))
+    .slice()
+    .sort((a, b) => {
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      const sa = stars[a.id] ?? -1;
+      const sb = stars[b.id] ?? -1;
+      if (sa !== sb) return sb - sa; // star 缺失（null）沉底
+      return a.name.localeCompare(b.name);
+    });
+
+  return (
+    <section className="market-view">
+      <div className="market-bar">
+        <input
+          className="input market-search"
+          placeholder="搜索插件名称 / 描述 / 标签"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <div className="seg-track">
+          {([["stars", "按热度"], ["name", "按名称"]] as const).map(([k, lbl]) => (
+            <button key={k} className={"seg-item" + (sortBy === k ? " is-active" : "")} onClick={() => setSortBy(k)}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <button className="btn" disabled={busy} onClick={() => void load(true)}>
+          {busy ? "刷新中…" : "刷新"}
+        </button>
+      </div>
+
+      {msg ? <div className="plg-runmsg">{msg}</div> : null}
+
+      {!loaded && !msg ? (
+        <div className="plg-empty">
+          <div className="plg-empty-mark">[ ⇩ ]</div>
+          <div className="plg-empty-t">插件市场</div>
+          <div className="plg-empty-d">浏览社区插件，按仓库热度排序；收录经人工审查。</div>
+          <button className="btn btn-primary" disabled={busy} onClick={() => void load()}>
+            {busy ? "加载中…" : "加载市场名单"}
+          </button>
+        </div>
+      ) : null}
+
+      {loaded && !hits.length ? <div className="plg-hint">无匹配条目。</div> : null}
+
+      {hits.length ? (
+        <div className="market-grid">
+          {hits.map((item) => {
+            const st = stars[item.id];
+            return (
+              <div key={item.id} className="market-card">
+                <div className="market-card-head">
+                  <span className="market-card-name">{item.name}</span>
+                  <span className="market-card-stars" title="GitHub Stars">★ {typeof st === "number" ? String(st) : "—"}</span>
+                </div>
+                <div className="market-card-meta">
+                  v{item.version}
+                  {item.author ? ` · ${item.author}` : ""}
+                </div>
+                <div className="market-card-desc">{item.description || item.repo}</div>
+                {item.tags?.length ? (
+                  <div className="market-card-tags">
+                    {item.tags.map((t) => (
+                      <span key={t} className="market-tag">{t}</span>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="market-card-foot">
+                  <code className="plg-code">{item.repo}</code>
+                  <button className="btn btn-primary" disabled={busy} onClick={() => void install(item)}>
+                    {busy ? "…" : "安装"}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      <div className="plg-hint" style={{ marginTop: 10 }}>
+        想上架你的插件？向 OneTHU-Market 仓库提交 Pull Request——流程见
+        {" "}<a href="https://github.com/smartThise/OneTHU-Market" target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>市场仓库</a>
+        与插件开发文档 §7。
+      </div>
+    </section>
+  );
+}
+
 /* ═══════════════ 安装面板：三路安装（粘贴 JS / JS 文件 / Rust 插件） ═══════════════ */
 
 function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
-  const [tab, setTab] = useState<"paste" | "jsfile" | "rust" | "market" | "github">("paste");
+  const [tab, setTab] = useState<"paste" | "jsfile" | "rust" | "github">("paste");
   const [repoInput, setRepoInput] = useState("");
-  const [query, setQuery] = useState("");
-  const [marketList, setMarketList] = useState<MarketEntry[] | null>(null);
-  const [marketErr, setMarketErr] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -586,32 +734,6 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
     const ref = parseRepoInput(input);
     const text = await fetchEntryFromRepo(ref, entry);
     await install(text);
-  };
-
-  const loadMarket = async (force = false): Promise<void> => {
-    setBusy(true);
-    setMarketErr(null);
-    try {
-      const reg = await fetchRegistry(force);
-      setMarketList(reg.plugins);
-    } catch (e) {
-      setMarketErr(String(e instanceof Error ? e.message : e).slice(0, 240));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const installFromMarket = async (item: MarketEntry): Promise<void> => {
-    setBusy(true);
-    setMsg(null);
-    try {
-      const text = await fetchEntryFromMarket(item);
-      await install(text);
-    } catch (e) {
-      setMsg(`安装失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
-    } finally {
-      setBusy(false);
-    }
   };
 
   const installRust = async (): Promise<void> => {
@@ -687,7 +809,6 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
             ["jsfile", "选择 .js 文件"],
             ["rust", "Rust 骨干插件"],
             ["github", "GitHub 仓库"],
-            ["market", "插件市场"],
           ] as const
         ).map(([k, label]) => (
           <button
@@ -770,62 +891,6 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
         </div>
       ) : null}
 
-      {tab === "market" ? (
-        <div className="plg-install-body">
-          <div className="plg-install-foot" style={{ marginBottom: 8 }}>
-            <input
-              className="input"
-              style={{ flex: 1 }}
-              placeholder="搜索名称 / 描述 / 标签"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <button className="btn" disabled={busy} onClick={() => void loadMarket(true)}>
-              {busy ? "刷新中…" : "刷新"}
-            </button>
-          </div>
-          {marketErr ? <div className="plg-hint" style={{ color: "var(--red)" }}>{marketErr}</div> : null}
-          {marketList === null && !marketErr ? (
-            <div className="plg-hint">
-              {busy ? "正在拉取市场名单…" : "尚未加载。"}
-              <button className="btn" style={{ marginLeft: 8 }} disabled={busy} onClick={() => void loadMarket()}>
-                加载市场
-              </button>
-            </div>
-          ) : null}
-          {marketList !== null ? (
-            (() => {
-              const q = query.trim().toLowerCase();
-              const hits = !q
-                ? marketList
-                : marketList.filter((x) =>
-                    [x.name, x.description, x.author, ...(x.tags ?? [])]
-                      .filter(Boolean)
-                      .some((v) => String(v).toLowerCase().includes(q)),
-                  );
-              if (!hits.length) return <div className="plg-hint">无匹配条目。</div>;
-              return (
-                <div className="plg-market-list">
-                  {hits.map((item) => (
-                    <div key={item.id} className="plg-market-item">
-                      <div className="plg-market-info">
-                        <div className="plg-market-name">
-                          {item.name} <span className="plg-market-ver">v{item.version}</span>
-                          {item.author ? <span className="plg-market-author"> · {item.author}</span> : null}
-                        </div>
-                        <div className="plg-market-desc">{item.description || item.repo}</div>
-                      </div>
-                      <button className="btn btn-primary" disabled={busy} onClick={() => void installFromMarket(item)}>
-                        安装
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()
-          ) : null}
-        </div>
-      ) : null}
 
       <div className="plg-install-foot plg-install-msg">
         {msg ? <span className="plg-msg">{msg}</span> : <span className="plg-hint">安装即代表信任该代码并授予其声明的权限。</span>}

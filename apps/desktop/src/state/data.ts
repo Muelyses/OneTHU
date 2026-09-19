@@ -35,7 +35,7 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
 import { http, info, learn, logLine, session } from "../lib/clients.js";
 // lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
 // 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
-import { helper as infoHelper } from "../lib/infoLib.js";
+import { helper as infoHelper, getSecondarySchedules } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
@@ -2565,7 +2565,32 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
     const end = new Date(start.getTime() + 6 * 86400000);
     info
       .getSchedule(fmtDate(start), fmtDate(end))
-      .then((entries) => {
+      .then(async (entries) => {
+        // 二级课表（实验课）并入：core InfoClient 的 zhjw JSONP 只含一级——
+        // lib 的 getSecondarySchedules（portal3rd setInitValue 解析）按周补齐，
+        // 失败不连累一级课表（上游 getSchedule = primary + secondary 同构）
+        try {
+          const sec = await getSecondarySchedules(semester.firstDay);
+          const from = fmtDate(start), to = fmtDate(end);
+          for (const c of sec) {
+            for (const sl of c.activeTime.base) {
+              const date = sl.beginTime.format("YYYY-MM-DD");
+              if (date < from || date > to) continue;
+              const st = sl.beginTime.format("HH:mm");
+              if (entries.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
+              entries.push({
+                courseName: c.name,
+                location: c.location || undefined,
+                date,
+                dayOfWeek: sl.dayOfWeek,
+                startTime: st,
+                endTime: sl.endTime.format("HH:mm"),
+                category: "二级课表",
+                raw: { source: "secondary" },
+              });
+            }
+          }
+        } catch { /* 二级失败静默：一级照常 */ }
         if (!cancelled) {
           cacheSet(wsKey, entries);
           setData(entries);

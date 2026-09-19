@@ -407,6 +407,13 @@ export async function libEnsureSession(): Promise<boolean> {
   return true;
 }
 
+/** 二级课表（实验课）单页解析：desktop 周课表并入用（core InfoClient 的
+ *  zhjw JSONP 只含一级——二级实验课缺失的根源，2026-09-19 定案） */
+export const getSecondarySchedules = async (firstDay: string): Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> => {
+  const mod = await import("@onethu/info-lib");
+  return (mod as unknown as { getSecondarySchedules: (h: unknown, s: { firstDay: string }) => Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> }).getSecondarySchedules(helper, { firstDay });
+};
+
 /** 强制完整重登（选课死结借用）：不走探活短路——id 会话权威单一来源，
  *  选课判死时由这里重建，选课不再自清仓互踢（2026-09-18 架构定案） */
 export async function libForceRelogin(): Promise<boolean> {

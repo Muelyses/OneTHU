@@ -179,8 +179,32 @@ css: `
 | Android | 否 | 启动器图标必须为安装包内预置资源，运行时仅能在编译期预置的多个 `activity-alias` 之间切换 |
 
 该能力属于平台层实现，与业务逻辑无关，且变更系统级应用标识涉及用户系统配置，因此
-不作为主题字段或插件接口开放。需要更换应用图标的用户，可在平台层面自行处理（如在
-macOS 上通过「显示简介」替换图标）。
+不作为主题字段或插件接口开放。
+
+**开发者更换应用图标的方式**：应用图标在打包阶段写入，通过 Tauri 的图标工具生成与
+配置：
+
+1. 准备源图：1024 × 1024 PNG，建议透明背景、主体居中。Android 自适应图标会裁切
+   外圈并施加遮罩，主体应控制在内侧约 66% 的安全区域内。
+2. 在 `apps/desktop` 目录执行：
+
+   ```bash
+   npx tauri icon path/to/source.png
+   ```
+
+   命令按平台生成全部尺寸并覆盖目标位置：
+
+   | 目标 | 产物 |
+   |---|---|
+   | 桌面三端 | `src-tauri/icons/` 下的 `icon.png`、`icon.icns`（macOS）、`icon.ico`（Windows）及各尺寸 PNG |
+   | Android | `src-tauri/gen/android/app/src/main/res/mipmap-*/` 各密度位图，以及 `mipmap-anydpi-v26/ic_launcher.xml` 自适应图标（前景 `ic_launcher_foreground` 与背景色 `ic_launcher_background`） |
+
+   Android 目标目录由 `tauri android init` 生成；若尚未初始化，先生成再执行图标命令。
+3. 重新构建分发物。桌面端重新打包；Android 端重新构建安装包（`npx tauri android build`），
+   覆盖安装后生效。
+
+当前仓库的图标配置位于 `src-tauri/tauri.conf.json` 的 `bundle.icon` 字段，默认引用
+`icons/icon.png`、`icons/icon.icns`、`icons/icon.ico`。
 
 ### 3.5 生命周期
 

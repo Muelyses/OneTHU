@@ -68,7 +68,7 @@ function parseSetCookieLine(line: string, requestHost: string): CookieRecord | n
 /** 直连公共域（learn/id/oauth/webvpn/info/card）：供传输层跳转包装判定复用。
  *  历史实证：info/card 的 wengine 代理路径不通，须直连——不能一刀切全包装。 */
 // lib 单管线（P3）：info/learn 退出公网直连名单——两域全量走包装通道，
-// 校内校外拓扑唯一（双环境适配的定案，docs/INFOLIB-PIPELINE-REVIEW.md P3）。
+// 校内校外拓扑唯一（双环境适配的定案，docs/architecture.md §2）。
 export const PUBLIC_DIRECT_HOSTS = new Set([
   "webvpn.tsinghua.edu.cn",
   "id.tsinghua.edu.cn",

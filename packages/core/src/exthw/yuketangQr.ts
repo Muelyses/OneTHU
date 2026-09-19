@@ -204,6 +204,29 @@ export async function yuketangQrPoll(
   }
 }
 
+/* ── ②′ 官方网页登录（WebView）通道：Cookie 原文 → 凭据串 ── */
+
+/**
+ * R18 24.2：把应用内 WebView / 原生 `CookieManager` 取回的 Cookie 原文
+ * （`name=value; name2=value2`，即 `document.cookie` 或 `CookieManager.getCookie()` 的格式）
+ * 解析为 `name→value`，再经 {@link yuketangBuildCookie} 补齐清华固定字段，
+ * 得到可直接用于拉取的 `Cookie:` 串（与扫码 / 短信登录同一出口）。
+ *
+ * 空原文返回空串——调用方据此判定「未取到会话」并回退「高级：手动粘贴 Cookie」。
+ */
+export function yuketangCookieFromHeader(raw: string): string {
+  const pairs = new Map<string, string>();
+  for (const part of raw.split(";")) {
+    const eq = part.indexOf("=");
+    if (eq <= 0) continue;
+    const name = part.slice(0, eq).trim();
+    const value = part.slice(eq + 1).trim();
+    if (name) pairs.set(name, value);
+  }
+  if (pairs.size === 0) return "";
+  return yuketangBuildCookie(pairs);
+}
+
 /* ── ③ 编排（状态机）：取码 → 长轮询 → 超时重发 → 过期重建 → 成功/取消 ── */
 
 export interface RunYuketangQrLoginDeps {

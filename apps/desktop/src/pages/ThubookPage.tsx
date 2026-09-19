@@ -100,7 +100,6 @@ export default function ThubookPage(): ReactNode {
   const [tocLoading, setTocLoading] = useState(true);
   const [err, setErr] = useState("");
   const [q, setQ] = useState("");
-  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
   const bodyRef = useRef<HTMLDivElement | null>(null);
 
   // 目录：抓首页侧边栏（组级）→ 并发抓各组页侧边栏合并子页（限 6 路）
@@ -144,7 +143,6 @@ export default function ThubookPage(): ReactNode {
         await Promise.all(workers);
         for (const [k, v] of cache) CACHE.set(k, v);
         setGroups(results);
-        setOpenGroups(new Set());
         const home2 = CACHE.get("/thubook/");
         if (home2) setPage(home2);
       } catch (e) {
@@ -155,7 +153,9 @@ export default function ThubookPage(): ReactNode {
     })();
   }, []);
 
-  const load = useCallback(async (path: string): Promise<void> => {
+  const load = useCallback(async (rawPath: string): Promise<void> => {
+    // 规范化：无扩展名的目录路径补尾斜杠（thubook.help 对 /thubook 回 308 → /thubook/）
+    const path = /\.[a-z0-9]+$/i.test(rawPath) || rawPath.endsWith("/") ? rawPath : rawPath + "/";
     const hit = CACHE.get(path);
     if (hit) {
       setCurrent(path);
@@ -228,7 +228,6 @@ export default function ThubookPage(): ReactNode {
           {tocLoading ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>目录加载中…</div> : null}
           <div style={{ display: "grid", gap: 2 }}>
             {visible.map((g) => {
-              const open = openGroups.has(g.path) || Boolean(qLower);
               return (
                 <div key={g.path}>
                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -242,22 +241,8 @@ export default function ThubookPage(): ReactNode {
                     >
                       {g.label}
                     </button>
-                    {g.children.length ? (
-                      <button
-                        onClick={() => {
-                          const next = new Set(openGroups);
-                          if (next.has(g.path)) next.delete(g.path);
-                          else next.add(g.path);
-                          setOpenGroups(next);
-                        }}
-                        style={{ border: "none", background: "none", cursor: "pointer", color: "var(--text-3, #999)", fontSize: 11, padding: 4 }}
-                      >
-                        {open ? "▾" : "▸"}
-                      </button>
-                    ) : null}
                   </div>
-                  {open
-                    ? g.children.map((c) => (
+                  {g.children.map((c) => (
                         <button
                           key={c.path}
                           onClick={() => void load(c.path)}
@@ -270,8 +255,7 @@ export default function ThubookPage(): ReactNode {
                         >
                           {c.label}
                         </button>
-                      ))
-                    : null}
+                      ))}
                 </div>
               );
             })}

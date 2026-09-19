@@ -2,7 +2,8 @@
 import { buildApi } from "./facade.js";
 import { installTheme, type ThemeDef } from "../state/theme.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
-import { ensureMadModelToken, madmodelDue, startMadModelPump } from "../state/madmodel.js";
+import { preflightMadModel, startMadModelPump } from "../state/madmodel.js";
+import { forceRemint } from "../state/madmodel.js";
 import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe, updatePlugin } from "./registry.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi, PluginCommand, PluginContext, PluginManifest, PluginRecord } from "./types.js";
@@ -124,16 +125,16 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
             dock: Boolean(c.dock),
             pluginId: id,
             run: async (input: string) => {
-              // MadModel 免费档：run 前同步 ensure（首次对话不等 10 分钟泵；失败不阻塞，Rust 报错兜底）
-              if (id === "onethu.harness" && madmodelDue()) {
-                await ensureMadModelToken().catch(() => undefined);
+              // MadModel 免费档对话前兜底：token 到期即续 + 可达性探针（10 分钟缓存）——
+              // 校外时把 reachable=0 写进 settings，Rust config 自动回退自费或出提醒文案
+              if (id === "onethu.harness") {
+                await preflightMadModel().catch(() => undefined);
               }
               const out = await callRust(id, "run", { command: c.id, input });
-              // 免费档请求被 IP 门禁弹掉（HTTP 307，校外常见）→ 强制重签发：
-              // 泵会自动升级到 SSO 重放 + webvpn 通道并写回新 base/cookie，下一条对话即恢复
+              // 漏判兜底：免费档请求仍被 IP 门禁弹掉（307）→ 强制重签 + 刷新可达性
               const errMsg = String((out as { error?: string })?.error ?? "");
-              if (id === "onethu.harness" && (errMsg.includes("307") || errMsg.includes("madmodel"))) {
-                void ensureMadModelToken(true).catch(() => undefined);
+              if (id === "onethu.harness" && errMsg.includes("307")) {
+                void forceRemint();
               }
               return out;
             },

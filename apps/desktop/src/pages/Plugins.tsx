@@ -5,6 +5,9 @@
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
 import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import type { CommandResult } from "../plugins/types.js";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { PageHead } from "../components/Layout.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -254,6 +257,41 @@ function ThemeApplyButton({ themePluginId, onMsg }: { themePluginId: string; onM
 
 /* ═══════════════ 模块卡 ═══════════════ */
 
+/** 结构化命令结果渲染：markdown（GFM）+ 条目列表 + 键值对 */
+function ResultBlock({ result }: { result: CommandResult }): ReactNode {
+  if (!result.markdown && !result.items?.length && !result.kv?.length) return null;
+  return (
+    <div className="plg-result">
+      {result.markdown ? (
+        <div className="plg-result-md">
+          <Markdown remarkPlugins={[remarkGfm]}>{result.markdown}</Markdown>
+        </div>
+      ) : null}
+      {result.kv?.length ? (
+        <div className="plg-result-kv">
+          {result.kv.map((x, i) => (
+            <div key={i} className="plg-result-kvrow">
+              <span className="plg-result-kvk">{x.k}</span>
+              <span className="plg-result-kvv">{x.v}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {result.items?.length ? (
+        <div className="plg-result-items">
+          {result.items.slice(0, 30).map((it, i) => (
+            <div key={i} className="plg-result-item">
+              <div className="plg-result-item-t">{it.title}</div>
+              {it.subtitle ? <div className="plg-result-item-s">{it.subtitle}</div> : null}
+              {it.meta ? <div className="plg-result-item-m">{it.meta}</div> : null}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function PluginCard({
   id,
   index,
@@ -268,6 +306,7 @@ function PluginCard({
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot).filter((c) => c.pluginId === id);
   const [open, setOpen] = useState(false);
   const [runMsg, setRunMsg] = useState<string | null>(null);
+  const [runResult, setRunResult] = useState<CommandResult | null>(null);
   const [input, setInput] = useState("");
   if (!rec) return null;
   const m = rec.manifest;
@@ -277,9 +316,19 @@ function PluginCard({
 
   const doRun = async (cmdId: string): Promise<void> => {
     setRunMsg("执行中…");
+    setRunResult(null);
     try {
-      const r = await runCommand(id, cmdId, input);
-      setRunMsg(r == null ? "完成" : String(typeof r === "string" ? r : JSON.stringify(r)).slice(0, 400));
+      const r = (await runCommand(id, cmdId, input)) as CommandResult | string | null;
+      if (r == null) {
+        setRunMsg("完成");
+      } else if (typeof r === "string") {
+        setRunMsg(r.slice(0, 400));
+      } else if (typeof r === "object") {
+        setRunResult(r);
+        setRunMsg(typeof r.text === "string" ? r.text.slice(0, 200) : null);
+      } else {
+        setRunMsg(String(r).slice(0, 400));
+      }
     } catch (e) {
       setRunMsg(`失败：${String(e instanceof Error ? e.message : e).slice(0, 300)}`);
     }
@@ -384,6 +433,9 @@ function PluginCard({
                       执行
                     </button>
                     {runMsg ? <div className="plg-runmsg">{runMsg}</div> : null}
+                    {runResult && (runResult.markdown || runResult.items?.length || runResult.kv?.length) ? (
+                      <ResultBlock result={runResult} />
+                    ) : null}
                   </div>
                 ))}
               </div>

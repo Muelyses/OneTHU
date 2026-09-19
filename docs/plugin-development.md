@@ -10,13 +10,14 @@
 3. [清单规范](#3-清单规范)
 4. [权限模型](#4-权限模型)
 5. [通用约定](#5-通用约定)
-6. [接入新的清华服务](#6-接入新的清华服务)
-7. [发布插件](#7-发布插件)
-8. [Rust sidecar 协议](#8-rust-sidecar-协议)
-9. [对话面板协议](#9-对话面板协议)
-10. [Android 内嵌形态](#10-android-内嵌形态)
-11. [调试](#11-调试)
-12. [版本记录](#12-版本记录)
+6. [插件 UI 通道与结构化结果](#6-插件-ui-通道与结构化结果)
+7. [接入新的清华服务](#7-接入新的清华服务)
+8. [发布插件](#8-发布插件)
+9. [Rust sidecar 协议](#9-rust-sidecar-协议)
+10. [对话面板协议](#10-对话面板协议)
+11. [Android 内嵌形态](#11-android-内嵌形态)
+12. [调试](#12-调试)
+13. [版本记录](#13-版本记录)
 
 ---
 
@@ -100,7 +101,7 @@ export default async function activate(ctx) {
 | `id` | string | 命令标识，对应 `run` 请求的 `command` 字段 |
 | `title` | string | 按钮文案 |
 | `inputLabel` / `inputPlaceholder` | string | 输入框标签与占位符；未设置时不渲染输入框 |
-| `dock` | boolean | 标记为对话面板命令，见 §7 |
+| `dock` | boolean | 标记为对话面板命令，见 §10 |
 
 ### 3.4 主题插件
 
@@ -258,7 +259,55 @@ css: `
   的调用链，后一步的入参必须是前一步返回的元素本体。工具实现中应按标识符查找元素
   后再传入，不应构造对象。
 
-## 6. 接入新的清华服务
+## 6. 插件 UI 通道与结构化结果
+
+插件不止能「执行命令返回一行字」：宿主提供 UI 通道（弹窗/表单/通知）与结构化
+结果渲染，插件可以构建完整的交互流。
+
+### 6.1 结构化命令结果
+
+`registerCommand` 的 run 返回值除纯字符串外，可返回 `CommandResult` 对象
+（`text` / `markdown` / `items` / `kv` 四类区块，见 [api-reference.md §0](./api-reference.md)），
+管理页在命令结果区渲染 Markdown（GFM 表格/代码块）、条目列表与键值对汇总：
+
+```js
+ctx.registerCommand({ id: "today", title: "今日概览" }, async () => ({
+  text: "共 5 条通知",
+  markdown: "| 课程 | 事项 |\n|---|---|\n| 高数 | 作业发布 |",
+  items: [
+    { title: "图书馆 3F-12", subtitle: "预约成功", meta: "13:00 – 17:00" },
+  ],
+  kv: [{ k: "今日课程", v: "3 节" }, { k: "电费余额", v: "23.4 元" }],
+}));
+```
+
+### 6.2 UI 通道（`onethu.ui`）
+
+| 方法 | 权限 | 用途 |
+|---|---|---|
+| `ui.toast(text)` | `ui` | 底部提示 3 秒 |
+| `ui.confirm(msg, {danger?})` | `ui` | 应用内确认弹窗（Promise 化），危险操作传 `{danger: true}` |
+| `ui.form(title, fields)` | `ui` | 通用表单弹窗：text/textarea/password/select 字段，resolve 键值对象（取消为 null） |
+| `ui.clipboard.write(text)` | `ui` | 写剪贴板 |
+| `ui.clipboard.read()` | `clipboard:read` | 读剪贴板（敏感权限，单列） |
+
+表单典型用法——插件收集参数后再执行写操作：
+
+```js
+ctx.registerCommand({ id: "book", title: "预订研讨间" }, async () => {
+  const f = await ctx.onethu.ui.form("预订研讨间", [
+    { key: "room", label: "研讨间", kind: "select", required: true,
+      options: [{ value: "b1", label: "B1-03" }, { value: "b2", label: "B2-07" }] },
+    { key: "date", label: "日期（YYYY-MM-DD）", required: true, default: "2026-09-20" },
+    { key: "note", label: "备注", kind: "textarea" },
+  ]);
+  if (!f) return "已取消";
+  if (!(await ctx.onethu.ui.confirm(`确认预订 ${f.room}？`, { danger: false }))) return "已取消";
+  // …执行预订
+});
+```
+
+## 7. 接入新的清华服务
 
 宿主已实现为独立命名空间的服务（`info`、`learn`、`library` 等）之外，其他清华校内
 系统可经 `onethu.ts` SDK 接入。SDK 复用宿主主会话：登录凭据、设备指纹、webvpn 通道
@@ -284,7 +333,7 @@ css: `
 **权限声明**：接入自定义服务需声明 `tsinghua:sdk`。该权限允许插件以用户登录态访问
 任意清华校内服务，应在插件描述中向用户说明具体访问目标。
 
-## 7. 发布插件
+## 8. 发布插件
 
 插件完成开发后可通过两种方式分发给其他用户：插件市场收录，或 GitHub 仓库直装。
 两者使用同一仓库格式约定，均仅覆盖 JS 插件；Rust 插件含平台二进制，仍经压缩包或
@@ -339,7 +388,7 @@ css: `
 权限声明与功能匹配、无超范围权限；无混淆代码、无远程动态拼装代码、无凭据收集
 行为。合并即收录，用户端刷新或等缓存过期（5 分钟）后可见。
 
-## 8. Rust sidecar 协议
+## 9. Rust sidecar 协议
 
 ### 8.1 通信格式
 
@@ -357,7 +406,7 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 | 消息 | 说明 |
 |---|---|
 | `onethu.call`（含 `ns`、`method`、`args`） | 调用 API，参数按位置传递；宿主以 `result` 或 `error` 回写 |
-| `progress` | 进度通知；对话面板场景支持 `kind` 字段，见 §7 |
+| `progress` | 进度通知；对话面板场景支持 `kind` 字段，见 §10 |
 | `log` | 日志行，展示于轨迹面板 |
 
 ### 8.2 实现约束
@@ -371,7 +420,37 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 - 不应依赖工作目录；宿主不保证当前目录。
 - 退出码非 0 或标准输出关闭时，宿主发出 `exit` 事件并清理进程记录。
 
-## 9. 对话面板协议
+### 9.3 OH 联动插件（MCP 之外的扩展通道）
+
+OH 的工具集除内置校园工具外，还内置两个联动工具，使模型可以调用**其他已启用
+插件**的能力：
+
+- `list_plugin_cmds`：列出已启用插件的命令清单；
+- `run_plugin_cmd`：执行某插件命令（`pluginId` / `cmdId` / `input`）。
+
+调用经宿主 `onethu.plugins.*` 门禁（OH 清单声明 `plugins:call` 权限）。**安全
+提示**：插件命令可能包含写操作，模型被指示执行前向用户说明；写型命令应由插件
+内部实现两段式确认（参照 OH 的 ConfirmNeeded 机制）。
+
+### 9.4 OH 接入 MCP 服务器
+
+OH 可作为 MCP（Model Context Protocol）客户端调用外部工具。在 OH 设置的
+「MCP 服务器」填 JSON 数组：
+
+```json
+[
+  { "name": "fs", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/me/docs"] },
+  { "name": "search", "command": "uvx", "args": ["mcp-server-fetch"] }
+]
+```
+
+实现为 **stdio 传输 + 冷启动模式**：每次工具调用重新 spawn server 进程
+（initialize → tools/list / tools/call → kill），无常驻状态，崩溃零影响。
+MCP 工具以 `mcp_<server>_<tool>` 命名注入对话（描述前缀「MCP·<server>」），
+与校园工具、联动插件工具同轮混用。当前为最小实现：不支持 resources/prompts
+与 OAuth 授权，需要这些能力的 server 暂不适用。
+
+## 10. 对话面板协议
 
 Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其渲染常驻对话面板：
 
@@ -399,7 +478,7 @@ Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其�
 会话管理命令的约定命名：`new_session`、`list_sessions`、`switch_session`、
 `delete_session`、`export_session`、`import_session`、`usage_report`、`selftest`。
 
-## 10. Android 内嵌形态
+## 11. Android 内嵌形态
 
 Android WebView 环境不允许执行任意路径的二进制文件，sidecar 形态在移动端不可用。
 官方 Harness 插件采用同一份 Rust 核心编译进应用进程的方式实现，通信经 Tauri 命令桥
@@ -416,7 +495,7 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 第三方 Rust 插件不提供移动端形态。
 
-## 11. 调试
+## 12. 调试
 
 | 方式 | 说明 |
 |---|---|
@@ -425,12 +504,13 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 | Android 日志 | `adb logcat -s onethu`，或 `adb logcat -d --pid=$(adb shell pidof app.onethu.desktop)` |
 | 端到端自测 | OneTHU-Harness 的 `test/sim_host.mjs`：模拟宿主门面与 OpenAI SSE 服务，覆盖握手、工具调用、流式输出、用量统计、会话管理与两段式确认 |
 
-## 12. 版本记录
+## 13. 版本记录
 
 | 版本 | 变更 |
 |---|---|
 | v1.4 | 新增 `ts` 命名空间与 `tsinghua:sdk` 权限（自定义清华服务接入 SDK：会话复用、通道分流、自愈重放）；新增 §6 接入指南 |
 | v1.5 | 新增 §7 发布插件：插件市场（OneTHU-Market 名单仓库，人工审查收录）与 GitHub 仓库直装 |
+| v1.6 | 插件平台化：§6 UI 通道（confirm/form/clipboard）与结构化命令结果（markdown/items/kv）；OH 联动插件（§9.3）与 MCP 客户端（§9.4，stdio 冷启动）；新增权限 clipboard:read、plugins:call |
 | v1.3 | 文档重写为标准格式；新增 `llm`、`theme`、`exthw:read`、`exthw:refresh`、`webview` 权限，新增 `llm`、`theme`、`exthw` 命名空间与 `ui.webModal`；设置项新增 `select` 类型 |
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |

@@ -14,6 +14,7 @@ import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listTh
 import { refreshExtHw } from "../state/exthw.js";
 import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
 import { AuthRequiredError } from "@onethu/core";
+import type { FormField } from "../lib/formModal.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
@@ -505,6 +506,29 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
         await invoke("open_web_modal", { url });
       },
+      /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式。 */
+      confirm: async (msg: string, opts?: { danger?: boolean }): Promise<boolean> => {
+        gate(perms, "ui", "ui.confirm");
+        const { confirmOk, confirmDanger } = await import("../lib/confirm.js");
+        return opts?.danger ? confirmDanger(String(msg ?? "")) : confirmOk(String(msg ?? ""));
+      },
+      /** 通用表单弹窗：字段定义见类型 FormField；resolve 键值对象，取消 resolve null。 */
+      form: async (title: string, fields: FormField[]): Promise<Record<string, string> | null> => {
+        gate(perms, "ui", "ui.form");
+        const { openFormModal } = await import("../lib/formModal.js");
+        return openFormModal(String(title ?? "请填写"), Array.isArray(fields) ? fields : []);
+      },
+      /** 剪贴板：写无需确认；read 需 clipboard:read 权限（敏感，可读密码管理器内容）。 */
+      clipboard: {
+        write: async (text: string): Promise<void> => {
+          gate(perms, "ui", "ui.clipboard.write");
+          await navigator.clipboard.writeText(String(text ?? ""));
+        },
+        read: async (): Promise<string> => {
+          gate(perms, "clipboard:read", "ui.clipboard.read");
+          return navigator.clipboard.readText();
+        },
+      },
     },
     llm: {
       /** 单轮对话（经内置 Harness：清华 MadModel 免费档 ↔ 自费 API 自动调度）。
@@ -561,6 +585,31 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       setDayNight: async (dayId: string | null, nightId: string | null) => {
         gate(perms, "theme", "theme.apply");
         setDayNightTheme(dayId ?? null, nightId ?? null);
+      },
+    },
+    plugins: {
+      /** 列出已启用 JS 插件及其命令（供 OH 等调用方做工具发现）。需 plugins:call 权限 */
+      list: async (): Promise<Array<{ pluginId: string; pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>> => {
+        gate(perms, "plugins:call", "plugins.list");
+        const { liveCommands } = await import("./loader.js");
+        const byPlugin = new Map<string, { pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>();
+        for (const [key, cmd] of liveCommands) {
+          const pid = key.split(":")[0] ?? "";
+          if (!pid || pid === "onethu.harness") continue;
+          const rec = getPlugin(pid);
+          if (!rec?.enabled) continue;
+          const entry = byPlugin.get(pid) ?? { pluginName: rec.manifest.name, commands: [] };
+          entry.commands.push({ id: cmd.id, title: cmd.title, inputLabel: cmd.inputLabel });
+          byPlugin.set(pid, entry);
+        }
+        return [...byPlugin.entries()].map(([pluginId, v]) => ({ pluginId, ...v }));
+      },
+      /** 执行已启用插件的命令（input 为文本参数）。高危：命令可能含写操作，
+       *  由各插件内部的两段确认与权限门禁兜底。需 plugins:call 权限 */
+      call: async (pluginId: string, cmdId: string, input?: string): Promise<unknown> => {
+        gate(perms, "plugins:call", "plugins.call");
+        const { runCommand } = await import("./loader.js");
+        return runCommand(String(pluginId ?? ""), String(cmdId ?? ""), String(input ?? ""));
       },
     },
     ts: {

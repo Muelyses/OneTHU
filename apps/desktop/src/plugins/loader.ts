@@ -23,7 +23,7 @@ interface LiveCommand extends PluginCommand {
   pluginId: string;
   run: (input: string) => Promise<unknown> | unknown;
 }
-const liveCommands = new Map<string, LiveCommand>();
+export const liveCommands = new Map<string, LiveCommand>();
 const cmdListeners = new Set<() => void>();
 /** 缓存快照：变更时重建（getSnapshot 稳定性） */
 let cmdCache: LiveCommand[] = [];
@@ -266,14 +266,14 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     "library:read", "library:book", "network:read",
     "learn:read", "learn:write", "venue:read", "venue:book", "xk:read", "kongjian:book",
     "cal:read", "cal:write", "mail:read", "mail:write", "cloud:read", "cloud:write",
-    "nav", "ui", "storage", "net:external", "llm",
-  ],
+    "nav", "ui", "storage", "net:external", "llm", "plugins:call"],
   settings: [
     { key: "provider", label: "模型源", type: "select", default: "", options: [
       { value: "madmodel", label: "清华 MadModel 免费（DeepSeek-V4-Flash · 校园网/VPN · 自动续期）" },
       { value: "custom", label: "自费 API（下方 Key/Endpoint/Model 生效）" },
       { value: "", label: "默认（自动：填了 Key 走自费，没填走 MadModel）" },
     ] },
+    { key: "mcpServers", label: "MCP 服务器（JSON 数组，可空）", type: "textarea", placeholder: '[{"name":"fs","command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/Users/me/docs"]}]', default: "" },
     { key: "apiKey", label: "API Key（自费模式用）", type: "password", placeholder: "sk-…" },
     { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
     { key: "model", label: "模型（自费模式用；免费档固定 DeepSeek-V4-Flash）", type: "text", default: "deepseek-chat" },

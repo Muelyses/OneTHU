@@ -28,6 +28,20 @@
 **链式调用**：形如 `library.list → floors → sections → seats → book` 的调用链，
 后一步入参必须是前一步返回的元素本体，不应按标识符构造对象。
 
+**结构化结果**：命令的返回值除纯字符串外，可返回 `CommandResult` 对象，管理页按
+区块渲染：
+
+```js
+return {
+  text: "共 5 条通知",                       // 顶部摘要行（可选）
+  markdown: "## 今日通知\n| 课程 | 内容 |\n|---|---|\n| 高数 | 作业发布 |",  // Markdown 正文（GFM 表格/列表/代码块）
+  items: [                                   // 条目列表（title 必填）
+    { title: "高数作业发布", subtitle: "第三章习题", meta: "2026-09-19 截止" }
+  ],
+  kv: [{ k: "今日课程", v: "3 节" }]         // 键值对汇总
+};
+```
+
 **超时与网络**：所有请求 45 秒超时。清华校内域名在校外网络不可达；校内业务统一经
 本 API 访问，`net.fetch` 仅用于校外地址。
 
@@ -52,6 +66,8 @@
 | `theme` | `theme.*` |
 | `exthw:read` / `exthw:refresh` | `exthw.snapshot` / `exthw.refresh` |
 | `tsinghua:sdk` | `ts.*`（以用户登录态访问任意清华校内服务） |
+| `clipboard:read` | `ui.clipboard.read`（读取系统剪贴板，敏感） |
+| `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
 | `webview` | `ui.webModal` |
 | `nav` / `ui` | `nav.go` / `ui.toast` |
 | `storage` | `storage.*`、`settings.get` |
@@ -268,10 +284,28 @@ export default async function activate(ctx) {
 `ts.client()` 亦可用于需要保持同一会话连续操作的场景（多次调用返回的客户端共享同一
 cookie 池，无需额外处理）。
 
-## 6. `info`
+## 6. `plugins` — 联动插件
+
+列出并执行其他已启用插件的命令，用于插件间联动（如 OH 对话工具化）。需
+`plugins:call` 权限——该权限允许触发任意已启用插件的命令（含写操作），安装确认
+需重点说明。
+
+| 方法 | 说明 |
+|---|
+|---|
+| `plugins.list()` | 列出已启用 JS 插件及其命令（`{pluginId, pluginName, commands[]}`） |
+| `plugins.call(pluginId, cmdId, input?)` | 执行某插件命令，返回该命令的原始结果 |
+
+```js
+const cmds = await ctx.onethu.plugins.list();
+// [{ pluginId: "onethu.dept-notices", pluginName: "院系通知", commands: [{ id: "fetch", title: "拉取最新通知", inputLabel: undefined }] }]
+const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
+```
+
+## 7. `info`
 
 对应清华信息门户（info.tsinghua.edu.cn），提供教务与生活事务的官方记录数据。学习
-行为类数据（作业、讨论）见 §8。
+行为类数据（作业、讨论）见 §9。
 
 **权限** `info:read`
 
@@ -302,7 +336,7 @@ cookie 池，无需额外处理）。
   "weekText": "第1-16周", "category": "讲授课" }
 ```
 
-## 7. `coursex`
+## 8. `coursex`
 
 对应 courseX 课程共享计划，提供跨学期课程信息检索，无需登录凭据。
 
@@ -314,7 +348,7 @@ cookie 池，无需额外处理）。
 | `coursex.search(q, semester?)` | 按关键词检索课程摘要 |
 | `coursex.detail(id)` | 课程详情；查无详情时返回 `{ id, error }` 或 `null` |
 
-## 8. `learn`
+## 9. `learn`
 
 对应清华网络学堂（web.learn.tsinghua.edu.cn），提供课程、作业、通知、课件与课程
 讨论区。
@@ -335,7 +369,7 @@ cookie 池，无需额外处理）。
 | `learn.reply(wlkcid, threadId, content)` | 回帖（写操作，纯文本正文） |
 | `learn.post(wlkcid, bqid, title, html)` | 发帖（写操作，HTML 正文） |
 
-## 9. `cal`
+## 10. `cal`
 
 对应应用日程功能。用户配置清华邮箱 CalDAV 后写操作同步至云端日历，未配置时写入
 本地。`agenda` 合并云端与本地日程并展开重复规则。
@@ -349,7 +383,7 @@ cookie 池，无需额外处理）。
 | `cal.edit(uid, ch)` | 修改；仅传入需变更的字段，`location` / `note` 传空串表示清除 |
 | `cal.remove(uid)` | 删除；自动路由至云端或本地 |
 
-## 10. `venue`
+## 11. `venue`
 
 对应清华大学体育部场馆中心。**接口范围限制**：依据体育部 2025-12-03 公告第七条第
 12 款，通过脚本提交预约将被暂停预订权限 6 个月，因此宿主仅提供查询、退订与官方页面
@@ -365,7 +399,7 @@ cookie 池，无需额外处理）。
 | `venue.cancel(resvUuid)` | 退订（写操作） |
 | `venue.jump(sceneUuid)` | 返回官方预约页地址，预约操作应引导用户在该页面完成 |
 
-## 11. `xk`
+## 12. `xk`
 
 对应清华选课系统的只读数据，不包含选课提交操作。
 
@@ -379,7 +413,7 @@ cookie 池，无需额外处理）。
 | `xk.detail(teacherId, code)` | 课程详情 |
 | `xk.reviews(course, teacher?)` | 社区课程评价；返回 `{ course, teacher, count, avg, reviews }` 或 `null` |
 
-## 12. `kongjian`
+## 13. `kongjian`
 
 对应宿舍公共空间预约。
 
@@ -392,7 +426,7 @@ cookie 池，无需额外处理）。
 | `kongjian.book(bookUrl, info)` | 预约（写操作）；`bookUrl` 来自 `page` 返回，`info` 为 `{ name, sid, tel, other }` |
 | `kongjian.cancel(target)` | 取消（写操作） |
 
-## 13. `card` / `dorm` / `network`
+## 14. `card` / `dorm` / `network`
 
 分别对应校园卡结算中心、学生宿舍服务与校园网自助服务。
 
@@ -409,7 +443,7 @@ cookie 池，无需额外处理）。
 | `network.deviceCount()` | 在线设备数量 |
 | `network.accountInfo()` | 账户信息：`{ realName, userGroup, allowedDevices }` |
 
-## 14. `library` / `libroom`
+## 15. `library` / `libroom`
 
 分别对应图书馆座位预约系统与研讨间预约系统。
 
@@ -438,7 +472,7 @@ cookie 池，无需额外处理）。
 研讨间系统对首次使用的账号可能返回「会话未能建立」，用户进入应用「预约」页面访问
 一次即可完成初始化。
 
-## 15. `mail` / `cloud`
+## 16. `mail` / `cloud`
 
 分别对应清华邮箱与清华云盘（Seafile）。
 
@@ -457,17 +491,21 @@ cookie 池，无需额外处理）。
 | `cloud.upload(repoId, parentDir, localPath, replace)` | 上传（写操作）；`localPath` 支持 `~` |
 | `cloud.share(repoId, path, expireDays)` | 生成分享链接（写操作）；`expireDays` 为 0 表示永久 |
 
-## 16. `nav` / `ui` / `storage` / `settings`
+## 17. `nav` / `ui` / `storage` / `settings`
 
 | 方法 | 权限 | 说明 |
 |---|---|---|
-| `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §18 |
+| `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §19 |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
+| `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 用户是否确认；`{danger: true}` 走危险操作样式 |
+| `ui.form(title, fields)` | `ui` | 通用表单弹窗，`fields` 为 `{key, label, kind?, placeholder?, default?, required?, options?}[]`（kind: text/textarea/password/select）；resolve 键值对象，取消 resolve `null` |
+| `ui.clipboard.write(text)` | `ui` | 写系统剪贴板 |
+| `ui.clipboard.read()` | `clipboard:read` | 读系统剪贴板（敏感：可读密码管理器复制的口令，权限单列） |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 
-## 17. `net`
+## 18. `net`
 
 外部网络请求接口，经 Rust 传输层发出，不受 WebView 同源策略限制，支持自定义请求头，
 45 秒超时，跟随重定向。仅用于访问校外地址；清华校内业务应使用前述命名空间。
@@ -487,7 +525,7 @@ const reply = (await res.json()).choices[0].message.content;
 
 调用 Anthropic 兼容接口时替换为 `x-api-key` 与 `anthropic-version` 请求头。
 
-## 18. 页面路由
+## 19. 页面路由
 
 `nav.go(page, params?)` 的 `page` 取值：
 

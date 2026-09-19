@@ -4452,3 +4452,37 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   font-size: 10px; font-weight: 600; vertical-align: 1px;
   background: var(--green-soft); color: var(--green);
 }
+
+/* ── 插件结构化结果（ResultBlock）── */
+.plg-result { margin-top: 6px; border: 1px solid var(--border-soft); border-radius: var(--r-md); background: var(--surface-2); padding: 8px 10px; }
+.plg-result-md { font-size: 12px; color: var(--text-1); line-height: 1.55; }
+.plg-result-md table { border-collapse: collapse; margin: 6px 0; width: 100%; }
+.plg-result-md th, .plg-result-md td { border: 1px solid var(--border); padding: 3px 8px; font-size: 11px; text-align: left; }
+.plg-result-md code { background: var(--surface-3); border-radius: 4px; padding: 1px 4px; font-size: 11px; }
+.plg-result-md pre { background: var(--surface-3); border-radius: var(--r-sm); padding: 8px; overflow: auto; }
+.plg-result-kv { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.plg-result-kvrow { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; }
+.plg-result-kvk { color: var(--text-3); flex: none; }
+.plg-result-kvv { color: var(--text-1); text-align: right; word-break: break-all; }
+.plg-result-items { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.plg-result-item { padding: 5px 8px; border: 1px solid var(--border-soft); border-radius: var(--r-sm); background: var(--surface); }
+.plg-result-item-t { font-size: 12px; font-weight: 600; color: var(--text-1); }
+.plg-result-item-s { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+.plg-result-item-m { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+
+/* ── 插件表单弹窗 ── */
+.plg-form-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(0, 0, 0, .35); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.plg-form-modal {
+  width: min(440px, 92vw); max-height: 80vh; overflow: auto;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-3); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.plg-form-title { font-size: 14px; font-weight: 700; color: var(--text-1); }
+.plg-form-field { display: flex; flex-direction: column; gap: 4px; }
+.plg-form-label { font-size: 11px; color: var(--text-3); }
+.plg-form-ops { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }

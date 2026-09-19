@@ -35,6 +35,8 @@ export type PluginPermission =
   | "storage" // 插件私有键值存储
   | "net:external" // 外部网络请求（大模型 API 等）
   | "tsinghua:sdk" // 以用户登录态访问任意清华校内服务（自定义服务接入 SDK；安装时重点确认）
+  | "clipboard:read" // 读取系统剪贴板（敏感：可读密码管理器复制的口令）
+  | "plugins:call" // 列出并执行其他已启用插件的命令（联动插件；OH 对话工具化需要）
   | "llm" // 经内置 Harness 的 LLM 对话（清华 MadModel 免费档 / 自费 API，自动调度）
   | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
   | "exthw:read" // 外部作业源（雨课堂/TUOJ/Tyche）状态与作业快照
@@ -100,6 +102,19 @@ export interface PluginManifest {
 }
 
 /** 插件注册的命令：显示在插件管理页，可带一段文本输入（agent prompt 等） */
+/** 命令/面板的结构化结果：runCommand 与 ui 面板均可返回，
+ *  宿主按区块渲染（纯 string 入参时自动包成 { text }）。 */
+export interface CommandResult {
+  /** 纯文本摘要（渲染在区块顶部） */
+  text?: string;
+  /** Markdown 正文（react-markdown + GFM：表格/列表/代码块/链接） */
+  markdown?: string;
+  /** 条目列表（每条 title 必填，subtitle/meta 为次要行） */
+  items?: Array<{ title: string; subtitle?: string; meta?: string }>;
+  /** 键值对（小型状态/汇总展示） */
+  kv?: Array<{ k: string; v: string }>;
+}
+
 export interface PluginCommand {
   id: string;
   title: string;
@@ -291,8 +306,23 @@ export interface OnethuApi {
   };
   ui: {
     toast(text: string): void;
+    /** 应用内确认弹窗（Promise 化）；opts.danger 走危险操作样式（红色确认钮）。需 ui 权限 */
+    confirm(msg: string, opts?: { danger?: boolean }): Promise<boolean>;
+    /** 通用表单弹窗：fields 为 FormField[]（text/textarea/password/select），
+     *  resolve 键值对象；用户取消 resolve null。需 ui 权限 */
+    form(title: string, fields: Array<{
+      key: string; label: string;
+      kind?: "text" | "textarea" | "password" | "select";
+      placeholder?: string; default?: string; required?: boolean;
+      options?: Array<{ value: string; label: string }>;
+    }>): Promise<Record<string, string> | null>;
     /** 应用内 WebView 模态打开 URL（Android 桌面模式浏览；桌面端抛错由调用方降级）。需 webview 权限 */
     webModal(url: string): Promise<void>;
+    /** 剪贴板：write 需 ui 权限；read 需 clipboard:read 权限（敏感） */
+    clipboard: {
+      write(text: string): Promise<void>;
+      read(): Promise<string>;
+    };
   };
   storage: {
     get<T = string>(key: string): T | null;
@@ -308,6 +338,12 @@ export interface OnethuApi {
     /** 外部 HTTP(S) 请求（经应用传输层，无 CORS 限制；需 net:external 权限）。
      *  返回标准 Response（可用 res.json()/res.text()）。 */
     fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
+  };
+  plugins: {
+    /** 列出已启用 JS 插件及其命令（联动插件工具发现）。需 plugins:call 权限 */
+    list(): Promise<Array<{ pluginId: string; pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>>;
+    /** 执行已启用插件的命令（高危：命令可能含写操作，由插件内部两段确认兜底）。需 plugins:call 权限 */
+    call(pluginId: string, cmdId: string, input?: string): Promise<unknown>;
   };
   ts: {
     /** 会话探活：返回主会话当前可用性。需 tsinghua:sdk 权限。 */

@@ -221,7 +221,10 @@ export async function fetchRegistry(force = false): Promise<MarketRegistry> {
       /* 缓存损坏则直接拉取 */
     }
   }
-  const res = await externalFetch(marketUrl());
+  // force 刷新时加 cache-buster：raw.githubusercontent 的 Fastly 边缘缓存会短时间
+  // 吐旧内容（不同客户端命中不同节点），换 query 视为新的缓存键直出最新
+  const bust = force ? (marketUrl().includes("?") ? "&" : "?") + `t=${Date.now()}` : "";
+  const res = await externalFetch(marketUrl() + bust);
   if (!res.ok) throw new Error(`市场名单拉取失败：HTTP ${res.status}`);
   const data = (await res.json()) as MarketRegistry;
   if (!data || !Array.isArray(data.plugins)) throw new Error("市场名单格式无效（缺 plugins 数组）");

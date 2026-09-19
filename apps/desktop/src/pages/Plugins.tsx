@@ -47,6 +47,22 @@ export function PluginsPage(): ReactNode {
   const themesSnap = useThemes();
   const plugins = cat === "all" ? allPlugins : allPlugins.filter((p) => (p.manifest.category ?? "general") === cat);
   const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" | "mcp" } | null>(null);
+  /** 市场名单版本（5 分钟缓存内零开销；用于已装卡片「可更新」提示） */
+  const [marketVersions, setMarketVersions] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let alive = true;
+    fetchRegistry()
+      .then((reg) => {
+        if (!alive) return;
+        const map: Record<string, string> = {};
+        for (const it of reg.plugins) map[it.id] = it.version;
+        setMarketVersions(map);
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [view]);
   const liveCount = plugins.filter((p) => p.enabled && isLive(p.manifest.id)).length;
   const coreCount = plugins.filter((p) => p.embedded).length;
 
@@ -135,7 +151,7 @@ export function PluginsPage(): ReactNode {
       ) : (
         <div className="plg-rack">
           {plugins.map((p, i) => (
-            <PluginCard key={p.manifest.id} id={p.manifest.id} index={i} onOpenSheet={setSheet} />
+            <PluginCard key={p.manifest.id} id={p.manifest.id} index={i} onOpenSheet={setSheet} marketVersion={marketVersions[p.manifest.id]} onGoMarket={() => setView("market")} />
           ))}
         </div>
       )}
@@ -298,10 +314,15 @@ function PluginCard({
   id,
   index,
   onOpenSheet,
+  marketVersion,
+  onGoMarket,
 }: {
   id: string;
   index: number;
   onOpenSheet: (s: { id: string; mode: "settings" | "log" | "mcp" }) => void;
+  /** 市场名单里该插件的版本（有新版时卡片显示「可更新」徽标） */
+  marketVersion?: string;
+  onGoMarket?: () => void;
 }): ReactNode {
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
@@ -384,6 +405,11 @@ function PluginCard({
           {id === "onethu.harness" ? (
             <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>
               MCP
+            </button>
+          ) : null}
+          {marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
+            <button className="btn btn-ghost plg-update-flag" title={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>
+              可更新 ↑
             </button>
           ) : null}
           <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>

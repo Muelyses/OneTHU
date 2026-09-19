@@ -4509,3 +4509,6 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 .plg-tab-root { flex: 1; min-height: 200px; border-radius: var(--r-lg); }
 .plg-tab-root > * { max-width: 100%; }
 .plg-svg-icon svg { width: 100%; height: 100%; display: block; }
+
+/* ── 已装卡片「可更新」徽标 ── */
+.plg-update-flag { color: var(--accent, #3b82f6); font-weight: 600; }

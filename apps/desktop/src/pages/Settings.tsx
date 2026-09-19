@@ -30,11 +30,12 @@ import {
   consumeExtHwScrollRequest,
   ensureExtHwCredsLoaded,
   extHwLogin,
+  removeExtHwCreds,
   saveExtHwCreds,
   refreshExtHw,
   useExternalHomework,
 } from "../state/exthw.js";
-import type { ExtHwCreds } from "@onethu/core";
+import type { ExtHwCreds, ExtHwSourceId } from "@onethu/core";
 
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
@@ -689,10 +690,45 @@ function ExtHwSection() {
       .finally(() => setBusy(null));
   };
 
+  /** R12 17.2：单源退出登录 —— 确认后只清该源凭据，不影响其他源 */
+  const onLogout = (source: ExtHwSourceId) => {
+    const label = source === "yuketang" ? "雨课堂" : source === "tuoj" ? "TUOJ" : "Tyche";
+    void confirmOk(`确定退出${label}登录？将清除本机保存的${label}凭据，不影响其他源。`).then(
+      async (ok) => {
+        if (!ok) return;
+        setBusy(`logout-${source}`);
+        setMsg(null);
+        try {
+          await removeExtHwCreds(source);
+          // 同步清空表单，避免随后点「保存」把旧 Cookie 又写回去
+          if (source === "yuketang") {
+            setYktCookie("");
+          } else if (source === "tuoj") {
+            setTuojCookie("");
+            setTuojVia(undefined);
+            setTuojPwd("");
+          } else {
+            setTycheCookie("");
+            setTychePwd("");
+          }
+          setMsg(`已退出${label}登录。`);
+          void refreshExtHw();
+        } catch (e: unknown) {
+          setMsg(`退出${label}登录失败：${errMsg(e)}`);
+        } finally {
+          setBusy(null);
+        }
+      },
+    );
+  };
+
+  const yktConfigured = Boolean(yktCookie.trim());
+  const tuojConfigured = Boolean(tuojCookie.trim()) || tuojVia === "cas" || ext.tuojAuto.kind === "ok";
+  const tycheConfigured = Boolean(tycheCookie.trim());
   const srcRows: Array<{ id: "yuketang" | "tuoj" | "tyche"; label: string; logged: boolean }> = [
-    { id: "yuketang", label: "雨课堂", logged: Boolean(yktCookie.trim()) },
-    { id: "tuoj", label: "TUOJ", logged: Boolean(tuojCookie.trim()) },
-    { id: "tyche", label: "Tyche", logged: Boolean(tycheCookie.trim()) },
+    { id: "yuketang", label: "雨课堂", logged: yktConfigured },
+    { id: "tuoj", label: "TUOJ", logged: tuojConfigured },
+    { id: "tyche", label: "Tyche", logged: tycheConfigured },
   ];
   const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--mono, monospace)", fontSize: 12 } as const;
   const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
@@ -722,6 +758,15 @@ function ExtHwSection() {
                 <span className="setting-desc" style={{ alignSelf: "center" }}>
                   {yktQrOpen ? "打开微信或雨豆APP 扫描二维码" : yktCookie.trim() ? "已登录" : "未登录"}
                 </span>
+                {yktConfigured ? (
+                  <button
+                    className="btn"
+                    disabled={busy !== null}
+                    onClick={() => onLogout("yuketang")}
+                  >
+                    {busy === "logout-yuketang" ? "退出中…" : "退出登录"}
+                  </button>
+                ) : null}
               </div>
               {yktQrOpen ? (
                 <YktQrPanel
@@ -769,10 +814,15 @@ function ExtHwSection() {
                   {busy === "tuoj-cas" ? "登录中…" : "用清华统一认证登录"}
                 </button>
                 <span className="setting-desc" style={{ alignSelf: "center" }}>
-                  {tuojCookie.trim() || ext.tuojAuto.kind === "ok"
+                  {tuojConfigured
                     ? `已登录${tuojVia === "cas" || ext.tuojAuto.kind === "ok" ? "（统一认证）" : "（账号密码）"}`
                     : "未登录"}
                 </span>
+                {tuojConfigured ? (
+                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuoj")}>
+                    {busy === "logout-tuoj" ? "退出中…" : "退出登录"}
+                  </button>
+                ) : null}
               </div>
               {/* R11 16.2：统一认证自动登录结果（成功 ✅ / 无账号提示 / 失败引导手动） */}
               {ext.tuojAuto.kind === "ok" ? (
@@ -818,6 +868,11 @@ function ExtHwSection() {
                 <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
                   {busy === "tyche-login" ? "登录中…" : "登录"}
                 </button>
+                {tycheConfigured ? (
+                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tyche")}>
+                    {busy === "logout-tyche" ? "退出中…" : "退出登录"}
+                  </button>
+                ) : null}
               </div>
             </div>
 

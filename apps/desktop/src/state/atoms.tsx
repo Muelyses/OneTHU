@@ -26,6 +26,7 @@ import {
 import type { LearnNav, Page } from "./app.js";
 import { cacheGet } from "./cache.js";
 import { getPluginAtom, pluginAtomKindOf } from "../plugins/pluginAtoms.js";
+import { getPluginTab } from "../plugins/tabs.js";
 import { FAVS_MAX_DEPTH, loadFavs, type AtomRef } from "./favorites.js";
 import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
@@ -272,7 +273,14 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
       sub: meta?.sub ?? def.group,
       icon: svgIcon(def.iconSvg),
       group: def.group,
-      open: (nav) => nav(target, undefined),
+      open: (nav) => {
+        // 目标 tab 未注册（插件停用/无 tab 形态如 OH）→ 降级提示而非跳空白页
+        if (!getPluginTab(target)) {
+          showToast("该插件功能页未启用");
+          return;
+        }
+        nav(target, undefined);
+      },
     };
   }
   if (kind === "page") {

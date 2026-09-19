@@ -17,7 +17,7 @@ import { AuthRequiredError } from "@onethu/core";
 import type { FormField } from "../lib/formModal.js";
 import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
 import { getTabRoot, onTabReady } from "./tabs.js";
-import { pluginAtomKindOf } from "./pluginAtoms.js";
+import { getPluginAtom, pluginAtomKindOf, pluginAtomKinds, registerStaticAtomItem, staticAtomKinds } from "./pluginAtoms.js";
 import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
@@ -573,6 +573,38 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           saveFavs(d);
           window.dispatchEvent(new Event("onethu.favs.changed"));
         }
+      },
+      /** 收藏任意已注册种类的原子（跨插件；meta 非空且该种类未注册时内联注册静态种类，
+       *  供 OH 等无 ctx 通道的调用方使用） */
+      addAtom: (ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void => {
+        gate(perms, "ui", "favorites.addAtom");
+        const kind = String(ref?.kind ?? "");
+        const key = String(ref?.key ?? "");
+        if (!kind.startsWith("plugin:") || !kind.slice("plugin:".length) || !key) {
+          throw new Error("addAtom 需要 { kind: \"plugin:<插件id>\", key }");
+        }
+        if (meta && typeof meta.title === "string" && meta.title && !getPluginAtom(kind)) {
+          registerStaticAtomItem(kind, key, meta);
+        }
+        const d = loadFavs();
+        const fid = folderId ? String(folderId) : d.order[0];
+        const f = fid ? d.folders[fid] : undefined;
+        if (!f) throw new Error("收藏夹不存在（先在收藏夹页创建）");
+        const atomKey = atomKeyOf({ kind, key });
+        if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
+          f.items.push({ t: "a" as const, atom: { kind, key } });
+          saveFavs(d);
+          window.dispatchEvent(new Event("onethu.favs.changed"));
+        }
+      },
+      /** 列出全部可收藏的插件原子种类（供调用方发现；OH 工具化用） */
+      kinds: (): Array<{ kind: string; group: string; source: "registered" | "static" }> => {
+        gate(perms, "ui", "favorites.kinds");
+        const reg = new Set(pluginAtomKinds());
+        return [
+          ...[...reg].map((kind) => ({ kind, group: getPluginAtom(kind)?.group ?? "插件", source: "registered" as const })),
+          ...staticAtomKinds().filter((x) => !reg.has(x.kind)).map((x) => ({ kind: x.kind, group: x.group, source: "static" as const })),
+        ];
       },
       /** 列出本插件被收藏的原子 */
       list: (): Array<{ folderId: string; folderTitle: string; key: string }> => {

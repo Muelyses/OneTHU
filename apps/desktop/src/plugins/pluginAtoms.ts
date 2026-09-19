@@ -47,3 +47,29 @@ export function getPluginAtom(kind: string): PluginAtomDef | undefined {
 export function pluginAtomKinds(): string[] {
   return [...atoms.keys()];
 }
+
+/* ── 静态原子种类（meta 内联注册）——供无 JS ctx 通道的插件（如 OH sidecar）经
+ *    favorites.addAtom 顺带注册：resolve 从调用时缓存的 key→meta 表查。 ── */
+const staticMeta = new Map<string, { group: string; iconSvg?: string; items: Map<string, { title: string; sub?: string }> }>();
+
+export function registerStaticAtomItem(kind: string, key: string, meta: { title: string; sub?: string; group?: string; iconSvg?: string }): void {
+  let entry = staticMeta.get(kind);
+  if (!entry) {
+    entry = { group: meta.group ?? "插件", iconSvg: meta.iconSvg, items: new Map() };
+    staticMeta.set(kind, entry);
+    if (!atoms.has(kind)) {
+      atoms.set(kind, {
+        kind,
+        pluginId: kind.slice("plugin:".length),
+        group: entry.group,
+        iconSvg: entry.iconSvg,
+        resolve: (k) => entry!.items.get(k) ?? null,
+      });
+    }
+  }
+  entry.items.set(key, { title: meta.title, sub: meta.sub });
+}
+
+export function staticAtomKinds(): Array<{ kind: string; group: string }> {
+  return [...staticMeta.entries()].map(([kind, e]) => ({ kind, group: e.group }));
+}

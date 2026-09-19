@@ -349,6 +349,10 @@ export interface OnethuApi {
     add(key: string, folderId?: string): void;
     /** 列出本插件已被收藏的原子的收藏夹与 key */
     list(): Array<{ folderId: string; folderTitle: string; key: string }>;
+    /** 收藏任意已注册种类的原子（跨插件）；meta 提供展示元数据（该种类未注册时内联注册） */
+    addAtom(ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void;
+    /** 列出全部可收藏的插件原子种类 */
+    kinds(): Array<{ kind: string; group: string; source: "registered" | "static" }>;
   };
   storage: {
     get<T = string>(key: string): T | null;

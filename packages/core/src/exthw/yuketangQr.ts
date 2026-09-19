@@ -189,13 +189,15 @@ export async function yuketangQrPoll(
   } catch (e) {
     if (aborted) return { done: false, aborted: true, message: "已取消" };
     if (timedOut) return { done: false, timedOut: true, message: "等待扫码超时" };
+    // R17b 24.1：长轮询的**传输层错误**（connection aborted / reset / operation timed out /
+    // network error 等，即任何非 HTTP 响应类错误）一律按「未扫码超时」处理 →
+    // 状态机用**同一 token** 继续轮询，直到二维码过期（~5min）或被取消。
+    // 真机根因：App 退后台被 MIUI 冻结/掐断网络 → reqwest 抛 `connection aborted`，
+    // 旧逻辑当硬错误退出 → 扫码作废。这里不再因一次连接中断就退出。
+    // HTTP 层错误（4xx/5xx、code!=0）不会抛异常，走上面的正常返回，语义保持不变（不吞）。
+    // 原始错误串保留在 message 里（仅诊断用；timedOut 路径 UI 不展示）。
     const message = e instanceof Error ? e.message : String(e);
-    // R17 23.1：传输层自身超时（reqwest `operation timed out` / JS 兜底「请求超时」）
-    // 同样按「未扫码超时」处理 → 状态机重发，而不是当硬错误直接退出。
-    if (/timed?\s*out|timeout|超时/i.test(message)) {
-      return { done: false, timedOut: true, message: "等待扫码超时（传输层超时）" };
-    }
-    return { done: false, message };
+    return { done: false, timedOut: true, message };
   } finally {
     if (timer) clearTimeout(timer);
     external?.removeEventListener("abort", onAbort);
@@ -237,7 +239,8 @@ export async function runYuketangQrLogin(deps: RunYuketangQrLoginDeps): Promise<
     if (signal?.aborted) return { done: false, aborted: true, message: "已取消" };
     deps.onPhase?.({ phase: "qr", qrContent: info.qrContent, expireAt: info.expireAt });
 
-    // 在二维码有效期内持续长轮询；单次超时后自动重发（同一 token）
+    // 在二维码有效期内持续长轮询；单次超时 / 传输层连接被掐（R17b 24.1）后
+    // 自动重发（**同一 token**，二维码不变），直到过期重建。
     while (now() < info.expireAt) {
       const r = await yuketangQrPoll(deps.fetchLike, info.token, { signal, timeoutMs: pollTimeoutMs });
       if (r.aborted) return r;

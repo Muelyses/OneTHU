@@ -1150,13 +1150,13 @@ fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String>
     };
     NATIVE_JAR_ARC.clear();
     {
-        let g = NATIVE_JAR_ARC.0.write().unwrap();
+        let mut g = NATIVE_JAR_ARC.0.write().unwrap();
         for line in &keep {
             let parts: Vec<&str> = line.split('\t').collect();
             if parts.len() != 4 { continue; }
             let (domain, cpath, secure, kv) = (parts[0], parts[1], parts[2], parts[3]);
             let host = domain.trim_start_matches('.');
-            let scheme = if *secure == "1" { "https" } else { "http" };
+            let scheme = if secure == "1" { "https" } else { "http" };
             let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
             let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
             let _ = g.parse(&set_cookie, &u);

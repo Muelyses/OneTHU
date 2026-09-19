@@ -10,10 +10,12 @@
  *   （2026-09-19 实测攻克，判定见 docs 十三节）
  * - 已批改（R16 21.1，2026-09-19 实测判别器）：作业 `problems[].user.status` 4=已批改 /
  *   3=已交未批，`user.my_score` -1 为未批占位；试卷复用 /v/exam/cover 的已出分条件。
- * - 详情链接（R16 21.2，从前端 pc.js 逆向）：作业
- *   `…/subject?type=5&classroom={cid}&id={leaf_id}&sku_id={sku_id}&exercise_id={leaf_type_id}`，
- *   试卷同形但 `type=6` + `exam_id=`；leaf_id/sku_id 缺失时回退
- *   `…/studentLog/{classroom_id}[?leaf_id=…]`（旧链，2026-09-18 带 cookie 实测 200）。
+ * - 详情链接（R16b，学生端深链，无头浏览器实测 2026-09-19）：作业
+ *   `…/ai-workspace/lms-graph/{classroom_id}/exercise/{leaf_id}?is_chapter=1`，
+ *   试卷 `…/ai-workspace/lms-graph/{classroom_id}/quiz/{leaf_id}?is_chapter=1`；
+ *   仅需 leaf_id，sku_id/node_id/exercise_id 不需要；缺 leaf_id 时回退
+ *   `…/v2/web/studentLog/{classroom_id}`（旧链，2026-09-18 带 cookie 实测 200）。
+ *   ⚠️ R16 21.2 的 `/subject?type=5|6&…` 是教师批改入口（学生打开 302 /forbidden），已弃用。
  * - 会话失效 → errcode=401000
  * ⚠️ host 必须是 pro.yuketang.cn（www. / changjiang. 会 401）
  * ⚠️ 服务端地址硬编码，凭据不再携带 base
@@ -310,23 +312,19 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
                 ? ""
                 : String(content["sku_id"]).trim();
             const classroomId = String(a["classroom_id"] ?? cid);
-            // R16 21.2：作业/试卷深链（从前端 pc.js 逆向，带 cookie 实测 200）：
-            //   作业 `${base}/subject?type=5&classroom={cid}&id={leaf_id}&sku_id={sku_id}&exercise_id={leaf_type_id}`
-            //   试卷 `${base}/subject?type=6&classroom={cid}&id={leaf_id}&sku_id={sku_id}&exam_id={leaf_type_id}`
-            // 缺 leaf_id / sku_id / leaf_type_id 任一 → 回退旧的课程日志页链接（带 leaf_id 定位）。
+            // R16b：学生端深链（无头浏览器实测，2026-09-19；R16 21.2 的 `/subject?type=5|6`
+            //   是教师批改入口，学生打开 302 → /v2/web/forbidden，已弃用）：
+            //   作业 `${base}/ai-workspace/lms-graph/{cid}/exercise/{leaf_id}?is_chapter=1`
+            //   试卷 `${base}/ai-workspace/lms-graph/{cid}/quiz/{leaf_id}?is_chapter=1`
+            // 仅需 leaf_id（sku_id/node_id/exercise_id 不需要）；缺 leaf_id → 回退旧课程日志页。
             let url: string;
-            if (leafStr && skuStr && leafTypeStr) {
-              const subjectType = type === 20 ? 6 : 5;
-              const idKey = type === 20 ? "exam_id" : "exercise_id";
+            if (leafStr) {
+              const route = type === 20 ? "quiz" : "exercise";
               url =
-                `${base}/subject?type=${subjectType}` +
-                `&classroom=${encodeURIComponent(classroomId)}` +
-                `&id=${encodeURIComponent(leafStr)}` +
-                `&sku_id=${encodeURIComponent(skuStr)}` +
-                `&${idKey}=${encodeURIComponent(leafTypeStr)}`;
+                `${base}/ai-workspace/lms-graph/${encodeURIComponent(classroomId)}` +
+                `/${route}/${encodeURIComponent(leafStr)}?is_chapter=1`;
             } else {
-              const leafQs = leafStr ? `?leaf_id=${encodeURIComponent(leafStr)}` : "";
-              url = `${base}/v2/web/studentLog/${cid}${leafQs}`;
+              url = `${base}/v2/web/studentLog/${cid}`;
             }
             const audited = roleByClassroom.get(classroomId) === 6;
             items.push({

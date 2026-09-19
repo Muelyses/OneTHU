@@ -252,22 +252,22 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     "nav", "ui", "storage", "net:external",
   ],
   settings: [
-    { key: "provider", label: "模型源（自由切换）", type: "select", default: "", options: [
-      { value: "", label: "清华 MadModel 免费档（DeepSeek-V4-Flash · 校园网/VPN · 自动续期）" },
+    { key: "provider", label: "模型源", type: "select", default: "", options: [
+      { value: "", label: "清华 MadModel 免费（DeepSeek-V4-Flash · 校园网/VPN · 自动续期）" },
       { value: "custom", label: "自费 API（下方 Key/Endpoint/Model 生效）" },
     ] },
-    { key: "apiKey", label: "API Key（自费模式用；免费档忽略）", type: "password", placeholder: "sk-…" },
-    { key: "madmodelToken", label: "MadModel Token（泵自动维护，勿手改）", type: "text", default: "" },
-    { key: "madmodelAt", label: "MadModel 签发时刻（泵自动维护，勿手改）", type: "text", default: "" },
+    { key: "apiKey", label: "API Key（自费模式用）", type: "password", placeholder: "sk-…" },
     { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
-    { key: "model", label: "模型", type: "text", default: "deepseek-chat" },
+    { key: "model", label: "模型（自费模式用；免费档固定 DeepSeek-V4-Flash）", type: "text", default: "deepseek-chat" },
     { key: "thinking", label: "思考模式（DeepSeek 自动切 reasoner）", type: "text", default: "off" },
     { key: "maxContext", label: "上下文预算（tokens，超出裁剪）", type: "text", default: "24000" },
     { key: "stream", label: "流式输出（off 回退非流式）", type: "text", default: "on" },
-    { key: "priceIn", label: "输入价格 $/1M tokens", type: "text", default: "0.27" },
-    { key: "priceOut", label: "输出价格 $/1M tokens", type: "text", default: "1.10" },
-    { key: "budget", label: "Token 预算（USD，到量停）", type: "text", default: "2" },
+    { key: "priceIn", label: "输入价格 $/1M tokens（自费模式）", type: "text", default: "0.27" },
+    { key: "priceOut", label: "输出价格 $/1M tokens（自费模式）", type: "text", default: "1.10" },
+    { key: "budget", label: "Token 预算（USD，到量停；自费模式）", type: "text", default: "2" },
     { key: "maxSteps", label: "单次任务最大步数", type: "text", default: "16" },
+    { key: "madmodelToken", label: "MadModel Token（自动维护，勿手改）", type: "text", default: "" },
+    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护，勿手改）", type: "text", default: "" },
   ],
 };
 
@@ -311,7 +311,11 @@ export async function seedBuiltinHarness(): Promise<void> {
       for (const p of EMBEDDED_HARNESS_MANIFEST.permissions ?? []) {
         if (!perms.has(p)) { perms.add(p); changed = true; }
       }
-      if (changed || rec.binPath !== binPath) {
+      // settings 清单自愈同款（2026-09-19）：内置清单新增字段（如 MadModel 的
+      // provider 下拉）时老注册表还是旧 manifest——设置 sheet 永远看不到新字段
+      const settingsChanged =
+        JSON.stringify(rec.manifest.settings ?? []) !== JSON.stringify(EMBEDDED_HARNESS_MANIFEST.settings ?? []);
+      if (changed || settingsChanged || rec.binPath !== binPath) {
         // ⚠️ 重注册必须保住用户填的 settings（API Key/模型/预算…）——
         // removePlugin 会连 settings 一起清，历史实锤：每次扩展权限清单
         // （mail:read→cloud:read 两轮）用户都得重新粘贴 deepseek key
@@ -324,7 +328,7 @@ export async function seedBuiltinHarness(): Promise<void> {
         if (Object.keys(prevSettings).length > 0) {
           updatePlugin("onethu.harness", { settings: prevSettings });
         }
-        await logLine(`[PLUGIN] 内置 OH 已刷新（权限/路径迁移，settings 保留）：${binPath}`);
+        await logLine(`[PLUGIN] 内置 OH 已刷新（权限${settingsChanged ? "/设置清单" : ""}/路径迁移，settings 保留）：${binPath}`);
       }
     }
   } catch (e) {

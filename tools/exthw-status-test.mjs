@@ -13,6 +13,26 @@
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
 import { createTuojSource } from "../packages/core/src/exthw/tuoj.ts";
 import { createTycheSource } from "../packages/core/src/exthw/tyche.ts";
+import * as nodeModule from "node:module";
+
+/* R12 17.1：编排层 `exthw/index.ts` 内部用 `.js` 相对导入（TS bundler 解析），
+ * Node 直引需经 registerHooks 重解析到 `.ts`（与 tools/tuoj-cas-test.mjs 同款）。
+ * 静态 import 在本文件加载时已解析完毕，故编排层用动态 import（见文末）。 */
+const canResolveTs = typeof nodeModule.registerHooks === "function";
+if (canResolveTs) {
+  nodeModule.registerHooks({
+    resolve(specifier, context, next) {
+      if ((specifier.startsWith("./") || specifier.startsWith("../")) && specifier.endsWith(".js")) {
+        try {
+          return next(specifier.slice(0, -3) + ".ts", context);
+        } catch {
+          /* 落回原样 */
+        }
+      }
+      return next(specifier, context);
+    },
+  });
+}
 
 let pass = 0;
 let fail = 0;
@@ -264,6 +284,113 @@ console.log("\n[Tyche]");
     statusCalls.every((c) => !c.url.includes("all=true")),
     "状态请求不带 all=true（只取本人提交）",
   );
+}
+
+/* ───────── R12 17.1：TUOJ「已配置但会话失效」→ force 漫游 → 成功重拉 ───────── */
+console.log("\n[TUOJ 失效自动重漫游 R12 17.1]");
+if (!canResolveTs) {
+  console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
+} else {
+  const { refreshExternalHomework, TuojSessionError, isTuojSessionError } = await import(
+    "../packages/core/src/exthw/index.ts"
+  );
+
+  /** mock fetchLike：`listStatuses` 依次决定第 N 次 /api/course/list 的状态码（末项复用） */
+  function makeTuojFetch(listStatuses) {
+    let listHits = 0;
+    const calls = [];
+    const json = (body, status = 200) =>
+      new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+    const fn = async (url, init = {}) => {
+      const method = (init.method ?? "GET").toUpperCase();
+      const headers = {};
+      for (const [k, v] of Object.entries(init.headers ?? {})) headers[k.toLowerCase()] = v;
+      calls.push({ url, method, headers });
+      if (url.endsWith("/api/course/list")) {
+        const status = listStatuses[Math.min(listHits, listStatuses.length - 1)];
+        listHits++;
+        return status === 200
+          ? json({ courses: [{ _id: 8, title: "离散数学" }] })
+          : json({ message: "unauthorized" }, status);
+      }
+      if (url.endsWith("/api/user/lookup")) return json({ user: { _id: 1001, username: "2026000000" } });
+      if (url.endsWith("/api/course/8/rank")) return json({ courseRank: { contests: [{ _id: 83 }] } });
+      if (url.endsWith("/api/course/8/contest/83/context"))
+        return json({ context: { metadata: { title: "hw1" }, schedule: { endAt: FUTURE } } });
+      if (url.endsWith("/api/course/8/contest/83/ranklist"))
+        return json({ ranklist: { players: [{ _id: 1001, username: "2026000000", details: { "0": {} } }] } });
+      return new Response("not found", { status: 404 });
+    };
+    fn.calls = calls;
+    fn.listHits = () => listHits;
+    return fn;
+  }
+
+  // 类型化判定：401/403 抛 TuojSessionError；其他错误不误判
+  ok(isTuojSessionError(new TuojSessionError(401)), "TuojSessionError(401) 判定为会话失效");
+  ok(isTuojSessionError(new Error("boom")) === false, "普通 Error 不判会话失效");
+
+  // ① 已配置但 401 → force 漫游成功 → 自动重拉一次 → 恢复
+  {
+    const creds = { tuoj: { cookie: "old", via: "password" } };
+    const fetchLike = makeTuojFetch([401, 200]);
+    let roamCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        creds.tuoj = { cookie: "new", via: "cas" }; // 模拟 CAS 漫游覆盖凭据
+        return true;
+      },
+    });
+    eq(r.reroutedTuoj, true, "①触发了一次 force 重漫游");
+    eq(roamCalls, 1, "①漫游恰好一次");
+    eq(fetchLike.listHits(), 2, "①课程列表被拉取两次（首发 401 + 重拉）");
+    eq(r.items.length, 1, "①重拉成功拉到 1 条作业");
+    eq(r.errors.tuoj, undefined, "①重拉成功后不再有 TUOJ 错误");
+    const listCalls = fetchLike.calls.filter((c) => c.url.endsWith("/api/course/list"));
+    eq(listCalls[0]?.headers["cookie"], "old", "①首发用旧 cookie");
+    eq(listCalls[1]?.headers["cookie"], "new", "①重拉用漫游后的新 cookie");
+  }
+
+  // ② 重拉仍 401 → 不再进入第二轮漫游（防循环），保留 401 错误
+  {
+    const creds = { tuoj: { cookie: "old" } };
+    const fetchLike = makeTuojFetch([401]);
+    let roamCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        return true;
+      },
+    });
+    eq(roamCalls, 1, "②防循环：仅漫游一次");
+    eq(fetchLike.listHits(), 2, "②重拉一次后停止");
+    ok(r.errors.tuoj?.includes("会话已失效"), "②保留原 401 错误");
+    eq(r.items.length, 0, "②无作业");
+  }
+
+  // ③ 漫游失败（返回 false）→ 维持原 401 错误，不重拉
+  {
+    const creds = { tuoj: { cookie: "old" } };
+    const fetchLike = makeTuojFetch([401, 200]);
+    let roamCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        return false; // 频控拦截 / 漫游失败
+      },
+    });
+    eq(r.reroutedTuoj, false, "③漫游失败不标记 rerouted");
+    eq(roamCalls, 1, "③仍尝试过一次漫游");
+    eq(fetchLike.listHits(), 1, "③不重拉");
+    ok(r.errors.tuoj?.includes("会话已失效"), "③维持原 401 错误与设置页引导");
+  }
 }
 
 /* ───────────────────────── 汇总 ───────────────────────── */

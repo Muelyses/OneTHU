@@ -22,6 +22,22 @@ export const BASE = "https://ai.tuoj.thusaac.com";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
 
+/** TUOJ 会话失效（HTTP 401/403）。R12 17.1：调用方据此触发**一次**强制重漫游后重试。
+ *  类型化（而非只比字符串）让自动重漫游判定与文案解耦。 */
+export class TuojSessionError extends Error {
+  readonly httpStatus: number;
+  constructor(status: number) {
+    super(`TUOJ 会话已失效（HTTP ${status}），请在设置页更新 Cookie`);
+    this.name = "TuojSessionError";
+    this.httpStatus = status;
+  }
+}
+
+/** 是否为 TUOJ 会话失效错误（R12 17.1 自动重漫游的唯一触发条件） */
+export function isTuojSessionError(e: unknown): e is TuojSessionError {
+  return e instanceof TuojSessionError;
+}
+
 interface TuojCred {
   /** 显式会话 Cookie 串；CAS 漫游模式传空串（会话由 HttpClient 的 jar 提供） */
   cookie: string;
@@ -61,7 +77,7 @@ async function requestJson(
   if (method === "POST") headers["Content-Type"] = "application/json";
   const res = await fetchLike(url, { method, headers, body: method === "POST" ? "" : undefined });
   if (res.status === 401 || res.status === 403) {
-    throw new Error(`TUOJ 会话已失效（HTTP ${res.status}），请在设置页更新 Cookie`);
+    throw new TuojSessionError(res.status);
   }
   const body = await res.text();
   let json: unknown;

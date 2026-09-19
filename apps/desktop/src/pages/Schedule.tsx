@@ -27,6 +27,7 @@ import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { useApp } from "../state/context.js";
 import { confirmOk } from "../lib/confirm.js";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
+import { logLine } from "../lib/log.js";
 
 const DAY_NAMES = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 /** 上游 schedule.tsx beginTime/endTime（节次兜底定位用） */

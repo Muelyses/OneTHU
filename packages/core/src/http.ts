@@ -73,6 +73,11 @@ export const PUBLIC_DIRECT_HOSTS = new Set([
   "webvpn.tsinghua.edu.cn",
   "id.tsinghua.edu.cn",
   "oauth.tsinghua.edu.cn",
+  // zhjw.cic.tsinghua.edu.cn 加白（2026-09-19）：教务二级课表 portal3rd.do 原
+  // 走包装撞引导壳（教务 host 的 wengine 票从未建立——教务访问统一直连 JSONP）
+  // → setInitValue 解析不到 → 二级实验课静默空。校外直连可达（课表 JSONP 同
+  // 域直连一直是活的），且教务会话就建在直连桶——同桶同活法。
+  "zhjw.cic.tsinghua.edu.cn",
   // ⚠ seat.lib.tsinghua.edu.cn 故意不在名单：webvpn 模式下座位系统全链（callback/
   //   home/book）必须同走包装通道；2026-09-07 实测加白名单反而通道分裂连累记录页。
   // card 退出直连（2026-09-06 真机实录）：oauth lbredirect 兑票落点恒为 webvpn

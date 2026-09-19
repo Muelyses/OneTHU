@@ -41,6 +41,13 @@ let nativeCookieClearHook: (() => Promise<void>) | null = null;
 export function setZhjwxkNativeClear(fn: () => Promise<void>): void {
   nativeCookieClearHook = fn;
 }
+/** 死结重登钩子（desktop 注入）：id 是单点登录，选课自清仓直登会踢掉 lib 的
+ *  id 会话、lib 自愈重登又踢回——无限互踢（17:51 双死结、01:43 隔夜 info
+ *  全死实录）。死结时改借 lib 的权威重登，id 会话单一来源。 */
+let xkReloginHook: (() => Promise<boolean>) | null = null;
+export function setZhjwxkReloginHook(fn: () => Promise<boolean>): void {
+  xkReloginHook = fn;
+}
 export function setZhjwxkDebug(fn: (line: string) => void): void {
   zhjwxkDebug = fn;
 }
@@ -244,6 +251,18 @@ async function ensure(
         // 永不消费，桌面 2026-09-17 实录）。唯一出路：清两 jar 的 id/oauth 会话
         // 强制回到全新登录表单，走账密直登重置会话（直登带受信 finger3，不触发
         // 2FA——传空指纹才是 2FA 根因）。
+        // 死结重登：优先借 lib 权威（单点登录互踢根治）；无钩子退回自清仓
+        if (xkReloginHook) {
+          zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 借 lib 权威重登（防互踢）");
+          let ok = false;
+          try { ok = await xkReloginHook(); } catch { ok = false; }
+          if (ok) {
+            html = await s.http.text(ZHJWXK + "/xklogin.do");
+            zhjwxkDebug?.(`[XK-CHECKSINGLE] lib 重登后重入 len=${html.length} checkSingle=${/checkSingle/.test(html) ? 1 : 0}`);
+            continue;   // 带 csRounds 计数继续 while 循环
+          }
+          zhjwxkDebug?.("[XK-CHECKSINGLE] lib 重登失败 → 回退自清仓");
+        }
         zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
         // 清仓前抢救健康域票据（webvpn/learn）：rust clear 是全清，全清会让
         // webvpn 票陪葬 → 日程/各页集体无票爆掉，逐页自愈转圈才恢复（2026-09-18

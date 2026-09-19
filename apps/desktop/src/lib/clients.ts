@@ -18,7 +18,7 @@ import {
 } from "@onethu/core";
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
 import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
-import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear } from "@onethu/core";
+import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
 
 export type { TwoFactorMethod };
 
@@ -170,6 +170,11 @@ void (async () => {
 
 setZhjwxkDebug((line) => void logLine(line));
 setZhjwxkNativeClear(nativeCookieClear);
+// 死结重登借 lib 权威：id 单点登录互踢根治（选课清仓直登曾踢死新闻/日程/info）
+{
+  const { libForceRelogin } = await import("./infoLib.js");
+  setZhjwxkReloginHook(libForceRelogin);
+}
 setWebvpnLog((line) => void logLine(line));
 
 // 逐跳 cookie 供应：包装 URL 解码出真实域（wrapped id 跳带 id 桶会话、wrapped zhjw

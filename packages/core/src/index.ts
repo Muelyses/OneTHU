@@ -151,7 +151,7 @@ export {
   changeXkVolunteer,
   // fetchXkRatings,   // 【教评#31冻结】
   setZhjwxkDebug,
-  setZhjwxkNativeClear,
+  setZhjwxkNativeClear, setZhjwxkReloginHook,
   xkParseDebug,
   ZY_LIMITS,
 } from "./zhjwxk/client.js";

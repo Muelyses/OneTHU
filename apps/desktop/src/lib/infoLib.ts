@@ -397,6 +397,16 @@ export async function libEnsureSession(): Promise<boolean> {
   return true;
 }
 
+/** 强制完整重登（选课死结借用）：不走探活短路——id 会话权威单一来源，
+ *  选课判死时由这里重建，选课不再自清仓互踢（2026-09-18 架构定案） */
+export async function libForceRelogin(): Promise<boolean> {
+  const username = inflight?.username ?? "";
+  const password = inflight?.password ?? "";
+  if (!username || !password) return false;
+  const r = await libLogin(username, password, helper.fingerprint).catch(() => null);
+  return r?.state === "ready";
+}
+
 /** 登录链是否挂起（用户正在 2FA 界面）——静默重登互斥判据 */
 export function libLoginPending(): boolean {
   return !!inflight && !inflight.settled;

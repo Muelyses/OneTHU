@@ -163,7 +163,7 @@ async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEnt
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   };
   const sig = (e: ScheduleEntry): string =>
-    `${e.courseName}|${e.date ?? ""}|${e.dayOfWeek ?? ""}|${e.startSection ?? ""}|${e.endSection ?? ""}|${e.location ?? ""}`;
+    `${e.courseName}|${e.date ?? ""}|${e.dayOfWeek ?? ""}|${e.startSection ?? ""}|${e.endSection ?? ""}|${e.location ?? ""}|${e.startTime ?? ""}|${e.endTime ?? ""}`;
   try {
     const merged: ScheduleEntry[] = [];
     const seen = new Set<string>();
@@ -276,7 +276,7 @@ async function buildPayload(): Promise<SyncPayloadArg> {
   void logLine(
     `[SYSCAL] hw-learn=${learnSnap?.homework?.length ?? "null"} hw-ext=${extHw.length} hw-events=${hwEvents.length} course-events=${events.length - hwEvents.length} alarm(default=${remind.default} 覆盖=${Object.keys(remind.items).length}项 值=${alarms})`,
   ).catch(() => undefined);
-  const mayuan = events.filter((e) => e.title.includes("马原"));
+  const mayuan = events.filter((e) => e.title.includes("马克思主义"));
   if (mayuan.length) {
     const iso = (ms: number): string => new Date(ms).toISOString().slice(5, 16).replace("T", " ");
     void logLine(`[SYSCAL] 马原 ${mayuan.length} 块: ${mayuan.map((e) => `${iso(e.startMs)}~${iso(e.endMs)}`).join(" | ")}`).catch(() => undefined);
@@ -302,13 +302,16 @@ export function buildHwEvents(
     if (h.submitted) continue; // 已交：不占日历（写完即清）
     const dl = parseLearnTime(h.deadline)?.getTime();
     if (!dl || dl < windowStart || dl > windowEnd) continue;
+    // 事件块从「提前量」起步到 DDL（对齐日程页橙色块语义）：事件开始即响铃 =
+    // 物理保证「提前 N 分钟」提醒，不依赖原生 alarm 写入（2026-09-19 到点提醒实录）。
+    const lead = hwRemind.items[h.id] ?? hwRemind.default;
     out.push({
       title: `作业截止 · ${(h as { courseName?: string }).courseName || courseName.get(h.courseId) || ""} ${h.title}`.trim(),
-      startMs: dl,
-      endMs: dl + 15 * 60_000,
+      startMs: dl - lead * 60_000,
+      endMs: dl,
       allDay: false,
-      notes: `网络学堂作业，${h.deadline} 截止。提交完成后自动从日历移除。`,
-      alarmMinutes: hwRemind.items[h.id] ?? hwRemind.default, // 覆盖优先，全局默认兜底
+      notes: `DDL ${h.deadline}（本块自截止前 ${lead >= 60 ? `${Math.floor(lead / 60)}小时${lead % 60 ? `${lead % 60}分` : ""}` : `${lead}分钟`} 开始）。提交完成后自动从日历移除。`,
+      alarmMinutes: lead, // 覆盖优先，全局默认兜底
     });
   }
   return out;

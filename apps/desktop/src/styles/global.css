@@ -864,6 +864,22 @@
 
 .exthw-oj-body { padding: 12px 16px 14px; border-top: 1px solid var(--border-soft); }
 
+/* ---------- 设置 · 外部作业源统一行范式（R15 20.3）---------- */
+
+.exthw-src { padding: 11px 16px; border-top: 1px solid var(--border-soft); }
+.exthw-src:first-child { border-top: 0; }
+
+.exthw-src-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.exthw-src-name { flex: none; }
+.exthw-src-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+.exthw-src-body { margin-top: 8px; }
+
+.exthw-more { padding: 2px 6px; color: var(--text-2); }
+
+.exthw-note { margin-top: 6px; font-size: var(--text-sm); line-height: 20px; color: var(--text-3); }
+.exthw-note.is-warn { color: var(--warning, #b7791f); }
+.exthw-note.is-error { color: var(--danger, #c04848); }
+
 /* ---------- 空态 / 错误 ---------- */
 
 .empty {

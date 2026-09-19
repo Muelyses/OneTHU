@@ -13,15 +13,26 @@
  */
 import { invoke } from "@tauri-apps/api/core";
 import { yuketangCookieFromHeader } from "@onethu/core";
+import { isAndroidNavigator } from "./androidHost.js";
 import { isTauri } from "./transport.js";
 
 /** 读取失败时的统一回退提示（桌面端读不到 / Android 未取到会话均适用） */
 export const YKT_WEB_FALLBACK_HINT =
   "读取失败。请在电脑浏览器登录 pro.yuketang.cn 后，用下方「高级：手动粘贴 Cookie」粘贴会话（浏览器 F12 → Application → Cookies）。";
 
-/** 当前是否 Android 宿主（应用内全屏 WebView 的移动端实现） */
+/**
+ * 当前是否 Android 宿主（应用内全屏 WebView 的移动端实现）。
+ *
+ * R18c-bugfix：tauri.conf.json 的 `windows[].userAgent` 把主窗口 UA 伪装成
+ * Windows Chrome/79（webvpn 票绑定 UA 指纹，不能改）→ Android 真机上
+ * navigator.userAgent 不含 "Android"，旧的单 UA 判定恒为 false，导致
+ * ① 官方网页登录按钮被隐藏（YKT_WEB_LOGIN_AVAILABLE）；
+ * ② 扫码保活不启动（保活控制器收到 isAndroid=false，不 startQrKeepAlive）。
+ * 改为多信号判定：UA + userAgentData.platform + navigator.platform 任一命中即 Android，
+ * 详见 ./androidHost.ts（含三种宿主的负例说明）。
+ */
 export const isAndroidHost =
-  typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+  typeof navigator !== "undefined" && isAndroidNavigator(navigator);
 
 /**
  * R18b 25.3.2：桌面端「官方网页登录」原生窗口在 Windows 实测白屏、缩放不重绘、

@@ -10,6 +10,8 @@
  *  - token 过期 → 自动重建二维码（重取 pre-info）
  *  - 成功 → 解析 Set-Cookie 并补齐清华固定字段
  *  - R18c：扫码保活（Android 前台服务）启停随面板生命周期（stub 断言调用序列）
+ *  - R18c-bugfix：isAndroidHost 多信号判定（stub navigator 模拟三种宿主，
+ *    回归：tauri.conf 伪装 UA 后 Android 真机仍须判为 Android）
  *
  * 说明：core 源码内部用 `.js` 扩展名互相引用（TS bundler 解析），Node 类型剥离
  * 不能把 `.js` 映射到 `.ts` —— 这里注册一个同步 resolve 钩子做重映射后再动态 import。
@@ -398,6 +400,66 @@ const tick = () => new Promise((r) => setTimeout(r, 0));
   });
   const r = await ctrl.start();
   ok(r.ok === false && r.reason === "invoke-error", "invoke 抛错 → {ok:false, reason:invoke-error}（不抛）", JSON.stringify(r));
+}
+
+/* ── ⑫ R18c-bugfix：isAndroidHost 判定（stub navigator 模拟三种宿主）── */
+console.log("[12] R18c-bugfix：isAndroidHost 多信号判定（stub navigator）");
+{
+  // androidHost.ts 零依赖，可直接导入；yktWebview.ts 因拖入 @onethu/core（TS 参数属性）
+  // 无法在 Node strip 模式下导入，故这里对同一判定函数做 stub 直测。
+  const { isAndroidNavigator } = await import("../apps/desktop/src/lib/androidHost.ts");
+
+  // tauri.conf.json windows[].userAgent（webvpn 票绑定 UA，不能改）—— Android 真机被伪装成这条 Windows UA
+  const SPOOFED_UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
+
+  // 12a：Android 真机（本 bug 回归用例）：UA 被伪装，靠 platform 兜底
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Linux armv8l" }) === true,
+    "Android 真机：UA 被伪装 + platform 'Linux armv8l' → true（R18c-bugfix 修复点）",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Linux aarch64" }) === true,
+    "Android 真机：UA 被伪装 + platform 'Linux aarch64' → true",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Linux armv7l" }) === true,
+    "Android 真机（32 位）：platform 'Linux armv7l' → true",
+  );
+  // 12b：Android 真机：UA 未被伪装（原判定保留）
+  ok(
+    isAndroidNavigator({
+      userAgent: "Mozilla/5.0 (Linux; Android 14; M2012K11AC) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+      platform: "Linux armv8l",
+    }) === true,
+    "Android：UA 含 Android（未被伪装）→ true（原判定）",
+  );
+  // 12c：userAgentData.platform 兜底（platform 缺失 / 较新内核）
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, userAgentData: { platform: "Android" } }) === true,
+    "Android：userAgentData.platform = 'Android'（UA 被伪装、platform 缺失）→ true",
+  );
+  // 12d：负例 —— Windows / macOS / Linux-x86 桌面、浏览器预览：三信号均不命中 → false
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Win32", userAgentData: { platform: "Windows" } }) === false,
+    "Windows 桌面（Win32）→ false（官方网页登录入口继续隐藏）",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "MacIntel", userAgentData: { platform: "macOS" } }) === false,
+    "macOS 桌面（MacIntel）→ false",
+  );
+  ok(
+    isAndroidNavigator({
+      userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      platform: "Linux x86_64",
+    }) === false,
+    "Linux-x86 桌面（Linux x86_64）→ false（不得与 arm/aarch 混淆）",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "", userAgentData: null }) === false,
+    "无任何 Android 信号（浏览器预览兜底）→ false",
+  );
+  ok(isAndroidNavigator(null) === false && isAndroidNavigator(undefined) === false, "nav 缺失 → false");
 }
 
 console.log(failed === 0 ? "\n全部通过 ✅" : `\n${failed} 项失败 ❌`);

@@ -184,5 +184,55 @@ console.log("[7] pre-info 解析（含 JWT exp）");
   ok(info.expireAt === expSec * 1000, "expireAt 取自 JWT exp", `expireAt=${info.expireAt}`);
 }
 
+/* ── ⑧ 传输层超时 → 继续轮询（R17 23.1）── */
+console.log("[8] 传输层超时 → 继续轮询");
+{
+  // 8a：yuketangQrPoll 必须把传输层超时放大到「本地轮询 + 10s」，
+  // 否则 tauriFetch/Rust http_request 会先于 AbortSignal 抢跑（扫码必失败根因）。
+  let seenTimeoutMs;
+  const fetchLike = (url, init) => {
+    if (url.includes("app-web-pre-info")) {
+      return Promise.resolve(resp(JSON.parse(preInfoBody("QR-T", makeJwt(Math.floor(Date.now() / 1000) + 120)))));
+    }
+    seenTimeoutMs = init?.timeoutMs;
+    return Promise.resolve(resp({ code: 1, msg: "未扫码" }));
+  };
+  await yuketangQrPoll(fetchLike, "tok", { timeoutMs: 28_000 });
+  ok(seenTimeoutMs === 38_000, "传输层超时 = 本地轮询 + 10s", `timeoutMs=${seenTimeoutMs}`);
+}
+{
+  // 8b：传输层抛超时（reqwest `operation timed out` / JS 兜底「请求超时」）
+  // → 归为 timedOut（未扫码），交由状态机重发，而非当硬错误退出。
+  const boom = () =>
+    Promise.reject(
+      new Error(
+        "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): operation timed out",
+      ),
+    );
+  const r = await yuketangQrPoll(boom, "tok", { timeoutMs: 500 });
+  ok(r.done === false && r.timedOut === true, "传输层超时 → timedOut（继续轮询）", JSON.stringify(r));
+}
+{
+  // 8c：状态机：第一次传输超时、第二次成功 —— 不得因传输超时退出。
+  let loginCalls = 0;
+  const fetchLike = (url) => {
+    if (url.includes("app-web-pre-info")) {
+      return Promise.resolve(resp(JSON.parse(preInfoBody("QR-T", makeJwt(Math.floor(Date.now() / 1000) + 120)))));
+    }
+    loginCalls++;
+    if (loginCalls === 1) {
+      return Promise.reject(
+        new Error(
+          "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): operation timed out",
+        ),
+      );
+    }
+    return Promise.resolve(resp({ code: 0, data: {} }, ["sessionid=SESS123"]));
+  };
+  const r = await runYuketangQrLogin({ fetchLike, pollTimeoutMs: 1000, now: () => 0 });
+  ok(r.done === true && !!r.cookie, "传输超时后继续轮询 → 最终成功", JSON.stringify(r));
+  ok(loginCalls === 2, "传输超时被重发（非硬错误退出）", `loginCalls=${loginCalls}`);
+}
+
 console.log(failed === 0 ? "\n全部通过 ✅" : `\n${failed} 项失败 ❌`);
 process.exit(failed === 0 ? 0 : 1);

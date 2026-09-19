@@ -377,6 +377,12 @@ export function ChatDock(): ReactNode {
         traceRef.current = [...traceRef.current.slice(-60), e.text!];
         setTrace((t) => [...t.slice(-40), e.text!]);
       }
+      else if (kind === "log" && e.text) {
+        // R7 结构化日志（LLM 请求/响应行）同样进「工具调用」链——模型源可证：
+        // 「→ LLM 请求 <model> · … · <端点 URL>」直接显示这一轮打到哪个服务
+        traceRef.current = [...traceRef.current.slice(-60), e.text!];
+        setTrace((t) => [...t.slice(-40), e.text!]);
+      }
       else if (kind === "notice" && e.text) setStatus(e.text);
       else if (kind === "usage" && (e as any).payload) setUsage((u) => ({ ...u, ...(e as any).payload }));
     }

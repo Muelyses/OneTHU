@@ -63,6 +63,9 @@ export interface ExternalHomework {
   submittedCount?: number;
   /** 题目总数（可选，仅雨课堂有精确数据） */
   totalCount?: number;
+  /** 是否已批改（R16 21.1；仅雨课堂能判定，其余源缺省 = 未批改，保守）。
+   *  雨课堂作业：已提交且不存在「已作答但未批改」的题；试卷：已提交且已出分。 */
+  graded?: boolean;
   /** 是否旁听课堂（雨课堂 courses/list `role===6`；role 5=正式、未知 role 不标，保守） */
   audited?: boolean;
   /** 考试得分（仅已提交且已出分；未提交/未出分不设，避免 0 分误导） */

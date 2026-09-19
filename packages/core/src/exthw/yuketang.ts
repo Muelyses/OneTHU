@@ -8,8 +8,12 @@
  * - DDL = activity.content.score_d（**毫秒时间戳**）
  * - 提交状态：作业（type 19）走 get_exercise_list；试卷（type 20）走 GET /v/exam/cover
  *   （2026-09-19 实测攻克，判定见 docs 十三节）
- * - 详情链接：activity.content.leaf_id 存在时 `…/studentLog/{classroom_id}?leaf_id={leaf_id}`，
- *   否则 `…/studentLog/{classroom_id}`（均返回 200 主应用 shell，2026-09-18 带 cookie 实测）
+ * - 已批改（R16 21.1，2026-09-19 实测判别器）：作业 `problems[].user.status` 4=已批改 /
+ *   3=已交未批，`user.my_score` -1 为未批占位；试卷复用 /v/exam/cover 的已出分条件。
+ * - 详情链接（R16 21.2，从前端 pc.js 逆向）：作业
+ *   `…/subject?type=5&classroom={cid}&id={leaf_id}&sku_id={sku_id}&exercise_id={leaf_type_id}`，
+ *   试卷同形但 `type=6` + `exam_id=`；leaf_id/sku_id 缺失时回退
+ *   `…/studentLog/{classroom_id}[?leaf_id=…]`（旧链，2026-09-18 带 cookie 实测 200）。
  * - 会话失效 → errcode=401000
  * ⚠️ host 必须是 pro.yuketang.cn（www. / changjiang. 会 401）
  * ⚠️ 服务端地址硬编码，凭据不再携带 base
@@ -91,6 +95,20 @@ interface YktStatusResult {
   totalCount?: number;
   score?: number;
   totalScore?: number;
+  /** 是否已批改（R16 21.1）；无法判定时不设（调用方按 false 处理） */
+  graded?: boolean;
+}
+
+/** `user.my_score` 是否为「未批改」占位（-1 / -1.00 / "-1.00" 等，R16 21.1 实测） */
+function isUnscoredPlaceholder(v: unknown): boolean {
+  if (typeof v === "number") return Number.isFinite(v) && v === -1;
+  if (typeof v === "string") {
+    const t = v.trim();
+    if (!t) return false;
+    const n = Number(t);
+    return Number.isFinite(n) && n === -1;
+  }
+  return false;
 }
 
 /** 并发映射（有界并发，失败在回调内自行捕获） */
@@ -113,6 +131,9 @@ async function mapLimited<T>(items: T[], limit: number, fn: (item: T) => Promise
  * GET /mooc-api/v1/lms/exercise/get_exercise_list/{leaf_type_id}/?classroom_id=…&term=latest&uv_id=…
  * ⚠️ 必须带请求头 `XTBZ: ykt`，否则报「XTBZ IS REQUIRED」。
  * 判定：`data.answer_count > 0` 或任一 `problems[].user.my_answer.content` 非空 → 已提交。
+ * 已批改（R16 21.1，保守）：已提交且不存在「已作答但未批改」的题；
+ * 「已作答」= `user.my_answer.content` 非空或整卷 `answer_count>0`；
+ * 「未批改」= `user.status === 3` 或 `user.my_score` 为 -1 占位（含 "-1.00"）。
  * 仅用于作业（type 19）；试卷（type 20）改用 fetchYktExamStatus。
  */
 async function fetchYktStatus(
@@ -135,21 +156,29 @@ async function fetchYktStatus(
     // 空壳响应（如 No permissions 落到 data:{}）→ 视为不可判定
     throw new Error("雨课堂作业状态响应为空");
   }
+  const ac = data["answer_count"];
+  const answerCount = typeof ac === "number" && Number.isFinite(ac) ? ac : 0;
   let answered = 0;
+  let answeredUngraded = false;
   for (const p of problems) {
     const user = (p["user"] ?? {}) as Record<string, unknown>;
     const my = (user["my_answer"] ?? {}) as Record<string, unknown>;
     const content = my["content"];
-    if (typeof content === "string" && content.trim().length > 0) answered++;
+    const hasContent = typeof content === "string" && content.trim().length > 0;
+    if (hasContent) answered++;
+    const answeredThis = hasContent || answerCount > 0;
+    if (answeredThis && (user["status"] === 3 || isUnscoredPlaceholder(user["my_score"]))) {
+      answeredUngraded = true;
+    }
   }
-  const ac = data["answer_count"];
-  const answerCount = typeof ac === "number" && Number.isFinite(ac) ? ac : 0;
   const submitted = answerCount > 0 || answered > 0;
   const submittedCount = answered > 0 ? answered : answerCount;
   return {
     submitted,
     submittedCount: submittedCount > 0 ? submittedCount : undefined,
     totalCount: problems.length > 0 ? problems.length : undefined,
+    // 无题目明细（problems 为空）时无法判定批改状态 → 保守 false
+    graded: submitted && problems.length > 0 && !answeredUngraded,
   };
 }
 
@@ -184,13 +213,13 @@ async function fetchYktExamStatus(
   const result = data["result"];
   if (result === null || result === undefined || typeof result !== "object") {
     // result 缺失/null（未作答或未出分）→ 保守未提交
-    return { submitted: false, totalCount };
+    return { submitted: false, totalCount, graded: false };
   }
   const r = result as Record<string, unknown>;
   const unfinishedRaw = r["unfinished_count"];
   const unfinished = typeof unfinishedRaw === "number" && Number.isFinite(unfinishedRaw) ? unfinishedRaw : undefined;
   if (problemCount === undefined || unfinished === undefined) {
-    return { submitted: false, totalCount };
+    return { submitted: false, totalCount, graded: false };
   }
   const done = Math.max(0, problemCount - unfinished);
   const submitted = unfinished < problemCount;
@@ -198,6 +227,8 @@ async function fetchYktExamStatus(
     submitted,
     submittedCount: done > 0 ? done : undefined,
     totalCount,
+    // R16 21.1：试卷「已批改」= 已提交且已出分（下方复用 R9 score 条件置 true）
+    graded: false,
   };
   // 分数仅「已提交 且 已出分 且 score/total_score 均为数字」时给（避免 0 分误导）
   const scoreRaw = r["score"];
@@ -211,6 +242,8 @@ async function fetchYktExamStatus(
   ) {
     out.score = scoreRaw;
     out.totalScore = totalScore;
+    // R16 21.1：试卷「已批改」复用 R9 已出分条件（有分数即已出分）
+    out.graded = true;
   }
   return out;
 }
@@ -267,21 +300,40 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
             if (ms > limit) continue; // 只保留未来 N 天（已过期仍保留）
             const id = a["id"] ?? a["courseware_id"] ?? ms;
             const leafTypeId = content["leaf_type_id"];
-            // 学习日志页：带 leaf_id 定位到具体条目（实测带 cookie 均 200）
-            const leaf = content["leaf_id"];
-            const leafQs = leaf !== undefined && leaf !== null && String(leaf).trim()
-              ? `?leaf_id=${encodeURIComponent(String(leaf))}`
-              : "";
+            const leafTypeStr = leafTypeId === undefined || leafTypeId === null ? "" : String(leafTypeId);
+            const leafStr =
+              content["leaf_id"] === undefined || content["leaf_id"] === null
+                ? ""
+                : String(content["leaf_id"]).trim();
+            const skuStr =
+              content["sku_id"] === undefined || content["sku_id"] === null
+                ? ""
+                : String(content["sku_id"]).trim();
             const classroomId = String(a["classroom_id"] ?? cid);
+            // R16 21.2：作业/试卷深链（从前端 pc.js 逆向，带 cookie 实测 200）：
+            //   作业 `${base}/subject?type=5&classroom={cid}&id={leaf_id}&sku_id={sku_id}&exercise_id={leaf_type_id}`
+            //   试卷 `${base}/subject?type=6&classroom={cid}&id={leaf_id}&sku_id={sku_id}&exam_id={leaf_type_id}`
+            // 缺 leaf_id / sku_id / leaf_type_id 任一 → 回退旧的课程日志页链接（带 leaf_id 定位）。
+            let url: string;
+            if (leafStr && skuStr && leafTypeStr) {
+              const subjectType = type === 20 ? 6 : 5;
+              const idKey = type === 20 ? "exam_id" : "exercise_id";
+              url =
+                `${base}/subject?type=${subjectType}` +
+                `&classroom=${encodeURIComponent(classroomId)}` +
+                `&id=${encodeURIComponent(leafStr)}` +
+                `&sku_id=${encodeURIComponent(skuStr)}` +
+                `&${idKey}=${encodeURIComponent(leafTypeStr)}`;
+            } else {
+              const leafQs = leafStr ? `?leaf_id=${encodeURIComponent(leafStr)}` : "";
+              url = `${base}/v2/web/studentLog/${cid}${leafQs}`;
+            }
             const audited = roleByClassroom.get(classroomId) === 6;
             items.push({
               classroomId,
-              leafTypeId: leafTypeId === undefined || leafTypeId === null ? "" : String(leafTypeId),
+              leafTypeId: leafTypeStr,
               isExam: type === 20,
-              skuId:
-                content["sku_id"] === undefined || content["sku_id"] === null
-                  ? undefined
-                  : String(content["sku_id"]),
+              skuId: skuStr || undefined,
               hw: {
                 id: `yuketang-${cid}-${id}`,
                 source: "yuketang",
@@ -289,7 +341,7 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
                 title: String(a["title"] ?? "作业"),
                 deadline: fmtLocal(ms),
                 kind: type === 20 ? "exam" : "homework",
-                url: `${base}/v2/web/studentLog/${cid}${leafQs}`,
+                url,
                 submitted: false,
                 audited: audited || undefined,
               },
@@ -312,6 +364,7 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
           if (st.totalCount !== undefined) it.hw.totalCount = st.totalCount;
           if (st.score !== undefined) it.hw.score = st.score;
           if (st.totalScore !== undefined) it.hw.totalScore = st.totalScore;
+          if (st.graded !== undefined) it.hw.graded = st.graded;
         } catch {
           /* 状态查询失败：保守保持未提交 */
         }

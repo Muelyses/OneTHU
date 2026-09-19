@@ -113,6 +113,10 @@ console.log("\n[雨课堂]");
           activities: [
             { type: 19, id: 10, title: "已交作业", classroom_id: 1, content: { leaf_type_id: 100, leaf_id: 5, score_d: FUTURE } },
             { type: 19, id: 11, title: "未交作业", classroom_id: 1, content: { leaf_type_id: 101, leaf_id: 6, score_d: FUTURE } },
+            { type: 19, id: 19, title: "已批改作业", classroom_id: 1, content: { leaf_type_id: 102, leaf_id: 20, sku_id: 950, score_d: FUTURE } },
+            { type: 19, id: 20, title: "已交未批作业", classroom_id: 1, content: { leaf_type_id: 103, leaf_id: 21, sku_id: 951, score_d: FUTURE } },
+            { type: 19, id: 21, title: "混合批改作业", classroom_id: 1, content: { leaf_type_id: 104, leaf_id: 22, sku_id: 952, score_d: FUTURE } },
+            { type: 19, id: 22, title: "缺 sku 作业", classroom_id: 1, content: { leaf_type_id: 105, leaf_id: 23, score_d: FUTURE } },
             { type: 20, id: 12, title: "已交试卷", classroom_id: 1, content: { leaf_type_id: 200, leaf_id: 7, sku_id: 900, score_d: FUTURE } },
             { type: 20, id: 13, title: "未交试卷", classroom_id: 1, content: { leaf_type_id: 201, leaf_id: 8, sku_id: 901, score_d: FUTURE } },
             { type: 20, id: 14, title: "无 result 试卷", classroom_id: 1, content: { leaf_type_id: 202, leaf_id: 9, sku_id: 902, score_d: FUTURE } },
@@ -141,6 +145,45 @@ console.log("\n[雨课堂]");
     },
     { match: (u) => u.includes("/get_exercise_list/101/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: { content: "" } } }, { user: { my_answer: {} } }] } } },
     { match: (u) => u.includes("/get_exercise_list/300/"), body: { data: { answer_count: 1, problems: [{ user: { my_answer: { content: "<p>y</p>" } } }] } } },
+    // R16 21.1：已批改三态（status 4 + 真实分 = 已批改；status 3 / my_score -1 占位 = 已交未批；无 user = 未交）
+    {
+      match: (u) => u.includes("/get_exercise_list/102/"),
+      body: {
+        data: {
+          answer_count: 2,
+          problems: [
+            { user: { status: 4, my_score: "30.00", comment: "很好", my_answer: { content: "<p>a</p>" } } },
+            { user: { status: 4, my_score: "0.00", my_answer: { content: "<p>b</p>" } } },
+          ],
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/103/"),
+      body: {
+        data: {
+          answer_count: 2,
+          problems: [
+            { user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>a</p>" } } },
+            { user: { status: 3, my_score: -1, my_answer: { content: "<p>b</p>" } } },
+          ],
+        },
+      },
+    },
+    {
+      // 混合：一题已批改（status 4）+ 一题已作答未批改（status 3）→ 保守不判已批改
+      match: (u) => u.includes("/get_exercise_list/104/"),
+      body: {
+        data: {
+          answer_count: 2,
+          problems: [
+            { user: { status: 4, my_score: "30.00", my_answer: { content: "<p>a</p>" } } },
+            { user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>b</p>" } } },
+          ],
+        },
+      },
+    },
+    { match: (u) => u.includes("/get_exercise_list/105/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: {} } }] } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, total_score: 100, result: { status: 5, unfinished_count: 0, score: 60, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, total_score: 100, result: { status: 6, unfinished_count: 31, score: 0, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, total_score: 100, result: null } } },
@@ -151,12 +194,35 @@ console.log("\n[雨课堂]");
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 10, "拉到 10 条作业");
+  eq(items.length, 14, "拉到 14 条作业");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   eq(byTitle.get("已交作业")?.submitted, true, "answer_count>0 → 已提交");
   eq(byTitle.get("已交作业")?.submittedCount, 1, "已交作业 submittedCount=1（有内容的题目数）");
   eq(byTitle.get("已交作业")?.totalCount, 2, "已交作业 totalCount=2");
   eq(byTitle.get("未交作业")?.submitted, false, "answer_count=0 且无作答 → 未提交");
+  // R16 21.1：graded 三态（status 4=已批改 / status 3=已交未批 / 无 user=未交）
+  eq(byTitle.get("已批改作业")?.graded, true, "status=4 + 真实分 → graded=true");
+  eq(byTitle.get("已批改作业")?.submitted, true, "已批改作业仍属已提交");
+  eq(byTitle.get("已交未批作业")?.submitted, true, "status=3 → 已提交");
+  eq(byTitle.get("已交未批作业")?.graded, false, "status=3 + my_score=-1（含数字 -1）→ graded=false");
+  eq(byTitle.get("混合批改作业")?.graded, false, "混合场景（有已作答未批改题）→ 保守 graded=false");
+  eq(byTitle.get("未交作业")?.graded, false, "无 user（未交）→ graded=false");
+  // R16 21.2：作业/试卷直链（subject 深链），缺 sku_id 回退旧课程日志页
+  eq(
+    byTitle.get("已批改作业")?.url,
+    "https://pro.yuketang.cn/subject?type=5&classroom=1&id=20&sku_id=950&exercise_id=102",
+    "作业直链 = /subject?type=5…exercise_id=",
+  );
+  eq(
+    byTitle.get("已交试卷")?.url,
+    "https://pro.yuketang.cn/subject?type=6&classroom=1&id=7&sku_id=900&exam_id=200",
+    "试卷直链 = /subject?type=6…exam_id=",
+  );
+  eq(
+    byTitle.get("缺 sku 作业")?.url,
+    "https://pro.yuketang.cn/v2/web/studentLog/1?leaf_id=23",
+    "缺 sku_id → 回退旧 studentLog 链接（带 leaf_id）",
+  );
   eq(byTitle.get("已交试卷")?.submitted, true, "试卷 result.unfinished_count<problem_count → 已提交");
   eq(byTitle.get("已交试卷")?.submittedCount, 20, "已交试卷 submittedCount=20（problem_count-unfinished_count）");
   eq(byTitle.get("已交试卷")?.totalCount, 20, "已交试卷 totalCount=20");
@@ -178,8 +244,15 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("缺满分试卷")?.totalScore, undefined, "缺 total_score → 不设 totalScore");
   eq(byTitle.get("零分已出分试卷")?.score, 0, "score=0 且已出分 → 照实显示 0");
   eq(byTitle.get("零分已出分试卷")?.totalScore, 100, "score=0 且已出分 → totalScore=100");
+  // R16 21.1：试卷 graded = 已提交且已出分（复用 R9 score 条件）
+  eq(byTitle.get("已交试卷")?.graded, true, "已出分试卷 → graded=true");
+  eq(byTitle.get("零分已出分试卷")?.graded, true, "0 分但已出分 → graded=true");
+  eq(byTitle.get("未出分试卷")?.graded, false, "score_finish=false → graded=false");
+  eq(byTitle.get("缺满分试卷")?.graded, false, "缺 total_score → graded=false");
+  eq(byTitle.get("未交试卷")?.graded, false, "未提交试卷 → graded=false");
+  eq(byTitle.get("无 result 试卷")?.graded, false, "result 缺失 → graded=false");
   const hwCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
-  eq(hwCalls.length, 3, "仅作业（type 19）走 get_exercise_list");
+  eq(hwCalls.length, 7, "仅作业（type 19）走 get_exercise_list");
   ok(
     hwCalls.every((c) => c.headers["xtbz"] === "ykt"),
     "作业状态请求均带 XTBZ: ykt",

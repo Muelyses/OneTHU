@@ -543,7 +543,7 @@ export function toHomework(e: ExternalHomework): Homework {
     publishTime: "",
     deadline: e.deadline,
     submitted: e.submitted,
-    graded: false,
+    graded: e.graded ?? false,
     url: e.url ?? "",
     source: e.source,
     externalUrl: e.url,

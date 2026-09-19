@@ -252,8 +252,11 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     "nav", "ui", "storage", "net:external",
   ],
   settings: [
-    { key: "apiKey", label: "API Key（留空 = 清华 MadModel 免费档，校园网/VPN 内自动续期）", type: "password", placeholder: "留空用免费档；自费填 sk-…" },
-    { key: "provider", label: "计费模式（custom=自费 API；留空=MadModel 免费档）", type: "text", default: "" },
+    { key: "provider", label: "模型源（自由切换）", type: "select", default: "", options: [
+      { value: "", label: "清华 MadModel 免费档（DeepSeek-V4-Flash · 校园网/VPN · 自动续期）" },
+      { value: "custom", label: "自费 API（下方 Key/Endpoint/Model 生效）" },
+    ] },
+    { key: "apiKey", label: "API Key（自费模式用；免费档忽略）", type: "password", placeholder: "sk-…" },
     { key: "madmodelToken", label: "MadModel Token（泵自动维护，勿手改）", type: "text", default: "" },
     { key: "madmodelAt", label: "MadModel 签发时刻（泵自动维护，勿手改）", type: "text", default: "" },
     { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },

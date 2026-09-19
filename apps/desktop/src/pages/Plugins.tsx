@@ -447,7 +447,17 @@ function SettingsBody({ id, rec }: { id: string; rec: any }): ReactNode {
           {fields.map((f: any) => (
             <label key={f.key} className="plg-setting">
               <span>{f.label}</span>
-              {f.type === "textarea" ? (
+              {f.type === "select" ? (
+                <select
+                  className="input"
+                  value={draft[f.key] ?? ""}
+                  onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+                >
+                  {(f.options ?? []).map((o: { value: string; label: string }) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              ) : f.type === "textarea" ? (
                 <textarea
                   className="input"
                   rows={3}

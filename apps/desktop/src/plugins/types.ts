@@ -65,7 +65,9 @@ export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: st
 export interface PluginSettingField {
   key: string;
   label: string;
-  type?: "text" | "password" | "textarea";
+  type?: "text" | "password" | "textarea" | "select";
+  /** select 类型的选项集 */
+  options?: Array<{ value: string; label: string }>;
   placeholder?: string;
   default?: string;
 }

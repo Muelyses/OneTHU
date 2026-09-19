@@ -25,7 +25,9 @@ let pumping = false;
 export function madmodelDue(): boolean {
   const rec = getPlugin(HARNESS_ID);
   const s = rec?.settings ?? {};
-  if (s.apiKey || s.provider === "custom") return false;
+  const provider = String(s.provider ?? "");
+  if (provider === "custom") return false; // 显式自费
+  if (!provider && s.apiKey) return false; // 老用户未显式选择但已填 key：维持自费不破坏
   const at = Number(s.madmodelAt ?? 0);
   return !at || Date.now() - at > REFRESH_MS;
 }

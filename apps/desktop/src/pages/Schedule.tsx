@@ -1086,13 +1086,23 @@ export function SchedulePage() {
                       </div>
                       <div style={{ display: "grid", gap: 6 }}>
                         {detail.clusterItems.map((m, i) => (
-                          <div key={i} style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--bg-hover, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline" }}>
-                            <span style={{ fontWeight: 600, flexShrink: 0 }}>
-                              {m.src === "hw" ? "⏰ DDL" : m.courseName}
+                          <div
+                            key={i}
+                            title="点击查看详情"
+                            onClick={() => setDetail({ ...m })}
+                            style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--bg-hover, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline", cursor: "pointer" }}
+                          >
+                            <span style={{ fontWeight: 600, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {m.src === "hw" ? `⏰ ${m.courseName}` : m.courseName}
                             </span>
-                            <span style={{ color: "var(--text-2, #555)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {m.src === "hw" ? `${m.location || "作业"}（${m.startTime}–${m.endTime}${m.hwMeta?.submitted ? " · 已提交" : " · 未提交"}${m.hwMeta?.ext ? " · " + (m.hwMeta.source ?? "") : ""}）` : `${m.startTime ?? ""}–${m.endTime ?? ""}${m.location ? " @" + m.location : ""}`}
+                            <span style={{ color: "var(--text-2, #555)", flexShrink: 0, marginLeft: "auto" }}>
+                              {m.src === "hw"
+                                ? `${m.startTime}–${m.endTime} · ${m.hwMeta?.submitted ? "已提交" : "未提交"}${m.hwMeta?.ext ? " · " + (m.hwMeta.source ?? "") : ""}`
+                                : `${m.startTime ?? ""}–${m.endTime ?? ""}${m.location ? " @" + m.location : ""}`}
                             </span>
+                            {m.location && m.src === "hw" ? (
+                              <span style={{ color: "var(--text-3, #999)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.location}</span>
+                            ) : null}
                           </div>
                         ))}
                       </div>

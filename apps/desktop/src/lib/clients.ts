@@ -171,10 +171,11 @@ void (async () => {
 setZhjwxkDebug((line) => void logLine(line));
 setZhjwxkNativeClear(nativeCookieClear);
 // 死结重登借 lib 权威：id 单点登录互踢根治（选课清仓直登曾踢死新闻/日程/info）
-{
+// hook 内懒加载——顶层 await 在生产构建 target（es2020）不可用，且懒加载无时序问题
+setZhjwxkReloginHook(async () => {
   const { libForceRelogin } = await import("./infoLib.js");
-  setZhjwxkReloginHook(libForceRelogin);
-}
+  return libForceRelogin();
+});
 setWebvpnLog((line) => void logLine(line));
 
 // 逐跳 cookie 供应：包装 URL 解码出真实域（wrapped id 跳带 id 桶会话、wrapped zhjw

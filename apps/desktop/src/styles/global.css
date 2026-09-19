@@ -4438,3 +4438,12 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   transition: color .15s ease, border-color .15s ease, background .15s ease;
 }
 .plg-repo-btn:hover { color: var(--text-1); border-color: var(--border-strong); background: var(--hover); }
+.market-repo-link {
+  display: inline-flex; align-items: center; gap: 5px; min-width: 0;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: 10px;
+  color: var(--text-3); background: transparent; border: none; cursor: pointer;
+  padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;
+  transition: color .15s ease;
+}
+.market-repo-link:hover { color: var(--accent); text-decoration: underline; }
+.market-repo-link svg { flex: none; opacity: .8; }

@@ -311,6 +311,14 @@ async function dumpDebug(err: unknown): Promise<void> {
   }
 }
 
+/** R17 23.3-4：登录成功（含 2FA 完成、设备信任建立）后自动重试一次 TUOJ 漫游。
+ *  动态 import 防循环依赖（exthw 状态层 import 本模块）；失败静默（状态层已记录）。 */
+function retryTuojAfterTrust(): void {
+  void import("../state/exthw.js")
+    .then((m) => m.retryTuojCasAfterLogin())
+    .catch(() => undefined);
+}
+
 /** UI 只管喂账密；登录链 = thu-info-lib（SM2 + 2FA hooks + roam-id，
  *  docs/INFOLIB-PIPELINE-REVIEW.md P2）。单一 webvpn 管线：不再有直连/webvpn
  *  降级舞蹈——webvpn 从校内校外都可达，拓扑唯一才是双环境适配的本质。
@@ -346,6 +354,8 @@ export async function login(
       session.injectCredentials(username, password);
       await persist();
       await logLine("LOGIN-OK (lib 链，单管线)");
+      // R17 23.3-4：设备信任已建立 → 自动重试一次此前失败的 TUOJ 漫游
+      retryTuojAfterTrust();
       // lib 主会话活了 → learn 客户端经 webvpn 透明 SSO 抓 _csrf（2026-09-17
       // 实录：缺此步则 loadReal 的 learn.* 预请求即抛 AuthRequiredError →
       // CAMPUS-AUTH 无限循环；resume 内部抓不到就保持未登录，不抛错）
@@ -415,6 +425,8 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
     await logLine("VERIFY-OK (lib 链完成)");
+    // R17 23.3-4：2FA + 信任设备完成 → 自动重试一次此前失败的 TUOJ 漫游
+    retryTuojAfterTrust();
     // 同 login()：2FA 完成即主会话活，learn 透明 SSO 建 csrf
     await learn.resume().catch(() => false);
     return null;

@@ -149,7 +149,10 @@ export async function yuketangQrPoll(
   }, timeoutMs) : null;
 
   try {
-    const res = await fetchLike(`${YKT_BASE}/api/v3/user/login/app-web-login`, {
+    // R17 23.1：传输层超时必须晚于本地轮询计时（+10s），否则 tauriFetch/Rust
+    // 的 http_request 会先于 AbortSignal 抢跑，把「未扫码」误报成硬错误退出。
+    // 本地计时到点 → ctrl.abort() → tauriFetch 的 signal 立即 reject → timedOut 重发。
+    const init: RequestInit & { timeoutMs?: number } = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -159,7 +162,9 @@ export async function yuketangQrPoll(
       },
       body: JSON.stringify({ token }),
       signal: ctrl.signal,
-    });
+      timeoutMs: timeoutMs + 10_000,
+    };
+    const res = await fetchLike(`${YKT_BASE}/api/v3/user/login/app-web-login`, init);
     const pairs = captureCookies(res);
     const text = await res.text();
     let json: Record<string, unknown> | null = null;
@@ -184,11 +189,42 @@ export async function yuketangQrPoll(
   } catch (e) {
     if (aborted) return { done: false, aborted: true, message: "已取消" };
     if (timedOut) return { done: false, timedOut: true, message: "等待扫码超时" };
-    return { done: false, message: e instanceof Error ? e.message : String(e) };
+    // R17b 24.1：长轮询的**传输层错误**（connection aborted / reset / operation timed out /
+    // network error 等，即任何非 HTTP 响应类错误）一律按「未扫码超时」处理 →
+    // 状态机用**同一 token** 继续轮询，直到二维码过期（~5min）或被取消。
+    // 真机根因：App 退后台被 MIUI 冻结/掐断网络 → reqwest 抛 `connection aborted`，
+    // 旧逻辑当硬错误退出 → 扫码作废。这里不再因一次连接中断就退出。
+    // HTTP 层错误（4xx/5xx、code!=0）不会抛异常，走上面的正常返回，语义保持不变（不吞）。
+    // 原始错误串保留在 message 里（仅诊断用；timedOut 路径 UI 不展示）。
+    const message = e instanceof Error ? e.message : String(e);
+    return { done: false, timedOut: true, message };
   } finally {
     if (timer) clearTimeout(timer);
     external?.removeEventListener("abort", onAbort);
   }
+}
+
+/* ── ②′ 官方网页登录（WebView）通道：Cookie 原文 → 凭据串 ── */
+
+/**
+ * R18 24.2：把应用内 WebView / 原生 `CookieManager` 取回的 Cookie 原文
+ * （`name=value; name2=value2`，即 `document.cookie` 或 `CookieManager.getCookie()` 的格式）
+ * 解析为 `name→value`，再经 {@link yuketangBuildCookie} 补齐清华固定字段，
+ * 得到可直接用于拉取的 `Cookie:` 串（与扫码 / 短信登录同一出口）。
+ *
+ * 空原文返回空串——调用方据此判定「未取到会话」并回退「高级：手动粘贴 Cookie」。
+ */
+export function yuketangCookieFromHeader(raw: string): string {
+  const pairs = new Map<string, string>();
+  for (const part of raw.split(";")) {
+    const eq = part.indexOf("=");
+    if (eq <= 0) continue;
+    const name = part.slice(0, eq).trim();
+    const value = part.slice(eq + 1).trim();
+    if (name) pairs.set(name, value);
+  }
+  if (pairs.size === 0) return "";
+  return yuketangBuildCookie(pairs);
 }
 
 /* ── ③ 编排（状态机）：取码 → 长轮询 → 超时重发 → 过期重建 → 成功/取消 ── */
@@ -226,7 +262,8 @@ export async function runYuketangQrLogin(deps: RunYuketangQrLoginDeps): Promise<
     if (signal?.aborted) return { done: false, aborted: true, message: "已取消" };
     deps.onPhase?.({ phase: "qr", qrContent: info.qrContent, expireAt: info.expireAt });
 
-    // 在二维码有效期内持续长轮询；单次超时后自动重发（同一 token）
+    // 在二维码有效期内持续长轮询；单次超时 / 传输层连接被掐（R17b 24.1）后
+    // 自动重发（**同一 token**，二维码不变），直到过期重建。
     while (now() < info.expireAt) {
       const r = await yuketangQrPoll(deps.fetchLike, info.token, { signal, timeoutMs: pollTimeoutMs });
       if (r.aborted) return r;

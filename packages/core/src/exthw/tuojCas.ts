@@ -103,12 +103,18 @@ function isCasInterstitial(html: string, finalUrl: string): boolean {
 }
 
 /** CAS 漫游失败文案（R10 15.1-2）：按「无凭据 / 直登失败 / 直连成功但校验失败」分支，
- *  杜绝旧版 ensureTried 一刀切「直连会话建立后仍未通过」的误导。 */
+ *  杜绝旧版 ensureTried 一刀切「直连会话建立后仍未通过」的误导。
+ *  R17 23.3：直登触发二次认证（2FA）时优先给出可操作文案，不再只说「详情见诊断日志」。 */
 export function tuojCasFailMessage(opts: {
   ensureTried: boolean;
   ensureOk: boolean;
   hasCreds: boolean;
+  /** 底层账密直登 id 触发二次认证（2FA）——需用户重新登录并信任设备 */
+  twoFactor?: boolean;
 }): string {
+  if (opts.twoFactor) {
+    return "TUOJ：需要二次认证：请在 OneTHU 里重新登录清华账号并勾选「信任此设备」后重试（建立设备信任后会自动重试一次 TUOJ 统一认证）。";
+  }
   const tail = "请在 OneTHU 重新登录清华账号（重新输入密码）后重试，或改用「TUOJ 账号密码登录」。";
   if (opts.ensureOk) {
     return `TUOJ：需先登录清华统一认证（直连会话已建立但 CAS 校验未通过，详情见诊断日志）。${tail}`;
@@ -120,6 +126,12 @@ export function tuojCasFailMessage(opts: {
     return `TUOJ：需先登录清华统一认证（OneTHU 内存中没有清华密码——重启恢复/未记住密码，无法自动建立直连会话）。${tail}`;
   }
   return `TUOJ：需先登录清华统一认证（自动登录清华统一认证未成功，详情见诊断日志）。${tail}`;
+}
+
+/** R17 23.3：底层错误是否为「触发二次认证」（id 端 2FA / 双因素）。 */
+export function isTwoFactorError(e: unknown): boolean {
+  const msg = e instanceof Error ? e.message : String(e);
+  return /二次认证|双因素|二次验证|双因子/.test(msg);
 }
 
 /** jar 里某域当前的 Cookie 串（无则空串） */
@@ -205,6 +217,7 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
   let casDiag = "";
   let ensureTried = false;
   let ensureOk = false;
+  let ensureTwoFactor = false;
   let confirmTried = false;
   let confirmOk = false;
 
@@ -238,6 +251,7 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
       } catch (e) {
         // 2FA 等底层可操作错误：记录后统一转方案 B 文案（不得静默失败）
         ensureOk = false;
+        ensureTwoFactor = isTwoFactorError(e);
         casDiag += ` | ensure-error=${e instanceof Error ? e.message : String(e)}`;
         http.debug?.(`[TUOJ-CAS] ensure-direct-id threw: ${e instanceof Error ? e.message : String(e)}`);
       }
@@ -263,9 +277,14 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
     }
 
     if (!confirmOk && isCasInterstitial(body, finalUrl)) {
-      // 方案 B（兜底）：可操作文案——按 ensureOk / 有无凭据分三支（R10 15.1-2）
+      // 方案 B（兜底）：可操作文案——按 ensureOk / 有无凭据 / 2FA 分支（R10 15.1-2，R17 23.3）
       throw new TuojCasError(
-        tuojCasFailMessage({ ensureTried, ensureOk: ensureOk || confirmTried, hasCreds }),
+        tuojCasFailMessage({
+          ensureTried,
+          ensureOk: ensureOk || confirmTried,
+          hasCreds,
+          twoFactor: ensureTwoFactor,
+        }),
         (casDiag + " | " + finalUrl + " | " + body.slice(0, 300)).slice(0, 800),
         { stage: "cas" },
       );

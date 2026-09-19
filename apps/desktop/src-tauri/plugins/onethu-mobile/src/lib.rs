@@ -5,6 +5,8 @@
 //!   在 Android 上先写 cacheDir 再经此桥转存，前端拿到的即用户可见的系统下载。
 //! - openIntent：intent:// 深链（地图导航直跳高德/腾讯/百度 App），
 //!   Intent.parseUri + browser_fallback_url 网页兜底。
+//! - openYktWebLogin / readYktCookies（R18 24.2）：应用内 WebView 打开雨课堂官方
+//!   登录页（扫码 / 短信），并经 android.webkit.CookieManager 读回会话 Cookie。
 //!
 //! 桌面端无此桥——主 crate 相关调用全部 cfg(target_os = "android") 隔离。
 

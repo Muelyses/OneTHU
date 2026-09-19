@@ -7,6 +7,7 @@ mod seafile;
 mod harness_embed;
 mod plugins;
 use std::collections::HashMap;
+use std::error::Error as _;
 use std::time::Duration;
 use tauri::Manager;
 
@@ -29,6 +30,23 @@ struct HttpInput {
 
 fn default_method() -> String {
     "GET".into()
+}
+
+/// 拼接 error 的 source 链（R17 23.4）：reqwest 的 `Display` 只输出
+/// `error sending request for url (...)`，真正原因（`operation timed out` 等）
+/// 藏在 `source()` 链里被吞掉——逐层拼接，杜绝「看不出原因」的网络错误。
+fn error_chain(e: &dyn std::error::Error) -> String {
+    let mut out = e.to_string();
+    let mut src = e.source();
+    while let Some(s) = src {
+        let text = s.to_string();
+        if !text.is_empty() && !out.contains(&text) {
+            out.push_str(": ");
+            out.push_str(&text);
+        }
+        src = s.source();
+    }
+    out
 }
 
 #[derive(Serialize)]
@@ -1049,7 +1067,7 @@ async fn http_native(
         if let Some(b) = &body_bytes {
             req = req.body(b.clone());
         }
-        let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+        let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
@@ -1086,7 +1104,7 @@ async fn http_native(
         final_headers = headers;
         final_set_cookies = set_cookies;
         let body_url_tag = resp.url().as_str().to_string();
-        final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?.to_vec();
+        final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {}", error_chain(&e)))?.to_vec();
         // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
         if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList") || body_url_tag.contains("checkSingle")) && method_cur.as_str() == "POST" {
             let mut hdr_dump = String::new();
@@ -1681,7 +1699,7 @@ async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
         req = req.body(b);
     }
 
-    let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+    let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
     let status = resp.status();
     let mut headers = HashMap::new();
     let mut set_cookies = Vec::new();
@@ -1693,7 +1711,7 @@ async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
             headers.insert(name.as_str().to_lowercase(), v);
         }
     }
-    let body_bytes = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?;
+    let body_bytes = resp.bytes().await.map_err(|e| format!("读取响应失败: {}", error_chain(&e)))?;
     // 分流规则：文本类（text/*、html/json/xml）按 Content-Type charset 解码为字符串
     // （reqwest text() 原语义，gb2312 教务页依赖此通道）；其余（图片/PDF/流）且非合法
     // UTF-8 时走 base64 字节通道——字符串通道会把 0x89 等 lossy 成 U+FFFD 损坏二进制。
@@ -1804,6 +1822,129 @@ fn open_eid_window(
     Ok("opened".into())
 }
 
+/* ---------------- R18 24.2：雨课堂「官方网页登录」WebView 通道 ----------------
+ * 打开应用内原生窗口指向 pro.yuketang.cn/web，用户在其中完成扫码或
+ * 「手机号 + 图形验证码 + 短信」登录；随后主窗口点「我已登录，读取会话」→
+ * read_ykt_cookies 从同一 webview 数据目录读取 Cookie（含 HttpOnly，wry/tauri
+ * 的 cookies_for_url 支持），前端经 yuketangBuildCookie 补齐清华字段后保存。
+ * 读不到（浏览器预览 / 未登录 / 平台不支持）→ 前端回退「高级：手动粘贴 Cookie」。
+ *
+ * R18b 25.3.2：原先裸 WebviewWindowBuilder（无注入脚本、无回传通道）在 Windows
+ * 实测白屏、缩放不重绘、关不掉（主线程卡死）。改为复用 open_eid_window /
+ * open_sports_window 已验证的窗口套路：注入脚本 + document.title 回传 + 后台
+ * 线程轮询（远程页无 IPC 权限，title 是最稳的回传通道）；cookie 读取在后台线程
+ * 走 cookies_for_url（Windows 主线程读会死锁），不占主线程。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
+    use tauri::webview::WebviewWindowBuilder;
+    use tauri::WebviewUrl;
+    let label = "yktlogin";
+    if let Some(w) = app.get_webview_window(label) {
+        let _ = w.set_focus();
+        return Ok("exists".into());
+    }
+    // 初始化脚本：远程登录页右下角注入固定「我已登录，读取会话」按钮，点击后把
+    // 标记写进 document.title（与 open_sports_window 同款 title 回传通道）。
+    // 仅注入一次；登录后跳转的页面不再重复注入（用 window 标记守卫）。
+    let script = r#"(function() {
+  if (window.__ONETHU_YKT_BTN) return;
+  window.__ONETHU_YKT_BTN = true;
+  function mount() {
+    try {
+      if (!document.body || document.getElementById("onethu-ykt-read")) return;
+      var b = document.createElement("button");
+      b.id = "onethu-ykt-read";
+      b.textContent = "我已登录，读取会话";
+      b.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:2147483647;padding:10px 16px;border:0;border-radius:8px;background:#1a6fd4;color:#fff;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.3)";
+      b.onclick = function() { document.title = "ONETHU_YKT_READY"; };
+      document.body.appendChild(b);
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
+})();"#;
+    let win = WebviewWindowBuilder::new(
+        &app,
+        label,
+        WebviewUrl::External("https://pro.yuketang.cn/web".parse().unwrap()),
+    )
+    .title("雨课堂 · 官方网页登录")
+    .inner_size(480.0, 760.0)
+    .initialization_script(script)
+    .build()
+    .map_err(|e| e.to_string())?;
+    let _ = win.set_focus();
+    // 轮询窗口标题：发现「我已登录」标记 → 在**后台线程**用 cookies_for_url 读
+    // Cookie（Windows 主线程读会死锁）→ 拿到 sessionid 就 emit + 关窗；没拿到
+    // 则复位标题让用户重试。最长 10 分钟（与 open_sports_window 一致）。
+    std::thread::spawn(move || {
+        for _ in 0..600 {
+            std::thread::sleep(std::time::Duration::from_millis(1000));
+            let Some(w) = app.get_webview_window(label) else {
+                return; // 用户已关窗
+            };
+            if w.title().unwrap_or_default() != "ONETHU_YKT_READY" {
+                continue;
+            }
+            let header = url::Url::parse("https://pro.yuketang.cn/")
+                .ok()
+                .and_then(|u| w.cookies_for_url(u).ok())
+                .map(|cs| {
+                    cs.iter()
+                        .map(|c| format!("{}={}", c.name(), c.value()))
+                        .collect::<Vec<_>>()
+                        .join("; ")
+                })
+                .unwrap_or_default();
+            if header.contains("sessionid=") {
+                let _ = w.close();
+                use tauri::Emitter;
+                let _ = app.emit("ykt-cookie", header);
+                return;
+            }
+            // 尚未登录：复位标题，注入按钮可再次点击
+            let _ = w.eval("document.title='雨课堂 · 官方网页登录'");
+        }
+    });
+    Ok("opened".into())
+}
+
+/// 读取 yktlogin 窗口内 `pro.yuketang.cn` 的 Cookie（含 HttpOnly），返回 `name=value; …` 原文。
+/// ⚠️ Windows 上必须在异步命令 / 非主线程读取，否则 WebView2 死锁（Tauri 文档）。
+/// ⚠️ Android 不支持该 API（恒返回空），移动端走 `#[cfg(mobile)]` 的 CookieManager 桥。
+#[cfg(desktop)]
+#[tauri::command]
+async fn read_ykt_cookies(app: tauri::AppHandle) -> Result<String, String> {
+    let win = app
+        .get_webview_window("yktlogin")
+        .ok_or_else(|| "雨课堂登录窗口未打开".to_string())?;
+    let url = url::Url::parse("https://pro.yuketang.cn/").map_err(|e| e.to_string())?;
+    let cookies = win.cookies_for_url(url).map_err(|e| e.to_string())?;
+    let header = cookies
+        .iter()
+        .map(|c| format!("{}={}", c.name(), c.value()))
+        .collect::<Vec<_>>()
+        .join("; ");
+    if header.is_empty() {
+        return Err(
+            "未读到 pro.yuketang.cn 的 Cookie：请先在窗口内完成登录，或改用「高级：手动粘贴 Cookie」"
+                .into(),
+        );
+    }
+    Ok(header)
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn close_ykt_window(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("yktlogin") {
+        w.close().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 
 #[cfg(desktop)]
 #[tauri::command]
@@ -1869,6 +2010,98 @@ fn open_sports_window(app: tauri::AppHandle) -> Result<String, String> {
 fn open_eid_window(_app: tauri::AppHandle, _username: String, _password: String) -> Result<String, String> {
     // 移动端无多窗口：前端捕获本错误后改用 opener 跳系统浏览器
     Err("移动端请在系统浏览器打开电子身份".into())
+}
+
+/* R18 24.2 移动端：应用内 WebView 由 onethu-mobile 插件（Kotlin）以 Dialog 呈现，
+ * Cookie 走 android.webkit.CookieManager（Tauri 的 cookies_for_url 在 Android 恒空）。 */
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    // R18b 25.3.1：全屏 Dialog 内的「我已登录，读取会话」直接读回 Cookie 原文并
+    // 在此 resolve；用户直接关闭则为空串。用 async 版本等待，不阻塞工作线程。
+    let r: serde_json::Value = handle
+        .run_mobile_plugin_async("openYktWebLogin", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(r.get("cookie")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn read_ykt_cookies(app: tauri::AppHandle) -> Result<String, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    let r: serde_json::Value = handle
+        .run_mobile_plugin("readYktCookies", serde_json::json!({}))
+        .map_err(|e| e.to_string())?;
+    let cookie = r.get("cookie").and_then(|v| v.as_str()).unwrap_or("").to_string();
+    if cookie.is_empty() {
+        return Err(
+            "未读到 pro.yuketang.cn 的 Cookie：请先在窗口内完成登录，或改用「高级：手动粘贴 Cookie」"
+                .into(),
+        );
+    }
+    Ok(cookie)
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+fn close_ykt_window(_app: tauri::AppHandle) -> Result<(), String> {
+    // 移动端是应用内 Dialog WebView，由用户自行关闭
+    Ok(())
+}
+
+/* R18c：扫码期间 Android 前台服务保活（QrKeepAliveService）。
+ * 前端 YktQrPanel 在二维码就绪时 start、成功/取消/过期/卸载时 stop。
+ * 桌面端无此机制，返回 {ok:false, reason:"not-android"}，前端零行为变化。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn start_qr_keep_alive() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-android" })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn stop_qr_keep_alive() -> serde_json::Value {
+    serde_json::json!({ "ok": true, "reason": "not-android" })
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn start_qr_keep_alive(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    // API 33+ 通知权限弹窗需等用户操作，故用 async 版本等待，不阻塞工作线程。
+    handle
+        .run_mobile_plugin_async("startQrKeepAlive", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn stop_qr_keep_alive(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("stopQrKeepAlive", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
 }
 
 /* 体育官方预约已改为主窗口 tab 内 iframe（URL ?token= 携带 JWT，官方 SPA
@@ -2124,7 +2357,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

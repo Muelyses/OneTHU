@@ -9,6 +9,9 @@
  *  - 取消（AbortSignal）→ 立即中止、不再发请求
  *  - token 过期 → 自动重建二维码（重取 pre-info）
  *  - 成功 → 解析 Set-Cookie 并补齐清华固定字段
+ *  - R18c：扫码保活（Android 前台服务）启停随面板生命周期（stub 断言调用序列）
+ *  - R18c-bugfix：isAndroidHost 多信号判定（stub navigator 模拟三种宿主，
+ *    回归：tauri.conf 伪装 UA 后 Android 真机仍须判为 Android）
  *
  * 说明：core 源码内部用 `.js` 扩展名互相引用（TS bundler 解析），Node 类型剥离
  * 不能把 `.js` 映射到 `.ts` —— 这里注册一个同步 resolve 钩子做重映射后再动态 import。
@@ -32,7 +35,7 @@ registerHooks({
   },
 });
 
-const { runYuketangQrLogin, yuketangQrPoll, yuketangQrStart } = await import(
+const { runYuketangQrLogin, yuketangQrPoll, yuketangQrStart, yuketangCookieFromHeader } = await import(
   "../packages/core/src/exthw/yuketangQr.ts"
 );
 
@@ -182,6 +185,281 @@ console.log("[7] pre-info 解析（含 JWT exp）");
   const info = await yuketangQrStart(fake);
   ok(info.qrContent === "https://x/qr" && info.token.startsWith("eyJ"), "返回 qrContent + token");
   ok(info.expireAt === expSec * 1000, "expireAt 取自 JWT exp", `expireAt=${info.expireAt}`);
+}
+
+/* ── ⑧ 传输层超时 → 继续轮询（R17 23.1）── */
+console.log("[8] 传输层超时 → 继续轮询");
+{
+  // 8a：yuketangQrPoll 必须把传输层超时放大到「本地轮询 + 10s」，
+  // 否则 tauriFetch/Rust http_request 会先于 AbortSignal 抢跑（扫码必失败根因）。
+  let seenTimeoutMs;
+  const fetchLike = (url, init) => {
+    if (url.includes("app-web-pre-info")) {
+      return Promise.resolve(resp(JSON.parse(preInfoBody("QR-T", makeJwt(Math.floor(Date.now() / 1000) + 120)))));
+    }
+    seenTimeoutMs = init?.timeoutMs;
+    return Promise.resolve(resp({ code: 1, msg: "未扫码" }));
+  };
+  await yuketangQrPoll(fetchLike, "tok", { timeoutMs: 28_000 });
+  ok(seenTimeoutMs === 38_000, "传输层超时 = 本地轮询 + 10s", `timeoutMs=${seenTimeoutMs}`);
+}
+{
+  // 8b：传输层抛超时（reqwest `operation timed out` / JS 兜底「请求超时」）
+  // → 归为 timedOut（未扫码），交由状态机重发，而非当硬错误退出。
+  const boom = () =>
+    Promise.reject(
+      new Error(
+        "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): operation timed out",
+      ),
+    );
+  const r = await yuketangQrPoll(boom, "tok", { timeoutMs: 500 });
+  ok(r.done === false && r.timedOut === true, "传输层超时 → timedOut（继续轮询）", JSON.stringify(r));
+}
+{
+  // 8c：状态机：第一次传输超时、第二次成功 —— 不得因传输超时退出。
+  let loginCalls = 0;
+  const fetchLike = (url) => {
+    if (url.includes("app-web-pre-info")) {
+      return Promise.resolve(resp(JSON.parse(preInfoBody("QR-T", makeJwt(Math.floor(Date.now() / 1000) + 120)))));
+    }
+    loginCalls++;
+    if (loginCalls === 1) {
+      return Promise.reject(
+        new Error(
+          "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): operation timed out",
+        ),
+      );
+    }
+    return Promise.resolve(resp({ code: 0, data: {} }, ["sessionid=SESS123"]));
+  };
+  const r = await runYuketangQrLogin({ fetchLike, pollTimeoutMs: 1000, now: () => 0 });
+  ok(r.done === true && !!r.cookie, "传输超时后继续轮询 → 最终成功", JSON.stringify(r));
+  ok(loginCalls === 2, "传输超时被重发（非硬错误退出）", `loginCalls=${loginCalls}`);
+}
+
+/* ── ⑨ connection aborted → 继续轮询（R17b 24.1，同 token）── */
+console.log("[9] connection aborted → 继续轮询（同 token）");
+{
+  // 9a：真机退后台被 MIUI 掐断长轮询时 reqwest 抛的传输层错误
+  // → 必须归为 timedOut（未扫码），而非硬错误退出。
+  const boom = () =>
+    Promise.reject(
+      new Error(
+        "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): client error (SendRequest): connection error: connection aborted",
+      ),
+    );
+  const r = await yuketangQrPoll(boom, "tok", { timeoutMs: 500 });
+  ok(r.done === false && r.timedOut === true, "connection aborted → timedOut（继续轮询）", JSON.stringify(r));
+  ok(
+    typeof r.message === "string" && /connection aborted/.test(r.message),
+    "原始错误串保留在 message（诊断用）",
+    r.message,
+  );
+}
+{
+  // 9a′：其它传输层错误（network error / connection reset）同样可恢复
+  const netErr = () => Promise.reject(new Error("网络错误: error sending request for url (…): connection reset by peer"));
+  const r = await yuketangQrPoll(netErr, "tok", { timeoutMs: 500 });
+  ok(r.done === false && r.timedOut === true, "connection reset → timedOut（继续轮询）", JSON.stringify(r));
+}
+{
+  // 9b：状态机：首次 connection aborted、第二次成功 —— 必须用**同一 token** 重发，
+  // 不得重建二维码（换 token = 已扫的码作废）。
+  const tokens = [];
+  let loginCalls = 0;
+  const fetchLike = (url, init) => {
+    if (url.includes("app-web-pre-info")) {
+      return Promise.resolve(
+        resp(JSON.parse(preInfoBody("QR-ABORT", makeJwt(Math.floor(Date.now() / 1000) + 120)))),
+      );
+    }
+    loginCalls++;
+    tokens.push(JSON.parse(init.body).token);
+    if (loginCalls === 1) {
+      return Promise.reject(
+        new Error(
+          "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): client error (SendRequest): connection error: connection aborted",
+        ),
+      );
+    }
+    return Promise.resolve(resp({ code: 0, data: {} }, ["sessionid=SESS123"]));
+  };
+  const r = await runYuketangQrLogin({ fetchLike, pollTimeoutMs: 1000, now: () => 0 });
+  ok(r.done === true && !!r.cookie, "connection aborted 后继续轮询 → 最终成功", JSON.stringify(r));
+  ok(loginCalls === 2, "连接被掐被重发（非硬错误退出）", `loginCalls=${loginCalls}`);
+  ok(tokens.length === 2 && tokens[0] === tokens[1], "重发沿用同一 token（二维码不换）", JSON.stringify(tokens));
+}
+
+/* ── ⑩ 官方网页通道：Cookie 原文 → 凭据串（R18 24.2）── */
+console.log("[10] 官方网页通道：Cookie 原文 → 凭据串");
+{
+  const cookie = yuketangCookieFromHeader("sessionid=SESS123; csrftoken=CSRF456; uv_id=2598");
+  ok(cookie.includes("sessionid=SESS123") && cookie.includes("csrftoken=CSRF456"), "解析出会话 Cookie", cookie);
+  ok(
+    cookie.includes("xtbz=ykt") && cookie.includes("university_id=2598") && cookie.includes("platform_id=3"),
+    "补齐清华固定字段",
+    cookie,
+  );
+  ok(yuketangCookieFromHeader("   ") === "" && yuketangCookieFromHeader("garbage") === "", "空 / 无对原文 → 空串（回退手动粘贴）");
+}
+
+/* ── ⑪ R18c：扫码保活启停随面板生命周期 ── */
+console.log("[11] R18c：扫码保活启停随面板生命周期");
+const tick = () => new Promise((r) => setTimeout(r, 0));
+{
+  // 11a：Android 正常路径 —— qr 启动、过期停止、刷新重启、成功/取消/卸载收口
+  const { createQrKeepAlive, bindQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const calls = [];
+  const ctrl = createQrKeepAlive({
+    isAndroid: true,
+    invoke: async (cmd) => {
+      calls.push(cmd);
+      return { ok: true };
+    },
+  });
+  const ka = bindQrKeepAlive(ctrl);
+  ka.onPhase("loading");
+  await tick();
+  ok(calls.length === 0, "loading 阶段不启停", calls.join(","));
+
+  ka.onPhase("qr");
+  await tick();
+  ok(calls.join(",") === "start_qr_keep_alive" && ctrl.on === true, "二维码就绪 → start", calls.join(","));
+
+  ka.onPhase("qr");
+  await tick();
+  ok(calls.join(",") === "start_qr_keep_alive", "重复 qr 幂等（不重复 start）", calls.join(","));
+
+  ka.onPhase("expired");
+  await tick();
+  ok(
+    calls.join(",") === "start_qr_keep_alive,stop_qr_keep_alive" && ctrl.on === false,
+    "过期 → stop",
+    calls.join(","),
+  );
+
+  ka.onPhase("qr");
+  await tick();
+  ok(calls[calls.length - 1] === "start_qr_keep_alive" && ctrl.on === true, "过期后刷新出新码 → 重新 start");
+
+  ka.stop(); // 成功 / 取消 / 卸载统一收口
+  await tick();
+  ok(calls.filter((c) => c === "stop_qr_keep_alive").length === 2, "成功 / 取消 / 卸载 → stop", calls.join(","));
+
+  ka.stop(); // 已停后再 stop：幂等，不重复 invoke
+  await tick();
+  ok(calls.filter((c) => c === "stop_qr_keep_alive").length === 2, "未生效时重复 stop 不重复 invoke", calls.join(","));
+}
+{
+  // 11b：非 Android —— 零行为（不 invoke、不报错）
+  const { createQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const calls = [];
+  const ctrl = createQrKeepAlive({
+    isAndroid: false,
+    invoke: async (cmd) => {
+      calls.push(cmd);
+      return { ok: true };
+    },
+  });
+  const r = await ctrl.start();
+  await ctrl.stop();
+  ok(r.ok === false && r.reason === "not-android", "非 Android → {ok:false, reason:not-android}", JSON.stringify(r));
+  ok(calls.length === 0 && ctrl.on === false, "非 Android 不 invoke");
+}
+{
+  // 11c：通知权限被拒 —— 返回 ok:false 不抛错，onStatus 不置 true，未生效时 stop 不 invoke
+  const { createQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const calls = [];
+  const states = [];
+  const ctrl = createQrKeepAlive({
+    isAndroid: true,
+    invoke: async (cmd) => {
+      calls.push(cmd);
+      return cmd === "start_qr_keep_alive" ? { ok: false, reason: "notifications-denied" } : { ok: true };
+    },
+    onStatus: (on) => states.push(on),
+  });
+  const r = await ctrl.start();
+  ok(
+    r.ok === false && r.reason === "notifications-denied",
+    "权限被拒 → {ok:false, reason:notifications-denied}",
+    JSON.stringify(r),
+  );
+  ok(states.length === 0 && ctrl.on === false, "未生效不触发 onStatus（保留「另一台设备」提示）");
+  await ctrl.stop();
+  ok(calls.join(",") === "start_qr_keep_alive", "未生效时 stop 不 invoke", calls.join(","));
+}
+{
+  // 11d：invoke 抛错（IPC/服务异常）—— 静默降级
+  const { createQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const ctrl = createQrKeepAlive({
+    isAndroid: true,
+    invoke: async () => {
+      throw new Error("boom");
+    },
+  });
+  const r = await ctrl.start();
+  ok(r.ok === false && r.reason === "invoke-error", "invoke 抛错 → {ok:false, reason:invoke-error}（不抛）", JSON.stringify(r));
+}
+
+/* ── ⑫ R18c-bugfix：isAndroidHost 判定（stub navigator 模拟三种宿主）── */
+console.log("[12] R18c-bugfix：isAndroidHost 多信号判定（stub navigator）");
+{
+  // androidHost.ts 零依赖，可直接导入；yktWebview.ts 因拖入 @onethu/core（TS 参数属性）
+  // 无法在 Node strip 模式下导入，故这里对同一判定函数做 stub 直测。
+  const { isAndroidNavigator } = await import("../apps/desktop/src/lib/androidHost.ts");
+
+  // tauri.conf.json windows[].userAgent（webvpn 票绑定 UA，不能改）—— Android 真机被伪装成这条 Windows UA
+  const SPOOFED_UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
+
+  // 12a：Android 真机（本 bug 回归用例）：UA 被伪装，靠 platform 兜底
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Linux armv8l" }) === true,
+    "Android 真机：UA 被伪装 + platform 'Linux armv8l' → true（R18c-bugfix 修复点）",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Linux aarch64" }) === true,
+    "Android 真机：UA 被伪装 + platform 'Linux aarch64' → true",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Linux armv7l" }) === true,
+    "Android 真机（32 位）：platform 'Linux armv7l' → true",
+  );
+  // 12b：Android 真机：UA 未被伪装（原判定保留）
+  ok(
+    isAndroidNavigator({
+      userAgent: "Mozilla/5.0 (Linux; Android 14; M2012K11AC) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+      platform: "Linux armv8l",
+    }) === true,
+    "Android：UA 含 Android（未被伪装）→ true（原判定）",
+  );
+  // 12c：userAgentData.platform 兜底（platform 缺失 / 较新内核）
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, userAgentData: { platform: "Android" } }) === true,
+    "Android：userAgentData.platform = 'Android'（UA 被伪装、platform 缺失）→ true",
+  );
+  // 12d：负例 —— Windows / macOS / Linux-x86 桌面、浏览器预览：三信号均不命中 → false
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "Win32", userAgentData: { platform: "Windows" } }) === false,
+    "Windows 桌面（Win32）→ false（官方网页登录入口继续隐藏）",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "MacIntel", userAgentData: { platform: "macOS" } }) === false,
+    "macOS 桌面（MacIntel）→ false",
+  );
+  ok(
+    isAndroidNavigator({
+      userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      platform: "Linux x86_64",
+    }) === false,
+    "Linux-x86 桌面（Linux x86_64）→ false（不得与 arm/aarch 混淆）",
+  );
+  ok(
+    isAndroidNavigator({ userAgent: SPOOFED_UA, platform: "", userAgentData: null }) === false,
+    "无任何 Android 信号（浏览器预览兜底）→ false",
+  );
+  ok(isAndroidNavigator(null) === false && isAndroidNavigator(undefined) === false, "nav 缺失 → false");
 }
 
 console.log(failed === 0 ? "\n全部通过 ✅" : `\n${failed} 项失败 ❌`);

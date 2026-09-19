@@ -10,17 +10,30 @@
 
 package app.onethu.mobile
 
+import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.Gravity
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.LinearLayout
+import android.webkit.CookieManager
 import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.core.content.ContextCompat
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
+import app.tauri.annotation.Permission
+import app.tauri.annotation.PermissionCallback
 import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
@@ -39,7 +52,12 @@ class OpenIntentArgs {
     lateinit var url: String
 }
 
-@TauriPlugin
+@TauriPlugin(
+    permissions = [
+        // R18c：API 33+ 展示前台服务常驻通知需运行时权限（清单在插件库 Manifest 声明）
+        Permission(strings = [Manifest.permission.POST_NOTIFICATIONS], alias = "notifications"),
+    ],
+)
 class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
 
     /** 沙盒文件 → 系统「下载」；回传 { name }（转存成功后的显示名） */
@@ -125,6 +143,188 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve()
         } catch (e: Exception) {
             invoke.reject(e.message ?: "无法解析 intent 链接")
+        }
+    }
+
+    /* ── R18 24.2 / R18b 25.3：雨课堂「官方网页登录」应用内 WebView 通道 ──
+     * Tauri 的 webview cookies_for_url 在 Android 恒返回空，故用系统
+     * android.webkit.CookieManager 读取；WebView 以**全屏 Dialog** 呈现
+     * （移动端无多窗口），底部固定按钮触发「读取会话 / 关闭」。
+     *
+     * R18b 25.3.1：原先 AlertDialog.setView(web) 会塌成一条缝——AlertDialog
+     * 的内容区自管高度，预先设 layoutParams 无效。改为 Dialog + Window
+     * MATCH_PARENT，WebView 以 weight=1 显式铺满，底部按钮条常显可见。 */
+
+    /** 读取 pro.yuketang.cn 的 Cookie 原文（含 HttpOnly）；未登录时为空串。 */
+    private fun readYktCookieHeader(): String {
+        val cm = CookieManager.getInstance()
+        cm.flush()
+        return cm.getCookie("https://pro.yuketang.cn/") ?: ""
+    }
+
+    /** 打开应用内全屏 WebView（pro.yuketang.cn/web），用户在其中完成扫码或短信登录。
+     *  回传 { cookie }：点「我已登录，读取会话」为 Cookie 原文，直接关闭则为 ""。 */
+    @Command
+    fun openYktWebLogin(invoke: Invoke) {
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.setAcceptCookie(true)
+
+                val web = WebView(activity)
+                // 第三方 Cookie 对官方登录页的跳转链是必需的
+                cm.setAcceptThirdPartyCookies(web, true)
+                web.settings.javaScriptEnabled = true
+                web.settings.domStorageEnabled = true
+                // R18b 25.3.1：官方网页版未做移动适配，靠视口缩放让桌面版页面可用
+                web.settings.useWideViewPort = true
+                web.settings.loadWithOverviewMode = true
+                web.settings.setSupportZoom(true)
+                web.settings.builtInZoomControls = true
+                web.settings.displayZoomControls = false
+                web.webViewClient = WebViewClient()
+
+                // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显
+                val root = LinearLayout(activity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setBackgroundColor(Color.WHITE)
+                }
+                root.addView(
+                    web,
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f),
+                )
+                val bottom = LinearLayout(activity).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER
+                    setPadding(24, 16, 24, 16)
+                    setBackgroundColor(Color.WHITE)
+                }
+                val readBtn = Button(activity).apply {
+                    text = "我已登录，读取会话"
+                    setTextColor(Color.WHITE)
+                    setBackgroundColor(Color.parseColor("#1A6FD4"))
+                }
+                val closeBtn = Button(activity).apply {
+                    text = "关闭"
+                    setTextColor(Color.parseColor("#1F2329"))
+                    setBackgroundColor(Color.parseColor("#E5E5E5"))
+                }
+                val readLp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                readLp.marginEnd = 16
+                bottom.addView(readBtn, readLp)
+                bottom.addView(
+                    closeBtn,
+                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f),
+                )
+                root.addView(
+                    bottom,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+
+                // 全屏 Dialog（部分 ROM 上仍显式设 MATCH_PARENT 兜底）
+                val dialog = Dialog(activity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                dialog.setContentView(root)
+
+                var settled = false
+                var readCookie: String? = null
+                readBtn.setOnClickListener {
+                    // 先读再关：dismiss 会触发 onDismissListener 并 destroy WebView
+                    readCookie = readYktCookieHeader()
+                    dialog.dismiss()
+                }
+                closeBtn.setOnClickListener { dialog.dismiss() }
+                dialog.setOnDismissListener {
+                    // 关闭时才 destroy()；结果只回传一次（按钮 / 返回键 / 点外部都走这里）
+                    if (!settled) {
+                        settled = true
+                        val ret = JSObject()
+                        ret.put("cookie", readCookie ?: "")
+                        invoke.resolve(ret)
+                    }
+                    web.destroy()
+                }
+
+                web.loadUrl("https://pro.yuketang.cn/web")
+                dialog.show()
+                dialog.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                )
+            } catch (e: Exception) {
+                invoke.reject(e.message ?: "打开雨课堂登录窗口失败")
+            }
+        }
+    }
+
+    /** 读取 pro.yuketang.cn 的 Cookie（含 HttpOnly），回传 { cookie } */
+    @Command
+    fun readYktCookies(invoke: Invoke) {
+        activity.runOnUiThread {
+            try {
+                val ret = JSObject()
+                ret.put("cookie", readYktCookieHeader())
+                invoke.resolve(ret)
+            } catch (e: Exception) {
+                invoke.reject(e.message ?: "读取雨课堂 Cookie 失败")
+            }
+        }
+    }
+
+    /* ── R18c：扫码期间前台服务保活（QrKeepAliveService）──
+     * 前端 YktQrPanel 在二维码就绪时 startQrKeepAlive、成功/取消/过期/卸载时
+     * stopQrKeepAlive。命令幂等：重复 start 安全、未启动时 stop 直接返回。
+     * API 33+ 先请求 POST_NOTIFICATIONS；被拒时回 { ok:false, reason:"notifications-denied" }
+     * （resolve 而非 reject，前端静默降级保留「另一台设备扫码」提示）。 */
+
+    private fun hasNotificationPermission(): Boolean =
+        Build.VERSION.SDK_INT < 33 ||
+            ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+
+    @Command
+    fun startQrKeepAlive(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            requestPermissionForAliases(arrayOf("notifications"), invoke, "notificationPermissionCallback")
+            return
+        }
+        activity.runOnUiThread { doStartQrKeepAlive(invoke) }
+    }
+
+    @PermissionCallback
+    fun notificationPermissionCallback(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", "notifications-denied"))
+            return
+        }
+        activity.runOnUiThread { doStartQrKeepAlive(invoke) }
+    }
+
+    private fun doStartQrKeepAlive(invoke: Invoke) {
+        try {
+            if (QrKeepAliveService.running) {
+                invoke.resolve(JSObject().put("ok", true).put("reason", "already-on"))
+                return
+            }
+            val ctx = activity.applicationContext
+            ContextCompat.startForegroundService(ctx, Intent(ctx, QrKeepAliveService::class.java))
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            // 启动失败（ROM 限制等）：不抛错，回 ok:false 让前端降级
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "start-failed"))
+        }
+    }
+
+    @Command
+    fun stopQrKeepAlive(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            ctx.stopService(Intent(ctx, QrKeepAliveService::class.java))
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "stop-failed"))
         }
     }
 }

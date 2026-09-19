@@ -23,7 +23,8 @@ import {
   APP_CODENAME, fetchLatestRelease, isNewer, currentVersion,
   isDismissed, dismissTag, type ReleaseInfo,
 } from "../lib/update.js";
-import { YktQrPanel } from "../components/ExtHwLoginModal.js";
+import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
+import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
   clearTuojAutoStatus,
   consumeExtHwScrollRequest,
@@ -523,10 +524,10 @@ function ExtHwSection() {
   const ext = useExternalHomework();
   // 雨课堂
   const [yktPhone, setYktPhone] = useState("");
-  const [yktCode, setYktCode] = useState("");
   const [yktCookie, setYktCookie] = useState("");
   const [yktQrOpen, setYktQrOpen] = useState(false);
-  const [yktSmsOpen, setYktSmsOpen] = useState(false);
+  // R18 24.2：官方网页登录（应用内 WebView，支持扫码 / 短信）
+  const [yktWebOpen, setYktWebOpen] = useState(false);
   // TUOJ（AI 版）
   const [tuojUser, setTuojUser] = useState("");
   const [tuojPwd, setTuojPwd] = useState("");
@@ -555,6 +556,13 @@ function ExtHwSection() {
   const [ojOpen, setOjOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  // R17 23.4：操作反馈「就近显示」——按触发区域归属，渲染在对应卡片内，
+  // 而不是统一堆在页面底部（真机实测在屏幕外，用户以为什么都没发生）。
+  const [msgArea, setMsgArea] = useState<"yuketang" | "oj" | "range">("range");
+  const notify = (area: "yuketang" | "oj" | "range", text: string): void => {
+    setMsgArea(area);
+    setMsg(text);
+  };
 
   // 凭据在 localStorage 里是密文：首次挂载异步解密后回填表单
   useEffect(() => {
@@ -637,7 +645,7 @@ function ExtHwSection() {
   };
 
   const onSave = () => {
-    void saveExtHwCreds(credsWith()).then(() => setMsg("已保存到本机。"));
+    void saveExtHwCreds(credsWith()).then(() => notify("range", "已保存到本机。"));
   };
 
   const onRefresh = () => {
@@ -645,34 +653,8 @@ function ExtHwSection() {
     setMsg(null);
     void saveExtHwCreds(credsWith())
       .then(() => refreshExtHw())
-      .then(() => setMsg("刷新完成。"))
-      .catch((e: unknown) => setMsg(`刷新失败：${errMsg(e)}`))
-      .finally(() => setBusy(null));
-  };
-
-  const onYktSend = () => {
-    setBusy("ykt-send");
-    setMsg(null);
-    void extHwLogin
-      .yuketangSendSms(yktPhone)
-      .then(() => setMsg("验证码已发送，请查收短信（若收不到，可能被风控拦截）。"))
-      .catch((e: unknown) => setMsg(`发送验证码失败：${errMsg(e)}`))
-      .finally(() => setBusy(null));
-  };
-
-  const onYktLogin = () => {
-    setBusy("ykt-login");
-    setMsg(null);
-    void extHwLogin
-      .yuketangVerify(yktPhone, yktCode)
-      .then(async (r) => {
-        setYktCookie(r.cookie);
-        setYktCode("");
-        await saveExtHwCreds(credsWith({ ykt: r.cookie }));
-        setMsg("雨课堂登录成功，已保存。");
-        void refreshExtHw();
-      })
-      .catch((e: unknown) => setMsg(`雨课堂登录失败：${errMsg(e)}`))
+      .then(() => notify("range", "刷新完成。"))
+      .catch((e: unknown) => notify("range", `刷新失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -694,10 +676,10 @@ function ExtHwSection() {
         await saveExtHwCreds(
           source === "tuoj" ? credsWith({ tuoj: r.cookie, tuojVia: "cas" }) : credsWith({ classic: r.cookie, classicVia: "cas" }),
         );
-        setMsg(`${SOURCE_NAMES[source]} 已通过清华统一认证登录，已保存。`);
+        notify("oj", `${SOURCE_NAMES[source]} 已通过清华统一认证登录，已保存。`);
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -725,10 +707,10 @@ function ExtHwSection() {
             ? credsWith({ tuoj: r.cookie, tuojVia: "password" })
             : credsWith({ classic: r.cookie, classicVia: "password" }),
         );
-        setMsg(`${SOURCE_NAMES[source]} 登录成功，已保存。`);
+        notify("oj", `${SOURCE_NAMES[source]} 登录成功，已保存。`);
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -742,10 +724,10 @@ function ExtHwSection() {
         setTychePwd("");
         setTycheFormOpen(false);
         await saveExtHwCreds(credsWith({ tyche: r.cookie }));
-        setMsg("Tyche 登录成功，已保存。");
+        notify("oj", "Tyche 登录成功，已保存。");
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`Tyche 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `Tyche 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -759,10 +741,10 @@ function ExtHwSection() {
         setDsaPwd("");
         setDsaFormOpen(false);
         await saveExtHwCreds(credsWith({ dsa: r.cookie }));
-        setMsg("DSA OJ 登录成功，已保存。");
+        notify("oj", "DSA OJ 登录成功，已保存。");
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`DSA OJ 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `DSA OJ 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -794,10 +776,10 @@ function ExtHwSection() {
             setDsaCookie("");
             setDsaPwd("");
           }
-          setMsg(`已退出${label}登录。`);
+          notify(source === "yuketang" ? "yuketang" : "oj", `已退出${label}登录。`);
           void refreshExtHw();
         } catch (e: unknown) {
-          setMsg(`退出${label}登录失败：${errMsg(e)}`);
+          notify(source === "yuketang" ? "yuketang" : "oj", `退出${label}登录失败：${errMsg(e)}`);
         } finally {
           setBusy(null);
         }
@@ -857,15 +839,55 @@ function ExtHwSection() {
                   {busy === "logout-yuketang" ? "退出中…" : "退出"}
                 </button>
               ) : (
-                <button className="btn btn-primary" disabled={busy !== null} onClick={() => setYktQrOpen((v) => !v)}>
-                  {yktQrOpen ? "收起扫码" : "微信扫码登录"}
-                </button>
+                <>
+                  <button
+                    className="btn btn-primary"
+                    disabled={busy !== null}
+                    onClick={() => {
+                      setYktWebOpen(false);
+                      setYktQrOpen((v) => !v);
+                    }}
+                  >
+                    {yktQrOpen ? "收起扫码" : "微信扫码登录"}
+                  </button>
+                  {/* R18 24.2：官方网页登录通道（应用内 WebView，支持扫码 / 短信）
+                      R18b 25.3.2：桌面端原生窗口实测白屏卡死 → 隐藏该入口（二维码可用），仅 Android 保留 */}
+                  {YKT_WEB_LOGIN_AVAILABLE ? (
+                    <button
+                      className="btn"
+                      disabled={busy !== null}
+                      title="在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录"
+                      onClick={() => {
+                        setYktQrOpen(false);
+                        setYktWebOpen((v) => !v);
+                      }}
+                    >
+                      {yktWebOpen ? "收起网页登录" : "官方网页登录"}
+                    </button>
+                  ) : null}
+                </>
               )}
-              <button className="btn btn-ghost exthw-more" onClick={() => setYktSmsOpen((v) => !v)}>
-                {yktSmsOpen ? "▾" : "▸"} 短信验证码
+              <button
+                className="btn btn-ghost exthw-more"
+                disabled
+                title="雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码"
+              >
+                短信验证码（暂不可用）
               </button>
             </span>
           </div>
+          {/* R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），
+              纯接口无法内嵌 → 直接短信通道停用；R18 24.2 起可在「官方网页登录」
+              应用内网页里正常使用短信（图形验证码由官方页自己完成）。
+              R18b 25.3.2：桌面端该入口隐藏，文案不再引导到它。 */}
+          <div className="exthw-note">
+            {YKT_WEB_LOGIN_AVAILABLE
+              ? "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信扫码，或用「官方网页登录」在应用内完成扫码 / 短信登录。"
+              : "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。"}
+          </div>
+          {msg && msgArea === "yuketang" ? (
+            <div className="exthw-note" role="status">{msg}</div>
+          ) : null}
           {ext.errors.yuketang ? <div className="exthw-note is-error">{ext.errors.yuketang}</div> : null}
           {yktQrOpen ? (
             <YktQrPanel
@@ -874,27 +896,24 @@ function ExtHwSection() {
                 setYktCookie(cookie);
                 setYktQrOpen(false);
                 void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
-                  setMsg("雨课堂扫码登录成功，已保存。");
+                  notify("yuketang", "雨课堂扫码登录成功，已保存。");
                   void refreshExtHw();
                 });
               }}
             />
           ) : null}
-          {yktSmsOpen ? (
-            <div className="exthw-src-body">
-              <div style={fieldStyle}>
-                <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="tel" placeholder="手机号" value={yktPhone} onChange={(e) => setYktPhone(e.target.value.trim())} />
-                <button className="btn" disabled={busy !== null || !yktPhone.trim()} onClick={onYktSend}>
-                  {busy === "ykt-send" ? "发送中…" : "发送验证码"}
-                </button>
-              </div>
-              <div style={fieldStyle}>
-                <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={yktCode} onChange={(e) => setYktCode(e.target.value.trim())} />
-                <button className="btn btn-primary" disabled={busy !== null || !yktPhone.trim() || !yktCode.trim()} onClick={onYktLogin}>
-                  {busy === "ykt-login" ? "登录中…" : "登录"}
-                </button>
-              </div>
-            </div>
+          {yktWebOpen ? (
+            <YktWebLoginPanel
+              onCancel={() => setYktWebOpen(false)}
+              onSuccess={(cookie) => {
+                setYktCookie(cookie);
+                setYktWebOpen(false);
+                void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
+                  notify("yuketang", "雨课堂官方网页登录成功，已保存会话。");
+                  void refreshExtHw();
+                });
+              }}
+            />
           ) : null}
         </div>
       </Card>
@@ -919,6 +938,9 @@ function ExtHwSection() {
           </span>
           <span className="exthw-oj-hint">{ojOpen ? "点击收起" : "点击展开登录"}</span>
         </button>
+        {msg && msgArea === "oj" ? (
+          <div className="exthw-note" role="status" style={{ margin: "6px 2px 0" }}>{msg}</div>
+        ) : null}
         {ojOpen ? (
           <div className="exthw-oj-body">
             {/* TUOJ（AI 版）：主路径 = 清华统一认证漫游；账号密码收进「更多」 */}
@@ -1131,7 +1153,9 @@ function ExtHwSection() {
                     </div>
                   );
                 })}
-                {msg ? <div style={{ fontSize: 13, color: "var(--text-2)" }}>{msg}</div> : null}
+                {msg && msgArea === "range" ? (
+                  <div style={{ fontSize: 13, color: "var(--text-2)" }} role="status">{msg}</div>
+                ) : null}
               </div>
             </div>
           </div>

@@ -439,6 +439,20 @@ async function maybeAutoTuojCas(source: TuojSourceId, opts: { force?: boolean } 
   }
 }
 
+/** R17 23.3-4：设备信任建立（重新登录 / 2FA 完成并勾选信任）后，自动重试一次
+ *  此前失败的 TUOJ 漫游（复用 R12 force 语义）。仅重试处于 failed 的源——
+ *  正常已配置 / 无账号（no-courses）/ 未尝试的源不打扰。永不抛出。 */
+export async function retryTuojCasAfterLogin(): Promise<void> {
+  // 确保 auto 状态已从 localStorage 回灌（loadTuojAuto 在首次解密时调用）
+  await ensureExtHwCredsLoaded().catch(() => undefined);
+  for (const source of ["tuoj", "tuojClassic"] as const) {
+    if (tuojAuto[source].kind !== "failed") continue;
+    // force 只绕「已配置」前置，24h 频控仍在 → 先复位失败状态（清频控）再强制重试一次
+    clearTuojAutoStatus(source);
+    await maybeAutoTuojCas(source, { force: true });
+  }
+}
+
 /** 清除单个源的凭据（其余源保留，R12 17.2）；TUOJ 系同时复位/抑制该源自动登录状态。 */
 export async function removeExtHwCreds(source: ExtHwSourceId): Promise<void> {
   const cur = getExtHwCreds();

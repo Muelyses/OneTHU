@@ -400,6 +400,31 @@ console.log("\n⑤ checkSingle 三形态（mock http，离线）");
   );
 }
 
+{
+  // ⑧（R17 23.3）直登触发 2FA → 文案给出可操作指引，不再只说「详情见诊断日志」
+  const http = makeMockHttp([
+    { match: (u) => u.endsWith("/api/user/oauth/info"), body: OAUTH_INFO },
+    { match: (u, m) => u === CAS_FORM && m === "GET", body: PASSWORD_PAGE, finalUrl: CAS_FORM },
+  ]);
+  try {
+    await tuojRoam(http, {
+      ensureIdSession: async () => {
+        throw new Error("id 服务登录触发二次认证，请先在应用内重新登录一次（建立设备信任）后重试");
+      },
+      hasIdCredentials: () => true,
+      confirmIdCheckSingle: async () => false,
+    });
+    check("⑧2FA 应抛错", false);
+  } catch (e) {
+    check("⑧抛 TuojCasError", e instanceof TuojCasError, e?.constructor?.name);
+    check(
+      "⑧文案：需要二次认证 + 信任此设备",
+      e instanceof TuojCasError && e.message.includes("需要二次认证") && e.message.includes("信任此设备"),
+      e?.message,
+    );
+  }
+}
+
 /* ── Tyche 验证码探针（可选：需 TYCHE_BASIC） ── */
 if (process.env.TYCHE_BASIC) {
   console.log("\n⑥ Tyche vcode 探针（真实网络）");

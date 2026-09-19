@@ -11,6 +11,7 @@
 package app.onethu.mobile
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
@@ -18,7 +19,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
@@ -125,6 +129,59 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve()
         } catch (e: Exception) {
             invoke.reject(e.message ?: "无法解析 intent 链接")
+        }
+    }
+
+    /* ── R18 24.2：雨课堂「官方网页登录」应用内 WebView 通道 ──
+     * Tauri 的 webview cookies_for_url 在 Android 恒返回空，故用系统
+     * android.webkit.CookieManager 读取；WebView 以 Dialog 呈现（移动端无多窗口）。 */
+
+    /** 打开应用内 WebView（pro.yuketang.cn/web），用户在其中完成扫码或短信登录 */
+    @Command
+    fun openYktWebLogin(invoke: Invoke) {
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.setAcceptCookie(true)
+                val web = WebView(activity)
+                // 第三方 Cookie 对官方登录页的跳转链是必需的
+                cm.setAcceptThirdPartyCookies(web, true)
+                web.settings.javaScriptEnabled = true
+                web.settings.domStorageEnabled = true
+                web.webViewClient = WebViewClient()
+                // AlertDialog 里裸 WebView 会塌成 0 高，给一个显式高度
+                val height = (activity.resources.displayMetrics.heightPixels * 0.7).toInt()
+                web.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height)
+                web.loadUrl("https://pro.yuketang.cn/web")
+                val dialog = AlertDialog.Builder(activity)
+                    .setTitle("雨课堂 · 官方网页登录")
+                    .setView(web)
+                    .setPositiveButton("关闭") { d, _ -> d.dismiss() }
+                    .setNegativeButton("我已登录") { d, _ -> d.dismiss() }
+                    .create()
+                dialog.setOnDismissListener { web.destroy() }
+                dialog.show()
+                invoke.resolve()
+            } catch (e: Exception) {
+                invoke.reject(e.message ?: "打开雨课堂登录窗口失败")
+            }
+        }
+    }
+
+    /** 读取 pro.yuketang.cn 的 Cookie（含 HttpOnly），回传 { cookie } */
+    @Command
+    fun readYktCookies(invoke: Invoke) {
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.flush()
+                val cookie = cm.getCookie("https://pro.yuketang.cn/") ?: ""
+                val ret = JSObject()
+                ret.put("cookie", cookie)
+                invoke.resolve(ret)
+            } catch (e: Exception) {
+                invoke.reject(e.message ?: "读取雨课堂 Cookie 失败")
+            }
         }
     }
 }

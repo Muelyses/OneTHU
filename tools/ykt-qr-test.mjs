@@ -12,6 +12,8 @@
  *  - R18c：扫码保活（Android 前台服务）启停随面板生命周期（stub 断言调用序列）
  *  - R18c-bugfix：isAndroidHost 多信号判定（stub navigator 模拟三种宿主，
  *    回归：tauri.conf 伪装 UA 后 Android 真机仍须判为 Android）
+ *  - R20-A：外部作业链接打开通道分流 pickExtHwOpenChannel（Android+http(s) →
+ *    应用内 WebView 桌面模式；桌面/预览 → 系统浏览器；非 http(s) → 拒绝）
  *
  * 说明：core 源码内部用 `.js` 扩展名互相引用（TS bundler 解析），Node 类型剥离
  * 不能把 `.js` 映射到 `.ts` —— 这里注册一个同步 resolve 钩子做重映射后再动态 import。
@@ -460,6 +462,56 @@ console.log("[12] R18c-bugfix：isAndroidHost 多信号判定（stub navigator�
     "无任何 Android 信号（浏览器预览兜底）→ false",
   );
   ok(isAndroidNavigator(null) === false && isAndroidNavigator(undefined) === false, "nav 缺失 → false");
+}
+
+/* ── ⑬ R20-A：外部作业链接打开通道分流（stub navigator + stub invoke）── */
+console.log("[13] R20-A：外部作业链接打开通道分流（pickExtHwOpenChannel）");
+{
+  const { pickExtHwOpenChannel, isHttpUrl } = await import("../apps/desktop/src/lib/androidHost.ts");
+
+  // R18c-bugfix 同款三宿主信号（外部作业点击处的真实输入形态）
+  // tauri.conf.json windows[].userAgent 同串：Android 真机主窗口 UA 被伪装成这条
+  const SPOOFED_UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
+  const ANDROID_SPOOFED = { userAgent: SPOOFED_UA, platform: "Linux armv8l" }; // UA 被伪装的 Android 真机
+  const WINDOWS = { userAgent: SPOOFED_UA, platform: "Win32", userAgentData: { platform: "Windows" } };
+
+  // 13a：http(s) 白名单
+  ok(isHttpUrl("https://pro.yuketang.cn/web") === true, "https → 放行");
+  ok(isHttpUrl("http://example.com/a?b=1") === true, "http → 放行（含大小写混排协议头场景见下）");
+  ok(isHttpUrl("HTTPS://PRO.YUKETANG.CN/WEB") === true, "HTTPS 大写 → 放行（大小写不敏感）");
+  ok(isHttpUrl("javascript:alert(1)") === false, "javascript: → 拒绝");
+  ok(isHttpUrl("intent://foo#Intent;package=bar;end") === false, "intent: → 拒绝");
+  ok(isHttpUrl("data:text/html,x") === false && isHttpUrl("mailto:a@b.c") === false, "data: / mailto: → 拒绝");
+  ok(isHttpUrl("") === false, "空串 → 拒绝");
+
+  // 13b：Android 宿主 + http(s) → 应用内 WebView 桌面模式
+  ok(
+    pickExtHwOpenChannel(ANDROID_SPOOFED, "https://pro.yuketang.cn/web", true) === "webview",
+    "Android 真机（UA 被伪装）+ https → webview（R20-A 主链路）",
+  );
+  ok(
+    pickExtHwOpenChannel({ userAgent: "Mozilla/5.0 (Linux; Android 14) Chrome/124 Mobile", platform: "Linux armv8l" }, "http://x.example/", true) === "webview",
+    "Android（UA 未被伪装）+ http → webview",
+  );
+  // 13c：桌面端 / 浏览器预览 → 保持现状系统浏览器
+  ok(
+    pickExtHwOpenChannel(WINDOWS, "https://pro.yuketang.cn/web", true) === "browser",
+    "Windows 桌面 + https → browser（桌面端保持 openExternal 现状）",
+  );
+  ok(
+    pickExtHwOpenChannel(ANDROID_SPOOFED, "https://pro.yuketang.cn/web", false) === "browser",
+    "非 Tauri（浏览器预览，即便信号像 Android）→ browser（不 invoke）",
+  );
+  // 13d：非 http(s) 一律拒绝（Android 也不开 WebView，桌面也不交系统浏览器）
+  ok(
+    pickExtHwOpenChannel(ANDROID_SPOOFED, "javascript:alert(1)", true) === "reject",
+    "Android + javascript: → reject（不开 WebView）",
+  );
+  ok(
+    pickExtHwOpenChannel(WINDOWS, "intent://foo#Intent;package=bar;end", true) === "reject",
+    "桌面 + intent: → reject（不交系统浏览器）",
+  );
 }
 
 console.log(failed === 0 ? "\n全部通过 ✅" : `\n${failed} 项失败 ❌`);

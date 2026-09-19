@@ -4,6 +4,8 @@
 //   （无需任何运行时权限，自建条目）；API < 29 回退公共 Downloads 直写。
 // - openIntent：intent:// 深链 → Intent.parseUri 解析（含 browser_fallback_url
 //   兜底参数）。地图导航用：装了高德/腾讯/百度直跳 App，未装则落网页版。
+// - openWebModal：全屏 Dialog WebView 以桌面模式打开任意 http(s) 页面
+//   （R20-A 外部作业详情链接救急，只读浏览、无 Cookie 回读，与登录通道互不影响）。
 //
 // 线程：文件转存在后台 Thread 做 IO，resolve/reject 一律 runOnUiThread
 // 回主线程（WebView 通道非线程安全）。
@@ -49,6 +51,11 @@ class SaveDownloadArgs {
 
 @InvokeArg
 class OpenIntentArgs {
+    lateinit var url: String
+}
+
+@InvokeArg
+class OpenWebModalArgs {
     lateinit var url: String
 }
 
@@ -255,6 +262,130 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 )
             } catch (e: Exception) {
                 invoke.reject(e.message ?: "打开雨课堂登录窗口失败")
+            }
+        }
+    }
+
+    /* ── R20-A：外部作业「桌面模式」内嵌浏览（通用，与登录通道互不影响）──
+     * 移动端点击外部作业（雨课堂等）详情链接时不再丢给系统浏览器，而是应用内
+     * 全屏 WebView 以桌面模式打开（官方网页版未做移动适配，桌面布局可读性最好）。
+     * 只读浏览：不注入任何脚本、不回读 Cookie、零数据链路改动；openYktWebLogin
+     * 的登录 WebView 各自独立创建/销毁，互不干扰。
+     * 布局与销毁语义沿用 R18b 25.3.1 的 openYktWebLogin：Dialog + MATCH_PARENT、
+     * WebView weight=1 铺满、底部按钮条常显；关闭（按钮 / 返回键）才 destroy()。 */
+
+    /** 桌面模式 UA：与 tauri.conf.json windows[].userAgent 同一条 Windows Chrome/79
+     *  串（主窗口 webvpn 票绑定该 UA 指纹，那条配置不能改，这里也只是复用同串）。
+     *  新建的 Dialog WebView 默认 UA 是移动端 Android WebView，须显式指成桌面 UA。 */
+    private val desktopUserAgent =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+            "Chrome/79.0.3945.88 Safari/537.36"
+
+    /** 全屏 Dialog WebView 打开任意 http(s) 页面（桌面模式 + 可缩放）。
+     *  回传 {}：用户点「关闭」或按返回键即销毁，无任何数据回读。 */
+    @Command
+    fun openWebModal(invoke: Invoke) {
+        val args = invoke.parseArgs(OpenWebModalArgs::class.java)
+        // scheme 白名单：非 http(s) 一律拒绝（Rust 侧已校验一次，这里兜底）
+        if (!args.url.startsWith("http://") && !args.url.startsWith("https://")) {
+            invoke.reject("拒绝在应用内 WebView 打开非 http(s) 链接: ${args.url}")
+            return
+        }
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.setAcceptCookie(true)
+
+                val web = WebView(activity)
+                // 第三方 Cookie（部分站点跳转链需要）；仅作用于本 WebView，不影响登录通道
+                cm.setAcceptThirdPartyCookies(web, true)
+                web.settings.javaScriptEnabled = true
+                web.settings.domStorageEnabled = true
+                // 桌面模式：桌面 UA + 视口按 meta 渲染 + 整页概览 + 双指/控件缩放
+                web.settings.userAgentString = desktopUserAgent
+                web.settings.useWideViewPort = true
+                web.settings.loadWithOverviewMode = true
+                web.settings.setSupportZoom(true)
+                web.settings.builtInZoomControls = true
+                web.settings.displayZoomControls = false
+                // 只读浏览：不设 JavascriptInterface、不注入初始化脚本
+                web.webViewClient = WebViewClient()
+
+                // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显（R18b 同款）
+                val root = LinearLayout(activity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setBackgroundColor(Color.WHITE)
+                }
+                root.addView(
+                    web,
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f),
+                )
+                val bottom = LinearLayout(activity).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER
+                    setPadding(24, 16, 24, 16)
+                    setBackgroundColor(Color.WHITE)
+                }
+                val browserBtn = Button(activity).apply {
+                    text = "在系统浏览器打开"
+                    setTextColor(Color.WHITE)
+                    setBackgroundColor(Color.parseColor("#1A6FD4"))
+                }
+                val closeBtn = Button(activity).apply {
+                    text = "关闭"
+                    setTextColor(Color.parseColor("#1F2329"))
+                    setBackgroundColor(Color.parseColor("#E5E5E5"))
+                }
+                val browserLp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                browserLp.marginEnd = 16
+                bottom.addView(browserBtn, browserLp)
+                bottom.addView(
+                    closeBtn,
+                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f),
+                )
+                root.addView(
+                    bottom,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+
+                // 全屏 Dialog（部分 ROM 上仍显式设 MATCH_PARENT 兜底）
+                val dialog = Dialog(activity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                dialog.setContentView(root)
+
+                var settled = false
+                browserBtn.setOnClickListener {
+                    // 兜底外链：取 WebView 当前 URL（保留页内跳转），交系统默认浏览器；
+                    // 打不开（无浏览器等）只提示、不关窗，用户仍可继续读或手动关闭
+                    val target = web.url?.takeIf { it.startsWith("http") } ?: args.url
+                    try {
+                        activity.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse(target)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                    } catch (e: Exception) {
+                        android.widget.Toast.makeText(activity, "无法在系统浏览器打开：${e.message ?: "未知错误"}", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+                closeBtn.setOnClickListener { dialog.dismiss() }
+                dialog.setOnDismissListener {
+                    // 关闭时才 destroy()；结果只回传一次（按钮 / 返回键 / 点外部都走这里）
+                    if (!settled) {
+                        settled = true
+                        invoke.resolve(JSObject())
+                    }
+                    web.destroy()
+                }
+
+                web.loadUrl(args.url)
+                dialog.show()
+                dialog.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                )
+            } catch (e: Exception) {
+                invoke.reject(e.message ?: "打开内嵌浏览窗口失败")
             }
         }
     }

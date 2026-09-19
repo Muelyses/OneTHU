@@ -7,6 +7,8 @@
 //!   Intent.parseUri + browser_fallback_url 网页兜底。
 //! - openYktWebLogin / readYktCookies（R18 24.2）：应用内 WebView 打开雨课堂官方
 //!   登录页（扫码 / 短信），并经 android.webkit.CookieManager 读回会话 Cookie。
+//! - openWebModal（R20-A）：全屏 Dialog WebView 以桌面模式打开任意 http(s) 页面
+//!   （外部作业详情链接救急，只读浏览、无 Cookie 回读，与登录通道互不影响）。
 //!
 //! 桌面端无此桥——主 crate 相关调用全部 cfg(target_os = "android") 隔离。
 

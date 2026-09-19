@@ -46,3 +46,28 @@ export function isAndroidNavigator(nav: AndroidHostSignals | null | undefined): 
   if (typeof nav.platform === "string" && ANDROID_PLATFORM_RE.test(nav.platform)) return true;
   return false;
 }
+
+/* ---------- R20-A：外部作业链接打开通道的纯分流判定 ----------
+ * 零依赖纯函数（同本文件既有约定），真实打开动作在 ./extHwBrowse.ts；
+ * tools/ykt-qr-test.mjs 对本函数做 stub 直测（见该测试 [13] 节）。 */
+
+/** 仅放行 http(s)：javascript:/data:/intent:/mailto: 等一律不开（双侧白名单的 TS 侧） */
+export function isHttpUrl(url: string): boolean {
+  return typeof url === "string" && /^https?:\/\//i.test(url);
+}
+
+/** 外部作业链接的打开通道：
+ *  - "reject"：非 http(s)，一律拒绝（不开 WebView 也不交系统浏览器）；
+ *  - "webview"：Tauri + Android 宿主 → 应用内全屏 WebView 桌面模式（open_web_modal）；
+ *  - "browser"：其余（桌面端 / 浏览器预览）→ 保持现状走系统浏览器（openExternal）。 */
+export type ExtHwOpenChannel = "webview" | "browser" | "reject";
+
+export function pickExtHwOpenChannel(
+  nav: AndroidHostSignals | null | undefined,
+  url: string,
+  tauri: boolean,
+): ExtHwOpenChannel {
+  if (!isHttpUrl(url)) return "reject";
+  if (tauri && isAndroidNavigator(nav)) return "webview";
+  return "browser";
+}

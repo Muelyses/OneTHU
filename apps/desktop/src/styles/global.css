@@ -56,7 +56,22 @@
   letter-spacing: 0.02em;
 }
 
-.nav { display: flex; flex-direction: column; gap: 1px; }
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* 侧栏功能增多后超出视口：nav 弹性占满剩余高度、独立滚动，foot 钉底不随滚 */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #ccc) transparent;
+  padding-bottom: 6px;
+}
+.nav::-webkit-scrollbar { width: 4px; }
+.nav::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 2px; }
+.nav::-webkit-scrollbar-track { background: transparent; }
 
 .nav-item {
   display: flex;

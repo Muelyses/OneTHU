@@ -2499,6 +2499,36 @@ export function useCalendar() {
   return { data, state, error, reload: load };
 }
 
+/** 二级课表（实验课）并入周课表：core JSONP 只含一级——lib getSecondarySchedules
+ *  补齐，按周区间过滤、按名+日期+时间去重；返回原数组引用（无新增）或新数组。 */
+const mergeSecondaryInto = async (
+  entries: ScheduleEntry[], semester: { firstDay: string }, start: Date, end: Date,
+): Promise<ScheduleEntry[]> => {
+  const sec = await getSecondarySchedules(semester.firstDay);
+  const from = fmtDate(start), to = fmtDate(end);
+  const added: ScheduleEntry[] = [];
+  for (const c of sec) {
+    for (const sl of c.activeTime.base) {
+      const date = sl.beginTime.format("YYYY-MM-DD");
+      if (date < from || date > to) continue;
+      const st = sl.beginTime.format("HH:mm");
+      if (entries.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
+      if (added.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
+      added.push({
+        courseName: c.name,
+        location: c.location || undefined,
+        date,
+        dayOfWeek: sl.dayOfWeek,
+        startTime: st,
+        endTime: sl.endTime.format("HH:mm"),
+        category: "二级课表",
+        raw: { source: "secondary" },
+      });
+    }
+  }
+  return added.length ? [...entries, ...added] : entries;
+};
+
 /** 某教学周课表（week 从 1 起，按所选学期 firstDay 平移 7 天窗口；info.getSchedule zhjw JSONP） */
 const WEEKSCHED_TTL = 10 * 60 * 1000;
 
@@ -2550,47 +2580,35 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
     }
     if (status !== "ready" || !semester || !wsKey) return;
     let cancelled = false;
+    const base = new Date(semester.firstDay.replace(/-/g, "/"));
+    const start = new Date(base.getTime() + (week - 1) * 7 * 86400000);
+    const end = new Date(start.getTime() + 6 * 86400000);
     const cached = cacheGet<ScheduleEntry[]>(wsKey);
     if (cached) {
-      // 旧值先亮（切周回来 0ms 上屏）；新鲜则跳过网络
+      // 旧值先亮（切周回来 0ms 上屏）；新鲜则跳过 JSONP 主链，但仍补二级
+      //（轻量单页请求）——二级并入曾被 TTL 连坐（05:02 拉过 → 切回不重跑）
       setData(cached.data);
       setState("ready");
-      if (Date.now() - cached.at < WEEKSCHED_TTL) return;
+      if (Date.now() - cached.at < WEEKSCHED_TTL) {
+        void mergeSecondaryInto(cached.data, semester, start, end).then((merged) => {
+          if (merged !== cached.data && !cancelled) {
+            cacheSet(wsKey, merged);
+            setData(merged);
+          }
+        }).catch(() => undefined);
+        return;
+      }
     } else {
       setState("loading");
     }
     setError(null);
-    const base = new Date(semester.firstDay.replace(/-/g, "/"));
-    const start = new Date(base.getTime() + (week - 1) * 7 * 86400000);
-    const end = new Date(start.getTime() + 6 * 86400000);
     info
       .getSchedule(fmtDate(start), fmtDate(end))
       .then(async (entries) => {
         // 二级课表（实验课）并入：core InfoClient 的 zhjw JSONP 只含一级——
         // lib 的 getSecondarySchedules（portal3rd setInitValue 解析）按周补齐，
         // 失败不连累一级课表（上游 getSchedule = primary + secondary 同构）
-        try {
-          const sec = await getSecondarySchedules(semester.firstDay);
-          const from = fmtDate(start), to = fmtDate(end);
-          for (const c of sec) {
-            for (const sl of c.activeTime.base) {
-              const date = sl.beginTime.format("YYYY-MM-DD");
-              if (date < from || date > to) continue;
-              const st = sl.beginTime.format("HH:mm");
-              if (entries.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
-              entries.push({
-                courseName: c.name,
-                location: c.location || undefined,
-                date,
-                dayOfWeek: sl.dayOfWeek,
-                startTime: st,
-                endTime: sl.endTime.format("HH:mm"),
-                category: "二级课表",
-                raw: { source: "secondary" },
-              });
-            }
-          }
-        } catch { /* 二级失败静默：一级照常 */ }
+        try { await mergeSecondaryInto(entries, semester, start, end); } catch { /* 静默 */ }
         if (!cancelled) {
           cacheSet(wsKey, entries);
           setData(entries);

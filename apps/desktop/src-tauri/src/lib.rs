@@ -617,6 +617,14 @@ fn plugin_dir_remove(app: tauri::AppHandle, id: String) -> Result<(), String> {
     Ok(())
 }
 
+/// 编译期平台判定（2026-09-19）：主 WebView UA 被 tauri.conf.json 硬编码成
+/// Windows Chrome 79（wengine 指纹），Android 上 navigator.userAgent 不含
+/// "Android"——JS 的 UA 判定恒 false，内嵌种入/自愈分支从未执行。改用本命令。
+#[tauri::command]
+fn os_is_android() -> bool {
+    cfg!(target_os = "android")
+}
+
 /// 内置 OH sidecar 安装：把打包资源里的二进制复制进 plugins/onethu.harness/，
 /// 返回新 binPath；资源缺失（未打包 sidecar）返回 None。跨平台：win 取 .exe。
 #[tauri::command]
@@ -2115,7 +2123,7 @@ tauri::Builder::default()
             http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
-            log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
+            log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
             open_external,open_eid_window,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])

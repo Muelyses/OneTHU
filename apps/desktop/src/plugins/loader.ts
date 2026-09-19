@@ -275,37 +275,51 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
 // MadModel 免费档续期泵：模块加载即启动（启动即试一枚 + 10 分钟巡检）
 startMadModelPump();
 
-/** Android 判定：APK 的 WebView UA 必含 Android（桌面 macOS/Windows 不含） */
-function isAndroid(): boolean {
-  return typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+/* Android 判定（2026-09-19 重写）：主 WebView UA 被 tauri.conf.json 硬编码成
+ * Windows Chrome 79（wengine 指纹，Android 同样被覆盖）——UA 判定恒 false，
+ * 内嵌种入/自愈分支在真机上从未执行。改用 Rust 编译期命令 os_is_android，
+ * invoke 不可用时才退回 UA 兜底。结果缓存（平台一次定，无需反复问）。 */
+let androidFlag: boolean | null = null;
+async function isAndroid(): Promise<boolean> {
+  if (androidFlag != null) return androidFlag;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    androidFlag = await invoke<boolean>("os_is_android");
+  } catch {
+    androidFlag = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+  }
+  return androidFlag;
 }
 
 // 模块加载即种（先于 activateInstalledPlugins 的恢复激活）；管理页删除后下次开机自动回来。
 // 桌面端同样内置：sidecar 二进制随 App 资源打包，开机复制进插件目录
 // appData/plugins/onethu.harness/ 并注册（builtin，用户不可删——它就是 App 的一部分）。
 // R10 架构：桌面所有插件（导入 + 内置）统一住在 appData/plugins/<id>/。
-if (isAndroid()) {
-  const prev = getPlugin("onethu.harness");
-  if (!prev) {
-    addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
-  } else if (JSON.stringify(prev.manifest) !== JSON.stringify(EMBEDDED_HARNESS_MANIFEST)) {
-    // 内置清单随 APK 刷新（APK 更新=内置 manifest 必然可能变：新设置字段/权限/描述）。
-    // 老注册表不清则设置 sheet 永远看不到新字段。用户 settings 全程保留
-    // （历史实锤：removePlugin 会连 settings 一起清，key 丢过两轮）。
-    const prevSettings = { ...prev.settings };
-    removePlugin("onethu.harness");
-    addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
-    if (Object.keys(prevSettings).length > 0) {
-      updatePlugin("onethu.harness", { settings: prevSettings });
-    }
-    void logLine(`[PLUGIN] 内置 OH 清单已随 APK 刷新（settings 保留 ${Object.keys(prevSettings).length} 项）`).catch(() => undefined);
-  }
-}
+/* Android 内嵌种入/自愈移入 seedBuiltinHarness（isAndroid 现为异步编译期判定，
+ * 模块顶层同步分支无法用；boot 序列 main.tsx 在激活前 await 它，时序不变） */
 
 /** 桌面内置 OH：sidecar 从打包资源落进插件目录，注册/迁移注册表指向。
  *  在 activateInstalledPlugins 之前调用一次；无打包资源（开发未构建）则静默跳过。 */
 export async function seedBuiltinHarness(): Promise<void> {
-  if (isAndroid()) return; // Android 走内嵌核心，无 sidecar
+  if (await isAndroid()) {
+    // 内嵌核心（编进 App 进程）：种入/自愈内置 manifest。APK 更新=内置清单可能变
+    // （新设置字段/权限），老注册表不清则设置 sheet 永远看不到新字段。
+    const prev = getPlugin("onethu.harness");
+    if (!prev) {
+      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+      await logLine("[PLUGIN] 内嵌 OH 已种入").catch(() => undefined);
+    } else if (JSON.stringify(prev.manifest) !== JSON.stringify(EMBEDDED_HARNESS_MANIFEST)) {
+      // 用户 settings 全程保留（历史实锤：removePlugin 会连 settings 一起清）
+      const prevSettings = { ...prev.settings };
+      removePlugin("onethu.harness");
+      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+      if (Object.keys(prevSettings).length > 0) {
+        updatePlugin("onethu.harness", { settings: prevSettings });
+      }
+      await logLine(`[PLUGIN] 内嵌 OH 清单已随 APK 刷新（settings 保留 ${Object.keys(prevSettings).length} 项）`).catch(() => undefined);
+    }
+    return;
+  }
   if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) return;
   try {
     const { invoke } = await import("@tauri-apps/api/core");

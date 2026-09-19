@@ -32,6 +32,9 @@ export interface ThemeDef {
   dark?: boolean;
   /** 来源：builtin 内置 | plugin 插件安装（勿手填） */
   source?: "builtin" | "plugin";
+  /** 来源插件 id（source=plugin 时由 loader 写入，勿手填）：插件卸载/停用/覆盖安装时
+   *  据此回收主题，避免「主题区删了插件卡还在」「插件删了主题还在」两处状态不同步 */
+  owner?: string;
 }
 
 /** 快照（useSyncExternalStore 消费） */
@@ -403,7 +406,7 @@ export function deactivateTheme(): void {
 }
 
 /** 安装/覆盖一个主题（插件路径或 JSON 导入共用） */
-export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plugin"): ThemeDef {
+export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plugin", owner?: string): ThemeDef {
   const clean: ThemeDef = {
     id: String(def.id || "").trim(),
     name: String(def.name || def.id || "未命名主题"),
@@ -416,6 +419,7 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
     css: def.css,
     dark: def.dark === true,
     source,
+    owner: source === "plugin" ? (owner ?? def.owner) : undefined,
   };
   if (!clean.id) throw new Error("主题 id 不能为空");
   const i = state.installed.findIndex((t) => t.id === clean.id);
@@ -427,20 +431,49 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
   return clean;
 }
 
-/** 删除主题（内置同权可删；删内置记入名单不复活） */
-export function removeTheme(id: string): void {
-  const def = state.installed.find((t) => t.id === id);
-  // 内置主题不可删除（用户始终有可用外观）；仅插件主题可移除
-  if (def?.source === "builtin") return;
-  state.installed = state.installed.filter((t) => t.id !== id);
-  if (state.activeId === id) {
+/** 批量移除主题（内部）：清 activeId 与昼夜档位，落盘并通知一次；内置主题不动 */
+function dropThemes(ids: Set<string>): string[] {
+  if (ids.size === 0) return [];
+  const gone = state.installed
+    .filter((t) => ids.has(t.id) && t.source !== "builtin")
+    .map((t) => t.id);
+  if (gone.length === 0) return [];
+  const goneSet = new Set(gone);
+  state.installed = state.installed.filter((t) => !goneSet.has(t.id));
+  if (state.activeId && goneSet.has(state.activeId)) {
     state.activeId = null;
     applyTheme(null);
   }
-  if (state.dayThemeId === id) state.dayThemeId = null;
-  if (state.nightThemeId === id) state.nightThemeId = null;
+  if (state.dayThemeId && goneSet.has(state.dayThemeId)) state.dayThemeId = null;
+  if (state.nightThemeId && goneSet.has(state.nightThemeId)) state.nightThemeId = null;
   persist();
   emit();
+  return gone;
+}
+
+/** 删除主题（内置不可删除——用户始终有可用外观；仅插件主题可移除） */
+export function removeTheme(id: string): void {
+  dropThemes(new Set([id]));
+}
+
+/** 回收某插件注册的主题（插件卸载 / 停用 / 覆盖安装时调用），返回被移除的 id。
+ *
+ *  匹配三种情形，缺一都会留下「孤儿主题」：
+ *    ① `owner === pluginId`——新版安装记录；
+ *    ② id 与本插件 id 相同——文档约定的同 id 写法，覆盖历史无 owner 的记录；
+ *    ③ 显式传入的 `ids`（插件模块本版声明的主题 id）——覆盖「主题 id 与插件 id
+ *       不同名」的历史记录。
+ *  `keep` 中的 id 保留：覆盖安装时新版主题已注册，不能连带删掉。 */
+export function removePluginThemes(pluginId: string, opts?: { ids?: string[]; keep?: string[] }): string[] {
+  const keep = new Set(opts?.keep ?? []);
+  const declared = new Set(opts?.ids ?? []);
+  const ids = new Set(
+    state.installed
+      .filter((t) => t.source === "plugin" && !keep.has(t.id)
+        && (t.owner === pluginId || t.id === pluginId || declared.has(t.id)))
+      .map((t) => t.id),
+  );
+  return dropThemes(ids);
 }
 
 /** 恢复全部被删的内置主题 */

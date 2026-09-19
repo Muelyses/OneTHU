@@ -21,7 +21,7 @@ import { addRustPlugin, updatePlugin } from "../plugins/registry.js";
 import { clearPluginEvents, pluginEvents, subscribePluginEvents } from "../plugins/events.js";
 import { notifyRust } from "../plugins/rust.js";
 import { PLUGIN_PERMISSIONS } from "../plugins/types.js";
-import { activateTheme, deactivateTheme, removeTheme, restoreBuiltins, useThemes } from "../state/theme.js";
+import { activateTheme, deactivateTheme, removeTheme, restoreBuiltins, useThemes, type ThemeDef } from "../state/theme.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -179,7 +179,35 @@ function ThemeSwatch({ vars }: { vars: Record<string, string> }): ReactNode {
 /** 主题管理区（插件页 · 主题页签）：内置主题 + 插件安装的主题一页全管 */
 function ThemeManagerSection(): ReactNode {
   const snap = useThemes();
+  const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const [msg, setMsg] = useState<string | null>(null);
+  /** 主题所属插件：优先安装时写入的 owner（同一插件可换主题 id），
+   *  退化到「主题 id 与插件 id 同名」的文档约定（历史记录没有 owner） */
+  const ownerOf = (t: ThemeDef): string | null => {
+    if (t.owner && plugins.some((p) => p.manifest.id === t.owner)) return t.owner;
+    if (plugins.some((p) => p.manifest.id === t.id)) return t.id;
+    return null;
+  };
+  /** 删除插件主题：主题定义由插件提供，只删定义会留下「孤儿插件卡」（用户实锤：
+   *  主题区删了、插件管理里还在）。有归属插件时按「卸载插件」处理，插件卸载路径
+   *  会回收主题定义，两处状态因此始终一致。 */
+  const delTheme = async (t: ThemeDef): Promise<void> => {
+    const owner = ownerOf(t);
+    if (!owner) {
+      removeTheme(t.id);
+      setMsg(`已删除「${t.name}」`);
+      return;
+    }
+    const { confirmOk } = await import("../lib/confirm.js");
+    const yes = await confirmOk(`删除主题「${t.name}」将同时卸载插件「${owner}」，其设置与命令一并移除。继续？`);
+    if (!yes) return;
+    try {
+      await uninstallPlugin(owner);
+      setMsg(`已删除「${t.name}」及插件「${owner}」`);
+    } catch (e) {
+      setMsg(`删除失败：${String(e).slice(0, 100)}`);
+    }
+  };
   return (
     <div
       style={{
@@ -211,7 +239,9 @@ function ThemeManagerSection(): ReactNode {
                     <b style={{ fontSize: "var(--text-base)" }}>{t.name}</b>
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--text-3)" }}>v{t.version}</span>
                     {t.source === "plugin" ? (
-                      <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>插件</span>
+                      <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }} title={ownerOf(t) ? `来自插件 ${ownerOf(t)}` : undefined}>
+                        插件
+                      </span>
                     ) : null}
                   </div>
                   <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -229,7 +259,11 @@ function ThemeManagerSection(): ReactNode {
                     </button>
                   )}
                   {t.source === "plugin" ? (
-                    <button className="btn btn-ghost" title="删除主题插件（内置主题不可删除）" onClick={() => { removeTheme(t.id); setMsg(`已删除「${t.name}」`); }}>
+                    <button
+                      className="btn btn-ghost"
+                      title={ownerOf(t) ? `删除主题并卸载插件 ${ownerOf(t)}` : "删除主题（内置主题不可删除）"}
+                      onClick={() => void delTheme(t)}
+                    >
                       删除
                     </button>
                   ) : null}
@@ -250,10 +284,27 @@ function ThemeManagerSection(): ReactNode {
   );
 }
 
-/** 主题插件卡上的「应用/撤下主题」动作（主题管理在设置页·主题区，此处快捷） */
-function ThemeApplyButton({ themePluginId, onMsg }: { themePluginId: string; onMsg: (s: string) => void }): ReactNode {
+/** 主题插件卡上的「应用/撤下主题」动作（主题管理在插件页 · 主题区，此处为快捷入口）。
+ *  主题 id 与插件 id 未必同名：按 owner 找，退化到 id 同名约定；插件停用（其主题已被
+ *  回收）时按钮置灰，不再点出一个「主题定义尚未注册」。 */
+function ThemeApplyButton({ pluginId, enabled, onMsg }: { pluginId: string; enabled: boolean; onMsg: (s: string) => void }): ReactNode {
   const snap = useThemes();
-  const applied = snap.activeId === themePluginId;
+  const theme = snap.themes.find((t) => t.owner === pluginId) ?? snap.themes.find((t) => t.id === pluginId);
+  const applied = !!theme && snap.activeId === theme.id;
+  if (!enabled) {
+    return (
+      <button className="btn btn-ghost" disabled title="插件已停用，启用后可应用其主题">
+        应用主题
+      </button>
+    );
+  }
+  if (!theme) {
+    return (
+      <button className="btn btn-ghost" disabled title="该插件当前未声明主题定义">
+        无主题
+      </button>
+    );
+  }
   return (
     <button
       className={"btn " + (applied ? "btn-ghost" : "btn-primary")}
@@ -261,8 +312,8 @@ function ThemeApplyButton({ themePluginId, onMsg }: { themePluginId: string; onM
         if (applied) {
           deactivateTheme();
           onMsg("已撤下主题，回到默认配色");
-        } else if (activateTheme(themePluginId)) {
-          onMsg("主题已应用（设置 → 主题 可管理全部主题）");
+        } else if (activateTheme(theme.id)) {
+          onMsg(`已应用「${theme.name}」（插件页 · 主题区可管理全部主题）`);
         } else {
           onMsg("主题定义尚未注册（插件未启用？）");
         }
@@ -400,7 +451,7 @@ function PluginCard({
               </svg>
             </button>
           ) : null}
-          {m.category === "theme" ? <ThemeApplyButton themePluginId={m.id} onMsg={setRunMsg} /> : null}
+          {m.category === "theme" ? <ThemeApplyButton pluginId={m.id} enabled={active} onMsg={setRunMsg} /> : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
           {id === "onethu.harness" ? (
             <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>

@@ -1,6 +1,6 @@
 /** 插件加载器：blob 动态 import + 权限门面注入 + 生命周期（安装/启用/停用/删除） */
 import { buildApi } from "./facade.js";
-import { installTheme, type ThemeDef } from "../state/theme.js";
+import { installTheme, removePluginThemes, type ThemeDef } from "../state/theme.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
 import { preflightMadModel, startMadModelPump } from "../state/madmodel.js";
 import { forceRemint } from "../state/madmodel.js";
@@ -83,8 +83,14 @@ export async function installPlugin(
       : "插件须导出 default(ctx) 激活函数");
   }
   const manifest = mod.manifest as PluginManifest;
+  /** 本版模块声明的主题 id（主题插件才有）——覆盖安装时保留，其余旧主题回收 */
+  const declaredThemeId = isTheme && mod.theme && typeof mod.theme === "object"
+    ? String((mod.theme as ThemeDef).id ?? "")
+    : "";
   const prev = getPlugin(manifest.id);
-  await deactivate(manifest.id).catch(() => undefined);
+  // 主题插件覆盖安装：先保留主题定义，activate 会用新版重新注册（否则应用中的主题
+  // 会在更新瞬间被撤下，用户看到「更新插件 = 掉主题」）
+  await deactivate(manifest.id, { keepTheme: isTheme }).catch(() => undefined);
   addPlugin({
     manifest,
     code,
@@ -94,6 +100,11 @@ export async function installPlugin(
     repo: meta?.repo ?? manifest.repo,
   });
   await activate(manifest.id, mod, blobUrl);
+  // 新版未再声明的旧主题（改了主题 id / 不再提供主题）随覆盖安装回收
+  if (isTheme) {
+    const stale = removePluginThemes(manifest.id, { keep: declaredThemeId ? [declaredThemeId] : [] });
+    if (stale.length) await logLine(`[PLUGIN] 覆盖安装回收旧主题：${stale.join("、")}`);
+  }
   await logLine(`[PLUGIN] 安装并激活 ${manifest.id}@${manifest.version}（${manifest.name}）`);
   return manifest;
 }
@@ -194,7 +205,7 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
   };
   // 主题插件：注册主题定义（无 default 时不再调用激活函数）
   if (rec.manifest.category === "theme" && m.theme && typeof m.theme === "object") {
-    installTheme(m.theme as ThemeDef, "plugin");
+    installTheme(m.theme as ThemeDef, "plugin", id);
     logLine(`[PLUGIN] 主题已注册 ${(m.theme as ThemeDef).id}（来自插件 ${id}）`);
   }
   if (rec.manifest.category === "theme" && typeof m.default !== "function") {
@@ -205,7 +216,7 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
   live.set(id, { id, kind: "js", mod: m, blobUrl: url ?? "", dispose: typeof maybeDispose?.dispose === "function" ? maybeDispose.dispose : undefined });
 }
 
-async function deactivate(id: string): Promise<void> {
+async function deactivate(id: string, opts?: { keepTheme?: boolean }): Promise<void> {
   const p = live.get(id);
   if (!p) return;
   if (p.kind === "rust") {
@@ -227,7 +238,17 @@ async function deactivate(id: string): Promise<void> {
   unregisterPluginAtoms(id);
   for (const el of document.querySelectorAll<HTMLStyleElement>(`style[data-plg-css="${id}"]`)) el.remove();
   if (p.blobUrl) URL.revokeObjectURL(p.blobUrl);
+  /** 本版声明的主题 id：模块卸载前取出，供主题回收匹配（历史记录无 owner 时用） */
+  const declaredThemeId = p.mod?.theme && typeof p.mod.theme === "object"
+    ? String((p.mod.theme as ThemeDef).id ?? "")
+    : "";
   live.delete(id);
+  // 主题插件停用/卸载：其主题一并撤架。停用时看似"顺手删了主题"，但启用会重新注册，
+  // 语义上「停用 = 不再提供该外观」；覆盖安装路径已用 keepTheme 排除。
+  if (!opts?.keepTheme) {
+    const gone = removePluginThemes(id, { ids: declaredThemeId ? [declaredThemeId] : [] });
+    if (gone.length) await logLine(`[PLUGIN] 随插件 ${id} 回收主题：${gone.join("、")}`);
+  }
 }
 
 /* ═══ 管理动作（UI 调用） ═══ */

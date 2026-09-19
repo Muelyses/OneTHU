@@ -443,6 +443,8 @@ async function maybeAutoTuojCas(source: TuojSourceId, opts: { force?: boolean } 
  *  此前失败的 TUOJ 漫游（复用 R12 force 语义）。仅重试处于 failed 的源——
  *  正常已配置 / 无账号（no-courses）/ 未尝试的源不打扰。永不抛出。 */
 export async function retryTuojCasAfterLogin(): Promise<void> {
+  // 确保 auto 状态已从 localStorage 回灌（loadTuojAuto 在首次解密时调用）
+  await ensureExtHwCredsLoaded().catch(() => undefined);
   for (const source of ["tuoj", "tuojClassic"] as const) {
     if (tuojAuto[source].kind !== "failed") continue;
     // force 只绕「已配置」前置，24h 频控仍在 → 先复位失败状态（清频控）再强制重试一次

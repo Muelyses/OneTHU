@@ -195,25 +195,37 @@ fn trace_key() -> String {
         .collect()
 }
 
+/// 调试日志文件路径：所有写点统一走这里（Windows 下 /tmp 语义为「当前盘根 \tmp\」）。
+const DEBUG_LOG_PATH: &str = "/tmp/onethu-debug.log";
+
+/// 打开调试日志（append）。写前先 `create_dir_all(parent)`——Windows 上 `\tmp\`
+/// 常不存在，此前 `File::create` 失败被 `let _` 吞掉，霖机器整条调试链静默失效
+/// （R10 15.1-3：log_debug / thos_log / venue_log 三处统一走本 helper）。
+fn open_debug_log() -> Option<std::fs::File> {
+    if let Some(parent) = std::path::Path::new(DEBUG_LOG_PATH).parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(DEBUG_LOG_PATH)
+        .ok()
+}
+
 #[tauri::command]
 fn log_debug(line: String) -> Result<(), String> {
     use std::io::Write;
-    const LOG: &str = "/tmp/onethu-debug.log";
     // 体积闸门：超 16MB 轮转为 .old（防 HTML dump 类循环刷盘——曾灌到 1GB）
-    if let Ok(meta) = std::fs::metadata(LOG) {
+    if let Ok(meta) = std::fs::metadata(DEBUG_LOG_PATH) {
         if meta.len() > 16 * 1024 * 1024 {
-            let _ = std::fs::rename(LOG, "/tmp/onethu-debug.log.old");
+            let _ = std::fs::rename(DEBUG_LOG_PATH, format!("{DEBUG_LOG_PATH}.old"));
         }
     }
-    let mut f = match std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(LOG)
-    {
-        Ok(f) => f,
+    let mut f = match open_debug_log() {
+        Some(f) => f,
         // Android 无 /tmp（2026-09-06 真机实录：调试通道整体静默失效）→ 落 logcat，
         // adb 直读。__android_log_write 是 NDK 公共符号（liblog），零依赖直链。
-        Err(_) => {
+        None => {
             #[cfg(target_os = "android")]
             unsafe {
                 extern "C" {
@@ -1306,11 +1318,7 @@ fn thos_log(line: &str) {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_millis())
         .unwrap_or(0);
-    if let Ok(mut f) = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open("/tmp/onethu-debug.log")
-    {
+    if let Some(mut f) = open_debug_log() {
         let _ = writeln!(f, "THOS-LOG {} | {}", ts, line);
     }
 }
@@ -1870,8 +1878,7 @@ const VENUE_ORIGIN: &str = "https://www.sports.tsinghua.edu.cn";
 /// venueview 反代留痕（与 log_debug 同文件，便于一次点击全链路取证）
 fn venue_log(msg: &str) {
     use std::io::Write;
-    const LOG: &str = "/tmp/onethu-debug.log";
-    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(LOG) {
+    if let Some(mut f) = open_debug_log() {
         let _ = writeln!(f, "{} | [VENUEVIEW] {}", chrono_now(), msg);
     }
 }

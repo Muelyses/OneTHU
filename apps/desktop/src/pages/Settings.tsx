@@ -24,6 +24,19 @@ import {
   isDismissed, dismissTag, type ReleaseInfo,
 } from "../lib/update.js";
 import { runProbeMatrix, type ProbeResult } from "./probe.js";
+import { YktQrPanel } from "../components/ExtHwLoginModal.js";
+import {
+  clearTuojAutoStatus,
+  consumeExtHwScrollRequest,
+  ensureExtHwCredsLoaded,
+  extHwLogin,
+  removeExtHwCreds,
+  saveExtHwCreds,
+  refreshExtHw,
+  useExternalHomework,
+} from "../state/exthw.js";
+import { SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
+import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
@@ -374,6 +387,9 @@ export function SettingsPage() {
           </div>
         )}
       </Card>
+      <SectionHead title="外部作业源" />
+      <ExtHwSection />
+
       <SectionHead title="首页" />
       <Card>
         <div className="setting-row">
@@ -490,7 +506,7 @@ export function SettingsPage() {
             <div className="setting-title">记住的密码</div>
             <div className="setting-desc">
               {hasSaved
-                ? "已在本机保存（混淆存储，应用数据目录，非明文）；刷新/重启后自动登录。"
+                ? "已在本机保存；刷新/重启后自动登录。"
                 : "未保存。登录页勾选「记住密码」即可启用。"}
             </div>
           </div>
@@ -502,6 +518,667 @@ export function SettingsPage() {
         </div>
       </Card>
     </>
+  );
+}
+
+/** R15 20.3：OJ 源统一行范式 —— `源名 + 状态徽标 …… 主操作 + 「更多」折叠`。
+ *  备选登录方式一律收进 more 折叠；行内只在需要用户动作时出现提示（会话失效 / 自动登录失败）。 */
+function OjSourceRow({
+  name,
+  logged,
+  via,
+  primary,
+  more,
+  note,
+  children,
+}: {
+  name: string;
+  logged: boolean;
+  /** 已登录方式（统一认证 / 账号密码），显示在徽标内 */
+  via?: string;
+  primary: ReactNode;
+  more?: ReactNode;
+  note?: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="exthw-src">
+      <div className="exthw-src-head">
+        <span className="setting-title exthw-src-name">{name}</span>
+        <span className={`exthw-badge${logged ? " is-on" : ""}`}>
+          {logged ? `已登录${via ? `·${via}` : ""}` : "未登录"}
+        </span>
+        <span className="exthw-src-actions">
+          {primary}
+          {more}
+        </span>
+      </div>
+      {note}
+      {children}
+    </div>
+  );
+}
+
+/* ── 外部作业源（雨课堂 / TUOJ 系 / Tyche / DSA OJ）── */
+function ExtHwSection() {
+  const ext = useExternalHomework();
+  // 雨课堂
+  const [yktPhone, setYktPhone] = useState("");
+  const [yktCode, setYktCode] = useState("");
+  const [yktCookie, setYktCookie] = useState("");
+  const [yktQrOpen, setYktQrOpen] = useState(false);
+  const [yktSmsOpen, setYktSmsOpen] = useState(false);
+  // TUOJ（AI 版）
+  const [tuojUser, setTuojUser] = useState("");
+  const [tuojPwd, setTuojPwd] = useState("");
+  const [tuojCookie, setTuojCookie] = useState("");
+  const [tuojVia, setTuojVia] = useState<"cas" | "password" | undefined>(undefined);
+  const [tuojPwdOpen, setTuojPwdOpen] = useState(false);
+  // TUOJ（经典版）
+  const [classicUser, setClassicUser] = useState("");
+  const [classicPwd, setClassicPwd] = useState("");
+  const [classicCookie, setClassicCookie] = useState("");
+  const [classicVia, setClassicVia] = useState<"cas" | "password" | undefined>(undefined);
+  const [classicPwdOpen, setClassicPwdOpen] = useState(false);
+  // Tyche
+  const [tycheUser, setTycheUser] = useState("");
+  const [tychePwd, setTychePwd] = useState("");
+  const [tycheCookie, setTycheCookie] = useState("");
+  const [tycheFormOpen, setTycheFormOpen] = useState(false);
+  // DSA OJ
+  const [dsaUser, setDsaUser] = useState("");
+  const [dsaPwd, setDsaPwd] = useState("");
+  const [dsaCookie, setDsaCookie] = useState("");
+  const [dsaFormOpen, setDsaFormOpen] = useState(false);
+  const [days, setDays] = useState("30");
+  const [advanced, setAdvanced] = useState(false);
+  // R14 19.2：OJ 平台组默认折叠（展开态不持久化，符合需求下限）
+  const [ojOpen, setOjOpen] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  // 凭据在 localStorage 里是密文：首次挂载异步解密后回填表单
+  useEffect(() => {
+    let alive = true;
+    void ensureExtHwCredsLoaded().then((c) => {
+      if (!alive) return;
+      setYktPhone(c.yuketang?.phone ?? "");
+      setYktCookie(c.yuketang?.cookie ?? "");
+      setTuojUser(c.tuoj?.username ?? "");
+      setTuojCookie(c.tuoj?.cookie ?? "");
+      setTuojVia(c.tuoj?.via);
+      setClassicUser(c.tuojClassic?.username ?? "");
+      setClassicCookie(c.tuojClassic?.cookie ?? "");
+      setClassicVia(c.tuojClassic?.via);
+      setTycheUser(c.tyche?.username ?? "");
+      setTycheCookie(c.tyche?.cookie ?? "");
+      setDsaUser(c.dsa?.username ?? "");
+      setDsaCookie(c.dsa?.cookie ?? "");
+      setDays(String(c.days ?? 30));
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // R11 16.3：引导横幅「去设置」跳转后，把本区滚动到视野（一次性标记）
+  useEffect(() => {
+    if (!consumeExtHwScrollRequest()) return;
+    const t = setTimeout(() => {
+      document.getElementById("settings-exthw")?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+
+  // R11 16.2：自动登录在本区打开后才完成时，把凭据回填到表单（否则状态 ✅ 与「未登录」打架）
+  useEffect(() => {
+    if (ext.tuojAuto.tuoj.kind !== "ok" && ext.tuojAuto.tuojClassic.kind !== "ok") return;
+    let alive = true;
+    void ensureExtHwCredsLoaded().then((c) => {
+      if (!alive) return;
+      setTuojCookie(c.tuoj?.cookie ?? "");
+      setTuojVia(c.tuoj?.via);
+      setClassicCookie(c.tuojClassic?.cookie ?? "");
+      setClassicVia(c.tuojClassic?.via);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [ext.tuojAuto.tuoj.kind, ext.tuojAuto.tuojClassic.kind]);
+
+  const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
+
+  /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用） */
+  const credsWith = (
+    o: {
+      ykt?: string;
+      tuoj?: string;
+      tuojVia?: "cas" | "password";
+      classic?: string;
+      classicVia?: "cas" | "password";
+      tyche?: string;
+      dsa?: string;
+    } = {},
+  ): ExtHwCreds => {
+    const yk = (o.ykt ?? yktCookie).trim();
+    const tj = (o.tuoj ?? tuojCookie).trim();
+    const cj = (o.classic ?? classicCookie).trim();
+    const tc = (o.tyche ?? tycheCookie).trim();
+    const ds = (o.dsa ?? dsaCookie).trim();
+    return {
+      yuketang: yk ? { cookie: yk, phone: yktPhone.trim() || undefined } : undefined,
+      tuoj: tj ? { cookie: tj, username: tuojUser.trim() || undefined, via: o.tuojVia ?? tuojVia } : undefined,
+      tuojClassic: cj
+        ? { cookie: cj, username: classicUser.trim() || undefined, via: o.classicVia ?? classicVia }
+        : undefined,
+      tyche: tc ? { cookie: tc, username: tycheUser.trim() || undefined } : undefined,
+      dsa: ds ? { cookie: ds, username: dsaUser.trim() || undefined } : undefined,
+      days: Math.max(1, Number(days) || 30),
+    };
+  };
+
+  const onSave = () => {
+    void saveExtHwCreds(credsWith()).then(() => setMsg("已保存到本机。"));
+  };
+
+  const onRefresh = () => {
+    setBusy("refresh");
+    setMsg(null);
+    void saveExtHwCreds(credsWith())
+      .then(() => refreshExtHw())
+      .then(() => setMsg("刷新完成。"))
+      .catch((e: unknown) => setMsg(`刷新失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onYktSend = () => {
+    setBusy("ykt-send");
+    setMsg(null);
+    void extHwLogin
+      .yuketangSendSms(yktPhone)
+      .then(() => setMsg("验证码已发送，请查收短信（若收不到，可能被风控拦截）。"))
+      .catch((e: unknown) => setMsg(`发送验证码失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onYktLogin = () => {
+    setBusy("ykt-login");
+    setMsg(null);
+    void extHwLogin
+      .yuketangVerify(yktPhone, yktCode)
+      .then(async (r) => {
+        setYktCookie(r.cookie);
+        setYktCode("");
+        await saveExtHwCreds(credsWith({ ykt: r.cookie }));
+        setMsg("雨课堂登录成功，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`雨课堂登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /** TUOJ 系主路径：清华统一认证漫游（零凭据；AI 版 / 经典版仅 base 不同） */
+  const onTuojCasLogin = (source: TuojSourceId) => {
+    setBusy(`tuoj-cas-${source}`);
+    setMsg(null);
+    void extHwLogin
+      .tuojCas(source)
+      .then(async (r) => {
+        if (source === "tuoj") {
+          setTuojCookie(r.cookie);
+          setTuojVia("cas");
+        } else {
+          setClassicCookie(r.cookie);
+          setClassicVia("cas");
+        }
+        clearTuojAutoStatus(source);
+        await saveExtHwCreds(
+          source === "tuoj" ? credsWith({ tuoj: r.cookie, tuojVia: "cas" }) : credsWith({ classic: r.cookie, classicVia: "cas" }),
+        );
+        setMsg(`${SOURCE_NAMES[source]} 已通过清华统一认证登录，已保存。`);
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /** TUOJ 系备选：账号密码登录（收在「更多」折叠内） */
+  const onTuojPwdLogin = (source: TuojSourceId) => {
+    const user = source === "tuoj" ? tuojUser : classicUser;
+    const pwd = source === "tuoj" ? tuojPwd : classicPwd;
+    setBusy(`tuoj-pwd-${source}`);
+    setMsg(null);
+    const run = source === "tuoj" ? extHwLogin.tuoj(user, pwd) : extHwLogin.tuojClassic(user, pwd);
+    void run
+      .then(async (r) => {
+        if (source === "tuoj") {
+          setTuojCookie(r.cookie);
+          setTuojVia("password");
+          setTuojPwd("");
+        } else {
+          setClassicCookie(r.cookie);
+          setClassicVia("password");
+          setClassicPwd("");
+        }
+        clearTuojAutoStatus(source);
+        await saveExtHwCreds(
+          source === "tuoj"
+            ? credsWith({ tuoj: r.cookie, tuojVia: "password" })
+            : credsWith({ classic: r.cookie, classicVia: "password" }),
+        );
+        setMsg(`${SOURCE_NAMES[source]} 登录成功，已保存。`);
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onTycheLogin = () => {
+    setBusy("tyche-login");
+    setMsg(null);
+    void extHwLogin
+      .tyche(tycheUser, tychePwd)
+      .then(async (r) => {
+        setTycheCookie(r.cookie);
+        setTychePwd("");
+        setTycheFormOpen(false);
+        await saveExtHwCreds(credsWith({ tyche: r.cookie }));
+        setMsg("Tyche 登录成功，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`Tyche 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  const onDsaLogin = () => {
+    setBusy("dsa-login");
+    setMsg(null);
+    void extHwLogin
+      .dsa(dsaUser, dsaPwd)
+      .then(async (r) => {
+        setDsaCookie(r.cookie);
+        setDsaPwd("");
+        setDsaFormOpen(false);
+        await saveExtHwCreds(credsWith({ dsa: r.cookie }));
+        setMsg("DSA OJ 登录成功，已保存。");
+        void refreshExtHw();
+      })
+      .catch((e: unknown) => setMsg(`DSA OJ 登录失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /** R12 17.2：单源退出登录 —— 确认后只清该源凭据，不影响其他源 */
+  const onLogout = (source: ExtHwSourceId) => {
+    const label = SOURCE_NAMES[source];
+    void confirmOk(`确定退出${label}登录？将清除本机保存的${label}凭据，不影响其他源。`).then(
+      async (ok) => {
+        if (!ok) return;
+        setBusy(`logout-${source}`);
+        setMsg(null);
+        try {
+          await removeExtHwCreds(source);
+          // 同步清空表单，避免随后点「保存」把旧 Cookie 又写回去
+          if (source === "yuketang") {
+            setYktCookie("");
+          } else if (source === "tuoj") {
+            setTuojCookie("");
+            setTuojVia(undefined);
+            setTuojPwd("");
+          } else if (source === "tuojClassic") {
+            setClassicCookie("");
+            setClassicVia(undefined);
+            setClassicPwd("");
+          } else if (source === "tyche") {
+            setTycheCookie("");
+            setTychePwd("");
+          } else {
+            setDsaCookie("");
+            setDsaPwd("");
+          }
+          setMsg(`已退出${label}登录。`);
+          void refreshExtHw();
+        } catch (e: unknown) {
+          setMsg(`退出${label}登录失败：${errMsg(e)}`);
+        } finally {
+          setBusy(null);
+        }
+      },
+    );
+  };
+
+  const configured: Record<ExtHwSourceId, boolean> = {
+    yuketang: Boolean(yktCookie.trim()),
+    tuoj: Boolean(tuojCookie.trim()) || tuojVia === "cas" || ext.tuojAuto.tuoj.kind === "ok",
+    tuojClassic: Boolean(classicCookie.trim()) || classicVia === "cas" || ext.tuojAuto.tuojClassic.kind === "ok",
+    tyche: Boolean(tycheCookie.trim()),
+    dsa: Boolean(dsaCookie.trim()),
+  };
+  /** R15 20.3：仅在需要用户动作时提示（会话失效 / 自动登录失败 / 无课程） */
+  const tuojNote = (source: TuojSourceId): ReactNode => {
+    const st = ext.tuojAuto[source];
+    return (
+      <>
+        {ext.errors[source] ? <div className="exthw-note is-error">{ext.errors[source]}</div> : null}
+        {st.kind === "failed" ? (
+          <div className="exthw-note is-warn">
+            自动登录未成功{st.message ? `（${st.message.slice(0, 160)}）` : ""}——可点「统一认证登录」重试。
+          </div>
+        ) : null}
+        {st.kind === "no-courses" ? (
+          <div className="exthw-note">统一认证已通过，但未返回课程（可能未注册 / 未选课）。</div>
+        ) : null}
+      </>
+    );
+  };
+  const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--mono, monospace)", fontSize: 12 } as const;
+  const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
+  const srcRows: Array<{ id: ExtHwSourceId; label: string; logged: boolean }> = (
+    ["yuketang", "tuoj", "tuojClassic", "tyche", "dsa"] as const
+  ).map((id) => ({ id, label: SOURCE_NAMES[id], logged: configured[id] }));
+
+  return (
+    <div id="settings-exthw">
+      <div className="setting-desc" style={{ margin: "0 2px 6px" }}>
+        把各平台作业 DDL 合并到「全部作业」与「今日」；只读拉取（标题 / 课程 / 截止时间），不提交、
+        不抓题目。凭据以 AES-GCM 加盐混淆后存本机。
+      </div>
+
+      {/* ── R14 19.1 / R15 20.3：雨课堂独立 Card，统一行范式 ── */}
+      <SectionHead title={SOURCE_CATEGORY_NAMES.courseware} />
+      <Card>
+        <div className="exthw-src">
+          <div className="exthw-src-head">
+            <span className="setting-title exthw-src-name">雨课堂</span>
+            <span className={`exthw-badge${configured.yuketang ? " is-on" : ""}`}>
+              {configured.yuketang ? "已登录" : "未登录"}
+            </span>
+            <span className="exthw-src-actions">
+              {configured.yuketang ? (
+                <button className="btn" disabled={busy !== null} onClick={() => onLogout("yuketang")}>
+                  {busy === "logout-yuketang" ? "退出中…" : "退出"}
+                </button>
+              ) : (
+                <button className="btn btn-primary" disabled={busy !== null} onClick={() => setYktQrOpen((v) => !v)}>
+                  {yktQrOpen ? "收起扫码" : "微信扫码登录"}
+                </button>
+              )}
+              <button className="btn btn-ghost exthw-more" onClick={() => setYktSmsOpen((v) => !v)}>
+                {yktSmsOpen ? "▾" : "▸"} 短信验证码
+              </button>
+            </span>
+          </div>
+          {ext.errors.yuketang ? <div className="exthw-note is-error">{ext.errors.yuketang}</div> : null}
+          {yktQrOpen ? (
+            <YktQrPanel
+              onCancel={() => setYktQrOpen(false)}
+              onSuccess={(cookie) => {
+                setYktCookie(cookie);
+                setYktQrOpen(false);
+                void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
+                  setMsg("雨课堂扫码登录成功，已保存。");
+                  void refreshExtHw();
+                });
+              }}
+            />
+          ) : null}
+          {yktSmsOpen ? (
+            <div className="exthw-src-body">
+              <div style={fieldStyle}>
+                <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="tel" placeholder="手机号" value={yktPhone} onChange={(e) => setYktPhone(e.target.value.trim())} />
+                <button className="btn" disabled={busy !== null || !yktPhone.trim()} onClick={onYktSend}>
+                  {busy === "ykt-send" ? "发送中…" : "发送验证码"}
+                </button>
+              </div>
+              <div style={fieldStyle}>
+                <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={yktCode} onChange={(e) => setYktCode(e.target.value.trim())} />
+                <button className="btn btn-primary" disabled={busy !== null || !yktPhone.trim() || !yktCode.trim()} onClick={onYktLogin}>
+                  {busy === "ykt-login" ? "登录中…" : "登录"}
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </Card>
+
+      {/* ── R14 19.2 / R15 20.3：OJ 平台组默认折叠，标题行常显 4 源接入状态 ── */}
+      <SectionHead title={SOURCE_CATEGORY_NAMES.oj} aside="按个人情况登录" />
+      <Card>
+        <button
+          type="button"
+          className="exthw-oj-head"
+          aria-expanded={ojOpen}
+          onClick={() => setOjOpen((v) => !v)}
+        >
+          <span className="exthw-oj-caret" aria-hidden="true">{ojOpen ? "▾" : "▸"}</span>
+          <span className="setting-title">OJ 平台登录</span>
+          <span className="exthw-oj-badges">
+            {(["tuoj", "tuojClassic", "tyche", "dsa"] as const).map((id) => (
+              <span key={id} className={`exthw-badge${configured[id] ? " is-on" : ""}`}>
+                {SOURCE_NAMES[id]} {configured[id] ? "✅" : "未登录"}
+              </span>
+            ))}
+          </span>
+          <span className="exthw-oj-hint">{ojOpen ? "点击收起" : "点击展开登录"}</span>
+        </button>
+        {ojOpen ? (
+          <div className="exthw-oj-body">
+            {/* TUOJ（AI 版）：主路径 = 清华统一认证漫游；账号密码收进「更多」 */}
+            <OjSourceRow
+              name={SOURCE_NAMES.tuoj}
+              logged={configured.tuoj}
+              via={
+                tuojVia === "cas" || ext.tuojAuto.tuoj.kind === "ok"
+                  ? "统一认证"
+                  : tuojVia === "password"
+                    ? "账号密码"
+                    : undefined
+              }
+              primary={
+                configured.tuoj ? (
+                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuoj")}>
+                    {busy === "logout-tuoj" ? "退出中…" : "退出"}
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => onTuojCasLogin("tuoj")}>
+                    {busy === "tuoj-cas-tuoj" ? "登录中…" : "统一认证登录"}
+                  </button>
+                )
+              }
+              more={
+                <button className="btn btn-ghost exthw-more" onClick={() => setTuojPwdOpen((v) => !v)}>
+                  {tuojPwdOpen ? "▾" : "▸"} 账号密码
+                </button>
+              }
+              note={tuojNote("tuoj")}
+            >
+              {tuojPwdOpen ? (
+                <div className="exthw-src-body">
+                  <div style={fieldStyle}>
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tuojUser} onChange={(e) => setTuojUser(e.target.value.trim())} />
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tuojPwd} onChange={(e) => setTuojPwd(e.target.value)} />
+                    <button className="btn" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={() => onTuojPwdLogin("tuoj")}>
+                      {busy === "tuoj-pwd-tuoj" ? "登录中…" : "登录"}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </OjSourceRow>
+
+            {/* TUOJ（经典版）：同 AI 版范式，仅 base 不同 */}
+            <OjSourceRow
+              name={SOURCE_NAMES.tuojClassic}
+              logged={configured.tuojClassic}
+              via={
+                classicVia === "cas" || ext.tuojAuto.tuojClassic.kind === "ok"
+                  ? "统一认证"
+                  : classicVia === "password"
+                    ? "账号密码"
+                    : undefined
+              }
+              primary={
+                configured.tuojClassic ? (
+                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuojClassic")}>
+                    {busy === "logout-tuojClassic" ? "退出中…" : "退出"}
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => onTuojCasLogin("tuojClassic")}>
+                    {busy === "tuoj-cas-tuojClassic" ? "登录中…" : "统一认证登录"}
+                  </button>
+                )
+              }
+              more={
+                <button className="btn btn-ghost exthw-more" onClick={() => setClassicPwdOpen((v) => !v)}>
+                  {classicPwdOpen ? "▾" : "▸"} 账号密码
+                </button>
+              }
+              note={tuojNote("tuojClassic")}
+            >
+              {classicPwdOpen ? (
+                <div className="exthw-src-body">
+                  <div style={fieldStyle}>
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={classicUser} onChange={(e) => setClassicUser(e.target.value.trim())} />
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={classicPwd} onChange={(e) => setClassicPwd(e.target.value)} />
+                    <button className="btn" disabled={busy !== null || !classicUser.trim() || !classicPwd} onClick={() => onTuojPwdLogin("tuojClassic")}>
+                      {busy === "tuoj-pwd-tuojClassic" ? "登录中…" : "登录"}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </OjSourceRow>
+
+            {/* Tyche：仅用户名 + 密码（校内或 sslvpn） */}
+            <OjSourceRow
+              name={SOURCE_NAMES.tyche}
+              logged={configured.tyche}
+              primary={
+                configured.tyche ? (
+                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tyche")}>
+                    {busy === "logout-tyche" ? "退出中…" : "退出"}
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => setTycheFormOpen((v) => !v)}>
+                    {tycheFormOpen ? "收起" : "登录"}
+                  </button>
+                )
+              }
+              more={
+                configured.tyche ? (
+                  <button className="btn btn-ghost exthw-more" onClick={() => setTycheFormOpen((v) => !v)}>
+                    {tycheFormOpen ? "▾" : "▸"} 重新登录
+                  </button>
+                ) : undefined
+              }
+              note={ext.errors.tyche ? <div className="exthw-note is-error">{ext.errors.tyche}</div> : undefined}
+            >
+              {tycheFormOpen ? (
+                <div className="exthw-src-body">
+                  <div style={fieldStyle}>
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tycheUser} onChange={(e) => setTycheUser(e.target.value.trim())} />
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tychePwd} onChange={(e) => setTychePwd(e.target.value)} />
+                    <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
+                      {busy === "tyche-login" ? "登录中…" : "登录"}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </OjSourceRow>
+
+            {/* DSA OJ：邮箱 + 密码（无统一认证） */}
+            <OjSourceRow
+              name={SOURCE_NAMES.dsa}
+              logged={configured.dsa}
+              primary={
+                configured.dsa ? (
+                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("dsa")}>
+                    {busy === "logout-dsa" ? "退出中…" : "退出"}
+                  </button>
+                ) : (
+                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => setDsaFormOpen((v) => !v)}>
+                    {dsaFormOpen ? "收起" : "登录"}
+                  </button>
+                )
+              }
+              more={
+                configured.dsa ? (
+                  <button className="btn btn-ghost exthw-more" onClick={() => setDsaFormOpen((v) => !v)}>
+                    {dsaFormOpen ? "▾" : "▸"} 重新登录
+                  </button>
+                ) : undefined
+              }
+              note={ext.errors.dsa ? <div className="exthw-note is-error">{ext.errors.dsa}</div> : undefined}
+            >
+              {dsaFormOpen ? (
+                <div className="exthw-src-body">
+                  <div style={fieldStyle}>
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="email" placeholder="邮箱" value={dsaUser} onChange={(e) => setDsaUser(e.target.value.trim())} />
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={dsaPwd} onChange={(e) => setDsaPwd(e.target.value)} />
+                    <button className="btn btn-primary" disabled={busy !== null || !dsaUser.trim() || !dsaPwd} onClick={onDsaLogin}>
+                      {busy === "dsa-login" ? "登录中…" : "登录"}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </OjSourceRow>
+          </div>
+        ) : null}
+      </Card>
+
+      {/* ── 共用：抓取范围 / 保存 / 刷新 / 高级（对所有源生效）── */}
+      <Card style={{ marginTop: 18 }}>
+        <div className="setting-row" style={{ alignItems: "flex-start" }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="setting-title">抓取范围与刷新</div>
+            <div className="setting-desc">对所有源生效；已过期的作业仍显示。</div>
+
+            <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span className="setting-title" style={{ fontSize: 13 }}>只保留未来</span>
+                <input className="input" style={{ width: 80 }} inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value.replace(/[^0-9]/g, ""))} />
+                <span className="setting-desc">天（已过期的仍显示）</span>
+              </div>
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button className="btn btn-primary" onClick={onSave}>保存</button>
+                <button className="btn" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>
+                  {busy === "refresh" || ext.state === "loading" ? "刷新中…" : "立即刷新"}
+                </button>
+              </div>
+
+              {/* 高级：手动粘贴 Cookie（一般用户用不到） */}
+              <div>
+                <button className="btn btn-ghost" style={{ padding: "2px 0" }} onClick={() => setAdvanced((v) => !v)}>
+                  {advanced ? "▾" : "▸"} 高级：手动粘贴 Cookie
+                </button>
+                {advanced ? (
+                  <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
+                    <textarea className="input" style={taStyle} placeholder="雨课堂 Cookie（sessionid / csrftoken / uv_id …）" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="TUOJ（AI 版）Cookie（session / session.sig）" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）Cookie（session / session.sig）" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(e) => setTycheCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(e) => setDsaCookie(e.target.value)} />
+                    <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点上方「保存」生效。</div>
+                  </div>
+                ) : null}
+              </div>
+
+              <div style={{ display: "grid", gap: 4 }}>
+                {srcRows.map(({ id, label, logged }) => {
+                  const count = ext.items.filter((it) => it.source === id).length;
+                  const err = ext.errors[id];
+                  return (
+                    <div key={id} style={{ fontSize: 13, color: "var(--text-2)" }}>
+                      {label}：{logged ? "已登录" : "未登录"} ·{" "}
+                      {err ? <span style={{ color: "var(--danger, #c04848)" }}>需重新登录</span> : `${count} 条`}
+                    </div>
+                  );
+                })}
+                {msg ? <div style={{ fontSize: 13, color: "var(--text-2)" }}>{msg}</div> : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
   );
 }
 

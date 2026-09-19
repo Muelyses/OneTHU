@@ -18,6 +18,7 @@ import { IconBell, IconChevron } from "../../components/Icons.js";
 import { CollectStar } from "../../components/Collect.js";
 import { enc } from "../../state/atoms.js";
 import { fmtRemindOffset, REMIND_MAX, REMIND_MIN, REMIND_PRESETS, setHwReminder, useHwDefault, useHwReminder } from "../../state/hwRemind.js";
+import { extHwSourceName } from "../../state/exthw.js";
 
 /* ---------- 深链学期挂钩 ----------
  * 深链（小OH navigate / 收藏原子）可能带 semesterId：courseId 是学期作用域的，
@@ -325,10 +326,26 @@ function HwRemindButton({ h }: { h: Homework }) {
 
 export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem, remind }: RowProps & { h: Homework; showGrade?: boolean; sem?: string; remind?: boolean }) {
   const { navigate } = useApp();
-  const go = () => navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from });
+  const external = Boolean(h.source);
+  const go = () => {
+    // 外部作业：有详情链接时用系统浏览器打开官方页；无链接则不导航（无网络学堂详情页）
+    if (external) {
+      if (h.externalUrl) void openExternal(h.externalUrl);
+      return;
+    }
+    navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from });
+  };
   const chip = homeworkChip(h);
   // 已批改直接显示成绩（thu-app learnHome「已批改 (分数)」语义）：等级码经 gradeLabel 转文字
-  const score = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
+  const gradeScore = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
+  // 外部考试分数（R9）：已提交且已出分时显示「已提交 · 60/100」（对齐已批改语义）
+  const examScore =
+    h.submitted && h.score !== undefined
+      ? h.totalScore !== undefined
+        ? `${h.score}/${h.totalScore}`
+        : String(h.score)
+      : "";
+  const score = gradeScore || examScore;
   return (
     <div
       className="row row-click"
@@ -343,16 +360,23 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
         <span>{fmtWhenParts(h.deadline).time} 截止</span>
       </div>
       <div className="row-main">
-        <div className="row-title">{h.title}</div>
-        <div className="row-sub">{courseName ?? "课程"}</div>
+        <div className="row-title">
+          {h.source ? <span className="src-badge" title={h.externalProgress ? `已作答 ${h.externalProgress}` : undefined}>{extHwSourceName(h.source)}</span> : null}
+          {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
+          {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
+          {h.title}
+        </div>
+        <div className="row-sub">{courseName ?? h.courseName ?? "课程"}</div>
       </div>
       <span className={`chip ${chip.cls}`} title={score ? `成绩：${score}` : undefined}>
         <span className="dot" />
         {score ? `${chip.text} · ${score}` : chip.text}
       </span>
-      {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation） */}
+      {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation）。R10 15.3：外部作业
+          的 h.id（ext:source:...）稳定可用，提醒链路只需 deadline/title，一并放开 */}
       {remind ? <HwRemindButton h={h} /> : null}
-      {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收 */}
+      {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收。
+          R10 15.3：外部作业复用同款拼接（courseId=ext:source、id=ext:...，稳定唯一） */}
       <CollectStar atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, courseName ?? "", sem ?? "") }} title={h.title} />
       <IconChevron className="row-caret" width={14} height={14} />
     </div>

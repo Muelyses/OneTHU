@@ -14,6 +14,7 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type Homework, type ScheduleEntry } from "@onethu/core";
 
 /** 轻路由签名（与 AppState.navigate 一致） */
@@ -174,19 +175,32 @@ export function HomeworkRows({
     <Card className="list">
       {rows.slice(0, 8).map((h, i) => {
         const chip = deadlineChip(h);
+        const external = Boolean(h.source);
         return (
           <RowClick
             key={h.courseId + "-" + h.id}
             style={{ animationDelay: i * 35 + "ms" }}
-            onClick={() => navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from: "today" })}
+            onClick={() => {
+              if (external) {
+                if (h.externalUrl) void openExternal(h.externalUrl);
+                return;
+              }
+              navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from: "today" });
+            }}
           >
             <div className="row-when">
               <b>{h.deadline.slice(5, 10)}</b>
               <span>{h.deadline.slice(11, 16)} 截止</span>
             </div>
             <div className="row-main">
-              <div className="row-title">{h.title}</div>
-              <div className="row-sub">{courseName(h.courseId)}</div>
+              <div className="row-title">
+                {/* R11 16.1：今日页不再显示来源徽标（雨课堂/TUOJ/Tyche）——移动端拥挤，
+                    来源只在「全部作业」页（shared.tsx HomeworkRow）显示；考试/旁听徽标保留。 */}
+                {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
+                {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
+                {h.title}
+              </div>
+              <div className="row-sub">{h.courseName ?? courseName(h.courseId)}</div>
             </div>
             <span className={"chip " + chip.cls}>
               <span className="dot" />
@@ -343,9 +357,12 @@ export function TodayOverviewWidget() {
   const { data, state } = useCampusData();
   const now = new Date();
   const dataReady = !(state === "loading" && !data);
+  // 合并外部作业（雨课堂/TUOJ/Tyche）：未配置凭据时 extHw 恒为空，与改动前完全一致
+  const ext = useExternalHomework();
+  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
   const unsubmitted = useMemo(
-    () => (data?.homework ?? []).filter((h) => !h.submitted).sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data],
+    () => [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted).sort((a, b) => a.deadline.localeCompare(b.deadline)),
+    [data, extHw],
   );
   const dueSoon = useMemo(
     () =>
@@ -428,9 +445,12 @@ export function AgendaWidget(): ReactNode {
 export function HomeworkWidget(): ReactNode {
   const { navigate } = useApp();
   const { data, state } = useCampusData();
+  // 合并外部作业：与「全部作业」页同口径（未配置凭据时恒为空数组）
+  const ext = useExternalHomework();
+  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
   const unsubmitted = useMemo(
-    () => (data?.homework ?? []).filter((h) => !h.submitted).sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data],
+    () => [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted).sort((a, b) => a.deadline.localeCompare(b.deadline)),
+    [data, extHw],
   );
   const courseName = (courseId: string) => data?.courses.find((c) => c.id === courseId)?.name ?? "课程";
   return <HomeworkRows loading={state === "loading" && !data} rows={unsubmitted} courseName={courseName} navigate={navigate} />;

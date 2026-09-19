@@ -32,6 +32,7 @@ import {
 } from "../lib/homeCards.js";
 import { readSubs } from "./info/newsSearch.js";
 import { openExternal } from "./info/openExternal.js";
+import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type ScheduleEntry } from "@onethu/core";
 
 /** 轻路由签名（与 AppState.navigate 一致） */
@@ -383,13 +384,16 @@ export function TodayPage() {
 
   /* ---- 数据派生（与外移前同口径） ---- */
 
-  /** 未提交作业（首页作业区唯一口径：submitted===false，含已逾期，按截止升序） */
+  /** 未提交作业（首页作业区唯一口径：submitted===false，含已逾期，按截止升序）；
+   *  合并外部作业（雨课堂/TUOJ/Tyche）——未配置凭据时 extHw 恒为空，零回归 */
+  const ext = useExternalHomework();
+  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
   const unsubmitted = useMemo(
     () =>
-      (data?.homework ?? [])
+      [...(data?.homework ?? []), ...extHw]
         .filter((h) => !h.submitted)
         .sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data],
+    [data, extHw],
   );
 
   /** 今天的日程事件：有 date 按 date 精确匹配（数据窗口跨 3 周不会重复），

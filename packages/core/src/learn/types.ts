@@ -55,6 +55,21 @@ export interface Homework {
   /** 批改时间（pysj） */
   gradeTime?: string;
   url: string;
+  /** 外部来源；网络学堂作业为 undefined（见 exthw） */
+  source?: import("../exthw/types.js").ExtHwSourceId;
+  /** 外部详情链接 */
+  externalUrl?: string;
+  /** 外部作业的课程名（网络学堂作业从 courses 映射，不需要本字段） */
+  courseName?: string;
+  /** 外部作业作答进度（如 "5/5"；仅外部作业，用于来源徽标 tooltip） */
+  externalProgress?: string;
+  /** 外部作业类型：考试 / 普通作业（仅外部作业，透出自 ExternalHomework.kind） */
+  kind?: "homework" | "exam";
+  /** 外部作业所属课堂是否旁听（仅外部作业，透出自 ExternalHomework.audited） */
+  audited?: boolean;
+  /** 外部考试得分 / 卷面满分（仅已提交且已出分的外部考试） */
+  score?: number;
+  totalScore?: number;
 }
 
 /** 可下载附件（thu-learn-lib RemoteFile 精简版） */

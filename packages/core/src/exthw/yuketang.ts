@@ -16,6 +16,9 @@
  *   仅需 leaf_id，sku_id/node_id/exercise_id 不需要；缺 leaf_id 时回退
  *   `…/v2/web/studentLog/{classroom_id}`（旧链，2026-09-18 带 cookie 实测 200）。
  *   ⚠️ R16 21.2 的 `/subject?type=5|6&…` 是教师批改入口（学生打开 302 /forbidden），已弃用。
+ * - 作业详情（R20-B1，docs 28.4 实测）：get_exercise_detail 复用 get_exercise_list 端点取整卷明细，
+ *   data.font 即该次作业的加密字体文件（题干 <span class="xuetangx-com-encrypted-font"> 靠它渲染）；
+ *   归一化 YkExerciseDetail / YkProblem，判定口径见 getExerciseDetail。
  * - 会话失效 → errcode=401000
  * ⚠️ host 必须是 pro.yuketang.cn（www. / changjiang. 会 401）
  * ⚠️ 服务端地址硬编码，凭据不再携带 base
@@ -111,6 +114,30 @@ function isUnscoredPlaceholder(v: unknown): boolean {
     return Number.isFinite(n) && n === -1;
   }
   return false;
+}
+
+/* ───────────────── R20-B1：作业详情归一化的宽松取值（缺字段不崩） ───────────────── */
+
+/** 字符串字段：非字符串（含缺失）一律 "" */
+function toStr(v: unknown): string {
+  return typeof v === "string" ? v : "";
+}
+
+/** 数字字段：数字 / 数字串（如 "30.00"）→ number；其余（含空串 / NaN / null）→ undefined */
+function toNum(v: unknown): number | undefined {
+  if (typeof v === "number") return Number.isFinite(v) ? v : undefined;
+  if (typeof v === "string") {
+    const t = v.trim();
+    if (!t) return undefined;
+    const n = Number(t);
+    return Number.isFinite(n) ? n : undefined;
+  }
+  return undefined;
+}
+
+/** 数字字段带默认值（缺失 → dft，保守口径由调用方定） */
+function toNumOr(v: unknown, dft: number): number {
+  return toNum(v) ?? dft;
 }
 
 /** 并发映射（有界并发，失败在回调内自行捕获） */
@@ -250,7 +277,193 @@ async function fetchYktExamStatus(
   return out;
 }
 
-export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: number): HomeworkSource {
+/* ───────────────── R20-B1：作业详情（get_exercise_list 整卷明细，只读） ───────────────── */
+
+/** 单题「我的作答」三态：docs 28.4 实测 user.status 4=已批改 / 3=已交未批；
+ *  无 user、或无显式 status 且无作答痕迹（my_answer.content 非空 / 整卷 answer_count>0）→ 未答（保守） */
+export type YkMyStatus = "unanswered" | "submitted" | "graded";
+
+/** 老师批注（源字段名是单数 comment[]） */
+export interface YkComment {
+  content: string;
+  /** 批注人姓名 */
+  name?: string;
+  /** 子批注序号 */
+  index?: number;
+}
+
+/** 归一化后的单题。题面缺字段不崩（0 / "" / [] 兜底）；「我的作答」仅在有值时设 */
+export interface YkProblem {
+  /** problems[].problem_id（String 化，供 React key / 逐题提交） */
+  problemId: string;
+  /** 题号（原样透传；缺失按数组序 1 起） */
+  index: number;
+  /** content.ProblemType（1 单选 2 多选 3 判断 4 填空 5 主观 6 试卷 9 外链 OJ；缺失 0） */
+  type: number;
+  typeText: string;
+  /** 题面分值（content.score；缺失 0） */
+  score: number;
+  /** 题干 HTML（含 xuetangx-com-encrypted-font 加密 span，需配 fontUrl 渲染） */
+  bodyHtml: string;
+  /** content.Options（形状随题型各异，B2/C1 再定） */
+  options?: unknown[];
+  /** content.AllowResults（["text","pic","file"]，主观题可提交形式；缺失 []） */
+  allowResults: string[];
+  /** 本题重交上限（content.max_retry / problems[].max_retry；缺失 0=不可重交，保守） */
+  maxRetry: number;
+  myStatus: YkMyStatus;
+  /** 仅「已批改」且为有效数字（非 -1 占位）时给——避免未出分显示 0 */
+  myScore?: number;
+  /** user.my_answer.content（非空时才设） */
+  myAnswerHtml?: string;
+  /** 老师总评（user.remark，非空时才设） */
+  remark?: string;
+  /** 老师批注（user.comment[]，滤掉空 content；全空不设） */
+  comments?: YkComment[];
+}
+
+/** 归一化后的作业详情 */
+export interface YkExerciseDetail {
+  name: string;
+  description: string;
+  /** 整卷重交上限（data.max_retry；缺失 0） */
+  maxRetry: number;
+  /** 是否允许补交（data.is_allowed_late_submission，仅显式 true；红线：仅允许时开放提交） */
+  lateAllowed: boolean;
+  /** 已作答题数（data.answer_count；缺失 0） */
+  answerCount: number;
+  /** data.font：该次作业的加密字体文件 URL（docs 28.4 实测，下载后 @font-face 应用） */
+  fontUrl?: string;
+  problems: YkProblem[];
+}
+
+/** 雨课堂源：在 HomeworkSource 之上附作业详情拉取（R20-B1；B2 详情页用） */
+export interface YuketangSource extends HomeworkSource {
+  /** 拉单份作业详情（只读）。uvId 缺省回落凭据里的 uvId，再回落清华默认 "2598"。
+   *  响应结构异常（errcode≠0 / 缺 data）抛带上下文的错误；单字段缺失不崩。 */
+  getExerciseDetail(leafTypeId: string, classroomId: string, uvId?: string): Promise<YkExerciseDetail>;
+}
+
+/** 单题三态（保守）：显式 status 优先（4=已批 / 3=已交未批）；否则看作答痕迹，
+ *  整卷 answer_count=0 且无内容 → 未答（与 fetchYktStatus 的「已提交」口径一致） */
+function toMyStatus(user: Record<string, unknown> | undefined, answerCount: number): YkMyStatus {
+  if (!user || Object.keys(user).length === 0) return "unanswered";
+  const status = user["status"];
+  if (status === 4) return "graded";
+  if (status === 3) return "submitted";
+  const my = (user["my_answer"] ?? {}) as Record<string, unknown>;
+  const hasContent = typeof my["content"] === "string" && my["content"].trim().length > 0;
+  return hasContent || answerCount > 0 ? "submitted" : "unanswered";
+}
+
+/** user.comment[] → YkComment[]（滤空 content / 非对象项；结果为空 → undefined） */
+function toComments(raw: unknown): YkComment[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: YkComment[] = [];
+  for (const c of raw) {
+    if (c === null || typeof c !== "object") continue;
+    const m = c as Record<string, unknown>;
+    const content = m["content"];
+    if (typeof content !== "string" || !content.trim()) continue;
+    out.push({
+      content,
+      ...(typeof m["name"] === "string" && m["name"] ? { name: m["name"] } : {}),
+      ...(typeof m["index"] === "number" && Number.isFinite(m["index"]) ? { index: m["index"] } : {}),
+    });
+  }
+  return out.length ? out : undefined;
+}
+
+/** problems[] 单项 → YkProblem。submission_status / review_detail / content_score 等字段
+ *  实测存在但归一化暂不透出（B2 如需再加）；缺字段不崩。 */
+function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: number): YkProblem {
+  const content = (p["content"] ?? {}) as Record<string, unknown>;
+  const userRaw = p["user"];
+  const user = userRaw !== null && typeof userRaw === "object" ? (userRaw as Record<string, unknown>) : undefined;
+  const myStatus = toMyStatus(user, answerCount);
+  const problem: YkProblem = {
+    problemId: p["problem_id"] === undefined || p["problem_id"] === null ? "" : String(p["problem_id"]),
+    index: toNumOr(p["index"], pos + 1),
+    // 28.4 实测字段为 ProblemType（28.1 旧记录写作 Type，做兼容回退）
+    type: toNumOr(content["ProblemType"] ?? content["Type"], 0),
+    typeText: toStr(content["TypeText"]),
+    score: toNumOr(content["score"], 0),
+    bodyHtml: toStr(content["Body"]),
+    allowResults: Array.isArray(content["AllowResults"])
+      ? (content["AllowResults"] as unknown[]).filter((x): x is string => typeof x === "string")
+      : [],
+    maxRetry: toNumOr(content["max_retry"] ?? p["max_retry"], 0),
+    myStatus,
+  };
+  const options = content["Options"];
+  if (Array.isArray(options)) problem.options = options as unknown[];
+  // 得分仅「已批改」且为有效数字（非 -1 占位，R16 21.1）时给
+  const myScoreRaw = user ? user["my_score"] : undefined;
+  const myScore = toNum(myScoreRaw);
+  if (myStatus === "graded" && myScore !== undefined && !isUnscoredPlaceholder(myScoreRaw)) {
+    problem.myScore = myScore;
+  }
+  const myAnswer = ((user ?? {})["my_answer"] ?? {}) as Record<string, unknown>;
+  if (typeof myAnswer["content"] === "string" && myAnswer["content"].trim()) {
+    problem.myAnswerHtml = myAnswer["content"];
+  }
+  if (user) {
+    if (typeof user["remark"] === "string" && user["remark"].trim()) problem.remark = user["remark"];
+    const comments = toComments(user["comment"]);
+    if (comments) problem.comments = comments;
+  }
+  return problem;
+}
+
+/**
+ * 拉单份作业详情并归一化（R20-B1，只读）：
+ * GET /mooc-api/v1/lms/exercise/get_exercise_list/{leaf_type_id}/?classroom_id=…&term=latest&uv_id=…
+ * ⚠️ 必须带请求头 `XTBZ: ykt`（同 fetchYktStatus）。
+ * 字段映射（docs 28.4 实测）：exercise 级 name / description / max_retry /
+ * is_allowed_late_submission / answer_count / font；problems[].content{ ProblemType, TypeText,
+ * Body, Options, AllowResults, score, max_retry }、problems[].user{ my_answer{content},
+ * remark, comment[], my_score, status }。
+ * 异常保守口径：errcode≠0 / 缺 data → throw 带上下文；单字段缺失 → 默认值不崩。
+ */
+async function fetchExerciseDetail(
+  fetchLike: FetchLike,
+  base: string,
+  cookie: string,
+  uv: string,
+  classroomId: string,
+  leafTypeId: string,
+): Promise<YkExerciseDetail> {
+  const leaf = String(leafTypeId ?? "").trim();
+  if (!leaf) throw new Error("雨课堂作业详情失败：leafTypeId 为空");
+  const url =
+    `${base}/mooc-api/v1/lms/exercise/get_exercise_list/${encodeURIComponent(leaf)}/` +
+    `?classroom_id=${encodeURIComponent(String(classroomId))}&term=latest&uv_id=${encodeURIComponent(uv)}`;
+  const body = await getJson(fetchLike, url, cookie, { XTBZ: "ykt" });
+  const errcode = body["errcode"];
+  if (typeof errcode === "number" && errcode !== 0) {
+    const msg = typeof body["errmsg"] === "string" ? ` ${body["errmsg"]}` : "";
+    throw new Error(`雨课堂作业详情失败：errcode=${errcode}${msg}`);
+  }
+  const dataRaw = body["data"];
+  if (dataRaw === null || typeof dataRaw !== "object") {
+    throw new Error("雨课堂作业详情响应异常：缺 data（会话可能已失效）");
+  }
+  const data = dataRaw as Record<string, unknown>;
+  const answerCount = toNumOr(data["answer_count"], 0);
+  const problemsRaw = Array.isArray(data["problems"]) ? (data["problems"] as Array<Record<string, unknown>>) : [];
+  const font = data["font"];
+  return {
+    name: toStr(data["name"]),
+    description: toStr(data["description"]),
+    maxRetry: toNumOr(data["max_retry"], 0),
+    lateAllowed: data["is_allowed_late_submission"] === true,
+    answerCount,
+    ...(typeof font === "string" && font.trim() ? { fontUrl: font } : {}),
+    problems: problemsRaw.map((p, i) => toYkProblem(p, i, answerCount)),
+  };
+}
+
+export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: number): YuketangSource {
   const base = BASE;
   const cookie = authCookie(cred);
   const uv = (cred.uvId ?? "").trim() || "2598";
@@ -369,6 +582,11 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
       });
 
       return items.map((it) => it.hw);
+    },
+    async getExerciseDetail(leafTypeId: string, classroomId: string, uvId?: string): Promise<YkExerciseDetail> {
+      // uvId 参数优先，回落凭据 uvId，再回落清华默认（与 fetch 链路同款兜底）
+      const uvFinal = (uvId ?? "").trim() || uv;
+      return fetchExerciseDetail(fetchLike, base, cookie, uvFinal, classroomId, leafTypeId);
     },
   };
 }

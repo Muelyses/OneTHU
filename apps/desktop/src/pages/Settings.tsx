@@ -25,6 +25,7 @@ import {
 } from "../lib/update.js";
 import { runProbeMatrix, type ProbeResult } from "./probe.js";
 import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
+import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
   clearTuojAutoStatus,
   consumeExtHwScrollRequest,
@@ -890,18 +891,21 @@ function ExtHwSection() {
                   >
                     {yktQrOpen ? "收起扫码" : "微信扫码登录"}
                   </button>
-                  {/* R18 24.2：官方网页登录通道（应用内 WebView，支持扫码 / 短信） */}
-                  <button
-                    className="btn"
-                    disabled={busy !== null}
-                    title="在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录"
-                    onClick={() => {
-                      setYktQrOpen(false);
-                      setYktWebOpen((v) => !v);
-                    }}
-                  >
-                    {yktWebOpen ? "收起网页登录" : "官方网页登录"}
-                  </button>
+                  {/* R18 24.2：官方网页登录通道（应用内 WebView，支持扫码 / 短信）
+                      R18b 25.3.2：桌面端原生窗口实测白屏卡死 → 隐藏该入口（二维码可用），仅 Android 保留 */}
+                  {YKT_WEB_LOGIN_AVAILABLE ? (
+                    <button
+                      className="btn"
+                      disabled={busy !== null}
+                      title="在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录"
+                      onClick={() => {
+                        setYktQrOpen(false);
+                        setYktWebOpen((v) => !v);
+                      }}
+                    >
+                      {yktWebOpen ? "收起网页登录" : "官方网页登录"}
+                    </button>
+                  ) : null}
                 </>
               )}
               <button
@@ -915,9 +919,12 @@ function ExtHwSection() {
           </div>
           {/* R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），
               纯接口无法内嵌 → 直接短信通道停用；R18 24.2 起可在「官方网页登录」
-              应用内网页里正常使用短信（图形验证码由官方页自己完成）。 */}
+              应用内网页里正常使用短信（图形验证码由官方页自己完成）。
+              R18b 25.3.2：桌面端该入口隐藏，文案不再引导到它。 */}
           <div className="exthw-note">
-            雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信扫码，或用「官方网页登录」在应用内完成扫码 / 短信登录。
+            {YKT_WEB_LOGIN_AVAILABLE
+              ? "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信扫码，或用「官方网页登录」在应用内完成扫码 / 短信登录。"
+              : "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。"}
           </div>
           {msg && msgArea === "yuketang" ? (
             <div className="exthw-note" role="status">{msg}</div>

@@ -17,7 +17,9 @@ import type { YktQrPhase } from "@onethu/core";
 import { ensureExtHwCredsLoaded, extHwLogin, refreshExtHw, saveExtHwCreds } from "../state/exthw.js";
 import {
   YKT_WEB_FALLBACK_HINT,
+  YKT_WEB_LOGIN_AVAILABLE,
   closeYuketangWebLogin,
+  onYuketangWebCookie,
   openYuketangWebLogin,
   readYuketangWebCookies,
 } from "../lib/yktWebview.js";
@@ -33,7 +35,11 @@ const YKT_SMS_DISABLED_NOTE = "雨课堂已启用图形验证码，短信登录�
 
 const YKT_CHANNELS: Array<{ key: YktChannel; label: string; hint: string; disabled?: boolean }> = [
   { key: "qr", label: "微信扫码", hint: "打开微信或雨豆APP 扫描二维码" },
-  { key: "web", label: "官方网页登录", hint: "支持扫码 / 手机号 + 图形验证码 + 短信（应用内网页）" },
+  // R18b 25.3.2：桌面端原生 WebView 窗口实测卡死，隐藏该入口（二维码在桌面可用）；
+  // 仅 Android 应用内全屏 WebView 保留官方网页登录。
+  ...(YKT_WEB_LOGIN_AVAILABLE
+    ? [{ key: "web" as const, label: "官方网页登录", hint: "支持扫码 / 手机号 + 图形验证码 + 短信（应用内网页）" }]
+    : []),
   { key: "sms", label: "手机验证码", hint: YKT_SMS_DISABLED_NOTE, disabled: true },
 ];
 
@@ -139,6 +145,22 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         {qr && status === "waiting" ? (
           <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>二维码约 5 分钟有效，过期自动刷新</div>
         ) : null}
+        {/* R18b 25.3.3：本机扫码会切走 App，MIUI/HyperOS 冻结进程会掐断长轮询导致确认丢失 */}
+        <div
+          style={{
+            fontSize: 12,
+            lineHeight: 1.6,
+            marginTop: 8,
+            padding: "6px 8px",
+            borderRadius: 8,
+            background: "rgba(26,111,212,0.08)",
+            color: "var(--text, #1f2329)",
+            textAlign: "left",
+          }}
+        >
+          建议用<b>另一台设备</b>（平板 / 电脑微信）扫码，并<b>保持本页在前台</b>；
+          本机扫码会切走 App，可能被系统冻结导致登录失败。
+        </div>
         {err ? <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
       </div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
@@ -168,13 +190,33 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
   const [err, setErr] = useState<string | null>(null);
   // 成功读回后由 onSuccess 关闭本面板；标记避免卸载清理把已关窗口再关一次（幂等，仅省一次调用）
   const doneRef = useRef(false);
+  // onSuccess 由父组件内联传入、每次渲染都会变 —— 用 ref 固定给异步回调
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
 
   useEffect(() => {
     let alive = true;
+    let unlisten: (() => void) | null = null;
     yktWebPanels++;
+    // 桌面端：窗口内注入按钮经 document.title 回传 → Rust 后台读回后 emit `ykt-cookie`
+    void onYuketangWebCookie((cookie) => {
+      if (!alive) return;
+      doneRef.current = true;
+      onSuccessRef.current(cookie);
+    }).then((off) => {
+      if (alive) unlisten = off;
+      else off();
+    });
     void openYuketangWebLogin()
-      .then(() => {
-        if (alive) setPhase("ready");
+      .then((cookie) => {
+        if (!alive) return;
+        // Android 全屏 Dialog 内的「我已登录，读取会话」直接带回会话；直接关闭则 null
+        if (cookie) {
+          doneRef.current = true;
+          onSuccessRef.current(cookie);
+          return;
+        }
+        setPhase("ready");
       })
       .catch((e: unknown) => {
         if (!alive) return;
@@ -183,6 +225,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
       });
     return () => {
       alive = false;
+      unlisten?.();
       yktWebPanels = Math.max(0, yktWebPanels - 1);
       // 延后一拍：StrictMode 清理后立即再挂载时，计数已 >0，不再关窗
       setTimeout(() => {

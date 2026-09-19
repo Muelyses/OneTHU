@@ -136,6 +136,10 @@ export const theme = {
 };
 ```
 
+完整示例见插件市场的 [OneTHU-theme-barbie](https://github.com/smartThise/OneTHU-theme-barbie)
+（芭比粉）：令牌覆盖 + 品牌 logo 替换 + 作用域附加 CSS 三段齐全，并带离线自检
+（令牌名合法性、CSS 作用域、文字对比度阈值）。
+
 **ThemeDef 字段**：
 
 | 字段 | 类型 | 必填 | 说明 |

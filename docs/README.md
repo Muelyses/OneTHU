@@ -50,3 +50,6 @@ OneTHU 是清华大学校园助手应用，基于 Tauri v2 与 React 实现，�
 - [OneTHU-plugin-hello](https://github.com/smartThise/OneTHU-plugin-hello)：JS 插件特性
   全景示例，覆盖结构化结果、确认与表单弹窗、剪贴板、自建功能页、全局 CSS、原子化
   收藏、OH 双向联动；随插件市场分发，可直接作为新插件的模板。
+- [OneTHU-theme-barbie](https://github.com/smartThise/OneTHU-theme-barbie)：主题插件
+  示例（芭比粉），演示令牌覆盖、品牌 logo 替换与作用域附加 CSS，零权限；见
+  [plugin-development.md §3.4](./plugin-development.md)。

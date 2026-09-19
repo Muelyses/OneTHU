@@ -1,6 +1,6 @@
 /** 全部作业（learnX Assignments）：按状态分组（进行中/已逾期/已交/已批改），组内按截止时间排序 */
 import { useMemo, useState } from "react";
-import { parseLearnTime } from "@onethu/core";
+import { parseLearnTime, SOURCE_NAMES } from "@onethu/core";
 import { PageAtomStar } from "../..//components/Collect.js";
 import { SegmentedOverflow, Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
 import { IconRefresh } from "../../components/Icons.js";
@@ -91,6 +91,40 @@ function ExtHwGuide() {
   );
 }
 
+/* R19 27.1：TUOJ 会话失效已静默自动重漫游过、但该源最终仍失败时，作业页明示
+ * 「已尝试自动重新登录，仍失败：<原因>」（文案由 core 组装进 errors）并保留手动入口
+ * ——「去设置重新登录」跳设置页 extHw 区的「统一认证登录」。不弹窗，仅条幅；
+ * 其余源错误仍只在设置页展示（与既有行为一致）。 */
+function ExtHwTuojErrorNote() {
+  const { navigate } = useApp();
+  const ext = useExternalHomework();
+  const rows = (["tuoj", "tuojClassic"] as const)
+    .map((id) => ({ id, name: SOURCE_NAMES[id], err: ext.errors[id] }))
+    .filter((r) => Boolean(r.err));
+  // 等凭据解密完成再判断，避免就绪前闪一下
+  if (ext.state !== "ready" || rows.length === 0) return null;
+  return (
+    <div className="browser-hint ext-hw-hint">
+      <span className="ext-hw-hint-text">
+        {rows.map(({ id, name, err }) => (
+          <div key={id} style={{ color: "var(--danger, #c04848)" }}>
+            {name}：{err}
+          </div>
+        ))}
+      </span>
+      <button
+        className="btn"
+        onClick={() => {
+          requestExtHwScroll();
+          navigate("settings");
+        }}
+      >
+        去设置重新登录
+      </button>
+    </div>
+  );
+}
+
 export function AssignmentsPage() {
   useLearnNavSemester();
   const { data, state, error, reload } = useLearnData();
@@ -142,6 +176,9 @@ export function AssignmentsPage() {
       {state === "error" ? <ErrorNote text={error ?? ""} onRetry={() => void reload()} /> : null}
 
       <ExtHwGuide />
+
+      {/* R19 27.1：TUOJ 自动重漫游仍失败的静默条幅（含「去设置重新登录」手动入口） */}
+      <ExtHwTuojErrorNote />
 
       <SegmentedOverflow>
         {FILTERS.map(({ key, label }) => (

@@ -13,6 +13,7 @@ import { fetchImageAsDataUrl, fetchImageByUrl } from "../../lib/clients.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
+import { openExternalHomework } from "../../lib/extHwBrowse.js";
 import { Card } from "../../components/Layout.js";
 import { IconBell, IconChevron } from "../../components/Icons.js";
 import { CollectStar } from "../../components/Collect.js";
@@ -328,9 +329,10 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
   const { navigate } = useApp();
   const external = Boolean(h.source);
   const go = () => {
-    // 外部作业：有详情链接时用系统浏览器打开官方页；无链接则不导航（无网络学堂详情页）
+    // 外部作业：有详情链接时打开官方页。R20-A：Android 宿主改走应用内
+    // 全屏 WebView 桌面模式（openExternalHomework 内部分流），桌面端保持系统浏览器。
     if (external) {
-      if (h.externalUrl) void openExternal(h.externalUrl);
+      if (h.externalUrl) void openExternalHomework(h.externalUrl);
       return;
     }
     navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from });

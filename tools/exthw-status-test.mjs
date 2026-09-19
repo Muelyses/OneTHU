@@ -8,7 +8,13 @@
  *    result 缺失 / 请求失败 → 保守未提交
  *  - TUOJ：ranklist 里按 _id/username 找到自己且 details 非空 → 已提交；找不到 / details 空 → 未提交
  *  - Tyche：task/Status（不带 all=true）submissionCount>0 → 已提交；0 / 报错 → 未提交
+ *  - R19 27.2：Tyche「已批改」判定——submissionList 按 pid 分组取 submitedTime 最新
+ *    （并列取 sid 最大），每个 pid 最新提交都有数字 score 且 result 非 0/1（判题中保守排除）
+ *    → graded=true；score=Σ 各 pid 最新分、totalScore=100×pid 数，仅 graded 时透出
  *  - 附带校验：雨课堂状态请求带 XTBZ: ykt；TUOJ lookup 用 POST
+ *  - R19 27.1：TUOJ 会话失效自动重漫游——401 → force 重漫游一次 → 重拉成功（R12 ①-④）；
+ *    同源并发 401 in-flight 去重只漫游一次；进程级频控放宽（同源两次 ≥10min、每源每进程
+ *    ≤3 次、AI 版 / 经典版独立计数）；失败文案「已尝试自动重新登录，仍失败：<原因>」
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
 import { createTuojSource, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
@@ -366,13 +372,129 @@ console.log("\n[Tyche]");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   eq(byTitle.get("作业一")?.submitted, true, "submissionCount>0 → 已提交");
   eq(byTitle.get("作业一")?.submittedCount, 6, "submittedCount=6");
+  eq(byTitle.get("作业一")?.graded, false, "submissionList 缺 pid/score → 保守 graded=false");
   eq(byTitle.get("作业二")?.submitted, false, "submissionCount=0 → 未提交");
+  eq(byTitle.get("作业二")?.graded, false, "未提交 → graded=false");
   eq(byTitle.get("作业三（状态接口报错）")?.submitted, false, "状态接口报错 → 保守未提交");
+  eq(byTitle.get("作业三（状态接口报错）")?.graded, false, "状态接口报错 → 保守 graded=false");
   const statusCalls = fetchLike.calls.filter((c) => c.url.includes("/task/Status?"));
   ok(
     statusCalls.every((c) => !c.url.includes("all=true")),
     "状态请求不带 all=true（只取本人提交）",
   );
+}
+
+/* ───────── R19 27.2：Tyche「已批改」判定（27.2b 字段定稿：pid/score/result/submitedTime/sid） ───────── */
+console.log("\n[Tyche 已批改 R19 27.2]");
+{
+  /** 构造一条 Tyche 提交（字段名按 27.2b 实测） */
+  const sub = (sid, pid, score, result = 2, submitedTime = "2026-09-19 20:31:05") => ({
+    sid,
+    pid,
+    tid: 1500,
+    gid: 42,
+    uid: 2026,
+    name: "lin",
+    language: "C++",
+    codeLength: 1024,
+    time: 0,
+    memory: 0,
+    score,
+    result,
+    outdated: false,
+    secret: 0,
+    submitedTime,
+  });
+  const fetchLike = makeFetch([
+    { match: (u) => u.includes("/group/GroupList"), body: { groupList: [{ gid: 42, name: "程设" }] } },
+    {
+      match: (u) => u.includes("/group/ShowGroup?gid=42"),
+      body: {
+        group: {
+          gid: 42,
+          tasks: [
+            { tid: 1500, title: "四题全过", endTime: localDT(FUTURE) },
+            { tid: 1501, title: "同题多次提交", endTime: localDT(FUTURE) },
+            { tid: 1502, title: "最新提交缺 score", endTime: localDT(FUTURE) },
+            { tid: 1503, title: "判题中", endTime: localDT(FUTURE) },
+            { tid: 1504, title: "无提交", endTime: localDT(FUTURE) },
+          ],
+        },
+      },
+    },
+    // ① 4 个 pid 各 100 → graded=true score=400 totalScore=400（霖那份作业的形态）
+    {
+      match: (u) => u.includes("/task/Status?tid=1500&gid=42"),
+      body: {
+        status: "success",
+        submissionCount: 4,
+        submissionList: [sub(101, 9001, 100), sub(102, 9002, 100), sub(103, 9003, 100), sub(104, 9004, 100)],
+      },
+    },
+    // ② 同 pid 多次提交取 submitedTime 最新（并列取 sid 最大）：只汇总最新一条的 score
+    {
+      match: (u) => u.includes("/task/Status?tid=1501&gid=42"),
+      body: {
+        status: "success",
+        submissionCount: 4,
+        submissionList: [
+          sub(201, 9101, 50, 9, "2026-09-18 10:00:00"), // 旧提交（50 分，错误）
+          sub(202, 9101, 100, 2, "2026-09-19 10:00:00"), // 最新 → 取 100
+          sub(203, 9102, 80, 2, "2026-09-19 09:00:00"),
+          sub(210, 9103, 0, 9, "2026-09-19 12:00:00"), // 与 sid=211 同秒，取 sid 大者
+          sub(211, 9103, 100, 2, "2026-09-19 12:00:00"),
+        ],
+      },
+    },
+    // ③ 存在未判：9104 的最新提交缺 score（旧的反而有分也不回退）→ 保守 graded=false
+    {
+      match: (u) => u.includes("/task/Status?tid=1502&gid=42"),
+      body: {
+        status: "success",
+        submissionCount: 3,
+        submissionList: [
+          sub(301, 9104, 100, 2, "2026-09-18 10:00:00"), // 旧提交有分
+          sub(302, 9104, undefined, undefined, "2026-09-19 10:00:00"), // 最新缺 score
+          sub(303, 9105, 100, 2, "2026-09-19 10:00:00"),
+        ],
+      },
+    },
+    // ③b 判题中：result=1（探测未观测到，保守排除）→ graded=false 不透出分数
+    {
+      match: (u) => u.includes("/task/Status?tid=1503&gid=42"),
+      body: {
+        status: "success",
+        submissionCount: 2,
+        submissionList: [sub(401, 9201, 100, 1, "2026-09-19 11:00:00"), sub(402, 9202, 100, 2, "2026-09-19 11:00:00")],
+      },
+    },
+    // ④ 无提交 → graded=false
+    { match: (u) => u.includes("/task/Status?tid=1504&gid=42"), body: { status: "success", submissionCount: 0, submissionList: [] } },
+  ]);
+  const src = createTycheSource({ cookie: "JSESSIONID=x" }, fetchLike, 30);
+  const items = await src.fetch();
+  eq(items.length, 5, "拉到 5 条作业");
+  const byTitle = new Map(items.map((i) => [i.title, i]));
+  // ① 四题全 100 → 已批改 · 400/400
+  eq(byTitle.get("四题全过")?.submitted, true, "①4 题各一次 100 → 已提交");
+  eq(byTitle.get("四题全过")?.graded, true, "①每个 pid 最新提交都有数字 score → graded=true");
+  eq(byTitle.get("四题全过")?.score, 400, "①score=Σ 各 pid 最新 score=400");
+  eq(byTitle.get("四题全过")?.totalScore, 400, "①totalScore=100×pid 数=400");
+  // ② 同 pid 多次提交取最新（并列取 sid 最大）
+  eq(byTitle.get("同题多次提交")?.graded, true, "②取每组最新 → 全有分 → graded=true");
+  eq(byTitle.get("同题多次提交")?.score, 280, "②score=100+80+100=280（旧 50 分不回退、并列取 sid 大的 100）");
+  eq(byTitle.get("同题多次提交")?.totalScore, 300, "②totalScore=100×3 pid=300");
+  // ③ 存在未判（缺 score）→ 保守未批改，不透出分数
+  eq(byTitle.get("最新提交缺 score")?.submitted, true, "③有提交 → 已提交");
+  eq(byTitle.get("最新提交缺 score")?.graded, false, "③最新提交缺 score（旧的有分不回退）→ graded=false");
+  eq(byTitle.get("最新提交缺 score")?.score, undefined, "③未批改 → 不透出 score（避免 0 分误导）");
+  eq(byTitle.get("最新提交缺 score")?.totalScore, undefined, "③未批改 → 不透出 totalScore");
+  // ③b result=1 判题中 → 保守排除
+  eq(byTitle.get("判题中")?.graded, false, "③b result=1 视为判题中 → 保守 graded=false");
+  eq(byTitle.get("判题中")?.score, undefined, "③b 判题中 → 不透出 score");
+  // ④ 无提交
+  eq(byTitle.get("无提交")?.submitted, false, "④无提交 → 未提交");
+  eq(byTitle.get("无提交")?.graded, false, "④无提交 → graded=false");
 }
 
 /* ───────── R15 20.2：经典 TUOJ（复用 tuoj 客户端，仅参数化 base/id/name） ───────── */
@@ -532,7 +654,7 @@ console.log("\n[TUOJ 失效自动重漫游 R12 17.1]");
 if (!canResolveTs) {
   console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
 } else {
-  const { refreshExternalHomework, TuojSessionError, isTuojSessionError } = await import(
+  const { refreshExternalHomework, resetTuojSessionRetryState, TuojSessionError, isTuojSessionError } = await import(
     "../packages/core/src/exthw/index.ts"
   );
 
@@ -573,6 +695,7 @@ if (!canResolveTs) {
 
   // ① 已配置但 401 → force 漫游成功 → 自动重拉一次 → 恢复
   {
+    resetTuojSessionRetryState(); // R19 27.1：重漫游有进程级频控，每个用例先清零
     const creds = { tuoj: { cookie: "old", via: "password" } };
     const fetchLike = makeTuojFetch([401, 200]);
     let roamCalls = 0;
@@ -597,6 +720,7 @@ if (!canResolveTs) {
 
   // ② 重拉仍 401 → 不再进入第二轮漫游（防循环），保留 401 错误
   {
+    resetTuojSessionRetryState();
     const creds = { tuoj: { cookie: "old" } };
     const fetchLike = makeTuojFetch([401]);
     let roamCalls = 0;
@@ -616,6 +740,7 @@ if (!canResolveTs) {
 
   // ③ 漫游失败（返回 false）→ 维持原 401 错误，不重拉
   {
+    resetTuojSessionRetryState();
     const creds = { tuoj: { cookie: "old" } };
     const fetchLike = makeTuojFetch([401, 200]);
     let roamCalls = 0;
@@ -635,6 +760,7 @@ if (!canResolveTs) {
 
   // ④（R15 20.2）经典 TUOJ 失效 → 按源 force 漫游 → 重拉（泛化后不再只认 tuoj）
   {
+    resetTuojSessionRetryState();
     const creds = { tuojClassic: { cookie: "old", via: "password" } };
     const fetchLike = makeTuojFetch([401, 200]);
     const seen = [];
@@ -659,6 +785,100 @@ if (!canResolveTs) {
       listCalls.every((c) => c.url.startsWith("https://oj.cs.tsinghua.edu.cn")),
       "④请求走经典版 base",
     );
+  }
+
+  /* ── R19 27.1：会话失效自动重漫游——in-flight 去重 + 进程级频控放宽 + 失败文案 ── */
+  console.log("\n[TUOJ 失效自动重漫游 R19 27.1]");
+  const REROUTE_PREFIX = "已尝试自动重新登录，仍失败：";
+
+  // ⑤ 同源并发 401 → in-flight 去重：两个并发 refresh 只发起一次重漫游，各自重拉均成功
+  {
+    resetTuojSessionRetryState();
+    const creds = { tuoj: { cookie: "old", via: "password" } };
+    const fetchLike = makeTuojFetch([401, 401, 200]);
+    let roamCalls = 0;
+    const hook = async () => {
+      roamCalls++;
+      creds.tuoj = { cookie: "new", via: "cas" };
+      return true;
+    };
+    const [ra, rb] = await Promise.all([
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook }),
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook }),
+    ]);
+    eq(roamCalls, 1, "⑤并发 401 只触发一次重漫游（共享 in-flight Promise）");
+    eq(ra.reroutedTuoj, true, "⑤第一个 refresh 标记 rerouted");
+    eq(rb.reroutedTuoj, true, "⑤第二个 refresh 共享漫游结果并标记 rerouted");
+    eq(ra.items.length, 1, "⑤第一个 refresh 重拉成功");
+    eq(rb.items.length, 1, "⑤第二个 refresh 重拉成功");
+    eq(fetchLike.listHits(), 4, "⑤课程列表共 4 次（两轮各：首发 401 + 重拉 200）");
+    ok(ra.errors.tuoj === undefined && rb.errors.tuoj === undefined, "⑤无错误残留");
+  }
+
+  // ⑥ 间隔频控（放宽后的 ≥10 分钟）：一次自动重漫游后紧接着再 401 → 不再自动重试；
+  //   发起过漫游仍失败的错误文案带「已尝试自动重新登录，仍失败：」前缀，未发起则无前缀
+  {
+    resetTuojSessionRetryState();
+    const creds = { tuoj: { cookie: "old" } };
+    const fetchLike = makeTuojFetch([401]);
+    let roamCalls = 0;
+    const first = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        return false; // 漫游失败（如统一认证未通过）
+      },
+    });
+    ok(first.errors.tuoj?.startsWith(REROUTE_PREFIX), "⑥发起过漫游仍失败 → 文案带「已尝试自动重新登录，仍失败：」前缀");
+    ok(first.errors.tuoj?.includes("会话已失效"), "⑥前缀后保留原 401 原因");
+    const second = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        return true;
+      },
+    });
+    eq(roamCalls, 1, "⑥间隔 <10 分钟 → 第二次 refresh 不再自动重漫游（24h 频控已放宽为 10min）");
+    ok(
+      Boolean(second.errors.tuoj) && !second.errors.tuoj.startsWith(REROUTE_PREFIX),
+      "⑥未发起漫游 → 文案无前缀（保留原 401 提示）",
+    );
+  }
+
+  // ⑦ 每进程每源最多 3 次 + 两源独立：放行时钟跨过 10min 间隔连试 3 次后第 4 次被拦；
+  //   AI 版烧完额度不影响经典版（各自计数）
+  {
+    resetTuojSessionRetryState();
+    const creds = { tuoj: { cookie: "old" } };
+    const fetchLike = makeTuojFetch([401]);
+    const roamed = [];
+    const hook = async (source) => {
+      roamed.push(source);
+      return false;
+    };
+    const realNow = Date.now;
+    try {
+      for (let n = 1; n <= 3; n++) {
+        Date.now = () => realNow() + n * 11 * 60 * 1000; // 每轮快进 11 分钟，跨过 10min 间隔
+        await refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook });
+      }
+      eq(roamed.length, 3, "⑦放行时钟下每次 refresh 各自动重试一次（共 3 次）");
+      Date.now = () => realNow() + 4 * 11 * 60 * 1000;
+      const r4 = await refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook });
+      eq(roamed.length, 3, "⑦每进程每源最多 3 次自动重试（第 4 次不再漫游）");
+      ok(
+        Boolean(r4.errors.tuoj) && !r4.errors.tuoj.startsWith(REROUTE_PREFIX),
+        "⑦超限后被拦的 refresh 文案无前缀（未发起漫游）",
+      );
+      // 两源独立：AI 版额度烧完，经典版首试仍放行
+      const credsC = { tuojClassic: { cookie: "old-c" } };
+      await refreshExternalHomework({ getCreds: () => credsC, fetchLike, rerouteTuoj: hook });
+      eq(roamed.filter((s) => s === "tuojClassic").length, 1, "⑦AI 版超限不影响经典版（两源独立计数）");
+    } finally {
+      Date.now = realNow;
+    }
   }
 }
 

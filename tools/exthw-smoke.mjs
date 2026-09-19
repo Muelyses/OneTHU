@@ -59,8 +59,10 @@ for (const src of sources) {
         it.submittedCount !== undefined || it.totalCount !== undefined
           ? ` ${it.submittedCount ?? "?"}/${it.totalCount ?? "?"}`
           : "";
-      // R9：考试 / 旁听标注与考试分数（仅已出分时打印）
-      const tags = [it.kind === "exam" ? "考试" : "", it.audited ? "旁听" : ""].filter(Boolean).join("/");
+      // R9：考试 / 旁听标注与考试分数（仅已出分时打印）；R19 27.2：已批改标注
+      const tags = [it.kind === "exam" ? "考试" : "", it.audited ? "旁听" : "", it.graded ? "已批改" : ""]
+        .filter(Boolean)
+        .join("/");
       const tagText = tags ? ` [${tags}]` : "";
       const score = it.score !== undefined ? ` score=${it.score}/${it.totalScore ?? "?"}` : "";
       console.log(

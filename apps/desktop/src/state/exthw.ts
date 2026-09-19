@@ -414,10 +414,19 @@ async function saveTuojCasCreds(source: TuojSourceId, cookie: string): Promise<v
 /** 静默自动尝试某 TUOJ 源的一次统一认证漫游；永不抛出。
  *  R12 17.1：`force=true` 绕过 `isTuojConfigured` 前置（「已配置但 cookie 失效」时使用）；
  *  频控保持（failed/no-courses 24h 内不重复，kind=ok 不受限）。
+ *  R19 27.1：`relaxThrottle=true`（会话失效 401/403 触发的自动重试专用）——
+ *  - 跳过 24h 频控（改由 core 的进程级频控接管：同源两次 ≥10min、每源每进程 ≤3 次），
+ *    避免一次失败（退后台 / 网络抖动）把 24h 内的自动恢复全烧掉；
+ *  - 尊重「显式退出」抑制：用户主动退出的源绝不自动补登录（手动「统一认证登录」可恢复）。
  *  返回 true = 漫游成功且该源凭据已覆盖保存。 */
-async function maybeAutoTuojCas(source: TuojSourceId, opts: { force?: boolean } = {}): Promise<boolean> {
+async function maybeAutoTuojCas(
+  source: TuojSourceId,
+  opts: { force?: boolean; relaxThrottle?: boolean } = {},
+): Promise<boolean> {
   if (!opts.force && (isTuojConfigured(source) || tuojAutoSuppressed[source])) return false;
-  if (tuojAutoThrottled(source)) return false;
+  // R19 27.1：会话失效触发的自动重试同样不吃「显式退出」抑制（force 不再绕过它）
+  if (opts.relaxThrottle && tuojAutoSuppressed[source]) return false;
+  if (!opts.relaxThrottle && tuojAutoThrottled(source)) return false;
   setTuojAuto(source, { kind: "running" });
   try {
     const r = await extHwLogin.tuojCas(source);
@@ -528,12 +537,14 @@ export function refreshExtHw(): Promise<void> {
     }
     state = "loading";
     rebuild();
-    // R12 17.1：401/403 → 对该源 force 重漫游（频控保持）→ 成功则重拉一次；失败保留原 401 错误
+    // R12 17.1：401/403 → 对该源 force 重漫游 → 成功则重拉一次；失败保留原 401 错误。
+    // R19 27.1：重漫游放宽 24h 频控（relaxThrottle，改吃 core 进程级频控 + in-flight 去重），
+    // 尊重「显式退出」抑制；漫游与重试全程静默，失败仅落 errors / tuojAuto 状态供设置页展示。
     const next = await refreshExternalHomework({
       getCreds: () => getExtHwCreds(),
       fetchLike: universalFetch,
       http,
-      rerouteTuoj: (source) => maybeAutoTuojCas(source, { force: true }),
+      rerouteTuoj: (source) => maybeAutoTuojCas(source, { force: true, relaxThrottle: true }),
     });
     items = next.items;
     errors = next.errors;

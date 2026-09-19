@@ -14,6 +14,7 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { openExternalHomework } from "../lib/extHwBrowse.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type Homework, type ScheduleEntry } from "@onethu/core";
 
@@ -182,7 +183,8 @@ export function HomeworkRows({
             style={{ animationDelay: i * 35 + "ms" }}
             onClick={() => {
               if (external) {
-                if (h.externalUrl) void openExternal(h.externalUrl);
+                // R20-A：Android 宿主改走应用内全屏 WebView 桌面模式（分流在 openExternalHomework）
+                if (h.externalUrl) void openExternalHomework(h.externalUrl);
                 return;
               }
               navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from: "today" });

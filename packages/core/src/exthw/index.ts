@@ -111,8 +111,45 @@ export interface RefreshExternalHomeworkDeps {
   /** TUOJ 系（tuoj / tuojClassic）已配置但会话失效（401/403）时的强制重漫游钩子，
    *  参数为具体源 id。返回 true = 漫游成功且凭据/会话已更新，随后自动重试该源**一次**；
    *  返回 false（含频控拦截）/ 抛出 = 放弃重试，保留原 401 错误。
-   *  缺省（未注入）时不做任何重漫游，行为同旧版。 */
+   *  缺省（未注入）时不做任何重漫游，行为同旧版。
+   *  R19 27.1：本钩子的调用已被进程级频控（同源 ≥10min / 每源 ≤3 次）与同源
+   *  in-flight 去重包裹——并发 401 只会让钩子对同一源执行一次。 */
   rerouteTuoj?: (source: TuojSourceId) => Promise<boolean>;
+}
+
+/* ── R19 27.1：TUOJ 会话失效（401/403）自动重漫游的进程级频控与并发去重 ──
+ * 旧频控（desktop 的 24h TUOJ_AUTO_THROTTLE_MS）对「已配置但 cookie 失效」这条最常见
+ * 路径过于苛刻：一次失败（退后台 / 网络抖动）就把 24h 内的自动恢复全烧掉。401 触发的
+ * 自动重漫游改用放宽策略：同一源两次自动重试间隔 ≥ 10 分钟、每进程每源最多 3 次；
+ * AI 版 / 经典版各自独立计数。状态存本模块（= 进程级），跨多次 refresh 累计。 */
+
+/** 同一源两次自动重漫游的最小间隔（R19 27.1） */
+export const TUOJ_SESSION_RETRY_MIN_INTERVAL_MS = 10 * 60 * 1000;
+/** 每进程每源自动重漫游次数上限（含失败尝试；R19 27.1） */
+export const TUOJ_SESSION_RETRY_MAX_PER_PROCESS = 3;
+
+/** 会话失效触发过自动重漫游、但该源最终仍失败时的错误前缀（作业页 / 设置页文案，
+ *  让用户知道系统已自动尝试过重新登录，而非首次失败） */
+const TUOJ_REROUTE_FAILED_PREFIX = "已尝试自动重新登录，仍失败：";
+
+const tuojSessionRetryState: Record<TuojSourceId, { count: number; lastAt: number }> = {
+  tuoj: { count: 0, lastAt: 0 },
+  tuojClassic: { count: 0, lastAt: 0 },
+};
+/** 同一源并发 401 共享一次重漫游（in-flight Promise 去重；R19 27.1） */
+const tuojSessionInflight: Partial<Record<TuojSourceId, Promise<boolean>>> = {};
+
+function tuojSessionRetryAllowed(source: TuojSourceId, now = Date.now()): boolean {
+  const st = tuojSessionRetryState[source];
+  return st.count < TUOJ_SESSION_RETRY_MAX_PER_PROCESS && now - st.lastAt >= TUOJ_SESSION_RETRY_MIN_INTERVAL_MS;
+}
+
+/** 清空进程级重漫游频控 / 去重状态（仅离线测试用；应用内无需调用） */
+export function resetTuojSessionRetryState(): void {
+  tuojSessionRetryState.tuoj = { count: 0, lastAt: 0 };
+  tuojSessionRetryState.tuojClassic = { count: 0, lastAt: 0 };
+  delete tuojSessionInflight.tuoj;
+  delete tuojSessionInflight.tuojClassic;
 }
 
 export interface RefreshExternalHomeworkResult {
@@ -125,7 +162,10 @@ export interface RefreshExternalHomeworkResult {
 }
 
 /** 各源并发拉取（allSettled，单源失败隔离）；TUOJ 系 401/403 → 强制重漫游一次并重试该源。
- *  ⚠️ 防循环：单次调用每个源至多触发一次重漫游，重试仍失败不再进入第二轮。永不抛出。 */
+ *  ⚠️ 防循环：单次调用每个源至多触发一次重漫游，重试仍失败不再进入第二轮。永不抛出。
+ *  R19 27.1：重漫游动作套进程级频控（同源 ≥10min、每源每进程 ≤3 次）+ 同源 in-flight
+ *  去重（并发 401 只发起一次漫游，后来者共享其结果）；发起过漫游而该源最终仍失败的，
+ *  错误文案加「已尝试自动重新登录，仍失败：」前缀。 */
 export async function refreshExternalHomework(
   deps: RefreshExternalHomeworkDeps,
 ): Promise<RefreshExternalHomeworkResult> {
@@ -137,25 +177,47 @@ export async function refreshExternalHomework(
   const results = await Promise.allSettled(sources.map((s) => s.fetch()));
 
   const reroutedSources: TuojSourceId[] = [];
-  if (deps.rerouteTuoj) {
+  /** 本轮发起（或共享）过自动重漫游的源——最终仍失败时用于加文案前缀（仅 TUOJ 系源会加入） */
+  const rerouteAttempted = new Set<ExtHwSourceId>();
+  const rerouteTuoj = deps.rerouteTuoj;
+  if (rerouteTuoj) {
     for (let i = 0; i < sources.length; i++) {
       const src = sources[i];
       if (!src || !isTuojFamily(src.id)) continue;
+      const sid: TuojSourceId = src.id;
       const r = results[i];
       if (r?.status !== "rejected" || !isTuojSessionError(r.reason)) continue;
+      // R19 27.1：同源已有 in-flight 重漫游 → 直接共享其结果（不再计数、不受频控拦截）
+      let inflight = tuojSessionInflight[sid];
+      if (!inflight) {
+        // 新发起一次漫游前先过进程级频控（间隔 / 次数；AI 版 / 经典版独立）
+        if (!tuojSessionRetryAllowed(sid)) continue;
+        const st = tuojSessionRetryState[sid];
+        st.count += 1;
+        st.lastAt = Date.now();
+        inflight = (async (): Promise<boolean> => {
+          try {
+            return await rerouteTuoj(sid);
+          } finally {
+            delete tuojSessionInflight[sid];
+          }
+        })();
+        tuojSessionInflight[sid] = inflight;
+      }
+      rerouteAttempted.add(sid);
       let ok = false;
       try {
-        ok = await deps.rerouteTuoj(src.id);
+        ok = await inflight;
       } catch {
         ok = false; // 漫游失败分支绝不抛出：保留原 401 错误与设置页引导
       }
       if (!ok) continue;
-      reroutedSources.push(src.id);
+      reroutedSources.push(sid);
       const retry = createExternalSources({
         creds: deps.getCreds(),
         fetchLike: deps.fetchLike,
         http: deps.http,
-      }).find((s) => s.id === src.id);
+      }).find((s) => s.id === sid);
       if (retry) {
         try {
           results[i] = { status: "fulfilled", value: await retry.fetch() };
@@ -172,7 +234,10 @@ export async function refreshExternalHomework(
     const src = sources[i];
     if (!src) return;
     if (r.status === "fulfilled") items.push(...r.value);
-    else errors[src.id] = r.reason instanceof Error ? r.reason.message : String(r.reason);
+    else {
+      const reason = r.reason instanceof Error ? r.reason.message : String(r.reason);
+      errors[src.id] = rerouteAttempted.has(src.id) ? `${TUOJ_REROUTE_FAILED_PREFIX}${reason}` : reason;
+    }
   });
   items.sort((a, b) => a.deadline.localeCompare(b.deadline));
   return { items, errors, reroutedTuoj: reroutedSources.length > 0, reroutedSources };

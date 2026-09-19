@@ -9,6 +9,9 @@
  *  - TUOJ：ranklist 里按 _id/username 找到自己且 details 非空 → 已提交；找不到 / details 空 → 未提交
  *  - Tyche：task/Status（不带 all=true）submissionCount>0 → 已提交；0 / 报错 → 未提交
  *  - 附带校验：雨课堂状态请求带 XTBZ: ykt；TUOJ lookup 用 POST
+ *  - R19 27.1：TUOJ 会话失效自动重漫游——401 → force 重漫游一次 → 重拉成功（R12 ①-④）；
+ *    同源并发 401 in-flight 去重只漫游一次；进程级频控放宽（同源两次 ≥10min、每源每进程
+ *    ≤3 次、AI 版 / 经典版独立计数）；失败文案「已尝试自动重新登录，仍失败：<原因>」
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
 import { createTuojSource, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
@@ -532,7 +535,7 @@ console.log("\n[TUOJ 失效自动重漫游 R12 17.1]");
 if (!canResolveTs) {
   console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
 } else {
-  const { refreshExternalHomework, TuojSessionError, isTuojSessionError } = await import(
+  const { refreshExternalHomework, resetTuojSessionRetryState, TuojSessionError, isTuojSessionError } = await import(
     "../packages/core/src/exthw/index.ts"
   );
 
@@ -573,6 +576,7 @@ if (!canResolveTs) {
 
   // ① 已配置但 401 → force 漫游成功 → 自动重拉一次 → 恢复
   {
+    resetTuojSessionRetryState(); // R19 27.1：重漫游有进程级频控，每个用例先清零
     const creds = { tuoj: { cookie: "old", via: "password" } };
     const fetchLike = makeTuojFetch([401, 200]);
     let roamCalls = 0;
@@ -597,6 +601,7 @@ if (!canResolveTs) {
 
   // ② 重拉仍 401 → 不再进入第二轮漫游（防循环），保留 401 错误
   {
+    resetTuojSessionRetryState();
     const creds = { tuoj: { cookie: "old" } };
     const fetchLike = makeTuojFetch([401]);
     let roamCalls = 0;
@@ -616,6 +621,7 @@ if (!canResolveTs) {
 
   // ③ 漫游失败（返回 false）→ 维持原 401 错误，不重拉
   {
+    resetTuojSessionRetryState();
     const creds = { tuoj: { cookie: "old" } };
     const fetchLike = makeTuojFetch([401, 200]);
     let roamCalls = 0;
@@ -635,6 +641,7 @@ if (!canResolveTs) {
 
   // ④（R15 20.2）经典 TUOJ 失效 → 按源 force 漫游 → 重拉（泛化后不再只认 tuoj）
   {
+    resetTuojSessionRetryState();
     const creds = { tuojClassic: { cookie: "old", via: "password" } };
     const fetchLike = makeTuojFetch([401, 200]);
     const seen = [];
@@ -659,6 +666,100 @@ if (!canResolveTs) {
       listCalls.every((c) => c.url.startsWith("https://oj.cs.tsinghua.edu.cn")),
       "④请求走经典版 base",
     );
+  }
+
+  /* ── R19 27.1：会话失效自动重漫游——in-flight 去重 + 进程级频控放宽 + 失败文案 ── */
+  console.log("\n[TUOJ 失效自动重漫游 R19 27.1]");
+  const REROUTE_PREFIX = "已尝试自动重新登录，仍失败：";
+
+  // ⑤ 同源并发 401 → in-flight 去重：两个并发 refresh 只发起一次重漫游，各自重拉均成功
+  {
+    resetTuojSessionRetryState();
+    const creds = { tuoj: { cookie: "old", via: "password" } };
+    const fetchLike = makeTuojFetch([401, 401, 200]);
+    let roamCalls = 0;
+    const hook = async () => {
+      roamCalls++;
+      creds.tuoj = { cookie: "new", via: "cas" };
+      return true;
+    };
+    const [ra, rb] = await Promise.all([
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook }),
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook }),
+    ]);
+    eq(roamCalls, 1, "⑤并发 401 只触发一次重漫游（共享 in-flight Promise）");
+    eq(ra.reroutedTuoj, true, "⑤第一个 refresh 标记 rerouted");
+    eq(rb.reroutedTuoj, true, "⑤第二个 refresh 共享漫游结果并标记 rerouted");
+    eq(ra.items.length, 1, "⑤第一个 refresh 重拉成功");
+    eq(rb.items.length, 1, "⑤第二个 refresh 重拉成功");
+    eq(fetchLike.listHits(), 4, "⑤课程列表共 4 次（两轮各：首发 401 + 重拉 200）");
+    ok(ra.errors.tuoj === undefined && rb.errors.tuoj === undefined, "⑤无错误残留");
+  }
+
+  // ⑥ 间隔频控（放宽后的 ≥10 分钟）：一次自动重漫游后紧接着再 401 → 不再自动重试；
+  //   发起过漫游仍失败的错误文案带「已尝试自动重新登录，仍失败：」前缀，未发起则无前缀
+  {
+    resetTuojSessionRetryState();
+    const creds = { tuoj: { cookie: "old" } };
+    const fetchLike = makeTuojFetch([401]);
+    let roamCalls = 0;
+    const first = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        return false; // 漫游失败（如统一认证未通过）
+      },
+    });
+    ok(first.errors.tuoj?.startsWith(REROUTE_PREFIX), "⑥发起过漫游仍失败 → 文案带「已尝试自动重新登录，仍失败：」前缀");
+    ok(first.errors.tuoj?.includes("会话已失效"), "⑥前缀后保留原 401 原因");
+    const second = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async () => {
+        roamCalls++;
+        return true;
+      },
+    });
+    eq(roamCalls, 1, "⑥间隔 <10 分钟 → 第二次 refresh 不再自动重漫游（24h 频控已放宽为 10min）");
+    ok(
+      Boolean(second.errors.tuoj) && !second.errors.tuoj.startsWith(REROUTE_PREFIX),
+      "⑥未发起漫游 → 文案无前缀（保留原 401 提示）",
+    );
+  }
+
+  // ⑦ 每进程每源最多 3 次 + 两源独立：放行时钟跨过 10min 间隔连试 3 次后第 4 次被拦；
+  //   AI 版烧完额度不影响经典版（各自计数）
+  {
+    resetTuojSessionRetryState();
+    const creds = { tuoj: { cookie: "old" } };
+    const fetchLike = makeTuojFetch([401]);
+    const roamed = [];
+    const hook = async (source) => {
+      roamed.push(source);
+      return false;
+    };
+    const realNow = Date.now;
+    try {
+      for (let n = 1; n <= 3; n++) {
+        Date.now = () => realNow() + n * 11 * 60 * 1000; // 每轮快进 11 分钟，跨过 10min 间隔
+        await refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook });
+      }
+      eq(roamed.length, 3, "⑦放行时钟下每次 refresh 各自动重试一次（共 3 次）");
+      Date.now = () => realNow() + 4 * 11 * 60 * 1000;
+      const r4 = await refreshExternalHomework({ getCreds: () => creds, fetchLike, rerouteTuoj: hook });
+      eq(roamed.length, 3, "⑦每进程每源最多 3 次自动重试（第 4 次不再漫游）");
+      ok(
+        Boolean(r4.errors.tuoj) && !r4.errors.tuoj.startsWith(REROUTE_PREFIX),
+        "⑦超限后被拦的 refresh 文案无前缀（未发起漫游）",
+      );
+      // 两源独立：AI 版额度烧完，经典版首试仍放行
+      const credsC = { tuojClassic: { cookie: "old-c" } };
+      await refreshExternalHomework({ getCreds: () => credsC, fetchLike, rerouteTuoj: hook });
+      eq(roamed.filter((s) => s === "tuojClassic").length, 1, "⑦AI 版超限不影响经典版（两源独立计数）");
+    } finally {
+      Date.now = realNow;
+    }
   }
 }
 

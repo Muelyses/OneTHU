@@ -128,7 +128,14 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
               if (id === "onethu.harness" && madmodelDue()) {
                 await ensureMadModelToken().catch(() => undefined);
               }
-              return callRust(id, "run", { command: c.id, input });
+              const out = await callRust(id, "run", { command: c.id, input });
+              // 免费档请求被 IP 门禁弹掉（HTTP 307，校外常见）→ 强制重签发：
+              // 泵会自动升级到 SSO 重放 + webvpn 通道并写回新 base/cookie，下一条对话即恢复
+              const errMsg = String((out as { error?: string })?.error ?? "");
+              if (id === "onethu.harness" && (errMsg.includes("307") || errMsg.includes("madmodel"))) {
+                void ensureMadModelToken(true).catch(() => undefined);
+              }
+              return out;
             },
           });
         }

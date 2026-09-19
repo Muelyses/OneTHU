@@ -66,36 +66,62 @@ async function mintViaHttp(url: string): Promise<string> {
   return parseMint(res as unknown as Response);
 }
 
-/** 层 2b：ticket 换 token——校内直连优先；校外（校内域不可达）走 webvpn 包装 */
-async function redeemTicket(ticket: string): Promise<string> {
+/** 层 2b：ticket 换 token——校内直连优先；校外（IP 门禁 307）走 webvpn 包装。
+ *  返回 {token, viaWebvpn}：viaWebvpn=true 时聊天请求也必须走 webvpn + 携带会话 cookie。 */
+async function redeemTicket(ticket: string): Promise<{ token: string; viaWebvpn: boolean }> {
   const url = `${SITE}/model-api/auth-login/check?ticket=${encodeURIComponent(ticket)}`;
   try {
-    return await mintViaHttp(url);
+    return { token: await mintViaHttp(url), viaWebvpn: false };
   } catch (e) {
     void logLine(`[MADMODEL] ticket 直连兑换失败，转 webvpn 包装：${e instanceof Error ? e.message : e}`).catch(() => undefined);
-    return mintViaHttp(webvpnWrap(url));
+    const wUrl = webvpnWrap(url);
+    const token = await mintViaHttp(wUrl);
+    void logLine("[MADMODEL] webvpn 兑换成功（校外白嫖通道）").catch(() => undefined);
+    return { token, viaWebvpn: true };
   }
 }
 
-/** 全阶梯获取一枚新 token 并写入 harness settings（Rust 下一轮 run 即用） */
+/** 全阶梯获取一枚新 token 并写入 harness settings（Rust 下一轮 run 即用）。
+ *  关键：成功路径决定聊天的 base_url 与 cookie——
+ *  - 校内直连成功 → madmodelBase=直连、无 cookie；
+ *  - 仅 webvpn 兑换成功（校外 IP 门禁）→ madmodelBase=webvpn 包装、
+ *    madmodelCookie=HttpClient jar 里 webvpn 会话头（Rust 请求原样带上，
+ *    wengine 网关在校园网内替我们把流量送进 madmodel）。 */
 export async function ensureMadModelToken(force = false): Promise<string> {
   if (pumping && !force) throw new Error("续期进行中");
   pumping = true;
   try {
-    const token = await (async () => {
-      try {
-        return await mintDirect();
-      } catch (e) {
-        void logLine(`[MADMODEL] 直连签发失败（可能校外）：${e instanceof Error ? e.message : e}`).catch(() => undefined);
-      }
+    let token = "";
+    let viaWebvpn = false;
+    try {
+      token = await mintDirect();
+    } catch (e) {
+      void logLine(`[MADMODEL] 直连签发失败（可能校外 IP 门禁）：${e instanceof Error ? e.message : e}`).catch(() => undefined);
+    }
+    if (!token) {
       const ticket = await ssoTicket();
-      return redeemTicket(ticket);
-    })();
+      const r = await redeemTicket(ticket);
+      token = r.token;
+      viaWebvpn = r.viaWebvpn;
+    }
     const rec = getPlugin(HARNESS_ID);
-    updatePlugin(HARNESS_ID, {
-      settings: { ...(rec?.settings ?? {}), madmodelToken: token, madmodelAt: String(Date.now()) },
-    });
-    void logLine(`[MADMODEL] token 已就位（len=${token.length}）`).catch(() => undefined);
+    const prev = rec?.settings ?? {};
+    const next: Record<string, string> = {
+      ...prev,
+      madmodelToken: token,
+      madmodelAt: String(Date.now()),
+    };
+    if (viaWebvpn) {
+      const chatUrl = webvpnWrap(`${SITE}/v1/chat/completions`);
+      next.madmodelBase = chatUrl.replace(/\/chat\/completions$/, "");
+      next.madmodelCookie = http.cookieHeaderFor(chatUrl) ?? "";
+      void logLine(`[MADMODEL] 走 webvpn 通道：base=${next.madmodelBase.slice(0, 80)}… cookie=${next.madmodelCookie ? "有" : "无"}`).catch(() => undefined);
+    } else {
+      next.madmodelBase = "";
+      next.madmodelCookie = "";
+    }
+    updatePlugin(HARNESS_ID, { settings: next });
+    void logLine(`[MADMODEL] token 已就位（len=${token.length}${viaWebvpn ? " · webvpn" : " · 直连"}）`).catch(() => undefined);
     return token;
   } finally {
     pumping = false;

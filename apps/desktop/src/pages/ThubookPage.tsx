@@ -154,8 +154,9 @@ export default function ThubookPage(): ReactNode {
   }, []);
 
   const load = useCallback(async (rawPath: string): Promise<void> => {
-    // 规范化：无扩展名的目录路径补尾斜杠（thubook.help 对 /thubook 回 308 → /thubook/）
-    const path = /\.[a-z0-9]+$/i.test(rawPath) || rawPath.endsWith("/") ? rawPath : rawPath + "/";
+    // 规范化（服务器语义实测 2026-09-19）：/thubook/xxx.html → 308，/thubook/xxx → 200，
+    // /thubook/xxx/ → 308——统一剥 .html 后缀即可；目录根 /thubook/ 保持原样。
+    const path = rawPath.replace(/\.html$/i, "");
     const hit = CACHE.get(path);
     if (hit) {
       setCurrent(path);

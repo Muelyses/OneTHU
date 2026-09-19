@@ -1,38 +1,38 @@
-# OneTHU 文档
+# OneTHU 开发文档
 
-**OneTHU** 是清华大学校园助手应用（Tauri v2 + React，桌面三端 + Android）：内置课表、
-作业、日程、图书馆座位、校园卡、电费、校园网等日常功能的统一界面，并提供插件系统
-让任何人扩展它。
+OneTHU 是清华大学校园助手应用，基于 Tauri v2 与 React 实现，支持桌面与 Android
+平台。应用集成课表、作业、日程、图书馆预约、校园卡、宿舍电费、校园网等日常功能，
+并通过插件系统提供扩展能力。
 
-## 我该读哪份
+## 文档索引
 
-| 你的目的 | 读这份 |
-|---|---|
-| 写一个插件（比如"每天早上播报今日课表"） | [插件开发指南](./plugin-development.md) → 需要查接口时翻 [API 参考](./api-reference.md) |
-| 查某个接口的参数、返回值、报错 | [`onethu.*` API 参考](./api-reference.md) |
-| 理解应用内部怎么运作（会话自愈、MadModel 免费档、主题系统…） | [系统架构](./architecture.md) |
-| 使用 / 扩展雨课堂、TUOJ、Tyche 作业聚合 | [外部作业源](./external-homework.md) |
-| 在宿主本体上做开发（贡献者） | [系统架构](./architecture.md) §8 构建与发布 |
+| 文档 | 内容 | 读者 |
+|---|---|---|
+| [plugin-development.md](./plugin-development.md) | 插件模型、清单规范、权限声明、三种插件形态的通信协议、对话面板协议、调试方法 | 插件开发者 |
+| [api-reference.md](./api-reference.md) | `ctx.onethu.*` 命名空间与方法的完整参考 | 插件开发者 |
+| [architecture.md](./architecture.md) | 进程模型、会话管线、插件宿主实现、主题系统、模型调度、构建流程 | 宿主贡献者 |
+| [external-homework.md](./external-homework.md) | 外部作业源（雨课堂 / TUOJ / Tyche）的接入方式、凭据维护、故障恢复 | 功能使用者与贡献者 |
 
-## 文档职责
+## 阅读路径
 
-| 文档 | 回答的问题 |
-|---|---|
-| [plugin-development.md](./plugin-development.md) | 插件怎么写、怎么打包成三种形态、协议长什么样、怎么调试 |
-| [api-reference.md](./api-reference.md) | `ctx.onethu.*` 每个命名空间是什么系统、每个方法收什么返回什么、怎么报错 |
-| [architecture.md](./architecture.md) | 进程模型、各子系统的设计决策与踩坑记录 |
-| [external-homework.md](./external-homework.md) | 作业聚合功能的登录方式、自动恢复行为、如何新增一个源 |
+- 开发首个插件：先读 [plugin-development.md](./plugin-development.md)，接口细节查询
+  [api-reference.md](./api-reference.md)。
+- 接入外部作业系统：读 [external-homework.md](./external-homework.md) §5。
+- 修改宿主实现：读 [architecture.md](./architecture.md)，构建命令见该文档 §8。
 
-## 接口真源（与文档冲突时以代码为准）
+## 接口真源
 
-| 真源 | 内容 |
+以下文件为接口定义的权威来源，文档与实现不一致时以代码为准：
+
+| 文件 | 内容 |
 |---|---|
 | `apps/desktop/src/plugins/types.ts` | `onethu.*` API 面与权限枚举 |
 | `apps/desktop/src/plugins/facade.ts` | 权限门禁与 API 实现 |
-| `packages/core/src/info/types.ts` | 领域类型 |
+| `packages/core/src/info/types.ts` | 领域数据类型 |
 | `apps/desktop/src/state/theme.ts` | 主题定义与昼夜调度 |
 | `packages/core/src/exthw/types.ts` | 外部作业源类型 |
 
-## 示例
+## 示例工程
 
-- `examples/harness-skel/` — 可直接 `cargo build` 的 Rust sidecar 插件骨架。
+- `examples/harness-skel/`：可编译的 Rust sidecar 插件骨架，实现宿主握手、
+  `onethu.call` 转发与命令执行。

@@ -1,215 +1,243 @@
 # 插件开发指南
 
-**这份文档教你为 OneTHU 写插件。** 一个插件 = 一段你写的代码，装进 OneTHU 后可以：
-调 `ctx.onethu.*` 读改用户的清华业务数据（查课表、订座位、发邮件、问 AI……）、往
-界面里注册命令按钮、拥有自己的常驻对话面板、或干脆换掉整个应用配色。你不需要碰
-OneTHU 本体代码，也不用管登录态、会话过期、网络重试——宿主全包了。
+本文档说明 OneTHU 插件的开发流程：插件模型、清单规范、权限声明、通信协议与调试
+方法。`ctx.onethu.*` 接口的逐方法说明见 [api-reference.md](./api-reference.md)。
 
-读完你能：写出并装上一个能跑的插件（§1），按需求选形态（§2），按协议实现 Rust 版
-（§6），以及知道怎么调试（§9）。每个接口的收发细节在
-[api-reference.md](./api-reference.md)（接口行为以真源代码为准，与文档冲突时以代码为
-准）。
+## 目录
 
-## 1. 快速开始
+1. [插件能力与形态](#1-插件能力与形态)
+2. [最小插件](#2-最小插件)
+3. [清单规范](#3-清单规范)
+4. [权限模型](#4-权限模型)
+5. [通用约定](#5-通用约定)
+6. [Rust sidecar 协议](#6-rust-sidecar-协议)
+7. [对话面板协议](#7-对话面板协议)
+8. [Android 内嵌形态](#8-android-内嵌形态)
+9. [调试](#9-调试)
+10. [版本记录](#10-版本记录)
 
-最小可用插件是一个 ES 模块，导出 `manifest` 与默认激活函数：
+---
+
+## 1. 插件能力与形态
+
+插件通过 `ctx.onethu.*` 访问宿主提供的全部数据能力（课表、作业、日程、图书馆预约、
+邮件、云盘、模型对话等），并可注册命令按钮、渲染常驻对话面板、定义主题。宿主承担
+会话维护、超时控制、重试与权限校验，插件只需处理业务语义。
+
+插件为受信代码（JS 插件在应用 webview 同域执行，Rust 插件为本机进程），权限门禁
+约束的是 `ctx.onethu.*` 的可见范围，不是代码沙箱。插件不得直接访问应用内部状态或
+DOM，全部操作应经公共接口完成。
+
+三种插件形态共用同一套权限门禁与 API 面：
+
+| 形态 | 载体 | 运行位置 | 支持平台 | 安装方式 |
+|---|---|---|---|---|
+| JS 模块 | ES 模块文本 | 应用 webview | 全部 | 设置 → 插件 → 粘贴代码或选择文件 |
+| Rust sidecar | 二进制与 manifest.json | 独立进程（stdio JSON-RPC） | 仅桌面 | 选择 manifest.json，二进制置于同目录 |
+| Rust 内嵌 | 编译进应用 | 应用进程内（Tauri 命令桥） | 仅 Android | 随安装包分发，由官方提供 |
+
+## 2. 最小插件
+
+JS 插件为一个 ES 模块，导出 `manifest` 与默认激活函数：
 
 ```js
 export const manifest = {
-  id: "onethu.hello",
-  name: "Hello",
+  id: "onethu.example",
+  name: "示例插件",
   version: "0.1.0",
-  description: "查余额并跳转的最小演示",
+  description: "查询校园卡余额并跳转至对应页面",
   permissions: ["user:read", "card:read", "nav", "ui"],
 };
 
 export default async function activate(ctx) {
-  ctx.registerCommand(
-    { id: "demo", title: "查余额并跳转" },
-    async () => {
-      const c = await ctx.onethu.card.info();
-      ctx.onethu.ui.toast(`${c.userName} 余额 ¥${c.balance.toFixed(2)}`);
-      ctx.onethu.nav.go("life", { lifeTab: "card" });
-      return `余额 ${c.balance} 元`;
-    },
-  );
+  ctx.registerCommand({ id: "balance", title: "查询余额" }, async () => {
+    const card = await ctx.onethu.card.info();
+    ctx.onethu.ui.toast(`余额 ¥${card.balance.toFixed(2)}`);
+    ctx.onethu.nav.go("life", { lifeTab: "card" });
+    return `余额 ${card.balance} 元`;
+  });
 }
 ```
 
-安装：设置 → 插件 → 粘贴代码 → 安装 → 展开卡片点命令。命令返回的 string 直接展示，
-异常显示前 200 字符。
+安装步骤：设置 → 插件 → 粘贴代码 → 安装 → 展开插件卡片 → 点击命令。命令返回的
+字符串直接展示在卡片中，异常展示前 200 字符。
 
-## 2. 插件形态
-
-| 形态 | 载体 | 运行位置 | 平台 | 安装方式 |
-|---|---|---|---|---|
-| JS 模块（默认） | ES 模块文本 | 应用 webview | 全平台 | 粘贴代码 / 选文件 |
-| Rust sidecar | 二进制 + manifest.json | 独立进程（stdio JSON-RPC） | 仅桌面 | 选 manifest.json（二进制同目录） |
-| Rust 内嵌 | 核心编进 App | App 进程内（Tauri 命令桥） | 仅 Android（官方内置） | 随 APK 分发 |
-
-三种形态共用同一套权限门禁与 `onethu.*` 数据面；Rust 侧经
-`onethu.call { ns, method, args }` 调用同一 API（§6.2）。
-
-**边界约定**：插件是受信代码（同域执行 / 本机二进制），权限门禁约束的是 `onethu.*`
-可见面而非代码沙箱；插件不得触碰应用内部状态与 DOM，一切经公共原子接口。
-
-## 3. manifest 规范
+## 3. 清单规范
 
 ### 3.1 字段
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `id` | string | ✓ | 唯一 id，反域名风格（`onethu.harness`）；`[a-z0-9.-]` |
-| `kind` | `"js" \| "rust"` | | 默认 `js` |
-| `bin` | string | rust | 二进制文件名（与 manifest.json 同目录） |
-| `name` / `version` / `author` / `description` | string | name/version ✓ | 展示信息 |
-| `permissions` | string[] | ✓ | 权限清单，安装时用户逐项确认（见 §4） |
-| `settings` | SettingField[] | | 设置表单，应用代渲染 |
-| `commands` | Command[] | | 管理页命令按钮（rust 插件也可在 activate 应答里给） |
+| `id` | string | 是 | 唯一标识，建议反域名形式（如 `onethu.harness`），允许 `[a-z0-9.-]` |
+| `kind` | `"js"` \| `"rust"` | 否 | 插件形态，默认 `js` |
+| `bin` | string | Rust 形态必填 | 二进制文件名，与 manifest.json 同目录 |
+| `name` | string | 是 | 显示名称 |
+| `version` | string | 是 | 版本号 |
+| `author` | string | 否 | 作者 |
+| `description` | string | 否 | 描述 |
+| `permissions` | string[] | 是 | 权限清单，安装时由用户逐项确认 |
+| `settings` | SettingField[] | 否 | 设置表单，由应用渲染 |
+| `commands` | Command[] | 否 | 命令按钮；Rust 插件也可在激活应答中返回 |
 
-### 3.2 settings 项
+### 3.2 设置项（SettingField）
 
-| 字段 | 说明 |
-|---|---|
-| `key` | 设置键，插件经 `onethu.settings.get()` 读取 |
-| `label` | 表单标签 |
-| `type` | `"text" \| "password" \| "textarea" \| "select"` |
-| `options` | select 专用：`[{ value, label }]` |
-| `placeholder` / `default` | 占位与默认值 |
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `key` | string | 设置键，插件通过 `onethu.settings.get()` 读取 |
+| `label` | string | 表单标签 |
+| `type` | `"text"` \| `"password"` \| `"textarea"` \| `"select"` | 控件类型 |
+| `options` | `{ value, label }[]` | `select` 类型的选项 |
+| `placeholder` | string | 输入占位符 |
+| `default` | string | 默认值 |
 
-### 3.3 command 项
+### 3.3 命令（Command）
 
-| 字段 | 说明 |
-|---|---|
-| `id` | 命令 id（`run` 的 `command` 参数） |
-| `title` | 管理页按钮文案 |
-| `inputLabel` / `inputPlaceholder` | 输入框；不填则无输入框 |
-| `dock` | rust 专用：标记为对话面板命令（§7） |
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 命令标识，对应 `run` 请求的 `command` 字段 |
+| `title` | string | 按钮文案 |
+| `inputLabel` / `inputPlaceholder` | string | 输入框标签与占位符；未设置时不渲染输入框 |
+| `dock` | boolean | 标记为对话面板命令，见 §7 |
 
 ### 3.4 生命周期
 
-- 安装即激活；启动时自动恢复已启用插件。
-- 停用 = 调 dispose 后卸载；删除 = 停用 + 清私有存储。
-- `activate` 返回值可含 `dispose()` 供停用清理。
-- 安装记录含 `builtin`（App 一部分，不可卸载）与 `embedded`（核心编进 App）标志。
-- **内置清单自愈**：内置插件的 manifest 与镜像不一致时，启动自动重注册（用户设置值保留）。
+- 安装后立即激活；应用启动时自动恢复所有已启用插件。
+- 停用：调用 `dispose` 后卸载。删除：停用并清除插件私有存储。
+- 激活函数可返回 `{ dispose() }`，用于停用时释放资源。
+- 安装记录包含 `builtin`（应用组成部分，不可卸载）与 `embedded`（编译进应用）标记。
+- 内置插件的清单与镜像不一致时，启动阶段自动重新注册，用户设置值保留。
 
 ## 4. 权限模型
 
-manifest `permissions` 声明 → 安装时用户确认 → 未授权调用抛 `PluginPermissionError`。
-三形态同一套门禁，无绕过路径。全表见
-[api-reference.md §2 权限总表](./api-reference.md#2-权限总表)。
+插件在清单中声明 `permissions`，安装时由用户确认。调用未声明权限的方法抛出
+`PluginPermissionError`。三种形态使用同一套门禁，无绕过路径。权限与 API 的对应关系
+见 [api-reference.md §0.1](./api-reference.md#01-权限总表)。
 
-两条硬性法规边界：
+以下两类能力受平台规则限制，宿主不提供对应接口：
 
-1. **体育场馆**：宿主不提供预约提交接口（只有查询/我的预约/退订/跳官方页）。依据
-   清华体育部场馆中心 2025-12-03 公告第七条第 12 款，脚本预订封禁 6 个月——插件同样
-   不得绕行。
-2. **不暴露**充值、改密等资金与凭据写操作。
+1. **体育场馆预约提交**。宿主仅提供查询、退订与官方页面跳转。依据清华大学体育部
+   场馆中心 2025-12-03 公告第七条第 12 款，通过脚本预订场地将被暂停预订权限 6 个月，
+   插件不得以任何方式绕过。
+2. **资金与凭据写操作**。不提供充值、修改密码等接口。
 
 ## 5. 通用约定
 
-### 5.1 网络三约定
+### 5.1 网络与超时
 
-1. **票据通道**：CAS 票据兑在哪个通道，会话建在哪个通道——宿主内部处理，经
-   `onethu.*` 的调用完全无感。`net.fetch` 直访清华内网需自行负责（内网域校外不可达）。
-2. **会话自愈**：会话失效自动重建后重试；重建失败抛 `AuthRequiredError`——提示用户
-   重新登录，**不要**重试。
-3. **45s 超时**：所有请求（含 `net.fetch`）兜底超时，不会无限悬挂。
+- **通道一致性**：CAS 票据的兑换通道决定会话建立通道，该过程由宿主内部处理，
+  经 `ctx.onethu.*` 发起的调用无需关心。`net.fetch` 直连清华内网域时需自行处理，
+  且校内域名在校外不可达；校内业务应统一使用 `ctx.onethu.*`。
+- **会话自愈**：会话失效时宿主自动重建并重试原请求。重建失败抛出
+  `AuthRequiredError`，此时应提示用户重新登录，不应重试。
+- **超时**：所有请求（含 `net.fetch`）设有 45 秒上限。
 
 ### 5.2 错误处理
 
-| 错误 | 判定 | 插件应当 |
+| 错误 | 判定方式 | 处理建议 |
 |---|---|---|
-| `PluginPermissionError` | 类名 / message 含「未获授权」 | 提示用户重装并授予对应权限 |
-| `AuthRequiredError` | message 含「会话未能建立」 | 提示重新登录，不要重试 |
-| 其余 `Error` | — | 可重试一次再报错 |
+| `PluginPermissionError` | 类名或消息含「未获授权」 | 提示用户重新安装并授予对应权限 |
+| `AuthRequiredError` | 消息含「会话未能建立」 | 提示用户重新登录，不应重试 |
+| 其他 `Error` | — | 可重试一次，失败后向用户报告 |
 
 ### 5.3 数据规约
 
-- 日期一律 `"YYYY-MM-DD"`，时间 `"HH:MM"`；`dateChoice` 是枚举（0=今天 1=明天）。
-- **对象传递**：链式调用（如 `library.list → floors → sections → seats → book`）
-  的后一步入参必须是前一步返回的元素本体，不要按 id 自行构造对象。
+- 日期格式为 `"YYYY-MM-DD"`，时间格式为 `"HH:MM"`。
+- `dateChoice` 为枚举参数（0 表示今天，1 表示明天），不是日期字符串。
+- **链式调用的对象传递**：形如 `library.list → floors → sections → seats → book`
+  的调用链，后一步的入参必须是前一步返回的元素本体。工具实现中应按标识符查找元素
+  后再传入，不应构造对象。
 
 ## 6. Rust sidecar 协议
 
-### 6.1 消息表（stdio，每行一个 JSON）
+### 6.1 通信格式
 
-宿主 → 插件：
-
-| 消息 | 说明 |
-|---|---|
-| `activate { settings, permissions }` | 拉起后握手；**必须应答** `{"commands":[…]}` |
-| `run { command, input }` | 执行命令；长任务边跑边 progress；**必须应答** |
-| `interrupt {}` | 打断（通知，无 id）——立即停止当前 run |
-| `dispose {}` | 优雅退出；应答后 `exit(0)` |
-
-插件 → 宿主：
+stdio 上的行分隔 JSON-RPC。宿主发往插件：
 
 | 消息 | 说明 |
 |---|---|
-| `onethu.call { ns, method, args }` | 调用任一 API（按位置传参），宿主回 `result` / `error` |
-| `progress { text?, step?, total?, kind? }` | 进度 / 对话面板流式通知 |
-| `log { line }` | 轨迹面板日志 |
+| `activate`（含 `settings`、`permissions`） | 进程启动后的握手请求，必须应答，`result` 需包含命令清单 `{"commands":[…]}` |
+| `run`（含 `command`、`input`） | 执行命令。长任务可先返回进度通知，最后必须应答最终结果 |
+| `interrupt` | 打断请求（通知，无 `id`），应立即终止当前执行 |
+| `dispose` | 停用或卸载前的退出请求，应答后进程应自行退出 |
 
-### 6.2 实现红线
+插件发往宿主：
 
-- **stdin 锁不可重入**：`for line in stdin().lock().lines()` 全程持锁，循环体内再
-  lock 读应答必死锁。全程 lock 一次，helper 复用同一 `&mut StdinLock`
-  （完整骨架见 `examples/harness-skel/`，可直接 `cargo build`）。
-- **run 应答超时 10 分钟**（progress 不重置）；超时只是该次调用报错，进程仍可继续。
-- 不要依赖工作目录；退出码非 0 / stdout 关闭 → 宿主发 `exit` 事件并清理进程表。
+| 消息 | 说明 |
+|---|---|
+| `onethu.call`（含 `ns`、`method`、`args`） | 调用 API，参数按位置传递；宿主以 `result` 或 `error` 回写 |
+| `progress` | 进度通知；对话面板场景支持 `kind` 字段，见 §7 |
+| `log` | 日志行，展示于轨迹面板 |
 
-## 7. 对话面板（dock）协议
+### 6.2 实现约束
 
-任何 rust 插件在 activate 应答中声明 `dock: true` 的命令，宿主即为其渲染常驻对话面板：
+- **标准输入锁不可重入**：`for line in stdin().lock().lines()` 会在整个循环期间持有
+  锁，循环体内再次调用 `stdin().lock()` 读取应答会造成死锁。应全程只加锁一次，
+  并在辅助函数中复用同一个 `&mut StdinLock`。完整实现见
+  `examples/harness-skel/`（可直接执行 `cargo build`）。
+- **应答超时**：`run` 请求的应答超时为 10 分钟，进度通知不重置计时。超时仅使该次
+  调用报错，进程继续运行，仍可发送进度与接收打断。
+- 不应依赖工作目录；宿主不保证当前目录。
+- 退出码非 0 或标准输出关闭时，宿主发出 `exit` 事件并清理进程记录。
+
+## 7. 对话面板协议
+
+Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其渲染常驻对话面板：
 
 ```json
 { "commands": [
-  { "id": "chat", "title": "对话", "inputLabel": "对 OH 说", "dock": true }
+  { "id": "chat", "title": "对话", "inputLabel": "输入指令", "dock": true }
 ] }
 ```
 
-面板发消息 = `run { command: "<dock 命令 id>", input }`。chat 命令返回结构化 JSON：
+面板提交消息等价于 `run { command: "<该命令 id>", input: "<用户输入>" }`。
+
+对话命令的应答为结构化 JSON：
 
 | 字段 | 说明 |
 |---|---|
-| `answer` / `sessionId` / `interrupted` | 回答、会话、是否被打断 |
-| `confirm: { summary }` | 非空时面板渲染两段式确认（用户确认 = 发送「确认」）。**所有写操作必须走此流程** |
-| `usage` / `sessionUsage` / `totalUsage` | token 用量与预算 |
+| `answer` | 最终回答文本 |
+| `sessionId` | 会话标识 |
+| `interrupted` | 是否被用户打断 |
+| `confirm` | 非空时面板渲染确认控件，用户确认等价于发送文本「确认」。所有写操作必须经此确认流程 |
+| `usage` / `sessionUsage` / `totalUsage` | 本次、会话与累计用量及预算 |
 
-progress 扩展（`params.kind`）：`delta`（回答增量）、`think`（思考增量）、`tool`（工具轨迹）、
-`notice`（状态行）、`usage`（用量刷新）。
+进度通知的 `kind` 取值：`delta`（回答增量）、`think`（思考增量）、`tool`（工具调用
+轨迹）、`notice`（状态行）、`usage`（用量刷新）。
 
-会话管理命令约定命名：`new_session` / `list_sessions` / `switch_session` / `delete_session` /
-`export_session` / `import_session` / `usage_report` / `selftest`。
+会话管理命令的约定命名：`new_session`、`list_sessions`、`switch_session`、
+`delete_session`、`export_session`、`import_session`、`usage_report`、`selftest`。
 
-## 8. Android 内嵌形态（官方）
+## 8. Android 内嵌形态
 
-Android WebView 沙箱无任意二进制执行权限，sidecar 不可用。官方 Harness 将同一份 Rust
-核心直接编进 App 进程（Tauri 命令桥代替 stdio）。核心要点：
+Android WebView 环境不允许执行任意路径的二进制文件，sidecar 形态在移动端不可用。
+官方 Harness 插件采用同一份 Rust 核心编译进应用进程的方式实现，通信经 Tauri 命令桥
+而非 stdio。要点：
 
-- 工作区 `plugins/OneTHU-Harness`：`core/`（宿主无关库，只依赖 `Host`/`Emit` 两个
-  trait）+ `bin/`（桌面 stdio 薄壳）。宿主无关性是内嵌的前提。
-- 宿主命令全部 **async**（Tauri v2 同步命令占主线程——曾致安卓全局冻结，红线）。
-- 调用链：core `Host::call` → 桥线程 → mpsc 队列 → JS 泵 `harness_bridge_take`
-  长轮询批量取走 → webview 门面（同一套权限门禁）→ `harness_rpc_reply` 回写。
-- loader 在 Android 宿主开机种入 `onethu.harness`（`builtin + embedded`，不可删）；
-  manifest 与镜像不一致自动重注册（设置保留）。
+- 工程结构：`plugins/OneTHU-Harness` 为 Cargo 工作区，`core/` 为宿主无关库（仅依赖
+  `Host` 与 `Emit` 两个 trait），`bin/` 为桌面 stdio 外壳。
+- 宿主命令必须为异步。Tauri v2 的同步命令在主线程执行，曾因同步实现的
+  `harness_bridge_take` 阻塞主线程 25 秒，导致 Android 端全局操作停顿。
+- 调用链：core 的 `Host::call` → 桥线程 → 消息队列 → JS 泵长轮询批量取走 →
+  webview 门面（同一套权限门禁）→ 经 Rust 传输层发出请求 → 回写结果。
+- loader 在 Android 宿主开机时写入 `onethu.harness` 内置记录
+  （`builtin` + `embedded`），不可删除；清单与镜像不一致时自动重新注册，设置保留。
+
+第三方 Rust 插件不提供移动端形态。
 
 ## 9. 调试
 
-| 手段 | 说明 |
+| 方式 | 说明 |
 |---|---|
-| `ctx.log(line)` / `log` 通知 / stderr | 进应用调试通道，前缀 `[PLUGIN:<id>]` |
-| 桌面日志 | `/tmp/onethu-debug.log` |
-| Android | `adb logcat -s onethu`（或 `--pid=$(adb shell pidof app.onethu.desktop)`） |
-| 端到端自测 | OneTHU-Harness `test/sim_host.mjs`（假 OpenAI SSE + 宿主门面，全链断言） |
+| `ctx.log(line)` / `log` 通知 / 标准错误输出 | 写入应用调试通道，前缀 `[PLUGIN:<id>]` |
+| 桌面端日志文件 | `/tmp/onethu-debug.log` |
+| Android 日志 | `adb logcat -s onethu`，或 `adb logcat -d --pid=$(adb shell pidof app.onethu.desktop)` |
+| 端到端自测 | OneTHU-Harness 的 `test/sim_host.mjs`：模拟宿主门面与 OpenAI SSE 服务，覆盖握手、工具调用、流式输出、用量统计、会话管理与两段式确认 |
 
 ## 10. 版本记录
 
-| 版本 | 要点 |
+| 版本 | 变更 |
 |---|---|
-| v1.3 | 文档重写为标准格式（本版）；新增 `llm` / `theme` / `exthw:read` / `exthw:refresh` / `webview` 权限与 `llm` / `theme` / `exthw` 命名空间、`ui.webModal`；`select` 设置项类型 |
-| v1.2 | `cal` 日程云同步（CalDAV）；权限 19 项 |
-| v1.1 / v1.0 / v0 | learn/venue/xk/kongjiang 扩展；异步内嵌桥；初版 |
+| v1.3 | 文档重写为标准格式；新增 `llm`、`theme`、`exthw:read`、`exthw:refresh`、`webview` 权限，新增 `llm`、`theme`、`exthw` 命名空间与 `ui.webModal`；设置项新增 `select` 类型 |
+| v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
+| v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |
+| v1.0 | 首个公开版本 |

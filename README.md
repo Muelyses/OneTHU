@@ -107,7 +107,7 @@ OneTHU/
 ### API 与插件开发
 
 OneTHU 为开发者封装并开放丰富的统一平台调度接口，鼓励开发者利用 OneTHU API 创造更多可能。
-为 OneTHU 编写插件（JS 模块 / Rust sidecar / Android 内嵌），见[插件与接口规范](docs/OneTHU-插件与接口指南.md)。
+为 OneTHU 编写插件（JS 模块 / Rust sidecar / Android 内嵌），见 [插件开发指南](docs/plugin-development.md) 与 [API 参考](docs/api-reference.md)。
 
 ## OneTHU Harness（OH）
 

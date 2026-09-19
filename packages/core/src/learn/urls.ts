@@ -1,4 +1,4 @@
-/** 网络学堂端点（验证自 thu-learn-lib，docs/API-NOTES.md §2） */
+/** 网络学堂端点（验证自 thu-learn-lib） */
 // lib 单管线（P3）：learn 经 webvpn 包装（thu-info-lib HOST_MAP.learn 同款 hex）。
 // wengine 服务端透明完成 learn 的 CAS 认证，LearnClient 无需漫游/直连登录链。
 export const LEARN_PREFIX =

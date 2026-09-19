@@ -1,7 +1,7 @@
 /**
  * 清华 WebVPN（网瑞达 Wrdvpn）URL 编解码 —— 已与真实门户逐字符对齐验证。
  *
- * 规则（docs/API-NOTES.md §4）：
+ * 规则（docs/architecture.md §2）：
  * - AES-128-CFB（CFB-128 整块反馈，不是 CFB-8）
  * - Key = IV = "wrdvpnisthebest!"
  * - 编码：hostname 尾部补 '0' 至 16 倍数 → 加密 → hex(IV) + hex(密文).slice(0, 2×原长)

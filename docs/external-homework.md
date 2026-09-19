@@ -1,63 +1,89 @@
-# 外部作业源（exthw）
+# 外部作业源
 
-把非网络学堂的作业系统（雨课堂、TUOJ、Tyche）拉进统一的作业页：聚合截止、真实提交
-判定、已批改得分，与原生作业并存。插件侧经 `onethu.exthw.snapshot()/refresh()`
-消费（见 [api-reference.md §6](./api-reference.md)）。
+清华大学的课程作业分布在多个系统中：网络学堂仅覆盖其中一部分，雨课堂承载课堂练习与
+试卷，TUOJ 承载编程作业（AI 版与经典版两个实例），Tyche 承载部分院系的作业。
 
-## 1. 三源一览
+外部作业源功能将上述系统的作业聚合到应用的作业页面，提供统一的截止时间展示、提交
+状态判定与批改结果。插件通过 `onethu.exthw.snapshot()` 与 `onethu.exthw.refresh()`
+使用该功能（见 [api-reference.md §4](./api-reference.md)）。
 
-| 源 | id | 登录方式 | 自动恢复 |
+本文档说明各源的接入与凭据维护方式、故障恢复机制，以及新增作业源的实现步骤。
+
+## 1. 数据模型
+
+所有源统一映射为 `ExternalHomework`：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 源内唯一标识，用于列表去重 |
+| `source` | string | 源标识，见 §2 |
+| `courseName` / `title` | string | 课程名与作业标题 |
+| `deadline` | string | 截止时间，格式 `"YYYY-MM-DD HH:MM"` |
+| `kind` | `"homework"` \| `"exam"` | 作业或试卷 |
+| `url` | string? | 详情链接 |
+| `submitted` | boolean | 提交状态 |
+| `graded` | boolean? | 批改状态，仅部分源提供 |
+| `score` | number? | 得分，仅已批改时有效 |
+
+## 2. 源与登录方式
+
+| 源 | 标识 | 登录方式 | 恢复机制 |
 |---|---|---|---|
-| 雨课堂 | `yuketang` | 扫码（长轮询）/ 短信（已停用，官方加图形验证码）/ 官方网页登录（应用内 WebView 读回 Cookie） | 扫码被掐同 token 续轮询；前台服务保活 |
-| TUOJ（AI 版） | `tuoj` | 清华统一认证（复用主会话漫游）+ TUOJ 账密（可选） | 401/403 静默重漫游一次并重拉 |
+| 雨课堂 | `yuketang` | 扫码登录（长轮询）；官方网页登录（应用内 WebView 读取 Cookie）。短信通道已停用，官方已增加图形验证码校验 | 传输层中断按未扫码处理，沿用同一令牌继续轮询；移动端由前台服务保活 |
+| TUOJ（AI 版） | `tuoj` | 复用清华统一认证会话漫游；可选配置 TUOJ 独立账密 | 接口返回 401 / 403 时自动重新漫游一次 |
 | TUOJ（经典版） | `tuojClassic` | 同上 | 同上 |
-| Tyche | `tyche` | 清华统一认证漫游 | 同 TUOJ 链路 |
+| Tyche | `tyche` | 复用清华统一认证会话漫游 | 同 TUOJ |
 
-## 2. 提交与批改判定
+## 3. 状态判定
 
-- **`submitted`（真实判定）**：三源各自查提交状态；查询失败/无法判定（如雨课堂试卷
-  类叶子无权限）**保守为 false**。
-- **雨课堂已批改**（R16）：`get_exercise_list` 的 status 4/3 + 分值占位符；作业/试卷
-  深链走学生端 `/ai-workspace/lms-graph/...`。
-- **Tyche 已批改**（R19 27.2）：`task/Status.submissionList[]`（pid/score/result/
-  submitedTime）按 pid 取最新提交汇总——每题都有有效得分 → `graded=true`，
-  `score=Σ`，`totalScore=100×题数`。
+**提交状态**：由各源独立查询得出。查询失败或无法判定时（例如雨课堂试卷类条目缺少
+访问权限）统一判定为未提交，避免出现「已提交」的误报。
 
-## 3. 会话失效自动恢复（R19 27.1）
+**批改状态**：
 
-TUOJ 系 401/403 时**静默自动重漫游一次并自动重拉**——此前只在「该源未配置」时触发，
-已配置但 cookie 失效这条路径没有恢复手段。
+- 雨课堂：读取 `get_exercise_list` 返回的 `status` 字段（取值 4 与 3 表示已批改），
+  并结合分值占位符判定；作业与试卷的详情链接指向学生端页面
+  `/ai-workspace/lms-graph/...`。
+- Tyche：读取 `task/Status` 的 `submissionList[]`（含 `pid`、`score`、`result`、
+  `submitedTime`），按 `pid` 取最新一次提交汇总。所有题目均有有效得分时判定为已
+  批改，`score` 为各题得分之和。
 
-| 约束 | 值 |
+## 4. 会话失效恢复
+
+TUOJ 系源在接口返回 401 或 403 时自动重新漫游一次并重新拉取数据。此前的自动漫游仅
+在源未配置时触发，已配置但凭据失效的情况缺少恢复手段。
+
+| 约束 | 取值 |
 |---|---|
-| 频控 | 同源两次自动重试 ≥10 分钟；每进程每源 ≤3 次 |
-| 并发 | 同源 401 共享 in-flight Promise（去重） |
-| 显式退出 | 用户登出后抑制自动重登 |
-| 失败兜底 | 作业页条幅「已尝试自动重新登录，仍失败：<原因>」+ 去设置重登入口 |
+| 重试间隔 | 同一源两次自动重试间隔不小于 10 分钟 |
+| 重试上限 | 每进程每源不超过 3 次 |
+| 并发处理 | 同一源的并发 401 共享同一请求 |
+| 退出抑制 | 用户显式退出登录后不自动重登 |
+| 失败提示 | 自动重登仍失败时，作业页显示提示条并附设置页重登入口 |
 
-## 4. 设置页
+## 5. 新增作业源
 
-设置 → 外部作业源：按 OJ 平台归组（TUOJ AI 版 / 经典版 / Tyche / 雨课堂）；
-扫码面板在移动端全屏 + 前台服务保活（常驻通知防 MIUI 冻结）；「另一台设备扫码 +
-保持前台」提示。
+1. **实现数据获取**：在 `packages/core/src/exthw/` 下新增源实现文件，返回
+   `ExternalHomework[]`。提交与批改状态需真实查询得出，无法判定时判定为未提交。
+   类型定义加入 `types.ts` 并从 `index.ts` 导出。
+2. **注册源标识**：扩展 `ExtHwSourceId` 联合类型，在 `extHwSourceName()` 中补充显示
+   名称，并在设置页按平台归组。
+3. **处理凭据**：需要独立凭据的源使用 `ExtHwCreds` 结构并在设置页提供表单；复用清华
+   统一认证的源不需要独立凭据。
+4. **补充测试**：在 `tools/exthw-status-test.mjs` 中增加断言（使用模拟数据，不依赖
+   真实网络）；具备登录态的源可在 `tools/exthw-smoke.mjs` 中增加真实数据验证。
+5. **更新文档**：在本文档 §2 表格中新增一行，源特有的登录与恢复行为补充至 §3、§4。
 
-## 5. 开发者：新增一个作业源
+## 6. 界面与测试
 
-1. **core**：`packages/core/src/exthw/` 新建 `<source>.ts`，实现
-   `ExternalHomework[]`（必填 id/source/courseName/title/deadline/kind；submitted
-   真实判定；url 尽量给深链）。类型加进 `types.ts` 与 `index.ts` 导出。
-2. **注册**：`ExtHwSourceId` 联合类型 + `extHwSourceName()` 显示名 + 设置页分组。
-3. **凭据**：若需独立凭据，走 `ExtHwCreds` 结构与设置页表单；统一认证系源复用主会话
-   漫游，不需要。
-4. **测试**：`tools/exthw-status-test.mjs` 加断言（mock 数据，不依赖真实网络）；
-   有登录态的再补 `tools/exthw-smoke.mjs` 真数据 smoke。
-5. **文档**：本文件 §1 表格加一行；登录/自动恢复的源特有行为写进 §2/§3。
+**设置页**：设置 → 外部作业源，按平台归组。移动端扫码面板为全屏显示，并提示使用
+另一台设备扫码、保持应用在前台。
 
-## 6. 测试与真数据验证
+**测试工具**：
 
-| 工具 | 覆盖 |
+| 工具 | 覆盖范围 |
 |---|---|
-| `tools/exthw-status-test.mjs` | 聚合状态机 / 判定 / 频控（169 断言） |
-| `tools/tuoj-cas-test.mjs` | CAS 漫游 / 2FA 文案 / 重漫游 |
-| `tools/ykt-qr-test.mjs` | 扫码状态机 / 保活生命周期 / 传输超时 |
-| `tools/exthw-smoke.mjs` | 真凭据 smoke（3/3 源成功 + Tyche 400/400 判定实录） |
+| `tools/exthw-status-test.mjs` | 聚合状态机、状态判定、频控逻辑 |
+| `tools/tuoj-cas-test.mjs` | CAS 漫游、二次认证提示、重新漫游 |
+| `tools/ykt-qr-test.mjs` | 扫码状态机、保活服务生命周期、传输层超时 |
+| `tools/exthw-smoke.mjs` | 真实凭据下的端到端验证 |

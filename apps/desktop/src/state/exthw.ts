@@ -1,5 +1,5 @@
 /**
- * 外部作业源状态层（雨课堂 / TUOJ / Tyche）。
+ * 外部作业源状态层（雨课堂 / TUOJ 系 / Tyche / DSA OJ）。
  *
  * 存储：`onethu.exthw.v1` 只存**密文**（AES-GCM）。密钥由「随机 salt（`onethu.exthw.salt.v1`
  * 存 localStorage）+ 固定串」经 PBKDF2(SHA-256, 12 万次) 派生。

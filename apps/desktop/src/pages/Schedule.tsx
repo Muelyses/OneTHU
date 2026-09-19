@@ -434,7 +434,7 @@ export function SchedulePage() {
         });
       }
     }
-    // 作业 DDL 入格：learn + 外源（雨课堂/TUOJ/Tyche）统一 Homework，
+    // 作业 DDL 入格：learn + 外源（雨课堂/TUOJ/Tyche/DSA OJ）统一 Homework，
     // deadline 前 2h → deadline 画成一个 DDL 块（橙色；已提交降透明由渲染层处理）
     const hwAll = [...(campus.data?.homework ?? []), ...extHw.items.map(toHomework)];
     for (const h of hwAll) {

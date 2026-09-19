@@ -40,7 +40,7 @@ export type PluginPermission =
   | "css" // 注入全局样式（影响整个应用外观，包括宿主界面；安装时重点确认）
   | "llm" // 经内置 Harness 的 LLM 对话（清华 MadModel 免费档 / 自费 API，自动调度）
   | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
-  | "exthw:read" // 外部作业源（雨课堂/TUOJ/Tyche）状态与作业快照
+  | "exthw:read" // 外部作业源（雨课堂/TUOJ 系/Tyche/DSA OJ）状态与作业快照
   | "exthw:refresh" // 触发外部作业源刷新（网络请求）
   | "webview"; // 应用内 WebView 模态（Android 桌面模式浏览；桌面自动降级系统浏览器）
 

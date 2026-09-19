@@ -385,7 +385,7 @@ export function TodayPage() {
   /* ---- 数据派生（与外移前同口径） ---- */
 
   /** 未提交作业（首页作业区唯一口径：submitted===false，含已逾期，按截止升序）；
-   *  合并外部作业（雨课堂/TUOJ/Tyche）——未配置凭据时 extHw 恒为空，零回归 */
+   *  合并外部作业（雨课堂/TUOJ/Tyche/DSA OJ）——未配置凭据时 extHw 恒为空，零回归 */
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
   const unsubmitted = useMemo(

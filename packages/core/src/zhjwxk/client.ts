@@ -1490,7 +1490,10 @@ export async function submitXkCourse(
     await sleep(1500); // v1.4.9：满员确认前置 1.5s
     const newToken = TOKEN_RE().exec(resp)?.[1];
     const queueFields: Record<string, string> = { ...fields, m: "saveBksKcDl" };
-    if (newToken) queueFields.token = newToken; // 一次性 token：必须换用响应页新值
+    // NextTHUxk 2.2.1 同款实证：一次性 token 在第一次 POST 已消耗，响应页不带
+    // 新 token 时复用旧值必失败——显式报错而非静默复用
+    if (!newToken) return { ok: false, msg: "排队页未返回新 token，请稍后重试", where: "none" };
+    queueFields.token = newToken;
     resp = await postZhjwxkApi(s, entry, "/xkBks.vxkBksXkbBs.do", queueFields);
     result = respond(resp);
   }

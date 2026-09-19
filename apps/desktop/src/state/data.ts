@@ -38,7 +38,7 @@ import { http, info, learn, logLine, session } from "../lib/clients.js";
 import { helper as infoHelper } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
-import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, isSportsCourse } from "../lib/xklogic.js";
+import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
 import type { XkPlanItem } from "@onethu/core";
 import {
   DEMO_COURSES,
@@ -1372,7 +1372,14 @@ export function useXkWorkbench(): XkWorkbench {
   const searchMetaRef = useRef<XkSearchMeta | null>(null);
   const searchRows = useMemo(
     () => {
-      const rows = buildRows(searchRaw, volMap, queueMap, selected, candidates, levelTypes);
+      // knote 记忆 + 回填（NextTHUxk 2.2.1）：凡见过能解析的时间/有效教师就持久
+      // 记下，目录没带回的课（已选不在目录）预览不再残缺——ROW-DIAG 悬案收口
+      const knote = cacheGet<XkKnote>("xk-knote")?.data ?? {};
+      let knDirty = false;
+      for (const c of searchRaw) knDirty = rememberKnote(knote, c.code, c.seq, c.teacher, c.time, c.credits) || knDirty;
+      for (const s2 of selected) knDirty = rememberKnote(knote, s2.code, s2.seq, s2.teacher, s2.time, s2.credits) || knDirty;
+      if (knDirty) cacheSet("xk-knote", knote, true);
+      const rows = applyKnote(buildRows(searchRaw, volMap, queueMap, selected, candidates, levelTypes), knote);
       // 教师空值诊断（悬案收口）：搜索格有名字但行上没有 → 覆盖层嫌疑人
       const odd = searchRaw.length > 0 ? rows.filter((r) => r.selected && (!r.teacher || /^\d{1,3}$/.test(r.teacher))).slice(0, 3) : [];
       // 教师空值诊断（悬案收口）：诊断信息误走 PAGE-ERR 通道会被当错误红条吓人
@@ -1700,7 +1707,7 @@ export function useXkWorkbench(): XkWorkbench {
       const k = `${c.code}_${c.seq || "0"}`;
       if (!seen.has(k)) { seen.add(k); all.push(c); }
     }
-    return buildRows(all, volMap, queueMap, selected, candidates, levelTypes);
+    return applyKnote(buildRows(all, volMap, queueMap, selected, candidates, levelTypes), cacheGet<XkKnote>("xk-knote")?.data ?? {});
   }, [enrichedCatalog, searchRaw, selDetail, candCatalog, volMap, queueMap, selected, candidates, levelTypes]);
   const canAdjustZy = useCallback(
     (code: string, seq: string, targetZy: number) => canAdjustZyFn(courses, code, seq, targetZy),

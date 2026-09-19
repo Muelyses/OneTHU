@@ -18,7 +18,7 @@ import {
 } from "@onethu/core";
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
 import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
-import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear } from "@onethu/core";
+import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
 
 export type { TwoFactorMethod };
 
@@ -170,6 +170,11 @@ void (async () => {
 
 setZhjwxkDebug((line) => void logLine(line));
 setZhjwxkNativeClear(nativeCookieClear);
+// 死结重登借 lib 权威：id 单点登录互踢根治（选课清仓直登曾踢死新闻/日程/info）
+{
+  const { libForceRelogin } = await import("./infoLib.js");
+  setZhjwxkReloginHook(libForceRelogin);
+}
 setWebvpnLog((line) => void logLine(line));
 
 // 逐跳 cookie 供应：包装 URL 解码出真实域（wrapped id 跳带 id 桶会话、wrapped zhjw
@@ -315,22 +320,10 @@ export async function login(
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
   const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
-  let fingerprint = await currentFingerprint();
-  // 死锁破解（2026-09-18）：设备 fp 已被 id 信任 → 免 2FA → 永不签发 finger3；
-  // finger3 空 → checkSingle 确认/直登全传空 → 死结复发。唯一出路：轮换 fp
-  // 强制 id 走一次 2FA，用户选信任 → SAVE_FINGER 签发 finger3 落盘。
-  // 【只轮换一次】：轮换后立刻持久化新 fp——finger3 未拿到前的重复登录
-  // 沿用同一 fp（否则 fp 每次变 = id 每次当新设备 = 2FA 无限循环，14:25/14:27 实录）
-  {
-    const saved = await store.loadSession().catch(() => null);
-    if (saved && !saved.finger3 && !(saved as SessionData)._fpRotated) {
-      fingerprint = makeFingerprint();
-      (saved as SessionData)._fpRotated = true;
-      saved.fingerprint = fingerprint;
-      await store.saveSession(saved).catch(() => undefined);
-      await logLine("FINGER3 空 → 设备指纹轮换（仅此一次；完成 2FA 请选信任设备）").catch(() => undefined);
-    }
-  }
+  const fingerprint = await currentFingerprint();
+  // （2026-09-18 决策）轮换实验撤除：强制 2FA 的链路被 keepalive/静默重登/
+  // lib 僵尸链三面夹击，稳定性失控。回归简单：fp 固定，登录一次 2FA 到位；
+  // finger3 缺失时选课靠死结自愈兜底（确认失败→清账直登，实测可用）。
   const remember = opts.remember ?? true;
   pendingSecret = { username, password, remember };
   if (!remember) await clearRemembered().catch(() => undefined);
@@ -342,13 +335,12 @@ export async function login(
     if (r.state === "ready") {
       session.username = username;
       session.state = "ready";
-      // SAVE_FINGER 可能新发受信凭据；没有则保留旧值（lib 链写 helper.fingerGenPrint）
+      // SAVE_FINGER 受信凭据同步（2FA 链内签发的才有效；直登后补签=身份异常）
       {
-        const { helper, libEnsureTrustFingerprint } = await import("./infoLib.js");
-        let fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
-        if (!fresh) fresh = await libEnsureTrustFingerprint(fingerprint).catch(() => "");
+        const { helper, getSelfFinger3 } = await import("./infoLib.js");
+        const fresh = getSelfFinger3() ||
+          (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
         session.finger3 = fresh || session.finger3 || "";
-        await logLine(`FINGER3 ${fresh ? "新签发" : session.finger3 ? "沿用旧值" : "仍为空"} len=${session.finger3.length}`).catch(() => undefined);
       }
       session.injectCredentials(username, password);
       await persist();
@@ -406,17 +398,18 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 }
 
 export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
-  const { libVerify2FA, helper } = await import("./infoLib.js");
+  const { libVerify2FA, helper, getSelfFinger3 } = await import("./infoLib.js");
   try {
     await libVerify2FA(type, code, trust);
     session.state = "ready";
     // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘：
-    // lib 链写入 helper.fingerGenPrint（infoLib 392 注释），此前自赋值空转
-    // → session.finger3 恒空 → checkSingle 确认传空 → 死结（2026-09-18 实录 f3=0）
+    // hook 自签路径写 selfFinger3（lib 内置路径丢 object）；lib 的 helper.
+    // fingerGenPrint 作后备。此前两处都空 → f3=0 → 死结（2026-09-18 实录）
     {
-      const { helper } = await import("./infoLib.js");
-      const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+      const fresh = getSelfFinger3() ||
+        (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
       session.finger3 = fresh || session.finger3 || "";
+      await logLine(`FINGER3 verify 落盘 len=${session.finger3.length}`).catch(() => undefined);
     }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();

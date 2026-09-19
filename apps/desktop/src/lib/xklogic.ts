@@ -330,6 +330,40 @@ export function buildRows(
   return rows;
 }
 
+/* ── §3.1b knote 记忆（NextTHUxk 2.2.1 同款移植）───────────── */
+/** 课号_班次 → 见过的有效教师/时间/学分（跨会话持久，调用方落盘） */
+export type XkKnote = Record<string, { teacher: string; time: string; credits: number }>;
+
+/** 凡见过能解析的时间/有效教师就记下（垃圾教师值守卫：纯数字不记）。
+ *  外校课/已选课的时间只在某次搜索说明列出现过一次也能永远用。 */
+export function rememberKnote(
+  kn: XkKnote, code: string, seq: string, teacher: string, time: string, credits: number,
+): boolean {
+  const t = teacher && !/^\d{1,3}$/.test(teacher) ? teacher : "";
+  const tOk = !!(time && parseTimeSlots(time).length);
+  if (!code || (!t && !tOk)) return false;
+  const k = `${code}_${String(parseInt(seq, 10) || 0)}`;
+  const ex = kn[k];
+  if (ex && ex.teacher === (t || ex.teacher) && ex.time === (time || ex.time)) return false;
+  kn[k] = { teacher: t || ex?.teacher || "", time: time || ex?.time || "", credits: credits || ex?.credits || 0 };
+  return true;
+}
+
+/** knote 回填：三级借行（精确同班→同课同师→课号）都没借到的空教师/时间行
+ *  用记忆兜底——已选课不在目录/搜索没带回时预览不再残缺（ROW-DIAG 悬案收口）。 */
+export function applyKnote(rows: XkRow[], kn: XkKnote): XkRow[] {
+  return rows.map((r) => {
+    const k = `${r.c.code}_${String(parseInt(r.c.seq, 10) || 0)}`;
+    const hit = kn[k] ?? Object.entries(kn).find(([key]) => key.startsWith(`${r.c.code}_`))?.[1];
+    if (!hit) return r;
+    const teacher = r.teacher || hit.teacher;
+    const time = r.time || hit.time;
+    const credits = r.credits || hit.credits;
+    if (teacher === r.teacher && time === r.time && credits === r.credits) return r;
+    return { ...r, teacher, time, credits, c: { ...r.c, teacher, time, credits } };
+  });
+}
+
 /* ── §3.2 冲突 ─────────────────────────────────────────────── */
 export interface SlotItem { name: string; code: string; seq: string; manual?: boolean }
 export function buildSlotIndex(items: Array<SlotItem & { time: string }>, out: Map<string, SlotItem[]>): void {

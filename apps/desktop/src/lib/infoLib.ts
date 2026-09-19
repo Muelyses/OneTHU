@@ -115,6 +115,16 @@ export function initInfoLib(): InfoHelper {
         text = await res.text();
       }
       void log(`ILIB ${init.method ?? "GET"} ${res.status} ${url.slice(0, 90)} → ${text.slice(0, 120).replace(/\s+/g, " ")}`);
+      // 二级课表现场诊断（静默空悬案）：portal3rd 的关键标记命中情况 + 数据段样本
+      if (url.includes("portal3rd")) {
+        const marks = {
+          len: text.length,
+          setInit: text.indexOf("function setInitValue"),
+          firstBrace: text.indexOf("{", text.indexOf("setInitValue")),
+          ejkb: /bks_ejkb|ekkb|二级/.test(text),
+        };
+        void log(`ILIB SECONDARY-DIAG ${JSON.stringify(marks)} sample=${text.slice(Math.max(0, marks.setInit), Math.max(0, marks.setInit) + 300).replace(/\s+/g, " ")}`);
+      }
       return {
         status: res.status,
         headers: Array.from(res.headers.entries()),
@@ -153,6 +163,11 @@ let methodsNotify: ((methods: TwoFactorMethod[]) => void) | null = null;
 let resolveMethod: ((t: "wechat" | "mobile" | "totp") => void) | null = null;
 let resolveCode: ((code: string) => void) | null = null;
 let pendingTrust = false;
+/** hook 自签拿到的 finger3（lib 内置路径会丢 object——这里接住） */
+let selfFinger3 = "";
+export function getSelfFinger3(): string {
+  return selfFinger3;
+}
 
 helper.twoFactorMethodHook = (hasWeChatBool, phone, hasTotp) => {
   const methods: TwoFactorMethod[] = [];
@@ -259,7 +274,8 @@ export async function libLogin(
   // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
   await nativeCookieClear().catch(() => undefined);
   helper.fingerprint = fingerprint || makeFingerprint();
-  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER——接 pendingTrust
+  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER（内置路径
+  // 响应 object=finger3 被 lib 丢弃——后续从持久化快照或再度 2FA 恢复）
   (helper as unknown as { trustFingerprintHook?: () => Promise<boolean> }).trustFingerprintHook =
     async () => pendingTrust;
   (helper as unknown as { trustFingerprintNameHook?: () => Promise<string> }).trustFingerprintNameHook =
@@ -297,7 +313,21 @@ export async function libSend2FA(type: string): Promise<void> {
     r(type as "wechat" | "mobile" | "totp");
     return;
   }
-  void log("2FA 方式已选定（重复发送忽略）: " + type);
+  // resolver 为空 = 用户手里的 UI 挂在已死的旧链上（keepalive 的 libEnsure
+  // Session 在僵尸 settle 后抢起新链）——照 libVerify2FA 的自愈：重启链并
+  // 自动应答方式选择，用户这次点击直接生效（码正常发出）
+  void log("2FA 方式选定但链已死 → 自动重启链并应答: " + type);
+  const username = inflight?.username ?? "";
+  const password = inflight?.password ?? "";
+  if (!username || !password) {
+    void log("2FA 重启失败：无内存凭据");
+    return;
+  }
+  const { p, methodsPromise } = startLoginRaw(username, password);
+  void methodsPromise.then(() => {
+    resolveMethod?.(type as "wechat" | "mobile" | "totp");
+  });
+  void p.catch(() => undefined);
 }
 
 ''/** 提交验证码（+是否信任设备）。lib 链在此续完：VERITY → SAVE_FINGER → 落地 → roam-id。
@@ -375,6 +405,35 @@ export async function libEnsureSession(): Promise<boolean> {
   }
   await inflight.p.catch(() => undefined);
   return true;
+}
+
+/** 二级课表（实验课）单页解析：desktop 周课表并入用（core InfoClient 的
+ *  zhjw JSONP 只含一级——二级实验课缺失的根源，2026-09-19 定案） */
+export const getSecondarySchedules = async (firstDay: string): Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> => {
+  const mod = await import("@onethu/info-lib");
+  try {
+    const r = await (mod as unknown as { getSecondarySchedules: (h: unknown, s: { firstDay: string }) => Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> }).getSecondarySchedules(helper, { firstDay });
+    void log(`SECONDARY-PARSE ${JSON.stringify(r.map((c) => ({ n: c.name, d: c.activeTime.base.slice(0, 2).map((sl) => sl.beginTime.format("YYYY-MM-DD HH:mm")) })))}`).catch(() => undefined);
+    return r;
+  } catch (e) {
+    void log(`SECONDARY-ERR ${e instanceof Error ? (e.stack ?? e.message).slice(0, 500) : String(e)}`).catch(() => undefined);
+    throw e;
+  }
+};
+
+/** 强制完整重登（选课死结借用）：不走探活短路——id 会话权威单一来源，
+ *  选课判死时由这里重建，选课不再自清仓互踢（2026-09-18 架构定案） */
+export async function libForceRelogin(): Promise<boolean> {
+  const username = inflight?.username ?? "";
+  const password = inflight?.password ?? "";
+  if (!username || !password) return false;
+  // 受信凭据喂给 lib：helper.fingerGenPrint 是内存变量，boot 恢复/进程重启后
+  // 为空 → libLogin 传空指纹 → id 要 2FA → 强制重登必撞墙（02:23 实录
+  // "lib 重登失败 → 回退自清仓"）。sessionFinger3（持久层）优先喂入。
+  (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint =
+    sessionFinger3 || (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+  const r = await libLogin(username, password, helper.fingerprint).catch(() => null);
+  return r?.state === "ready";
 }
 
 /** 登录链是否挂起（用户正在 2FA 界面）——静默重登互斥判据 */

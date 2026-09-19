@@ -311,8 +311,12 @@ export const parseScript = (
     segments.forEach((seg) => {
         reg.test(seg);
         const basic = RegExp.$3;
-        const dayOfWeek = Number(basic[3]);
-        const sessionIndex = Number(basic[1]);
+        // getElementById('a{day}_{session}') 实锚：a4_5 = 星期4第5节——原 basic[3]/
+        // basic[1] 反取把课放周五第4节（实验室科研探究错位实证，2026-09-19）。
+        // split 拆分兼容两位节次（a4_12）。
+        const anchor = basic.split(/[a_]/).filter(Boolean);
+        const dayOfWeek = Number(anchor[0]);
+        const sessionIndex = Number(anchor[1]);
         const begin = beginList[sessionIndex - 1];
         const end = endList[sessionIndex - 1];
         const title = RegExp.$2;

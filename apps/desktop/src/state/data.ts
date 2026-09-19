@@ -35,10 +35,10 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
 import { http, info, learn, logLine, session } from "../lib/clients.js";
 // lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
 // 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
-import { helper as infoHelper } from "../lib/infoLib.js";
+import { helper as infoHelper, getSecondarySchedules } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
-import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, isSportsCourse } from "../lib/xklogic.js";
+import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
 import type { XkPlanItem } from "@onethu/core";
 import {
   DEMO_COURSES,
@@ -652,6 +652,9 @@ function xkSession(): ZhjwxkSession {
     // 需求锁死在本模块内，不污染全局会话桶（seedJar 拆条事故定案）
     xkSessionSingleton = { http, username: c.username, password: c.password, fingerprint: c.fingerprint, isoFetch: nativeFetch as unknown as typeof universalFetch, finger3: session.finger3 };
   }
+  // finger3 动态取最新：单例在旧登录时创建、值拷贝定死——verify 后落盘的新
+  // finger3 传不进选课（15:53 落盘 len=32 而 15:54 选课 f3=0 实录）
+  xkSessionSingleton.finger3 = session.finger3 || xkSessionSingleton.finger3;
   return xkSessionSingleton;
 }
 
@@ -1353,6 +1356,9 @@ export function useXkWorkbench(): XkWorkbench {
   }, []);
 
   refreshVolRef.current = refreshVol;
+  // 搜索落地失败的自动重试入口（failSearch 引用）
+  const refreshRef = useRef<((fresh?: boolean) => Promise<void>) | null>(null);
+  refreshRef.current = refresh as unknown as (fresh?: boolean) => Promise<void>;
   const [searchState, setSearchState] = useState<DataState | "idle" | "loadingMore">("idle");
   const [searchPage, setSearchPage] = useState(1);
   const [searchHasMore, setSearchHasMore] = useState(false);
@@ -1366,10 +1372,19 @@ export function useXkWorkbench(): XkWorkbench {
   const searchMetaRef = useRef<XkSearchMeta | null>(null);
   const searchRows = useMemo(
     () => {
-      const rows = buildRows(searchRaw, volMap, queueMap, selected, candidates, levelTypes);
+      // knote 记忆 + 回填（NextTHUxk 2.2.1）：凡见过能解析的时间/有效教师就持久
+      // 记下，目录没带回的课（已选不在目录）预览不再残缺——ROW-DIAG 悬案收口
+      const knote = cacheGet<XkKnote>("xk-knote")?.data ?? {};
+      let knDirty = false;
+      for (const c of searchRaw) knDirty = rememberKnote(knote, c.code, c.seq, c.teacher, c.time, c.credits) || knDirty;
+      for (const s2 of selected) knDirty = rememberKnote(knote, s2.code, s2.seq, s2.teacher, s2.time, s2.credits) || knDirty;
+      if (knDirty) cacheSet("xk-knote", knote, true);
+      const rows = applyKnote(buildRows(searchRaw, volMap, queueMap, selected, candidates, levelTypes), knote);
       // 教师空值诊断（悬案收口）：搜索格有名字但行上没有 → 覆盖层嫌疑人
       const odd = searchRaw.length > 0 ? rows.filter((r) => r.selected && (!r.teacher || /^\d{1,3}$/.test(r.teacher))).slice(0, 3) : [];
-      for (const r of odd) logPageError("ROW-DIAG", new Error(`code=${r.c.code}_${r.c.seq} cTeacher="${r.c.teacher}" selTeacher="${r.sel?.teacher ?? ""}" selTime="${r.sel?.time ?? ""}"`));
+      // 教师空值诊断（悬案收口）：诊断信息误走 PAGE-ERR 通道会被当错误红条吓人
+      //（数据实际已到——SEARCH-ROW/XK-PLAN 都正常）——降级为 debug 日志
+      for (const r of odd) void logLine(`ROW-DIAG code=${r.c.code}_${r.c.seq} cTeacher="${r.c.teacher}" selTeacher="${r.sel?.teacher ?? ""}" selTime="${r.sel?.time ?? ""}"`).catch(() => undefined);
       return rows;
     },
     [searchRaw, volMap, queueMap, selected, candidates, levelTypes],
@@ -1401,9 +1416,19 @@ export function useXkWorkbench(): XkWorkbench {
 
   const failSearch = useCallback((err: unknown, seq: number): void => {
     if (seq !== searchSeqRef.current) return;
+    const msg = explainNetworkError(err);
     logPageError("XK-SEARCH", err);
+    // 落地类失败自动重试一次：首刷撞自愈窗口（16:33/16:48 实录第二波必成），
+    // 等 4.2s（选课侧 3s 冷却 + 余量）后自动重跑 refresh——成功则黄条自愈，
+    // 不再让用户手动点重试
+    // 引导壳型异常页（htmlHead 带 __vpn_hostname_data）同为可自愈态
+    if (/登录未落地|恢复冷却中|__vpn_hostname_data/.test(msg)) {
+      setTimeout(() => {
+        if (seq === searchSeqRef.current) void refreshRef.current?.(false);
+      }, 4200);
+    }
     // 失登不整页重载：错误条 + 重试（proxyZhjwxkApi 内部已带 relogin 自愈），保住搜索现场
-    setSearchError(explainNetworkError(err));
+    setSearchError(msg);
     setSearchState("error");
   }, []);
 
@@ -1682,7 +1707,7 @@ export function useXkWorkbench(): XkWorkbench {
       const k = `${c.code}_${c.seq || "0"}`;
       if (!seen.has(k)) { seen.add(k); all.push(c); }
     }
-    return buildRows(all, volMap, queueMap, selected, candidates, levelTypes);
+    return applyKnote(buildRows(all, volMap, queueMap, selected, candidates, levelTypes), cacheGet<XkKnote>("xk-knote")?.data ?? {});
   }, [enrichedCatalog, searchRaw, selDetail, candCatalog, volMap, queueMap, selected, candidates, levelTypes]);
   const canAdjustZy = useCallback(
     (code: string, seq: string, targetZy: number) => canAdjustZyFn(courses, code, seq, targetZy),
@@ -2474,6 +2499,36 @@ export function useCalendar() {
   return { data, state, error, reload: load };
 }
 
+/** 二级课表（实验课）并入周课表：core JSONP 只含一级——lib getSecondarySchedules
+ *  补齐，按周区间过滤、按名+日期+时间去重；返回原数组引用（无新增）或新数组。 */
+const mergeSecondaryInto = async (
+  entries: ScheduleEntry[], semester: { firstDay: string }, start: Date, end: Date,
+): Promise<ScheduleEntry[]> => {
+  const sec = await getSecondarySchedules(semester.firstDay);
+  const from = fmtDate(start), to = fmtDate(end);
+  const added: ScheduleEntry[] = [];
+  for (const c of sec) {
+    for (const sl of c.activeTime.base) {
+      const date = sl.beginTime.format("YYYY-MM-DD");
+      if (date < from || date > to) continue;
+      const st = sl.beginTime.format("HH:mm");
+      if (entries.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
+      if (added.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
+      added.push({
+        courseName: c.name,
+        location: c.location || undefined,
+        date,
+        dayOfWeek: sl.dayOfWeek,
+        startTime: st,
+        endTime: sl.endTime.format("HH:mm"),
+        category: "二级课表",
+        raw: { source: "secondary" },
+      });
+    }
+  }
+  return added.length ? [...entries, ...added] : entries;
+};
+
 /** 某教学周课表（week 从 1 起，按所选学期 firstDay 平移 7 天窗口；info.getSchedule zhjw JSONP） */
 const WEEKSCHED_TTL = 10 * 60 * 1000;
 
@@ -2525,22 +2580,35 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
     }
     if (status !== "ready" || !semester || !wsKey) return;
     let cancelled = false;
+    const base = new Date(semester.firstDay.replace(/-/g, "/"));
+    const start = new Date(base.getTime() + (week - 1) * 7 * 86400000);
+    const end = new Date(start.getTime() + 6 * 86400000);
     const cached = cacheGet<ScheduleEntry[]>(wsKey);
     if (cached) {
-      // 旧值先亮（切周回来 0ms 上屏）；新鲜则跳过网络
+      // 旧值先亮（切周回来 0ms 上屏）；新鲜则跳过 JSONP 主链，但仍补二级
+      //（轻量单页请求）——二级并入曾被 TTL 连坐（05:02 拉过 → 切回不重跑）
       setData(cached.data);
       setState("ready");
-      if (Date.now() - cached.at < WEEKSCHED_TTL) return;
+      if (Date.now() - cached.at < WEEKSCHED_TTL) {
+        void mergeSecondaryInto(cached.data, semester, start, end).then((merged) => {
+          if (merged !== cached.data && !cancelled) {
+            cacheSet(wsKey, merged);
+            setData(merged);
+          }
+        }).catch(() => undefined);
+        return;
+      }
     } else {
       setState("loading");
     }
     setError(null);
-    const base = new Date(semester.firstDay.replace(/-/g, "/"));
-    const start = new Date(base.getTime() + (week - 1) * 7 * 86400000);
-    const end = new Date(start.getTime() + 6 * 86400000);
     info
       .getSchedule(fmtDate(start), fmtDate(end))
-      .then((entries) => {
+      .then(async (entries) => {
+        // 二级课表（实验课）并入：core InfoClient 的 zhjw JSONP 只含一级——
+        // lib 的 getSecondarySchedules（portal3rd setInitValue 解析）按周补齐，
+        // 失败不连累一级课表（上游 getSchedule = primary + secondary 同构）
+        try { await mergeSecondaryInto(entries, semester, start, end); } catch { /* 静默 */ }
         if (!cancelled) {
           cacheSet(wsKey, entries);
           setData(entries);

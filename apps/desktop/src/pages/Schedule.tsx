@@ -240,6 +240,10 @@ export function SchedulePage() {
   const [windowRows, setWindowRows] = useState<ScheduleEntry[] | null>(null);
   const [winLoading, setWinLoading] = useState(false);
   const [winError, setWinError] = useState<string | null>(null);
+  /** 周窗失败自动重试计数（每窗口最多 2 次、间隔 4.2s）：选课死结借 lib 重登
+   *  后教务/漫游会话重建需几秒，softRecover 的一次原地重取不够——静默自愈，
+   *  红条不再吓人（2026-09-19 快速往返实录） */
+  const winRetryRef = useRef<{ key: string; count: number }>({ key: "", count: 0 });
   const windowKey = `${ymdOf(viewWindow[0])}_${ymdOf(viewWindow[1])}`;
   useEffect(() => {
     if (mode !== "timetable" || status === "demo") return; // 列表自取月窗；demo 退 campus 数据
@@ -259,13 +263,22 @@ export function SchedulePage() {
       .catch(async (err) => {
         if (!alive) return;
         // 失登（稳定性专项）：softRecover 透明重建 → 原地重取一次；仍败才亮条
+        const scheduleAutoRetry = (): boolean => {
+          const st = winRetryRef.current;
+          if (st.key !== windowKey) { st.key = windowKey; st.count = 0; }
+          if (st.count >= 2) return false;
+          st.count += 1;
+          setTimeout(() => { if (alive) setReloadTick((t) => t + 1); }, 4200);
+          return true;
+        };
         if (isAuthError(err) && (await softRecover("schedule-win"))) {
           await grab().catch((e2) => {
-            if (alive) setWinError(e2 instanceof Error ? e2.message : String(e2));
+            if (alive && !scheduleAutoRetry()) setWinError(e2 instanceof Error ? e2.message : String(e2));
           });
           return;
         }
         if (alive) {
+          if (scheduleAutoRetry()) return;
           setWindowRows([]);
           setWinError(err instanceof Error ? err.message : String(err));
         }

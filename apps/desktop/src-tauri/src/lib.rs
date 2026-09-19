@@ -1141,6 +1141,43 @@ fn http_native_clear_cookies() -> Result<(), String> {
     Ok(())
 }
 
+/// 按域后缀清 cookie（id 单点互踢根治）：lib 重登/选课自愈只清 id/oauth，
+/// learn/info/教务/webvpn 的会话票全保——重建后各页秒恢复，不再红条几秒。
+#[tauri::command]
+fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String> {
+    let suffixes: Vec<String> = suffixes.iter().map(|s| s.to_lowercase()).collect();
+    let keep: Vec<String> = {
+        let g = NATIVE_JAR_ARC.0.read().unwrap();
+        let mut lines = Vec::new();
+        for c in g.iter_unexpired() {
+            let domain = c.domain().unwrap_or("").trim_start_matches('.').to_lowercase();
+            if domain.is_empty() { continue; }
+            let hit = suffixes.iter().any(|s| domain == *s || domain.ends_with(&format!(".{}", s)));
+            if hit { continue; }
+            let path = c.path().unwrap_or("/").to_string();
+            let secure = if c.secure().unwrap_or(false) { "1" } else { "0" };
+            lines.push(format!("{}\t{}\t{}\t{}={}", c.domain().unwrap_or(""), path, secure, c.name(), c.value()));
+        }
+        lines
+    };
+    NATIVE_JAR_ARC.clear();
+    {
+        let mut g = NATIVE_JAR_ARC.0.write().unwrap();
+        for line in &keep {
+            let parts: Vec<&str> = line.split('\t').collect();
+            if parts.len() != 4 { continue; }
+            let (domain, cpath, secure, kv) = (parts[0], parts[1], parts[2], parts[3]);
+            let host = domain.trim_start_matches('.');
+            let scheme = if secure == "1" { "https" } else { "http" };
+            let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
+            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
+            let _ = g.parse(&set_cookie, &u);
+        }
+    }
+    NATIVE_JAR_ARC.1.store(true, std::sync::atomic::Ordering::Relaxed);
+    Ok(())
+}
+
 /// jar → rust 播种（wengine 引导页票种等不经 Set-Cookie 的会话）
 #[tauri::command]
 fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
@@ -2075,6 +2112,7 @@ tauri::Builder::default()
         })
         .invoke_handler(tauri::generate_handler![
             http_native_clear_cookies,
+            http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,

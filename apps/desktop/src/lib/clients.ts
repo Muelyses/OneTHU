@@ -241,6 +241,11 @@ export const session = new CampusSession({
   fetchLike: (u, init) => nativeFetch(String(u), init as Parameters<typeof nativeFetch>[1]),
 });
 
+/** R17 23.3：设备指纹「只轮换一次」标记的内存镜像。此前 `_fpRotated` 只落
+ *  localStorage（store.saveSession），未进 persist() 快照与 SESSION_FILE 镜像 →
+ *  每次启动都重新轮换 → id 端永远当新设备 → 2FA 无限循环。 */
+let fpRotated = false;
+
 // InfoClient 会话过期续约：lib 会话守卫（探活+静默重登）替代 demo roam-id 链
 // ——登录链已统一到 thu-info-lib（单管线），demo 链退役后其漫游钩子不再可用。
 session.info.setRenewers({
@@ -305,6 +310,14 @@ async function dumpDebug(err: unknown): Promise<void> {
   }
 }
 
+/** R17 23.3-4：登录成功（含 2FA 完成、设备信任建立）后自动重试一次 TUOJ 漫游。
+ *  动态 import 防循环依赖（exthw 状态层 import 本模块）；失败静默（状态层已记录）。 */
+function retryTuojAfterTrust(): void {
+  void import("../state/exthw.js")
+    .then((m) => m.retryTuojCasAfterLogin())
+    .catch(() => undefined);
+}
+
 /** UI 只管喂账密；登录链 = thu-info-lib（SM2 + 2FA hooks + roam-id，
  *  docs/INFOLIB-PIPELINE-REVIEW.md P2）。单一 webvpn 管线：不再有直连/webvpn
  *  降级舞蹈——webvpn 从校内校外都可达，拓扑唯一才是双环境适配的本质。
@@ -323,13 +336,18 @@ export async function login(
   // 沿用同一 fp（否则 fp 每次变 = id 每次当新设备 = 2FA 无限循环，14:25/14:27 实录）
   {
     const saved = await store.loadSession().catch(() => null);
-    if (saved && !saved.finger3 && !(saved as SessionData)._fpRotated) {
+    if (saved) fpRotated = saved._fpRotated === true;
+    if (saved && !saved.finger3 && !saved._fpRotated) {
       fingerprint = makeFingerprint();
-      (saved as SessionData)._fpRotated = true;
+      saved._fpRotated = true;
       saved.fingerprint = fingerprint;
+      fpRotated = true;
       await store.saveSession(saved).catch(() => undefined);
       await logLine("FINGER3 空 → 设备指纹轮换（仅此一次；完成 2FA 请选信任设备）").catch(() => undefined);
     }
+    // 生效指纹写回内存会话：否则后续 persist() 用旧 session.fingerprint 覆盖，
+    // 轮换与 _fpRotated 一起被抹掉（每次启动都重新轮换的直接原因）。
+    session.fingerprint = fingerprint;
   }
   const remember = opts.remember ?? true;
   pendingSecret = { username, password, remember };
@@ -353,6 +371,8 @@ export async function login(
       session.injectCredentials(username, password);
       await persist();
       await logLine("LOGIN-OK (lib 链，单管线)");
+      // R17 23.3-4：设备信任已建立 → 自动重试一次此前失败的 TUOJ 漫游
+      retryTuojAfterTrust();
       // lib 主会话活了 → learn 客户端经 webvpn 透明 SSO 抓 _csrf（2026-09-17
       // 实录：缺此步则 loadReal 的 learn.* 预请求即抛 AuthRequiredError →
       // CAMPUS-AUTH 无限循环；resume 内部抓不到就保持未登录，不抛错）
@@ -417,10 +437,14 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
       const { helper } = await import("./infoLib.js");
       const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
       session.finger3 = fresh || session.finger3 || "";
+      // R17 23.3-2：2FA 完成后同样确认 finger3 捕获并落盘（boot 日志口径一致）
+      await logLine(`FINGER3 ${fresh ? "新签发" : session.finger3 ? "沿用旧值" : "仍为空"} len=${session.finger3.length}`).catch(() => undefined);
     }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
     await logLine("VERIFY-OK (lib 链完成)");
+    // R17 23.3-4：2FA + 信任设备完成 → 自动重试一次此前失败的 TUOJ 漫游
+    retryTuojAfterTrust();
     // 同 login()：2FA 完成即主会话活，learn 透明 SSO 建 csrf
     await learn.resume().catch(() => false);
     return null;
@@ -437,11 +461,15 @@ export async function persist(): Promise<void> {
   // R10：新会话落盘前清 InfoClient 静态缓存——libToken 是 10 分钟静态缓存且跨
   // 重登录存活，旧 token 配新会话会让订座恒报「没有登录或登录已超时」
   info.resetStaticSessionCaches();
+  // R17 23.3：`_fpRotated` 必须进快照与文件镜像（否则重启后指纹再轮换 → 2FA 死循环）。
+  // 与 store 旧值取并集，避免未走 resume/login 的 persist 调用抹掉该标记。
+  const prev = await store.loadSession().catch(() => null);
   const snapshot: SessionData = {
     username: session.username,
     fingerprint: session.fingerprint,
     cookiesJson: http.jar.serialize(),
     finger3: session.finger3,
+    _fpRotated: fpRotated || prev?._fpRotated === true || undefined,
     savedAt: Date.now(),
   };
   await store.saveSession(snapshot);
@@ -463,6 +491,7 @@ export async function persist(): Promise<void> {
 
 export async function currentFingerprint(): Promise<string> {
   const saved = await store.loadSession();
+  if (saved) fpRotated = saved._fpRotated === true;
   if (saved?.fingerprint) return saved.fingerprint;
   // 首次生成即落盘（demo 的 redux-persist 初值语义）：否则登录中途崩溃会
   // 重新随机，设备信任（fingerPrint 比对）永远建立不起来
@@ -513,6 +542,9 @@ export async function resumeSession(): Promise<boolean> {
   session.username = saved.username;
   session.fingerprint = saved.fingerprint;
   session.finger3 = saved.finger3 ?? "";
+  // R17 23.3：恢复「只轮换一次」标记；boot 日志补 FINGER3 状态（空/沿用旧值 len=N）
+  fpRotated = saved._fpRotated === true;
+  await logLine(`FINGER3 ${session.finger3 ? "沿用旧值" : "空"} len=${session.finger3.length} fpRotated=${fpRotated ? "1" : "0"}`).catch(() => undefined);
   {
     const { setLibFinger3, helper } = await import("./infoLib.js");
     setLibFinger3(session.finger3);
@@ -634,6 +666,7 @@ export async function logout(): Promise<void> {
   // 属设备信任、跨登出保留——否则下次登录指纹重随机 → 信任失效 → 每次被迫 2FA
   // （17:40 存档丢失 → 指纹重随机的教训）。
   const saved = await store.loadSession().catch(() => null);
+  fpRotated = saved?._fpRotated === true;
   await store.clearSession();
   // 会话快照（本地 + 文件）一并清空：无「曾登录」快照，boot 的静默重登才不会
   // 把显式登出顶掉。记住的密码保留（登录页预填用），仅 Settings 可清除。
@@ -646,6 +679,7 @@ export async function logout(): Promise<void> {
         username: "",
         fingerprint: saved.fingerprint,
         finger3: saved.finger3 ?? "",
+        _fpRotated: saved._fpRotated === true || undefined,
         cookiesJson: "{}",
         demoCookies: "",
         idJsid: "",

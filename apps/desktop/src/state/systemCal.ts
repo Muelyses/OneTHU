@@ -21,6 +21,8 @@ import { parseLearnTime } from "@onethu/core";
 import type { ScheduleEntry } from "@onethu/core";
 import { cacheGet, cacheSet } from "./cache.js";
 import { getLearnSnapshot, getWeekSchedSnapshot, logPageError, subscribeLearnData } from "./data.js";
+import { getSecondaryEntries } from "../lib/infoLib.js";
+import { http as appHttp } from "../lib/clients.js";
 import { getHwRemindState, subscribeHwRemind, type HwRemindState } from "./hwRemind.js";
 import { getCachedCalendar } from "./data.js";
 
@@ -173,6 +175,20 @@ async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEnt
         merged.push(e);
       }
     }
+    // 二级课表（自定义时段实验课等）并入：core InfoClient 的 JSONP 只含一级——
+    // 马原跨节两段实录（2026-09-19）：一级只给第三大节，第四大节的小段在二级
+    // 课表，不并入则系统日历丢段（日程页 grab 链有并所以页内正常）。与日程页
+    // 同款去重：同名同日同时刻视为同一节。二级失败静默：一级照常。
+    try {
+      const sec = await getSecondaryEntries(appHttp, sem.firstDay, ymd(d0), ymd(d1));
+      for (const c of sec) {
+        if (merged.some((r) => r.courseName === c.name && r.date === c.date && r.startTime === c.startTime)) continue;
+        merged.push({
+          courseName: c.name, location: c.location, date: c.date, dayOfWeek: c.dayOfWeek,
+          startTime: c.startTime, endTime: c.endTime, category: "二级课表", raw: { source: "secondary" },
+        });
+      }
+    } catch { /* 二级失败静默：一级照常 */ }
     cacheSet(key, merged, true);
     return merged;
   } catch (err) {
@@ -303,7 +319,7 @@ export async function syncSystemCalendar(opts?: { silent?: boolean }): Promise<S
     // 原生侧拒绝（真机实锤）。request_permission 幂等：已授权立即返回 true。
     if (await systemCalSupported()) {
       const granted = await invokePlugin<boolean>("request_permission");
-      if (!granted) throw new Error("未获得系统日历权限（可到系统设置里重新允许 OneTHU 访问日历）");
+      if (!granted) throw new Error("未获得系统日历权限（系统设置→隐私与安全性→日历 勾选 OneTHU 后重启应用重试；应用更新/重编译后 macOS 可能要求重新确认授权）");
     }
     const payload = await buildPayload();
     const fingerprint = fingerprintOf(payload);
@@ -338,7 +354,7 @@ export async function syncSystemCalendar(opts?: { silent?: boolean }): Promise<S
 export async function enableSystemCalendar(): Promise<void> {
   if (!(await systemCalSupported())) throw new Error("当前平台不支持系统日历原生同步（可从日程页导出 .ics 文件）");
   const granted = await invokePlugin<boolean>("request_permission");
-  if (!granted) throw new Error("未获得系统日历权限（可到系统设置里重新允许 OneTHU 访问日历）");
+  if (!granted) throw new Error("未获得系统日历权限（系统设置→隐私与安全性→日历 勾选 OneTHU 后重启应用重试；应用更新/重编译后 macOS 可能要求重新确认授权）");
   await syncSystemCalendar();
   cfg = { ...cfg, enabled: true, stopped: false };
   await persistCfg();

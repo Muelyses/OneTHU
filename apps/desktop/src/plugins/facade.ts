@@ -16,6 +16,9 @@ import {
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
 } from "../state/cloudCal.js";
 import { refreshMail, readMail, mailSearch, sendMail, mailFolderTotal } from "../state/mail.js";
+import { getLearnSnapshot } from "../state/data.js";
+import { getExtHwSnapshot, toHomework } from "../state/exthw.js";
+import { parseLearnTime } from "@onethu/core";
 import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -95,6 +98,28 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
               allDay: !!o.allDay, location: o.location, note: o.description, source,
             });
           }
+        }
+        // 作业 DDL 实时并入（learn + exthw 外部源统一 Homework）：纯内存只读，
+        // 绝不上云（用户拍板 2026-09-19：作业像课表一样没必要上云）。窗口内
+        // 未交作业 → DDL 当刻 15 分钟事件，来源标 hw/hw-ext，OH 可答「还有什么没交」。
+        const snap = getLearnSnapshot();
+        const courseName = new Map((snap?.courses ?? []).map((c) => [c.id, c.name]));
+        const hwAll = [
+          ...(snap?.homework ?? []),
+          ...getExtHwSnapshot().items.map(toHomework),
+        ];
+        for (const h of hwAll) {
+          if (h.submitted) continue;
+          const dl = parseLearnTime(h.deadline)?.getTime();
+          if (!dl || dl < from || dl > to) continue;
+          const startHm = h.deadline.slice(11, 16) || "23:59";
+          rows.push({
+            uid: `hw:${h.id}`, title: `作业截止 · ${h.courseName || courseName.get(h.courseId) || ""} ${h.title}`.trim(),
+            date: h.deadline.slice(0, 10), start: startHm,
+            end: startHm, allDay: false, location: "",
+            note: h.source?.startsWith("ext:") ? "外部平台作业 DDL" : "网络学堂作业 DDL",
+            source: h.source?.startsWith("ext:") ? "hw-ext" : "hw",
+          });
         }
         return rows.sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.start).localeCompare(String(b.start)));
       })();

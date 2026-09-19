@@ -13,6 +13,8 @@
  * 3. 校验：`GET /api/course/list` 成功即视为登录完成。
  *
  * ⚠️ 本模块只做**只读**漫游（不提交任何 TUOJ 业务数据）；凭据（清华账密）不经过本模块。
+ * R15 20.1：经典 TUOJ（oj.cs.tsinghua.edu.cn）同套代码，仅 oauth/info 返回的漫游回调不同
+ * （经典版 `.../api/user/tsinghua/login`）；漫游 url 本就取自服务端响应，故只需传 `deps.base`。
  */
 import type { HttpClient } from "../http.js";
 import { BASE as TUOJ_BASE } from "./tuoj.js";
@@ -57,6 +59,9 @@ export interface TuojRoamResult {
 }
 
 export interface TuojRoamDeps {
+  /** R15 20.2：TUOJ 系 base（缺省 AI 版）；CAS url 仍取服务端 `oauth/info` 响应，
+   *  故经典版无需额外分支。 */
+  base?: string;
   /** 「确保直连 id 会话」前置（方案 A）：无直连统一认证会话时按账密直登 id
    *  （桌面端注入 `InfoClient.ensureDirectIdLogin`，凭据来自 CampusSession，零用户输入）。
    *  返回 true = id 直连会话已建立，tuojRoam 会重走漫游表单。缺省时只走方案 B 文案。 */
@@ -170,8 +175,9 @@ const JSON_HEADERS = { Accept: "application/json, text/plain, */*" } as const;
  * 成功返回 jar 里的 TUOJ 会话串；失败抛 `TuojCasError`（消息可直接展示给用户）。
  */
 export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promise<TuojRoamResult> {
+  const base = deps.base ?? TUOJ_BASE;
   // ① 问 TUOJ 要 CAS 漫游入口
-  const infoRes = await http.request(`${TUOJ_BASE}/api/user/oauth/info`, {
+  const infoRes = await http.request(`${base}/api/user/oauth/info`, {
     direct: true,
     headers: { ...JSON_HEADERS },
   });
@@ -279,7 +285,7 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
   }
 
   // ④ 校验：能拉到课程列表即视为登录完成（会话 cookie 已落 jar）
-  const listRes = await http.request(`${TUOJ_BASE}/api/course/list`, {
+  const listRes = await http.request(`${base}/api/course/list`, {
     direct: true,
     headers: { ...JSON_HEADERS },
   });
@@ -300,5 +306,5 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
     );
   }
 
-  return { cookie: jarCookieString(http, TUOJ_BASE), courseCount: list.courses.length };
+  return { cookie: jarCookieString(http, base), courseCount: list.courses.length };
 }

@@ -1,5 +1,5 @@
 /**
- * 外部作业源登录客户端（雨课堂 / TUOJ / Tyche）。
+ * 外部作业源登录客户端（雨课堂 / TUOJ 系 / Tyche / DSA OJ）。
  *
  * 目标：一般用户**不需要手动爬 Cookie** —— 各平台用自己的账号体系登录，登录成功后
  * 由本模块从**传输层自定义头**里取回会话 Cookie，拼成后续只读拉取所需的 `Cookie:` 串。
@@ -15,6 +15,7 @@
  */
 import type { FetchLike } from "../http.js";
 import { BASE as TUOJ_BASE } from "./tuoj.js";
+import { BASE as DSA_BASE } from "./dsa.js";
 import { BASE as TYCHE_BASE, basicHeader } from "./tyche.js";
 
 const YKT_BASE = "https://pro.yuketang.cn";
@@ -180,28 +181,73 @@ export async function yuketangVerifyLogin(
   return { cookie: yuketangBuildCookie(pairs) };
 }
 
-/* ── TUOJ（用户名 + 密码） ── */
+/* ── TUOJ 系（用户名 + 密码；AI 版 / 经典版仅 base 不同） ── */
 
-/** POST /api/user/login {username,password}；成功 Set-Cookie session / session.sig。 */
+/** POST {base}/api/user/login {username,password}；成功 Set-Cookie session / session.sig。
+ *  R15 20.2：`base` 缺省 AI 版；经典版传 `TUOJ_CLASSIC_BASE`。 */
 export async function tuojLogin(
   username: string,
   password: string,
   fetchLike: FetchLike,
+  base: string = TUOJ_BASE,
 ): Promise<ExtHwLoginResult> {
   const u = username.trim();
   if (!u) throw new Error("请输入 TUOJ 用户名");
   if (!password) throw new Error("请输入 TUOJ 密码");
   const { res, json } = await postJson(
     fetchLike,
-    `${TUOJ_BASE}/api/user/login`,
+    `${base}/api/user/login`,
     { username: u, password },
-    { Origin: TUOJ_BASE, Referer: `${TUOJ_BASE}/` },
+    { Origin: base, Referer: `${base}/` },
   );
   const pairs = cookiePairs(readSetCookies(res));
   if (pairs.size === 0) {
     const err = json && typeof json["error"] === "string" ? json["error"] : `HTTP ${res.status}`;
     throw new Error(`TUOJ 登录失败：${err}`);
   }
+  return { cookie: serialize(pairs) };
+}
+
+/* ── DSA OJ（邮箱 + 密码；老式 form-urlencoded） ── */
+
+/**
+ * POST `user.php` `{action:"login", username:<邮箱>, password}`；成功 `{error:0}` 并
+ * Set-Cookie 会话。R15 20.2：DSA 无统一认证，仅手动账密。
+ */
+export async function dsaLogin(
+  email: string,
+  password: string,
+  fetchLike: FetchLike,
+): Promise<ExtHwLoginResult> {
+  const u = email.trim();
+  if (!u) throw new Error("请输入 DSA OJ 邮箱");
+  if (!password) throw new Error("请输入 DSA OJ 密码");
+  const res = await fetchLike(`${DSA_BASE}user.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": UA,
+      Accept: "application/json, text/plain, */*",
+      Origin: "https://dsa.cs.tsinghua.edu.cn",
+      Referer: DSA_BASE,
+    },
+    body: new URLSearchParams({ action: "login", username: u, password }).toString(),
+  });
+  const text = await res.text();
+  let json: Record<string, unknown> | null = null;
+  try {
+    json = JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    json = null;
+  }
+  // 先看业务错误码（error≠0 时即使有 Set-Cookie 也不算登录成功）
+  const code = json ? Number(json["error"]) : 0;
+  if (json && Number.isFinite(code) && code !== 0) {
+    const msg = typeof json["message"] === "string" ? json["message"] : `error=${code}`;
+    throw new Error(`DSA OJ 登录失败：${msg}`);
+  }
+  const pairs = captureCookies(res);
+  if (pairs.size === 0) throw noCookieError("DSA OJ");
   return { cookie: serialize(pairs) };
 }
 

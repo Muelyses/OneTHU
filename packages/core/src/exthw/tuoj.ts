@@ -1,5 +1,5 @@
 /**
- * TUOJ（ai.tuoj.thusaac.com）只读客户端。
+ * TUOJ 系（AI 版 / 经典版）只读客户端。
  *
  * 实测（2026-09-18）：
  * - 课程 GET /api/course/list → courses[].{_id, title}
@@ -8,7 +8,10 @@
  * ⚠️ metadata / schedule / status **嵌在 context 下**（不是顶层）
  * - DDL = context.schedule.effectiveEndAt || context.schedule.endAt（**毫秒**）
  * - 会话失效 → HTTP 401/403
- * ⚠️ 服务端地址硬编码，凭据不再携带 base
+ *
+ * R15 20.1：经典 TUOJ（oj.cs.tsinghua.edu.cn）与 AI 版**同一套代码**，接口行为一致，
+ * 故本客户端按 `base` / `id` / `name` 参数化复用（CAS 漫游入口见 tuojCas.ts）。
+ * ⚠️ 服务端地址在各自源的组装处指定，凭据不再携带 base。
  *
  * 会话来源（二选一，均由调用方注入）：
  * - 显式 Cookie 串（账号密码登录 / 手动粘贴）→ 直接塞 `Cookie:` 头；
@@ -16,9 +19,11 @@
  *   清华统一认证漫游（tuojCas.ts）建立的会话自动随请求携带。
  */
 import type { FetchLike } from "../http.js";
-import type { ExternalHomework, HomeworkSource } from "./types.js";
+import type { ExtHwSourceId, ExternalHomework, HomeworkSource } from "./types.js";
 
 export const BASE = "https://ai.tuoj.thusaac.com";
+/** 经典 TUOJ（R15 20.1；与 AI 版同代码，仅 base / CAS 回调不同） */
+export const CLASSIC_BASE = "https://oj.cs.tsinghua.edu.cn";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
 
@@ -43,6 +48,17 @@ interface TuojCred {
   cookie: string;
   /** 登录用户名（学号）；仅当 `POST /api/user/lookup` 不可用时作为匹配回退 */
   username?: string;
+}
+
+/** R15 20.2：TUOJ 系客户端参数（经典版复用同一实现） */
+export interface TuojSourceConfig {
+  /** 服务端 base；缺省 AI 版 `BASE` */
+  base?: string;
+  /** 源 id；缺省 `"tuoj"`（经典版传 `"tuojClassic"`） */
+  id?: ExtHwSourceId;
+  /** 展示名；缺省 `"TUOJ"`（组装层传 `SOURCE_NAMES[id]`，此处保持仅 type-only 依赖，
+   *  以便 tools/*.mjs 直引本文件） */
+  name?: string;
 }
 
 /** 毫秒时间戳 → "YYYY-MM-DD HH:MM"（本地时区） */
@@ -131,13 +147,20 @@ async function fetchTuojStatus(
   return { submitted: keys.length > 0, submittedCount: keys.length > 0 ? keys.length : undefined };
 }
 
-export function createTuojSource(cred: TuojCred, fetchLike: FetchLike, days: number): HomeworkSource {
-  const base = BASE;
+export function createTuojSource(
+  cred: TuojCred,
+  fetchLike: FetchLike,
+  days: number,
+  config: TuojSourceConfig = {},
+): HomeworkSource {
+  const base = config.base ?? BASE;
+  const id = config.id ?? "tuoj";
+  const name = config.name ?? "TUOJ";
   const cookie = (cred.cookie ?? "").trim();
   const fallbackUsername = (cred.username ?? "").trim() || undefined;
   return {
-    id: "tuoj",
-    name: "TUOJ",
+    id,
+    name,
     async fetch(): Promise<ExternalHomework[]> {
       const courseBody = await getJson(fetchLike, `${base}/api/course/list`, cookie);
       const courses = Array.isArray(courseBody["courses"])
@@ -185,8 +208,8 @@ export function createTuojSource(cred: TuojCred, fetchLike: FetchLike, days: num
                 /* 状态查询失败：保守保持未提交 */
               }
               const hw: ExternalHomework = {
-                id: `tuoj-${cid}-${tid}`,
-                source: "tuoj",
+                id: `${id}-${cid}-${tid}`,
+                source: id,
                 courseName,
                 title: String(metadata["title"] ?? ct["title"] ?? "作业"),
                 deadline: fmtLocal(msRaw),

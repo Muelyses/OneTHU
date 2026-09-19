@@ -11,8 +11,10 @@
  *  - 附带校验：雨课堂状态请求带 XTBZ: ykt；TUOJ lookup 用 POST
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
-import { createTuojSource } from "../packages/core/src/exthw/tuoj.ts";
+import { createTuojSource, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
 import { createTycheSource } from "../packages/core/src/exthw/tyche.ts";
+import { createDsaSource, parseDsaDate, DsaSessionError, isDsaSessionError } from "../packages/core/src/exthw/dsa.ts";
+import { SOURCE_NAMES } from "../packages/core/src/exthw/types.ts";
 import * as nodeModule from "node:module";
 
 /* R12 17.1：编排层 `exthw/index.ts` 内部用 `.js` 相对导入（TS bundler 解析），
@@ -49,16 +51,18 @@ function eq(actual, expected, msg) {
   ok(actual === expected, `${msg}（期望 ${JSON.stringify(expected)}，实际 ${JSON.stringify(actual)}）`);
 }
 
-/** 构造一个按 URL 路由的 mock fetchLike；记录每次请求 {url, method, headers} */
+/** 构造一个按 URL 路由的 mock fetchLike；记录每次请求 {url, method, headers, body}。
+ *  R15：`match` 第三参拿到请求体（DSA 同一 URL 按 action 分流）。 */
 function makeFetch(routes) {
   const calls = [];
   const fn = async (url, init = {}) => {
     const method = (init.method ?? "GET").toUpperCase();
     const headers = {};
     for (const [k, v] of Object.entries(init.headers ?? {})) headers[k.toLowerCase()] = v;
-    calls.push({ url, method, headers });
+    const body = typeof init.body === "string" ? init.body : "";
+    calls.push({ url, method, headers, body });
     for (const r of routes) {
-      if (r.match(url, method)) {
+      if (r.match(url, method, body)) {
         if (r.throw) throw new Error(r.throw);
         const status = r.status ?? 200;
         return new Response(typeof r.body === "string" ? r.body : JSON.stringify(r.body ?? {}), {
@@ -78,6 +82,11 @@ const pad = (n) => String(n).padStart(2, "0");
 const localDT = (ms) => {
   const d = new Date(ms);
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};
+/** 外部源统一 DDL 口径 "YYYY-MM-DD HH:MM"（本地时区） */
+const localMin = (ms) => {
+  const d = new Date(ms);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
 /* ───────────────────────── 雨课堂 ───────────────────────── */
@@ -286,6 +295,158 @@ console.log("\n[Tyche]");
   );
 }
 
+/* ───────── R15 20.2：经典 TUOJ（复用 tuoj 客户端，仅参数化 base/id/name） ───────── */
+console.log("\n[经典 TUOJ]");
+{
+  const fetchLike = makeFetch([
+    { match: (u, m) => u.endsWith("/api/user/lookup") && m === "POST", body: { user: { _id: 1001, username: "2026000000" } } },
+    { match: (u) => u.endsWith("/api/course/list"), body: { courses: [{ _id: 8, title: "数据结构" }] } },
+    { match: (u) => u.endsWith("/api/course/8/rank"), body: { courseRank: { contests: [{ _id: 83, title: "hw1" }] } } },
+    { match: (u) => u.endsWith("/api/course/8/contest/83/context"), body: { context: { metadata: { title: "hw1" }, schedule: { endAt: FUTURE } } } },
+    { match: (u) => u.endsWith("/api/course/8/contest/83/ranklist"), body: { ranklist: { players: [{ _id: 1001, username: "2026000000", details: { "0": {} } }] } } },
+  ]);
+  const src = createTuojSource({ cookie: "session=x" }, fetchLike, 30, {
+    base: TUOJ_CLASSIC_BASE,
+    id: "tuojClassic",
+    name: SOURCE_NAMES.tuojClassic,
+  });
+  const items = await src.fetch();
+  eq(src.id, "tuojClassic", "源 id = tuojClassic");
+  eq(src.name, SOURCE_NAMES.tuojClassic, "展示名取 SOURCE_NAMES.tuojClassic");
+  eq(items.length, 1, "拉到 1 条作业");
+  eq(items[0]?.source, "tuojClassic", "条目 source = tuojClassic");
+  eq(items[0]?.id, "tuojClassic-8-83", "条目 id 前缀按源");
+  eq(items[0]?.submitted, true, "ranklist 命中自己且 details 非空 → 已提交");
+  ok(
+    fetchLike.calls.length > 0 && fetchLike.calls.every((c) => c.url.startsWith(TUOJ_CLASSIC_BASE)),
+    "全部请求走经典版 base",
+  );
+  ok(items[0]?.url?.startsWith(TUOJ_CLASSIC_BASE), "详情 url 走经典版 base");
+}
+{
+  // 不传 config 时仍是 AI 版（零回归）
+  const fetchLike = makeFetch([{ match: () => true, body: { courses: [] } }]);
+  const src = createTuojSource({ cookie: "s=x" }, fetchLike, 30);
+  eq(src.id, "tuoj", "缺省 id = tuoj");
+  eq(src.name, "TUOJ", "缺省展示名回退 TUOJ（组装层传 SOURCE_NAMES）");
+  await src.fetch();
+  ok(
+    fetchLike.calls.every((c) => c.url.startsWith("https://ai.tuoj.thusaac.com")),
+    "缺省 base 仍为 AI 版",
+  );
+}
+
+/* ───────── R15 20.2：DSA OJ（邮箱账密；endDate 容错解析） ───────── */
+console.log("\n[DSA OJ]");
+{
+  // endDate 容错解析（纯函数，格式不确定）
+  const local = (y, mo, d, h = 0, mi = 0, s = 0) => new Date(y, mo - 1, d, h, mi, s).getTime();
+  eq(parseDsaDate("2026-09-27 23:59:59"), local(2026, 9, 27, 23, 59, 59), "空格分隔按本地时间");
+  eq(parseDsaDate("2026-09-27T23:59:59"), local(2026, 9, 27, 23, 59, 59), "ISO T 分隔按本地时间");
+  eq(parseDsaDate("2026/09/27 23:59:59"), local(2026, 9, 27, 23, 59, 59), "斜杠分隔按本地时间");
+  eq(parseDsaDate("2026-09-27"), local(2026, 9, 27), "仅日期按本地零点");
+  eq(parseDsaDate("2026-09-27T23:59:59+08:00"), Date.UTC(2026, 8, 27, 15, 59, 59), "显式 +08:00 按绝对时刻");
+  eq(parseDsaDate("2026-09-27T15:59:59Z"), Date.UTC(2026, 8, 27, 15, 59, 59), "Z 按 UTC");
+  eq(parseDsaDate("1758960000000"), 1758960000000, "13 位数字串按毫秒");
+  eq(parseDsaDate("1758960000"), 1758960000000, "10 位数字串按秒");
+  eq(parseDsaDate(1758960000000), 1758960000000, "数字 ms 原样");
+  ok(Number.isNaN(parseDsaDate("bad-format")), "无法识别 → NaN");
+  ok(Number.isNaN(parseDsaDate("")), "空串 → NaN");
+  ok(Number.isNaN(parseDsaDate(undefined)), "非字符串 → NaN");
+}
+{
+  // 课程列表 + 逐课作业（相对未来日期，确保在时间窗内）
+  const plusDays = (n) => new Date(Date.now() + n * 86400000);
+  const fmtD = (d, sep) => {
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}${sep}${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  };
+  const d1 = plusDays(3);
+  const expected = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate(), d1.getHours(), d1.getMinutes(), d1.getSeconds()).getTime();
+  const fetchLike = makeFetch([
+    { match: (u, m, b) => u.endsWith("/user.php") && b.includes("action=checklogin"), body: { islogin: true } },
+    {
+      match: (u, m, b) => u.endsWith("/course.php") && b.includes("action=usercourses"),
+      body: { error: 0, courseList: [{ courseId: 12, name: "数据结构" }] },
+    },
+    {
+      match: (u, m, b) => u.endsWith("/course.php") && b.includes("action=courseinfo"),
+      body: {
+        error: 0,
+        courseList: [
+          {
+            myRole: 1,
+            assignmentList: [
+              { id: 1, name: "空格日期", endDate: fmtD(d1, " ") },
+              { id: 2, name: "ISO 日期", endDate: fmtD(d1, "T") },
+              { id: 3, name: "斜杠日期", endDate: fmtD(d1, " ").replace(/-/g, "/") },
+              { id: 4, name: "坏格式", endDate: "not-a-date" },
+            ],
+          },
+        ],
+      },
+    },
+  ]);
+  const src = createDsaSource({ cookie: "PHPSESSID=x", username: "me@mails.tsinghua.edu.cn" }, fetchLike, 30);
+  const items = await src.fetch();
+  eq(src.id, "dsa", "源 id = dsa");
+  eq(src.name, "DSA OJ", "展示名 = DSA OJ");
+  eq(items.length, 3, "坏格式 endDate 被跳过，其余 3 条保留");
+  const byTitle = new Map(items.map((i) => [i.title, i]));
+  eq(byTitle.get("空格日期")?.deadline, localMin(expected), "空格日期 DDL 正确");
+  eq(byTitle.get("ISO 日期")?.deadline, localMin(expected), "ISO 日期 DDL 正确");
+  eq(byTitle.get("斜杠日期")?.deadline, localMin(expected), "斜杠日期 DDL 正确");
+  eq(byTitle.get("空格日期")?.courseName, "数据结构", "课程名取 usercourses");
+  eq(byTitle.get("空格日期")?.submitted, false, "提交状态语义未确认 → 保守未提交");
+  ok(byTitle.get("空格日期")?.url?.includes("course_id=12"), "详情 url 带 course_id");
+  const checkCalls = fetchLike.calls.filter((c) => c.url.endsWith("/user.php"));
+  ok(
+    checkCalls.every((c) => c.method === "POST" && c.headers["content-type"] === "application/x-www-form-urlencoded"),
+    "会话检查走 POST form-urlencoded",
+  );
+  ok(checkCalls.every((c) => c.headers["cookie"] === "PHPSESSID=x"), "请求携带会话 Cookie");
+}
+{
+  // checklogin=false → 类型化会话失效错误
+  const fetchLike = makeFetch([
+    { match: (u, m, b) => u.endsWith("/user.php") && b.includes("action=checklogin"), body: { islogin: false } },
+  ]);
+  const src = createDsaSource({ cookie: "PHPSESSID=x" }, fetchLike, 30);
+  let err;
+  try {
+    await src.fetch();
+  } catch (e) {
+    err = e;
+  }
+  ok(isDsaSessionError(err), "checklogin=false → 抛 DsaSessionError");
+  eq(err instanceof DsaSessionError, true, "错误类型为 DsaSessionError");
+}
+{
+  // 会话中途失效：usercourses error≠0 → 类型化错误
+  const fetchLike = makeFetch([
+    { match: (u, m, b) => u.endsWith("/user.php") && b.includes("action=checklogin"), body: { islogin: true } },
+    { match: (u, m, b) => u.endsWith("/course.php") && b.includes("action=usercourses"), body: { error: 1 } },
+  ]);
+  const src = createDsaSource({ cookie: "PHPSESSID=x" }, fetchLike, 30);
+  let err;
+  try {
+    await src.fetch();
+  } catch (e) {
+    err = e;
+  }
+  ok(isDsaSessionError(err), "usercourses error≠0 → 抛 DsaSessionError");
+}
+{
+  // 未选课（courseList 空）→ 0 条，不报错
+  const fetchLike = makeFetch([
+    { match: (u, m, b) => u.endsWith("/user.php") && b.includes("action=checklogin"), body: { islogin: true } },
+    { match: (u, m, b) => u.endsWith("/course.php") && b.includes("action=usercourses"), body: { error: 0, courseList: [] } },
+  ]);
+  const src = createDsaSource({ cookie: "PHPSESSID=x" }, fetchLike, 30);
+  const items = await src.fetch();
+  eq(items.length, 0, "未选课 → 0 条且不报错");
+}
+
 /* ───────── R12 17.1：TUOJ「已配置但会话失效」→ force 漫游 → 成功重拉 ───────── */
 console.log("\n[TUOJ 失效自动重漫游 R12 17.1]");
 if (!canResolveTs) {
@@ -390,6 +551,94 @@ if (!canResolveTs) {
     eq(roamCalls, 1, "③仍尝试过一次漫游");
     eq(fetchLike.listHits(), 1, "③不重拉");
     ok(r.errors.tuoj?.includes("会话已失效"), "③维持原 401 错误与设置页引导");
+  }
+
+  // ④（R15 20.2）经典 TUOJ 失效 → 按源 force 漫游 → 重拉（泛化后不再只认 tuoj）
+  {
+    const creds = { tuojClassic: { cookie: "old", via: "password" } };
+    const fetchLike = makeTuojFetch([401, 200]);
+    const seen = [];
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      rerouteTuoj: async (source) => {
+        seen.push(source);
+        creds.tuojClassic = { cookie: "new", via: "cas" }; // 模拟经典版 CAS 漫游覆盖凭据
+        return true;
+      },
+    });
+    eq(seen.length, 1, "④经典 TUOJ 触发一次漫游");
+    eq(seen[0], "tuojClassic", "④漫游钩子收到源 id = tuojClassic");
+    eq(r.reroutedTuoj, true, "④reroutedTuoj=true");
+    eq(r.reroutedSources.join(","), "tuojClassic", "④reroutedSources 记录经典版");
+    eq(r.items.length, 1, "④重拉成功拉到 1 条");
+    const listCalls = fetchLike.calls.filter((c) => c.url.endsWith("/api/course/list"));
+    eq(listCalls[0]?.headers["cookie"], "old", "④首发用旧 cookie");
+    eq(listCalls[1]?.headers["cookie"], "new", "④重拉用漫游后的新 cookie");
+    ok(
+      listCalls.every((c) => c.url.startsWith("https://oj.cs.tsinghua.edu.cn")),
+      "④请求走经典版 base",
+    );
+  }
+}
+
+/* ───────── R15 20.2：DSA 登录 + 经典 TUOJ 账密 base 参数化（动态引 core 登录层） ───────── */
+console.log("\n[DSA 登录]");
+if (!canResolveTs) {
+  console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
+} else {
+  const { dsaLogin, tuojLogin } = await import("../packages/core/src/exthw/login.ts");
+  const { CLASSIC_BASE } = await import("../packages/core/src/exthw/tuoj.ts");
+  {
+    const calls = [];
+    const fetchLike = async (url, init = {}) => {
+      calls.push({ url: String(url), method: init.method, body: String(init.body ?? "") });
+      return new Response(JSON.stringify({ error: 0 }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "x-onethu-set-cookie": JSON.stringify(["PHPSESSID=abc; Path=/"]),
+        },
+      });
+    };
+    const r = await dsaLogin("me@mails.tsinghua.edu.cn", "pw", fetchLike);
+    eq(r.cookie, "PHPSESSID=abc", "DSA 登录取回会话 Cookie");
+    ok(calls[0].url.endsWith("/oj/user.php"), "DSA 登录打到 user.php");
+    ok(
+      calls[0].body.includes("action=login") && calls[0].body.includes("username=me%40mails.tsinghua.edu.cn"),
+      "DSA 登录 form 编码含 action / username",
+    );
+  }
+  {
+    const fetchLike = async () =>
+      new Response(JSON.stringify({ error: 1, message: "邮箱或密码错误" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    let err;
+    try {
+      await dsaLogin("a@b.c", "x", fetchLike);
+    } catch (e) {
+      err = e;
+    }
+    ok(err instanceof Error && err.message.includes("邮箱或密码错误"), "DSA 登录 error≠0 → 抛服务端消息");
+  }
+  {
+    // 经典 TUOJ 账号密码登录走经典 base（base 参数化）
+    const calls = [];
+    const fetchLike = async (url, init = {}) => {
+      calls.push({ url: String(url), method: init.method });
+      return new Response(JSON.stringify({}), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "x-onethu-set-cookie": JSON.stringify(["session=x; Path=/"]),
+        },
+      });
+    };
+    const r = await tuojLogin("2026000000", "pw", fetchLike, CLASSIC_BASE);
+    eq(r.cookie, "session=x", "经典 TUOJ 账密登录取回 Cookie");
+    ok(calls[0].url.startsWith(CLASSIC_BASE), "经典 TUOJ 账密登录打到经典 base");
   }
 }
 

@@ -1,16 +1,19 @@
 /**
- * 外部作业源冒烟脚本（真连三平台）。
+ * 外部作业源冒烟脚本（真连各平台）。
  *
  * 运行：source ~/.onethu-creds.env && node tools/exthw-smoke.mjs
- * 环境变量：YKT_COOKIE / YKT_UV / TUOJ_COOKIE / TYCHE_BASIC / TYCHE_COOKIE
+ * 环境变量：YKT_COOKIE / YKT_UV / TUOJ_COOKIE / TUOJ_CLASSIC_COOKIE / TYCHE_BASIC /
+ *           TYCHE_COOKIE / DSA_COOKIE
  * 逐源打印条数 + 条目（含 `submitted` 提交状态）；单源失败打印错误但不中断。
+ * 未提供某源凭据 → 静默跳过该源（不报错、不计失败）。
  *
  * 注意：core 源码内部用 .js 扩展名互相引用（TS bundler 解析），Node 类型剥离
- * 不能把 .js 映射到 .ts —— 故这里直接引入三个源文件（它们仅有 type-only 依赖）。
+ * 不能把 .js 映射到 .ts —— 故这里直接引入各源文件（它们仅有 type-only 相对依赖）。
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
-import { createTuojSource } from "../packages/core/src/exthw/tuoj.ts";
+import { createTuojSource, CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
 import { createTycheSource } from "../packages/core/src/exthw/tyche.ts";
+import { createDsaSource } from "../packages/core/src/exthw/dsa.ts";
 
 /** Node 原生 fetch 包成 FetchLike */
 const fetchLike = (url, init) => fetch(url, init);
@@ -19,16 +22,29 @@ const env = process.env;
 const creds = {
   yuketang: env.YKT_COOKIE ? { cookie: env.YKT_COOKIE, uvId: env.YKT_UV || "2598" } : null,
   tuoj: env.TUOJ_COOKIE ? { cookie: env.TUOJ_COOKIE } : null,
+  tuojClassic: env.TUOJ_CLASSIC_COOKIE ? { cookie: env.TUOJ_CLASSIC_COOKIE } : null,
   tyche: env.TYCHE_COOKIE ? { basic: env.TYCHE_BASIC || "cs:thuc++", cookie: env.TYCHE_COOKIE } : null,
+  dsa: env.DSA_COOKIE ? { cookie: env.DSA_COOKIE } : null,
 };
 
 const sources = [];
 if (creds.yuketang) sources.push(createYuketangSource(creds.yuketang, fetchLike, 30));
 if (creds.tuoj) sources.push(createTuojSource(creds.tuoj, fetchLike, 30));
+if (creds.tuojClassic)
+  sources.push(
+    createTuojSource(creds.tuojClassic, fetchLike, 30, {
+      base: CLASSIC_BASE,
+      id: "tuojClassic",
+      name: "TUOJ（经典版）",
+    }),
+  );
 if (creds.tyche) sources.push(createTycheSource(creds.tyche, fetchLike, 30));
+if (creds.dsa) sources.push(createDsaSource(creds.dsa, fetchLike, 30));
 
 if (sources.length === 0) {
-  console.log("未提供任何凭据（YKT_COOKIE / TUOJ_COOKIE / TYCHE_COOKIE）——无事可做。");
+  console.log(
+    "未提供任何凭据（YKT_COOKIE / TUOJ_COOKIE / TUOJ_CLASSIC_COOKIE / TYCHE_COOKIE / DSA_COOKIE）——无事可做。",
+  );
   process.exit(0);
 }
 

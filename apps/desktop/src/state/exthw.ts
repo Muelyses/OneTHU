@@ -10,7 +10,7 @@
  * 登录：设置页调用 `extHwLogin.*`（内部走 core 的登录客户端 + universalFetch），
  * 成功后把 Cookie 存进本模块，用户无需手动爬 Cookie。
  *
- * 拉取：三源并发，Promise.allSettled —— 单源失败只记该源错误，其余照常；
+ * 拉取：各源并发，Promise.allSettled —— 单源失败只记该源错误，其余照常；
  * 数据走内存缓存 + 订阅（useSyncExternalStore），不落盘。
  * 未配置任何凭据时：不请求、items 为空 —— 与改动前行为完全一致（零回归）。
  */
@@ -20,6 +20,8 @@ import {
   refreshExternalHomework,
   runYuketangQrLogin,
   SOURCE_NAMES,
+  TUOJ_CLASSIC_BASE,
+  dsaLogin,
   tuojLogin,
   tuojRoam,
   tycheLogin,
@@ -31,6 +33,7 @@ import type {
   ExtHwSourceId,
   ExternalHomework,
   Homework,
+  TuojSourceId,
   YktQrPhase,
   YktQrPollResult,
 } from "@onethu/core";
@@ -41,10 +44,20 @@ export const EXTHW_KEY = "onethu.exthw.v1";
 export const EXTHW_SALT_KEY = "onethu.exthw.salt.v1";
 /** 引导横幅「知道了」的忽略标记（沿用 onethu.* 前缀） */
 export const EXTHW_GUIDE_KEY = "onethu.exthw.guide.dismissed";
-/** TUOJ 统一认证自动登录「上次尝试」存档键（失败/无账号后 24h 内不重复自动尝试） */
-export const EXTHW_TUOJ_AUTO_KEY = "onethu.exthw.tuojAuto.v1";
-/** 用户显式退出 TUOJ 的抑制标记（R12 17.2）：未再次手动登录前不自动漫游 */
-export const EXTHW_TUOJ_LOGOUT_KEY = "onethu.exthw.tuojLogout.v1";
+/** TUOJ 统一认证自动登录「上次尝试」存档键（失败/无账号后 24h 内不重复自动尝试）。
+ *  R15 20.2：按源分键（tuoj 沿用旧键，经典版新键）。 */
+export const EXTHW_TUOJ_AUTO_KEYS: Record<TuojSourceId, string> = {
+  tuoj: "onethu.exthw.tuojAuto.v1",
+  tuojClassic: "onethu.exthw.tuojClassicAuto.v1",
+};
+/** 用户显式退出 TUOJ 系的抑制标记（R12 17.2；R15 按源分键） */
+export const EXTHW_TUOJ_LOGOUT_KEYS: Record<TuojSourceId, string> = {
+  tuoj: "onethu.exthw.tuojLogout.v1",
+  tuojClassic: "onethu.exthw.tuojClassicLogout.v1",
+};
+/** 兼容旧名（外部仅测试/诊断可能引用 AI 版键） */
+export const EXTHW_TUOJ_AUTO_KEY = EXTHW_TUOJ_AUTO_KEYS.tuoj;
+export const EXTHW_TUOJ_LOGOUT_KEY = EXTHW_TUOJ_LOGOUT_KEYS.tuoj;
 /** 自动尝试频控窗口：24h（R11 16.2） */
 export const TUOJ_AUTO_THROTTLE_MS = 24 * 60 * 60 * 1000;
 /** 派生密钥的固定串（与随机 salt 一起喂 PBKDF2；公开写在源码里也无妨——salt 才是个体差异） */
@@ -203,8 +216,16 @@ export function hasAnyExtHwCreds(c: ExtHwCreds = creds): boolean {
     c.yuketang?.cookie?.trim() ||
       c.tuoj?.cookie?.trim() ||
       c.tuoj?.via === "cas" ||
-      c.tyche?.cookie?.trim(),
+      c.tuojClassic?.cookie?.trim() ||
+      c.tuojClassic?.via === "cas" ||
+      c.tyche?.cookie?.trim() ||
+      c.dsa?.cookie?.trim(),
   );
+}
+
+/** 是否 TUOJ 系源（tuoj / tuojClassic）——自动漫游与凭据清理按源区分 */
+export function isTuojFamilyId(id: ExtHwSourceId): id is TuojSourceId {
+  return id === "tuoj" || id === "tuojClassic";
 }
 
 /** 是否已「知道了」外部作业源引导横幅 */
@@ -254,13 +275,16 @@ export const extHwLogin = {
       onPhase: opts.onPhase,
       pollTimeoutMs: opts.pollTimeoutMs,
     }),
-  /** TUOJ 清华统一认证漫游（零凭据）：无直连 id 会话时先按内存账密直登 id
+  /** TUOJ 系清华统一认证漫游（零凭据）：无直连 id 会话时先按内存账密直登 id
    *  （InfoClient.ensureDirectIdLogin，凭据来自 CampusSession，零用户输入），再走
    *  漫游表单；会话活着但 CAS 返回 checkSingle 指纹确认页时经 confirmIdCheckSingle
    *  确认取票（R10 15.1-1，修「白登入」误判）。会话落在共享 HttpClient 的 jar 里，
-   *  随后 persist() 快照进本机会话存档。 */
-  tuojCas: async (): Promise<{ cookie: string }> => {
+   *  随后 persist() 快照进本机会话存档。
+   *  R15 20.2：`source` 区分 AI 版 / 经典版（经典版传 `TUOJ_CLASSIC_BASE`，CAS url 仍取
+   *  服务端响应）。 */
+  tuojCas: async (source: TuojSourceId = "tuoj"): Promise<{ cookie: string }> => {
     const r = await tuojRoam(http, {
+      base: source === "tuojClassic" ? TUOJ_CLASSIC_BASE : undefined,
       ensureIdSession: (u) => info.ensureDirectIdLogin(u),
       hasIdCredentials: () => info.hasIdCredentials(),
       confirmIdCheckSingle: (u) => info.confirmIdCheckSingle(u),
@@ -269,12 +293,15 @@ export const extHwLogin = {
     return { cookie: r.cookie };
   },
   tuoj: (username: string, password: string) => tuojLogin(username, password, universalFetch),
+  tuojClassic: (username: string, password: string) =>
+    tuojLogin(username, password, universalFetch, TUOJ_CLASSIC_BASE),
+  dsa: (email: string, password: string) => dsaLogin(email, password, universalFetch),
   tyche: (username: string, password: string) => tycheLogin(username, password, universalFetch),
 };
 
-/* ── TUOJ 统一认证自动登录（R11 16.2）──
- * extHw 刷新时若 TUOJ 未配置，静默尝试一次 CAS 漫游；任何失败都不抛出、不打扰用户。
- * 成功 → 写入凭据（同手动登录）；CAS 通过但课程列表 401/403 → no-courses（可能未注册/
+/* ── TUOJ 系统一认证自动登录（R11 16.2；R15 20.2 按源泛化）──
+ * extHw 刷新时若某 TUOJ 源未配置，静默尝试一次 CAS 漫游；任何失败都不抛出、不打扰用户。
+ * 成功 → 写入该源凭据（同手动登录）；CAS 通过但课程列表 401/403 → no-courses（可能未注册/
  * 未选课，不算错误）；其余 → failed（仅设置页展示，引导手动）。失败/无账号后 24h 频控。 */
 
 export type TuojAutoKind = "idle" | "running" | "ok" | "no-courses" | "failed";
@@ -287,40 +314,47 @@ export interface TuojAutoStatus {
   message?: string;
 }
 
-let tuojAuto: TuojAutoStatus = { kind: "idle" };
-/** 用户显式退出 TUOJ 后置位：抑制「未配置即自动漫游」（R12 17.2）。手动登录会解除。 */
-let tuojAutoSuppressed = false;
+/** 每个 TUOJ 系源各一份自动登录状态（AI 版 / 经典版互不影响） */
+export type TuojAutoMap = Record<TuojSourceId, TuojAutoStatus>;
+
+const idleTuojAuto = (): TuojAutoMap => ({ tuoj: { kind: "idle" }, tuojClassic: { kind: "idle" } });
+
+let tuojAuto: TuojAutoMap = idleTuojAuto();
+/** 用户显式退出某 TUOJ 源后置位：抑制该源「未配置即自动漫游」（R12 17.2）。手动登录会解除。 */
+let tuojAutoSuppressed: Record<TuojSourceId, boolean> = { tuoj: false, tuojClassic: false };
 
 /** 从 localStorage 回灌自动登录结果（含频控时间戳）；失败静默降级为 idle */
 function loadTuojAuto(): void {
-  try {
-    tuojAutoSuppressed = localStorage.getItem(EXTHW_TUOJ_LOGOUT_KEY) === "1";
-  } catch {
-    tuojAutoSuppressed = false;
-  }
-  try {
-    const raw = localStorage.getItem(EXTHW_TUOJ_AUTO_KEY);
-    if (!raw) return;
-    const j = JSON.parse(raw) as { outcome?: string; at?: number; message?: string };
-    if (
-      j &&
-      typeof j.at === "number" &&
-      (j.outcome === "ok" || j.outcome === "no-courses" || j.outcome === "failed")
-    ) {
-      tuojAuto = { kind: j.outcome, at: j.at, message: j.message };
+  for (const source of ["tuoj", "tuojClassic"] as const) {
+    try {
+      tuojAutoSuppressed[source] = localStorage.getItem(EXTHW_TUOJ_LOGOUT_KEYS[source]) === "1";
+    } catch {
+      tuojAutoSuppressed[source] = false;
     }
-  } catch {
-    /* 存储不可用 / 损坏：保持 idle */
+    try {
+      const raw = localStorage.getItem(EXTHW_TUOJ_AUTO_KEYS[source]);
+      if (!raw) continue;
+      const j = JSON.parse(raw) as { outcome?: string; at?: number; message?: string };
+      if (
+        j &&
+        typeof j.at === "number" &&
+        (j.outcome === "ok" || j.outcome === "no-courses" || j.outcome === "failed")
+      ) {
+        tuojAuto[source] = { kind: j.outcome, at: j.at, message: j.message };
+      }
+    } catch {
+      /* 存储不可用 / 损坏：保持 idle */
+    }
   }
 }
 
-/** 更新自动登录状态；终态落盘（running/idle 不覆盖已有频控记录）并通知订阅者 */
-function setTuojAuto(next: TuojAutoStatus): void {
-  tuojAuto = next;
+/** 更新某源自动登录状态；终态落盘（running/idle 不覆盖已有频控记录）并通知订阅者 */
+function setTuojAuto(source: TuojSourceId, next: TuojAutoStatus): void {
+  tuojAuto[source] = next;
   if (next.kind === "ok" || next.kind === "no-courses" || next.kind === "failed") {
     try {
       localStorage.setItem(
-        EXTHW_TUOJ_AUTO_KEY,
+        EXTHW_TUOJ_AUTO_KEYS[source],
         JSON.stringify({ outcome: next.kind, at: next.at, message: next.message }),
       );
     } catch {
@@ -330,63 +364,72 @@ function setTuojAuto(next: TuojAutoStatus): void {
   rebuild();
 }
 
-/** 手动登录成功 / 清空后复位自动登录状态（避免旧的「无账号/失败」提示误导）。
+/** 手动登录成功 / 清空后复位某源自动登录状态（避免旧的「无账号/失败」提示误导）。
  *  R12 17.2：同时解除「显式退出」抑制——用户重新登录后自动漫游恢复正常。 */
-export function clearTuojAutoStatus(): void {
-  tuojAuto = { kind: "idle" };
-  tuojAutoSuppressed = false;
+export function clearTuojAutoStatus(source: TuojSourceId): void {
+  tuojAuto[source] = { kind: "idle" };
+  tuojAutoSuppressed[source] = false;
   try {
-    localStorage.removeItem(EXTHW_TUOJ_AUTO_KEY);
-    localStorage.removeItem(EXTHW_TUOJ_LOGOUT_KEY);
+    localStorage.removeItem(EXTHW_TUOJ_AUTO_KEYS[source]);
+    localStorage.removeItem(EXTHW_TUOJ_LOGOUT_KEYS[source]);
   } catch {
     /* 忽略 */
   }
   rebuild();
 }
 
-/** 用户显式退出 TUOJ（R12 17.2）：复位自动登录状态并抑制后续自动漫游，
+/** 用户显式退出某 TUOJ 源（R12 17.2）：复位自动登录状态并抑制后续自动漫游，
  *  否则「未配置 → 下次刷新自动漫游」会把刚退出的登录立刻补回来。 */
-export function markTuojLoggedOut(): void {
-  clearTuojAutoStatus();
-  tuojAutoSuppressed = true;
+export function markTuojLoggedOut(source: TuojSourceId): void {
+  clearTuojAutoStatus(source);
+  tuojAutoSuppressed[source] = true;
   try {
-    localStorage.setItem(EXTHW_TUOJ_LOGOUT_KEY, "1");
+    localStorage.setItem(EXTHW_TUOJ_LOGOUT_KEYS[source], "1");
   } catch {
     /* 存储不可用：内存态仍生效 */
   }
   rebuild();
 }
 
-/** TUOJ 源是否已配置（显式 Cookie 或 CAS 漫游标记任一即算） */
-export function isTuojConfigured(c: ExtHwCreds = creds): boolean {
-  return Boolean(c.tuoj?.cookie?.trim() || c.tuoj?.via === "cas");
+/** 某 TUOJ 系源是否已配置（显式 Cookie 或 CAS 漫游标记任一即算） */
+export function isTuojConfigured(source: TuojSourceId, c: ExtHwCreds = creds): boolean {
+  const cr = c[source];
+  return Boolean(cr?.cookie?.trim() || cr?.via === "cas");
 }
 
 /** 失败/无账号后 24h 内不再自动尝试（成功无需频控——已配置后根本不会走自动） */
-function tuojAutoThrottled(now = Date.now()): boolean {
-  if (tuojAuto.kind !== "failed" && tuojAuto.kind !== "no-courses") return false;
-  return typeof tuojAuto.at === "number" && now - tuojAuto.at < TUOJ_AUTO_THROTTLE_MS;
+function tuojAutoThrottled(source: TuojSourceId, now = Date.now()): boolean {
+  const st = tuojAuto[source];
+  if (st.kind !== "failed" && st.kind !== "no-courses") return false;
+  return typeof st.at === "number" && now - st.at < TUOJ_AUTO_THROTTLE_MS;
 }
 
-/** 静默自动尝试一次 TUOJ 统一认证漫游；永不抛出。
+/** 写入某 TUOJ 源的 CAS 凭据（cookie 可为空——会话在共享 jar 里） */
+async function saveTuojCasCreds(source: TuojSourceId, cookie: string): Promise<void> {
+  const cur = getExtHwCreds();
+  const next: ExtHwCreds = source === "tuoj" ? { ...cur, tuoj: { cookie, via: "cas" } } : { ...cur, tuojClassic: { cookie, via: "cas" } };
+  await saveExtHwCreds(next);
+}
+
+/** 静默自动尝试某 TUOJ 源的一次统一认证漫游；永不抛出。
  *  R12 17.1：`force=true` 绕过 `isTuojConfigured` 前置（「已配置但 cookie 失效」时使用）；
  *  频控保持（failed/no-courses 24h 内不重复，kind=ok 不受限）。
- *  返回 true = 漫游成功且凭据已覆盖保存。 */
-async function maybeAutoTuojCas(opts: { force?: boolean } = {}): Promise<boolean> {
-  if (!opts.force && (isTuojConfigured() || tuojAutoSuppressed)) return false;
-  if (tuojAutoThrottled()) return false;
-  setTuojAuto({ kind: "running" });
+ *  返回 true = 漫游成功且该源凭据已覆盖保存。 */
+async function maybeAutoTuojCas(source: TuojSourceId, opts: { force?: boolean } = {}): Promise<boolean> {
+  if (!opts.force && (isTuojConfigured(source) || tuojAutoSuppressed[source])) return false;
+  if (tuojAutoThrottled(source)) return false;
+  setTuojAuto(source, { kind: "running" });
   try {
-    const r = await extHwLogin.tuojCas();
-    await saveExtHwCreds({ ...getExtHwCreds(), tuoj: { cookie: r.cookie, via: "cas" } });
-    setTuojAuto({ kind: "ok", at: Date.now() });
+    const r = await extHwLogin.tuojCas(source);
+    await saveTuojCasCreds(source, r.cookie);
+    setTuojAuto(source, { kind: "ok", at: Date.now() });
     return true;
   } catch (e) {
     // 失败分支绝不弹错：只记录状态，设置页据此展示手动入口
     if (isTuojNoCoursesError(e)) {
-      setTuojAuto({ kind: "no-courses", at: Date.now() });
+      setTuojAuto(source, { kind: "no-courses", at: Date.now() });
     } else {
-      setTuojAuto({
+      setTuojAuto(source, {
         kind: "failed",
         at: Date.now(),
         message: e instanceof Error ? e.message : String(e),
@@ -396,15 +439,17 @@ async function maybeAutoTuojCas(opts: { force?: boolean } = {}): Promise<boolean
   }
 }
 
-/** 清除单个源的凭据（其余源保留，R12 17.2）；TUOJ 同时复位/抑制自动登录状态。 */
+/** 清除单个源的凭据（其余源保留，R12 17.2）；TUOJ 系同时复位/抑制该源自动登录状态。 */
 export async function removeExtHwCreds(source: ExtHwSourceId): Promise<void> {
   const cur = getExtHwCreds();
   const next: ExtHwCreds = { days: cur.days };
   if (source !== "yuketang") next.yuketang = cur.yuketang;
   if (source !== "tuoj") next.tuoj = cur.tuoj;
+  if (source !== "tuojClassic") next.tuojClassic = cur.tuojClassic;
   if (source !== "tyche") next.tyche = cur.tyche;
+  if (source !== "dsa") next.dsa = cur.dsa;
   await saveExtHwCreds(next);
-  if (source === "tuoj") markTuojLoggedOut();
+  if (isTuojFamilyId(source)) markTuojLoggedOut(source);
 }
 
 /* ── 内存缓存 + 订阅 ── */
@@ -419,8 +464,9 @@ export interface ExtHwSnapshot {
   lastAt: number;
   /** 是否配置了任一源（未配置时调用方应完全走原逻辑） */
   configured: boolean;
-  /** TUOJ 统一认证自动登录状态（R11 16.2；仅自动路径维护，手动登录会复位） */
-  tuojAuto: TuojAutoStatus;
+  /** TUOJ 系统一认证自动登录状态（R11 16.2；R15 按源分：tuoj / tuojClassic；
+   *  仅自动路径维护，手动登录会复位对应源） */
+  tuojAuto: TuojAutoMap;
 }
 
 let items: ExternalHomework[] = [];
@@ -449,14 +495,15 @@ export function getExtHwSnapshot(): ExtHwSnapshot {
 
 let inflight: Promise<void> | null = null;
 
-/** 三源并发拉取（allSettled）；未配置凭据则清空并直接就绪。
- *  R12 17.1：TUOJ 已配置但会话失效（401/403）→ 强制重漫游一次 → 自动重试该源。 */
+/** 各源并发拉取（allSettled）；未配置凭据则清空并直接就绪。
+ *  R12 17.1 / R15 20.2：TUOJ 系任一源已配置但会话失效（401/403）→ 强制重漫游该源一次 → 自动重试。 */
 export function refreshExtHw(): Promise<void> {
   if (inflight) return inflight;
   const run = (async (): Promise<void> => {
     await ensureExtHwCredsLoaded();
-    // R11 16.2：TUOJ 未配置时静默自动漫游一次（永不抛出；失败仅记状态 + 24h 频控）
-    await maybeAutoTuojCas();
+    // R11 16.2：TUOJ 系未配置时静默自动漫游一次（永不抛出；失败仅记状态 + 24h 频控）
+    await maybeAutoTuojCas("tuoj");
+    await maybeAutoTuojCas("tuojClassic");
     if (!hasAnyExtHwCreds()) {
       items = [];
       errors = {};
@@ -467,12 +514,12 @@ export function refreshExtHw(): Promise<void> {
     }
     state = "loading";
     rebuild();
-    // R12 17.1：401/403 → force 重漫游（频控保持）→ 成功则重拉一次；失败保留原 401 错误
+    // R12 17.1：401/403 → 对该源 force 重漫游（频控保持）→ 成功则重拉一次；失败保留原 401 错误
     const next = await refreshExternalHomework({
       getCreds: () => getExtHwCreds(),
       fetchLike: universalFetch,
       http,
-      rerouteTuoj: () => maybeAutoTuojCas({ force: true }),
+      rerouteTuoj: (source) => maybeAutoTuojCas(source, { force: true }),
     });
     items = next.items;
     errors = next.errors;

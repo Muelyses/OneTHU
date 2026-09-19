@@ -11,13 +11,18 @@
  */
 import type { FetchLike, HttpClient } from "../http.js";
 
-export type ExtHwSourceId = "yuketang" | "tuoj" | "tyche";
+export type ExtHwSourceId = "yuketang" | "tuoj" | "tuojClassic" | "tyche" | "dsa";
+
+/** TUOJ 系（共用同一套客户端与清华统一认证漫游，仅 base/id/name 不同） */
+export type TuojSourceId = "tuoj" | "tuojClassic";
 
 /** 源展示名（UI 徽标 / 设置页统一口径） */
 export const SOURCE_NAMES: Record<ExtHwSourceId, string> = {
   yuketang: "雨课堂",
-  tuoj: "TUOJ",
+  tuoj: "TUOJ（AI 版）",
+  tuojClassic: "TUOJ（经典版）",
   tyche: "Tyche",
+  dsa: "DSA OJ",
 };
 
 /** 源大类：`courseware` = 课程平台（雨课堂，人人可用）；
@@ -29,7 +34,9 @@ export type ExtHwCategory = "courseware" | "oj";
 export const SOURCE_CATEGORIES: Record<ExtHwSourceId, ExtHwCategory> = {
   yuketang: "courseware",
   tuoj: "oj",
+  tuojClassic: "oj",
   tyche: "oj",
+  dsa: "oj",
 };
 
 /** 大类展示名（设置页分组标题） */
@@ -85,11 +92,23 @@ export interface ExtHwCreds {
   /** 登录后拼好的会话 Cookie；`username` 仅用于设置页回填。
    *  `via`: "cas" = 清华统一认证漫游（会话在 HttpClient 的 jar 里，cookie 可空）；
    *         "password" = TUOJ 账号密码登录。 */
-  tuoj?: { cookie: string; username?: string; via?: "cas" | "password" };
+  tuoj?: TuojCreds;
+  /** 经典 TUOJ（oj.cs.tsinghua.edu.cn）：同 AI 版结构（复用同一客户端）。 */
+  tuojClassic?: TuojCreds;
+  /** DSA OJ（dsa.cs.tsinghua.edu.cn）：邮箱 + 密码登录，会话 Cookie；
+   *  `username`（邮箱）仅用于设置页回填。 */
+  dsa?: { cookie: string; username?: string };
   /** 登录后拼好的会话 Cookie；Basic 头已硬编码，不在此暴露 */
   tyche?: { cookie: string; username?: string };
   /** 只保留未来 N 天（默认 30）；已过期的仍保留（属"未提交"） */
   days?: number;
+}
+
+/** TUOJ 系凭据（AI 版 / 经典版共用） */
+export interface TuojCreds {
+  cookie: string;
+  username?: string;
+  via?: "cas" | "password";
 }
 
 /** 组装三源（只组装已配置 cookie / 已漫游的源），并附上 `category` 大类元数据 */

@@ -41,6 +41,8 @@ nodeModule.registerHooks({
 const { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isCheckSinglePage, isTuojNoCoursesError } = await import(
   "../packages/core/src/exthw/tuojCas.ts"
 );
+// 经典 TUOJ base（R15 20.1：与 AI 版同套代码，仅 CAS 回调不同）
+const { CLASSIC_BASE } = await import("../packages/core/src/exthw/tuoj.ts");
 // 真实 InfoClient（#idCheckSingle 复用）——mock HttpClient 注入，验证确认 POST 行为
 const { InfoClient } = await import("../packages/core/src/info/client.ts");
 
@@ -121,6 +123,19 @@ const formHtml = await formRes.text();
 check("HTTP 200", formRes.status === 200, `status=${formRes.status}`);
 check("isCasLoginPage(html) === true", isCasLoginPage(formHtml) === true, `body=${formHtml.length}B`);
 check("登录页锚点不含 ticket（不会误跟）", !String(extractTicketAnchor(formHtml) ?? "").includes("ticket="), String(extractTicketAnchor(formHtml)));
+
+console.log("\n②b 经典 TUOJ oauth/info（真实网络，R15 20.1）");
+const classicInfoRes = await fetch(`${CLASSIC_BASE}/api/user/oauth/info`, { headers: { "User-Agent": UA } });
+const classicInfo = await classicInfoRes.json();
+check("HTTP 200", classicInfoRes.status === 200, `status=${classicInfoRes.status}`);
+check("tsinghua.enable === true", classicInfo?.tsinghua?.enable === true, JSON.stringify(classicInfo?.tsinghua?.enable));
+check(
+  "url 是经典版 CAS 漫游表单地址（回调 .../api/user/tsinghua/login）",
+  typeof classicInfo?.tsinghua?.url === "string" &&
+    classicInfo.tsinghua.url.startsWith("https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/") &&
+    classicInfo.tsinghua.url.includes("/api/user/tsinghua/login"),
+  classicInfo?.tsinghua?.url,
+);
 
 console.log("\n③ 纯函数单测（构造页）");
 const successPage =
@@ -344,6 +359,44 @@ console.log("\n⑤ checkSingle 三形态（mock http，离线）");
   check(
     "⑤-5 课程列表 200 非 JSON 不判无账号",
     isTuojNoCoursesError(new TuojCasError("x", "", { stage: "courses", httpStatus: 200 })) === false,
+  );
+}
+
+{
+  // ⑦（R15 20.2）经典 TUOJ 漫游：`deps.base` 参数化后，oauth/info、CAS 表单、课程校验
+  //    全走经典 base；CAS url 仍取自服务端响应（回调 .../api/user/tsinghua/login）。
+  const CLASSIC_FORM =
+    "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/929e496594c7a63203fb03e457a43c6b/0?/api/user/tsinghua/login";
+  const http = makeMockHttp([
+    {
+      match: (u) => u === `${CLASSIC_BASE}/api/user/oauth/info`,
+      body: JSON.stringify({ tsinghua: { enable: true, url: CLASSIC_FORM } }),
+    },
+    {
+      match: (u, m) => u === CLASSIC_FORM && m === "GET",
+      body: "<html><body>redirecting</body></html>",
+      finalUrl: `${CLASSIC_BASE}/api/user/tsinghua/login`,
+    },
+    { match: (u) => u === `${CLASSIC_BASE}/api/course/list`, body: COURSE_LIST },
+  ]);
+  try {
+    const r = await tuojRoam(http, { base: CLASSIC_BASE });
+    check("⑦经典 base 漫游成功", r.courseCount === 1, `courseCount=${r.courseCount}`);
+  } catch (e) {
+    check("⑦经典 base 漫游成功", false, e?.message);
+  }
+  check(
+    "⑦请求 oauth/info 走经典 base",
+    http.calls.some((c) => c.url === `${CLASSIC_BASE}/api/user/oauth/info`),
+  );
+  check(
+    "⑦课程校验走经典 base",
+    http.calls.some((c) => c.url === `${CLASSIC_BASE}/api/course/list`),
+  );
+  check(
+    "⑦全程未打到 AI base",
+    http.calls.every((c) => !c.url.startsWith("https://ai.tuoj.thusaac.com")),
+    http.calls.map((c) => c.url).join(" | "),
   );
 }
 

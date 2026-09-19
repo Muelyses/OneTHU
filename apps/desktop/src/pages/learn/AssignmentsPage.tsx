@@ -58,7 +58,7 @@ function ExtHwGuide() {
             登录后把各平台作业 DDL 合并到「全部作业」与「今日」。
           </div>
           {/* R11 16.2：TUOJ 自动漫游已过统一认证但未返回课程——条幅提示，不算错误 */}
-          {ext.tuojAuto.kind === "no-courses" ? (
+          {ext.tuojAuto.tuoj.kind === "no-courses" ? (
             <div style={{ opacity: 0.8, marginTop: 2 }}>
               TUOJ 统一认证已通过，但未返回课程（可能未注册 / 未选课）。
             </div>

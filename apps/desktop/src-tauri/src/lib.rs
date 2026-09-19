@@ -1914,7 +1914,7 @@ fn open_eid_window(_app: tauri::AppHandle, _username: String, _password: String)
 
 #[cfg(mobile)]
 #[tauri::command]
-fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
+async fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
     let handle = app
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0
@@ -1927,7 +1927,7 @@ fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
 
 #[cfg(mobile)]
 #[tauri::command]
-fn read_ykt_cookies(app: tauri::AppHandle) -> Result<String, String> {
+async fn read_ykt_cookies(app: tauri::AppHandle) -> Result<String, String> {
     let handle = app
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0

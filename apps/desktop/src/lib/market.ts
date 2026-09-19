@@ -118,6 +118,29 @@ async function externalFetch(url: string, init?: RequestInit): Promise<Response>
   return fetch(url, init ?? {});
 }
 
+/** GitHub contents API 拉文件（base64）——与 raw.githubusercontent 不同缓存体系，
+ *  raw 的 Fastly 边缘节点会短时吐推送前旧内容（且忽略 query 的 cache-buster），
+ *  安装/更新优先走这里保新鲜，raw 降级兜底。 */
+async function fetchEntryViaApi(ref: RepoRef, branch: string, entry: string): Promise<string | null> {
+  try {
+    const mid = ref.subPath ? `/${ref.subPath.replace(/^\/+|\/+$/g, "")}` : "";
+    const path = `${mid}/${entry.replace(/^\/+/, "")}`.replace(/^\/+/, "");
+    const url = `https://api.github.com/repos/${ref.owner}/${ref.repo}/contents/${path}?ref=${encodeURIComponent(branch)}`;
+    const res = await externalFetch(url, {
+      headers: { "User-Agent": "OneTHU-App", Accept: "application/vnd.github+json" },
+    });
+    if (!res.ok) return null;
+    const j = (await res.json()) as { content?: string; encoding?: string };
+    if (j.encoding !== "base64" || typeof j.content !== "string") return null;
+    const text = new TextDecoder().decode(
+      Uint8Array.from(atob(j.content.replace(/\s/g, "")), (c) => c.charCodeAt(0)),
+    );
+    return text.trim() ? text : null;
+  } catch {
+    return null;
+  }
+}
+
 /** 从 GitHub 仓库拉取插件入口模块文本。命中第一个存在的候选即返回；
  *  全部未命中抛错（列出已尝试的路径）。 */
 export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<string> {
@@ -125,6 +148,12 @@ export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<
   const entries = entry ? [entry] : ENTRY_CANDIDATES;
   const tried: string[] = [];
   for (const b of branches) {
+    // contents API 优先（保新鲜）
+    for (const e of entries) {
+      tried.push(`api:${ref.owner}/${ref.repo}@${b}/${e}`);
+      const viaApi = await fetchEntryViaApi(ref, b, e);
+      if (viaApi) return viaApi;
+    }
     for (const e of entries) {
       // cache-buster：安装/更新是用户主动动作，必须绕开 raw.githubusercontent
       // 的 Fastly 边缘缓存（否则更新可能拉到推送前的旧代码）

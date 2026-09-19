@@ -180,7 +180,10 @@ export async function fetchStarMap(items: MarketEntry[]): Promise<Record<string,
     items.map(async (item) => {
       try {
         const ref = parseRepoInput(item.repo);
-        const res = await externalFetch(`https://api.github.com/repos/${ref.owner}/${ref.repo}`);
+        // api.github.com 强制要求 User-Agent（缺失直接 403），Tauri http 层不带浏览器式 UA
+        const res = await externalFetch(`https://api.github.com/repos/${ref.owner}/${ref.repo}`, {
+          headers: { "User-Agent": "OneTHU-App", Accept: "application/vnd.github+json" },
+        });
         if (!res.ok) {
           out[item.id] = null;
           return;

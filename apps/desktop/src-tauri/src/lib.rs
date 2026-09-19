@@ -7,6 +7,7 @@ mod seafile;
 mod harness_embed;
 mod plugins;
 use std::collections::HashMap;
+use std::error::Error as _;
 use std::time::Duration;
 use tauri::Manager;
 
@@ -29,6 +30,23 @@ struct HttpInput {
 
 fn default_method() -> String {
     "GET".into()
+}
+
+/// 拼接 error 的 source 链（R17 23.4）：reqwest 的 `Display` 只输出
+/// `error sending request for url (...)`，真正原因（`operation timed out` 等）
+/// 藏在 `source()` 链里被吞掉——逐层拼接，杜绝「看不出原因」的网络错误。
+fn error_chain(e: &dyn std::error::Error) -> String {
+    let mut out = e.to_string();
+    let mut src = e.source();
+    while let Some(s) = src {
+        let text = s.to_string();
+        if !text.is_empty() && !out.contains(&text) {
+            out.push_str(": ");
+            out.push_str(&text);
+        }
+        src = s.source();
+    }
+    out
 }
 
 #[derive(Serialize)]
@@ -1041,7 +1059,7 @@ async fn http_native(
         if let Some(b) = &body_bytes {
             req = req.body(b.clone());
         }
-        let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+        let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
@@ -1078,7 +1096,7 @@ async fn http_native(
         final_headers = headers;
         final_set_cookies = set_cookies;
         let body_url_tag = resp.url().as_str().to_string();
-        final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?.to_vec();
+        final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {}", error_chain(&e)))?.to_vec();
         // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
         if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList") || body_url_tag.contains("checkSingle")) && method_cur.as_str() == "POST" {
             let mut hdr_dump = String::new();
@@ -1636,7 +1654,7 @@ async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
         req = req.body(b);
     }
 
-    let resp = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+    let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
     let status = resp.status();
     let mut headers = HashMap::new();
     let mut set_cookies = Vec::new();
@@ -1648,7 +1666,7 @@ async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
             headers.insert(name.as_str().to_lowercase(), v);
         }
     }
-    let body_bytes = resp.bytes().await.map_err(|e| format!("读取响应失败: {e}"))?;
+    let body_bytes = resp.bytes().await.map_err(|e| format!("读取响应失败: {}", error_chain(&e)))?;
     // 分流规则：文本类（text/*、html/json/xml）按 Content-Type charset 解码为字符串
     // （reqwest text() 原语义，gb2312 教务页依赖此通道）；其余（图片/PDF/流）且非合法
     // UTF-8 时走 base64 字节通道——字符串通道会把 0x89 等 lossy 成 U+FFFD 损坏二进制。

@@ -126,7 +126,9 @@ export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<
   const tried: string[] = [];
   for (const b of branches) {
     for (const e of entries) {
-      const url = rawEntryUrl(ref, b, e);
+      // cache-buster：安装/更新是用户主动动作，必须绕开 raw.githubusercontent
+      // 的 Fastly 边缘缓存（否则更新可能拉到推送前的旧代码）
+      const url = rawEntryUrl(ref, b, e) + (rawEntryUrl(ref, b, e).includes("?") ? "&" : "?") + `t=${Date.now()}`;
       tried.push(`${ref.owner}/${ref.repo}@${b}/${e}`);
       const res = await externalFetch(url).catch(() => null);
       if (res && res.ok) {

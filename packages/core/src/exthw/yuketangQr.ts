@@ -149,7 +149,10 @@ export async function yuketangQrPoll(
   }, timeoutMs) : null;
 
   try {
-    const res = await fetchLike(`${YKT_BASE}/api/v3/user/login/app-web-login`, {
+    // R17 23.1：传输层超时必须晚于本地轮询计时（+10s），否则 tauriFetch/Rust
+    // 的 http_request 会先于 AbortSignal 抢跑，把「未扫码」误报成硬错误退出。
+    // 本地计时到点 → ctrl.abort() → tauriFetch 的 signal 立即 reject → timedOut 重发。
+    const init: RequestInit & { timeoutMs?: number } = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -159,7 +162,9 @@ export async function yuketangQrPoll(
       },
       body: JSON.stringify({ token }),
       signal: ctrl.signal,
-    });
+      timeoutMs: timeoutMs + 10_000,
+    };
+    const res = await fetchLike(`${YKT_BASE}/api/v3/user/login/app-web-login`, init);
     const pairs = captureCookies(res);
     const text = await res.text();
     let json: Record<string, unknown> | null = null;
@@ -184,7 +189,13 @@ export async function yuketangQrPoll(
   } catch (e) {
     if (aborted) return { done: false, aborted: true, message: "已取消" };
     if (timedOut) return { done: false, timedOut: true, message: "等待扫码超时" };
-    return { done: false, message: e instanceof Error ? e.message : String(e) };
+    const message = e instanceof Error ? e.message : String(e);
+    // R17 23.1：传输层自身超时（reqwest `operation timed out` / JS 兜底「请求超时」）
+    // 同样按「未扫码超时」处理 → 状态机重发，而不是当硬错误直接退出。
+    if (/timed?\s*out|timeout|超时/i.test(message)) {
+      return { done: false, timedOut: true, message: "等待扫码超时（传输层超时）" };
+    }
+    return { done: false, message };
   } finally {
     if (timer) clearTimeout(timer);
     external?.removeEventListener("abort", onAbort);

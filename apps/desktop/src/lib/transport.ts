@@ -51,21 +51,49 @@ async function invokeHttp(
   headers: Record<string, string>,
   body?: string,
   bodyB64?: string,
+  opts: { signal?: AbortSignal; timeoutMs?: number } = {},
 ): Promise<HttpOutput> {
   const { invoke } = await import("@tauri-apps/api/core");
   const p = invoke<HttpOutput>("http_request", {
-    input: { url, method, headers, body: body ?? null, body_b64: bodyB64 ?? null },
+    input: {
+      url,
+      method,
+      headers,
+      body: body ?? null,
+      body_b64: bodyB64 ?? null,
+      // R17 23.1：透传 Rust reqwest 的 timeout_ms（缺省 null → Rust 侧默认 20s）。
+      // 长轮询端点（雨课堂 app-web-login）需 >20s，由调用方显式放大。
+      timeout_ms: opts.timeoutMs ?? null,
+    },
   });
+  // R17 23.1：init.signal 生效——abort → 立即 reject JS promise，Rust 请求自然结束。
+  // 此前 signal 被忽略：调用方 28s 超时 abort 后仍 await 到 Rust 20s 超时，
+  // reqwest 的 Display 吞掉 source 链 → 被 core 当硬错误退出（扫码必失败根因）。
+  const signal = opts.signal;
+  let onAbort: (() => void) | undefined;
+  const abortPromise = signal
+    ? new Promise<never>((_, rej) => {
+        const fire = (): void => rej(new DOMException("请求已取消", "AbortError"));
+        if (signal.aborted) fire();
+        else {
+          onAbort = fire;
+          signal.addEventListener("abort", onAbort, { once: true });
+        }
+      })
+    : null;
   // 45s 超时兜底：Rust reqwest 无默认超时，webvpn 链路偶发悬挂会无限 await
   // （「校外卡死」实录）。到点即弃约解阻塞，后台 Rust 任务自生自灭（有界泄漏）。
+  // R17 23.1：调用方显式放大 timeoutMs 时，兜底须更晚，否则又变成传输层抢跑。
+  const guardMs = Math.max(45_000, (opts.timeoutMs ?? 0) + 5_000);
   let timer: ReturnType<typeof setTimeout> | undefined;
   const guard = new Promise<never>((_, rej) => {
-    timer = setTimeout(() => rej(new Error(`请求超时（45s）：${url.slice(0, 120)}`)), 45_000);
+    timer = setTimeout(() => rej(new Error(`请求超时（${guardMs / 1000}s）：${url.slice(0, 120)}`)), guardMs);
   });
   try {
-    return await Promise.race([p, guard]);
+    return await Promise.race(abortPromise ? [p, guard, abortPromise] : [p, guard]);
   } finally {
     if (timer) clearTimeout(timer);
+    if (signal && onAbort) signal.removeEventListener("abort", onAbort);
   }
 }
 
@@ -270,6 +298,9 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
   let method = (init.method ?? "GET").toUpperCase();
   let body = typeof init.body === "string" ? init.body : undefined;
   let bodyB64: string | undefined;
+  // R17 23.1：signal / timeoutMs 为 core 侧扩展字段（FetchLike 的 RequestInit 之外）
+  const signal = init.signal ?? undefined;
+  const timeoutMs = (init as RequestInit & { timeoutMs?: number }).timeoutMs;
   const headers = collectHeaders(init);
   if (init.body instanceof URLSearchParams) {
     body = init.body.toString();
@@ -334,7 +365,7 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
       delete headers["cookie"];
     }
 
-    const res = await invokeHttp(currentUrl, method, headers, body, bodyB64);
+    const res = await invokeHttp(currentUrl, method, headers, body, bodyB64, { signal, timeoutMs });
     hopLogger?.(
       currentUrl,
       res.status,

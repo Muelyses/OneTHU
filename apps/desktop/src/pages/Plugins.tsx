@@ -636,6 +636,12 @@ function MarketView(): ReactNode {
     }
   };
 
+  // 进入市场视图即自动加载：缓存命中（5 分钟内）立即展示，否则拉网络
+  useEffect(() => {
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const q = query.trim().toLowerCase();
   const hits = (items ?? [])
     .filter((x) => !q || [x.name, x.description, x.author, ...(x.tags ?? [])].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)))
@@ -671,15 +677,17 @@ function MarketView(): ReactNode {
 
       {msg ? <div className="plg-runmsg">{msg}</div> : null}
 
-      {!loaded && !msg ? (
-        <div className="plg-empty">
-          <div className="plg-empty-mark">[ ⇩ ]</div>
-          <div className="plg-empty-t">插件市场</div>
-          <div className="plg-empty-d">浏览社区插件，按仓库热度排序；收录经人工审查。</div>
-          <button className="btn btn-primary" disabled={busy} onClick={() => void load()}>
-            {busy ? "加载中…" : "加载市场名单"}
-          </button>
-        </div>
+      {!loaded ? (
+        msg ? (
+          <div className="plg-hint" style={{ color: "var(--red)" }}>
+            {msg}
+            <button className="btn" style={{ marginLeft: 10 }} disabled={busy} onClick={() => void load(true)}>
+              重试
+            </button>
+          </div>
+        ) : (
+          <div className="plg-hint">{busy ? "正在拉取市场名单…" : "准备中…"}</div>
+        )
       ) : null}
 
       {loaded && !hits.length ? <div className="plg-hint">无匹配条目。</div> : null}

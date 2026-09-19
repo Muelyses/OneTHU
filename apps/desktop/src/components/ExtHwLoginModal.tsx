@@ -15,18 +15,25 @@ import { createPortal } from "react-dom";
 import { QRCodeSVG } from "qrcode.react";
 import type { YktQrPhase } from "@onethu/core";
 import { ensureExtHwCredsLoaded, extHwLogin, refreshExtHw, saveExtHwCreds } from "../state/exthw.js";
+import {
+  YKT_WEB_FALLBACK_HINT,
+  closeYuketangWebLogin,
+  openYuketangWebLogin,
+  readYuketangWebCookies,
+} from "../lib/yktWebview.js";
 
 /** 与 CardTab 充值弹窗同款遮罩 / 面板（移动端也留出 24px 边距、限高可滚动） */
 const maskStyle: React.CSSProperties = { position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
 const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
 
-type YktChannel = "qr" | "sms";
+type YktChannel = "qr" | "web" | "sms";
 
 /** R17 23.2：短信通道停用说明（与设置页文案一致） */
 const YKT_SMS_DISABLED_NOTE = "雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码。";
 
 const YKT_CHANNELS: Array<{ key: YktChannel; label: string; hint: string; disabled?: boolean }> = [
   { key: "qr", label: "微信扫码", hint: "打开微信或雨豆APP 扫描二维码" },
+  { key: "web", label: "官方网页登录", hint: "支持扫码 / 手机号 + 图形验证码 + 短信（应用内网页）" },
   { key: "sms", label: "手机验证码", hint: YKT_SMS_DISABLED_NOTE, disabled: true },
 ];
 
@@ -51,6 +58,9 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
 
+  // R17b 24.1：本 effect 只依赖 nonce（手动刷新）——**不监听回前台 / visibilitychange**，
+  // 因为重建 = 换 token = 已扫的码作废。退后台被掐断的长轮询由 core 用同一 token 自动重发，
+  // 回前台后继续即可取回已确认的登录。
   useEffect(() => {
     const id = ++runId.current;
     const ctrl = new AbortController();
@@ -143,7 +153,91 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
   );
 }
 
+/**
+ * R18 24.2：雨课堂「官方网页登录」面板（应用内 WebView，支持扫码 / 短信）。
+ * 挂载即打开官方登录窗口；用户完成登录后点「我已登录，读取会话」读回 Cookie；
+ * 读不到时明确提示回退「高级：手动粘贴 Cookie」。
+ */
+
+/** 当前挂载的官方登录面板数（React StrictMode 会「挂载→清理→再挂载」，
+ *  用计数 + 延后一拍避免把刚打开的窗口误关）。 */
+let yktWebPanels = 0;
+
+export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string) => void; onCancel: () => void }) {
+  const [phase, setPhase] = useState<"opening" | "ready" | "reading">("opening");
+  const [err, setErr] = useState<string | null>(null);
+  // 成功读回后由 onSuccess 关闭本面板；标记避免卸载清理把已关窗口再关一次（幂等，仅省一次调用）
+  const doneRef = useRef(false);
+
+  useEffect(() => {
+    let alive = true;
+    yktWebPanels++;
+    void openYuketangWebLogin()
+      .then(() => {
+        if (alive) setPhase("ready");
+      })
+      .catch((e: unknown) => {
+        if (!alive) return;
+        setPhase("ready");
+        setErr(`打开登录窗口失败：${e instanceof Error ? e.message : String(e)}`);
+      });
+    return () => {
+      alive = false;
+      yktWebPanels = Math.max(0, yktWebPanels - 1);
+      // 延后一拍：StrictMode 清理后立即再挂载时，计数已 >0，不再关窗
+      setTimeout(() => {
+        if (yktWebPanels === 0 && !doneRef.current) void closeYuketangWebLogin();
+      }, 0);
+    };
+  }, []);
+
+  const read = (): void => {
+    setPhase("reading");
+    setErr(null);
+    void readYuketangWebCookies()
+      .then((cookie) => {
+        doneRef.current = true;
+        void closeYuketangWebLogin();
+        onSuccess(cookie);
+      })
+      .catch((e: unknown) => {
+        setPhase("ready");
+        setErr(`${e instanceof Error ? e.message : String(e)}\n${YKT_WEB_FALLBACK_HINT}`);
+      });
+  };
+
+  return (
+    <div
+      style={{
+        marginTop: 10,
+        padding: 12,
+        border: "1px solid var(--border, #e5e5e5)",
+        borderRadius: 10,
+        background: "var(--bg-2, rgba(0,0,0,0.02))",
+      }}
+    >
+      <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+        已打开官方登录窗口，请在其中完成<b>微信扫码</b>，或<b>手机号 + 图形验证码 + 短信验证码</b>登录。
+        <br />
+        登录成功后回到本页，点击「我已登录，读取会话」。
+      </div>
+      {err ? (
+        <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8, whiteSpace: "pre-wrap" }}>{err}</div>
+      ) : null}
+      <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10, flexWrap: "wrap" }}>
+        <button className="btn btn-primary" disabled={phase === "reading"} onClick={read}>
+          {phase === "reading" ? "读取中…" : "我已登录，读取会话"}
+        </button>
+        <button className="btn btn-ghost" onClick={onCancel}>
+          取消
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [channel, setChannel] = useState<YktChannel>("qr");
   if (!open) return null;
 
   return createPortal(
@@ -171,8 +265,9 @@ export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () 
               <input
                 type="radio"
                 name="ykt-channel"
-                defaultChecked={c.key === "qr"}
+                checked={channel === c.key}
                 disabled={c.disabled}
+                onChange={() => setChannel(c.key)}
               />
               <span>
                 <b>{c.label}</b>
@@ -182,12 +277,21 @@ export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () 
           ))}
         </div>
 
-        <YktQrPanel
-          onCancel={onClose}
-          onSuccess={(cookie) => {
-            void saveYuketang(cookie).then(onClose);
-          }}
-        />
+        {channel === "web" ? (
+          <YktWebLoginPanel
+            onCancel={onClose}
+            onSuccess={(cookie) => {
+              void saveYuketang(cookie).then(onClose);
+            }}
+          />
+        ) : (
+          <YktQrPanel
+            onCancel={onClose}
+            onSuccess={(cookie) => {
+              void saveYuketang(cookie).then(onClose);
+            }}
+          />
+        )}
       </div>
     </div>,
     document.body,

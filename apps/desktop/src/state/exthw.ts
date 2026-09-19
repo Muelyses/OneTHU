@@ -237,9 +237,15 @@ export const extHwLogin = {
     }),
   /** TUOJ 清华统一认证漫游（零凭据）：无直连 id 会话时先按内存账密直登 id
    *  （InfoClient.ensureDirectIdLogin，凭据来自 CampusSession，零用户输入），再走
-   *  漫游表单；会话落在共享 HttpClient 的 jar 里，随后 persist() 快照进本机会话存档。 */
+   *  漫游表单；会话活着但 CAS 返回 checkSingle 指纹确认页时经 confirmIdCheckSingle
+   *  确认取票（R10 15.1-1，修「白登入」误判）。会话落在共享 HttpClient 的 jar 里，
+   *  随后 persist() 快照进本机会话存档。 */
   tuojCas: async (): Promise<{ cookie: string }> => {
-    const r = await tuojRoam(http, { ensureIdSession: (u) => info.ensureDirectIdLogin(u) });
+    const r = await tuojRoam(http, {
+      ensureIdSession: (u) => info.ensureDirectIdLogin(u),
+      hasIdCredentials: () => info.hasIdCredentials(),
+      confirmIdCheckSingle: (u) => info.confirmIdCheckSingle(u),
+    });
     await persist().catch(() => undefined);
     return { cookie: r.cookie };
   },

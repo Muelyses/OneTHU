@@ -1986,6 +1986,34 @@ export class InfoClient {
     return false;
   }
 
+  /** 是否有可用于自动直登 id 的内存凭据（R10 15.1-2 文案分支：区分「无凭据」与「直登失败」）。 */
+  hasIdCredentials(): boolean {
+    const creds = this.#idCredentials?.();
+    return Boolean(creds?.username && creds?.password);
+  }
+
+  /**
+   * exthw（TUOJ 统一认证）前置：id 会话已建立时 CAS 可能返回 **checkSingle 指纹确认页**
+   * （200，URL 仍是 `/do/off/ui/auth/login/form/<uuid>`）。tuojRoam 经 deps 注入调用本方法
+   * 完成「确认取票 → 兑付」，避免把确认页误判成「仍是登录页」而白登入（R10 15.1-1）。
+   * 返回 true = 确认 POST 拿到票据且兑付成功；内部复用 #idCheckSingle / #consumeIdTicketUrl。
+   */
+  async confirmIdCheckSingle(formUrl: string): Promise<boolean> {
+    // 与 #idLoginProbe 同策略：直连优先，id 直连不可达时退 WebVPN 包装形态
+    let effUrl = formUrl;
+    let viaWrap = false;
+    try {
+      await this.#http.text(formUrl, { direct: true });
+    } catch {
+      effUrl = webvpnWrap(formUrl);
+      viaWrap = true;
+    }
+    const out = await this.#idCheckSingle(effUrl, viaWrap);
+    this.lastDebug = out.diag;
+    if (!out.ticketUrl) return false;
+    return this.#consumeIdTicketUrl(out.ticketUrl, formUrl);
+  }
+
   /** 单次账密登录尝试：取票（#idLoginProbe）→ 兑付（#consumeIdTicketUrl）。2FA 抛
    *  AuthRequiredError，其余失败返回诊断现场。 */
   async #idLoginAttempt(

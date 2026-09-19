@@ -19,6 +19,14 @@ if (typeof nodeModule.registerHooks !== "function") {
 
 nodeModule.registerHooks({
   resolve(specifier, context, next) {
+    // InfoClient 依赖链会 import sm-crypto（CJS；Node ESM 认不出其命名导出）。
+    // 本脚本只走 checkSingle 取票/兑付路径，不触碰 SM 加解密，注入空壳导出即可。
+    if (specifier === "sm-crypto") {
+      return {
+        url: "data:text/javascript,export const sm2={};export const sm3={};export const sm4={};",
+        shortCircuit: true,
+      };
+    }
     if ((specifier.startsWith("./") || specifier.startsWith("../")) && specifier.endsWith(".js")) {
       try {
         return next(specifier.slice(0, -3) + ".ts", context);
@@ -30,9 +38,11 @@ nodeModule.registerHooks({
   },
 });
 
-const { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage } = await import(
+const { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isCheckSinglePage } = await import(
   "../packages/core/src/exthw/tuojCas.ts"
 );
+// 真实 InfoClient（#idCheckSingle 复用）——mock HttpClient 注入，验证确认 POST 行为
+const { InfoClient } = await import("../packages/core/src/info/client.ts");
 
 let pass = 0;
 let fail = 0;
@@ -126,6 +136,11 @@ check("无锚点 → null", extractTicketAnchor("<html>no link</html>") === null
 check("isCasLoginPage: sm2publicKey", isCasLoginPage('<input id="sm2publicKey" value="aa">') === true);
 check("isCasLoginPage: i_pass", isCasLoginPage('<input name="i_pass">') === true);
 check("isCasLoginPage: 业务页 → false", isCasLoginPage("<html><body>TUOJ</body></html>") === false);
+check(
+  "isCheckSinglePage: checkSingle 确认页",
+  isCheckSinglePage('<form action="/do/off/ui/auth/login/checkSingle" method="post"></form>') === true,
+);
+check("isCheckSinglePage: 业务页 → false", isCheckSinglePage("<html><body>TUOJ</body></html>") === false);
 
 console.log("\n④ tuojRoam 无统一认证会话 → 可读错误（真实网络，最小 HttpClient 替身）");
 try {
@@ -140,9 +155,173 @@ try {
   );
 }
 
+/* ── mock HttpClient（离线，按 URL/方法路由；记录 calls） ── */
+function makeMockHttp(routes) {
+  const calls = [];
+  const http = {
+    lastFinalUrl: "",
+    lastCookieNames: "",
+    debug: () => {},
+    jar: { getCookies: () => [] },
+    async request(url, init = {}) {
+      const method = (init.method ?? "GET").toUpperCase();
+      calls.push({ url: String(url), method, body: init.body ? String(init.body) : "" });
+      for (const r of routes) {
+        if (r.match(String(url), method)) {
+          const body = typeof r.body === "function" ? r.body() : r.body ?? "";
+          const res = new Response(body, { status: r.status ?? 200, headers: r.headers ?? {} });
+          http.lastFinalUrl = r.finalUrl ?? String(url);
+          return res;
+        }
+      }
+      throw new Error(`no mock route: ${method} ${url}`);
+    },
+    async text(url, init = {}) {
+      const res = await http.request(url, init);
+      return res.text();
+    },
+  };
+  http.calls = calls;
+  return http;
+}
+
+/* ── R10 15.1-4：checkSingle 三形态（mock http，离线） ──
+ * ①首 GET=密码页 → ensure=ok → 重试=确认页 → 确认 POST→302 ticket → 兑付 → 课程列表 ok
+ * ②确认 POST 无 finger3 失败 → 文案分支正确
+ * ③ensureOk=false 且无内存凭据 → 无凭据文案
+ * ④（附加）ensureOk=false 有凭据 → 直登失败文案 */
+const CAS_FORM =
+  "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/929e496594c7a63203fb03e457a43c6b/0?/api/user/tsinghua/roaming/AI-TUOJ";
+const CHECK_SINGLE_ACTION = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/checkSingle";
+const TICKET = "https://ai.tuoj.thusaac.com/api/user/tsinghua/roaming/AI-TUOJ?ticket=ST-123";
+const PASSWORD_PAGE = '<html><body><input id="sm2publicKey" value="aa"><input name="i_pass"></body></html>';
+const CHECK_SINGLE_PAGE =
+  '<html><head><title>Title</title></head><body><form action="/do/off/ui/auth/login/checkSingle" method="post"></form></body></html>';
+const OAUTH_INFO = JSON.stringify({ tsinghua: { enable: true, url: CAS_FORM } });
+const COURSE_LIST = JSON.stringify({ courses: [{ _id: 8, title: "离散数学" }] });
+
+console.log("\n⑤ checkSingle 三形态（mock http，离线）");
+{
+  // ① 密码页 → ensure=ok → 重试=确认页 → 确认 POST → 302 ticket → 兑付 → 课程列表
+  const formHits = { n: 0 };
+  const http = makeMockHttp([
+    { match: (u) => u.endsWith("/api/user/oauth/info"), body: OAUTH_INFO },
+    {
+      match: (u, m) => u === CAS_FORM && m === "GET",
+      body: () => (++formHits.n === 1 ? PASSWORD_PAGE : CHECK_SINGLE_PAGE),
+      finalUrl: CAS_FORM,
+    },
+    { match: (u, m) => u === CHECK_SINGLE_ACTION && m === "POST", status: 302, headers: { location: TICKET } },
+    {
+      match: (u) => u.includes("oauth.tsinghua.edu.cn/lb-auth/lbredirect"),
+      body: "",
+      headers: { "x-onethu-final-url": TICKET },
+    },
+    { match: (u) => u.endsWith("/api/course/list"), body: COURSE_LIST },
+  ]);
+  const info = new InfoClient(http);
+  info.setIdCredentials(() => ({ username: "2026000000", password: "pw", fingerprint: "fp", finger3: "f3" }));
+  try {
+    const r = await tuojRoam(http, {
+      ensureIdSession: async () => true,
+      hasIdCredentials: () => info.hasIdCredentials(),
+      confirmIdCheckSingle: (u) => info.confirmIdCheckSingle(u),
+    });
+    check("①确认页不再误判、漫游成功", r.courseCount === 1, `courseCount=${r.courseCount}`);
+  } catch (e) {
+    check("①确认页不再误判、漫游成功", false, e?.message);
+  }
+  const post = http.calls.find((c) => c.method === "POST" && c.url === CHECK_SINGLE_ACTION);
+  check("①确认 POST checkSingle 已发出", Boolean(post), post ? post.url : "(无)");
+  check(
+    "①确认 POST 带 fingerGenPrint=f3",
+    Boolean(post) && post.body.includes("fingerGenPrint=f3"),
+    post?.body,
+  );
+}
+
+{
+  // ② 确认 POST 无 finger3 → 取不到票据 → ensureOk=true 的文案分支
+  const formHits = { n: 0 };
+  const http = makeMockHttp([
+    { match: (u) => u.endsWith("/api/user/oauth/info"), body: OAUTH_INFO },
+    {
+      match: (u, m) => u === CAS_FORM && m === "GET",
+      body: () => (++formHits.n === 1 ? PASSWORD_PAGE : CHECK_SINGLE_PAGE),
+      finalUrl: CAS_FORM,
+    },
+    { match: (u, m) => u === CHECK_SINGLE_ACTION && m === "POST", body: "<html><body>确认失败，无票据</body></html>" },
+  ]);
+  const info = new InfoClient(http);
+  info.setIdCredentials(() => ({ username: "2026000000", password: "pw", fingerprint: "fp" })); // 无 finger3
+  try {
+    await tuojRoam(http, {
+      ensureIdSession: async () => true,
+      hasIdCredentials: () => info.hasIdCredentials(),
+      confirmIdCheckSingle: (u) => info.confirmIdCheckSingle(u),
+    });
+    check("②确认失败应抛错", false);
+  } catch (e) {
+    check("②抛 TuojCasError", e instanceof TuojCasError, e?.constructor?.name);
+    check(
+      "②文案：直连会话已建立但 CAS 校验未通过",
+      e instanceof TuojCasError && e.message.includes("直连会话已建立但 CAS 校验未通过"),
+      e?.message,
+    );
+  }
+}
+
+{
+  // ③ ensureOk=false 且无内存凭据 → 无凭据文案
+  const http = makeMockHttp([
+    { match: (u) => u.endsWith("/api/user/oauth/info"), body: OAUTH_INFO },
+    { match: (u, m) => u === CAS_FORM && m === "GET", body: PASSWORD_PAGE, finalUrl: CAS_FORM },
+  ]);
+  const info = new InfoClient(http);
+  info.setIdCredentials(() => null);
+  try {
+    await tuojRoam(http, {
+      ensureIdSession: async () => false,
+      hasIdCredentials: () => info.hasIdCredentials(),
+      confirmIdCheckSingle: (u) => info.confirmIdCheckSingle(u),
+    });
+    check("③无凭据应抛错", false);
+  } catch (e) {
+    check(
+      "③文案：内存中没有清华密码",
+      e instanceof TuojCasError && e.message.includes("OneTHU 内存中没有清华密码"),
+      e?.message,
+    );
+  }
+}
+
+{
+  // ④（附加）ensureOk=false 但有内存凭据 → 直登失败文案
+  const http = makeMockHttp([
+    { match: (u) => u.endsWith("/api/user/oauth/info"), body: OAUTH_INFO },
+    { match: (u, m) => u === CAS_FORM && m === "GET", body: PASSWORD_PAGE, finalUrl: CAS_FORM },
+  ]);
+  const info = new InfoClient(http);
+  info.setIdCredentials(() => ({ username: "2026000000", password: "pw", fingerprint: "fp", finger3: "f3" }));
+  try {
+    await tuojRoam(http, {
+      ensureIdSession: async () => false,
+      hasIdCredentials: () => info.hasIdCredentials(),
+      confirmIdCheckSingle: (u) => info.confirmIdCheckSingle(u),
+    });
+    check("④有凭据直登失败应抛错", false);
+  } catch (e) {
+    check(
+      "④文案：自动登录清华统一认证未成功",
+      e instanceof TuojCasError && e.message.includes("自动登录清华统一认证未成功"),
+      e?.message,
+    );
+  }
+}
+
 /* ── Tyche 验证码探针（可选：需 TYCHE_BASIC） ── */
 if (process.env.TYCHE_BASIC) {
-  console.log("\n⑤ Tyche vcode 探针（真实网络）");
+  console.log("\n⑥ Tyche vcode 探针（真实网络）");
   const basic = `Basic ${Buffer.from(process.env.TYCHE_BASIC).toString("base64")}`;
   const tRes = await fetch("http://166.111.236.164:6080/tyche/user/GetToken?username=root", {
     headers: { Authorization: basic, "User-Agent": UA },
@@ -151,7 +330,7 @@ if (process.env.TYCHE_BASIC) {
   check("GetToken 可用（status=success）", tJson?.status === "success", JSON.stringify(tJson));
   check("GetToken 返回 vcode 字段", typeof tJson?.vcode === "boolean", `vcode=${tJson?.vcode}`);
 } else {
-  console.log("\n⑤ Tyche vcode 探针：跳过（未设置 TYCHE_BASIC）");
+  console.log("\n⑥ Tyche vcode 探针：跳过（未设置 TYCHE_BASIC）");
 }
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败。`);

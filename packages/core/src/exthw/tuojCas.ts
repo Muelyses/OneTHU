@@ -40,6 +40,12 @@ export interface TuojRoamDeps {
    *  （桌面端注入 `InfoClient.ensureDirectIdLogin`，凭据来自 CampusSession，零用户输入）。
    *  返回 true = id 直连会话已建立，tuojRoam 会重走漫游表单。缺省时只走方案 B 文案。 */
   ensureIdSession?: (casFormUrl: string) => Promise<boolean>;
+  /** 内存中是否有可用于自动直登 id 的清华凭据（R10：区分「无凭据」与「直登失败」文案）。
+   *  缺省视为有（不改变旧调用方的文案分支）。 */
+  hasIdCredentials?: () => boolean;
+  /** checkSingle 指纹确认页取票 + 兑付（R10：会话活着时的第三形态）。
+   *  桌面端注入 `InfoClient.confirmIdCheckSingle`；缺省时不走该修复。 */
+  confirmIdCheckSingle?: (formUrl: string) => Promise<boolean>;
 }
 
 /** CAS「登录成功 / 自动跳转」中间页里的回调锚点（demoLogin.casServiceLogin 同款写法） */
@@ -50,6 +56,44 @@ export function extractTicketAnchor(html: string): string | null {
 /** 是否 CAS 登录表单页（= 当前没有有效统一认证会话） */
 export function isCasLoginPage(html: string): boolean {
   return /id="sm2publicKey"/.test(html) || /name="i_pass"/.test(html);
+}
+
+/** 是否 CAS **checkSingle 指纹确认页**（R10）：id 会话活着、不再要密码，只 POST 指纹
+ *  确认继续。URL 仍停在 `/do/off/ui/auth/login/form/<uuid>`，此前被误判成「仍是登录页」
+ *  → 白登入（15.1）。 */
+export function isCheckSinglePage(html: string): boolean {
+  return /checkSingle/.test(html);
+}
+
+/** CAS 中间页（密码登录页 / checkSingle 确认页）；URL 停在 form 路径也算。
+ *  三形态：`name="sm2publicKey"` | `name="i_pass"` | `checkSingle`（15.1-4）。 */
+function isCasInterstitial(html: string, finalUrl: string): boolean {
+  return (
+    isCasLoginPage(html) ||
+    /name="sm2publicKey"/.test(html) ||
+    isCheckSinglePage(html) ||
+    /\/do\/off\/ui\/auth\/login\/form\//.test(finalUrl)
+  );
+}
+
+/** CAS 漫游失败文案（R10 15.1-2）：按「无凭据 / 直登失败 / 直连成功但校验失败」分支，
+ *  杜绝旧版 ensureTried 一刀切「直连会话建立后仍未通过」的误导。 */
+export function tuojCasFailMessage(opts: {
+  ensureTried: boolean;
+  ensureOk: boolean;
+  hasCreds: boolean;
+}): string {
+  const tail = "请在 OneTHU 重新登录清华账号（重新输入密码）后重试，或改用「TUOJ 账号密码登录」。";
+  if (opts.ensureOk) {
+    return `TUOJ：需先登录清华统一认证（直连会话已建立但 CAS 校验未通过，详情见诊断日志）。${tail}`;
+  }
+  if (!opts.ensureTried) {
+    return `TUOJ：需先登录清华统一认证（未检测到有效的统一认证会话）。${tail}`;
+  }
+  if (!opts.hasCreds) {
+    return `TUOJ：需先登录清华统一认证（OneTHU 内存中没有清华密码——重启恢复/未记住密码，无法自动建立直连会话）。${tail}`;
+  }
+  return `TUOJ：需先登录清华统一认证（自动登录清华统一认证未成功，详情见诊断日志）。${tail}`;
 }
 
 /** jar 里某域当前的 Cookie 串（无则空串） */
@@ -85,6 +129,7 @@ function emitCasDiag(http: HttpClient, phase: string, body: string, finalUrl: st
       isCasLoginPage(body) ? "cas-login-page" : "",
       /sm2publicKey/.test(body) ? "sm2publicKey" : "",
       /name="i_pass"/.test(body) ? "i_pass" : "",
+      isCheckSinglePage(body) ? "checkSingle" : "",
     ]
       .filter(Boolean)
       .join("+") || "none";
@@ -132,14 +177,32 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
   let casDiag = "";
   let ensureTried = false;
   let ensureOk = false;
+  let confirmTried = false;
+  let confirmOk = false;
 
-  if (isCasLoginPage(body) || /\/do\/off\/ui\/auth\/login\/form\//.test(finalUrl)) {
+  // 内存凭据有无（文案分支用）；缺省视为有，不改变旧调用方行为
+  const hasCreds = deps.hasIdCredentials ? deps.hasIdCredentials() : true;
+
+  if (isCasInterstitial(body, finalUrl)) {
     // 诊断（12.1-1）：id 桶 cookie 名单 / lastFinalUrl / CAS 页面特征
     casDiag = emitCasDiag(http, "no-direct-id-session", body, finalUrl);
 
-    // 方案 A：前置「确保直连 id 会话」——账密直登 id（凭据从会话取，零用户输入）→
-    // 重走漫游表单（CAS 用新会话重新发票并 302 到 TUOJ 回调）。
-    if (deps.ensureIdSession) {
+    // R10 15.1-1：进入分支先测三形态——checkSingle 确认页（id 会话活着）直接确认取票 +
+    // 兑付，绝不因 URL 仍停在 form 路径就判「仍是登录页」而白登入。
+    if (isCheckSinglePage(body) && deps.confirmIdCheckSingle) {
+      confirmTried = true;
+      try {
+        confirmOk = await deps.confirmIdCheckSingle(tsinghua.url);
+        emitCasDiag(http, `confirm-checkSingle=${confirmOk ? "ok" : "fail"}`, body, finalUrl);
+      } catch (e) {
+        confirmOk = false;
+        casDiag += ` | confirm-error=${e instanceof Error ? e.message : String(e)}`;
+        http.debug?.(`[TUOJ-CAS] confirm-checkSingle threw: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+
+    // 方案 A：仍无会话（密码页 / 确认失败）→ 账密直登 id 后重走漫游表单
+    if (!confirmOk && deps.ensureIdSession) {
       ensureTried = true;
       try {
         ensureOk = await deps.ensureIdSession(tsinghua.url);
@@ -152,19 +215,29 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
       }
     }
 
-    if (ensureOk) {
+    if (!confirmOk && ensureOk) {
       const retryRes = await http.request(tsinghua.url);
       body = await retryRes.text();
       finalUrl = http.lastFinalUrl || retryRes.url || tsinghua.url;
       emitCasDiag(http, "after-ensure-direct-id", body, finalUrl);
+      // R10 15.1-1：ensure 重试后同样可能落到 checkSingle 确认页 → 再确认一次
+      if (isCheckSinglePage(body) && deps.confirmIdCheckSingle) {
+        confirmTried = true;
+        try {
+          confirmOk = await deps.confirmIdCheckSingle(tsinghua.url);
+          emitCasDiag(http, `confirm-checkSingle-after-ensure=${confirmOk ? "ok" : "fail"}`, body, finalUrl);
+        } catch (e) {
+          confirmOk = false;
+          casDiag += ` | confirm-error=${e instanceof Error ? e.message : String(e)}`;
+          http.debug?.(`[TUOJ-CAS] confirm-checkSingle(after ensure) threw: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
     }
 
-    if (isCasLoginPage(body) || /\/do\/off\/ui\/auth\/login\/form\//.test(finalUrl)) {
-      // 方案 B（兜底）：可操作文案——引导重新输入清华密码建立直连会话，或回退 TUOJ 账密。
+    if (!confirmOk && isCasInterstitial(body, finalUrl)) {
+      // 方案 B（兜底）：可操作文案——按 ensureOk / 有无凭据分三支（R10 15.1-2）
       throw new TuojCasError(
-        ensureTried
-          ? "TUOJ：需先登录清华统一认证（直连会话建立后仍未通过 CAS 校验）。请在 OneTHU 重新登录清华账号（重新输入密码）后重试，或改用「TUOJ 账号密码登录」。"
-          : "TUOJ：需先登录清华统一认证（未检测到有效的统一认证会话）。请在 OneTHU 重新登录清华账号（输入密码以建立直连会话），或改用「TUOJ 账号密码登录」。",
+        tuojCasFailMessage({ ensureTried, ensureOk: ensureOk || confirmTried, hasCreds }),
         (casDiag + " | " + finalUrl + " | " + body.slice(0, 300)).slice(0, 800),
       );
     }

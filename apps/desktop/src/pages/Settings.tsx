@@ -564,10 +564,8 @@ function ExtHwSection() {
   const ext = useExternalHomework();
   // 雨课堂
   const [yktPhone, setYktPhone] = useState("");
-  const [yktCode, setYktCode] = useState("");
   const [yktCookie, setYktCookie] = useState("");
   const [yktQrOpen, setYktQrOpen] = useState(false);
-  const [yktSmsOpen, setYktSmsOpen] = useState(false);
   // TUOJ（AI 版）
   const [tuojUser, setTuojUser] = useState("");
   const [tuojPwd, setTuojPwd] = useState("");
@@ -688,32 +686,6 @@ function ExtHwSection() {
       .then(() => refreshExtHw())
       .then(() => setMsg("刷新完成。"))
       .catch((e: unknown) => setMsg(`刷新失败：${errMsg(e)}`))
-      .finally(() => setBusy(null));
-  };
-
-  const onYktSend = () => {
-    setBusy("ykt-send");
-    setMsg(null);
-    void extHwLogin
-      .yuketangSendSms(yktPhone)
-      .then(() => setMsg("验证码已发送，请查收短信（若收不到，可能被风控拦截）。"))
-      .catch((e: unknown) => setMsg(`发送验证码失败：${errMsg(e)}`))
-      .finally(() => setBusy(null));
-  };
-
-  const onYktLogin = () => {
-    setBusy("ykt-login");
-    setMsg(null);
-    void extHwLogin
-      .yuketangVerify(yktPhone, yktCode)
-      .then(async (r) => {
-        setYktCookie(r.cookie);
-        setYktCode("");
-        await saveExtHwCreds(credsWith({ ykt: r.cookie }));
-        setMsg("雨课堂登录成功，已保存。");
-        void refreshExtHw();
-      })
-      .catch((e: unknown) => setMsg(`雨课堂登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -902,11 +874,18 @@ function ExtHwSection() {
                   {yktQrOpen ? "收起扫码" : "微信扫码登录"}
                 </button>
               )}
-              <button className="btn btn-ghost exthw-more" onClick={() => setYktSmsOpen((v) => !v)}>
-                {yktSmsOpen ? "▾" : "▸"} 短信验证码
+              <button
+                className="btn btn-ghost exthw-more"
+                disabled
+                title="雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码"
+              >
+                短信验证码（暂不可用）
               </button>
             </span>
           </div>
+          {/* R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），
+              我们无法内嵌 → 停用短信通道，引导扫码。 */}
+          <div className="exthw-note">雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码。</div>
           {ext.errors.yuketang ? <div className="exthw-note is-error">{ext.errors.yuketang}</div> : null}
           {yktQrOpen ? (
             <YktQrPanel
@@ -920,22 +899,6 @@ function ExtHwSection() {
                 });
               }}
             />
-          ) : null}
-          {yktSmsOpen ? (
-            <div className="exthw-src-body">
-              <div style={fieldStyle}>
-                <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="tel" placeholder="手机号" value={yktPhone} onChange={(e) => setYktPhone(e.target.value.trim())} />
-                <button className="btn" disabled={busy !== null || !yktPhone.trim()} onClick={onYktSend}>
-                  {busy === "ykt-send" ? "发送中…" : "发送验证码"}
-                </button>
-              </div>
-              <div style={fieldStyle}>
-                <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={yktCode} onChange={(e) => setYktCode(e.target.value.trim())} />
-                <button className="btn btn-primary" disabled={busy !== null || !yktPhone.trim() || !yktCode.trim()} onClick={onYktLogin}>
-                  {busy === "ykt-login" ? "登录中…" : "登录"}
-                </button>
-              </div>
-            </div>
           ) : null}
         </div>
       </Card>

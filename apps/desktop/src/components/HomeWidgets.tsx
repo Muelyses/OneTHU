@@ -195,6 +195,8 @@ export function HomeworkRows({
             <div className="row-main">
               <div className="row-title">
                 {h.source ? <span className="src-badge" title={h.externalProgress ? `已作答 ${h.externalProgress}` : undefined}>{extHwSourceName(h.source)}</span> : null}
+                {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
+                {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
                 {h.title}
               </div>
               <div className="row-sub">{h.courseName ?? courseName(h.courseId)}</div>

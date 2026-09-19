@@ -372,12 +372,12 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
         <span className="dot" />
         {score ? `${chip.text} · ${score}` : chip.text}
       </span>
-      {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation）；外部作业无网络学堂详情页，不挂提醒 */}
-      {remind && !external ? <HwRemindButton h={h} /> : null}
-      {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收；外部作业不收 */}
-      {external ? null : (
-        <CollectStar atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, courseName ?? "", sem ?? "") }} title={h.title} />
-      )}
+      {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation）。R10 15.3：外部作业
+          的 h.id（ext:source:...）稳定可用，提醒链路只需 deadline/title，一并放开 */}
+      {remind ? <HwRemindButton h={h} /> : null}
+      {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收。
+          R10 15.3：外部作业复用同款拼接（courseId=ext:source、id=ext:...，稳定唯一） */}
+      <CollectStar atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, courseName ?? "", sem ?? "") }} title={h.title} />
       <IconChevron className="row-caret" width={14} height={14} />
     </div>
   );

@@ -20,8 +20,8 @@ type Filter = "unfinished" | "overdue" | "submitted" | "graded" | "all";
 const FILTERS: Array<{ key: Filter; label: string }> = [
   { key: "unfinished", label: "进行中" },
   { key: "overdue", label: "已逾期" },
-  { key: "submitted", label: "已提交" },
-  { key: "graded", label: "已批改" },
+  { key: "submitted", label: "已交" },
+  { key: "graded", label: "已批" },
   { key: "all", label: "全部" },
 ];
 
@@ -91,9 +91,9 @@ export function AssignmentsPage() {
   }, [data, extHw]);
 
   const list = groups[filter];
-  const meta = data
-    ? `${semesterText(data.semester.id)} · 进行中 ${groups.unfinished.length} · 逾期 ${groups.overdue.length} · 已交 ${groups.submitted.length} · 已批 ${groups.graded.length}${extHw.length > 0 ? ` · 外部 ${extHw.length}` : ""}`
-    : "按截止时间排序";
+  // R10 15.4：页头只留学期文本；各分组计数已并入 SegmentedOverflow 各 tab（含「全部」），
+  // 「外部 N」删除（已融入各组、无信息量）
+  const meta = data ? semesterText(data.semester.id) : "按截止时间排序";
 
   return (
     <>

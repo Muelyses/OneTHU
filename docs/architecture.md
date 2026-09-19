@@ -53,7 +53,8 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 ## 4. 主题系统
 
 主题以插件形式提供（`manifest.category === "theme"`），实现方式为覆盖 `tokens.css`
-的 CSS 变量，可选替换 logo 与附加 CSS。内置主题与第三方主题权限相同，均可删除。
+的 CSS 变量，可选替换 logo 与附加 CSS。内置主题不可删除，仅插件主题可由用户删除
+（历史上删除的内置主题可经「恢复内置主题」找回）。
 
 昼夜调度实现于 `state/theme.ts`：
 

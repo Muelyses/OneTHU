@@ -106,7 +106,8 @@ export default async function activate(ctx) {
 
 主题是一种特殊插件：清单声明 `category: "theme"`，模块导出 `theme` 对象
 （`ThemeDef`）而非 `default` 激活函数。宿主在安装与启动时将其注册进主题库，
-与其他主题（内置或第三方）同权：可应用、可停用、可删除。
+与其他主题同权：可应用、可停用、可删除（内置主题除外——内置主题不可删除，
+保证用户始终有可用外观）。
 
 ```js
 export const manifest = {

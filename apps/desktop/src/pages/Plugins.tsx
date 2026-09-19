@@ -207,9 +207,11 @@ function ThemeManagerSection(): ReactNode {
                       应用
                     </button>
                   )}
-                  <button className="btn btn-ghost" title="删除主题（内置同权可删）" onClick={() => { removeTheme(t.id); setMsg(`已删除「${t.name}」`); }}>
-                    删除
-                  </button>
+                  {t.source === "plugin" ? (
+                    <button className="btn btn-ghost" title="删除主题插件（内置主题不可删除）" onClick={() => { removeTheme(t.id); setMsg(`已删除「${t.name}」`); }}>
+                      删除
+                    </button>
+                  ) : null}
                 </div>
               </div>
             );

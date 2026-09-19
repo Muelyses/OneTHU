@@ -39,7 +39,9 @@ function isOverdue(h: { submitted: boolean; deadline: string }): boolean {
 /** 外部作业源引导横幅：新用户不知道雨课堂/TUOJ 要单独登录。
  *  仅「尚未配置任何外部源」时显示，配置后自动消失；「知道了」持久忽略（localStorage）。
  *  R11 16.3：主文案改为「接入多平台作业聚合」；主按钮「登录雨课堂」弹登录通道 modal
- *  （扫码 / 手机验证码，UI 参考校园卡充值弹窗）；次按钮「去设置」跳设置页 extHw 区。 */
+ *  （扫码 / 手机验证码，UI 参考校园卡充值弹窗）；次按钮「去设置」跳设置页 extHw 区。
+ *  R13 18.3：文案改两段式——雨课堂人人可用（主按钮仍登录雨课堂）；OJ 平台按个人情况
+ *  在设置页登录，不再把三类平台并列平铺。 */
 function ExtHwGuide() {
   const { navigate } = useApp();
   const ext = useExternalHomework();
@@ -51,7 +53,10 @@ function ExtHwGuide() {
     <>
       <div className="browser-hint ext-hw-hint">
         <span className="ext-hw-hint-text">
-          <div>接入多平台作业聚合：把雨课堂 / TUOJ / Tyche 的作业 DDL 合并到「全部作业」与「今日」。</div>
+          <div>雨课堂人人可用；OJ 平台（TUOJ、Tyche 等）按个人情况在设置页登录。</div>
+          <div style={{ opacity: 0.8, marginTop: 2 }}>
+            登录后把各平台作业 DDL 合并到「全部作业」与「今日」。
+          </div>
           {/* R11 16.2：TUOJ 自动漫游已过统一认证但未返回课程——条幅提示，不算错误 */}
           {ext.tuojAuto.kind === "no-courses" ? (
             <div style={{ opacity: 0.8, marginTop: 2 }}>

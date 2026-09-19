@@ -35,7 +35,14 @@ import {
   refreshExtHw,
   useExternalHomework,
 } from "../state/exthw.js";
-import type { ExtHwCreds, ExtHwSourceId } from "@onethu/core";
+import { SOURCE_CATEGORY_NAMES } from "@onethu/core";
+import type { ExtHwCategory, ExtHwCreds, ExtHwSourceId } from "@onethu/core";
+
+/** R13 18.2：外部作业源两个子区的组说明（courseware=雨课堂；oj=OJ 平台大类） */
+const EXT_HW_CATEGORY_DESCS: Record<ExtHwCategory, string> = {
+  courseware: "清华课程平台，人人可用。",
+  oj: "按个人情况登录，不是每个 THUer 都有 OJ 账号（如部分平台仅计算机系同学可用）。",
+};
 
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
@@ -745,134 +752,148 @@ function ExtHwSection() {
             localStorage。
           </div>
 
-          <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
-            {/* 雨课堂：主路径 = 微信 / 雨豆APP 扫码；短信为折叠备选 */}
+          <div style={{ marginTop: 12, display: "grid", gap: 18 }}>
+            {/* ── 子区一：雨课堂（courseware，清华课程平台，人人可用）── */}
             <div>
-              <div className="setting-title" style={{ fontSize: 13 }}>
-                雨课堂 <span className="setting-desc" style={{ display: "inline" }}>（微信 / 雨豆APP 扫码）</span>
-              </div>
-              <div style={fieldStyle}>
-                <button className="btn btn-primary" disabled={busy !== null} onClick={() => setYktQrOpen((v) => !v)}>
-                  {yktQrOpen ? "收起扫码登录" : "微信扫码登录"}
-                </button>
-                <span className="setting-desc" style={{ alignSelf: "center" }}>
-                  {yktQrOpen ? "打开微信或雨豆APP 扫描二维码" : yktCookie.trim() ? "已登录" : "未登录"}
-                </span>
-                {yktConfigured ? (
-                  <button
-                    className="btn"
-                    disabled={busy !== null}
-                    onClick={() => onLogout("yuketang")}
-                  >
-                    {busy === "logout-yuketang" ? "退出中…" : "退出登录"}
-                  </button>
-                ) : null}
-              </div>
-              {yktQrOpen ? (
-                <YktQrPanel
-                  onCancel={() => setYktQrOpen(false)}
-                  onSuccess={(cookie) => {
-                    setYktCookie(cookie);
-                    setYktQrOpen(false);
-                    void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
-                      setMsg("雨课堂扫码登录成功，已保存。");
-                      void refreshExtHw();
-                    });
-                  }}
-                />
-              ) : null}
-              <div>
-                <button className="btn btn-ghost" style={{ padding: "2px 0", marginTop: 4 }} onClick={() => setYktSmsOpen((v) => !v)}>
-                  {yktSmsOpen ? "▾" : "▸"} 备选：手机号 + 短信验证码
-                </button>
-                {yktSmsOpen ? (
-                  <>
-                    <div style={fieldStyle}>
-                      <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="tel" placeholder="手机号" value={yktPhone} onChange={(e) => setYktPhone(e.target.value.trim())} />
-                      <button className="btn" disabled={busy !== null || !yktPhone.trim()} onClick={onYktSend}>
-                        {busy === "ykt-send" ? "发送中…" : "发送验证码"}
-                      </button>
-                    </div>
-                    <div style={fieldStyle}>
-                      <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={yktCode} onChange={(e) => setYktCode(e.target.value.trim())} />
-                      <button className="btn btn-primary" disabled={busy !== null || !yktPhone.trim() || !yktCode.trim()} onClick={onYktLogin}>
-                        {busy === "ykt-login" ? "登录中…" : "登录"}
-                      </button>
-                    </div>
-                  </>
-                ) : null}
-              </div>
-            </div>
-
-            {/* TUOJ：主路径 = 清华统一认证漫游（一键，零凭据）；账号密码为折叠备选 */}
-            <div>
-              <div className="setting-title" style={{ fontSize: 13 }}>
-                TUOJ <span className="setting-desc" style={{ display: "inline" }}>（清华统一认证，一键登录）</span>
-              </div>
-              <div style={fieldStyle}>
-                <button className="btn btn-primary" disabled={busy !== null} onClick={onTuojCasLogin}>
-                  {busy === "tuoj-cas" ? "登录中…" : "用清华统一认证登录"}
-                </button>
-                <span className="setting-desc" style={{ alignSelf: "center" }}>
-                  {tuojConfigured
-                    ? `已登录${tuojVia === "cas" || ext.tuojAuto.kind === "ok" ? "（统一认证）" : "（账号密码）"}`
-                    : "未登录"}
-                </span>
-                {tuojConfigured ? (
-                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuoj")}>
-                    {busy === "logout-tuoj" ? "退出中…" : "退出登录"}
-                  </button>
-                ) : null}
-              </div>
-              {/* R11 16.2：统一认证自动登录结果（成功 ✅ / 无账号提示 / 失败引导手动） */}
-              {ext.tuojAuto.kind === "ok" ? (
-                <div className="setting-desc" style={{ marginTop: 4 }}>统一认证自动登录 ✅</div>
-              ) : ext.tuojAuto.kind === "no-courses" ? (
-                <div className="setting-desc" style={{ marginTop: 4 }}>
-                  统一认证已通过，但 TUOJ 未返回课程（可能未注册/未选课）。
-                </div>
-              ) : ext.tuojAuto.kind === "failed" ? (
-                <div className="setting-desc" style={{ marginTop: 4 }}>
-                  自动登录未成功{ext.tuojAuto.message ? `（${ext.tuojAuto.message.slice(0, 160)}）` : ""}
-                  ——可点上方「用清华统一认证登录」手动重试。
-                </div>
-              ) : null}
-              <div>
-                <button
-                  className="btn btn-ghost"
-                  style={{ padding: "2px 0", marginTop: 4 }}
-                  onClick={() => setTuojPwdOpen((v) => !v)}
-                >
-                  {tuojPwdOpen ? "▾" : "▸"} 备选：TUOJ 账号密码登录
-                </button>
-                {tuojPwdOpen ? (
-                  <div style={fieldStyle}>
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tuojUser} onChange={(e) => setTuojUser(e.target.value.trim())} />
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tuojPwd} onChange={(e) => setTuojPwd(e.target.value)} />
-                    <button className="btn" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={onTuojLogin}>
-                      {busy === "tuoj-login" ? "登录中…" : "登录"}
-                    </button>
+              <div className="setting-title">{SOURCE_CATEGORY_NAMES.courseware}</div>
+              <div className="setting-desc">{EXT_HW_CATEGORY_DESCS.courseware}</div>
+              <div style={{ marginTop: 8, display: "grid", gap: 14 }}>
+                {/* 雨课堂：主路径 = 微信 / 雨豆APP 扫码；短信为折叠备选 */}
+                <div>
+                  <div className="setting-title" style={{ fontSize: 13 }}>
+                    微信 / 雨豆APP 扫码
                   </div>
-                ) : null}
+                  <div style={fieldStyle}>
+                    <button className="btn btn-primary" disabled={busy !== null} onClick={() => setYktQrOpen((v) => !v)}>
+                      {yktQrOpen ? "收起扫码登录" : "微信扫码登录"}
+                    </button>
+                    <span className="setting-desc" style={{ alignSelf: "center" }}>
+                      {yktQrOpen ? "打开微信或雨豆APP 扫描二维码" : yktCookie.trim() ? "已登录" : "未登录"}
+                    </span>
+                    {yktConfigured ? (
+                      <button
+                        className="btn"
+                        disabled={busy !== null}
+                        onClick={() => onLogout("yuketang")}
+                      >
+                        {busy === "logout-yuketang" ? "退出中…" : "退出登录"}
+                      </button>
+                    ) : null}
+                  </div>
+                  {yktQrOpen ? (
+                    <YktQrPanel
+                      onCancel={() => setYktQrOpen(false)}
+                      onSuccess={(cookie) => {
+                        setYktCookie(cookie);
+                        setYktQrOpen(false);
+                        void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
+                          setMsg("雨课堂扫码登录成功，已保存。");
+                          void refreshExtHw();
+                        });
+                      }}
+                    />
+                  ) : null}
+                  <div>
+                    <button className="btn btn-ghost" style={{ padding: "2px 0", marginTop: 4 }} onClick={() => setYktSmsOpen((v) => !v)}>
+                      {yktSmsOpen ? "▾" : "▸"} 备选：手机号 + 短信验证码
+                    </button>
+                    {yktSmsOpen ? (
+                      <>
+                        <div style={fieldStyle}>
+                          <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="tel" placeholder="手机号" value={yktPhone} onChange={(e) => setYktPhone(e.target.value.trim())} />
+                          <button className="btn" disabled={busy !== null || !yktPhone.trim()} onClick={onYktSend}>
+                            {busy === "ykt-send" ? "发送中…" : "发送验证码"}
+                          </button>
+                        </div>
+                        <div style={fieldStyle}>
+                          <input className="input" style={{ minWidth: 160, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={yktCode} onChange={(e) => setYktCode(e.target.value.trim())} />
+                          <button className="btn btn-primary" disabled={busy !== null || !yktPhone.trim() || !yktCode.trim()} onClick={onYktLogin}>
+                            {busy === "ykt-login" ? "登录中…" : "登录"}
+                          </button>
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Tyche：用户名 + 密码 */}
+            {/* ── 子区二：OJ 平台（oj，按个人情况登录）── */}
             <div>
-              <div className="setting-title" style={{ fontSize: 13 }}>
-                Tyche <span className="setting-desc" style={{ display: "inline" }}>（用户名 + 密码；校内或 sslvpn，勿用 webvpn）</span>
-              </div>
-              <div style={fieldStyle}>
-                <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tycheUser} onChange={(e) => setTycheUser(e.target.value.trim())} />
-                <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tychePwd} onChange={(e) => setTychePwd(e.target.value)} />
-                <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
-                  {busy === "tyche-login" ? "登录中…" : "登录"}
-                </button>
-                {tycheConfigured ? (
-                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tyche")}>
-                    {busy === "logout-tyche" ? "退出中…" : "退出登录"}
-                  </button>
-                ) : null}
+              <div className="setting-title">{SOURCE_CATEGORY_NAMES.oj}</div>
+              <div className="setting-desc">{EXT_HW_CATEGORY_DESCS.oj}</div>
+              <div style={{ marginTop: 8, display: "grid", gap: 14 }}>
+                {/* TUOJ：主路径 = 清华统一认证漫游（一键，零凭据）；账号密码为折叠备选 */}
+                <div>
+                  <div className="setting-title" style={{ fontSize: 13 }}>
+                    TUOJ <span className="setting-desc" style={{ display: "inline" }}>（清华统一认证，一键登录）</span>
+                  </div>
+                  <div style={fieldStyle}>
+                    <button className="btn btn-primary" disabled={busy !== null} onClick={onTuojCasLogin}>
+                      {busy === "tuoj-cas" ? "登录中…" : "用清华统一认证登录"}
+                    </button>
+                    <span className="setting-desc" style={{ alignSelf: "center" }}>
+                      {tuojConfigured
+                        ? `已登录${tuojVia === "cas" || ext.tuojAuto.kind === "ok" ? "（统一认证）" : "（账号密码）"}`
+                        : "未登录"}
+                    </span>
+                    {tuojConfigured ? (
+                      <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuoj")}>
+                        {busy === "logout-tuoj" ? "退出中…" : "退出登录"}
+                      </button>
+                    ) : null}
+                  </div>
+                  {/* R11 16.2：统一认证自动登录结果（成功 ✅ / 无账号提示 / 失败引导手动） */}
+                  {ext.tuojAuto.kind === "ok" ? (
+                    <div className="setting-desc" style={{ marginTop: 4 }}>统一认证自动登录 ✅</div>
+                  ) : ext.tuojAuto.kind === "no-courses" ? (
+                    <div className="setting-desc" style={{ marginTop: 4 }}>
+                      统一认证已通过，但 TUOJ 未返回课程（可能未注册/未选课）。
+                    </div>
+                  ) : ext.tuojAuto.kind === "failed" ? (
+                    <div className="setting-desc" style={{ marginTop: 4 }}>
+                      自动登录未成功{ext.tuojAuto.message ? `（${ext.tuojAuto.message.slice(0, 160)}）` : ""}
+                      ——可点上方「用清华统一认证登录」手动重试。
+                    </div>
+                  ) : null}
+                  <div>
+                    <button
+                      className="btn btn-ghost"
+                      style={{ padding: "2px 0", marginTop: 4 }}
+                      onClick={() => setTuojPwdOpen((v) => !v)}
+                    >
+                      {tuojPwdOpen ? "▾" : "▸"} 备选：TUOJ 账号密码登录
+                    </button>
+                    {tuojPwdOpen ? (
+                      <div style={fieldStyle}>
+                        <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tuojUser} onChange={(e) => setTuojUser(e.target.value.trim())} />
+                        <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tuojPwd} onChange={(e) => setTuojPwd(e.target.value)} />
+                        <button className="btn" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={onTuojLogin}>
+                          {busy === "tuoj-login" ? "登录中…" : "登录"}
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* Tyche：用户名 + 密码 */}
+                <div>
+                  <div className="setting-title" style={{ fontSize: 13 }}>
+                    Tyche <span className="setting-desc" style={{ display: "inline" }}>（用户名 + 密码；校内或 sslvpn，勿用 webvpn）</span>
+                  </div>
+                  <div style={fieldStyle}>
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tycheUser} onChange={(e) => setTycheUser(e.target.value.trim())} />
+                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tychePwd} onChange={(e) => setTychePwd(e.target.value)} />
+                    <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
+                      {busy === "tyche-login" ? "登录中…" : "登录"}
+                    </button>
+                    {tycheConfigured ? (
+                      <button className="btn" disabled={busy !== null} onClick={() => onLogout("tyche")}>
+                        {busy === "logout-tyche" ? "退出中…" : "退出登录"}
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -10,7 +10,14 @@
  * 雨课堂 / Tyche 仍走裸 FetchLike。
  */
 import type { FetchLike, HttpClient } from "../http.js";
-import type { ExtHwCreds, ExtHwSourceId, ExternalHomework, HomeworkSource } from "./types.js";
+import type {
+  ExtHwCreds,
+  ExtHwSourceId,
+  ExternalHomework,
+  HomeworkSource,
+  RegisteredHomeworkSource,
+} from "./types.js";
+import { SOURCE_CATEGORIES } from "./types.js";
 import { createYuketangSource } from "./yuketang.js";
 import { BASE as TUOJ_BASE, createTuojSource, isTuojSessionError } from "./tuoj.js";
 import { createTycheSource } from "./tyche.js";
@@ -25,10 +32,17 @@ export interface CreateExternalSourcesDeps {
   http?: HttpClient;
 }
 
-export function createExternalSources({ creds, fetchLike, http }: CreateExternalSourcesDeps): HomeworkSource[] {
+/** R13 18.1：按 `SOURCE_CATEGORIES` 给组装出的源附上大类元数据（courseware / oj）。
+ *  纯信息架构字段，不改变凭据、拉取与展示。 */
+const withCategory = (s: HomeworkSource): RegisteredHomeworkSource => ({
+  ...s,
+  category: SOURCE_CATEGORIES[s.id],
+});
+
+export function createExternalSources({ creds, fetchLike, http }: CreateExternalSourcesDeps): RegisteredHomeworkSource[] {
   const days = typeof creds.days === "number" && creds.days > 0 ? creds.days : 30;
-  const sources: HomeworkSource[] = [];
-  if (creds.yuketang?.cookie?.trim()) sources.push(createYuketangSource(creds.yuketang, fetchLike, days));
+  const sources: RegisteredHomeworkSource[] = [];
+  if (creds.yuketang?.cookie?.trim()) sources.push(withCategory(createYuketangSource(creds.yuketang, fetchLike, days)));
   // TUOJ：显式 Cookie 串（账号密码路径）或 CAS 漫游标记（via="cas"）任一存在即组装
   const tuoj = creds.tuoj;
   if (tuoj && (tuoj.cookie?.trim() || tuoj.via === "cas")) {
@@ -37,12 +51,12 @@ export function createExternalSources({ creds, fetchLike, http }: CreateExternal
       // 没有则退回凭据里的显式 Cookie 串。强制直连（TUOJ 是公网域，绝不 WebVPN 包装）。
       const jarCookie = http.cookieHeaderFor(`${TUOJ_BASE}/api/course/list`);
       const cookie = (jarCookie ?? tuoj.cookie ?? "").trim();
-      sources.push(createTuojSource({ cookie, username: tuoj.username }, (u, i) => http.request(u, { ...i, direct: true }), days));
+      sources.push(withCategory(createTuojSource({ cookie, username: tuoj.username }, (u, i) => http.request(u, { ...i, direct: true }), days)));
     } else {
-      sources.push(createTuojSource({ cookie: tuoj.cookie ?? "", username: tuoj.username }, fetchLike, days));
+      sources.push(withCategory(createTuojSource({ cookie: tuoj.cookie ?? "", username: tuoj.username }, fetchLike, days)));
     }
   }
-  if (creds.tyche?.cookie?.trim()) sources.push(createTycheSource(creds.tyche, fetchLike, days));
+  if (creds.tyche?.cookie?.trim()) sources.push(withCategory(createTycheSource(creds.tyche, fetchLike, days)));
   return sources;
 }
 
@@ -128,8 +142,8 @@ export async function refreshExternalHomework(
   return { items, errors, reroutedTuoj };
 }
 
-export { SOURCE_NAMES } from "./types.js";
-export type { ExtHwCreds, ExtHwSourceId, ExternalHomework, HomeworkSource } from "./types.js";
+export { SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES } from "./types.js";
+export type { ExtHwCategory, ExtHwCreds, ExtHwSourceId, ExternalHomework, HomeworkSource, RegisteredHomeworkSource } from "./types.js";
 export {
   yuketangSendSmsCode,
   yuketangVerifyLogin,

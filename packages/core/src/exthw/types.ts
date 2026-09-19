@@ -20,6 +20,24 @@ export const SOURCE_NAMES: Record<ExtHwSourceId, string> = {
   tyche: "Tyche",
 };
 
+/** 源大类：`courseware` = 课程平台（雨课堂，人人可用）；
+ *  `oj` = OJ 评测平台（按个人情况，不是每个 THUer 都有账号）。 */
+export type ExtHwCategory = "courseware" | "oj";
+
+/** 源 → 大类注册表（信息架构元数据；**不参与**凭据存储与拉取链路）。
+ *  新增源只在此登记 category，设置页即可按大类自动归组。 */
+export const SOURCE_CATEGORIES: Record<ExtHwSourceId, ExtHwCategory> = {
+  yuketang: "courseware",
+  tuoj: "oj",
+  tyche: "oj",
+};
+
+/** 大类展示名（设置页分组标题） */
+export const SOURCE_CATEGORY_NAMES: Record<ExtHwCategory, string> = {
+  courseware: "雨课堂",
+  oj: "OJ 平台",
+};
+
 export interface ExternalHomework {
   /** 源内稳定唯一 id，用于 React key / 去重（不含 `ext:` 前缀） */
   id: string;
@@ -54,6 +72,12 @@ export interface HomeworkSource {
   fetch(): Promise<ExternalHomework[]>;
 }
 
+/** 组装后的源：在基础源上附带大类元数据（由 createExternalSources 按
+ *  `SOURCE_CATEGORIES` 登记，设置页据此归组；不影响拉取链路）。 */
+export interface RegisteredHomeworkSource extends HomeworkSource {
+  category: ExtHwCategory;
+}
+
 /** 凭据（由 desktop 层从 localStorage 读出后注入；core 不碰存储） */
 export interface ExtHwCreds {
   /** 登录后拼好的会话 Cookie；`phone` 仅用于设置页回填 */
@@ -68,10 +92,10 @@ export interface ExtHwCreds {
   days?: number;
 }
 
-/** 组装三源（只组装已配置 cookie / 已漫游的源） */
+/** 组装三源（只组装已配置 cookie / 已漫游的源），并附上 `category` 大类元数据 */
 export type CreateExternalSources = (deps: {
   creds: ExtHwCreds;
   fetchLike: FetchLike;
   /** 带 CookieJar 的 core HttpClient（TUOJ 的清华统一认证漫游会话在 jar 里） */
   http?: HttpClient;
-}) => HomeworkSource[];
+}) => RegisteredHomeworkSource[];

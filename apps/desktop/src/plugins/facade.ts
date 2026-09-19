@@ -15,6 +15,7 @@ import { refreshExtHw } from "../state/exthw.js";
 import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
 import { AuthRequiredError } from "@onethu/core";
 import type { FormField } from "../lib/formModal.js";
+import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
@@ -681,7 +682,16 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     settings: {
       get: () => {
         gate(perms, "storage", "settings.get");
-        return { ...(getPlugin(pluginId)?.settings ?? {}) };
+        const out = { ...(getPlugin(pluginId)?.settings ?? {}) };
+        // MCP 服务器由宿主管理 UI 逐条维护（lib/mcpStore.ts），此处注入 JSON 供 OH 读取
+        if (pluginId === "onethu.harness") {
+          try {
+            out["mcpServers"] = mcpServersJsonForSettings();
+          } catch {
+            /* 存储不可用时留空 */
+          }
+        }
+        return out;
       },
     },
     net: {

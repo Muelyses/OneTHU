@@ -434,21 +434,21 @@ OH 的工具集除内置校园工具外，还内置两个联动工具，使模�
 
 ### 9.4 OH 接入 MCP 服务器
 
-OH 可作为 MCP（Model Context Protocol）客户端调用外部工具。在 OH 设置的
-「MCP 服务器」填 JSON 数组：
+OH 可作为 MCP（Model Context Protocol）客户端调用外部工具。服务器在
+「插件 → OneTHU Harness 卡片 → MCP」中逐条管理（添加 / 编辑 / 删除），每条
+为一个 stdio server：
 
-```json
-[
-  { "name": "fs", "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/me/docs"] },
-  { "name": "search", "command": "uvx", "args": ["mcp-server-fetch"] }
-]
-```
+| 字段 | 说明 |
+|---|---|
+| 名称 | 工具前缀（工具全名 `mcp_<名称>_<工具>`） |
+| 启动命令 | 如 `npx`、`uvx`、`/usr/bin/node` |
+| 参数 | 空格分隔，支持引号包裹含空格的项（如 `-y @modelcontextprotocol/server-filesystem /Users/me/docs`） |
+| 环境变量 | `KEY=VALUE` 空格分隔 |
 
 实现为 **stdio 传输 + 冷启动模式**：每次工具调用重新 spawn server 进程
 （initialize → tools/list / tools/call → kill），无常驻状态，崩溃零影响。
-MCP 工具以 `mcp_<server>_<tool>` 命名注入对话（描述前缀「MCP·<server>」），
-与校园工具、联动插件工具同轮混用。当前为最小实现：不支持 resources/prompts
-与 OAuth 授权，需要这些能力的 server 暂不适用。
+MCP 工具与校园工具、联动插件工具同轮混用。当前为最小实现：不支持
+resources/prompts 与 OAuth 授权，需要这些能力的 server 暂不适用。
 
 ## 10. 对话面板协议
 

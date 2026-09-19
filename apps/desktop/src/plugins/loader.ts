@@ -273,7 +273,6 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
       { value: "custom", label: "自费 API（下方 Key/Endpoint/Model 生效）" },
       { value: "", label: "默认（自动：填了 Key 走自费，没填走 MadModel）" },
     ] },
-    { key: "mcpServers", label: "MCP 服务器（JSON 数组，可空）", type: "textarea", placeholder: '[{"name":"fs","command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/Users/me/docs"]}]', default: "" },
     { key: "apiKey", label: "API Key（自费模式用）", type: "password", placeholder: "sk-…" },
     { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
     { key: "model", label: "模型（自费模式用；免费档固定 DeepSeek-V4-Flash）", type: "text", default: "deepseek-chat" },

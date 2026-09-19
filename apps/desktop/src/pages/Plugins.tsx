@@ -6,6 +6,8 @@
  */
 import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import type { CommandResult } from "../plugins/types.js";
+import { loadMcpServers, saveMcpServers, type McpServerEntry } from "../lib/mcpStore.js";
+import { openFormModal } from "../lib/formModal.js";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
@@ -44,7 +46,7 @@ export function PluginsPage(): ReactNode {
   const [instOpen, setInstOpen] = useState(false);
   const themesSnap = useThemes();
   const plugins = cat === "all" ? allPlugins : allPlugins.filter((p) => (p.manifest.category ?? "general") === cat);
-  const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" } | null>(null);
+  const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" | "mcp" } | null>(null);
   const liveCount = plugins.filter((p) => p.enabled && isLive(p.manifest.id)).length;
   const coreCount = plugins.filter((p) => p.embedded).length;
 
@@ -299,7 +301,7 @@ function PluginCard({
 }: {
   id: string;
   index: number;
-  onOpenSheet: (s: { id: string; mode: "settings" | "log" }) => void;
+  onOpenSheet: (s: { id: string; mode: "settings" | "log" | "mcp" }) => void;
 }): ReactNode {
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
@@ -379,6 +381,11 @@ function PluginCard({
           ) : null}
           {m.category === "theme" ? <ThemeApplyButton themePluginId={m.id} onMsg={setRunMsg} /> : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
+          {id === "onethu.harness" ? (
+            <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>
+              MCP
+            </button>
+          ) : null}
           <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>
             设置
           </button>
@@ -466,32 +473,96 @@ function PluginSheet({
   onClose,
 }: {
   id: string;
-  mode: "settings" | "log";
+  mode: "settings" | "log" | "mcp";
   onClose: () => void;
 }): ReactNode {
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
   if (!rec) return null;
+  const title = mode === "settings" ? "设置" : mode === "mcp" ? "MCP 服务器" : "运行日志";
   return (
     <div className="plg-mask" onClick={onClose}>
       <section
         className="plg-sheet"
         role="dialog"
-        aria-label={mode === "settings" ? `${rec.manifest.name} 设置` : `${rec.manifest.name} 运行日志`}
+        aria-label={`${title} · ${rec.manifest.name}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="plg-sheet-head">
-          <b>{mode === "settings" ? "设置" : "运行日志"} · {rec.manifest.name}</b>
+          <b>{title} · {rec.manifest.name}</b>
           <button className="btn btn-ghost" onClick={onClose}>
             关闭
           </button>
         </div>
         {mode === "settings" ? (
           <SettingsBody id={id} rec={rec} />
+        ) : mode === "mcp" ? (
+          <McpBody />
         ) : (
           <LogBody id={id} />
         )}
       </section>
+    </div>
+  );
+}
+
+/** MCP 服务器管理：逐条增删改（表单弹窗），存宿主侧结构化存储，OH 启动对话时经 settings 注入 */
+function McpBody(): ReactNode {
+  const [list, setList] = useState<McpServerEntry[]>(() => loadMcpServers());
+  const save = (next: McpServerEntry[]): void => {
+    setList(next);
+    saveMcpServers(next);
+  };
+  const edit = async (idx: number): Promise<void> => {
+    const cur = list[idx];
+    const f = await openFormModal(idx === -1 ? "添加 MCP 服务器" : `编辑 MCP 服务器 · ${cur?.name ?? ""}`, [
+      { key: "name", label: "名称（工具前缀 mcp_<name>_）", required: true, default: cur?.name ?? "" },
+      { key: "command", label: "启动命令", required: true, default: cur?.command ?? "", placeholder: "npx / uvx / /usr/bin/node …" },
+      { key: "args", label: "参数（空格分隔，含引号的项用单引号包裹）", kind: "textarea", default: cur?.args.join(" ") ?? "", placeholder: '-y @modelcontextprotocol/server-filesystem /Users/me/docs' },
+      { key: "env", label: "环境变量（KEY=VALUE，空格分隔多个）", default: Object.entries(cur?.env ?? {}).map(([k, v]) => `${k}=${v}`).join(" ") },
+    ]);
+    if (!f) return;
+    const parseSpaceList = (v: string): string[] =>
+      (v.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? []).map((x) => x.replace(/^["']|["']$/g, ""));
+    const env: Record<string, string> = {};
+    for (const pair of parseSpaceList(f.env ?? "")) {
+      const i = pair.indexOf("=");
+      if (i > 0) env[pair.slice(0, i)] = pair.slice(i + 1);
+    }
+    const entry: McpServerEntry = { name: f.name?.trim() ?? "", command: f.command?.trim() ?? "", args: parseSpaceList(f.args ?? ""), env };
+    const next = list.slice();
+    if (idx === -1) next.push(entry);
+    else next[idx] = entry;
+    save(next);
+  };
+  const del = async (idx: number): Promise<void> => {
+    const { confirmOk } = await import("../lib/confirm.js");
+    const target = list[idx];
+    if (!target) return;
+    if (!(await confirmOk(`删除 MCP 服务器「${target.name}」？`))) return;
+    save(list.filter((_, i) => i !== idx));
+  };
+  return (
+    <div className="mcp-body">
+      <div className="plg-hint" style={{ marginBottom: 8 }}>
+        每条为一个 stdio MCP server；OH 对话时其工具以 <code className="plg-code">mcp_&lt;名称&gt;_&lt;工具&gt;</code> 注入。
+      </div>
+      {!list.length ? <div className="plg-hint">尚未添加。点「添加 MCP 服务器」开始。</div> : null}
+      {list.map((sv, i) => (
+        <div key={`${sv.name}:${i}`} className="mcp-item">
+          <div className="mcp-item-main">
+            <div className="mcp-item-name">{sv.name}</div>
+            <code className="plg-code">{sv.command} {sv.args.join(" ")}</code>
+          </div>
+          <div style={{ display: "flex", gap: 4, flex: "none" }}>
+            <button className="btn btn-ghost" onClick={() => void edit(i)}>编辑</button>
+            <button className="btn btn-ghost plg-danger" onClick={() => void del(i)}>删除</button>
+          </div>
+        </div>
+      ))}
+      <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => void edit(-1)}>
+        ＋ 添加 MCP 服务器
+      </button>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import { buildApi } from "./facade.js";
 import { installTheme, type ThemeDef } from "../state/theme.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
+import { startMadModelPump } from "../state/madmodel.js";
 import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe, updatePlugin } from "./registry.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi, PluginCommand, PluginContext, PluginManifest, PluginRecord } from "./types.js";
@@ -245,7 +246,10 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     "nav", "ui", "storage", "net:external",
   ],
   settings: [
-    { key: "apiKey", label: "API Key", type: "password", placeholder: "sk-…" },
+    { key: "apiKey", label: "API Key（留空 = 清华 MadModel 免费档，校园网/VPN 内自动续期）", type: "password", placeholder: "留空用免费档；自费填 sk-…" },
+    { key: "provider", label: "计费模式（custom=自费 API；留空=MadModel 免费档）", type: "text", default: "" },
+    { key: "madmodelToken", label: "MadModel Token（泵自动维护，勿手改）", type: "text", default: "" },
+    { key: "madmodelAt", label: "MadModel 签发时刻（泵自动维护，勿手改）", type: "text", default: "" },
     { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
     { key: "model", label: "模型", type: "text", default: "deepseek-chat" },
     { key: "thinking", label: "思考模式（DeepSeek 自动切 reasoner）", type: "text", default: "off" },
@@ -257,6 +261,9 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     { key: "maxSteps", label: "单次任务最大步数", type: "text", default: "16" },
   ],
 };
+
+// MadModel 免费档续期泵：模块加载即启动（启动即试一枚 + 10 分钟巡检）
+startMadModelPump();
 
 /** Android 判定：APK 的 WebView UA 必含 Android（桌面 macOS/Windows 不含） */
 function isAndroid(): boolean {

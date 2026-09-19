@@ -155,7 +155,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 
 ## 4. `exthw`
 
-对应外部作业源聚合接口，覆盖雨课堂、TUOJ（AI 版与经典版）、Tyche 三个作业系统。
+对应外部作业源聚合接口，覆盖雨课堂、TUOJ（AI 版与经典版）、Tyche、DSA OJ 四个作业系统。
 各源的凭据维护与故障恢复机制见 [external-homework.md](./external-homework.md)。
 
 **权限** `exthw:read`（快照）、`exthw:refresh`（刷新）
@@ -178,7 +178,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `source` | string | 源标识：`yuketang`、`tuoj`、`tuojClassic`、`tyche` |
+| `source` | string | 源标识：`yuketang`、`tuoj`、`tuojClassic`、`tyche`、`dsa` |
 | `course` / `title` | string | 课程名与作业标题 |
 | `deadline` | string \| null | 截止时间，格式 `"YYYY-MM-DD HH:MM"` |
 | `url` | string \| null | 详情链接 |

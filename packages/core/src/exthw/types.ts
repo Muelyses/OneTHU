@@ -38,6 +38,12 @@ export interface ExternalHomework {
   submittedCount?: number;
   /** 题目总数（可选，仅雨课堂有精确数据） */
   totalCount?: number;
+  /** 是否旁听课堂（雨课堂 courses/list `role===6`；role 5=正式、未知 role 不标，保守） */
+  audited?: boolean;
+  /** 考试得分（仅已提交且已出分；未提交/未出分不设，避免 0 分误导） */
+  score?: number;
+  /** 考试卷面满分（与 score 成对出现；取自 /v/exam/cover 的 total_score） */
+  totalScore?: number;
 }
 
 export interface HomeworkSource {

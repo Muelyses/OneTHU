@@ -337,7 +337,15 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
   };
   const chip = homeworkChip(h);
   // 已批改直接显示成绩（thu-app learnHome「已批改 (分数)」语义）：等级码经 gradeLabel 转文字
-  const score = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
+  const gradeScore = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
+  // 外部考试分数（R9）：已提交且已出分时显示「已提交 · 60/100」（对齐已批改语义）
+  const examScore =
+    h.submitted && h.score !== undefined
+      ? h.totalScore !== undefined
+        ? `${h.score}/${h.totalScore}`
+        : String(h.score)
+      : "";
+  const score = gradeScore || examScore;
   return (
     <div
       className="row row-click"
@@ -354,6 +362,8 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
       <div className="row-main">
         <div className="row-title">
           {h.source ? <span className="src-badge" title={h.externalProgress ? `已作答 ${h.externalProgress}` : undefined}>{extHwSourceName(h.source)}</span> : null}
+          {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
+          {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
           {h.title}
         </div>
         <div className="row-sub">{courseName ?? h.courseName ?? "课程"}</div>

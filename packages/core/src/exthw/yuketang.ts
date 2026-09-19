@@ -84,6 +84,15 @@ interface YktItem {
   skuId?: string;
 }
 
+/** 单条提交状态查询结果（作业与试卷共用；score/totalScore 仅试卷已出分时给） */
+interface YktStatusResult {
+  submitted: boolean;
+  submittedCount?: number;
+  totalCount?: number;
+  score?: number;
+  totalScore?: number;
+}
+
 /** 并发映射（有界并发，失败在回调内自行捕获） */
 async function mapLimited<T>(items: T[], limit: number, fn: (item: T) => Promise<void>): Promise<void> {
   let i = 0;
@@ -113,7 +122,7 @@ async function fetchYktStatus(
   uv: string,
   classroomId: string,
   leafTypeId: string,
-): Promise<{ submitted: boolean; submittedCount?: number; totalCount?: number }> {
+): Promise<YktStatusResult> {
   const url =
     `${base}/mooc-api/v1/lms/exercise/get_exercise_list/${encodeURIComponent(leafTypeId)}/` +
     `?classroom_id=${encodeURIComponent(classroomId)}&term=latest&uv_id=${encodeURIComponent(uv)}`;
@@ -160,7 +169,7 @@ async function fetchYktExamStatus(
   classroomId: string,
   leafTypeId: string,
   skuId: string,
-): Promise<{ submitted: boolean; submittedCount?: number; totalCount?: number }> {
+): Promise<YktStatusResult> {
   const skuQs = skuId ? `&sku_id=${encodeURIComponent(skuId)}` : "";
   const url =
     `${base}/v/exam/cover?exam_id=${encodeURIComponent(leafTypeId)}` +
@@ -170,22 +179,40 @@ async function fetchYktExamStatus(
   const pcRaw = data["problem_count"];
   const problemCount = typeof pcRaw === "number" && Number.isFinite(pcRaw) ? pcRaw : undefined;
   const totalCount = problemCount !== undefined && problemCount > 0 ? problemCount : undefined;
+  const tsRaw = data["total_score"];
+  const totalScore = typeof tsRaw === "number" && Number.isFinite(tsRaw) ? tsRaw : undefined;
   const result = data["result"];
   if (result === null || result === undefined || typeof result !== "object") {
     // result 缺失/null（未作答或未出分）→ 保守未提交
     return { submitted: false, totalCount };
   }
-  const unfinishedRaw = (result as Record<string, unknown>)["unfinished_count"];
+  const r = result as Record<string, unknown>;
+  const unfinishedRaw = r["unfinished_count"];
   const unfinished = typeof unfinishedRaw === "number" && Number.isFinite(unfinishedRaw) ? unfinishedRaw : undefined;
   if (problemCount === undefined || unfinished === undefined) {
     return { submitted: false, totalCount };
   }
   const done = Math.max(0, problemCount - unfinished);
-  return {
-    submitted: unfinished < problemCount,
+  const submitted = unfinished < problemCount;
+  const out: YktStatusResult = {
+    submitted,
     submittedCount: done > 0 ? done : undefined,
     totalCount,
   };
+  // 分数仅「已提交 且 已出分 且 score/total_score 均为数字」时给（避免 0 分误导）
+  const scoreRaw = r["score"];
+  const scoreFinish = r["score_finish"];
+  if (
+    submitted &&
+    scoreFinish !== false &&
+    typeof scoreRaw === "number" &&
+    Number.isFinite(scoreRaw) &&
+    totalScore !== undefined
+  ) {
+    out.score = scoreRaw;
+    out.totalScore = totalScore;
+  }
+  return out;
 }
 
 export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: number): HomeworkSource {
@@ -204,6 +231,13 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
       }
       const data = (coursesBody["data"] ?? {}) as Record<string, unknown>;
       const list = Array.isArray(data["list"]) ? (data["list"] as Array<Record<string, unknown>>) : [];
+      // classroom_id → role 映射（R9）：role 5=正式选课、6=旁听；其余未知值不标（保守）
+      const roleByClassroom = new Map<string, unknown>();
+      for (const c of list) {
+        const cid = c["classroom_id"];
+        if (cid === undefined || cid === null) continue;
+        roleByClassroom.set(String(cid), c["role"]);
+      }
       const limit = Date.now() + (days > 0 ? days : 30) * 86400000;
       const items: YktItem[] = [];
       for (const c of list) {
@@ -238,8 +272,10 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
             const leafQs = leaf !== undefined && leaf !== null && String(leaf).trim()
               ? `?leaf_id=${encodeURIComponent(String(leaf))}`
               : "";
+            const classroomId = String(a["classroom_id"] ?? cid);
+            const audited = roleByClassroom.get(classroomId) === 6;
             items.push({
-              classroomId: String(a["classroom_id"] ?? cid),
+              classroomId,
               leafTypeId: leafTypeId === undefined || leafTypeId === null ? "" : String(leafTypeId),
               isExam: type === 20,
               skuId:
@@ -255,6 +291,7 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
                 kind: type === 20 ? "exam" : "homework",
                 url: `${base}/v2/web/studentLog/${cid}${leafQs}`,
                 submitted: false,
+                audited: audited || undefined,
               },
             });
           }
@@ -273,6 +310,8 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
           it.hw.submitted = st.submitted;
           if (st.submittedCount !== undefined) it.hw.submittedCount = st.submittedCount;
           if (st.totalCount !== undefined) it.hw.totalCount = st.totalCount;
+          if (st.score !== undefined) it.hw.score = st.score;
+          if (st.totalScore !== undefined) it.hw.totalScore = st.totalScore;
         } catch {
           /* 状态查询失败：保守保持未提交 */
         }

@@ -63,6 +63,13 @@ export interface Homework {
   courseName?: string;
   /** 外部作业作答进度（如 "5/5"；仅外部作业，用于来源徽标 tooltip） */
   externalProgress?: string;
+  /** 外部作业类型：考试 / 普通作业（仅外部作业，透出自 ExternalHomework.kind） */
+  kind?: "homework" | "exam";
+  /** 外部作业所属课堂是否旁听（仅外部作业，透出自 ExternalHomework.audited） */
+  audited?: boolean;
+  /** 外部考试得分 / 卷面满分（仅已提交且已出分的外部考试） */
+  score?: number;
+  totalScore?: number;
 }
 
 /** 可下载附件（thu-learn-lib RemoteFile 精简版） */

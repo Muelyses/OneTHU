@@ -43,8 +43,12 @@ for (const src of sources) {
         it.submittedCount !== undefined || it.totalCount !== undefined
           ? ` ${it.submittedCount ?? "?"}/${it.totalCount ?? "?"}`
           : "";
+      // R9：考试 / 旁听标注与考试分数（仅已出分时打印）
+      const tags = [it.kind === "exam" ? "考试" : "", it.audited ? "旁听" : ""].filter(Boolean).join("/");
+      const tagText = tags ? ` [${tags}]` : "";
+      const score = it.score !== undefined ? ` score=${it.score}/${it.totalScore ?? "?"}` : "";
       console.log(
-        `  · [${it.kind}] submitted=${it.submitted}${prog} | ${it.deadline} | ${it.courseName} | ${it.title}${it.url ? " | " + it.url : ""}`,
+        `  · [${it.kind}]${tagText} submitted=${it.submitted}${prog}${score} | ${it.deadline} | ${it.courseName} | ${it.title}${it.url ? " | " + it.url : ""}`,
       );
     }
   } catch (e) {

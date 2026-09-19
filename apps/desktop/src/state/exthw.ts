@@ -344,6 +344,10 @@ export function toHomework(e: ExternalHomework): Homework {
       e.submittedCount !== undefined && e.totalCount !== undefined
         ? `${e.submittedCount}/${e.totalCount}`
         : undefined,
+    kind: e.kind,
+    audited: e.audited,
+    score: e.score,
+    totalScore: e.totalScore,
   };
 }
 

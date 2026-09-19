@@ -64,7 +64,18 @@ const localDT = (ms) => {
 console.log("\n[雨课堂]");
 {
   const fetchLike = makeFetch([
-    { match: (u) => u.includes("/v2/api/web/courses/list"), body: { errcode: 0, data: { list: [{ classroom_id: 1, name: "线代" }] } } },
+    {
+      match: (u) => u.includes("/v2/api/web/courses/list"),
+      body: {
+        errcode: 0,
+        data: {
+          list: [
+            { classroom_id: 1, name: "线代", role: 5 },
+            { classroom_id: 2, name: "线代-4", role: 6 },
+          ],
+        },
+      },
+    },
     {
       match: (u) => u.includes("/v2/api/web/logs/learn/1"),
       body: {
@@ -77,6 +88,20 @@ console.log("\n[雨课堂]");
             { type: 20, id: 13, title: "未交试卷", classroom_id: 1, content: { leaf_type_id: 201, leaf_id: 8, sku_id: 901, score_d: FUTURE } },
             { type: 20, id: 14, title: "无 result 试卷", classroom_id: 1, content: { leaf_type_id: 202, leaf_id: 9, sku_id: 902, score_d: FUTURE } },
             { type: 20, id: 15, title: "状态报错试卷", classroom_id: 1, content: { leaf_type_id: 203, leaf_id: 10, sku_id: 903, score_d: FUTURE } },
+            { type: 20, id: 16, title: "未出分试卷", classroom_id: 1, content: { leaf_type_id: 204, leaf_id: 11, sku_id: 904, score_d: FUTURE } },
+            { type: 20, id: 17, title: "缺满分试卷", classroom_id: 1, content: { leaf_type_id: 205, leaf_id: 12, sku_id: 905, score_d: FUTURE } },
+            { type: 20, id: 18, title: "零分已出分试卷", classroom_id: 1, content: { leaf_type_id: 206, leaf_id: 13, sku_id: 906, score_d: FUTURE } },
+          ],
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/v2/api/web/logs/learn/2"),
+      body: {
+        errcode: 0,
+        data: {
+          activities: [
+            { type: 19, id: 20, title: "旁听作业", classroom_id: 2, content: { leaf_type_id: 300, leaf_id: 14, score_d: FUTURE } },
           ],
         },
       },
@@ -86,14 +111,18 @@ console.log("\n[雨课堂]");
       body: { data: { answer_count: 3, problems: [{ user: { my_answer: { content: "<p>x</p>" } } }, { user: { my_answer: { content: "" } } }] } },
     },
     { match: (u) => u.includes("/get_exercise_list/101/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: { content: "" } } }, { user: { my_answer: {} } }] } } },
-    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, result: { status: 5, unfinished_count: 0, score: 60 } } } },
-    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, result: { status: 6, unfinished_count: 31 } } } },
-    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, result: null } } },
+    { match: (u) => u.includes("/get_exercise_list/300/"), body: { data: { answer_count: 1, problems: [{ user: { my_answer: { content: "<p>y</p>" } } }] } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, total_score: 100, result: { status: 5, unfinished_count: 0, score: 60, score_finish: true } } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, total_score: 100, result: { status: 6, unfinished_count: 31, score: 0, score_finish: true } } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, total_score: 100, result: null } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=203"), throw: "boom" },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=204"), body: { data: { problem_count: 10, total_score: 100, result: { status: 5, unfinished_count: 0, score: 60, score_finish: false } } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=205"), body: { data: { problem_count: 10, result: { status: 5, unfinished_count: 0, score: 60, score_finish: true } } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=206"), body: { data: { problem_count: 10, total_score: 100, result: { status: 5, unfinished_count: 0, score: 0, score_finish: true } } } },
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 6, "拉到 6 条作业");
+  eq(items.length, 10, "拉到 10 条作业");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   eq(byTitle.get("已交作业")?.submitted, true, "answer_count>0 → 已提交");
   eq(byTitle.get("已交作业")?.submittedCount, 1, "已交作业 submittedCount=1（有内容的题目数）");
@@ -106,8 +135,22 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("未交试卷")?.totalCount, 31, "未交试卷 totalCount=31");
   eq(byTitle.get("无 result 试卷")?.submitted, false, "试卷 result 缺失/null → 保守未提交");
   eq(byTitle.get("状态报错试卷")?.submitted, false, "试卷状态请求失败 → 保守未提交");
+  // R9：旁听标注（role=6 → audited，role=5/未知不标）
+  eq(byTitle.get("旁听作业")?.audited, true, "role=6 课堂 → audited=true");
+  eq(byTitle.get("旁听作业")?.submitted, true, "旁听作业照常判提交状态");
+  eq(byTitle.get("已交作业")?.audited, undefined, "role=5 课堂 → 不标旁听");
+  // R9：考试分数（仅已提交且已出分给 score/totalScore）
+  eq(byTitle.get("已交试卷")?.score, 60, "已出分试卷 score=60");
+  eq(byTitle.get("已交试卷")?.totalScore, 100, "已出分试卷 totalScore=100");
+  eq(byTitle.get("未交试卷")?.score, undefined, "未提交试卷不设 score");
+  eq(byTitle.get("未出分试卷")?.submitted, true, "未出分试卷仍按提交判定");
+  eq(byTitle.get("未出分试卷")?.score, undefined, "score_finish=false → 不设 score");
+  eq(byTitle.get("缺满分试卷")?.score, undefined, "缺 total_score → 不设 score");
+  eq(byTitle.get("缺满分试卷")?.totalScore, undefined, "缺 total_score → 不设 totalScore");
+  eq(byTitle.get("零分已出分试卷")?.score, 0, "score=0 且已出分 → 照实显示 0");
+  eq(byTitle.get("零分已出分试卷")?.totalScore, 100, "score=0 且已出分 → totalScore=100");
   const hwCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
-  eq(hwCalls.length, 2, "仅作业（type 19）走 get_exercise_list");
+  eq(hwCalls.length, 3, "仅作业（type 19）走 get_exercise_list");
   ok(
     hwCalls.every((c) => c.headers["xtbz"] === "ykt"),
     "作业状态请求均带 XTBZ: ykt",
@@ -117,7 +160,7 @@ console.log("\n[雨课堂]");
     "作业状态请求均带 classroom_id / uv_id",
   );
   const examCalls = fetchLike.calls.filter((c) => c.url.includes("/v/exam/cover"));
-  eq(examCalls.length, 4, "试卷（type 20）走 /v/exam/cover");
+  eq(examCalls.length, 7, "试卷（type 20）走 /v/exam/cover");
   ok(
     examCalls.every((c) => c.headers["xtbz"] === "ykt"),
     "试卷状态请求均带 XTBZ: ykt",

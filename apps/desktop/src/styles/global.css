@@ -272,6 +272,25 @@
   flex: none;
 }
 
+/* 外部考试 / 旁听课堂小徽标（R9）：与 src-badge 同规格，低调配色 */
+.tag-exam,
+.tag-audit {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 6px;
+  margin-right: 6px;
+  border-radius: var(--r-pill);
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 500;
+  vertical-align: 1px;
+  flex: none;
+}
+
+.tag-exam { background: var(--amber-soft); color: var(--amber); }
+.tag-audit { background: var(--accent-soft); color: var(--accent); }
+
 /* ---------- 统计卡 ---------- */
 
 /* 统计卡网格：1fr = minmax(auto,1fr)，内容一宽就撑破容器把页面顶出横向滚动

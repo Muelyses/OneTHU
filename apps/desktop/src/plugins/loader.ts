@@ -284,8 +284,26 @@ function isAndroid(): boolean {
 // 桌面端同样内置：sidecar 二进制随 App 资源打包，开机复制进插件目录
 // appData/plugins/onethu.harness/ 并注册（builtin，用户不可删——它就是 App 的一部分）。
 // R10 架构：桌面所有插件（导入 + 内置）统一住在 appData/plugins/<id>/。
-if (isAndroid() && !getPlugin("onethu.harness")) {
-  addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+if (isAndroid()) {
+  const prev = getPlugin("onethu.harness");
+  if (!prev) {
+    addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+  } else {
+    // 内置清单自愈（同桌面 seed）：新 APK 扩了权限/设置字段（如 MadModel provider
+    // 下拉）时老注册表还是旧 manifest——设置 sheet 永远看不到新字段。变了就重注册，
+    // 用户 settings 全程保留（历史实锤：removePlugin 会连 settings 一起清）。
+    const mChanged =
+      JSON.stringify(prev.manifest.permissions ?? []) !== JSON.stringify(EMBEDDED_HARNESS_MANIFEST.permissions ?? []) ||
+      JSON.stringify(prev.manifest.settings ?? []) !== JSON.stringify(EMBEDDED_HARNESS_MANIFEST.settings ?? []);
+    if (mChanged) {
+      const prevSettings = { ...prev.settings };
+      removePlugin("onethu.harness");
+      addRustPlugin(EMBEDDED_HARNESS_MANIFEST, "", true);
+      if (Object.keys(prevSettings).length > 0) {
+        updatePlugin("onethu.harness", { settings: prevSettings });
+      }
+    }
+  }
 }
 
 /** 桌面内置 OH：sidecar 从打包资源落进插件目录，注册/迁移注册表指向。

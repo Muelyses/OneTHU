@@ -594,6 +594,13 @@ function ExtHwSection() {
   const [ojOpen, setOjOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  // R17 23.4：操作反馈「就近显示」——按触发区域归属，渲染在对应卡片内，
+  // 而不是统一堆在页面底部（真机实测在屏幕外，用户以为什么都没发生）。
+  const [msgArea, setMsgArea] = useState<"yuketang" | "oj" | "range">("range");
+  const notify = (area: "yuketang" | "oj" | "range", text: string): void => {
+    setMsgArea(area);
+    setMsg(text);
+  };
 
   // 凭据在 localStorage 里是密文：首次挂载异步解密后回填表单
   useEffect(() => {
@@ -676,7 +683,7 @@ function ExtHwSection() {
   };
 
   const onSave = () => {
-    void saveExtHwCreds(credsWith()).then(() => setMsg("已保存到本机。"));
+    void saveExtHwCreds(credsWith()).then(() => notify("range", "已保存到本机。"));
   };
 
   const onRefresh = () => {
@@ -684,8 +691,8 @@ function ExtHwSection() {
     setMsg(null);
     void saveExtHwCreds(credsWith())
       .then(() => refreshExtHw())
-      .then(() => setMsg("刷新完成。"))
-      .catch((e: unknown) => setMsg(`刷新失败：${errMsg(e)}`))
+      .then(() => notify("range", "刷新完成。"))
+      .catch((e: unknown) => notify("range", `刷新失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -707,10 +714,10 @@ function ExtHwSection() {
         await saveExtHwCreds(
           source === "tuoj" ? credsWith({ tuoj: r.cookie, tuojVia: "cas" }) : credsWith({ classic: r.cookie, classicVia: "cas" }),
         );
-        setMsg(`${SOURCE_NAMES[source]} 已通过清华统一认证登录，已保存。`);
+        notify("oj", `${SOURCE_NAMES[source]} 已通过清华统一认证登录，已保存。`);
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -738,10 +745,10 @@ function ExtHwSection() {
             ? credsWith({ tuoj: r.cookie, tuojVia: "password" })
             : credsWith({ classic: r.cookie, classicVia: "password" }),
         );
-        setMsg(`${SOURCE_NAMES[source]} 登录成功，已保存。`);
+        notify("oj", `${SOURCE_NAMES[source]} 登录成功，已保存。`);
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -755,10 +762,10 @@ function ExtHwSection() {
         setTychePwd("");
         setTycheFormOpen(false);
         await saveExtHwCreds(credsWith({ tyche: r.cookie }));
-        setMsg("Tyche 登录成功，已保存。");
+        notify("oj", "Tyche 登录成功，已保存。");
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`Tyche 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `Tyche 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -772,10 +779,10 @@ function ExtHwSection() {
         setDsaPwd("");
         setDsaFormOpen(false);
         await saveExtHwCreds(credsWith({ dsa: r.cookie }));
-        setMsg("DSA OJ 登录成功，已保存。");
+        notify("oj", "DSA OJ 登录成功，已保存。");
         void refreshExtHw();
       })
-      .catch((e: unknown) => setMsg(`DSA OJ 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", `DSA OJ 登录失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -807,10 +814,10 @@ function ExtHwSection() {
             setDsaCookie("");
             setDsaPwd("");
           }
-          setMsg(`已退出${label}登录。`);
+          notify(source === "yuketang" ? "yuketang" : "oj", `已退出${label}登录。`);
           void refreshExtHw();
         } catch (e: unknown) {
-          setMsg(`退出${label}登录失败：${errMsg(e)}`);
+          notify(source === "yuketang" ? "yuketang" : "oj", `退出${label}登录失败：${errMsg(e)}`);
         } finally {
           setBusy(null);
         }
@@ -886,6 +893,9 @@ function ExtHwSection() {
           {/* R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），
               我们无法内嵌 → 停用短信通道，引导扫码。 */}
           <div className="exthw-note">雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码。</div>
+          {msg && msgArea === "yuketang" ? (
+            <div className="exthw-note" role="status">{msg}</div>
+          ) : null}
           {ext.errors.yuketang ? <div className="exthw-note is-error">{ext.errors.yuketang}</div> : null}
           {yktQrOpen ? (
             <YktQrPanel
@@ -894,7 +904,7 @@ function ExtHwSection() {
                 setYktCookie(cookie);
                 setYktQrOpen(false);
                 void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
-                  setMsg("雨课堂扫码登录成功，已保存。");
+                  notify("yuketang", "雨课堂扫码登录成功，已保存。");
                   void refreshExtHw();
                 });
               }}
@@ -923,6 +933,9 @@ function ExtHwSection() {
           </span>
           <span className="exthw-oj-hint">{ojOpen ? "点击收起" : "点击展开登录"}</span>
         </button>
+        {msg && msgArea === "oj" ? (
+          <div className="exthw-note" role="status" style={{ margin: "6px 2px 0" }}>{msg}</div>
+        ) : null}
         {ojOpen ? (
           <div className="exthw-oj-body">
             {/* TUOJ（AI 版）：主路径 = 清华统一认证漫游；账号密码收进「更多」 */}
@@ -1135,7 +1148,9 @@ function ExtHwSection() {
                     </div>
                   );
                 })}
-                {msg ? <div style={{ fontSize: 13, color: "var(--text-2)" }}>{msg}</div> : null}
+                {msg && msgArea === "range" ? (
+                  <div style={{ fontSize: 13, color: "var(--text-2)" }} role="status">{msg}</div>
+                ) : null}
               </div>
             </div>
           </div>

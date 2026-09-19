@@ -2505,7 +2505,7 @@ const mergeSecondaryInto = async (
   entries: ScheduleEntry[], semester: { firstDay: string }, start: Date, end: Date,
 ): Promise<ScheduleEntry[]> => {
   const from = fmtDate(start), to = fmtDate(end);
-  const sec = await getSecondaryEntries(semester.firstDay, from, to);
+  const sec = await getSecondaryEntries(http, semester.firstDay, from, to);
   const added: ScheduleEntry[] = [];
   for (const c of sec) {
     if (entries.some((e) => e.courseName === c.name && e.date === c.date && e.startTime === c.startTime)) continue;

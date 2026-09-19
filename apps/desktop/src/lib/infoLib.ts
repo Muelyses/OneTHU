@@ -411,12 +411,13 @@ export async function libEnsureSession(): Promise<boolean> {
  *  lib 的 roaming+substring 链路曾静默空（DIAG 有页面、PARSE 无结果），
  *  黑盒绕开一次到位。按 [from,to] 日期区间返回扁平条目。 */
 export const getSecondaryEntries = async (
+  http: { text: (url: string) => Promise<string> },
   firstDay: string, from: string, to: string,
 ): Promise<Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }>> => {
-  const mod = await import("@onethu/info-lib");
-  const uFetch = (mod as unknown as { uFetch?: (url: string) => Promise<string> }).uFetch;
-  if (!uFetch) throw new Error("info-lib uFetch 未导出");
-  const html = await uFetch("http://zhjw.cic.tsinghua.edu.cn/portal3rd.do?m=bks_ejkbSearch");
+  // core HttpClient 直连（zhjw.cic 已在 PUBLIC_DIRECT_HOSTS 白名单，与课表
+  // JSONP 同会话桶）。lib 的 uFetch 未从 index 导出（mod.uFetch undefined），
+  // 之前每次都在守卫处静默抛错——全程「静默空」的最终根源（2026-09-19 实锤）。
+  const html = await http.text("http://zhjw.cic.tsinghua.edu.cn/portal3rd.do?m=bks_ejkbSearch");
   const lo = html.indexOf("function setInitValue");
   void log(`SECONDARY-FETCH len=${html.length} setInit=${lo}`).catch(() => undefined);
   if (lo < 0) return [];

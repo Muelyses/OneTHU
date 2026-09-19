@@ -115,16 +115,6 @@ export function initInfoLib(): InfoHelper {
         text = await res.text();
       }
       void log(`ILIB ${init.method ?? "GET"} ${res.status} ${url.slice(0, 90)} → ${text.slice(0, 120).replace(/\s+/g, " ")}`);
-      // 二级课表现场诊断（静默空悬案）：portal3rd 的关键标记命中情况 + 数据段样本
-      if (url.includes("portal3rd")) {
-        const marks = {
-          len: text.length,
-          setInit: text.indexOf("function setInitValue"),
-          firstBrace: text.indexOf("{", text.indexOf("setInitValue")),
-          ejkb: /bks_ejkb|ekkb|二级/.test(text),
-        };
-        void log(`ILIB SECONDARY-DIAG ${JSON.stringify(marks)} sample=${text.slice(Math.max(0, marks.setInit), Math.max(0, marks.setInit) + 300).replace(/\s+/g, " ")}`);
-      }
       return {
         status: res.status,
         headers: Array.from(res.headers.entries()),

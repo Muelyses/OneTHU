@@ -35,7 +35,7 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
 import { http, info, learn, logLine, session } from "../lib/clients.js";
 // lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
 // 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
-import { helper as infoHelper, getSecondaryEntries } from "../lib/infoLib.js";
+import { helper as infoHelper } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
@@ -2499,31 +2499,6 @@ export function useCalendar() {
   return { data, state, error, reload: load };
 }
 
-/** 二级课表（实验课）并入周课表：core JSONP 只含一级——lib getSecondarySchedules
- *  补齐，按周区间过滤、按名+日期+时间去重；返回原数组引用（无新增）或新数组。 */
-const mergeSecondaryInto = async (
-  entries: ScheduleEntry[], semester: { firstDay: string }, start: Date, end: Date,
-): Promise<ScheduleEntry[]> => {
-  const from = fmtDate(start), to = fmtDate(end);
-  const sec = await getSecondaryEntries(http, semester.firstDay, from, to);
-  const added: ScheduleEntry[] = [];
-  for (const c of sec) {
-    if (entries.some((e) => e.courseName === c.name && e.date === c.date && e.startTime === c.startTime)) continue;
-    if (added.some((e) => e.courseName === c.name && e.date === c.date && e.startTime === c.startTime)) continue;
-    added.push({
-      courseName: c.name,
-      location: c.location || undefined,
-      date: c.date,
-      dayOfWeek: c.dayOfWeek,
-      startTime: c.startTime,
-      endTime: c.endTime,
-      category: "二级课表",
-      raw: { source: "secondary" },
-    });
-  }
-  return added.length ? [...entries, ...added] : entries;
-};
-
 /** 某教学周课表（week 从 1 起，按所选学期 firstDay 平移 7 天窗口；info.getSchedule zhjw JSONP） */
 const WEEKSCHED_TTL = 10 * 60 * 1000;
 
@@ -2573,7 +2548,6 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
       setState("ready");
       return;
     }
-    void logLine(`WEEKSCHED-TICK status=${status} sem=${semester?.semesterId ?? "null"} week=${week}`).catch(() => undefined);
     if (status !== "ready" || !semester || !wsKey) return;
     let cancelled = false;
     const base = new Date(semester.firstDay.replace(/-/g, "/"));
@@ -2585,26 +2559,17 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
       //（轻量单页请求）——二级并入曾被 TTL 连坐（05:02 拉过 → 切回不重跑）
       setData(cached.data);
       setState("ready");
-      if (Date.now() - cached.at < WEEKSCHED_TTL) {
-        void mergeSecondaryInto(cached.data, semester, start, end).then((merged) => {
-          if (merged !== cached.data && !cancelled) {
-            cacheSet(wsKey, merged);
-            setData(merged);
-          }
-        }).catch(() => undefined);
-        return;
-      }
+      if (Date.now() - cached.at < WEEKSCHED_TTL) return;
     } else {
       setState("loading");
     }
     setError(null);
     info
       .getSchedule(fmtDate(start), fmtDate(end))
-      .then(async (entries) => {
+      .then((entries) => {
         // 二级课表（实验课）并入：core InfoClient 的 zhjw JSONP 只含一级——
         // lib 的 getSecondarySchedules（portal3rd setInitValue 解析）按周补齐，
         // 失败不连累一级课表（上游 getSchedule = primary + secondary 同构）
-        try { await mergeSecondaryInto(entries, semester, start, end); } catch { /* 静默 */ }
         if (!cancelled) {
           cacheSet(wsKey, entries);
           setData(entries);

@@ -11,7 +11,7 @@ import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
 import { useCalendar, useCampusData } from "../state/data.js";
 import { cacheSet } from "../state/cache.js";
-import { isAuthError } from "@onethu/core";
+import { isAuthError, learnUrls } from "@onethu/core";
 import { softRecover } from "../lib/reload.js";
 import { ScheduleAgenda } from "./ScheduleAgenda.js";
 import type { AgendaItem } from "./ScheduleAgenda.js";
@@ -454,7 +454,13 @@ export function SchedulePage() {
         startTime: hmOf(b),
         endTime: hmOf(d),
         src: "hw",
-        hwMeta: { submitted: !!h.submitted, source: h.source, externalUrl: h.externalUrl || h.url || undefined, ext: !!h.source },
+        hwMeta: {
+          submitted: !!h.submitted,
+          source: h.source,
+          ext: !!h.source,
+          // 外源用自带链接；learn 作业拼官方作业详情页（浏览器已登录即可看）
+          externalUrl: h.externalUrl || h.url || (h.baseId ? learnUrls.LEARN_HOMEWORK_PAGE(h.courseId, h.baseId) : undefined),
+        },
       });
     }
     // 重叠缩略：≥3 件重叠合并成"N 件事"簇块（扫描线极大区间）

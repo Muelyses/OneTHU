@@ -148,9 +148,24 @@ export function compareVersions(a: string, b: string): number {
   const pb = norm(b);
   const len = Math.max(pa.length, pb.length);
   for (let i = 0; i < len; i++) {
-    const xa = pa[i] ?? 0;
-    const xb = pb[i] ?? 0;
+    const xa = pa[i] ?? null;
+    const xb = pb[i] ?? null;
     if (xa === xb) continue;
+    // 数字段缺失按 0 补齐（1.0 == 1.0.0）；字符串段缺失即预发布语义（1.0.0-beta < 1.0.0）
+    if (xa === null) {
+      if (typeof xb === "number") {
+        if (xb === 0) continue;
+        return -1;
+      }
+      return 1;
+    }
+    if (xb === null) {
+      if (typeof xa === "number") {
+        if (xa === 0) continue;
+        return 1;
+      }
+      return -1;
+    }
     if (typeof xa === "number" && typeof xb === "number") return xa < xb ? -1 : 1;
     return String(xa) < String(xb) ? -1 : 1;
   }

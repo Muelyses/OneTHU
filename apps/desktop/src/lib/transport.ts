@@ -90,7 +90,11 @@ export async function nativeSeedCookies(url: string, lines: string[]): Promise<v
 export async function nativeCookieClear(): Promise<void> {
   try {
     const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("http_native_clear_cookies");
+    // 域清（id 单点互踢根治）：learn/info/教务/webvpn 的会话票全保，只清死域。
+    // 全清曾让重建后各页集体红条几秒（learn/info 会话陪葬要漫游重拉）。
+    await invoke("http_native_clear_cookies_domain", {
+      suffixes: ["id.tsinghua.edu.cn", "oauth.tsinghua.edu.cn"],
+    });
   } catch {
     /* 非 tauri 环境忽略 */
   }

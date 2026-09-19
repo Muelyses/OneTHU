@@ -2,7 +2,7 @@
 import { buildApi } from "./facade.js";
 import { installTheme, type ThemeDef } from "../state/theme.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
-import { startMadModelPump } from "../state/madmodel.js";
+import { ensureMadModelToken, madmodelDue, startMadModelPump } from "../state/madmodel.js";
 import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe, updatePlugin } from "./registry.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi, PluginCommand, PluginContext, PluginManifest, PluginRecord } from "./types.js";
@@ -123,7 +123,13 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
             id: c.id, title: String(c.title), inputLabel: c.inputLabel, inputPlaceholder: c.inputPlaceholder,
             dock: Boolean(c.dock),
             pluginId: id,
-            run: async (input: string) => callRust(id, "run", { command: c.id, input }),
+            run: async (input: string) => {
+              // MadModel 免费档：run 前同步 ensure（首次对话不等 10 分钟泵；失败不阻塞，Rust 报错兜底）
+              if (id === "onethu.harness" && madmodelDue()) {
+                await ensureMadModelToken().catch(() => undefined);
+              }
+              return callRust(id, "run", { command: c.id, input });
+            },
           });
         }
       }

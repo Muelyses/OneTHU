@@ -2681,7 +2681,7 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 .nav-fold.is-folded { opacity: 0.55; }
 .nav-item.nav-new { color: var(--text-3); }
 .nav-item.nav-new:hover { color: var(--text-1); }
-.nav-item.nav-folded-toggle { color: var(--text-3); font-size: var(--text-sm); }
+.nav-item.nav-folded-toggle { color: var(--text-3); margin-top: 6px; }
 .nav-item.nav-folded-toggle:hover { color: var(--text-1); }
 .nav-item.nav-folded-toggle .row-caret { margin-left: auto; transition: transform 140ms ease; transform: rotate(0deg); }
 .nav-item.nav-folded-toggle.is-open .row-caret { transform: rotate(90deg); }
@@ -4512,3 +4512,14 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 
 /* ── 已装卡片「可更新」徽标 ── */
 .plg-update-flag { color: var(--accent, #3b82f6); font-weight: 600; }
+
+/* ── 侧栏用户收藏夹段：限高滚动，保住「新建/已折叠收藏夹」栏完整可见 ── */
+.nav-folders-scroll {
+  flex: none;
+  max-height: clamp(120px, 24vh, 240px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.nav-folders-scroll::-webkit-scrollbar { width: 4px; }
+.nav-folders-scroll::-webkit-scrollbar-thumb { border-radius: 4px; background: var(--border); }

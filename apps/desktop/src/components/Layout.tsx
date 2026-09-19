@@ -277,14 +277,14 @@ export function Shell({ children }: { children: ReactNode }) {
 
   /** 侧栏/抽屉共用导航内容 */
   const navContent = (onAfter?: () => void) => {
-    const unfoldedDefaults = navAll.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
-    const foldedDefaults = navAll.filter(({ page: p }) => favs.data.foldedDefaults.includes(p));
+    const unfoldedDefaults = NAV.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
+    const foldedDefaults = NAV.filter(({ page: p }) => favs.data.foldedDefaults.includes(p));
     const unfoldedUser = favs.data.order.filter((id) => !favs.data.foldedRoots.includes(id));
     const foldedUser = favs.data.order.filter((id) => favs.data.foldedRoots.includes(id));
     const foldedCount = foldedDefaults.length + foldedUser.length;
     return (
       <>
-        {/* 默认一级入口：今日恒在最上（不可折叠），其余可折叠 */}
+        {/* 默认一级入口（内置）：今日恒在最上（不可折叠），其余可折叠 */}
         {unfoldedDefaults.map(({ page: p, label, icon: Icon }) =>
           navRow("d-" + p, {
             active: page === p,
@@ -298,20 +298,43 @@ export function Shell({ children }: { children: ReactNode }) {
             onFold: p === "today" ? undefined : () => favs.foldSidebar(p, true),
           }),
         )}
-        {/* 用户收藏夹（根层）：跳转入口层 */}
-        {unfoldedUser.map((id) =>
-          navRow("u-" + id, {
-            active: isFolderActive(id),
-            label: favs.data.folders[id]?.title ?? "收藏夹",
-            icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
-            onClick: () => {
-              onAfter?.();
-              navigate("folder", { folderId: id });
-            },
-            folded: false,
-            onFold: () => favs.foldSidebar(id, false),
-          }),
-        )}
+        {/* 插件功能页分组：与内置入口视觉分离 */}
+        {pluginNav.length ? (
+          <>
+            <div className="nav-label">插件功能页</div>
+            {pluginNav.map(({ page: p, label, icon: Icon }) =>
+              navRow("pl-" + p, {
+                active: page === p,
+                label,
+                icon: <Icon />,
+                onClick: () => {
+                  onAfter?.();
+                  navigate(p);
+                },
+                folded: false,
+              }),
+            )}
+          </>
+        ) : null}
+        {/* 收藏夹分组 */}
+        <div className="nav-label">收藏夹</div>
+        {/* 用户收藏夹（根层）：跳转入口层；段内限高滚动——收藏夹再多也不把
+            「新建收藏夹 / 已折叠收藏夹」推到滚动边缘挤成半截 */}
+        <div className="nav-folders-scroll">
+          {unfoldedUser.map((id) =>
+            navRow("u-" + id, {
+              active: isFolderActive(id),
+              label: favs.data.folders[id]?.title ?? "收藏夹",
+              icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
+              onClick: () => {
+                onAfter?.();
+                navigate("folder", { folderId: id });
+              },
+              folded: false,
+              onFold: () => favs.foldSidebar(id, false),
+            }),
+          )}
+        </div>
         <button
           className="nav-item nav-new"
           onClick={() => {

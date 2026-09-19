@@ -51,6 +51,7 @@
 | `llm` | `llm.*` |
 | `theme` | `theme.*` |
 | `exthw:read` / `exthw:refresh` | `exthw.snapshot` / `exthw.refresh` |
+| `tsinghua:sdk` | `ts.*`（以用户登录态访问任意清华校内服务） |
 | `webview` | `ui.webModal` |
 | `nav` / `ui` | `nav.go` / `ui.toast` |
 | `storage` | `storage.*`、`settings.get` |
@@ -188,10 +189,89 @@ await ctx.onethu.theme.setFollowSystem(true);
 
 触发全部作业源刷新。各源设有独立的频控与并发去重；TUOJ 会话失效时自动重新漫游一次。
 
-## 5. `info`
+## 5. `ts` — 清华服务接入 SDK
+
+对接对象为任意清华校内服务，包括尚未被宿主实现为独立命名空间的系统（各院系系统、
+实验室预约、研究院门户等）。本命名空间将宿主维护的会话层能力开放给插件复用：webvpn
+通道分流、统一认证凭据、cookie 池、会话失效后的自动重登与请求重放。
+
+**权限** `tsinghua:sdk`。该权限允许插件以用户登录态访问任意清华校内服务，安装确认
+页需向用户明确说明。
+
+### `ts.status()`
+
+主会话探活。
+
+**返回** `"ready"`（可用）、`"expired"`（会话失效）、`"logged-out"`（未登录）。
+
+### `ts.ensure()`
+
+确保主会话可用：探活并按需透明建立。不可用时抛出 `AuthRequiredError`。
+
+### `ts.username()`
+
+**返回** `string | null`，当前登录名。
+
+### `ts.client(opts?)`
+
+创建面向清华服务的 HTTP 客户端。该客户端共享宿主主会话 cookie 池，因此登录凭据、
+设备指纹与各系统既有会话均被继承；请求经宿主传输层发出（45 秒超时、无同源策略
+限制），响应含登录页特征时宿主自动重新登录并重放一次。
+
+| 参数 | 类型 | 说明 |
+|---|---|---|
+| `opts.mode` | `"auto"` \| `"webvpn"` \| `"direct"` | 通道分流模式，缺省 `"auto"`。`auto` 按宿主现行规则分流；`direct` 强制直连；`webvpn` 按包装会话桶规则 |
+
+**返回**客户端对象：
+
+| 方法 | 说明 |
+|---|---|
+| `fetch(url, init?)` | 发起请求。`init` 为 `{ method?, headers?, body? }`；返回标准 `Response` |
+| `resolve(url)` | 返回按分流规则解析后的实际请求地址，用于调试与展示 |
+
+**分流规则**（`auto` 模式，与宿主传输层同源）：
+
+| 目标地址 | 通道 |
+|---|---|
+| `id`、`oauth`、`webvpn` 域及各白名单公网域（如 `ai.tuoj.thusaac.com`） | 直连 |
+| `learn.tsinghua.edu.cn` | 直连 |
+| 其余校内域名（`info`、`zhjw.cic`、各院系系统等） | 经 webvpn 包装 |
+
+白名单域为实测结论所致：这些域名经包装会导致会话隔离或票据失效，因此即便指定
+`mode: "webvpn"` 也保持直连。
+
+**统一认证（CAS）对接的系统**：会话存活时直接请求业务地址即可。未认证请求会被
+重定向至统一认证，宿主持有的 CAS 会话自动完成票据兑换并返回业务页，插件收到的是
+最终业务响应，无需处理重定向链。对接流程非标准的系统，参考
+`packages/core/src/exthw/tuojCas.ts` 的显式漫游实现。
+
+```js
+export const manifest = {
+  id: "onethu.dept-notices",
+  name: "院系通知",
+  version: "0.1.0",
+  permissions: ["tsinghua:sdk"],
+};
+
+export default async function activate(ctx) {
+  ctx.registerCommand({ id: "fetch", title: "拉取最新通知" }, async () => {
+    await ctx.onethu.ts.ensure();                 // 会话不可用时抛错，由用户重新登录
+    const client = ctx.onethu.ts.client();        // auto：校内域自动经 webvpn
+    const res = await client.fetch("https://dept.example.tsinghua.edu.cn/api/notices");
+    if (!res.ok) return `请求失败：HTTP ${res.status}`;
+    const { items } = await res.json();
+    return items.slice(0, 5).map((n) => `${n.date} ${n.title}`).join("\n");
+  });
+}
+```
+
+`ts.client()` 亦可用于需要保持同一会话连续操作的场景（多次调用返回的客户端共享同一
+cookie 池，无需额外处理）。
+
+## 6. `info`
 
 对应清华信息门户（info.tsinghua.edu.cn），提供教务与生活事务的官方记录数据。学习
-行为类数据（作业、讨论）见 §7。
+行为类数据（作业、讨论）见 §8。
 
 **权限** `info:read`
 
@@ -222,7 +302,7 @@ await ctx.onethu.theme.setFollowSystem(true);
   "weekText": "第1-16周", "category": "讲授课" }
 ```
 
-## 6. `coursex`
+## 7. `coursex`
 
 对应 courseX 课程共享计划，提供跨学期课程信息检索，无需登录凭据。
 
@@ -234,7 +314,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `coursex.search(q, semester?)` | 按关键词检索课程摘要 |
 | `coursex.detail(id)` | 课程详情；查无详情时返回 `{ id, error }` 或 `null` |
 
-## 7. `learn`
+## 8. `learn`
 
 对应清华网络学堂（web.learn.tsinghua.edu.cn），提供课程、作业、通知、课件与课程
 讨论区。
@@ -255,7 +335,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `learn.reply(wlkcid, threadId, content)` | 回帖（写操作，纯文本正文） |
 | `learn.post(wlkcid, bqid, title, html)` | 发帖（写操作，HTML 正文） |
 
-## 8. `cal`
+## 9. `cal`
 
 对应应用日程功能。用户配置清华邮箱 CalDAV 后写操作同步至云端日历，未配置时写入
 本地。`agenda` 合并云端与本地日程并展开重复规则。
@@ -269,7 +349,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `cal.edit(uid, ch)` | 修改；仅传入需变更的字段，`location` / `note` 传空串表示清除 |
 | `cal.remove(uid)` | 删除；自动路由至云端或本地 |
 
-## 9. `venue`
+## 10. `venue`
 
 对应清华大学体育部场馆中心。**接口范围限制**：依据体育部 2025-12-03 公告第七条第
 12 款，通过脚本提交预约将被暂停预订权限 6 个月，因此宿主仅提供查询、退订与官方页面
@@ -285,7 +365,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `venue.cancel(resvUuid)` | 退订（写操作） |
 | `venue.jump(sceneUuid)` | 返回官方预约页地址，预约操作应引导用户在该页面完成 |
 
-## 10. `xk`
+## 11. `xk`
 
 对应清华选课系统的只读数据，不包含选课提交操作。
 
@@ -299,7 +379,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `xk.detail(teacherId, code)` | 课程详情 |
 | `xk.reviews(course, teacher?)` | 社区课程评价；返回 `{ course, teacher, count, avg, reviews }` 或 `null` |
 
-## 11. `kongjian`
+## 12. `kongjian`
 
 对应宿舍公共空间预约。
 
@@ -312,7 +392,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `kongjian.book(bookUrl, info)` | 预约（写操作）；`bookUrl` 来自 `page` 返回，`info` 为 `{ name, sid, tel, other }` |
 | `kongjian.cancel(target)` | 取消（写操作） |
 
-## 12. `card` / `dorm` / `network`
+## 13. `card` / `dorm` / `network`
 
 分别对应校园卡结算中心、学生宿舍服务与校园网自助服务。
 
@@ -329,7 +409,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `network.deviceCount()` | 在线设备数量 |
 | `network.accountInfo()` | 账户信息：`{ realName, userGroup, allowedDevices }` |
 
-## 13. `library` / `libroom`
+## 14. `library` / `libroom`
 
 分别对应图书馆座位预约系统与研讨间预约系统。
 
@@ -358,7 +438,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 研讨间系统对首次使用的账号可能返回「会话未能建立」，用户进入应用「预约」页面访问
 一次即可完成初始化。
 
-## 14. `mail` / `cloud`
+## 15. `mail` / `cloud`
 
 分别对应清华邮箱与清华云盘（Seafile）。
 
@@ -377,17 +457,17 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `cloud.upload(repoId, parentDir, localPath, replace)` | 上传（写操作）；`localPath` 支持 `~` |
 | `cloud.share(repoId, path, expireDays)` | 生成分享链接（写操作）；`expireDays` 为 0 表示永久 |
 
-## 15. `nav` / `ui` / `storage` / `settings`
+## 16. `nav` / `ui` / `storage` / `settings`
 
 | 方法 | 权限 | 说明 |
 |---|---|---|
-| `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §17 |
+| `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §18 |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 
-## 16. `net`
+## 17. `net`
 
 外部网络请求接口，经 Rust 传输层发出，不受 WebView 同源策略限制，支持自定义请求头，
 45 秒超时，跟随重定向。仅用于访问校外地址；清华校内业务应使用前述命名空间。
@@ -407,7 +487,7 @@ const reply = (await res.json()).choices[0].message.content;
 
 调用 Anthropic 兼容接口时替换为 `x-api-key` 与 `anthropic-version` 请求头。
 
-## 17. 页面路由
+## 18. 页面路由
 
 `nav.go(page, params?)` 的 `page` 取值：
 

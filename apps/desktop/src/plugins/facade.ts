@@ -12,7 +12,8 @@ import { PluginPermissionError, type OnethuApi, type PluginPermission } from "./
 import { invoke } from "@tauri-apps/api/core";
 import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listThemes, themeSchedule } from "../state/theme.js";
 import { refreshExtHw } from "../state/exthw.js";
-import { session as appSession, logLine } from "../lib/clients.js";
+import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
+import { AuthRequiredError } from "@onethu/core";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
@@ -560,6 +561,45 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       setDayNight: async (dayId: string | null, nightId: string | null) => {
         gate(perms, "theme", "theme.apply");
         setDayNightTheme(dayId ?? null, nightId ?? null);
+      },
+    },
+    ts: {
+      /** 会话探活：learn 可达即视为主会话可用（wengine SSO 透明建立）。 */
+      status: async (): Promise<"ready" | "expired" | "logged-out"> => {
+        gate(perms, "tsinghua:sdk", "ts.status");
+        if (!appSession.username) return "logged-out";
+        const ok = await campusLearn.resume().catch(() => false);
+        return ok ? "ready" : "expired";
+      },
+      /** 确保主会话可用：探活 + 透明建立；失败抛 AuthRequiredError（宿主统一口径）。 */
+      ensure: async (): Promise<void> => {
+        gate(perms, "tsinghua:sdk", "ts.ensure");
+        const ok = await campusLearn.resume().catch(() => false);
+        if (!ok) {
+          throw new AuthRequiredError("清华会话未能建立：请在 OneTHU 中重新登录后再试。");
+        }
+      },
+      username: async (): Promise<string | null> => {
+        gate(perms, "tsinghua:sdk", "ts.username");
+        return appSession.username ?? null;
+      },
+      /** 清华服务 HTTP 客户端：共享宿主 HttpClient（cookie 池 / webvpn 分流 /
+       *  45s 超时 / 会话失效自动重登重放）。mode 覆盖分流判定。 */
+      client: (opts?: { mode?: "auto" | "webvpn" | "direct" }) => {
+        gate(perms, "tsinghua:sdk", "ts.client");
+        const mode = opts?.mode ?? "auto";
+        const client = {
+          fetch: async (url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }) => {
+            gate(perms, "tsinghua:sdk", "ts.client.fetch");
+            const target = campusHttp.resolveUrl(String(url), { mode });
+            const res = await campusHttp.request(target, { ...(init ?? {}), direct: mode === "direct" || undefined });
+            return res;
+          },
+          resolve: (url: string): string => {
+            return campusHttp.resolveUrl(String(url), { mode });
+          },
+        };
+        return client;
       },
     },
     exthw: {

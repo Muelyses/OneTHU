@@ -320,17 +320,7 @@ export class HttpClient {
     } catch {
       /* 非 http URL 交由后续逻辑 */
     }
-    let goDirect = direct === true;
-    if (!goDirect && host) {
-      // 2026-09-13 回滚：id/oauth 直连改动破坏了 webvpn 包装的会话隔离——
-      // 手机（webvpn 桶）与桌面（直连桶）原本在不同命名空间互不干扰；直连化
-      // 后手机闯进直连 id 命名空间=加入单会话互踢（选课 checkSingle 页=踢人
-      // 确认页实锤）。「非校园网适配」的精髓就是这层隔离，恢复原状。
-      goDirect = this.#webVPN ? host === "learn.tsinghua.edu.cn" : PUBLIC_HOSTS.has(host);
-    }
-    const target = this.webVPNEncoder && !goDirect && host && !PUBLIC_HOSTS.has(host)
-      ? this.webVPNEncoder(url)
-      : url;
+    const target = this.resolveUrl(url, { mode: direct === true ? "direct" : "auto" });
     const cookie = this.#cookieHeaderFor(target);
     this.lastTarget = target;
     this.lastCookieNames = cookie
@@ -354,6 +344,39 @@ export class HttpClient {
       /* 忽略畸形 URL */
     }
     return response;
+  }
+
+  /**
+   * 传输分流判定（request 与 SDK resolve 的单一真源）：
+   * - learn.tsinghua.edu.cn：公网站点且会话 cookie 与 id CAS 同名（JSESSIONID），
+   *   代理链互相干扰——实证直连有效，一律绕过包装。
+   * - id/oauth/webvpn：登录链公共域，直连。
+   * - 其余校内网关域名：校外不可达，经 webvpn 包装（webVPNEncoder 存在时）。
+   * mode："auto"=按实例模式现行规则；"direct"=强制直连；"webvpn"=强制包装
+   * （直连白名单域不受强制影响，避免双重包装）。 */
+  resolveUrl(url: string, opts: { mode?: "auto" | "webvpn" | "direct" } = {}): string {
+    const mode = opts.mode ?? "auto";
+    const PUBLIC_HOSTS = PUBLIC_DIRECT_HOSTS;
+    let host = "";
+    try {
+      host = new URL(url).hostname;
+    } catch {
+      return url;
+    }
+    if (!host) return url;
+    let goDirect: boolean;
+    if (mode === "direct") {
+      goDirect = true;
+    } else if (mode === "webvpn") {
+      goDirect = false;
+    } else {
+      // 2026-09-13 回滚记录：id/oauth 直连化破坏了 webvpn 包装的会话隔离（手机
+      // webvpn 桶与桌面直连桶的单会话互踢）。「非校园网适配」的精髓就是这层隔离。
+      goDirect = this.#webVPN ? host === "learn.tsinghua.edu.cn" : PUBLIC_HOSTS.has(host);
+    }
+    return this.webVPNEncoder && !goDirect && !PUBLIC_HOSTS.has(host)
+      ? this.webVPNEncoder(url)
+      : url;
   }
 
   #cookieHeaderFor(targetUrl: string): string | null {

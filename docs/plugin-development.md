@@ -10,11 +10,12 @@
 3. [清单规范](#3-清单规范)
 4. [权限模型](#4-权限模型)
 5. [通用约定](#5-通用约定)
-6. [Rust sidecar 协议](#6-rust-sidecar-协议)
-7. [对话面板协议](#7-对话面板协议)
-8. [Android 内嵌形态](#8-android-内嵌形态)
-9. [调试](#9-调试)
-10. [版本记录](#10-版本记录)
+6. [接入新的清华服务](#6-接入新的清华服务)
+7. [Rust sidecar 协议](#7-rust-sidecar-协议)
+8. [对话面板协议](#8-对话面板协议)
+9. [Android 内嵌形态](#9-android-内嵌形态)
+10. [调试](#10-调试)
+11. [版本记录](#11-版本记录)
 
 ---
 
@@ -254,9 +255,35 @@ css: `
   的调用链，后一步的入参必须是前一步返回的元素本体。工具实现中应按标识符查找元素
   后再传入，不应构造对象。
 
-## 6. Rust sidecar 协议
+## 6. 接入新的清华服务
 
-### 6.1 通信格式
+宿主已实现为独立命名空间的服务（`info`、`learn`、`library` 等）之外，其他清华校内
+系统可经 `onethu.ts` SDK 接入。SDK 复用宿主主会话：登录凭据、设备指纹、webvpn 通道
+分流、会话失效后的自动重登与请求重放均由宿主处理，插件只需实现目标系统的业务请求。
+接口细节见 [api-reference.md §5](./api-reference.md)。
+
+标准流程：
+
+1. `await ctx.onethu.ts.ensure()`——确认主会话可用；失败时向用户提示重新登录。
+2. `const client = ctx.onethu.ts.client()`——创建客户端。缺省 `auto` 分流：校内域名
+   自动经 webvpn 包装，登录链域与白名单公网域直连。
+3. `await client.fetch("<目标地址>")`——发起业务请求。目标系统若对接统一认证
+   （CAS），未认证请求会被重定向并自动完成票据兑换，插件收到最终业务响应。
+4. 按目标系统的响应格式解析数据。
+
+**通道模式**：缺省 `auto` 覆盖常见场景。目标系统经实测确认必须直连时（webvpn 包装
+会破坏其会话），改用 `ts.client({ mode: "direct" })`，并在插件说明中注明原因。
+
+**CAS 显式漫游**：目标系统的对接流程非标准（需在认证表单中注入额外参数等）时，
+参考 `packages/core/src/exthw/tuojCas.ts`。该模块为 TUOJ 接入的生产实现，包含 CAS
+登录页判定、ticket 锚点提取与二次认证处理，可作为模板复制到插件内。
+
+**权限声明**：接入自定义服务需声明 `tsinghua:sdk`。该权限允许插件以用户登录态访问
+任意清华校内服务，应在插件描述中向用户说明具体访问目标。
+
+## 7. Rust sidecar 协议
+
+### 7.1 通信格式
 
 stdio 上的行分隔 JSON-RPC。宿主发往插件：
 
@@ -275,7 +302,7 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 | `progress` | 进度通知；对话面板场景支持 `kind` 字段，见 §7 |
 | `log` | 日志行，展示于轨迹面板 |
 
-### 6.2 实现约束
+### 7.2 实现约束
 
 - **标准输入锁不可重入**：`for line in stdin().lock().lines()` 会在整个循环期间持有
   锁，循环体内再次调用 `stdin().lock()` 读取应答会造成死锁。应全程只加锁一次，
@@ -286,7 +313,7 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 - 不应依赖工作目录；宿主不保证当前目录。
 - 退出码非 0 或标准输出关闭时，宿主发出 `exit` 事件并清理进程记录。
 
-## 7. 对话面板协议
+## 8. 对话面板协议
 
 Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其渲染常驻对话面板：
 
@@ -314,7 +341,7 @@ Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其�
 会话管理命令的约定命名：`new_session`、`list_sessions`、`switch_session`、
 `delete_session`、`export_session`、`import_session`、`usage_report`、`selftest`。
 
-## 8. Android 内嵌形态
+## 9. Android 内嵌形态
 
 Android WebView 环境不允许执行任意路径的二进制文件，sidecar 形态在移动端不可用。
 官方 Harness 插件采用同一份 Rust 核心编译进应用进程的方式实现，通信经 Tauri 命令桥
@@ -331,7 +358,7 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 第三方 Rust 插件不提供移动端形态。
 
-## 9. 调试
+## 10. 调试
 
 | 方式 | 说明 |
 |---|---|
@@ -340,10 +367,11 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 | Android 日志 | `adb logcat -s onethu`，或 `adb logcat -d --pid=$(adb shell pidof app.onethu.desktop)` |
 | 端到端自测 | OneTHU-Harness 的 `test/sim_host.mjs`：模拟宿主门面与 OpenAI SSE 服务，覆盖握手、工具调用、流式输出、用量统计、会话管理与两段式确认 |
 
-## 10. 版本记录
+## 11. 版本记录
 
 | 版本 | 变更 |
 |---|---|
+| v1.4 | 新增 `ts` 命名空间与 `tsinghua:sdk` 权限（自定义清华服务接入 SDK：会话复用、通道分流、自愈重放）；新增 §6 接入指南 |
 | v1.3 | 文档重写为标准格式；新增 `llm`、`theme`、`exthw:read`、`exthw:refresh`、`webview` 权限，新增 `llm`、`theme`、`exthw` 命名空间与 `ui.webModal`；设置项新增 `select` 类型 |
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |

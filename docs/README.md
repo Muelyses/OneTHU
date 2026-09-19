@@ -19,6 +19,8 @@ OneTHU 是清华大学校园助手应用，基于 Tauri v2 与 React 实现，�
   [api-reference.md](./api-reference.md)。
 - 开发主题（配色、字体、logo、深色档）：读 [plugin-development.md §3.4](./plugin-development.md)。
 - 接入外部作业系统：读 [external-homework.md](./external-homework.md) §5。
+- 接入文档未覆盖的清华校内服务：读 [plugin-development.md §6](./plugin-development.md)、
+  [api-reference.md §5](./api-reference.md)。
 - 修改宿主实现：读 [architecture.md](./architecture.md)，构建命令见该文档 §8。
 
 ## 接口真源

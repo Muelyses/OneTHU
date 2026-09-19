@@ -34,6 +34,7 @@ export type PluginPermission =
   | "ui" // toast 提示
   | "storage" // 插件私有键值存储
   | "net:external" // 外部网络请求（大模型 API 等）
+  | "tsinghua:sdk" // 以用户登录态访问任意清华校内服务（自定义服务接入 SDK；安装时重点确认）
   | "llm" // 经内置 Harness 的 LLM 对话（清华 MadModel 免费档 / 自费 API，自动调度）
   | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
   | "exthw:read" // 外部作业源（雨课堂/TUOJ/Tyche）状态与作业快照
@@ -305,6 +306,23 @@ export interface OnethuApi {
     /** 外部 HTTP(S) 请求（经应用传输层，无 CORS 限制；需 net:external 权限）。
      *  返回标准 Response（可用 res.json()/res.text()）。 */
     fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
+  };
+  ts: {
+    /** 会话探活：返回主会话当前可用性。需 tsinghua:sdk 权限。 */
+    status(): Promise<"ready" | "expired" | "logged-out">;
+    /** 确保主会话可用（探活 + 透明建立）；不可用时抛 AuthRequiredError。 */
+    ensure(): Promise<void>;
+    /** 当前登录名（未登录为 null）。 */
+    username(): Promise<string | null>;
+    /** 创建清华服务 HTTP 客户端：共享宿主主会话 cookie 池与自愈守卫，
+     *  自动处理 webvpn 包装与直连分流。CAS 对接的系统在会话存活时自动过票。 */
+    client(opts?: { mode?: "auto" | "webvpn" | "direct" }): {
+      /** 发起请求。init 为标准 RequestInit 子集；返回标准 Response。
+       *  响应含登录页特征时宿主自动重登并重放一次。 */
+      fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
+      /** 返回按分流规则解析后的实际请求 URL（调试与展示用）。 */
+      resolve(url: string): string;
+    };
   };
   llm: {
     /** 单轮对话（经内置 Harness：清华 MadModel 免费档 ↔ 自费 API 自动调度）。

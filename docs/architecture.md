@@ -33,6 +33,10 @@
   由选课模块的死结自愈机制处理（确认失败后清除账密凭据直接登录）。
 - **状态持久化**：WKWebView 的 localStorage 可能被系统清理。会话快照与记住的密码
   同时镜像到应用数据目录的普通文件，启动时优先读取 localStorage，缺失则从文件恢复。
+- **对外复用**：上述能力经 `onethu.ts` SDK 开放给插件（`TsHttpClient` 直接复用宿主
+  HttpClient 实例，共享 cookie 池、通道分流与自愈重放），使插件可在不重复实现认证
+  与通道逻辑的前提下接入新的校内服务。见
+  [plugin-development.md §6](./plugin-development.md)。
 
 ## 3. 插件宿主
 
@@ -121,5 +125,6 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | 前端类型检查 | `pnpm --filter @onethu/core typecheck`；`cd apps/desktop && npx tsc --noEmit` |
 | Rust 检查 | `cd plugins/OneTHU-Harness/core && cargo check` |
 | 数据层测试 | `node tools/exthw-status-test.mjs`、`tools/tuoj-cas-test.mjs`、`tools/ykt-qr-test.mjs` |
+| SDK 分流测试 | `node --import ./tools/ts-resolve-register.mjs tools/ts-sdk-test.mjs` |
 
 分支约定：开发在 `dev2` 分支，发布时推送至 `dev3`（GitHub 与清华 Git 两个远端）。

@@ -131,6 +131,9 @@ await ctx.onethu.theme.setDayNight(null, "onethu.theme.night");
 await ctx.onethu.theme.setFollowSystem(true);
 ```
 
+主题插件（`category: "theme"` 清单与 `ThemeDef`）的开发说明见
+[plugin-development.md §3.4](./plugin-development.md)。
+
 ## 4. `exthw`
 
 对应外部作业源聚合接口，覆盖雨课堂、TUOJ（AI 版与经典版）、Tyche 三个作业系统。

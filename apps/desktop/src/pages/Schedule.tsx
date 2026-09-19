@@ -253,7 +253,31 @@ export function SchedulePage() {
     const grab = (): Promise<void> =>
       info
         .getSchedule(ymdOf(viewWindow[0]), ymdOf(viewWindow[1]))
-        .then((rows) => {
+        .then(async (rows) => {
+          // 二级课表（实验课）并入：core InfoClient 的 JSONP 只含一级——
+          // 之前并错在无人调用的 useWeekSchedule（TICK=0 实锤），现在加在
+          // 真正的窗口取数链路。失败静默不连累一级。
+          try {
+            const fd = calendar.data?.firstDay ?? "";
+            if (fd) {
+              const { getSecondaryEntries } = await import("../lib/infoLib.js");
+              const { http } = await import("../lib/clients.js");
+              const sec = await getSecondaryEntries(http, fd, ymdOf(viewWindow[0]), ymdOf(viewWindow[1]));
+              for (const c of sec) {
+                if (rows.some((r) => r.courseName === c.name && r.date === c.date && r.startTime === c.startTime)) continue;
+                rows.push({
+                  courseName: c.name,
+                  location: c.location,
+                  date: c.date,
+                  dayOfWeek: c.dayOfWeek,
+                  startTime: c.startTime,
+                  endTime: c.endTime,
+                  category: "二级课表",
+                  raw: { source: "secondary" },
+                });
+              }
+            }
+          } catch { /* 二级失败静默：一级照常 */ }
           // 落持久缓存：系统日历 SWR 兜底的数据源（用户实锤「看得到课表但
           // 同步报会话失效」——页内 state 对兜底不可见）；重启后也活着
           cacheSet(`schedwin:${windowKey}`, rows, true);

@@ -1,5 +1,6 @@
-/** 全部作业（learnX Assignments）：按状态分组（未交/已交/已批改），组内按截止时间排序 */
+/** 全部作业（learnX Assignments）：按状态分组（进行中/已逾期/已交/已批改），组内按截止时间排序 */
 import { useMemo, useState } from "react";
+import { parseLearnTime } from "@onethu/core";
 import { PageAtomStar } from "../..//components/Collect.js";
 import { SegmentedOverflow, Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
 import { IconRefresh } from "../../components/Icons.js";
@@ -14,14 +15,24 @@ import {
 import { BackButton, HomeworkRow, semesterText } from "./shared.js";
 import { useLearnNavSemester } from "./shared.js";
 
-type Filter = "unfinished" | "submitted" | "graded" | "all";
+type Filter = "unfinished" | "overdue" | "submitted" | "graded" | "all";
 
 const FILTERS: Array<{ key: Filter; label: string }> = [
-  { key: "unfinished", label: "未提交" },
+  { key: "unfinished", label: "进行中" },
+  { key: "overdue", label: "已逾期" },
   { key: "submitted", label: "已提交" },
   { key: "graded", label: "已批改" },
   { key: "all", label: "全部" },
 ];
+
+/** 逾期未交（12.2）：未提交且截止时间已过。解析统一走 core parseLearnTime（与 shared.tsx
+ *  同源；兼容外部源 "YYYY-MM-DD HH:mm" 与 ISO 串）；解析失败不判逾期 → 留在「进行中」，
+ *  避免把拿不到 deadline 的条目误分类。 */
+function isOverdue(h: { submitted: boolean; deadline: string }): boolean {
+  if (h.submitted) return false;
+  const d = parseLearnTime(h.deadline);
+  return d !== null && d.getTime() < Date.now();
+}
 
 /** 外部作业源引导横幅：新用户不知道雨课堂/TUOJ 要单独登录。
  *  仅「尚未配置任何外部源」时显示，配置后自动消失；「知道了」持久忽略（localStorage）。 */
@@ -70,7 +81,9 @@ export function AssignmentsPage() {
   const groups = useMemo(() => {
     const hw = [...(data?.homework ?? []), ...extHw].sort((a, b) => a.deadline.localeCompare(b.deadline));
     return {
-      unfinished: hw.filter((h) => !h.submitted),
+      // 进行中 = 未交且未逾期（含 deadline 解析失败者，保守不判逾期）
+      unfinished: hw.filter((h) => !h.submitted && !isOverdue(h)),
+      overdue: hw.filter(isOverdue),
       submitted: hw.filter((h) => h.submitted && !h.graded),
       graded: hw.filter((h) => h.graded),
       all: hw,
@@ -79,7 +92,7 @@ export function AssignmentsPage() {
 
   const list = groups[filter];
   const meta = data
-    ? `${semesterText(data.semester.id)} · 未交 ${groups.unfinished.length} · 已交 ${groups.submitted.length} · 已批 ${groups.graded.length}${extHw.length > 0 ? ` · 外部 ${extHw.length}` : ""}`
+    ? `${semesterText(data.semester.id)} · 进行中 ${groups.unfinished.length} · 逾期 ${groups.overdue.length} · 已交 ${groups.submitted.length} · 已批 ${groups.graded.length}${extHw.length > 0 ? ` · 外部 ${extHw.length}` : ""}`
     : "按截止时间排序";
 
   return (
@@ -121,7 +134,7 @@ export function AssignmentsPage() {
       {state === "loading" && !data ? (
         <SkeletonRows rows={6} />
       ) : state === "error" && !data ? null : list.length === 0 ? (
-        <Card><Empty text={filter === "unfinished" ? "没有未提交的作业。" : "该分组暂无作业。"} /></Card>
+        <Card><Empty text={filter === "unfinished" ? "没有进行中的作业。" : filter === "overdue" ? "没有已逾期未交的作业。" : "该分组暂无作业。"} /></Card>
       ) : (
         <Card className="list">
           {list.map((h, i) => (

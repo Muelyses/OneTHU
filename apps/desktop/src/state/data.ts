@@ -2573,6 +2573,7 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
       setState("ready");
       return;
     }
+    void logLine(`WEEKSCHED-TICK status=${status} sem=${semester?.semesterId ?? "null"} week=${week}`).catch(() => undefined);
     if (status !== "ready" || !semester || !wsKey) return;
     let cancelled = false;
     const base = new Date(semester.firstDay.replace(/-/g, "/"));

@@ -12,13 +12,17 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { invoke } from "@tauri-apps/api/core";
 import { QRCodeSVG } from "qrcode.react";
 import type { YktQrPhase } from "@onethu/core";
 import { ensureExtHwCredsLoaded, extHwLogin, refreshExtHw, saveExtHwCreds } from "../state/exthw.js";
+import { bindQrKeepAlive, createQrKeepAlive } from "../lib/qrKeepAlive.js";
+import type { QrKeepAliveController } from "../lib/qrKeepAlive.js";
 import {
   YKT_WEB_FALLBACK_HINT,
   YKT_WEB_LOGIN_AVAILABLE,
   closeYuketangWebLogin,
+  isAndroidHost,
   onYuketangWebCookie,
   openYuketangWebLogin,
   readYuketangWebCookies,
@@ -59,17 +63,30 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
   const [status, setStatus] = useState<"loading" | "waiting" | "expired" | "error">("loading");
   const [err, setErr] = useState<string | null>(null);
   const [nonce, setNonce] = useState(0);
+  // R18c：保活是否生效 → 切换提示文案（仅 Android 可能为 true）
+  const [keepAliveOn, setKeepAliveOn] = useState(false);
   const runId = useRef(0);
   // onSuccess 由父组件内联传入、每次渲染都会变 —— 用 ref 固定，避免 effect 反复重启
   const onSuccessRef = useRef(onSuccess);
   onSuccessRef.current = onSuccess;
+  // R18c：保活控制器只建一次（跨刷新/重挂载复用，幂等由控制器内部保证）
+  const keepAliveRef = useRef<QrKeepAliveController | null>(null);
+  if (keepAliveRef.current === null) {
+    keepAliveRef.current = createQrKeepAlive({
+      isAndroid: isAndroidHost,
+      invoke: (cmd) => invoke(cmd),
+      onStatus: setKeepAliveOn,
+    });
+  }
 
   // R17b 24.1：本 effect 只依赖 nonce（手动刷新）——**不监听回前台 / visibilitychange**，
   // 因为重建 = 换 token = 已扫的码作废。退后台被掐断的长轮询由 core 用同一 token 自动重发，
   // 回前台后继续即可取回已确认的登录。
+  // R18c：二维码就绪（qr）→ 启动前台服务保活；成功 / 取消 / 过期 / 卸载 → 停止。
   useEffect(() => {
     const id = ++runId.current;
     const ctrl = new AbortController();
+    const keepAlive = bindQrKeepAlive(keepAliveRef.current!);
     setStatus("loading");
     setErr(null);
     setQr(null);
@@ -78,6 +95,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         signal: ctrl.signal,
         onPhase: (p: YktQrPhase) => {
           if (id !== runId.current) return;
+          keepAlive.onPhase(p.phase);
           if (p.phase === "qr") {
             setQr({ qrContent: p.qrContent, expireAt: p.expireAt });
             setStatus("waiting");
@@ -88,6 +106,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
       })
       .then((r) => {
         if (id !== runId.current || r.aborted) return;
+        keepAlive.stop(); // 成功 / 报错收口（成功时立刻停，不等卸载）
         if (r.done && r.cookie) {
           onSuccessRef.current(r.cookie);
           return;
@@ -96,10 +115,17 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         setErr(r.message ?? "登录未完成");
       });
     return () => {
-      // 卸载 / 刷新 / 取消：中止长轮询，不留悬挂请求
+      // 卸载 / 刷新 / 取消：中止长轮询 + 停保活，不留悬挂请求与通知
       ctrl.abort();
+      keepAlive.stop();
     };
   }, [nonce]);
+
+  const handleCancel = () => {
+    // 取消：先停保活再交给父组件（父组件通常随即卸载本面板）
+    void keepAliveRef.current?.stop();
+    onCancel();
+  };
 
   const statusText =
     status === "loading"
@@ -109,6 +135,17 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         : status === "error"
           ? null
           : "请用微信或雨豆APP 扫描二维码";
+
+  const hintStyle: React.CSSProperties = {
+    fontSize: 12,
+    lineHeight: 1.6,
+    marginTop: 8,
+    padding: "6px 8px",
+    borderRadius: 8,
+    background: "rgba(26,111,212,0.08)",
+    color: "var(--text, #1f2329)",
+    textAlign: "left",
+  };
 
   return (
     <div
@@ -145,29 +182,26 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         {qr && status === "waiting" ? (
           <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>二维码约 5 分钟有效，过期自动刷新</div>
         ) : null}
-        {/* R18b 25.3.3：本机扫码会切走 App，MIUI/HyperOS 冻结进程会掐断长轮询导致确认丢失 */}
-        <div
-          style={{
-            fontSize: 12,
-            lineHeight: 1.6,
-            marginTop: 8,
-            padding: "6px 8px",
-            borderRadius: 8,
-            background: "rgba(26,111,212,0.08)",
-            color: "var(--text, #1f2329)",
-            textAlign: "left",
-          }}
-        >
-          建议用<b>另一台设备</b>（平板 / 电脑微信）扫码，并<b>保持本页在前台</b>；
-          本机扫码会切走 App，可能被系统冻结导致登录失败。
-        </div>
+        {/* R18b 25.3.3：本机扫码会切走 App，MIUI/HyperOS 冻结进程会掐断长轮询导致确认丢失。
+            R18c：Android 前台服务保活生效后改为「本机扫码也可用」提示；未生效（非 Android /
+            权限被拒）保留「另一台设备」引导。 */}
+        {keepAliveOn ? (
+          <div style={hintStyle}>
+            已开启<b>扫码保活</b>：本机扫码也可用（切到微信期间请勿清理通知）。
+          </div>
+        ) : (
+          <div style={hintStyle}>
+            建议用<b>另一台设备</b>（平板 / 电脑微信）扫码，并<b>保持本页在前台</b>；
+            本机扫码会切走 App，可能被系统冻结导致登录失败。
+          </div>
+        )}
         {err ? <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
       </div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
         <button className="btn" onClick={() => setNonce((n) => n + 1)}>
           刷新二维码
         </button>
-        <button className="btn btn-ghost" onClick={onCancel}>
+        <button className="btn btn-ghost" onClick={handleCancel}>
           取消
         </button>
       </div>

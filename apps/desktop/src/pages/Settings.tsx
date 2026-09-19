@@ -7,6 +7,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { clearRemembered, loadRemembered, session } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
+import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
 import { useApp } from "../state/context.js";
@@ -447,6 +448,10 @@ export function SettingsPage() {
         ) : null}
       </Card>
 
+      <SectionHead title="外观" />
+      <Card>
+        <AppearanceSection />
+      </Card>
       <SectionHead title="插件" />
       <Card>
         <div className="setting-row">
@@ -1224,3 +1229,59 @@ function UpdateRow() {
 }
 
 
+
+/** 外观：昼夜主题调度——跟随系统暗/亮自动切日夜两档主题 */
+function AppearanceSection(): ReactNode {
+  const snap = useThemes();
+  const themes = [{ id: "", name: "基础令牌（默认外观）" }, ...snap.themes.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
+  return (
+    <div className="setting-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+        <div>
+          <div className="setting-title">跟随系统昼夜</div>
+          <div className="setting-desc">
+            开启后按系统的深色模式自动切换：亮色用「白天主题」，深色用「黑夜主题」。
+            {snap.followSystem ? `（当前系统：${snap.systemDark ? "深色" : "浅色"}）` : ""}
+          </div>
+        </div>
+        <button
+          className={"switch" + (snap.followSystem ? " on" : "")}
+          role="switch"
+          aria-checked={snap.followSystem}
+          aria-label="跟随系统昼夜"
+          onClick={() => setFollowSystem(!snap.followSystem)}
+        />
+      </div>
+      {snap.followSystem ? (
+        <>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+            <div className="setting-title" style={{ flex: "none" }}>白天主题</div>
+            <select
+              className="input"
+              value={snap.dayThemeId ?? ""}
+              onChange={(e) => setDayNightTheme(e.target.value || null, snap.nightThemeId)}
+              style={{ maxWidth: 240 }}
+            >
+              {themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+            <div className="setting-title" style={{ flex: "none" }}>黑夜主题</div>
+            <select
+              className="input"
+              value={snap.nightThemeId ?? ""}
+              onChange={(e) => setDayNightTheme(snap.dayThemeId, e.target.value || null)}
+              style={{ maxWidth: 240 }}
+            >
+              {themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+        </>
+      ) : (
+        <div className="setting-desc" style={{ color: "var(--text-3)" }}>
+          手动换主题在 插件页 → 主题 里操作；想昼夜自动切换就打开上面的开关。
+        </div>
+      )}
+    </div>
+  );
+}

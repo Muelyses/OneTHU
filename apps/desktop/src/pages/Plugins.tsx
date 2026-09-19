@@ -4,7 +4,7 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
-import { fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { PageHead } from "../components/Layout.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -593,6 +593,8 @@ function LogBody({ id }: { id: string }): ReactNode {
 /* ═══════════════ 插件市场视图：热度排序 · 搜索 · 一键安装 ═══════════════ */
 
 function MarketView(): ReactNode {
+  const installed = useSyncExternalStore(subscribe, installedPlugins);
+  const installedMap = new Map(installed.map((p) => [p.manifest.id, p.manifest.version]));
   const [items, setItems] = useState<MarketEntry[] | null>(null);
   const [stars, setStars] = useState<Record<string, number | null>>({});
   const [query, setQuery] = useState("");
@@ -687,7 +689,10 @@ function MarketView(): ReactNode {
             return (
               <div key={item.id} className="market-card">
                 <div className="market-card-head">
-                  <span className="market-card-name">{item.name}</span>
+                  <span className="market-card-name">
+                    {item.name}
+                    {installedMap.has(item.id) ? <span className="market-installed-badge">已安装</span> : null}
+                  </span>
                   <span className="market-card-stars" title="GitHub Stars">★ {typeof st === "number" ? String(st) : "—"}</span>
                 </div>
                 <div className="market-card-meta">
@@ -721,9 +726,27 @@ function MarketView(): ReactNode {
                     </svg>
                     {item.repo}
                   </button>
-                  <button className="btn btn-primary" disabled={busy} onClick={() => void install(item)}>
-                    {busy ? "…" : "安装"}
-                  </button>
+                  {(() => {
+                    const local = installedMap.get(item.id);
+                    if (local && compareVersions(item.version, local) <= 0) {
+                      return (
+                        <button className="btn" disabled title={`本地 v${local}，已是最新`}>
+                          已安装
+                        </button>
+                      );
+                    }
+                    const updating = !!local;
+                    return (
+                      <button
+                        className="btn btn-primary"
+                        disabled={busy}
+                        title={updating ? `本地 v${local} → 市场 v${item.version}` : undefined}
+                        onClick={() => void install(item)}
+                      >
+                        {busy ? "…" : updating ? "更新" : "安装"}
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
             );

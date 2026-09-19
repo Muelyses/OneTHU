@@ -4447,3 +4447,8 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 }
 .market-repo-link:hover { color: var(--accent); text-decoration: underline; }
 .market-repo-link svg { flex: none; opacity: .8; }
+.market-installed-badge {
+  margin-left: 6px; padding: 1px 7px; border-radius: var(--r-pill);
+  font-size: 10px; font-weight: 600; vertical-align: 1px;
+  background: var(--green-soft); color: var(--green);
+}

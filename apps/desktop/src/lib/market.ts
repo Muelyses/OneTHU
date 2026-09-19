@@ -140,6 +140,23 @@ export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<
   );
 }
 
+/** 三段版本号比较（v 前缀容错）：a<b 返回 -1，相等 0，a>b 返回 1。
+ *  非数字段按字符串比较；段数不足补 0。 */
+export function compareVersions(a: string, b: string): number {
+  const norm = (v: string) => v.replace(/^v/i, "").split(/[.-]/).map((x) => (/^\d+$/.test(x) ? Number(x) : x));
+  const pa = norm(a);
+  const pb = norm(b);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i++) {
+    const xa = pa[i] ?? 0;
+    const xb = pb[i] ?? 0;
+    if (xa === xb) continue;
+    if (typeof xa === "number" && typeof xb === "number") return xa < xb ? -1 : 1;
+    return String(xa) < String(xb) ? -1 : 1;
+  }
+  return 0;
+}
+
 /** 拉取一批仓库的 GitHub star 数（无 token 限额 60/h/IP，条目量级足够）。
  *  失败的条目返回 null，排序时沉底。结果并入注册表缓存。 */
 export async function fetchStarMap(items: MarketEntry[]): Promise<Record<string, number | null>> {

@@ -1,5 +1,5 @@
 /** 市场仓库地址解析测试（parseRepoInput / rawEntryUrl，纯函数） */
-import { parseRepoInput, rawEntryUrl } from "../apps/desktop/src/lib/market.ts";
+import { compareVersions, parseRepoInput, rawEntryUrl } from "../apps/desktop/src/lib/market.ts";
 
 let pass = 0, fail = 0;
 const eq = (a, e, l) => { if (JSON.stringify(a) === JSON.stringify(e)) { pass++; } else { fail++; console.error(`✗ ${l}\n  期望: ${JSON.stringify(e)}\n  实际: ${JSON.stringify(a)}`); } };
@@ -24,6 +24,13 @@ throws(() => parseRepoInput("https://github.com/only-owner"), "缺 repo 段");
 // raw URL 组装
 eq(rawEntryUrl({ owner: "a", repo: "b" }, "main", "plugin.js"), "https://raw.githubusercontent.com/a/b/main/plugin.js", "raw URL");
 eq(rawEntryUrl({ owner: "a", repo: "b", subPath: "p/x" }, "dev", "index.js"), "https://raw.githubusercontent.com/a/b/dev/p/x/index.js", "raw URL 子路径");
+
+// 版本比较
+eq(compareVersions("1.0.0", "1.0.0"), 0, "版本相等");
+eq(compareVersions("1.1.0", "1.0.9"), 1, "次版本号更高");
+eq(compareVersions("0.9.9", "1.0.0"), -1, "主版本号更低");
+eq(compareVersions("v2.0", "1.9.9"), 1, "v 前缀与段数不足");
+eq(compareVersions("1.0.0-beta", "1.0.0"), -1, "预发布段字符串小于空");
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail ? 1 : 0);

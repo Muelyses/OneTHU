@@ -55,6 +55,12 @@ export function FavsProvider({ children }: { children: ReactNode }) {
     window.addEventListener("storage", on);
     return () => window.removeEventListener("storage", on);
   }, []);
+  // 插件经门面写收藏（favorites.add）→ 本窗口刷新（storage 事件不覆盖同窗口写）
+  useEffect(() => {
+    const on = () => setData(loadFavs());
+    window.addEventListener("onethu.favs.changed", on);
+    return () => window.removeEventListener("onethu.favs.changed", on);
+  }, []);
 
   const create = useCallback((title: string, parentId: string | null) => {
     let newId: string | null = null;

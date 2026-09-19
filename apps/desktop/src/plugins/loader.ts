@@ -5,6 +5,12 @@ import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedd
 import { preflightMadModel, startMadModelPump } from "../state/madmodel.js";
 import { forceRemint } from "../state/madmodel.js";
 import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe, updatePlugin } from "./registry.js";
+import { registerPluginTab, unregisterPluginTabs } from "./tabs.js";
+/** ctx 方法的权限门禁：manifest.permissions 未声明即抛错（安装确认向用户说明过这些权限） */
+function gate(perms: Set<string>, perm: string, what: string): void {
+  if (!perms.has(perm)) throw new Error(`[PLUGIN] 权限未声明：${what} 需要 ${perm}`);
+}
+import { pluginAtomKindOf, registerPluginAtom, unregisterPluginAtoms } from "./pluginAtoms.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi, PluginCommand, PluginContext, PluginManifest, PluginRecord } from "./types.js";
 
@@ -157,6 +163,33 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
       liveCommands.set(`${id}:${cmd.id}`, { ...cmd, pluginId: id, run });
       notifyCmds();
     },
+    /** 注册侧栏功能页（UI 自由化）：pageKey = plugin:<id>:<tabId>，内容经 ui.onTabReady 渲染 */
+    registerTab: (tab) => {
+      if (!tab?.id || typeof tab.title !== "string") return;
+      gate(perms, "ui", "registerTab");
+      registerPluginTab({ pageKey: `plugin:${id}:${tab.id}`, pluginId: id, title: String(tab.title), iconSvg: typeof tab.iconSvg === "string" ? tab.iconSvg : undefined });
+    },
+    /** 注入插件样式（天马行空 CSS）：全局作用，文档规约用 [data-plg="<id>"] 作用域；需 css 权限 */
+    registerCss: (css) => {
+      gate(perms, "css", "registerCss");
+      if (typeof css !== "string" || !css.trim()) return;
+      const el = document.createElement("style");
+      el.dataset.plgCss = id;
+      el.textContent = css;
+      document.head.appendChild(el);
+    },
+    /** 注册原子种类（万物原子化）：使插件结果可收进收藏夹；key 约定 "<tabId>~<原子key>" */
+    registerAtom: (def) => {
+      if (typeof def?.resolve !== "function") return;
+      gate(perms, "ui", "registerAtom");
+      registerPluginAtom({
+        kind: pluginAtomKindOf(id),
+        pluginId: id,
+        group: String(def.group ?? "插件"),
+        iconSvg: typeof def.iconSvg === "string" ? def.iconSvg : undefined,
+        resolve: def.resolve,
+      });
+    },
     log: (line: string) => void logLine(`[PLUGIN:${id}] ${line}`),
   };
   // 主题插件：注册主题定义（无 default 时不再调用激活函数）
@@ -190,6 +223,9 @@ async function deactivate(id: string): Promise<void> {
   }
   for (const k of [...liveCommands.keys()]) if (k.startsWith(`${id}:`)) liveCommands.delete(k);
   for (const l of cmdListeners) l();
+  unregisterPluginTabs(id);
+  unregisterPluginAtoms(id);
+  for (const el of document.querySelectorAll<HTMLStyleElement>(`style[data-plg-css="${id}"]`)) el.remove();
   if (p.blobUrl) URL.revokeObjectURL(p.blobUrl);
   live.delete(id);
 }

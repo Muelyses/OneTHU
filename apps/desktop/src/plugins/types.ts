@@ -37,6 +37,7 @@ export type PluginPermission =
   | "tsinghua:sdk" // 以用户登录态访问任意清华校内服务（自定义服务接入 SDK；安装时重点确认）
   | "clipboard:read" // 读取系统剪贴板（敏感：可读密码管理器复制的口令）
   | "plugins:call" // 列出并执行其他已启用插件的命令（联动插件；OH 对话工具化需要）
+  | "css" // 注入全局样式（影响整个应用外观，包括宿主界面；安装时重点确认）
   | "llm" // 经内置 Harness 的 LLM 对话（清华 MadModel 免费档 / 自费 API，自动调度）
   | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
   | "exthw:read" // 外部作业源（雨课堂/TUOJ/Tyche）状态与作业快照
@@ -130,6 +131,19 @@ export interface PluginContext {
   onethu: OnethuApi;
   /** 注册命令（管理页展示、用户点击执行） */
   registerCommand(cmd: PluginCommand, run: (input: string) => Promise<unknown> | unknown): void;
+  /** 注册侧栏功能页（UI 自由化）：应用导航出现本插件的 tab；
+   *  页面内容由插件在容器内全权渲染（onethu.ui.onTabReady / getTabRoot 拿 DOM）。 */
+  registerTab(tab: { id: string; title: string; iconSvg?: string }): void;
+  /** 注入插件样式（天马行空 CSS）：全局 <style>，插件停用即移除。
+   *  作用域规约：选择器用 [data-plg="<pluginId>"] 包裹，避免污染宿主界面。需 css 权限。 */
+  registerCss(css: string): void;
+  /** 注册原子种类（万物原子化）：使插件结果可收进用户收藏夹、进 AtomPicker。
+   *  resolve(key) 返回展示元数据；key 约定 "<tabId>~<原子key>"（点击深链到对应 tab）。 */
+  registerAtom(def: {
+    group: string;
+    iconSvg?: string;
+    resolve: (key: string) => { title: string; sub?: string } | null;
+  }): void;
   /** 写日志（进应用调试通道：桌面 /tmp/onethu-debug.log，Android logcat tag=onethu） */
   log(line: string): void;
 }
@@ -323,6 +337,18 @@ export interface OnethuApi {
       write(text: string): Promise<void>;
       read(): Promise<string>;
     };
+    /** 本插件 tab 的挂载容器（未挂载时 null）——拿到后可全权渲染 DOM */
+    getTabRoot(pageKey: string): HTMLElement | null;
+    /** 订阅 tab 容器就绪（已就绪立即回调；返回退订函数） */
+    onTabReady(pageKey: string, cb: (root: HTMLElement) => void): () => void;
+  };
+  /** 万物原子化收藏（对齐宿主收藏夹体系）：插件结果可收进用户收藏夹，点击深链回插件 tab。需 ui 权限 */
+  favorites: {
+    /** 收藏本插件原子。key 即 registerAtom 约定的 "<tabId>~<原子key>"（本插件 kind 自动补全）；
+     *  folderId 缺省收进第一个根收藏夹（无根夹时自动建「我的收藏」） */
+    add(key: string, folderId?: string): void;
+    /** 列出本插件已被收藏的原子的收藏夹与 key */
+    list(): Array<{ folderId: string; folderTitle: string; key: string }>;
   };
   storage: {
     get<T = string>(key: string): T | null;

@@ -16,6 +16,9 @@ import { session as appSession, logLine, http as campusHttp, learn as campusLear
 import { AuthRequiredError } from "@onethu/core";
 import type { FormField } from "../lib/formModal.js";
 import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
+import { getTabRoot, onTabReady } from "./tabs.js";
+import { pluginAtomKindOf } from "./pluginAtoms.js";
+import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
@@ -529,6 +532,62 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           gate(perms, "clipboard:read", "ui.clipboard.read");
           return navigator.clipboard.readText();
         },
+      },
+      /** 本插件 tab 的挂载容器（同步；未挂载 null）。pageKey 须以 plugin:<本插件id>: 开头 */
+      getTabRoot: (pageKey: string): HTMLElement | null => {
+        gate(perms, "ui", "ui.getTabRoot");
+        const key = String(pageKey ?? "");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("getTabRoot 仅限本插件注册的 tab");
+        return getTabRoot(key);
+      },
+      /** 订阅 tab 容器就绪（已就绪立即回调；返回退订函数） */
+      onTabReady: (pageKey: string, cb: (root: HTMLElement) => void): (() => void) => {
+        gate(perms, "ui", "ui.onTabReady");
+        const key = String(pageKey ?? "");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("onTabReady 仅限本插件注册的 tab");
+        if (typeof cb !== "function") return () => undefined;
+        return onTabReady(key, cb);
+      },
+    },
+    favorites: {
+      /** 收藏本插件原子（key = "<tabId>~<原子key>"；展示元数据走 registerAtom.resolve） */
+      add: (key: string, folderId?: string): void => {
+        gate(perms, "ui", "favorites.add");
+        const k = String(key ?? "");
+        if (!k) throw new Error("favorites.add 需要 key");
+        let d = loadFavs();
+        let fid: string | undefined = folderId ? String(folderId) : d.order[0];
+        if (!fid || !d.folders[fid]) {
+          const next = createFolder(d, "我的收藏", null);
+          fid = next.order.find((x) => !d.order.includes(x));
+          if (!fid) throw new Error("创建收藏夹失败");
+          saveFavs(next);
+          window.dispatchEvent(new Event("onethu.favs.changed"));
+          d = loadFavs();
+        }
+        const f = d.folders[fid];
+        if (!f) throw new Error("收藏夹不存在");
+        const atomKey = atomKeyOf({ kind: pluginAtomKindOf(pluginId), key: k });
+        if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
+          f.items.push({ t: "a" as const, atom: { kind: pluginAtomKindOf(pluginId), key: k } });
+          saveFavs(d);
+          window.dispatchEvent(new Event("onethu.favs.changed"));
+        }
+      },
+      /** 列出本插件被收藏的原子 */
+      list: (): Array<{ folderId: string; folderTitle: string; key: string }> => {
+        gate(perms, "ui", "favorites.list");
+        const kind = pluginAtomKindOf(pluginId);
+        const d = loadFavs();
+        const out: Array<{ folderId: string; folderTitle: string; key: string }> = [];
+        for (const [fid, f] of Object.entries(d.folders)) {
+          for (const it of f.items) {
+            if (it.t === "a" && it.atom.kind === kind) {
+              out.push({ folderId: fid, folderTitle: f.title, key: it.atom.key });
+            }
+          }
+        }
+        return out;
       },
     },
     llm: {

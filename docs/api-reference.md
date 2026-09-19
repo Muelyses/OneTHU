@@ -68,6 +68,7 @@ return {
 | `tsinghua:sdk` | `ts.*`（以用户登录态访问任意清华校内服务） |
 | `clipboard:read` | `ui.clipboard.read`（读取系统剪贴板，敏感） |
 | `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
+| `css` | `registerCss`（注入全局样式，影响整个应用外观；安装时重点确认） |
 | `webview` | `ui.webModal` |
 | `nav` / `ui` | `nav.go` / `ui.toast` |
 | `storage` | `storage.*`、`settings.get` |
@@ -502,6 +503,8 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `ui.form(title, fields)` | `ui` | 通用表单弹窗，`fields` 为 `{key, label, kind?, placeholder?, default?, required?, options?}[]`（kind: text/textarea/password/select）；resolve 键值对象，取消 resolve `null` |
 | `ui.clipboard.write(text)` | `ui` | 写系统剪贴板 |
 | `ui.clipboard.read()` | `clipboard:read` | 读系统剪贴板（敏感：可读密码管理器复制的口令，权限单列） |
+| `ui.getTabRoot(pageKey)` / `ui.onTabReady(pageKey, cb)` | `ui` | 本插件功能页的 DOM 挂载容器（自由渲染）；仅限 `plugin:<本插件id>:` 前缀 |
+| `favorites.add(key, folderId?)` / `favorites.list()` | `ui` | 原子化收藏：收进宿主收藏夹（kind 自动补全为本插件），key 见 plugin-development §6.4 |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 

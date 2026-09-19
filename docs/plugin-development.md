@@ -307,6 +307,59 @@ ctx.registerCommand({ id: "book", title: "预订研讨间" }, async () => {
 });
 ```
 
+### 6.3 自建功能页（tab）与自由渲染
+
+插件可以在应用侧栏注册**自己的功能页**，并在页面容器内**全权渲染 DOM**——任意
+HTML 结构、交互逻辑，配合 `registerCss` 天马行空的样式：
+
+```js
+export default function activate(ctx) {
+  // ① 侧栏注册 tab（pageKey = plugin:<插件id>:<tabId>）
+  ctx.registerTab({
+    id: "main",
+    title: "打卡",
+    iconSvg: '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="6"/></svg>',
+  });
+  // ② 注入样式（需 css 权限；作用域规约 [data-plg="<插件id>"]）
+  ctx.registerCss(`
+    [data-plg="onethu.habit"] .streak { color: #e8543f; font-weight: 700; }
+  `);
+  // ③ 页面容器就绪后渲染（容器常驻：切走再切回，插件内部状态保留）
+  ctx.onethu.ui.onTabReady("plugin:onethu.habit:main", (root) => {
+    root.innerHTML = `<div class="streak">连续打卡 3 天</div>`;
+    root.querySelector(".streak")?.addEventListener("click", () => { /* 任意交互 */ });
+  });
+}
+```
+
+约束与边界：
+
+- 页面容器挂在宿主 React 布局内，容器**之外**的宿主界面不得改动（`registerCss`
+  的选择器请遵守作用域规约；越界样式会被审查拒绝收录）；
+- tab 图标为 16×16 视口的 inline SVG；
+- 容器就绪回调可能多次触发（页面重建），渲染函数应写成幂等（先清空再挂）。
+
+### 6.4 原子化收藏（对齐宿主收藏夹体系）
+
+宿主收藏夹是**万物原子化**体系：课程/作业/通知/场馆等都注册为原子，收藏夹只存
+原子引用。插件可以注册自己的原子种类，使插件结果**与课程、通知同等地位**地收进
+用户收藏夹，点击卡片深链回插件对应 tab：
+
+```js
+// ① 注册原子种类（key 约定 "<tabId>~<原子key>"，展示元数据由 resolve 提供）
+ctx.registerAtom({
+  group: "打卡",
+  resolve: (key) => state.get(key.slice(key.indexOf("~") + 1))
+    ? { title: `打卡记录 ${key.slice(key.indexOf("~") + 1)}`, sub: "打卡" }
+    : null, // 返回 null = 原子已失效（收藏夹降级显示）
+});
+// ② 收藏（folderId 缺省收进第一个根收藏夹；展示元数据走 resolve，不重复传）
+ctx.onethu.favorites.add("main~streak:3");
+// ③ 查询本插件被收藏情况
+const saved = ctx.onethu.favorites.list();
+// [{ folderId: "f_x", folderTitle: "我的收藏", key: "main~streak:3" }]
+```
+
 ## 7. 接入新的清华服务
 
 宿主已实现为独立命名空间的服务（`info`、`learn`、`library` 等）之外，其他清华校内
@@ -511,6 +564,7 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 | v1.4 | 新增 `ts` 命名空间与 `tsinghua:sdk` 权限（自定义清华服务接入 SDK：会话复用、通道分流、自愈重放）；新增 §6 接入指南 |
 | v1.5 | 新增 §7 发布插件：插件市场（OneTHU-Market 名单仓库，人工审查收录）与 GitHub 仓库直装 |
 | v1.6 | 插件平台化：§6 UI 通道（confirm/form/clipboard）与结构化命令结果（markdown/items/kv）；OH 联动插件（§9.3）与 MCP 客户端（§9.4，stdio 冷启动）；新增权限 clipboard:read、plugins:call |
+| v1.7 | UI 自由化：§6.3 自建功能页（registerTab + onTabReady 自由渲染 DOM）与 registerCss 全局样式（新权限 css）；§6.4 原子化收藏（registerAtom 注册原子种类，favorites.add/list 收藏进宿主收藏夹并深链回插件 tab） |
 | v1.3 | 文档重写为标准格式；新增 `llm`、`theme`、`exthw:read`、`exthw:refresh`、`webview` 权限，新增 `llm`、`theme`、`exthw` 命名空间与 `ui.webModal`；设置项新增 `select` 类型 |
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |

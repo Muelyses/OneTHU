@@ -25,6 +25,7 @@ import {
 } from "../components/HomeWidgets.js";
 import type { LearnNav, Page } from "./app.js";
 import { cacheGet } from "./cache.js";
+import { getPluginAtom, pluginAtomKindOf } from "../plugins/pluginAtoms.js";
 import { FAVS_MAX_DEPTH, loadFavs, type AtomRef } from "./favorites.js";
 import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
@@ -236,8 +237,44 @@ function view(partial: Omit<AtomView, "atom"> & { atom: AtomRef }): AtomView {
 }
 
 /** 解析原子：注册表未知的 kind/key 返回 null（渲染处直接丢弃） */
+/** inline SVG 字符串 → AtomIcon（插件原子图标；异常降级拼图占位） */
+function svgIcon(svg: string | undefined): AtomIcon {
+  return ({ width = 16, height = 16, className }) => (
+    <span
+      className={"plg-svg-icon" + (className ? ` ${className}` : "")}
+      style={{ width, height, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+      dangerouslySetInnerHTML={{ __html: svg ?? FALLBACK_TAB_SVG }}
+    />
+  );
+}
+
+const FALLBACK_TAB_SVG = '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2.5 4.2 6l-2.4 4.5L6 13.5l3-2 3 2 2.2-3-2.4-4.5L10 2.5l-4 0z"/></svg>';
+
 export function resolveAtom(ref: AtomRef): AtomView | null {
   const { kind, key } = ref;
+  // 插件动态原子（kind = plugin:<pluginId>；key 编解码由插件自持）
+  if (kind.startsWith("plugin:")) {
+    const def = getPluginAtom(kind);
+    if (!def) return null;
+    const meta = (() => {
+      try {
+        return def.resolve(key);
+      } catch {
+        return null;
+      }
+    })();
+    // 约定：插件原子 key = "<tabId>~<原子key>"——点击深链到插件对应 tab
+    const tabId = key.split("~")[0] ?? "";
+    const target: Page = `plugin:${kind.slice("plugin:".length)}:${tabId}`;
+    return {
+      atom: ref,
+      title: meta?.title ?? "（已失效的插件原子）",
+      sub: meta?.sub ?? def.group,
+      icon: svgIcon(def.iconSvg),
+      group: def.group,
+      open: (nav) => nav(target, undefined),
+    };
+  }
   if (kind === "page") {
     const s = PAGE_ATOMS.find((a) => a.key === key);
     if (!s) return null;

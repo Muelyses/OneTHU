@@ -1,5 +1,5 @@
 import { Shell, BrandLogo } from "./components/Layout.js";
-import { useEffect } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LearnPage } from "./pages/Learn.js";
 import { AssignmentDetailPage } from "./pages/learn/AssignmentDetailPage.js";
@@ -34,6 +34,9 @@ import { AppProvider } from "./state/app.js";
 import { FavsProvider } from "./state/favs.js";
 import { useApp } from "./state/context.js";
 import { setNavBridge, setStatusBridge } from "./plugins/bridges.js";
+import { installedPlugins, subscribe } from "./plugins/loader.js";
+import { getPluginTab, setTabRoot } from "./plugins/tabs.js";
+import type { Page } from "./state/app.js";
 import { ChatDock } from "./plugins/ChatDock.js";
 import { refreshLearnDataSilently, startLearnAutoRefresh, stopLearnAutoRefresh } from "./state/data.js";
 
@@ -107,6 +110,7 @@ function Routed() {
         {page === "learn-notice-detail" && <NoticeDetailPage />}
         {page === "learn-forum-thread" && <ForumThreadPage />}
         {page === "learn-file-detail" && <FileDetailPage />}
+        {page.startsWith("plugin:") && <PluginTabHost pageKey={page} />}
       </Shell>
     );
   })();
@@ -119,6 +123,42 @@ function Routed() {
       <FilePreviewHost />
       <ToastHost />
     </>
+  );
+}
+
+/** 插件动态 tab 宿主：挂容器登记进 tabs.ts，插件经 ui.onTabReady/getTabRoot 拿 DOM 全权渲染。
+ *  容器常驻（React 不销毁），仅切页时 display 切换——插件内部状态保留。 */
+function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
+  const plugins = useSyncExternalStore(subscribe, installedPlugins);
+  const tab = getPluginTab(pageKey);
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [failed, setFailed] = useState<string | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setFailed(null);
+    const pluginId = tab?.pluginId ?? "";
+    const rec = plugins.find((x) => x.manifest.id === pluginId);
+    if (!tab || !rec) {
+      setFailed("该插件 tab 所属插件未安装或已停用");
+      setTabRoot(pageKey, null);
+      return;
+    }
+    el.dataset.plg = pluginId;
+    setTabRoot(pageKey, el);
+    return () => setTabRoot(pageKey, null);
+  }, [pageKey, tab?.pluginId, plugins]);
+  const icon = tab?.iconSvg;
+  return (
+    <div className="page-body plg-tab-page">
+      <div className="plg-tab-head">
+        <span className="plg-svg-icon" dangerouslySetInnerHTML={{ __html: icon ?? "" }} />
+        <b>{tab?.title ?? "插件页"}</b>
+        {tab ? <span className="plg-tab-src">来自插件 {tab.pluginId}</span> : null}
+      </div>
+      {failed ? <div className="plg-hint">{failed}</div> : null}
+      <div ref={ref} className="plg-tab-root" data-pagekey={pageKey} />
+    </div>
   );
 }
 

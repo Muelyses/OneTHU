@@ -1,4 +1,4 @@
-//! 插件命令（JS 侧只有探活；saveDownload/openIntent 由主 crate Rust 直调）
+//! 插件命令（JS 侧只有探活；saveDownload/openIntent/openYktWebLogin/readYktCookies 由主 crate Rust 直调）
 
 use tauri::{AppHandle, Runtime};
 

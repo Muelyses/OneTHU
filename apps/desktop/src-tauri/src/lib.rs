@@ -1777,6 +1777,71 @@ fn open_eid_window(
     Ok("opened".into())
 }
 
+/* ---------------- R18 24.2：雨课堂「官方网页登录」WebView 通道 ----------------
+ * 打开应用内原生窗口指向 pro.yuketang.cn/web，用户在其中完成扫码或
+ * 「手机号 + 图形验证码 + 短信」登录；随后主窗口点「我已登录，读取会话」→
+ * read_ykt_cookies 从同一 webview 数据目录读取 Cookie（含 HttpOnly，wry/tauri
+ * 的 cookies_for_url 支持），前端经 yuketangBuildCookie 补齐清华字段后保存。
+ * 读不到（浏览器预览 / 未登录 / 平台不支持）→ 前端回退「高级：手动粘贴 Cookie」。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
+    use tauri::webview::WebviewWindowBuilder;
+    use tauri::WebviewUrl;
+    let label = "yktlogin";
+    if let Some(w) = app.get_webview_window(label) {
+        let _ = w.set_focus();
+        return Ok("exists".into());
+    }
+    // 窗口内不注入任何脚本：登录全程由用户操作，读取动作由主窗口按钮触发（避免与页面跳转竞态）。
+    let win = WebviewWindowBuilder::new(
+        &app,
+        label,
+        WebviewUrl::External("https://pro.yuketang.cn/web".parse().unwrap()),
+    )
+    .title("雨课堂 · 官方网页登录")
+    .inner_size(480.0, 760.0)
+    .build()
+    .map_err(|e| e.to_string())?;
+    let _ = win.set_focus();
+    Ok("opened".into())
+}
+
+/// 读取 yktlogin 窗口内 `pro.yuketang.cn` 的 Cookie（含 HttpOnly），返回 `name=value; …` 原文。
+/// ⚠️ Windows 上必须在异步命令 / 非主线程读取，否则 WebView2 死锁（Tauri 文档）。
+/// ⚠️ Android 不支持该 API（恒返回空），移动端走 `#[cfg(mobile)]` 的 CookieManager 桥。
+#[cfg(desktop)]
+#[tauri::command]
+async fn read_ykt_cookies(app: tauri::AppHandle) -> Result<String, String> {
+    let win = app
+        .get_webview_window("yktlogin")
+        .ok_or_else(|| "雨课堂登录窗口未打开".to_string())?;
+    let url = url::Url::parse("https://pro.yuketang.cn/").map_err(|e| e.to_string())?;
+    let cookies = win.cookies_for_url(url).map_err(|e| e.to_string())?;
+    let header = cookies
+        .iter()
+        .map(|c| format!("{}={}", c.name(), c.value()))
+        .collect::<Vec<_>>()
+        .join("; ");
+    if header.is_empty() {
+        return Err(
+            "未读到 pro.yuketang.cn 的 Cookie：请先在窗口内完成登录，或改用「高级：手动粘贴 Cookie」"
+                .into(),
+        );
+    }
+    Ok(header)
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn close_ykt_window(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(w) = app.get_webview_window("yktlogin") {
+        w.close().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 
 #[cfg(desktop)]
 #[tauri::command]
@@ -1842,6 +1907,49 @@ fn open_sports_window(app: tauri::AppHandle) -> Result<String, String> {
 fn open_eid_window(_app: tauri::AppHandle, _username: String, _password: String) -> Result<String, String> {
     // 移动端无多窗口：前端捕获本错误后改用 opener 跳系统浏览器
     Err("移动端请在系统浏览器打开电子身份".into())
+}
+
+/* R18 24.2 移动端：应用内 WebView 由 onethu-mobile 插件（Kotlin）以 Dialog 呈现，
+ * Cookie 走 android.webkit.CookieManager（Tauri 的 cookies_for_url 在 Android 恒空）。 */
+
+#[cfg(mobile)]
+#[tauri::command]
+fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    let _: serde_json::Value = handle
+        .run_mobile_plugin("openYktWebLogin", serde_json::json!({}))
+        .map_err(|e| e.to_string())?;
+    Ok("opened".into())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+fn read_ykt_cookies(app: tauri::AppHandle) -> Result<String, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    let r: serde_json::Value = handle
+        .run_mobile_plugin("readYktCookies", serde_json::json!({}))
+        .map_err(|e| e.to_string())?;
+    let cookie = r.get("cookie").and_then(|v| v.as_str()).unwrap_or("").to_string();
+    if cookie.is_empty() {
+        return Err(
+            "未读到 pro.yuketang.cn 的 Cookie：请先在窗口内完成登录，或改用「高级：手动粘贴 Cookie」"
+                .into(),
+        );
+    }
+    Ok(cookie)
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+fn close_ykt_window(_app: tauri::AppHandle) -> Result<(), String> {
+    // 移动端是应用内 Dialog WebView，由用户自行关闭
+    Ok(())
 }
 
 /* 体育官方预约已改为主窗口 tab 内 iframe（URL ?token= 携带 JWT，官方 SPA
@@ -2096,7 +2204,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

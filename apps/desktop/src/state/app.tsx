@@ -18,6 +18,7 @@ export type Page =
   | "thos" // 在线服务（THOS 服务大厅原生化：事项列表 + 服务目录）
   | "mail" // 邮箱（IMAP 收 / SMTP 发，复用云日历凭据）
   | "cloud" // 清华云盘（Seafile Web API）
+  | "thubook" // THUbook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
   | "folder" // 用户收藏夹页（navParams.folderId 指向具体收藏夹）
   | "settings"
   | "plugins" // 插件管理页（机架视觉；设置页留入口，不动侧栏导航）

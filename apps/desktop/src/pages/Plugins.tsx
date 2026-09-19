@@ -4,6 +4,7 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
+import { fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { PageHead } from "../components/Layout.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -556,7 +557,11 @@ function LogBody({ id }: { id: string }): ReactNode {
 /* ═══════════════ 安装面板：三路安装（粘贴 JS / JS 文件 / Rust 插件） ═══════════════ */
 
 function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
-  const [tab, setTab] = useState<"paste" | "jsfile" | "rust">("paste");
+  const [tab, setTab] = useState<"paste" | "jsfile" | "rust" | "market" | "github">("paste");
+  const [repoInput, setRepoInput] = useState("");
+  const [query, setQuery] = useState("");
+  const [marketList, setMarketList] = useState<MarketEntry[] | null>(null);
+  const [marketErr, setMarketErr] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -570,6 +575,38 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
       const m = await installPlugin(text);
       setMsg(`已安装并激活：${m.name} v${m.version}`);
       setCode("");
+    } catch (e) {
+      setMsg(`安装失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const installFromRepoText = async (input: string, entry?: string): Promise<void> => {
+    const ref = parseRepoInput(input);
+    const text = await fetchEntryFromRepo(ref, entry);
+    await install(text);
+  };
+
+  const loadMarket = async (force = false): Promise<void> => {
+    setBusy(true);
+    setMarketErr(null);
+    try {
+      const reg = await fetchRegistry(force);
+      setMarketList(reg.plugins);
+    } catch (e) {
+      setMarketErr(String(e instanceof Error ? e.message : e).slice(0, 240));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const installFromMarket = async (item: MarketEntry): Promise<void> => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const text = await fetchEntryFromMarket(item);
+      await install(text);
     } catch (e) {
       setMsg(`安装失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
     } finally {
@@ -649,6 +686,8 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
             ["paste", "粘贴 JS 模块"],
             ["jsfile", "选择 .js 文件"],
             ["rust", "Rust 骨干插件"],
+            ["github", "GitHub 仓库"],
+            ["market", "插件市场"],
           ] as const
         ).map(([k, label]) => (
           <button
@@ -708,6 +747,83 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
             <span className="plg-filebox-t">{busy ? "打开系统对话框…" : "选择 manifest.json（系统文件对话框）"}</span>
             <span className="plg-filebox-d">二进制须与 manifest.json 同目录（桌面端 sidecar 形态；Android 内置核心无需安装）</span>
           </button>
+        </div>
+      ) : null}
+
+      {tab === "github" ? (
+        <div className="plg-install-body">
+          <input
+            className="input"
+            placeholder="user/repo 或 https://github.com/user/repo（可 @branch 或 /tree/branch）"
+            value={repoInput}
+            onChange={(e) => setRepoInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !busy && repoInput.trim()) void installFromRepoText(repoInput);
+            }}
+          />
+          <div className="plg-install-foot">
+            <span className="plg-hint">从仓库根目录拉取 plugin.js（或 index.js / main.js），与粘贴安装同一校验管线。</span>
+            <button className="btn btn-primary" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput)}>
+              {busy ? "安装中…" : "安装"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {tab === "market" ? (
+        <div className="plg-install-body">
+          <div className="plg-install-foot" style={{ marginBottom: 8 }}>
+            <input
+              className="input"
+              style={{ flex: 1 }}
+              placeholder="搜索名称 / 描述 / 标签"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button className="btn" disabled={busy} onClick={() => void loadMarket(true)}>
+              {busy ? "刷新中…" : "刷新"}
+            </button>
+          </div>
+          {marketErr ? <div className="plg-hint" style={{ color: "var(--red)" }}>{marketErr}</div> : null}
+          {marketList === null && !marketErr ? (
+            <div className="plg-hint">
+              {busy ? "正在拉取市场名单…" : "尚未加载。"}
+              <button className="btn" style={{ marginLeft: 8 }} disabled={busy} onClick={() => void loadMarket()}>
+                加载市场
+              </button>
+            </div>
+          ) : null}
+          {marketList !== null ? (
+            (() => {
+              const q = query.trim().toLowerCase();
+              const hits = !q
+                ? marketList
+                : marketList.filter((x) =>
+                    [x.name, x.description, x.author, ...(x.tags ?? [])]
+                      .filter(Boolean)
+                      .some((v) => String(v).toLowerCase().includes(q)),
+                  );
+              if (!hits.length) return <div className="plg-hint">无匹配条目。</div>;
+              return (
+                <div className="plg-market-list">
+                  {hits.map((item) => (
+                    <div key={item.id} className="plg-market-item">
+                      <div className="plg-market-info">
+                        <div className="plg-market-name">
+                          {item.name} <span className="plg-market-ver">v{item.version}</span>
+                          {item.author ? <span className="plg-market-author"> · {item.author}</span> : null}
+                        </div>
+                        <div className="plg-market-desc">{item.description || item.repo}</div>
+                      </div>
+                      <button className="btn btn-primary" disabled={busy} onClick={() => void installFromMarket(item)}>
+                        安装
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()
+          ) : null}
         </div>
       ) : null}
 

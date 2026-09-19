@@ -1,0 +1,176 @@
+/**
+ * 插件市场与 GitHub 仓库直装数据层。
+ *
+ * 两套机制共用同一仓库格式约定（JS 插件单文件 ES 模块，内嵌 manifest）：
+ * - 市场：官方市场仓库维护 registry.json（人工审查收录），客户端拉取展示、搜索、一键安装；
+ * - 直装：用户输入 GitHub 仓库地址（user/repo 或完整 URL，可 @branch），客户端从
+ *   raw.githubusercontent.com 拉取入口模块，走与「粘贴安装」同一校验管线。
+ *
+ * 传输：tauriFetch（Tauri http_request，无 CORS 限制、走系统代理）；浏览器预览降级
+ * window.fetch。Rust 插件的远程分发（二进制）不在本机制范围内。
+ */
+
+export const DEFAULT_MARKET_URL =
+  "https://raw.githubusercontent.com/smartThise/OneTHU-Market/main/registry.json";
+const MARKET_URL_KEY = "onethu.market.url";
+const CACHE_KEY = "onethu.market.cache.v1";
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+export interface MarketEntry {
+  id: string;
+  name: string;
+  version: string;
+  author?: string;
+  description?: string;
+  repo: string;
+  entry?: string;
+  tags?: string[];
+}
+
+export interface MarketRegistry {
+  version: number;
+  updatedAt?: string;
+  plugins: MarketEntry[];
+}
+
+export interface RepoRef {
+  owner: string;
+  repo: string;
+  branch?: string;
+  subPath?: string;
+}
+
+/** 解析 GitHub 仓库地址。接受：user/repo、user/repo@branch、
+ *  https://github.com/user/repo(.git)(@branch)、user/repo/tree/branch/sub/path。
+ *  非法输入抛 Error（message 面向用户）。 */
+export function parseRepoInput(input: string): RepoRef {
+  let s = (input ?? "").trim();
+  if (!s) throw new Error("请输入仓库地址，如 user/repo");
+  s = s.replace(/^git@github\.com:/i, "https://github.com/");
+  if (!/^https?:\/\//i.test(s)) {
+    // 允许省略协议：github.com/user/repo 或 user/repo
+    s = s.replace(/^github\.com\//i, "https://github.com/");
+    if (!/^https:\/\/[^/]+\/[^/]+/.test(s)) {
+      const m = /^([\w.-]+)\/([\w.-]+?)(?:@([\w./-]+))?$/.exec(s);
+      const owner = m?.[1];
+      const repo = m?.[2];
+      if (!m || !owner || !repo) throw new Error("无法识别的仓库地址；示例：user/repo 或 user/repo@dev");
+      return { owner, repo: repo.replace(/\.git$/, ""), branch: m[3] || undefined };
+    }
+  }
+  let u: URL;
+  try {
+    u = new URL(s);
+  } catch {
+    throw new Error("无法识别的仓库地址；示例：user/repo 或完整 GitHub URL");
+  }
+  if (!/(^|\.)github\.com$/i.test(u.hostname)) {
+    throw new Error("目前仅支持 GitHub 仓库（github.com）");
+  }
+  const parts = u.pathname.replace(/^\/+|\/+$/g, "").split("/");
+  if (parts.length < 2 || !parts[0] || !parts[1]) {
+    throw new Error("缺少 owner/repo；示例：https://github.com/user/repo");
+  }
+  const owner = parts[0];
+  let repo = parts[1].replace(/\.git$/, "");
+  let branch: string | undefined;
+  let subPath: string | undefined;
+  // /tree/<branch>(/sub/path) 形态
+  if (parts[2] === "tree" && parts[3]) {
+    branch = parts[3];
+    subPath = parts.slice(4).join("/") || undefined;
+  } else {
+    const hash = s.lastIndexOf("@");
+    if (hash > u.origin.length) {
+      const tail = s.slice(hash + 1).replace(/\/+$/, "");
+      if (tail) branch = tail;
+    }
+  }
+  if (!/^[\w.-]+$/.test(owner) || !/^[\w.-]+$/.test(repo)) {
+    throw new Error("owner/repo 含非法字符");
+  }
+  return { owner, repo, branch, subPath };
+}
+
+/** 入口模块候选（顺序即优先级）；分支缺省依次尝试 main、master。 */
+const ENTRY_CANDIDATES = ["plugin.js", "index.js", "main.js"];
+const DEFAULT_BRANCHES = ["main", "master"];
+
+export function rawEntryUrl(ref: RepoRef, branch: string, entry: string): string {
+  const base = `https://raw.githubusercontent.com/${ref.owner}/${ref.repo}/${branch}`;
+  const mid = ref.subPath ? `/${ref.subPath.replace(/^\/+|\/+$/g, "")}` : "";
+  return `${base}${mid}/${entry.replace(/^\/+/, "")}`;
+}
+
+async function externalFetch(url: string, init?: RequestInit): Promise<Response> {
+  try {
+    const { isTauri, tauriFetch } = await import("./transport.js");
+    if (isTauri) return await tauriFetch(url, init ?? {});
+  } catch {
+    /* 预览环境降级 */
+  }
+  return fetch(url, init ?? {});
+}
+
+/** 从 GitHub 仓库拉取插件入口模块文本。命中第一个存在的候选即返回；
+ *  全部未命中抛错（列出已尝试的路径）。 */
+export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<string> {
+  const branches = ref.branch ? [ref.branch] : DEFAULT_BRANCHES;
+  const entries = entry ? [entry] : ENTRY_CANDIDATES;
+  const tried: string[] = [];
+  for (const b of branches) {
+    for (const e of entries) {
+      const url = rawEntryUrl(ref, b, e);
+      tried.push(`${ref.owner}/${ref.repo}@${b}/${e}`);
+      const res = await externalFetch(url).catch(() => null);
+      if (res && res.ok) {
+        const text = await res.text();
+        if (text.trim()) return text;
+      }
+    }
+  }
+  throw new Error(
+    `仓库中未找到插件入口（尝试：${tried.join("、")}）。仓库需在根目录提供 plugin.js（或 index.js / main.js，或清单指定 entry）。`,
+  );
+}
+
+function marketUrl(): string {
+  try {
+    return localStorage.getItem(MARKET_URL_KEY) || DEFAULT_MARKET_URL;
+  } catch {
+    return DEFAULT_MARKET_URL;
+  }
+}
+
+/** 拉取市场名单（带 5 分钟缓存）。force=true 跳过缓存。 */
+export async function fetchRegistry(force = false): Promise<MarketRegistry> {
+  if (!force) {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const { url, at, data } = JSON.parse(raw) as { url: string; at: number; data: MarketRegistry };
+        if (url === marketUrl() && Date.now() - at < CACHE_TTL_MS && Array.isArray(data?.plugins)) {
+          return data;
+        }
+      }
+    } catch {
+      /* 缓存损坏则直接拉取 */
+    }
+  }
+  const res = await externalFetch(marketUrl());
+  if (!res.ok) throw new Error(`市场名单拉取失败：HTTP ${res.status}`);
+  const data = (await res.json()) as MarketRegistry;
+  if (!data || !Array.isArray(data.plugins)) throw new Error("市场名单格式无效（缺 plugins 数组）");
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ url: marketUrl(), at: Date.now(), data }));
+  } catch {
+    /* 存不下就不缓存 */
+  }
+  return data;
+}
+
+/** 市场条目 → 安装：拉取其仓库入口并返回模块文本（交由 installPlugin 校验安装）。 */
+export async function fetchEntryFromMarket(item: MarketEntry): Promise<string> {
+  const ref = parseRepoInput(item.repo);
+  return fetchEntryFromRepo(ref, item.entry);
+}

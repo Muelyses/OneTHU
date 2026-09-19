@@ -11,11 +11,12 @@
 4. [权限模型](#4-权限模型)
 5. [通用约定](#5-通用约定)
 6. [接入新的清华服务](#6-接入新的清华服务)
-7. [Rust sidecar 协议](#7-rust-sidecar-协议)
-8. [对话面板协议](#8-对话面板协议)
-9. [Android 内嵌形态](#9-android-内嵌形态)
-10. [调试](#10-调试)
-11. [版本记录](#11-版本记录)
+7. [发布插件](#7-发布插件)
+8. [Rust sidecar 协议](#8-rust-sidecar-协议)
+9. [对话面板协议](#9-对话面板协议)
+10. [Android 内嵌形态](#10-android-内嵌形态)
+11. [调试](#11-调试)
+12. [版本记录](#12-版本记录)
 
 ---
 
@@ -281,9 +282,62 @@ css: `
 **权限声明**：接入自定义服务需声明 `tsinghua:sdk`。该权限允许插件以用户登录态访问
 任意清华校内服务，应在插件描述中向用户说明具体访问目标。
 
-## 7. Rust sidecar 协议
+## 7. 发布插件
 
-### 7.1 通信格式
+插件完成开发后可通过两种方式分发给其他用户：插件市场收录，或 GitHub 仓库直装。
+两者使用同一仓库格式约定，均仅覆盖 JS 插件；Rust 插件含平台二进制，仍经压缩包或
+文件夹安装（见 §3 与安装面板）。
+
+### 7.1 仓库格式
+
+插件仓库根目录提供 `plugin.js`（或 `index.js`、`main.js`），内容为单文件 ES 模块：
+`manifest` 导出 + 默认导出激活函数——与「粘贴安装」格式完全一致。可用子目录组织
+文档与示例，入口文件以外的内容不会被拉取。
+
+入口发现顺序：清单显式指定 `entry` 时按指定拉取；否则依次尝试 `plugin.js`、
+`index.js`、`main.js`，分支缺省依次尝试 `main`、`master`。
+
+### 7.2 GitHub 仓库直装
+
+用户在 OneTHU 插件页 → 安装插件 → 「GitHub 仓库」输入仓库地址直接安装。地址支持
+以下形态：
+
+| 形态 | 示例 |
+|---|---|
+| 简写 | `user/repo` |
+| 指定分支 | `user/repo@dev` |
+| 完整 URL | `https://github.com/user/repo`（可带 `.git`） |
+| 子目录 | `https://github.com/user/repo/tree/dev/plugins/demo` |
+
+拉取经 `raw.githubusercontent.com`，安装走与粘贴安装相同的清单校验与权限确认管线。
+
+### 7.3 插件市场收录
+
+应用内市场数据源为独立仓库 [OneTHU-Market](https://github.com/smartThise/OneTHU-Market)：
+`registry.json` 为收录名单，应用端拉取展示、搜索，点击安装即从条目 `repo` 拉取入口
+模块。名单条目格式：
+
+```json
+{
+  "id": "onethu.your-plugin",
+  "name": "插件名",
+  "version": "1.0.0",
+  "author": "作者",
+  "description": "一句话说明",
+  "repo": "user/your-repo",
+  "entry": "plugin.js",
+  "tags": ["分类"]
+}
+```
+
+**提交流程**：Fork OneTHU-Market → 在 `registry.json` 追加条目 → 提交 Pull Request。
+审查（当前为人工）要点：仓库存在且入口可拉取可解析；`manifest` 与条目信息一致；
+权限声明与功能匹配、无超范围权限；无混淆代码、无远程动态拼装代码、无凭据收集
+行为。合并即收录，用户端刷新或等缓存过期（5 分钟）后可见。
+
+## 8. Rust sidecar 协议
+
+### 8.1 通信格式
 
 stdio 上的行分隔 JSON-RPC。宿主发往插件：
 
@@ -302,7 +356,7 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 | `progress` | 进度通知；对话面板场景支持 `kind` 字段，见 §7 |
 | `log` | 日志行，展示于轨迹面板 |
 
-### 7.2 实现约束
+### 8.2 实现约束
 
 - **标准输入锁不可重入**：`for line in stdin().lock().lines()` 会在整个循环期间持有
   锁，循环体内再次调用 `stdin().lock()` 读取应答会造成死锁。应全程只加锁一次，
@@ -313,7 +367,7 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 - 不应依赖工作目录；宿主不保证当前目录。
 - 退出码非 0 或标准输出关闭时，宿主发出 `exit` 事件并清理进程记录。
 
-## 8. 对话面板协议
+## 9. 对话面板协议
 
 Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其渲染常驻对话面板：
 
@@ -341,7 +395,7 @@ Rust 插件在激活应答中将某命令标记 `dock: true`，宿主即为其�
 会话管理命令的约定命名：`new_session`、`list_sessions`、`switch_session`、
 `delete_session`、`export_session`、`import_session`、`usage_report`、`selftest`。
 
-## 9. Android 内嵌形态
+## 10. Android 内嵌形态
 
 Android WebView 环境不允许执行任意路径的二进制文件，sidecar 形态在移动端不可用。
 官方 Harness 插件采用同一份 Rust 核心编译进应用进程的方式实现，通信经 Tauri 命令桥
@@ -358,7 +412,7 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 第三方 Rust 插件不提供移动端形态。
 
-## 10. 调试
+## 11. 调试
 
 | 方式 | 说明 |
 |---|---|
@@ -367,11 +421,12 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 | Android 日志 | `adb logcat -s onethu`，或 `adb logcat -d --pid=$(adb shell pidof app.onethu.desktop)` |
 | 端到端自测 | OneTHU-Harness 的 `test/sim_host.mjs`：模拟宿主门面与 OpenAI SSE 服务，覆盖握手、工具调用、流式输出、用量统计、会话管理与两段式确认 |
 
-## 11. 版本记录
+## 12. 版本记录
 
 | 版本 | 变更 |
 |---|---|
 | v1.4 | 新增 `ts` 命名空间与 `tsinghua:sdk` 权限（自定义清华服务接入 SDK：会话复用、通道分流、自愈重放）；新增 §6 接入指南 |
+| v1.5 | 新增 §7 发布插件：插件市场（OneTHU-Market 名单仓库，人工审查收录）与 GitHub 仓库直装 |
 | v1.3 | 文档重写为标准格式；新增 `llm`、`theme`、`exthw:read`、`exthw:refresh`、`webview` 权限，新增 `llm`、`theme`、`exthw` 命名空间与 `ui.webModal`；设置项新增 `select` 类型 |
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |

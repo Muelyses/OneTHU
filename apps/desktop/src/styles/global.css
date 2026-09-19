@@ -4366,3 +4366,20 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   height: 100%;
   background: var(--primary);
 }
+
+/* ── 插件市场（安装面板 · 市场页签）── */
+.plg-market-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow: auto; }
+.plg-market-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface);
+}
+.plg-market-item:hover { border-color: var(--border-strong); background: var(--hover); }
+.plg-market-info { min-width: 0; flex: 1; }
+.plg-market-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.plg-market-ver { font-weight: 400; color: var(--text-3); font-size: 11px; }
+.plg-market-author { font-weight: 400; color: var(--text-3); font-size: 11px; }
+.plg-market-desc {
+  font-size: 11px; color: var(--text-3); margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}

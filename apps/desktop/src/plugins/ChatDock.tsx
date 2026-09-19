@@ -201,6 +201,9 @@ export function ChatDock(): ReactNode {
   const [closing, setClosing] = useState(false); // 关闭动画期：面板仍挂载
   /* 灵动岛：语音会话状态机 off→arming（等授权窗）→listening（轮询转写）→sending（等最终结果） */
   const [voice, setVoice] = useState<"off" | "arming" | "listening" | "sending">("off");
+  // 语音会话的真实时序源（state 是渲染快照，存在竞态）：idle=未进行；starting=enterVoice
+  // 启动中（含 await speechAvailable/speechStart 的窗口）；active=已开始监听
+  const voicePhaseRef = useRef<"idle" | "starting" | "active">("idle");
   const [voiceText, setVoiceText] = useState("");
   const [voiceFail, setVoiceFail] = useState<string | null>(null); // 失败原因：留在遮罩上 2.6s 再散
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
@@ -645,6 +648,16 @@ export function ChatDock(): ReactNode {
     return () => window.clearInterval(t);
   }, [voice]);
 
+  // 兜底：按住期间窗口失焦（Cmd+Tab、切换空间等），pointerup 不会到达按钮，语音会
+  // 悬死。失焦时若语音仍在进行则立即收尾。
+  useEffect(() => {
+    const onBlur = (): void => {
+      if (voicePhaseRef.current !== "idle") void finishVoice();
+    };
+    window.addEventListener("blur", onBlur);
+    return () => window.removeEventListener("blur", onBlur);
+  }, []);
+
   /** 语音失败：遮罩上亮 2.6s（notice 在面板内，关着面板时看不见） */
   const showVoiceFail = (msg: string): void => {
     setVoice("off");
@@ -654,7 +667,9 @@ export function ChatDock(): ReactNode {
   };
 
   const enterVoice = async (): Promise<void> => {
+    if (voicePhaseRef.current !== "starting") return; // 防重入
     if (!(await speechAvailable())) {
+      voicePhaseRef.current = "idle";
       showVoiceFail("此设备暂不支持原生语音识别（macOS 需 pnpm tauri:app 方式运行并授权）");
       return;
     }
@@ -662,15 +677,34 @@ export function ChatDock(): ReactNode {
     setVoiceText("");
     try {
       await speechStart(); // 首次会同步等待系统授权窗（麦克风+语音识别）
+      // 启动期间用户已松手（finishVoice 置 idle）：立即收尾，杜绝「无人监听却停不下来」
+      if (voicePhaseRef.current !== "starting") {
+        speechStop();
+        setVoice("off");
+        setVoiceText("");
+        return;
+      }
+      voicePhaseRef.current = "active";
       setVoice("listening");
     } catch (e) {
+      voicePhaseRef.current = "idle";
       showVoiceFail(`语音启动失败：${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
   /** 松手：收最终文本 → 滑动特效开面板 → 新对话 + 填入（不自动发送，先看一眼再回车） */
   const finishVoice = async (): Promise<void> => {
-    if (voice !== "arming" && voice !== "listening") return;
+    // 守卫读 phase ref（真时序），不读渲染快照的 voice——启动窗口内松手也能正确收尾
+    if (voicePhaseRef.current === "idle") return;
+    const started = voicePhaseRef.current === "active";
+    voicePhaseRef.current = "idle";
+    if (!started) {
+      // 尚未进入监听：无需等识别器收尾
+      speechStop();
+      setVoice("off");
+      setVoiceText("");
+      return;
+    }
     setVoice("sending");
     speechStop();
     await new Promise((r) => setTimeout(r, VOICE_FINAL_GRACE_MS)); // 识别器收尾出最终结果
@@ -693,6 +727,7 @@ export function ChatDock(): ReactNode {
     setVoiceFail(null);
     pressTimer.current = window.setTimeout(() => {
       pressTimer.current = null;
+      voicePhaseRef.current = "starting";
       void enterVoice();
     }, VOICE_HOLD_MS);
     try {
@@ -710,6 +745,11 @@ export function ChatDock(): ReactNode {
       return;
     }
     void finishVoice();
+  };
+  // 兜底：pointer capture 被 WebView 丢弃（系统手势等）时，指针事件不再到达按钮，
+  // 语音会悬死。捕获丢失且语音仍在进行 → 立即收尾（正常路径 up 先释放捕获，此处 idle 无副作用）。
+  const onIslandLostCapture = (): void => {
+    if (voicePhaseRef.current !== "idle") void finishVoice();
   };
   const onIslandPointerCancel = (): void => {
     if (pressTimer.current != null) {
@@ -756,6 +796,7 @@ export function ChatDock(): ReactNode {
         onPointerDown={onIslandPointerDown}
         onPointerUp={onIslandPointerUp}
         onPointerCancel={onIslandPointerCancel}
+        onLostPointerCapture={onIslandLostCapture}
         onKeyDown={onIslandKeyDown}
       >
         <span className="dock-island-logo"><HarnessMark size={15} /></span>

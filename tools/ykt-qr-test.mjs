@@ -32,7 +32,7 @@ registerHooks({
   },
 });
 
-const { runYuketangQrLogin, yuketangQrPoll, yuketangQrStart } = await import(
+const { runYuketangQrLogin, yuketangQrPoll, yuketangQrStart, yuketangCookieFromHeader } = await import(
   "../packages/core/src/exthw/yuketangQr.ts"
 );
 
@@ -232,6 +232,72 @@ console.log("[8] 传输层超时 → 继续轮询");
   const r = await runYuketangQrLogin({ fetchLike, pollTimeoutMs: 1000, now: () => 0 });
   ok(r.done === true && !!r.cookie, "传输超时后继续轮询 → 最终成功", JSON.stringify(r));
   ok(loginCalls === 2, "传输超时被重发（非硬错误退出）", `loginCalls=${loginCalls}`);
+}
+
+/* ── ⑨ connection aborted → 继续轮询（R17b 24.1，同 token）── */
+console.log("[9] connection aborted → 继续轮询（同 token）");
+{
+  // 9a：真机退后台被 MIUI 掐断长轮询时 reqwest 抛的传输层错误
+  // → 必须归为 timedOut（未扫码），而非硬错误退出。
+  const boom = () =>
+    Promise.reject(
+      new Error(
+        "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): client error (SendRequest): connection error: connection aborted",
+      ),
+    );
+  const r = await yuketangQrPoll(boom, "tok", { timeoutMs: 500 });
+  ok(r.done === false && r.timedOut === true, "connection aborted → timedOut（继续轮询）", JSON.stringify(r));
+  ok(
+    typeof r.message === "string" && /connection aborted/.test(r.message),
+    "原始错误串保留在 message（诊断用）",
+    r.message,
+  );
+}
+{
+  // 9a′：其它传输层错误（network error / connection reset）同样可恢复
+  const netErr = () => Promise.reject(new Error("网络错误: error sending request for url (…): connection reset by peer"));
+  const r = await yuketangQrPoll(netErr, "tok", { timeoutMs: 500 });
+  ok(r.done === false && r.timedOut === true, "connection reset → timedOut（继续轮询）", JSON.stringify(r));
+}
+{
+  // 9b：状态机：首次 connection aborted、第二次成功 —— 必须用**同一 token** 重发，
+  // 不得重建二维码（换 token = 已扫的码作废）。
+  const tokens = [];
+  let loginCalls = 0;
+  const fetchLike = (url, init) => {
+    if (url.includes("app-web-pre-info")) {
+      return Promise.resolve(
+        resp(JSON.parse(preInfoBody("QR-ABORT", makeJwt(Math.floor(Date.now() / 1000) + 120)))),
+      );
+    }
+    loginCalls++;
+    tokens.push(JSON.parse(init.body).token);
+    if (loginCalls === 1) {
+      return Promise.reject(
+        new Error(
+          "网络错误: error sending request for url (https://pro.yuketang.cn/api/v3/user/login/app-web-login): client error (SendRequest): connection error: connection aborted",
+        ),
+      );
+    }
+    return Promise.resolve(resp({ code: 0, data: {} }, ["sessionid=SESS123"]));
+  };
+  const r = await runYuketangQrLogin({ fetchLike, pollTimeoutMs: 1000, now: () => 0 });
+  ok(r.done === true && !!r.cookie, "connection aborted 后继续轮询 → 最终成功", JSON.stringify(r));
+  ok(loginCalls === 2, "连接被掐被重发（非硬错误退出）", `loginCalls=${loginCalls}`);
+  ok(tokens.length === 2 && tokens[0] === tokens[1], "重发沿用同一 token（二维码不换）", JSON.stringify(tokens));
+}
+
+/* ── ⑩ 官方网页通道：Cookie 原文 → 凭据串（R18 24.2）── */
+console.log("[10] 官方网页通道：Cookie 原文 → 凭据串");
+{
+  const cookie = yuketangCookieFromHeader("sessionid=SESS123; csrftoken=CSRF456; uv_id=2598");
+  ok(cookie.includes("sessionid=SESS123") && cookie.includes("csrftoken=CSRF456"), "解析出会话 Cookie", cookie);
+  ok(
+    cookie.includes("xtbz=ykt") && cookie.includes("university_id=2598") && cookie.includes("platform_id=3"),
+    "补齐清华固定字段",
+    cookie,
+  );
+  ok(yuketangCookieFromHeader("   ") === "" && yuketangCookieFromHeader("garbage") === "", "空 / 无对原文 → 空串（回退手动粘贴）");
 }
 
 console.log(failed === 0 ? "\n全部通过 ✅" : `\n${failed} 项失败 ❌`);

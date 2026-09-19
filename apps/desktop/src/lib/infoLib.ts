@@ -411,9 +411,14 @@ export async function libEnsureSession(): Promise<boolean> {
  *  zhjw JSONP 只含一级——二级实验课缺失的根源，2026-09-19 定案） */
 export const getSecondarySchedules = async (firstDay: string): Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> => {
   const mod = await import("@onethu/info-lib");
-  const r = await (mod as unknown as { getSecondarySchedules: (h: unknown, s: { firstDay: string }) => Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> }).getSecondarySchedules(helper, { firstDay });
-  void log(`SECONDARY-PARSE ${JSON.stringify(r.map((c) => ({ n: c.name, d: c.activeTime.base.slice(0, 2).map((sl) => sl.beginTime.format("YYYY-MM-DD HH:mm")) })))}`).catch(() => undefined);
-  return r;
+  try {
+    const r = await (mod as unknown as { getSecondarySchedules: (h: unknown, s: { firstDay: string }) => Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> }).getSecondarySchedules(helper, { firstDay });
+    void log(`SECONDARY-PARSE ${JSON.stringify(r.map((c) => ({ n: c.name, d: c.activeTime.base.slice(0, 2).map((sl) => sl.beginTime.format("YYYY-MM-DD HH:mm")) })))}`).catch(() => undefined);
+    return r;
+  } catch (e) {
+    void log(`SECONDARY-ERR ${e instanceof Error ? (e.stack ?? e.message).slice(0, 500) : String(e)}`).catch(() => undefined);
+    throw e;
+  }
 };
 
 /** 强制完整重登（选课死结借用）：不走探活短路——id 会话权威单一来源，

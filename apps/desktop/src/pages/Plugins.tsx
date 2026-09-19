@@ -56,31 +56,15 @@ export function PluginsPage(): ReactNode {
           </span>
         }
         actions={
-          <>
-            <div className="seg-track" style={{ marginRight: 10 }}>
-              {([["mine", "我的插件"], ["market", "插件市场"]] as const).map(([k, lbl]) => (
-                <button key={k} className={"seg-item" + (view === k ? " is-active" : "")} onClick={() => setView(k)}>
-                  {lbl}
-                </button>
-              ))}
-            </div>
-            {view === "mine" ? (
-              <button className="btn btn-primary" onClick={() => setInstOpen((o) => !o)}>
-                {instOpen ? "收起安装" : "安装插件"}
+          <div className="seg-track">
+            {([["mine", "我的插件"], ["market", "插件市场"]] as const).map(([k, lbl]) => (
+              <button key={k} className={"seg-item" + (view === k ? " is-active" : "")} onClick={() => setView(k)}>
+                {lbl}
               </button>
-            ) : null}
-          </>
+            ))}
+          </div>
         }
       />
-
-      {/* 插件类别页签（主题插件单独一类，2026-09-13 主题系统立项） */}
-      <div className="seg-track" style={{ marginBottom: 10 }}>
-        {([["all", `全部 ${allPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${allPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
-          <button key={k} className={"seg-item" + (cat === k ? " is-active" : "")} onClick={() => setCat(k)}>
-            {lbl}
-          </button>
-        ))}
-      </div>
 
       {/* 电表概览条 */}
       <div className="plg-stats">
@@ -105,7 +89,6 @@ export function PluginsPage(): ReactNode {
         </div>
       </div>
 
-      {instOpen ? <InstallPanel onClose={() => setInstOpen(false)} /> : null}
 
       {/* 主题管理区：主题即插件，管理面就在插件页（主题页签下展开；用户定案
           2026-09-13：设置页不放，避免双头管理） */}
@@ -113,6 +96,22 @@ export function PluginsPage(): ReactNode {
         <MarketView />
       ) : (
         <>
+      {instOpen ? <InstallPanel onClose={() => setInstOpen(false)} /> : null}
+
+      {/* 我的插件 · 工具行：类别页签 + 安装入口（归拢一行；主切换只留视图级） */}
+      <div className="plg-toolbar">
+        <div className="seg-track">
+          {([["all", `全部 ${allPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${allPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
+            <button key={k} className={"seg-item" + (cat === k ? " is-active" : "")} onClick={() => setCat(k)}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <button className="btn btn-primary" onClick={() => setInstOpen((o) => !o)}>
+          {instOpen ? "收起安装" : "安装插件"}
+        </button>
+      </div>
+
       {cat === "theme" || cat === "all" ? <ThemeManagerSection /> : null}
 
       {plugins.length === 0 && cat !== "theme" ? (

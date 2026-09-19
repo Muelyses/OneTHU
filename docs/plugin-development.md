@@ -313,9 +313,11 @@ css: `
 
 ### 7.3 插件市场收录
 
-应用内市场数据源为独立仓库 [OneTHU-Market](https://github.com/smartThise/OneTHU-Market)：
-`registry.json` 为收录名单，应用端拉取展示、搜索，点击安装即从条目 `repo` 拉取入口
-模块。名单条目格式：
+应用内市场数据源为独立仓库 [OneTHU-Market](https://github.com/smartThise/OneTHU-Market)。
+市场仓库**只收录插件元信息与源码仓库地址**，不收录插件代码——插件本体始终存放在
+作者自己的 GitHub 仓库，安装时由应用直接拉取。`registry.json` 为收录名单，应用端
+拉取展示、按仓库热度排序、搜索，点击安装即从条目 `repo` 拉取入口模块。名单条目
+格式：
 
 ```json
 {

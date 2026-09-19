@@ -6,9 +6,11 @@ import { SegmentedOverflow, Card, Empty, ErrorNote, PageHead, SkeletonRows } fro
 import { IconRefresh } from "../../components/Icons.js";
 import { useApp } from "../../state/context.js";
 import { useLearnData } from "../../state/data.js";
+import { ExtHwLoginModal } from "../../components/ExtHwLoginModal.js";
 import {
   dismissExtHwGuide,
   isExtHwGuideDismissed,
+  requestExtHwScroll,
   toHomework,
   useExternalHomework,
 } from "../../state/exthw.js";
@@ -35,32 +37,52 @@ function isOverdue(h: { submitted: boolean; deadline: string }): boolean {
 }
 
 /** 外部作业源引导横幅：新用户不知道雨课堂/TUOJ 要单独登录。
- *  仅「尚未配置任何外部源」时显示，配置后自动消失；「知道了」持久忽略（localStorage）。 */
+ *  仅「尚未配置任何外部源」时显示，配置后自动消失；「知道了」持久忽略（localStorage）。
+ *  R11 16.3：主文案改为「接入多平台作业聚合」；主按钮「登录雨课堂」弹登录通道 modal
+ *  （扫码 / 手机验证码，UI 参考校园卡充值弹窗）；次按钮「去设置」跳设置页 extHw 区。 */
 function ExtHwGuide() {
   const { navigate } = useApp();
   const ext = useExternalHomework();
   const [dismissed, setDismissed] = useState(() => isExtHwGuideDismissed());
+  const [loginOpen, setLoginOpen] = useState(false);
   // 等凭据解密完成（state=ready）再判断，避免已配置用户瞬时闪一下横幅
   if (ext.state !== "ready" || ext.configured || dismissed) return null;
   return (
-    <div className="browser-hint ext-hw-hint">
-      <span className="ext-hw-hint-text">
-        外部作业来自雨课堂 / TUOJ / Tyche，首次使用请到「设置 → 外部作业源」登录（雨课堂支持微信扫码，TUOJ
-        支持清华统一认证一键登录）。
-      </span>
-      <button className="btn" onClick={() => navigate("settings")}>
-        去登录
-      </button>
-      <button
-        className="btn btn-ghost"
-        onClick={() => {
-          dismissExtHwGuide();
-          setDismissed(true);
-        }}
-      >
-        知道了
-      </button>
-    </div>
+    <>
+      <div className="browser-hint ext-hw-hint">
+        <span className="ext-hw-hint-text">
+          <div>接入多平台作业聚合：把雨课堂 / TUOJ / Tyche 的作业 DDL 合并到「全部作业」与「今日」。</div>
+          {/* R11 16.2：TUOJ 自动漫游已过统一认证但未返回课程——条幅提示，不算错误 */}
+          {ext.tuojAuto.kind === "no-courses" ? (
+            <div style={{ opacity: 0.8, marginTop: 2 }}>
+              TUOJ 统一认证已通过，但未返回课程（可能未注册 / 未选课）。
+            </div>
+          ) : null}
+        </span>
+        <button className="btn btn-primary" onClick={() => setLoginOpen(true)}>
+          登录雨课堂
+        </button>
+        <button
+          className="btn"
+          onClick={() => {
+            requestExtHwScroll();
+            navigate("settings");
+          }}
+        >
+          去设置
+        </button>
+        <button
+          className="btn btn-ghost"
+          onClick={() => {
+            dismissExtHwGuide();
+            setDismissed(true);
+          }}
+        >
+          知道了
+        </button>
+      </div>
+      <ExtHwLoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+    </>
   );
 }
 

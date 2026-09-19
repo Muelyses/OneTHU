@@ -59,5 +59,5 @@ export {
 export type { ExtHwLoginResult } from "./login.js";
 export { yuketangQrStart, yuketangQrPoll, runYuketangQrLogin } from "./yuketangQr.js";
 export type { YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } from "./yuketangQr.js";
-export { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage } from "./tuojCas.js";
+export { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isTuojNoCoursesError } from "./tuojCas.js";
 export type { TuojRoamResult, TuojRoamDeps } from "./tuojCas.js";

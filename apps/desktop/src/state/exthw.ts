@@ -17,6 +17,7 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import {
   createExternalSources,
+  isTuojNoCoursesError,
   runYuketangQrLogin,
   SOURCE_NAMES,
   tuojLogin,
@@ -40,6 +41,10 @@ export const EXTHW_KEY = "onethu.exthw.v1";
 export const EXTHW_SALT_KEY = "onethu.exthw.salt.v1";
 /** 引导横幅「知道了」的忽略标记（沿用 onethu.* 前缀） */
 export const EXTHW_GUIDE_KEY = "onethu.exthw.guide.dismissed";
+/** TUOJ 统一认证自动登录「上次尝试」存档键（失败/无账号后 24h 内不重复自动尝试） */
+export const EXTHW_TUOJ_AUTO_KEY = "onethu.exthw.tuojAuto.v1";
+/** 自动尝试频控窗口：24h（R11 16.2） */
+export const TUOJ_AUTO_THROTTLE_MS = 24 * 60 * 60 * 1000;
 /** 派生密钥的固定串（与随机 salt 一起喂 PBKDF2；公开写在源码里也无妨——salt 才是个体差异） */
 const KDF_PASS = "onethu-exthw-local-obfuscation-v1";
 const PBKDF2_ITER = 120_000;
@@ -161,6 +166,7 @@ export function ensureExtHwCredsLoaded(): Promise<ExtHwCreds> {
     }
     creds = next && typeof next === "object" ? next : {};
     loaded = true;
+    loadTuojAuto();
     rebuild();
   })();
   return loadPromise.then(() => creds);
@@ -217,6 +223,17 @@ export function dismissExtHwGuide(): void {
   }
 }
 
+/** 引导横幅「去设置」：跨页请求设置页把 extHw 区滚动到视野（一次性标记，R11 16.3） */
+let extHwScrollRequested = false;
+export function requestExtHwScroll(): void {
+  extHwScrollRequested = true;
+}
+export function consumeExtHwScrollRequest(): boolean {
+  const v = extHwScrollRequested;
+  extHwScrollRequested = false;
+  return v;
+}
+
 /* ── 登录（走 core 登录客户端 + Tauri 传输层） ── */
 
 export const extHwLogin = {
@@ -253,6 +270,102 @@ export const extHwLogin = {
   tyche: (username: string, password: string) => tycheLogin(username, password, universalFetch),
 };
 
+/* ── TUOJ 统一认证自动登录（R11 16.2）──
+ * extHw 刷新时若 TUOJ 未配置，静默尝试一次 CAS 漫游；任何失败都不抛出、不打扰用户。
+ * 成功 → 写入凭据（同手动登录）；CAS 通过但课程列表 401/403 → no-courses（可能未注册/
+ * 未选课，不算错误）；其余 → failed（仅设置页展示，引导手动）。失败/无账号后 24h 频控。 */
+
+export type TuojAutoKind = "idle" | "running" | "ok" | "no-courses" | "failed";
+
+export interface TuojAutoStatus {
+  kind: TuojAutoKind;
+  /** 最近一次自动尝试完成时间（ms）；kind==="running"/"idle" 时无 */
+  at?: number;
+  /** 失败原因（仅 kind==="failed"；设置页展示，绝不弹窗） */
+  message?: string;
+}
+
+let tuojAuto: TuojAutoStatus = { kind: "idle" };
+
+/** 从 localStorage 回灌自动登录结果（含频控时间戳）；失败静默降级为 idle */
+function loadTuojAuto(): void {
+  try {
+    const raw = localStorage.getItem(EXTHW_TUOJ_AUTO_KEY);
+    if (!raw) return;
+    const j = JSON.parse(raw) as { outcome?: string; at?: number; message?: string };
+    if (
+      j &&
+      typeof j.at === "number" &&
+      (j.outcome === "ok" || j.outcome === "no-courses" || j.outcome === "failed")
+    ) {
+      tuojAuto = { kind: j.outcome, at: j.at, message: j.message };
+    }
+  } catch {
+    /* 存储不可用 / 损坏：保持 idle */
+  }
+}
+
+/** 更新自动登录状态；终态落盘（running/idle 不覆盖已有频控记录）并通知订阅者 */
+function setTuojAuto(next: TuojAutoStatus): void {
+  tuojAuto = next;
+  if (next.kind === "ok" || next.kind === "no-courses" || next.kind === "failed") {
+    try {
+      localStorage.setItem(
+        EXTHW_TUOJ_AUTO_KEY,
+        JSON.stringify({ outcome: next.kind, at: next.at, message: next.message }),
+      );
+    } catch {
+      /* 存储不可用：内存态仍生效 */
+    }
+  }
+  rebuild();
+}
+
+/** 手动登录成功 / 清空后复位自动登录状态（避免旧的「无账号/失败」提示误导） */
+export function clearTuojAutoStatus(): void {
+  tuojAuto = { kind: "idle" };
+  try {
+    localStorage.removeItem(EXTHW_TUOJ_AUTO_KEY);
+  } catch {
+    /* 忽略 */
+  }
+  rebuild();
+}
+
+/** TUOJ 源是否已配置（显式 Cookie 或 CAS 漫游标记任一即算） */
+export function isTuojConfigured(c: ExtHwCreds = creds): boolean {
+  return Boolean(c.tuoj?.cookie?.trim() || c.tuoj?.via === "cas");
+}
+
+/** 失败/无账号后 24h 内不再自动尝试（成功无需频控——已配置后根本不会走自动） */
+function tuojAutoThrottled(now = Date.now()): boolean {
+  if (tuojAuto.kind !== "failed" && tuojAuto.kind !== "no-courses") return false;
+  return typeof tuojAuto.at === "number" && now - tuojAuto.at < TUOJ_AUTO_THROTTLE_MS;
+}
+
+/** 静默自动尝试一次 TUOJ 统一认证漫游；永不抛出。 */
+async function maybeAutoTuojCas(): Promise<void> {
+  if (isTuojConfigured()) return;
+  if (tuojAutoThrottled()) return;
+  setTuojAuto({ kind: "running" });
+  try {
+    const r = await extHwLogin.tuojCas();
+    await saveExtHwCreds({ ...getExtHwCreds(), tuoj: { cookie: r.cookie, via: "cas" } });
+    setTuojAuto({ kind: "ok", at: Date.now() });
+  } catch (e) {
+    // 失败分支绝不弹错：只记录状态，设置页据此展示手动入口
+    if (isTuojNoCoursesError(e)) {
+      setTuojAuto({ kind: "no-courses", at: Date.now() });
+    } else {
+      setTuojAuto({
+        kind: "failed",
+        at: Date.now(),
+        message: e instanceof Error ? e.message : String(e),
+      });
+    }
+  }
+}
+
 /* ── 内存缓存 + 订阅 ── */
 
 export type ExtHwState = "idle" | "loading" | "ready";
@@ -265,6 +378,8 @@ export interface ExtHwSnapshot {
   lastAt: number;
   /** 是否配置了任一源（未配置时调用方应完全走原逻辑） */
   configured: boolean;
+  /** TUOJ 统一认证自动登录状态（R11 16.2；仅自动路径维护，手动登录会复位） */
+  tuojAuto: TuojAutoStatus;
 }
 
 let items: ExternalHomework[] = [];
@@ -274,9 +389,9 @@ let lastAt = 0;
 const listeners = new Set<() => void>();
 
 /** useSyncExternalStore 要求 getSnapshot 引用稳定 —— 变更时才重建 */
-let snapshot: ExtHwSnapshot = { items, errors, state, lastAt, configured: false };
+let snapshot: ExtHwSnapshot = { items, errors, state, lastAt, configured: false, tuojAuto };
 function rebuild(): void {
-  snapshot = { items, errors, state, lastAt, configured: hasAnyExtHwCreds() };
+  snapshot = { items, errors, state, lastAt, configured: hasAnyExtHwCreds(), tuojAuto };
   listeners.forEach((fn) => fn());
 }
 
@@ -297,8 +412,10 @@ let inflight: Promise<void> | null = null;
 export function refreshExtHw(): Promise<void> {
   if (inflight) return inflight;
   const run = (async (): Promise<void> => {
-    const current = await ensureExtHwCredsLoaded();
-    const sources = createExternalSources({ creds: current, fetchLike: universalFetch, http });
+    await ensureExtHwCredsLoaded();
+    // R11 16.2：TUOJ 未配置时静默自动漫游一次（永不抛出；失败仅记状态 + 24h 频控）
+    await maybeAutoTuojCas();
+    const sources = createExternalSources({ creds: getExtHwCreds(), fetchLike: universalFetch, http });
     if (sources.length === 0) {
       items = [];
       errors = {};

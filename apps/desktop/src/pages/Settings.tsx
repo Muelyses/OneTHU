@@ -1,7 +1,6 @@
 declare const __APP_VERSION__: string;
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { QRCodeSVG } from "qrcode.react";
 import { Card, PageHead, SectionHead } from "../components/Layout.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -25,8 +24,17 @@ import {
   isDismissed, dismissTag, type ReleaseInfo,
 } from "../lib/update.js";
 import { runProbeMatrix, type ProbeResult } from "./probe.js";
-import { ensureExtHwCredsLoaded, extHwLogin, saveExtHwCreds, refreshExtHw, useExternalHomework } from "../state/exthw.js";
-import type { ExtHwCreds, YktQrPhase } from "@onethu/core";
+import { YktQrPanel } from "../components/ExtHwLoginModal.js";
+import {
+  clearTuojAutoStatus,
+  consumeExtHwScrollRequest,
+  ensureExtHwCredsLoaded,
+  extHwLogin,
+  saveExtHwCreds,
+  refreshExtHw,
+  useExternalHomework,
+} from "../state/exthw.js";
+import type { ExtHwCreds } from "@onethu/core";
 
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
@@ -551,6 +559,29 @@ function ExtHwSection() {
     };
   }, []);
 
+  // R11 16.3：引导横幅「去设置」跳转后，把本区滚动到视野（一次性标记）
+  useEffect(() => {
+    if (!consumeExtHwScrollRequest()) return;
+    const t = setTimeout(() => {
+      document.getElementById("settings-exthw")?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 0);
+    return () => clearTimeout(t);
+  }, []);
+
+  // R11 16.2：自动登录在本区打开后才完成时，把凭据回填到表单（否则状态 ✅ 与「未登录」打架）
+  useEffect(() => {
+    if (ext.tuojAuto.kind !== "ok") return;
+    let alive = true;
+    void ensureExtHwCredsLoaded().then((c) => {
+      if (!alive) return;
+      setTuojCookie(c.tuoj?.cookie ?? "");
+      setTuojVia(c.tuoj?.via);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [ext.tuojAuto.kind]);
+
   const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
   /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用） */
@@ -615,6 +646,7 @@ function ExtHwSection() {
       .then(async (r) => {
         setTuojCookie(r.cookie);
         setTuojVia("cas");
+        clearTuojAutoStatus();
         await saveExtHwCreds(credsWith({ tuoj: r.cookie, tuojVia: "cas" }));
         setMsg("TUOJ 已通过清华统一认证登录，已保存。");
         void refreshExtHw();
@@ -632,6 +664,7 @@ function ExtHwSection() {
         setTuojCookie(r.cookie);
         setTuojVia("password");
         setTuojPwd("");
+        clearTuojAutoStatus();
         await saveExtHwCreds(credsWith({ tuoj: r.cookie, tuojVia: "password" }));
         setMsg("TUOJ 登录成功，已保存。");
         void refreshExtHw();
@@ -665,8 +698,9 @@ function ExtHwSection() {
   const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
 
   return (
-    <Card>
-      <div className="setting-row" style={{ alignItems: "flex-start" }}>
+    <div id="settings-exthw">
+      <Card>
+        <div className="setting-row" style={{ alignItems: "flex-start" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="setting-title">外部作业源</div>
           <div className="setting-desc">
@@ -735,11 +769,24 @@ function ExtHwSection() {
                   {busy === "tuoj-cas" ? "登录中…" : "用清华统一认证登录"}
                 </button>
                 <span className="setting-desc" style={{ alignSelf: "center" }}>
-                  {tuojCookie.trim()
-                    ? `已登录${tuojVia === "cas" ? "（统一认证）" : "（账号密码）"}`
+                  {tuojCookie.trim() || ext.tuojAuto.kind === "ok"
+                    ? `已登录${tuojVia === "cas" || ext.tuojAuto.kind === "ok" ? "（统一认证）" : "（账号密码）"}`
                     : "未登录"}
                 </span>
               </div>
+              {/* R11 16.2：统一认证自动登录结果（成功 ✅ / 无账号提示 / 失败引导手动） */}
+              {ext.tuojAuto.kind === "ok" ? (
+                <div className="setting-desc" style={{ marginTop: 4 }}>统一认证自动登录 ✅</div>
+              ) : ext.tuojAuto.kind === "no-courses" ? (
+                <div className="setting-desc" style={{ marginTop: 4 }}>
+                  统一认证已通过，但 TUOJ 未返回课程（可能未注册/未选课）。
+                </div>
+              ) : ext.tuojAuto.kind === "failed" ? (
+                <div className="setting-desc" style={{ marginTop: 4 }}>
+                  自动登录未成功{ext.tuojAuto.message ? `（${ext.tuojAuto.message.slice(0, 160)}）` : ""}
+                  ——可点上方「用清华统一认证登录」手动重试。
+                </div>
+              ) : null}
               <div>
                 <button
                   className="btn btn-ghost"
@@ -817,109 +864,7 @@ function ExtHwSection() {
           </div>
         </div>
       </div>
-    </Card>
-  );
-}
-
-/* ── 雨课堂扫码登录面板（微信 / 雨豆APP）── */
-function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string) => void; onCancel: () => void }) {
-  const [qr, setQr] = useState<{ qrContent: string; expireAt: number } | null>(null);
-  const [status, setStatus] = useState<"loading" | "waiting" | "expired" | "error">("loading");
-  const [err, setErr] = useState<string | null>(null);
-  const [nonce, setNonce] = useState(0);
-  const runId = useRef(0);
-  // onSuccess 由父组件内联传入、每次渲染都会变 —— 用 ref 固定，避免 effect 反复重启
-  const onSuccessRef = useRef(onSuccess);
-  onSuccessRef.current = onSuccess;
-
-  useEffect(() => {
-    const id = ++runId.current;
-    const ctrl = new AbortController();
-    setStatus("loading");
-    setErr(null);
-    setQr(null);
-    void extHwLogin
-      .yuketangQr({
-        signal: ctrl.signal,
-        onPhase: (p: YktQrPhase) => {
-          if (id !== runId.current) return;
-          if (p.phase === "qr") {
-            setQr({ qrContent: p.qrContent, expireAt: p.expireAt });
-            setStatus("waiting");
-          } else if (p.phase === "expired") {
-            setStatus("expired");
-          }
-        },
-      })
-      .then((r) => {
-        if (id !== runId.current || r.aborted) return;
-        if (r.done && r.cookie) {
-          onSuccessRef.current(r.cookie);
-          return;
-        }
-        setStatus("error");
-        setErr(r.message ?? "登录未完成");
-      });
-    return () => {
-      // 卸载 / 刷新 / 取消：中止长轮询，不留悬挂请求
-      ctrl.abort();
-    };
-  }, [nonce]);
-
-  const statusText =
-    status === "loading"
-      ? "正在获取二维码…"
-      : status === "expired"
-        ? "二维码已过期，正在刷新…"
-        : status === "error"
-          ? null
-          : "请用微信或雨豆APP 扫描二维码";
-
-  return (
-    <div
-      style={{
-        marginTop: 10,
-        padding: 12,
-        border: "1px solid var(--border, #e5e5e5)",
-        borderRadius: 10,
-        background: "var(--bg-2, rgba(0,0,0,0.02))",
-      }}
-    >
-      <div style={{ textAlign: "center" }}>
-        {qr ? (
-          <div style={{ background: "#fff", display: "inline-block", padding: 10, borderRadius: 10 }}>
-            <QRCodeSVG value={qr.qrContent} size={176} level="M" />
-          </div>
-        ) : (
-          <div
-            style={{
-              width: 196,
-              height: 196,
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#fff",
-              borderRadius: 10,
-              color: "var(--text-2)",
-            }}
-          >
-            {status === "error" ? "—" : "加载中…"}
-          </div>
-        )}
-        {statusText ? <div style={{ fontSize: 13, marginTop: 8 }}>{statusText}</div> : null}
-        {qr && status === "waiting" ? (
-          <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>二维码约 5 分钟有效，过期自动刷新</div>
-        ) : null}
-        {err ? <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
-      </div>
-      <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
-        <button className="btn" onClick={() => setNonce((n) => n + 1)}>
-          刷新二维码
-        </button>
-        <button className="btn btn-ghost" onClick={onCancel}>
-          取消
-        </button>
-      </div>
+      </Card>
     </div>
   );
 }

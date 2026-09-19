@@ -38,7 +38,7 @@ nodeModule.registerHooks({
   },
 });
 
-const { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isCheckSinglePage } = await import(
+const { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isCheckSinglePage, isTuojNoCoursesError } = await import(
   "../packages/core/src/exthw/tuojCas.ts"
 );
 // 真实 InfoClient（#idCheckSingle 复用）——mock HttpClient 注入，验证确认 POST 行为
@@ -317,6 +317,34 @@ console.log("\n⑤ checkSingle 三形态（mock http，离线）");
       e?.message,
     );
   }
+}
+
+{
+  // ⑤-5（R11 16.2）统一认证已通过、课程列表 401/403 → stage=courses（可能未注册/未选课，
+  // 自动登录据此走「无账号」提示而非失败）。CAS 表单返回非中间页、finalUrl 落漫游回调。
+  const http = makeMockHttp([
+    { match: (u) => u.endsWith("/api/user/oauth/info"), body: OAUTH_INFO },
+    {
+      match: (u, m) => u === CAS_FORM && m === "GET",
+      body: "<html><body>redirecting</body></html>",
+      finalUrl: "https://ai.tuoj.thusaac.com/api/user/tsinghua/roaming/AI-TUOJ",
+    },
+    { match: (u) => u.endsWith("/api/course/list"), status: 403, body: JSON.stringify({ message: "forbidden" }) },
+  ]);
+  try {
+    await tuojRoam(http);
+    check("⑤-5 课程列表 403 应抛错", false);
+  } catch (e) {
+    check("⑤-5 抛 TuojCasError", e instanceof TuojCasError, e?.constructor?.name);
+    check("⑤-5 stage === courses", e?.stage === "courses", String(e?.stage));
+    check("⑤-5 httpStatus === 403", e?.httpStatus === 403, String(e?.httpStatus));
+    check("⑤-5 isTuojNoCoursesError === true", isTuojNoCoursesError(e) === true);
+  }
+  check("⑤-5 非 courses 错误不判无账号", isTuojNoCoursesError(new Error("x")) === false);
+  check(
+    "⑤-5 课程列表 200 非 JSON 不判无账号",
+    isTuojNoCoursesError(new TuojCasError("x", "", { stage: "courses", httpStatus: 200 })) === false,
+  );
 }
 
 /* ── Tyche 验证码探针（可选：需 TYCHE_BASIC） ── */

@@ -21,11 +21,32 @@ import { BASE as TUOJ_BASE } from "./tuoj.js";
 export class TuojCasError extends Error {
   /** 服务端页面片段，供诊断 */
   detail?: string;
-  constructor(message: string, detail?: string) {
+  /** 失败阶段（R11 16.2）：`cas` = 统一认证未通过；`courses` = 已过统一认证但
+   *  课程列表校验失败（可能已登录但未注册/未选课）。自动登录据此区分「无账号」。 */
+  stage?: "cas" | "courses";
+  /** 课程列表校验失败时的 HTTP 状态（stage === "courses" 时有值） */
+  httpStatus?: number;
+  constructor(
+    message: string,
+    detail?: string,
+    opts?: { stage?: "cas" | "courses"; httpStatus?: number },
+  ) {
     super(message);
     this.name = "TuojCasError";
     this.detail = detail;
+    this.stage = opts?.stage;
+    this.httpStatus = opts?.httpStatus;
   }
+}
+
+/** 是否为「统一认证已通过、但 TUOJ 未返回课程」——课程列表 401/403（R11 16.2：
+ *  可能未注册 / 未选课，不算错误）。自动登录据此走「无账号」提示而非失败。 */
+export function isTuojNoCoursesError(e: unknown): boolean {
+  return (
+    e instanceof TuojCasError &&
+    e.stage === "courses" &&
+    (e.httpStatus === 401 || e.httpStatus === 403)
+  );
 }
 
 export interface TuojRoamResult {
@@ -166,6 +187,7 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
     throw new TuojCasError(
       "TUOJ：清华统一认证入口不可用（TUOJ 可能已关闭该登录方式）",
       infoBody.slice(0, 300),
+      { stage: "cas" },
     );
   }
 
@@ -239,6 +261,7 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
       throw new TuojCasError(
         tuojCasFailMessage({ ensureTried, ensureOk: ensureOk || confirmTried, hasCreds }),
         (casDiag + " | " + finalUrl + " | " + body.slice(0, 300)).slice(0, 800),
+        { stage: "cas" },
       );
     }
   }
@@ -273,6 +296,7 @@ export async function tuojRoam(http: HttpClient, deps: TuojRoamDeps = {}): Promi
         ? `TUOJ：统一认证漫游后仍未取得会话（HTTP ${listRes.status}）`
         : "TUOJ：统一认证漫游返回异常（课程列表非 JSON）",
       (finalUrl + " | " + listBody.slice(0, 300)).slice(0, 600),
+      { stage: "courses", httpStatus: listRes.status },
     );
   }
 

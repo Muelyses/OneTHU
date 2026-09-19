@@ -10,11 +10,13 @@
 
 package app.onethu.mobile
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -27,8 +29,11 @@ import android.widget.LinearLayout
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.ContextCompat
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
+import app.tauri.annotation.Permission
+import app.tauri.annotation.PermissionCallback
 import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
@@ -47,7 +52,12 @@ class OpenIntentArgs {
     lateinit var url: String
 }
 
-@TauriPlugin
+@TauriPlugin(
+    permissions = [
+        // R18c：API 33+ 展示前台服务常驻通知需运行时权限（清单在插件库 Manifest 声明）
+        Permission(strings = [Manifest.permission.POST_NOTIFICATIONS], alias = "notifications"),
+    ],
+)
 class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
 
     /** 沙盒文件 → 系统「下载」；回传 { name }（转存成功后的显示名） */
@@ -260,6 +270,61 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             } catch (e: Exception) {
                 invoke.reject(e.message ?: "读取雨课堂 Cookie 失败")
             }
+        }
+    }
+
+    /* ── R18c：扫码期间前台服务保活（QrKeepAliveService）──
+     * 前端 YktQrPanel 在二维码就绪时 startQrKeepAlive、成功/取消/过期/卸载时
+     * stopQrKeepAlive。命令幂等：重复 start 安全、未启动时 stop 直接返回。
+     * API 33+ 先请求 POST_NOTIFICATIONS；被拒时回 { ok:false, reason:"notifications-denied" }
+     * （resolve 而非 reject，前端静默降级保留「另一台设备扫码」提示）。 */
+
+    private fun hasNotificationPermission(): Boolean =
+        Build.VERSION.SDK_INT < 33 ||
+            ContextCompat.checkSelfPermission(activity, Manifest.permission.POST_NOTIFICATIONS) ==
+            PackageManager.PERMISSION_GRANTED
+
+    @Command
+    fun startQrKeepAlive(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            requestPermissionForAliases(arrayOf("notifications"), invoke, "notificationPermissionCallback")
+            return
+        }
+        activity.runOnUiThread { doStartQrKeepAlive(invoke) }
+    }
+
+    @PermissionCallback
+    fun notificationPermissionCallback(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", "notifications-denied"))
+            return
+        }
+        activity.runOnUiThread { doStartQrKeepAlive(invoke) }
+    }
+
+    private fun doStartQrKeepAlive(invoke: Invoke) {
+        try {
+            if (QrKeepAliveService.running) {
+                invoke.resolve(JSObject().put("ok", true).put("reason", "already-on"))
+                return
+            }
+            val ctx = activity.applicationContext
+            ContextCompat.startForegroundService(ctx, Intent(ctx, QrKeepAliveService::class.java))
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            // 启动失败（ROM 限制等）：不抛错，回 ok:false 让前端降级
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "start-failed"))
+        }
+    }
+
+    @Command
+    fun stopQrKeepAlive(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            ctx.stopService(Intent(ctx, QrKeepAliveService::class.java))
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "stop-failed"))
         }
     }
 }

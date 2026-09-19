@@ -9,6 +9,7 @@
  *  - 取消（AbortSignal）→ 立即中止、不再发请求
  *  - token 过期 → 自动重建二维码（重取 pre-info）
  *  - 成功 → 解析 Set-Cookie 并补齐清华固定字段
+ *  - R18c：扫码保活（Android 前台服务）启停随面板生命周期（stub 断言调用序列）
  *
  * 说明：core 源码内部用 `.js` 扩展名互相引用（TS bundler 解析），Node 类型剥离
  * 不能把 `.js` 映射到 `.ts` —— 这里注册一个同步 resolve 钩子做重映射后再动态 import。
@@ -298,6 +299,105 @@ console.log("[10] 官方网页通道：Cookie 原文 → 凭据串");
     cookie,
   );
   ok(yuketangCookieFromHeader("   ") === "" && yuketangCookieFromHeader("garbage") === "", "空 / 无对原文 → 空串（回退手动粘贴）");
+}
+
+/* ── ⑪ R18c：扫码保活启停随面板生命周期 ── */
+console.log("[11] R18c：扫码保活启停随面板生命周期");
+const tick = () => new Promise((r) => setTimeout(r, 0));
+{
+  // 11a：Android 正常路径 —— qr 启动、过期停止、刷新重启、成功/取消/卸载收口
+  const { createQrKeepAlive, bindQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const calls = [];
+  const ctrl = createQrKeepAlive({
+    isAndroid: true,
+    invoke: async (cmd) => {
+      calls.push(cmd);
+      return { ok: true };
+    },
+  });
+  const ka = bindQrKeepAlive(ctrl);
+  ka.onPhase("loading");
+  await tick();
+  ok(calls.length === 0, "loading 阶段不启停", calls.join(","));
+
+  ka.onPhase("qr");
+  await tick();
+  ok(calls.join(",") === "start_qr_keep_alive" && ctrl.on === true, "二维码就绪 → start", calls.join(","));
+
+  ka.onPhase("qr");
+  await tick();
+  ok(calls.join(",") === "start_qr_keep_alive", "重复 qr 幂等（不重复 start）", calls.join(","));
+
+  ka.onPhase("expired");
+  await tick();
+  ok(
+    calls.join(",") === "start_qr_keep_alive,stop_qr_keep_alive" && ctrl.on === false,
+    "过期 → stop",
+    calls.join(","),
+  );
+
+  ka.onPhase("qr");
+  await tick();
+  ok(calls[calls.length - 1] === "start_qr_keep_alive" && ctrl.on === true, "过期后刷新出新码 → 重新 start");
+
+  ka.stop(); // 成功 / 取消 / 卸载统一收口
+  await tick();
+  ok(calls.filter((c) => c === "stop_qr_keep_alive").length === 2, "成功 / 取消 / 卸载 → stop", calls.join(","));
+
+  ka.stop(); // 已停后再 stop：幂等，不重复 invoke
+  await tick();
+  ok(calls.filter((c) => c === "stop_qr_keep_alive").length === 2, "未生效时重复 stop 不重复 invoke", calls.join(","));
+}
+{
+  // 11b：非 Android —— 零行为（不 invoke、不报错）
+  const { createQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const calls = [];
+  const ctrl = createQrKeepAlive({
+    isAndroid: false,
+    invoke: async (cmd) => {
+      calls.push(cmd);
+      return { ok: true };
+    },
+  });
+  const r = await ctrl.start();
+  await ctrl.stop();
+  ok(r.ok === false && r.reason === "not-android", "非 Android → {ok:false, reason:not-android}", JSON.stringify(r));
+  ok(calls.length === 0 && ctrl.on === false, "非 Android 不 invoke");
+}
+{
+  // 11c：通知权限被拒 —— 返回 ok:false 不抛错，onStatus 不置 true，未生效时 stop 不 invoke
+  const { createQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const calls = [];
+  const states = [];
+  const ctrl = createQrKeepAlive({
+    isAndroid: true,
+    invoke: async (cmd) => {
+      calls.push(cmd);
+      return cmd === "start_qr_keep_alive" ? { ok: false, reason: "notifications-denied" } : { ok: true };
+    },
+    onStatus: (on) => states.push(on),
+  });
+  const r = await ctrl.start();
+  ok(
+    r.ok === false && r.reason === "notifications-denied",
+    "权限被拒 → {ok:false, reason:notifications-denied}",
+    JSON.stringify(r),
+  );
+  ok(states.length === 0 && ctrl.on === false, "未生效不触发 onStatus（保留「另一台设备」提示）");
+  await ctrl.stop();
+  ok(calls.join(",") === "start_qr_keep_alive", "未生效时 stop 不 invoke", calls.join(","));
+}
+{
+  // 11d：invoke 抛错（IPC/服务异常）—— 静默降级
+  const { createQrKeepAlive } = await import("../apps/desktop/src/lib/qrKeepAlive.ts");
+  const ctrl = createQrKeepAlive({
+    isAndroid: true,
+    invoke: async () => {
+      throw new Error("boom");
+    },
+  });
+  const r = await ctrl.start();
+  ok(r.ok === false && r.reason === "invoke-error", "invoke 抛错 → {ok:false, reason:invoke-error}（不抛）", JSON.stringify(r));
 }
 
 console.log(failed === 0 ? "\n全部通过 ✅" : `\n${failed} 项失败 ❌`);

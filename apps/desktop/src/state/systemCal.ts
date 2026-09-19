@@ -271,9 +271,16 @@ async function buildPayload(): Promise<SyncPayloadArg> {
     windowEnd,
   );
   events.push(...hwEvents);
+  const remind = getHwRemindState();
+  const alarms = [...new Set(hwEvents.map((e) => e.alarmMinutes))].join("/");
   void logLine(
-    `[SYSCAL] hw-learn=${learnSnap?.homework?.length ?? "null"} hw-ext=${extHw.length} hw-events=${hwEvents.length} course-events=${events.length - hwEvents.length}`,
+    `[SYSCAL] hw-learn=${learnSnap?.homework?.length ?? "null"} hw-ext=${extHw.length} hw-events=${hwEvents.length} course-events=${events.length - hwEvents.length} alarm(default=${remind.default} 覆盖=${Object.keys(remind.items).length}项 值=${alarms})`,
   ).catch(() => undefined);
+  const mayuan = events.filter((e) => e.title.includes("马原"));
+  if (mayuan.length) {
+    const iso = (ms: number): string => new Date(ms).toISOString().slice(5, 16).replace("T", " ");
+    void logLine(`[SYSCAL] 马原 ${mayuan.length} 块: ${mayuan.map((e) => `${iso(e.startMs)}~${iso(e.endMs)}`).join(" | ")}`).catch(() => undefined);
+  }
 
   events.sort((a, b) => a.startMs - b.startMs);
   if (events.length > MAX_EVENTS) throw new Error(`事件数 ${events.length} 超出上限 ${MAX_EVENTS}，已中止系统日历同步`);

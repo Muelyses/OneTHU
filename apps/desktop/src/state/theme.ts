@@ -456,6 +456,17 @@ export function restoreBuiltins(): number {
   return back.length;
 }
 
+/** 插件 API facade 用的非 hook 查询（不触发订阅） */
+export function listThemes(): ThemeDef[] {
+  return [...state.installed];
+}
+export function activeThemeId(): string | null {
+  return state.activeId;
+}
+export function themeSchedule(): { followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null; systemDark: boolean } {
+  return { followSystem: state.followSystem, dayThemeId: state.dayThemeId, nightThemeId: state.nightThemeId, systemDark };
+}
+
 /** 插件侧查询：某主题 id 是否已在架上（供 loader 提示覆盖安装） */
 export function hasTheme(id: string): boolean {
   return state.installed.some((t) => t.id === id);

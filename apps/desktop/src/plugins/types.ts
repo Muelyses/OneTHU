@@ -33,7 +33,12 @@ export type PluginPermission =
   | "nav" // 应用内页面跳转
   | "ui" // toast 提示
   | "storage" // 插件私有键值存储
-  | "net:external"; // 外部网络请求（大模型 API 等）
+  | "net:external" // 外部网络请求（大模型 API 等）
+  | "llm" // 经内置 Harness 的 LLM 对话（清华 MadModel 免费档 / 自费 API，自动调度）
+  | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
+  | "exthw:read" // 外部作业源（雨课堂/TUOJ/Tyche）状态与作业快照
+  | "exthw:refresh" // 触发外部作业源刷新（网络请求）
+  | "webview"; // 应用内 WebView 模态（Android 桌面模式浏览；桌面自动降级系统浏览器）
 
 export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: string; desc: string }> = [
   { id: "user:read", label: "读取基本信息", desc: "姓名/学号/院系与登录会话状态" },
@@ -283,6 +288,8 @@ export interface OnethuApi {
   };
   ui: {
     toast(text: string): void;
+    /** 应用内 WebView 模态打开 URL（Android 桌面模式浏览；桌面端抛错由调用方降级）。需 webview 权限 */
+    webModal(url: string): Promise<void>;
   };
   storage: {
     get<T = string>(key: string): T | null;
@@ -298,6 +305,40 @@ export interface OnethuApi {
     /** 外部 HTTP(S) 请求（经应用传输层，无 CORS 限制；需 net:external 权限）。
      *  返回标准 Response（可用 res.json()/res.text()）。 */
     fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
+  };
+  llm: {
+    /** 单轮对话（经内置 Harness：清华 MadModel 免费档 ↔ 自费 API 自动调度）。
+     *  返回回复文本与本次实际使用的模型/模型源；免费档不可用（校外且无自费 Key）
+     *  时抛带引导文案的错误。需 llm 权限。 */
+    chat(input: string): Promise<{ text: string; model: string; provider: string }>;
+    /** 当前 Harness 的模型源设置（"madmodel" | "custom" | ""=自动） */
+    provider(): Promise<string>;
+  };
+  theme: {
+    /** 已安装主题列表（含 dark 声明） */
+    list(): Promise<Array<{ id: string; name: string; version: string; dark: boolean }>>;
+    /** 当前手动选中的主题 id（昼夜跟随模式下实际生效看 schedule().systemDark） */
+    active(): Promise<string | null>;
+    /** 应用某主题（null=基础令牌；会自动退出昼夜跟随） */
+    apply(id: string | null): Promise<void>;
+    /** 昼夜调度状态（followSystem/两档 id/系统当前暗亮） */
+    schedule(): Promise<{ followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null; systemDark: boolean }>;
+    /** 开关「跟随系统昼夜」 */
+    setFollowSystem(on: boolean): Promise<void>;
+    /** 设置日/夜两档主题（null=基础令牌） */
+    setDayNight(dayId: string | null, nightId: string | null): Promise<void>;
+  };
+  exthw: {
+    /** 外部作业源快照：各源作业条目/错误/自动登录状态/上次刷新时间 */
+    snapshot(): Promise<{
+      items: Array<{ source: string; course: string; title: string; deadline: string | null; url: string | null; submitted: boolean; graded: boolean; score: number | null }>;
+      errors: Record<string, string>;
+      state: string;
+      lastAt: number;
+      configured: boolean;
+    }>;
+    /** 触发全源刷新（网络请求；各源按自身频控） */
+    refresh(): Promise<void>;
   };
 }
 

@@ -10,6 +10,8 @@ import { getPlugin, pluginStorageKey, updatePlugin } from "./registry.js";
 import { PluginPermissionError, type OnethuApi, type PluginPermission } from "./types.js";
 
 import { invoke } from "@tauri-apps/api/core";
+import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listThemes, themeSchedule } from "../state/theme.js";
+import { refreshExtHw } from "../state/exthw.js";
 import { session as appSession, logLine } from "../lib/clients.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
@@ -494,6 +496,96 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       toast: (text: string) => {
         gate(perms, "ui", "ui.toast");
         showToast(text);
+      },
+      /** 应用内 WebView 模态打开 URL（Android 桌面模式浏览；桌面无此能力抛错，
+       *  调用方应 catch 后降级 onethu.nav 外链或系统浏览器）。需 webview 权限。 */
+      webModal: async (url: string): Promise<void> => {
+        gate(perms, "webview", "ui.webModal");
+        if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
+        await invoke("open_web_modal", { url });
+      },
+    },
+    llm: {
+      /** 单轮对话（经内置 Harness：清华 MadModel 免费档 ↔ 自费 API 自动调度）。
+       *  免费档不可用（校外且无自费 Key）时抛带引导文案的错误。需 llm 权限。 */
+      chat: async (input: string): Promise<{ text: string; model: string; provider: string }> => {
+        gate(perms, "llm", "llm.chat");
+        // 动态 import 断 loader→facade 的环；经内置 Harness 的 chat 命令
+        //（免费档↔自费自动调度、可达性兜底、会话与工具链全在 Rust 侧）
+        const { runCommand } = await import("./loader.js");
+        const out = (await runCommand("onethu.harness", "chat", String(input ?? ""))) as {
+          type?: string; ok?: boolean; error?: string; answer?: string; model?: string;
+        };
+        if (!out || out.ok !== true) {
+          throw new Error(String(out?.error ?? "Harness 对话失败"));
+        }
+        return { text: String(out.answer ?? ""), model: String(out.model ?? ""), provider: "harness" };
+      },
+      /** 当前 Harness 的模型源设置（"madmodel" | "custom" | ""=自动） */
+      provider: async (): Promise<string> => {
+        gate(perms, "llm", "llm.provider");
+        const { getPlugin } = await import("./registry.js");
+        const st = getPlugin("onethu.harness")?.settings ?? {};
+        const provider = String(st.provider ?? "");
+        if (provider) return provider;
+        return st.apiKey ? "custom" : "madmodel";
+      },
+    },
+    theme: {
+      list: async () => {
+        gate(perms, "theme", "theme.list");
+        return listThemes().map((t) => ({ id: t.id, name: t.name, version: t.version, dark: t.dark === true }));
+      },
+      active: async () => {
+        gate(perms, "theme", "theme.list");
+        return activeThemeId();
+      },
+      apply: async (id: string | null) => {
+        gate(perms, "theme", "theme.apply");
+        if (id === null) {
+          const { deactivateTheme } = await import("../state/theme.js");
+          deactivateTheme();
+          return;
+        }
+        activateTheme(String(id));
+      },
+      schedule: async () => {
+        gate(perms, "theme", "theme.list");
+        return themeSchedule();
+      },
+      setFollowSystem: async (on: boolean) => {
+        gate(perms, "theme", "theme.apply");
+        setFollowSystem(on === true);
+      },
+      setDayNight: async (dayId: string | null, nightId: string | null) => {
+        gate(perms, "theme", "theme.apply");
+        setDayNightTheme(dayId ?? null, nightId ?? null);
+      },
+    },
+    exthw: {
+      snapshot: async () => {
+        gate(perms, "exthw:read", "exthw.snapshot");
+        const snap = getExtHwSnapshot();
+        return {
+          items: snap.items.map((h) => ({
+            source: String(h.source),
+            course: String(h.courseName ?? ""),
+            title: String(h.title ?? ""),
+            deadline: h.deadline ?? null,
+            url: h.url ?? null,
+            submitted: h.submitted === true,
+            graded: (h as { graded?: boolean }).graded === true,
+            score: (h as { score?: number | null }).score ?? null,
+          })),
+          errors: snap.errors as Record<string, string>,
+          state: String(snap.state),
+          lastAt: snap.lastAt,
+          configured: snap.configured === true,
+        };
+      },
+      refresh: async () => {
+        gate(perms, "exthw:refresh", "exthw.refresh");
+        await refreshExtHw();
       },
     },
     storage: storageNs,

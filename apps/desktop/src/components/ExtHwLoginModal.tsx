@@ -1,9 +1,10 @@
 /**
  * 外部作业源「登录雨课堂」通道弹窗（R11 16.3）。
  *
- * 新手指引横幅的主按钮弹出本 modal，内含两条登录通道：
- *  ① 微信 / 雨豆APP 扫码（复用 core 的 runYuketangQrLogin 状态机）
- *  ② 手机号 + 短信验证码（复用 yuketangSendSmsCode / yuketangVerifyLogin）
+ * 新手指引横幅的主按钮弹出本 modal，登录通道为微信 / 雨豆APP 扫码
+ * （复用 core 的 runYuketangQrLogin 状态机）。
+ * R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），无法内嵌
+ * → 停用「手机验证码」通道（置灰 + 说明），文案指向扫码。
  *
  * UI 参考「校园卡充值」弹窗（pages/info/CardTab.tsx RechargeDialog）的遮罩 / 卡片 /
  * 通道单选布局：同一套 mask/panel 视觉与按钮层级，降低新用户认知成本。
@@ -21,18 +22,20 @@ const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeigh
 
 type YktChannel = "qr" | "sms";
 
-const YKT_CHANNELS: Array<{ key: YktChannel; label: string; hint: string }> = [
+/** R17 23.2：短信通道停用说明（与设置页文案一致） */
+const YKT_SMS_DISABLED_NOTE = "雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码。";
+
+const YKT_CHANNELS: Array<{ key: YktChannel; label: string; hint: string; disabled?: boolean }> = [
   { key: "qr", label: "微信扫码", hint: "打开微信或雨豆APP 扫描二维码" },
-  { key: "sms", label: "手机验证码", hint: "用雨课堂绑定手机号接收短信" },
+  { key: "sms", label: "手机验证码", hint: YKT_SMS_DISABLED_NOTE, disabled: true },
 ];
 
 /** 合并写入雨课堂凭据（保留 TUOJ/Tyche 等既有配置）后刷新 */
-async function saveYuketang(cookie: string, phone?: string): Promise<void> {
+async function saveYuketang(cookie: string): Promise<void> {
   const c = await ensureExtHwCredsLoaded();
-  const prevPhone = c.yuketang?.phone ?? "";
   await saveExtHwCreds({
     ...c,
-    yuketang: { ...(c.yuketang ?? {}), cookie, phone: (phone ?? prevPhone).trim() || undefined },
+    yuketang: { ...(c.yuketang ?? {}), cookie },
   });
   void refreshExtHw();
 }
@@ -141,56 +144,36 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
 }
 
 export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [channel, setChannel] = useState<YktChannel>("qr");
-  const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
-  const [busy, setBusy] = useState<string | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
   if (!open) return null;
 
-  const close = () => {
-    setBusy(null);
-    setMsg(null);
-    onClose();
-  };
-
-  const onSend = () => {
-    setBusy("send");
-    setMsg(null);
-    void extHwLogin
-      .yuketangSendSms(phone)
-      .then(() => setMsg("验证码已发送，请查收短信（若收不到，可能被风控拦截）。"))
-      .catch((e: unknown) => setMsg(`发送验证码失败：${e instanceof Error ? e.message : String(e)}`))
-      .finally(() => setBusy(null));
-  };
-
-  const onVerify = () => {
-    setBusy("verify");
-    setMsg(null);
-    void extHwLogin
-      .yuketangVerify(phone, code)
-      .then(async (r) => {
-        await saveYuketang(r.cookie, phone);
-        setCode("");
-        close();
-      })
-      .catch((e: unknown) => setMsg(`雨课堂登录失败：${e instanceof Error ? e.message : String(e)}`))
-      .finally(() => setBusy(null));
-  };
-
   return createPortal(
-    <div style={maskStyle} onClick={close}>
+    <div style={maskStyle} onClick={onClose}>
       <div style={panelStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
           <b>登录雨课堂</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={close}>✕</button>
+          <button className="btn" onClick={onClose}>✕</button>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
           {YKT_CHANNELS.map((c) => (
-            <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13 }}>
-              <input type="radio" checked={channel === c.key} onChange={() => { setChannel(c.key); setMsg(null); }} />
+            <label
+              key={c.key}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                cursor: c.disabled ? "not-allowed" : "pointer",
+                fontSize: 13,
+                opacity: c.disabled ? 0.5 : 1,
+              }}
+            >
+              <input
+                type="radio"
+                name="ykt-channel"
+                defaultChecked={c.key === "qr"}
+                disabled={c.disabled}
+              />
               <span>
                 <b>{c.label}</b>
                 <span style={{ opacity: 0.6 }}> · {c.hint}</span>
@@ -199,30 +182,12 @@ export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () 
           ))}
         </div>
 
-        {channel === "qr" ? (
-          <YktQrPanel
-            onCancel={close}
-            onSuccess={(cookie) => {
-              void saveYuketang(cookie).then(close);
-            }}
-          />
-        ) : (
-          <div style={{ marginTop: 10 }}>
-            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-              <input className="input" style={{ minWidth: 140, flex: 1 }} inputMode="tel" placeholder="手机号" value={phone} onChange={(e) => setPhone(e.target.value.trim())} />
-              <button className="btn" disabled={busy !== null || !phone.trim()} onClick={onSend}>
-                {busy === "send" ? "发送中…" : "发送验证码"}
-              </button>
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <input className="input" style={{ minWidth: 140, flex: 1 }} inputMode="numeric" placeholder="短信验证码" value={code} onChange={(e) => setCode(e.target.value.trim())} />
-              <button className="btn btn-primary" disabled={busy !== null || !phone.trim() || !code.trim()} onClick={onVerify}>
-                {busy === "verify" ? "登录中…" : "登录"}
-              </button>
-            </div>
-            {msg ? <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8 }}>{msg}</div> : null}
-          </div>
-        )}
+        <YktQrPanel
+          onCancel={onClose}
+          onSuccess={(cookie) => {
+            void saveYuketang(cookie).then(onClose);
+          }}
+        />
       </div>
     </div>,
     document.body,

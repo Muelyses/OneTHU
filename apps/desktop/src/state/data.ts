@@ -35,7 +35,7 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
 import { http, info, learn, logLine, session } from "../lib/clients.js";
 // lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
 // 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
-import { helper as infoHelper, getSecondarySchedules } from "../lib/infoLib.js";
+import { helper as infoHelper, getSecondaryEntries } from "../lib/infoLib.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { softRecover } from "../lib/reload.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
@@ -2504,27 +2504,22 @@ export function useCalendar() {
 const mergeSecondaryInto = async (
   entries: ScheduleEntry[], semester: { firstDay: string }, start: Date, end: Date,
 ): Promise<ScheduleEntry[]> => {
-  const sec = await getSecondarySchedules(semester.firstDay);
   const from = fmtDate(start), to = fmtDate(end);
+  const sec = await getSecondaryEntries(semester.firstDay, from, to);
   const added: ScheduleEntry[] = [];
   for (const c of sec) {
-    for (const sl of c.activeTime.base) {
-      const date = sl.beginTime.format("YYYY-MM-DD");
-      if (date < from || date > to) continue;
-      const st = sl.beginTime.format("HH:mm");
-      if (entries.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
-      if (added.some((e) => e.courseName === c.name && e.date === date && e.startTime === st)) continue;
-      added.push({
-        courseName: c.name,
-        location: c.location || undefined,
-        date,
-        dayOfWeek: sl.dayOfWeek,
-        startTime: st,
-        endTime: sl.endTime.format("HH:mm"),
-        category: "二级课表",
-        raw: { source: "secondary" },
-      });
-    }
+    if (entries.some((e) => e.courseName === c.name && e.date === c.date && e.startTime === c.startTime)) continue;
+    if (added.some((e) => e.courseName === c.name && e.date === c.date && e.startTime === c.startTime)) continue;
+    added.push({
+      courseName: c.name,
+      location: c.location || undefined,
+      date: c.date,
+      dayOfWeek: c.dayOfWeek,
+      startTime: c.startTime,
+      endTime: c.endTime,
+      category: "二级课表",
+      raw: { source: "secondary" },
+    });
   }
   return added.length ? [...entries, ...added] : entries;
 };

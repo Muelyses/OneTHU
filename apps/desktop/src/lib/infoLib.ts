@@ -407,18 +407,57 @@ export async function libEnsureSession(): Promise<boolean> {
   return true;
 }
 
-/** 二级课表（实验课）单页解析：desktop 周课表并入用（core InfoClient 的
- *  zhjw JSONP 只含一级——二级实验课缺失的根源，2026-09-19 定案） */
-export const getSecondarySchedules = async (firstDay: string): Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> => {
+/** 二级课表（实验课）自实现：直连拉 portal3rd + 正则解析（本地验证过）。
+ *  lib 的 roaming+substring 链路曾静默空（DIAG 有页面、PARSE 无结果），
+ *  黑盒绕开一次到位。按 [from,to] 日期区间返回扁平条目。 */
+export const getSecondaryEntries = async (
+  firstDay: string, from: string, to: string,
+): Promise<Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }>> => {
   const mod = await import("@onethu/info-lib");
-  try {
-    const r = await (mod as unknown as { getSecondarySchedules: (h: unknown, s: { firstDay: string }) => Promise<Array<{ name: string; location: string; activeTime: { base: Array<{ beginTime: { format: (f: string) => string }; endTime: { format: (f: string) => string }; dayOfWeek: number }> } }>> }).getSecondarySchedules(helper, { firstDay });
-    void log(`SECONDARY-PARSE ${JSON.stringify(r.map((c) => ({ n: c.name, d: c.activeTime.base.slice(0, 2).map((sl) => sl.beginTime.format("YYYY-MM-DD HH:mm")) })))}`).catch(() => undefined);
-    return r;
-  } catch (e) {
-    void log(`SECONDARY-ERR ${e instanceof Error ? (e.stack ?? e.message).slice(0, 500) : String(e)}`).catch(() => undefined);
-    throw e;
+  const uFetch = (mod as unknown as { uFetch?: (url: string) => Promise<string> }).uFetch;
+  if (!uFetch) throw new Error("info-lib uFetch 未导出");
+  const html = await uFetch("http://zhjw.cic.tsinghua.edu.cn/portal3rd.do?m=bks_ejkbSearch");
+  const lo = html.indexOf("function setInitValue");
+  void log(`SECONDARY-FETCH len=${html.length} setInit=${lo}`).catch(() => undefined);
+  if (lo < 0) return [];
+  const script = html.substring(lo, html.indexOf("}", lo));
+  const beginList = ["08:00", "09:50", "13:30", "15:20", "17:05", "19:20"];
+  const endList = ["09:35", "12:15", "15:05", "16:55", "18:40", "21:45"];
+  const reg = /"<span onmouseover=\\"return overlib\('(.+?)'\);\\" onmouseout='return nd\(\);'>(.+?)<\/span>";[ \n\t\r]+?document\.getElementById\('(.+?)'\)\.innerHTML \+= strHTML\+"<br>";/g;
+  const fd = new Date((firstDay ?? "").replace(/-/g, "/"));
+  const expand = (pat: string): number[] => {
+    const out: number[] = [];
+    for (const part of pat.split(",")) {
+      const [a, b] = part.split("-");
+      const s = parseInt(a ?? "", 10), e = b ? parseInt(b, 10) : s;
+      for (let w = s; w <= e; w++) out.push(w);
+    }
+    return out.filter((w) => w > 0);
+  };
+  const out: Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }> = [];
+  for (const m of script.matchAll(reg)) {
+    const detail = (m[1] ?? "").replace(/\s/g, "");
+    const title = m[2] ?? "";
+    const anchor = (m[3] ?? "").split(/[a_]/).filter(Boolean);
+    const day = Number(anchor[0]);
+    const session = Number(anchor[1]);
+    if (!day || !session) continue;
+    const begin = beginList[session - 1] || "08:00";
+    const endT = endList[session - 1] || "09:35";
+    const loc = /[(（]([^，,]+)[，,]/.exec(detail)?.[1] ?? "待定";
+    const weeks = /单周/.test(detail) ? [1,3,5,7,9,11,13,15]
+      : /双周/.test(detail) ? [2,4,6,8,10,12,14,16]
+      : /全周/.test(detail) ? Array.from({length: 16}, (_, i) => i + 1)
+      : (() => { const wm = /第([\d\-~,]+)周/.exec(detail); return wm ? expand(wm[1] ?? "") : []; })();
+    for (const w of weeks) {
+      const date = new Date(fd.getTime() + ((w - 1) * 7 + day - 1) * 86400000);
+      const ds = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      if (ds < from || ds > to) continue;
+      out.push({ name: title, location: loc, date: ds, dayOfWeek: day, startTime: begin, endTime: endT });
+    }
   }
+  void log(`SECONDARY-PARSE ${out.length} 门 sample=${JSON.stringify(out.slice(0, 2))}`).catch(() => undefined);
+  return out;
 };
 
 /** 强制完整重登（选课死结借用）：不走探活短路——id 会话权威单一来源，

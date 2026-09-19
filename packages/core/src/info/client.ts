@@ -1858,13 +1858,20 @@ export class InfoClient {
       InfoClient.libCacheClear();
     }
     if (this.#libRoamed) return;
-    await this.#roamIdService(urls.LIBRARY_CAS_FORM());
-    if (!(await this.#libAlive())) {
-      throw new AuthRequiredError(
-        `图书馆座位系统会话未能建立（现场: ${String(this.lastDebug || this.#http.lastDebug).slice(0, 160)}）`,
-      );
+    // 登录链尾流：刚完成整套重登（LOGIN-OK）后数秒内，图书馆直登确认+兑付能过
+    // （checkSingle ok=true）但应用会话探针仍死——第二次必成（用户实录「回日程/
+    // 选课再回来图书馆就好了」）。内化为一探一歇二试，红条静默不再吓人。
+    for (let round = 0; round < 2; round++) {
+      await this.#roamIdService(urls.LIBRARY_CAS_FORM());
+      if (await this.#libAlive()) {
+        this.#libRoamed = true;
+        return;
+      }
+      if (round === 0) await new Promise<void>((r) => setTimeout(r, 2500));
     }
-    this.#libRoamed = true;
+    throw new AuthRequiredError(
+      `图书馆座位系统会话未能建立（现场: ${String(this.lastDebug || this.#http.lastDebug).slice(0, 160)}）`,
+    );
     });
   }
 

@@ -2016,6 +2016,49 @@ fn close_ykt_window(_app: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/* R18c：扫码期间 Android 前台服务保活（QrKeepAliveService）。
+ * 前端 YktQrPanel 在二维码就绪时 start、成功/取消/过期/卸载时 stop。
+ * 桌面端无此机制，返回 {ok:false, reason:"not-android"}，前端零行为变化。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn start_qr_keep_alive() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-android" })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn stop_qr_keep_alive() -> serde_json::Value {
+    serde_json::json!({ "ok": true, "reason": "not-android" })
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn start_qr_keep_alive(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    // API 33+ 通知权限弹窗需等用户操作，故用 async 版本等待，不阻塞工作线程。
+    handle
+        .run_mobile_plugin_async("startQrKeepAlive", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn stop_qr_keep_alive(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("stopQrKeepAlive", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
 /* 体育官方预约已改为主窗口 tab 内 iframe（URL ?token= 携带 JWT，官方 SPA
  * 开机即认的 SSO 载体），不再需要独立弹窗命令——独立窗注入 localStorage.headers
  * 对官方 SPA 无效（它开机只读 URL 参数），已删除。 */
@@ -2268,7 +2311,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

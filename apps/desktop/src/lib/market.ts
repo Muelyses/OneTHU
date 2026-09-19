@@ -121,11 +121,10 @@ async function externalFetch(url: string, init?: RequestInit): Promise<Response>
 /** GitHub contents API 拉文件（base64）——与 raw.githubusercontent 不同缓存体系，
  *  raw 的 Fastly 边缘节点会短时吐推送前旧内容（且忽略 query 的 cache-buster），
  *  安装/更新优先走这里保新鲜，raw 降级兜底。 */
-async function fetchEntryViaApi(ref: RepoRef, branch: string, entry: string): Promise<string | null> {
+async function fetchFileViaApi(owner: string, repo: string, branch: string, path: string): Promise<string | null> {
   try {
-    const mid = ref.subPath ? `/${ref.subPath.replace(/^\/+|\/+$/g, "")}` : "";
-    const path = `${mid}/${entry.replace(/^\/+/, "")}`.replace(/^\/+/, "");
-    const url = `https://api.github.com/repos/${ref.owner}/${ref.repo}/contents/${path}?ref=${encodeURIComponent(branch)}`;
+    const clean = path.replace(/^\/+/, "");
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${clean}?ref=${encodeURIComponent(branch)}`;
     const res = await externalFetch(url, {
       headers: { "User-Agent": "OneTHU-App", Accept: "application/vnd.github+json" },
     });
@@ -139,6 +138,19 @@ async function fetchEntryViaApi(ref: RepoRef, branch: string, entry: string): Pr
   } catch {
     return null;
   }
+}
+
+async function fetchEntryViaApi(ref: RepoRef, branch: string, entry: string): Promise<string | null> {
+  const mid = ref.subPath ? `/${ref.subPath.replace(/^\/+|\/+$/g, "")}` : "";
+  const path = `${mid}/${entry.replace(/^\/+/, "")}`;
+  return fetchFileViaApi(ref.owner, ref.repo, branch, path);
+}
+
+/** 从 marketUrl() 解析 github raw 形态（owner/repo/branch/path）；非该形态返回 null（自定义源不走 api 通道） */
+function parseRawMarketUrl(): { owner: string; repo: string; branch: string; path: string } | null {
+  const m = /^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/.exec(marketUrl());
+  if (!m) return null;
+  return { owner: m[1] ?? "", repo: m[2] ?? "", branch: m[3] ?? "", path: m[4] ?? "" };
 }
 
 /** 从 GitHub 仓库拉取插件入口模块文本。命中第一个存在的候选即返回；
@@ -252,8 +264,25 @@ export async function fetchRegistry(force = false): Promise<MarketRegistry> {
       /* 缓存损坏则直接拉取 */
     }
   }
-  // force 刷新时加 cache-buster：raw.githubusercontent 的 Fastly 边缘缓存会短时间
-  // 吐旧内容（不同客户端命中不同节点），换 query 视为新的缓存键直出最新
+  // force 刷新：contents API 优先（raw 的 Fastly 缓存忽略 query，buster 无效，
+  // 推送后短时吐旧名单导致「明明发了新版市场还是旧的」）
+  if (force) {
+    const ref = parseRawMarketUrl();
+    if (ref) {
+      const viaApi = await fetchFileViaApi(ref.owner, ref.repo, ref.branch, ref.path);
+      if (viaApi) {
+        const data = JSON.parse(viaApi) as MarketRegistry;
+        if (data && Array.isArray(data.plugins)) {
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ url: marketUrl(), at: Date.now(), data }));
+          } catch {
+            /* 存不下就不缓存 */
+          }
+          return data;
+        }
+      }
+    }
+  }
   const bust = force ? (marketUrl().includes("?") ? "&" : "?") + `t=${Date.now()}` : "";
   const res = await externalFetch(marketUrl() + bust);
   if (!res.ok) throw new Error(`市场名单拉取失败：HTTP ${res.status}`);

@@ -451,7 +451,9 @@ export function SchedulePage() {
       });
     }
     // 重叠缩略：≥3 件重叠合并成"N 件事"簇块（扫描线极大区间）
-    return { entries: clusterize(inWeek), allDayChips: chips };
+    const clustered = clusterize(inWeek);
+    void logLine(`HW-CLUSTER in=${inWeek.length} hw=${inWeek.filter((e) => e.src === "hw").length} out=${clustered.length} clusters=${clustered.filter((e) => e.src === "cluster").map((e) => `${e.courseName}@${e.startTime}-${e.endTime}`).join("|")}`).catch(() => undefined);
+    return { entries: clustered, allDayChips: chips };
   }, [viewWindow, windowRows, campus.data, cal.cloudEvents, cal.localEvents, extHw.items]);
 
   const placed = useMemo(() => layout(entries), [entries]);
@@ -1003,7 +1005,7 @@ export function SchedulePage() {
                               p.entry.src === "cluster"
                                 ? `${p.entry.courseName}（${hhmm(p.beginMin)}–${hhmm(p.endMin)}）：${p.entry.clusterItems?.map((m) => `${m.courseName}${m.location ? "@" + m.location : ""}`).join("；")} · 点击展开`
                                 : p.entry.src === "hw"
-                                  ? `DDL ${hhmm(p.beginMin) === "" ? "" : ""}${p.entry.location ? " · " + p.entry.location : ""} · ${hhmm(p.beginMin)}–${hhmm(p.endMin)}${p.entry.hwMeta?.submitted ? " · 已提交" : " · 未提交"}${p.entry.hwMeta?.ext ? " · " + (p.entry.hwMeta.source ?? "") : " · 网络学堂"}`
+                                  ? `${p.entry.courseName}（${p.entry.location ?? ""}）DDL ${hhmm(p.beginMin)}–${hhmm(p.endMin)} · ${p.entry.hwMeta?.submitted ? "已提交" : "未提交"} · ${p.entry.hwMeta?.ext ? p.entry.hwMeta.source ?? "外部" : "网络学堂"} · 点击查看`
                                   : `${p.entry.courseName}${p.entry.teacher ? " · " + p.entry.teacher : ""}${
                                       p.entry.location ? " @" + p.entry.location : ""
                                     }（${hhmm(p.beginMin)}–${hhmm(p.endMin)}）${p.entry.src === "cloud" || p.entry.src === "local" ? " · 点击编辑" : " · 点击查看"}`
@@ -1028,7 +1030,7 @@ export function SchedulePage() {
                             }}
                           >
                             <div style={{ fontSize: compact ? 8.5 : 9.5, fontWeight: 700, lineHeight: 1.3 }}>
-                              {p.entry.src === "hw" ? `⏰ ${p.entry.location || "作业"} DDL` : p.entry.courseName}
+                              {p.entry.src === "hw" ? `⏰ ${p.entry.courseName}` : p.entry.courseName}
                             </div>
                             {!compact && p.entry.location ? (
                               <div

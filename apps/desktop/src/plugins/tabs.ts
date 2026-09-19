@@ -62,14 +62,23 @@ export function subscribePluginTabs(cb: () => void): () => void {
 
 /* ── tab 挂载点 ── */
 
+/** 最近一次插件渲染回调异常（宿主展示用；成功渲染后清除） */
+export const lastTabError: { key: string; message: string } = { key: "", message: "" };
+
 export function setTabRoot(pageKey: string, el: HTMLElement | null): void {
   if (el) {
     roots.set(pageKey, el);
     for (const cb of readyListeners.get(pageKey) ?? []) {
       try {
         cb(el);
-      } catch {
-        /* 插件回调异常不影响宿主 */
+        if (lastTabError.key === pageKey) {
+          lastTabError.key = "";
+          lastTabError.message = "";
+        }
+      } catch (e) {
+        lastTabError.key = pageKey;
+        lastTabError.message = e instanceof Error ? e.message : String(e);
+        console.warn(`[PLUGIN] tab 渲染回调异常（${pageKey}）：`, e);
       }
     }
   } else {

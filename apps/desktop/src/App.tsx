@@ -35,7 +35,7 @@ import { FavsProvider } from "./state/favs.js";
 import { useApp } from "./state/context.js";
 import { setNavBridge, setStatusBridge } from "./plugins/bridges.js";
 import { installedPlugins, subscribe } from "./plugins/loader.js";
-import { getPluginTab, setTabRoot } from "./plugins/tabs.js";
+import { getPluginTab, lastTabError, setTabRoot } from "./plugins/tabs.js";
 import type { Page } from "./state/app.js";
 import { ChatDock } from "./plugins/ChatDock.js";
 import { refreshLearnDataSilently, startLearnAutoRefresh, stopLearnAutoRefresh } from "./state/data.js";
@@ -146,7 +146,14 @@ function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
     }
     el.dataset.plg = pluginId;
     setTabRoot(pageKey, el);
-    return () => setTabRoot(pageKey, null);
+    // 渲染回调异常时把错误显示在页面（插件回调被 tabs.ts 捕获，这里取最近错误）
+    const t = window.setTimeout(() => {
+      if (lastTabError.key === pageKey) setFailed(`插件渲染异常：${lastTabError.message}`);
+    }, 50);
+    return () => {
+      window.clearTimeout(t);
+      setTabRoot(pageKey, null);
+    };
   }, [pageKey, tab?.pluginId, plugins]);
   const icon = tab?.iconSvg;
   return (

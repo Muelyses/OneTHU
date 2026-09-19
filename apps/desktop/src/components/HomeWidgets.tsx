@@ -14,7 +14,7 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
-import { extHwSourceName, toHomework, useExternalHomework } from "../state/exthw.js";
+import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type Homework, type ScheduleEntry } from "@onethu/core";
 
 /** 轻路由签名（与 AppState.navigate 一致） */
@@ -194,7 +194,8 @@ export function HomeworkRows({
             </div>
             <div className="row-main">
               <div className="row-title">
-                {h.source ? <span className="src-badge" title={h.externalProgress ? `已作答 ${h.externalProgress}` : undefined}>{extHwSourceName(h.source)}</span> : null}
+                {/* R11 16.1：今日页不再显示来源徽标（雨课堂/TUOJ/Tyche）——移动端拥挤，
+                    来源只在「全部作业」页（shared.tsx HomeworkRow）显示；考试/旁听徽标保留。 */}
                 {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
                 {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
                 {h.title}

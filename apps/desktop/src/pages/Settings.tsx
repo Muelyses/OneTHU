@@ -7,6 +7,8 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { clearRemembered, loadRemembered, session } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
+import { getPlugin, updatePlugin, subscribe as subscribePlugins } from "../plugins/registry.js";
+import { ensureMadModelToken, madmodelDue } from "../state/madmodel.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
 import { useApp } from "../state/context.js";

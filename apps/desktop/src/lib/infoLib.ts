@@ -447,7 +447,8 @@ export const getSecondaryEntries = async (
       out.push({ name: title, location: loc, date: ds, dayOfWeek: day, startTime: begin, endTime: endT });
     }
   }
-  void log(`SECONDARY-PARSE ${out.length} 门 sample=${JSON.stringify(out.slice(0, 2))}`).catch(() => undefined);
+  const names = [...new Set(out.map((o) => o.name))];
+  void log(`SECONDARY-PARSE ${out.length} 条 ${names.length} 门: ${names.join(" / ").slice(0, 400)}`).catch(() => undefined);
   return out;
 };
 

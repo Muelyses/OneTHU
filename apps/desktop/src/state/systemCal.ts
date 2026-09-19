@@ -22,7 +22,8 @@ import type { ScheduleEntry } from "@onethu/core";
 import { cacheGet, cacheSet } from "./cache.js";
 import { getLearnSnapshot, getWeekSchedSnapshot, logPageError, subscribeLearnData } from "./data.js";
 import { getSecondaryEntries } from "../lib/infoLib.js";
-import { http as appHttp } from "../lib/clients.js";
+import { http as appHttp, logLine } from "../lib/clients.js";
+import { getExtHwSnapshot, toHomework } from "./exthw.js";
 import { getHwRemindState, subscribeHwRemind, type HwRemindState } from "./hwRemind.js";
 import { getCachedCalendar } from "./data.js";
 
@@ -181,6 +182,7 @@ async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEnt
     // 同款去重：同名同日同时刻视为同一节。二级失败静默：一级照常。
     try {
       const sec = await getSecondaryEntries(appHttp, sem.firstDay, ymd(d0), ymd(d1));
+      void logLine(`[SYSCAL] 二级并入 ${sec.length} 门: ${sec.map((c) => c.name).join(" / ").slice(0, 300)}`).catch(() => undefined);
       for (const c of sec) {
         if (merged.some((r) => r.courseName === c.name && r.date === c.date && r.startTime === c.startTime)) continue;
         merged.push({
@@ -257,8 +259,21 @@ async function buildPayload(): Promise<SyncPayloadArg> {
     }
   }
 
-  // 网络学堂作业 DDL（learnX 模式）
-  events.push(...buildHwEvents(getLearnSnapshot(), getHwRemindState(), windowStart, windowEnd));
+  // 作业 DDL（learnX 模式）：learn 快照 + exthw 外部源统一 Homework（2026-09-19
+  // 用户拍板：作业像课表一样不上云——系统日历的作业事件由同步时实时聚合）。
+  // learn 快照为内存态：重启后学堂自动刷新撞会话墙时为空——打日志诊断，不中止。
+  const learnSnap = getLearnSnapshot();
+  const extHw = getExtHwSnapshot().items.map(toHomework);
+  const hwEvents = buildHwEvents(
+    learnSnap ? { courses: learnSnap.courses, homework: [...learnSnap.homework, ...extHw] } : { courses: [], homework: extHw },
+    getHwRemindState(),
+    windowStart,
+    windowEnd,
+  );
+  events.push(...hwEvents);
+  void logLine(
+    `[SYSCAL] hw-learn=${learnSnap?.homework?.length ?? "null"} hw-ext=${extHw.length} hw-events=${hwEvents.length} course-events=${events.length - hwEvents.length}`,
+  ).catch(() => undefined);
 
   events.sort((a, b) => a.startMs - b.startMs);
   if (events.length > MAX_EVENTS) throw new Error(`事件数 ${events.length} 超出上限 ${MAX_EVENTS}，已中止系统日历同步`);
@@ -281,7 +296,7 @@ export function buildHwEvents(
     const dl = parseLearnTime(h.deadline)?.getTime();
     if (!dl || dl < windowStart || dl > windowEnd) continue;
     out.push({
-      title: `作业截止 · ${courseName.get(h.courseId) ?? ""} ${h.title}`.trim(),
+      title: `作业截止 · ${(h as { courseName?: string }).courseName || courseName.get(h.courseId) || ""} ${h.title}`.trim(),
       startMs: dl,
       endMs: dl + 15 * 60_000,
       allDay: false,

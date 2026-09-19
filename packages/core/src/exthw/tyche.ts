@@ -10,6 +10,13 @@
  * - DDL = judgeEndTime || endTime，形如 "2026-09-27T16:00:00"（**无时区**）
  *   → 必须按**本地时间**解析（直接 new Date 会当 UTC，差 8 小时）
  * - 会话失效 → 响应 {"status":"login"}
+ * - R19 27.2b 实测（gid=42 tid=1406，有效 Cookie 探测定稿）：
+ *   `GET task/Status` → `{ status:"success", submissionCount, page, submissionList:[…] }`，
+ *   每条提交 `{ sid, pid, tid, gid, uid, name, language, codeLength, time, memory,
+ *   score, result, outdated, secret, submitedTime }`——`pid`=题目、`score`=该次提交得分
+ *   （0/100）、`result`=判题结果（实测 2=通过 / 9=错误），同一 pid 可有多条历史提交；
+ *   `group.tasks[]` 本身**不带得分**（仅 tid/gid/title/description/时间/mode 等元数据），
+ *   故「已批改 / 得分」只能从 `submissionList` 按 pid 取最新一条汇总（见 fetchTycheStatus）。
  * ⚠️ 服务端地址与 Basic 头均硬编码，凭据不再携带 base
  */
 import type { FetchLike } from "../http.js";
@@ -79,28 +86,101 @@ async function getJson(fetchLike: FetchLike, url: string, headers: Record<string
 }
 
 /**
- * 查单个作业（task）是否已提交：`GET task/Status?tid={tid}&gid={gid}`（**不带 all=true**）。
+ * 查单个作业（task）的提交与批改状态：`GET task/Status?tid={tid}&gid={gid}`（**不带 all=true**）。
  * 实测：不带 `all=true` 时只返回**当前用户**的提交（`submissionList[].name` = 自己，
  * `uid` = 自己）；带 `all=true` 则返回全组。故 `submissionCount > 0` → 已提交。
  * ⚠️ 不用 `task/ProblemStatus`：其实测返回 sid/uid/submitedTime 全为 null、
  *    result/score 恒定（与是否提交无关），**不是**用户维度的提交状态。
+ *
+ * 已批改判定（R19 27.2b 定稿）：
+ * 1. 按 `pid` 分组，每组取 `submitedTime` 最新的一条（并列取 `sid` 最大）；
+ * 2. `graded = submissionCount > 0` 且**每个 pid 的最新提交都带数字 score**；
+ *    `result` 若为 0/1 视为判题中（探测未观测到该值，保守排除并注释）；
+ * 3. `score = Σ 各 pid 最新 score`；`totalScore = 100 × pid 数`（Tyche 每题满分 100，实测佐证）。
+ *    score/totalScore 仅 `graded` 时透出（沿用 R9 约定：未出分不显示 0 分误导）。
  */
+interface TycheStatusResult {
+  submitted: boolean;
+  submittedCount?: number;
+  /** 是否已批改（判定失败保守 false） */
+  graded: boolean;
+  /** 各题最新得分之和（仅 graded 时给） */
+  score?: number;
+  /** 满分 = 100 × 题数（仅 graded 时给） */
+  totalScore?: number;
+}
+
+/** 提交时间比较：a 是否比 b 更新。`submitedTime` 两者均可解析为数字则按数值比
+ *  （兼容毫秒时间戳形态），否则按字符串比（实测 "YYYY-MM-DD HH:MM:SS" 同格式
+ *  字典序即时间序）；时间并列 / 缺失时取 `sid` 大者（27.2b 定稿）。 */
+function isNewerSubmission(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+  const num = (v: unknown): number =>
+    typeof v === "number" && Number.isFinite(v)
+      ? v
+      : typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))
+        ? Number(v)
+        : NaN;
+  const na = num(a["submitedTime"]);
+  const nb = num(b["submitedTime"]);
+  if (Number.isFinite(na) && Number.isFinite(nb) && na !== nb) return na > nb;
+  const sa = typeof a["submitedTime"] === "string" ? (a["submitedTime"] as string).trim() : "";
+  const sb = typeof b["submitedTime"] === "string" ? (b["submitedTime"] as string).trim() : "";
+  if (sa && sb && sa !== sb) return sa > sb;
+  const ia = num(a["sid"]);
+  const ib = num(b["sid"]);
+  if (Number.isFinite(ia) && Number.isFinite(ib) && ia !== ib) return ia > ib;
+  return false;
+}
+
+/** 由 submissionList 汇总已批改 / 得分（规则见 fetchTycheStatus 注释；失败保守 false） */
+function judgeTycheGraded(submissionCount: number, list: Array<Record<string, unknown>>): Pick<TycheStatusResult, "graded" | "score" | "totalScore"> {
+  // 未提交（含 submissionCount 缺失回退 list.length 后仍为 0）→ 谈不上已批改
+  if (!(submissionCount > 0)) return { graded: false };
+  // 按 pid 分组，取每题最新一条提交
+  const latest = new Map<string, Record<string, unknown>>();
+  for (const it of list) {
+    if (!it || typeof it !== "object") continue;
+    const pid = it["pid"];
+    if (pid === undefined || pid === null) continue;
+    const key = String(pid);
+    const cur = latest.get(key);
+    if (cur === undefined || isNewerSubmission(it, cur)) latest.set(key, it);
+  }
+  if (latest.size === 0) return { graded: false };
+  let score = 0;
+  for (const it of latest.values()) {
+    // 每题最新提交都必须带数字 score，否则保守视为未批改
+    const s = it["score"];
+    if (typeof s !== "number" || !Number.isFinite(s)) return { graded: false };
+    // result 0/1 = 判题中（探测未观测到该值，保守排除：有分也当未判完）
+    const r = it["result"];
+    if (r === 0 || r === 1) return { graded: false };
+    score += s;
+  }
+  return { graded: true, score, totalScore: 100 * latest.size };
+}
+
 async function fetchTycheStatus(
   fetchLike: FetchLike,
   base: string,
   headers: Record<string, string>,
   gid: unknown,
   tid: unknown,
-): Promise<{ submitted: boolean; submittedCount?: number }> {
+): Promise<TycheStatusResult> {
   const st = await getJson(
     fetchLike,
     `${base}/task/Status?tid=${encodeURIComponent(String(tid))}&gid=${encodeURIComponent(String(gid))}`,
     headers,
   );
   const cnt = st["submissionCount"];
-  const list = Array.isArray(st["submissionList"]) ? st["submissionList"] : [];
+  const list = Array.isArray(st["submissionList"]) ? (st["submissionList"] as Array<Record<string, unknown>>) : [];
   const count = typeof cnt === "number" && Number.isFinite(cnt) ? cnt : list.length;
-  return { submitted: count > 0, submittedCount: count > 0 ? count : undefined };
+  const gradedInfo = judgeTycheGraded(count, list);
+  return {
+    submitted: count > 0,
+    submittedCount: count > 0 ? count : undefined,
+    ...gradedInfo,
+  };
 }
 
 export function createTycheSource(cred: TycheCred, fetchLike: FetchLike, days: number): HomeworkSource {
@@ -140,12 +220,12 @@ export function createTycheSource(cred: TycheCred, fetchLike: FetchLike, days: n
             const ms = parseLocalDateTime(raw);
             if (!Number.isFinite(ms)) continue;
             if (ms > limit) continue;
-            // 提交状态（仅对时间窗内的 task 查）；失败只跳过（保守 false）
-            let status: { submitted: boolean; submittedCount?: number } = { submitted: false };
+            // 提交/批改状态（仅对时间窗内的 task 查）；失败只跳过（保守 false）
+            let status: TycheStatusResult = { submitted: false, graded: false };
             try {
               status = await fetchTycheStatus(fetchLike, base, headers, gid, tid);
             } catch {
-              /* 状态查询失败：保守保持未提交 */
+              /* 状态查询失败：保守保持未提交、未批改 */
             }
             const hw: ExternalHomework = {
               id: `tyche-${gid}-${tid}`,
@@ -158,6 +238,13 @@ export function createTycheSource(cred: TycheCred, fetchLike: FetchLike, days: n
               submitted: status.submitted,
             };
             if (status.submittedCount !== undefined) hw.submittedCount = status.submittedCount;
+            // R19 27.2：已批改判定 + 得分（score/totalScore 仅 graded 时透出，
+            // 沿用 R9 约定：未出分不显示 0 分误导）
+            hw.graded = status.graded;
+            if (status.graded) {
+              hw.score = status.score;
+              hw.totalScore = status.totalScore;
+            }
             out.push(hw);
           }
         } catch {

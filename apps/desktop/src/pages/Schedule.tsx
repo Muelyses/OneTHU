@@ -130,10 +130,17 @@ function clusterize(entries: GridEntry[]): GridEntry[] {
   for (let day = 0; day < 7; day++) {
     const list = byDay[day] ?? [];
     if (list.length < 3) { out2.push(...list); continue; }
-    // 扫描线事件：begin=+1，end=-1（同分钟先收尾，首尾相接不算重叠）
+    // 扫描线事件：begin=+1，end=-1（同分钟先收尾，首尾相接不算重叠）。
+    // 无效时刻（NaN/undefined，如跨天/异常事件）的条目不参与扫描直接透传——
+    // 曾因单个 NaN 事件抢占 count≥3 的 t0 导致整簇 members 过滤全灭。
+    const valid = list.filter((e) => Number.isFinite(beginMinOf(e)) && Number.isFinite(endMinOf(e)));
+    const invalid = list.filter((e) => !(Number.isFinite(beginMinOf(e)) && Number.isFinite(endMinOf(e))));
+    out2.push(...invalid);
+    const scanList = valid;
+    if (scanList.length < 3) { out2.push(...scanList); continue; }
     type Ev = { min: number; d: number };
     const evs: Ev[] = [];
-    for (const e of list) {
+    for (const e of scanList) {
       evs.push({ min: beginMinOf(e), d: 1 });
       evs.push({ min: endMinOf(e), d: -1 });
     }
@@ -146,10 +153,10 @@ function clusterize(entries: GridEntry[]): GridEntry[] {
       if (prev < 3 && count >= 3) t0 = ev.min;
       else if (prev >= 3 && count < 3) clusters.push({ t0, t1: ev.min });
     }
-    if (clusters.length === 0) { out2.push(...list); continue; }
+    if (clusters.length === 0) { out2.push(...scanList); continue; }
     const taken = new Set<GridEntry>();
     for (const c of clusters) {
-      const members = list.filter((e) => !taken.has(e) && beginMinOf(e) >= c.t0 && beginMinOf(e) < c.t1);
+      const members = scanList.filter((e) => !taken.has(e) && beginMinOf(e) >= c.t0 && beginMinOf(e) < c.t1);
       if (members.length < 3) continue; // 归属后不足 3（被长条目稀释）→ 不缩略
       for (const m of members) taken.add(m);
       const names = [...new Set(members.map((m) => m.location || m.courseName))].slice(0, 3).join("、");
@@ -164,7 +171,7 @@ function clusterize(entries: GridEntry[]): GridEntry[] {
         clusterItems: members,
       });
     }
-    for (const e of list) if (!taken.has(e)) out2.push(e);
+    for (const e of scanList) if (!taken.has(e)) out2.push(e);
   }
   return out2;
 }

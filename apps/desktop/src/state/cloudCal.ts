@@ -398,30 +398,17 @@ export async function exportSemesterToCloud(
  * → 防抖重推（指纹相同跳过）。未交才写，交完即删；闹钟 = 单作业覆盖 ?? 全局默认
  * （IcsEvent.alarmMinutes → VALARM）。未配置云同步时全程静默。 */
 
-/** 作业 DDL → 云日历事件（纯函数可测） */
+/** 作业 DDL → 云日历事件（纯函数可测）
+ *  2026-09-19 停用：作业 DDL 改由日程网格 hw 块承担（重叠自动缩略，见
+ *  Schedule.tsx clusterize）。固定返回 []——syncHwToCloud 的幂等清理会把
+ *  云端残留的 homework 源事件全部删掉（含 2026-09-09 起写入的旧格式），
+ *  用户要恢复"作业上云"删掉这一行 return 即可。 */
 export function buildHwCloudEvents(
   snap: { courses?: Array<{ id: string; name: string }>; homework?: Array<{ id: string; courseId: string; title: string; deadline: string; submitted: boolean }> } | null,
   hwRemind: HwRemindState,
 ): caldav.IcsEvent[] {
-  if (!snap) return [];
-  const courseName = new Map((snap.courses ?? []).map((c) => [c.id, c.name]));
-  const out: caldav.IcsEvent[] = [];
-  for (const h of snap.homework ?? []) {
-    if (h.submitted) continue; // 已交：云端即删（幂等重写自然移除）
-    const dl = parseLearnTime(h.deadline)?.getTime();
-    if (!dl) continue;
-    out.push({
-      uid: `onethu-hw-${sig32(`${h.courseId}|${h.id}`)}@onethu`,
-      summary: `作业截止 · ${courseName.get(h.courseId) ?? ""} ${h.title}`.trim(),
-      start: dl,
-      end: dl + 15 * 60_000,
-      description: `网络学堂作业，${h.deadline} 截止。提交完成后自动从云日历移除。`,
-      categories: ["ONETHU-HW"],
-      onethuSource: "homework",
-      alarmMinutes: hwRemind.items[h.id] ?? hwRemind.default, // 覆盖优先，全局默认兜底
-    });
-  }
-  return out;
+  void snap; void hwRemind;
+  return [];
 }
 
 let hwCloudTimer: ReturnType<typeof setTimeout> | null = null;

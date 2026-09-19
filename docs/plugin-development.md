@@ -13,7 +13,7 @@
 6. [插件 UI 通道与结构化结果](#6-插件-ui-通道与结构化结果)
 7. [接入新的清华服务](#7-接入新的清华服务)
 8. [发布插件](#8-发布插件)
-9. [Rust sidecar 协议](#9-rust-sidecar-协议)
+9. [Rust sidecar 协议与 OH 扩展](#9-rust-sidecar-协议与-oh-扩展)
 10. [对话面板协议](#10-对话面板协议)
 11. [Android 内嵌形态](#11-android-内嵌形态)
 12. [调试](#12-调试)
@@ -64,6 +64,10 @@ export default async function activate(ctx) {
 
 安装步骤：设置 → 插件 → 粘贴代码 → 安装 → 展开插件卡片 → 点击命令。命令返回的
 字符串直接展示在卡片中，异常展示前 200 字符。
+
+完整特性示例见插件市场收录的 [OneTHU-plugin-hello](https://github.com/smartThise/OneTHU-plugin-hello)：
+单文件覆盖结构化结果、确认与表单弹窗、剪贴板、自建功能页、全局 CSS、原子化收藏与
+OH 双向联动，可直接作为新插件的模板（删除不需要的段落即可）。
 
 ## 3. 清单规范
 
@@ -392,7 +396,7 @@ const saved = ctx.onethu.favorites.list();
 两者使用同一仓库格式约定，均仅覆盖 JS 插件；Rust 插件含平台二进制，仍经压缩包或
 文件夹安装（见 §3 与安装面板）。
 
-### 7.1 仓库格式
+### 8.1 仓库格式
 
 插件仓库根目录提供 `plugin.js`（或 `index.js`、`main.js`），内容为单文件 ES 模块：
 `manifest` 导出 + 默认导出激活函数——与「粘贴安装」格式完全一致。可用子目录组织
@@ -401,7 +405,7 @@ const saved = ctx.onethu.favorites.list();
 入口发现顺序：清单显式指定 `entry` 时按指定拉取；否则依次尝试 `plugin.js`、
 `index.js`、`main.js`，分支缺省依次尝试 `main`、`master`。
 
-### 7.2 GitHub 仓库直装
+### 8.2 GitHub 仓库直装
 
 用户在 OneTHU 插件页 → 安装插件 → 「GitHub 仓库」输入仓库地址直接安装。地址支持
 以下形态：
@@ -413,9 +417,10 @@ const saved = ctx.onethu.favorites.list();
 | 完整 URL | `https://github.com/user/repo`（可带 `.git`） |
 | 子目录 | `https://github.com/user/repo/tree/dev/plugins/demo` |
 
-拉取经 `raw.githubusercontent.com`，安装走与粘贴安装相同的清单校验与权限确认管线。
+拉取优先经 GitHub contents API、失败降级 `raw.githubusercontent.com`（通道选择与新鲜度
+见 §8.4），安装走与粘贴安装相同的清单校验与权限确认管线。
 
-### 7.3 插件市场收录
+### 8.3 插件市场收录
 
 应用内市场数据源为独立仓库 [OneTHU-Market](https://github.com/smartThise/OneTHU-Market)。
 市场仓库**只收录插件元信息与源码仓库地址**，不收录插件代码——插件本体始终存放在
@@ -441,11 +446,32 @@ const saved = ctx.onethu.favorites.list();
 权限声明与功能匹配、无超范围权限；无混淆代码、无远程动态拼装代码、无凭据收集
 行为。合并即收录，用户端刷新或等缓存过期（5 分钟）后可见。
 
-## 9. Rust sidecar 协议
+### 8.4 更新检查与拉取新鲜度
 
-### 8.1 通信格式
+应用端按版本号比较判定更新：市场名单条目的 `version` 高于本地已装版本时，插件卡片
+显示「可更新 ↑」徽标（点击跳转市场视图），市场条目按钮显示「更新」，并提示
+`本地 vX → 市场 vY`。版本比较按数字段逐段进行（`1.10.0` 大于 `1.9.0`），`v` 前缀
+容错。
 
-stdio 上的行分隔 JSON-RPC。宿主发往插件：
+**名单版本号由人工维护**：`registry.json` 的 `version` 不随插件仓库自动更新。插件
+仓库发布新版本后，作者须同步向 OneTHU-Market 提交版本号改动，否则用户端不出现更新
+提示——此即「插件已升级但市场看不到新版」的常见成因。
+
+| 场景 | 通道 | 说明 |
+|---|---|---|
+| 插件安装 / 更新 | GitHub contents API 优先，raw 降级 | contents API 取 `api.github.com/repos/<owner>/<repo>/contents/<path>?ref=<branch>`，base64 解码；与 raw 域名分属不同缓存体系 |
+| 市场名单刷新 | 同上；强制刷新跳过本地缓存 | 名单另有 5 分钟 localStorage 缓存，应用重启不失效 |
+
+raw 域名的 Fastly 边缘节点会短时返回推送前的旧内容，且该缓存**忽略 query 参数**
+（附加时间戳的 cache-buster 无效），故不作为首选通道。contents API 未认证时限速
+60 次/小时，超限后静默降级至 raw，此时可能短暂读到旧内容。
+
+## 9. Rust sidecar 协议与 OH 扩展
+
+### 9.1 通信格式
+
+Rust 插件（sidecar 与内嵌两种形态共用核心）经 stdio 上的行分隔 JSON-RPC 与宿主通信；
+本节 §9.3–9.5 为官方 OH 插件对外提供的扩展通道。宿主发往插件：
 
 | 消息 | 说明 |
 |---|---|
@@ -462,7 +488,7 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 | `progress` | 进度通知；对话面板场景支持 `kind` 字段，见 §10 |
 | `log` | 日志行，展示于轨迹面板 |
 
-### 8.2 实现约束
+### 9.2 实现约束
 
 - **标准输入锁不可重入**：`for line in stdin().lock().lines()` 会在整个循环期间持有
   锁，循环体内再次调用 `stdin().lock()` 读取应答会造成死锁。应全程只加锁一次，
@@ -473,11 +499,21 @@ stdio 上的行分隔 JSON-RPC。宿主发往插件：
 - 不应依赖工作目录；宿主不保证当前目录。
 - 退出码非 0 或标准输出关闭时，宿主发出 `exit` 事件并清理进程记录。
 
-OH 对话内也可直接收藏信息：模型可调 `add_favorite`（标题/key/备注）把结果收进
-用户收藏夹（「对话收藏」分组，点击提示来源）；`list_favorite_kinds` 可查全部
-可收藏种类。
+### 9.3 OH 收藏工具
 
-### 9.3 OH 联动插件（MCP 之外的扩展通道）
+OH 对话内可直接把信息收进用户收藏夹，与插件收藏共用同一套原子体系：
+
+| 工具 | 说明 |
+|---|---|
+| `list_favorite_kinds` | 列出可收藏的原子种类（内置页面与实体、插件注册的种类），返回 kind 与分组 |
+| `add_favorite` | 收藏一条信息：`title`（卡片标题，必填）、`key`（稳定引用，必填）、`note`（第二行说明，可选） |
+
+`add_favorite` 的原子 kind 固定为 `plugin:onethu.harness`，`key` 缺 `fav:` 前缀时
+自动补全，落点为「对话收藏」分组；同一 key 重复收藏不重复添加。该分组的卡片当前
+点击提示来源（OH 尚无自建功能页），OH 提供功能页后可改为深链。
+
+
+### 9.4 OH 联动插件（MCP 之外的扩展通道）
 
 OH 的工具集除内置校园工具外，还内置两个联动工具，使模型可以调用**其他已启用
 插件**的能力：
@@ -489,7 +525,7 @@ OH 的工具集除内置校园工具外，还内置两个联动工具，使模�
 提示**：插件命令可能包含写操作，模型被指示执行前向用户说明；写型命令应由插件
 内部实现两段式确认（参照 OH 的 ConfirmNeeded 机制）。
 
-### 9.4 OH 接入 MCP 服务器
+### 9.5 OH 接入 MCP 服务器
 
 OH 可作为 MCP（Model Context Protocol）客户端调用外部工具。服务器在
 「插件 → OneTHU Harness 卡片 → MCP」中逐条管理（添加 / 编辑 / 删除），每条
@@ -565,10 +601,11 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 | 版本 | 变更 |
 |---|---|
-| v1.4 | 新增 `ts` 命名空间与 `tsinghua:sdk` 权限（自定义清华服务接入 SDK：会话复用、通道分流、自愈重放）；新增 §6 接入指南 |
-| v1.5 | 新增 §7 发布插件：插件市场（OneTHU-Market 名单仓库，人工审查收录）与 GitHub 仓库直装 |
-| v1.6 | 插件平台化：§6 UI 通道（confirm/form/clipboard）与结构化命令结果（markdown/items/kv）；OH 联动插件（§9.3）与 MCP 客户端（§9.4，stdio 冷启动）；新增权限 clipboard:read、plugins:call |
+| v1.8 | 新增 §8.4 更新检查与拉取新鲜度（contents API 优先、raw 降级、名单版本号人工维护）；OH 收藏工具独立为 §9.3（其余 §9 子节顺延至 9.5）；§8 与 §9 子节编号修正 |
 | v1.7 | UI 自由化：§6.3 自建功能页（registerTab + onTabReady 自由渲染 DOM）与 registerCss 全局样式（新权限 css）；§6.4 原子化收藏（registerAtom 注册原子种类，favorites.add/list 收藏进宿主收藏夹并深链回插件 tab） |
+| v1.6 | 插件平台化：§6 UI 通道（confirm/form/clipboard）与结构化命令结果（markdown/items/kv）；OH 联动插件（§9.4）与 MCP 客户端（§9.5，stdio 冷启动）；新增权限 clipboard:read、plugins:call |
+| v1.5 | 新增 §8 发布插件：插件市场（OneTHU-Market 名单仓库，人工审查收录）与 GitHub 仓库直装 |
+| v1.4 | 新增 `ts` 命名空间与 `tsinghua:sdk` 权限（自定义清华服务接入 SDK：会话复用、通道分流、自愈重放）；新增 §7 接入指南 |
 | v1.3 | 文档重写为标准格式；新增 `llm`、`theme`、`exthw:read`、`exthw:refresh`、`webview` 权限，新增 `llm`、`theme`、`exthw` 命名空间与 `ui.webModal`；设置项新增 `select` 类型 |
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |

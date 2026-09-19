@@ -49,6 +49,15 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 - **Android 宿主判定**：`tauri.conf.json` 为适配 wengine 指纹固定了 Windows 版
   Chrome UA，导致 JavaScript 侧基于 UA 的平台判定失效。现改用 Rust 编译期命令
   `os_is_android()`，并以 `androidHost.ts` 的多信号判定作为补充。
+- **插件功能页**：插件经 `registerTab` 注册页签，注册表由 `plugins/tabs.ts` 维护，
+  路由为 `plugin:<插件id>:<页签id>`；`PluginTabHost` 渲染页头与挂载容器，容器常驻
+  （切页仅切换显示，插件内部状态保留），容器经 `setTabRoot` 登记后由插件全权渲染。
+  注册表的快照按 emit 重建并缓存，订阅端（`useSyncExternalStore`）不得拿到每次新建
+  的数组，否则无限重渲染导致白屏。插件的渲染回调异常在页面内提示，不静默吞掉。
+- **侧栏分组**：内置入口（含折叠组）、插件功能页、收藏夹三段分列并各带分组标题；
+  收藏夹段限高滚动，收藏数量增长不挤压「新建收藏夹」与折叠组。
+- **市场拉取通道**：插件安装/更新与市场名单刷新优先经 GitHub contents API，raw 域名
+  降级兜底（缓存语义差异见 [plugin-development.md §8.4](./plugin-development.md)）。
 
 ## 4. 主题系统
 
@@ -96,6 +105,11 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
    信息（连接校园网或学校 VPN，或在插件设置中切换至自费 API）。若仍出现 307 响应，
    宿主返回明确错误并触发一次令牌重签。
 
+**MCP 服务器**：宿主侧配置存于 `localStorage` 键 `onethu.mcp.servers.v1`
+（`lib/mcpStore.ts`，逐条增删改），在 `settings.get` 时以 `mcpServers` JSON 注入 OH
+的插件设置。Rust 侧不读配置文件，仅在 `execute` 时接收该字段并据此派生
+`mcp_<服务器名>_<工具名>` 工具。管理入口为插件页 OH 卡片内的「MCP」弹窗。
+
 ## 6. 外部作业源
 
 雨课堂、TUOJ（AI 版与经典版）、Tyche 三源统一映射为 `ExternalHomework` 模型，以
@@ -127,5 +141,7 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | Rust 检查 | `cd plugins/OneTHU-Harness/core && cargo check` |
 | 数据层测试 | `node tools/exthw-status-test.mjs`、`tools/tuoj-cas-test.mjs`、`tools/ykt-qr-test.mjs` |
 | SDK 分流测试 | `node --import ./tools/ts-resolve-register.mjs tools/ts-sdk-test.mjs` |
+| 插件 UI 逻辑测试 | `node --import ./tools/ts-resolve-register.mjs tools/plugin-ui-test.mjs` |
+| 市场名单解析测试 | `node --import ./tools/ts-resolve-register.mjs tools/market-parse-test.mjs` |
 
 分支约定：开发在 `dev2` 分支，发布时推送至 `dev3`（GitHub 与清华 Git 两个远端）。

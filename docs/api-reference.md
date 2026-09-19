@@ -11,8 +11,9 @@
 
 ## 0. 通用约定
 
-**异步性**：除 `session.*`、`ui.toast`、`storage.*`、`nav.go` 外均为异步方法，返回
-`Promise`。
+**异步性**：除 `session.*`、`ui.toast`、`ui.getTabRoot`、`ui.onTabReady`、
+`favorites.add` / `favorites.addAtom` / `favorites.kinds`、`storage.*`、`nav.go` 外均为
+异步方法，返回 `Promise`。
 
 **错误**
 
@@ -70,7 +71,7 @@ return {
 | `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
 | `css` | `registerCss`（注入全局样式，影响整个应用外观；安装时重点确认） |
 | `webview` | `ui.webModal` |
-| `nav` / `ui` | `nav.go` / `ui.toast` |
+| `nav` / `ui` | `nav.go` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
 
@@ -292,8 +293,7 @@ cookie 池，无需额外处理）。
 需重点说明。
 
 | 方法 | 说明 |
-|---|
-|---|
+|---|---|
 | `plugins.list()` | 列出已启用 JS 插件及其命令（`{pluginId, pluginName, commands[]}`） |
 | `plugins.call(pluginId, cmdId, input?)` | 执行某插件命令，返回该命令的原始结果 |
 
@@ -504,7 +504,8 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `ui.clipboard.write(text)` | `ui` | 写系统剪贴板 |
 | `ui.clipboard.read()` | `clipboard:read` | 读系统剪贴板（敏感：可读密码管理器复制的口令，权限单列） |
 | `ui.getTabRoot(pageKey)` / `ui.onTabReady(pageKey, cb)` | `ui` | 本插件功能页的 DOM 挂载容器（自由渲染）；仅限 `plugin:<本插件id>:` 前缀 |
-| `favorites.add(key, folderId?)` / `favorites.list()` | `ui` | 原子化收藏：收进宿主收藏夹（kind 自动补全为本插件），key 见 plugin-development §6.4 |
+| `favorites.add(key, folderId?)` / `favorites.list()` | `ui` | 收藏本插件原子：key 形如 `<tabId>~<原子key>`，kind 自动补全为本插件；`list` 返回本插件已被收藏的收藏夹与 key。见 plugin-development §6.4 |
+| `favorites.addAtom(ref, meta?, folderId?)` / `favorites.kinds()` | `ui` | 收藏任意已注册种类的原子（跨插件）：`ref` 为 `{kind, key}`，`meta` 提供展示元数据且在该种类未注册时内联注册为静态种类（OH 收藏工具经此通道）；`kinds` 列出全部可收藏种类 |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 
@@ -542,4 +543,8 @@ const reply = (await res.json()).choices[0].message.content;
 | `reserve` | 预约聚合 | `reserveTab`：`lib` / `room` / `classroom` / `sports` / `kongjian` |
 | `zhjwxk` | 选课系统 | — |
 | `settings` / `plugins` | 设置 / 插件管理 | — |
+| `plugin:<插件id>:<页签id>` | 插件自建功能页（`registerTab`，见 plugin-development §6.3） | — |
 | `learn-course` 等 | 学堂详情页 | `courseId`、`itemId` |
+
+插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向
+该路由。插件未安装、已停用或未注册该页签时，页面显示降级提示而非空白。

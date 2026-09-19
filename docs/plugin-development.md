@@ -99,7 +99,76 @@ export default async function activate(ctx) {
 | `inputLabel` / `inputPlaceholder` | string | 输入框标签与占位符；未设置时不渲染输入框 |
 | `dock` | boolean | 标记为对话面板命令，见 §7 |
 
-### 3.4 生命周期
+### 3.4 主题插件
+
+主题是一种特殊插件：清单声明 `category: "theme"`，模块导出 `theme` 对象
+（`ThemeDef`）而非 `default` 激活函数。宿主在安装与启动时将其注册进主题库，
+与其他主题（内置或第三方）同权：可应用、可停用、可删除。
+
+```js
+export const manifest = {
+  id: "onethu.theme.example",
+  name: "示例主题",
+  version: "1.0.0",
+  category: "theme",
+  permissions: [],
+};
+
+export const theme = {
+  id: "onethu.theme.example",
+  name: "示例主题",
+  version: "1.0.0",
+  description: "替换强调色与页面底色",
+  vars: {
+    "--accent": "#0d9488",
+    "--accent-soft": "#e0f4f1",
+    "--bg": "#f9fcfb",
+  },
+};
+```
+
+**ThemeDef 字段**：
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `id` | string | 是 | 主题唯一标识，建议 `onethu.theme.<名称>`；与清单 id 一致便于管理 |
+| `name` / `version` | string | 是 | 展示信息 |
+| `author` / `description` | string | 否 | 展示信息 |
+| `vars` | `Record<string, string>` | 是 | CSS 变量覆盖，键为设计令牌名（可覆盖清单见下表） |
+| `fonts` | `{ ui?, mono? }` | 否 | 字体栈覆盖 |
+| `logo` | string | 否 | 品牌 logo 替换，inline SVG 字符串（viewBox 24×24 最佳） |
+| `css` | string | 否 | 附加 CSS；必须以 `:root[data-theme="<主题 id>"]` 限定作用域 |
+| `dark` | boolean | 否 | 声明为深色主题。激活时应用 `color-scheme: dark`（原生控件与滚动条同步），并可在昼夜调度中作为「黑夜主题」档位 |
+
+**可覆盖的设计令牌**（定义于 `packages/ui/src/tokens.css`）：
+
+| 类别 | 变量 |
+|---|---|
+| 面 | `--bg`、`--bg-soft`、`--surface`、`--surface-2`、`--surface-3`、`--skeleton` |
+| 线 | `--border`、`--border-soft`、`--border-strong` |
+| 文字 | `--text-1`、`--text-2`、`--text-3`、`--text-dim` |
+| 品牌与强调 | `--primary`、`--primary-hover`、`--on-primary`、`--accent`、`--accent-soft`、`--accent-border` |
+| 功能色 | `--red`、`--red-soft`、`--amber`、`--amber-soft`、`--green`、`--green-soft` |
+| 交互态 | `--hover`、`--active`、`--ring` |
+| 阴影 | `--shadow-1`、`--shadow-2`、`--shadow-3` |
+| 字体 | `--font-ui`、`--font-mono` |
+| 字号 | `--text-xxs` 至 `--text-xl` |
+| 间距与形状 | `--gap-1` 至 `--gap-6`、`--r-sm`、`--r-md`、`--r-lg`、`--r-pill`、`--sidebar-w` |
+
+**实现边界**（边界契约）：主题只做令牌覆盖，不得改变组件结构与布局骨架。深色主题
+如需修正应用内硬编码的浅色元素，通过 `css` 字段附加作用域限定的规则，示例：
+
+```js
+css: `
+:root[data-theme="onethu.theme.example"] .plg-pin.is-oh { background: var(--surface-2); color: var(--text-1); }
+`,
+```
+
+**与昼夜调度的关系**：`dark: true` 的主题可被用户选为「黑夜主题」档（设置 → 外观），
+系统深色模式切换时自动生效。主题插件无激活函数，因此不使用 `settings` 设置项；
+需要变体时发布多个主题即可。
+
+### 3.5 生命周期
 
 - 安装后立即激活；应用启动时自动恢复所有已启用插件。
 - 停用：调用 `dispose` 后卸载。删除：停用并清除插件私有存储。

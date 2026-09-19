@@ -6,6 +6,8 @@
  * - 学习日志 GET /v2/api/web/logs/learn/{classroom_id}?page=0&offset=200&sort=0&actype=-1
  *   → data.activities[]，type 19=作业 20=试卷（14=课件 5=投票，忽略）
  * - DDL = activity.content.score_d（**毫秒时间戳**）
+ * - 提交状态：作业（type 19）走 get_exercise_list；试卷（type 20）走 GET /v/exam/cover
+ *   （2026-09-19 实测攻克，判定见 docs 十三节）
  * - 详情链接：activity.content.leaf_id 存在时 `…/studentLog/{classroom_id}?leaf_id={leaf_id}`，
  *   否则 `…/studentLog/{classroom_id}`（均返回 200 主应用 shell，2026-09-18 带 cookie 实测）
  * - 会话失效 → errcode=401000
@@ -76,6 +78,10 @@ interface YktItem {
   hw: ExternalHomework;
   classroomId: string;
   leafTypeId: string;
+  /** type 20（试卷）标记：走 /v/exam/cover 而非 get_exercise_list */
+  isExam: boolean;
+  /** type 20 试卷封面接口所需的 sku_id（activity.content.sku_id，可能缺失） */
+  skuId?: string;
 }
 
 /** 并发映射（有界并发，失败在回调内自行捕获） */
@@ -98,7 +104,7 @@ async function mapLimited<T>(items: T[], limit: number, fn: (item: T) => Promise
  * GET /mooc-api/v1/lms/exercise/get_exercise_list/{leaf_type_id}/?classroom_id=…&term=latest&uv_id=…
  * ⚠️ 必须带请求头 `XTBZ: ykt`，否则报「XTBZ IS REQUIRED」。
  * 判定：`data.answer_count > 0` 或任一 `problems[].user.my_answer.content` 非空 → 已提交。
- * 「试卷」（type 20）叶子调此接口返回 No permissions（error_code=20009）→ 抛错，由调用方保守标未提交。
+ * 仅用于作业（type 19）；试卷（type 20）改用 fetchYktExamStatus。
  */
 async function fetchYktStatus(
   fetchLike: FetchLike,
@@ -135,6 +141,50 @@ async function fetchYktStatus(
     submitted,
     submittedCount: submittedCount > 0 ? submittedCount : undefined,
     totalCount: problems.length > 0 ? problems.length : undefined,
+  };
+}
+
+/**
+ * 查单个「试卷」（type 20）的提交状态：
+ * GET /v/exam/cover?exam_id={leaf_type_id}&classroom_id=…&sku_id=…
+ * ⚠️ 必须带请求头 `XTBZ: ykt`（与习题路径一致）。
+ * 判定（docs 13.2）：`result` 非空且 `result.unfinished_count < problem_count` → 已提交；
+ * `result` 缺失/null 或字段不可解析 → 保守未提交。
+ * 进度：submittedCount = problem_count - unfinished_count，totalCount = problem_count。
+ * 请求失败（HTTP 非 2xx / 非 JSON）会 throw，由调用方跳过并保持未提交。
+ */
+async function fetchYktExamStatus(
+  fetchLike: FetchLike,
+  base: string,
+  cookie: string,
+  classroomId: string,
+  leafTypeId: string,
+  skuId: string,
+): Promise<{ submitted: boolean; submittedCount?: number; totalCount?: number }> {
+  const skuQs = skuId ? `&sku_id=${encodeURIComponent(skuId)}` : "";
+  const url =
+    `${base}/v/exam/cover?exam_id=${encodeURIComponent(leafTypeId)}` +
+    `&classroom_id=${encodeURIComponent(classroomId)}${skuQs}`;
+  const body = await getJson(fetchLike, url, cookie, { XTBZ: "ykt" });
+  const data = (body["data"] ?? {}) as Record<string, unknown>;
+  const pcRaw = data["problem_count"];
+  const problemCount = typeof pcRaw === "number" && Number.isFinite(pcRaw) ? pcRaw : undefined;
+  const totalCount = problemCount !== undefined && problemCount > 0 ? problemCount : undefined;
+  const result = data["result"];
+  if (result === null || result === undefined || typeof result !== "object") {
+    // result 缺失/null（未作答或未出分）→ 保守未提交
+    return { submitted: false, totalCount };
+  }
+  const unfinishedRaw = (result as Record<string, unknown>)["unfinished_count"];
+  const unfinished = typeof unfinishedRaw === "number" && Number.isFinite(unfinishedRaw) ? unfinishedRaw : undefined;
+  if (problemCount === undefined || unfinished === undefined) {
+    return { submitted: false, totalCount };
+  }
+  const done = Math.max(0, problemCount - unfinished);
+  return {
+    submitted: unfinished < problemCount,
+    submittedCount: done > 0 ? done : undefined,
+    totalCount,
   };
 }
 
@@ -191,6 +241,11 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
             items.push({
               classroomId: String(a["classroom_id"] ?? cid),
               leafTypeId: leafTypeId === undefined || leafTypeId === null ? "" : String(leafTypeId),
+              isExam: type === 20,
+              skuId:
+                content["sku_id"] === undefined || content["sku_id"] === null
+                  ? undefined
+                  : String(content["sku_id"]),
               hw: {
                 id: `yuketang-${cid}-${id}`,
                 source: "yuketang",
@@ -212,7 +267,9 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
       await mapLimited(items, STATUS_CONCURRENCY, async (it) => {
         if (!it.leafTypeId) return;
         try {
-          const st = await fetchYktStatus(fetchLike, base, cookie, uv, it.classroomId, it.leafTypeId);
+          const st = it.isExam
+            ? await fetchYktExamStatus(fetchLike, base, cookie, it.classroomId, it.leafTypeId, it.skuId ?? "")
+            : await fetchYktStatus(fetchLike, base, cookie, uv, it.classroomId, it.leafTypeId);
           it.hw.submitted = st.submitted;
           if (st.submittedCount !== undefined) it.hw.submittedCount = st.submittedCount;
           if (st.totalCount !== undefined) it.hw.totalCount = st.totalCount;

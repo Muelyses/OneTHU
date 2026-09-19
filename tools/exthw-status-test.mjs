@@ -3,7 +3,9 @@
  *
  * 运行：node tools/exthw-status-test.mjs
  * 覆盖：
- *  - 雨课堂：answer_count>0 / my_answer.content 非空 → 已提交；空壳（试卷 No permissions）→ 保守未提交
+ *  - 雨课堂作业（type 19）：answer_count>0 / my_answer.content 非空 → 已提交；空壳 → 保守未提交
+ *  - 雨课堂试卷（type 20）：/v/exam/cover 的 result.unfinished_count<problem_count → 已提交；
+ *    result 缺失 / 请求失败 → 保守未提交
  *  - TUOJ：ranklist 里按 _id/username 找到自己且 details 非空 → 已提交；找不到 / details 空 → 未提交
  *  - Tyche：task/Status（不带 all=true）submissionCount>0 → 已提交；0 / 报错 → 未提交
  *  - 附带校验：雨课堂状态请求带 XTBZ: ykt；TUOJ lookup 用 POST
@@ -71,7 +73,10 @@ console.log("\n[雨课堂]");
           activities: [
             { type: 19, id: 10, title: "已交作业", classroom_id: 1, content: { leaf_type_id: 100, leaf_id: 5, score_d: FUTURE } },
             { type: 19, id: 11, title: "未交作业", classroom_id: 1, content: { leaf_type_id: 101, leaf_id: 6, score_d: FUTURE } },
-            { type: 20, id: 12, title: "试卷（无权限）", classroom_id: 1, content: { leaf_type_id: 102, leaf_id: 7, score_d: FUTURE } },
+            { type: 20, id: 12, title: "已交试卷", classroom_id: 1, content: { leaf_type_id: 200, leaf_id: 7, sku_id: 900, score_d: FUTURE } },
+            { type: 20, id: 13, title: "未交试卷", classroom_id: 1, content: { leaf_type_id: 201, leaf_id: 8, sku_id: 901, score_d: FUTURE } },
+            { type: 20, id: 14, title: "无 result 试卷", classroom_id: 1, content: { leaf_type_id: 202, leaf_id: 9, sku_id: 902, score_d: FUTURE } },
+            { type: 20, id: 15, title: "状态报错试卷", classroom_id: 1, content: { leaf_type_id: 203, leaf_id: 10, sku_id: 903, score_d: FUTURE } },
           ],
         },
       },
@@ -81,26 +86,45 @@ console.log("\n[雨课堂]");
       body: { data: { answer_count: 3, problems: [{ user: { my_answer: { content: "<p>x</p>" } } }, { user: { my_answer: { content: "" } } }] } },
     },
     { match: (u) => u.includes("/get_exercise_list/101/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: { content: "" } } }, { user: { my_answer: {} } }] } } },
-    { match: (u) => u.includes("/get_exercise_list/102/"), body: { msg: "No permissions", error_code: 20009, data: {}, success: false } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, result: { status: 5, unfinished_count: 0, score: 60 } } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, result: { status: 6, unfinished_count: 31 } } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, result: null } } },
+    { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=203"), throw: "boom" },
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 3, "拉到 3 条作业");
+  eq(items.length, 6, "拉到 6 条作业");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   eq(byTitle.get("已交作业")?.submitted, true, "answer_count>0 → 已提交");
   eq(byTitle.get("已交作业")?.submittedCount, 1, "已交作业 submittedCount=1（有内容的题目数）");
   eq(byTitle.get("已交作业")?.totalCount, 2, "已交作业 totalCount=2");
   eq(byTitle.get("未交作业")?.submitted, false, "answer_count=0 且无作答 → 未提交");
-  eq(byTitle.get("试卷（无权限）")?.submitted, false, "试卷空壳（No permissions）→ 保守未提交");
-  const statusCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
-  ok(statusCalls.length >= 3, "对每个作业都发了状态请求");
+  eq(byTitle.get("已交试卷")?.submitted, true, "试卷 result.unfinished_count<problem_count → 已提交");
+  eq(byTitle.get("已交试卷")?.submittedCount, 20, "已交试卷 submittedCount=20（problem_count-unfinished_count）");
+  eq(byTitle.get("已交试卷")?.totalCount, 20, "已交试卷 totalCount=20");
+  eq(byTitle.get("未交试卷")?.submitted, false, "试卷 unfinished_count==problem_count → 未提交");
+  eq(byTitle.get("未交试卷")?.totalCount, 31, "未交试卷 totalCount=31");
+  eq(byTitle.get("无 result 试卷")?.submitted, false, "试卷 result 缺失/null → 保守未提交");
+  eq(byTitle.get("状态报错试卷")?.submitted, false, "试卷状态请求失败 → 保守未提交");
+  const hwCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
+  eq(hwCalls.length, 2, "仅作业（type 19）走 get_exercise_list");
   ok(
-    statusCalls.every((c) => c.headers["xtbz"] === "ykt"),
-    "状态请求均带 XTBZ: ykt",
+    hwCalls.every((c) => c.headers["xtbz"] === "ykt"),
+    "作业状态请求均带 XTBZ: ykt",
   );
   ok(
-    statusCalls.every((c) => c.url.includes("classroom_id=") && c.url.includes("uv_id=")),
-    "状态请求均带 classroom_id / uv_id",
+    hwCalls.every((c) => c.url.includes("classroom_id=") && c.url.includes("uv_id=")),
+    "作业状态请求均带 classroom_id / uv_id",
+  );
+  const examCalls = fetchLike.calls.filter((c) => c.url.includes("/v/exam/cover"));
+  eq(examCalls.length, 4, "试卷（type 20）走 /v/exam/cover");
+  ok(
+    examCalls.every((c) => c.headers["xtbz"] === "ykt"),
+    "试卷状态请求均带 XTBZ: ykt",
+  );
+  ok(
+    examCalls.every((c) => c.url.includes("exam_id=") && c.url.includes("classroom_id=") && c.url.includes("sku_id=")),
+    "试卷状态请求均带 exam_id / classroom_id / sku_id",
   );
 }
 

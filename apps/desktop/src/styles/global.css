@@ -1093,7 +1093,9 @@
 .rich blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid var(--border-strong); color: var(--text-2); }
 
 /* 搜索框 */
+.coursex-bar { min-width: 0; }
 .search-box {
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -1115,6 +1117,11 @@
 }
 .search-box input {
   flex: 1;
+  /* min-width:0 必须有：flex 子项默认 min-width:auto，而 input 的固有宽度约 20ch，
+     窄屏（手机 courseX 栏：学期选择器 + 搜索框 + 按钮）会把输入框顶宽出卡片 →
+     表现为「搜索框里的文字溢出」（用户实录 2026-09-20） */
+  min-width: 0;
+  width: 100%;
   height: 100%;
   border: 0;
   background: transparent;

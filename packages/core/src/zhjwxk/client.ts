@@ -507,6 +507,9 @@ export async function fetchZhjwxkPage(s: ZhjwxkSession, path: string): Promise<s
 
 /* ── 解析（demo 正则逐行照抄）────────────────────────────────── */
 
+// 格子 id 解析拆到独立模块：纯函数无依赖，测试可在无构建产物下直跑
+export { parseCellAnchor } from "./anchor.js";
+
 // 行捕获前瞻到下一 trr1/trr2 行头或表尾（2026-09-14 嵌套表格实锤：多教师格
 // 内嵌 <table> 的内层 </tr> 会把非贪婪截断，教师格之后的列全丢——30240593
 // 第1班教师读成内层计数码"3"、容量/余量串格）。内层 <tr> 无 trr 类名不触发
@@ -606,6 +609,7 @@ export function parseQueueCandidates(html: string): QueueCandidate[] {
  *  即真实时间正源（不依赖目录加载顺序；样本实证「全周」描述串解析不出格子）。
  *  教师在块内 strHTML1 "；X" 行（教师/类型/周次）。同课多格（跨节次）按课号
  *  合并时间为逗号串，parseTimeSlots 全局匹配多段。 */
+
 export function parseTimetableCandidates(html: string): QueueCandidate[] {
   const byCode = new Map<string, QueueCandidate>();
   const re =

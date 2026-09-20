@@ -151,7 +151,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private const val SLOT_H = 22
         /** 说明文字的颜色（灰）与字号 */
         private const val SUB_COLOR = 0xFF81858C.toInt()
-        private const val SUB_SP = 10
+        private const val SUB_SP = 11
         /** 图标组布局的格子数（2 行 × 4 列） */
         private const val CELL_IDS = 8
 
@@ -359,10 +359,12 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private fun styledRow(text: String, sub: String, row: JSONObject?, color: Int?): CharSequence {
             val full = if (sub.isEmpty()) text else "$text　$sub"
             val sp = android.text.SpannableString(full)
+            // 2026-09-20 用户反馈「安卓小组件字体很小」→ 整体 +1sp（主文 13→14、
+            // 强调 17→18、小档 11→12），说明小字 SUB_SP 同步 10→11。
             val headSp = when (row?.optString("size").orEmpty()) {
-                "lg" -> 17
-                "sm" -> 11
-                else -> 13
+                "lg" -> 18
+                "sm" -> 12
+                else -> 14
             }
             sp.setSpan(android.text.style.AbsoluteSizeSpan(headSp, true), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             if (row?.optBoolean("strong", false) == true) {

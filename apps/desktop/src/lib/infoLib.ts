@@ -20,7 +20,7 @@ import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/netw
 const SAVE_FINGER_URL = "https://id.tsinghua.edu.cn/b/doubleAuth/personal/saveFinger";
 import { InfoHelper, roam } from "@onethu/info-lib";
 import { withPrivacy } from "./privacy.js";
-import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
+import { sm2crypto, makeFingerprint, webvpnDecodeUrl, parseCellAnchor, type TwoFactorMethod } from "@onethu/core";
 
 let initialized = false;
 
@@ -430,10 +430,14 @@ export const getSecondaryEntries = async (
   for (const m of script.matchAll(reg)) {
     const detail = (m[1] ?? "").replace(/\s/g, "");
     const title = m[2] ?? "";
-    const anchor = (m[3] ?? "").split(/[a_]/).filter(Boolean);
-    const day = Number(anchor[0]);
-    const session = Number(anchor[1]);
-    if (!day || !session) continue;
+    // 格子 id = a{session}_{day}（口径见 core parseCellAnchor / info app parseScript）。
+    // 此前这里把 day/session 读反 → 二级课表（实验室课为主）整体错位并与主课表重复。
+    const anchor = parseCellAnchor(m[3] ?? "");
+    if (!anchor) {
+      void log(`SECONDARY-ANCHOR-SKIP 无法解析格子 id=${m[3] ?? ""} 课程=${title}`).catch(() => undefined);
+      continue;
+    }
+    const { session, day } = anchor;
     const begin = beginList[session - 1] || "08:00";
     const endT = endList[session - 1] || "09:35";
     const loc = /[(（]([^，,]+)[，,]/.exec(detail)?.[1] ?? "待定";

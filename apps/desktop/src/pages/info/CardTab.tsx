@@ -62,9 +62,10 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
   if (!open) return null;
 
   const amt = Number(amount);
-  // 银行卡圈存服务端下限 10 元（cardpay.inputtxamtgreater10，2026-09-17 实录）；
-  // 微信/支付宝扫码充值无此限制
-  const minAmt = channel === "bank" ? 10 : 1;
+  // 全渠道下限统一 10 元（2026-09-20 定案）：银行卡圈存服务端本就拒 10 元以下
+  // （cardpay.inputtxamtgreater10，2026-09-17 实录），微信/支付宝官方收银台同样
+  // 起步 10 元（真机实录「至少充 10 块」）——三端统一成一条规则，不再分渠道。
+  const minAmt = 10;
   const valid = Number.isFinite(amt) && amt >= minAmt && amt <= 1000 && Math.round(amt * 100) === amt * 100;
   const close = () => {
     setStep("form");
@@ -121,7 +122,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             <input
               className="input"
               inputMode="decimal"
-              placeholder="自定义金额（1 ~ 1000 元）"
+              placeholder="自定义金额（10 ~ 1000 元）"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               style={{ marginBottom: 10 }}
@@ -131,7 +132,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
                 <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13 }}>
                   <input type="radio" checked={channel === c.key} onChange={() => {
                     setChannel(c.key);
-                    if (c.key === "bank" && Number(amount) < 10) setAmount("20");
+                    if (Number(amount) < 10) setAmount("20"); // 全渠道下限 10 元，低于则抬到 20
                   }} />
                   <span>
                     <b>{c.label}</b>

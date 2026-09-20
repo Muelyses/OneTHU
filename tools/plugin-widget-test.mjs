@@ -122,7 +122,26 @@ const def = (over = {}) => ({
   eq("序列化后槽位仍在", round.slots["1"].rows[0].text, "已打卡 3 天");
 }
 
-/* ⑦ 快照丢弃无槽位号的脏输入 */
+/* ⑦ 注册表变更通知：插件重新声明/注销时宿主才能立刻跟上 */
+{
+  __resetPluginWidgets();
+  const events = [];
+  const unsub = W.subscribePluginWidgets(() => events.push("changed"));
+  registerPluginWidget(def());
+  eq("注册触发一次通知", events.length, 1);
+  registerPluginWidget(def({ title: "改了" }));
+  eq("重注册再触发", events.length, 2);
+  unregisterPluginWidgets("onethu.habit");
+  eq("注销也触发", events.length, 3);
+  unregisterPluginWidgets("不存在的插件");
+  eq("注销不存在的插件不触发", events.length, 3);
+  unsub();
+  registerPluginWidget(def());
+  eq("退订后不再通知", events.length, 3);
+  __resetPluginWidgets();
+}
+
+/* ⑧ 快照丢弃无槽位号的脏输入 */
 {
   const snap = buildWidgetSnapshot({
     schedule: [], homework: [], remind: { default: 120, items: {} }, now,

@@ -14,6 +14,7 @@ globalThis.localStorage = {
 };
 
 const { createWidgetRuntime } = await import("../apps/desktop/src/state/widgetRuntime.ts");
+const { registerPluginWidget, __resetPluginWidgets } = await import("../apps/desktop/src/plugins/pluginWidgets.ts");
 
 let pass = 0, fail = 0;
 const eq = (name, a, b) => {
@@ -123,6 +124,26 @@ function harness({ ok: okFlag = true, throwIt = false } = {}) {
   eq("非 Android 不推", await rt.syncNow(), false);
   eq("非 Android 零调用", h.calls.length, 0);
   rt.stop();
+}
+
+/* ⑤b 插件重新声明小组件 → 立刻重推（否则要等 15 分钟定时重算，用户改了内容看不到） */
+{
+  const h = harness();
+  __resetPluginWidgets();
+  const rt = createWidgetRuntime({ invoke: h.invoke, backendAvailable: true, collect: h.collect, subscribe: h.subscribe, debounceMs: 20, tickMs: 100000 });
+  await rt.syncNow();
+  h.calls.length = 0;
+  registerPluginWidget({
+    id: "streak", pluginId: "onethu.habit", pluginName: "打卡", title: "打卡 3 天",
+    rows: [{ text: "已打卡 3 天" }],
+  });
+  h.fire();                       // 生产环境里由 subscribeNotifySources 转发注册表变更
+  await sleep(60);
+  eq("注册变化触发重推", h.calls.filter((c) => c[0] === "widget_push").length, 1);
+  const snap = JSON.parse(h.calls.find((c) => c[0] === "widget_push")[1].snapshot);
+  eq("重推的快照带上槽位内容", snap.slots["1"].title, "打卡 3 天");
+  rt.stop();
+  __resetPluginWidgets();
 }
 
 /* ⑥ stop 后不再推 */

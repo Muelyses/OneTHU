@@ -93,6 +93,39 @@ pub fn backend() -> String {
     "none".into()
 }
 
+/// 打开系统通知设置页。macOS 与 Windows 都能用 URL scheme 直达，
+/// 不引入额外依赖；失败如实回报（用户仍可自己去系统设置）。
+#[cfg(target_os = "macos")]
+pub fn open_settings(what: &str) -> Value {
+    let url = match what {
+        "exact-alarm" => "x-apple.systempreferences:com.apple.Notifications-Settings.extension",
+        _ => "x-apple.systempreferences:com.apple.Notifications-Settings.extension",
+    };
+    match std::process::Command::new("open").arg(url).status() {
+        Ok(st) if st.success() => json!({ "ok": true }),
+        Ok(st) => json!({ "ok": false, "reason": format!("open 退出码 {:?}", st.code()) }),
+        Err(e) => json!({ "ok": false, "reason": e.to_string() }),
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub fn open_settings(what: &str) -> Value {
+    let target = match what {
+        "exact-alarm" => "ms-settings:notifications",
+        _ => "ms-settings:notifications",
+    };
+    match std::process::Command::new("cmd").args(["/C", "start", "", target]).status() {
+        Ok(st) if st.success() => json!({ "ok": true }),
+        Ok(st) => json!({ "ok": false, "reason": format!("cmd 退出码 {:?}", st.code()) }),
+        Err(e) => json!({ "ok": false, "reason": e.to_string() }),
+    }
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+pub fn open_settings(_what: &str) -> Value {
+    json!({ "ok": false, "reason": "not-implemented-desktop" })
+}
+
 /* ── macOS ── */
 
 #[cfg(target_os = "macos")]

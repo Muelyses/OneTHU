@@ -10,34 +10,14 @@
  *      插件既然单独申请了 notify 权限，就该由插件自己决定发不发。
  */
 import { invoke } from "@tauri-apps/api/core";
+import { fetchNotifyStatus, type NativeNotifyStatus } from "./notifyBridge.js";
 import { isPluginNotifyId, pluginNotifyId } from "./notifyIds.js";
 
-export interface PluginNotifyStatus {
-  /** 平台后端：android / macos / windows / none */
-  backend: string;
-  granted: boolean;
-  exact: boolean;
-  ok: boolean;
-  reason?: string;
-}
+export type PluginNotifyStatus = NativeNotifyStatus;
 
+/** 后端与授权状态（复用通用桥，插件侧只关心结果形状） */
 export async function pluginNotifyStatus(request: boolean): Promise<PluginNotifyStatus> {
-  try {
-    const backend = await invoke<string>("notify_backend");
-    if (backend === "none") return { backend, granted: false, exact: false, ok: false, reason: "not-supported" };
-    const raw = (await invoke<Record<string, unknown>>("notify_permission", { request })) as {
-      ok?: boolean; granted?: boolean; exact?: boolean; reason?: string;
-    };
-    return {
-      backend,
-      granted: raw?.granted === true,
-      exact: raw?.exact !== false,
-      ok: raw?.ok === true,
-      reason: typeof raw?.reason === "string" ? raw.reason : undefined,
-    };
-  } catch (e) {
-    return { backend: "none", granted: false, exact: false, ok: false, reason: String(e).slice(0, 120) };
-  }
+  return fetchNotifyStatus(request);
 }
 
 /** 排一条插件通知；`afterSeconds` 为 0 时立即发（原生侧用 1 秒兜底，避免"过去时刻"被拒） */

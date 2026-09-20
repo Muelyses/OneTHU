@@ -68,6 +68,10 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   落点（点击通知打开哪一页）由原生存下、应用回前台时取走并导航；macOS 与 Windows 的
   深链回调分别需要 App delegate 挂钩与 COM 激活器，当前为系统默认行为（见
   `src/notify_windows.rs` 文件头）。
+- **渠道管理与授权引导**：渠道与精确闹钟授权都在系统设置里，应用只能带路——`notify_open_settings`
+  按 `channels` / `exact-alarm` / `app` 打开对应系统页（Android 走 `Settings.ACTION_*`，
+  macOS/Windows 走 URL scheme）。设置页显示什么文案、给不给按钮，由纯函数
+  `state/notifyStatus.ts` 决定（每种「后端 × 授权 × 精确」组合都要讲到点上，故单独可测）。
 
 ## 4. 主题系统
 
@@ -153,6 +157,7 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | SDK 分流测试 | `node --import ./tools/ts-resolve-register.mjs tools/ts-sdk-test.mjs` |
 | 插件 UI 逻辑测试 | `node --import ./tools/ts-resolve-register.mjs tools/plugin-ui-test.mjs` |
 | 主题插件联动测试 | `node --import ./tools/ts-resolve-register.mjs tools/theme-plugin-sync-test.mjs` |
+| 通知状态文案测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-status-test.mjs` |
 | Windows 通知模块编译检查 | `cd tools/win-notify-check && cargo check --target x86_64-pc-windows-msvc` |
 | Rust 单测（通知载荷解析等） | `cd apps/desktop/src-tauri && cargo test --lib` |
 | 市场名单解析测试 | `node --import ./tools/ts-resolve-register.mjs tools/market-parse-test.mjs` |

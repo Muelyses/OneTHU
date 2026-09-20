@@ -11,6 +11,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Switch } from "./Layout.js";
 import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.js";
+import { fetchNotifyStatus, openNotifySettings, sendTestNotification, type NativeNotifyStatus } from "../state/notifyBridge.js";
+import { notifyHint } from "../state/notifyStatus.js";
 import { ensureNotifyRuntime } from "../state/notifySources.js";
 import type { NotifyPlanItem, NotifySettings } from "../state/notifyPlan.js";
 
@@ -45,8 +47,7 @@ function fmtAt(ms: number): string {
 
 export function NotifySettingsSection(): ReactNode {
   const [s, setS] = useState<NotifySettings>(() => loadNotifySettings());
-  const [backend, setBackend] = useState<string>("checking");
-  const [perm, setPerm] = useState<{ granted: boolean; exact: boolean } | null>(null);
+  const [status, setStatus] = useState<NativeNotifyStatus | null>(null);
   const [plan, setPlan] = useState<NotifyPlanItem[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -55,7 +56,7 @@ export function NotifySettingsSection(): ReactNode {
     const next = saveNotifySettings(p);
     setS(next);
     // 开启提醒时顺带请求授权（此时用户意图明确，弹框不唐突）
-    if (p.enabled === true) void invoke("notify_permission", { request: true }).then(() => refreshStatus()).catch(() => undefined);
+    if (p.enabled === true) void refreshStatus(true);
     // 改动即重排：关掉总开关时运行时内部会「撤干净」而不是留着旧排程
     void (async () => {
       const rt = await ensureNotifyRuntime();
@@ -65,18 +66,9 @@ export function NotifySettingsSection(): ReactNode {
     })();
   };
 
-  const refreshStatus = async (): Promise<void> => {
-    try {
-      const b = await invoke<string>("notify_backend");
-      setBackend(b);
-      if (b === "none") return;
-      const p = (await invoke<Record<string, unknown>>("notify_permission", { request: false })) as {
-        ok?: boolean; granted?: boolean; exact?: boolean;
-      };
-      setPerm({ granted: p?.granted === true, exact: p?.exact !== false });
-    } catch {
-      setBackend("none");
-    }
+  /** 只查状态（request=false）：首次打开设置页不该弹系统授权框 */
+  const refreshStatus = async (request = false): Promise<void> => {
+    setStatus(await fetchNotifyStatus(request));
   };
 
   useEffect(() => {
@@ -91,11 +83,11 @@ export function NotifySettingsSection(): ReactNode {
   const onTest = async (): Promise<void> => {
     setBusy(true);
     try {
-      // 测试即用户主动行为：顺带补一次授权请求（未授权时先弹系统框）
-      await invoke("notify_permission", { request: true }).catch(() => undefined);
-      const r = (await invoke<Record<string, unknown>>("notify_test")) as { ok?: boolean; reason?: string };
-      setMsg(r?.ok ? "已发出测试通知——看到了就说明这条链通了" : `测试失败：${r?.reason ?? "未知原因"}`);
-      void refreshStatus();
+      // 测试即用户主动行为：先补一次授权请求（未授权时会弹系统框）
+      const st = await fetchNotifyStatus(true);
+      setStatus(st);
+      const sent = await sendTestNotification();
+      setMsg(sent ? "已发出测试通知——看到了就说明这条链通了" : `测试失败：${st.granted ? "投递失败，看日志" : "通知未授权"}`);
     } catch (e) {
       setMsg(`测试失败：${String(e).slice(0, 80)}`);
     } finally {
@@ -103,13 +95,11 @@ export function NotifySettingsSection(): ReactNode {
     }
   };
 
-  const backendLabel: Record<string, string> = {
-    android: "Android（通知渠道 + 定时闹钟）",
-    macos: "macOS（系统通知中心）",
-    windows: "Windows（系统通知）",
-    none: "本平台暂未接入",
-    checking: "检测中…",
-  };
+  const hint = notifyHint({
+    backend: status?.backend ?? "none",
+    granted: status?.granted === true,
+    exact: status?.exact !== false,
+  });
 
   return (
     <>
@@ -118,7 +108,7 @@ export function NotifySettingsSection(): ReactNode {
           <div className="setting-title">提醒</div>
           <div className="setting-desc">
             把日程上的事推到系统通知：课程与考试开课前、作业 DDL 到期前，另有每日早报。
-            投递走后端：{backendLabel[backend] ?? backend}。
+            投递走后端：{status?.backend ?? "检测中…"}。
           </div>
         </div>
         <Switch on={s.enabled} onChange={(v) => patch({ enabled: v })} label="提醒总开关" />
@@ -187,21 +177,28 @@ export function NotifySettingsSection(): ReactNode {
 
       <div className="setting-row">
         <div>
-          <div className="setting-title">权限状态</div>
-          <div className="setting-desc">
-            {perm === null
-              ? "检测中…"
-              : perm.granted
-                ? backend === "android" && !perm.exact
-                  ? "通知已授权；精确提醒未授权——系统会允许少量延迟（不影响送达）。可在系统设置的「闹钟与提醒」里允许精确提醒。"
-                  : "通知已授权。"
-                : "通知未授权：提醒发不出来。请在系统设置里为本应用打开通知权限。"}
+          <div className="setting-title">权限与系统设置</div>
+          <div className="setting-desc" style={hint.level === "error" ? { color: "var(--red)" } : undefined}>
+            {status === null ? "检测中…" : hint.text}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button className="btn" disabled={busy || backend === "none"} onClick={() => void onTest()}>
+        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+          <button className="btn" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>
             试一下
           </button>
+          {hint.action ? (
+            <button
+              className="btn btn-ghost"
+              title={`打开：${hint.action.label}`}
+              onClick={() => {
+                void openNotifySettings(hint.action!.kind).then((okOpen) => {
+                  if (!okOpen) setMsg("打开系统设置失败，请在系统设置里手动找到本应用的通知");
+                });
+              }}
+            >
+              {hint.action.label}
+            </button>
+          ) : null}
           <button className="btn btn-ghost" onClick={() => void refreshStatus()}>
             重新检测
           </button>

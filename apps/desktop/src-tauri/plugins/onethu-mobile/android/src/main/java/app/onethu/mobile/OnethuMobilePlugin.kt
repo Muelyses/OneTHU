@@ -18,6 +18,7 @@ import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
+import android.provider.Settings
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
@@ -71,6 +72,13 @@ class WidgetPushArgs {
 @InvokeArg
 class NotifyScheduleArgs {
     lateinit var items: String
+}
+
+/** 要打开哪个系统设置页：channels（渠道，可带 channel）/ exact-alarm / app */
+@InvokeArg
+class NotifyOpenSettingsArgs {
+    var what: String = "channels"
+    var channel: String = ""
 }
 
 /** 是否要发起授权请求（缺省 false：只查状态） */
@@ -629,6 +637,33 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             .put("target", "settings")
         val ok = NotifyCenter.post(ctx, "test-" + System.currentTimeMillis(), item)
         invoke.resolve(JSObject().put("ok", ok).put("granted", hasNotificationPermission()))
+    }
+
+    /** 打开系统通知相关设置页。Android 的「渠道管理」与「精确闹钟授权」都在系统设置里，
+     *  应用只能带用户跳过去——所以这个入口是渠道管理链路的一部分，不是可选项。 */
+    @Command
+    fun notifyOpenSettings(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(NotifyOpenSettingsArgs::class.java)
+            val ctx = activity.applicationContext
+            val intent = when (args.what) {
+                "exact-alarm" -> Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                "app" -> Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName)
+                else -> {
+                    // 渠道级：指向我们自己的某个通知渠道（渠道不存在时系统回落应用通知页）
+                    val channel = NotifyCenter.channelOf(args.channel)
+                    Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, channel)
+                }
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ctx.startActivity(intent)
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "open-settings-failed"))
+        }
     }
 
     @Command

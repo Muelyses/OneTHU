@@ -67,6 +67,7 @@ export function applyScenarios(scenarioIds: string[], orientation: HomeOrientati
   const collapsed = { ...loadCollapsedDefaults() };
   for (const def of meta) if (!keep.has(def.id)) collapsed[def.id] = true;
   saveCollapsedDefaults(collapsed);
+  broadcastHomeChanged();
 }
 
 
@@ -75,6 +76,15 @@ export function applyScenarios(scenarioIds: string[], orientation: HomeOrientati
  * 与 applyScenarios 的区别：那个按场景**整体重排**，这个只在用户勾掉的卡上写 off，
  * 其它卡保持现有栏位与顺序——用户改完不会觉得首页被"重刷"了一遍。
  */
+/** 布局落盘后的广播：首页（以及任何读卡片的界面）据此立刻重读，不必等重进页面 */
+function broadcastHomeChanged(): void {
+  try {
+    window.dispatchEvent(new Event("onethu.home.changed"));
+  } catch {
+    /* 无 window（测试环境）忽略 */
+  }
+}
+
 export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation): void {
   const safeKeep: HomeCardId[] = keep.length > 0 ? keep : ["today-overview"];
   // 两个朝向都写：用户的选择与横竖屏无关；只写一个朝向会让另一个朝向留着旧的"全关"布局
@@ -93,6 +103,7 @@ export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation
   saveCollapsedDefaults(collapsed);
 
   // 留痕：这类"以为选了、其实还关着 / 一张没留"的情况必须能从日志看出来
+  broadcastHomeChanged();
   void import("../lib/clients.js")
     .then((m) =>
       m.logLine(
@@ -106,8 +117,11 @@ export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation
 
 /** 首页布局被清空时的自救：恢复注册表默认（今日页空白的那个状态一键回来） */
 export function restoreDefaultTodayCards(orientation: HomeOrientation): void {
-  saveLayout(resolveLayout(HOME_CARD_META, null), orientation);
+  for (const o of ["portrait", "landscape"] as HomeOrientation[]) {
+    saveLayout(resolveLayout(HOME_CARD_META, null), o);
+  }
   saveCollapsedDefaults({});
+  broadcastHomeChanged();
 }
 
 /** 导览里可勾选的今日卡片：只列**默认可见**的展示卡（入口卡仍在「添加卡片」里） */

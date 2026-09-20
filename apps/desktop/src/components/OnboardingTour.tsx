@@ -99,6 +99,21 @@ export function OnboardingTour(): React.ReactNode {
     if (goFavorites) navigate("folder");
   };
 
+  /** 示例收藏夹：点击即完成一次完整收藏流程（建夹 → 放原子），并说明"万物皆可收藏"。
+   *  三项覆盖三种粒度：一级页面（网络学堂）、一级页面（选课）、二级页签（预约页 · 空教室）。 */
+  const SEED_ATOMS = [
+    { kind: "page", key: "learn" },              // 网络学堂（一级）
+    { kind: "page", key: "zhjwxk" },             // 选课（一级）
+    { kind: "page", key: "reserve-classroom" },  // 空教室（预约页的二级页签）
+  ];
+  const [seeded, setSeeded] = useState(false);
+  const seedDemoFolder = (): void => {
+    const id = favs.create("示例收藏夹", null);
+    if (!id) return;
+    for (const atom of SEED_ATOMS) favs.addAtom(id, atom);
+    setSeeded(true);
+  };
+
   const panel: React.CSSProperties = {
     position: "fixed", inset: 0, zIndex: 2000, display: "flex", alignItems: "center",
     justifyContent: "center", background: "rgba(0,0,0,.45)", padding: 20,
@@ -259,28 +274,37 @@ export function OnboardingTour(): React.ReactNode {
 
         {step === 3 ? (
           <>
-            <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>最后：收藏夹怎么用</h3>
-            <p style={{ margin: "0 0 4px", fontSize: 13.5, lineHeight: 1.8 }}>
-              <b>第一步</b>：在侧栏点「＋ 新建收藏夹」，起个名字（例如「今天要做的」）。
+            <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>最后一步：完成一次收藏</h3>
+            <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.8, color: "var(--text-2, #555)" }}>
+              点下面的按钮，会为你建一个<b>示例收藏夹</b>，并放入三项：
+              <b>网络学堂</b>（一级页面）、<b>选课</b>（一级页面）、<b>空教室</b>（预约页里的二级页签）。
             </p>
-            <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.8 }}>
-              <b>第二步</b>：打开任意页面或条目（一门课、一项作业、洗衣机、成绩单），
-              点标题旁的 ☆ 收进刚才那个收藏夹——以后一点直达，也能放到桌面小组件。
+            <p style={{ margin: "0 0 12px", fontSize: 13.5, lineHeight: 1.8, color: "var(--text-2, #555)" }}>
+              收藏夹建好后可以改名、拖拽排序、放桌面小组件——<b>万物皆可收藏</b>：
+              任何页面、任何页签、任何一门课、任何一项作业、任何一台洗衣机，都能收进来，下次一点直达。
             </p>
+            <button
+              className={seeded ? "btn" : "btn btn-primary"}
+              disabled={seeded}
+              style={{ width: "100%", marginBottom: 10 }}
+              onClick={seedDemoFolder}
+            >
+              {seeded ? "✓ 示例收藏夹已创建（含 3 项）" : "创建示例收藏夹（含 3 项）"}
+            </button>
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)" }}>
-              下面还有按场景收起首页卡片，可点掉不要的。
+              下面还可按场景收起首页卡片，不需要的直接点掉。
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {SCENARIOS.map((s) => (
+              {SCENARIOS.map((sc) => (
                 <button
-                  key={s.id}
-                  className={keepCards.includes(s.id) ? "btn btn-primary" : "btn"}
+                  key={sc.id}
+                  className={keepCards.includes(sc.id) ? "btn btn-primary" : "btn"}
                   style={{ fontSize: 12.5 }}
                   onClick={() =>
-                    setKeepCards((p) => (p.includes(s.id) ? p.filter((x) => x !== s.id) : [...p, s.id]))
+                    setKeepCards((p) => (p.includes(sc.id) ? p.filter((x) => x !== sc.id) : [...p, sc.id]))
                   }
                 >
-                  {s.label}
+                  {sc.label}
                 </button>
               ))}
             </div>

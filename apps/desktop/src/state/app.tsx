@@ -294,6 +294,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     setPage(p);
     setNavParams(params ?? null);
+    // 本机使用统计（今日页「最近使用」的数据源）：动态 import 回避 app↔atoms 的模块环
+    void import("./atoms.js")
+      .then((m) => m.recordPageAtomUse(p, params ?? null))
+      .catch(() => undefined);
   }, []);
 
   const login = useCallback(

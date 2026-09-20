@@ -1553,20 +1553,13 @@ async fn thos_portal_window(
     // 逐条注入（绝不打印 Cookie 值）。域走默认（当前页 origin=webvpn），Path=/
     let mut seeded = 0usize;
     for (base, header) in seeds {
-        // Domain 必须显式写：set_cookie 时窗口还停在 webvpn 源根（甚至还没加载完），
-        // 不带 Domain 的 Cookie 会按"当前文档"归属，等于没种——雨课堂那段之所以有效，
-        // 正是因为它写了 `Domain=.yuketang.cn; Path=/`（2026-09-20 实测：不写 Domain 时
-        // 日志显示"已种 8 条"、页面仍停在登录页）。
-        let host = url::Url::parse(base)
-            .ok()
-            .and_then(|u| u.host_str().map(|h| h.to_string()))
-            .unwrap_or_else(|| "webvpn.tsinghua.edu.cn".to_string());
+        let _ = base;
         for pair in header.split("; ") {
             let pair = pair.trim();
             if pair.is_empty() || !pair.contains('=') {
                 continue;
             }
-            if let Ok(c) = Cookie::parse(format!("{pair}; Domain={host}; Path=/")) {
+            if let Ok(c) = Cookie::parse(format!("{pair}; Path=/")) {
                 if win.set_cookie(c).is_ok() {
                     seeded += 1;
                 }
@@ -2890,6 +2883,137 @@ fn venue_sso_set(
     Ok(())
 }
 
+/* ---------------- 体育官方预约页：应用内「共享登录态」窗口 ----------------
+ * 用户拍板（2026-09-20）：照在线服务的经验办——**复用凭据**：手机端全屏 WebView、
+ * 电脑端独立窗口，两边都带同一登录态，不再把用户丢去系统浏览器重登一遍。
+ * 官方 SPA（hash 路由）开机读 localStorage["token"] / ["headers"]（venue.ts 实录：
+ * getParams→storage.getItem，?token= 启动逻辑并不解析），因此注入必须在**页面脚本
+ * 之前**：桌面走 initialization_script（每次导航都先跑），Android 走 Kotlin 注入。
+ * 注入的 JWT 只在 invoke 参数与内存中传递，绝不打印、不落盘。
+ * 预约动作仍由用户在官方页面上手动完成（体育部公告第 12 条红线不变）。 */
+
+/// 把体育 JWT 写进当前 origin 的 localStorage（与 Kotlin 侧 VENUE_SEED_JS 同语义）
+fn venue_seed_js(token: &str) -> String {
+    let t = serde_json::to_string(token).unwrap_or_else(|_| "\"\"".to_string());
+    format!(
+        r#"(function(){{try{{var t={t};localStorage.setItem("token",JSON.stringify(t));localStorage.setItem("headers",JSON.stringify(JSON.stringify({{token:t}})));localStorage.setItem("refreshToken",JSON.stringify(""));}}catch(e){{}}}})();"#
+    )
+}
+
+/// 桌面端：独立子窗口 + 页面脚本前注入登录态（同 UA——官方系统按客户端指纹管会话）
+#[cfg(desktop)]
+async fn venue_open_portal_impl(
+    app: &tauri::AppHandle,
+    token: &str,
+    url: &str,
+    dark: bool,
+) -> Result<(), String> {
+    use tauri::webview::Cookie;
+    use tauri::{WebviewUrl, WebviewWindowBuilder};
+    let label = "venueportal";
+    if let Some(w) = app.get_webview_window(label) {
+        let _ = w.close();
+    }
+    // 先建在体育系统源根（同 origin），注入脚本与 Cookie 都落在同一个域上
+    let mut builder = WebviewWindowBuilder::new(
+        app,
+        label,
+        WebviewUrl::External(format!("{VENUE_ORIGIN}/venue/index.html").parse().unwrap()),
+    )
+    .title("场馆预约 · OneTHU")
+    .inner_size(1100.0, 820.0)
+    .initialization_script(venue_seed_js(token));
+    let main_ua = app
+        .config()
+        .app
+        .windows
+        .first()
+        .and_then(|w| w.user_agent.clone());
+    if let Some(ua) = main_ua.as_deref() {
+        builder = builder.user_agent(ua);
+    }
+    if dark {
+        builder = builder.initialization_script(DARK_PAINT_JS);
+    }
+    let win = builder.build().map_err(|e| e.to_string())?;
+    // 顺带把原生 jar 里 sports 域的票种进去（官方页若用 Cookie 走 SSO，这里就一并共享）
+    let pairs: Vec<String> = {
+        let jar = NATIVE_JAR_ARC.0.read().unwrap();
+        match format!("{VENUE_ORIGIN}/").parse() {
+            Ok(u) => jar
+                .matches(&u)
+                .iter()
+                .map(|c| format!("{}={}", c.name(), c.value()))
+                .collect(),
+            Err(_) => Vec::new(),
+        }
+    };
+    let mut seeded = 0usize;
+    for pair in &pairs {
+        if let Ok(c) = Cookie::parse(format!("{pair}; Domain=www.sports.tsinghua.edu.cn; Path=/")) {
+            if win.set_cookie(c).is_ok() {
+                seeded += 1;
+            }
+        }
+    }
+    venue_log(&format!(
+        "[VENUE-PORTAL] 独立窗口：注入登录态（{} 字节）+ {seeded} 条 Cookie，UA={}",
+        token.len(),
+        if main_ua.is_some() { "同主窗口" } else { "默认" }
+    ));
+    win.navigate(url.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
+        .map_err(|e| e.to_string())?;
+    let _ = win.set_focus();
+    Ok(())
+}
+
+/// Android：全屏 Dialog WebView + Kotlin 侧注入同一份登录态脚本
+#[cfg(mobile)]
+async fn venue_open_portal_impl(
+    app: &tauri::AppHandle,
+    token: &str,
+    url: &str,
+    dark: bool,
+) -> Result<(), String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    venue_log(&format!(
+        "[VENUE-PORTAL] 移动端全屏浏览：注入登录态（{} 字节）→ {}",
+        token.len(),
+        &url[..url.len().min(60)]
+    ));
+    let _: Result<serde_json::Value, _> = handle
+        .run_mobile_plugin_async(
+            "openWebModal",
+            serde_json::json!({
+                "url": url,
+                "dark": dark,
+                "injectJs": venue_seed_js(token),
+            }),
+        )
+        .await;
+    Ok(())
+}
+
+/// 体育官方预约页：应用内打开（桌面独立窗口 / Android 全屏 WebView），共享同一登录态。
+#[tauri::command]
+async fn venue_open_portal(
+    app: tauri::AppHandle,
+    token: String,
+    url: String,
+    dark: Option<bool>,
+) -> Result<(), String> {
+    if token.len() < 20 {
+        return Err("体育系统登录态缺失：请先完成登录".into());
+    }
+    if !url.starts_with(VENUE_ORIGIN) {
+        return Err("拒绝在应用内打开非体育系统链接".into());
+    }
+    venue_open_portal_impl(&app, &token, &url, dark.unwrap_or(false)).await
+}
+
 fn chrono_now() -> String {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -3114,7 +3238,7 @@ tauri::Builder::default()
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,venue_sso_set,venue_open_portal,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

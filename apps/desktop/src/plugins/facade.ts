@@ -535,6 +535,28 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 12;
         return searchAtoms(String(query ?? ""), n).map((h) => ({ kind: h.kind, key: h.key, title: h.title, sub: h.sub, group: h.group }));
       },
+      /** 使用统计：只读本机 localStorage 的点击记录（不含校园数据），用于「用户常用什么」 */
+      usage: async (limit?: number) => {
+        gate(perms, "nav", "nav.usage");
+        const { usageStats, topAtomUses, recentAtomUses } = await import("../lib/usage.js");
+        const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 10;
+        const s = usageStats();
+        return {
+          total: s.total,
+          kinds: s.kinds,
+          top: topAtomUses(n).map((e) => ({
+            kind: e.kind, key: e.key, title: e.title ?? e.key, group: e.group ?? "", n: e.n, last: e.last,
+          })),
+          recent: recentAtomUses(n).map((e) => ({
+            kind: e.kind, key: e.key, title: e.title ?? e.key, n: e.n, last: e.last,
+          })),
+        };
+      },
+      clearUsage: async () => {
+        gate(perms, "nav", "nav.clearUsage");
+        const { clearUsage } = await import("../lib/usage.js");
+        clearUsage();
+      },
       /** 打开原子：复用收藏夹那套 view.open(nav)，故插件点开的页面与用户自己点收藏完全一致 */
       openAtom: async (ref: { kind: string; key: string }) => {
         gate(perms, "nav", "nav.openAtom");

@@ -349,6 +349,16 @@ export interface OnethuApi {
     /** 打开一个原子（等价用户点收藏夹里的那一项：跳功能页 / 切聚合页页签 / 开服务页）。
      *  该原子未注册或已失效时返回 false——**不会跳空白页**，调用方据此回话。需 nav 权限 */
     openAtom(ref: { kind: string; key: string }): Promise<boolean>;
+    /** 本机使用统计（只含「点过什么」，不含任何校园数据）：总次数、种类数、
+     *  使用最多的若干项（带 kind/key，可直接交给 nav.openAtom 打开）。需 nav 权限 */
+    usage(limit?: number): Promise<{
+      total: number;
+      kinds: number;
+      top: Array<{ kind: string; key: string; title: string; group: string; n: number; last: number }>;
+      recent: Array<{ kind: string; key: string; title: string; n: number; last: number }>;
+    }>;
+    /** 清空本机使用统计（用户主动要求「别再记了」时用）。需 nav 权限 */
+    clearUsage(): Promise<void>;
   };
   ui: {
     toast(text: string): void;

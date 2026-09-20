@@ -197,10 +197,13 @@ export function ThosPage() {
       // 无记住凭据也可走链：账密传空，id 表单出现时用户在 webview 内手动输入
       // 一次（链继续自动完成）——桌面首次/未开记住密码时的必经路径
       const remembered = await loadRemembered();
+      const { currentThemeIsDark } = await import("../../state/theme.js");
       await invoke("thos_open_portal", {
         url: routeThosUrl(url),
         username: remembered?.username ?? "",
         password: remembered?.password ?? "",
+        // 深色主题：桌面用 initialization_script、安卓用 onPageFinished 注入涂白脚本
+        dark: currentThemeIsDark(),
       });
     } catch (e) {
       setError(`打开官方页失败：${String(e)}`);

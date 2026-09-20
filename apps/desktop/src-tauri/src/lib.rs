@@ -1469,6 +1469,96 @@ fn thos_log(line: &str) {
     }
 }
 
+/// 深色主题下把官方页「正文黑字」涂白（与 Kotlin 侧 DARK_INJECT_JS 同一份脚本；
+/// tools/dark-inject-test.mjs 断言两者一致，防止漂移）。
+/// 桌面用 WebviewWindowBuilder::initialization_script 注入，Android 用 onPageFinished 注入。
+const DARK_PAINT_JS: &str = r#"(function(){
+  if (window.__othDark) { window.__othPaint && window.__othPaint(); return; }
+  window.__othDark = 1;
+  var INK = '#E9E9E9', LINK = '#7AA2F7', PALE = 0.55;
+  function lum(c){
+    var m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(c || '');
+    if (!m) return null;
+    return (0.299 * m[1] + 0.587 * m[2] + 0.114 * m[3]) / 255;
+  }
+  function paint(){
+    var de = document.documentElement, b = document.body;
+    de.style.setProperty('background-color', '#111315', 'important');
+    if (b) b.style.setProperty('background-color', '#111315', 'important');
+    var els = (b || de).querySelectorAll('*');
+    for (var i = 0; i < els.length; i++){
+      var el = els[i], t = el.tagName;
+      if (t === 'IMG' || t === 'VIDEO' || t === 'CANVAS' || t === 'IFRAME' || t === 'SVG' || t === 'PATH') continue;
+      try {
+        var cs = getComputedStyle(el);
+        var l = lum(cs.color);
+        if (l !== null && l < PALE) el.style.setProperty('color', (t === 'A' ? LINK : INK), 'important');
+        var bg = lum(cs.backgroundColor);
+        if (bg !== null && bg > PALE) el.style.setProperty('background-color', 'transparent', 'important');
+      } catch (e) {}
+    }
+  }
+  window.__othPaint = paint;
+  paint();
+  document.addEventListener('DOMContentLoaded', paint);
+  setTimeout(paint, 600); setTimeout(paint, 2000); setTimeout(paint, 5000);
+  try {
+    var t = null;
+    new MutationObserver(function(){ if (t) return; t = setTimeout(function(){ t = null; paint(); }, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+})()"#;
+
+/// 桌面端：独立子窗口打开官方服务页，并在导航前种入会话票（macOS / Windows）。
+#[cfg(desktop)]
+async fn thos_portal_window(
+    app: &tauri::AppHandle,
+    seeds: &[(String, String)],
+    target: &str,
+    dark: bool,
+) -> Result<(), String> {
+    use tauri::webview::Cookie;
+    use tauri::{WebviewUrl, WebviewWindowBuilder};
+    if !(target.starts_with("http://") || target.starts_with("https://")) {
+        return Err("拒绝在应用内打开非 http(s) 链接".into());
+    }
+    let label = "thosportal";
+    if let Some(w) = app.get_webview_window(label) {
+        let _ = w.close();
+    }
+    let mut builder = WebviewWindowBuilder::new(
+        app,
+        label,
+        WebviewUrl::External("https://webvpn.tsinghua.edu.cn/".parse().unwrap()),
+    )
+    .title("在线服务 · OneTHU")
+    .inner_size(1100.0, 820.0);
+    if dark {
+        builder = builder.initialization_script(DARK_PAINT_JS);
+    }
+    let win = builder.build().map_err(|e| e.to_string())?;
+    // 逐条注入（绝不打印 Cookie 值）。域走默认（当前页 origin=webvpn），Path=/
+    let mut seeded = 0usize;
+    for (base, header) in seeds {
+        let _ = base;
+        for pair in header.split("; ") {
+            let pair = pair.trim();
+            if pair.is_empty() || !pair.contains('=') {
+                continue;
+            }
+            if let Ok(c) = Cookie::parse(format!("{pair}; Path=/")) {
+                if win.set_cookie(c).is_ok() {
+                    seeded += 1;
+                }
+            }
+        }
+    }
+    thos_log(&format!("[THOS-SEED] 独立窗口已种 {seeded} 条会话票 → {}", &target[..target.len().min(60)]));
+    win.navigate(target.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 #[tauri::command]
 async fn thos_open_portal(
     app: tauri::AppHandle,
@@ -1476,6 +1566,7 @@ async fn thos_open_portal(
     url: String,
     username: String,
     password: String,
+    dark: Option<bool>,
 ) -> Result<(), String> {
     // 1) 从原生仓收集三大域的未过期 cookie。
     //    注意：不能用 c.domain() 过滤——host-only cookie（服务器 Set-Cookie 不带
@@ -1504,6 +1595,51 @@ async fn thos_open_portal(
     };
     if seeds.is_empty() {
         return Err("本机会话为空：请先在 OneTHU 登录再打开在线服务".into());
+    }
+
+    // 1.5) 桌面端（macOS / Windows）：开**独立子 WebView 窗口**并在导航前逐条种会话票
+    //      （与雨课堂官方页 open_ykt_submit_window 同一套做法）。此前桌面是把主 webview
+    //      导航到目标页后立刻跳回 app，等于用户根本没看到页面，实际只能去系统浏览器裸奔
+    //      → 每次都要二次验证（用户 2026-09-20 提问「mac 和 win 怎么办」）。
+    //      窗口方式：先建在 webvpn 源根（同源）→ set_cookie（原生 jar 的 webvpn/thos/id 票）
+    //      → 再导航到目标页，首跳就带会话，永不二次登录；深色时用 initialization_script
+    //      注入涂白脚本（顺带解决官方页深色下黑字）。
+    #[cfg(desktop)]
+    {
+        match thos_portal_window(&app, &seeds, &url, dark.unwrap_or(false)).await {
+            Ok(()) => return Ok(()),
+            Err(e) => {
+                thos_log(&format!("[THOS-SEED] 独立窗口方式失败（{e}）→ 回退 JS 种票链"));
+            }
+        }
+    }
+
+    // 2) 移动端：原生 CookieManager 种票 + 直接导航（2026-09-20）
+    //    与 info app 同思路（它的 RN 网络层与 WebView 共用 CookieManager，官方页天然带会话）。
+    //    我们此前 JNI 反射调 setCookie 在华为 WebView 上 NoSuchMethodError，才退化成 JS
+    //    document.cookie 种票 → 每次打开都要重新验证。改走自家 Kotlin 插件的
+    //    android.webkit.CookieManager（非反射），种完直接进目标页，后续打开也不再问。
+    #[cfg(mobile)]
+    {
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        for (base, header) in &seeds {
+            // 返回类型要显式标注：run_mobile_plugin_async<T: DeserializeOwned> 的 T
+            // 靠 `let _ =` 推不出来（E0283）
+            let _: Result<serde_json::Value, _> = handle
+                .run_mobile_plugin_async(
+                    "seedWebViewCookies",
+                    serde_json::json!({ "url": base, "cookie": header }),
+                )
+                .await;
+        }
+        thos_log(&format!("[THOS-SEED] 原生 CookieManager 种票完成 → 直接导航目标页"));
+        webview
+            .eval(&format!("location.href = {:?}", url))
+            .map_err(|e| format!("导航目标: {e}"))?;
+        return Ok(());
     }
 
     // 2) 注入 + 导航（Android）：纯 JS 方案——JNI CookieManagerAdapter 的
@@ -2518,6 +2654,27 @@ fn open_web_modal(url: String) -> Result<(), String> {
     Err("桌面端无内嵌浏览窗口，请使用系统浏览器".into())
 }
 
+/// 打开系统「应用详情」（权限被永久拒绝后的唯一出路；仅 Android 有实现）
+#[cfg(mobile)]
+#[tauri::command]
+async fn open_app_settings(app: tauri::AppHandle) -> Result<(), String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    let _: serde_json::Value = handle
+        .run_mobile_plugin_async("openAppSettings", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+async fn open_app_settings() -> Result<(), String> {
+    Err("桌面端请在「系统设置 → 隐私与安全性」里授权".into())
+}
+
 #[cfg(mobile)]
 #[tauri::command]
 async fn open_web_modal(app: tauri::AppHandle, url: String, dark: Option<bool>) -> Result<(), String> {
@@ -2890,7 +3047,7 @@ tauri::Builder::default()
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_ykt_submit_window,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

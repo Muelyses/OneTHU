@@ -16,11 +16,30 @@ const KT = path.join(
   import.meta.dirname, "..",
   "apps/desktop/src-tauri/plugins/onethu-mobile/android/src/main/java/app/onethu/mobile/OnethuMobilePlugin.kt",
 );
+const RS = path.join(
+  import.meta.dirname, "..",
+  "apps/desktop/src-tauri/src/lib.rs",
+);
 const kt = fs.readFileSync(KT, "utf8");
-const m = /private const val DARK_INJECT_JS = """([\s\S]*?)"""/.exec(kt);
-if (!m) { console.error("✗ 找不到 DARK_INJECT_JS"); process.exit(1); }
-const src = m[1];
-if (/\\\\[ds(]/.test(src)) { console.error("✗ Kotlin 原始字符串里出现双反斜杠（正则会失效）"); process.exit(1); }
+const mk = /private const val DARK_INJECT_JS = """([\s\S]*?)"""/.exec(kt);
+if (!mk) { console.error("✗ 找不到 Kotlin DARK_INJECT_JS"); process.exit(1); }
+const src = mk[1];
+const rs = fs.readFileSync(RS, "utf8");
+const mr = /const DARK_PAINT_JS: &str = r#"([\s\S]*?)"#;/.exec(rs);
+if (!mr) { console.error("✗ 找不到 Rust DARK_PAINT_JS（桌面初始化脚本）"); process.exit(1); }
+const srcRust = mr[1];
+
+// 原始字符串里出现双反斜杠 = 正则必失效（Kotlin 与 Rust 各踩过一次）
+for (const [name, body] of [["Kotlin", src], ["Rust", srcRust]]) {
+  if (/\\\\[ds(]/.test(body)) { console.error(`✗ ${name} 原始字符串里出现双反斜杠（正则会失效）`); process.exit(1); }
+}
+// 两份必须是同一份脚本（安卓 onPageFinished 注入 / 桌面 initialization_script 注入）
+const norm = (t) => t.replace(/\s+/g, " ").trim();
+if (norm(src) !== norm(srcRust)) {
+  console.error("✗ Kotlin 与 Rust 的涂白脚本不一致（改一处必须同步另一处）");
+  process.exit(1);
+}
+console.log("· Kotlin / Rust 两份涂白脚本一致，且无多余转义");
 
 let pass = 0, fail = 0;
 const t = (name, cond) => { if (cond) pass++; else { fail++; console.error("✗ " + name); } };
@@ -58,6 +77,17 @@ t("深蓝链接 → 高亮蓝", got(link, "color") === "#7AA2F7");
 t("白底 → 透明（露出深色底）", got(whitish, "background-color") === "transparent");
 t("IMG 等媒体元素不被涂色", got(img, "color") === undefined && got(img, "background-color") === undefined);
 t("html/body 底色转深", got(html, "background-color") === "#111315" && got(body, "background-color") === "#111315");
+
+// 再用 Rust（桌面）那份跑一遍同样的断言：两处注入脚本行为必须一致
+made.length = 0;
+const html2 = el("HTML", "rgb(0,0,0)", "rgba(0, 0, 0, 0)");
+const body2 = el("BODY", "rgb(0,0,0)", "rgba(0, 0, 0, 0)");
+const black2 = el("DIV", "rgb(0, 0, 0)", "rgba(0, 0, 0, 0)");
+const link2 = el("A", "rgb(0, 0, 238)", "rgba(0, 0, 0, 0)");
+globalThis.document = { documentElement: html2, body: body2, readyState: "complete", addEventListener() {}, querySelectorAll: () => made };
+new Function(srcRust)();
+t("Rust 版：黑字 → 白字", black2._s.get("color") === "#E9E9E9");
+t("Rust 版：链接 → 高亮蓝", link2._s.get("color") === "#7AA2F7");
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);

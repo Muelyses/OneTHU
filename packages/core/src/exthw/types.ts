@@ -72,6 +72,11 @@ export interface ExternalHomework {
   score?: number;
   /** 考试卷面满分（与 score 成对出现；取自 /v/exam/cover 的 total_score） */
   totalScore?: number;
+  /** R20-B2：雨课堂作业详情参数 leaf_type_id（get_exercise_list 路径段；仅 yuketang 源设置，
+   *  其余源恒缺省）。移动端原生详情页（YktAssignmentDetailPage）据此拉整卷明细。 */
+  leafTypeId?: string;
+  /** R20-B2：雨课堂 classroom_id（与 leafTypeId 成对出现；仅 yuketang 源设置） */
+  classroomId?: string;
 }
 
 export interface HomeworkSource {

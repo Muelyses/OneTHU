@@ -292,6 +292,14 @@ export interface YkComment {
   index?: number;
 }
 
+/** 我的作答附件（R20-B2）：user.my_answer.attachment[] 里能确认的字段只有
+ *  name / url（实测快照形如 {id:7, name:"fig.png"}；id 等其余字段 B2 不透出）。
+ *  B2 只读展示文件名；下载 / 上传属 R20-C。 */
+export interface YkAttachment {
+  name?: string;
+  url?: string;
+}
+
 /** 归一化后的单题。题面缺字段不崩（0 / "" / [] 兜底）；「我的作答」仅在有值时设 */
 export interface YkProblem {
   /** problems[].problem_id（String 化，供 React key / 逐题提交） */
@@ -316,6 +324,11 @@ export interface YkProblem {
   myScore?: number;
   /** user.my_answer.content（非空时才设） */
   myAnswerHtml?: string;
+  /** user.my_answer.attachment 归一化（非空数组时才设；B2 只读展示，下载属 R20-C） */
+  myAnswerAttachments?: YkAttachment[];
+  /** 题型 9（外链 OJ）的作答外链（content.data.answer_problem_url，docs 28.4；
+   *  仅 type 9 且取到 http(s) 串时设。红线：此类题不在雨课堂站内提交） */
+  externalUrl?: string;
   /** 老师总评（user.remark，非空时才设） */
   remark?: string;
   /** 老师批注（user.comment[]，滤掉空 content；全空不设） */
@@ -330,6 +343,8 @@ export interface YkExerciseDetail {
   maxRetry: number;
   /** 是否允许补交（data.is_allowed_late_submission，仅显式 true；红线：仅允许时开放提交） */
   lateAllowed: boolean;
+  /** 补交截止（data.late_submission，毫秒时间戳 → "YYYY-MM-DD HH:MM"；缺失/非数字不设） */
+  lateDeadline?: string;
   /** 已作答题数（data.answer_count；缺失 0） */
   answerCount: number;
   /** data.font：该次作业的加密字体文件 URL（docs 28.4 实测，下载后 @font-face 应用） */
@@ -374,6 +389,33 @@ function toComments(raw: unknown): YkComment[] | undefined {
   return out.length ? out : undefined;
 }
 
+/** user.my_answer.attachment[] → YkAttachment[]（R20-B2）。
+ *  实测项形如 {id:7, name:"fig.png"}，也有 avatar/attachment 位给空串的脏数据；
+ *  保守只取对象项里的 name / url 字符串字段，无 name 且无 url 的项丢弃；
+ *  结果为空 → undefined（UI 按无附件渲染）。 */
+function toMyAttachments(raw: unknown): YkAttachment[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: YkAttachment[] = [];
+  for (const a of raw) {
+    if (a === null || typeof a !== "object") continue;
+    const m = a as Record<string, unknown>;
+    const name = typeof m["name"] === "string" && m["name"].trim() ? m["name"].trim() : undefined;
+    const url = typeof m["url"] === "string" && m["url"].trim() ? m["url"].trim() : undefined;
+    if (name || url) out.push({ ...(name ? { name } : {}), ...(url ? { url } : {}) });
+  }
+  return out.length ? out : undefined;
+}
+
+/** 题型 9（外链 OJ）→ 作答外链：content.data.answer_problem_url（docs 28.4 pc.js 逆向）。
+ *  data 形状实测为对象（也可能缺省/非对象），保守取 answer_problem_url 字符串字段；
+ *  仅接受 http(s)（与 R20-A isHttpUrl 同口径），其余一律不设。 */
+function toProblemExternalUrl(content: Record<string, unknown>): string | undefined {
+  const data = content["data"];
+  if (data === null || typeof data !== "object") return undefined;
+  const u = (data as Record<string, unknown>)["answer_problem_url"];
+  return typeof u === "string" && /^https?:\/\//i.test(u.trim()) ? u.trim() : undefined;
+}
+
 /** problems[] 单项 → YkProblem。submission_status / review_detail / content_score 等字段
  *  实测存在但归一化暂不透出（B2 如需再加）；缺字段不崩。 */
 function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: number): YkProblem {
@@ -407,6 +449,14 @@ function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: numbe
   if (typeof myAnswer["content"] === "string" && myAnswer["content"].trim()) {
     problem.myAnswerHtml = myAnswer["content"];
   }
+  // R20-B2：作答附件归一化（只读展示；下载/上传属 R20-C）
+  const atts = toMyAttachments(myAnswer["attachment"]);
+  if (atts) problem.myAnswerAttachments = atts;
+  // 题型 9（外链 OJ）：透出作答外链（红线：不在雨课堂站内提交）
+  if (problem.type === 9) {
+    const extUrl = toProblemExternalUrl(content);
+    if (extUrl) problem.externalUrl = extUrl;
+  }
   if (user) {
     if (typeof user["remark"] === "string" && user["remark"].trim()) problem.remark = user["remark"];
     const comments = toComments(user["comment"]);
@@ -420,9 +470,10 @@ function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: numbe
  * GET /mooc-api/v1/lms/exercise/get_exercise_list/{leaf_type_id}/?classroom_id=…&term=latest&uv_id=…
  * ⚠️ 必须带请求头 `XTBZ: ykt`（同 fetchYktStatus）。
  * 字段映射（docs 28.4 实测）：exercise 级 name / description / max_retry /
- * is_allowed_late_submission / answer_count / font；problems[].content{ ProblemType, TypeText,
- * Body, Options, AllowResults, score, max_retry }、problems[].user{ my_answer{content},
- * remark, comment[], my_score, status }。
+ * is_allowed_late_submission / answer_count / font；R20-B2 增补 late_submission → lateDeadline；
+ * problems[].content{ ProblemType, TypeText,
+ * Body, Options, AllowResults, score, max_retry }、problems[].user{ my_answer{content, attachment},
+ * remark, comment[], my_score, status }；题型 9 透出 content.data.answer_problem_url。
  * 异常保守口径：errcode≠0 / 缺 data → throw 带上下文；单字段缺失 → 默认值不崩。
  */
 async function fetchExerciseDetail(
@@ -452,11 +503,14 @@ async function fetchExerciseDetail(
   const answerCount = toNumOr(data["answer_count"], 0);
   const problemsRaw = Array.isArray(data["problems"]) ? (data["problems"] as Array<Record<string, unknown>>) : [];
   const font = data["font"];
+  // R20-B2：补交截止（毫秒时间戳，docs 28.1/28.4 实测字段 late_submission）
+  const lateMs = toNum(data["late_submission"]);
   return {
     name: toStr(data["name"]),
     description: toStr(data["description"]),
     maxRetry: toNumOr(data["max_retry"], 0),
     lateAllowed: data["is_allowed_late_submission"] === true,
+    ...(lateMs !== undefined && lateMs > 0 ? { lateDeadline: fmtLocal(lateMs) } : {}),
     answerCount,
     ...(typeof font === "string" && font.trim() ? { fontUrl: font } : {}),
     problems: problemsRaw.map((p, i) => toYkProblem(p, i, answerCount)),
@@ -555,6 +609,9 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
                 url,
                 submitted: false,
                 audited: audited || undefined,
+                // R20-B2：原生详情页拉取参数（leaf_type_id 缺失时不设 → UI 回退网页打开）
+                ...(leafTypeStr ? { leafTypeId: leafTypeStr } : {}),
+                classroomId,
               },
             });
           }

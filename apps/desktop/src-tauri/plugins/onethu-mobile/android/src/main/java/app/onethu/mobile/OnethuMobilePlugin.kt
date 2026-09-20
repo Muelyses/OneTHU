@@ -26,6 +26,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.Gravity
@@ -64,6 +65,13 @@ class OpenIntentArgs {
 }
 
 @InvokeArg
+class SeedCookiesArgs {
+    /** 目标 origin（如 https://webvpn.tsinghua.edu.cn/） */
+    lateinit var url: String
+    /** "k=v; k2=v2" 原文（仅在内存传递，绝不落盘/打印内容） */
+    lateinit var cookie: String
+}
+
 class OpenWebModalArgs {
     lateinit var url: String
     /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
@@ -529,9 +537,69 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
             "Chrome/79.0.3945.88 Safari/537.36"
 
+    /**
+     * 打开本应用的系统设置页（2026-09-20）。
+     *
+     * 用途：定位等运行时权限被用户拒绝两次后，Android 不再弹窗，requestPermissions 静默
+     * 返回 denied——此时唯一出路是让用户去系统设置里手动打开。部分 ROM（HyperOS/ColorOS）
+     * 首次请求就可能被静默拒绝，所以这个入口必须有。
+     */
+    @Command
+    fun openAppSettings(invoke: Invoke) {
+        activity.runOnUiThread {
+            try {
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", activity.packageName, null),
+                )
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+                invoke.resolve()
+            } catch (e: Throwable) {
+                invoke.reject("打开系统设置失败: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * 把 Rust 侧会话票种进 WebView 的 CookieManager（2026-09-20）。
+     *
+     * 为什么必须走这里：info app 的官方页之所以永不二次验证，是因为 RN 的网络层与 WebView
+     * **共用同一个 Android CookieManager**。Tauri 侧 Rust(reqwest) 自带 jar，WebView 拿不到，
+     * 于是我们早先试过 JNI 反射调 CookieManagerAdapter.setCookie——华为新版 WebView glue 的
+     * 签名变了，直接 NoSuchMethodError，只能退化成 JS 在目标 origin 写 document.cookie
+     * （要求恰好落在同源文档、还会被站点自己的 Set-Cookie 覆盖）→ 表现就是「每次打开都要重新验证」。
+     *
+     * 这里直接用 android.webkit.CookieManager（**非反射**，与 RN 同一条 API），种完 flush，
+     * WebView 之后再导航就天然带会话；种进去的是持久 Cookie，后续打开也在。
+     */
+    @Command
+    fun seedWebViewCookies(invoke: Invoke) {
+        val args = invoke.parseArgs(SeedCookiesArgs::class.java)
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.setAcceptCookie(true)
+                var n = 0
+                for (pair in args.cookie.split("; ")) {
+                    if (!pair.contains("=")) continue
+                    cm.setCookie(args.url, "$pair; Path=/; Secure")
+                    n++
+                }
+                cm.flush()
+                invoke.resolve()
+                Log.i("onethu", "[COOKIE-SEED] $n 条 → ${args.url}")
+            } catch (e: Throwable) {
+                invoke.reject("种会话 Cookie 失败: ${e.message}")
+            }
+        }
+    }
+
     /** 全屏 Dialog WebView 打开任意 http(s) 页面（桌面模式 + 可缩放）。
      *  回传 {}：用户点「关闭」或按返回键即销毁，无任何数据回读。 */
     @Command
+
+
     fun openWebModal(invoke: Invoke) {
         val args = invoke.parseArgs(OpenWebModalArgs::class.java)
         // scheme 白名单：非 http(s) 一律拒绝（Rust 侧已校验一次，这里兜底）

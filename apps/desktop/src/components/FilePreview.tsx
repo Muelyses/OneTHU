@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { http, downloadLearnUrl, withLearnCsrf } from "../lib/clients.js";
+import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
 import {
@@ -162,6 +162,8 @@ const ZIP_EXTS = new Set(["zip", "jar"]);
 const OFFICE_EXTS = new Set(["docx", "xlsx", "pptx"]);
 /** 文本/zip 解码上限：超过则引导下载（防止 atob 大文件卡 UI） */
 const DECODE_LIMIT = 20 * 1024 * 1024;
+/** 预览抓取上限：再大就不走 IPC（base64 回传会把 WebView 拖死），直接引导下载 */
+const PREVIEW_MAX_BYTES = 48 * 1024 * 1024;
 /** zip 内文本条目内联预览的大小上限 */
 const ZIP_TEXT_LIMIT = 200 * 1024;
 /** xlsx 单表最多渲染的行/列数（超出提示截断） */
@@ -202,9 +204,15 @@ function base64ToBytes(b64: string): Uint8Array {
 
 /** 任意错误的中文可读描述（网络错误走 explainNetworkError，其余取 message） */
 function errMsg(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err);
+  // Rust 侧大小闸门：too-large:<实际>:<上限> → 说清楚多大、该怎么办
+  const big = /too-large:(\d+):(\d+)/.exec(raw);
+  if (big) {
+    return `文件较大（${fmtBytes(Number(big[1]))}），应用内预览上限 ${fmtBytes(Number(big[2]))}——点「下载」或「另存为」即可完整保存。`;
+  }
   const s = explainNetworkError(err);
   if (s) return s;
-  return err instanceof Error ? err.message : String(err);
+  return raw;
 }
 
 /* ---------- 抓取（复用 fetchImageAsDataUrl 的 fetch_binary 思路，mime 单独带回） ---------- */
@@ -224,7 +232,14 @@ async function fetchBinary(url: string): Promise<FetchedBinary> {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
   const { invoke } = await import("@tauri-apps/api/core");
-  const out = await invoke<{ mime: string; data: string }>("fetch_binary", { url: target, cookies: jarCookies });
+  // 预览上限与超时都放大：二进制要以 base64 经 IPC 回传，默认 8MB/12s 是给正文图片的，
+  // 课件 PDF/Office 常常几十 MB、几秒起步——用图片的参数去看文件必然「有些文件打不开」。
+  const out = await invoke<{ mime: string; data: string }>("fetch_binary", {
+    url: target,
+    cookies: jarCookies,
+    maxBytes: PREVIEW_MAX_BYTES,
+    timeoutSecs: 60,
+  });
   const mime = (out.mime || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";
   return { mime, dataUrl: `data:${mime};base64,${out.data}`, b64: out.data };
 }
@@ -743,7 +758,7 @@ export function FilePreviewHost() {
         setPhase({ s: "ready", view });
       } catch (err) {
         if (!alive) return;
-        setPhase({ s: "error", msg: explainNetworkError(err) });
+        setPhase({ s: "error", msg: errMsg(err) });
       }
     })();
     return () => {
@@ -759,7 +774,22 @@ export function FilePreviewHost() {
       const path = await downloadLearnUrl(cur.url, cur.name || "download");
       setDlMsg(`已下载到：${path}`);
     } catch (err) {
-      setDlMsg("下载失败：" + explainNetworkError(err));
+      setDlMsg("下载失败：" + errMsg(err));
+    } finally {
+      setDlBusy(false);
+    }
+  }, [cur, dlBusy]);
+
+  /** 另存为：这一次落哪儿由用户当场选（桌面保存对话框 / Android「保存到…」） */
+  const doSaveAs = useCallback(async () => {
+    if (!cur || dlBusy) return;
+    setDlBusy(true);
+    setDlMsg("");
+    try {
+      const path = await saveLearnUrlAs(cur.url, cur.name || "download");
+      setDlMsg(path ? `已保存到：${path}` : "已取消另存为。");
+    } catch (err) {
+      setDlMsg("另存为失败：" + errMsg(err));
     } finally {
       setDlBusy(false);
     }
@@ -814,6 +844,9 @@ export function FilePreviewHost() {
           <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
             {dlBusy ? "下载中…" : "下载"}
           </button>
+          <button className="btn btn-ghost" disabled={dlBusy} title="这次保存到哪里由你选" onClick={() => void doSaveAs()}>
+            另存为
+          </button>
           <button className="btn" onClick={close}>✕</button>
         </div>
 
@@ -827,6 +860,9 @@ export function FilePreviewHost() {
                 <button className="btn" onClick={retry}>重试</button>
                 <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
                   {dlBusy ? "下载中…" : "下载查看"}
+                </button>
+                <button className="btn btn-ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>
+                  另存为…
                 </button>
               </div>
             </div>
@@ -907,6 +943,9 @@ export function FilePreviewHost() {
               </div>
               <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
                 {dlBusy ? "下载中…" : "下载查看"}
+              </button>
+              <button className="btn btn-ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>
+                另存为…
               </button>
             </div>
           ) : null}

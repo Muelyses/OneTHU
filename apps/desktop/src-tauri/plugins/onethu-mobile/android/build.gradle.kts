@@ -26,5 +26,8 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
+    // SAF 选择器的结果经 @ActivityCallback 回传，参数类型是 androidx 的 ActivityResult，
+    // 而 tauri-android 把它作为实现依赖（不传递），故这里显式声明（版本对齐 tauri 2.11.5）
+    implementation("androidx.activity:activity-ktx:1.9.3")
     implementation(project(":tauri-android"))
 }

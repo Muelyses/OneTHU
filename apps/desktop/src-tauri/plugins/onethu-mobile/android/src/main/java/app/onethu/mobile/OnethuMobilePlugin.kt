@@ -21,6 +21,7 @@ import android.content.ContentValues
 import android.content.ComponentName
 import android.content.Intent
 import android.provider.Settings
+import android.provider.DocumentsContract
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
@@ -31,6 +32,8 @@ import android.view.Gravity
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
+import androidx.activity.result.ActivityResult
+import app.tauri.annotation.ActivityCallback
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -121,6 +124,22 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 } catch (_: Exception) {
                     "application/octet-stream"
                 }
+                // 用户选过自定义文件夹（SAF 目录树）就写进去；没选才落系统「下载」
+                val tree = DownloadPrefs.treeUri(activity)
+                if (tree != null) {
+                    val uri = DownloadPrefs.createDocument(activity, tree, mime, name)
+                    if (uri != null) {
+                        activity.contentResolver.openOutputStream(uri)?.use { o -> src.inputStream().use { it.copyTo(o) } }
+                            ?: throw IllegalStateException("打开输出流失败")
+                        val ret = JSObject()
+                        ret.put("name", name)
+                        ret.put("dir", DownloadPrefs.label(activity))
+                        activity.runOnUiThread { invoke.resolve(ret) }
+                        return@Thread
+                    }
+                    // 目录树失效（用户删了文件夹/撤销授权）：清掉配置，回落系统下载
+                    DownloadPrefs.clear(activity)
+                }
                 if (Build.VERSION.SDK_INT >= 29) {
                     val resolver = activity.contentResolver
                     val values = ContentValues().apply {
@@ -155,6 +174,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 }
                 val ret = JSObject()
                 ret.put("name", name)
+                ret.put("dir", "系统下载")
                 activity.runOnUiThread { invoke.resolve(ret) }
             } catch (e: Exception) {
                 val msg = e.message ?: "转存失败"
@@ -162,6 +182,141 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             }
         }.start()
     }
+
+    /* ── 下载位置（Android 走 SAF：目录树授权一次，之后一直写那里）── */
+
+    /** 当前下载位置：{ path 显示名, isDefault }；path 是给用户看的（SAF 给不出真实路径） */
+    @Command
+    fun downloadDirGet(invoke: Invoke) {
+        try {
+            val ret = JSObject()
+            ret.put("path", DownloadPrefs.label(activity))
+            ret.put("isDefault", DownloadPrefs.treeUri(activity) == null)
+            invoke.resolve(ret)
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "读取下载位置失败")
+        }
+    }
+
+    /** 调起系统文件夹选择器（ACTION_OPEN_DOCUMENT_TREE），授权持久化到重启之后 */
+    @Command
+    fun downloadDirPick(invoke: Invoke) {
+        try {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION,
+                )
+            }
+            // Tauri v2 的插件 API：结果经 @ActivityCallback 回传（没有 onActivityResult 钩子）
+            startActivityForResult(invoke, intent, "onPickDownloadDir")
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "无法调起文件夹选择器")
+        }
+    }
+
+    @ActivityCallback
+    private fun onPickDownloadDir(invoke: Invoke?, result: ActivityResult) {
+        if (invoke == null) return
+        val uri = result.data?.data
+        if (result.resultCode != Activity.RESULT_OK || uri == null) {
+            // 用户取消：不改配置，原样回当前值
+            val now = JSObject()
+            now.put("path", DownloadPrefs.label(activity))
+            now.put("isDefault", DownloadPrefs.treeUri(activity) == null)
+            invoke.resolve(now)
+            return
+        }
+        try {
+            activity.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+            )
+        } catch (_: SecurityException) {
+            // 少数 ROM 不给持久授权：本次仍可用；重启后失效会被 createDocument 兜底清掉
+        }
+        DownloadPrefs.setTree(activity, uri.toString())
+        val ret = JSObject()
+        ret.put("path", DownloadPrefs.label(activity))
+        ret.put("isDefault", false)
+        invoke.resolve(ret)
+    }
+
+    @Command
+    fun downloadDirReset(invoke: Invoke) {
+        try {
+            DownloadPrefs.clear(activity)
+            val ret = JSObject()
+            ret.put("path", DownloadPrefs.label(activity))
+            ret.put("isDefault", true)
+            invoke.resolve(ret)
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "重置下载位置失败")
+        }
+    }
+
+    /**
+     * 另存为：调起系统「保存到…」（ACTION_CREATE_DOCUMENT），用户当场挑位置与文件名。
+     * 先由 Rust 把文件落到应用缓存，这里只负责把字节写进用户选定的文档 URI。
+     */
+    @Command
+    fun saveAsDocument(invoke: Invoke) {
+        val args = invoke.parseArgs(SaveDownloadArgs::class.java)
+        val src = File(args.path)
+        if (!src.exists()) {
+            invoke.reject("源文件不存在：${args.path}")
+            return
+        }
+        try {
+            val name = args.name.ifBlank { src.name }
+            val mime = try {
+                URLConnection.guessContentTypeFromName(name) ?: "application/octet-stream"
+            } catch (_: Exception) {
+                "application/octet-stream"
+            }
+            pendingSaveAsPath = args.path
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = mime
+                putExtra(Intent.EXTRA_TITLE, name)
+            }
+            startActivityForResult(invoke, intent, "onSaveAsDocument")
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "无法调起保存对话框")
+        }
+    }
+
+    @ActivityCallback
+    private fun onSaveAsDocument(invoke: Invoke?, result: ActivityResult) {
+        if (invoke == null) return
+        val uri = result.data?.data
+        if (result.resultCode != Activity.RESULT_OK || uri == null) {
+            invoke.resolve(JSObject().put("cancelled", true))
+            return
+        }
+        val source = pendingSaveAsPath
+        pendingSaveAsPath = null
+        if (source == null) {
+            invoke.reject("源文件已丢失，请重新下载")
+            return
+        }
+        Thread {
+            try {
+                File(source).inputStream().use { input ->
+                    val out = activity.contentResolver.openOutputStream(uri)
+                        ?: throw IllegalStateException("打开输出流失败")
+                    out.use { o -> input.copyTo(o) }
+                }
+                invoke.resolve(JSObject().put("name", DownloadPrefs.displayName(activity, uri)))
+            } catch (e: Exception) {
+                activity.runOnUiThread { invoke.reject(e.message ?: "写入失败") }
+            }
+        }.start()
+    }
+
+    /** 另存为流程中待写入的源文件（回调时用） */
+    private var pendingSaveAsPath: String? = null
 
     /** intent:// 深链打开（地图导航跳 App）；未装目标 App 时落 browser_fallback_url */
     @Command

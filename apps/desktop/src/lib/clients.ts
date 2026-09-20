@@ -680,10 +680,24 @@ export function withLearnCsrf(url: string): string {
   }
 }
 
-/** learn 文件下载：带会话 Cookie 直连取字节，落盘 ~/Downloads */
+/** learn 文件下载：带会话 Cookie 直连取字节，落盘到设置中的下载目录 */
 export async function downloadLearnFile(fileId: string, filename: string): Promise<string> {
   const { LEARN_FILE_DOWNLOAD } = await import("@onethu/core");
   return downloadLearnUrl(LEARN_FILE_DOWNLOAD(fileId), filename);
+}
+
+/**
+ * 另存为：这一次落哪儿由用户当场决定（桌面系统保存对话框 / Android 保存到…）。
+ * 返回落盘位置；用户取消返回 null（取消不是错误，调用方别弹报错）。
+ */
+export async function saveLearnUrlAs(url: string, filename: string): Promise<string | null> {
+  const target = withLearnCsrf(url);
+  const jarCookies = http.jar
+    .getCookies(new URL(target))
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string | null>("save_file_as", { url: target, cookies: jarCookies, filename });
 }
 
 /** 任意 learn 资源下载（作业/通知附件端点与课件不同，由 core 解析出完整 downloadUrl）。

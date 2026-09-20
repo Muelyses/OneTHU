@@ -6,7 +6,7 @@ import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { clearRemembered, loadRemembered, session } from "../lib/clients.js";
+import { clearRemembered, loadRemembered, session, isTauri } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
@@ -352,6 +352,8 @@ export function SettingsPage() {
       </Card>
       <SectionHead title="外部作业源" />
       <ExtHwSection />
+
+      <DownloadSettings />
 
       <SectionHead title="首页" />
       <Card>
@@ -1177,6 +1179,88 @@ function ExtHwSection() {
         </div>
       </Card>
     </div>
+  );
+}
+
+/* ── 下载位置（网络学堂附件与云盘文件落盘处）──
+ * 桌面端：系统文件夹选择器 + 本机保存；Android：SAF 目录树（见 onethu-mobile 插件）。
+ * 这里只做「读当前值 / 让用户改」，真正的落盘判断在原生侧（downloads.rs / 插件）。 */
+type DownloadDirectory = { path: string; isDefault: boolean };
+
+function DownloadSettings() {
+  const [available, setAvailable] = useState(isTauri);
+  const [directory, setDirectory] = useState<DownloadDirectory | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!available) return;
+    let active = true;
+    void invoke<DownloadDirectory | null>("download_directory_get")
+      .then((value) => {
+        if (!active) return;
+        setDirectory(value);
+        if (!value) setAvailable(false);   // 该平台不支持（如未接入的形态）：不显示这一块
+      })
+      .catch((e: unknown) => {
+        if (active) setMessage(`读取下载位置失败：${e instanceof Error ? e.message : String(e)}`);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [available]);
+
+  const changeDirectory = async (reset: boolean): Promise<void> => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const value = await invoke<DownloadDirectory | null>(
+        reset ? "download_directory_reset" : "download_directory_pick",
+      );
+      if (value) {
+        setDirectory(value);
+        setMessage(reset ? "已恢复默认下载位置。" : "下载位置已保存，下次下载时生效。");
+      }
+    } catch (e) {
+      setMessage(`修改失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!available) return null;
+  return (
+    <>
+      <SectionHead title="下载" />
+      <Card>
+        <div className="setting-row" style={{ flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+            <div className="setting-title">下载位置</div>
+            <div className="setting-desc" style={{ overflowWrap: "anywhere" }}>
+              {loading ? "正在读取…" : directory?.path || "下载位置读取失败，请重新选择文件夹或恢复默认。"}
+            </div>
+            <div className="setting-desc">
+              网络学堂附件与云盘文件将保存到这里，已下载的文件不会移动；单个文件也可以用「另存为」临时挑别处。
+            </div>
+            {message ? (
+              <div role="status" style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)", overflowWrap: "anywhere" }}>{message}</div>
+            ) : null}
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button className="btn" disabled={loading || busy} onClick={() => void changeDirectory(false)}>
+              选择文件夹
+            </button>
+            <button className="btn" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>
+              恢复默认
+            </button>
+          </div>
+        </div>
+      </Card>
+    </>
   );
 }
 

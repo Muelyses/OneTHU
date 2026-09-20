@@ -12,6 +12,7 @@ mod notify_macos;
 mod notify_windows;
 mod mail;
 mod seafile;
+mod downloads;
 mod harness_embed;
 mod plugins;
 use std::collections::HashMap;
@@ -344,7 +345,7 @@ fn open_external(app: tauri::AppHandle, url: String) -> Result<(), String> {
  * 会话快照与「记住密码」一律镜像到应用数据目录的普通文件，启动时优先
  * localStorage、缺失则从文件回灌。 */
 
-fn state_dir(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+fn state_dir<R: tauri::Runtime>(app: &tauri::AppHandle<R>) -> Result<std::path::PathBuf, String> {
     let dir = app
         .path()
         .app_data_dir()
@@ -368,7 +369,7 @@ fn safe_name(name: &str) -> String {
 }
 
 #[tauri::command]
-fn state_write(app: tauri::AppHandle, name: String, content: String) -> Result<(), String> {
+fn state_write<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String, content: String) -> Result<(), String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
     // 原子写：临时文件 + rename，强退/断电不留半截 JSON
     let tmp = path.with_extension("json.tmp");
@@ -377,7 +378,7 @@ fn state_write(app: tauri::AppHandle, name: String, content: String) -> Result<(
 }
 
 #[tauri::command]
-fn state_read(app: tauri::AppHandle, name: String) -> Result<Option<String>, String> {
+fn state_read<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String) -> Result<Option<String>, String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
     match std::fs::read_to_string(&path) {
         Ok(s) => Ok(Some(s)),
@@ -387,7 +388,7 @@ fn state_read(app: tauri::AppHandle, name: String) -> Result<Option<String>, Str
 }
 
 #[tauri::command]
-fn state_delete(app: tauri::AppHandle, name: String) -> Result<(), String> {
+fn state_delete<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String) -> Result<(), String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
     match std::fs::remove_file(&path) {
         Ok(()) => Ok(()),
@@ -730,15 +731,18 @@ async fn save_text_file(
     Ok(Some(real.to_string_lossy().to_string()))
 }
 
-/// 带会话 Cookie 下载文件到 ~/Downloads（learn 直连；登录失效/空文件识别拒绝）。
-/// 落盘名：响应 Content-Disposition 真名优先，其次调用方传入名（title.fileType）。
-#[tauri::command]
-async fn download_file(
-    app: tauri::AppHandle,
-    url: String,
-    cookies: String,
-    filename: String,
-) -> Result<String, String> {
+/// 抓附件字节（download_file / save_file_as 共用）：
+/// 会话失效识别、真名解析、空文件校验都收敛在这里——两处走同一套判断，
+/// 免得出现「下载能识别会话失效、另存为却把登录页当文件写盘」这种不一致。
+///
+/// 会话失效的两种形态都要认：状态码 200 但内容是登录跳转页（HTML）、以及 HTML 里带
+/// location.href 的短响应。但**附件本身就是 .html 时要放行**（用户就是来下网页的），
+/// 故先看 Content-Type 与落盘名，再决定要不要按内容开头判。
+pub(crate) async fn fetch_attachment(
+    url: &str,
+    cookies: &str,
+    fallback_name: &str,
+) -> Result<(String, Vec<u8>), String> {
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::limited(10))
         // 全部目标域均为 *.tsinghua.edu.cn，直连即可：强制绕过系统代理（reqwest 0.12
@@ -749,7 +753,7 @@ async fn download_file(
         .build()
         .map_err(|e| e.to_string())?;
     let resp = client
-        .get(&url)
+        .get(url)
         .header("Cookie", cookies)
         .send()
         .await
@@ -762,27 +766,49 @@ async fn download_file(
         .get(reqwest::header::CONTENT_DISPOSITION)
         .and_then(|v| v.to_str().ok())
         .map(|s| s.to_string());
+    let content_type = resp
+        .headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("")
+        .to_ascii_lowercase();
     let bytes = resp.bytes().await.map_err(|e| e.to_string())?;
     if bytes.is_empty() {
         return Err("下载失败：文件内容为空（mobile 同款 bytesWritten==0 校验）".into());
     }
-    // 登录失效/会话重定向中转页：状态码 200 但内容是 HTML 跳转页
-    // （mobile fs.downloadFile：bytesWritten<100 且含 location.href → 失败）
-    let head = String::from_utf8_lossy(&bytes[..bytes.len().min(4096)]);
-    let head = head.trim_start_matches('\u{feff}').trim_start();
-    let looks_html = head.starts_with("<!DOCTYPE") || head.starts_with("<!doctype") || head.starts_with("<html");
-    let login_redirect = bytes.len() < 4096 && head.contains("location.href");
-    if looks_html || login_redirect {
-        return Err("会话已失效，需要重新登录".into());
-    }
-    // 落盘名：Content-Disposition 真名优先（服务器知道真实文件名），
-    // 其次调用方名；服务端真名通常自带扩展名，不重复追加
     let name = content_disposition
         .as_deref()
         .and_then(parse_cd_filename)
         .filter(|n| !n.trim().is_empty())
-        .unwrap_or(filename);
-    // Windows 没有 HOME（只有 USERPROFILE）——旧版在 Windows 下载文件恒报"无法定位主目录"
+        .unwrap_or_else(|| fallback_name.to_string());
+    let name_is_html = {
+        let lower = name.to_ascii_lowercase();
+        lower.ends_with(".html") || lower.ends_with(".htm")
+    };
+    if !name_is_html {
+        let head = String::from_utf8_lossy(&bytes[..bytes.len().min(4096)]);
+        let head = head.trim_start_matches('\u{feff}').trim_start();
+        let looks_html = head.starts_with("<!DOCTYPE")
+            || head.starts_with("<!doctype")
+            || head.starts_with("<html");
+        let login_redirect = bytes.len() < 4096 && head.contains("location.href");
+        if content_type.starts_with("text/html") || looks_html || login_redirect {
+            return Err("会话已失效，需要重新登录".into());
+        }
+    }
+    Ok((name, bytes.to_vec()))
+}
+
+/// 带会话 Cookie 下载文件到设置中的下载目录（learn 直连；登录失效/空文件识别拒绝）。
+/// 落盘名：响应 Content-Disposition 真名优先，其次调用方传入名（title.fileType）。
+#[tauri::command]
+async fn download_file(
+    app: tauri::AppHandle,
+    url: String,
+    cookies: String,
+    filename: String,
+) -> Result<String, String> {
+    let (name, bytes) = fetch_attachment(&url, &cookies, &filename).await?;
     let safe_name: String = name
         .chars()
         .map(|c| if c == '/' || c == ':' { '_' } else { c })
@@ -809,24 +835,84 @@ async fn download_file(
                 serde_json::json!({ "path": tmp.to_string_lossy(), "name": safe_name }),
             )
             .map_err(|e| e.to_string())?;
-        if r.get("name").is_some() {
-            return Ok(format!("下载/{safe_name}"));
+        if let Some(dir) = r.get("dir").and_then(|v| v.as_str()) {
+            return Ok(format!("{dir}/{safe_name}"));
         }
         // 桥失败：缓存文件兜底（至少文件是完整的）
         return Ok(tmp.to_string_lossy().into_owned());
     }
     #[cfg(not(target_os = "android"))]
     {
-        let _ = &app;
-        let home = std::env::var("HOME")
-            .or_else(|_| std::env::var("USERPROFILE"))
-            .map_err(|_| "无法定位主目录")?;
-        let dir = std::path::Path::new(&home).join("Downloads");
+        let dir = downloads::directory(&app)?;
         std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
         let path = dir.join(&safe_name);
         std::fs::write(&path, &bytes).map_err(|e| e.to_string())?;
         Ok(path.to_string_lossy().into_owned())
     }
+}
+
+/// 另存为：这一次下载落哪儿由用户当场决定（桌面 = 系统保存对话框；
+/// Android = ACTION_CREATE_DOCUMENT）。取消返回 Ok(None)——用户改主意不是错误。
+#[cfg(not(target_os = "android"))]
+#[tauri::command]
+async fn save_file_as<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
+    url: String,
+    cookies: String,
+    filename: String,
+) -> Result<Option<String>, String> {
+    use tauri_plugin_dialog::DialogExt;
+    let (name, bytes) = fetch_attachment(&url, &cookies, &filename).await?;
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    app.dialog()
+        .file()
+        .set_title("另存为")
+        .set_file_name(&name)
+        .save_file(move |path| {
+            let _ = tx.send(path);
+        });
+    let Some(picked) = rx.await.map_err(|e| e.to_string())? else {
+        return Ok(None);
+    };
+    let path = picked.into_path().map_err(|e| e.to_string())?;
+    std::fs::write(&path, &bytes).map_err(|e| e.to_string())?;
+    Ok(Some(path.to_string_lossy().into_owned()))
+}
+
+#[cfg(target_os = "android")]
+#[tauri::command]
+async fn save_file_as(
+    app: tauri::AppHandle,
+    url: String,
+    cookies: String,
+    filename: String,
+) -> Result<Option<String>, String> {
+    use tauri::Manager;
+    let (name, bytes) = fetch_attachment(&url, &cookies, &filename).await?;
+    // 先落应用缓存，再由 Activity 用 ACTION_CREATE_DOCUMENT 把字节写进用户挑的位置
+    let dir = app
+        .path()
+        .app_cache_dir()
+        .map_err(|e| format!("无法定位缓存目录: {e}"))?
+        .join("onethu-dl");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let tmp = dir.join(&name);
+    std::fs::write(&tmp, &bytes).map_err(|e| e.to_string())?;
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    let r: serde_json::Value = handle
+        .run_mobile_plugin_async(
+            "saveAsDocument",
+            serde_json::json!({ "path": tmp.to_string_lossy(), "name": name }),
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    if r.get("cancelled").and_then(|v| v.as_bool()).unwrap_or(false) {
+        return Ok(None);
+    }
+    Ok(r.get("name").and_then(|v| v.as_str()).map(|s| s.to_string()))
 }
 
 #[derive(Serialize)]
@@ -840,7 +926,16 @@ struct BinaryOut {
 /// 带会话 Cookie 抓取二进制资源（learn 正文图片等），base64 回传给前端转 dataURL。
 /// webview 的 <img> 不携带应用会话 Cookie，直挂 learn 地址只会得到登录页/401。
 #[tauri::command]
-async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> Result<BinaryOut, String> {
+async fn fetch_binary(
+    url: String,
+    cookies: String,
+    referer: Option<String>,
+    // 允许的最大字节数（默认 8MB，图片用；文件预览显式放大）：二进制要以 base64 经 IPC
+    // 回传，几十 MB 的文件在这条路上会拖死 WebView——与其卡死，不如早拒并引导「下载后查看」。
+    max_bytes: Option<u64>,
+    // 超时秒数（默认 12；文件预览传大一些，图片的超时对文件不够用）
+    timeout_secs: Option<u64>,
+) -> Result<BinaryOut, String> {
     // 共享 client + 超时（2026-09-13 用户实锤「其他服务变慢」：每调用新建
     // client 无连接复用（每次全量 TLS 握手）且无任何超时——校外不可达直连
     // 挂到 OS 级 75s TCP 超时，反复开关通知=悬挂连接与 async 任务堆积）。
@@ -851,7 +946,7 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
             .no_proxy() // 同 download_file：清华域直连，绕系统代理（参考 PR #2）
             .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
             .connect_timeout(std::time::Duration::from_secs(5))
-            .timeout(std::time::Duration::from_secs(12))
+            // 单请求总超时在下面按参数设置（客户端是 static，读不到运行时的值）
             .build()
             .expect("fetch_binary client build")
     });
@@ -871,6 +966,8 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
     if let Some(r) = referer {
         req = req.header("Referer", r);
     }
+    // 单请求超时：图片 12 秒够，文件预览要更宽（大 PDF 在这条路上本来就慢）
+    let req = req.timeout(std::time::Duration::from_secs(timeout_secs.unwrap_or(12)));
     let resp = req
         .send()
         .await
@@ -888,7 +985,19 @@ async fn fetch_binary(url: String, cookies: String, referer: Option<String>) -> 
         .unwrap_or("")
         .trim()
         .to_string();
+    // 大小闸门：二进制要以 base64 经 IPC 回传，几十 MB 的文件在这条路上会拖死 WebView。
+    // 先看 Content-Length，服务器没给就在读完后再判；超限返回带 "too-large" 标记的错误，
+    // 前端据此提示「文件较大，请下载后查看」而不是丢一个网络错误。
+    let limit = max_bytes.unwrap_or(8 * 1024 * 1024);
+    if let Some(len) = resp.content_length() {
+        if len > limit {
+            return Err(format!("too-large:{}:{}", len, limit));
+        }
+    }
     let bytes = resp.bytes().await.map_err(|e| e.to_string())?;
+    if bytes.len() as u64 > limit {
+        return Err(format!("too-large:{}:{}", bytes.len(), limit));
+    }
     if bytes.is_empty() {
         return Err("预览失败：文件内容为空".into());
     }
@@ -2682,6 +2791,7 @@ tauri::Builder::default()
             http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
+            downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
             open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,

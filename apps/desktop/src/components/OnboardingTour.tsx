@@ -56,6 +56,8 @@ export function OnboardingTour(): React.ReactNode {
   const [keepCards, setKeepCards] = useState<string[]>(["learn", "schedule"]);
   /** 首屏二选一：自行选择（逐项）/ 按场景预设 */
   const [mode, setMode] = useState<"manual" | "preset">("manual");
+  /** 示例收藏夹是否已创建（hooks 必须全部在早退之前，见下方 return null） */
+  const [seeded, setSeeded] = useState(false);
   const [preset, setPreset] = useState<Preset | null>(null);
 
   if (!open) return null;
@@ -112,7 +114,6 @@ export function OnboardingTour(): React.ReactNode {
     { kind: "page", key: "zhjwxk" },             // 选课（一级）
     { kind: "page", key: "reserve-classroom" },  // 空教室（预约页的二级页签）
   ];
-  const [seeded, setSeeded] = useState(false);
   const seedDemoFolder = (goTo: boolean): void => {
     const id = favs.create("示例收藏夹", null);
     if (!id) return;

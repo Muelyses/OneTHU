@@ -1,8 +1,0 @@
-/Volumes/PortableSSD/Projects/thuapp/OneTHU/tools/win-notify-check/target/x86_64-pc-windows-msvc/debug/deps/windows_threading-d2174b2d567e4455.d: /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/lib.rs /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/bindings.rs /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/pool.rs /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/../readme.md
-
-/Volumes/PortableSSD/Projects/thuapp/OneTHU/tools/win-notify-check/target/x86_64-pc-windows-msvc/debug/deps/libwindows_threading-d2174b2d567e4455.rmeta: /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/lib.rs /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/bindings.rs /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/pool.rs /Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/../readme.md
-
-/Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/lib.rs:
-/Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/bindings.rs:
-/Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/pool.rs:
-/Users/st/.cargo/registry/src/mirrors.tuna.tsinghua.edu.cn-4dc01642fd091eda/windows-threading-0.1.0/src/../readme.md:

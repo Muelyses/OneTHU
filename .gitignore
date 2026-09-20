@@ -28,3 +28,6 @@ gradle/**
 # AppleDouble 资源叉（外接 exFAT 卷上写文件必生）：曾在 Android res 目录出现，
 # 会被 aapt/manifest merger 当资源读进去报重复类——一律不入库
 ._*
+
+# 工具目录里的 cargo 构建产物（tools/win-notify-check 等）：一次误提交曾把 628MB 带进历史
+tools/*/target/

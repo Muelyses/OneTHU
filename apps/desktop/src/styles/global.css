@@ -4439,10 +4439,11 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 .thos-service-open:hover strong {
   color: var(--primary);
 }
-.thos-fav {
-  font-size: 18px;
-  line-height: 1;
-  padding: 6px 8px;
+.thos-service-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
 }
 .thos-list {
   display: flex;

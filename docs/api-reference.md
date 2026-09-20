@@ -13,7 +13,7 @@
 
 **异步性**：除 `session.*`、`ui.toast`、`ui.getTabRoot`、`ui.onTabReady`、
 `favorites.add` / `favorites.addAtom` / `favorites.kinds`、`storage.*`、`nav.go` 外均为
-异步方法，返回 `Promise`。
+异步方法，返回 `Promise`（`nav.searchAtoms` / `nav.openAtom` 亦为异步）。
 
 **错误**
 
@@ -71,7 +71,7 @@ return {
 | `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
 | `css` | `registerCss`（注入全局样式，影响整个应用外观；安装时重点确认） |
 | `webview` | `ui.webModal` |
-| `nav` / `ui` | `nav.go` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
+| `nav` / `ui` | `nav.go` / `nav.searchAtoms` / `nav.openAtom` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
 | `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染）、`widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback`（读写桌面上每一块小组件显示的内容） |
@@ -512,6 +512,8 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | 方法 | 权限 | 说明 |
 |---|---|---|
 | `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §19 |
+| `nav.searchAtoms(query, limit?)` | `nav` | 按关键词检索全应用可跳转原子，返回 `{kind, key, title, sub?, group}[]`（缺省 12 条，上限 50）。只查静态注册表 + 本机缓存，**不发起任何校园请求** |
+| `nav.openAtom(ref)` | `nav` | 打开一个原子（等价用户点收藏夹里那一项：跳功能页 / 切聚合页页签 / 打开官方服务页）；解析不出返回 `false`，不会跳空白页。见 §20 |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
 | `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 用户是否确认；`{danger: true}` 走危险操作样式 |
@@ -575,3 +577,27 @@ const reply = (await res.json()).choices[0].message.content;
 
 插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向
 该路由。插件未安装、已停用或未注册该页签时，页面显示降级提示而非空白。
+
+## 20. 原子（`{kind, key}`）——收藏与「一句话直达」的共同底座
+
+**万物原子化**：应用里每一个可跳转的对象——功能页面、今日组件、操作、课程、作业、
+通知、文件、在线服务、场馆、教学楼、洗衣机楼、图书馆、新闻、插件自定义条目——都
+表示为一个原子引用 `{ kind, key }`。收藏夹只存引用（`favorites.addAtom(ref, meta?)`），
+点击时由宿主解析成页面跳转，因此**同一个引用在收藏夹、桌面小组件、OH 对话、插件
+搜索里行为完全一致**。
+
+- **kind**：原子种类。`page` / `action` / `widget-*` 等为静态注册；`course` /
+  `assignment` / `thos-service` / `sports-v` … 为动态实体（数据来自本机缓存）；
+  `plugin:<插件id>` 为插件注册的种类。
+- **key**：种类内稳定标识，由宿主 `enc(...parts)` 用 `~` 连接、`dec(key)` 拆回。
+  调用方不要自己拼 key——用 `nav.searchAtoms` 拿到的 `key` 原样回传即可。
+- **`thos-service`**：在线服务（服务大厅）条目，key = `enc(id, name, department)`。
+  由在线服务页打开过目录后写入本机缓存，故「星号收藏」与「OH 一句话打开亲友来访」
+  共用同一份引用；打开动作走应用内官方页面（三端一致：桌面独立窗口、Android 全屏
+  WebView，登录态与主窗口共享）。
+- **解析不出即失效**：`nav.openAtom` 对已删数据 / 已停用插件的引用返回 `false`，
+  收藏夹与桌面小组件也会降级显示（不写空页面）。插件据此回话，不要承诺做不到的事。
+
+**检索面**：`nav.searchAtoms(query, limit?)` 只查静态注册表 + 本机缓存，**不发任何
+校园请求**——所以它快、离线可用，但只认识本机出现过的实体。宿主内实现真源见
+`apps/desktop/src/state/atoms.tsx`（`searchAtoms` / `resolveAtom`）。

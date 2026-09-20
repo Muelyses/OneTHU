@@ -527,6 +527,26 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "nav", "nav.go");
         if (!navGo(page, params)) throw new Error("导航桥未就绪（应用启动中）");
       },
+      /** 原子检索：静态注册表（功能页/今日组件/操作）+ 本机缓存（课程/作业/通知/在线服务…）。
+       *  动态 import 与 normalizeBinding 同法，回避 facade↔atoms 的模块环。 */
+      searchAtoms: async (query: string, limit?: number) => {
+        gate(perms, "nav", "nav.searchAtoms");
+        const { searchAtoms } = await import("../state/atoms.js");
+        const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 12;
+        return searchAtoms(String(query ?? ""), n).map((h) => ({ kind: h.kind, key: h.key, title: h.title, sub: h.sub, group: h.group }));
+      },
+      /** 打开原子：复用收藏夹那套 view.open(nav)，故插件点开的页面与用户自己点收藏完全一致 */
+      openAtom: async (ref: { kind: string; key: string }) => {
+        gate(perms, "nav", "nav.openAtom");
+        const kind = String(ref?.kind ?? "");
+        const key = String(ref?.key ?? "");
+        if (!kind || !key) return false;
+        const { resolveAtom } = await import("../state/atoms.js");
+        const view = resolveAtom({ kind, key });
+        if (!view) return false;
+        view.open((page, params) => navGo(page, params as Record<string, unknown> | undefined));
+        return true;
+      },
     },
     ui: {
       toast: (text: string) => {

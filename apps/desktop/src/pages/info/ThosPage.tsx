@@ -12,6 +12,8 @@
  * 不共享 cookie，内嵌 webview 的 cookie 桥是后续增强，不阻塞本期。
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CollectStar } from "../../components/Collect.js";
+import { enc, noteAtomCache } from "../../state/atoms.js";
 import { IconPin } from "../../components/Icons.js";
 import type {
   ThosCounts,
@@ -193,6 +195,15 @@ export function ThosPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  /** 服务目录就绪 → 写入原子缓存：收藏面板可检索、OH 可一句话命中并打开 */
+  useEffect(() => {
+    const items = services?.items ?? [];
+    if (items.length === 0) return;
+    noteAtomCache({
+      thosServices: items.map((x) => ({ id: x.id, name: x.name, department: x.department, url: x.url })),
+    });
+  }, [services]);
 
   /** 记录一次服务打开（用于"最近使用"排序；与收藏互不影响） */
   const recall = (id: string): void => {
@@ -399,19 +410,6 @@ export function ThosPage() {
                 >
                   <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <strong>{item.name}</strong>
-                    {/* 铆钉 = 仅表示"在常用"，与统一收藏（星号）语义分离 */}
-                    <button
-                      className="icon-btn"
-                      aria-label={favorites.includes(item.id) ? `取消常用 ${item.name}` : `加入常用 ${item.name}`}
-                      title={favorites.includes(item.id) ? "取消常用" : "钉在常用"}
-                      style={{ color: favorites.includes(item.id) ? "var(--accent, #4176e6)" : "var(--text-3, #999)", flex: "none" }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        favorite(item.id);
-                      }}
-                    >
-                      <IconPin width={13} height={13} />
-                    </button>
                   </span>
                   <span className="dim">{item.department || "部门未提供"}</span>
                   {item.kind ? (
@@ -420,13 +418,24 @@ export function ThosPage() {
                     </span>
                   ) : null}
                 </button>
-                <button
-                  className="btn btn-ghost thos-fav"
-                  aria-label={favorites.includes(item.id) ? "取消收藏" : "收藏服务"}
-                  onClick={() => favorite(item.id)}
-                >
-                  {favorites.includes(item.id) ? "★" : "☆"}
-                </button>
+                {/* 两个动作语义互不相同，故并列：
+                    星号 = 统一收藏原子（收进任意收藏夹）；图钉 = 仅"在常用"（排序置顶） */}
+                <span className="thos-service-actions">
+                  <CollectStar
+                    atom={{ kind: "thos-service", key: enc(item.id, item.name, item.department ?? "") }}
+                    title={item.name}
+                  />
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    aria-label={favorites.includes(item.id) ? `取消常用 ${item.name}` : `加入常用 ${item.name}`}
+                    title={favorites.includes(item.id) ? "取消常用" : "钉在常用"}
+                    style={{ color: favorites.includes(item.id) ? "var(--accent, #4176e6)" : "var(--text-3, #999)", flex: "none" }}
+                    onClick={() => favorite(item.id)}
+                  >
+                    <IconPin width={14} height={14} />
+                  </button>
+                </span>
               </div>
             </Card>
           ))}

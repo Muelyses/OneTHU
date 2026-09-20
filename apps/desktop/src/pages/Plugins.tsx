@@ -21,6 +21,7 @@ import { addRustPlugin, updatePlugin } from "../plugins/registry.js";
 import { clearPluginEvents, pluginEvents, subscribePluginEvents } from "../plugins/events.js";
 import { notifyRust } from "../plugins/rust.js";
 import { PLUGIN_PERMISSIONS } from "../plugins/types.js";
+import { collectWidgetSlots } from "../plugins/pluginWidgets.js";
 import { activateTheme, deactivateTheme, removeTheme, restoreBuiltins, useThemes, type ThemeDef } from "../state/theme.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -384,6 +385,8 @@ function PluginCard({
   const [input, setInput] = useState("");
   if (!rec) return null;
   const m = rec.manifest;
+  /** 本插件声明的小组件所占槽位（卡片上标出来，用户才知道该放哪个「OneTHU 插件小组件 N」） */
+  const widgetSlots = collectWidgetSlots().filter((x) => x.pluginId === id);
   const active = rec.enabled && isLive(id);
   const failed = rec.enabled && !isLive(id);
   const stateText = active ? "运行中" : failed ? "加载失败" : "已停用";
@@ -423,6 +426,15 @@ function PluginCard({
             <span className="plg-ver">v{m.version}</span>
             <span className="plg-kind">{m.kind === "rust" ? "RUST" : "JS"}</span>
             {m.category === "theme" ? <span className="plg-core" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>主题</span> : null}
+            {widgetSlots.length > 0 ? (
+              <span
+                className="plg-core"
+                style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+                title={`桌面小组件：把「OneTHU 插件小组件 ${widgetSlots.map((x) => x.slot).join(" / ")}」放到桌面即可看到本插件的内容`}
+              >
+                小组件 {widgetSlots.map((x) => x.slot).join("/")}
+              </span>
+            ) : null}
             {rec.embedded ? <span className="plg-core" title="Rust 核心已编进 App，无需二进制">内置</span> : null}
           </div>
           <div className={"plg-state" + (active ? " is-run" : failed ? " is-err" : "")}>

@@ -53,6 +53,21 @@ export const PLUGIN_WIDGET_MAX_ROWS = 3;
 
 const widgets = new Map<string, PluginWidgetDef[]>();
 
+/** 注册表变更订阅：插件重新声明小组件（或注销）时，宿主据此立刻重推快照——
+ *  否则用户改了内容要等下一次定时重算（15 分钟）才在桌面看到。 */
+const listeners = new Set<() => void>();
+
+export function subscribePluginWidgets(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+
+function emit(): void {
+  for (const fn of [...listeners]) fn();
+}
+
 export function registerPluginWidget(def: PluginWidgetDef): void {
   const list = [...(widgets.get(def.pluginId) ?? [])];
   const i = list.findIndex((w) => w.id === def.id);
@@ -60,10 +75,13 @@ export function registerPluginWidget(def: PluginWidgetDef): void {
   if (i >= 0) list[i] = def;
   else list.push(def);
   widgets.set(def.pluginId, list);
+  emit();
 }
 
 export function unregisterPluginWidgets(pluginId: string): void {
+  if (!widgets.has(pluginId)) return;
   widgets.delete(pluginId);
+  emit();
 }
 
 export function pluginWidgetDefs(pluginId: string): PluginWidgetDef[] {
@@ -125,4 +143,5 @@ export function collectWidgetSlots(maxRows = PLUGIN_WIDGET_MAX_ROWS): ResolvedWi
 /** 测试与调试用：清空注册表 */
 export function __resetPluginWidgets(): void {
   widgets.clear();
+  emit();
 }

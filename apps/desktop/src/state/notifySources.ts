@@ -11,6 +11,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { subscribeCampusData, subscribeLearnData } from "./data.js";
 import { subscribeExtHw } from "./exthw.js";
 import { subscribeHwRemind } from "./hwRemind.js";
+import { subscribePluginWidgets } from "../plugins/pluginWidgets.js";
 import { collectNotifyInputs } from "./notifyInputs.js";
 import { createNotifyRuntime, type NotifyRuntime } from "./notifyRuntime.js";
 import { createWidgetRuntime, type WidgetRuntime } from "./widgetRuntime.js";
@@ -19,13 +20,15 @@ import type { NotifyInvoke } from "./notifyScheduler.js";
 export type NotifyRuntimeHandle = NotifyRuntime;
 export type WidgetRuntimeHandle = WidgetRuntime;
 
-/** 四处数据源任一变化都重算计划（防抖在运行时里，订阅这里只做转发） */
+/** 数据源任一变化都重算（防抖在运行时里，订阅这里只做转发）。
+ *  含插件小组件注册表：插件重新声明小组件时，桌面上的槽位内容要立刻跟上。 */
 export function subscribeNotifySources(fn: () => void): () => void {
   const unsubs = [
     subscribeLearnData(fn),
     subscribeExtHw(fn),
     subscribeHwRemind(fn),
     subscribeCampusData(fn),
+    subscribePluginWidgets(fn),
   ];
   return () => {
     for (const u of unsubs) u();

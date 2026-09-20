@@ -65,6 +65,10 @@ class OpenIntentArgs {
 }
 
 @InvokeArg
+class ReadCookiesArgs {
+    lateinit var url: String
+}
+
 class SeedCookiesArgs {
     /** 目标 origin（如 https://webvpn.tsinghua.edu.cn/） */
     lateinit var url: String
@@ -80,6 +84,9 @@ class OpenWebModalArgs {
     /** 应用当前是否深色主题（2026-09-20）：true 时对 WebView 开启「算法暗化」——
      *  官方页（THUbook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
     var dark: Boolean = false
+    /** Cookie 归属域（如 https://webvpn.tsinghua.edu.cn/）。空 = 用 url 的 origin。
+     *  2026-09-20：此前硬编码成 pro.yuketang.cn，非雨课堂的官方页（在线服务/THOS）种不进去。 */
+    var cookieUrl: String = ""
 }
 
 /** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释）：
@@ -725,10 +732,19 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 // 写入 CookieManager（含 HttpOnly 由系统存储），**绝不打印 Cookie 值**；
                 // 空串 = 不注入，R20-A 只读浏览行为不变。注入在 loadUrl 之前同步完成。
                 if (args.cookie.isNotBlank()) {
+                    // 归属域：优先 cookieUrl；否则取 target url 的 origin（不再写死雨课堂）
+                    val seedUrl = args.cookieUrl.ifBlank {
+                        try {
+                            val u = java.net.URI(args.url)
+                            "${u.scheme}://${u.host}/"
+                        } catch (e: Throwable) {
+                            args.url
+                        }
+                    }
                     for (pair in args.cookie.split(";")) {
                         val p = pair.trim()
                         if (p.isEmpty() || !p.contains("=")) continue
-                        cm.setCookie("https://pro.yuketang.cn/", "$p; path=/; domain=.yuketang.cn")
+                        cm.setCookie(seedUrl, "$p; path=/")
                     }
                     cm.flush()
                 }
@@ -741,6 +757,28 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 )
             } catch (e: Exception) {
                 invoke.reject(e.message ?: "打开内嵌浏览窗口失败")
+            }
+        }
+    }
+
+    /**
+     * 读取任意 URL 在 WebView CookieManager 里的 Cookie（含 HttpOnly），回传 { cookie }。
+     *
+     * 用途（2026-09-20）：内嵌官方页关掉后，把 WebView 侧可能已刷新的会话票**回灌原生 jar**
+     * —— 这就是「共享登录状态」的反向桥：Rust jar 是权威会话，进页面时种进去，出来时收回来，
+     * 用户在官方页里完成的登录/续期也能被应用复用。
+     */
+    @Command
+    fun readWebViewCookies(invoke: Invoke) {
+        val args = invoke.parseArgs(ReadCookiesArgs::class.java)
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                val ret = JSObject()
+                ret.put("cookie", cm.getCookie(args.url) ?: "")
+                invoke.resolve(ret)
+            } catch (e: Throwable) {
+                invoke.reject("读取 WebView Cookie 失败: ${e.message}")
             }
         }
     }

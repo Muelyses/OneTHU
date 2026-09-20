@@ -1614,31 +1614,74 @@ async fn thos_open_portal(
         }
     }
 
-    // 2) 移动端：原生 CookieManager 种票 + 直接导航（2026-09-20）
-    //    与 info app 同思路（它的 RN 网络层与 WebView 共用 CookieManager，官方页天然带会话）。
-    //    我们此前 JNI 反射调 setCookie 在华为 WebView 上 NoSuchMethodError，才退化成 JS
-    //    document.cookie 种票 → 每次打开都要重新验证。改走自家 Kotlin 插件的
-    //    android.webkit.CookieManager（非反射），种完直接进目标页，后续打开也不再问。
+    // 2) 移动端（Android）：开**全屏 Dialog WebView**（独立于主界面，关闭即回 app——
+    //    绝不像上一版那样把主 webview 导航走），并在 loadUrl 之前用原生
+    //    android.webkit.CookieManager 把会话票种进去（非反射，避免华为 WebView glue 的
+    //    NoSuchMethodError）。信息来自 info app：它的官方页永不二次验证，是因为 RN 网络层与
+    //    WebView 共用同一个 CookieManager；我们这里是两套存储，所以显式做「进页面种票、
+    //    出页面回灌」的双向桥。
+    //    关闭后：把 WebView 侧可能已刷新的 webvpn/id 票读回来灌进原生 jar（反向共享登录态）。
     #[cfg(mobile)]
     {
         let handle = app
             .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
             .0
             .clone();
-        for (base, header) in &seeds {
-            // 返回类型要显式标注：run_mobile_plugin_async<T: DeserializeOwned> 的 T
-            // 靠 `let _ =` 推不出来（E0283）
-            let _: Result<serde_json::Value, _> = handle
+        // 目标 origin 决定 cookie 归属域；webvpn/id/thos 的票一并种入（wengine 需要）
+        let target_origin = url::Url::parse(&url)
+            .map(|u| format!("{}://{}/", u.scheme(), u.host_str().unwrap_or("")))
+            .unwrap_or_else(|_| "https://webvpn.tsinghua.edu.cn/".to_string());
+        let combined = seeds
+            .iter()
+            .map(|(_, h)| h.as_str())
+            .collect::<Vec<_>>()
+            .join("; ");
+        thos_log(&format!(
+            "[THOS-SEED] 移动端全屏浏览：种 {} 组票（{} 条）→ {}",
+            seeds.len(),
+            combined.split("; ").filter(|x| x.contains('=')).count(),
+            &url[..url.len().min(60)]
+        ));
+        let _: Result<serde_json::Value, _> = handle
+            .run_mobile_plugin_async(
+                "openWebModal",
+                serde_json::json!({
+                    "url": url,
+                    "dark": dark.unwrap_or(false),
+                    "cookie": combined,
+                    "cookieUrl": target_origin,
+                }),
+            )
+            .await;
+        // 对话框已关闭 → 反向回灌（用户在官方页里做的登录/续期同步回原生 jar）
+        for base in [
+            "https://webvpn.tsinghua.edu.cn/",
+            "https://id.tsinghua.edu.cn/",
+            "https://thos.tsinghua.edu.cn/",
+        ] {
+            let got: Result<serde_json::Value, _> = handle
                 .run_mobile_plugin_async(
-                    "seedWebViewCookies",
-                    serde_json::json!({ "url": base, "cookie": header }),
+                    "readWebViewCookies",
+                    serde_json::json!({ "url": base }),
                 )
                 .await;
+            if let Ok(v) = got {
+                if let Some(header) = v.get("cookie").and_then(|x| x.as_str()) {
+                    if !header.is_empty() {
+                        // seed_line 是 SharedNativeJar（自持锁）的方法，不是读锁 guard 上的
+                        let mut n = 0;
+                        for pair in header.split("; ") {
+                            let pair = pair.trim();
+                            if pair.contains('=') {
+                                NATIVE_JAR_ARC.seed_line(base, pair);
+                                n += 1;
+                            }
+                        }
+                        thos_log(&format!("[THOS-SEED] 回灌 {base} ← {n} 条"));
+                    }
+                }
+            }
         }
-        thos_log(&format!("[THOS-SEED] 原生 CookieManager 种票完成 → 直接导航目标页"));
-        webview
-            .eval(&format!("location.href = {:?}", url))
-            .map_err(|e| format!("导航目标: {e}"))?;
         return Ok(());
     }
 

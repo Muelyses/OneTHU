@@ -21,7 +21,7 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import {
   AgendaRows, CardBalanceBody, ClassRows, EntryCard, HomeworkRows, NewsRows, NoticeRows, ResvRows,
-  SECTION_OF, WEEKDAYS, calDaysUntil, deadlineMs, countdownChip, ymd,
+  RowClick, SECTION_OF, WEEKDAYS, calDaysUntil, deadlineMs, countdownChip, ymd,
   type AgendaRow,
 } from "../components/HomeWidgets.js";
 import {
@@ -43,7 +43,8 @@ type Nav = (page: Page, params?: LearnNav) => void;
 
 /* ══════════ 最近使用 / 猜你喜欢（本机统计驱动，卡体为空则整卡不渲染） ══════════ */
 
-/** 一行 = 一个原子：图标 + 标题 + 说明 + 可选「为什么推给你」 */
+/** 一行 = 一个原子。样式与「最近通知」等同款行（tl-bar + 标题/说明 + 右侧箭头）：
+ *  之前用一个 accent-soft 的方形图标底，摆在首页像一排小按钮，"原子选择条"很怪。 */
 function AtomUseRows({
   rows,
   onOpen,
@@ -51,31 +52,29 @@ function AtomUseRows({
   rows: Array<{ ref: { kind: string; key: string }; title: string; sub?: string; why?: string }>;
   onOpen: (page: Page, params?: LearnNav) => void;
 }) {
+  const views = rows
+    .map((r) => ({ r, view: resolveAtom(r.ref) }))
+    .filter((x): x is { r: (typeof rows)[number]; view: NonNullable<ReturnType<typeof resolveAtom>> } => !!x.view);
+  if (views.length === 0) return null;
   return (
-    <div className="list">
-      {rows.map((r, i) => {
-        const view = resolveAtom(r.ref);
-        if (!view) return null;
-        const Icon = view.icon;
-        return (
-          <button
-            key={r.ref.kind + "~" + r.ref.key}
-            className="row"
-            style={{ animationDelay: `${Math.min(i, 12) * 25}ms`, width: "100%", textAlign: "left" }}
-            title={view.sub}
-            onClick={() => view.open((p, params) => onOpen(p, params as LearnNav))}
-          >
-            <span className="wb-kind-icon" aria-hidden="true">
-              <Icon width={16} height={16} />
-            </span>
-            <span className="row-main">
-              <span className="row-title">{r.title}</span>
-              <span className="row-sub">{r.why ? r.why + " · " + (r.sub ?? view.sub ?? "") : (r.sub ?? view.sub ?? "")}</span>
-            </span>
-          </button>
-        );
-      })}
-    </div>
+    <Card className="list">
+      {views.map(({ r, view }, i) => (
+        <RowClick
+          key={r.ref.kind + "~" + r.ref.key}
+          style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}
+          onClick={() => view.open((p, params) => onOpen(p, params as LearnNav))}
+        >
+          <div className="tl-bar" style={{ background: "var(--border-strong)" }} />
+          <div className="tl-main">
+            <div className="tl-title">{r.title || view.title}</div>
+            <div className="tl-sub">
+              {r.why ? `${r.why} · ${r.sub ?? view.sub ?? ""}` : (r.sub ?? view.sub ?? "")}
+            </div>
+          </div>
+          <IconChevron className="row-caret" width={14} height={14} />
+        </RowClick>
+      ))}
+    </Card>
   );
 }
 

@@ -5,6 +5,7 @@
  */
 import assert from "node:assert/strict";
 import { normalizeServiceName, serviceScore } from "../apps/desktop/src/lib/serviceMatch.ts";
+import { SEED_VERSION, loadSeedState, pickSeedServices } from "../apps/desktop/src/lib/thosSeed.ts";
 
 const hit = (name, q) => serviceScore(name, q) > 0;
 const miss = (name, q) => serviceScore(name, q) === 0;
@@ -39,4 +40,22 @@ const tight = serviceScore("亲友来访预约", "亲友来访");
 const loose = serviceScore("亲友来访预约", "亲友预约");
 assert.ok(tight > loose, "省字更少的口语名应排更前");
 
-console.log("结果：在线服务口语名匹配 ✓（10 组断言）");
+// ⑦ 常用服务预置：正式名与口语名有出入也要铆上；漏掉的不记账（下次还能补）
+const dir = [
+  { id: "a", name: "亲友入校报备", department: "保卫处" },
+  { id: "b", name: "缓考申请", department: "教务处" },
+  { id: "c", name: "会议活动及场地申请", department: "校办" },
+];
+const seeded = pickSeedServices(dir, [], []);
+assert.deepEqual(seeded.ids, ["a", "b"], "亲友（入校报备）与缓考都应被预置（事故原型）");
+assert.equal(seeded.done.length, 2, "两个关键词都应记账");
+assert.deepEqual(pickSeedServices(dir, ["a", "b"], seeded.done).ids, [], "已铆过的不重复添加");
+assert.deepEqual(pickSeedServices(dir, ["a"], []).ids, ["b"], "只缺一项时只补那一项");
+assert.deepEqual(pickSeedServices([{ id: "x", name: "在读证明申请" }], [], []), { ids: [], done: [] }, "目录里没有相近的：不记账，下次再试");
+
+// ⑧ 预置标记：老格式（"1"）视为未记账 → 按新规则补一次（正是为了修本次事故）
+assert.deepEqual(loadSeedState("1"), { v: SEED_VERSION, done: [] }, "老标记应触发重补");
+assert.deepEqual(loadSeedState(null), { v: SEED_VERSION, done: [] }, "首次进入无记账");
+assert.deepEqual(loadSeedState(JSON.stringify({ v: SEED_VERSION, done: ["缓考"] })).done, ["缓考"], "同版本读回记账");
+
+console.log("结果：在线服务口语名匹配 + 常用预置 ✓（19 组断言）");

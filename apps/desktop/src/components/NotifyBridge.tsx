@@ -18,6 +18,7 @@ import {
   ensureWidgetRuntime,
   releaseNotifyRuntimes,
 } from "../state/notifySources.js";
+import { parseWidgetTarget } from "../state/widgetTarget.js";
 
 export function NotifyBridge(): ReactNode {
   const { status, navigate } = useApp();
@@ -42,7 +43,9 @@ export function NotifyBridge(): ReactNode {
     };
   }, [status]);
 
-  /* ② 回到前台取走落点：小组件/通知点击先写进原生，这里消费并导航 */
+  /* ② 回到前台取走落点：小组件/通知点击先写进原生，这里消费并导航。
+        小组件的落点是「页面 + 参数」（如「某收藏夹」= folder?folderId=f1），
+        故要先拆开再导航，否则会跳到没有上下文的收藏夹首页。 */
   useEffect(() => {
     if (status !== "ready") return;
     const take = async (): Promise<void> => {
@@ -50,7 +53,8 @@ export function NotifyBridge(): ReactNode {
       try {
         const raw = await invoke<{ ok?: boolean; target?: string }>("notify_take_target");
         const target = raw?.target ?? "";
-        if (target) navigate(target as never, {} as never);
+        const parsed = parseWidgetTarget(target);
+        if (parsed) navigate(parsed.page as never, parsed.params as never);
       } catch {
         /* 无后端的平台返回 not-implemented：静默 */
       }

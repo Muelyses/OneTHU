@@ -11,8 +11,11 @@
  * - 编辑模式：添加原子（搜索弹层）/ 新建子收藏夹 / 重命名 / 删除（页头=根，
  *   栏内=子夹），与聚合页「栏目删减走管理栏目、实体删除走页内」同思路。
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { loadWidgetSettings, saveWidgetSettings } from "../state/widgetSettings.js";
+import { useNotifyBackend } from "../components/useNotifyBackend.js";
+import { showToast } from "../state/toast.js";
 import { Card, Empty, PageHead, SegmentedOverflow } from "../components/Layout.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { FolderIcon, FOLDER_ICONS, IconChevron, IconPen } from "../components/Icons.js";
@@ -112,6 +115,64 @@ export function FolderPage() {
 
 /* ══════════ 单层收藏夹视图：导航栏（有子夹时）+ 直属瀑布流，递归 ══════════ */
 
+/* ══════════ 桌面小组件：把收藏内容一键放上桌面（仅 Android） ══════════ */
+
+/** 当前是否已经用「这个收藏夹」当小组件内容 */
+function isWidgetFolder(folderId: string): boolean {
+  const src = loadWidgetSettings().source;
+  return src.kind === "folder" && src.folderId === folderId;
+}
+
+/** 当前是否已经用「这个原子」当小组件内容 */
+function isWidgetAtom(atom: AtomRef): boolean {
+  const src = loadWidgetSettings().source;
+  return src.kind === "atom" && !!src.atom && src.atom.kind === atom.kind && src.atom.key === atom.key;
+}
+
+/** 夹级入口：编辑态工具栏上的「上桌面 / 已在桌面」 */
+function FolderWidgetButton({ folderId }: { folderId: string }): ReactNode {
+  const backend = useNotifyBackend();
+  const [, bump] = useState(0);
+  if (backend !== "android") return null;      // 桌面端不做小组件：不显示假入口
+  const on = isWidgetFolder(folderId);
+  return (
+    <button
+      className="btn"
+      title={on ? "点一下恢复为默认的「今天」内容" : "把本收藏夹的内容显示到桌面小组件"}
+      onClick={() => {
+        saveWidgetSettings({ source: on ? { kind: "today" } : { kind: "folder", folderId } });
+        bump((n) => n + 1);
+        showToast(on ? "桌面小组件已恢复为「今天」" : "已把本收藏夹放上桌面小组件");
+      }}
+    >
+      {on ? "已在桌面" : "上桌面"}
+    </button>
+  );
+}
+
+/** 原子级入口：长卡工具条上的「桌」 */
+function AtomWidgetButton({ atom }: { atom: AtomRef }): ReactNode {
+  const backend = useNotifyBackend();
+  const [, bump] = useState(0);
+  if (backend !== "android") return null;
+  const on = isWidgetAtom(atom);
+  return (
+    <button
+      type="button"
+      className="icon-btn"
+      title={on ? "点一下恢复为默认的「今天」内容" : "把这个原子显示到桌面小组件"}
+      aria-label="显示到桌面小组件"
+      onClick={() => {
+        saveWidgetSettings({ source: on ? { kind: "today" } : { kind: "atom", atom: { kind: atom.kind, key: atom.key } } });
+        bump((n) => n + 1);
+        showToast(on ? "桌面小组件已恢复为「今天」" : "已把这个原子放上桌面小组件");
+      }}
+    >
+      桌
+    </button>
+  );
+}
+
 export function FolderView({ folderId, editing, isRoot = false }: { folderId: string; editing: boolean; isRoot?: boolean }) {
   const favs = useFavs();
   const f = favs.data.folders[folderId];
@@ -204,6 +265,7 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
               >
                 新建子收藏夹
               </button>
+              <FolderWidgetButton folderId={folderId} />
               {!isRoot && !renaming ? (
                 <button className="btn" onClick={() => { setRenameVal(f.title); setRenaming(true); }}>重命名</button>
               ) : null}
@@ -389,6 +451,7 @@ function OneItem({
           方
         </button>
       ) : null}
+      <AtomWidgetButton atom={it.atom} />
       <button type="button" className="icon-btn" title="从此收藏夹移除" aria-label="移除" onClick={() => favs.removeAt(folderId, index)}>
         ✕
       </button>

@@ -15,6 +15,7 @@ globalThis.localStorage = {
 
 const { createWidgetRuntime } = await import("../apps/desktop/src/state/widgetRuntime.ts");
 const { registerPluginWidget, __resetPluginWidgets } = await import("../apps/desktop/src/plugins/pluginWidgets.ts");
+const { subscribeWidgetSettings } = await import("../apps/desktop/src/state/widgetSettings.ts");
 
 let pass = 0, fail = 0;
 const eq = (name, a, b) => {
@@ -52,7 +53,17 @@ function harness({ ok: okFlag = true, throwIt = false } = {}) {
       schedule: [{ date: todayStr(), startTime: "10:00", courseName: "数据结构", location: "六教6A215", category: "课程" }],
       homework: [{ id: "h1", title: "第三章习题", deadline: tonight(), submitted: false }],
     }),
-    subscribe: (fn) => { listeners.push(fn); return () => { const i = listeners.indexOf(fn); if (i >= 0) listeners.splice(i, 1); }; },
+    // 生产接线（subscribeNotifySources）里「来源配置变化」也是重推触发源，这里照抄，
+    // 否则「改完设置桌面没反应」这类漏接线在测试里看不见。
+    subscribe: (fn) => {
+      listeners.push(fn);
+      const offSettings = subscribeWidgetSettings(fn);
+      return () => {
+        const i = listeners.indexOf(fn);
+        if (i >= 0) listeners.splice(i, 1);
+        offSettings();
+      };
+    },
     fire: () => { for (const fn of [...listeners]) fn(); },
   };
 }
@@ -157,6 +168,58 @@ function harness({ ok: okFlag = true, throwIt = false } = {}) {
   await sleep(60);
   eq("stop 后零调用", h.calls.length, 0);
   eq("stop 后订阅解绑", h.listeners.length, 0);
+}
+
+/* ⑥b 用户把内容设为「某收藏夹」：推收藏夹内容而不是今日视图；openPage 覆盖落点 */
+{
+  const { saveWidgetSettings } = await import("../apps/desktop/src/state/widgetSettings.ts");
+  const h = harness();
+  saveWidgetSettings({ source: { kind: "folder", folderId: "f1" }, openPage: "schedule" });
+  const rt = createWidgetRuntime({
+    invoke: h.invoke, backendAvailable: true, collect: h.collect, subscribe: h.subscribe, tickMs: 999999,
+    resolveSource: () => ({
+      title: "常用", rows: [{ text: "网络学堂", sub: "作业与通知" }], footer: "3 项",
+      target: "folder", params: { folderId: "f1" },
+    }),
+  });
+  await rt.syncNow();
+  const snap = JSON.parse(h.calls[0][1].snapshot);
+  eq("自定义来源：标题来自配置", snap.title, "常用");
+  eq("自定义来源：落点被「点开哪个页面」覆盖", snap.target, "schedule");
+  ok("自定义来源：不再显示今日课程", !snap.rows.some((r) => r.text.includes("数据结构")));
+  rt.stop();
+}
+
+/* ⑥c 配置失效（收藏夹被删 / 原子解析不出）→ 回落今日视图，而不是推一张空卡 */
+{
+  const { saveWidgetSettings } = await import("../apps/desktop/src/state/widgetSettings.ts");
+  const h = harness();
+  saveWidgetSettings({ source: { kind: "folder", folderId: "gone" }, openPage: null });
+  const rt = createWidgetRuntime({
+    invoke: h.invoke, backendAvailable: true, collect: h.collect, subscribe: h.subscribe, tickMs: 999999,
+    resolveSource: () => null,
+  });
+  await rt.syncNow();
+  const snap = JSON.parse(h.calls[0][1].snapshot);
+  ok("配置失效：回落今日视图", snap.rows.some((r) => r.text.includes("数据结构")));
+  eq("配置失效：落点回到今日页", snap.target, "today");
+  rt.stop();
+}
+
+/* ⑥d 来源配置变化会立刻重推（设置页/收藏夹页改完抬头就能看到桌面变了） */
+{
+  const { saveWidgetSettings } = await import("../apps/desktop/src/state/widgetSettings.ts");
+  const h = harness();
+  const rt = createWidgetRuntime({
+    invoke: h.invoke, backendAvailable: true, collect: h.collect, subscribe: h.subscribe, debounceMs: 20, tickMs: 100000,
+    resolveSource: () => null,
+  });
+  await rt.syncNow();
+  h.calls.length = 0;
+  saveWidgetSettings({ source: { kind: "today" } });
+  await sleep(80);
+  eq("配置变化触发重推", h.calls.filter((c) => c[0] === "widget_push").length, 1);
+  rt.stop();
 }
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);

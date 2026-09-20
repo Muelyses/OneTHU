@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead } from "../components/Layout.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
+import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { clearRemembered, loadRemembered, session } from "../lib/clients.js";
@@ -456,6 +457,10 @@ export function SettingsPage() {
       <SectionHead title="通知" />
       <Card>
         <NotifySettingsSection />
+      </Card>
+      <SectionHead title="桌面小组件" />
+      <Card>
+        <WidgetSettingsSection />
       </Card>
       <SectionHead title="插件" />
       <Card>

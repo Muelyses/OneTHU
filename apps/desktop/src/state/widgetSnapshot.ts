@@ -7,6 +7,7 @@
  * 注释），改动需两端同步。
  */
 import { parseLearnTime } from "@onethu/core/src/learn/time.js";
+import { encodeWidgetTarget } from "./widgetTarget.js";
 import { effectiveRemind, type HwRemindState } from "./hwRemind.js";
 import { scheduleStart, type PlanHomework, type PlanScheduleEntry } from "./notifyPlan.js";
 
@@ -52,6 +53,11 @@ export interface WidgetSnapshotInput {
   extraRows?: WidgetRow[];
   /** 插件小组件的槽位内容（来自 plugins/pluginWidgets.ts 的 collectWidgetSlots） */
   slots?: WidgetSlotInput[];
+  /** 点击落点覆盖（设置里指定「点开哪个页面」；给了就无视内容来源的默认落点） */
+  targetOverride?: string | null;
+  /** 自定义内容来源（用户把小组件设为「某收藏夹 / 某原子」时由 widgetSource 解析得到）。
+   *  给定时宿主小组件显示它，而不是默认的「今天」视图。 */
+  custom?: { title: string; rows: WidgetRow[]; footer: string; target: string; params?: Record<string, unknown> } | null;
 }
 
 function ymd(ms: number): string {
@@ -85,6 +91,19 @@ function left(ms: number): string {
  */
 export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot {
   const now = input.now;
+  // 用户指定了内容来源：直接用它（widgetRuntime 已把收藏夹/原子解析成行）
+  if (input.custom) {
+    const { title, rows, footer, target, params } = input.custom;
+    return {
+      title: String(title || "我的收藏"),
+      updatedAt: now,
+      target: input.targetOverride
+        ? encodeWidgetTarget(input.targetOverride, null)
+        : encodeWidgetTarget(target || "folder", params ?? null),
+      rows: (rows ?? []).slice(0, 3).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
+      footer: String(footer ?? ""),
+    };
+  }
   const today = ymd(now);
   const maxRows = Math.max(1, input.maxRows ?? 3);
 
@@ -166,7 +185,7 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
   return {
     title: `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`,
     updatedAt: now,
-    target: "today",
+    target: input.targetOverride ? encodeWidgetTarget(input.targetOverride, null) : "today",
     rows,
     footer,
     ...(Object.keys(slotMap).length ? { slots: slotMap } : {}),

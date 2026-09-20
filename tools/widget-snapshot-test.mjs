@@ -108,5 +108,46 @@ const hw = (extra = {}) => ({ id: "h1", title: "第三章习题", deadline: "202
   eq("行满时插件条目不出现", s.rows.some((r) => r.text === "不该出现"), false);
 }
 
+/* 自定义来源：用户把小组件设为「某收藏夹 / 某原子」时，快照整张换成它 */
+{
+  const s = buildWidgetSnapshot({
+    schedule: [cls()], homework: [hw()], remind: REMIND, now: NOW,
+    custom: {
+      title: "常用", rows: [{ text: "网络学堂", sub: "作业与通知" }, { text: "图书馆座位" }],
+      footer: "4 项 · 还有 2 项", target: "folder", params: { folderId: "f1" },
+    },
+  });
+  eq("自定义来源：标题", s.title, "常用");
+  eq("自定义来源：行内容", s.rows.map((r) => r.text), ["网络学堂", "图书馆座位"]);
+  eq("自定义来源：脚注", s.footer, "4 项 · 还有 2 项");
+  eq("自定义来源：落点带参数", s.target, "folder?folderId=f1");
+  ok("自定义来源：今日课程让位", !s.rows.some((r) => r.text.includes("数据结构")));
+}
+
+/* 自定义来源：行数上限 3（原生最多画三行），且缺 target 时兜底到收藏夹页 */
+{
+  const s = buildWidgetSnapshot({
+    schedule: [], homework: [], remind: REMIND, now: NOW,
+    custom: { title: "", rows: [1, 2, 3, 4, 5].map((n) => ({ text: `第${n}项` })), footer: "", target: "" },
+  });
+  eq("自定义来源：超过三行只留三行", s.rows.length, 3);
+  eq("自定义来源：标题为空时兜底", s.title, "我的收藏");
+  eq("自定义来源：无落点时兜底收藏夹页", s.target, "folder");
+}
+
+/* 落点覆盖：设置里指定「点开哪个页面」，内容来源的默认落点让位 */
+{
+  const s = buildWidgetSnapshot({
+    schedule: [cls()], homework: [], remind: REMIND, now: NOW, targetOverride: "schedule",
+  });
+  eq("落点覆盖：默认内容也能改落点", s.target, "schedule");
+  ok("落点覆盖：内容不受影响", s.rows.some((r) => r.text.includes("数据结构")));
+  const s2 = buildWidgetSnapshot({
+    schedule: [], homework: [], remind: REMIND, now: NOW, targetOverride: "learn",
+    custom: { title: "常用", rows: [{ text: "网络学堂" }], footer: "", target: "folder", params: { folderId: "f1" } },
+  });
+  eq("落点覆盖：压过自定义来源的落点", s2.target, "learn");
+}
+
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);

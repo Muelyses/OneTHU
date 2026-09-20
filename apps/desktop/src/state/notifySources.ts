@@ -13,6 +13,11 @@ import { onCloudCalChange } from "./cloudCal.js";
 import { subscribeExtHw } from "./exthw.js";
 import { subscribeHwRemind } from "./hwRemind.js";
 import { subscribePluginWidgets } from "../plugins/pluginWidgets.js";
+import { loadFavs } from "./favorites.js";
+import { resolveAtom } from "./atoms.js";
+import { muteToasts } from "./toast.js";
+import { resolveWidgetSource, type ResolvedSource } from "./widgetSource.js";
+import { loadWidgetSettings, subscribeWidgetSettings } from "./widgetSettings.js";
 import { collectNotifyInputs } from "./notifyInputs.js";
 import { createNotifyRuntime, type NotifyRuntime } from "./notifyRuntime.js";
 import { createWidgetRuntime, type WidgetRuntime } from "./widgetRuntime.js";
@@ -31,6 +36,7 @@ export function subscribeNotifySources(fn: () => void): () => void {
     subscribeCampusData(fn),
     subscribePluginWidgets(fn),
     onCloudCalChange(fn),
+    subscribeWidgetSettings(fn),      // 改「小组件显示什么」要立刻重推
   ];
   return () => {
     for (const u of unsubs) u();
@@ -40,6 +46,15 @@ export function subscribeNotifySources(fn: () => void): () => void {
 const invokeBridge: NotifyInvoke = (cmd, args) => invoke(cmd, args ?? {});
 
 let backendKind = "unknown";
+const backendListeners = new Set<() => void>();
+
+/** 后端探测完成后通知一次：设置页据此决定「桌面小组件」区块显示开关还是说明 */
+export function subscribeNotifyBackend(fn: () => void): () => void {
+  backendListeners.add(fn);
+  return () => {
+    backendListeners.delete(fn);
+  };
+}
 let notifyRuntime: NotifyRuntime | null = null;
 let widgetRuntime: WidgetRuntime | null = null;
 
@@ -51,6 +66,7 @@ export async function detectNotifyBackend(): Promise<string> {
   } catch {
     backendKind = "none";
   }
+  for (const fn of [...backendListeners]) fn();
   return backendKind;
 }
 
@@ -72,6 +88,33 @@ export async function ensureNotifyRuntime(): Promise<NotifyRuntime> {
   return notifyRuntime;
 }
 
+/** 生产实现：把用户配置解析成小组件内容（收藏夹 / 收藏原子） */
+function resolveWidgetSourceProd(): ResolvedSource | null {
+  const settings = loadWidgetSettings();
+  const favs = loadFavs();
+  return resolveWidgetSource(settings, {
+    folders: favs.folders as never,
+    resolveAtom: (ref) => {
+      const v = resolveAtom(ref as never);
+      if (!v) return null;
+      // 原子自身的落点由 atoms 的 open 闭包持有；这里用「捕获式 nav」取出来，
+      // 而不是在注册表里再维护一份 page/params（两份必然漂移）。
+      // 注意 open 可能弹提示（如插件页未启用），故进静音区。
+      let hit: { page: string; params?: Record<string, unknown> } | null = null;
+      muteToasts(() => {
+        try {
+          v.open(((page: string, params?: Record<string, unknown>) => {
+            hit = { page: String(page), params };
+          }) as never);
+        } catch {
+          /* 个别原子 open 依赖运行时态：取不到就回落收藏夹落点 */
+        }
+      });
+      return { title: v.title, sub: v.sub, target: hit ?? undefined };
+    },
+  });
+}
+
 export async function ensureWidgetRuntime(): Promise<WidgetRuntime> {
   if (widgetRuntime) return widgetRuntime;
   const kind = await detectNotifyBackend();
@@ -81,6 +124,7 @@ export async function ensureWidgetRuntime(): Promise<WidgetRuntime> {
     onError: (m) => console.warn("[widget]", m),
     collect: collectNotifyInputs,
     subscribe: subscribeNotifySources,
+    resolveSource: resolveWidgetSourceProd,
   });
   return widgetRuntime;
 }

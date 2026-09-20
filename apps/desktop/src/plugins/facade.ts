@@ -818,6 +818,50 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "widget", "widget.slots");
         return pluginWidgets.PLUGIN_WIDGET_SLOTS;
       },
+      /** 宿主小组件当前显示的内容来源（用户可在设置页 / 收藏夹页自行更改） */
+      getSource: async (): Promise<{ kind: string; folderId?: string; atom?: { kind: string; key: string } }> => {
+        gate(perms, "widget", "widget.getSource");
+        const { loadWidgetSettings } = await import("../state/widgetSettings.js");
+        const src = loadWidgetSettings().source;
+        return src.kind === "folder"
+          ? { kind: "folder", folderId: src.folderId ?? "" }
+          : src.kind === "atom" && src.atom
+            ? { kind: "atom", atom: { kind: src.atom.kind, key: src.atom.key } }
+            : { kind: "today" };
+      },
+      /** 改宿主小组件显示的内容；传 null 恢复默认「今天」。名不副实（夹被删/原子失效）返回 false */
+      setSource: async (source: unknown): Promise<boolean> => {
+        gate(perms, "widget", "widget.setSource");
+        const { saveWidgetSettings } = await import("../state/widgetSettings.js");
+        const want = (source ?? null) as { kind?: string; folderId?: string; atom?: { kind?: string; key?: string } } | null;
+        if (want === null || want.kind === "today") {
+          saveWidgetSettings({ source: { kind: "today" } });
+          return true;
+        }
+        if (want.kind === "folder") {
+          const { loadFavs } = await import("../state/favorites.js");
+          const id = String(want.folderId ?? "");
+          if (!id || !loadFavs().folders[id]) return false;
+          saveWidgetSettings({ source: { kind: "folder", folderId: id } });
+          return true;
+        }
+        if (want.kind === "atom") {
+          const { resolveAtom } = await import("../state/atoms.js");
+          const kind = String(want.atom?.kind ?? "");
+          const key = String(want.atom?.key ?? "");
+          if (!kind || !key || !resolveAtom({ kind, key })) return false;
+          saveWidgetSettings({ source: { kind: "atom", atom: { kind, key } } });
+          return true;
+        }
+        return false;
+      },
+      /** 用户收藏夹清单（id 与名称）：给插件做一个「显示哪个收藏夹」的选择器 */
+      folders: async (): Promise<Array<{ id: string; title: string }>> => {
+        gate(perms, "widget", "widget.folders");
+        const { loadFavs } = await import("../state/favorites.js");
+        const d = loadFavs();
+        return Object.values(d.folders).map((f) => ({ id: f.id, title: f.title }));
+      },
     },
     settings: {
       get: () => {

@@ -13,6 +13,8 @@ import type { PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
 import type { NotifyInvoke } from "./notifyScheduler.js";
 import { buildWidgetSnapshot, serializeWidgetSnapshot, type WidgetSnapshot } from "./widgetSnapshot.js";
 import { collectWidgetSlots } from "../plugins/pluginWidgets.js";
+import { loadWidgetSettings } from "./widgetSettings.js";
+import type { ResolvedSource } from "./widgetSource.js";
 import { createSyncer } from "./displaySyncer.js";
 
 export interface WidgetRuntimeDeps {
@@ -22,6 +24,8 @@ export interface WidgetRuntimeDeps {
   collect: (now: number) => { schedule: PlanScheduleEntry[]; homework: PlanHomework[] };
   subscribe: (fn: () => void) => () => void;
   onError?: (m: string) => void;
+  /** 解析「显示什么」的用户配置（收藏夹 / 收藏原子）。缺省或返回 null 时回落默认今日视图 */
+  resolveSource?: () => ResolvedSource | null;
   debounceMs?: number;
   tickMs?: number;
 }
@@ -42,6 +46,9 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     now: number,
   ): Promise<boolean> {
     if (!deps.backendAvailable) return false;
+    // 用户配置的内容来源（收藏夹/原子）优先；解析失败（夹被删、原子失效）回落今日视图
+    const settings = loadWidgetSettings();
+    const custom = settings.source.kind === "today" ? null : (deps.resolveSource?.() ?? null);
     const snap = buildWidgetSnapshot({
       schedule: inputs.schedule,
       homework: inputs.homework,
@@ -49,6 +56,9 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
       now,
       // 插件小组件槽位：注册表是纯数据，直接读（插件的原子解析在 collectWidgetSlots 里完成）
       slots: collectWidgetSlots(),
+      custom,
+      // 用户指定了「点开哪个页面」就一律用它（内容来源的默认落点让位）
+      targetOverride: settings.openPage,
     });
     try {
       const raw = (await deps.invoke("widget_push", { snapshot: serializeWidgetSnapshot(snap) })) as

@@ -1533,6 +1533,19 @@ async fn thos_portal_window(
     )
     .title("在线服务 · OneTHU")
     .inner_size(1100.0, 820.0);
+    // UA 必须与主窗口一致（tauri.conf.json 里硬编码的 Chrome/79）：
+    // **wengine 按客户端指纹（UA）管会话**，UA 不同就是另一个客户端，我们种进去的
+    // webvpn 票不算数 → 子窗口照样被弹登录页（2026-09-20 实测：日志显示「已种 8 条」
+    // 但页面仍要求登录）。这里直接沿用主窗口配置的 UA。
+    let main_ua = app
+        .config()
+        .app
+        .windows
+        .first()
+        .and_then(|w| w.user_agent.clone());
+    if let Some(ua) = main_ua.as_deref() {
+        builder = builder.user_agent(ua);
+    }
     if dark {
         builder = builder.initialization_script(DARK_PAINT_JS);
     }
@@ -1553,7 +1566,11 @@ async fn thos_portal_window(
             }
         }
     }
-    thos_log(&format!("[THOS-SEED] 独立窗口已种 {seeded} 条会话票 → {}", &target[..target.len().min(60)]));
+    thos_log(&format!(
+        "[THOS-SEED] 独立窗口已种 {seeded} 条会话票（UA={}）→ {}",
+        if main_ua.is_some() { "同主窗口" } else { "默认" },
+        &target[..target.len().min(60)]
+    ));
     win.navigate(target.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
         .map_err(|e| e.to_string())?;
     Ok(())

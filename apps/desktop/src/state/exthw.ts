@@ -21,6 +21,7 @@ import {
   runYuketangQrLogin,
   SOURCE_NAMES,
   TUOJ_CLASSIC_BASE,
+  createYuketangSource,
   dsaLogin,
   tuojLogin,
   tuojRoam,
@@ -34,6 +35,7 @@ import type {
   ExternalHomework,
   Homework,
   TuojSourceId,
+  YkExerciseDetail,
   YktQrPhase,
   YktQrPollResult,
 } from "@onethu/core";
@@ -581,12 +583,33 @@ export function toHomework(e: ExternalHomework): Homework {
     audited: e.audited,
     score: e.score,
     totalScore: e.totalScore,
+    // R20-B2：雨课堂原生详情页拉取参数（仅 yuketang 有；其余源恒 undefined）
+    externalLeafTypeId: e.leafTypeId,
+    externalClassroomId: e.classroomId,
   };
 }
 
 /** 源展示名（徽标用） */
 export function extHwSourceName(id: ExtHwSourceId): string {
   return SOURCE_NAMES[id] ?? id;
+}
+
+/* ── R20-B2：雨课堂作业详情（原生详情页用；只读） ── */
+
+/**
+ * 拉单份雨课堂作业详情（getExerciseDetail 的 state 层薄包装）：
+ * 凭据 / 传输层在此注入（core 不碰存储），uvId 回落凭据值（createYuketangSource 内再回落 "2598"）。
+ * 未配置雨课堂凭据 → 抛错（页面展示错误态 + 保留原文案），绝不静默。
+ * 失败原样上抛（含 errcode / 会话失效上下文），由页面展示并 log_debug。
+ */
+export async function fetchYktExerciseDetail(leafTypeId: string, classroomId: string): Promise<YkExerciseDetail> {
+  const creds = getExtHwCreds();
+  const cred = creds.yuketang;
+  if (!cred || !cred.cookie.trim()) {
+    throw new Error("雨课堂未登录：请先在 设置 → 外部作业源 登录雨课堂");
+  }
+  const src = createYuketangSource(cred, universalFetch, creds.days ?? 30);
+  return src.getExerciseDetail(leafTypeId, classroomId);
 }
 
 /* ── React hook ── */

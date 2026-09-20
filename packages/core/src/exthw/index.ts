@@ -258,8 +258,10 @@ export type { ExtHwLoginResult } from "./login.js";
 export { yuketangQrStart, yuketangQrPoll, runYuketangQrLogin, yuketangCookieFromHeader } from "./yuketangQr.js";
 export type { YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } from "./yuketangQr.js";
 /* R20-B1：雨课堂作业详情（归一化类型；实例经 createYuketangSource(...).getExerciseDetail 取）。
- * R20-B2 增补 YkAttachment（我的作答附件，只读展示）。 */
+ * R20-B2 增补 YkAttachment（我的作答附件，只读展示）；createYuketangSource 透出到包入口
+ * （desktop state 层 fetchYktExerciseDetail 需要自行注入凭据 / universalFetch）。 */
 export type { YkExerciseDetail, YkProblem, YkComment, YkAttachment, YkMyStatus, YuketangSource } from "./yuketang.js";
+export { createYuketangSource } from "./yuketang.js";
 export { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isTuojNoCoursesError } from "./tuojCas.js";
 export type { TuojRoamResult, TuojRoamDeps } from "./tuojCas.js";
 export { TuojSessionError, isTuojSessionError, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "./tuoj.js";

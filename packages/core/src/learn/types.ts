@@ -70,6 +70,11 @@ export interface Homework {
   /** 外部考试得分 / 卷面满分（仅已提交且已出分的外部考试） */
   score?: number;
   totalScore?: number;
+  /** R20-B2：雨课堂原生详情页拉取参数 leaf_type_id（仅 yuketang 透出自
+   *  ExternalHomework.leafTypeId；缺失时 UI 回退网页打开，其余源恒 undefined） */
+  externalLeafTypeId?: string;
+  /** R20-B2：雨课堂 classroom_id（与 externalLeafTypeId 成对出现，仅 yuketang） */
+  externalClassroomId?: string;
 }
 
 /** 可下载附件（thu-learn-lib RemoteFile 精简版） */

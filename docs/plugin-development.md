@@ -511,6 +511,13 @@ const st = await ctx.onethu.notify.status(true);   // 传 true 才会发起授�
 两者使用同一仓库格式约定，均仅覆盖 JS 插件；Rust 插件含平台二进制，仍经压缩包或
 文件夹安装（见 §3 与安装面板）。
 
+**许可**：插件是独立仓库，许可由作者自定——宿主不限制、也不代管插件的授权方式。
+官方示例插件（[hello](https://github.com/smartThise/OneTHU-plugin-hello)、
+[barbie](https://github.com/smartThise/OneTHU-theme-barbie)）一律以 **MIT** 开源，可自由使用；
+主程序自身的许可与第三方组件约定见主仓库 [LICENSE](../LICENSE) 与
+[LICENSES/THIRD-PARTY.md](../LICENSES/THIRD-PARTY.md)（后者的限制针对主程序分发，
+不扩张到插件）。建议插件仓库根目录附 `LICENSE` 并在 README 注明。
+
 ### 8.1 仓库格式
 
 插件仓库根目录提供 `plugin.js`（或 `index.js`、`main.js`），内容为单文件 ES 模块：

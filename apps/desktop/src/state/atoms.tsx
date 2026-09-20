@@ -14,11 +14,8 @@
  * 只搜本机已见过的数据——搜索框绝不主动轰炸校内服务）。
  */
 import type { ReactNode } from "react";
-import {
-  IconBell, IconCalendar, IconCard, IconCheck, IconExternal, IconFile, IconFlag,
-  IconFolder, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconToday, IconTrace, IconXk,
-  IconCloud,
-} from "../components/Icons.js";
+import { openThosInApp } from "../lib/thosOpen.js";
+import { IconBell, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconThos, IconToday, IconTrace, IconXk } from "../components/Icons.js";
 import {
   AgendaWidget, CardBalanceWidget, HomeworkWidget, RecentNoticesWidget, SubsNewsWidget,
   TodayClassesWidget, TodayOverviewWidget, TodayResvWidget,
@@ -96,6 +93,8 @@ export interface AtomDynCache {
   courseXCourses?: Array<{ sem: string; id: string; name: string; teacher?: string }>;
   /** 讨论区板块（BbsPanel 板块列表就绪后写入） */
   bbsBoards?: Array<{ courseId: string; bqid: string; name: string; courseName?: string; sem?: string }>;
+  /** 在线服务目录（ThosPage 就绪后写入；id 为原子 key，url 供打开） */
+  thosServices?: Array<{ id: string; name: string; department?: string; url?: string }>;
   /** 讨论区话题（BbsPanel 列表页就绪后写入；bqid 为所属板块） */
   bbsThreads?: Array<{ courseId: string; bqid: string; id: string; title: string; courseName?: string; sem?: string }>;
 }
@@ -299,6 +298,21 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
       atom: ref, title: w.title, sub: w.sub, icon: w.icon, group: w.group,
       widget: w.body,
       open: (nav) => nav(w.page, w.params ? { ...w.params } : undefined),
+    });
+  }
+  if (kind === "thos-service") {
+    const [id, name, department] = dec(key);
+    if (!id) return null;
+    return view({
+      atom: ref,
+      title: name || "在线服务",
+      sub: department ? "在线服务 · " + department : "在线服务",
+      icon: IconThos,
+      group: "在线服务",
+      open: () => {
+        const svc = (dyn.thosServices ?? []).find((x) => x.id === id);
+        if (svc?.url) void openThosInApp(svc.url);
+      },
     });
   }
   if (kind === "course") {
@@ -577,6 +591,8 @@ export function searchAtoms(query: string, limit = 24): AtomHit[] {
   for (const b of dyn.bbsBoards ?? []) if (match(b.name, b.courseName)) push(hit({ atom: { kind: "bbs-board", key: enc(b.courseId, b.bqid, b.name, b.courseName ?? "", b.sem ?? "") }, title: b.name, sub: (b.courseName ? b.courseName + " · " : "") + "讨论区板块", icon: IconLearn, group: "网络学堂" }));
   for (const t of dyn.bbsThreads ?? []) if (match(t.title, t.courseName)) push(hit({ atom: { kind: "forum", key: enc(t.courseId, t.id, t.bqid, t.title, t.courseName ?? "", t.sem ?? "") }, title: t.title, sub: (t.courseName ? t.courseName + " · " : "") + "讨论区话题", icon: IconLearn, group: "网络学堂" }));
   for (const a of INFO_APPS) if (match(a.name, a.cat)) push(hit({ atom: { kind: "infoapp", key: enc(a.cat, a.name, a.id) }, title: a.name, sub: a.cat + " · Info 应用", icon: IconExternal, group: "Info 应用" }));
+  // 在线服务目录（ThosPage 打开过一次即入缓存）——OH「一句话打开亲友来访」即命中这里
+  for (const s of dyn.thosServices ?? []) if (match(s.name, s.department)) push(hit({ atom: { kind: "thos-service", key: enc(s.id, s.name, s.department ?? "") }, title: s.name, sub: (s.department ? s.department + " · " : "") + "在线服务", icon: IconThos, group: "在线服务" }));
   // 收藏夹跳转原子（全部夹：根 + 子，标题命中即出）
   for (const f of Object.values(loadFavs().folders)) if (match(f.title)) push(hit({ atom: { kind: "folder", key: f.id }, title: f.title, sub: "收藏夹 · 点击直达", icon: IconFolder, group: "我的收藏夹" }));
 

@@ -342,6 +342,13 @@ export interface OnethuApi {
   nav: {
     /** 应用内跳转（page 见接口指南「页面路由」；params 如 { reserveTab: "room" }） */
     go(page: string, params?: Record<string, unknown>): void;
+    /** 按关键词检索全应用可跳转原子（功能页面 / 今日组件 / 本机已见过的课程·作业·通知·
+     *  在线服务等）。只查静态注册表 + 本机缓存，**绝不发起校园请求**；
+     *  与 nav.openAtom 配对即「一句话直达」。需 nav 权限 */
+    searchAtoms(query: string, limit?: number): Promise<Array<{ kind: string; key: string; title: string; sub?: string; group: string }>>;
+    /** 打开一个原子（等价用户点收藏夹里的那一项：跳功能页 / 切聚合页页签 / 开服务页）。
+     *  该原子未注册或已失效时返回 false——**不会跳空白页**，调用方据此回话。需 nav 权限 */
+    openAtom(ref: { kind: string; key: string }): Promise<boolean>;
   };
   ui: {
     toast(text: string): void;

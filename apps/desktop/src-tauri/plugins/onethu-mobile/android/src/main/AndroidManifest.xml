@@ -43,6 +43,42 @@
                 android:resource="@xml/onethu_widget_info" />
         </receiver>
 
+        <!-- 插件小组件槽位 1..3：Android 不允许运行时注册 provider，故预留固定槽位；
+             插件按声明顺序占位，内容经快照 slots["N"] 送进来（见 OnethuWidget.kt）。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSlot1"
+            android:label="@string/onethu_widget_slot1_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_slot1_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSlot2"
+            android:label="@string/onethu_widget_slot2_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_slot2_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSlot3"
+            android:label="@string/onethu_widget_slot3_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_slot3_info" />
+        </receiver>
+
         <!-- 点击落点广播（小组件与通知共用）：PendingIntent 里跑不了代码，
              先落到这里存 target 再拉起 App。exported=false：只由本应用的 PendingIntent 触发。 -->
         <receiver

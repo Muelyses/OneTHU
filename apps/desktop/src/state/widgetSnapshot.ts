@@ -16,6 +16,19 @@ export interface WidgetRow {
   sub?: string;
 }
 
+/** 插件小组件的槽位内容（snapshot 里的形态，槽位号为 map 键） */
+export interface WidgetSlotContent {
+  title: string;
+  rows: WidgetRow[];
+  footer: string;
+  target: string;
+}
+
+/** 槽位输入（结构上对应 plugins/pluginWidgets.ts 的 ResolvedWidgetSlot） */
+export interface WidgetSlotInput extends WidgetSlotContent {
+  slot: string;
+}
+
 export interface WidgetSnapshot {
   title: string;
   updatedAt: number;
@@ -23,6 +36,9 @@ export interface WidgetSnapshot {
   target: string;
   rows: WidgetRow[];
   footer: string;
+  /** 插件小组件槽位（槽位号 → 内容）；为空时不写该字段。
+   *  宿主小组件不读它，槽位小组件（原生 OnethuWidgetSlotNProvider）读自己那一键。 */
+  slots?: Record<string, WidgetSlotContent>;
 }
 
 export interface WidgetSnapshotInput {
@@ -32,8 +48,10 @@ export interface WidgetSnapshotInput {
   now: number;
   /** 最多几行（原生布局三行；多余的在 footer 里计数体现） */
   maxRows?: number;
-  /** 插件声明的小组件条目：插到课程/DDL 之后（Phase 2 接 registerWidget） */
+  /** 插件声明的小组件条目：插到课程/DDL 之后（宿主小组件里的插件行） */
   extraRows?: WidgetRow[];
+  /** 插件小组件的槽位内容（来自 plugins/pluginWidgets.ts 的 collectWidgetSlots） */
+  slots?: WidgetSlotInput[];
 }
 
 function ymd(ms: number): string {
@@ -134,12 +152,24 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
     ? "今天没有课与截止"
     : `${parts.join(" · ")}${more > 0 ? ` · 还有 ${more} 项` : ""}`;
 
+  const slotMap: Record<string, WidgetSlotContent> = {};
+  for (const slot of input.slots ?? []) {
+    if (!slot?.slot) continue;
+    slotMap[String(slot.slot)] = {
+      title: String(slot.title ?? "插件小组件"),
+      rows: (slot.rows ?? []).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
+      footer: String(slot.footer ?? ""),
+      target: String(slot.target ?? ""),
+    };
+  }
+
   return {
     title: `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`,
     updatedAt: now,
     target: "today",
     rows,
     footer,
+    ...(Object.keys(slotMap).length ? { slots: slotMap } : {}),
   };
 }
 

@@ -14,6 +14,7 @@
  */
 import { channelOf, type NotifyPlanItem } from "./notifyPlan.js";
 import { loadScheduledFingerprints, saveScheduledFingerprints } from "./notifySettings.js";
+import { isPluginNotifyId } from "./notifyIds.js";
 
 export type NotifyInvoke = (cmd: string, args?: Record<string, unknown>) => Promise<unknown>;
 
@@ -63,9 +64,11 @@ export function createNotifyScheduler(deps: NotifySchedulerDeps) {
     };
   }
 
+  /** 系统侧待投递的**宿主**通知 id。插件通知（plugin: 前缀）不属于宿主 id 空间：
+   *  认领它们会导致下一轮同步把插件排的通知当"计划外"撤掉。 */
   async function pendingIds(): Promise<string[]> {
     try {
-      return asArray(await deps.invoke("notify_pending"), "ids");
+      return asArray(await deps.invoke("notify_pending"), "ids").filter((id) => !isPluginNotifyId(id));
     } catch {
       return [];
     }

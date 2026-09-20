@@ -498,7 +498,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             // 校验一次 JSON：坏快照宁可不写，也不能让小组件渲染时崩
             JSONObject(args.snapshot)
             WidgetStore.save(ctx, args.snapshot)
-            activity.runOnUiThread { OnethuWidgetProvider.refreshAll(ctx) }
+            activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "push-failed"))
@@ -510,7 +510,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         try {
             val ctx = activity.applicationContext
             WidgetStore.clear(ctx)
-            activity.runOnUiThread { OnethuWidgetProvider.refreshAll(ctx) }
+            activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "clear-failed"))

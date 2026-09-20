@@ -12,6 +12,7 @@ import { getHwRemindState } from "./hwRemind.js";
 import type { PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
 import type { NotifyInvoke } from "./notifyScheduler.js";
 import { buildWidgetSnapshot, serializeWidgetSnapshot, type WidgetSnapshot } from "./widgetSnapshot.js";
+import { collectWidgetSlots } from "../plugins/pluginWidgets.js";
 import { createSyncer } from "./displaySyncer.js";
 
 export interface WidgetRuntimeDeps {
@@ -46,6 +47,8 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
       homework: inputs.homework,
       remind: getHwRemindState(),
       now,
+      // 插件小组件槽位：注册表是纯数据，直接读（插件的原子解析在 collectWidgetSlots 里完成）
+      slots: collectWidgetSlots(),
     });
     try {
       const raw = (await deps.invoke("widget_push", { snapshot: serializeWidgetSnapshot(snap) })) as

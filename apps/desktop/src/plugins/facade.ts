@@ -18,6 +18,7 @@ import type { FormField } from "../lib/formModal.js";
 import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
 import { getTabRoot, onTabReady } from "./tabs.js";
 import { getPluginAtom, pluginAtomKindOf, pluginAtomKinds, registerStaticAtomItem, staticAtomKinds } from "./pluginAtoms.js";
+import * as pluginWidgets from "./pluginWidgets.js";
 import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
@@ -770,6 +771,54 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       },
     },
     storage: storageNs,
+    notify: {
+      /** 排一条插件通知。id 归插件所有（plugin:<pluginId>:<key>）：宿主同步不会撤它，
+       *  插件停用/卸载时由 loader 收回。需 notify 权限。 */
+      send: async (opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{ ok: boolean; id: string; reason?: string }> => {
+        gate(perms, "notify", "notify.send");
+        const title = String(opts?.title ?? "").trim();
+        if (!title) throw new Error("notify.send 需要 title");
+        const key = String(opts?.key ?? "").trim() || `n${Date.now().toString(36)}`;
+        const { sendPluginNotification } = await import("../state/pluginNotify.js");
+        return sendPluginNotification({
+          pluginId,
+          key,
+          title: title.slice(0, 80),
+          body: String(opts?.body ?? "").slice(0, 200),
+          afterSeconds: typeof opts?.afterSeconds === "number" ? opts.afterSeconds : 60,
+          page: String(opts?.page ?? ""),
+        });
+      },
+      cancel: async (key: string): Promise<boolean> => {
+        gate(perms, "notify", "notify.cancel");
+        const { cancelPluginNotification } = await import("../state/pluginNotify.js");
+        const { pluginNotifyId } = await import("../state/notifyIds.js");
+        return cancelPluginNotification(pluginNotifyId(pluginId, String(key ?? "").trim()));
+      },
+      status: async (request = false): Promise<{ ok: boolean; backend: string; granted: boolean; exact: boolean; reason?: string }> => {
+        gate(perms, "notify", "notify.status");
+        const { pluginNotifyStatus } = await import("../state/pluginNotify.js");
+        return pluginNotifyStatus(request === true);
+      },
+    },
+    widget: {
+      /** 本插件已声明的小组件及所占槽位（未占槽位 = 有更早的插件把槽位占满了） */
+      list: (): Array<{ id: string; title: string; slot: string | null }> => {
+        gate(perms, "widget", "widget.list");
+        const { pluginWidgetDefs, collectWidgetSlots } = pluginWidgets;
+        const slots = new Map(collectWidgetSlots().map((s) => [`${s.pluginId}#${s.widgetId}`, s.slot]));
+        return pluginWidgetDefs(pluginId).map((w) => ({
+          id: w.id,
+          title: w.title,
+          slot: slots.get(`${pluginId}#${w.id}`) ?? null,
+        }));
+      },
+      /** 本平台预留的槽位总数 */
+      slots: (): number => {
+        gate(perms, "widget", "widget.slots");
+        return pluginWidgets.PLUGIN_WIDGET_SLOTS;
+      },
+    },
     settings: {
       get: () => {
         gate(perms, "storage", "settings.get");

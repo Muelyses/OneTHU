@@ -1,6 +1,7 @@
 /** 插件加载器：blob 动态 import + 权限门面注入 + 生命周期（安装/启用/停用/删除） */
 import { buildApi } from "./facade.js";
 import { installTheme, removePluginThemes, type ThemeDef } from "../state/theme.js";
+import { registerPluginWidget, unregisterPluginWidgets } from "./pluginWidgets.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
 import { preflightMadModel, startMadModelPump } from "../state/madmodel.js";
 import { forceRemint } from "../state/madmodel.js";
@@ -201,6 +202,19 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
         resolve: def.resolve,
       });
     },
+    /** 声明桌面小组件（Android）：只声明显示什么；宿主解析原子后交给原生渲染。需 widget 权限 */
+    registerWidget: (def) => {
+      if (!def?.id || typeof def.title !== "string" || !Array.isArray(def.rows)) return;
+      gate(perms, "widget", "registerWidget");
+      registerPluginWidget({
+        id: String(def.id),
+        pluginId: id,
+        pluginName: String(rec.manifest.name ?? id),
+        title: String(def.title),
+        rows: def.rows.filter((r) => r && typeof r === "object"),
+        target: typeof def.target === "string" ? def.target : undefined,
+      });
+    },
     log: (line: string) => void logLine(`[PLUGIN:${id}] ${line}`),
   };
   // 主题插件：注册主题定义（无 default 时不再调用激活函数）
@@ -236,6 +250,7 @@ async function deactivate(id: string, opts?: { keepTheme?: boolean }): Promise<v
   for (const l of cmdListeners) l();
   unregisterPluginTabs(id);
   unregisterPluginAtoms(id);
+  unregisterPluginWidgets(id);
   for (const el of document.querySelectorAll<HTMLStyleElement>(`style[data-plg-css="${id}"]`)) el.remove();
   if (p.blobUrl) URL.revokeObjectURL(p.blobUrl);
   /** 本版声明的主题 id：模块卸载前取出，供主题回收匹配（历史记录无 owner 时用） */
@@ -243,6 +258,12 @@ async function deactivate(id: string, opts?: { keepTheme?: boolean }): Promise<v
     ? String((p.mod.theme as ThemeDef).id ?? "")
     : "";
   live.delete(id);
+  // 插件自排的系统通知一并收回：否则卸载后它排的通知还会照常弹出
+  {
+    const { cancelPluginNotifications } = await import("../state/pluginNotify.js");
+    const n = await cancelPluginNotifications(id).catch(() => 0);
+    if (n > 0) await logLine(`[PLUGIN] 随插件 ${id} 收回通知 ${n} 条`);
+  }
   // 主题插件停用/卸载：其主题一并撤架。停用时看似"顺手删了主题"，但启用会重新注册，
   // 语义上「停用 = 不再提供该外观」；覆盖安装路径已用 keepTheme 排除。
   if (!opts?.keepTheme) {

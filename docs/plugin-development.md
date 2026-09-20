@@ -379,6 +379,66 @@ const saved = ctx.onethu.favorites.list();
 // [{ folderId: "f_x", folderTitle: "我的收藏", key: "main~streak:3" }]
 ```
 
+### 6.5 声明式桌面小组件（Android）
+
+插件可以把自己的信息放到 Android 桌面：`ctx.registerWidget` 声明「显示什么」，宿主把声明
+解析成原生可画的内容，由系统小组件渲染。
+
+```js
+ctx.registerWidget({
+  id: "streak",                                  // 插件内唯一；同 id 重复声明为覆盖
+  title: "连续打卡 3 天",
+  rows: [
+    { atom: "main~streak:3" },                    // 引用本插件注册的原子（宿主解析出标题/说明）
+    { text: "本周已完成 5/7", sub: "坚持中" },     // 或直接给一行字面文本
+  ],
+  target: "plugin:onethu.habit:main",             // 点击落点；缺省为该插件第一个功能页
+});
+```
+
+| 规则 | 说明 |
+|---|---|
+| 权限 | 需 `widget`。桌面端（macOS / Windows）不做小组件，本 API 只在 Android 生效 |
+| 槽位 | 宿主预留 **3 个**槽位（`OneTHU 插件小组件 1/2/3`），插件按声明顺序占位 |
+| 覆盖 | 同 id 重复声明**就地替换**：插件更新自己的小组件不会把槽位让给别的插件 |
+| 原子行 | `{ atom }` 走本插件注册的原子解析（key 约定同收藏夹 `"<tabId>~<原子key>"`）；`resolve` 返回 `null` 的行丢弃 |
+| 空内容 | 解析后一行不剩的小组件**不占槽位**（避免桌面上出现一张写着插件名、内容全空的卡片） |
+| 行数 | 单卡最多 3 行（原生布局三行） |
+| 落点 | 点击小组件回到 `target` 指定的页面；槽位无内容时点击进插件页，便于用户排查是谁占的槽位 |
+
+**为什么是「声明式」**：Android 桌面小组件由 AppWidgetHost 在**独立进程**里渲染，那里没有
+WebView、没有登录会话、也没有插件的 JS 运行时——插件代码在桌面上根本跑不起来。所以插件
+只能声明内容与落点，取值与渲染必须由宿主完成（宿主在前台算出快照推给原生，见
+[architecture.md §3](./architecture.md)）。
+
+**为什么是固定槽位**：系统不允许应用在运行时注册新的 AppWidgetProvider（provider 必须在清单
+里声明）。宿主因此一次性预留若干槽位，用户把「OneTHU 插件小组件 N」放到桌面即可看到第 N 个
+插件小组件。查看自己占了哪个槽位：`ctx.onethu.widget.list()`。
+
+### 6.6 系统通知（三端）
+
+把信息推给系统的通知中心，而不是只在自己界面里提示：
+
+```js
+const { ok, id, reason } = await ctx.onethu.notify.send({
+  title: "打卡提醒",
+  body: "今天还没打卡",
+  afterSeconds: 3600,        // 缺省 60；至少 1 秒后，避免「过去时刻」被系统拒绝
+  key: "today",              // 同 key 重复发送覆盖同一条（通知 id 稳定）
+  page: "plugin:onethu.habit:main",   // 点击通知的落点
+});
+await ctx.onethu.notify.cancel("today");
+const st = await ctx.onethu.notify.status(true);   // 传 true 才会发起授权请求
+```
+
+| 规则 | 说明 |
+|---|---|
+| 权限 | 需 `notify`；`status()` 会回报平台后端（android / macos / windows / none）与授权状态 |
+| 归属 | 通知 id 为 `plugin:<插件id>:<key>`，**归插件所有**：宿主重排自己的提醒时不会撤销它 |
+| 收回 | 插件停用或卸载时宿主自动收回该插件排下的全部通知 |
+| 总开关 | 不受宿主「提醒总开关」约束——那个开关管的是宿主自己的课程/DDL 提醒；插件既然单独申请了 `notify` 权限，发不发由插件决定 |
+| 平台差异 | Android 走通知渠道 + 定时闹钟（进程被杀也送达）；macOS 走系统通知中心；Windows 走 toast。三端点击落点的深链在桌面端尚未接（见 architecture.md） |
+
 ## 7. 接入新的清华服务
 
 宿主已实现为独立命名空间的服务（`info`、`learn`、`library` 等）之外，其他清华校内
@@ -616,6 +676,7 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 | 版本 | 变更 |
 |---|---|
+| v1.9 | 插件小组件与系统通知：§6.5 声明式桌面小组件（`ctx.registerWidget`，3 个预留槽位、原子行解析、点击落点）与 §6.6 系统通知（`onethu.notify.send/cancel/status`，通知 id 归插件）；新增权限 `widget`、`notify` |
 | v1.8 | 新增 §8.4 更新检查与拉取新鲜度（contents API 优先、raw 降级、名单版本号人工维护）；OH 收藏工具独立为 §9.3（其余 §9 子节顺延至 9.5）；§8 与 §9 子节编号修正 |
 | v1.7 | UI 自由化：§6.3 自建功能页（registerTab + onTabReady 自由渲染 DOM）与 registerCss 全局样式（新权限 css）；§6.4 原子化收藏（registerAtom 注册原子种类，favorites.add/list 收藏进宿主收藏夹并深链回插件 tab） |
 | v1.6 | 插件平台化：§6 UI 通道（confirm/form/clipboard）与结构化命令结果（markdown/items/kv）；OH 联动插件（§9.4）与 MCP 客户端（§9.5，stdio 冷启动）；新增权限 clipboard:read、plugins:call |

@@ -176,5 +176,18 @@ function fakeBackend({ failOn = null } = {}) {
   eq("坏存储回落默认", loadNotifySettings(), NOTIFY_DEFAULTS);
 }
 
+/* ⑫ 插件通知不属宿主 id 空间：不认领、不撤销（否则插件排的通知会被宿主同步清掉） */
+{
+  const be = fakeBackend();
+  be.pending.add("plugin:onethu.habit:n1");
+  const sc = createNotifyScheduler({ invoke: be.invoke, backendAvailable: true });
+  const r = await sc.sync([item("ddl:a")]);
+  eq("宿主只排自己的计划", [r.scheduled, r.cancelled], [1, 0]);
+  eq("插件通知未被撤销", be.pending.has("plugin:onethu.habit:n1"), true);
+  const r2 = await sc.cancelAll();
+  eq("关总开关只撤宿主通知", r2.cancelled, 1);
+  eq("插件通知仍在（由插件自己或停用时收回）", be.pending.has("plugin:onethu.habit:n1"), true);
+}
+
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);

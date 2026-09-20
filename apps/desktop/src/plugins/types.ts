@@ -42,7 +42,9 @@ export type PluginPermission =
   | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
   | "exthw:read" // 外部作业源（雨课堂/TUOJ 系/Tyche/DSA OJ）状态与作业快照
   | "exthw:refresh" // 触发外部作业源刷新（网络请求）
-  | "webview"; // 应用内 WebView 模态（Android 桌面模式浏览；桌面自动降级系统浏览器）
+  | "webview" // 应用内 WebView 模态（Android 桌面模式浏览；桌面自动降级系统浏览器）
+  | "widget" // 声明 Android 桌面小组件（只声明显示什么，渲染由宿主与原生完成）
+  | "notify"; // 发送系统通知（三端；内容与时刻由插件自定）
 
 export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: string; desc: string }> = [
   { id: "user:read", label: "读取基本信息", desc: "姓名/学号/院系与登录会话状态" },
@@ -68,6 +70,17 @@ export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: st
   { id: "ui", label: "显示提示", desc: "弹出 toast 消息" },
   { id: "storage", label: "本地存储", desc: "插件私有键值存储（卸载即清除）" },
   { id: "net:external", label: "外部网络请求", desc: "直接请求任意外部 HTTP(S) 接口（大模型 API 等）" },
+  { id: "widget", label: "桌面小组件", desc: "向 Android 桌面小组件声明要显示的内容（渲染与取值由宿主完成，插件不写原生代码）" },
+  { id: "notify", label: "发送系统通知", desc: "向系统通知中心推送通知（三端），内容与时刻由插件决定" },
+  { id: "css", label: "注入全局样式", desc: "注入影响整个应用外观的 CSS（安装时重点确认）" },
+  { id: "clipboard:read", label: "读取剪贴板", desc: "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）" },
+  { id: "plugins:call", label: "调用其他插件", desc: "列出并执行其他已启用插件的命令（含写操作）" },
+  { id: "tsinghua:sdk", label: "访问任意校内服务", desc: "以你的登录态访问任意清华校内系统（自定义服务接入）" },
+  { id: "theme", label: "主题控制", desc: "查询与应用主题、参与昼夜跟随调度（可改变全局外观）" },
+  { id: "llm", label: "模型对话", desc: "经内置 Harness 调用大模型（清华免费档或你的自费 API）" },
+  { id: "exthw:read", label: "读取外部作业源", desc: "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照" },
+  { id: "exthw:refresh", label: "刷新外部作业源", desc: "触发外部作业源网络刷新" },
+  { id: "webview", label: "应用内网页", desc: "在应用内打开网页（Android 桌面模式浏览）" },
 ];
 
 /** 插件设置项：安装后由应用代为渲染表单（插件不自带 UI） */
@@ -143,6 +156,15 @@ export interface PluginContext {
     group: string;
     iconSvg?: string;
     resolve: (key: string) => { title: string; sub?: string } | null;
+  }): void;
+  /** 声明一个桌面小组件（Android）：只声明「显示什么」，渲染由宿主与原生完成。
+   *  rows 里可用 { atom } 引用本插件注册的原子（key 约定同收藏夹 "<tabId>~<原子key>"），
+   *  宿主解析后交给原生；有 3 个预留槽位，按声明顺序占位。需 widget 权限。 */
+  registerWidget(def: {
+    id: string;
+    title: string;
+    rows: Array<{ text: string; sub?: string } | { atom: string }>;
+    target?: string;
   }): void;
   /** 写日志（进应用调试通道：桌面 /tmp/onethu-debug.log，Android logcat tag=onethu） */
   log(line: string): void;
@@ -353,6 +375,28 @@ export interface OnethuApi {
     addAtom(ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void;
     /** 列出全部可收藏的插件原子种类 */
     kinds(): Array<{ kind: string; group: string; source: "registered" | "static" }>;
+  };
+  /** 系统通知（三端）：插件自定内容与时刻；通知 id 归插件所有，宿主重排不会撤它 */
+  notify: {
+    /** 排一条通知；afterSeconds 缺省 60（至少 1 秒后，避免"过去时刻"被系统拒绝）。
+     *  需 notify 权限。返回 ok=false 时 reason 说明原因（未授权 / 平台不支持 / 排程失败） */
+    send(opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{
+      ok: boolean;
+      /** 通知 id（撤销时用） */
+      id: string;
+      reason?: string;
+    }>;
+    /** 撤销一条自己的通知（key 与 send 时一致） */
+    cancel(key: string): Promise<boolean>;
+    /** 后端与权限状态；request=true 时顺带发起授权请求（用户主动行为时才传） */
+    status(request?: boolean): Promise<{ ok: boolean; backend: string; granted: boolean; exact: boolean; reason?: string }>;
+  };
+  /** 桌面小组件（Android）：查询本插件声明的小组件与所占槽位 */
+  widget: {
+    /** 列出本插件已声明的小组件及槽位号（未占槽位时 slot 为 null） */
+    list(): Array<{ id: string; title: string; slot: string | null }>;
+    /** 本平台的槽位总数（用于提示用户「放到第 N 个小组件」） */
+    slots(): number;
   };
   storage: {
     get<T = string>(key: string): T | null;

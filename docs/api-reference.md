@@ -74,6 +74,8 @@ return {
 | `nav` / `ui` | `nav.go` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
+| `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染） |
+| `notify` | `notify.send` / `notify.cancel` / `notify.status`（发送系统通知，三端） |
 
 ---
 
@@ -506,6 +508,10 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `ui.getTabRoot(pageKey)` / `ui.onTabReady(pageKey, cb)` | `ui` | 本插件功能页的 DOM 挂载容器（自由渲染）；仅限 `plugin:<本插件id>:` 前缀 |
 | `favorites.add(key, folderId?)` / `favorites.list()` | `ui` | 收藏本插件原子：key 形如 `<tabId>~<原子key>`，kind 自动补全为本插件；`list` 返回本插件已被收藏的收藏夹与 key。见 plugin-development §6.4 |
 | `favorites.addAtom(ref, meta?, folderId?)` / `favorites.kinds()` | `ui` | 收藏任意已注册种类的原子（跨插件）：`ref` 为 `{kind, key}`，`meta` 提供展示元数据且在该种类未注册时内联注册为静态种类（OH 收藏工具经此通道）；`kinds` 列出全部可收藏种类 |
+| `notify.send(opts)` | `notify` | 排一条系统通知：`{title, body?, afterSeconds?, key?, page?}`；返回 `{ok, id, reason?}`。通知 id 为 `plugin:<插件id>:<key>`，归插件所有，宿主重排不撤 |
+| `notify.cancel(key)` | `notify` | 撤销本插件排下的某条通知 |
+| `notify.status(request?)` | `notify` | 后端与授权状态：`{ok, backend, granted, exact, reason?}`；`request=true` 才发起授权请求 |
+| `widget.list()` / `widget.slots()` | `widget` | 本插件已声明的小组件与所占槽位（未占槽为 `null`）/ 本平台预留槽位数 |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 

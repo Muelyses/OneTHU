@@ -14,8 +14,7 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
-import { openExternalHomework, isAndroidHostEnv } from "../lib/extHwBrowse.js";
-import { pickYktDetailEntry } from "../lib/yktDetail.js";
+import { openHomeworkRow } from "../lib/homeworkEntry.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type Homework, type ScheduleEntry } from "@onethu/core";
 
@@ -177,35 +176,15 @@ export function HomeworkRows({
     <Card className="list">
       {rows.slice(0, 8).map((h, i) => {
         const chip = deadlineChip(h);
-        const external = Boolean(h.source);
         return (
           <RowClick
             key={h.courseId + "-" + h.id}
             style={{ animationDelay: i * 35 + "ms" }}
             onClick={() => {
-              if (external) {
-                // R20-B2：Android 宿主的雨课堂条目直达原生只读详情页（learn-ykt-detail）；
-                // 其余保持 R20-A 现状（openExternalHomework 内部分流，桌面行为零变化）。
-                if (pickYktDetailEntry(isAndroidHostEnv(), h) === "native") {
-                  navigate("learn-ykt-detail", {
-                    ykt: {
-                      leafTypeId: h.externalLeafTypeId ?? "",
-                      classroomId: h.externalClassroomId ?? "",
-                      externalUrl: h.externalUrl,
-                      title: h.title,
-                      deadline: h.deadline,
-                      courseName: h.courseName ?? courseName(h.courseId),
-                      kind: h.kind,
-                    },
-                    from: "today",
-                  });
-                  return;
-                }
-                // R20-A：Android 宿主改走应用内全屏 WebView 桌面模式（分流在 openExternalHomework）
-                if (h.externalUrl) void openExternalHomework(h.externalUrl);
-                return;
-              }
-              navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from: "today" });
+              // R20-B2b：行点击统一走 openHomeworkRow 三态分流（雨课堂参数齐备 →
+              // learn-ykt-detail 原生详情，全平台默认原生；其余外部源 → R20-A 通道；
+              // 内部作业 → 站内详情）。今日页与收藏夹的作业卡都经此组件，单点收敛。
+              openHomeworkRow(h, { navigate, from: "today", courseName: courseName(h.courseId) });
             }}
           >
             <div className="row-when">

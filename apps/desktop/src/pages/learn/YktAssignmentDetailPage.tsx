@@ -10,11 +10,13 @@
  *
  * 数据：core getExerciseDetail（R20-B1）经 state 层薄包装 fetchYktExerciseDetail
  * （凭据 / universalFetch 注入）。loading / error 态齐备：失败**保留原始错误文案**
- * 并 log_debug 留痕，绝不静默吞；错误态提供「重试」与「在网页中打开」双出口。
+ * 并 log_debug 留痕，绝不静默吞；错误态提供「重试」与「浏览器打开」双出口。
  *
- * 入口（R20-B2）：移动端（Android 宿主）作业列表的雨课堂条目点击直达本页
- * （分流纯函数 pickYktDetailEntry，见 lib/yktDetail.ts）；R20-A 的桌面模式 WebView
- * 保留为页内备用入口（页头「在网页中打开」按钮，openExternalHomework 分流不变）。
+ * 入口（R20-B2b）：作业列表 / 今日页 / 搜索等所有作业行点击统一走 openHomeworkRow
+ * 三态分流（lib/homeworkEntry.ts；纯判定 pickHomeworkRoute 在 lib/yktDetail.ts）——
+ * 雨课堂 + 详情参数齐备 → **全平台默认**直达本页（不再限 Android 宿主，PC 同样原生），
+ * 参数缺失才回退 R20-A。官方页降为页内备用出口：页头「浏览器打开」按钮
+ * （openExternalHomework 分流不变：桌面 = 系统浏览器，移动 = 应用内桌面模式 WebView）。
  *
  * 红线（B2 只读，写死在渲染逻辑里）：
  *  - 本页**不渲染任何提交 / 作答输入入口**——提交属 R20-C1/C2；
@@ -185,6 +187,7 @@ export function YktAssignmentDetailPage() {
   const summary = yktExerciseSummary(detail?.problems ?? []);
   const left = timeLeft(ykt.deadline ?? "");
   const openInWeb = (): void => {
+    // R20-A 通道（分流在 openExternalHomework）：桌面 = 系统浏览器；移动 = 应用内桌面模式 WebView
     if (ykt.externalUrl) void openExternalHomework(ykt.externalUrl);
   };
 
@@ -197,7 +200,7 @@ export function YktAssignmentDetailPage() {
         <Card>
           <ErrorNote text={errMsg} onRetry={() => setTick((t) => t + 1)} />
           <div className="detail-meta" style={{ padding: "0 16px 10px" }}>
-            详情拉取失败不影响列表状态；可用右上角「在网页中打开」走官方页面（R20-A 通道）。
+            详情拉取失败不影响列表状态；可用右上角「浏览器打开」走官方页面（R20-A 通道）。
           </div>
         </Card>
       </>
@@ -287,8 +290,8 @@ export function YktAssignmentDetailPage() {
           <>
             <BackButton to={from} />
             {ykt.externalUrl ? (
-              <button className="btn" onClick={openInWeb} title="R20-A：应用内桌面模式 WebView（移动端）/ 系统浏览器（桌面）">
-                在网页中打开
+              <button className="btn" onClick={openInWeb} title="桌面 = 系统浏览器打开官方页；移动 = 应用内桌面模式 WebView（R20-A 通道）">
+                浏览器打开
               </button>
             ) : null}
           </>

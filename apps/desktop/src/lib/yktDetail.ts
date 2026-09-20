@@ -3,9 +3,12 @@
  * 无 Tauri —— tools/ykt-detail-ui-test.mjs 用 Node 直引做回归测试，约定同
  * ./androidHost.ts）。
  *
- * 范围（B2 只读）：
- *  - 入口分流：移动端（Android 宿主）雨课堂条目 → 原生详情页；其余保持 R20-A 现状
- *    （openExternalHomework 内部分流：Android → 桌面模式 WebView，桌面 → 系统浏览器）；
+ * 范围：
+ *  - 入口分流（R20-B2b 默认原生）：作业行点击统一三态判定 pickHomeworkRoute ——
+ *    雨课堂 + 详情参数齐备 → 原生详情页（**全平台默认**，不再限 Android 宿主，PC 同样
+ *    直达原生页）；其余外部源 / 参数缺失 → external（openExternalHomework 内部分流：
+ *    Android → 桌面模式 WebView，桌面 → 系统浏览器）；无 source 的内部作业 → internal
+ *    （learn-assignment-detail）。真实导航/打开动作收在 ./homeworkEntry.ts（薄执行层）；
  *  - 展示口径：单题批改徽标、整卷批改/得分汇总、题型文案、作答附件文案。
  *
  * 红线（写死在本模块注释与页面实现里）：B2 无任何提交 UI；试卷（exam / type 6 / 20）
@@ -23,15 +26,32 @@ export interface YktEntryRow {
   externalClassroomId?: string;
 }
 
-/** 原生详情页入口判定（纯函数）：
- *  - "native"：Android 宿主（tauri + isAndroidNavigator 多信号，与 R20-A 同口径）
- *    且是雨课堂条目且详情参数齐备 → 直达 learn-ykt-detail 原生页；
- *  - "external"：桌面端 / 浏览器预览 / 非雨课堂 / 参数缺失 → 保持 R20-A 现状
- *    （openExternalHomework：Android 走应用内 WebView 桌面模式，桌面走系统浏览器）。 */
-export function pickYktDetailEntry(androidHost: boolean, row: YktEntryRow): "native" | "external" {
-  return androidHost && row.source === "yuketang" && Boolean(row.externalLeafTypeId) && Boolean(row.externalClassroomId)
-    ? "native"
-    : "external";
+/** 作业行点击的统一路由三态（R20-B2b：所有点击入口共用同一条判定） */
+export type HomeworkRowRoute =
+  | "ykt-native" // 雨课堂 + 详情参数齐备 → learn-ykt-detail 原生页（全平台默认）
+  | "external-web" // 其余外部源 / 雨课堂参数缺失 → openExternalHomework（R20-A 分流）
+  | "internal"; // 无 source 的网络学堂作业 → learn-assignment-detail
+
+/** 作业行点击统一分流（纯函数，零依赖；真实导航/打开动作在 ./homeworkEntry.ts）：
+ *  - "ykt-native"：雨课堂条目且 leafTypeId/classroomId 齐备 → 直达 learn-ykt-detail。
+ *    R20-B2b 起**不再看宿主**：Android / 桌面（PC）一律默认原生，官方页降为页内
+ *    「浏览器打开」备用出口（真机反馈：Android 上仍落 R20-A WebView，桌面原生页
+ *    同样可用，故收敛为同一默认）；参数缺失才回退 external（详情拉不了，别把用户
+ *    带进死页）；
+ *  - "external-web"：非雨课堂外部源（TUOJ/Tyche…）或雨课堂参数缺失 → 保持 R20-A
+ *    现状（openExternalHomework：Android 应用内 WebView 桌面模式，桌面系统浏览器）；
+ *  - "internal"：无 source 的网络学堂作业 → learn-assignment-detail。 */
+export function pickHomeworkRoute(row: YktEntryRow): HomeworkRowRoute {
+  if (row.source === "yuketang" && Boolean(row.externalLeafTypeId) && Boolean(row.externalClassroomId)) {
+    return "ykt-native";
+  }
+  return row.source ? "external-web" : "internal";
+}
+
+/** 雨课堂原生详情页入口判定（R20-B2 两态口径，pickHomeworkRoute 的投影，
+ *  保留给旧调用点/测试：native ⇔ pickHomeworkRoute(row) === "ykt-native"）。 */
+export function pickYktDetailEntry(row: YktEntryRow): "native" | "external" {
+  return pickHomeworkRoute(row) === "ykt-native" ? "native" : "external";
 }
 
 /* ── 展示口径 ── */

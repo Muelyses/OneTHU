@@ -13,8 +13,7 @@ import { fetchImageAsDataUrl, fetchImageByUrl } from "../../lib/clients.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
-import { openExternalHomework, isAndroidHostEnv } from "../../lib/extHwBrowse.js";
-import { pickYktDetailEntry } from "../../lib/yktDetail.js";
+import { openHomeworkRow } from "../../lib/homeworkEntry.js";
 import { Card } from "../../components/Layout.js";
 import { IconBell, IconChevron } from "../../components/Icons.js";
 import { CollectStar } from "../../components/Collect.js";
@@ -328,32 +327,10 @@ function HwRemindButton({ h }: { h: Homework }) {
 
 export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem, remind }: RowProps & { h: Homework; showGrade?: boolean; sem?: string; remind?: boolean }) {
   const { navigate } = useApp();
-  const external = Boolean(h.source);
+  // R20-B2b：行点击统一走 openHomeworkRow 三态分流（雨课堂参数齐备 → learn-ykt-detail
+  // 原生详情，全平台默认原生；其余外部源 → R20-A 通道；内部作业 → 站内详情）。
   const go = () => {
-    // 外部作业：有详情链接时打开官方页。R20-B2：Android 宿主的雨课堂条目直达
-    // 原生只读详情页（learn-ykt-detail，解决雨课堂网页版不适配移动端的痛点）；
-    // 桌面 / 浏览器预览 / 非雨课堂 / 详情参数缺失 → 保持 R20-A 现状
-    // （openExternalHomework 内部分流：Android 应用内 WebView 桌面模式，桌面系统浏览器）。
-    if (external) {
-      if (pickYktDetailEntry(isAndroidHostEnv(), h) === "native") {
-        navigate("learn-ykt-detail", {
-          ykt: {
-            leafTypeId: h.externalLeafTypeId ?? "",
-            classroomId: h.externalClassroomId ?? "",
-            externalUrl: h.externalUrl,
-            title: h.title,
-            deadline: h.deadline,
-            courseName: h.courseName,
-            kind: h.kind,
-          },
-          from,
-        });
-        return;
-      }
-      if (h.externalUrl) void openExternalHomework(h.externalUrl);
-      return;
-    }
-    navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from });
+    openHomeworkRow(h, { navigate, from, courseName });
   };
   const chip = homeworkChip(h);
   // 已批改直接显示成绩（thu-app learnHome「已批改 (分数)」语义）：等级码经 gradeLabel 转文字

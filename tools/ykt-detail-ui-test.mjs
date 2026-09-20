@@ -1,11 +1,14 @@
 /**
  * R20-B2：雨课堂原生作业详情页 —— 纯判定/展示函数 + core 新透出字段 单测（离线，mock，不打真实平台）。
+ * R20-B2b：入口默认原生改版 —— [1] 改为全平台口径 + [5] 新增点击入口接线静态审计。
  *
  * 运行：node tools/ykt-detail-ui-test.mjs
  *
  * 覆盖：
- *  [1] 入口分流 pickYktDetailEntry（apps/desktop/src/lib/yktDetail.ts）：
- *      Android 宿主 + yuketang + 参数齐备 → native；桌面 / 浏览器 / 非雨课堂 / 缺参数 → external（R20-A 现状）
+ *  [1] 入口分流（apps/desktop/src/lib/yktDetail.ts）：
+ *      pickHomeworkRoute 三态统一判定 —— yuketang + 参数齐备 → ykt-native
+ *      （R20-B2b 起全平台默认原生，不再看 Android 宿主）；非雨课堂 / 缺参数 → external-web；
+ *      无 source → internal。pickYktDetailEntry = ykt-native 的两态投影（旧口径兼容）。
  *  [2] 展示口径（同文件）：yktStatusChip 三态徽标（真实 0 分也显示）/ yktScoreText /
  *      yktTypeText（typeText 缺失时按 ProblemType 兜底）/ yktIsExternalLinkProblem（题型 9 红线）/
  *      yktAttachmentsText（空 → ""；无名附件回退 url / 占位）
@@ -16,10 +19,15 @@
  *      - 详情 late_submission → lateDeadline（毫秒 → 本地 "YYYY-MM-DD HH:MM"；缺失/0 → 不设）
  *      - my_answer.attachment（非对象元素过滤、空白名过滤、空数组 → 不设）
  *      - 题型 9 content.data.answer_problem_url → externalUrl（仅 http(s)；非题型 9 / 非法 url 不设）
+ *  [5] R20-B2b 入口接线静态审计（漏接回归网）：全部作业/课程详情（shared.tsx）、今日页与
+ *      收藏夹作业卡（HomeWidgets.tsx）、全局搜索（SearchPage.tsx）三处点击点必须统一走
+ *      openHomeworkRow（lib/homeworkEntry.ts），不得自拼判定 / 直连详情页；原生详情页保留
+ *      「浏览器打开」备用出口（openExternalHomework：桌面系统浏览器 / 移动 R20-A WebView）。
  *
- * 覆盖边界：toHomework 的 externalLeafTypeId/externalClassroomId 两行映射与
- * state/exthw.ts fetchYktExerciseDetail 依赖 @tauri-apps / localStorage（Node 无法加载），
- * 由 pnpm typecheck + 真机烟测覆盖（docs 28.8）。
+ * 覆盖边界：homeworkEntry.ts openHomeworkRow / toHomework 的 externalLeafTypeId/
+ * externalClassroomId 两行映射与 state/exthw.ts fetchYktExerciseDetail 依赖
+ * @tauri-apps / localStorage（Node 无法加载），由 pnpm typecheck + [5] 静态审计 +
+ * 真机烟测覆盖（docs 28.8 / 28.9）。
  */
 import { registerHooks } from "node:module";
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
@@ -41,7 +49,7 @@ registerHooks({
   },
 });
 
-const { pickYktDetailEntry, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText } = await import(
+const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText } = await import(
   "../apps/desktop/src/lib/yktDetail.ts"
 );
 
@@ -96,16 +104,21 @@ function fmtExpect(ms) {
 
 const YKT_BASE = "https://pro.yuketang.cn";
 
-/* ───────────────── [1] 入口分流 ───────────────── */
-console.log("\n[1] 入口分流 pickYktDetailEntry");
+/* ───────────────── [1] 入口分流（R20-B2b：全平台默认原生） ───────────────── */
+console.log("\n[1] 入口分流 pickHomeworkRoute / pickYktDetailEntry（R20-B2b 默认原生）");
 {
-  eq(pickYktDetailEntry(true, { source: "yuketang", externalLeafTypeId: "100123", externalClassroomId: "777" }), "native", "Android + 雨课堂 + 参数齐备 → native");
-  eq(pickYktDetailEntry(false, { source: "yuketang", externalLeafTypeId: "100123", externalClassroomId: "777" }), "external", "桌面端 → external（R20-A 现状，行为零变化）");
-  eq(pickYktDetailEntry(true, { source: "yuketang", externalClassroomId: "777" }), "external", "缺 leafTypeId → external（详情拉不了，别把用户带进死页）");
-  eq(pickYktDetailEntry(true, { source: "yuketang", externalLeafTypeId: "100123" }), "external", "缺 classroomId → external");
-  eq(pickYktDetailEntry(true, { source: "tuoj", externalLeafTypeId: "1", externalClassroomId: "1" }), "external", "非雨课堂源 → external");
-  eq(pickYktDetailEntry(true, {}), "external", "内部作业（无 source）→ external");
-  eq(pickYktDetailEntry(true, { source: "yuketang", externalLeafTypeId: "", externalClassroomId: "" }), "external", "空串参数视同缺失 → external");
+  // 判定不再收宿主参数：PC 与 Android 同一口径，签名单参化
+  eq(pickHomeworkRoute({ source: "yuketang", externalLeafTypeId: "100123", externalClassroomId: "777" }), "ykt-native", "雨课堂 + 参数齐备 → ykt-native（全平台默认原生，PC 亦然）");
+  eq(pickHomeworkRoute({ source: "yuketang", externalClassroomId: "777" }), "external-web", "缺 leafTypeId → external-web（详情拉不了，别把用户带进死页）");
+  eq(pickHomeworkRoute({ source: "yuketang", externalLeafTypeId: "100123" }), "external-web", "缺 classroomId → external-web");
+  eq(pickHomeworkRoute({ source: "yuketang" }), "external-web", "双参数全缺 → external-web");
+  eq(pickHomeworkRoute({ source: "yuketang", externalLeafTypeId: "", externalClassroomId: "" }), "external-web", "空串参数视同缺失 → external-web");
+  eq(pickHomeworkRoute({ source: "tuoj", externalLeafTypeId: "1", externalClassroomId: "1" }), "external-web", "非雨课堂源 → external-web（R20-A 通道）");
+  eq(pickHomeworkRoute({}), "internal", "内部作业（无 source）→ internal（站内详情）");
+
+  // 两态投影（旧口径兼容）：native ⇔ ykt-native
+  eq(pickYktDetailEntry({ source: "yuketang", externalLeafTypeId: "100123", externalClassroomId: "777" }), "native", "pickYktDetailEntry 投影：参数齐备 → native");
+  eq(pickYktDetailEntry({ source: "yuketang", externalLeafTypeId: "100123" }), "external", "pickYktDetailEntry 投影：缺参 → external");
 }
 
 /* ───────────────── [2] 展示口径 ───────────────── */
@@ -304,6 +317,41 @@ console.log("\n[4] core：列表 leafTypeId/classroomId + 详情 lateDeadline/�
   const d3 = await src3.getExerciseDetail("9", "777");
   eq(d3.lateDeadline, undefined, "late_submission=0 → lateDeadline 不设");
   eq(d3.maxRetry, 0, "max_retry=0 照旧透出（UI 显「不可重交」）");
+}
+
+/* ───────────────── [5] 入口接线静态审计（R20-B2b：漏接回归网） ───────────────── */
+console.log("\n[5] 入口接线静态审计（所有点击点统一 openHomeworkRow）");
+{
+  const { readFileSync } = await import("node:fs");
+  const readSrc = (rel) => readFileSync(new URL(rel, import.meta.url), "utf8");
+
+  // 作业行点击点全量清单（新增点击点必须接 openHomeworkRow 并登记到这里）
+  const CLICK_POINTS = [
+    ["shared.tsx HomeworkRow（全部作业 / 课程详情）", "../apps/desktop/src/pages/learn/shared.tsx"],
+    ["HomeWidgets.tsx HomeworkRows（今日页 / 收藏夹作业卡）", "../apps/desktop/src/components/HomeWidgets.tsx"],
+    ["SearchPage.tsx SearchHomeworkRow（全局搜索）", "../apps/desktop/src/pages/learn/SearchPage.tsx"],
+  ];
+  for (const [name, rel] of CLICK_POINTS) {
+    const src = readSrc(rel);
+    ok(src.includes("openHomeworkRow("), `${name}：行点击统一走 openHomeworkRow`);
+    ok(!src.includes("pickYktDetailEntry(") && !src.includes("openExternalHomework("), `${name}：不自拼雨课堂判定 / 网页打开（防分流旁路）`);
+    ok(!src.includes('navigate("learn-ykt-detail"') && !src.includes('navigate("learn-assignment-detail"'), `${name}：不绕过分流直连详情页`);
+  }
+
+  // 唯一执行层：三态动作全部收在 homeworkEntry.ts
+  const entry = readSrc("../apps/desktop/src/lib/homeworkEntry.ts");
+  ok(
+    entry.includes("pickHomeworkRoute") &&
+      entry.includes("openExternalHomework") &&
+      entry.includes('navigate("learn-ykt-detail"') &&
+      entry.includes('navigate("learn-assignment-detail"'),
+    "homeworkEntry.ts = 唯一执行层（三态动作齐全：ykt-native / external-web / internal）",
+  );
+
+  // 原生详情页保留「浏览器打开」备用出口，文案统一
+  const page = readSrc("../apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx");
+  ok(page.includes("浏览器打开") && page.includes("openExternalHomework"), "原生详情页保留「浏览器打开」备用出口（R20-A 分流：桌面系统浏览器 / 移动 WebView）");
+  ok(!page.includes("在网页中打开"), "旧文案「在网页中打开」已统一为「浏览器打开」");
 }
 
 console.log(`\n═══ R20-B2 雨课堂原生详情页单测：${pass} 通过 / ${fail} 失败 ═══`);

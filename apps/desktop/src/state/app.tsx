@@ -119,7 +119,7 @@ export interface YktNav {
   leafTypeId: string;
   /** classroom_id（core getExerciseDetail 第二参） */
   classroomId: string;
-  /** 官方网页直链（「在网页中打开」备用入口，R20-A 分流不变；可空） */
+  /** 官方网页直链（「浏览器打开」备用出口，R20-A 分流不变；可空） */
   externalUrl?: string;
   /** 作业名（列表行 title；详情 name 覆盖） */
   title?: string;

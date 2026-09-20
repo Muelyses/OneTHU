@@ -2,6 +2,9 @@
 
 use serde::{Deserialize, Serialize};
 
+/// 桌面端通知实现（macOS/Windows）。Android 走 onethu-mobile 插件的 Kotlin 侧，
+/// 故整个模块按桌面端门控——否则 Android 目标下会编进一堆用不到的桌面实现。
+#[cfg(desktop)]
 mod notify;
 #[cfg(target_os = "macos")]
 mod notify_macos;

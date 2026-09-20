@@ -98,11 +98,17 @@ export async function runNotifyDoctor(deps: NotifyDoctorDeps): Promise<DoctorRep
         .map(([k, v]) => `槽位${k}:${v}`)
         .join(" ");
       const titles = Object.entries(ws.slotTitles).map(([k, t]) => `槽位${k}=${t}`).join("；");
+      const providerInfo =
+        ws.providersRegistered.length === 0
+          ? "系统未登记任何小组件 provider（清单合并可能未生效，请把这条反馈给开发者）"
+          : `系统已登记 ${ws.providersRegistered.length} 个 provider（${ws.providersRegistered.join("、")}）`;
+      const widgetStatus: DoctorStep["status"] = ws.providersRegistered.length === 0 ? "fail" : ws.hasSnapshot ? "ok" : "warn";
       push(
         "widget",
         "小组件",
-        ws.hasSnapshot ? "ok" : "warn",
+        widgetStatus,
         [
+          providerInfo,
           ws.hasSnapshot ? `快照已于 ${fmtTime(ws.snapshotAt)} 生成` : "还没有快照（打开应用并刷新一次数据即可生成）",
           placed > 0 ? `桌面已放 ${placed} 个（宿主 ${ws.hostPlaced}）${slotInfo}` : "桌面尚未放置任何小组件",
           titles || "（当前无插件占用槽位）",

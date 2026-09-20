@@ -29,7 +29,10 @@ function harness(over = {}) {
     scheduleReason: "",
     pendingContainsProbe: true,
     testOk: true,
-    widget: { ok: true, hostPlaced: 1, slotsPlaced: { "1": 1 }, hasSnapshot: true, snapshotAt: NOW - 60_000, slotTitles: { "1": "Hello 计数 3" } },
+    widget: {
+      ok: true, hostPlaced: 1, slotsPlaced: { "1": 1 }, hasSnapshot: true, snapshotAt: NOW - 60_000,
+      slotTitles: { "1": "Hello 计数 3" }, providersRegistered: ["宿主", "槽位1", "槽位2", "槽位3"],
+    },
     hasWidgetStatus: true,
     ...over,
   };
@@ -125,7 +128,7 @@ const step = (r, id) => r.steps.find((s) => s.id === id);
 
 /* ⑧ 小组件未放/无快照：warn 且把数字讲清楚 */
 {
-  const h = harness({ widget: { ok: true, hostPlaced: 0, slotsPlaced: {}, hasSnapshot: false, snapshotAt: 0, slotTitles: {} } });
+  const h = harness({ widget: { ok: true, hostPlaced: 0, slotsPlaced: {}, hasSnapshot: false, snapshotAt: 0, slotTitles: {}, providersRegistered: ["宿主"] } });
   const r = await runNotifyDoctor(h.deps);
   const w = step(r, "widget");
   eq("无快照 → warn", w.status, "warn");
@@ -142,6 +145,17 @@ const step = (r, id) => r.steps.find((s) => s.id === id);
   ok("报出放置数量", w.detail.includes("桌面已放 2 个"));
   ok("报出宿主数量", w.detail.includes("宿主 1"));
   ok("报出槽位标题", w.detail.includes("Hello 计数 3"));
+  ok("报出 provider 登记情况", w.detail.includes("系统已登记 4 个 provider"));
+}
+
+/* ⑨b provider 未登记（清单合并没生效）：直接判失败并交回开发者 */
+{
+  const h = harness({ widget: { ok: true, hostPlaced: 0, slotsPlaced: {}, hasSnapshot: true, snapshotAt: NOW, slotTitles: {}, providersRegistered: [] } });
+  const r = await runNotifyDoctor(h.deps);
+  const w = step(r, "widget");
+  eq("provider 未登记 → fail", w.status, "fail");
+  eq("provider 未登记 → 整体失败", r.ok, false);
+  ok("指明清单合并可能未生效", w.detail.includes("清单合并"));
 }
 
 /* ⑩ 投递被拒：最后一步失败，结论指向它 */

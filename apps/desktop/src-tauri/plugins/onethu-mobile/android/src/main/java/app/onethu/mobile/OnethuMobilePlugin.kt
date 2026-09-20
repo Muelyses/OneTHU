@@ -533,6 +533,15 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             snap?.optJSONObject("slots")?.let { s ->
                 for (k in s.keys()) slotContent.put(k, s.optJSONObject(k)?.optString("title").orEmpty())
             }
+            // 系统侧到底登记了哪几个小组件 provider：这正是「选择器里看不到小组件」的第一现场
+            // （provider 由仓库内插件库清单经 manifest merger 合入，换机/构建脚本一变就可能掉）
+            val registered = JSONArray()
+            val installed = manager?.installedProviders
+            for ((key, cls) in OnethuBaseWidget.providerEntries()) {
+                val name = cls.name
+                val found = installed?.any { it.provider.className == name } == true
+                if (found) registered.put(if (key == null) "宿主" else "槽位$key")
+            }
             invoke.resolve(
                 JSObject()
                     .put("ok", true)
@@ -541,6 +550,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                     .put("hasSnapshot", snap != null)
                     .put("snapshotAt", snap?.optLong("updatedAt") ?: 0L)
                     .put("slotTitles", slotContent)
+                    .put("providersRegistered", registered)
             )
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "widget-status-failed"))

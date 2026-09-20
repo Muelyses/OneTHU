@@ -17,6 +17,8 @@ export interface NativeWidgetStatus {
   snapshotAt: number;
   /** 槽位号 → 该槽位当前标题（插件声明的内容） */
   slotTitles: Record<string, string>;
+  /** 系统侧已登记的 provider（宿主 / 槽位N）——空数组说明清单合并没生效 */
+  providersRegistered: string[];
   reason?: string;
 }
 
@@ -31,6 +33,7 @@ export async function fetchWidgetStatus(): Promise<NativeWidgetStatus | null> {
       hasSnapshot: raw.hasSnapshot === true,
       snapshotAt: Number(raw.snapshotAt ?? 0),
       slotTitles: (raw.slotTitles as Record<string, string>) ?? {},
+      providersRegistered: Array.isArray(raw.providersRegistered) ? (raw.providersRegistered as string[]) : [],
     };
   } catch {
     return null;      // 桌面端 not-android：诊断里跳过这一步

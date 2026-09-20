@@ -1550,16 +1550,24 @@ async fn thos_portal_window(
         builder = builder.initialization_script(DARK_PAINT_JS);
     }
     let win = builder.build().map_err(|e| e.to_string())?;
-    // 逐条注入（绝不打印 Cookie 值）。域走默认（当前页 origin=webvpn），Path=/
+    // 逐条注入（绝不打印 Cookie 值）。**每条都必须带自己的 Domain**：
+    //   ① 三组票分属 webvpn / thos / id 三个域，缺域就全落到当前页 origin（webvpn），
+    //      id/thos 的票等于没种；
+    //   ② wry 的 set_cookie 对「无域 cookie」是**静默丢弃**——返回 Ok、计数照涨，
+    //      日志看着"种了 8 条"而页面依旧弹登录（2026-09-20 两度踩坑：一次是漏 Domain，
+    //      一次是这份修复只存在于工作区没入库，重建二进制后回归）。
     let mut seeded = 0usize;
     for (base, header) in seeds {
-        let _ = base;
+        let host = match url::Url::parse(base).ok().and_then(|u| u.host_str().map(str::to_string)) {
+            Some(h) if !h.is_empty() => h,
+            _ => continue,
+        };
         for pair in header.split("; ") {
             let pair = pair.trim();
             if pair.is_empty() || !pair.contains('=') {
                 continue;
             }
-            if let Ok(c) = Cookie::parse(format!("{pair}; Path=/")) {
+            if let Ok(c) = Cookie::parse(format!("{pair}; Domain={host}; Path=/")) {
                 if win.set_cookie(c).is_ok() {
                     seeded += 1;
                 }

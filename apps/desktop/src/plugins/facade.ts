@@ -5,6 +5,7 @@ import { universalFetch } from "../lib/transport.js";
 import { navGo, sessionStatus } from "./bridges.js";
 import { venueClient } from "../lib/venue.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { normalizeServiceName, serviceScore } from "../lib/serviceMatch.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { getPlugin, pluginStorageKey, updatePlugin } from "./registry.js";
 import { PluginPermissionError, type OnethuApi, type PluginPermission } from "./types.js";
@@ -567,6 +568,43 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const view = resolveAtom({ kind, key });
         if (!view) return false;
         view.open((page, params) => navGo(page, params as Record<string, unknown> | undefined));
+        return true;
+      },
+    },
+    services: {
+      /** 在线服务目录检索：本机原子缓存搜不到时的兜底（会发一次校园请求）。
+       *  匹配容忍口语简称，命中判据见 serviceScore；结果顺带写回原子缓存。 */
+      search: async (query: string, limit?: number) => {
+        gate(perms, "info:read", "services.search");
+        const q = normalizeServiceName(String(query ?? ""));
+        if (!q) return [];
+        const { initInfoLib } = await import("../lib/infoLib.js");
+        const helper = initInfoLib();
+        await helper.prepareThosSession();
+        const page = await helper.getThosServices();
+        const items = (page?.items ?? []).filter((s) => s.name);
+        const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 10;
+        // 目录整份写回本机缓存：之后 OH / 收藏搜索都能离线命中同一批服务
+        if (items.length > 0) {
+          const { noteAtomCache } = await import("../state/atoms.js");
+          noteAtomCache({
+            thosServices: items.map((x) => ({ id: x.id, name: x.name, department: x.department, url: x.url })),
+          });
+        }
+        return items
+          .map((s) => ({ s, score: serviceScore(s.name, q) }))
+          .filter((x) => x.score > 0)
+          .sort((a, b) => b.score - a.score || a.s.name.length - b.s.name.length)
+          .slice(0, n)
+          .map(({ s }) => ({ id: s.id, name: s.name, department: s.department, url: s.url }));
+      },
+      /** 应用内打开服务官方页：与用户点在线服务那一条完全同一条链路（同一登录态） */
+      open: async (service: { id?: string; name?: string; url?: string }) => {
+        gate(perms, "info:read", "services.open");
+        const url = String(service?.url ?? "");
+        if (!/^https?:\/\//.test(url)) return false;
+        const { openThosInApp } = await import("../lib/thosOpen.js");
+        await openThosInApp(url);
         return true;
       },
     },

@@ -396,6 +396,16 @@ export interface OnethuApi {
     /** 列出全部可收藏的插件原子种类 */
     kinds(): Array<{ kind: string; group: string; source: "registered" | "static" }>;
   };
+  /** 在线服务（服务大厅）目录：本机缓存检索不到时的兜底通道。需 info:read */
+  services: {
+    /** 按名字检索服务目录（**会发起校园请求**：先校验会话再取目录，仅在没有本地缓存时才该调用）。
+     *  匹配容忍口语简称（「亲友预约」能命中「亲友来访预约」），最多 limit 条（缺省 10、上限 50）。
+     *  结果同时写入本机原子缓存，之后 nav.searchAtoms / nav.openAtom 即可离线命中 */
+    search(query: string, limit?: number): Promise<Array<{ id: string; name: string; department?: string; url: string }>>;
+    /** 在应用内打开某个服务官方页（桌面独立窗口 / Android 全屏 WebView，共享同一登录态）。
+     *  url 必须来自 search 结果；打不开（无 url / 宿主不支持）返回 false */
+    open(service: { id?: string; name?: string; url?: string }): Promise<boolean>;
+  };
   /** 系统通知（三端）：插件自定内容与时刻；通知 id 归插件所有，宿主重排不会撤它 */
   notify: {
     /** 排一条通知；afterSeconds 缺省 60（至少 1 秒后，避免"过去时刻"被系统拒绝）。

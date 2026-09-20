@@ -524,8 +524,9 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             val manager = AppWidgetManager.getInstance(ctx)
             var host = 0
             val slots = JSONObject()
-            for ((key, cls, _label) in OnethuBaseWidget.providerEntries()) {
-                val n = manager?.getAppWidgetIds(ComponentName(ctx, cls))?.size ?: 0
+            for (entry in OnethuBaseWidget.providerEntries()) {
+                val key = entry.first
+                val n = manager?.getAppWidgetIds(ComponentName(ctx, entry.second))?.size ?: 0
                 // 宿主有四种形态，桌面上的数量要累加（任一形态放置都算「宿主已放置」）
                 if (key == null) host += n else slots.put(key, n)
             }
@@ -538,10 +539,10 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             // （provider 由仓库内插件库清单经 manifest merger 合入，换机/构建脚本一变就可能掉）
             val registered = JSONArray()
             val installed = manager?.installedProviders
-            for ((_key, cls, label) in OnethuBaseWidget.providerEntries()) {
-                val name = cls.name
+            for (entry in OnethuBaseWidget.providerEntries()) {
+                val name = entry.second.name
                 val found = installed?.any { it.provider.className == name } == true
-                if (found) registered.put(label)
+                if (found) registered.put(entry.third)
             }
             invoke.resolve(
                 JSObject()

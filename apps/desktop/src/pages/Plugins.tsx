@@ -4,6 +4,12 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
+import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import type { CommandResult } from "../plugins/types.js";
+import { loadMcpServers, saveMcpServers, type McpServerEntry } from "../lib/mcpStore.js";
+import { openFormModal } from "../lib/formModal.js";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { PageHead } from "../components/Layout.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -15,7 +21,8 @@ import { addRustPlugin, updatePlugin } from "../plugins/registry.js";
 import { clearPluginEvents, pluginEvents, subscribePluginEvents } from "../plugins/events.js";
 import { notifyRust } from "../plugins/rust.js";
 import { PLUGIN_PERMISSIONS } from "../plugins/types.js";
-import { activateTheme, deactivateTheme, removeTheme, restoreBuiltins, useThemes } from "../state/theme.js";
+import { collectWidgetSlots } from "../plugins/pluginWidgets.js";
+import { activateTheme, deactivateTheme, removeTheme, restoreBuiltins, useThemes, type ThemeDef } from "../state/theme.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -35,11 +42,28 @@ function monogram(name: string, id: string): string {
 export function PluginsPage(): ReactNode {
   const allPlugins = useSyncExternalStore(subscribe, installedPlugins);
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
+  const [view, setView] = useState<"mine" | "market">("mine");
   const [cat, setCat] = useState<"all" | "theme" | "general">("all");
   const [instOpen, setInstOpen] = useState(false);
   const themesSnap = useThemes();
   const plugins = cat === "all" ? allPlugins : allPlugins.filter((p) => (p.manifest.category ?? "general") === cat);
-  const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" } | null>(null);
+  const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" | "mcp" } | null>(null);
+  /** 市场名单版本（5 分钟缓存内零开销；用于已装卡片「可更新」提示） */
+  const [marketVersions, setMarketVersions] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let alive = true;
+    fetchRegistry()
+      .then((reg) => {
+        if (!alive) return;
+        const map: Record<string, string> = {};
+        for (const it of reg.plugins) map[it.id] = it.version;
+        setMarketVersions(map);
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [view]);
   const liveCount = plugins.filter((p) => p.enabled && isLive(p.manifest.id)).length;
   const coreCount = plugins.filter((p) => p.embedded).length;
 
@@ -54,20 +78,15 @@ export function PluginsPage(): ReactNode {
           </span>
         }
         actions={
-          <button className="btn btn-primary" onClick={() => setInstOpen((o) => !o)}>
-            {instOpen ? "收起安装" : "安装插件"}
-          </button>
+          <div className="seg-track">
+            {([["mine", "我的插件"], ["market", "插件市场"]] as const).map(([k, lbl]) => (
+              <button key={k} className={"seg-item" + (view === k ? " is-active" : "")} onClick={() => setView(k)}>
+                {lbl}
+              </button>
+            ))}
+          </div>
         }
       />
-
-      {/* 插件类别页签（主题插件单独一类，2026-09-13 主题系统立项） */}
-      <div className="seg-track" style={{ marginBottom: 10 }}>
-        {([["all", `全部 ${allPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${allPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
-          <button key={k} className={"seg-item" + (cat === k ? " is-active" : "")} onClick={() => setCat(k)}>
-            {lbl}
-          </button>
-        ))}
-      </div>
 
       {/* 电表概览条 */}
       <div className="plg-stats">
@@ -92,10 +111,29 @@ export function PluginsPage(): ReactNode {
         </div>
       </div>
 
-      {instOpen ? <InstallPanel onClose={() => setInstOpen(false)} /> : null}
 
       {/* 主题管理区：主题即插件，管理面就在插件页（主题页签下展开；用户定案
           2026-09-13：设置页不放，避免双头管理） */}
+      {view === "market" ? (
+        <MarketView />
+      ) : (
+        <>
+      {instOpen ? <InstallPanel onClose={() => setInstOpen(false)} /> : null}
+
+      {/* 我的插件 · 工具行：类别页签 + 安装入口（归拢一行；主切换只留视图级） */}
+      <div className="plg-toolbar">
+        <div className="seg-track">
+          {([["all", `全部 ${allPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${allPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
+            <button key={k} className={"seg-item" + (cat === k ? " is-active" : "")} onClick={() => setCat(k)}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
+          {instOpen ? "收起安装" : "安装插件"}
+        </button>
+      </div>
+
       {cat === "theme" || cat === "all" ? <ThemeManagerSection /> : null}
 
       {plugins.length === 0 && cat !== "theme" ? (
@@ -114,12 +152,14 @@ export function PluginsPage(): ReactNode {
       ) : (
         <div className="plg-rack">
           {plugins.map((p, i) => (
-            <PluginCard key={p.manifest.id} id={p.manifest.id} index={i} onOpenSheet={setSheet} />
+            <PluginCard key={p.manifest.id} id={p.manifest.id} index={i} onOpenSheet={setSheet} marketVersion={marketVersions[p.manifest.id]} onGoMarket={() => setView("market")} />
           ))}
         </div>
       )}
 
       {sheet ? <PluginSheet id={sheet.id} mode={sheet.mode} onClose={() => setSheet(null)} /> : null}
+        </>
+      )}
     </div>
   );
 }
@@ -140,7 +180,35 @@ function ThemeSwatch({ vars }: { vars: Record<string, string> }): ReactNode {
 /** 主题管理区（插件页 · 主题页签）：内置主题 + 插件安装的主题一页全管 */
 function ThemeManagerSection(): ReactNode {
   const snap = useThemes();
+  const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const [msg, setMsg] = useState<string | null>(null);
+  /** 主题所属插件：优先安装时写入的 owner（同一插件可换主题 id），
+   *  退化到「主题 id 与插件 id 同名」的文档约定（历史记录没有 owner） */
+  const ownerOf = (t: ThemeDef): string | null => {
+    if (t.owner && plugins.some((p) => p.manifest.id === t.owner)) return t.owner;
+    if (plugins.some((p) => p.manifest.id === t.id)) return t.id;
+    return null;
+  };
+  /** 删除插件主题：主题定义由插件提供，只删定义会留下「孤儿插件卡」（用户实锤：
+   *  主题区删了、插件管理里还在）。有归属插件时按「卸载插件」处理，插件卸载路径
+   *  会回收主题定义，两处状态因此始终一致。 */
+  const delTheme = async (t: ThemeDef): Promise<void> => {
+    const owner = ownerOf(t);
+    if (!owner) {
+      removeTheme(t.id);
+      setMsg(`已删除「${t.name}」`);
+      return;
+    }
+    const { confirmOk } = await import("../lib/confirm.js");
+    const yes = await confirmOk(`删除主题「${t.name}」将同时卸载插件「${owner}」，其设置与命令一并移除。继续？`);
+    if (!yes) return;
+    try {
+      await uninstallPlugin(owner);
+      setMsg(`已删除「${t.name}」及插件「${owner}」`);
+    } catch (e) {
+      setMsg(`删除失败：${String(e).slice(0, 100)}`);
+    }
+  };
   return (
     <div
       style={{
@@ -172,7 +240,9 @@ function ThemeManagerSection(): ReactNode {
                     <b style={{ fontSize: "var(--text-base)" }}>{t.name}</b>
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--text-3)" }}>v{t.version}</span>
                     {t.source === "plugin" ? (
-                      <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>插件</span>
+                      <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }} title={ownerOf(t) ? `来自插件 ${ownerOf(t)}` : undefined}>
+                        插件
+                      </span>
                     ) : null}
                   </div>
                   <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -189,9 +259,15 @@ function ThemeManagerSection(): ReactNode {
                       应用
                     </button>
                   )}
-                  <button className="btn btn-ghost" title="删除主题（内置同权可删）" onClick={() => { removeTheme(t.id); setMsg(`已删除「${t.name}」`); }}>
-                    删除
-                  </button>
+                  {t.source === "plugin" ? (
+                    <button
+                      className="btn btn-ghost"
+                      title={ownerOf(t) ? `删除主题并卸载插件 ${ownerOf(t)}` : "删除主题（内置主题不可删除）"}
+                      onClick={() => void delTheme(t)}
+                    >
+                      删除
+                    </button>
+                  ) : null}
                 </div>
               </div>
             );
@@ -209,10 +285,27 @@ function ThemeManagerSection(): ReactNode {
   );
 }
 
-/** 主题插件卡上的「应用/撤下主题」动作（主题管理在设置页·主题区，此处快捷） */
-function ThemeApplyButton({ themePluginId, onMsg }: { themePluginId: string; onMsg: (s: string) => void }): ReactNode {
+/** 主题插件卡上的「应用/撤下主题」动作（主题管理在插件页 · 主题区，此处为快捷入口）。
+ *  主题 id 与插件 id 未必同名：按 owner 找，退化到 id 同名约定；插件停用（其主题已被
+ *  回收）时按钮置灰，不再点出一个「主题定义尚未注册」。 */
+function ThemeApplyButton({ pluginId, enabled, onMsg }: { pluginId: string; enabled: boolean; onMsg: (s: string) => void }): ReactNode {
   const snap = useThemes();
-  const applied = snap.activeId === themePluginId;
+  const theme = snap.themes.find((t) => t.owner === pluginId) ?? snap.themes.find((t) => t.id === pluginId);
+  const applied = !!theme && snap.activeId === theme.id;
+  if (!enabled) {
+    return (
+      <button className="btn btn-ghost" disabled title="插件已停用，启用后可应用其主题">
+        应用主题
+      </button>
+    );
+  }
+  if (!theme) {
+    return (
+      <button className="btn btn-ghost" disabled title="该插件当前未声明主题定义">
+        无主题
+      </button>
+    );
+  }
   return (
     <button
       className={"btn " + (applied ? "btn-ghost" : "btn-primary")}
@@ -220,8 +313,8 @@ function ThemeApplyButton({ themePluginId, onMsg }: { themePluginId: string; onM
         if (applied) {
           deactivateTheme();
           onMsg("已撤下主题，回到默认配色");
-        } else if (activateTheme(themePluginId)) {
-          onMsg("主题已应用（设置 → 主题 可管理全部主题）");
+        } else if (activateTheme(theme.id)) {
+          onMsg(`已应用「${theme.name}」（插件页 · 主题区可管理全部主题）`);
         } else {
           onMsg("主题定义尚未注册（插件未启用？）");
         }
@@ -234,32 +327,85 @@ function ThemeApplyButton({ themePluginId, onMsg }: { themePluginId: string; onM
 
 /* ═══════════════ 模块卡 ═══════════════ */
 
+/** 结构化命令结果渲染：markdown（GFM）+ 条目列表 + 键值对 */
+function ResultBlock({ result }: { result: CommandResult }): ReactNode {
+  if (!result.markdown && !result.items?.length && !result.kv?.length) return null;
+  return (
+    <div className="plg-result">
+      {result.markdown ? (
+        <div className="plg-result-md">
+          <Markdown remarkPlugins={[remarkGfm]}>{result.markdown}</Markdown>
+        </div>
+      ) : null}
+      {result.kv?.length ? (
+        <div className="plg-result-kv">
+          {result.kv.map((x, i) => (
+            <div key={i} className="plg-result-kvrow">
+              <span className="plg-result-kvk">{x.k}</span>
+              <span className="plg-result-kvv">{x.v}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {result.items?.length ? (
+        <div className="plg-result-items">
+          {result.items.slice(0, 30).map((it, i) => (
+            <div key={i} className="plg-result-item">
+              <div className="plg-result-item-t">{it.title}</div>
+              {it.subtitle ? <div className="plg-result-item-s">{it.subtitle}</div> : null}
+              {it.meta ? <div className="plg-result-item-m">{it.meta}</div> : null}
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function PluginCard({
   id,
   index,
   onOpenSheet,
+  marketVersion,
+  onGoMarket,
 }: {
   id: string;
   index: number;
-  onOpenSheet: (s: { id: string; mode: "settings" | "log" }) => void;
+  onOpenSheet: (s: { id: string; mode: "settings" | "log" | "mcp" }) => void;
+  /** 市场名单里该插件的版本（有新版时卡片显示「可更新」徽标） */
+  marketVersion?: string;
+  onGoMarket?: () => void;
 }): ReactNode {
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot).filter((c) => c.pluginId === id);
   const [open, setOpen] = useState(false);
   const [runMsg, setRunMsg] = useState<string | null>(null);
+  const [runResult, setRunResult] = useState<CommandResult | null>(null);
   const [input, setInput] = useState("");
   if (!rec) return null;
   const m = rec.manifest;
+  /** 本插件声明的小组件所占槽位（卡片上标出来，用户才知道该放哪个「OneTHU 插件小组件 N」） */
+  const widgetSlots = collectWidgetSlots().filter((x) => x.pluginId === id);
   const active = rec.enabled && isLive(id);
   const failed = rec.enabled && !isLive(id);
   const stateText = active ? "运行中" : failed ? "加载失败" : "已停用";
 
   const doRun = async (cmdId: string): Promise<void> => {
     setRunMsg("执行中…");
+    setRunResult(null);
     try {
-      const r = await runCommand(id, cmdId, input);
-      setRunMsg(r == null ? "完成" : String(typeof r === "string" ? r : JSON.stringify(r)).slice(0, 400));
+      const r = (await runCommand(id, cmdId, input)) as CommandResult | string | null;
+      if (r == null) {
+        setRunMsg("完成");
+      } else if (typeof r === "string") {
+        setRunMsg(r.slice(0, 400));
+      } else if (typeof r === "object") {
+        setRunResult(r);
+        setRunMsg(typeof r.text === "string" ? r.text.slice(0, 200) : null);
+      } else {
+        setRunMsg(String(r).slice(0, 400));
+      }
     } catch (e) {
       setRunMsg(`失败：${String(e instanceof Error ? e.message : e).slice(0, 300)}`);
     }
@@ -280,6 +426,15 @@ function PluginCard({
             <span className="plg-ver">v{m.version}</span>
             <span className="plg-kind">{m.kind === "rust" ? "RUST" : "JS"}</span>
             {m.category === "theme" ? <span className="plg-core" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>主题</span> : null}
+            {widgetSlots.length > 0 ? (
+              <span
+                className="plg-core"
+                style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+                title={`桌面小组件：把「OneTHU 插件小组件 ${widgetSlots.map((x) => x.slot).join(" / ")}」放到桌面即可看到本插件的内容`}
+              >
+                小组件 {widgetSlots.map((x) => x.slot).join("/")}
+              </span>
+            ) : null}
             {rec.embedded ? <span className="plg-core" title="Rust 核心已编进 App，无需二进制">内置</span> : null}
           </div>
           <div className={"plg-state" + (active ? " is-run" : failed ? " is-err" : "")}>
@@ -289,8 +444,37 @@ function PluginCard({
           </div>
         </div>
         <div className="plg-ops">
-          {m.category === "theme" ? <ThemeApplyButton themePluginId={m.id} onMsg={setRunMsg} /> : null}
+          {rec.repo ? (
+            <button
+              className="plg-repo-btn"
+              title={`打开源码仓库：${rec.repo}`}
+              aria-label="打开源码仓库"
+              onClick={() => void (async () => {
+                try {
+                  const { openUrl } = await import("@tauri-apps/plugin-opener");
+                  await openUrl(rec.repo!);
+                } catch {
+                  window.open(rec.repo!, "_blank");
+                }
+              })()}
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+              </svg>
+            </button>
+          ) : null}
+          {m.category === "theme" ? <ThemeApplyButton pluginId={m.id} enabled={active} onMsg={setRunMsg} /> : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
+          {id === "onethu.harness" ? (
+            <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>
+              MCP
+            </button>
+          ) : null}
+          {marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
+            <button className="btn btn-ghost plg-update-flag" title={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>
+              可更新 ↑
+            </button>
+          ) : null}
           <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>
             设置
           </button>
@@ -299,7 +483,7 @@ function PluginCard({
               日志
             </button>
           ) : null}
-          {rec.embedded || rec.builtin ? null : (
+          {rec.embedded || rec.builtin || m.id === "onethu.harness" ? null : (
             <button className="btn btn-ghost plg-danger" onClick={() => void uninstallPlugin(id)}>
               删除
             </button>
@@ -345,6 +529,9 @@ function PluginCard({
                       执行
                     </button>
                     {runMsg ? <div className="plg-runmsg">{runMsg}</div> : null}
+                    {runResult && (runResult.markdown || runResult.items?.length || runResult.kv?.length) ? (
+                      <ResultBlock result={runResult} />
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -375,32 +562,96 @@ function PluginSheet({
   onClose,
 }: {
   id: string;
-  mode: "settings" | "log";
+  mode: "settings" | "log" | "mcp";
   onClose: () => void;
 }): ReactNode {
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
   if (!rec) return null;
+  const title = mode === "settings" ? "设置" : mode === "mcp" ? "MCP 服务器" : "运行日志";
   return (
     <div className="plg-mask" onClick={onClose}>
       <section
         className="plg-sheet"
         role="dialog"
-        aria-label={mode === "settings" ? `${rec.manifest.name} 设置` : `${rec.manifest.name} 运行日志`}
+        aria-label={`${title} · ${rec.manifest.name}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="plg-sheet-head">
-          <b>{mode === "settings" ? "设置" : "运行日志"} · {rec.manifest.name}</b>
+          <b>{title} · {rec.manifest.name}</b>
           <button className="btn btn-ghost" onClick={onClose}>
             关闭
           </button>
         </div>
         {mode === "settings" ? (
           <SettingsBody id={id} rec={rec} />
+        ) : mode === "mcp" ? (
+          <McpBody />
         ) : (
           <LogBody id={id} />
         )}
       </section>
+    </div>
+  );
+}
+
+/** MCP 服务器管理：逐条增删改（表单弹窗），存宿主侧结构化存储，OH 启动对话时经 settings 注入 */
+function McpBody(): ReactNode {
+  const [list, setList] = useState<McpServerEntry[]>(() => loadMcpServers());
+  const save = (next: McpServerEntry[]): void => {
+    setList(next);
+    saveMcpServers(next);
+  };
+  const edit = async (idx: number): Promise<void> => {
+    const cur = list[idx];
+    const f = await openFormModal(idx === -1 ? "添加 MCP 服务器" : `编辑 MCP 服务器 · ${cur?.name ?? ""}`, [
+      { key: "name", label: "名称（工具前缀 mcp_<name>_）", required: true, default: cur?.name ?? "" },
+      { key: "command", label: "启动命令", required: true, default: cur?.command ?? "", placeholder: "npx / uvx / /usr/bin/node …" },
+      { key: "args", label: "参数（空格分隔，含引号的项用单引号包裹）", kind: "textarea", default: cur?.args.join(" ") ?? "", placeholder: '-y @modelcontextprotocol/server-filesystem /Users/me/docs' },
+      { key: "env", label: "环境变量（KEY=VALUE，空格分隔多个）", default: Object.entries(cur?.env ?? {}).map(([k, v]) => `${k}=${v}`).join(" ") },
+    ]);
+    if (!f) return;
+    const parseSpaceList = (v: string): string[] =>
+      (v.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? []).map((x) => x.replace(/^["']|["']$/g, ""));
+    const env: Record<string, string> = {};
+    for (const pair of parseSpaceList(f.env ?? "")) {
+      const i = pair.indexOf("=");
+      if (i > 0) env[pair.slice(0, i)] = pair.slice(i + 1);
+    }
+    const entry: McpServerEntry = { name: f.name?.trim() ?? "", command: f.command?.trim() ?? "", args: parseSpaceList(f.args ?? ""), env };
+    const next = list.slice();
+    if (idx === -1) next.push(entry);
+    else next[idx] = entry;
+    save(next);
+  };
+  const del = async (idx: number): Promise<void> => {
+    const { confirmOk } = await import("../lib/confirm.js");
+    const target = list[idx];
+    if (!target) return;
+    if (!(await confirmOk(`删除 MCP 服务器「${target.name}」？`))) return;
+    save(list.filter((_, i) => i !== idx));
+  };
+  return (
+    <div className="mcp-body">
+      <div className="plg-hint" style={{ marginBottom: 8 }}>
+        每条为一个 stdio MCP server；OH 对话时其工具以 <code className="plg-code">mcp_&lt;名称&gt;_&lt;工具&gt;</code> 注入。
+      </div>
+      {!list.length ? <div className="plg-hint">尚未添加。点「添加 MCP 服务器」开始。</div> : null}
+      {list.map((sv, i) => (
+        <div key={`${sv.name}:${i}`} className="mcp-item">
+          <div className="mcp-item-main">
+            <div className="mcp-item-name">{sv.name}</div>
+            <code className="plg-code">{sv.command} {sv.args.join(" ")}</code>
+          </div>
+          <div style={{ display: "flex", gap: 4, flex: "none" }}>
+            <button className="btn btn-ghost" onClick={() => void edit(i)}>编辑</button>
+            <button className="btn btn-ghost plg-danger" onClick={() => void del(i)}>删除</button>
+          </div>
+        </div>
+      ))}
+      <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => void edit(-1)}>
+        ＋ 添加 MCP 服务器
+      </button>
     </div>
   );
 }
@@ -447,7 +698,17 @@ function SettingsBody({ id, rec }: { id: string; rec: any }): ReactNode {
           {fields.map((f: any) => (
             <label key={f.key} className="plg-setting">
               <span>{f.label}</span>
-              {f.type === "textarea" ? (
+              {f.type === "select" ? (
+                <select
+                  className="input"
+                  value={draft[f.key] ?? ""}
+                  onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+                >
+                  {(f.options ?? []).map((o: { value: string; label: string }) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              ) : f.type === "textarea" ? (
                 <textarea
                   className="input"
                   rows={3}
@@ -543,10 +804,192 @@ function LogBody({ id }: { id: string }): ReactNode {
   );
 }
 
+/* ═══════════════ 插件市场视图：热度排序 · 搜索 · 一键安装 ═══════════════ */
+
+function MarketView(): ReactNode {
+  const installed = useSyncExternalStore(subscribe, installedPlugins);
+  const installedMap = new Map(installed.map((p) => [p.manifest.id, p.manifest.version]));
+  const [items, setItems] = useState<MarketEntry[] | null>(null);
+  const [stars, setStars] = useState<Record<string, number | null>>({});
+  const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"stars" | "name">("stars");
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const load = async (force = false): Promise<void> => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const reg = await fetchRegistry(force);
+      setItems(reg.plugins);
+      setLoaded(true);
+      // star 数动态拉取（失败沉底），不阻塞列表展示
+      fetchStarMap(reg.plugins).then(setStars).catch(() => setStars({}));
+    } catch (e) {
+      setMsg(`市场名单拉取失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const install = async (item: MarketEntry): Promise<void> => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const text = await fetchEntryFromMarket(item);
+      const { installPlugin } = await import("../plugins/loader.js");
+      const m = await installPlugin(text, { repo: normalizeRepoUrl(item.repo) });
+      setMsg(`已安装并激活：${m.name} v${m.version}——切回「我的插件」查看。`);
+    } catch (e) {
+      setMsg(`安装失败：${String(e instanceof Error ? e.message : e).slice(0, 200)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // 进入市场视图即自动加载：缓存命中（5 分钟内）立即展示，否则拉网络
+  useEffect(() => {
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const q = query.trim().toLowerCase();
+  const hits = (items ?? [])
+    .filter((x) => !q || [x.name, x.description, x.author, ...(x.tags ?? [])].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)))
+    .slice()
+    .sort((a, b) => {
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      const sa = stars[a.id] ?? -1;
+      const sb = stars[b.id] ?? -1;
+      if (sa !== sb) return sb - sa; // star 缺失（null）沉底
+      return a.name.localeCompare(b.name);
+    });
+
+  return (
+    <section className="market-view">
+      <div className="market-bar">
+        <input
+          className="input market-search"
+          placeholder="搜索插件名称 / 描述 / 标签"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <div className="seg-track">
+          {([["stars", "按热度"], ["name", "按名称"]] as const).map(([k, lbl]) => (
+            <button key={k} className={"seg-item" + (sortBy === k ? " is-active" : "")} onClick={() => setSortBy(k)}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <button className="btn" disabled={busy} onClick={() => void load(true)}>
+          {busy ? "刷新中…" : "刷新"}
+        </button>
+      </div>
+
+      {msg ? <div className="plg-runmsg">{msg}</div> : null}
+
+      {!loaded ? (
+        msg ? (
+          <div className="plg-hint" style={{ color: "var(--red)" }}>
+            {msg}
+            <button className="btn" style={{ marginLeft: 10 }} disabled={busy} onClick={() => void load(true)}>
+              重试
+            </button>
+          </div>
+        ) : (
+          <div className="plg-hint">{busy ? "正在拉取市场名单…" : "准备中…"}</div>
+        )
+      ) : null}
+
+      {loaded && !hits.length ? <div className="plg-hint">无匹配条目。</div> : null}
+
+      {hits.length ? (
+        <div className="market-grid">
+          {hits.map((item) => {
+            const st = stars[item.id];
+            return (
+              <div key={item.id} className="market-card">
+                <div className="market-card-head">
+                  <span className="market-card-name">
+                    {item.name}
+                    {installedMap.has(item.id) ? <span className="market-installed-badge">已安装</span> : null}
+                  </span>
+                  <span className="market-card-stars" title="GitHub Stars">★ {typeof st === "number" ? String(st) : "—"}</span>
+                </div>
+                <div className="market-card-meta">
+                  v{item.version}
+                  {item.author ? ` · ${item.author}` : ""}
+                </div>
+                <div className="market-card-desc">{item.description || item.repo}</div>
+                {item.tags?.length ? (
+                  <div className="market-card-tags">
+                    {item.tags.map((t) => (
+                      <span key={t} className="market-tag">{t}</span>
+                    ))}
+                  </div>
+                ) : null}
+                <div className="market-card-foot">
+                  <button
+                    className="market-repo-link"
+                    title={`在浏览器打开仓库：${normalizeRepoUrl(item.repo)}`}
+                    onClick={() => void (async () => {
+                      const url = normalizeRepoUrl(item.repo);
+                      try {
+                        const { openUrl } = await import("@tauri-apps/plugin-opener");
+                        await openUrl(url);
+                      } catch {
+                        window.open(url, "_blank");
+                      }
+                    })()}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+                      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+                    </svg>
+                    {item.repo}
+                  </button>
+                  {(() => {
+                    const local = installedMap.get(item.id);
+                    if (local && compareVersions(item.version, local) <= 0) {
+                      return (
+                        <button className="btn" disabled title={`本地 v${local}，已是最新`}>
+                          已安装
+                        </button>
+                      );
+                    }
+                    const updating = !!local;
+                    return (
+                      <button
+                        className="btn btn-primary"
+                        disabled={busy}
+                        title={updating ? `本地 v${local} → 市场 v${item.version}` : undefined}
+                        onClick={() => void install(item)}
+                      >
+                        {busy ? "…" : updating ? "更新" : "安装"}
+                      </button>
+                    );
+                  })()}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      <div className="plg-hint" style={{ marginTop: 10 }}>
+        想上架你的插件？向 OneTHU-Market 仓库提交 Pull Request——流程见
+        {" "}<a href="https://github.com/smartThise/OneTHU-Market" target="_blank" rel="noreferrer" style={{ color: "var(--accent)" }}>市场仓库</a>
+        与插件开发文档 §7。
+      </div>
+    </section>
+  );
+}
+
 /* ═══════════════ 安装面板：三路安装（粘贴 JS / JS 文件 / Rust 插件） ═══════════════ */
 
 function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
-  const [tab, setTab] = useState<"paste" | "jsfile" | "rust">("paste");
+  const [tab, setTab] = useState<"paste" | "jsfile" | "rust" | "github">("paste");
+  const [repoInput, setRepoInput] = useState("");
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -565,6 +1008,15 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
     } finally {
       setBusy(false);
     }
+  };
+
+  const installFromRepoText = async (input: string, entry?: string): Promise<void> => {
+    const ref = parseRepoInput(input);
+    const text = await fetchEntryFromRepo(ref, entry);
+    const { installPlugin } = await import("../plugins/loader.js");
+    const m = await installPlugin(text, { repo: normalizeRepoUrl(input) });
+    setMsg(`已安装并激活：${m.name} v${m.version}`);
+    setRepoInput("");
   };
 
   const installRust = async (): Promise<void> => {
@@ -639,6 +1091,7 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
             ["paste", "粘贴 JS 模块"],
             ["jsfile", "选择 .js 文件"],
             ["rust", "Rust 骨干插件"],
+            ["github", "GitHub 仓库"],
           ] as const
         ).map(([k, label]) => (
           <button
@@ -700,6 +1153,27 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
           </button>
         </div>
       ) : null}
+
+      {tab === "github" ? (
+        <div className="plg-install-body">
+          <input
+            className="input"
+            placeholder="user/repo 或 https://github.com/user/repo（可 @branch 或 /tree/branch）"
+            value={repoInput}
+            onChange={(e) => setRepoInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !busy && repoInput.trim()) void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`));
+            }}
+          />
+          <div className="plg-install-foot">
+            <span className="plg-hint">从仓库根目录拉取 plugin.js（或 index.js / main.js），与粘贴安装同一校验管线。</span>
+            <button className="btn btn-primary" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`))}>
+              {busy ? "安装中…" : "安装"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
 
       <div className="plg-install-foot plg-install-msg">
         {msg ? <span className="plg-msg">{msg}</span> : <span className="plg-hint">安装即代表信任该代码并授予其声明的权限。</span>}

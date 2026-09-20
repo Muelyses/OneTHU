@@ -56,7 +56,22 @@
   letter-spacing: 0.02em;
 }
 
-.nav { display: flex; flex-direction: column; gap: 1px; }
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* 侧栏功能增多后超出视口：nav 弹性占满剩余高度、独立滚动，foot 钉底不随滚 */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #ccc) transparent;
+  padding-bottom: 6px;
+}
+.nav::-webkit-scrollbar { width: 4px; }
+.nav::-webkit-scrollbar-thumb { background: var(--border, #ccc); border-radius: 2px; }
+.nav::-webkit-scrollbar-track { background: transparent; }
 
 .nav-item {
   display: flex;
@@ -1713,6 +1728,126 @@
   font-size: var(--text-sm);
 }
 
+/* ══════════ 小组件绑定层（选内容 / 选哪一块） ══════════
+   这里是「挑一样东西」而不是「浏览一长串搜索结果」，所以不用列表行（一行灰条挤两行字，
+   在手机上看就是一排灰杠）：四类内容做成 2×2 卡片，实例与收藏夹做成一行一卡。 */
+.wb-kinds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.wb-kind {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+
+.wb-kind:hover, .wb-kind.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.wb-kind-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.wb-kind-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.wb-kind-desc {
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--text-3);
+}
+
+.wb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.wb-row:hover { border-color: var(--accent); }
+
+.wb-row-main { flex: 1 1 auto; min-width: 0; }
+
+.wb-row-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.wb-row-sub {
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--text-3);
+}
+
+.wb-row-shape {
+  flex: none;
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+
+.wb-current {
+  margin: 2px 0 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--text-2);
+}
+
+/* 文件预览头部：窄屏收紧内边距与按钮，保证「关闭」不被挤出面板 */
+@media (max-width: 480px) {
+  .fp-head {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .fp-head .fp-actions {
+    gap: 6px;
+  }
+
+  .fp-head .btn {
+    padding: 0 10px;
+    font-size: var(--text-sm);
+  }
+}
+
 /* 硬刷新悬浮按钮：固定右下角，全页面（含登录页）可见，触屏友好 */
 .hard-refresh-fab {
   position: fixed;
@@ -2666,7 +2801,7 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 .nav-fold.is-folded { opacity: 0.55; }
 .nav-item.nav-new { color: var(--text-3); }
 .nav-item.nav-new:hover { color: var(--text-1); }
-.nav-item.nav-folded-toggle { color: var(--text-3); font-size: var(--text-sm); }
+.nav-item.nav-folded-toggle { color: var(--text-3); margin-top: 6px; }
 .nav-item.nav-folded-toggle:hover { color: var(--text-1); }
 .nav-item.nav-folded-toggle .row-caret { margin-left: auto; transition: transform 140ms ease; transform: rotate(0deg); }
 .nav-item.nav-folded-toggle.is-open .row-caret { transform: rotate(90deg); }
@@ -3386,9 +3521,9 @@ html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 10p
 .plg-caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; transition: transform 0.18s ease; display: inline-block; }
 .plg-caret.is-open { transform: rotate(180deg); }
 
-.plg-mask { position: fixed; inset: 0; background: rgba(15, 17, 21, 0.44); z-index: 9995; display: flex; align-items: flex-end; justify-content: center; animation: plg-fade 0.18s ease both; }
+.plg-mask { position: fixed; inset: 0; background: rgba(15, 17, 21, 0.44); z-index: 9995; display: flex; align-items: center; justify-content: center; animation: plg-fade 0.18s ease both; }
 @keyframes plg-fade { from { opacity: 0; } }
-.plg-sheet { width: min(560px, calc(100% - 24px)); max-height: min(86dvh, 720px); margin-bottom: 3vh; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-3); display: flex; flex-direction: column; overflow: hidden; animation: plg-up 0.22s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+.plg-sheet { width: min(560px, calc(100% - 24px)); max-height: min(86dvh, 720px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-3); display: flex; flex-direction: column; overflow: hidden; animation: plg-up 0.22s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
 @keyframes plg-up { from { transform: translateY(16px); opacity: 0; } }
 .plg-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border-soft); font-size: var(--text-base); flex: none; }
 .plg-sheet-body { padding: 14px 16px; overflow: auto; display: grid; gap: 10px; align-content: start; flex: 1; min-height: 0; }
@@ -4438,3 +4573,159 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   .ykt-problem-chip { margin-left: 0; }
   .ykt-problem-head { row-gap: 4px; }
 }
+/* ── 插件市场（安装面板 · 市场页签）── */
+.plg-market-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow: auto; }
+.plg-market-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface);
+}
+.plg-market-item:hover { border-color: var(--border-strong); background: var(--hover); }
+.plg-market-info { min-width: 0; flex: 1; }
+.plg-market-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.plg-market-ver { font-weight: 400; color: var(--text-3); font-size: 11px; }
+.plg-market-author { font-weight: 400; color: var(--text-3); font-size: 11px; }
+.plg-market-desc {
+  font-size: 11px; color: var(--text-3); margin-top: 2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── 插件市场独立视图 ── */
+.market-view { display: flex; flex-direction: column; gap: 10px; }
+.market-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.market-search { flex: 1; min-width: 220px; }
+.market-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.market-card {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface); box-shadow: var(--shadow-1);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.market-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow-2); }
+.market-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.market-card-name { font-size: 14px; font-weight: 700; color: var(--text-1); }
+.market-card-stars {
+  font-size: 11px; color: var(--amber); font-weight: 600; flex: none;
+  padding: 1px 7px; border-radius: var(--r-pill); background: var(--amber-soft);
+}
+.market-card-meta { font-size: 11px; color: var(--text-3); }
+.market-card-desc {
+  font-size: 12px; color: var(--text-2); line-height: 1.5; min-height: 34px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.market-card-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.market-tag {
+  font-size: 10px; color: var(--text-3); padding: 1px 6px;
+  border: 1px solid var(--border); border-radius: var(--r-pill); background: var(--surface-2);
+}
+.market-card-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-top: 2px; padding-top: 8px; border-top: 1px dashed var(--border-soft);
+}
+.market-card-foot .plg-code {
+  font-size: 10px; color: var(--text-3); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; max-width: 65%;
+}
+
+/* ── 插件页：工具行与仓库跳转 ── */
+.plg-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 10px;
+}
+.plg-install-toggle { font-size: 12px; padding: 4px 12px; }
+.plg-repo-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; flex: none;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: transparent; color: var(--text-3); cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.plg-repo-btn:hover { color: var(--text-1); border-color: var(--border-strong); background: var(--hover); }
+.market-repo-link {
+  display: inline-flex; align-items: center; gap: 5px; min-width: 0;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: 10px;
+  color: var(--text-3); background: transparent; border: none; cursor: pointer;
+  padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;
+  transition: color .15s ease;
+}
+.market-repo-link:hover { color: var(--accent); text-decoration: underline; }
+.market-repo-link svg { flex: none; opacity: .8; }
+.market-installed-badge {
+  margin-left: 6px; padding: 1px 7px; border-radius: var(--r-pill);
+  font-size: 10px; font-weight: 600; vertical-align: 1px;
+  background: var(--green-soft); color: var(--green);
+}
+
+/* ── 插件结构化结果（ResultBlock）── */
+.plg-result { margin-top: 6px; border: 1px solid var(--border-soft); border-radius: var(--r-md); background: var(--surface-2); padding: 8px 10px; }
+.plg-result-md { font-size: 12px; color: var(--text-1); line-height: 1.55; }
+.plg-result-md table { border-collapse: collapse; margin: 6px 0; width: 100%; }
+.plg-result-md th, .plg-result-md td { border: 1px solid var(--border); padding: 3px 8px; font-size: 11px; text-align: left; }
+.plg-result-md code { background: var(--surface-3); border-radius: 4px; padding: 1px 4px; font-size: 11px; }
+.plg-result-md pre { background: var(--surface-3); border-radius: var(--r-sm); padding: 8px; overflow: auto; }
+.plg-result-kv { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+.plg-result-kvrow { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; }
+.plg-result-kvk { color: var(--text-3); flex: none; }
+.plg-result-kvv { color: var(--text-1); text-align: right; word-break: break-all; }
+.plg-result-items { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.plg-result-item { padding: 5px 8px; border: 1px solid var(--border-soft); border-radius: var(--r-sm); background: var(--surface); }
+.plg-result-item-t { font-size: 12px; font-weight: 600; color: var(--text-1); }
+.plg-result-item-s { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+.plg-result-item-m { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+
+/* ── 插件表单弹窗 ── */
+.plg-form-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0, 0, 0, .35); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.plg-form-modal {
+  width: min(440px, 92vw); max-height: 80vh; overflow: auto;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-3); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.plg-form-title { font-size: 14px; font-weight: 700; color: var(--text-1); }
+.plg-form-field { display: flex; flex-direction: column; gap: 4px; }
+.plg-form-label { font-size: 11px; color: var(--text-3); }
+.plg-form-ops { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+
+/* ── MCP 服务器管理 ── */
+.mcp-body { flex: 1; min-height: 0; overflow: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.mcp-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface);
+}
+.mcp-item-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.mcp-item-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
+.mcp-item-main .plg-code {
+  font-size: 10px; color: var(--text-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── 插件动态 tab（UI 自由化）── */
+.plg-tab-page { display: flex; flex-direction: column; gap: 8px; }
+.plg-tab-head { display: flex; align-items: baseline; gap: 8px; color: var(--text-1); }
+.plg-tab-head b { font-size: var(--text-lg, 16px); }
+.plg-tab-src { font-size: 11px; color: var(--text-3); }
+.plg-tab-root { flex: 1; min-height: 200px; border-radius: var(--r-lg); }
+.plg-tab-root > * { max-width: 100%; }
+.plg-svg-icon svg { width: 100%; height: 100%; display: block; }
+
+/* ── 已装卡片「可更新」徽标 ── */
+.plg-update-flag { color: var(--accent, #3b82f6); font-weight: 600; }
+
+/* ── 侧栏用户收藏夹段：限高滚动，保住「新建/已折叠收藏夹」栏完整可见 ── */
+.nav-folders-scroll {
+  flex: none;
+  max-height: clamp(120px, 24vh, 240px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.nav-folders-scroll::-webkit-scrollbar { width: 4px; }
+.nav-folders-scroll::-webkit-scrollbar-thumb { border-radius: 4px; background: var(--border); }

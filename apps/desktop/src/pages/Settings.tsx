@@ -2,11 +2,14 @@ declare const __APP_VERSION__: string;
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead } from "../components/Layout.js";
+import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
+import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { clearRemembered, loadRemembered, session } from "../lib/clients.js";
+import { clearRemembered, loadRemembered, session, isTauri } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
+import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
 import { useApp } from "../state/context.js";
@@ -23,7 +26,6 @@ import {
   APP_CODENAME, fetchLatestRelease, isNewer, currentVersion,
   isDismissed, dismissTag, type ReleaseInfo,
 } from "../lib/update.js";
-import { runProbeMatrix, type ProbeResult } from "./probe.js";
 import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
 import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
@@ -52,9 +54,6 @@ export function SettingsPage() {
   // 首页布局恢复：点击后短暂显示「已恢复默认」，到点回位
   const [homeResetAt, setHomeResetAt] = useState(0);
   const [eidMsg, setEidMsg] = useState<string | null>(null);
-  // dev2 管线验收探针（lib 单管线 DoD）
-  const [probeRunning, setProbeRunning] = useState(false);
-  const [probeResults, setProbeResults] = useState<ProbeResult[] | null>(null);
   // 云同步（清华邮箱 CalDAV 日历）
   const cloud = useCloudCal();
   const [calEmail, setCalEmail] = useState("");
@@ -122,43 +121,6 @@ export function SettingsPage() {
         </div>
       </Card>
 
-      <SectionHead title="管线验收（dev2 移植）" />
-      <Card>
-        <div className="setting-row" style={{ alignItems: "flex-start" }}>
-          <div>
-            <div className="setting-title">thu-info-lib 单管线验收矩阵</div>
-            <div className="setting-desc">
-              登录后运行：逐项调用 thu-info-lib 公开 API（个人信息/校历/课表/图书馆/新闻/校园卡），
-              每项都走「包装域 + wengine SSO + 共享 jar」完整管线。任何一项红 = 该链路适配有缺口。
-            </div>
-            {probeResults ? (
-              <div style={{ marginTop: 10, fontSize: 13, display: "grid", gap: 4 }}>
-                {probeResults.map((r) => (
-                  <div key={r.name} style={{ display: "flex", gap: 8 }}>
-                    <span style={{ color: r.ok ? "#2e9e5b" : "#d0453c", fontWeight: 600 }}>{r.ok ? "✓" : "✗"}</span>
-                    <span style={{ color: "var(--text-1)" }}>{r.name}</span>
-                    <span style={{ color: "var(--text-2)", marginLeft: "auto", whiteSpace: "nowrap" }}>
-                      {r.detail} · {r.ms}ms
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
-          <button
-            className="btn"
-            disabled={probeRunning}
-            onClick={() => {
-              setProbeRunning(true);
-              void runProbeMatrix()
-                .then(setProbeResults)
-                .finally(() => setProbeRunning(false));
-            }}
-          >
-            {probeRunning ? "运行中…" : "运行验收"}
-          </button>
-        </div>
-      </Card>
 
       <SectionHead title="账户设置" />
       <Card>
@@ -393,6 +355,8 @@ export function SettingsPage() {
       <SectionHead title="外部作业源" />
       <ExtHwSection />
 
+      <DownloadSettings />
+
       <SectionHead title="首页" />
       <Card>
         <div className="setting-row">
@@ -490,6 +454,18 @@ export function SettingsPage() {
         ) : null}
       </Card>
 
+      <SectionHead title="外观" />
+      <Card>
+        <AppearanceSection />
+      </Card>
+      <SectionHead title="通知" />
+      <Card>
+        <NotifySettingsSection />
+      </Card>
+      <SectionHead title="桌面小组件" />
+      <Card>
+        <WidgetSettingsSection />
+      </Card>
       <SectionHead title="插件" />
       <Card>
         <div className="setting-row">
@@ -1380,6 +1356,88 @@ function ExtHwSection() {
   );
 }
 
+/* ── 下载位置（网络学堂附件与云盘文件落盘处）──
+ * 桌面端：系统文件夹选择器 + 本机保存；Android：SAF 目录树（见 onethu-mobile 插件）。
+ * 这里只做「读当前值 / 让用户改」，真正的落盘判断在原生侧（downloads.rs / 插件）。 */
+type DownloadDirectory = { path: string; isDefault: boolean };
+
+function DownloadSettings() {
+  const [available, setAvailable] = useState(isTauri);
+  const [directory, setDirectory] = useState<DownloadDirectory | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!available) return;
+    let active = true;
+    void invoke<DownloadDirectory | null>("download_directory_get")
+      .then((value) => {
+        if (!active) return;
+        setDirectory(value);
+        if (!value) setAvailable(false);   // 该平台不支持（如未接入的形态）：不显示这一块
+      })
+      .catch((e: unknown) => {
+        if (active) setMessage(`读取下载位置失败：${e instanceof Error ? e.message : String(e)}`);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [available]);
+
+  const changeDirectory = async (reset: boolean): Promise<void> => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const value = await invoke<DownloadDirectory | null>(
+        reset ? "download_directory_reset" : "download_directory_pick",
+      );
+      if (value) {
+        setDirectory(value);
+        setMessage(reset ? "已恢复默认下载位置。" : "下载位置已保存，下次下载时生效。");
+      }
+    } catch (e) {
+      setMessage(`修改失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!available) return null;
+  return (
+    <>
+      <SectionHead title="下载" />
+      <Card>
+        <div className="setting-row" style={{ flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+            <div className="setting-title">下载位置</div>
+            <div className="setting-desc" style={{ overflowWrap: "anywhere" }}>
+              {loading ? "正在读取…" : directory?.path || "下载位置读取失败，请重新选择文件夹或恢复默认。"}
+            </div>
+            <div className="setting-desc">
+              网络学堂附件与云盘文件将保存到这里，已下载的文件不会移动；单个文件也可以用「另存为」临时挑别处。
+            </div>
+            {message ? (
+              <div role="status" style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)", overflowWrap: "anywhere" }}>{message}</div>
+            ) : null}
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button className="btn" disabled={loading || busy} onClick={() => void changeDirectory(false)}>
+              选择文件夹
+            </button>
+            <button className="btn" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>
+              恢复默认
+            </button>
+          </div>
+        </div>
+      </Card>
+    </>
+  );
+}
+
 /* ── 版本更新检查（GitHub Releases）── */
 function UpdateRow() {
   const [checking, setChecking] = useState(false);
@@ -1439,3 +1497,59 @@ function UpdateRow() {
 }
 
 
+
+/** 外观：昼夜主题调度——跟随系统暗/亮自动切日夜两档主题 */
+function AppearanceSection(): ReactNode {
+  const snap = useThemes();
+  const themes = [{ id: "", name: "基础令牌（默认外观）" }, ...snap.themes.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
+  return (
+    <div className="setting-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+        <div>
+          <div className="setting-title">跟随系统昼夜</div>
+          <div className="setting-desc">
+            开启后按系统的深色模式自动切换：亮色用「白天主题」，深色用「黑夜主题」。
+            {snap.followSystem ? `（当前系统：${snap.systemDark ? "深色" : "浅色"}）` : ""}
+          </div>
+        </div>
+        <button
+          className={"switch" + (snap.followSystem ? " on" : "")}
+          role="switch"
+          aria-checked={snap.followSystem}
+          aria-label="跟随系统昼夜"
+          onClick={() => setFollowSystem(!snap.followSystem)}
+        />
+      </div>
+      {snap.followSystem ? (
+        <>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+            <div className="setting-title" style={{ flex: "none" }}>白天主题</div>
+            <select
+              className="input"
+              value={snap.dayThemeId ?? ""}
+              onChange={(e) => setDayNightTheme(e.target.value || null, snap.nightThemeId)}
+              style={{ maxWidth: 240 }}
+            >
+              {themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+            <div className="setting-title" style={{ flex: "none" }}>黑夜主题</div>
+            <select
+              className="input"
+              value={snap.nightThemeId ?? ""}
+              onChange={(e) => setDayNightTheme(snap.dayThemeId, e.target.value || null)}
+              style={{ maxWidth: 240 }}
+            >
+              {themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+        </>
+      ) : (
+        <div className="setting-desc" style={{ color: "var(--text-3)" }}>
+          手动换主题在 插件页 → 主题 里操作；想昼夜自动切换就打开上面的开关。
+        </div>
+      )}
+    </div>
+  );
+}

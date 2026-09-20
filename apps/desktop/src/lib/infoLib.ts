@@ -153,6 +153,11 @@ let methodsNotify: ((methods: TwoFactorMethod[]) => void) | null = null;
 let resolveMethod: ((t: "wechat" | "mobile" | "totp") => void) | null = null;
 let resolveCode: ((code: string) => void) | null = null;
 let pendingTrust = false;
+/** hook 自签拿到的 finger3（lib 内置路径会丢 object——这里接住） */
+let selfFinger3 = "";
+export function getSelfFinger3(): string {
+  return selfFinger3;
+}
 
 helper.twoFactorMethodHook = (hasWeChatBool, phone, hasTotp) => {
   const methods: TwoFactorMethod[] = [];
@@ -259,7 +264,8 @@ export async function libLogin(
   // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
   await nativeCookieClear().catch(() => undefined);
   helper.fingerprint = fingerprint || makeFingerprint();
-  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER——接 pendingTrust
+  // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER（内置路径
+  // 响应 object=finger3 被 lib 丢弃——后续从持久化快照或再度 2FA 恢复）
   (helper as unknown as { trustFingerprintHook?: () => Promise<boolean> }).trustFingerprintHook =
     async () => pendingTrust;
   (helper as unknown as { trustFingerprintNameHook?: () => Promise<string> }).trustFingerprintNameHook =
@@ -297,7 +303,21 @@ export async function libSend2FA(type: string): Promise<void> {
     r(type as "wechat" | "mobile" | "totp");
     return;
   }
-  void log("2FA 方式已选定（重复发送忽略）: " + type);
+  // resolver 为空 = 用户手里的 UI 挂在已死的旧链上（keepalive 的 libEnsure
+  // Session 在僵尸 settle 后抢起新链）——照 libVerify2FA 的自愈：重启链并
+  // 自动应答方式选择，用户这次点击直接生效（码正常发出）
+  void log("2FA 方式选定但链已死 → 自动重启链并应答: " + type);
+  const username = inflight?.username ?? "";
+  const password = inflight?.password ?? "";
+  if (!username || !password) {
+    void log("2FA 重启失败：无内存凭据");
+    return;
+  }
+  const { p, methodsPromise } = startLoginRaw(username, password);
+  void methodsPromise.then(() => {
+    resolveMethod?.(type as "wechat" | "mobile" | "totp");
+  });
+  void p.catch(() => undefined);
 }
 
 ''/** 提交验证码（+是否信任设备）。lib 链在此续完：VERITY → SAVE_FINGER → 落地 → roam-id。
@@ -375,6 +395,76 @@ export async function libEnsureSession(): Promise<boolean> {
   }
   await inflight.p.catch(() => undefined);
   return true;
+}
+
+/** 二级课表（实验课）自实现：直连拉 portal3rd + 正则解析（本地验证过）。
+ *  lib 的 roaming+substring 链路曾静默空（DIAG 有页面、PARSE 无结果），
+ *  黑盒绕开一次到位。按 [from,to] 日期区间返回扁平条目。 */
+export const getSecondaryEntries = async (
+  http: { text: (url: string) => Promise<string> },
+  firstDay: string, from: string, to: string,
+): Promise<Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }>> => {
+  // core HttpClient 直连（zhjw.cic 已在 PUBLIC_DIRECT_HOSTS 白名单，与课表
+  // JSONP 同会话桶）。lib 的 uFetch 未从 index 导出（mod.uFetch undefined），
+  // 之前每次都在守卫处静默抛错——全程「静默空」的最终根源（2026-09-19 实锤）。
+  const html = await http.text("http://zhjw.cic.tsinghua.edu.cn/portal3rd.do?m=bks_ejkbSearch");
+  const lo = html.indexOf("function setInitValue");
+  void log(`SECONDARY-FETCH len=${html.length} setInit=${lo}`).catch(() => undefined);
+  if (lo < 0) return [];
+  const script = html.substring(lo, html.indexOf("}", lo));
+  const beginList = ["08:00", "09:50", "13:30", "15:20", "17:05", "19:20"];
+  const endList = ["09:35", "12:15", "15:05", "16:55", "18:40", "21:45"];
+  const reg = /"<span onmouseover=\\"return overlib\('(.+?)'\);\\" onmouseout='return nd\(\);'>(.+?)<\/span>";[ \n\t\r]+?document\.getElementById\('(.+?)'\)\.innerHTML \+= strHTML\+"<br>";/g;
+  const fd = new Date((firstDay ?? "").replace(/-/g, "/"));
+  const expand = (pat: string): number[] => {
+    const out: number[] = [];
+    for (const part of pat.split(",")) {
+      const [a, b] = part.split("-");
+      const s = parseInt(a ?? "", 10), e = b ? parseInt(b, 10) : s;
+      for (let w = s; w <= e; w++) out.push(w);
+    }
+    return out.filter((w) => w > 0);
+  };
+  const out: Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }> = [];
+  for (const m of script.matchAll(reg)) {
+    const detail = (m[1] ?? "").replace(/\s/g, "");
+    const title = m[2] ?? "";
+    const anchor = (m[3] ?? "").split(/[a_]/).filter(Boolean);
+    const day = Number(anchor[0]);
+    const session = Number(anchor[1]);
+    if (!day || !session) continue;
+    const begin = beginList[session - 1] || "08:00";
+    const endT = endList[session - 1] || "09:35";
+    const loc = /[(（]([^，,]+)[，,]/.exec(detail)?.[1] ?? "待定";
+    const weeks = /单周/.test(detail) ? [1,3,5,7,9,11,13,15]
+      : /双周/.test(detail) ? [2,4,6,8,10,12,14,16]
+      : /全周/.test(detail) ? Array.from({length: 16}, (_, i) => i + 1)
+      : (() => { const wm = /第([\d\-~,]+)周/.exec(detail); return wm ? expand(wm[1] ?? "") : []; })();
+    for (const w of weeks) {
+      const date = new Date(fd.getTime() + ((w - 1) * 7 + day - 1) * 86400000);
+      const ds = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      if (ds < from || ds > to) continue;
+      out.push({ name: title, location: loc, date: ds, dayOfWeek: day, startTime: begin, endTime: endT });
+    }
+  }
+  const names = [...new Set(out.map((o) => o.name))];
+  void log(`SECONDARY-PARSE ${out.length} 条 ${names.length} 门: ${names.join(" / ").slice(0, 400)}`).catch(() => undefined);
+  return out;
+};
+
+/** 强制完整重登（选课死结借用）：不走探活短路——id 会话权威单一来源，
+ *  选课判死时由这里重建，选课不再自清仓互踢（2026-09-18 架构定案） */
+export async function libForceRelogin(): Promise<boolean> {
+  const username = inflight?.username ?? "";
+  const password = inflight?.password ?? "";
+  if (!username || !password) return false;
+  // 受信凭据喂给 lib：helper.fingerGenPrint 是内存变量，boot 恢复/进程重启后
+  // 为空 → libLogin 传空指纹 → id 要 2FA → 强制重登必撞墙（02:23 实录
+  // "lib 重登失败 → 回退自清仓"）。sessionFinger3（持久层）优先喂入。
+  (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint =
+    sessionFinger3 || (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+  const r = await libLogin(username, password, helper.fingerprint).catch(() => null);
+  return r?.state === "ready";
 }
 
 /** 登录链是否挂起（用户正在 2FA 界面）——静默重登互斥判据 */

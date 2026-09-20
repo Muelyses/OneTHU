@@ -41,6 +41,13 @@ let nativeCookieClearHook: (() => Promise<void>) | null = null;
 export function setZhjwxkNativeClear(fn: () => Promise<void>): void {
   nativeCookieClearHook = fn;
 }
+/** 死结重登钩子（desktop 注入）：id 是单点登录，选课自清仓直登会踢掉 lib 的
+ *  id 会话、lib 自愈重登又踢回——无限互踢（17:51 双死结、01:43 隔夜 info
+ *  全死实录）。死结时改借 lib 的权威重登，id 会话单一来源。 */
+let xkReloginHook: (() => Promise<boolean>) | null = null;
+export function setZhjwxkReloginHook(fn: () => Promise<boolean>): void {
+  xkReloginHook = fn;
+}
 export function setZhjwxkDebug(fn: (line: string) => void): void {
   zhjwxkDebug = fn;
 }
@@ -56,7 +63,8 @@ export interface ZhjwxkSession {
    *  选课的多域 cookie 需求只能在自己罐子里满足，爆炸半径锁死本模块）。 */
   readonly isoFetch?: (url: string, init?: RequestInit) => Promise<Response>;
   /** 受信设备三段指纹（demoLogin 免 2FA 用；缺省时隔离通道可能被要求 2FA */
-  readonly finger3?: string;
+  /** 可更新：desktop 侧 verify 签发后动态刷新（单例值拷贝会定死旧空值） */
+  finger3?: string;
 }
 
 /** 已选课程（demo /api/courses 的 courses 项，字段一一对应） */
@@ -157,12 +165,19 @@ const ENTRY_TTL_MS = 10 * 60_000;
 const entryCache = new WeakMap<ZhjwxkSession, ZhjwxkEntry>();
 /** 最近一次成功重登时刻（合流护栏：8 秒窗口内的并发弹回共用新会话，不起重复链） */
 let lastXkReloginAt = 0;
+/** 兑付失败冷却：失败后短期内不再打 id（并发数据路各自全跑 = 自踢风暴，
+ *  用户实录「放一会突然会好」= 风暴平息；主动放缓让 id 喘息） */
+let xkFailCooldownUntil = 0;
+const xkSleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const entryInflight = new WeakMap<ZhjwxkSession, Promise<ZhjwxkEntry>>();
 
 async function ensure(
   s: ZhjwxkSession,
   semesterOverride?: string,
 ): Promise<{ entry: ZhjwxkEntry; semester: string }> {
+  if (Date.now() < xkFailCooldownUntil) {
+    throw new AuthRequiredError("选课会话恢复冷却中，请稍候重试");
+  }
   const hit = entryCache.get(s);
   if (hit && Date.now() - hit.at < ENTRY_TTL_MS) {
     return { entry: hit, semester: semesterOverride ?? hit.semester ?? semesterFromDate() };
@@ -216,7 +231,19 @@ async function ensure(
       const target = res.status >= 300 && res.status < 400 && loc ? loc : (/href="([^"]*ticket=[^"]*)"/i.exec(pageHtml)?.[1] ?? "");
       zhjwxkDebug?.(`[XK-CHECKSINGLE] st=${res.status} loc=${loc.slice(0, 80)} target=${target.slice(0, 90)}`);
       if (!target) break;   // 无票据可兑付：走表单链
-      const tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
+      let tgt = target.startsWith("http") ? target : new URL(target, ID_PREFIX).toString();
+      // 协议改写（check 块同款教训）：zhjwxk 是 http 应用，https 锚点原样兑付
+      // 会让 /https/ 包装代理到 443 →「访问内容不存在」票据白烧 → 误判死结 →
+      // 清仓殃及日程（17:38 快速往返双输实录）——必须改写为直连 http。
+      if (tgt.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+        tgt = ZHJWXK + tgt.slice("https://zhjwxk.cic.tsinghua.edu.cn".length);
+      } else {
+        const dec = decodeUrl(tgt);
+        if (dec?.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+          tgt = webvpnWrap(dec.replace("https://zhjwxk.cic.tsinghua.edu.cn", ZHJWXK));
+        }
+      }
+      zhjwxkDebug?.(`[XK-CHECKSINGLE] 兑付=${tgt.slice(0, 110)}`);
       await http.text(tgt).catch(() => {});   // 兑付票据（失败不阻断：回落表单链）
       html = await http.text(ZHJWXK + "/xklogin.do");
       if (/checkSingle/.test(html)) {
@@ -224,17 +251,44 @@ async function ensure(
         // 永不消费，桌面 2026-09-17 实录）。唯一出路：清两 jar 的 id/oauth 会话
         // 强制回到全新登录表单，走账密直登重置会话（直登带受信 finger3，不触发
         // 2FA——传空指纹才是 2FA 根因）。
+        // 死结重登：优先借 lib 权威（单点登录互踢根治）；无钩子退回自清仓
+        if (xkReloginHook) {
+          zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 借 lib 权威重登（防互踢）");
+          let ok = false;
+          try { ok = await xkReloginHook(); } catch { ok = false; }
+          if (ok) {
+            html = await s.http.text(ZHJWXK + "/xklogin.do");
+            zhjwxkDebug?.(`[XK-CHECKSINGLE] lib 重登后重入 len=${html.length} checkSingle=${/checkSingle/.test(html) ? 1 : 0}`);
+            continue;   // 带 csRounds 计数继续 while 循环
+          }
+          zhjwxkDebug?.("[XK-CHECKSINGLE] lib 重登失败 → 回退自清仓");
+        }
         zhjwxkDebug?.("[XK-CHECKSINGLE] 确认死结 → 清 id/oauth 会话走账密直登");
         // 清仓前抢救健康域票据（webvpn/learn）：rust clear 是全清，全清会让
         // webvpn 票陪葬 → 日程/各页集体无票爆掉，逐页自愈转圈才恢复（2026-09-18
         // 实录）。死结只在 id/oauth 域——健康票救回、只重建死域。
+        // 全量快照抢救：id/oauth 外全部保命。原按 webvpn/learn 根 URL 捞会漏掉
+        // path 限定的 wengine app-host 票（Path=/http/<hash>/ 不是根路径前缀，
+        // getCookies(根) 捞不到）→ 清后包装请求无票 → 引导壳（「教务返回异常页」，
+        // 强制刷新实录）
         const rescue: Array<[string, string]> = [];
-        for (const dom of ["https://webvpn.tsinghua.edu.cn/", "https://learn.tsinghua.edu.cn/"]) {
-          try {
-            for (const c of s.http.jar.getCookies(new URL(dom))) {
-              rescue.push([dom, `${c.name}=${c.value}`]);
-            }
-          } catch { /* 忽略 */ }
+        try {
+          const snap = JSON.parse(s.http.jar.serialize() || "[]") as Array<{ domain?: string; path?: string; name?: string; value?: string }>;
+          for (const c of snap) {
+            if (!c.domain || !c.name || !c.value) continue;
+            if (/id\.tsinghua|oauth\.tsinghua/.test(c.domain)) continue; // 死域不救
+            const physical = `https://${c.domain.replace(/^\./, "")}${c.path || "/"}`;
+            rescue.push([physical, `${c.name}=${c.value}`]);
+          }
+        } catch { /* 快照失败退回旧粒度 */ }
+        if (rescue.length === 0) {
+          for (const dom of ["https://webvpn.tsinghua.edu.cn/", "https://learn.tsinghua.edu.cn/"]) {
+            try {
+              for (const c of s.http.jar.getCookies(new URL(dom))) {
+                rescue.push([dom, `${c.name}=${c.value}`]);
+              }
+            } catch { /* 忽略 */ }
+          }
         }
         try { await nativeCookieClearHook?.(); } catch { /* 钩子未注入/失败不阻断 */ }
         for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
@@ -281,9 +335,16 @@ async function ensure(
       zhjwxkDebug?.(`[XK-BOUNCE] 未成功 全页=${checkHtml.slice(0, 1500).replace(/\s+/g, " ")}`);
       throw new AuthRequiredError("选课系统身份确认失败，请重新登录后重试");
     }
-    const anchor = /<a[^>]+href="([^"]+)"/i.exec(checkHtml)?.[1];
+    // 锚点必须选 zhjwxk 的：id 成功页会罗列全部 pending 票锚点（learn/oauth 的
+    // 过期票排前面），抓第一个 = 烧在别的服务的死票上 → 两次重试全废 → 报错
+    // （15:58 实录：第1次 learn 票落 id 页、第2次 oauth 票落门户页，隔离通道
+    // 才救回——UI 已红条）。过滤后一步兑付正主票。
+    const anchors = [...checkHtml.matchAll(/<a[^>]+href="([^"]+)"/gi)]
+      .map((m) => m[1])
+      .filter((x): x is string => !!x);
+    const anchor = anchors.find((a) => /zhjwxk|j_acegi/.test(a));
     if (anchor) {
-      let target = anchor.startsWith("http") ? anchor : new URL(anchor, ID_PREFIX).toString();
+      let target = (anchor.startsWith("http") ? anchor : new URL(anchor, ID_PREFIX).toString()) as string;
       // id 锚点是 https://zhjwxk...（直连或 /https/ 包装），但 zhjwxk 是 http 应用
       //（引导页 __vpn_app_protocol_data="http"）：/https/ 包装会让 wengine 代理到
       // 443 → "访问内容不存在"（票据白烧、会话建不成）。按真实协议改写后兑付。
@@ -312,14 +373,57 @@ async function ensure(
   // 但兑付落在电子身份页/webvpn门户页——缓存这种毒 entry 会让合流窗口内所有请求
   // 吃死页。不缓存；webvpn 劫持场景重放一次，二次仍未落地才抛失登。
   if (semester) break;
+  // id 中转页跟随：pending 清空后 check 成功页无锚点可抓，xklogin 302 落在
+  // id 的「用户电子身份服务系统」中转页——页内 <a> 是 pending 票链，兑付任意
+  // 一张即清空 pending，重放的 xklogin 就能拿到直达 302（16:03 实录：两轮
+  // 重放全烧在中转页上，兑付链断）
+  if (attempt < 2 && /用户电子身份服务系统/.test(html)) {
+    const aLinks = [...html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>/gi)]
+      .map((m) => m[1])
+      .filter((x): x is string => !!x);
+    // id 中转页的跳转除 <a> 外还有 JS location / meta refresh（16:48 实录：
+    // 页内无 <a> ticket 锚点，兑付链断在 JS 跳转上）
+    const jsLoc =
+      /(?:location\.href|location\.replace|window\.location)\s*=\s*["']([^"']+)["']/.exec(html)?.[1] ??
+      /<meta[^>]+http-equiv=["']refresh["'][^>]+url=([^"'>]+)/i.exec(html)?.[1];
+    const hop = aLinks.find((a) => /ticket=/.test(a)) ?? (jsLoc && /ticket=/.test(jsLoc) ? jsLoc : undefined);
+    if (hop) {
+      let t = hop.startsWith("http") ? hop : new URL(hop, ID_PREFIX).toString();
+      if (t.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+        t = ZHJWXK + t.slice("https://zhjwxk.cic.tsinghua.edu.cn".length);
+      } else {
+        const dec = decodeUrl(t);
+        if (dec?.startsWith("https://zhjwxk.cic.tsinghua.edu.cn")) {
+          t = webvpnWrap(dec.replace("https://zhjwxk.cic.tsinghua.edu.cn", ZHJWXK));
+        }
+      }
+      zhjwxkDebug?.(`[XK-HOP] 中转兑付=${t.slice(0, 130)}`);
+      const landed = await http.text(t).catch(() => "");
+      zhjwxkDebug?.(`[XK-HOP] 落地 len=${landed.length} 页首=${landed.slice(0, 150).replace(/\s+/g, " ")}`);
+      if (landed) html = landed;
+    }
+  }
   if (attempt < 2) {
-    zhjwxkDebug?.(`[XK-RETRY] 未落地（可能 webvpn 重登劫持），重放 xklogin`);
+    zhjwxkDebug?.(`[XK-RETRY] 未落地（可能 webvpn 重登劫持），1.5s 后重放 xklogin`);
+    await xkSleep(1500);
     continue;
   }
+  xkFailCooldownUntil = Date.now() + 3000;
   throw new AuthRequiredError("选课系统登录未落地，请重新登录后重试");
   }
   const entry: ZhjwxkEntry = { semester, at: Date.now() };
   lastXkReloginAt = Date.now();
+  // wengine 票预热 v2：壳的根源是包装请求无 wengine 票（隔离通道拷的全局桶
+  // 里没有 zhjwxk 票——全局会话从没访问过 zhjwxk；双 GET 仍壳实证壳靠 JS
+  // 无头拿不到票）。改走 wengine 的票获取接口（libEnsureSession 同款探针），
+  // nativeFetch 底座自动把签发的票种进 rust 权威仓，后续包装请求带上票。
+  try {
+    const probe = await s.isoFetch?.(
+      "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=zhjwxk.cic.tsinghua.edu.cn&scheme=http&path=/",
+    );
+    const body = await probe?.text().catch(() => "");
+    zhjwxkDebug?.(`[XK-WARMUP] 票接口 len=${body?.length ?? 0} 票=${/ticket|wrdvpn/i.test(body ?? "") ? "✓" : "?"}`);
+  } catch { /* 预热失败不阻断（后续 isXkDeadHtml 兜底） */ }
   entryCache.set(s, entry);
   return entry;
   })().catch((e) => {
@@ -363,10 +467,10 @@ async function proxyZhjwxkApi(s: ZhjwxkSession, entry: ZhjwxkEntry, zhjwxkPath: 
   }
   // 乐观自愈（dormPage 同构）：jar 会话真死 → 静默重走登录链并重试一次，用户无感；
   // 重试仍死则原样返回，由 assertNotDenied 抛 AuthRequiredError 走 softRecover/看门狗链。
-  // 合流护栏：8 秒内已有别的请求重登过（entry 缓存即新鲜），不再删缓存起新链——
-  // 并发数据路同时弹回时各自重登纯属浪费且易互相踩（singleLogin 已除，链本身无害，
-  // 但一帧内 3-4 条链仍拖慢自愈）
-  if (Date.now() - lastXkReloginAt > 8_000) entryCache.delete(s);
+  // 合流护栏：60s 内重登成功过（缓存存在且新鲜）→ 不删缓存防风暴；【失败场景
+  // 无缓存，必须放行重试】——16:33 实录 5s 后第三路救回靠的就是重试，60s
+  // 无条件护栏曾把这条救回路挡死（16:48 失败后无人再试）。3s 失败冷却挡风暴。
+  if (entryCache.get(s) && Date.now() - lastXkReloginAt > 60_000) entryCache.delete(s);
   await ensure(s);
   const retried = await xkHttp(s).text(ZHJWXK + zhjwxkPath);
   entry.at = Date.now();
@@ -1386,7 +1490,10 @@ export async function submitXkCourse(
     await sleep(1500); // v1.4.9：满员确认前置 1.5s
     const newToken = TOKEN_RE().exec(resp)?.[1];
     const queueFields: Record<string, string> = { ...fields, m: "saveBksKcDl" };
-    if (newToken) queueFields.token = newToken; // 一次性 token：必须换用响应页新值
+    // NextTHUxk 2.2.1 同款实证：一次性 token 在第一次 POST 已消耗，响应页不带
+    // 新 token 时复用旧值必失败——显式报错而非静默复用
+    if (!newToken) return { ok: false, msg: "排队页未返回新 token，请稍后重试", where: "none" };
+    queueFields.token = newToken;
     resp = await postZhjwxkApi(s, entry, "/xkBks.vxkBksXkbBs.do", queueFields);
     result = respond(resp);
   }

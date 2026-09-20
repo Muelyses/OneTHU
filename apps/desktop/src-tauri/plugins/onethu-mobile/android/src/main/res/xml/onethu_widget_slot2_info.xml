@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  插件小组件槽位 2 的元信息。
+
+  槽位是「固定预留」的：Android 不允许运行时注册 AppWidgetProvider，所以清单里先声明
+  3 个槽位，插件按声明顺序占位；内容由 JS 侧解析插件声明后放进快照的 slots["2"]。
+  与宿主小组件同尺寸（3×2），但由插件内容决定实际显示。
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="1800000"
+    android:previewLayout="@layout/onethu_widget_preview_list"
+    android:initialLayout="@layout/onethu_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/onethu_widget_slot_desc" />

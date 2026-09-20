@@ -11,6 +11,7 @@ import {
   makeFingerprint,
   webvpnDecodeUrl,
   webvpnWrap,
+  normalizeWebvpnUrl,
   PUBLIC_DIRECT_HOSTS,
   type CredentialStore,
   type SessionData,
@@ -18,7 +19,7 @@ import {
 } from "@onethu/core";
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
 import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
-import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear } from "@onethu/core";
+import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
 
 export type { TwoFactorMethod };
 
@@ -170,6 +171,12 @@ void (async () => {
 
 setZhjwxkDebug((line) => void logLine(line));
 setZhjwxkNativeClear(nativeCookieClear);
+// 死结重登借 lib 权威：id 单点登录互踢根治（选课清仓直登曾踢死新闻/日程/info）
+// hook 内懒加载——顶层 await 在生产构建 target（es2020）不可用，且懒加载无时序问题
+setZhjwxkReloginHook(async () => {
+  const { libForceRelogin } = await import("./infoLib.js");
+  return libForceRelogin();
+});
 setWebvpnLog((line) => void logLine(line));
 
 // 逐跳 cookie 供应：包装 URL 解码出真实域（wrapped id 跳带 id 桶会话、wrapped zhjw
@@ -240,11 +247,6 @@ export const session = new CampusSession({
   info,
   fetchLike: (u, init) => nativeFetch(String(u), init as Parameters<typeof nativeFetch>[1]),
 });
-
-/** R17 23.3：设备指纹「只轮换一次」标记的内存镜像。此前 `_fpRotated` 只落
- *  localStorage（store.saveSession），未进 persist() 快照与 SESSION_FILE 镜像 →
- *  每次启动都重新轮换 → id 端永远当新设备 → 2FA 无限循环。 */
-let fpRotated = false;
 
 // InfoClient 会话过期续约：lib 会话守卫（探活+静默重登）替代 demo roam-id 链
 // ——登录链已统一到 thu-info-lib（单管线），demo 链退役后其漫游钩子不再可用。
@@ -328,27 +330,10 @@ export async function login(
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
   const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
-  let fingerprint = await currentFingerprint();
-  // 死锁破解（2026-09-18）：设备 fp 已被 id 信任 → 免 2FA → 永不签发 finger3；
-  // finger3 空 → checkSingle 确认/直登全传空 → 死结复发。唯一出路：轮换 fp
-  // 强制 id 走一次 2FA，用户选信任 → SAVE_FINGER 签发 finger3 落盘。
-  // 【只轮换一次】：轮换后立刻持久化新 fp——finger3 未拿到前的重复登录
-  // 沿用同一 fp（否则 fp 每次变 = id 每次当新设备 = 2FA 无限循环，14:25/14:27 实录）
-  {
-    const saved = await store.loadSession().catch(() => null);
-    if (saved) fpRotated = saved._fpRotated === true;
-    if (saved && !saved.finger3 && !saved._fpRotated) {
-      fingerprint = makeFingerprint();
-      saved._fpRotated = true;
-      saved.fingerprint = fingerprint;
-      fpRotated = true;
-      await store.saveSession(saved).catch(() => undefined);
-      await logLine("FINGER3 空 → 设备指纹轮换（仅此一次；完成 2FA 请选信任设备）").catch(() => undefined);
-    }
-    // 生效指纹写回内存会话：否则后续 persist() 用旧 session.fingerprint 覆盖，
-    // 轮换与 _fpRotated 一起被抹掉（每次启动都重新轮换的直接原因）。
-    session.fingerprint = fingerprint;
-  }
+  const fingerprint = await currentFingerprint();
+  // （2026-09-18 决策）轮换实验撤除：强制 2FA 的链路被 keepalive/静默重登/
+  // lib 僵尸链三面夹击，稳定性失控。回归简单：fp 固定，登录一次 2FA 到位；
+  // finger3 缺失时选课靠死结自愈兜底（确认失败→清账直登，实测可用）。
   const remember = opts.remember ?? true;
   pendingSecret = { username, password, remember };
   if (!remember) await clearRemembered().catch(() => undefined);
@@ -360,13 +345,12 @@ export async function login(
     if (r.state === "ready") {
       session.username = username;
       session.state = "ready";
-      // SAVE_FINGER 可能新发受信凭据；没有则保留旧值（lib 链写 helper.fingerGenPrint）
+      // SAVE_FINGER 受信凭据同步（2FA 链内签发的才有效；直登后补签=身份异常）
       {
-        const { helper, libEnsureTrustFingerprint } = await import("./infoLib.js");
-        let fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
-        if (!fresh) fresh = await libEnsureTrustFingerprint(fingerprint).catch(() => "");
+        const { helper, getSelfFinger3 } = await import("./infoLib.js");
+        const fresh = getSelfFinger3() ||
+          (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
         session.finger3 = fresh || session.finger3 || "";
-        await logLine(`FINGER3 ${fresh ? "新签发" : session.finger3 ? "沿用旧值" : "仍为空"} len=${session.finger3.length}`).catch(() => undefined);
       }
       session.injectCredentials(username, password);
       await persist();
@@ -426,19 +410,18 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 }
 
 export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
-  const { libVerify2FA, helper } = await import("./infoLib.js");
+  const { libVerify2FA, helper, getSelfFinger3 } = await import("./infoLib.js");
   try {
     await libVerify2FA(type, code, trust);
     session.state = "ready";
     // SAVE_FINGER 的受信凭据（trust=true 时服务端新发）必须立刻落盘：
-    // lib 链写入 helper.fingerGenPrint（infoLib 392 注释），此前自赋值空转
-    // → session.finger3 恒空 → checkSingle 确认传空 → 死结（2026-09-18 实录 f3=0）
+    // hook 自签路径写 selfFinger3（lib 内置路径丢 object）；lib 的 helper.
+    // fingerGenPrint 作后备。此前两处都空 → f3=0 → 死结（2026-09-18 实录）
     {
-      const { helper } = await import("./infoLib.js");
-      const fresh = (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+      const fresh = getSelfFinger3() ||
+        (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
       session.finger3 = fresh || session.finger3 || "";
-      // R17 23.3-2：2FA 完成后同样确认 finger3 捕获并落盘（boot 日志口径一致）
-      await logLine(`FINGER3 ${fresh ? "新签发" : session.finger3 ? "沿用旧值" : "仍为空"} len=${session.finger3.length}`).catch(() => undefined);
+      await logLine(`FINGER3 verify 落盘 len=${session.finger3.length}`).catch(() => undefined);
     }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
     await persist();
@@ -461,15 +444,11 @@ export async function persist(): Promise<void> {
   // R10：新会话落盘前清 InfoClient 静态缓存——libToken 是 10 分钟静态缓存且跨
   // 重登录存活，旧 token 配新会话会让订座恒报「没有登录或登录已超时」
   info.resetStaticSessionCaches();
-  // R17 23.3：`_fpRotated` 必须进快照与文件镜像（否则重启后指纹再轮换 → 2FA 死循环）。
-  // 与 store 旧值取并集，避免未走 resume/login 的 persist 调用抹掉该标记。
-  const prev = await store.loadSession().catch(() => null);
   const snapshot: SessionData = {
     username: session.username,
     fingerprint: session.fingerprint,
     cookiesJson: http.jar.serialize(),
     finger3: session.finger3,
-    _fpRotated: fpRotated || prev?._fpRotated === true || undefined,
     savedAt: Date.now(),
   };
   await store.saveSession(snapshot);
@@ -491,7 +470,6 @@ export async function persist(): Promise<void> {
 
 export async function currentFingerprint(): Promise<string> {
   const saved = await store.loadSession();
-  if (saved) fpRotated = saved._fpRotated === true;
   if (saved?.fingerprint) return saved.fingerprint;
   // 首次生成即落盘（demo 的 redux-persist 初值语义）：否则登录中途崩溃会
   // 重新随机，设备信任（fingerPrint 比对）永远建立不起来
@@ -542,9 +520,6 @@ export async function resumeSession(): Promise<boolean> {
   session.username = saved.username;
   session.fingerprint = saved.fingerprint;
   session.finger3 = saved.finger3 ?? "";
-  // R17 23.3：恢复「只轮换一次」标记；boot 日志补 FINGER3 状态（空/沿用旧值 len=N）
-  fpRotated = saved._fpRotated === true;
-  await logLine(`FINGER3 ${session.finger3 ? "沿用旧值" : "空"} len=${session.finger3.length} fpRotated=${fpRotated ? "1" : "0"}`).catch(() => undefined);
   {
     const { setLibFinger3, helper } = await import("./infoLib.js");
     setLibFinger3(session.finger3);
@@ -666,7 +641,6 @@ export async function logout(): Promise<void> {
   // 属设备信任、跨登出保留——否则下次登录指纹重随机 → 信任失效 → 每次被迫 2FA
   // （17:40 存档丢失 → 指纹重随机的教训）。
   const saved = await store.loadSession().catch(() => null);
-  fpRotated = saved?._fpRotated === true;
   await store.clearSession();
   // 会话快照（本地 + 文件）一并清空：无「曾登录」快照，boot 的静默重登才不会
   // 把显式登出顶掉。记住的密码保留（登录页预填用），仅 Settings 可清除。
@@ -679,7 +653,6 @@ export async function logout(): Promise<void> {
         username: "",
         fingerprint: saved.fingerprint,
         finger3: saved.finger3 ?? "",
-        _fpRotated: saved._fpRotated === true || undefined,
         cookiesJson: "{}",
         demoCookies: "",
         idJsid: "",
@@ -708,16 +681,31 @@ export function withLearnCsrf(url: string): string {
   }
 }
 
-/** learn 文件下载：带会话 Cookie 直连取字节，落盘 ~/Downloads */
+/** learn 文件下载：带会话 Cookie 直连取字节，落盘到设置中的下载目录 */
 export async function downloadLearnFile(fileId: string, filename: string): Promise<string> {
   const { LEARN_FILE_DOWNLOAD } = await import("@onethu/core");
   return downloadLearnUrl(LEARN_FILE_DOWNLOAD(fileId), filename);
 }
 
+/**
+ * 另存为：这一次落哪儿由用户当场决定（桌面系统保存对话框 / Android 保存到…）。
+ * 返回落盘位置；用户取消返回 null（取消不是错误，调用方别弹报错）。
+ */
+export async function saveLearnUrlAs(url: string, filename: string): Promise<string | null> {
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
+  const jarCookies = http.jar
+    .getCookies(new URL(target))
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string | null>("save_file_as", { url: target, cookies: jarCookies, filename });
+}
+
 /** 任意 learn 资源下载（作业/通知附件端点与课件不同，由 core 解析出完整 downloadUrl）。
  *  落盘名以前端传入的 filename 为准；Rust 侧会用响应 Content-Disposition 的真名兜底。 */
 export async function downloadLearnUrl(url: string, filename: string): Promise<string> {
-  const target = withLearnCsrf(url);
+  // 归一：历史缓存/其它路径可能给出双重包装的 webvpn 地址（真机 404 事故），这里兜住
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)
@@ -729,7 +717,7 @@ export async function downloadLearnUrl(url: string, filename: string): Promise<s
 /** 正文图片 → dataURL：webview 的 <img> 不携带应用会话 Cookie，
  *  直挂 learn 地址只会得到登录页；须由应用侧带 Cookie 抓取后内联。 */
 export async function fetchImageAsDataUrl(url: string): Promise<string> {
-  const target = withLearnCsrf(url);
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  宿主小组件「1×1 快捷方式」的选择器预览。
+
+  previewLayout（API 31+）让启动器的选择器直接显示这块小组件长什么样：没有它，系统会拿
+  initialLayout 当预览，而我们的 initialLayout 内容都是空的（真实内容由应用算好下发），
+  在选择器里就是几个空框——「看不到 1×1」有一部分正是这个原因。
+  预览里的文字与图标是写死的样例，不参与真实渲染。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/onethu_widget_bg"
+    android:padding="6dp">
+
+    <TextView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:text="卡"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#0F1115"
+        android:background="@drawable/onethu_widget_bg" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textSize="11sp"
+        android:textColor="#0F1115"
+        android:text="校园卡" />
+</LinearLayout>

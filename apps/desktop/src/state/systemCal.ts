@@ -21,6 +21,9 @@ import { parseLearnTime } from "@onethu/core";
 import type { ScheduleEntry } from "@onethu/core";
 import { cacheGet, cacheSet } from "./cache.js";
 import { getLearnSnapshot, getWeekSchedSnapshot, logPageError, subscribeLearnData } from "./data.js";
+import { getSecondaryEntries } from "../lib/infoLib.js";
+import { http as appHttp, logLine } from "../lib/clients.js";
+import { getExtHwSnapshot, toHomework } from "./exthw.js";
 import { getHwRemindState, subscribeHwRemind, type HwRemindState } from "./hwRemind.js";
 import { getCachedCalendar } from "./data.js";
 
@@ -160,7 +163,7 @@ async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEnt
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   };
   const sig = (e: ScheduleEntry): string =>
-    `${e.courseName}|${e.date ?? ""}|${e.dayOfWeek ?? ""}|${e.startSection ?? ""}|${e.endSection ?? ""}|${e.location ?? ""}`;
+    `${e.courseName}|${e.date ?? ""}|${e.dayOfWeek ?? ""}|${e.startSection ?? ""}|${e.endSection ?? ""}|${e.location ?? ""}|${e.startTime ?? ""}|${e.endTime ?? ""}`;
   try {
     const merged: ScheduleEntry[] = [];
     const seen = new Set<string>();
@@ -173,6 +176,21 @@ async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEnt
         merged.push(e);
       }
     }
+    // 二级课表（自定义时段实验课等）并入：core InfoClient 的 JSONP 只含一级——
+    // 马原跨节两段实录（2026-09-19）：一级只给第三大节，第四大节的小段在二级
+    // 课表，不并入则系统日历丢段（日程页 grab 链有并所以页内正常）。与日程页
+    // 同款去重：同名同日同时刻视为同一节。二级失败静默：一级照常。
+    try {
+      const sec = await getSecondaryEntries(appHttp, sem.firstDay, ymd(d0), ymd(d1));
+      void logLine(`[SYSCAL] 二级并入 ${sec.length} 门: ${sec.map((c) => c.name).join(" / ").slice(0, 300)}`).catch(() => undefined);
+      for (const c of sec) {
+        if (merged.some((r) => r.courseName === c.name && r.date === c.date && r.startTime === c.startTime)) continue;
+        merged.push({
+          courseName: c.name, location: c.location, date: c.date, dayOfWeek: c.dayOfWeek,
+          startTime: c.startTime, endTime: c.endTime, category: "二级课表", raw: { source: "secondary" },
+        });
+      }
+    } catch { /* 二级失败静默：一级照常 */ }
     cacheSet(key, merged, true);
     return merged;
   } catch (err) {
@@ -241,8 +259,28 @@ async function buildPayload(): Promise<SyncPayloadArg> {
     }
   }
 
-  // 网络学堂作业 DDL（learnX 模式）
-  events.push(...buildHwEvents(getLearnSnapshot(), getHwRemindState(), windowStart, windowEnd));
+  // 作业 DDL（learnX 模式）：learn 快照 + exthw 外部源统一 Homework（2026-09-19
+  // 用户拍板：作业像课表一样不上云——系统日历的作业事件由同步时实时聚合）。
+  // learn 快照为内存态：重启后学堂自动刷新撞会话墙时为空——打日志诊断，不中止。
+  const learnSnap = getLearnSnapshot();
+  const extHw = getExtHwSnapshot().items.map(toHomework);
+  const hwEvents = buildHwEvents(
+    learnSnap ? { courses: learnSnap.courses, homework: [...learnSnap.homework, ...extHw] } : { courses: [], homework: extHw },
+    getHwRemindState(),
+    windowStart,
+    windowEnd,
+  );
+  events.push(...hwEvents);
+  const remind = getHwRemindState();
+  const alarms = [...new Set(hwEvents.map((e) => e.alarmMinutes))].join("/");
+  void logLine(
+    `[SYSCAL] hw-learn=${learnSnap?.homework?.length ?? "null"} hw-ext=${extHw.length} hw-events=${hwEvents.length} course-events=${events.length - hwEvents.length} alarm(default=${remind.default} 覆盖=${Object.keys(remind.items).length}项 值=${alarms})`,
+  ).catch(() => undefined);
+  const mayuan = events.filter((e) => e.title.includes("马克思主义"));
+  if (mayuan.length) {
+    const iso = (ms: number): string => new Date(ms).toISOString().slice(5, 16).replace("T", " ");
+    void logLine(`[SYSCAL] 马原 ${mayuan.length} 块: ${mayuan.map((e) => `${iso(e.startMs)}~${iso(e.endMs)}`).join(" | ")}`).catch(() => undefined);
+  }
 
   events.sort((a, b) => a.startMs - b.startMs);
   if (events.length > MAX_EVENTS) throw new Error(`事件数 ${events.length} 超出上限 ${MAX_EVENTS}，已中止系统日历同步`);
@@ -264,13 +302,16 @@ export function buildHwEvents(
     if (h.submitted) continue; // 已交：不占日历（写完即清）
     const dl = parseLearnTime(h.deadline)?.getTime();
     if (!dl || dl < windowStart || dl > windowEnd) continue;
+    // 事件块从「提前量」起步到 DDL（对齐日程页橙色块语义）：事件开始即响铃 =
+    // 物理保证「提前 N 分钟」提醒，不依赖原生 alarm 写入（2026-09-19 到点提醒实录）。
+    const lead = hwRemind.items[h.id] ?? hwRemind.default;
     out.push({
-      title: `作业截止 · ${courseName.get(h.courseId) ?? ""} ${h.title}`.trim(),
-      startMs: dl,
-      endMs: dl + 15 * 60_000,
+      title: `作业截止 · ${(h as { courseName?: string }).courseName || courseName.get(h.courseId) || ""} ${h.title}`.trim(),
+      startMs: dl - lead * 60_000,
+      endMs: dl,
       allDay: false,
-      notes: `网络学堂作业，${h.deadline} 截止。提交完成后自动从日历移除。`,
-      alarmMinutes: hwRemind.items[h.id] ?? hwRemind.default, // 覆盖优先，全局默认兜底
+      notes: `DDL ${h.deadline}（本块自截止前 ${lead >= 60 ? `${Math.floor(lead / 60)}小时${lead % 60 ? `${lead % 60}分` : ""}` : `${lead}分钟`} 开始）。提交完成后自动从日历移除。`,
+      alarmMinutes: lead, // 覆盖优先，全局默认兜底
     });
   }
   return out;
@@ -303,7 +344,7 @@ export async function syncSystemCalendar(opts?: { silent?: boolean }): Promise<S
     // 原生侧拒绝（真机实锤）。request_permission 幂等：已授权立即返回 true。
     if (await systemCalSupported()) {
       const granted = await invokePlugin<boolean>("request_permission");
-      if (!granted) throw new Error("未获得系统日历权限（可到系统设置里重新允许 OneTHU 访问日历）");
+      if (!granted) throw new Error("未获得系统日历权限（系统设置→隐私与安全性→日历 勾选 OneTHU 后重启应用重试；应用更新/重编译后 macOS 可能要求重新确认授权）");
     }
     const payload = await buildPayload();
     const fingerprint = fingerprintOf(payload);
@@ -338,7 +379,7 @@ export async function syncSystemCalendar(opts?: { silent?: boolean }): Promise<S
 export async function enableSystemCalendar(): Promise<void> {
   if (!(await systemCalSupported())) throw new Error("当前平台不支持系统日历原生同步（可从日程页导出 .ics 文件）");
   const granted = await invokePlugin<boolean>("request_permission");
-  if (!granted) throw new Error("未获得系统日历权限（可到系统设置里重新允许 OneTHU 访问日历）");
+  if (!granted) throw new Error("未获得系统日历权限（系统设置→隐私与安全性→日历 勾选 OneTHU 后重启应用重试；应用更新/重编译后 macOS 可能要求重新确认授权）");
   await syncSystemCalendar();
   cfg = { ...cfg, enabled: true, stopped: false };
   await persistCfg();

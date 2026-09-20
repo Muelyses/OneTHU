@@ -6,7 +6,22 @@ const listeners = new Set<(m: string | null) => void>();
 function emit(): void {
   listeners.forEach((fn) => fn(current));
 }
+/**
+ * 静音区间：后台任务（推小组件快照等）会在「非用户操作」上下文中复用交互函数，
+ * 那些函数可能弹提示；进静音区后提示被丢弃，避免用户莫名看到一句反馈。
+ */
+let muted = false;
+export function muteToasts<T>(fn: () => T): T {
+  const prev = muted;
+  muted = true;
+  try {
+    return fn();
+  } finally {
+    muted = prev;
+  }
+}
 export function showToast(text: string): void {
+  if (muted) return;
   current = text;
   if (timer) clearTimeout(timer);
   emit();

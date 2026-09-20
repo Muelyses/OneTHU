@@ -1,12 +1,15 @@
 /**
  * 洗衣机页 —— 楼栋分组 → 楼层设备状态。
- * thu-info-app washer.tsx 移植：捷利（api.cleverschool.cn）+ 海乐生活
- * （yshz-user.haier-ioc.com）公开接口，无需校内会话。
- * 设备状态：空闲（绿）/ 运行中·剩余分钟（灰）/ 故障（红）。
+ * thu-info-app 移植：捷利（api.cleverschool.cn）+ 海乐生活（yshz-user.haier-ioc.com）
+ * + 小兰智慧（wash-ltd-thu.aajax.top）三处公开接口，无需校内会话。
+ * 设备状态：空闲（绿）/ 运行中·剩余分钟（琥珀）/ 待机·离线（灰）/ 故障（红）。
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { WasherBuilding, WasherBuildingGroup, WasherDevice } from "@onethu/core";
-import { getWasherBuildingGroups, getWasherDevices } from "@onethu/core";
+import {
+  getWasherBuildingGroups, getWasherDevices, WASHER_PROVIDER_LABEL,
+  washerProviderCode, washerProviderOf,
+} from "@onethu/core";
 import { Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
 import { logLine } from "../../lib/clients.js";
 import { explainNetworkError, universalFetch } from "../../lib/transport.js";
@@ -23,21 +26,28 @@ function logErr(tag: string, err: unknown): void {
 type LoadState = "loading" | "error" | "ready";
 type DeviceState = "idle" | "loading" | "error" | "ready";
 
-/** 设备视觉（状态点 + 徽标 + 文案）：空闲绿 / 运行中呼吸灰 / 故障红 */
+/** 设备视觉（状态点 + 徽标 + 文案）：空闲绿 / 运行中琥珀 / 待机离线灰 / 故障红。
+ *  待机与离线不能都算「故障」——前者随时可用、后者是网络掉线，含义完全不同。 */
 function deviceVisual(w: WasherDevice): { dot: string; chip: string; text: string } {
   if (w.status === "idle") return { dot: "is-idle", chip: "chip chip-green", text: "空闲" };
   if (w.status === "working")
     return { dot: "is-working", chip: "chip chip-amber", text: w.eta > 0 ? `剩余 ${w.eta} 分` : "运行中" };
+  if (w.status === "standby") return { dot: "is-idle", chip: "chip chip-gray", text: "待机" };
+  if (w.status === "offline") return { dot: "is-error", chip: "chip chip-gray", text: "离线" };
+  if (w.status === "unknown") return { dot: "is-error", chip: "chip chip-gray", text: "状态未知" };
   return { dot: "is-error", chip: "chip chip-red", text: "故障" };
 }
 
 export function WasherTab({
-  deepBuildingId, deepBuildingName, deepHlsh, deepMachine,
+  deepBuildingId, deepBuildingName, deepProvider, deepHlsh, deepMachine,
 }: {
   /** 深链（实体原子）：自动选中的楼栋 id */
   deepBuildingId?: string;
   /** 楼栋展示名兜底 */
   deepBuildingName?: string;
+  /** 楼栋所属数据源（"0"/"1"/"2"）；缺省按捷利 */
+  deepProvider?: string;
+  /** @deprecated 旧深链只带布尔：true = 海乐生活 */
   deepHlsh?: boolean;
   /** 要高亮滚动的设备名 */
   deepMachine?: string;
@@ -67,7 +77,7 @@ export function WasherTab({
       // 原子搜索缓存：楼栋目录只在本 tab 加载后入库（搜索框不主动请求）
       noteAtomCache({
         washerGroups: list.flatMap((g) =>
-          g.buildings.map((b) => ({ gname: g.name, id: b.id, name: b.name, hlsh: !!b.hlsh })),
+          g.buildings.map((b) => ({ gname: g.name, id: b.id, name: b.name, provider: washerProviderCode(b.provider) })),
         ),
       });
     } catch (err) {
@@ -95,7 +105,7 @@ export function WasherTab({
 
   /** 选中楼栋所属分组名（星标原子 sub 用） */
   const groupOfBuilding = (b: WasherBuilding): string | undefined =>
-    (groups ?? []).find((g) => g.buildings.some((x) => x.id === b.id && !!x.hlsh === !!b.hlsh))?.name;
+    (groups ?? []).find((g) => g.buildings.some((x) => x.id === b.id && x.provider === b.provider))?.name;
 
   const loadDevices = useCallback(async (b: WasherBuilding) => {
     setSel(b);
@@ -110,19 +120,25 @@ export function WasherTab({
       setDError(explainNetworkError(err));
     }
   }, []);
-  /* 深链：楼栋目录就绪后自动选中目标楼栋（只落一次） */
+  /* 深链：楼栋目录就绪后自动选中目标楼栋（只落一次）。
+     数据源也要一起匹配：楼栋 id 在不同数据源之间可能重名，只按 id 会选到另一家的楼栋。
+     旧深链只带布尔（deepHlsh）→ 折算成 "1"/"0"，老收藏照常回原位。 */
   const deepApplied = useRef(false);
+  const wantProvider = deepProvider ?? (deepHlsh === undefined ? undefined : deepHlsh ? "1" : "0");
   useEffect(() => {
     if (deepApplied.current || gState !== "ready" || !groups || !deepBuildingId) return;
     deepApplied.current = true;
+    const want = washerProviderOf(wantProvider);
     for (const g of groups) {
-      const b = g.buildings.find((x) => x.id === deepBuildingId);
+      const b =
+        g.buildings.find((x) => x.id === deepBuildingId && x.provider === want) ??
+        g.buildings.find((x) => x.id === deepBuildingId);   // 数据源对不上时退而求其次：至少进到这个 id
       if (b) {
         void loadDevices(b);
         return;
       }
     }
-  }, [groups, gState, deepBuildingId, loadDevices]);
+  }, [groups, gState, deepBuildingId, wantProvider, loadDevices]);
 
 
   if (status === "demo") {
@@ -133,7 +149,7 @@ export function WasherTab({
     <>
       <SectionHead
         title="洗衣机"
-        aside="捷利 cleverschool · 海乐生活 haier-ioc（公开接口）"
+        aside="捷利 cleverschool · 海乐生活 haier-ioc · 小兰智慧（公开接口）"
       />
       {gState === "error" ? <ErrorNote text={gError ?? ""} onRetry={() => void loadGroups()} /> : null}
       {gState === "loading" && !groups ? (
@@ -190,7 +206,7 @@ export function WasherTab({
                               <button
                                 type="button"
                                 key={`${g.name}-${b.id}`}
-                                className={`filter-dd-opt washer-dd-opt${sel && b.id === sel.id && !!b.hlsh === !!sel.hlsh ? " is-sel" : ""}`}
+                                className={`filter-dd-opt washer-dd-opt${sel && b.id === sel.id && b.provider === sel.provider ? " is-sel" : ""}`}
                                 onClick={() => pick(b)}
                               >
                                 {b.name}
@@ -214,9 +230,9 @@ export function WasherTab({
             title={sel.name}
             aside={
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                <span>{sel.hlsh ? "海乐生活点位" : "捷利楼栋"}</span>
+                <span>{WASHER_PROVIDER_LABEL[sel.provider]}</span>
                 <CollectStar
-                  atom={{ kind: "washer-b", key: enc(sel.id, sel.name, sel.hlsh ? "1" : "0", groupOfBuilding(sel) ?? "") }}
+                  atom={{ kind: "washer-b", key: enc(sel.id, sel.name, washerProviderCode(sel.provider), groupOfBuilding(sel) ?? "") }}
                   title={sel.name}
                 />
               </span>
@@ -254,7 +270,7 @@ export function WasherTab({
                         </div>
                         <span className={v.chip}>{v.text}</span>
                         <CollectStar
-                          atom={{ kind: "washer-m", key: enc(sel.id, sel.name, sel.hlsh ? "1" : "0", title) }}
+                          atom={{ kind: "washer-m", key: enc(sel.id, sel.name, washerProviderCode(sel.provider), title) }}
                           title={sel.name + " · " + title}
                         />
                       </Card>

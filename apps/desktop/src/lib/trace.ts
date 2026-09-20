@@ -2,7 +2,9 @@
  * 寻迹（trace）：高德 Web 服务 REST 客户端 + 坐标换算 + 导航深链。
  *
  * 数据面：
- * - POI 检索 place/text（citylimit 北京，adname 过滤海淀）→ 事件地点 → 经纬度（GCJ-02）
+ * - POI 检索：先 assistant/inputtips（联想；楼房级 POI 更全，App 里能搜到的这里也能），
+ *   没结果回落 place/text；候选筛选与排序见 lib/poiPick.ts（海淀限定 + 清华园优先 + 同名校验）
+ *   → 事件地点 → 经纬度（GCJ-02）
  * - 路径规划 walking/bicycling/driving（v3）→ 指定交通方式的 ETA
  * - POI 结果落 localStorage 永久缓存（POI 不动；ETA 每次现场算）
  *
@@ -11,6 +13,7 @@
  *
  * Key 策略（用户拍板）：个人 Web 服务 key 混淆后内置（量小，非安全边界，仅防脚本扫库）。
  */
+import { pickPoi, withCampusPrefix, type PoiCandidate } from "./poiPick.js";
 import { universalFetch } from "./transport.js";
 
 /* ── Key 通道：运行时注入 → Rust trace_key 命令（XOR 0x5A 混淆存储）──
@@ -146,16 +149,46 @@ export interface Poi {
   district: string;
 }
 
-const POI_CACHE_PREFIX = "onethu.trace.poi.";
+/* 缓存版本：v2 起落点选择加了「必须落在清华园」的判读。
+ * 老缓存里存着按「海淀区第一个」选出来的错误点（例如「清华大学第一教学楼」被高德匹配到
+ * 「清华东路35号北京林业大学第一教学楼」），不换键就会一直用错误结果。 */
+const POI_CACHE_PREFIX = "onethu.trace.poi.v2.";
 
 function poiCacheKey(q: string): string {
   return POI_CACHE_PREFIX + q;
 }
 
-/** 检索关键词 → 海淀区 POI（取海淀候选第一个） */
+/**
+ * 输入提示（联想）检索：高德的 place/text 与 App 里能搜到的 POI **不是同一套**——
+ * 「清华大学第一教室楼」在 place/text 里根本排不上（返回的甚至是北京林业大学第一教学楼），
+ * 而 inputtips 直接给出 `116.324101,40.001513`。故先走联想接口，命中就用它；
+ * 联想没结果再回落 place/text（两者都失败才算没找到）。
+ */
+async function searchByInputTips(q: string, key: string): Promise<Poi[]> {
+  const url = `${REST}/assistant/inputtips?keywords=${encodeURIComponent(q)}&city=${encodeURIComponent("北京")}&citylimit=true&datatype=poi&key=${key}`;
+  const res = await universalFetch(url, { method: "GET" });
+  const json = (await res.json()) as {
+    status?: string;
+    tips?: Array<{ name?: string; address?: string | string[]; district?: string; location?: string }>;
+  };
+  if (json.status !== "1" || !Array.isArray(json.tips)) return [];
+  return json.tips
+    .filter((t) => t.name && t.location && /,/.test(t.location))
+    .map((t) => {
+      const [lng = 0, lat = 0] = (t.location ?? "0,0").split(",").map(Number);
+      const address = Array.isArray(t.address) ? t.address.join(" ") : (t.address ?? "");
+      const p: PoiCandidate = { lng, lat, name: t.name ?? "", address, district: t.district ?? "" };
+      return p;
+    });
+}
+
+/** 检索关键词 → 海淀区 POI（优先落在清华园的候选） */
 export async function searchPoi(query: string): Promise<Poi | null> {
-  const q = query.trim();
-  if (!q) return null;
+  const raw = query.trim();
+  if (!raw) return null;
+  // 校园限定词兜底：调用方给什么词都保证带「清华大学」前缀（少了它高德会把
+  // 「第一教学楼」匹配到清华东路沿线的外校点位上）
+  const q = withCampusPrefix(raw);
   const cached = readPoiCache(q);
   if (cached) return cached.hit ? cached.poi : null; // 负缓存：查不到也记住，防反复打接口
 
@@ -163,22 +196,29 @@ export async function searchPoi(query: string): Promise<Poi | null> {
   const key = amapKey();
   if (!key) return null;
   try {
-    const url = `${REST}/place/text?keywords=${encodeURIComponent(q)}&city=${encodeURIComponent("北京市")}&citylimit=true&offset=10&page=1&key=${key}`;
-    const res = await universalFetch(url, { method: "GET" });
-    const json = (await res.json()) as { status?: string; pois?: Array<{ location?: string; name?: string; address?: string; pname?: string; adname?: string }> };
-    if (json.status === "1" && Array.isArray(json.pois)) {
-      pois = json.pois
-        .filter((p) => p.location && p.name)
-        .map((p) => {
-          const [lng = 0, lat = 0] = (p.location ?? "0,0").split(",").map(Number);
-          return { lng, lat, name: p.name ?? "", address: p.address ?? "", district: p.adname ?? "" };
-        });
-    }
+    pois = await searchByInputTips(q, key);
   } catch {
-    return null; // 网络错误不落负缓存
+    pois = [];      // 联想接口失败不致命：下面还有 place/text
   }
-  // 海淀区限定（adname 含海淀）
-  const pick = pois.find((p) => p.district.includes("海淀")) ?? null;
+  if (pois.length === 0) {
+    try {
+      const url = `${REST}/place/text?keywords=${encodeURIComponent(q)}&city=${encodeURIComponent("北京市")}&citylimit=true&offset=10&page=1&key=${key}`;
+      const res = await universalFetch(url, { method: "GET" });
+      const json = (await res.json()) as { status?: string; pois?: Array<{ location?: string; name?: string; address?: string; pname?: string; adname?: string }> };
+      if (json.status === "1" && Array.isArray(json.pois)) {
+        pois = json.pois
+          .filter((p) => p.location && p.name)
+          .map((p) => {
+            const [lng = 0, lat = 0] = (p.location ?? "0,0").split(",").map(Number);
+            return { lng, lat, name: p.name ?? "", address: p.address ?? "", district: p.adname ?? "" };
+          });
+      }
+    } catch {
+      return null; // 网络错误不落负缓存
+    }
+  }
+  // 筛选与排序见 lib/poiPick.ts（纯函数、可直测）：海淀限定 → 优先清华园 → 按同名校验排序
+  const pick = pickPoi(pois, q);
   writePoiCache(q, pick);
   return pick;
 }

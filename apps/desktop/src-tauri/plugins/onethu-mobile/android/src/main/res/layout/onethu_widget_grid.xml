@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  图标组小组件布局（收藏夹 = 内嵌的文件夹）：最多 2 行 × 4 列共 8 个原子图标并列。
+
+  每个图标格子是独立可点的（各自带自己的落点 PendingIntent），因此这块小组件等于
+  一个「能放好几个原子」的迷你收藏夹面板。放不下/没内容的格子隐藏而不是留空框。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/onethu_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/onethu_widget_bg"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/onethu_widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="#0F1115" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell0_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell0_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell1_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell1_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell2_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell2_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell3_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell3_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell4_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell4_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell5_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell5_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell6_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell6_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/onethu_widget_cell7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/onethu_widget_cell7_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/onethu_widget_icon_desc" />
+
+                <TextView
+                    android:id="@+id/onethu_widget_cell7_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="10sp"
+                    android:textColor="#0F1115" />
+            </LinearLayout>
+        </LinearLayout>
+</LinearLayout>

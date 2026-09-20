@@ -25,6 +25,9 @@ import {
 } from "../components/HomeWidgets.js";
 import type { LearnNav, Page } from "./app.js";
 import { cacheGet } from "./cache.js";
+import { getPluginAtom, pluginAtomKindOf } from "../plugins/pluginAtoms.js";
+import { WASHER_PROVIDER_LABEL, washerProviderCode, washerProviderOf } from "@onethu/core";
+import { getPluginTab } from "../plugins/tabs.js";
 import { FAVS_MAX_DEPTH, loadFavs, type AtomRef } from "./favorites.js";
 import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
@@ -73,7 +76,7 @@ export function dec(key: string): string[] {
 
 export interface AtomDynCache {
   /** 洗衣机楼栋组（WasherTab groups 就绪后写入） */
-  washerGroups?: Array<{ gname: string; id: string; name: string; hlsh?: boolean }>;
+  washerGroups?: Array<{ gname: string; id: string; name: string; provider?: string }>;
   /** 教学楼（ClassroomTab 就绪后写入） */
   classroomBuildings?: Array<{ searchName: string; name: string }>;
   /** 体育场馆 scene（VenueSportsTab 就绪后写入；uuid 为原子 key） */
@@ -236,8 +239,51 @@ function view(partial: Omit<AtomView, "atom"> & { atom: AtomRef }): AtomView {
 }
 
 /** 解析原子：注册表未知的 kind/key 返回 null（渲染处直接丢弃） */
+/** inline SVG 字符串 → AtomIcon（插件原子图标；异常降级拼图占位） */
+function svgIcon(svg: string | undefined): AtomIcon {
+  return ({ width = 16, height = 16, className }) => (
+    <span
+      className={"plg-svg-icon" + (className ? ` ${className}` : "")}
+      style={{ width, height, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+      dangerouslySetInnerHTML={{ __html: svg ?? FALLBACK_TAB_SVG }}
+    />
+  );
+}
+
+const FALLBACK_TAB_SVG = '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2.5 4.2 6l-2.4 4.5L6 13.5l3-2 3 2 2.2-3-2.4-4.5L10 2.5l-4 0z"/></svg>';
+
 export function resolveAtom(ref: AtomRef): AtomView | null {
   const { kind, key } = ref;
+  // 插件动态原子（kind = plugin:<pluginId>；key 编解码由插件自持）
+  if (kind.startsWith("plugin:")) {
+    const def = getPluginAtom(kind);
+    if (!def) return null;
+    const meta = (() => {
+      try {
+        return def.resolve(key);
+      } catch {
+        return null;
+      }
+    })();
+    // 约定：插件原子 key = "<tabId>~<原子key>"——点击深链到插件对应 tab
+    const tabId = key.split("~")[0] ?? "";
+    const target: Page = `plugin:${kind.slice("plugin:".length)}:${tabId}`;
+    return {
+      atom: ref,
+      title: meta?.title ?? "（已失效的插件原子）",
+      sub: meta?.sub ?? def.group,
+      icon: svgIcon(def.iconSvg),
+      group: def.group,
+      open: (nav) => {
+        // 目标 tab 未注册（插件停用/无 tab 形态如 OH）→ 降级提示而非跳空白页
+        if (!getPluginTab(target)) {
+          showToast("该插件功能页未启用");
+          return;
+        }
+        nav(target, undefined);
+      },
+    };
+  }
   if (kind === "page") {
     const s = PAGE_ATOMS.find((a) => a.key === key);
     if (!s) return null;
@@ -302,19 +348,21 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
   }
   if (kind === "washer-b") {
     const [id, name, hlsh, gname] = dec(key);
+    const provider = washerProviderOf(hlsh);
     if (!id) return null;
     return view({
-      atom: ref, title: name || "洗衣机楼栋", sub: (gname ? gname + " · " : "") + (hlsh === "1" ? "海乐生活点位" : "全部洗衣机"), icon: IconRefresh, group: "洗衣机",
-      open: (nav) => nav("life", { lifeTab: "washer", washerBuildingId: id, washerBuildingName: name, washerBuildingHlsh: hlsh === "1" }),
+      atom: ref, title: name || "洗衣机楼栋", sub: (gname ? gname + " · " : "") + WASHER_PROVIDER_LABEL[provider], icon: IconRefresh, group: "洗衣机",
+      open: (nav) => nav("life", { lifeTab: "washer", washerBuildingId: id, washerBuildingName: name, washerBuildingProvider: washerProviderCode(provider) }),
     });
   }
   if (kind === "washer-m") {
     const [bId, bName, hlsh, dev] = dec(key);
+    const provider = washerProviderOf(hlsh);
     if (!bId || !dev) return null;
     return view({
-      atom: ref, title: dev, sub: (bName || "") + (hlsh === "1" ? " · 海乐" : "") + " · 洗衣机", icon: IconRefresh, group: "洗衣机", defaultSq: true,
+      atom: ref, title: dev, sub: (bName || "") + " · " + WASHER_PROVIDER_LABEL[provider], icon: IconRefresh, group: "洗衣机", defaultSq: true,
       tileLive: () => <WasherTileStatus atomKey={key} />,
-      open: (nav) => nav("life", { lifeTab: "washer", washerBuildingId: bId, washerBuildingName: bName, washerBuildingHlsh: hlsh === "1", washerMachine: dev }),
+      open: (nav) => nav("life", { lifeTab: "washer", washerBuildingId: bId, washerBuildingName: bName, washerBuildingProvider: washerProviderCode(provider), washerMachine: dev }),
     });
   }
   if (kind === "classroom-b") {
@@ -516,7 +564,7 @@ export function searchAtoms(query: string, limit = 24): AtomHit[] {
     for (const n of campus.notifications ?? []) if (match(n.title)) push(hit({ atom: { kind: "notice", key: enc(n.courseId, n.id, n.title) }, title: n.title, sub: "课程通知", icon: IconBell, group: "网络学堂" }));
     for (const f of campus.files ?? []) if (match(f.title)) push(hit({ atom: { kind: "file", key: enc(f.courseId, f.id, f.title) }, title: f.title, sub: "课程文件", icon: IconFile, group: "网络学堂" }));
   }
-  for (const b of dyn.washerGroups ?? []) if (match(b.name, b.gname)) push(hit({ atom: { kind: "washer-b", key: enc(b.id, b.name, b.hlsh ? "1" : "0", b.gname) }, title: b.name, sub: b.gname, icon: IconRefresh, group: "洗衣机" }));
+  for (const b of dyn.washerGroups ?? []) if (match(b.name, b.gname)) push(hit({ atom: { kind: "washer-b", key: enc(b.id, b.name, b.provider ?? "0", b.gname) }, title: b.name, sub: b.gname, icon: IconRefresh, group: "洗衣机" }));
   for (const b of dyn.classroomBuildings ?? []) if (match(b.name)) push(hit({ atom: { kind: "classroom-b", key: enc(b.searchName, b.name) }, title: b.name, sub: "教学楼", icon: IconSearch, group: "空教室" }));
   for (const s of dyn.sportsScenes ?? []) if (match(s.name)) push(hit({ atom: { kind: "sports-v", key: enc(s.uuid, s.name) }, title: s.name, sub: "体育场馆", icon: IconSchedule, group: "体育" }));
   for (const n of dyn.newsItems ?? []) if (match(n.name, n.source)) push(hit({ atom: { kind: "news", key: enc(n.xxid, n.name, n.source) }, title: n.name, sub: n.source || "校内通知", icon: IconExternal, group: "新闻" }));

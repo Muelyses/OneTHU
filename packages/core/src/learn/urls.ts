@@ -1,8 +1,25 @@
-/** 网络学堂端点（验证自 thu-learn-lib，docs/API-NOTES.md §2） */
+/** 网络学堂端点（验证自 thu-learn-lib） */
 // lib 单管线（P3）：learn 经 webvpn 包装（thu-info-lib HOST_MAP.learn 同款 hex）。
 // wengine 服务端透明完成 learn 的 CAS 认证，LearnClient 无需漫游/直连登录链。
 export const LEARN_PREFIX =
   "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421fcf2408e297e7c4377068ea48d546d30ca8cc97bcc";
+
+/**
+ * 页面里取到的 href → 可直接请求的绝对 URL。
+ *
+ * 为什么需要它：learn 页面是**经 webvpn 取回**的，wengine 会把页面里的链接改写成
+ * `/https/<hexLearn>/b/wlxt/…` 这种**已经包装形态**的相对路径；此时若照旧拼 LEARN_PREFIX
+ * （它本身就是包装后的 learn 根），就会得到 `/https/<hex>/https/<hex>/…` 的双重包装，
+ * 服务端直接 404。真机实测：通知附件下载地址被包了两层，预览与下载全废。
+ */
+export function learnAbsoluteUrl(href: string, fallbackPrefix: string = LEARN_PREFIX): string {
+  const h = String(href ?? "").trim();
+  if (!h) return h;
+  if (/^https?:\/\//i.test(h)) return h;                       // 已是绝对地址（可能已包装，别动）
+  const rest = h.replace(/^\/+/, "");
+  if (/^https?\//i.test(rest)) return `https://webvpn.tsinghua.edu.cn/${rest}`; // 网关相对路径：只补域名
+  return `${fallbackPrefix}/${rest}`;
+}
 
 export const LEARN_COURSE_LIST_PAGE = () => `${LEARN_PREFIX}/f/wlxt/index/course/student/`;
 

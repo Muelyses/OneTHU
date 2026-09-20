@@ -86,8 +86,11 @@ export const JXRL_YJS_PREFIX =
     "https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b69336153301c9aa596522b20bc86e6e559a9b290/jxmh_out.do?m=yjs_jxrl_all&p_start_date=";
 export const JXRL_MIDDLE = "&p_end_date=";
 export const JXRL_SUFFIX = "&jsoncallback=m";
-export const SECONDARY_URL =
-    "https://webvpn.tsinghua.edu.cn/http/77726476706e69737468656265737421eaff4b8b69336153301c9aa596522b20bc86e6e559a9b290/portal3rd.do?m=bks_ejkbSearch";
+// 二级课表（实验课）接口：原 webvpn 包装形态撞引导壳（教务 host 的 wengine 票
+// 从未建立——OneTHU 的教务访问统一走直连 JSONP，没人访问过包装形态）→
+// setInitValue 解析不到 → 静默空。改直连与教务 JSONP 同桶同活法（上游校园网
+// 直连无此问题；webvpn 包装壳实锤见 2026-09-19 [HTTP-WENGINE] 17904 实录）。
+export const SECONDARY_URL = "http://zhjw.cic.tsinghua.edu.cn/portal3rd.do?m=bks_ejkbSearch";
 export const PDF_NEWS_PREFIX =
     "https://webvpn.tsinghua.edu.cn/https/77726476706e69737468656265737421f9f9479369247b59700f81b9991b2631506205de/b/info/wj/downloadPdfStream/";
 export const SYSC_PDF_NEWS_PREFIX =

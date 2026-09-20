@@ -68,7 +68,7 @@ function parseSetCookieLine(line: string, requestHost: string): CookieRecord | n
 /** 直连公共域（learn/id/oauth/webvpn/info/card）：供传输层跳转包装判定复用。
  *  历史实证：info/card 的 wengine 代理路径不通，须直连——不能一刀切全包装。 */
 // lib 单管线（P3）：info/learn 退出公网直连名单——两域全量走包装通道，
-// 校内校外拓扑唯一（双环境适配的定案，docs/INFOLIB-PIPELINE-REVIEW.md P3）。
+// 校内校外拓扑唯一（双环境适配的定案，docs/architecture.md §2）。
 export const PUBLIC_DIRECT_HOSTS = new Set([
   "webvpn.tsinghua.edu.cn",
   "id.tsinghua.edu.cn",
@@ -76,6 +76,11 @@ export const PUBLIC_DIRECT_HOSTS = new Set([
   // TUOJ（ai.tuoj.thusaac.com）是公网域，清华统一认证漫游与后续只读拉取一律直连，
   // 绝不能经 webvpn 包装（2026-09-18 TUOJ CAS 接入）
   "ai.tuoj.thusaac.com",
+  // zhjw.cic.tsinghua.edu.cn 加白（2026-09-19）：教务二级课表 portal3rd.do 原
+  // 走包装撞引导壳（教务 host 的 wengine 票从未建立——教务访问统一直连 JSONP）
+  // → setInitValue 解析不到 → 二级实验课静默空。校外直连可达（课表 JSONP 同
+  // 域直连一直是活的），且教务会话就建在直连桶——同桶同活法。
+  "zhjw.cic.tsinghua.edu.cn",
   // ⚠ seat.lib.tsinghua.edu.cn 故意不在名单：webvpn 模式下座位系统全链（callback/
   //   home/book）必须同走包装通道；2026-09-07 实测加白名单反而通道分裂连累记录页。
   // card 退出直连（2026-09-06 真机实录）：oauth lbredirect 兑票落点恒为 webvpn
@@ -315,17 +320,7 @@ export class HttpClient {
     } catch {
       /* 非 http URL 交由后续逻辑 */
     }
-    let goDirect = direct === true;
-    if (!goDirect && host) {
-      // 2026-09-13 回滚：id/oauth 直连改动破坏了 webvpn 包装的会话隔离——
-      // 手机（webvpn 桶）与桌面（直连桶）原本在不同命名空间互不干扰；直连化
-      // 后手机闯进直连 id 命名空间=加入单会话互踢（选课 checkSingle 页=踢人
-      // 确认页实锤）。「非校园网适配」的精髓就是这层隔离，恢复原状。
-      goDirect = this.#webVPN ? host === "learn.tsinghua.edu.cn" : PUBLIC_HOSTS.has(host);
-    }
-    const target = this.webVPNEncoder && !goDirect && host && !PUBLIC_HOSTS.has(host)
-      ? this.webVPNEncoder(url)
-      : url;
+    const target = this.resolveUrl(url, { mode: direct === true ? "direct" : "auto" });
     const cookie = this.#cookieHeaderFor(target);
     this.lastTarget = target;
     this.lastCookieNames = cookie
@@ -349,6 +344,39 @@ export class HttpClient {
       /* 忽略畸形 URL */
     }
     return response;
+  }
+
+  /**
+   * 传输分流判定（request 与 SDK resolve 的单一真源）：
+   * - learn.tsinghua.edu.cn：公网站点且会话 cookie 与 id CAS 同名（JSESSIONID），
+   *   代理链互相干扰——实证直连有效，一律绕过包装。
+   * - id/oauth/webvpn：登录链公共域，直连。
+   * - 其余校内网关域名：校外不可达，经 webvpn 包装（webVPNEncoder 存在时）。
+   * mode："auto"=按实例模式现行规则；"direct"=强制直连；"webvpn"=强制包装
+   * （直连白名单域不受强制影响，避免双重包装）。 */
+  resolveUrl(url: string, opts: { mode?: "auto" | "webvpn" | "direct" } = {}): string {
+    const mode = opts.mode ?? "auto";
+    const PUBLIC_HOSTS = PUBLIC_DIRECT_HOSTS;
+    let host = "";
+    try {
+      host = new URL(url).hostname;
+    } catch {
+      return url;
+    }
+    if (!host) return url;
+    let goDirect: boolean;
+    if (mode === "direct") {
+      goDirect = true;
+    } else if (mode === "webvpn") {
+      goDirect = false;
+    } else {
+      // 2026-09-13 回滚记录：id/oauth 直连化破坏了 webvpn 包装的会话隔离（手机
+      // webvpn 桶与桌面直连桶的单会话互踢）。「非校园网适配」的精髓就是这层隔离。
+      goDirect = this.#webVPN ? host === "learn.tsinghua.edu.cn" : PUBLIC_HOSTS.has(host);
+    }
+    return this.webVPNEncoder && !goDirect && !PUBLIC_HOSTS.has(host)
+      ? this.webVPNEncoder(url)
+      : url;
   }
 
   #cookieHeaderFor(targetUrl: string): string | null {

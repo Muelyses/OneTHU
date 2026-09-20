@@ -53,6 +53,11 @@ const getPrimary = (helper: InfoHelper, {firstDay, weekCount}: Semester) =>
         MOCK_PRIMARY_SCHEDULE,
     );
 
+/** 二级课表（实验课）单页解析导出：desktop 周课表（core InfoClient zhjw JSONP
+ *  只含一级）按周并入用。firstDay 由调用方传（学期起始日）。 */
+export const getSecondarySchedules = (helper: InfoHelper, semester: { firstDay: string }): Promise<Schedule[]> =>
+    getSecondary(helper, semester as Parameters<typeof getSecondary>[1]);
+
 const getSecondary = (helper: InfoHelper, {firstDay}: Semester) =>
     roamingWrapperWithMocks(
         helper,

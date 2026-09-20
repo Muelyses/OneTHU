@@ -1,0 +1,18 @@
+[package]
+name = "win-notify-check"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+# 只依赖 windows crate：本检查器不链接主 crate（主 crate 的 ring 在 macOS 上
+# 没有 Windows C 工具链编不过），因此这里按原文件路径直接编通知模块。
+[dependencies]
+serde_json = "1"
+windows = { version = "0.61", features = [
+  "Foundation", "Foundation_Collections",
+  "Data_Xml_Dom", "UI_Notifications",
+  "Win32_System_Com", "Win32_System_Registry", "Win32_Security",
+] }

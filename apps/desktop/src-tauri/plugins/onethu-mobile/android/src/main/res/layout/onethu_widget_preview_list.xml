@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  宿主小组件「列表形态」（日程与 DDL / 单原子详情 / 教室洗衣机状态）的选择器预览。
+
+  刻意与真实渲染同构（色条 + 主文 + 小字说明）：选择器里看到的样子就是放到桌面后的样子。
+  预览文字是写死的样例。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/onethu_widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#0F1115"
+        android:text="今天 9月20日" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="#e07a4f" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#0F1115"
+            android:text="10:00 数据结构　六教6A215 · 还有 40 分钟" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="#3d8bfd" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="normal"
+            android:textColor="#0F1115"
+            android:text="14:00 线性代数　三教3200 · 还有 4 小时" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="#e5484d" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#0F1115"
+            android:text="DDL 第三章习题　今天 23:59 · 还有 5 小时" />
+    </LinearLayout>
+</LinearLayout>

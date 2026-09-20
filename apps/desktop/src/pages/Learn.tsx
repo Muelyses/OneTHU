@@ -66,7 +66,7 @@ export function LearnPage() {
     void reload();
   }, [wantedSemester, data, reload]);
 
-  // 外部作业（雨课堂/TUOJ/Tyche）与学期无关，全量计入「未交作业」；未配置凭据时 extHw 恒为空（零回归）
+  // 外部作业（雨课堂/TUOJ/Tyche/DSA OJ）与学期无关，全量计入「未交作业」；未配置凭据时 extHw 恒为空（零回归）
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
 

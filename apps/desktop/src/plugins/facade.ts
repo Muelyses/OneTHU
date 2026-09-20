@@ -10,12 +10,24 @@ import { getPlugin, pluginStorageKey, updatePlugin } from "./registry.js";
 import { PluginPermissionError, type OnethuApi, type PluginPermission } from "./types.js";
 
 import { invoke } from "@tauri-apps/api/core";
-import { session as appSession, logLine } from "../lib/clients.js";
+import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listThemes, themeSchedule } from "../state/theme.js";
+import { refreshExtHw } from "../state/exthw.js";
+import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
+import { AuthRequiredError } from "@onethu/core";
+import type { FormField } from "../lib/formModal.js";
+import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
+import { getTabRoot, onTabReady } from "./tabs.js";
+import { getPluginAtom, pluginAtomKindOf, pluginAtomKinds, registerStaticAtomItem, staticAtomKinds } from "./pluginAtoms.js";
+import * as pluginWidgets from "./pluginWidgets.js";
+import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
 } from "../state/cloudCal.js";
 import { refreshMail, readMail, mailSearch, sendMail, mailFolderTotal } from "../state/mail.js";
+import { getLearnSnapshot } from "../state/data.js";
+import { getExtHwSnapshot, toHomework } from "../state/exthw.js";
+import { parseLearnTime } from "@onethu/core";
 import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -35,6 +47,34 @@ function wrap<T extends Record<string, unknown>>(obj: T, perms: Set<string>, per
       : v;
   }
   return out as T;
+}
+
+
+import type { WidgetBinding } from "../state/widgetInstances.js";
+
+/** 校验插件传来的绑定：目标必须真实存在，否则拒绝（改了配置却指向不存在的东西最糟） */
+async function normalizeBinding(raw: unknown): Promise<WidgetBinding | null> {
+  const b = raw as { kind?: string; folderId?: string; atom?: { kind?: string; key?: string } } | null;
+  if (!b || typeof b !== "object") return null;
+  if (b.kind === "today") return { kind: "today" };
+  if (b.kind === "folder") {
+    const { loadFavs } = await import("../state/favorites.js");
+    const id = String(b.folderId ?? "");
+    return id && loadFavs().folders[id] ? { kind: "folder", folderId: id } : null;
+  }
+  if (b.kind === "detail" || b.kind === "shortcut") {
+    const { resolveAtom } = await import("../state/atoms.js");
+    const kind = String(b.atom?.kind ?? "");
+    const key = String(b.atom?.key ?? "");
+    if (!kind || !key || !resolveAtom({ kind, key })) return null;
+    return { kind: b.kind, atom: { kind, key } };
+  }
+  return null;
+}
+
+async function fallbackBinding(): Promise<WidgetBinding> {
+  const { loadWidgetInstances } = await import("../state/widgetInstances.js");
+  return loadWidgetInstances().fallback;
 }
 
 export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
@@ -95,6 +135,28 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
               allDay: !!o.allDay, location: o.location, note: o.description, source,
             });
           }
+        }
+        // 作业 DDL 实时并入（learn + exthw 外部源统一 Homework）：纯内存只读，
+        // 绝不上云（用户拍板 2026-09-19：作业像课表一样没必要上云）。窗口内
+        // 未交作业 → DDL 当刻 15 分钟事件，来源标 hw/hw-ext，OH 可答「还有什么没交」。
+        const snap = getLearnSnapshot();
+        const courseName = new Map((snap?.courses ?? []).map((c) => [c.id, c.name]));
+        const hwAll = [
+          ...(snap?.homework ?? []),
+          ...getExtHwSnapshot().items.map(toHomework),
+        ];
+        for (const h of hwAll) {
+          if (h.submitted) continue;
+          const dl = parseLearnTime(h.deadline)?.getTime();
+          if (!dl || dl < from || dl > to) continue;
+          const startHm = h.deadline.slice(11, 16) || "23:59";
+          rows.push({
+            uid: `hw:${h.id}`, title: `作业截止 · ${h.courseName || courseName.get(h.courseId) || ""} ${h.title}`.trim(),
+            date: h.deadline.slice(0, 10), start: startHm,
+            end: startHm, allDay: false, location: "",
+            note: h.source?.startsWith("ext:") ? "外部平台作业 DDL" : "网络学堂作业 DDL",
+            source: h.source?.startsWith("ext:") ? "hw-ext" : "hw",
+          });
         }
         return rows.sort((a, b) => String(a.date).localeCompare(String(b.date)) || String(a.start).localeCompare(String(b.start)));
       })();
@@ -470,12 +532,384 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "ui", "ui.toast");
         showToast(text);
       },
+      /** 应用内 WebView 模态打开 URL（Android 桌面模式浏览；桌面无此能力抛错，
+       *  调用方应 catch 后降级 onethu.nav 外链或系统浏览器）。需 webview 权限。 */
+      webModal: async (url: string): Promise<void> => {
+        gate(perms, "webview", "ui.webModal");
+        if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
+        await invoke("open_web_modal", { url });
+      },
+      /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式。 */
+      confirm: async (msg: string, opts?: { danger?: boolean }): Promise<boolean> => {
+        gate(perms, "ui", "ui.confirm");
+        const { confirmOk, confirmDanger } = await import("../lib/confirm.js");
+        return opts?.danger ? confirmDanger(String(msg ?? "")) : confirmOk(String(msg ?? ""));
+      },
+      /** 通用表单弹窗：字段定义见类型 FormField；resolve 键值对象，取消 resolve null。 */
+      form: async (title: string, fields: FormField[]): Promise<Record<string, string> | null> => {
+        gate(perms, "ui", "ui.form");
+        const { openFormModal } = await import("../lib/formModal.js");
+        return openFormModal(String(title ?? "请填写"), Array.isArray(fields) ? fields : []);
+      },
+      /** 剪贴板：写无需确认；read 需 clipboard:read 权限（敏感，可读密码管理器内容）。 */
+      clipboard: {
+        write: async (text: string): Promise<void> => {
+          gate(perms, "ui", "ui.clipboard.write");
+          await navigator.clipboard.writeText(String(text ?? ""));
+        },
+        read: async (): Promise<string> => {
+          gate(perms, "clipboard:read", "ui.clipboard.read");
+          return navigator.clipboard.readText();
+        },
+      },
+      /** 本插件 tab 的挂载容器（同步；未挂载 null）。pageKey 须以 plugin:<本插件id>: 开头 */
+      getTabRoot: (pageKey: string): HTMLElement | null => {
+        gate(perms, "ui", "ui.getTabRoot");
+        const key = String(pageKey ?? "");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("getTabRoot 仅限本插件注册的 tab");
+        return getTabRoot(key);
+      },
+      /** 订阅 tab 容器就绪（已就绪立即回调；返回退订函数） */
+      onTabReady: (pageKey: string, cb: (root: HTMLElement) => void): (() => void) => {
+        gate(perms, "ui", "ui.onTabReady");
+        const key = String(pageKey ?? "");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("onTabReady 仅限本插件注册的 tab");
+        if (typeof cb !== "function") return () => undefined;
+        return onTabReady(key, cb);
+      },
+    },
+    favorites: {
+      /** 收藏本插件原子（key = "<tabId>~<原子key>"；展示元数据走 registerAtom.resolve） */
+      add: (key: string, folderId?: string): void => {
+        gate(perms, "ui", "favorites.add");
+        const k = String(key ?? "");
+        if (!k) throw new Error("favorites.add 需要 key");
+        let d = loadFavs();
+        let fid: string | undefined = folderId ? String(folderId) : d.order[0];
+        if (!fid || !d.folders[fid]) {
+          const next = createFolder(d, "我的收藏", null);
+          fid = next.order.find((x) => !d.order.includes(x));
+          if (!fid) throw new Error("创建收藏夹失败");
+          saveFavs(next);
+          window.dispatchEvent(new Event("onethu.favs.changed"));
+          d = loadFavs();
+        }
+        const f = d.folders[fid];
+        if (!f) throw new Error("收藏夹不存在");
+        const atomKey = atomKeyOf({ kind: pluginAtomKindOf(pluginId), key: k });
+        if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
+          f.items.push({ t: "a" as const, atom: { kind: pluginAtomKindOf(pluginId), key: k } });
+          saveFavs(d);
+          window.dispatchEvent(new Event("onethu.favs.changed"));
+        }
+      },
+      /** 收藏任意已注册种类的原子（跨插件；meta 非空且该种类未注册时内联注册静态种类，
+       *  供 OH 等无 ctx 通道的调用方使用） */
+      addAtom: (ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void => {
+        gate(perms, "ui", "favorites.addAtom");
+        const kind = String(ref?.kind ?? "");
+        const key = String(ref?.key ?? "");
+        if (!kind.startsWith("plugin:") || !kind.slice("plugin:".length) || !key) {
+          throw new Error("addAtom 需要 { kind: \"plugin:<插件id>\", key }");
+        }
+        if (meta && typeof meta.title === "string" && meta.title && !getPluginAtom(kind)) {
+          registerStaticAtomItem(kind, key, meta);
+        }
+        const d = loadFavs();
+        const fid = folderId ? String(folderId) : d.order[0];
+        const f = fid ? d.folders[fid] : undefined;
+        if (!f) throw new Error("收藏夹不存在（先在收藏夹页创建）");
+        const atomKey = atomKeyOf({ kind, key });
+        if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
+          f.items.push({ t: "a" as const, atom: { kind, key } });
+          saveFavs(d);
+          window.dispatchEvent(new Event("onethu.favs.changed"));
+        }
+      },
+      /** 列出全部可收藏的插件原子种类（供调用方发现；OH 工具化用） */
+      kinds: (): Array<{ kind: string; group: string; source: "registered" | "static" }> => {
+        gate(perms, "ui", "favorites.kinds");
+        const reg = new Set(pluginAtomKinds());
+        return [
+          ...[...reg].map((kind) => ({ kind, group: getPluginAtom(kind)?.group ?? "插件", source: "registered" as const })),
+          ...staticAtomKinds().filter((x) => !reg.has(x.kind)).map((x) => ({ kind: x.kind, group: x.group, source: "static" as const })),
+        ];
+      },
+      /** 列出本插件被收藏的原子 */
+      list: (): Array<{ folderId: string; folderTitle: string; key: string }> => {
+        gate(perms, "ui", "favorites.list");
+        const kind = pluginAtomKindOf(pluginId);
+        const d = loadFavs();
+        const out: Array<{ folderId: string; folderTitle: string; key: string }> = [];
+        for (const [fid, f] of Object.entries(d.folders)) {
+          for (const it of f.items) {
+            if (it.t === "a" && it.atom.kind === kind) {
+              out.push({ folderId: fid, folderTitle: f.title, key: it.atom.key });
+            }
+          }
+        }
+        return out;
+      },
+    },
+    llm: {
+      /** 单轮对话（经内置 Harness：清华 MadModel 免费档 ↔ 自费 API 自动调度）。
+       *  免费档不可用（校外且无自费 Key）时抛带引导文案的错误。需 llm 权限。 */
+      chat: async (input: string): Promise<{ text: string; model: string; provider: string }> => {
+        gate(perms, "llm", "llm.chat");
+        // 动态 import 断 loader→facade 的环；经内置 Harness 的 chat 命令
+        //（免费档↔自费自动调度、可达性兜底、会话与工具链全在 Rust 侧）
+        const { runCommand } = await import("./loader.js");
+        const out = (await runCommand("onethu.harness", "chat", String(input ?? ""))) as {
+          type?: string; ok?: boolean; error?: string; answer?: string; model?: string;
+        };
+        if (!out || out.ok !== true) {
+          throw new Error(String(out?.error ?? "Harness 对话失败"));
+        }
+        return { text: String(out.answer ?? ""), model: String(out.model ?? ""), provider: "harness" };
+      },
+      /** 当前 Harness 的模型源设置（"madmodel" | "custom" | ""=自动） */
+      provider: async (): Promise<string> => {
+        gate(perms, "llm", "llm.provider");
+        const { getPlugin } = await import("./registry.js");
+        const st = getPlugin("onethu.harness")?.settings ?? {};
+        const provider = String(st.provider ?? "");
+        if (provider) return provider;
+        return st.apiKey ? "custom" : "madmodel";
+      },
+    },
+    theme: {
+      list: async () => {
+        gate(perms, "theme", "theme.list");
+        return listThemes().map((t) => ({ id: t.id, name: t.name, version: t.version, dark: t.dark === true }));
+      },
+      active: async () => {
+        gate(perms, "theme", "theme.list");
+        return activeThemeId();
+      },
+      apply: async (id: string | null) => {
+        gate(perms, "theme", "theme.apply");
+        if (id === null) {
+          const { deactivateTheme } = await import("../state/theme.js");
+          deactivateTheme();
+          return;
+        }
+        activateTheme(String(id));
+      },
+      schedule: async () => {
+        gate(perms, "theme", "theme.list");
+        return themeSchedule();
+      },
+      setFollowSystem: async (on: boolean) => {
+        gate(perms, "theme", "theme.apply");
+        setFollowSystem(on === true);
+      },
+      setDayNight: async (dayId: string | null, nightId: string | null) => {
+        gate(perms, "theme", "theme.apply");
+        setDayNightTheme(dayId ?? null, nightId ?? null);
+      },
+    },
+    plugins: {
+      /** 列出已启用 JS 插件及其命令（供 OH 等调用方做工具发现）。需 plugins:call 权限 */
+      list: async (): Promise<Array<{ pluginId: string; pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>> => {
+        gate(perms, "plugins:call", "plugins.list");
+        const { liveCommands } = await import("./loader.js");
+        const byPlugin = new Map<string, { pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>();
+        for (const [key, cmd] of liveCommands) {
+          const pid = key.split(":")[0] ?? "";
+          if (!pid || pid === "onethu.harness") continue;
+          const rec = getPlugin(pid);
+          if (!rec?.enabled) continue;
+          const entry = byPlugin.get(pid) ?? { pluginName: rec.manifest.name, commands: [] };
+          entry.commands.push({ id: cmd.id, title: cmd.title, inputLabel: cmd.inputLabel });
+          byPlugin.set(pid, entry);
+        }
+        return [...byPlugin.entries()].map(([pluginId, v]) => ({ pluginId, ...v }));
+      },
+      /** 执行已启用插件的命令（input 为文本参数）。高危：命令可能含写操作，
+       *  由各插件内部的两段确认与权限门禁兜底。需 plugins:call 权限 */
+      call: async (pluginId: string, cmdId: string, input?: string): Promise<unknown> => {
+        gate(perms, "plugins:call", "plugins.call");
+        const { runCommand } = await import("./loader.js");
+        return runCommand(String(pluginId ?? ""), String(cmdId ?? ""), String(input ?? ""));
+      },
+    },
+    ts: {
+      /** 会话探活：learn 可达即视为主会话可用（wengine SSO 透明建立）。 */
+      status: async (): Promise<"ready" | "expired" | "logged-out"> => {
+        gate(perms, "tsinghua:sdk", "ts.status");
+        if (!appSession.username) return "logged-out";
+        const ok = await campusLearn.resume().catch(() => false);
+        return ok ? "ready" : "expired";
+      },
+      /** 确保主会话可用：探活 + 透明建立；失败抛 AuthRequiredError（宿主统一口径）。 */
+      ensure: async (): Promise<void> => {
+        gate(perms, "tsinghua:sdk", "ts.ensure");
+        const ok = await campusLearn.resume().catch(() => false);
+        if (!ok) {
+          throw new AuthRequiredError("清华会话未能建立：请在 OneTHU 中重新登录后再试。");
+        }
+      },
+      username: async (): Promise<string | null> => {
+        gate(perms, "tsinghua:sdk", "ts.username");
+        return appSession.username ?? null;
+      },
+      /** 清华服务 HTTP 客户端：共享宿主 HttpClient（cookie 池 / webvpn 分流 /
+       *  45s 超时 / 会话失效自动重登重放）。mode 覆盖分流判定。 */
+      client: (opts?: { mode?: "auto" | "webvpn" | "direct" }) => {
+        gate(perms, "tsinghua:sdk", "ts.client");
+        const mode = opts?.mode ?? "auto";
+        const client = {
+          fetch: async (url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }) => {
+            gate(perms, "tsinghua:sdk", "ts.client.fetch");
+            const target = campusHttp.resolveUrl(String(url), { mode });
+            const res = await campusHttp.request(target, { ...(init ?? {}), direct: mode === "direct" || undefined });
+            return res;
+          },
+          resolve: (url: string): string => {
+            return campusHttp.resolveUrl(String(url), { mode });
+          },
+        };
+        return client;
+      },
+    },
+    exthw: {
+      snapshot: async () => {
+        gate(perms, "exthw:read", "exthw.snapshot");
+        const snap = getExtHwSnapshot();
+        return {
+          items: snap.items.map((h) => ({
+            source: String(h.source),
+            course: String(h.courseName ?? ""),
+            title: String(h.title ?? ""),
+            deadline: h.deadline ?? null,
+            url: h.url ?? null,
+            submitted: h.submitted === true,
+            graded: (h as { graded?: boolean }).graded === true,
+            score: (h as { score?: number | null }).score ?? null,
+          })),
+          errors: snap.errors as Record<string, string>,
+          state: String(snap.state),
+          lastAt: snap.lastAt,
+          configured: snap.configured === true,
+        };
+      },
+      refresh: async () => {
+        gate(perms, "exthw:refresh", "exthw.refresh");
+        await refreshExtHw();
+      },
     },
     storage: storageNs,
+    notify: {
+      /** 排一条插件通知。id 归插件所有（plugin:<pluginId>:<key>）：宿主同步不会撤它，
+       *  插件停用/卸载时由 loader 收回。需 notify 权限。 */
+      send: async (opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{ ok: boolean; id: string; reason?: string }> => {
+        gate(perms, "notify", "notify.send");
+        const title = String(opts?.title ?? "").trim();
+        if (!title) throw new Error("notify.send 需要 title");
+        const key = String(opts?.key ?? "").trim() || `n${Date.now().toString(36)}`;
+        const { sendPluginNotification } = await import("../state/pluginNotify.js");
+        return sendPluginNotification({
+          pluginId,
+          key,
+          title: title.slice(0, 80),
+          body: String(opts?.body ?? "").slice(0, 200),
+          afterSeconds: typeof opts?.afterSeconds === "number" ? opts.afterSeconds : 60,
+          page: String(opts?.page ?? ""),
+        });
+      },
+      cancel: async (key: string): Promise<boolean> => {
+        gate(perms, "notify", "notify.cancel");
+        const { cancelPluginNotification } = await import("../state/pluginNotify.js");
+        const { pluginNotifyId } = await import("../state/notifyIds.js");
+        return cancelPluginNotification(pluginNotifyId(pluginId, String(key ?? "").trim()));
+      },
+      status: async (request = false): Promise<{ ok: boolean; backend: string; granted: boolean; exact: boolean; reason?: string }> => {
+        gate(perms, "notify", "notify.status");
+        const { pluginNotifyStatus } = await import("../state/pluginNotify.js");
+        return pluginNotifyStatus(request === true);
+      },
+    },
+    widget: {
+      /** 本插件已声明的小组件及所占槽位（未占槽位 = 有更早的插件把槽位占满了） */
+      list: (): Array<{ id: string; title: string; slot: string | null }> => {
+        gate(perms, "widget", "widget.list");
+        const { pluginWidgetDefs, collectWidgetSlots } = pluginWidgets;
+        const slots = new Map(collectWidgetSlots().map((s) => [`${s.pluginId}#${s.widgetId}`, s.slot]));
+        return pluginWidgetDefs(pluginId).map((w) => ({
+          id: w.id,
+          title: w.title,
+          slot: slots.get(`${pluginId}#${w.id}`) ?? null,
+        }));
+      },
+      /** 本平台预留的槽位总数 */
+      slots: (): number => {
+        gate(perms, "widget", "widget.slots");
+        return pluginWidgets.PLUGIN_WIDGET_SLOTS;
+      },
+      /** 桌面上每一块小组件及其绑定的内容（插件据此做「一键把本插件内容放上桌面」之类的功能） */
+      instances: async (): Promise<Array<{ id: string; shape: string; binding: unknown }>> => {
+        gate(perms, "widget", "widget.instances");
+        const [{ fetchWidgetInstances }, { loadWidgetInstances, bindingOf }] = await Promise.all([
+          import("../state/widgetBridge.js"),
+          import("../state/widgetInstances.js"),
+        ]);
+        const list = (await fetchWidgetInstances()) ?? [];
+        const map = loadWidgetInstances();
+        return list.map((i) => ({ id: String(i.id), shape: String(i.provider ?? ""), binding: bindingOf(i.id, map) }));
+      },
+      /** 新放上桌面、还没选的块用哪份默认内容 */
+      getFallback: async (): Promise<unknown> => {
+        gate(perms, "widget", "widget.getFallback");
+        const { loadWidgetInstances } = await import("../state/widgetInstances.js");
+        return loadWidgetInstances().fallback;
+      },
+      setFallback: async (binding: unknown): Promise<boolean> => {
+        gate(perms, "widget", "widget.setFallback");
+        const { setWidgetFallback } = await import("../state/widgetInstances.js");
+        const b = await normalizeBinding(binding);
+        if (!b) return false;
+        setWidgetFallback(b);
+        return true;
+      },
+      /** 绑定某一块的显示内容；传 null 恢复默认。id 不存在或目标失效返回 false */
+      bind: async (id: string, binding: unknown): Promise<boolean> => {
+        gate(perms, "widget", "widget.bind");
+        const [{ fetchWidgetInstances }, { bindWidgetInstance }] = await Promise.all([
+          import("../state/widgetBridge.js"),
+          import("../state/widgetInstances.js"),
+        ]);
+        const list = (await fetchWidgetInstances()) ?? [];
+        if (!list.some((i) => String(i.id) === String(id))) return false;
+        if (binding === null) {
+          bindWidgetInstance(id, (await fallbackBinding()));
+          return true;
+        }
+        const b = await normalizeBinding(binding);
+        if (!b) return false;
+        bindWidgetInstance(id, b);
+        return true;
+      },
+      /** 解除绑定（回到默认内容） */
+      unbind: async (id: string): Promise<boolean> => {
+        gate(perms, "widget", "widget.unbind");
+        const { unbindWidgetInstance } = await import("../state/widgetInstances.js");
+        unbindWidgetInstance(id);
+        return true;
+      },
+    },
     settings: {
       get: () => {
         gate(perms, "storage", "settings.get");
-        return { ...(getPlugin(pluginId)?.settings ?? {}) };
+        const out = { ...(getPlugin(pluginId)?.settings ?? {}) };
+        // MCP 服务器由宿主管理 UI 逐条维护（lib/mcpStore.ts），此处注入 JSON 供 OH 读取
+        if (pluginId === "onethu.harness") {
+          try {
+            out["mcpServers"] = mcpServersJsonForSettings();
+          } catch {
+            /* 存储不可用时留空 */
+          }
+        }
+        return out;
       },
     },
     net: {

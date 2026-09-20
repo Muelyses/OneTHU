@@ -131,11 +131,12 @@ const twoFactorAuth = async (helper: InfoHelper): Promise<string> => {
     if (helper.trustFingerprintHook) {
         const trustFingerprint = await helper.trustFingerprintHook();
         if (trustFingerprint) {
-            const { result: r4, msg: m4 } = JSON.parse(await uFetch(SAVE_FINGER_URL, {
+            const parsed = JSON.parse(await uFetch(SAVE_FINGER_URL, {
                 fingerprint: helper.fingerprint,
                 deviceName: await helper.trustFingerprintNameHook(),
                 radioVal: "是",
             }));
+            const { result: r4, msg: m4 } = parsed;
             if (r4 != "success") {
                 if (m4.includes("上限") || m4.includes("limit")) {
                     helper.twoFactorAuthLimitHook && await helper.twoFactorAuthLimitHook();
@@ -143,6 +144,12 @@ const twoFactorAuth = async (helper: InfoHelper): Promise<string> => {
                 else {
                     throw new LoginError(m4);
                 }
+            }
+            else {
+                // 响应 object 即 finger3（bundle: saveFinger3Local(t.object)）——
+                // 此前被解构丢弃，helper.fingerGenPrint 永远空 → checkSingle 确认
+                // 传空指纹 → id 死结（2026-09-18 三次"已增加"实录）
+                helper.fingerGenPrint = String(parsed.object ?? "") || helper.fingerGenPrint;
             }
         }
     }

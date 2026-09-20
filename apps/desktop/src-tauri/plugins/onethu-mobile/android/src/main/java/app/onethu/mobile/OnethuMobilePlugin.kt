@@ -14,10 +14,14 @@ package app.onethu.mobile
 
 import android.Manifest
 import android.app.Activity
+import android.appwidget.AppWidgetManager
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
+import android.content.ComponentName
 import android.content.Intent
+import android.provider.Settings
+import android.provider.DocumentsContract
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
@@ -28,6 +32,8 @@ import android.view.Gravity
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
+import androidx.activity.result.ActivityResult
+import app.tauri.annotation.ActivityCallback
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -40,6 +46,8 @@ import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
 import app.tauri.plugin.Plugin
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.net.URLConnection
 
@@ -60,6 +68,38 @@ class OpenWebModalArgs {
     /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
+}
+
+/** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释）：
+ *  `{ "instances": { "<appWidgetId>": {…} }, "slots": { "1": {…} } }` */
+@InvokeArg
+class WidgetPushArgs {
+    lateinit var snapshot: String
+}
+
+/** 待排程的通知条目数组（JSON 字符串，结构见 OnethuNotify.kt 顶部注释） */
+@InvokeArg
+class NotifyScheduleArgs {
+    lateinit var items: String
+}
+
+/** 要打开哪个系统设置页：channels（渠道，可带 channel）/ exact-alarm / app */
+@InvokeArg
+class NotifyOpenSettingsArgs {
+    var what: String = "channels"
+    var channel: String = ""
+}
+
+/** 是否要发起授权请求（缺省 false：只查状态） */
+@InvokeArg
+class NotifyPermissionArgs {
+    var request: Boolean = false
+}
+
+/** 要撤销的通知 id 数组（JSON 字符串） */
+@InvokeArg
+class NotifyCancelArgs {
+    lateinit var ids: String
 }
 
 @TauriPlugin(
@@ -86,6 +126,22 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                     URLConnection.guessContentTypeFromName(name) ?: "application/octet-stream"
                 } catch (_: Exception) {
                     "application/octet-stream"
+                }
+                // 用户选过自定义文件夹（SAF 目录树）就写进去；没选才落系统「下载」
+                val tree = DownloadPrefs.treeUri(activity)
+                if (tree != null) {
+                    val uri = DownloadPrefs.createDocument(activity, tree, mime, name)
+                    if (uri != null) {
+                        activity.contentResolver.openOutputStream(uri)?.use { o -> src.inputStream().use { it.copyTo(o) } }
+                            ?: throw IllegalStateException("打开输出流失败")
+                        val ret = JSObject()
+                        ret.put("name", name)
+                        ret.put("dir", DownloadPrefs.label(activity))
+                        activity.runOnUiThread { invoke.resolve(ret) }
+                        return@Thread
+                    }
+                    // 目录树失效（用户删了文件夹/撤销授权）：清掉配置，回落系统下载
+                    DownloadPrefs.clear(activity)
                 }
                 if (Build.VERSION.SDK_INT >= 29) {
                     val resolver = activity.contentResolver
@@ -121,6 +177,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 }
                 val ret = JSObject()
                 ret.put("name", name)
+                ret.put("dir", "系统下载")
                 activity.runOnUiThread { invoke.resolve(ret) }
             } catch (e: Exception) {
                 val msg = e.message ?: "转存失败"
@@ -128,6 +185,141 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             }
         }.start()
     }
+
+    /* ── 下载位置（Android 走 SAF：目录树授权一次，之后一直写那里）── */
+
+    /** 当前下载位置：{ path 显示名, isDefault }；path 是给用户看的（SAF 给不出真实路径） */
+    @Command
+    fun downloadDirGet(invoke: Invoke) {
+        try {
+            val ret = JSObject()
+            ret.put("path", DownloadPrefs.label(activity))
+            ret.put("isDefault", DownloadPrefs.treeUri(activity) == null)
+            invoke.resolve(ret)
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "读取下载位置失败")
+        }
+    }
+
+    /** 调起系统文件夹选择器（ACTION_OPEN_DOCUMENT_TREE），授权持久化到重启之后 */
+    @Command
+    fun downloadDirPick(invoke: Invoke) {
+        try {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
+                        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION,
+                )
+            }
+            // Tauri v2 的插件 API：结果经 @ActivityCallback 回传（没有 onActivityResult 钩子）
+            startActivityForResult(invoke, intent, "onPickDownloadDir")
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "无法调起文件夹选择器")
+        }
+    }
+
+    @ActivityCallback
+    private fun onPickDownloadDir(invoke: Invoke?, result: ActivityResult) {
+        if (invoke == null) return
+        val uri = result.data?.data
+        if (result.resultCode != Activity.RESULT_OK || uri == null) {
+            // 用户取消：不改配置，原样回当前值
+            val now = JSObject()
+            now.put("path", DownloadPrefs.label(activity))
+            now.put("isDefault", DownloadPrefs.treeUri(activity) == null)
+            invoke.resolve(now)
+            return
+        }
+        try {
+            activity.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+            )
+        } catch (_: SecurityException) {
+            // 少数 ROM 不给持久授权：本次仍可用；重启后失效会被 createDocument 兜底清掉
+        }
+        DownloadPrefs.setTree(activity, uri.toString())
+        val ret = JSObject()
+        ret.put("path", DownloadPrefs.label(activity))
+        ret.put("isDefault", false)
+        invoke.resolve(ret)
+    }
+
+    @Command
+    fun downloadDirReset(invoke: Invoke) {
+        try {
+            DownloadPrefs.clear(activity)
+            val ret = JSObject()
+            ret.put("path", DownloadPrefs.label(activity))
+            ret.put("isDefault", true)
+            invoke.resolve(ret)
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "重置下载位置失败")
+        }
+    }
+
+    /**
+     * 另存为：调起系统「保存到…」（ACTION_CREATE_DOCUMENT），用户当场挑位置与文件名。
+     * 先由 Rust 把文件落到应用缓存，这里只负责把字节写进用户选定的文档 URI。
+     */
+    @Command
+    fun saveAsDocument(invoke: Invoke) {
+        val args = invoke.parseArgs(SaveDownloadArgs::class.java)
+        val src = File(args.path)
+        if (!src.exists()) {
+            invoke.reject("源文件不存在：${args.path}")
+            return
+        }
+        try {
+            val name = args.name.ifBlank { src.name }
+            val mime = try {
+                URLConnection.guessContentTypeFromName(name) ?: "application/octet-stream"
+            } catch (_: Exception) {
+                "application/octet-stream"
+            }
+            pendingSaveAsPath = args.path
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = mime
+                putExtra(Intent.EXTRA_TITLE, name)
+            }
+            startActivityForResult(invoke, intent, "onSaveAsDocument")
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "无法调起保存对话框")
+        }
+    }
+
+    @ActivityCallback
+    private fun onSaveAsDocument(invoke: Invoke?, result: ActivityResult) {
+        if (invoke == null) return
+        val uri = result.data?.data
+        if (result.resultCode != Activity.RESULT_OK || uri == null) {
+            invoke.resolve(JSObject().put("cancelled", true))
+            return
+        }
+        val source = pendingSaveAsPath
+        pendingSaveAsPath = null
+        if (source == null) {
+            invoke.reject("源文件已丢失，请重新下载")
+            return
+        }
+        Thread {
+            try {
+                File(source).inputStream().use { input ->
+                    val out = activity.contentResolver.openOutputStream(uri)
+                        ?: throw IllegalStateException("打开输出流失败")
+                    out.use { o -> input.copyTo(o) }
+                }
+                invoke.resolve(JSObject().put("name", DownloadPrefs.displayName(activity, uri)))
+            } catch (e: Exception) {
+                activity.runOnUiThread { invoke.reject(e.message ?: "写入失败") }
+            }
+        }.start()
+    }
+
+    /** 另存为流程中待写入的源文件（回调时用） */
+    private var pendingSaveAsPath: String? = null
 
     /** intent:// 深链打开（地图导航跳 App）；未装目标 App 时落 browser_fallback_url */
     @Command
@@ -471,6 +663,284 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "stop-failed"))
+        }
+    }
+
+    /* ── 桌面小组件（AppWidgetProvider）──
+     * 前端把渲染好的快照推过来（widgetPush），原生存进 SharedPreferences 并立刻重画
+     * 所有已放置的小组件；widgetTakeTarget 供 App 启动后取走「用户点的是哪个落点」。
+     * 小组件侧不做任何网络/解析——它连 WebView 都没有。 */
+
+    @Command
+    fun widgetPush(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(WidgetPushArgs::class.java)
+            val ctx = activity.applicationContext
+            // 校验一次 JSON：坏快照宁可不写，也不能让小组件渲染时崩
+            val root = JSONObject(args.snapshot)
+            // 宿主家族按实例（appWidgetId）各存一份内容；插件槽位仍是全局一份
+            val instances = root.optJSONObject("instances")
+            val live = mutableSetOf<Int>()
+            if (instances != null) {
+                for (key in instances.keys()) {
+                    val id = key.toIntOrNull() ?: continue
+                    live.add(id)
+                    WidgetStore.saveInstance(ctx, id, instances.getJSONObject(key).toString())
+                }
+            }
+            root.optJSONObject("slots")?.let { WidgetStore.saveSlots(ctx, it.toString()) }
+            // 已被移除的小组件：顺手清掉它的内容（否则 appWidgetId 复用时会串内容）
+            WidgetStore.pruneInstances(ctx, live)
+            activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "push-failed"))
+        }
+    }
+
+    /** 桌面上每一块宿主机小组件的清单：id / provider / 占位宽高。
+     *  应用据此为「每一块」算内容——内容绑定在实例上，就必须先知道有哪些实例。 */
+    @Command
+    fun widgetInstances(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            val manager = AppWidgetManager.getInstance(ctx)
+            val out = JSONArray()
+            if (manager != null) {
+                for (cls in OnethuBaseWidget.hostProviders()) {
+                    for (id in manager.getAppWidgetIds(ComponentName(ctx, cls))) {
+                        val (w, h) = OnethuBaseWidget.sizeOf(manager, id)
+                        out.put(
+                            JSObject()
+                                .put("id", id)
+                                .put("provider", cls.simpleName)
+                                .put("w", w)
+                                .put("h", h)
+                                .put("bound", WidgetStore.loadInstance(ctx, id) != null)
+                        )
+                    }
+                }
+            }
+            invoke.resolve(JSObject().put("ok", true).put("instances", out))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "instances-failed"))
+        }
+    }
+
+    /** 小组件落地状态：桌面上放了几个、每个槽位几个、快照时间与槽位内容。
+     *  存在的意义是把「用户说没看到」变成可查的数字——自检链路要用。 */
+    @Command
+    fun widgetStatus(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            val manager = AppWidgetManager.getInstance(ctx)
+            var host = 0
+            val slots = JSONObject()
+            for (entry in OnethuBaseWidget.providerEntries()) {
+                val key = entry.first
+                val n = manager?.getAppWidgetIds(ComponentName(ctx, entry.second))?.size ?: 0
+                // 宿主有四种形态，桌面上的数量要累加（任一形态放置都算「宿主已放置」）
+                if (key == null) host += n else slots.put(key, n)
+            }
+            val snap = WidgetStore.loadSlots(ctx)
+            val slotContent = JSONObject()
+            snap?.let { s ->
+                for (k in s.keys()) slotContent.put(k, s.optJSONObject(k)?.optString("title").orEmpty())
+            }
+            // 系统侧到底登记了哪几个小组件 provider：这正是「选择器里看不到小组件」的第一现场
+            // （provider 由仓库内插件库清单经 manifest merger 合入，换机/构建脚本一变就可能掉）
+            val registered = JSONArray()
+            val installed = manager?.installedProviders
+            for (entry in OnethuBaseWidget.providerEntries()) {
+                val name = entry.second.name
+                val found = installed?.any { it.provider.className == name } == true
+                if (found) registered.put(entry.third)
+            }
+            invoke.resolve(
+                JSObject()
+                    .put("ok", true)
+                    .put("hostPlaced", host)
+                    .put("slotsPlaced", slots)
+                    .put("hasSnapshot", snap != null)
+                    .put("snapshotAt", snap?.optLong("updatedAt") ?: 0L)
+                    .put("slotTitles", slotContent)
+                    .put("providersRegistered", registered)
+            )
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "widget-status-failed"))
+        }
+    }
+
+    @Command
+    fun widgetClear(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            WidgetStore.clear(ctx)
+            activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "clear-failed"))
+        }
+    }
+
+    /* ── 系统通知（渠道 + 定时）──
+     * JS 侧 notifyPlan.ts 算出计划，这里只负责排进 AlarmManager 与权限状态回报。
+     * 精确闹钟在 API 31+ 需要用户在系统设置里允许；不可用时降级为不精确投递
+     * （setAndAllowWhileIdle，宁晚不丢），状态经 notifyPermission 回报给设置页。 */
+
+    @Command
+    fun notifyPermission(invoke: Invoke) {
+        // request=false（设置页只查状态）不弹权限框；用户主动开启提醒 / 点「试一下」才请求
+        val want = try {
+            invoke.parseArgs(NotifyPermissionArgs::class.java).request
+        } catch (e: Exception) {
+            false
+        }
+        if (want && !hasNotificationPermission()) {
+            requestPermissionForAliases(arrayOf("notifications"), invoke, "notificationPermissionCallback")
+            return
+        }
+        resolveNotifyPermission(invoke)
+    }
+
+    /** 通知权限回调（与扫码保活共用 alias，但走各自回调以免串状态） */
+    @PermissionCallback
+    fun notifyPermissionCallback(invoke: Invoke) {
+        resolveNotifyPermission(invoke)
+    }
+
+    private fun resolveNotifyPermission(invoke: Invoke) {
+        val ctx = activity.applicationContext
+        invoke.resolve(
+            JSObject()
+                .put("ok", true)
+                .put("granted", hasNotificationPermission())
+                .put("exact", OnethuNotifyReceiver.canExact(ctx))
+                .put("android", true)
+        )
+    }
+
+    @Command
+    fun notifySchedule(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(NotifyScheduleArgs::class.java)
+            val ctx = activity.applicationContext
+            val arr = JSONArray(args.items)
+            var scheduled = 0
+            for (i in 0 until arr.length()) {
+                val item = arr.optJSONObject(i) ?: continue
+                if (OnethuNotifyReceiver.schedule(ctx, item)) scheduled++
+            }
+            invoke.resolve(
+                JSObject().put("ok", true).put("scheduled", scheduled)
+                    .put("exact", OnethuNotifyReceiver.canExact(ctx))
+            )
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "schedule-failed"))
+        }
+    }
+
+    @Command
+    fun notifyCancel(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(NotifyCancelArgs::class.java)
+            val ctx = activity.applicationContext
+            val arr = JSONArray(args.ids)
+            var cancelled = 0
+            for (i in 0 until arr.length()) {
+                val id = arr.optString(i)
+                if (id.isEmpty()) continue
+                OnethuNotifyReceiver.cancel(ctx, id)
+                cancelled++
+            }
+            invoke.resolve(JSObject().put("ok", true).put("cancelled", cancelled))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "cancel-failed"))
+        }
+    }
+
+    @Command
+    fun notifyPending(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            val ids = JSONArray()
+            for ((id, _) in NotifyStore.all(ctx)) ids.put(id)
+            invoke.resolve(JSObject().put("ok", true).put("ids", ids))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "pending-failed"))
+        }
+    }
+
+    /** 立即发一条测试通知（设置页「试一下」按钮）：渠道与权限链路自证。 */
+    @Command
+    fun notifyTest(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            requestPermissionForAliases(arrayOf("notifications"), invoke, "notifyTestCallback")
+            return
+        }
+        doNotifyTest(invoke)
+    }
+
+    @PermissionCallback
+    fun notifyTestCallback(invoke: Invoke) {
+        doNotifyTest(invoke)
+    }
+
+    private fun doNotifyTest(invoke: Invoke) {
+        val ctx = activity.applicationContext
+        val item = JSONObject()
+            .put("title", "OneTHU 提醒测试")
+            .put("body", "看到这条说明通知渠道已就绪。")
+            .put("channel", "briefing")
+            .put("target", "settings")
+        val ok = NotifyCenter.post(ctx, "test-" + System.currentTimeMillis(), item)
+        invoke.resolve(JSObject().put("ok", ok).put("granted", hasNotificationPermission()))
+    }
+
+    /** 打开系统通知相关设置页。Android 的「渠道管理」与「精确闹钟授权」都在系统设置里，
+     *  应用只能带用户跳过去——所以这个入口是渠道管理链路的一部分，不是可选项。 */
+    @Command
+    fun notifyOpenSettings(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(NotifyOpenSettingsArgs::class.java)
+            val ctx = activity.applicationContext
+            val intent = when (args.what) {
+                "exact-alarm" -> Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                "app" -> Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                    .putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName)
+                else -> {
+                    // 渠道级：指向我们自己的某个通知渠道（渠道不存在时系统回落应用通知页）
+                    val channel = NotifyCenter.channelOf(args.channel)
+                    Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
+                        .putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName)
+                        .putExtra(Settings.EXTRA_CHANNEL_ID, channel)
+                }
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ctx.startActivity(intent)
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "open-settings-failed"))
+        }
+    }
+
+    @Command
+    fun notifyTakeTarget(invoke: Invoke) {
+        try {
+            val target = LaunchTarget.take(activity.applicationContext)
+            invoke.resolve(JSObject().put("ok", true).put("target", target))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "take-failed"))
+        }
+    }
+
+    @Command
+    fun widgetTakeTarget(invoke: Invoke) {
+        try {
+            val target = LaunchTarget.take(activity.applicationContext)
+            invoke.resolve(JSObject().put("ok", true).put("target", target))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "take-failed"))
         }
     }
 }

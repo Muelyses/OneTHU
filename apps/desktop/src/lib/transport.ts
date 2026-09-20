@@ -118,7 +118,11 @@ export async function nativeSeedCookies(url: string, lines: string[]): Promise<v
 export async function nativeCookieClear(): Promise<void> {
   try {
     const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("http_native_clear_cookies");
+    // 域清（id 单点互踢根治）：learn/info/教务/webvpn 的会话票全保，只清死域。
+    // 全清曾让重建后各页集体红条几秒（learn/info 会话陪葬要漫游重拉）。
+    await invoke("http_native_clear_cookies_domain", {
+      suffixes: ["id.tsinghua.edu.cn", "oauth.tsinghua.edu.cn"],
+    });
   } catch {
     /* 非 tauri 环境忽略 */
   }
@@ -465,16 +469,50 @@ function b64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
 export const universalFetch: FetchLike = (url, init) =>
   isTauri ? tauriFetch(url, init) : window.fetch(url, init);
 
-/** 登录失败的场景化提示 */
-export function explainNetworkError(err: unknown): string {
-  if (err instanceof Error) {
-    if (!isTauri && /fetch|network|Failed to fetch/i.test(err.message)) {
-      return "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev，或先用演示模式。";
+/**
+ * 错误的可读提示。
+ *
+ * 关键点：**Tauri 命令是用字符串 reject 的**（Rust 侧 `Err("会话已失效…")`），
+ * 那些值不是 Error 实例。曾经这里只认 `err instanceof Error`，于是所有原生错误
+ * （会话失效 / HTTP 403 / 文件过大 / 空文件）统统显示成「未知网络错误」——
+ * 真话被吞掉，排查只能靠猜。现在先把任意形态的 err 归一成一句话，再场景化。
+ */
+export function rawErrorText(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "string") return err;
+  if (err && typeof err === "object") {
+    const m = (err as { message?: unknown }).message;
+    if (typeof m === "string" && m) return m;
+    try {
+      return JSON.stringify(err);
+    } catch {
+      /* 循环引用等：落到下面的兜底 */
     }
-    if (/网络错误|timed? ?out|timeout/i.test(err.message)) {
-      return "网络超时：请确认校园网 / WebVPN 可达。";
-    }
-    return err.message;
   }
-  return "未知网络错误";
+  if (err === null || err === undefined) return "";
+  return String(err);
+}
+
+export function explainNetworkError(err: unknown): string {
+  const raw = rawErrorText(err).trim();
+  if (!raw) return "操作失败（原生未给出原因，可到「设置 → 诊断」看日志）";
+  // 原生侧的大小闸门：说清多大、该怎么办，而不是丢一个网络错误
+  const big = /too-large:(\d+):(\d+)/.exec(raw);
+  if (big) {
+    const mb = (n: string): string => `${(Number(n) / 1024 / 1024).toFixed(1)} MB`;
+    return `文件较大（${mb(big[1]!)}），应用内预览上限 ${mb(big[2]!)}——请改用「下载」或「另存为」。`;
+  }
+  if (/会话已失效|需要重新登录|未登录/.test(raw)) {
+    return `会话已失效：${raw}（下拉刷新或到设置里重新登录后再试）`;
+  }
+  if (/^HTTP \d{3}/.test(raw)) {
+    return `${raw}：服务端拒绝了这次请求（登录态过期或该文件无权限）`;
+  }
+  if (!isTauri && /fetch|network|Failed to fetch/i.test(raw)) {
+    return "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev，或先用演示模式。";
+  }
+  if (/网络错误|timed? ?out|timeout/i.test(raw)) {
+    return "网络超时：请确认校园网 / WebVPN 可达。";
+  }
+  return raw;
 }

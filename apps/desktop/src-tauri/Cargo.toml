@@ -45,6 +45,39 @@ base64 = "0.22"
 onethu-harness-core = { path = "../../../plugins/OneTHU-Harness/core" }
 tauri-plugin-geolocation = "2.3.3"
 
+# macOS 系统通知：UNUserNotificationCenter（objc2 绑定，见 src/notify_macos.rs）。
+# 与日历插件同源依赖，版本对齐避免重复编译两套 objc2。
+[target.'cfg(target_os = "macos")'.dependencies]
+block2 = "0.6"
+objc2 = { version = "0.6", features = ["alloc", "std"] }
+objc2-foundation = { version = "0.3", default-features = false, features = [
+  "std", "NSString", "NSArray", "NSError", "NSObject", "NSBundle",
+] }
+objc2-user-notifications = { version = "0.3", default-features = false, features = [
+  "std", "block2", "UNUserNotificationCenter", "UNNotificationContent",
+  "UNNotificationRequest", "UNNotificationSettings", "UNNotificationTrigger",
+  # 点击回调（delegate）与读到点击的是哪条通知
+  "UNNotification", "UNNotificationResponse",
+] }
+
+# Windows 系统通知：WinRT toast（含定时投递 AddToSchedule）。见 src/notify_windows.rs。
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.61", features = [
+  "Foundation", "Foundation_Collections",
+  "Data_Xml_Dom", "UI_Notifications",
+  "Win32_System_Com", "Win32_System_Registry",
+] }
+
+[features]
+# 仅在需要实测 macOS 通知原生链路时开启（见 src/bin/notify_probe.rs）
+notify-probe = []
+
+# 探针二进制：放进 OneTHU.app/Contents/MacOS 里跑，才能以应用身份访问通知中心
+[[bin]]
+name = "notify_probe"
+path = "src/bin/notify_probe.rs"
+required-features = ["notify-probe"]
+
 [profile.release]
 strip = true
 lto = true
@@ -52,3 +85,5 @@ codegen-units = 1
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt"] }
+# 单测需要 mock AppHandle（seafile live 测试与 notify 载荷解析测试）
+tauri = { version = "2", features = ["test"] }

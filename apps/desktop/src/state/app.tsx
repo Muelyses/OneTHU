@@ -18,6 +18,7 @@ export type Page =
   | "thos" // 在线服务（THOS 服务大厅原生化：事项列表 + 服务目录）
   | "mail" // 邮箱（IMAP 收 / SMTP 发，复用云日历凭据）
   | "cloud" // 清华云盘（Seafile Web API）
+  | "thubook" // THUbook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
   | "folder" // 用户收藏夹页（navParams.folderId 指向具体收藏夹）
   | "settings"
   | "plugins" // 插件管理页（机架视觉；设置页留入口，不动侧栏导航）
@@ -31,6 +32,7 @@ export type Page =
   | "learn-notice-detail" // 通知只读详情（courseId+itemId）
   | "learn-forum-thread" // 讨论区话题阅读/回复（courseId+threadId）
   | "learn-file-detail" // 文件详情（courseId+itemId）
+  | `plugin:${string}` // 插件动态 tab（plugins/tabs.ts 注册表；pageKey = plugin:<pluginId>:<tabId>）
   | "learn-ykt-detail"; // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
 
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
@@ -78,6 +80,9 @@ export interface LearnNav {
   /** 楼栋展示名兜底（原子 key 里自带，列表未就绪时也能显示） */
   washerBuildingName?: string;
   /** 楼栋是否海乐生活点位（key 自带） */
+  /** 洗衣机楼栋所属数据源（"0" 捷利 / "1" 海乐生活 / "2" 小兰智慧）；缺省按捷利 */
+  washerBuildingProvider?: string;
+  /** @deprecated 旧深链只带布尔（true = 海乐生活）：保留读取，新的都走 washerBuildingProvider */
   washerBuildingHlsh?: boolean;
   /** 洗衣机：楼内要高亮滚动的设备名 */
   washerMachine?: string;
@@ -107,7 +112,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "info", "life", "reserve", "zhjwxk", "thos", "plugins", "folder", "settings"] as const; // trace 漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings"] as const; // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /**
  * R20-B2：雨课堂作业原生详情页参数。
@@ -131,8 +136,9 @@ export interface YktNav {
   kind?: "homework" | "exam";
 }
 
-/** 子页归属的一级页（侧栏高亮 / hash 用） */
+/** 子页归属的一级页（侧栏高亮 / hash 用）；插件动态 tab（plugin:<id>:<tabId>）保持原值直通 */
 export function topLevelPage(p: Page): Page {
+  if (p.startsWith("plugin:")) return p;
   return (TOP_PAGES as readonly string[]).includes(p) ? p : "learn";
 }
 

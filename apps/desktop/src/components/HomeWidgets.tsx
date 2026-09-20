@@ -193,7 +193,7 @@ export function HomeworkRows({
             </div>
             <div className="row-main">
               <div className="row-title">
-                {/* R11 16.1：今日页不再显示来源徽标（雨课堂/TUOJ/Tyche）——移动端拥挤，
+                {/* R11 16.1：今日页不再显示来源徽标（雨课堂/TUOJ/Tyche/DSA OJ）——移动端拥挤，
                     来源只在「全部作业」页（shared.tsx HomeworkRow）显示；考试/旁听徽标保留。 */}
                 {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
                 {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
@@ -356,7 +356,7 @@ export function TodayOverviewWidget() {
   const { data, state } = useCampusData();
   const now = new Date();
   const dataReady = !(state === "loading" && !data);
-  // 合并外部作业（雨课堂/TUOJ/Tyche）：未配置凭据时 extHw 恒为空，与改动前完全一致
+  // 合并外部作业（雨课堂/TUOJ/Tyche/DSA OJ）：未配置凭据时 extHw 恒为空，与改动前完全一致
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
   const unsubmitted = useMemo(

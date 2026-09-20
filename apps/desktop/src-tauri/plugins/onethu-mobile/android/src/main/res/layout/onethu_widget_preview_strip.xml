@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  宿主小组件「矮条形态」（2×1 / 4×1）的选择器预览。
+
+  previewLayout（API 31+）让启动器的选择器直接显示这块小组件长什么样：没有它，系统会拿
+  initialLayout 当预览，而我们的 initialLayout 内容都是空的（真实内容由应用算好下发），
+  在选择器里就是几个空框——「看不到 1×1」有一部分正是这个原因。
+  预览里的文字与图标是写死的样例，不参与真实渲染。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@drawable/onethu_widget_bg"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="12sp"
+        android:textColor="#0F1115"
+        android:text="10:00 数据结构 · 六教6A215" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:textSize="10sp"
+        android:textColor="#81858C"
+        android:text="2 节课 · 1 个截止" />
+</LinearLayout>

@@ -17,11 +17,146 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 定时提醒：API 31+ 精确闹钟需用户在系统设置里允许（应用无法自行授予）；
+         未授权时降级 setAndAllowWhileIdle，宁晚不丢。 -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- 重启后重排：AlarmManager 的闹钟不跨重启存活，凭持久化条目重建。 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application>
         <service
             android:name="app.onethu.mobile.QrKeepAliveService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- 桌面小组件：AppWidgetProvider 必须 exported=true（系统要投递
+             APPWIDGET_UPDATE 广播），meta-data 指向 androidx 之外的 appwidget-provider
+             元信息（初始占位/初始布局/30 分钟轮询）。
+
+             宿主小组件声明四种形态（3×2 标准 / 2×2 方块 / 2×1 窄条 / 4×1 长条）：
+             选择器里能直接选的形态数 = provider 数，故形态只能靠多声明 provider 给出来。
+             四者共用同一套布局与同一份快照，只是初始占位不同；放置后仍可自由拖动改尺寸
+             （见 OnethuWidget.kt 的 rowBudget：行数按实际高度决定）。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape1Shortcut"
+            android:label="@string/onethu_widget_shortcut_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_shortcut_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape2Narrow"
+            android:label="@string/onethu_widget_narrow_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_narrow_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape3Square"
+            android:label="@string/onethu_widget_square_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_square_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape4Standard"
+            android:label="@string/onethu_widget_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape5Strip"
+            android:label="@string/onethu_widget_strip_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_strip_info" />
+        </receiver>
+
+        <!-- 插件小组件槽位 1..3：Android 不允许运行时注册 provider，故预留固定槽位；
+             插件按声明顺序占位，内容经快照 slots["N"] 送进来（见 OnethuWidget.kt）。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSlot1"
+            android:label="@string/onethu_widget_slot1_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_slot1_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSlot2"
+            android:label="@string/onethu_widget_slot2_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_slot2_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSlot3"
+            android:label="@string/onethu_widget_slot3_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_slot3_info" />
+        </receiver>
+
+        <!-- 小组件配置入口：放置时系统拉起它，它把「配哪一块」记成落点再拉起应用。
+             exported=true 是必须的——拉起方是启动器（另一个 UID）；activity 本身不显示界面。 -->
+        <activity
+            android:name="app.onethu.mobile.OnethuWidgetConfigActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+
+        <!-- 点击落点广播（小组件与通知共用）：PendingIntent 里跑不了代码，
+             先落到这里存 target 再拉起 App。exported=false：只由本应用的 PendingIntent 触发。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuLaunchReceiver"
+            android:exported="false" />
+
+        <!-- 定时通知到点触发：AlarmManager 的 PendingIntent 指向这里，弹完即清。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuNotifyReceiver"
+            android:exported="false" />
+
+        <!-- 开机 / 应用升级后重排所有未到点的通知与小组件 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

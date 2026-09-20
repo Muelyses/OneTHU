@@ -11,7 +11,7 @@ import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
 import { useCalendar, useCampusData } from "../state/data.js";
 import { cacheSet } from "../state/cache.js";
-import { isAuthError } from "@onethu/core";
+import { isAuthError, learnUrls } from "@onethu/core";
 import { softRecover } from "../lib/reload.js";
 import { ScheduleAgenda } from "./ScheduleAgenda.js";
 import type { AgendaItem } from "./ScheduleAgenda.js";
@@ -22,10 +22,12 @@ import {
   useCloudCal, syncCloudCal, getCloudCalConfig,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent, buildSemesterEvents,
 } from "../state/cloudCal.js";
-import { info } from "../lib/clients.js";
+import { info, logLine } from "../lib/clients.js";
+import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { useApp } from "../state/context.js";
+import { courseColor, SRC_COLOR } from "../lib/courseColor.js";
 import { confirmOk } from "../lib/confirm.js";
-import { openPath } from "@tauri-apps/plugin-opener";
+import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 
 const DAY_NAMES = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 /** 上游 schedule.tsx beginTime/endTime（节次兜底定位用） */
@@ -66,25 +68,18 @@ interface GridEntry {
   /** 真实时刻（lib parseJSON 语义：kssj/jssj 优先于节次定位） */
   startTime?: string;
   endTime?: string;
-  /** 来源（课程缺省=palette；考试/云/本固定色） */
-  src?: "exam" | "cloud" | "local";
+  /** 来源（课程缺省=palette；考试/云/本/作业DDL/重叠簇固定色） */
+  src?: "exam" | "cloud" | "local" | "hw" | "cluster";
+  /** 作业 DDL 元数据（src==="hw"） */
+  hwMeta?: { submitted: boolean; source?: string; externalUrl?: string; ext: boolean };
+  /** 重叠簇内的原始条目（src==="cluster"，详情弹层列表展开） */
+  clusterItems?: GridEntry[];
   /** 云/本事件可编辑定位 */
   uid?: string;
 }
 
-/** 来源固定色（与日程列表口径一致） */
-const SRC_COLOR: Record<"exam" | "cloud" | "local", string> = { exam: "#e5484d", cloud: "#1fa487", local: "#8a8f98" };
-
-/** 课程块配色（按课程名稳定取色，同学期同色） */
-const PALETTE = [
-  "#6d7ff0", "#3d8bfd", "#1fa487", "#e07a4f", "#b463d6",
-  "#2f9edb", "#c9971f", "#4caf6e", "#d45c8a", "#7a63e8",
-];
-function colorOf(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return PALETTE[h % PALETTE.length] ?? PALETTE[0] ?? "#6d7ff0";
-}
+/* 课程与来源配色见 lib/courseColor.ts（课表、选课预览、桌面小组件共用一份口径） */
+const colorOf = courseColor;
 
 interface Placed {
   entry: GridEntry;
@@ -102,6 +97,75 @@ function beginMinOf(s: GridEntry): number {
 }
 function endMinOf(s: GridEntry): number {
   return hmToMin(s.endTime) ?? END_MIN[s.endSection ?? s.startSection ?? 1] ?? AXIS_BEGIN + 45;
+}
+
+/**
+ * 同日重叠缩略：扫描线找「重叠计数 ≥3」的极大时间区间，每区间合并成一个
+ * 簇块（"N 件事"），条目按其开始时刻归属所在簇（横跨多簇的长条目归 begin
+ * 所在簇）。例：66 门选作实验课同一 DDL → 一个簇块；前 30 门与后 15+15
+ * 各自成段 → 两个簇块。<3 重叠照常逐条渲染。
+ */
+function clusterize(entries: GridEntry[]): GridEntry[] {
+  const out2: GridEntry[] = [];
+  const byDay: GridEntry[][] = Array.from({ length: 7 }, () => []);
+  for (const e of entries) {
+    const day = (e.dayOfWeek ?? 1) - 1;
+    if (day < 0 || day > 6) { out2.push(e); continue; }
+    byDay[day]?.push(e);
+  }
+  for (let day = 0; day < 7; day++) {
+    const list = byDay[day] ?? [];
+    if (list.length < 3) { out2.push(...list); continue; }
+    // 扫描线事件：begin=+1，end=-1（同分钟先收尾，首尾相接不算重叠）。
+    // 无效时刻（NaN/undefined，如跨天/异常事件）的条目不参与扫描直接透传——
+    // 曾因单个 NaN 事件抢占 count≥3 的 t0 导致整簇 members 过滤全灭。
+    const valid = list.filter((e) => Number.isFinite(beginMinOf(e)) && Number.isFinite(endMinOf(e)));
+    const invalid = list.filter((e) => !(Number.isFinite(beginMinOf(e)) && Number.isFinite(endMinOf(e))));
+    out2.push(...invalid);
+    const scanList = valid;
+    if (scanList.length < 3) { out2.push(...scanList); continue; }
+    type Ev = { min: number; d: number };
+    const evs: Ev[] = [];
+    for (const e of scanList) {
+      evs.push({ min: beginMinOf(e), d: 1 });
+      evs.push({ min: endMinOf(e), d: -1 });
+    }
+    evs.sort((a, b) => a.min - b.min || a.d - b.d);
+    const clusters: Array<{ t0: number; t1: number }> = [];
+    let count = 0, t0 = 0;
+    for (const ev of evs) {
+      const prev = count;
+      count += ev.d;
+      if (prev < 3 && count >= 3) t0 = ev.min;
+      else if (prev >= 3 && count < 3) clusters.push({ t0, t1: ev.min });
+    }
+    if (clusters.length === 0) { out2.push(...scanList); continue; }
+    const taken = new Set<GridEntry>();
+    for (const c of clusters) {
+      const members = scanList.filter((e) => !taken.has(e) && beginMinOf(e) >= c.t0 && beginMinOf(e) < c.t1);
+      if (members.length < 3) continue; // 归属后不足 3（被长条目稀释）→ 不缩略
+      for (const m of members) taken.add(m);
+      const names = [...new Set(members.map((m) => m.location || m.courseName))].slice(0, 3).join("、");
+      out2.push({
+        courseName: `${members.length} 件事`,
+        location: names,
+        dayOfWeek: day + 1,
+        date: members[0]?.date,
+        startTime: hhmmFromMin(c.t0),
+        endTime: hhmmFromMin(c.t1),
+        src: "cluster",
+        clusterItems: members,
+      });
+    }
+    for (const e of scanList) if (!taken.has(e)) out2.push(e);
+  }
+  return out2;
+}
+
+/** 分钟数 → "HH:MM"（clusterize 簇块边界用） */
+function hhmmFromMin(min: number): string {
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 /**
@@ -194,6 +258,7 @@ const emptyDraft = (date: string, canCloud: boolean): Draft => ({
 export function SchedulePage() {
   const campus = useCampusData();
   const calendar = useCalendar();
+  const extHw = useExternalHomework();
   const cal = useCloudCal();
   const { status } = useApp();
 
@@ -240,6 +305,10 @@ export function SchedulePage() {
   const [windowRows, setWindowRows] = useState<ScheduleEntry[] | null>(null);
   const [winLoading, setWinLoading] = useState(false);
   const [winError, setWinError] = useState<string | null>(null);
+  /** 周窗失败自动重试计数（每窗口最多 2 次、间隔 4.2s）：选课死结借 lib 重登
+   *  后教务/漫游会话重建需几秒，softRecover 的一次原地重取不够——静默自愈，
+   *  红条不再吓人（2026-09-19 快速往返实录） */
+  const winRetryRef = useRef<{ key: string; count: number }>({ key: "", count: 0 });
   const windowKey = `${ymdOf(viewWindow[0])}_${ymdOf(viewWindow[1])}`;
   useEffect(() => {
     if (mode !== "timetable" || status === "demo") return; // 列表自取月窗；demo 退 campus 数据
@@ -249,7 +318,31 @@ export function SchedulePage() {
     const grab = (): Promise<void> =>
       info
         .getSchedule(ymdOf(viewWindow[0]), ymdOf(viewWindow[1]))
-        .then((rows) => {
+        .then(async (rows) => {
+          // 二级课表（实验课）并入：core InfoClient 的 JSONP 只含一级——
+          // 之前并错在无人调用的 useWeekSchedule（TICK=0 实锤），现在加在
+          // 真正的窗口取数链路。失败静默不连累一级。
+          try {
+            const fd = calendar.data?.firstDay ?? "";
+            if (fd) {
+              const { getSecondaryEntries } = await import("../lib/infoLib.js");
+              const { http } = await import("../lib/clients.js");
+              const sec = await getSecondaryEntries(http, fd, ymdOf(viewWindow[0]), ymdOf(viewWindow[1]));
+              for (const c of sec) {
+                if (rows.some((r) => r.courseName === c.name && r.date === c.date && r.startTime === c.startTime)) continue;
+                rows.push({
+                  courseName: c.name,
+                  location: c.location,
+                  date: c.date,
+                  dayOfWeek: c.dayOfWeek,
+                  startTime: c.startTime,
+                  endTime: c.endTime,
+                  category: "二级课表",
+                  raw: { source: "secondary" },
+                });
+              }
+            }
+          } catch { /* 二级失败静默：一级照常 */ }
           // 落持久缓存：系统日历 SWR 兜底的数据源（用户实锤「看得到课表但
           // 同步报会话失效」——页内 state 对兜底不可见）；重启后也活着
           cacheSet(`schedwin:${windowKey}`, rows, true);
@@ -259,13 +352,22 @@ export function SchedulePage() {
       .catch(async (err) => {
         if (!alive) return;
         // 失登（稳定性专项）：softRecover 透明重建 → 原地重取一次；仍败才亮条
+        const scheduleAutoRetry = (): boolean => {
+          const st = winRetryRef.current;
+          if (st.key !== windowKey) { st.key = windowKey; st.count = 0; }
+          if (st.count >= 2) return false;
+          st.count += 1;
+          setTimeout(() => { if (alive) setReloadTick((t) => t + 1); }, 4200);
+          return true;
+        };
         if (isAuthError(err) && (await softRecover("schedule-win"))) {
           await grab().catch((e2) => {
-            if (alive) setWinError(e2 instanceof Error ? e2.message : String(e2));
+            if (alive && !scheduleAutoRetry()) setWinError(e2 instanceof Error ? e2.message : String(e2));
           });
           return;
         }
         if (alive) {
+          if (scheduleAutoRetry()) return;
           setWindowRows([]);
           setWinError(err instanceof Error ? err.message : String(err));
         }
@@ -318,8 +420,40 @@ export function SchedulePage() {
         });
       }
     }
-    return { entries: inWeek, allDayChips: chips };
-  }, [viewWindow, windowRows, campus.data, cal.cloudEvents, cal.localEvents]);
+    // 作业 DDL 入格：learn + 外源（雨课堂/TUOJ/Tyche/DSA OJ）统一 Homework，
+    // deadline 前 2h → deadline 画成一个 DDL 块（橙色；已提交降透明由渲染层处理）
+    const hwAll = [...(campus.data?.homework ?? []), ...extHw.items.map(toHomework)];
+    for (const h of hwAll) {
+      if (!h.deadline) continue;
+      const d = new Date(String(h.deadline).replace(/-/g, "/"));
+      if (isNaN(d.getTime())) continue;
+      const t = d.getTime();
+      if (t < lo || t > hi) continue;
+      const b = new Date(t - 2 * 3_600_000);
+      const hmOf = (x: Date): string => `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}`;
+      const wd = (new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).getUTCDay() + 6) % 7;
+      inWeek.push({
+        courseName: h.title,
+        location: h.courseName || undefined,
+        date: ymdOf(d),
+        dayOfWeek: wd + 1,
+        startTime: hmOf(b),
+        endTime: hmOf(d),
+        src: "hw",
+        hwMeta: {
+          submitted: !!h.submitted,
+          source: h.source,
+          ext: !!h.source,
+          // 外源用自带链接；learn 作业拼官方作业详情页（浏览器已登录即可看）
+          externalUrl: h.externalUrl || h.url || (h.baseId ? learnUrls.LEARN_HOMEWORK_PAGE(h.courseId, h.baseId) : undefined),
+        },
+      });
+    }
+    // 重叠缩略：≥3 件重叠合并成"N 件事"簇块（扫描线极大区间）
+    const clustered = clusterize(inWeek);
+    void logLine(`HW-CLUSTER in=${inWeek.length} hw=${inWeek.filter((e) => e.src === "hw").length} out=${clustered.length} clusters=${clustered.filter((e) => e.src === "cluster").map((e) => `${e.courseName}@${e.startTime}-${e.endTime}`).join("|")}`).catch(() => undefined);
+    return { entries: clustered, allDayChips: chips };
+  }, [viewWindow, windowRows, campus.data, cal.cloudEvents, cal.localEvents, extHw.items]);
 
   const placed = useMemo(() => layout(entries), [entries]);
 
@@ -866,9 +1000,15 @@ export function SchedulePage() {
                         return (
                           <div
                             key={`b-${i}`}
-                            title={`${p.entry.courseName}${p.entry.teacher ? " · " + p.entry.teacher : ""}${
-                              p.entry.location ? " @" + p.entry.location : ""
-                            }（${hhmm(p.beginMin)}–${hhmm(p.endMin)}）${p.entry.src === "cloud" || p.entry.src === "local" ? " · 点击编辑" : " · 点击查看"}`}
+                            title={
+                              p.entry.src === "cluster"
+                                ? `${p.entry.courseName}（${hhmm(p.beginMin)}–${hhmm(p.endMin)}）：${p.entry.clusterItems?.map((m) => `${m.courseName}${m.location ? "@" + m.location : ""}`).join("；")} · 点击展开`
+                                : p.entry.src === "hw"
+                                  ? `${p.entry.courseName}（${p.entry.location ?? ""}）DDL ${hhmm(p.beginMin)}–${hhmm(p.endMin)} · ${p.entry.hwMeta?.submitted ? "已提交" : "未提交"} · ${p.entry.hwMeta?.ext ? p.entry.hwMeta.source ?? "外部" : "网络学堂"} · 点击查看`
+                                  : `${p.entry.courseName}${p.entry.teacher ? " · " + p.entry.teacher : ""}${
+                                      p.entry.location ? " @" + p.entry.location : ""
+                                    }（${hhmm(p.beginMin)}–${hhmm(p.endMin)}）${p.entry.src === "cloud" || p.entry.src === "local" ? " · 点击编辑" : " · 点击查看"}`
+                            }
                             onClick={() => onBlockClick(p.entry)}
                             style={{
                               position: "absolute",
@@ -877,6 +1017,7 @@ export function SchedulePage() {
                               top,
                               height,
                               background: p.color,
+                              opacity: p.entry.src === "hw" && p.entry.hwMeta?.submitted ? 0.55 : undefined,
                               borderRadius: 5,
                               padding: compact ? "2px 4px" : "3px 5px",
                               color: "#fff",
@@ -888,7 +1029,7 @@ export function SchedulePage() {
                             }}
                           >
                             <div style={{ fontSize: compact ? 8.5 : 9.5, fontWeight: 700, lineHeight: 1.3 }}>
-                              {p.entry.courseName}
+                              {p.entry.src === "hw" ? `⏰ ${p.entry.courseName}` : p.entry.courseName}
                             </div>
                             {!compact && p.entry.location ? (
                               <div
@@ -926,6 +1067,68 @@ export function SchedulePage() {
             <div style={MODAL_MASK} onClick={() => setDetail(null)}>
               <div style={MODAL_PANEL} onClick={(e) => e.stopPropagation()}>
                 <div style={{ padding: 16 }}>
+                  {detail.clusterItems ? (
+                    // 重叠簇详情：列出该时段全部事项
+                    <>
+                      <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>
+                        {detail.courseName}（{detail.startTime ?? ""}–{detail.endTime ?? ""}）
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--text-3, #999)", marginBottom: 10 }}>
+                        {detail.location} · 此时间段事项较多，已合并显示
+                      </div>
+                      <div style={{ display: "grid", gap: 6 }}>
+                        {detail.clusterItems.map((m, i) => (
+                          <div
+                            key={i}
+                            title="点击查看详情"
+                            onClick={() => setDetail({ ...m })}
+                            style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--bg-hover, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline", cursor: "pointer" }}
+                          >
+                            <span style={{ fontWeight: 600, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {m.src === "hw" ? `⏰ ${m.courseName}` : m.courseName}
+                            </span>
+                            <span style={{ color: "var(--text-2, #555)", flexShrink: 0, marginLeft: "auto" }}>
+                              {m.src === "hw"
+                                ? `${m.startTime}–${m.endTime} · ${m.hwMeta?.submitted ? "已提交" : "未提交"}${m.hwMeta?.ext ? " · " + (m.hwMeta.source ?? "") : ""}`
+                                : `${m.startTime ?? ""}–${m.endTime ?? ""}${m.location ? " @" + m.location : ""}`}
+                            </span>
+                            {m.location && m.src === "hw" ? (
+                              <span style={{ color: "var(--text-3, #999)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.location}</span>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : detail.src === "hw" ? (
+                    // 作业 DDL 详情
+                    <>
+                      <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
+                        ⏰ {detail.courseName}
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text, #1f2329)" }}>
+                        <span style={{ color: "var(--text-3, #999)" }}>课程</span>
+                        <span>{detail.location ?? "—"}</span>
+                        <span style={{ color: "var(--text-3, #999)" }}>截止</span>
+                        <span>{detail.date} {detail.endTime}</span>
+                        <span style={{ color: "var(--text-3, #999)" }}>状态</span>
+                        <span style={{ color: detail.hwMeta?.submitted ? "#1fa487" : "#e5484d", fontWeight: 600 }}>
+                          {detail.hwMeta?.submitted ? "已提交" : "未提交"}
+                        </span>
+                        <span style={{ color: "var(--text-3, #999)" }}>来源</span>
+                        <span>{detail.hwMeta?.ext ? detail.hwMeta.source ?? "外部" : "网络学堂"}</span>
+                      </div>
+                      {detail.hwMeta?.externalUrl ? (
+                        <button
+                          className="btn"
+                          style={{ marginTop: 14, width: "100%" }}
+                          onClick={() => void openUrl(detail.hwMeta?.externalUrl ?? "")}
+                        >
+                          打开官方页面
+                        </button>
+                      ) : null}
+                    </>
+                  ) : (
+                    <>
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
                     {detail.src === "exam" ? "考试详情" : "课程详情"}
                   </div>
@@ -954,6 +1157,8 @@ export function SchedulePage() {
                       </>
                     ) : null}
                   </div>
+                    </>
+                  )}
                   <div style={{ fontSize: 12, color: "var(--text-3, #999)", margin: "12px 0 4px" }}>
                     课程与考试来自教务系统数据，不能在此修改；自建日程点击即可编辑。
                   </div>

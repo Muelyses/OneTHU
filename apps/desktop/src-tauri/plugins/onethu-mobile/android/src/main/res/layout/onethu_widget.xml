@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  桌面小组件布局（RemoteViews 受限控件集：LinearLayout / TextView / ImageView）。
+
+  JS 侧算好内容（标题 / 至多五条 / 脚注，每条可带色条、加粗与说明）后推到原生，这里只负责
+  摆位置——小组件进程里没有 WebView，也没有会话，任何需要网络或解析的逻辑都不在这里做。
+
+  为什么「一条一行、行内分层」：给每条再单独占一行说明，会让两行的小组件只放得下一条内容
+  （用户看到的就是「拉到三行才看得见东西」）。改成同一行内用 Span 分层——主文加粗上色、
+  说明小字灰字跟在其后——两行就能放两条，主次也清楚。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/onethu_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/onethu_widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/onethu_widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#0F1115"
+        android:text="今日" />
+
+    <LinearLayout
+        android:id="@+id/onethu_widget_slot1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <!-- 左侧色条：课程色 / 紧迫度色 / 状态色；无色时占位不可见（保证各行文字对齐）。
+             用 TextView 而不是 View：RemoteViews 只能 inflate 标了 @RemoteView 的控件。 -->
+        <TextView
+            android:id="@+id/onethu_widget_bar1"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent" />
+
+        <!-- 一条一行：主文与说明在同一个 TextView 里用 Span 分层（主文加粗/上色、说明小字灰），
+             这样「两行」放得下两条内容，而不会因为给每条单独占一行说明而挤掉内容。
+             加粗只能用 StyleSpan：RemoteViews 的 setTypeface 需要 Typeface 参数，反射式 setInt 会抛。 -->
+        <TextView
+            android:id="@+id/onethu_widget_row1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="13sp"
+            android:textColor="#0F1115" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/onethu_widget_slot2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <!-- 左侧色条：课程色 / 紧迫度色 / 状态色；无色时占位不可见（保证各行文字对齐）。
+             用 TextView 而不是 View：RemoteViews 只能 inflate 标了 @RemoteView 的控件。 -->
+        <TextView
+            android:id="@+id/onethu_widget_bar2"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent" />
+
+        <!-- 一条一行：主文与说明在同一个 TextView 里用 Span 分层（主文加粗/上色、说明小字灰），
+             这样「两行」放得下两条内容，而不会因为给每条单独占一行说明而挤掉内容。
+             加粗只能用 StyleSpan：RemoteViews 的 setTypeface 需要 Typeface 参数，反射式 setInt 会抛。 -->
+        <TextView
+            android:id="@+id/onethu_widget_row2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="13sp"
+            android:textColor="#0F1115" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/onethu_widget_slot3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <!-- 左侧色条：课程色 / 紧迫度色 / 状态色；无色时占位不可见（保证各行文字对齐）。
+             用 TextView 而不是 View：RemoteViews 只能 inflate 标了 @RemoteView 的控件。 -->
+        <TextView
+            android:id="@+id/onethu_widget_bar3"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent" />
+
+        <!-- 一条一行：主文与说明在同一个 TextView 里用 Span 分层（主文加粗/上色、说明小字灰），
+             这样「两行」放得下两条内容，而不会因为给每条单独占一行说明而挤掉内容。
+             加粗只能用 StyleSpan：RemoteViews 的 setTypeface 需要 Typeface 参数，反射式 setInt 会抛。 -->
+        <TextView
+            android:id="@+id/onethu_widget_row3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="13sp"
+            android:textColor="#0F1115" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/onethu_widget_slot4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <!-- 左侧色条：课程色 / 紧迫度色 / 状态色；无色时占位不可见（保证各行文字对齐）。
+             用 TextView 而不是 View：RemoteViews 只能 inflate 标了 @RemoteView 的控件。 -->
+        <TextView
+            android:id="@+id/onethu_widget_bar4"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent" />
+
+        <!-- 一条一行：主文与说明在同一个 TextView 里用 Span 分层（主文加粗/上色、说明小字灰），
+             这样「两行」放得下两条内容，而不会因为给每条单独占一行说明而挤掉内容。
+             加粗只能用 StyleSpan：RemoteViews 的 setTypeface 需要 Typeface 参数，反射式 setInt 会抛。 -->
+        <TextView
+            android:id="@+id/onethu_widget_row4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="13sp"
+            android:textColor="#0F1115" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/onethu_widget_slot5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <!-- 左侧色条：课程色 / 紧迫度色 / 状态色；无色时占位不可见（保证各行文字对齐）。
+             用 TextView 而不是 View：RemoteViews 只能 inflate 标了 @RemoteView 的控件。 -->
+        <TextView
+            android:id="@+id/onethu_widget_bar5"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent" />
+
+        <!-- 一条一行：主文与说明在同一个 TextView 里用 Span 分层（主文加粗/上色、说明小字灰），
+             这样「两行」放得下两条内容，而不会因为给每条单独占一行说明而挤掉内容。
+             加粗只能用 StyleSpan：RemoteViews 的 setTypeface 需要 Typeface 参数，反射式 setInt 会抛。 -->
+        <TextView
+            android:id="@+id/onethu_widget_row5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="13sp"
+            android:textColor="#0F1115" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/onethu_widget_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="10sp"
+        android:textColor="#81858C" />
+</LinearLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  宿主小组件「长条 4×1」的元信息（初始占位 4 列 × 1 行）：横贯桌面的一条，渲染与窄条一致（一行内容 + 脚注）。
+
+  - 与标准形态共用同一套布局（@layout/onethu_widget）：行数由实际高度决定，故这里只需要
+    声明初始占位与可拖动的下界；放置后用户仍可自由改尺寸。
+  - minResizeWidth/Height 统一 110×40dp：放开到「2 列 × 1 行」以便拖成窄条。
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="40dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="1"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="1800000"
+    android:previewLayout="@layout/onethu_widget_preview_strip"
+    android:initialLayout="@layout/onethu_widget"
+    android:configure="app.onethu.mobile.OnethuWidgetConfigActivity"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/onethu_widget_desc" />

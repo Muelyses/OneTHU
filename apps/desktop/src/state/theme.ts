@@ -28,8 +28,13 @@ export interface ThemeDef {
   logo?: string;
   /** 附加 CSS（主题是受信代码，同插件；建议自行用 [data-theme] 限定作用域） */
   css?: string;
+  /** 暗色主题声明：true → color-scheme: dark（原生控件/滚动条跟随）+ 昼夜调度可选中 */
+  dark?: boolean;
   /** 来源：builtin 内置 | plugin 插件安装（勿手填） */
   source?: "builtin" | "plugin";
+  /** 来源插件 id（source=plugin 时由 loader 写入，勿手填）：插件卸载/停用/覆盖安装时
+   *  据此回收主题，避免「主题区删了插件卡还在」「插件删了主题还在」两处状态不同步 */
+  owner?: string;
 }
 
 /** 快照（useSyncExternalStore 消费） */
@@ -40,6 +45,12 @@ export interface ThemeSnapshot {
   logoSvg: string | null;
   /** 被删除的内置 id（恢复按钮可见性依据） */
   deletedBuiltins: string[];
+  /** 昼夜调度状态（UI 的外观设置区消费） */
+  followSystem: boolean;
+  dayThemeId: string | null;
+  nightThemeId: string | null;
+  /** 系统当前是否暗色（跟随模式下实际生效的是哪一档） */
+  systemDark: boolean;
 }
 
 /* ---------- 内置主题（令牌覆盖演示五种气质；全部可删） ---------- */
@@ -148,6 +159,52 @@ const BUILTIN_THEMES: ThemeDef[] = [
     },
     source: "builtin",
   },
+  {
+    id: "onethu.theme.night",
+    name: "凝夜",
+    version: "1.0.0",
+    author: "OneTHU",
+    dark: true,
+    description: "深夜工作台：墨蓝黑纸面 + 亮钢蓝强调，昼夜调度的黑夜档。",
+    vars: {
+      "--bg": "#0e1117",
+      "--bg-soft": "#12161f",
+      "--surface": "#151a24",
+      "--surface-2": "#1a2030",
+      "--surface-3": "#232b3d",
+      "--skeleton": "rgba(255, 255, 255, 0.06)",
+      "--border": "rgba(255, 255, 255, 0.1)",
+      "--border-soft": "rgba(255, 255, 255, 0.05)",
+      "--border-strong": "rgba(255, 255, 255, 0.18)",
+      "--text-1": "#e8ebf2",
+      "--text-2": "#a3abb8",
+      "--text-3": "#7d8494",
+      "--text-dim": "#3a4152",
+      "--primary": "#e8ebf2",
+      "--primary-hover": "#c6ccd8",
+      "--on-primary": "#0e1117",
+      "--accent": "#6b9bff",
+      "--accent-soft": "rgba(107, 155, 255, 0.14)",
+      "--accent-border": "rgba(107, 155, 255, 0.35)",
+      "--red": "#ff736f",
+      "--red-soft": "rgba(229, 72, 77, 0.16)",
+      "--amber": "#ffb457",
+      "--amber-soft": "rgba(217, 115, 13, 0.16)",
+      "--green": "#4ade80",
+      "--green-soft": "rgba(34, 197, 94, 0.14)",
+      "--hover": "rgba(255, 255, 255, 0.06)",
+      "--active": "rgba(255, 255, 255, 0.1)",
+      "--shadow-1": "0 2px 4px rgba(0, 0, 0, 0.4)",
+      "--shadow-2": "0 2px 8px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.3)",
+      "--shadow-3": "0 0 1px rgba(0, 0, 0, 0.6), 0 12px 32px rgba(0, 0, 0, 0.45)",
+      "--ring": "0 0 0 3px rgba(107, 155, 255, 0.35)",
+    },
+    css: `/* 凝夜：硬编码浅色残面的定点修补（global.css 不改动，主题层覆盖） */
+:root[data-theme="onethu.theme.night"] .plg-pin.is-oh { background: var(--surface-2); color: var(--text-1); }
+:root[data-theme="onethu.theme.night"] .plg-switch i { background: #e8ebf2; }
+:root[data-theme="onethu.theme.night"] img { opacity: 0.92; }`,
+    source: "builtin",
+  },
 ];
 
 const STORE_KEY = "onethu.theme.v1";
@@ -157,9 +214,14 @@ interface PersistShape {
   installed: ThemeDef[];
   activeId: string | null;
   deletedBuiltins: string[];
+  /** 昼夜调度：跟随系统暗/亮自动切换日/夜两档主题（false=手动单选，向后兼容） */
+  followSystem: boolean;
+  dayThemeId: string | null;
+  nightThemeId: string | null;
 }
 
-let state: PersistShape = { installed: [], activeId: null, deletedBuiltins: [] };
+let state: PersistShape = { installed: [], activeId: null, deletedBuiltins: [], followSystem: false, dayThemeId: null, nightThemeId: null };
+let systemDark = false;
 let logoSvg: string | null = null;
 const listeners = new Set<() => void>();
 /** getSnapshot 缓存：useSyncExternalStore 要求引用稳定，每次新建对象
@@ -190,6 +252,9 @@ function bootstrap(): void {
           installed: parsed.installed.filter((t) => t && typeof t.id === "string" && t.vars),
           activeId: typeof parsed.activeId === "string" ? parsed.activeId : null,
           deletedBuiltins: Array.isArray(parsed.deletedBuiltins) ? parsed.deletedBuiltins : [],
+          followSystem: parsed.followSystem === true,
+          dayThemeId: typeof parsed.dayThemeId === "string" ? parsed.dayThemeId : null,
+          nightThemeId: typeof parsed.nightThemeId === "string" ? parsed.nightThemeId : null,
         };
       }
     }
@@ -225,6 +290,7 @@ function applyTheme(def: ThemeDef | null): void {
   let style = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
   if (!def) {
     delete root.dataset.theme;
+    root.style.colorScheme = "light"; // 回归基础令牌 = 亮色（安卓 WebView 强制反色防护恢复）
     if (style) style.textContent = "";
     logoSvg = null;
     return;
@@ -246,13 +312,35 @@ function applyTheme(def: ThemeDef | null): void {
   style.textContent = css;
   document.head.appendChild(style);   // 重新挪到末尾：vite 后注入的样式压不过
   root.dataset.theme = def.id;
+  // color-scheme 跟随主题声明：暗色主题让原生控件/滚动条/表单控件同步反色
+  // （global.css 的 :root { color-scheme: light } 特异度 (0,1,0) 被这里 (0,2,0) 稳压）
+  root.style.colorScheme = def.dark ? "dark" : "light";
   logoSvg = def.logo && def.logo.includes("<svg") ? def.logo : null;
 }
 
-/** 应用当前 activeId（找不到/为空 = 回归默认令牌） */
+/** 应用当前应生效的主题：跟随系统时按系统暗/亮取日夜两档，否则手动单选 */
 function applyActive(): void {
-  const def = state.installed.find((t) => t.id === state.activeId) ?? null;
+  const id = state.followSystem
+    ? (systemDark ? state.nightThemeId : state.dayThemeId) ?? state.activeId
+    : state.activeId;
+  const def = state.installed.find((t) => t.id === id) ?? null;
   applyTheme(def);
+}
+
+/** 系统暗色监听：跟随模式下系统切换即时换主题 */
+const darkMq = typeof window !== "undefined" && "matchMedia" in window ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+if (darkMq) {
+  const onSys = (): void => {
+    const was = systemDark;
+    systemDark = darkMq.matches;
+    if (state.followSystem && was !== systemDark) {
+      applyActive();
+      emit();
+    }
+  };
+  if (darkMq.addEventListener) darkMq.addEventListener("change", onSys);
+  else darkMq.addListener?.(onSys); // 旧 WebView 兼容
+  systemDark = darkMq.matches;
 }
 
 bootstrap();
@@ -260,7 +348,16 @@ bootstrap();
 /* ---------- 公开 API ---------- */
 
 function snapshot(): ThemeSnapshot {
-  snapCache ??= { themes: [...state.installed], activeId: state.activeId, logoSvg, deletedBuiltins: [...state.deletedBuiltins] };
+  snapCache ??= {
+    themes: [...state.installed],
+    activeId: state.activeId,
+    logoSvg,
+    deletedBuiltins: [...state.deletedBuiltins],
+    followSystem: state.followSystem,
+    dayThemeId: state.dayThemeId,
+    nightThemeId: state.nightThemeId,
+    systemDark,
+  };
   return snapCache;
 }
 
@@ -283,6 +380,23 @@ export function activateTheme(id: string): boolean {
   return true;
 }
 
+/** 开关「跟随系统昼夜」：开=按系统暗/亮自动切日夜两档；关=回到手动单选 */
+export function setFollowSystem(on: boolean): void {
+  state.followSystem = on;
+  applyActive();
+  persist();
+  emit();
+}
+
+/** 设置日/夜两档主题 id（跟随模式下系统暗色用 nightThemeId，亮色用 dayThemeId） */
+export function setDayNightTheme(dayId: string | null, nightId: string | null): void {
+  state.dayThemeId = dayId;
+  state.nightThemeId = nightId;
+  applyActive();
+  persist();
+  emit();
+}
+
 /** 停用主题：回到基础令牌（不删除） */
 export function deactivateTheme(): void {
   state.activeId = null;
@@ -292,7 +406,7 @@ export function deactivateTheme(): void {
 }
 
 /** 安装/覆盖一个主题（插件路径或 JSON 导入共用） */
-export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plugin"): ThemeDef {
+export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plugin", owner?: string): ThemeDef {
   const clean: ThemeDef = {
     id: String(def.id || "").trim(),
     name: String(def.name || def.id || "未命名主题"),
@@ -303,7 +417,9 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
     fonts: def.fonts,
     logo: def.logo,
     css: def.css,
+    dark: def.dark === true,
     source,
+    owner: source === "plugin" ? (owner ?? def.owner) : undefined,
   };
   if (!clean.id) throw new Error("主题 id 不能为空");
   const i = state.installed.findIndex((t) => t.id === clean.id);
@@ -315,19 +431,49 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
   return clean;
 }
 
-/** 删除主题（内置同权可删；删内置记入名单不复活） */
-export function removeTheme(id: string): void {
-  const def = state.installed.find((t) => t.id === id);
-  state.installed = state.installed.filter((t) => t.id !== id);
-  if (def?.source === "builtin" && !state.deletedBuiltins.includes(id)) {
-    state.deletedBuiltins.push(id);
-  }
-  if (state.activeId === id) {
+/** 批量移除主题（内部）：清 activeId 与昼夜档位，落盘并通知一次；内置主题不动 */
+function dropThemes(ids: Set<string>): string[] {
+  if (ids.size === 0) return [];
+  const gone = state.installed
+    .filter((t) => ids.has(t.id) && t.source !== "builtin")
+    .map((t) => t.id);
+  if (gone.length === 0) return [];
+  const goneSet = new Set(gone);
+  state.installed = state.installed.filter((t) => !goneSet.has(t.id));
+  if (state.activeId && goneSet.has(state.activeId)) {
     state.activeId = null;
     applyTheme(null);
   }
+  if (state.dayThemeId && goneSet.has(state.dayThemeId)) state.dayThemeId = null;
+  if (state.nightThemeId && goneSet.has(state.nightThemeId)) state.nightThemeId = null;
   persist();
   emit();
+  return gone;
+}
+
+/** 删除主题（内置不可删除——用户始终有可用外观；仅插件主题可移除） */
+export function removeTheme(id: string): void {
+  dropThemes(new Set([id]));
+}
+
+/** 回收某插件注册的主题（插件卸载 / 停用 / 覆盖安装时调用），返回被移除的 id。
+ *
+ *  匹配三种情形，缺一都会留下「孤儿主题」：
+ *    ① `owner === pluginId`——新版安装记录；
+ *    ② id 与本插件 id 相同——文档约定的同 id 写法，覆盖历史无 owner 的记录；
+ *    ③ 显式传入的 `ids`（插件模块本版声明的主题 id）——覆盖「主题 id 与插件 id
+ *       不同名」的历史记录。
+ *  `keep` 中的 id 保留：覆盖安装时新版主题已注册，不能连带删掉。 */
+export function removePluginThemes(pluginId: string, opts?: { ids?: string[]; keep?: string[] }): string[] {
+  const keep = new Set(opts?.keep ?? []);
+  const declared = new Set(opts?.ids ?? []);
+  const ids = new Set(
+    state.installed
+      .filter((t) => t.source === "plugin" && !keep.has(t.id)
+        && (t.owner === pluginId || t.id === pluginId || declared.has(t.id)))
+      .map((t) => t.id),
+  );
+  return dropThemes(ids);
 }
 
 /** 恢复全部被删的内置主题 */
@@ -340,6 +486,17 @@ export function restoreBuiltins(): number {
   persist();
   emit();
   return back.length;
+}
+
+/** 插件 API facade 用的非 hook 查询（不触发订阅） */
+export function listThemes(): ThemeDef[] {
+  return [...state.installed];
+}
+export function activeThemeId(): string | null {
+  return state.activeId;
+}
+export function themeSchedule(): { followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null; systemDark: boolean } {
+  return { followSystem: state.followSystem, dayThemeId: state.dayThemeId, nightThemeId: state.nightThemeId, systemDark };
 }
 
 /** 插件侧查询：某主题 id 是否已在架上（供 loader 提示覆盖安装） */

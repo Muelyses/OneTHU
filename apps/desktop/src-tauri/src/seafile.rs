@@ -169,10 +169,12 @@ pub async fn seafile_dir(token: String, repo_id: String, path: String) -> Result
     Ok(out)
 }
 
-/// 下载到 ~/Downloads（Content-Disposition 真名优先；同 lib.rs download_file 约定）
+/// 下载到设置中的下载目录（Content-Disposition 真名优先；同 lib.rs download_file 约定）
 #[tauri::command]
-pub async fn seafile_download(
-    app: tauri::AppHandle,
+/// `R` 泛型：句柄只在 Android 分支用到（写缓存后经系统桥转存），桌面端实际不使用，
+/// 泛型化让 live 测试可以传 mock 句柄而不必构造 Wry 运行时。
+pub async fn seafile_download<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
     token: String,
     repo_id: String,
     path: String,
@@ -233,11 +235,7 @@ pub async fn seafile_download(
     }
     #[cfg(not(target_os = "android"))]
     {
-        let _ = &app;
-        let home = std::env::var("HOME")
-            .or_else(|_| std::env::var("USERPROFILE"))
-            .map_err(|_| "无法定位主目录")?;
-        let dir = std::path::Path::new(&home).join("Downloads");
+        let dir = crate::downloads::directory(&app)?;
         std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
         let path = dir.join(&safe_name);
         std::fs::write(&path, &bytes).map_err(|e| e.to_string())?;
@@ -559,7 +557,14 @@ mod tests {
         assert!(share.link.starts_with("https://"), "链接应为 https");
 
         // 下载回来校验内容
-        let local = seafile_download(t.clone(), repo.id.clone(), format!("{dir}/onethu-seafile-up.txt"))
+        // seafile_download 后来多了 AppHandle（Android 要写进应用沙盒）：ignored 的 live
+        // 测试因此编不过，连累整个 lib 测试目标——这里补上 mock 句柄，测试本身不跑。
+        let local = seafile_download(
+            tauri::test::mock_app().handle().clone(),
+            t.clone(),
+            repo.id.clone(),
+            format!("{dir}/onethu-seafile-up.txt"),
+        )
             .await
             .expect("下载");
         let content = std::fs::read_to_string(&local).unwrap();

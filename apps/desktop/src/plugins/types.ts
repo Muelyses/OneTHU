@@ -33,7 +33,18 @@ export type PluginPermission =
   | "nav" // 应用内页面跳转
   | "ui" // toast 提示
   | "storage" // 插件私有键值存储
-  | "net:external"; // 外部网络请求（大模型 API 等）
+  | "net:external" // 外部网络请求（大模型 API 等）
+  | "tsinghua:sdk" // 以用户登录态访问任意清华校内服务（自定义服务接入 SDK；安装时重点确认）
+  | "clipboard:read" // 读取系统剪贴板（敏感：可读密码管理器复制的口令）
+  | "plugins:call" // 列出并执行其他已启用插件的命令（联动插件；OH 对话工具化需要）
+  | "css" // 注入全局样式（影响整个应用外观，包括宿主界面；安装时重点确认）
+  | "llm" // 经内置 Harness 的 LLM 对话（清华 MadModel 免费档 / 自费 API，自动调度）
+  | "theme" // 主题查询与应用、昼夜跟随调度（可改变全局外观）
+  | "exthw:read" // 外部作业源（雨课堂/TUOJ 系/Tyche/DSA OJ）状态与作业快照
+  | "exthw:refresh" // 触发外部作业源刷新（网络请求）
+  | "webview" // 应用内 WebView 模态（Android 桌面模式浏览；桌面自动降级系统浏览器）
+  | "widget" // 声明 Android 桌面小组件（只声明显示什么，渲染由宿主与原生完成）
+  | "notify"; // 发送系统通知（三端；内容与时刻由插件自定）
 
 export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: string; desc: string }> = [
   { id: "user:read", label: "读取基本信息", desc: "姓名/学号/院系与登录会话状态" },
@@ -59,13 +70,26 @@ export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: st
   { id: "ui", label: "显示提示", desc: "弹出 toast 消息" },
   { id: "storage", label: "本地存储", desc: "插件私有键值存储（卸载即清除）" },
   { id: "net:external", label: "外部网络请求", desc: "直接请求任意外部 HTTP(S) 接口（大模型 API 等）" },
+  { id: "widget", label: "桌面小组件", desc: "向 Android 桌面小组件声明要显示的内容（渲染与取值由宿主完成，插件不写原生代码）" },
+  { id: "notify", label: "发送系统通知", desc: "向系统通知中心推送通知（三端），内容与时刻由插件决定" },
+  { id: "css", label: "注入全局样式", desc: "注入影响整个应用外观的 CSS（安装时重点确认）" },
+  { id: "clipboard:read", label: "读取剪贴板", desc: "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）" },
+  { id: "plugins:call", label: "调用其他插件", desc: "列出并执行其他已启用插件的命令（含写操作）" },
+  { id: "tsinghua:sdk", label: "访问任意校内服务", desc: "以你的登录态访问任意清华校内系统（自定义服务接入）" },
+  { id: "theme", label: "主题控制", desc: "查询与应用主题、参与昼夜跟随调度（可改变全局外观）" },
+  { id: "llm", label: "模型对话", desc: "经内置 Harness 调用大模型（清华免费档或你的自费 API）" },
+  { id: "exthw:read", label: "读取外部作业源", desc: "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照" },
+  { id: "exthw:refresh", label: "刷新外部作业源", desc: "触发外部作业源网络刷新" },
+  { id: "webview", label: "应用内网页", desc: "在应用内打开网页（Android 桌面模式浏览）" },
 ];
 
 /** 插件设置项：安装后由应用代为渲染表单（插件不自带 UI） */
 export interface PluginSettingField {
   key: string;
   label: string;
-  type?: "text" | "password" | "textarea";
+  type?: "text" | "password" | "textarea" | "select";
+  /** select 类型的选项集 */
+  options?: Array<{ value: string; label: string }>;
   placeholder?: string;
   default?: string;
 }
@@ -82,6 +106,8 @@ export interface PluginManifest {
   version: string;
   author?: string;
   description?: string;
+  /** 源码仓库地址（可选）：管理页据此提供「仓库」跳转 */
+  repo?: string;
   permissions: PluginPermission[];
   settings?: PluginSettingField[];
   /** 插件类别（2026-09-13 主题系统立项）：theme=主题插件（导出 theme 定义，
@@ -90,6 +116,19 @@ export interface PluginManifest {
 }
 
 /** 插件注册的命令：显示在插件管理页，可带一段文本输入（agent prompt 等） */
+/** 命令/面板的结构化结果：runCommand 与 ui 面板均可返回，
+ *  宿主按区块渲染（纯 string 入参时自动包成 { text }）。 */
+export interface CommandResult {
+  /** 纯文本摘要（渲染在区块顶部） */
+  text?: string;
+  /** Markdown 正文（react-markdown + GFM：表格/列表/代码块/链接） */
+  markdown?: string;
+  /** 条目列表（每条 title 必填，subtitle/meta 为次要行） */
+  items?: Array<{ title: string; subtitle?: string; meta?: string }>;
+  /** 键值对（小型状态/汇总展示） */
+  kv?: Array<{ k: string; v: string }>;
+}
+
 export interface PluginCommand {
   id: string;
   title: string;
@@ -105,6 +144,28 @@ export interface PluginContext {
   onethu: OnethuApi;
   /** 注册命令（管理页展示、用户点击执行） */
   registerCommand(cmd: PluginCommand, run: (input: string) => Promise<unknown> | unknown): void;
+  /** 注册侧栏功能页（UI 自由化）：应用导航出现本插件的 tab；
+   *  页面内容由插件在容器内全权渲染（onethu.ui.onTabReady / getTabRoot 拿 DOM）。 */
+  registerTab(tab: { id: string; title: string; iconSvg?: string }): void;
+  /** 注入插件样式（天马行空 CSS）：全局 <style>，插件停用即移除。
+   *  作用域规约：选择器用 [data-plg="<pluginId>"] 包裹，避免污染宿主界面。需 css 权限。 */
+  registerCss(css: string): void;
+  /** 注册原子种类（万物原子化）：使插件结果可收进用户收藏夹、进 AtomPicker。
+   *  resolve(key) 返回展示元数据；key 约定 "<tabId>~<原子key>"（点击深链到对应 tab）。 */
+  registerAtom(def: {
+    group: string;
+    iconSvg?: string;
+    resolve: (key: string) => { title: string; sub?: string } | null;
+  }): void;
+  /** 声明一个桌面小组件（Android）：只声明「显示什么」，渲染由宿主与原生完成。
+   *  rows 里可用 { atom } 引用本插件注册的原子（key 约定同收藏夹 "<tabId>~<原子key>"），
+   *  宿主解析后交给原生；有 3 个预留槽位，按声明顺序占位。需 widget 权限。 */
+  registerWidget(def: {
+    id: string;
+    title: string;
+    rows: Array<{ text: string; sub?: string } | { atom: string }>;
+    target?: string;
+  }): void;
   /** 写日志（进应用调试通道：桌面 /tmp/onethu-debug.log，Android logcat tag=onethu） */
   log(line: string): void;
 }
@@ -281,6 +342,71 @@ export interface OnethuApi {
   };
   ui: {
     toast(text: string): void;
+    /** 应用内确认弹窗（Promise 化）；opts.danger 走危险操作样式（红色确认钮）。需 ui 权限 */
+    confirm(msg: string, opts?: { danger?: boolean }): Promise<boolean>;
+    /** 通用表单弹窗：fields 为 FormField[]（text/textarea/password/select），
+     *  resolve 键值对象；用户取消 resolve null。需 ui 权限 */
+    form(title: string, fields: Array<{
+      key: string; label: string;
+      kind?: "text" | "textarea" | "password" | "select";
+      placeholder?: string; default?: string; required?: boolean;
+      options?: Array<{ value: string; label: string }>;
+    }>): Promise<Record<string, string> | null>;
+    /** 应用内 WebView 模态打开 URL（Android 桌面模式浏览；桌面端抛错由调用方降级）。需 webview 权限 */
+    webModal(url: string): Promise<void>;
+    /** 剪贴板：write 需 ui 权限；read 需 clipboard:read 权限（敏感） */
+    clipboard: {
+      write(text: string): Promise<void>;
+      read(): Promise<string>;
+    };
+    /** 本插件 tab 的挂载容器（未挂载时 null）——拿到后可全权渲染 DOM */
+    getTabRoot(pageKey: string): HTMLElement | null;
+    /** 订阅 tab 容器就绪（已就绪立即回调；返回退订函数） */
+    onTabReady(pageKey: string, cb: (root: HTMLElement) => void): () => void;
+  };
+  /** 万物原子化收藏（对齐宿主收藏夹体系）：插件结果可收进用户收藏夹，点击深链回插件 tab。需 ui 权限 */
+  favorites: {
+    /** 收藏本插件原子。key 即 registerAtom 约定的 "<tabId>~<原子key>"（本插件 kind 自动补全）；
+     *  folderId 缺省收进第一个根收藏夹（无根夹时自动建「我的收藏」） */
+    add(key: string, folderId?: string): void;
+    /** 列出本插件已被收藏的原子的收藏夹与 key */
+    list(): Array<{ folderId: string; folderTitle: string; key: string }>;
+    /** 收藏任意已注册种类的原子（跨插件）；meta 提供展示元数据（该种类未注册时内联注册） */
+    addAtom(ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void;
+    /** 列出全部可收藏的插件原子种类 */
+    kinds(): Array<{ kind: string; group: string; source: "registered" | "static" }>;
+  };
+  /** 系统通知（三端）：插件自定内容与时刻；通知 id 归插件所有，宿主重排不会撤它 */
+  notify: {
+    /** 排一条通知；afterSeconds 缺省 60（至少 1 秒后，避免"过去时刻"被系统拒绝）。
+     *  需 notify 权限。返回 ok=false 时 reason 说明原因（未授权 / 平台不支持 / 排程失败） */
+    send(opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{
+      ok: boolean;
+      /** 通知 id（撤销时用） */
+      id: string;
+      reason?: string;
+    }>;
+    /** 撤销一条自己的通知（key 与 send 时一致） */
+    cancel(key: string): Promise<boolean>;
+    /** 后端与权限状态；request=true 时顺带发起授权请求（用户主动行为时才传） */
+    status(request?: boolean): Promise<{ ok: boolean; backend: string; granted: boolean; exact: boolean; reason?: string }>;
+  };
+  /** 桌面小组件（Android）：查询本插件声明的小组件与所占槽位 */
+  widget: {
+    /** 列出本插件已声明的小组件及槽位号（未占槽位时 slot 为 null） */
+    list(): Array<{ id: string; title: string; slot: string | null }>;
+    /** 本平台的槽位总数（用于提示用户「放到第 N 个小组件」） */
+    slots(): number;
+    /** 桌面上每一块小组件（appWidgetId）及其绑定的内容 */
+    instances(): Promise<Array<{ id: string; shape: string; binding: unknown }>>;
+    /** 新放置、还没选的块用哪份默认内容 */
+    getFallback(): Promise<unknown>;
+    /** 改默认内容；目标不存在（收藏夹被删 / 原子解析不出）返回 false */
+    setFallback(binding: { kind: "today" } | { kind: "folder"; folderId: string } | { kind: "detail" | "shortcut"; atom: { kind: string; key: string } } | null): Promise<boolean>;
+    /** 绑定某一块的显示内容（id 为 instances() 报回的 id）；目标失效返回 false */
+    bind(id: string, binding: { kind: "today" } | { kind: "folder"; folderId: string } | { kind: "detail" | "shortcut"; atom: { kind: string; key: string } } | null): Promise<boolean>;
+    /** 解除绑定（回到默认内容） */
+    unbind(id: string): Promise<boolean>;
   };
   storage: {
     get<T = string>(key: string): T | null;
@@ -297,6 +423,63 @@ export interface OnethuApi {
      *  返回标准 Response（可用 res.json()/res.text()）。 */
     fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
   };
+  plugins: {
+    /** 列出已启用 JS 插件及其命令（联动插件工具发现）。需 plugins:call 权限 */
+    list(): Promise<Array<{ pluginId: string; pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>>;
+    /** 执行已启用插件的命令（高危：命令可能含写操作，由插件内部两段确认兜底）。需 plugins:call 权限 */
+    call(pluginId: string, cmdId: string, input?: string): Promise<unknown>;
+  };
+  ts: {
+    /** 会话探活：返回主会话当前可用性。需 tsinghua:sdk 权限。 */
+    status(): Promise<"ready" | "expired" | "logged-out">;
+    /** 确保主会话可用（探活 + 透明建立）；不可用时抛 AuthRequiredError。 */
+    ensure(): Promise<void>;
+    /** 当前登录名（未登录为 null）。 */
+    username(): Promise<string | null>;
+    /** 创建清华服务 HTTP 客户端：共享宿主主会话 cookie 池与自愈守卫，
+     *  自动处理 webvpn 包装与直连分流。CAS 对接的系统在会话存活时自动过票。 */
+    client(opts?: { mode?: "auto" | "webvpn" | "direct" }): {
+      /** 发起请求。init 为标准 RequestInit 子集；返回标准 Response。
+       *  响应含登录页特征时宿主自动重登并重放一次。 */
+      fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
+      /** 返回按分流规则解析后的实际请求 URL（调试与展示用）。 */
+      resolve(url: string): string;
+    };
+  };
+  llm: {
+    /** 单轮对话（经内置 Harness：清华 MadModel 免费档 ↔ 自费 API 自动调度）。
+     *  返回回复文本与本次实际使用的模型/模型源；免费档不可用（校外且无自费 Key）
+     *  时抛带引导文案的错误。需 llm 权限。 */
+    chat(input: string): Promise<{ text: string; model: string; provider: string }>;
+    /** 当前 Harness 的模型源设置（"madmodel" | "custom" | ""=自动） */
+    provider(): Promise<string>;
+  };
+  theme: {
+    /** 已安装主题列表（含 dark 声明） */
+    list(): Promise<Array<{ id: string; name: string; version: string; dark: boolean }>>;
+    /** 当前手动选中的主题 id（昼夜跟随模式下实际生效看 schedule().systemDark） */
+    active(): Promise<string | null>;
+    /** 应用某主题（null=基础令牌；会自动退出昼夜跟随） */
+    apply(id: string | null): Promise<void>;
+    /** 昼夜调度状态（followSystem/两档 id/系统当前暗亮） */
+    schedule(): Promise<{ followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null; systemDark: boolean }>;
+    /** 开关「跟随系统昼夜」 */
+    setFollowSystem(on: boolean): Promise<void>;
+    /** 设置日/夜两档主题（null=基础令牌） */
+    setDayNight(dayId: string | null, nightId: string | null): Promise<void>;
+  };
+  exthw: {
+    /** 外部作业源快照：各源作业条目/错误/自动登录状态/上次刷新时间 */
+    snapshot(): Promise<{
+      items: Array<{ source: string; course: string; title: string; deadline: string | null; url: string | null; submitted: boolean; graded: boolean; score: number | null }>;
+      errors: Record<string, string>;
+      state: string;
+      lastAt: number;
+      configured: boolean;
+    }>;
+    /** 触发全源刷新（网络请求；各源按自身频控） */
+    refresh(): Promise<void>;
+  };
 }
 
 /** 安装记录（localStorage 持久化） */
@@ -304,6 +487,8 @@ export interface PluginRecord {
   manifest: PluginManifest;
   /** js 插件的模块文本；rust 插件为空串 */
   code: string;
+  /** 来源仓库（市场/GitHub 直装时记录；清单自声明 repo 亦可） */
+  repo?: string;
   /** rust 插件：二进制绝对路径（manifest 在其同目录 manifest.json） */
   binPath?: string;
   /** 内置插件（OH）：App 的一部分，管理页不可卸载 */

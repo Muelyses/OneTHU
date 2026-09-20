@@ -1,10 +1,11 @@
 /** 侧栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关） */
-import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, useSyncExternalStore} from "react";
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type Page } from "../state/app.js";
-import { IconChevron, IconDemo, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPlug, IconSchedule, IconSettings, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud,} from "./Icons.js";
+import { IconChevron, IconDemo, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPlug, IconSchedule, IconSettings, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
+import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
 import { checkUpdateSilently } from "../lib/update.js";
 
@@ -13,6 +14,22 @@ import { checkUpdateSilently } from "../lib/update.js";
  * 「已折叠收藏夹（N）」组；一切功能原子锚定在这些原位页面，用户收藏夹
  * 只是原子的跳转入口层。今日 = 首页恒在最上；设置 = 钉底。
  */
+/** 插件动态 tab（useSyncExternalStore 订阅；渲染在固定 NAV 之后） */
+function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> {
+  const tabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
+  return tabs.map((t) => ({
+    page: t.pageKey as Page,
+    label: t.title,
+    icon: ({ width = 16, height = 16 }: { width?: number; height?: number }) => (
+      <span
+        className="plg-svg-icon"
+        style={{ width, height, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+        dangerouslySetInnerHTML={{ __html: t.iconSvg ?? '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2.5 4.2 6l-2.4 4.5L6 13.5l3-2 3 2 2.2-3-2.4-4.5L10 2.5l-4 0z"/></svg>' }}
+      />
+    ),
+  }));
+}
+
 const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> = [
   { page: "today", label: "今日", icon: IconToday },
   { page: "learn", label: "网络学堂", icon: IconLearn },
@@ -20,6 +37,7 @@ const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> 
   { page: "trace", label: "寻迹", icon: IconTrace },
   { page: "mail", label: "邮箱", icon: IconMail },
   { page: "cloud", label: "云盘", icon: IconCloud },
+  { page: "thubook", label: "THUbook", icon: IconBook },
   { page: "info", label: "信息", icon: IconInfo },
   { page: "life", label: "生活", icon: IconCard },
   { page: "reserve", label: "预约", icon: IconCalendar },
@@ -210,6 +228,8 @@ export function Slogan({ size = 13 }: { size?: number }) {
 export function Shell({ children }: { children: ReactNode }) {
   const { status, page: rawPage, navigate, navParams } = useApp();
   const favs = useFavs();
+  const pluginNav = usePluginNavEntries();
+  const navAll = [...NAV, ...pluginNav];
   const page = topLevelPage(rawPage);
   const demo = status === "demo";
   const [navOpen, setNavOpen] = useState(false);
@@ -264,7 +284,7 @@ export function Shell({ children }: { children: ReactNode }) {
     const foldedCount = foldedDefaults.length + foldedUser.length;
     return (
       <>
-        {/* 默认一级入口：今日恒在最上（不可折叠），其余可折叠 */}
+        {/* 默认一级入口（内置）：今日恒在最上（不可折叠），其余可折叠 */}
         {unfoldedDefaults.map(({ page: p, label, icon: Icon }) =>
           navRow("d-" + p, {
             active: page === p,
@@ -278,20 +298,43 @@ export function Shell({ children }: { children: ReactNode }) {
             onFold: p === "today" ? undefined : () => favs.foldSidebar(p, true),
           }),
         )}
-        {/* 用户收藏夹（根层）：跳转入口层 */}
-        {unfoldedUser.map((id) =>
-          navRow("u-" + id, {
-            active: isFolderActive(id),
-            label: favs.data.folders[id]?.title ?? "收藏夹",
-            icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
-            onClick: () => {
-              onAfter?.();
-              navigate("folder", { folderId: id });
-            },
-            folded: false,
-            onFold: () => favs.foldSidebar(id, false),
-          }),
-        )}
+        {/* 插件功能页分组：与内置入口视觉分离 */}
+        {pluginNav.length ? (
+          <>
+            <div className="nav-label">插件功能页</div>
+            {pluginNav.map(({ page: p, label, icon: Icon }) =>
+              navRow("pl-" + p, {
+                active: page === p,
+                label,
+                icon: <Icon />,
+                onClick: () => {
+                  onAfter?.();
+                  navigate(p);
+                },
+                folded: false,
+              }),
+            )}
+          </>
+        ) : null}
+        {/* 收藏夹分组 */}
+        <div className="nav-label">收藏夹</div>
+        {/* 用户收藏夹（根层）：跳转入口层；段内限高滚动——收藏夹再多也不把
+            「新建收藏夹 / 已折叠收藏夹」推到滚动边缘挤成半截 */}
+        <div className="nav-folders-scroll">
+          {unfoldedUser.map((id) =>
+            navRow("u-" + id, {
+              active: isFolderActive(id),
+              label: favs.data.folders[id]?.title ?? "收藏夹",
+              icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
+              onClick: () => {
+                onAfter?.();
+                navigate("folder", { folderId: id });
+              },
+              folded: false,
+              onFold: () => favs.foldSidebar(id, false),
+            }),
+          )}
+        </div>
         <button
           className="nav-item nav-new"
           onClick={() => {
@@ -377,7 +420,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const topbarTitle =
     page === "folder" && navParams?.folderId
       ? favs.data.folders[navParams.folderId]?.title ?? "收藏夹"
-      : NAV.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : "OneTHU");
+      : navAll.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : "OneTHU");
 
   return (
     <div className="shell">
@@ -502,8 +545,9 @@ export function PageHead({
   actions?: ReactNode;
 }) {
   const { page } = useApp();
+  const pluginNav = usePluginNavEntries();
   // 窄屏顶栏已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
-  const navLabel = NAV.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
+  const navLabel = [...NAV, ...pluginNav].find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
   const dupOnTopbar =
     typeof window !== "undefined" &&
     window.matchMedia("(max-width: 860px)").matches &&

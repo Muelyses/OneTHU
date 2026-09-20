@@ -49,14 +49,15 @@ OneTHU 是对 thu-info-app / learnX / NextTHUxk 的完全重构：统一身份�
 - **严禁将本项目源码用于任何形式的自动预约 / 抢场**。该行为既违反体育部场馆中心预约须知，也违反本项目开源准则；由此产生的一切后果由使用者自行承担。
 - 本项目为非官方的个人效率工具，与清华大学无关；所有数据均来自学校公开系统的网页接口，仅供个人学习与日常使用。
 
-### 外部作业源（荷塘雨课堂 / TUOJ / Tyche）
+### 外部作业源（荷塘雨课堂 / TUOJ / Tyche / DSA OJ）
 
-设置页「外部作业源」可把三个平台的作业 DDL 合并进「全部作业」与「今日」，一处看全。
+设置页「外部作业源」可把各平台的作业 DDL 合并进「全部作业」与「今日」，一处看全：
+雨课堂、TUOJ（AI 版与经典版）、Tyche、DSA OJ。
 
 - **只读**：只取「标题 + 课程 + 截止时间 + 来源」，不提交、不答题、不抓题目内容。
-- **登录即可**：雨课堂用手机号 + 短信验证码；TUOJ / Tyche 用各自的用户名 + 密码。登录成功后由应用从传输层自定义响应头（`x-onethu-set-cookie`）取回会话 Cookie，**无需手动爬 Cookie**。登录只在桌面端（Tauri）可用：浏览器预览读不到 `Set-Cookie`。
+- **登录即可**：雨课堂用扫码或官方网页登录；TUOJ / Tyche 复用清华统一认证（TUOJ 也可配独立账密）；DSA OJ 用邮箱 + 密码（该站无统一认证）。登录成功后由应用从传输层自定义响应头（`x-onethu-set-cookie`）取回会话 Cookie，**无需手动爬 Cookie**。登录只在桌面端（Tauri）可用：浏览器预览读不到 `Set-Cookie`。
 - **凭据存储**：`onethu.exthw.v1` 只存**密文**（WebCrypto AES-GCM；密钥由本机随机 salt + 固定串经 PBKDF2 派生）。⚠️ **这只是本地混淆，不是真正的安全** —— 密钥与密文同在本机 localStorage，能读存储的人仍可解出明文；它只避免凭据以肉眼可读的形式被顺手看到或随备份导出。请勿在共享设备上使用。
-- **地址硬编码**：三个平台的服务端地址写死在代码里（雨课堂 `pro.yuketang.cn`、TUOJ `ai.tuoj.thusaac.com`、Tyche `166.111.236.164:6080`），不向用户暴露；Tyche 在校外需 WebVPN。
+- **地址硬编码**：各平台的服务端地址写死在代码里（雨课堂 `pro.yuketang.cn`、TUOJ `ai.tuoj.thusaac.com` 与 `oj.cs.tsinghua.edu.cn`、Tyche `166.111.236.164:6080`、DSA OJ `dsa.cs.tsinghua.edu.cn`），不向用户暴露；Tyche 在校外需 WebVPN。
 - 各平台接口均为逆向自其网页端的非官方用法，可能随对方改版失效；外部源拉取失败**不影响**网络学堂主流程。
 
 ---
@@ -107,7 +108,7 @@ OneTHU/
 ### API 与插件开发
 
 OneTHU 为开发者封装并开放丰富的统一平台调度接口，鼓励开发者利用 OneTHU API 创造更多可能。
-为 OneTHU 编写插件（JS 模块 / Rust sidecar / Android 内嵌），见[插件与接口规范](docs/OneTHU-插件与接口指南.md)。
+为 OneTHU 编写插件（JS 模块 / Rust sidecar / Android 内嵌），见 [插件开发指南](docs/plugin-development.md) 与 [API 参考](docs/api-reference.md)。
 
 ## OneTHU Harness（OH）
 

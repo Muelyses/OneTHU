@@ -154,7 +154,7 @@ export const PRESETS: Preset[] = [
   {
     id: "info",
     label: "信息大师",
-    hint: "成绩、考试、学籍、新闻与网堂全在",
+    hint: "成绩、考试、学籍、新闻与网络学堂全在",
     pages: ["today", "learn", "info", "schedule", "thos", "otherinfo"],
     tabs: { info: ALL_TABS.info, life: ["card", "network"] },
     cards: ["learn", "schedule", "extend"],

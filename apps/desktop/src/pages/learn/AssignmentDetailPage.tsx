@@ -222,7 +222,7 @@ export function AssignmentDetailPage() {
         const why = r.msg ?? "";
         throw new Error(
           /请上传附件/.test(why)
-            ? "该作业要求必须带附件，网堂不允许只删不传——请直接选新附件提交替换"
+            ? "该作业要求必须带附件，网络学堂不允许只删不传——请直接选新附件提交替换"
             : why || "撤回失败",
         );
       }

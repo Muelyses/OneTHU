@@ -23,18 +23,20 @@
  *  - 试卷（kind exam / 源 type 20）同样只读，无提交相关 UI；
  *  - 题型 9（外链 OJ）只显示外链跳转（externalUrl → 系统浏览器），不渲染作答区。
  *
- * 题干渲染（B2 基础占位）：bodyHtml 直接 innerHTML（雨课堂 CDN 图片交给 WebView
- * 原生加载，不走 learn 图片管道）。
- * TODO(R20-B3)：xuetangx-com-encrypted-font 加密字体（data.fontUrl 下载后 @font-face）
- * 与 $…$ LaTeX 公式渲染（docs 28.7 B3）；加密 span 当前显示占位字形，属已知形态。
+ * 题干渲染（R20-B3）：题干 / 我的作答 / 作业说明统一走 components/exthw/ProblemBody——
+ * 本地内联沙箱文档（sandbox srcdoc iframe）：xuetangx-com-encrypted-font 加密字体经
+ * loadYktFont 下载缓存（7 天 TTL / 失败 10min 退避 / magic 校验）挂 @font-face，
+ * $…$ 与 $$…$$ 走内置 KaTeX（离线自包含），图片带 Cookie/Referer 代理重试，
+ * 失败逐环降级（剥加密 span 保原文 / 保留 $ 原文 / 占位框+文件名），永不白屏。
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import type { YkExerciseDetail, YkProblem } from "@onethu/core";
 import { BackButton, timeLeft } from "./shared.js";
 import { Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
+import { ProblemBody } from "../../components/exthw/ProblemBody.js";
 import { useApp } from "../../state/context.js";
-import { fetchYktExerciseDetail } from "../../state/exthw.js";
+import { fetchYktExerciseDetail, getYktCookie } from "../../state/exthw.js";
 import { explainNetworkError } from "../../lib/transport.js";
 import { openExternalHomework } from "../../lib/extHwBrowse.js";
 import { openExternal } from "../info/openExternal.js";
@@ -54,12 +56,6 @@ function fmtMaxRetry(n: number | undefined): string {
   return n !== undefined && n > 0 ? `${n} 次` : "不可重交";
 }
 
-/** 题干 / 作答正文的基础渲染（B2 占位，见文件头 TODO(R20-B3)）。
- *  内容来自雨课堂服务端 HTML（与官方页同源信任级别）；B3 接字体/LaTeX 时替换本组件。 */
-function YktBasicHtml({ html }: { html: string }) {
-  return <div className="ykt-rich" dangerouslySetInnerHTML={{ __html: html }} />;
-}
-
 /** 老师评语（remark / comments）按纯文本渲染：实测快照均为纯文本（非 HTML），
  *  纯文本 + pre-wrap 不会吃掉换行，也避免把评语当 HTML 注入。 */
 function YktPlainText({ text }: { text: string }) {
@@ -67,8 +63,9 @@ function YktPlainText({ text }: { text: string }) {
 }
 
 /** 单题卡：序号 + 题型 + 分值 + 批改徽标；题干 / 我的作答 + 附件 / 老师评语。
- *  题型 9（外链 OJ）：只渲染外链跳转（红线），作答与评语区一律不给。 */
-function ProblemCard({ p }: { p: YkProblem }) {
+ *  题型 9（外链 OJ）：只渲染外链跳转（红线），作答与评语区一律不给。
+ *  题干 / 作答正文（R20-B3）：ProblemBody 内联沙箱渲染（加密字体 + LaTeX + 图片代理）。 */
+function ProblemCard({ p, fontUrl, cookies }: { p: YkProblem; fontUrl?: string; cookies: string }) {
   const chip = yktStatusChip(p);
   const ext9 = yktIsExternalLinkProblem(p);
   const attText = yktAttachmentsText(p.myAnswerAttachments);
@@ -87,7 +84,7 @@ function ProblemCard({ p }: { p: YkProblem }) {
       </div>
       {ext9 ? (
         <div className="ykt-problem-body">
-          {p.bodyHtml ? <YktBasicHtml html={p.bodyHtml} /> : null}
+          {p.bodyHtml ? <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题题干`} /> : null}
           {p.externalUrl ? (
             <button className="btn ykt-ext-btn" onClick={() => void openExternal(p.externalUrl!)}>
               打开外链题目 ↗
@@ -101,13 +98,13 @@ function ProblemCard({ p }: { p: YkProblem }) {
         <>
           {p.bodyHtml ? (
             <div className="ykt-problem-body">
-              <YktBasicHtml html={p.bodyHtml} />
+              <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题题干`} />
             </div>
           ) : null}
           {hasAnswer ? (
             <div className="ykt-ans">
               <div className="ykt-sec-label">我的作答</div>
-              {p.myAnswerHtml ? <YktBasicHtml html={p.myAnswerHtml} /> : null}
+              {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题我的作答`} /> : null}
               {attText ? <div className="ykt-ans-att">附件：{attText}</div> : null}
             </div>
           ) : p.myStatus === "unanswered" ? (
@@ -186,6 +183,8 @@ export function YktAssignmentDetailPage() {
   const meta = `${ykt.courseName || "雨课堂"}${ykt.deadline ? ` · ${ykt.deadline} 截止` : ""}`;
   const summary = yktExerciseSummary(detail?.problems ?? []);
   const left = timeLeft(ykt.deadline ?? "");
+  // R20-B3：题干渲染的资源通道 Cookie（未登录为空串，字体/图片侧自然降级）
+  const yktCookie = getYktCookie();
   const openInWeb = (): void => {
     // R20-A 通道（分流在 openExternalHomework）：桌面 = 系统浏览器；移动 = 应用内桌面模式 WebView
     if (ykt.externalUrl) void openExternalHomework(ykt.externalUrl);
@@ -263,8 +262,7 @@ export function YktAssignmentDetailPage() {
           <Card className="detail-sec">
             <div className="detail-sec-head">作业说明</div>
             <div className="ykt-problem-body">
-              {/* TODO(R20-B3)：加密字体 + LaTeX（同题干口径） */}
-              <YktBasicHtml html={d.description} />
+              <ProblemBody html={d.description} fontUrl={d.fontUrl} cookies={yktCookie} title="作业说明" />
             </div>
           </Card>
         ) : null}
@@ -275,7 +273,7 @@ export function YktAssignmentDetailPage() {
             <Empty text="本作业暂无题目明细（可能接口未返回 problems）。" />
           </Card>
         ) : (
-          d.problems.map((p) => <ProblemCard key={p.problemId || p.index} p={p} />)
+          d.problems.map((p) => <ProblemCard key={p.problemId || p.index} p={p} fontUrl={d.fontUrl} cookies={yktCookie} />)
         )}
       </>
     );

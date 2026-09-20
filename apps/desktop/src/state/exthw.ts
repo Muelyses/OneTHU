@@ -790,6 +790,14 @@ export function extHwSourceName(id: ExtHwSourceId): string {
 /* ── R20-B2：雨课堂作业详情（原生详情页用；只读） ── */
 
 /**
+ * 当前雨课堂会话 Cookie（R20-B3 题干渲染用：字体下载 / 图片代理的 fetch_binary 注入）。
+ * 未登录 → 空串（调用方照常渲染，资源侧自然降级）。仅作内存传递，**不落日志**。
+ */
+export function getYktCookie(): string {
+  return getExtHwCreds().yuketang?.cookie?.trim() ?? "";
+}
+
+/**
  * 拉单份雨课堂作业详情（getExerciseDetail 的 state 层薄包装）：
  * 凭据 / 传输层在此注入（core 不碰存储），uvId 回落凭据值（createYuketangSource 内再回落 "2598"）。
  * 未配置雨课堂凭据 → 抛错（页面展示错误态 + 保留原文案），绝不静默。

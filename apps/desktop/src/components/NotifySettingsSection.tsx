@@ -17,6 +17,7 @@ import {
 } from "../state/notifyBridge.js";
 import { fetchWidgetStatus } from "../state/widgetBridge.js";
 import { notifyHint } from "../state/notifyStatus.js";
+import { groupPluginNotifications } from "../state/notifyIds.js";
 import { runNotifyDoctor, type DoctorReport } from "../state/notifyDoctor.js";
 import { ensureNotifyRuntime } from "../state/notifySources.js";
 import type { NotifyPlanItem, NotifySettings } from "../state/notifyPlan.js";
@@ -57,6 +58,8 @@ export function NotifySettingsSection(): ReactNode {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [report, setReport] = useState<DoctorReport | null>(null);
+  /** 插件排下的待投递通知（按插件归组）：用户能看见、能撤 */
+  const [pluginNotifs, setPluginNotifs] = useState<Array<{ pluginId: string; ids: string[] }>>([]);
 
   const patch = (p: Partial<NotifySettings>): void => {
     const next = saveNotifySettings(p);
@@ -77,8 +80,13 @@ export function NotifySettingsSection(): ReactNode {
     setStatus(await fetchNotifyStatus(request));
   };
 
+  const refreshPluginNotifs = async (): Promise<void> => {
+    setPluginNotifs(groupPluginNotifications(await fetchPendingIds()));
+  };
+
   useEffect(() => {
     void refreshStatus();
+    void refreshPluginNotifs();
     void (async () => {
       const rt = await ensureNotifyRuntime();
       await rt.syncNow();
@@ -121,6 +129,7 @@ export function NotifySettingsSection(): ReactNode {
       });
       setReport(r);
       setMsg(null);
+      void refreshPluginNotifs();
     } finally {
       setBusy(false);
     }
@@ -230,6 +239,36 @@ export function NotifySettingsSection(): ReactNode {
           <button className="btn btn-ghost" onClick={() => void refreshStatus()}>
             重新检测
           </button>
+        </div>
+      </div>
+
+      <div className="setting-row">
+        <div>
+          <div className="setting-title">插件通知</div>
+          <div className="setting-desc">
+            {pluginNotifs.length === 0
+              ? "当前没有插件排下的通知。插件通知归插件所有：宿主重排自己的提醒时不会动它，插件停用或卸载时会自动收回。"
+              : pluginNotifs.map((g) => `${g.pluginId}（${g.ids.length} 条）`).join("；")}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+          <button className="btn btn-ghost" onClick={() => void refreshPluginNotifs()}>
+            刷新
+          </button>
+          {pluginNotifs.length > 0 ? (
+            <button
+              className="btn btn-ghost plg-danger"
+              onClick={() => {
+                const all = pluginNotifs.flatMap((g) => g.ids);
+                void cancelNotifications(all).then(() => {
+                  setMsg(`已撤销 ${all.length} 条插件通知`);
+                  return refreshPluginNotifs();
+                });
+              }}
+            >
+              全部撤销
+            </button>
+          ) : null}
         </div>
       </div>
 

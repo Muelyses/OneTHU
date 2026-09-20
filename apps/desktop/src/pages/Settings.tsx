@@ -73,17 +73,17 @@ function jumpToSection(titles: string[]): void {
 
 /** 设置页的二级页签（与信息页 / 生活页同形态）：标题 → 页签分组 */
 const SETTINGS_TAB_OF: Record<string, string> = {
-  导览: "导览", 关于: "关于", 账户: "账号", 账号与凭据: "账号", 安全: "账号",
+  关于: "关于", 账户: "账号", 账号与凭据: "账号", 安全: "账号",
   云同步: "数据与同步", 外部作业源: "数据与同步",
   首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
   通知: "通知与提醒", 桌面小组件: "通知与提醒",
   插件: "插件", 下载: "下载与存储",
 };
-const SETTINGS_TAB_ORDER = ["导览", "账号", "通知与提醒", "外观与布局", "数据与同步", "下载与存储", "插件", "关于"];
+const SETTINGS_TAB_ORDER = ["账号", "通知与提醒", "外观与布局", "数据与同步", "下载与存储", "插件", "关于"];
 
 export function SettingsPage() {
-  /** 当前二级页签（默认「导览」） */
-  const [tab, setTab] = useState<string>("导览");
+  /** 当前二级页签（默认第一个栏目） */
+  const [tab, setTab] = useState<string>(SETTINGS_TAB_ORDER[0] ?? "账号");
   const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
   const settingsTabHidden = settingsTabLayout.hidden;
   const [manageOpen, setManageOpen] = useState(false);
@@ -169,15 +169,27 @@ export function SettingsPage() {
       <PageHead
         title="设置"
         actions={
-          <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
-            管理栏目
-          </button>
+          <>
+            <button
+              className="btn"
+              onClick={() => {
+                resetOnboarding();
+                location.reload();
+              }}
+              title="重新走一遍首次使用引导"
+            >
+              导览
+            </button>
+            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
+              管理栏目
+            </button>
+          </>
         }
       />
 
       <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
         {settingsTabLayout.order
-          .filter((t) => !tabLayout.hidden.includes(t))
+          .filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t))
           .map((t) => (
             <button
               key={t}
@@ -190,25 +202,6 @@ export function SettingsPage() {
             </button>
           ))}
       </SegmentedOverflow>
-
-      <SectionHead title="导览" aside="按场景收起用不到的卡片；随时可重来" />
-      <Card>
-        <div className="setting-row">
-          <div>
-            <div className="setting-name">重新导览</div>
-            <div className="setting-desc">再走一遍首次使用引导（选择场景、收起卡片、建收藏夹）。</div>
-          </div>
-          <button
-            className="btn"
-            onClick={() => {
-              resetOnboarding();
-              location.reload();
-            }}
-          >
-            开始导览
-          </button>
-        </div>
-      </Card>
 
       <SectionHead title="关于" />
       <Card>

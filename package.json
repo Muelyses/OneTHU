@@ -10,7 +10,8 @@
     "dev": "pnpm --filter @onethu/desktop dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter @onethu/core test"
+    "test": "pnpm --filter @onethu/core test",
+    "lint:ui-copy": "node tools/ui-copy-lint.mjs"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

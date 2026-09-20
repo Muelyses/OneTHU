@@ -199,7 +199,7 @@ export function NetworkTab() {
       <SectionHead title="校园网" aside="usereg 自服务 · 验证码登录" />
       {state === "error" ? (
         needLogin ? (
-          <ErrorNote text="校园网尚未登录（校园网与统一身份认证相互独立，未登录是常态）。可稍后在本页验证码自助登录，或重试查询。" onRetry={() => void load()} />
+          <ErrorNote text="校园网未登录（它与统一身份认证是两回事）。可在本页用验证码自助登录。" onRetry={() => void load()} />
         ) : (
           <ErrorNote text="该功能暂时不可用（获取失败，可稍后重试）" onRetry={() => void load()} />
         )

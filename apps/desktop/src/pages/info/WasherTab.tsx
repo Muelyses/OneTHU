@@ -143,7 +143,7 @@ export function WasherTab({
     <>
       <SectionHead
         title="洗衣机"
-        aside="捷利 cleverschool · 海乐生活 haier-ioc · 小兰智慧（公开接口）"
+        aside="数据来自三家：捷利 · 海乐生活 · 小兰智慧"
       />
       {gState === "error" ? <ErrorNote text={gError ?? ""} onRetry={() => void loadGroups()} /> : null}
       {gState === "loading" && !groups ? (

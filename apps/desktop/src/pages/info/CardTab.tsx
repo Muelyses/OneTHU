@@ -82,7 +82,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
     if (channel === "bank") {
       const h = new Date().getHours() + new Date().getMinutes() / 60;
       if (h < 6 || h >= 20 + 40 / 60) {
-        setErr("当前不在银行卡圈存时段（6:00~20:40）。请改用扫码充值，或明天 6:00 后再试。");
+        setErr("银行卡圈存限 6:00~20:40：请改用扫码充值，或明天再试。");
         setBusy(false);
         return;
       }

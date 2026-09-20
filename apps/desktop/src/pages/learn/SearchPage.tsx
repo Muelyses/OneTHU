@@ -366,7 +366,7 @@ export function SearchPage() {
       <div className="page-head">
         <div>
           <h1>搜索</h1>
-          <div className="page-head-meta">课程 / 作业 / 通知 / 文件的相关性搜索（标题 · 正文 · 附件 · 课程名）</div>
+          <div className="page-head-meta">搜课程、作业、通知、文件（含正文与附件）</div>
         </div>
         <div className="page-head-actions">
           <PageAtomStar atomKey="learn-search" title="网络学堂搜索" />

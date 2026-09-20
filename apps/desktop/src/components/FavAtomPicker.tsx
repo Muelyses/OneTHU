@@ -105,7 +105,7 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
           {results.length === 0 ? (
             <div className="home-modal-hint">
               {q.trim()
-                ? "没有匹配。收藏夹里没有它，全局搜索也没命中——可以先去收藏夹页把对应页面打开一次再试。"
+                ? "没找到。先去收藏夹页打开一次对应页面再试。"
                 : "收藏夹还是空的：先去收藏夹页收几个原子，或直接输入关键词搜索。"}
             </div>
           ) : (

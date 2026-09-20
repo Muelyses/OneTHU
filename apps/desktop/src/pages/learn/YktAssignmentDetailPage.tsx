@@ -193,7 +193,7 @@ export function YktAssignmentDetailPage() {
       <>
         <PageHead title="雨课堂作业" actions={<BackButton to={from} />} />
         <Card>
-          <Empty text="缺少雨课堂作业参数（leafTypeId/classroomId），请从作业列表重新进入。" />
+          <Empty text="这个入口不完整，请从作业列表重新进入。" />
         </Card>
       </>
     );
@@ -353,7 +353,7 @@ export function YktAssignmentDetailPage() {
               </button>
             ) : null}
             {ykt.externalUrl ? (
-              <button className="btn" onClick={openInWeb} title="桌面 = 系统浏览器打开官方页；移动 = 应用内桌面模式 WebView（R20-A 通道）">
+              <button className="btn" onClick={openInWeb} title="在系统浏览器或应用内打开官方页">
                 浏览器打开
               </button>
             ) : null}

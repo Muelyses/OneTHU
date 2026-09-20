@@ -12,6 +12,7 @@
  * 不共享 cookie，内嵌 webview 的 cookie 桥是后续增强，不阻塞本期。
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { IconPin } from "../../components/Icons.js";
 import type {
   ThosCounts,
   ThosPage,
@@ -396,7 +397,22 @@ export function ThosPage() {
                     void openOfficial(item.url);
                   }}
                 >
-                  <strong>{item.name}</strong>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <strong>{item.name}</strong>
+                    {/* 铆钉 = 仅表示"在常用"，与统一收藏（星号）语义分离 */}
+                    <button
+                      className="icon-btn"
+                      aria-label={favorites.includes(item.id) ? `取消常用 ${item.name}` : `加入常用 ${item.name}`}
+                      title={favorites.includes(item.id) ? "取消常用" : "钉在常用"}
+                      style={{ color: favorites.includes(item.id) ? "var(--accent, #4176e6)" : "var(--text-3, #999)", flex: "none" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        favorite(item.id);
+                      }}
+                    >
+                      <IconPin width={13} height={13} />
+                    </button>
+                  </span>
                   <span className="dim">{item.department || "部门未提供"}</span>
                   {item.kind ? (
                     <span className="chip chip-amber">

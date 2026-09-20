@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CollectStar } from "../../components/Collect.js";
+import { SEED_KEYWORDS, loadSeedState, pickSeedServices } from "../../lib/thosSeed.js";
 import { enc, noteAtomCache } from "../../state/atoms.js";
 import { IconPin } from "../../components/Icons.js";
 import type {
@@ -94,8 +95,6 @@ function seedKey(userId: string): string {
   return `thos-favorites-seeded:${userId}`;
 }
 
-/** 常用服务预置项：按名称匹配（服务 id 由学校侧分配，名称更稳定） */
-const SEED_SERVICE_KEYWORDS = ["亲友来访", "缓考"];
 
 function loadFavorites(userId: string): string[] {
   try {
@@ -115,6 +114,11 @@ const DATE_LABEL: Record<ThosTaskKind, string> = {
   unread: "抄送时间",
   phases: "申请时间",
 };
+
+/** 还没匹配上的预置关键词（仅用于日志说明"为什么常用里少一项"） */
+function SEED_KEYWORDS_LEFT(done: string[]): string[] {
+  return SEED_KEYWORDS.filter((k) => !done.includes(k));
+}
 
 export function ThosPage() {
   const { user, navParams } = useApp();
@@ -217,24 +221,41 @@ export function ThosPage() {
     }
   };
 
-  /** 首次进入：把「亲友来访人员报备」「缓考申请」放进常用服务（只做一次） */
+  /** 首启预置：把「亲友（来访/入校报备）」与「缓考」铆进常用服务。
+   *  逐关键词记账 + 口语容错匹配（学校侧正式名与用户口语常有出入，见 lib/thosSeed.ts）；
+   *  漏掉的关键词不记账，下次进页面继续补；匹配规则升级会重补一次（修本次事故）。 */
   useEffect(() => {
     const items = services?.items ?? [];
     if (!userId || items.length === 0) return;
-    if (localStorage.getItem(seedKey(userId))) return;
-    if (favorites.length > 0) {
-      localStorage.setItem(seedKey(userId), "1");
+    const state = loadSeedState(localStorage.getItem(seedKey(userId)));
+    const { ids, done } = pickSeedServices(items, favorites, state.done);
+    const changed = done.length !== state.done.length;
+    if (ids.length === 0) {
+      if (changed) {
+        try {
+          localStorage.setItem(seedKey(userId), JSON.stringify({ v: state.v, done }));
+        } catch {
+          /* 存不下不影响本次会话 */
+        }
+      }
       return;
     }
-    const seed = SEED_SERVICE_KEYWORDS
-      .map((kw) => items.find((x) => `${x.name}${x.department ?? ""}`.includes(kw))?.id)
-      .filter((x): x is string => Boolean(x));
-    if (seed.length === 0) return;
-    setFavorites(seed);
+    const next = [...favorites, ...ids];
+    setFavorites(next);
     setOnlyFavorites(true);
+    // 留痕（不打印服务 id 之外的东西）：预置是"静默功能"，出问题只能靠日志定位
+    void import("../../lib/clients.js")
+      .then((m) => {
+        const names = items.filter((x) => ids.includes(x.id)).map((x) => x.name);
+        const pending = SEED_KEYWORDS_LEFT(done);
+        return m.logLine(
+          `[THOS-SEED] 常用服务预置：${names.join(" / ") || "无"}${pending.length ? `（未匹配待补：${pending.join("、")}）` : ""}`,
+        );
+      })
+      .catch(() => undefined);
     try {
-      localStorage.setItem(favKey(userId), JSON.stringify(seed));
-      localStorage.setItem(seedKey(userId), "1");
+      localStorage.setItem(favKey(userId), JSON.stringify(next));
+      localStorage.setItem(seedKey(userId), JSON.stringify({ v: state.v, done }));
     } catch {
       /* 存不下也不影响本次会话 */
     }

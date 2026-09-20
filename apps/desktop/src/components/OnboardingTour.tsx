@@ -7,13 +7,21 @@
  *  - 判定"是否第一次"：onethu.onboarded.v1；设置页有常驻「重新导览」。
  */
 import { useState } from "react";
-import { PRESETS, SCENARIOS, applyScenarios, hasOnboarded, markOnboarded, type Preset } from "../state/onboarding.js";
+import { PRESETS, SCENARIOS, applyTodayCards, cardsForScenarios, cardsOfScenario, hasOnboarded, markOnboarded, todayChoosableCards, type Preset } from "../state/onboarding.js";
 import { TABS as INFO_TABS } from "../pages/info/InfoPage.js";
 import { TABS as LIFE_TABS } from "../pages/info/LifePage.js";
 import { loadTabLayout, saveTabLayout } from "../lib/tabLayout.js";
+import type { HomeCardId, HomeOrientation } from "../lib/homeCards.js";
 import { useApp } from "../state/context.js";
 import { useFavs } from "../state/favs.js";
 import { NAV } from "./Layout.js";
+
+/** 当前朝向（判据与 Today.tsx 一致）：首页布局按横竖屏各存一份，
+ *  导览的卡片取舍必须落到用户此刻在看的那一份，否则等于没生效。 */
+function currentOrientation(): HomeOrientation {
+  if (typeof window === "undefined") return "portrait";
+  return window.matchMedia("(orientation: portrait)").matches ? "portrait" : "landscape";
+}
 
 /** 侧栏内置功能：直接复用 Layout 的 NAV（含图标），只补一句"里面有啥"。
  *  选课按用户要求不参与询问。 */
@@ -53,12 +61,19 @@ export function OnboardingTour(): React.ReactNode {
   const [keepTabs, setKeepTabs] = useState<string[]>(
     TAB_GROUPS.flatMap((g) => g.tabs.map((t) => `${g.key}:${t.id}`)),
   );
-  const [keepCards, setKeepCards] = useState<string[]>(["learn", "schedule"]);
+  /** 今日页可勾选的卡（默认全留 = 现在的全面版首页；只勾掉不要的） */
+  const CARD_CHOICES = todayChoosableCards();
+  const [keepCards, setKeepCards] = useState<HomeCardId[]>(CARD_CHOICES.map((c) => c.id));
   /** 首屏二选一：自行选择（逐项）/ 按场景预设 */
   const [mode, setMode] = useState<"manual" | "preset">("manual");
   /** 示例收藏夹是否已创建（hooks 必须全部在早退之前，见下方 return null） */
   const [seeded, setSeeded] = useState(false);
   const [preset, setPreset] = useState<Preset | null>(null);
+  /** 选预设时同步卡片勾选：卡片步骤所见即所得（此后以勾选为准） */
+  const choosePreset = (pr: Preset): void => {
+    setPreset(pr);
+    setKeepCards(cardsForScenarios(pr.cards));
+  };
 
   if (!open) return null;
 
@@ -87,7 +102,7 @@ export function OnboardingTour(): React.ReactNode {
         const keepIds = preset.tabs[g.key] ?? [];
         saveTabLayout(g.key, { order: ids, hidden: ids.filter((id) => !keepIds.includes(id)) });
       }
-      applyScenarios(preset.cards, "portrait");
+      applyTodayCards(keepCards, currentOrientation());
       return;
     }
 
@@ -103,8 +118,8 @@ export function OnboardingTour(): React.ReactNode {
       const hidden = ids.filter((id) => !keepTabs.includes(`${g.key}:${id}`));
       saveTabLayout(g.key, { order: ids, hidden });
     }
-    // ③ 首页卡片：按场景收起其余
-    applyScenarios(keepCards, "portrait");
+    // ③ 今日页卡片：取消的收进「添加卡片」，其余保持现状（全面版默认不被动过）
+    applyTodayCards(keepCards as HomeCardId[], currentOrientation());
   };
 
   /** 示例收藏夹：点击即完成一次完整收藏流程（建夹 → 放原子），并说明"万物皆可收藏"。
@@ -148,7 +163,7 @@ export function OnboardingTour(): React.ReactNode {
     </button>
   );
 
-  const STEPS = 4;
+  const STEPS = 5;
   return (
     <div style={panel} role="dialog" aria-modal="true" aria-label="首次使用导览">
       <div style={box}>
@@ -156,7 +171,7 @@ export function OnboardingTour(): React.ReactNode {
           <>
             <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>欢迎使用 OneTHU</h3>
             <p style={{ margin: "0 0 6px", fontSize: 13.5, lineHeight: 1.75, color: "var(--text-2, #555)" }}>
-              接下来用三步把界面调成你自己的样子：<b>侧栏功能 → 各页页签 → 收藏夹</b>。
+              接下来用四步把界面调成你自己的样子：<b>侧栏功能 → 各页页签 → 今日页卡片 → 收藏夹</b>。
             </p>
             <p style={{ margin: "0 0 14px", fontSize: 13.5, lineHeight: 1.75, color: "var(--text-2, #555)" }}>
               功能一个都不会少，只是不常用的先折起来，随时能展开。
@@ -195,7 +210,7 @@ export function OnboardingTour(): React.ReactNode {
               {PRESETS.map((pr) => (
                 <button
                   key={pr.id}
-                  onClick={() => setPreset(pr)}
+                  onClick={() => choosePreset(pr)}
                   style={{
                     textAlign: "left", padding: "12px 13px", borderRadius: 10, cursor: "pointer",
                     border: preset?.id === pr.id ? "1px solid var(--accent, #4176e6)" : "1px solid var(--border, #e5e6eb)",
@@ -287,6 +302,32 @@ export function OnboardingTour(): React.ReactNode {
 
         {step === 3 ? (
           <>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>今日页留哪些卡？</h3>
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)", lineHeight: 1.6 }}>
+              现在默认是<b>全面版</b>首页：内容一次给全。点一下取消 = 这张卡先收进「添加卡片」，
+              以后在首页「编辑 → 添加卡片」里随时能加回来。
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {CARD_CHOICES.map((c) => {
+                const on = keepCards.includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    className={on ? "btn btn-primary" : "btn"}
+                    style={{ fontSize: 12.5, padding: "4px 10px", opacity: on ? 1 : 0.5 }}
+                    title={c.hint ?? ""}
+                    onClick={() => setKeepCards((p) => (p.includes(c.id) ? p.filter((x) => x !== c.id) : [...p, c.id]))}
+                  >
+                    {on ? "✓ " : ""}{c.title}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : null}
+
+        {step === 4 ? (
+          <>
             <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>最后一步：完成一次收藏</h3>
             <p style={{ margin: "0 0 10px", fontSize: 13.5, lineHeight: 1.8, color: "var(--text-2, #555)" }}>
               点下面的按钮，会为你建一个<b>示例收藏夹</b>，并放入三项：
@@ -308,18 +349,24 @@ export function OnboardingTour(): React.ReactNode {
               下面还可按场景收起首页卡片，不需要的直接点掉。
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {SCENARIOS.map((sc) => (
-                <button
-                  key={sc.id}
-                  className={keepCards.includes(sc.id) ? "btn btn-primary" : "btn"}
-                  style={{ fontSize: 12.5 }}
-                  onClick={() =>
-                    setKeepCards((p) => (p.includes(sc.id) ? p.filter((x) => x !== sc.id) : [...p, sc.id]))
-                  }
-                >
-                  {sc.label}
-                </button>
-              ))}
+              {SCENARIOS.map((sc) => {
+                const cards = cardsOfScenario(sc.id);
+                const on = cards.length > 0 && cards.every((c) => keepCards.includes(c));
+                return (
+                  <button
+                    key={sc.id}
+                    className={on ? "btn btn-primary" : "btn"}
+                    style={{ fontSize: 12.5 }}
+                    onClick={() =>
+                      setKeepCards((p) =>
+                        on ? p.filter((x) => !cards.includes(x)) : [...new Set([...p, ...cards])],
+                      )
+                    }
+                  >
+                    {on ? "✓ " : "收起"}{sc.label}
+                  </button>
+                );
+              })}
             </div>
           </>
         ) : null}

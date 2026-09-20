@@ -9,12 +9,16 @@ import {
   HOME_CARD_META,
   loadCollapsedDefaults,
   loadLayout,
+  resolveLayout,
   saveCollapsedDefaults,
   saveLayout,
   type HomeCardId,
   type HomeLayoutItem,
   type HomeOrientation,
 } from "../lib/homeCards.js";
+
+export { SCENARIOS, cardsForScenarios, cardsOfScenario, type Scenario } from "../lib/onboardingCards.js";
+import { cardsForScenarios, SCENARIOS } from "../lib/onboardingCards.js";
 
 const KEY = "onethu.onboarded.v1";
 
@@ -43,46 +47,9 @@ export function resetOnboarding(): void {
   }
 }
 
-export interface Scenario {
-  id: string;
-  label: string;
-  hint: string;
-  /** 选了这个场景 → 这些卡片保持可见（其余收进右栏或关闭） */
-  keep: HomeCardId[];
-}
 
-/** 场景按"你要干什么"分组，而不是让用户对着一堆页面逐个勾 */
-export const SCENARIOS: Scenario[] = [
-  {
-    id: "learn",
-    label: "学习",
-    hint: "作业、通知、课程文件、成绩",
-    keep: ["today-overview", "homework", "notices", "learn-assignments", "learn-notices", "learn-files", "info-report"],
-  },
-  {
-    id: "life",
-    label: "校园生活",
-    hint: "校园卡、电费、洗衣机、预约",
-    keep: ["today-overview", "cardEntry", "resv", "life-dorm", "life-washer"],
-  },
-  {
-    id: "schedule",
-    label: "日程与课表",
-    hint: "今日课程、日程提醒、课表",
-    keep: ["today-overview", "agenda", "classes"],
-  },
-  {
-    id: "extend",
-    label: "插件与更多",
-    hint: "插件市场、订阅新闻、选课",
-    keep: ["today-overview", "news", "xk", "info-news"],
-  },
-];
-
-/** 应用场景：未选的卡片进右栏（rail），右栏也放不下的关闭（off）；选中的置回主栏 */
 export function applyScenarios(scenarioIds: string[], orientation: HomeOrientation): void {
-  const keep = new Set<HomeCardId>(["today-overview"]);
-  for (const s of SCENARIOS) if (scenarioIds.includes(s.id)) for (const id of s.keep) keep.add(id);
+  const keep = new Set<HomeCardId>(cardsForScenarios(scenarioIds));
 
   const meta = HOME_CARD_META;
   const saved = loadLayout(orientation) ?? [];
@@ -102,6 +69,35 @@ export function applyScenarios(scenarioIds: string[], orientation: HomeOrientati
   saveCollapsedDefaults(collapsed);
 }
 
+
+/**
+ * 今日页「留哪些卡」：导览里逐张决定（默认全留 = 现在的全面版首页）。
+ * 与 applyScenarios 的区别：那个按场景**整体重排**，这个只在用户勾掉的卡上写 off，
+ * 其它卡保持现有栏位与顺序——用户改完不会觉得首页被"重刷"了一遍。
+ */
+export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation): void {
+  const keepSet = new Set(keep);
+  const saved = resolveLayout(HOME_CARD_META, loadLayout(orientation));
+  const items: HomeLayoutItem[] = saved.map((it) => {
+    if (keepSet.has(it.id)) return it;
+    return { ...it, col: "off", collapsed: true };
+  });
+  saveLayout(items, orientation);
+
+  // 被收起来的卡默认折叠，回到首页不会又把一屏塞满
+  const collapsed = { ...loadCollapsedDefaults() };
+  for (const def of HOME_CARD_META) if (!keepSet.has(def.id)) collapsed[def.id] = true;
+  saveCollapsedDefaults(collapsed);
+}
+
+/** 导览里可勾选的今日卡片：只列**默认可见**的展示卡（入口卡仍在「添加卡片」里） */
+export function todayChoosableCards(): Array<{ id: HomeCardId; title: string; hint?: string }> {
+  return HOME_CARD_META.filter((d) => d.kind === "bespoke" && !d.defaultHidden).map((d) => ({
+    id: d.id,
+    title: d.title,
+    hint: d.aside,
+  }));
+}
 
 /** 预算好的使用场景预设（导览首屏二选一：自行选择 / 按场景预设）。
  *  选预设后仍可返回上一步改选，或改完再进"自行选择"逐项微调。 */

@@ -2665,3 +2665,22 @@ tauri::Builder::default()
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
+
+/// 探针钩子：只在 `notify-probe` feature 下暴露 macOS 通知原生链路，
+/// 供 src/bin/notify_probe.rs 在 .app 包内实测（默认构建不含此模块）。
+#[cfg(all(feature = "notify-probe", target_os = "macos"))]
+pub mod notify_probe_hooks {
+    pub fn status(request: bool) -> Result<bool, String> {
+        crate::notify_macos::status(request)
+    }
+    pub fn add(id: &str, at: i64, title: &str, body: &str, target: &str) -> Result<(), String> {
+        crate::notify_macos::add(id, at, title, body, target)
+    }
+    pub fn pending_ids() -> Result<Vec<String>, String> {
+        crate::notify_macos::pending_ids()
+    }
+    pub fn cancel(ids: &[String]) {
+        crate::notify_macos::cancel(ids)
+    }
+}

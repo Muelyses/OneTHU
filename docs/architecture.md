@@ -168,6 +168,7 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | 通知状态文案测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-status-test.mjs` |
 | 通知自检编排测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-doctor-test.mjs` |
 | 通知 id 约定与归组测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-ids-test.mjs` |
+| macOS 通知原生链路探针 | `cd apps/desktop/src-tauri && cargo build --features notify-probe --bin notify_probe`，再把二进制放进某个 `OneTHU.app/Contents/MacOS/` 并**改名为 `CFBundleExecutable` 同名**（否则 `NSBundle` 不认包、报 not-bundled），运行即打印授权/排程/回读/撤销四步结果 |
 | Windows 通知模块编译检查 | `cd tools/win-notify-check && cargo check --target x86_64-pc-windows-msvc` |
 | Android 目标交叉检查 | `cd apps/desktop/src-tauri` 后设 `CC_aarch64_linux_android` / `AR_aarch64_linux_android` / `CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER` 指 NDK 的 `aarch64-linux-android24-clang`，再 `cargo check --target aarch64-linux-android`（桌面 `cargo check` 不编译 `#[cfg(mobile)]` 分支，这是唯一能提前发现 Android 侧编译错误的手段） |
 | Rust 单测（通知载荷解析等） | `cd apps/desktop/src-tauri && cargo test --lib` |

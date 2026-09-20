@@ -68,6 +68,16 @@ windows = { version = "0.61", features = [
   "Win32_System_Com", "Win32_System_Registry",
 ] }
 
+[features]
+# 仅在需要实测 macOS 通知原生链路时开启（见 src/bin/notify_probe.rs）
+notify-probe = []
+
+# 探针二进制：放进 OneTHU.app/Contents/MacOS 里跑，才能以应用身份访问通知中心
+[[bin]]
+name = "notify_probe"
+path = "src/bin/notify_probe.rs"
+required-features = ["notify-probe"]
+
 [profile.release]
 strip = true
 lto = true

@@ -80,20 +80,38 @@ export async function ensureMadModelToken(force = false): Promise<string> {
 /** 对话前兜底：免费档语义下保证「可达性状态新鲜 + token 到期即续」。
  *  - token 到期：完整重签（顺带刷新可达性）；
  *  - token 新鲜但可达性判定超 10 分钟：轻探针刷新（网络切换 10 分钟内自动纠正）。 */
-export async function preflightMadModel(): Promise<void> {
-  if (!madmodelActive()) return;
+export async function preflightMadModel(): Promise<string | null> {
+  if (!madmodelActive()) return null;
   if (madmodelDue()) {
-    await ensureMadModelToken().catch((e) =>
-      void logLine(`[MADMODEL] ${e instanceof Error ? e.message : String(e)}`).catch(() => undefined),
-    );
-    return;
+    try {
+      await ensureMadModelToken();
+      return null;
+    } catch (e) {
+      const why = e instanceof Error ? e.message : String(e);
+      void logLine(`[MADMODEL] 续期失败：${why}`).catch(() => undefined);
+      return freeTierHint(why);
+    }
   }
   const s = getPlugin(HARNESS_ID)?.settings ?? {};
+  const tok = String(s.madmodelToken ?? "");
   const at = Number(s.madmodelReachableAt ?? 0);
   if (!at || Date.now() - at > REACH_TTL_MS) {
     const ok = await probeReachable();
     writeSettings({ madmodelReachable: ok ? "1" : "0", madmodelReachableAt: String(Date.now()) });
   }
+  // token 为空但「未到期」只可能是设置被外部写坏（如手改设置页覆盖）——此时明确报出来
+  if (!tok) return freeTierHint("设置里没有 madmodelToken");
+  return null;
+}
+
+/** 免费档不可用时的用户可读说明：把真实原因说清楚，而不是让人以为「没填 API Key」。 */
+function freeTierHint(why: string): string {
+  return [
+    "清华免费档（MadModel）暂不可用：" + why + "。",
+    "· 校园网内会自动签发 token（本应用每 10 分钟自动续期），可稍候重试；",
+    "· 校外 / 走了代理或 VPN 时 IP 门禁会拦（MadModel 仅限校内 IP）——请连校园网或学校 VPN（EasyConnect），",
+    "  或在 设置 → 插件 → OneTHU Harness 填入自费 API Key 并把模型源切到「自费 API」。",
+  ].join("\n");
 }
 
 /** 外部强制重签（run 遇 307 漏判兜底）：刷新 token/可达性，下一条对话即恢复正确通道 */
@@ -112,4 +130,10 @@ export function startMadModelPump(): void {
   };
   void tick();
   setInterval(tick, 10 * 60_000).unref?.();
+  // 免费档没签出来时 60s 快速重试（校园网刚连上/刚回校的场景，不必等满 10 分钟）
+  setInterval(() => {
+    if (!madmodelActive()) return;
+    if (String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "")) return;
+    void preflightMadModel().catch(() => undefined);
+  }, 60_000).unref?.();
 }

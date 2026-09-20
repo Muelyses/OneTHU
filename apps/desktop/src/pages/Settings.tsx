@@ -28,6 +28,7 @@ import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
 import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
   clearTuojAutoStatus,
+  clearTycheLogoutSuppress,
   consumeExtHwScrollRequest,
   ensureExtHwCredsLoaded,
   extHwLogin,
@@ -586,6 +587,11 @@ function ExtHwSection() {
   const [tychePwd, setTychePwd] = useState("");
   const [tycheCookie, setTycheCookie] = useState("");
   const [tycheFormOpen, setTycheFormOpen] = useState(false);
+  // R21-A：记住密码（勾选后 username+password 随凭据信封 AES-GCM 存本机；
+  // 会话失效时用存档账密静默自动重登一次。tycheSavedPwd = 已存档密码的内存回填，
+  // 与 tycheCookie 同性质：只在内存态用于组装保存，不显示明文）
+  const [tycheRemember, setTycheRemember] = useState(false);
+  const [tycheSavedPwd, setTycheSavedPwd] = useState("");
   // DSA OJ
   const [dsaUser, setDsaUser] = useState("");
   const [dsaPwd, setDsaPwd] = useState("");
@@ -620,6 +626,8 @@ function ExtHwSection() {
       setClassicVia(c.tuojClassic?.via);
       setTycheUser(c.tyche?.username ?? "");
       setTycheCookie(c.tyche?.cookie ?? "");
+      setTycheRemember(Boolean(c.tyche?.password));
+      setTycheSavedPwd(c.tyche?.password ?? "");
       setDsaUser(c.dsa?.username ?? "");
       setDsaCookie(c.dsa?.cookie ?? "");
       setDays(String(c.days ?? 30));
@@ -656,7 +664,9 @@ function ExtHwSection() {
 
   const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
-  /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用） */
+  /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用）。
+   *  R21-A：o.tychePwd = 刚登录成功、且勾选「记住密码」时要存档的密码（随 AES-GCM
+   *  信封加密落盘）；未勾选 → 不存密码（并清掉旧存档，即「取消记住」）。 */
   const credsWith = (
     o: {
       ykt?: string;
@@ -665,6 +675,7 @@ function ExtHwSection() {
       classic?: string;
       classicVia?: "cas" | "password";
       tyche?: string;
+      tychePwd?: string;
       dsa?: string;
     } = {},
   ): ExtHwCreds => {
@@ -679,7 +690,13 @@ function ExtHwSection() {
       tuojClassic: cj
         ? { cookie: cj, username: classicUser.trim() || undefined, via: o.classicVia ?? classicVia }
         : undefined,
-      tyche: tc ? { cookie: tc, username: tycheUser.trim() || undefined } : undefined,
+      tyche: tc
+        ? {
+            cookie: tc,
+            username: tycheUser.trim() || undefined,
+            password: tycheRemember ? (o.tychePwd ?? (tycheSavedPwd || undefined)) : undefined,
+          }
+        : undefined,
       dsa: ds ? { cookie: ds, username: dsaUser.trim() || undefined } : undefined,
       days: Math.max(1, Number(days) || 30),
     };
@@ -758,14 +775,20 @@ function ExtHwSection() {
   const onTycheLogin = () => {
     setBusy("tyche-login");
     setMsg(null);
+    const pwdNow = tychePwd; // async 回调前留档（下面 setTychePwd("") 会清空输入框）
     void extHwLogin
-      .tyche(tycheUser, tychePwd)
+      .tyche(tycheUser, pwdNow)
       .then(async (r) => {
         setTycheCookie(r.cookie);
+        // R21-A：勾选「记住密码」→ 把刚输的密码随凭据信封（AES-GCM）存档，会话失效时静默重登；
+        // 未勾选 → 不存档（credsWith 里 password=undefined，同时覆盖清掉旧存档）
+        if (tycheRemember) setTycheSavedPwd(pwdNow);
+        // R21-A：手动登录成功 → 解除「显式退出」对自动重登的抑制
+        clearTycheLogoutSuppress();
         setTychePwd("");
         setTycheFormOpen(false);
-        await saveExtHwCreds(credsWith({ tyche: r.cookie }));
-        notify("oj", "Tyche 登录成功，已保存。");
+        await saveExtHwCreds(credsWith({ tyche: r.cookie, tychePwd: tycheRemember ? pwdNow : undefined }));
+        notify("oj", tycheRemember ? "Tyche 登录成功，已保存（已记住密码，会话失效将自动重登）。" : "Tyche 登录成功，已保存。");
         void refreshExtHw();
       })
       .catch((e: unknown) => notify("oj", `Tyche 登录失败：${errMsg(e)}`))
@@ -813,6 +836,9 @@ function ExtHwSection() {
           } else if (source === "tyche") {
             setTycheCookie("");
             setTychePwd("");
+            // R21-A：退出 = 清掉「记住密码」态（removeExtHwCreds 已清存档并抑制自动重登）
+            setTycheRemember(false);
+            setTycheSavedPwd("");
           } else {
             setDsaCookie("");
             setDsaPwd("");
@@ -1068,7 +1094,7 @@ function ExtHwSection() {
               ) : null}
             </OjSourceRow>
 
-            {/* Tyche：仅用户名 + 密码（校内或 sslvpn） */}
+            {/* Tyche：用户名 + 密码（校内或 sslvpn）；R21-A 支持记住密码 + 会话失效静默自动重登 */}
             <OjSourceRow
               name={SOURCE_NAMES.tyche}
               logged={configured.tyche}
@@ -1090,7 +1116,13 @@ function ExtHwSection() {
                   </button>
                 ) : undefined
               }
-              note={ext.errors.tyche ? <div className="exthw-note is-error">{ext.errors.tyche}</div> : undefined}
+              note={
+                ext.errors.tyche ? (
+                  <div className="exthw-note is-error">{ext.errors.tyche}</div>
+                ) : tycheRemember && configured.tyche ? (
+                  <div className="exthw-note">已记住密码：会话失效将自动重新登录（静默进行，失败才会提示）。</div>
+                ) : undefined
+              }
             >
               {tycheFormOpen ? (
                 <div className="exthw-src-body">
@@ -1100,6 +1132,16 @@ function ExtHwSection() {
                     <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
                       {busy === "tyche-login" ? "登录中…" : "登录"}
                     </button>
+                  </div>
+                  {/* R21-A：记住密码 → 会话失效时用存档账密静默自动重登一次（同源 ≥10min、每进程 ≤3 次） */}
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12, opacity: 0.9 }}>
+                    <input type="checkbox" checked={tycheRemember} onChange={(e) => setTycheRemember(e.target.checked)} />
+                    记住密码（会话失效后自动重新登录）
+                  </label>
+                  <div style={{ marginTop: 4, fontSize: 12, opacity: 0.65 }}>
+                    {tycheRemember
+                      ? "密码将以 AES-GCM 密文存本机（与其它凭据同路），不进日志、不上传；退出登录即清除。"
+                      : "不勾选则只保存本次会话，失效后需手动重新登录。"}
                   </div>
                 </div>
               ) : null}

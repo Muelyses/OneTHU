@@ -22,7 +22,7 @@ import type {
 import { SOURCE_CATEGORIES, SOURCE_NAMES } from "./types.js";
 import { createYuketangSource } from "./yuketang.js";
 import { BASE as TUOJ_BASE, CLASSIC_BASE as TUOJ_CLASSIC_BASE, createTuojSource, isTuojSessionError } from "./tuoj.js";
-import { createTycheSource } from "./tyche.js";
+import { createTycheSource, isTycheSessionError } from "./tyche.js";
 import { createDsaSource } from "./dsa.js";
 
 export interface CreateExternalSourcesDeps {
@@ -115,41 +115,67 @@ export interface RefreshExternalHomeworkDeps {
    *  R19 27.1：本钩子的调用已被进程级频控（同源 ≥10min / 每源 ≤3 次）与同源
    *  in-flight 去重包裹——并发 401 只会让钩子对同一源执行一次。 */
   rerouteTuoj?: (source: TuojSourceId) => Promise<boolean>;
+  /** R21-A：Tyche 会话失效（status=login / 401 / 跳登录页）时的静默自动重登钩子
+   *  （desktop 注入：已记住密码 → 用存档账密重登一次并覆盖保存凭据）。
+   *  返回 true = 重登成功且凭据已更新，随后自动重拉该源**一次**；false / 抛出 = 放弃，
+   *  保留原错误。与 TUOJ 重漫游共用同一套进程级频控（同源 ≥10min / 每进程 ≤3 次，
+   *  tyche 独立计数）与 in-flight 去重。缺省时不做任何自动重登，行为同旧版。 */
+  reloginTyche?: () => Promise<boolean>;
 }
 
-/* ── R19 27.1：TUOJ 会话失效（401/403）自动重漫游的进程级频控与并发去重 ──
+/* ── R19 27.1 / R21-A：会话失效自动重登的进程级频控与并发去重 ──
  * 旧频控（desktop 的 24h TUOJ_AUTO_THROTTLE_MS）对「已配置但 cookie 失效」这条最常见
- * 路径过于苛刻：一次失败（退后台 / 网络抖动）就把 24h 内的自动恢复全烧掉。401 触发的
- * 自动重漫游改用放宽策略：同一源两次自动重试间隔 ≥ 10 分钟、每进程每源最多 3 次；
- * AI 版 / 经典版各自独立计数。状态存本模块（= 进程级），跨多次 refresh 累计。 */
+ * 路径过于苛刻：一次失败（退后台 / 网络抖动）就把 24h 内的自动恢复全烧掉。会话失效触发的
+ * 自动重登改用放宽策略：同一源两次自动重试间隔 ≥ 10 分钟、每进程每源最多 3 次；
+ * TUOJ 两源 + Tyche 各自独立计数。状态存本模块（= 进程级），跨多次 refresh 累计。 */
 
-/** 同一源两次自动重漫游的最小间隔（R19 27.1） */
-export const TUOJ_SESSION_RETRY_MIN_INTERVAL_MS = 10 * 60 * 1000;
-/** 每进程每源自动重漫游次数上限（含失败尝试；R19 27.1） */
-export const TUOJ_SESSION_RETRY_MAX_PER_PROCESS = 3;
+/** 同一源两次自动重登的最小间隔（R19 27.1 定 TUOJ 值；R21-A Tyche 对齐同值） */
+export const SESSION_RETRY_MIN_INTERVAL_MS = 10 * 60 * 1000;
+/** 每进程每源自动重登次数上限（含失败尝试，否则永久失败的源会每 10 分钟烧一次永不封顶） */
+export const SESSION_RETRY_MAX_PER_PROCESS = 3;
+/** 兼容别名（R19 27.1 导出名；TUOJ 系语义） */
+export const TUOJ_SESSION_RETRY_MIN_INTERVAL_MS = SESSION_RETRY_MIN_INTERVAL_MS;
+export const TUOJ_SESSION_RETRY_MAX_PER_PROCESS = SESSION_RETRY_MAX_PER_PROCESS;
+/** R21-A：Tyche 同策略别名（与 TUOJ 同值，独立计数） */
+export const TYCHE_SESSION_RETRY_MIN_INTERVAL_MS = SESSION_RETRY_MIN_INTERVAL_MS;
+export const TYCHE_SESSION_RETRY_MAX_PER_PROCESS = SESSION_RETRY_MAX_PER_PROCESS;
 
-/** 会话失效触发过自动重漫游、但该源最终仍失败时的错误前缀（作业页 / 设置页文案，
+/** 会话失效触发过自动重登、但该源最终仍失败时的错误前缀（作业页 / 设置页文案，
  *  让用户知道系统已自动尝试过重新登录，而非首次失败） */
-const TUOJ_REROUTE_FAILED_PREFIX = "已尝试自动重新登录，仍失败：";
+const SESSION_RELOGIN_FAILED_PREFIX = "已尝试自动重新登录，仍失败：";
 
-const tuojSessionRetryState: Record<TuojSourceId, { count: number; lastAt: number }> = {
+/** 支持会话失效自动重登的源：TUOJ 两源（重漫游）+ tyche（账密重登，R21-A） */
+type SessionRetrySourceId = TuojSourceId | "tyche";
+
+function isSessionRetrySource(id: ExtHwSourceId): id is SessionRetrySourceId {
+  return isTuojFamily(id) || id === "tyche";
+}
+
+const sessionRetryState: Record<SessionRetrySourceId, { count: number; lastAt: number }> = {
   tuoj: { count: 0, lastAt: 0 },
   tuojClassic: { count: 0, lastAt: 0 },
+  tyche: { count: 0, lastAt: 0 },
 };
-/** 同一源并发 401 共享一次重漫游（in-flight Promise 去重；R19 27.1） */
-const tuojSessionInflight: Partial<Record<TuojSourceId, Promise<boolean>>> = {};
+/** 同一源并发会话失效共享一次自动重登（in-flight Promise 去重；R19 27.1 / R21-A） */
+const sessionInflight: Partial<Record<SessionRetrySourceId, Promise<boolean>>> = {};
 
-function tuojSessionRetryAllowed(source: TuojSourceId, now = Date.now()): boolean {
-  const st = tuojSessionRetryState[source];
-  return st.count < TUOJ_SESSION_RETRY_MAX_PER_PROCESS && now - st.lastAt >= TUOJ_SESSION_RETRY_MIN_INTERVAL_MS;
+function sessionRetryAllowed(source: SessionRetrySourceId, now = Date.now()): boolean {
+  const st = sessionRetryState[source];
+  return st.count < SESSION_RETRY_MAX_PER_PROCESS && now - st.lastAt >= SESSION_RETRY_MIN_INTERVAL_MS;
 }
 
-/** 清空进程级重漫游频控 / 去重状态（仅离线测试用；应用内无需调用） */
+/** 清空 TUOJ 系进程级重漫游频控 / 去重状态（仅离线测试用；应用内无需调用） */
 export function resetTuojSessionRetryState(): void {
-  tuojSessionRetryState.tuoj = { count: 0, lastAt: 0 };
-  tuojSessionRetryState.tuojClassic = { count: 0, lastAt: 0 };
-  delete tuojSessionInflight.tuoj;
-  delete tuojSessionInflight.tuojClassic;
+  sessionRetryState.tuoj = { count: 0, lastAt: 0 };
+  sessionRetryState.tuojClassic = { count: 0, lastAt: 0 };
+  delete sessionInflight.tuoj;
+  delete sessionInflight.tuojClassic;
+}
+
+/** 清空 Tyche 进程级自动重登频控 / 去重状态（仅离线测试用；应用内无需调用） */
+export function resetTycheSessionRetryState(): void {
+  sessionRetryState.tyche = { count: 0, lastAt: 0 };
+  delete sessionInflight.tyche;
 }
 
 export interface RefreshExternalHomeworkResult {
@@ -159,13 +185,16 @@ export interface RefreshExternalHomeworkResult {
   reroutedTuoj: boolean;
   /** 实际触发过重漫游的 TUOJ 系源（R15 20.2；诊断用） */
   reroutedSources: TuojSourceId[];
+  /** R21-A：是否因 Tyche 会话失效触发过静默自动重登并重拉成功（诊断/测试用） */
+  reloginTyche: boolean;
 }
 
-/** 各源并发拉取（allSettled，单源失败隔离）；TUOJ 系 401/403 → 强制重漫游一次并重试该源。
- *  ⚠️ 防循环：单次调用每个源至多触发一次重漫游，重试仍失败不再进入第二轮。永不抛出。
- *  R19 27.1：重漫游动作套进程级频控（同源 ≥10min、每源每进程 ≤3 次）+ 同源 in-flight
- *  去重（并发 401 只发起一次漫游，后来者共享其结果）；发起过漫游而该源最终仍失败的，
- *  错误文案加「已尝试自动重新登录，仍失败：」前缀。 */
+/** 各源并发拉取（allSettled，单源失败隔离）；TUOJ 系 401/403 → 强制重漫游一次并重试该源，
+ *  Tyche 会话失效（status=login / 401 / 跳登录页）→ 静默自动重登一次并重拉该源（R21-A）。
+ *  ⚠️ 防循环：单次调用每个源至多触发一次自动重登，重试仍失败不再进入第二轮。永不抛出。
+ *  R19 27.1 / R21-A：重登动作套进程级频控（同源 ≥10min、每源每进程 ≤3 次，各源独立计数）
+ *  + 同源 in-flight 去重（并发失效只发起一次，后来者共享其结果）；发起过重登而该源最终
+ *  仍失败的，错误文案加「已尝试自动重新登录，仍失败：」前缀。 */
 export async function refreshExternalHomework(
   deps: RefreshExternalHomeworkDeps,
 ): Promise<RefreshExternalHomeworkResult> {
@@ -177,42 +206,55 @@ export async function refreshExternalHomework(
   const results = await Promise.allSettled(sources.map((s) => s.fetch()));
 
   const reroutedSources: TuojSourceId[] = [];
-  /** 本轮发起（或共享）过自动重漫游的源——最终仍失败时用于加文案前缀（仅 TUOJ 系源会加入） */
+  let reloginTycheOk = false;
+  /** 本轮发起（或共享）过自动重登的源——最终仍失败时用于加文案前缀 */
   const rerouteAttempted = new Set<ExtHwSourceId>();
-  const rerouteTuoj = deps.rerouteTuoj;
-  if (rerouteTuoj) {
+
+  /** 按源解析重登钩子：TUOJ 系走 rerouteTuoj，tyche 走 reloginTyche（R21-A）；未注入 = null */
+  const hookFor = (sid: SessionRetrySourceId): (() => Promise<boolean>) | null => {
+    if (sid === "tyche") return deps.reloginTyche ? () => deps.reloginTyche!() : null;
+    return deps.rerouteTuoj ? () => deps.rerouteTuoj!(sid) : null;
+  };
+  /** 该源被拒的原因是否「会话失效」（TUOJ=TuojSessionError；tyche=TycheSessionError） */
+  const isSessionErrorFor = (sid: SessionRetrySourceId, reason: unknown): boolean =>
+    sid === "tyche" ? isTycheSessionError(reason) : isTuojSessionError(reason);
+
+  if (deps.rerouteTuoj || deps.reloginTyche) {
     for (let i = 0; i < sources.length; i++) {
       const src = sources[i];
-      if (!src || !isTuojFamily(src.id)) continue;
-      const sid: TuojSourceId = src.id;
+      if (!src || !isSessionRetrySource(src.id)) continue;
+      const sid: SessionRetrySourceId = src.id;
+      const hook = hookFor(sid);
+      if (!hook) continue;
       const r = results[i];
-      if (r?.status !== "rejected" || !isTuojSessionError(r.reason)) continue;
-      // R19 27.1：同源已有 in-flight 重漫游 → 直接共享其结果（不再计数、不受频控拦截）
-      let inflight = tuojSessionInflight[sid];
+      if (r?.status !== "rejected" || !isSessionErrorFor(sid, r.reason)) continue;
+      // R19 27.1 / R21-A：同源已有 in-flight 重登 → 直接共享其结果（不再计数、不受频控拦截）
+      let inflight = sessionInflight[sid];
       if (!inflight) {
-        // 新发起一次漫游前先过进程级频控（间隔 / 次数；AI 版 / 经典版独立）
-        if (!tuojSessionRetryAllowed(sid)) continue;
-        const st = tuojSessionRetryState[sid];
+        // 新发起一次重登前先过进程级频控（间隔 / 次数；TUOJ 两源与 tyche 各自独立）
+        if (!sessionRetryAllowed(sid)) continue;
+        const st = sessionRetryState[sid];
         st.count += 1;
         st.lastAt = Date.now();
         inflight = (async (): Promise<boolean> => {
           try {
-            return await rerouteTuoj(sid);
+            return await hook();
           } finally {
-            delete tuojSessionInflight[sid];
+            delete sessionInflight[sid];
           }
         })();
-        tuojSessionInflight[sid] = inflight;
+        sessionInflight[sid] = inflight;
       }
       rerouteAttempted.add(sid);
       let ok = false;
       try {
         ok = await inflight;
       } catch {
-        ok = false; // 漫游失败分支绝不抛出：保留原 401 错误与设置页引导
+        ok = false; // 重登失败分支绝不抛出：保留原会话错误与设置页引导
       }
       if (!ok) continue;
-      reroutedSources.push(sid);
+      if (sid === "tyche") reloginTycheOk = true;
+      else reroutedSources.push(sid);
       const retry = createExternalSources({
         creds: deps.getCreds(),
         fetchLike: deps.fetchLike,
@@ -236,11 +278,11 @@ export async function refreshExternalHomework(
     if (r.status === "fulfilled") items.push(...r.value);
     else {
       const reason = r.reason instanceof Error ? r.reason.message : String(r.reason);
-      errors[src.id] = rerouteAttempted.has(src.id) ? `${TUOJ_REROUTE_FAILED_PREFIX}${reason}` : reason;
+      errors[src.id] = rerouteAttempted.has(src.id) ? `${SESSION_RELOGIN_FAILED_PREFIX}${reason}` : reason;
     }
   });
   items.sort((a, b) => a.deadline.localeCompare(b.deadline));
-  return { items, errors, reroutedTuoj: reroutedSources.length > 0, reroutedSources };
+  return { items, errors, reroutedTuoj: reroutedSources.length > 0, reroutedSources, reloginTyche: reloginTycheOk };
 }
 
 export { SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES } from "./types.js";
@@ -266,4 +308,6 @@ export { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isTuojNoCo
 export type { TuojRoamResult, TuojRoamDeps } from "./tuojCas.js";
 export { TuojSessionError, isTuojSessionError, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "./tuoj.js";
 export type { TuojSourceConfig } from "./tuoj.js";
+/* R21-A：Tyche 会话失效错误（status=login / 401 / 跳登录页），供编排层与离线测试判定 */
+export { TycheSessionError, isTycheSessionError } from "./tyche.js";
 export { DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, BASE as DSA_BASE } from "./dsa.js";

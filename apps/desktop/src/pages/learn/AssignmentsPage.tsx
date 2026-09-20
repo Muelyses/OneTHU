@@ -94,11 +94,14 @@ function ExtHwGuide() {
 /* R19 27.1：TUOJ 会话失效已静默自动重漫游过、但该源最终仍失败时，作业页明示
  * 「已尝试自动重新登录，仍失败：<原因>」（文案由 core 组装进 errors）并保留手动入口
  * ——「去设置重新登录」跳设置页 extHw 区的「统一认证登录」。不弹窗，仅条幅；
- * 其余源错误仍只在设置页展示（与既有行为一致）。 */
-function ExtHwTuojErrorNote() {
+ * 其余源错误仍只在设置页展示（与既有行为一致）。
+ * R21-A：Tyche 会话失效静默自动重登（记住密码时）失败也走同一条幅——core 对发起过
+ * 自动重登仍失败的源统一加同款前缀，这里把 tyche 并入渲染列表；「去设置」落到
+ * Tyche 卡片的手动登录入口。 */
+function ExtHwSourceErrorNote() {
   const { navigate } = useApp();
   const ext = useExternalHomework();
-  const rows = (["tuoj", "tuojClassic"] as const)
+  const rows = (["tuoj", "tuojClassic", "tyche"] as const)
     .map((id) => ({ id, name: SOURCE_NAMES[id], err: ext.errors[id] }))
     .filter((r) => Boolean(r.err));
   // 等凭据解密完成再判断，避免就绪前闪一下
@@ -178,7 +181,7 @@ export function AssignmentsPage() {
       <ExtHwGuide />
 
       {/* R19 27.1：TUOJ 自动重漫游仍失败的静默条幅（含「去设置重新登录」手动入口） */}
-      <ExtHwTuojErrorNote />
+      <ExtHwSourceErrorNote />
 
       <SegmentedOverflow>
         {FILTERS.map(({ key, label }) => (

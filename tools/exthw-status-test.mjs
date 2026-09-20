@@ -15,6 +15,11 @@
  *  - R19 27.1：TUOJ 会话失效自动重漫游——401 → force 重漫游一次 → 重拉成功（R12 ①-④）；
  *    同源并发 401 in-flight 去重只漫游一次；进程级频控放宽（同源两次 ≥10min、每源每进程
  *    ≤3 次、AI 版 / 经典版独立计数）；失败文案「已尝试自动重新登录，仍失败：<原因>」
+ *  - R21-A：Tyche 会话失效静默自动重登——status=login / 401 / 非 JSON（跳登录页）统一
+ *    TycheSessionError（含 task/Status 内层冒泡）；reloginTyche 钩子 → 静默重登一次 →
+ *    自动重拉（新 Cookie 生效）；同源并发失效 in-flight 去重；进程级频控（同源 ≥10min、
+ *    每源每进程 ≤3 次，与 TUOJ 独立计数）；重登仍失败文案同款前缀；非会话错误 / 未注入
+ *    钩子不重登；tycheLogin 登录链路（挑战 token / sha1 双哈希 / vcode 拒绝 / 错误映射）
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
 import { createTuojSource, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
@@ -879,6 +884,382 @@ if (!canResolveTs) {
     } finally {
       Date.now = realNow;
     }
+  }
+}
+
+/* ───────── R21-A：Tyche 会话失效静默自动重登（记住密码） ───────── */
+console.log("\n[Tyche 失效自动重登 R21-A]");
+if (!canResolveTs) {
+  console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
+} else {
+  const { refreshExternalHomework, resetTycheSessionRetryState, resetTuojSessionRetryState, TycheSessionError, isTycheSessionError } = await import(
+    "../packages/core/src/exthw/index.ts"
+  );
+  const { createTycheSource } = await import("../packages/core/src/exthw/tyche.ts");
+  const TYCHE_BASE = "http://166.111.236.164:6080/tyche";
+
+  const TYCHE_GROUP_OK = {
+    group: { gid: 42, name: "程序设计基础", tasks: [{ tid: 1406, title: "作业一", judgeEndTime: localDT(FUTURE) }] },
+  };
+  const TYCHE_STATUS_OK = {
+    status: "success",
+    submissionCount: 1,
+    submissionList: [{ pid: 1, sid: 1, score: 100, result: 2, submitedTime: "2026-09-19 10:00:00" }],
+  };
+  const TYCHE_LOGIN_BODY = { status: "login" };
+
+  /** mock Tyche fetchLike：groupStatuses 依次决定第 N 次 GroupList 的响应（末项复用）；
+   *  statusBody / statusBody2 分别是首发与（自动重登后）重拉时 task/Status 的响应。
+   *  routeStatus = "login" → {status:"login"}；"fail" → throw 普通 Error；数字 → HTTP 该码。 */
+  function makeTycheFetch(groupStatuses, { statusBody = TYCHE_STATUS_OK, statusBody2 = TYCHE_STATUS_OK } = {}) {
+    let groupHits = 0;
+    let statusHits = 0;
+    const calls = [];
+    const json = (body, status = 200) =>
+      new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+    const groupResp = (spec) => {
+      if (spec === "login") return json(TYCHE_LOGIN_BODY);
+      if (typeof spec === "number") return json({ message: "err" }, spec);
+      if (spec === "fail") throw new Error("网络断开");
+      return json({ groupList: [{ gid: 42, name: "程序设计基础" }] });
+    };
+    const fn = async (url, init = {}) => {
+      const method = (init.method ?? "GET").toUpperCase();
+      const headers = {};
+      for (const [k, v] of Object.entries(init.headers ?? {})) headers[k.toLowerCase()] = v;
+      calls.push({ url, method, headers });
+      if (url.endsWith("/group/GroupList")) {
+        const spec = groupStatuses[Math.min(groupHits, groupStatuses.length - 1)];
+        groupHits++;
+        return groupResp(spec);
+      }
+      if (url.includes("/group/ShowGroup")) return json(TYCHE_GROUP_OK);
+      if (url.includes("/task/Status")) {
+        const body = statusHits++ === 0 ? statusBody : statusBody2;
+        if (body === "login") return json(TYCHE_LOGIN_BODY);
+        if (body === "fail") throw new Error("状态接口网络断开");
+        return json(body);
+      }
+      return new Response("not found", { status: 404 });
+    };
+    fn.calls = calls;
+    fn.groupHits = () => groupHits;
+    return fn;
+  }
+
+  // ⑩ 类型判定：status=login / 401 / 非 JSON 三种失效都归 TycheSessionError，其余不误判
+  {
+    const sess = createTycheSource({ cookie: "c" }, makeTycheFetch(["login"]), 30);
+    let err;
+    try {
+      await sess.fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isTycheSessionError(err), "⑩GroupList status=login → TycheSessionError");
+    ok(isTycheSessionError(new TycheSessionError("x")), "⑩TycheSessionError 实例判定为会话失效");
+    ok(!isTycheSessionError(new Error("boom")), "⑩普通 Error 不判会话失效");
+    ok(!(err instanceof Error && err.name === "TuojSessionError"), "⑩不与 TUOJ 会话错误混淆");
+  }
+
+  // ⑪ status=login → 静默自动重登一次 → 自动重拉成功（新 Cookie 生效）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login", "ok"]);
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        creds.tyche = { cookie: "new", username: "u", password: "p" }; // 模拟重登覆盖凭据
+        return true;
+      },
+    });
+    eq(r.reloginTyche, true, "⑪触发了一次静默自动重登");
+    eq(reloginCalls, 1, "⑪重登恰好一次");
+    eq(fetchLike.groupHits(), 2, "⑪GroupList 拉取两次（首发 login + 重拉成功）");
+    eq(r.items.length, 1, "⑪重拉成功拉到 1 条作业");
+    eq(r.errors.tyche, undefined, "⑪重拉成功后不再有 Tyche 错误");
+    const groupCalls = fetchLike.calls.filter((c) => c.url.endsWith("/group/GroupList"));
+    eq(groupCalls[0]?.headers["cookie"], "old", "⑪首发用旧 cookie");
+    eq(groupCalls[1]?.headers["cookie"], "new", "⑪重拉用重登后的新 cookie");
+  }
+
+  // ⑫ 重登失败 → 不进入第二轮（防循环），错误文案带「已尝试自动重新登录，仍失败：」前缀
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login"]);
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        return false; // 重登失败（密码错 / 需验证码等）
+      },
+    });
+    eq(reloginCalls, 1, "⑫防循环：仅重登一次");
+    eq(fetchLike.groupHits(), 1, "⑫重登失败不重拉");
+    ok(r.errors.tyche?.startsWith("已尝试自动重新登录，仍失败："), "⑫文案带「已尝试自动重新登录，仍失败：」前缀");
+    ok(r.errors.tyche?.includes("status=login"), "⑫前缀后保留原失效原因");
+    eq(r.items.length, 0, "⑫无作业");
+  }
+
+  // ⑬ 非会话错误（网络断）不触发自动重登、无前缀
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old" } };
+    const fetchLike = makeTycheFetch(["fail"]);
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        return true;
+      },
+    });
+    eq(reloginCalls, 0, "⑬普通网络错误不触发自动重登");
+    ok(Boolean(r.errors.tyche) && !r.errors.tyche.startsWith("已尝试自动重新登录"), "⑬普通错误文案无前缀");
+  }
+
+  // ⑭ 未注入 reloginTyche 钩子 → 行为同旧版（不重登、无前缀）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old" } };
+    const fetchLike = makeTycheFetch(["login"]);
+    const r = await refreshExternalHomework({ getCreds: () => creds, fetchLike });
+    eq(fetchLike.groupHits(), 1, "⑭无钩子不重试");
+    ok(Boolean(r.errors.tyche) && !r.errors.tyche.startsWith("已尝试自动重新登录"), "⑭无钩子文案无前缀");
+  }
+
+  // ⑮ 并发会话失效 → in-flight 去重：两个并发 refresh 只重登一次，各自重拉均成功
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login", "login", "ok"]);
+    let reloginCalls = 0;
+    const hook = async () => {
+      reloginCalls++;
+      creds.tyche = { cookie: "new", username: "u", password: "p" };
+      return true;
+    };
+    const [ra, rb] = await Promise.all([
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook }),
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook }),
+    ]);
+    eq(reloginCalls, 1, "⑮并发失效只触发一次重登（共享 in-flight Promise）");
+    eq(ra.reloginTyche, true, "⑮第一个 refresh 标记 reloginTyche");
+    eq(rb.reloginTyche, true, "⑮第二个 refresh 共享重登结果并标记");
+    eq(ra.items.length, 1, "⑮第一个 refresh 重拉成功");
+    eq(rb.items.length, 1, "⑮第二个 refresh 重拉成功");
+    eq(fetchLike.groupHits(), 4, "⑮GroupList 共 4 次（两轮各：首发 login + 重拉 ok）");
+    ok(ra.errors.tyche === undefined && rb.errors.tyche === undefined, "⑮无错误残留");
+  }
+
+  // ⑯ 频控：同源两次 ≥10min、每进程 ≤3 次（含失败），Tyche 与 TUOJ 独立计数
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login"]);
+    const attempts = [];
+    const hook = async () => {
+      attempts.push(1);
+      return false;
+    };
+    const realNow = Date.now;
+    try {
+      // 第一轮：发起过重登仍失败 → 前缀
+      const first = await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      eq(attempts.length, 1, "⑯首次失效发起一次重登");
+      ok(first.errors.tyche?.startsWith("已尝试自动重新登录，仍失败："), "⑯发起过重登仍失败 → 带前缀");
+      // 第二轮：间隔 <10min → 不再自动重登，无前缀
+      const second = await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      eq(attempts.length, 1, "⑯间隔 <10min 不再自动重登");
+      ok(Boolean(second.errors.tyche) && !second.errors.tyche.startsWith("已尝试自动重新登录"), "⑯被频控拦截的文案无前缀");
+      // 放行时钟：跨过 10min 间隔再试 2 次（累计 3 次 = 每进程上限），第 4 次被拦
+      for (let n = 2; n <= 3; n++) {
+        Date.now = () => realNow() + n * 11 * 60 * 1000;
+        await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      }
+      eq(attempts.length, 3, "⑯放行时钟下累计 3 次（每进程上限）");
+      Date.now = () => realNow() + 4 * 11 * 60 * 1000;
+      const r4 = await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      eq(attempts.length, 3, "⑯第 4 次不再自动重登（超限）");
+      ok(Boolean(r4.errors.tyche) && !r4.errors.tyche.startsWith("已尝试自动重新登录"), "⑯超限文案无前缀");
+      // Tyche 与 TUOJ 频控独立计数：Tyche 已超限（上一步烧满 3 次），TUOJ 401 仍照常漫游
+      resetTuojSessionRetryState(); // TUOJ 状态在本文件 R19 块已用掉，清零后单独验证独立性
+      const tuojCreds = { tuoj: { cookie: "old" } };
+      let tuojRoamCalls = 0;
+      const tuojJson = (body, status = 200) =>
+        new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+      let tuojListHits = 0;
+      const tuojFetch = async (url, init = {}) => {
+        if (String(url).endsWith("/api/course/list")) {
+          const st = tuojListHits++ === 0 ? 401 : 200;
+          return st === 200
+            ? tuojJson({ courses: [{ _id: 8, title: "离散数学" }] })
+            : tuojJson({ message: "unauthorized" }, st);
+        }
+        if (String(url).endsWith("/api/user/lookup")) return tuojJson({ user: { _id: 1001, username: "2026000000" } });
+        if (String(url).includes("/contest/83/context"))
+          return tuojJson({ context: { metadata: { title: "hw1" }, schedule: { endAt: FUTURE } } });
+        if (String(url).includes("/contest/83/ranklist"))
+          return tuojJson({ ranklist: { players: [{ _id: 1001, username: "2026000000", details: { "0": {} } }] } });
+        if (String(url).endsWith("/api/course/8/rank")) return tuojJson({ courseRank: { contests: [{ _id: 83 }] } });
+        return new Response("not found", { status: 404 });
+      };
+      const rt = await refreshExternalHomework({
+        getCreds: () => tuojCreds,
+        fetchLike: tuojFetch,
+        rerouteTuoj: async () => {
+          tuojRoamCalls++;
+          tuojCreds.tuoj = { cookie: "new" };
+          return true;
+        },
+      });
+      eq(tuojRoamCalls, 1, "⑯Tyche 超限不影响 TUOJ 重漫游（各自独立计数）");
+      eq(rt.reroutedTuoj, true, "⑯TUOJ 401 照常漫游成功");
+      eq(rt.items.length, 1, "⑯TUOJ 重拉成功");
+    } finally {
+      Date.now = realNow;
+    }
+  }
+
+  // ⑰ 仅 task/Status 失效（GroupList 正常）也必须冒泡并触发重登（内层 catch 不能吞会话错误）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["ok", "ok"], { statusBody: "login", statusBody2: TYCHE_STATUS_OK });
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        creds.tyche = { cookie: "new", username: "u", password: "p" };
+        return true;
+      },
+    });
+    eq(reloginCalls, 1, "⑰task/Status 会话失效触发一次重登");
+    eq(r.items.length, 1, "⑰重登后重拉成功");
+    ok(r.items[0]?.graded === true && r.items[0]?.score === 100, "⑰重拉数据完整（已批改 100 分）");
+  }
+
+  // ⑱ task/Status 普通错误仍保守吞掉（不触发重登、不算失败）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old" } };
+    const fetchLike = makeTycheFetch(["ok"], { statusBody: "fail" });
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        return true;
+      },
+    });
+    eq(reloginCalls, 0, "⑱状态接口普通错误不触发重登");
+    eq(r.errors.tyche, undefined, "⑱且不作为该源错误");
+    eq(r.items.length, 1, "⑱列表照常返回（状态保守未提交）");
+    ok(r.items[0]?.submitted === false && r.items[0]?.graded === false, "⑱状态保守 false");
+  }
+}
+
+/* ───────── R21-A：Tyche 账密登录客户端（记住密码自动重登所依赖的登录链路） ───────── */
+console.log("\n[Tyche 登录 R21-A]");
+if (!canResolveTs) {
+  console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
+} else {
+  const { tycheLogin } = await import("../packages/core/src/exthw/login.ts");
+  const { createHash } = await import("node:crypto");
+  const sha1 = (s) => createHash("sha1").update(s).digest("hex");
+  const TYCHE_BASE = "http://166.111.236.164:6080/tyche";
+
+  // ⑲ 成功链路：GetToken(vcode=false) → sha1(sha1(pwd)+token) → POST Login 取回 Cookie
+  {
+    const calls = [];
+    const fetchLike = async (url, init = {}) => {
+      calls.push({ url: String(url), method: init.method, body: String(init.body ?? "") });
+      if (String(url).includes("/user/GetToken")) {
+        return new Response(JSON.stringify({ status: "success", vcode: false, token: "T1" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ status: "success" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "x-onethu-set-cookie": JSON.stringify(["JSESSIONID=abc; Path=/", "username=u; Path=/", "uid=1; Path=/"]),
+        },
+      });
+    };
+    const r = await tycheLogin("2026000000", "pw", fetchLike);
+    eq(r.cookie, "JSESSIONID=abc; username=u; uid=1", "⑲登录取回会话 Cookie 串");
+    eq(calls[0]?.method, "GET", "⑲先 GET 取挑战 token");
+    ok(calls[0].url.includes("/user/GetToken?username=2026000000"), "⑲GetToken 带用户名");
+    eq(calls[1]?.method, "POST", "⑳再 POST 登录");
+    ok(calls[1].url.includes("/user/Login"), "⑳POST 打到 user/Login");
+    ok(calls[1].body.includes("token=T1"), "⑳登录表单带挑战 token");
+    ok(calls[1].body.includes(`password=${sha1(sha1("pw") + "T1")}`), "⑳口令变换 sha1(sha1(pwd)+token) 与 Login.html 一致");
+  }
+  // ㉑ vcode=true（考场锁定）→ 明确报错且不发登录 POST（无验证码输入通道，不能静默重登）
+  {
+    const calls = [];
+    const fetchLike = async (url, init = {}) => {
+      calls.push({ url: String(url) });
+      return new Response(JSON.stringify({ status: "success", vcode: true, token: "T2" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+    let err;
+    try {
+      await tycheLogin("u", "p", fetchLike);
+    } catch (e) {
+      err = e;
+    }
+    ok(err instanceof Error && err.message.includes("验证码"), "㉑vcode=true → 明确提示需要验证码");
+    eq(calls.length, 1, "㉑不发登录 POST（只有 GetToken 一跳）");
+  }
+  // ㉒ 用户名不存在 / 密码错误 → 服务端 returnFailString 映射成中文
+  {
+    const fetchLike = async () =>
+      new Response(JSON.stringify({ status: "error", returnFailString: "username_not_exist" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    let err;
+    try {
+      await tycheLogin("ghost", "p", fetchLike);
+    } catch (e) {
+      err = e;
+    }
+    ok(err instanceof Error && err.message.includes("用户名不存在"), "㉒username_not_exist → 中文提示");
+    const fetchLike2 = async (url, init = {}) => {
+      if (String(url).includes("/user/Login")) {
+        return new Response(JSON.stringify({ returnFailString: "password_mismatch" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ status: "success", vcode: false, token: "T3" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+    let err2;
+    try {
+      await tycheLogin("u", "bad", fetchLike2);
+    } catch (e) {
+      err2 = e;
+    }
+    ok(err2 instanceof Error && err2.message.includes("密码错误"), "㉒password_mismatch → 中文提示");
   }
 }
 

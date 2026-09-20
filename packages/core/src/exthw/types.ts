@@ -106,8 +106,12 @@ export interface ExtHwCreds {
   /** DSA OJ（dsa.cs.tsinghua.edu.cn）：邮箱 + 密码登录，会话 Cookie；
    *  `username`（邮箱）仅用于设置页回填。 */
   dsa?: { cookie: string; username?: string };
-  /** 登录后拼好的会话 Cookie；Basic 头已硬编码，不在此暴露 */
-  tyche?: { cookie: string; username?: string };
+  /** 登录后拼好的会话 Cookie；Basic 头已硬编码，不在此暴露。
+   *  R21-A：`password` = 「记住密码」勾选后保存的 Tyche 登录口令（**明文参数，只存在于
+   *  本结构内存态**；落盘走 desktop 的 AES-GCM 信封 `onethu.exthw.v1`，与既有凭据同路——
+   *  信封整体加密，不存在明文落盘）。会话失效（status=login / 401 / 跳登录页）时
+   *  desktop 用 username+password 静默自动重登一次；未记住（缺省）则保持旧行为=手动。 */
+  tyche?: { cookie: string; username?: string; password?: string };
   /** 只保留未来 N 天（默认 30）；已过期的仍保留（属"未提交"） */
   days?: number;
 }

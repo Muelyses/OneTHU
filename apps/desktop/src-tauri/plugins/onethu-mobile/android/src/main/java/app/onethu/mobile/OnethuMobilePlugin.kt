@@ -40,6 +40,7 @@ import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
 import app.tauri.plugin.Plugin
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.net.URLConnection
@@ -64,6 +65,18 @@ class OpenWebModalArgs {
 @InvokeArg
 class WidgetPushArgs {
     lateinit var snapshot: String
+}
+
+/** 待排程的通知条目数组（JSON 字符串，结构见 OnethuNotify.kt 顶部注释） */
+@InvokeArg
+class NotifyScheduleArgs {
+    lateinit var items: String
+}
+
+/** 要撤销的通知 id 数组（JSON 字符串） */
+@InvokeArg
+class NotifyCancelArgs {
+    lateinit var ids: String
 }
 
 @TauriPlugin(
@@ -498,10 +511,128 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         }
     }
 
+    /* ── 系统通知（渠道 + 定时）──
+     * JS 侧 notifyPlan.ts 算出计划，这里只负责排进 AlarmManager 与权限状态回报。
+     * 精确闹钟在 API 31+ 需要用户在系统设置里允许；不可用时降级为不精确投递
+     * （setAndAllowWhileIdle，宁晚不丢），状态经 notifyPermission 回报给设置页。 */
+
+    @Command
+    fun notifyPermission(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            requestPermissionForAliases(arrayOf("notifications"), invoke, "notificationPermissionCallback")
+            return
+        }
+        resolveNotifyPermission(invoke)
+    }
+
+    /** 通知权限回调（与扫码保活共用 alias，但走各自回调以免串状态） */
+    @PermissionCallback
+    fun notifyPermissionCallback(invoke: Invoke) {
+        resolveNotifyPermission(invoke)
+    }
+
+    private fun resolveNotifyPermission(invoke: Invoke) {
+        val ctx = activity.applicationContext
+        invoke.resolve(
+            JSObject()
+                .put("ok", true)
+                .put("granted", hasNotificationPermission())
+                .put("exact", OnethuNotifyReceiver.canExact(ctx))
+                .put("android", true)
+        )
+    }
+
+    @Command
+    fun notifySchedule(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(NotifyScheduleArgs::class.java)
+            val ctx = activity.applicationContext
+            val arr = JSONArray(args.items)
+            var scheduled = 0
+            for (i in 0 until arr.length()) {
+                val item = arr.optJSONObject(i) ?: continue
+                if (OnethuNotifyReceiver.schedule(ctx, item)) scheduled++
+            }
+            invoke.resolve(
+                JSObject().put("ok", true).put("scheduled", scheduled)
+                    .put("exact", OnethuNotifyReceiver.canExact(ctx))
+            )
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "schedule-failed"))
+        }
+    }
+
+    @Command
+    fun notifyCancel(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(NotifyCancelArgs::class.java)
+            val ctx = activity.applicationContext
+            val arr = JSONArray(args.ids)
+            var cancelled = 0
+            for (i in 0 until arr.length()) {
+                val id = arr.optString(i)
+                if (id.isEmpty()) continue
+                OnethuNotifyReceiver.cancel(ctx, id)
+                cancelled++
+            }
+            invoke.resolve(JSObject().put("ok", true).put("cancelled", cancelled))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "cancel-failed"))
+        }
+    }
+
+    @Command
+    fun notifyPending(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            val ids = JSONArray()
+            for ((id, _) in NotifyStore.all(ctx)) ids.put(id)
+            invoke.resolve(JSObject().put("ok", true).put("ids", ids))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "pending-failed"))
+        }
+    }
+
+    /** 立即发一条测试通知（设置页「试一下」按钮）：渠道与权限链路自证。 */
+    @Command
+    fun notifyTest(invoke: Invoke) {
+        if (!hasNotificationPermission()) {
+            requestPermissionForAliases(arrayOf("notifications"), invoke, "notifyTestCallback")
+            return
+        }
+        doNotifyTest(invoke)
+    }
+
+    @PermissionCallback
+    fun notifyTestCallback(invoke: Invoke) {
+        doNotifyTest(invoke)
+    }
+
+    private fun doNotifyTest(invoke: Invoke) {
+        val ctx = activity.applicationContext
+        val item = JSONObject()
+            .put("title", "OneTHU 提醒测试")
+            .put("body", "看到这条说明通知渠道已就绪。")
+            .put("channel", "briefing")
+            .put("target", "settings")
+        val ok = NotifyCenter.post(ctx, "test-" + System.currentTimeMillis(), item)
+        invoke.resolve(JSObject().put("ok", ok).put("granted", hasNotificationPermission()))
+    }
+
+    @Command
+    fun notifyTakeTarget(invoke: Invoke) {
+        try {
+            val target = LaunchTarget.take(activity.applicationContext)
+            invoke.resolve(JSObject().put("ok", true).put("target", target))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "take-failed"))
+        }
+    }
+
     @Command
     fun widgetTakeTarget(invoke: Invoke) {
         try {
-            val target = WidgetStore.takeTarget(activity.applicationContext)
+            val target = LaunchTarget.take(activity.applicationContext)
             invoke.resolve(JSObject().put("ok", true).put("target", target))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "take-failed"))

@@ -1,4 +1,5 @@
 import { Shell, BrandLogo } from "./components/Layout.js";
+import { NotifyBridge } from "./components/NotifyBridge.js";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LearnPage } from "./pages/Learn.js";
@@ -119,6 +120,7 @@ function Routed() {
     <>
       {body}
       <PluginBridge />
+      <NotifyBridge />
       {(status === "ready" || status === "demo") && <ChatDock />}
       <FilePreviewHost />
       <ToastHost />

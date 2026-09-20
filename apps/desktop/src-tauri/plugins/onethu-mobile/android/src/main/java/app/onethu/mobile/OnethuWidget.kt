@@ -15,6 +15,7 @@ package app.onethu.mobile
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -26,7 +27,6 @@ import org.json.JSONObject
 object WidgetStore {
     private const val PREFS = "onethu_widget"
     private const val KEY_SNAPSHOT = "snapshot"
-    private const val KEY_TARGET = "target"
 
     fun save(ctx: Context, json: String) {
         ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -45,28 +45,16 @@ object WidgetStore {
 
     fun clear(ctx: Context) {
         ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().remove(KEY_SNAPSHOT).remove(KEY_TARGET).apply()
-    }
-
-    /** 点击小组件时记下要落的页面，等 App 启动后由 widget_take_target 取走（取走即清）。 */
-    fun putTarget(ctx: Context, target: String) {
-        ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-            .edit().putString(KEY_TARGET, target).apply()
-    }
-
-    fun takeTarget(ctx: Context): String {
-        val prefs = ctx.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val v = prefs.getString(KEY_TARGET, null) ?: return ""
-        prefs.edit().remove(KEY_TARGET).apply()
-        return v
+            .edit().remove(KEY_SNAPSHOT).apply()
     }
 }
 
-/** 点击落点广播：PendingIntent 里跑不了代码，故先落到这里存落点再拉起 App。 */
-class OnethuWidgetClickReceiver : android.content.BroadcastReceiver() {
+/** 点击落点广播（小组件与通知共用）：PendingIntent 里跑不了代码，
+ *  故先把落点写进 LaunchTarget 再拉起 App，App 起来后取走并导航。 */
+class OnethuLaunchReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val target = intent.getStringExtra(EXTRA_TARGET) ?: ""
-        if (target.isNotEmpty()) WidgetStore.putTarget(context, target)
+        if (target.isNotEmpty()) LaunchTarget.put(context, target)
         val launch = context.packageManager.getLaunchIntentForPackage(context.packageName)
         if (launch != null) {
             launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -128,8 +116,8 @@ class OnethuWidgetProvider : AppWidgetProvider() {
 
             // 点击：落点交给广播（存 target 后拉起 App），未配置落点时只打开 App
             val target = snap?.optString("target").orEmpty()
-            val clickIntent = Intent(ctx, OnethuWidgetClickReceiver::class.java)
-                .putExtra(OnethuWidgetClickReceiver.EXTRA_TARGET, target)
+            val clickIntent = Intent(ctx, OnethuLaunchReceiver::class.java)
+                .putExtra(OnethuLaunchReceiver.EXTRA_TARGET, target)
             val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             val pending = PendingIntent.getBroadcast(ctx, 0, clickIntent, flags)
             views.setOnClickPendingIntent(R.id.onethu_widget_root, pending)

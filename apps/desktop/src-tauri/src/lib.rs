@@ -2164,6 +2164,129 @@ async fn widget_take_target(app: tauri::AppHandle) -> Result<serde_json::Value, 
         .map_err(|e| e.to_string())
 }
 
+/* 系统通知（三端）：JS 侧 notifyPlan.ts 算出「什么时候发什么」，这里只做投递。
+ *
+ * Android：经 onethu-mobile 插件落到 AlarmManager（进程被杀也送得到，重启后重排）。
+ * 桌面端 macOS / Windows 由本 crate 的 notify 模块实现（见 src/notify.rs）。
+ * 权限状态、精确闹钟可用性由各后端回报，设置页据此提示用户去系统设置。 */
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn notify_permission(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("notifyPermission", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn notify_schedule(app: tauri::AppHandle, items: String) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("notifySchedule", serde_json::json!({ "items": items }))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn notify_cancel(app: tauri::AppHandle, ids: String) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("notifyCancel", serde_json::json!({ "ids": ids }))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn notify_pending(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("notifyPending", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn notify_test(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("notifyTest", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn notify_take_target(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("notifyTakeTarget", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+/* 桌面端（macOS / Windows）：暂以 not-implemented 占位，由 src/notify.rs 实现后替换。
+ * 返回结构与其他未实现路径一致（ok:false + reason），前端据此在设置页显示「本平台暂不支持」。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_permission() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop" })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_schedule(_items: String) -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "scheduled": 0 })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_cancel(_ids: String) -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "cancelled": 0 })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_pending() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "ids": [] })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_test() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop" })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_take_target() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "target": "" })
+}
+
 /* R20-A：外部作业「桌面模式」内嵌浏览（救急）。移动端点击外部作业详情链接时
  * 不丢给系统浏览器，改走 onethu-mobile 插件（Kotlin openWebModal）的全屏 Dialog
  * WebView：桌面 UA + useWideViewPort/概览模式 + 可缩放，只读浏览（不注入脚本、
@@ -2452,7 +2575,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,open_web_modal,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

@@ -73,6 +73,19 @@ function favKey(userId: string): string {
   return `thos-favorites:${userId}`;
 }
 
+function recentKey(userId: string): string {
+  return `thos-recent:${userId}`;
+}
+
+function loadRecent(userId: string): string[] {
+  try {
+    const value = JSON.parse(localStorage.getItem(recentKey(userId)) ?? "[]");
+    return Array.isArray(value) ? value.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
 /** 预置「常用服务」的一次性标记（只做一次，之后完全由用户增删） */
 function seedKey(userId: string): string {
   return `thos-favorites-seeded:${userId}`;
@@ -112,11 +125,17 @@ export function ThosPage() {
   const [tasks, setTasks] = useState<Partial<Record<ThosTaskKind, ThosPage<ThosTask>>>>({});
   const [services, setServices] = useState<ThosPage<ThosService>>();
   const [favorites, setFavorites] = useState<string[]>([]);
+  /** 最近打开过的服务（排序依据：收藏优先，其次最近使用，其余保持学校原序） */
+  const [recent, setRecent] = useState<string[]>([]);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [updated, setUpdated] = useState<number>();
   const generation = useRef(0);
+
+  useEffect(() => {
+    setRecent(loadRecent(userId));
+  }, [userId]);
 
   useEffect(() => {
     const list = loadFavorites(userId);
@@ -173,6 +192,18 @@ export function ThosPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  /** 记录一次服务打开（用于"最近使用"排序；与收藏互不影响） */
+  const recall = (id: string): void => {
+    if (!id) return;
+    const next = [id, ...recent.filter((x) => x !== id)].slice(0, 20);
+    setRecent(next);
+    try {
+      localStorage.setItem(recentKey(userId), JSON.stringify(next));
+    } catch {
+      /* 存不下不影响会话 */
+    }
+  };
 
   /** 首次进入：把「亲友来访人员报备」「缓考申请」放进常用服务（只做一次） */
   useEffect(() => {
@@ -263,15 +294,23 @@ export function ThosPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pending, query, tab],
   );
-  const serviceRows = useMemo(
-    () =>
-      (services?.items ?? []).filter(
-        (x) =>
-          (!onlyFavorites || favorites.includes(x.id)) &&
-          `${x.name} ${x.department}`.toLowerCase().includes(query.toLowerCase()),
-      ),
-    [services, onlyFavorites, favorites, query],
-  );
+  const serviceRows = useMemo(() => {
+    const rows = (services?.items ?? []).filter(
+      (x) =>
+        (!onlyFavorites || favorites.includes(x.id)) &&
+        `${x.name} ${x.department}`.toLowerCase().includes(query.toLowerCase()),
+    );
+    // 可解释排序：已收藏 → 最近打开过 → 其余保持学校原序（稳定排序，不改动同档内相对次序）
+    const rank = new Map(recent.map((id, i) => [id, i] as const));
+    return [...rows].sort((a, b) => {
+      const fa = favorites.includes(a.id) ? 0 : 1;
+      const fb = favorites.includes(b.id) ? 0 : 1;
+      if (fa !== fb) return fa - fb;
+      const ra = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+      const rb = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      return ra - rb;
+    });
+  }, [services, onlyFavorites, favorites, query, recent]);
   const page = tab === "services" ? services : tasks[tab];
   const complete = page?.complete && (tab !== "todo" || tasks.active?.complete);
 
@@ -307,15 +346,6 @@ export function ThosPage() {
           <span>点选服务直接跳转对应页面，不再经过服务大厅。</span>
         </div>
       </div>
-      <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
-        {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
-        {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>
-          tabBtn(kind, `${KIND_LABEL[kind]} ${(counts as Record<string, number | undefined> | undefined)?.[kind] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }),
-        )}
-        {tabBtn("services-fav", `常用 ${favorites.length}`, tab === "services" && onlyFavorites, () => { setTab("services"); setOnlyFavorites(favorites.length > 0); setQuery(""); })}
-        {tabBtn("services-all", "全部服务", tab === "services" && !onlyFavorites, () => { setTab("services"); setOnlyFavorites(false); setQuery(""); })}
-      </div>
-
       <input
         className="thos-search"
         aria-label="搜索在线服务"
@@ -329,6 +359,16 @@ export function ThosPage() {
             : "搜索事项（标题/节点/编号）"
         }
       />
+
+      <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
+        {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
+        {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>
+          tabBtn(kind, `${KIND_LABEL[kind]} ${(counts as Record<string, number | undefined> | undefined)?.[kind] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }),
+        )}
+        {tabBtn("services-fav", `常用 ${favorites.length}`, tab === "services" && onlyFavorites, () => { setTab("services"); setOnlyFavorites(favorites.length > 0); setQuery(""); })}
+        {tabBtn("services-all", "全部服务", tab === "services" && !onlyFavorites, () => { setTab("services"); setOnlyFavorites(false); setQuery(""); })}
+      </div>
+
 
       {error ? <ErrorNote text={error} onRetry={() => void load()} /> : null}
       {busy && !page ? <SkeletonRows rows={4} /> : null}
@@ -351,7 +391,10 @@ export function ThosPage() {
                 <button
                   className="row-main thos-service-open"
                   aria-label={`打开服务 ${item.name}`}
-                  onClick={() => openOfficial(item.url)}
+                  onClick={() => {
+                    recall(item.id);
+                    void openOfficial(item.url);
+                  }}
                 >
                   <strong>{item.name}</strong>
                   <span className="dim">{item.department || "部门未提供"}</span>

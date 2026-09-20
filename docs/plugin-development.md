@@ -66,8 +66,9 @@ export default async function activate(ctx) {
 字符串直接展示在卡片中，异常展示前 200 字符。
 
 完整特性示例见插件市场收录的 [OneTHU-plugin-hello](https://github.com/smartThise/OneTHU-plugin-hello)：
-单文件覆盖结构化结果、确认与表单弹窗、剪贴板、自建功能页、全局 CSS、原子化收藏与
-OH 双向联动，可直接作为新插件的模板（删除不需要的段落即可）。
+单文件覆盖结构化结果、确认与表单弹窗、剪贴板、自建功能页、全局 CSS、原子化收藏、
+桌面小组件（§6.5）、系统通知（§6.6）与 OH 双向联动，可直接作为新插件的模板
+（删除不需要的段落即可）。
 
 ## 3. 清单规范
 

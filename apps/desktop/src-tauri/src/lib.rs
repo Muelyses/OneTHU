@@ -1553,13 +1553,20 @@ async fn thos_portal_window(
     // 逐条注入（绝不打印 Cookie 值）。域走默认（当前页 origin=webvpn），Path=/
     let mut seeded = 0usize;
     for (base, header) in seeds {
-        let _ = base;
+        // Domain 必须显式写：set_cookie 时窗口还停在 webvpn 源根（甚至还没加载完），
+        // 不带 Domain 的 Cookie 会按"当前文档"归属，等于没种——雨课堂那段之所以有效，
+        // 正是因为它写了 `Domain=.yuketang.cn; Path=/`（2026-09-20 实测：不写 Domain 时
+        // 日志显示"已种 8 条"、页面仍停在登录页）。
+        let host = url::Url::parse(base)
+            .ok()
+            .and_then(|u| u.host_str().map(|h| h.to_string()))
+            .unwrap_or_else(|| "webvpn.tsinghua.edu.cn".to_string());
         for pair in header.split("; ") {
             let pair = pair.trim();
             if pair.is_empty() || !pair.contains('=') {
                 continue;
             }
-            if let Ok(c) = Cookie::parse(format!("{pair}; Path=/")) {
+            if let Ok(c) = Cookie::parse(format!("{pair}; Domain={host}; Path=/")) {
                 if win.set_cookie(c).is_ok() {
                     seeded += 1;
                 }

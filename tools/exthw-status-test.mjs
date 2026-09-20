@@ -15,6 +15,16 @@
  *  - R19 27.1：TUOJ 会话失效自动重漫游——401 → force 重漫游一次 → 重拉成功（R12 ①-④）；
  *    同源并发 401 in-flight 去重只漫游一次；进程级频控放宽（同源两次 ≥10min、每源每进程
  *    ≤3 次、AI 版 / 经典版独立计数）；失败文案「已尝试自动重新登录，仍失败：<原因>」
+ *  - R21-A：Tyche 会话失效静默自动重登——status=login / 401 / 非 JSON（跳登录页）统一
+ *    TycheSessionError（含 task/Status 内层冒泡）；reloginTyche 钩子 → 静默重登一次 →
+ *    自动重拉（新 Cookie 生效）；同源并发失效 in-flight 去重；进程级频控（同源 ≥10min、
+ *    每源每进程 ≤3 次，与 TUOJ 独立计数）；重登仍失败文案同款前缀；非会话错误 / 未注入
+ *    钩子不重登；tycheLogin 登录链路（挑战 token / sha1 双哈希 / vcode 拒绝 / 错误映射）
+ *  - R21-B：雨课堂会话失效归一（401/403、errcode=401000、code=50000、非 JSON 四特征 →
+ *    YktSessionError；网络断不误判）；checkSession 健康检查（有效含归属人 / 各失效原因 /
+ *    网络断 alive=null 不谎报）；Cookie 轮换捕获回写（x-onethu-set-cookie 白名单合并、
+ *    后续请求即用新值、无轮换零回调）；Cookie 导出/导入往返与各类拒绝；
+ *    refreshExternalHomework 对 yuketang 失效不做静默重登（无自动重登路径）
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
 import { createTuojSource, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
@@ -124,6 +134,10 @@ console.log("\n[雨课堂]");
             { type: 19, id: 21, title: "混合批改作业", classroom_id: 1, content: { leaf_type_id: 104, leaf_id: 22, sku_id: 952, score_d: FUTURE } },
             { type: 19, id: 22, title: "缺 sku 作业", classroom_id: 1, content: { leaf_type_id: 105, leaf_id: 23, score_d: FUTURE } },
             { type: 19, id: 23, title: "缺 leaf 作业", classroom_id: 1, content: { leaf_type_id: 106, sku_id: 953, score_d: FUTURE } },
+            // R20-B3：已批改作业分数（score = 已批题 my_score 合计 / totalScore = content.score 合计）
+            { type: 19, id: 24, title: "零分已批改作业", classroom_id: 1, content: { leaf_type_id: 107, leaf_id: 24, sku_id: 954, score_d: FUTURE } },
+            { type: 19, id: 25, title: "缺分已批改作业", classroom_id: 1, content: { leaf_type_id: 108, leaf_id: 25, sku_id: 955, score_d: FUTURE } },
+            { type: 19, id: 26, title: "无满分已批改作业", classroom_id: 1, content: { leaf_type_id: 109, leaf_id: 26, sku_id: 956, score_d: FUTURE } },
             { type: 20, id: 12, title: "已交试卷", classroom_id: 1, content: { leaf_type_id: 200, leaf_id: 7, sku_id: 900, score_d: FUTURE } },
             { type: 20, id: 13, title: "未交试卷", classroom_id: 1, content: { leaf_type_id: 201, leaf_id: 8, sku_id: 901, score_d: FUTURE } },
             { type: 20, id: 14, title: "无 result 试卷", classroom_id: 1, content: { leaf_type_id: 202, leaf_id: 9, sku_id: 902, score_d: FUTURE } },
@@ -153,14 +167,15 @@ console.log("\n[雨课堂]");
     { match: (u) => u.includes("/get_exercise_list/101/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: { content: "" } } }, { user: { my_answer: {} } }] } } },
     { match: (u) => u.includes("/get_exercise_list/300/"), body: { data: { answer_count: 1, problems: [{ user: { my_answer: { content: "<p>y</p>" } } }] } } },
     // R16 21.1：已批改三态（status 4 + 真实分 = 已批改；status 3 / my_score -1 占位 = 已交未批；无 user = 未交）
+    // R20-B3：题面分值 content.score 同响应可得（score 合计 / 满分合计的映射输入）
     {
       match: (u) => u.includes("/get_exercise_list/102/"),
       body: {
         data: {
           answer_count: 2,
           problems: [
-            { user: { status: 4, my_score: "30.00", comment: "很好", my_answer: { content: "<p>a</p>" } } },
-            { user: { status: 4, my_score: "0.00", my_answer: { content: "<p>b</p>" } } },
+            { content: { score: 20 }, user: { status: 4, my_score: "30.00", comment: "很好", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 20 }, user: { status: 4, my_score: "0.00", my_answer: { content: "<p>b</p>" } } },
           ],
         },
       },
@@ -171,8 +186,8 @@ console.log("\n[雨课堂]");
         data: {
           answer_count: 2,
           problems: [
-            { user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>a</p>" } } },
-            { user: { status: 3, my_score: -1, my_answer: { content: "<p>b</p>" } } },
+            { content: { score: 20 }, user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 20 }, user: { status: 3, my_score: -1, my_answer: { content: "<p>b</p>" } } },
           ],
         },
       },
@@ -184,14 +199,45 @@ console.log("\n[雨课堂]");
         data: {
           answer_count: 2,
           problems: [
-            { user: { status: 4, my_score: "30.00", my_answer: { content: "<p>a</p>" } } },
-            { user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>b</p>" } } },
+            { content: { score: 15 }, user: { status: 4, my_score: "30.00", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 15 }, user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>b</p>" } } },
           ],
         },
       },
     },
     { match: (u) => u.includes("/get_exercise_list/105/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: {} } }] } } },
     { match: (u) => u.includes("/get_exercise_list/106/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: {} } }] } } },
+    // R20-B3：分数映射边界 —— 真实 0 分 / 无一题有有效分 / 题面分值缺失
+    {
+      match: (u) => u.includes("/get_exercise_list/107/"),
+      body: {
+        data: {
+          answer_count: 2,
+          problems: [
+            { content: { score: 10 }, user: { status: 4, my_score: "0.00", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 10 }, user: { status: 4, my_score: 0, my_answer: { content: "<p>b</p>" } } },
+          ],
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/108/"),
+      body: {
+        data: {
+          answer_count: 1,
+          problems: [{ content: { score: 10 }, user: { status: 4, my_answer: { content: "<p>a</p>" } } }],
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/109/"),
+      body: {
+        data: {
+          answer_count: 1,
+          problems: [{ user: { status: 4, my_score: 8, my_answer: { content: "<p>a</p>" } } }],
+        },
+      },
+    },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, total_score: 100, result: { status: 5, unfinished_count: 0, score: 60, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, total_score: 100, result: { status: 6, unfinished_count: 31, score: 0, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, total_score: 100, result: null } } },
@@ -202,7 +248,7 @@ console.log("\n[雨课堂]");
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 15, "拉到 15 条作业");
+  eq(items.length, 18, "拉到 18 条作业");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   eq(byTitle.get("已交作业")?.submitted, true, "answer_count>0 → 已提交");
   eq(byTitle.get("已交作业")?.submittedCount, 1, "已交作业 submittedCount=1（有内容的题目数）");
@@ -215,6 +261,19 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("已交未批作业")?.graded, false, "status=3 + my_score=-1（含数字 -1）→ graded=false");
   eq(byTitle.get("混合批改作业")?.graded, false, "混合场景（有已作答未批改题）→ 保守 graded=false");
   eq(byTitle.get("未交作业")?.graded, false, "无 user（未交）→ graded=false");
+  // R20-B3：已批改作业分数（对齐考试口径：已提交且带分 → 入口显示「已批改 · 30/40」）
+  eq(byTitle.get("已批改作业")?.score, 30, "已批改作业 score=30（status4 真实分合计 30+0，含真实 0 分）");
+  eq(byTitle.get("已批改作业")?.totalScore, 40, "已批改作业 totalScore=40（题面 content.score 合计）");
+  eq(byTitle.get("零分已批改作业")?.graded, true, "全 0 分且 status4 → graded=true（0 分是真实结果非占位）");
+  eq(byTitle.get("零分已批改作业")?.score, 0, "真实 0 分 → score=0 照实透出");
+  eq(byTitle.get("零分已批改作业")?.totalScore, 20, "真实 0 分 → totalScore=20 照设（显示「0/20」）");
+  eq(byTitle.get("缺分已批改作业")?.graded, true, "status4 但 my_score 缺失 → 不判「未批改」（保守 graded=true）");
+  eq(byTitle.get("缺分已批改作业")?.score, undefined, "无一题有有效分 → 不设 score（缺数据不谎报 0 分）");
+  eq(byTitle.get("无满分已批改作业")?.score, 8, "题面 content.score 缺失 → 仍透出 score（入口显示裸分数）");
+  eq(byTitle.get("无满分已批改作业")?.totalScore, undefined, "题面分值全缺失 → 不设 totalScore（满分合计为 0 不给）");
+  eq(byTitle.get("已交未批作业")?.score, undefined, "未批改 → 不设 score（未批改不显示）");
+  eq(byTitle.get("混合批改作业")?.score, undefined, "混合批改（graded=false）→ 即使单题有分也不设 score");
+  eq(byTitle.get("已交作业")?.score, undefined, "已提交无批改信息 → 不设 score");
   // R16b：作业/试卷学生端深链（ai-workspace lms-graph），仅需 leaf_id；缺 leaf_id 回退旧课程日志页
   eq(
     byTitle.get("已批改作业")?.url,
@@ -265,7 +324,7 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("未交试卷")?.graded, false, "未提交试卷 → graded=false");
   eq(byTitle.get("无 result 试卷")?.graded, false, "result 缺失 → graded=false");
   const hwCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
-  eq(hwCalls.length, 8, "仅作业（type 19）走 get_exercise_list");
+  eq(hwCalls.length, 11, "仅作业（type 19）走 get_exercise_list（11 份，分数与状态同一响应零额外请求）");
   ok(
     hwCalls.every((c) => c.headers["xtbz"] === "ykt"),
     "作业状态请求均带 XTBZ: ykt",
@@ -882,6 +941,382 @@ if (!canResolveTs) {
   }
 }
 
+/* ───────── R21-A：Tyche 会话失效静默自动重登（记住密码） ───────── */
+console.log("\n[Tyche 失效自动重登 R21-A]");
+if (!canResolveTs) {
+  console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
+} else {
+  const { refreshExternalHomework, resetTycheSessionRetryState, resetTuojSessionRetryState, TycheSessionError, isTycheSessionError } = await import(
+    "../packages/core/src/exthw/index.ts"
+  );
+  const { createTycheSource } = await import("../packages/core/src/exthw/tyche.ts");
+  const TYCHE_BASE = "http://166.111.236.164:6080/tyche";
+
+  const TYCHE_GROUP_OK = {
+    group: { gid: 42, name: "程序设计基础", tasks: [{ tid: 1406, title: "作业一", judgeEndTime: localDT(FUTURE) }] },
+  };
+  const TYCHE_STATUS_OK = {
+    status: "success",
+    submissionCount: 1,
+    submissionList: [{ pid: 1, sid: 1, score: 100, result: 2, submitedTime: "2026-09-19 10:00:00" }],
+  };
+  const TYCHE_LOGIN_BODY = { status: "login" };
+
+  /** mock Tyche fetchLike：groupStatuses 依次决定第 N 次 GroupList 的响应（末项复用）；
+   *  statusBody / statusBody2 分别是首发与（自动重登后）重拉时 task/Status 的响应。
+   *  routeStatus = "login" → {status:"login"}；"fail" → throw 普通 Error；数字 → HTTP 该码。 */
+  function makeTycheFetch(groupStatuses, { statusBody = TYCHE_STATUS_OK, statusBody2 = TYCHE_STATUS_OK } = {}) {
+    let groupHits = 0;
+    let statusHits = 0;
+    const calls = [];
+    const json = (body, status = 200) =>
+      new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+    const groupResp = (spec) => {
+      if (spec === "login") return json(TYCHE_LOGIN_BODY);
+      if (typeof spec === "number") return json({ message: "err" }, spec);
+      if (spec === "fail") throw new Error("网络断开");
+      return json({ groupList: [{ gid: 42, name: "程序设计基础" }] });
+    };
+    const fn = async (url, init = {}) => {
+      const method = (init.method ?? "GET").toUpperCase();
+      const headers = {};
+      for (const [k, v] of Object.entries(init.headers ?? {})) headers[k.toLowerCase()] = v;
+      calls.push({ url, method, headers });
+      if (url.endsWith("/group/GroupList")) {
+        const spec = groupStatuses[Math.min(groupHits, groupStatuses.length - 1)];
+        groupHits++;
+        return groupResp(spec);
+      }
+      if (url.includes("/group/ShowGroup")) return json(TYCHE_GROUP_OK);
+      if (url.includes("/task/Status")) {
+        const body = statusHits++ === 0 ? statusBody : statusBody2;
+        if (body === "login") return json(TYCHE_LOGIN_BODY);
+        if (body === "fail") throw new Error("状态接口网络断开");
+        return json(body);
+      }
+      return new Response("not found", { status: 404 });
+    };
+    fn.calls = calls;
+    fn.groupHits = () => groupHits;
+    return fn;
+  }
+
+  // ⑩ 类型判定：status=login / 401 / 非 JSON 三种失效都归 TycheSessionError，其余不误判
+  {
+    const sess = createTycheSource({ cookie: "c" }, makeTycheFetch(["login"]), 30);
+    let err;
+    try {
+      await sess.fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isTycheSessionError(err), "⑩GroupList status=login → TycheSessionError");
+    ok(isTycheSessionError(new TycheSessionError("x")), "⑩TycheSessionError 实例判定为会话失效");
+    ok(!isTycheSessionError(new Error("boom")), "⑩普通 Error 不判会话失效");
+    ok(!(err instanceof Error && err.name === "TuojSessionError"), "⑩不与 TUOJ 会话错误混淆");
+  }
+
+  // ⑪ status=login → 静默自动重登一次 → 自动重拉成功（新 Cookie 生效）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login", "ok"]);
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        creds.tyche = { cookie: "new", username: "u", password: "p" }; // 模拟重登覆盖凭据
+        return true;
+      },
+    });
+    eq(r.reloginTyche, true, "⑪触发了一次静默自动重登");
+    eq(reloginCalls, 1, "⑪重登恰好一次");
+    eq(fetchLike.groupHits(), 2, "⑪GroupList 拉取两次（首发 login + 重拉成功）");
+    eq(r.items.length, 1, "⑪重拉成功拉到 1 条作业");
+    eq(r.errors.tyche, undefined, "⑪重拉成功后不再有 Tyche 错误");
+    const groupCalls = fetchLike.calls.filter((c) => c.url.endsWith("/group/GroupList"));
+    eq(groupCalls[0]?.headers["cookie"], "old", "⑪首发用旧 cookie");
+    eq(groupCalls[1]?.headers["cookie"], "new", "⑪重拉用重登后的新 cookie");
+  }
+
+  // ⑫ 重登失败 → 不进入第二轮（防循环），错误文案带「已尝试自动重新登录，仍失败：」前缀
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login"]);
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        return false; // 重登失败（密码错 / 需验证码等）
+      },
+    });
+    eq(reloginCalls, 1, "⑫防循环：仅重登一次");
+    eq(fetchLike.groupHits(), 1, "⑫重登失败不重拉");
+    ok(r.errors.tyche?.startsWith("已尝试自动重新登录，仍失败："), "⑫文案带「已尝试自动重新登录，仍失败：」前缀");
+    ok(r.errors.tyche?.includes("status=login"), "⑫前缀后保留原失效原因");
+    eq(r.items.length, 0, "⑫无作业");
+  }
+
+  // ⑬ 非会话错误（网络断）不触发自动重登、无前缀
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old" } };
+    const fetchLike = makeTycheFetch(["fail"]);
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        return true;
+      },
+    });
+    eq(reloginCalls, 0, "⑬普通网络错误不触发自动重登");
+    ok(Boolean(r.errors.tyche) && !r.errors.tyche.startsWith("已尝试自动重新登录"), "⑬普通错误文案无前缀");
+  }
+
+  // ⑭ 未注入 reloginTyche 钩子 → 行为同旧版（不重登、无前缀）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old" } };
+    const fetchLike = makeTycheFetch(["login"]);
+    const r = await refreshExternalHomework({ getCreds: () => creds, fetchLike });
+    eq(fetchLike.groupHits(), 1, "⑭无钩子不重试");
+    ok(Boolean(r.errors.tyche) && !r.errors.tyche.startsWith("已尝试自动重新登录"), "⑭无钩子文案无前缀");
+  }
+
+  // ⑮ 并发会话失效 → in-flight 去重：两个并发 refresh 只重登一次，各自重拉均成功
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login", "login", "ok"]);
+    let reloginCalls = 0;
+    const hook = async () => {
+      reloginCalls++;
+      creds.tyche = { cookie: "new", username: "u", password: "p" };
+      return true;
+    };
+    const [ra, rb] = await Promise.all([
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook }),
+      refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook }),
+    ]);
+    eq(reloginCalls, 1, "⑮并发失效只触发一次重登（共享 in-flight Promise）");
+    eq(ra.reloginTyche, true, "⑮第一个 refresh 标记 reloginTyche");
+    eq(rb.reloginTyche, true, "⑮第二个 refresh 共享重登结果并标记");
+    eq(ra.items.length, 1, "⑮第一个 refresh 重拉成功");
+    eq(rb.items.length, 1, "⑮第二个 refresh 重拉成功");
+    eq(fetchLike.groupHits(), 4, "⑮GroupList 共 4 次（两轮各：首发 login + 重拉 ok）");
+    ok(ra.errors.tyche === undefined && rb.errors.tyche === undefined, "⑮无错误残留");
+  }
+
+  // ⑯ 频控：同源两次 ≥10min、每进程 ≤3 次（含失败），Tyche 与 TUOJ 独立计数
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["login"]);
+    const attempts = [];
+    const hook = async () => {
+      attempts.push(1);
+      return false;
+    };
+    const realNow = Date.now;
+    try {
+      // 第一轮：发起过重登仍失败 → 前缀
+      const first = await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      eq(attempts.length, 1, "⑯首次失效发起一次重登");
+      ok(first.errors.tyche?.startsWith("已尝试自动重新登录，仍失败："), "⑯发起过重登仍失败 → 带前缀");
+      // 第二轮：间隔 <10min → 不再自动重登，无前缀
+      const second = await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      eq(attempts.length, 1, "⑯间隔 <10min 不再自动重登");
+      ok(Boolean(second.errors.tyche) && !second.errors.tyche.startsWith("已尝试自动重新登录"), "⑯被频控拦截的文案无前缀");
+      // 放行时钟：跨过 10min 间隔再试 2 次（累计 3 次 = 每进程上限），第 4 次被拦
+      for (let n = 2; n <= 3; n++) {
+        Date.now = () => realNow() + n * 11 * 60 * 1000;
+        await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      }
+      eq(attempts.length, 3, "⑯放行时钟下累计 3 次（每进程上限）");
+      Date.now = () => realNow() + 4 * 11 * 60 * 1000;
+      const r4 = await refreshExternalHomework({ getCreds: () => creds, fetchLike, reloginTyche: hook });
+      eq(attempts.length, 3, "⑯第 4 次不再自动重登（超限）");
+      ok(Boolean(r4.errors.tyche) && !r4.errors.tyche.startsWith("已尝试自动重新登录"), "⑯超限文案无前缀");
+      // Tyche 与 TUOJ 频控独立计数：Tyche 已超限（上一步烧满 3 次），TUOJ 401 仍照常漫游
+      resetTuojSessionRetryState(); // TUOJ 状态在本文件 R19 块已用掉，清零后单独验证独立性
+      const tuojCreds = { tuoj: { cookie: "old" } };
+      let tuojRoamCalls = 0;
+      const tuojJson = (body, status = 200) =>
+        new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+      let tuojListHits = 0;
+      const tuojFetch = async (url, init = {}) => {
+        if (String(url).endsWith("/api/course/list")) {
+          const st = tuojListHits++ === 0 ? 401 : 200;
+          return st === 200
+            ? tuojJson({ courses: [{ _id: 8, title: "离散数学" }] })
+            : tuojJson({ message: "unauthorized" }, st);
+        }
+        if (String(url).endsWith("/api/user/lookup")) return tuojJson({ user: { _id: 1001, username: "2026000000" } });
+        if (String(url).includes("/contest/83/context"))
+          return tuojJson({ context: { metadata: { title: "hw1" }, schedule: { endAt: FUTURE } } });
+        if (String(url).includes("/contest/83/ranklist"))
+          return tuojJson({ ranklist: { players: [{ _id: 1001, username: "2026000000", details: { "0": {} } }] } });
+        if (String(url).endsWith("/api/course/8/rank")) return tuojJson({ courseRank: { contests: [{ _id: 83 }] } });
+        return new Response("not found", { status: 404 });
+      };
+      const rt = await refreshExternalHomework({
+        getCreds: () => tuojCreds,
+        fetchLike: tuojFetch,
+        rerouteTuoj: async () => {
+          tuojRoamCalls++;
+          tuojCreds.tuoj = { cookie: "new" };
+          return true;
+        },
+      });
+      eq(tuojRoamCalls, 1, "⑯Tyche 超限不影响 TUOJ 重漫游（各自独立计数）");
+      eq(rt.reroutedTuoj, true, "⑯TUOJ 401 照常漫游成功");
+      eq(rt.items.length, 1, "⑯TUOJ 重拉成功");
+    } finally {
+      Date.now = realNow;
+    }
+  }
+
+  // ⑰ 仅 task/Status 失效（GroupList 正常）也必须冒泡并触发重登（内层 catch 不能吞会话错误）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old", username: "u", password: "p" } };
+    const fetchLike = makeTycheFetch(["ok", "ok"], { statusBody: "login", statusBody2: TYCHE_STATUS_OK });
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        creds.tyche = { cookie: "new", username: "u", password: "p" };
+        return true;
+      },
+    });
+    eq(reloginCalls, 1, "⑰task/Status 会话失效触发一次重登");
+    eq(r.items.length, 1, "⑰重登后重拉成功");
+    ok(r.items[0]?.graded === true && r.items[0]?.score === 100, "⑰重拉数据完整（已批改 100 分）");
+  }
+
+  // ⑱ task/Status 普通错误仍保守吞掉（不触发重登、不算失败）
+  {
+    resetTycheSessionRetryState();
+    const creds = { tyche: { cookie: "old" } };
+    const fetchLike = makeTycheFetch(["ok"], { statusBody: "fail" });
+    let reloginCalls = 0;
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike,
+      reloginTyche: async () => {
+        reloginCalls++;
+        return true;
+      },
+    });
+    eq(reloginCalls, 0, "⑱状态接口普通错误不触发重登");
+    eq(r.errors.tyche, undefined, "⑱且不作为该源错误");
+    eq(r.items.length, 1, "⑱列表照常返回（状态保守未提交）");
+    ok(r.items[0]?.submitted === false && r.items[0]?.graded === false, "⑱状态保守 false");
+  }
+}
+
+/* ───────── R21-A：Tyche 账密登录客户端（记住密码自动重登所依赖的登录链路） ───────── */
+console.log("\n[Tyche 登录 R21-A]");
+if (!canResolveTs) {
+  console.log("  跳过：需要 Node ≥ 22.15（module.registerHooks）以解析 core 的 .js→.ts 相对导入");
+} else {
+  const { tycheLogin } = await import("../packages/core/src/exthw/login.ts");
+  const { createHash } = await import("node:crypto");
+  const sha1 = (s) => createHash("sha1").update(s).digest("hex");
+  const TYCHE_BASE = "http://166.111.236.164:6080/tyche";
+
+  // ⑲ 成功链路：GetToken(vcode=false) → sha1(sha1(pwd)+token) → POST Login 取回 Cookie
+  {
+    const calls = [];
+    const fetchLike = async (url, init = {}) => {
+      calls.push({ url: String(url), method: init.method, body: String(init.body ?? "") });
+      if (String(url).includes("/user/GetToken")) {
+        return new Response(JSON.stringify({ status: "success", vcode: false, token: "T1" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ status: "success" }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "x-onethu-set-cookie": JSON.stringify(["JSESSIONID=abc; Path=/", "username=u; Path=/", "uid=1; Path=/"]),
+        },
+      });
+    };
+    const r = await tycheLogin("2026000000", "pw", fetchLike);
+    eq(r.cookie, "JSESSIONID=abc; username=u; uid=1", "⑲登录取回会话 Cookie 串");
+    eq(calls[0]?.method, "GET", "⑲先 GET 取挑战 token");
+    ok(calls[0].url.includes("/user/GetToken?username=2026000000"), "⑲GetToken 带用户名");
+    eq(calls[1]?.method, "POST", "⑳再 POST 登录");
+    ok(calls[1].url.includes("/user/Login"), "⑳POST 打到 user/Login");
+    ok(calls[1].body.includes("token=T1"), "⑳登录表单带挑战 token");
+    ok(calls[1].body.includes(`password=${sha1(sha1("pw") + "T1")}`), "⑳口令变换 sha1(sha1(pwd)+token) 与 Login.html 一致");
+  }
+  // ㉑ vcode=true（考场锁定）→ 明确报错且不发登录 POST（无验证码输入通道，不能静默重登）
+  {
+    const calls = [];
+    const fetchLike = async (url, init = {}) => {
+      calls.push({ url: String(url) });
+      return new Response(JSON.stringify({ status: "success", vcode: true, token: "T2" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+    let err;
+    try {
+      await tycheLogin("u", "p", fetchLike);
+    } catch (e) {
+      err = e;
+    }
+    ok(err instanceof Error && err.message.includes("验证码"), "㉑vcode=true → 明确提示需要验证码");
+    eq(calls.length, 1, "㉑不发登录 POST（只有 GetToken 一跳）");
+  }
+  // ㉒ 用户名不存在 / 密码错误 → 服务端 returnFailString 映射成中文
+  {
+    const fetchLike = async () =>
+      new Response(JSON.stringify({ status: "error", returnFailString: "username_not_exist" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    let err;
+    try {
+      await tycheLogin("ghost", "p", fetchLike);
+    } catch (e) {
+      err = e;
+    }
+    ok(err instanceof Error && err.message.includes("用户名不存在"), "㉒username_not_exist → 中文提示");
+    const fetchLike2 = async (url, init = {}) => {
+      if (String(url).includes("/user/Login")) {
+        return new Response(JSON.stringify({ returnFailString: "password_mismatch" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ status: "success", vcode: false, token: "T3" }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    };
+    let err2;
+    try {
+      await tycheLogin("u", "bad", fetchLike2);
+    } catch (e) {
+      err2 = e;
+    }
+    ok(err2 instanceof Error && err2.message.includes("密码错误"), "㉒password_mismatch → 中文提示");
+  }
+}
+
 /* ───────── R15 20.2：DSA 登录 + 经典 TUOJ 账密 base 参数化（动态引 core 登录层） ───────── */
 console.log("\n[DSA 登录]");
 if (!canResolveTs) {
@@ -939,6 +1374,227 @@ if (!canResolveTs) {
     const r = await tuojLogin("2026000000", "pw", fetchLike, CLASSIC_BASE);
     eq(r.cookie, "session=x", "经典 TUOJ 账密登录取回 Cookie");
     ok(calls[0].url.startsWith(CLASSIC_BASE), "经典 TUOJ 账密登录打到经典 base");
+  }
+}
+
+/* ───────── R21-B：雨课堂会话失效归一 / 健康检查 / Cookie 轮换 / 导出导入 ───────── */
+console.log("\n[雨课堂 R21-B 会话/保活/导出导入]");
+{
+  const { YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } = await import(
+    "../packages/core/src/exthw/yuketang.ts"
+  );
+  const jsonRes = (body, status = 200, extraHeaders = {}) =>
+    new Response(typeof body === "string" ? body : JSON.stringify(body), {
+      status,
+      headers: { "Content-Type": "application/json", ...extraHeaders },
+    });
+
+  // ① 错误归一矩阵：四特征 → YktSessionError
+  {
+    let err;
+    try {
+      await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("unauthorized", { status: 401 }), 30).fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err), "①HTTP 401 → YktSessionError");
+    ok(err instanceof Error && err.message.includes("会话已失效") && err.message.includes("401"), "①401 文案含「会话已失效」与状态码");
+
+    const h403 = await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("", { status: 403 }), 30).checkSession();
+    eq(h403.alive, false, "①HTTP 403 checkSession alive=false");
+    eq(h403.reason, "http403", "①403 reason=http403");
+
+    const f401k = makeFetch([
+      { match: (u) => u.includes("/v2/api/web/courses/list"), body: { errcode: 401000, errmsg: "Session not exists" } },
+    ]);
+    err = undefined;
+    try {
+      await createYuketangSource({ cookie: "sessionid=x" }, f401k, 30).fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err) && err instanceof Error && err.message.includes("401000"), "①courses errcode=401000 → 会话错误含 401000");
+
+    err = undefined;
+    try {
+      await createYuketangSource(
+        { cookie: "sessionid=x" },
+        makeFetch([{ match: (u) => u.includes("/get_exercise_list/"), body: { errcode: 401000, errmsg: "Session not exists" } }]),
+        30,
+      ).getExerciseDetail("7001", "77");
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err) && err instanceof Error && err.message.includes("401000"), "①详情 errcode=401000 → 会话错误含 401000");
+
+    const h50000 = await createYuketangSource(
+      { cookie: "sessionid=x" },
+      async () => jsonRes({ code: 50000, msg: "UNAUTHENTICATED", data: "" }),
+      30,
+    ).checkSession();
+    eq(h50000.alive, false, "①basic-info code=50000 alive=false");
+    eq(h50000.reason, "unauthenticated", "①50000 reason=unauthenticated");
+
+    const hHtml = await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("<html>login</html>", { status: 200 }), 30).checkSession();
+    eq(hHtml.alive, false, "①非 JSON（登录壳）alive=false");
+    eq(hHtml.reason, "non-json", "①非 JSON reason=non-json");
+
+    err = undefined;
+    try {
+      await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("<html>login</html>", { status: 200 }), 30).fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err), "①courses 返回非 JSON → YktSessionError");
+
+    ok(isYktSessionError(new YktSessionError()), "①YktSessionError 实例判定成立");
+    ok(!isYktSessionError(new Error("boom")), "①普通 Error 不判会话失效");
+    if (canResolveTs) {
+      const { TuojSessionError } = await import("../packages/core/src/exthw/index.ts");
+      ok(!isYktSessionError(new TuojSessionError()), "①不与 TUOJ 会话错误混淆");
+    }
+  }
+
+  // ② 会话有效：alive=true + 宽松取归属人；basic-info 无需 XTBZ 头
+  {
+    const calls = [];
+    const f = async (url, init = {}) => {
+      calls.push({ url: String(url), headers: init.headers ?? {} });
+      return jsonRes({ code: 0, msg: "", data: { name: "张三", username: "zhangsan" } });
+    };
+    const h = await createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, f, 30).checkSession();
+    eq(h.alive, true, "②code=0 → 会话有效");
+    eq(h.userName, "张三", "②宽松取到归属人姓名");
+    ok(h.checkedAt > 0, "②记录检查时间");
+    eq(calls.length, 1, "②健康检查只打一个请求");
+    ok(calls[0].url.includes("/api/v3/user/basic-info"), "②打到 basic-info");
+    ok(!Object.keys(calls[0].headers).some((k) => k.toLowerCase() === "xtbz"), "②basic-info 无需 XTBZ 头");
+  }
+
+  // ③ 网络断：alive=null（未知，不谎报失效），且不抛
+  {
+    const h = await createYuketangSource(
+      { cookie: "sessionid=x" },
+      async () => {
+        throw new TypeError("fetch failed");
+      },
+      30,
+    ).checkSession();
+    eq(h.alive, null, "③网络断 alive=null");
+    eq(h.reason, "network", "③网络断 reason=network");
+  }
+
+  // ④ Cookie 轮换捕获：Set-Cookie 白名单合并 → 回调一次 → 后续请求即用新值
+  {
+    const calls = [];
+    const refreshes = [];
+    const rotated = {
+      "Content-Type": "application/json",
+      "x-onethu-set-cookie": JSON.stringify(["sessionid=NEW; Path=/; HttpOnly", "randomtoken=zz; Path=/", "uv_id=2598; Path=/"]),
+    };
+    const f = async (url, init = {}) => {
+      calls.push({ url: String(url), cookie: (init.headers ?? {})["Cookie"] ?? "" });
+      if (String(url).includes("/v2/api/web/courses/list")) {
+        return jsonRes({ errcode: 0, data: { list: [{ classroom_id: 1, name: "线代", role: 5 }] } }, 200, rotated);
+      }
+      return jsonRes({ errcode: 0, data: { activities: [] } });
+    };
+    await createYuketangSource({ cookie: "sessionid=OLD; uv_id=2598; xtbz=ykt" }, f, 30, { onCookieRefresh: (c) => refreshes.push(c) }).fetch();
+    eq(refreshes.length, 1, "④轮换恰好回调一次");
+    ok(refreshes[0].includes("sessionid=NEW"), "④轮换后的 Cookie 带新 sessionid");
+    ok(!refreshes[0].includes("randomtoken"), "④非白名单字段（randomtoken）不并入");
+    ok(refreshes[0].includes("xtbz=ykt") && refreshes[0].includes("uv_id=2598"), "④原有字段保留");
+    ok(calls.length >= 2, "④课程后跟随了后续请求");
+    ok(calls[0].cookie.includes("sessionid=OLD"), "④首发用旧 sessionid");
+    ok(calls[1].cookie.includes("sessionid=NEW"), "④轮换后请求立即用新 sessionid");
+    ok(calls.every((c) => !c.cookie.includes("randomtoken")), "④请求头永不带非白名单字段");
+
+    // 无轮换 → 零回调
+    const refreshes2 = [];
+    await createYuketangSource(
+      { cookie: "sessionid=OLD" },
+      async () => jsonRes({ errcode: 0, data: { list: [] } }),
+      30,
+      { onCookieRefresh: (c) => refreshes2.push(c) },
+    ).fetch();
+    eq(refreshes2.length, 0, "④无 Set-Cookie → 不回调");
+  }
+
+  // ⑤ mergeYktCookiePairs 纯函数：换值 / 追加 / 忽略非白名单
+  {
+    const m = mergeYktCookiePairs("sessionid=a; uv_id=2598", new Map([["sessionid", "b"], ["platform_id", "3"]]));
+    ok(m.includes("sessionid=b") && m.includes("platform_id=3") && m.includes("uv_id=2598"), "⑤换值 / 追加白名单字段 / 保留原有");
+    eq(mergeYktCookiePairs("sessionid=a", new Map([["random", "z"]])), "sessionid=a", "⑤非白名单字段忽略");
+    eq(mergeYktCookiePairs("sessionid=a", new Map()), "sessionid=a", "⑤空 pairs 原样返回");
+  }
+
+  // ⑥ Cookie 导出 / 导入往返与拒绝
+  {
+    const text = buildYktCookieExportJson({ cookie: "sessionid=abc; uv_id=2598", uvId: "2598", phone: "13800000000" }, new Date("2026-09-20T04:00:00Z"));
+    const j = JSON.parse(text);
+    eq(j.kind, YKT_COOKIE_EXPORT_KIND, "⑥导出 kind 标识");
+    eq(j.version, 1, "⑥导出 version=1");
+    eq(j.sensitive, true, "⑥sensitive 敏感标注恒真");
+    ok(typeof j.warn === "string" && j.warn.length > 10, "⑥warn 警示文案（脱离 UI 也在）");
+    ok(j.exportedAt.startsWith("2026-09-20"), "⑥导出时间（ISO）");
+    const back = parseYktCookieExportJson(text);
+    eq(back.cookie, "sessionid=abc; uv_id=2598", "⑥导入回读 cookie");
+    eq(back.uvId, "2598", "⑥导入回读 uvId");
+    eq(back.phone, "13800000000", "⑥导入回读 phone");
+    const j2 = JSON.parse(buildYktCookieExportJson({ cookie: "sessionid=abc" }));
+    eq(j2.phone, undefined, "⑥phone 缺省不设");
+
+    let berr;
+    try {
+      buildYktCookieExportJson({ cookie: "uv_id=2598" });
+    } catch (e) {
+      berr = e;
+    }
+    ok(berr instanceof Error && berr.message.includes("sessionid"), "⑥缺 sessionid 拒绝导出");
+
+    let perr;
+    try {
+      parseYktCookieExportJson("not json");
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("JSON"), "⑥坏 JSON 拒绝导入");
+    try {
+      parseYktCookieExportJson(JSON.stringify({ kind: "other", version: 1, cookie: "sessionid=a" }));
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("类型不符"), "⑥kind 不符拒绝导入");
+    try {
+      parseYktCookieExportJson(JSON.stringify({ kind: YKT_COOKIE_EXPORT_KIND, version: 2, cookie: "sessionid=a" }));
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("版本"), "⑥版本不符拒绝导入");
+    try {
+      parseYktCookieExportJson(JSON.stringify({ kind: YKT_COOKIE_EXPORT_KIND, version: 1, cookie: "uv_id=2598" }));
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("sessionid"), "⑥会话串缺 sessionid 拒绝导入");
+  }
+
+  // ⑦ 编排层：yuketang 失效只进 errors（无自动重登路径，不加前缀、不触发 Tyche 重登）
+  if (canResolveTs) {
+    const { refreshExternalHomework, resetTycheSessionRetryState, resetTuojSessionRetryState } = await import(
+      "../packages/core/src/exthw/index.ts"
+    );
+    resetTycheSessionRetryState();
+    resetTuojSessionRetryState();
+    const creds = { yuketang: { cookie: "sessionid=dead", uvId: "2598" } };
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike: async () => new Response("unauthorized", { status: 401 }),
+    });
+    ok(typeof r.errors.yuketang === "string" && r.errors.yuketang.includes("会话已失效"), "⑦yuketang 失效文案进 errors 且含「会话已失效」");
+    ok(!r.errors.yuketang.includes("已尝试自动重新登录"), "⑦无静默重登路径 → 不加自动重登前缀");
+    eq(r.reloginTyche, false, "⑦不误触发 Tyche 自动重登");
+    eq(r.items.length, 0, "⑦yuketang 单源失效时 items 为空");
   }
 }
 

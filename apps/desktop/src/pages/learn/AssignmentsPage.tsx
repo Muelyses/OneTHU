@@ -94,34 +94,49 @@ function ExtHwGuide() {
 /* R19 27.1：TUOJ 会话失效已静默自动重漫游过、但该源最终仍失败时，作业页明示
  * 「已尝试自动重新登录，仍失败：<原因>」（文案由 core 组装进 errors）并保留手动入口
  * ——「去设置重新登录」跳设置页 extHw 区的「统一认证登录」。不弹窗，仅条幅；
- * 其余源错误仍只在设置页展示（与既有行为一致）。 */
-function ExtHwTuojErrorNote() {
+ * 其余源错误仍只在设置页展示（与既有行为一致）。
+ * R21-A：Tyche 会话失效静默自动重登（记住密码时）失败也走同一条幅——core 对发起过
+ * 自动重登仍失败的源统一加同款前缀，这里把 tyche 并入渲染列表；「去设置」落到
+ * Tyche 卡片的手动登录入口。
+ * R21-B：雨课堂会话失效（无静默重登路径——短信有图形验证码、扫码需人）并入渲染列表，
+ * 并给「扫码重登」一键直达登录弹窗，省一趟设置页。 */
+function ExtHwSourceErrorNote() {
   const { navigate } = useApp();
   const ext = useExternalHomework();
-  const rows = (["tuoj", "tuojClassic"] as const)
+  const [yktLoginOpen, setYktLoginOpen] = useState(false);
+  const rows = (["tuoj", "tuojClassic", "tyche", "yuketang"] as const)
     .map((id) => ({ id, name: SOURCE_NAMES[id], err: ext.errors[id] }))
     .filter((r) => Boolean(r.err));
+  const yktFailed = rows.some((r) => r.id === "yuketang");
   // 等凭据解密完成再判断，避免就绪前闪一下
   if (ext.state !== "ready" || rows.length === 0) return null;
   return (
-    <div className="browser-hint ext-hw-hint">
-      <span className="ext-hw-hint-text">
-        {rows.map(({ id, name, err }) => (
-          <div key={id} style={{ color: "var(--danger, #c04848)" }}>
-            {name}：{err}
-          </div>
-        ))}
-      </span>
-      <button
-        className="btn"
-        onClick={() => {
-          requestExtHwScroll();
-          navigate("settings");
-        }}
-      >
-        去设置重新登录
-      </button>
-    </div>
+    <>
+      <div className="browser-hint ext-hw-hint">
+        <span className="ext-hw-hint-text">
+          {rows.map(({ id, name, err }) => (
+            <div key={id} style={{ color: "var(--danger, #c04848)" }}>
+              {name}：{err}
+            </div>
+          ))}
+        </span>
+        {yktFailed ? (
+          <button className="btn btn-primary" onClick={() => setYktLoginOpen(true)}>
+            雨课堂扫码重登
+          </button>
+        ) : null}
+        <button
+          className="btn"
+          onClick={() => {
+            requestExtHwScroll();
+            navigate("settings");
+          }}
+        >
+          去设置重新登录
+        </button>
+      </div>
+      <ExtHwLoginModal open={yktLoginOpen} onClose={() => setYktLoginOpen(false)} />
+    </>
   );
 }
 
@@ -178,7 +193,7 @@ export function AssignmentsPage() {
       <ExtHwGuide />
 
       {/* R19 27.1：TUOJ 自动重漫游仍失败的静默条幅（含「去设置重新登录」手动入口） */}
-      <ExtHwTuojErrorNote />
+      <ExtHwSourceErrorNote />
 
       <SegmentedOverflow>
         {FILTERS.map(({ key, label }) => (

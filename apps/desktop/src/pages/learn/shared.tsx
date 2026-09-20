@@ -13,7 +13,8 @@ import { fetchImageAsDataUrl, fetchImageByUrl } from "../../lib/clients.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
-import { openExternalHomework } from "../../lib/extHwBrowse.js";
+import { openHomeworkRow } from "../../lib/homeworkEntry.js";
+import { homeworkEntryScoreText } from "../../lib/yktDetail.js";
 import { Card } from "../../components/Layout.js";
 import { IconBell, IconChevron } from "../../components/Icons.js";
 import { CollectStar } from "../../components/Collect.js";
@@ -327,26 +328,16 @@ function HwRemindButton({ h }: { h: Homework }) {
 
 export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem, remind }: RowProps & { h: Homework; showGrade?: boolean; sem?: string; remind?: boolean }) {
   const { navigate } = useApp();
-  const external = Boolean(h.source);
+  // R20-B2b：行点击统一走 openHomeworkRow 三态分流（雨课堂参数齐备 → learn-ykt-detail
+  // 原生详情，全平台默认原生；其余外部源 → R20-A 通道；内部作业 → 站内详情）。
   const go = () => {
-    // 外部作业：有详情链接时打开官方页。R20-A：Android 宿主改走应用内
-    // 全屏 WebView 桌面模式（openExternalHomework 内部分流），桌面端保持系统浏览器。
-    if (external) {
-      if (h.externalUrl) void openExternalHomework(h.externalUrl);
-      return;
-    }
-    navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from });
+    openHomeworkRow(h, { navigate, from, courseName });
   };
   const chip = homeworkChip(h);
   // 已批改直接显示成绩（thu-app learnHome「已批改 (分数)」语义）：等级码经 gradeLabel 转文字
   const gradeScore = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
-  // 外部考试分数（R9）：已提交且已出分时显示「已提交 · 60/100」（对齐已批改语义）
-  const examScore =
-    h.submitted && h.score !== undefined
-      ? h.totalScore !== undefined
-        ? `${h.score}/${h.totalScore}`
-        : String(h.score)
-      : "";
+  // 外部源分数（R9 考试 + R20-B3 已批改雨课堂作业同口径）：已提交且带分 → 「已批改 · 30/40」
+  const examScore = homeworkEntryScoreText(h);
   const score = gradeScore || examScore;
   return (
     <div

@@ -13,6 +13,11 @@
  * 拉取：各源并发，Promise.allSettled —— 单源失败只记该源错误，其余照常；
  * 数据走内存缓存 + 订阅（useSyncExternalStore），不落盘。
  * 未配置任何凭据时：不请求、items 为空 —— 与改动前行为完全一致（零回归）。
+ *
+ * R21-A：Tyche 支持「记住密码」（creds.tyche.username+password，随信封整体 AES-GCM
+ * 加密，明文不落盘/不进日志）。会话失效（status=login / 401 / 跳登录页）→ core 编排层
+ * 触发一次静默自动重登（频控：同源 ≥10min、每进程 ≤3 次、并发 in-flight 去重）并自动
+ * 重拉；用户显式退出（EXTHW_TYCHE_LOGOUT_KEY）后绝不自动重登，手动登录解除。
  */
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import {
@@ -21,6 +26,7 @@ import {
   runYuketangQrLogin,
   SOURCE_NAMES,
   TUOJ_CLASSIC_BASE,
+  createYuketangSource,
   dsaLogin,
   tuojLogin,
   tuojRoam,
@@ -34,11 +40,12 @@ import type {
   ExternalHomework,
   Homework,
   TuojSourceId,
+  YkExerciseDetail,
   YktQrPhase,
   YktQrPollResult,
 } from "@onethu/core";
 import { universalFetch } from "../lib/transport.js";
-import { http, info, persist } from "../lib/clients.js";
+import { http, info, logLine, persist } from "../lib/clients.js";
 
 export const EXTHW_KEY = "onethu.exthw.v1";
 export const EXTHW_SALT_KEY = "onethu.exthw.salt.v1";
@@ -55,6 +62,8 @@ export const EXTHW_TUOJ_LOGOUT_KEYS: Record<TuojSourceId, string> = {
   tuoj: "onethu.exthw.tuojLogout.v1",
   tuojClassic: "onethu.exthw.tuojClassicLogout.v1",
 };
+/** R21-A：用户显式退出 Tyche 的抑制标记——退出后**绝不**自动重登（手动登录可解除） */
+export const EXTHW_TYCHE_LOGOUT_KEY = "onethu.exthw.tycheLogout.v1";
 /** 兼容旧名（外部仅测试/诊断可能引用 AI 版键） */
 export const EXTHW_TUOJ_AUTO_KEY = EXTHW_TUOJ_AUTO_KEYS.tuoj;
 export const EXTHW_TUOJ_LOGOUT_KEY = EXTHW_TUOJ_LOGOUT_KEYS.tuoj;
@@ -182,6 +191,7 @@ export function ensureExtHwCredsLoaded(): Promise<ExtHwCreds> {
     creds = next && typeof next === "object" ? next : {};
     loaded = true;
     loadTuojAuto();
+    loadTycheReloginFlag();
     rebuild();
   })();
   return loadPromise.then(() => creds);
@@ -462,7 +472,94 @@ export async function retryTuojCasAfterLogin(): Promise<void> {
   }
 }
 
-/** 清除单个源的凭据（其余源保留，R12 17.2）；TUOJ 系同时复位/抑制该源自动登录状态。 */
+/* ── R21-A：Tyche 会话失效静默自动重登（记住密码前提）──
+ * 模式对齐 R19 27.1 的 TUOJ 自动重漫游：会话失效（status=login / 401 / 跳登录页，
+ * core 归一为 TycheSessionError）→ 编排层（core refreshExternalHomework 的 reloginTyche
+ * 钩子）触发本模块的一次静默重登 → 成功后 core 自动重拉该源一次。
+ * 频控 / 去重在 core：同源两次 ≥10min、每进程 ≤3 次（tyche 独立计数）、并发失效共享
+ * in-flight。这里只负责三件事：
+ *  ① 尊重「显式退出」抑制（EXTHW_TYCHE_LOGOUT_KEY）——用户主动退出的绝不自动补登录；
+ *  ② 只在「已记住密码」（creds.tyche.username+password 都在，勾选「记住密码」才有）时重登；
+ *  ③ 全程静默 + log_debug 诊断（**绝不**打印任何凭据：密码不落日志，用户名也不打）。
+ * 手动登录成功（Settings）会清除抑制标记并按勾选保存/清除记住的密码。 */
+
+/** 显式退出抑制标记（内存态；localStorage 持久，见 loadTycheReloginFlag） */
+let tycheReloginSuppressed = false;
+
+/** 从 localStorage 回灌显式退出抑制标记（首次解密凭据时调用；失败静默降级为未抑制） */
+function loadTycheReloginFlag(): void {
+  try {
+    tycheReloginSuppressed = localStorage.getItem(EXTHW_TYCHE_LOGOUT_KEY) === "1";
+  } catch {
+    tycheReloginSuppressed = false;
+  }
+}
+
+/** 用户显式退出 Tyche：置抑制标记（R21-A），后续会话失效不再自动重登 */
+export function markTycheLoggedOut(): void {
+  tycheReloginSuppressed = true;
+  try {
+    localStorage.setItem(EXTHW_TYCHE_LOGOUT_KEY, "1");
+  } catch {
+    /* 存储不可用：内存态仍生效 */
+  }
+}
+
+/** 手动登录 Tyche 成功后解除抑制标记（下次会话失效恢复自动重登资格） */
+export function clearTycheLogoutSuppress(): void {
+  tycheReloginSuppressed = false;
+  try {
+    localStorage.removeItem(EXTHW_TYCHE_LOGOUT_KEY);
+  } catch {
+    /* 忽略 */
+  }
+}
+
+/** Tyche 是否处于「显式退出」抑制（设置页提示用；诊断） */
+export function isTycheReloginSuppressed(): boolean {
+  return tycheReloginSuppressed;
+}
+
+/** 是否已记住 Tyche 密码（勾选「记住密码」后 username+password 齐备；设置页提示用） */
+export function isTychePasswordRemembered(c: ExtHwCreds = getExtHwCreds()): boolean {
+  return Boolean(c.tyche?.username?.trim() && c.tyche?.password);
+}
+
+/**
+ * Tyche 会话失效的静默自动重登（core 编排层钩子；永不抛出）。
+ * 前置不满足（显式退出 / 未记住密码）→ 直接 false，core 保留原错误（不带前缀）。
+ * 成功 → 新 Cookie 连同记住的账密一并覆盖保存（凭据信封整体 AES-GCM，明文不落盘）。
+ * 频控 / in-flight 去重由 core 负责，这里不做二次频控（避免双重计数）。
+ */
+async function maybeAutoTycheRelogin(): Promise<boolean> {
+  if (tycheReloginSuppressed) {
+    void logLine("R21-A Tyche 会话失效：用户曾显式退出登录，跳过自动重登");
+    return false;
+  }
+  const cred = getExtHwCreds().tyche;
+  const user = cred?.username?.trim() ?? "";
+  const pwd = cred?.password ?? "";
+  if (!user || !pwd) {
+    void logLine("R21-A Tyche 会话失效：未记住密码，跳过自动重登（可在设置页勾选「记住密码」）");
+    return false;
+  }
+  void logLine("R21-A Tyche 会话失效：使用记住的账密静默自动重登…");
+  try {
+    const r = await extHwLogin.tyche(user, pwd);
+    await saveExtHwCreds({ ...getExtHwCreds(), tyche: { cookie: r.cookie, username: user, password: pwd } });
+    void logLine("R21-A Tyche 自动重登成功，凭据已更新并触发重拉");
+    return true;
+  } catch (e) {
+    // 失败静默：仅诊断日志 + core 侧把「已尝试自动重新登录，仍失败：<原因>」写进 errors
+    const msg = e instanceof Error ? e.message : String(e);
+    void logLine(`R21-A Tyche 自动重登失败：${msg.slice(0, 200)}`);
+    return false;
+  }
+}
+
+/** 清除单个源的凭据（其余源保留，R12 17.2）；TUOJ 系同时复位/抑制该源自动登录状态。
+ *  R21-A：退出 Tyche 同时清掉记住的密码（整个 tyche 凭据被移除）并抑制自动重登——
+ *  用户显式退出后绝不静默补登录。 */
 export async function removeExtHwCreds(source: ExtHwSourceId): Promise<void> {
   const cur = getExtHwCreds();
   const next: ExtHwCreds = { days: cur.days };
@@ -473,6 +570,99 @@ export async function removeExtHwCreds(source: ExtHwSourceId): Promise<void> {
   if (source !== "dsa") next.dsa = cur.dsa;
   await saveExtHwCreds(next);
   if (isTuojFamilyId(source)) markTuojLoggedOut(source);
+  if (source === "tyche") markTycheLoggedOut();
+}
+
+/* ── R21-B：雨课堂会话保活心跳 + 健康检查 + Cookie 轮换回写 ──
+ * 侦查结论（docs 三十节，2026-09-20 真连 + 前端 bundle 全量端点挖掘）：雨课堂**没有**
+ * 会话续期/刷新端点，sessionid 由服务端 Django 管理，客户端无法「续命」→ 保活只能靠
+ * 周期性轻量已授权请求试探/触发服务端会话续期（是否滑动能推迟过期属实验验证项）。
+ * 这里实现三件事：
+ * ① 6h 一次心跳：GET /api/v3/user/basic-info（最轻的已授权请求）+ 结果记入快照；
+ * ② 服务端若在响应里轮换 Cookie（Set-Cookie 白名单字段）→ 合并后用 AES-GCM 信封
+ *   存回凭据（侦查未见轮换证据，属兜底）；
+ * ③ 健康检查结果（含失效原因）供设置页「检查会话」与失效引导（一键重登/导入）展示。
+ * 全程静默 + log_debug；**绝不**打印 Cookie 内容。 */
+
+/** 心跳周期：6h（霖反馈会话约 24h 失效——6h 足够密；实验结论待 docs 三十节回填） */
+export const YKT_HEARTBEAT_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
+/** 雨课堂会话健康状态（进快照；checkedAt=null = 从未检查过） */
+export interface YktSessionState {
+  /** true=有效；false=已失效；null=未知（未检查 / 网络断，不谎报） */
+  alive: boolean | null;
+  /** 失效原因（alive=false：http401 / http403 / errcode=401000 / unauthenticated / non-json；
+   *  alive=null：network） */
+  reason?: string;
+  /** 会话归属人姓名（basic-info 能取到时；仅展示用） */
+  userName?: string;
+  /** 检查完成时间（ms） */
+  checkedAt: number | null;
+}
+
+let yktSession: YktSessionState = { alive: null, checkedAt: null };
+let yktHbTimer: ReturnType<typeof setInterval> | null = null;
+let yktHbKickoff: ReturnType<typeof setTimeout> | null = null;
+let yktHbBusy = false;
+
+/** 服务端轮换 Cookie 的存回（onCookieRefresh 钩子）：并入现有凭据后 AES-GCM 信封整体落盘 */
+async function saveYktCookieRefresh(cookie: string): Promise<void> {
+  const cur = getExtHwCreds();
+  const prev = cur.yuketang;
+  await saveExtHwCreds({ ...cur, yuketang: { cookie, ...(prev?.uvId ? { uvId: prev.uvId } : {}), ...(prev?.phone ? { phone: prev.phone } : {}) } });
+  void logLine("R21-B 雨课堂会话：服务端轮换 Cookie，已合并存回凭据（AES-GCM）");
+}
+
+/**
+ * 立即做一次会话健康检查（心跳单次动作；设置页「检查会话」同款）。
+ * 未配置雨课堂 → 返回 null（不动快照）。永不抛出；结果写入快照 yktSession。
+ */
+export async function runYktSessionCheck(): Promise<YktSessionState | null> {
+  await ensureExtHwCredsLoaded().catch(() => undefined);
+  const cred = getExtHwCreds().yuketang;
+  if (!cred?.cookie?.trim()) return null;
+  if (yktHbBusy) return null;
+  yktHbBusy = true;
+  try {
+    const src = createYuketangSource(cred, universalFetch, getExtHwCreds().days ?? 30, {
+      onCookieRefresh: (c) => {
+        void saveYktCookieRefresh(c);
+      },
+    });
+    const h = await src.checkSession();
+    yktSession = { alive: h.alive, reason: h.reason, userName: h.userName, checkedAt: h.checkedAt };
+    if (h.alive === true) {
+      void logLine(`R21-B 雨课堂心跳：会话有效${h.userName ? `（${h.userName}）` : ""}`);
+    } else if (h.alive === false) {
+      void logLine(`R21-B 雨课堂心跳：会话已失效（${h.reason}），请重新登录或导入 Cookie`);
+    } else {
+      void logLine("R21-B 雨课堂心跳：网络异常，会话状态未知（不判失效）");
+    }
+    rebuild();
+    return yktSession;
+  } catch (e) {
+    // checkSession 本身不抛（内部已归一），防御性兜底
+    yktSession = { alive: null, reason: "network", checkedAt: Date.now() };
+    void logLine(`R21-B 雨课堂心跳异常：${(e instanceof Error ? e.message : String(e)).slice(0, 200)}`);
+    rebuild();
+    return yktSession;
+  } finally {
+    yktHbBusy = false;
+  }
+}
+
+/** 启动保活心跳（幂等）：启动 15s 后先查一次（避开启动刷新高峰），此后每 6h 一次。 */
+export function startYktHeartbeat(): void {
+  if (yktHbTimer) return;
+  if (!yktHbKickoff) {
+    yktHbKickoff = setTimeout(() => {
+      yktHbKickoff = null;
+      void runYktSessionCheck();
+    }, 15_000);
+  }
+  yktHbTimer = setInterval(() => {
+    void runYktSessionCheck();
+  }, YKT_HEARTBEAT_INTERVAL_MS);
 }
 
 /* ── 内存缓存 + 订阅 ── */
@@ -490,6 +680,8 @@ export interface ExtHwSnapshot {
   /** TUOJ 系统一认证自动登录状态（R11 16.2；R15 按源分：tuoj / tuojClassic；
    *  仅自动路径维护，手动登录会复位对应源） */
   tuojAuto: TuojAutoMap;
+  /** R21-B：雨课堂会话健康状态（心跳 / 手动「检查会话」维护；checkedAt=null = 未检查） */
+  yktSession: YktSessionState;
 }
 
 let items: ExternalHomework[] = [];
@@ -499,9 +691,9 @@ let lastAt = 0;
 const listeners = new Set<() => void>();
 
 /** useSyncExternalStore 要求 getSnapshot 引用稳定 —— 变更时才重建 */
-let snapshot: ExtHwSnapshot = { items, errors, state, lastAt, configured: false, tuojAuto };
+let snapshot: ExtHwSnapshot = { items, errors, state, lastAt, configured: false, tuojAuto, yktSession };
 function rebuild(): void {
-  snapshot = { items, errors, state, lastAt, configured: hasAnyExtHwCreds(), tuojAuto };
+  snapshot = { items, errors, state, lastAt, configured: hasAnyExtHwCreds(), tuojAuto, yktSession };
   listeners.forEach((fn) => fn());
 }
 
@@ -540,11 +732,14 @@ export function refreshExtHw(): Promise<void> {
     // R12 17.1：401/403 → 对该源 force 重漫游 → 成功则重拉一次；失败保留原 401 错误。
     // R19 27.1：重漫游放宽 24h 频控（relaxThrottle，改吃 core 进程级频控 + in-flight 去重），
     // 尊重「显式退出」抑制；漫游与重试全程静默，失败仅落 errors / tuojAuto 状态供设置页展示。
+    // R21-A：Tyche 会话失效（status=login / 401 / 跳登录页）→ 记住密码时静默自动重登一次
+    // 并重拉；频控 / in-flight 去重 / 失败文案前缀都在 core，显式退出抑制在本模块。
     const next = await refreshExternalHomework({
       getCreds: () => getExtHwCreds(),
       fetchLike: universalFetch,
       http,
       rerouteTuoj: (source) => maybeAutoTuojCas(source, { force: true, relaxThrottle: true }),
+      reloginTyche: () => maybeAutoTycheRelogin(),
     });
     items = next.items;
     errors = next.errors;
@@ -581,12 +776,41 @@ export function toHomework(e: ExternalHomework): Homework {
     audited: e.audited,
     score: e.score,
     totalScore: e.totalScore,
+    // R20-B2：雨课堂原生详情页拉取参数（仅 yuketang 有；其余源恒 undefined）
+    externalLeafTypeId: e.leafTypeId,
+    externalClassroomId: e.classroomId,
   };
 }
 
 /** 源展示名（徽标用） */
 export function extHwSourceName(id: ExtHwSourceId): string {
   return SOURCE_NAMES[id] ?? id;
+}
+
+/* ── R20-B2：雨课堂作业详情（原生详情页用；只读） ── */
+
+/**
+ * 当前雨课堂会话 Cookie（R20-B3 题干渲染用：字体下载 / 图片代理的 fetch_binary 注入）。
+ * 未登录 → 空串（调用方照常渲染，资源侧自然降级）。仅作内存传递，**不落日志**。
+ */
+export function getYktCookie(): string {
+  return getExtHwCreds().yuketang?.cookie?.trim() ?? "";
+}
+
+/**
+ * 拉单份雨课堂作业详情（getExerciseDetail 的 state 层薄包装）：
+ * 凭据 / 传输层在此注入（core 不碰存储），uvId 回落凭据值（createYuketangSource 内再回落 "2598"）。
+ * 未配置雨课堂凭据 → 抛错（页面展示错误态 + 保留原文案），绝不静默。
+ * 失败原样上抛（含 errcode / 会话失效上下文），由页面展示并 log_debug。
+ */
+export async function fetchYktExerciseDetail(leafTypeId: string, classroomId: string): Promise<YkExerciseDetail> {
+  const creds = getExtHwCreds();
+  const cred = creds.yuketang;
+  if (!cred || !cred.cookie.trim()) {
+    throw new Error("雨课堂未登录：请先在 设置 → 外部作业源 登录雨课堂");
+  }
+  const src = createYuketangSource(cred, universalFetch, creds.days ?? 30);
+  return src.getExerciseDetail(leafTypeId, classroomId);
 }
 
 /* ── React hook ── */
@@ -603,6 +827,8 @@ export function useExternalHomework(): UseExternalHomework {
   // 应用启动即拉一次（有凭据时）；state 模块级保持，只有首次 idle 才触发
   useEffect(() => {
     if (getExtHwSnapshot().state === "idle") void refreshExtHw();
+    // R21-B：启动保活心跳（幂等；15s 后首查，此后每 6h 一次）
+    startYktHeartbeat();
   }, []);
   return { ...snap, reload };
 }

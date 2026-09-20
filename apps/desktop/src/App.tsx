@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LearnPage } from "./pages/Learn.js";
 import { AssignmentDetailPage } from "./pages/learn/AssignmentDetailPage.js";
+import { YktAssignmentDetailPage } from "./pages/learn/YktAssignmentDetailPage.js";
 import { AssignmentsPage } from "./pages/learn/AssignmentsPage.js";
 import { CourseDetailPage } from "./pages/learn/CourseDetailPage.js";
 import { FileDetailPage } from "./pages/learn/FileDetailPage.js";
@@ -112,7 +113,8 @@ function Routed() {
         {page === "learn-forum-thread" && <ForumThreadPage />}
         {page === "learn-file-detail" && <FileDetailPage />}
         {page.startsWith("plugin:") && <PluginTabHost pageKey={page} />}
-      </Shell>
+        {/* R20-B2：雨课堂作业原生只读详情页（移动端雨课堂条目直达；桌面亦可打开） */}
+        {page === "learn-ykt-detail" && <YktAssignmentDetailPage />}      </Shell>
     );
   })();
 

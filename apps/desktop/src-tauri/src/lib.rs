@@ -2538,6 +2538,95 @@ async fn open_web_modal(app: tauri::AppHandle, url: String) -> Result<(), String
     Ok(())
 }
 
+/* R20-C1：雨课堂官方作答页「应用内 WebView」通道（写操作，但只打开官方页——
+ * 提交仍由官方页自身逻辑完成，不替代、不绕过其确认/拦截）。
+ * 与 R20-A 只读浏览（open_web_modal）分开：本命令额外**注入当前会话 Cookie**
+ * （桌面走 wry set_cookie，移动走 Kotlin CookieManager），URL 用 R16b 学生端直链。
+ * Cookie 只在 invoke 参数 / 内存中传递，绝不打印、不落盘、不进 log_debug。
+ * 关闭/返回后 emit "ykt-submit-closed"，前端据此重新拉真实状态（禁止乐观更新）。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn open_ykt_submit_window(app: tauri::AppHandle, url: String, cookie: String) -> Result<(), String> {
+    use tauri::webview::{Cookie, WebviewWindowBuilder};
+    use tauri::WebviewUrl;
+    // scheme 白名单：非 http(s) 一律拒绝
+    if !(url.starts_with("http://") || url.starts_with("https://")) {
+        return Err("拒绝在应用内 WebView 打开非 http(s) 链接".into());
+    }
+    let label = "yktsubmit";
+    if let Some(w) = app.get_webview_window(label) {
+        let _ = w.close();
+    }
+    // 先建在雨课堂源根（同域），注入会话 Cookie 后再导航到官方作答页——避免首跳
+    // 无 Cookie 被弹登录。窗口独立于主窗口 / 登录窗口，互不影响。
+    let win = WebviewWindowBuilder::new(
+        &app,
+        label,
+        WebviewUrl::External("https://pro.yuketang.cn/".parse().unwrap()),
+    )
+    .title("雨课堂 · 作答 / 提交")
+    .inner_size(1024.0, 780.0)
+    .build()
+    .map_err(|e| e.to_string())?;
+    // 逐条注入：`name=value; …` → Cookie(Domain=.yuketang.cn, Path=/)。解析失败的条目
+    // 静默跳过（官方页会自行要求重新登录），绝不把 Cookie 值写进任何日志。
+    for pair in cookie.split(';') {
+        let pair = pair.trim();
+        if pair.is_empty() || !pair.contains('=') {
+            continue;
+        }
+        if let Ok(c) = Cookie::parse(format!("{pair}; Domain=.yuketang.cn; Path=/")) {
+            let _ = win.set_cookie(c);
+        }
+    }
+    let _ = win.set_focus();
+    let target = match url.parse() {
+        Ok(u) => u,
+        Err(e) => {
+            let _ = win.close();
+            return Err(format!("官方作答页地址非法: {e}"));
+        }
+    };
+    if let Err(e) = win.navigate(target) {
+        let _ = win.close();
+        return Err(e.to_string());
+    }
+    // 后台轮询窗口存在性：用户关闭 → emit 一次（前端据此重拉详情，不乐观更新）。
+    let app2 = app.clone();
+    std::thread::spawn(move || loop {
+        std::thread::sleep(std::time::Duration::from_millis(700));
+        if app2.get_webview_window(label).is_none() {
+            use tauri::Emitter;
+            let _ = app2.emit("ykt-submit-closed", ());
+            return;
+        }
+    });
+    Ok(())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn open_ykt_submit_window(app: tauri::AppHandle, url: String, cookie: String) -> Result<(), String> {
+    // scheme 白名单：非 http(s) 一律拒绝（Kotlin 侧再兜底一次）
+    if !(url.starts_with("http://") || url.starts_with("https://")) {
+        return Err(format!("拒绝在应用内 WebView 打开非 http(s) 链接: {url}"));
+    }
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    // 移动端 Kotlin 全屏 Dialog WebView：Cookie 走 CookieManager 注入，关闭才 resolve。
+    // async 版本等待，不阻塞工作线程（与 open_web_modal 同款写法）。
+    let _: serde_json::Value = handle
+        .run_mobile_plugin_async("openWebModal", serde_json::json!({ "url": url, "cookie": cookie }))
+        .await
+        .map_err(|e| e.to_string())?;
+    use tauri::Emitter;
+    let _ = app.emit("ykt-submit-closed", ());
+    Ok(())
+}
+
 /* 体育官方预约已改为主窗口 tab 内 iframe（URL ?token= 携带 JWT，官方 SPA
  * 开机即认的 SSO 载体），不再需要独立弹窗命令——独立窗注入 localStorage.headers
  * 对官方 SPA 无效（它开机只读 URL 参数），已删除。 */
@@ -2794,10 +2883,7 @@ tauri::Builder::default()
             http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
-            downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
-            plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
+            downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,open_ykt_submit_window,            plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

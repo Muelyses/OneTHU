@@ -32,6 +32,25 @@ interface TycheCred {
   cookie: string;
 }
 
+/* ── R21-A：Tyche 会话失效错误（可静默自动重登的唯一触发类型） ──
+ * 实测（2026-09-20 真连侦查，见 docs §29.1）：会话失效有三种表现——
+ * ① 响应 `{"status":"login"}`（GroupList / ShowGroup / task/Status 均如此，HTTP 200）；
+ * ② HTTP 401/403（外层 Basic 网关拒绝）；
+ * ③ 返回非 JSON（登录页 HTML / 网关跳转）。
+ * 三者都归一为 TycheSessionError，编排层（exthw/index.ts）只对它触发自动重登；
+ * 其余错误（网络断、HTTP 5xx、字段异常）不重登，保持原样上抛。 */
+export class TycheSessionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TycheSessionError";
+  }
+}
+
+/** 是否 Tyche 会话失效错误（含子类；其他错误一律 false） */
+export function isTycheSessionError(e: unknown): e is TycheSessionError {
+  return e instanceof TycheSessionError;
+}
+
 /** 无时区的本地日期时间串 → 毫秒（"2026-09-27T16:00:00" 按本地时间，绝不按 UTC） */
 function parseLocalDateTime(s: string): number {
   const t = s.trim();
@@ -71,17 +90,20 @@ const BufferLike = {
 async function getJson(fetchLike: FetchLike, url: string, headers: Record<string, string>): Promise<Record<string, unknown>> {
   const res = await fetchLike(url, { method: "GET", headers });
   if (res.status === 401 || res.status === 403) {
-    throw new Error(`Tyche 鉴权失败（HTTP ${res.status}），请检查 Basic / Cookie（校外需 WebVPN）`);
+    // R21-A：401/403 = 会话/网关鉴权失效 → 会话错误（可自动重登）
+    throw new TycheSessionError(`Tyche 鉴权失败（HTTP ${res.status}），请检查 Basic / Cookie（校外需 WebVPN）`);
   }
   const body = await res.text();
   let json: unknown;
   try {
     json = JSON.parse(body);
   } catch {
-    throw new Error("Tyche 返回非 JSON（会话可能已失效）");
+    // R21-A：非 JSON = 登录页 HTML / 网关跳转（「跳登录页」特征）→ 会话错误
+    throw new TycheSessionError("Tyche 返回非 JSON（会话可能已失效，被跳到登录页）");
   }
   const obj = (json ?? {}) as Record<string, unknown>;
-  if (obj["status"] === "login") throw new Error("Tyche 会话已失效（status=login），请在设置页更新 Cookie");
+  // R21-A：`status:"login"` = 接口未登录特征（实测会话失效的唯一稳定标志）→ 会话错误
+  if (obj["status"] === "login") throw new TycheSessionError("Tyche 会话已失效（status=login），请在设置页更新 Cookie");
   return obj;
 }
 
@@ -220,11 +242,14 @@ export function createTycheSource(cred: TycheCred, fetchLike: FetchLike, days: n
             const ms = parseLocalDateTime(raw);
             if (!Number.isFinite(ms)) continue;
             if (ms > limit) continue;
-            // 提交/批改状态（仅对时间窗内的 task 查）；失败只跳过（保守 false）
+            // 提交/批改状态（仅对时间窗内的 task 查）；失败只跳过（保守 false）。
+            // R21-A：会话失效必须上抛（否则 status=login 只会静默变成「未提交」，
+            // 自动重登永远不被触发）；其余错误仍吞掉。
             let status: TycheStatusResult = { submitted: false, graded: false };
             try {
               status = await fetchTycheStatus(fetchLike, base, headers, gid, tid);
-            } catch {
+            } catch (e) {
+              if (isTycheSessionError(e)) throw e;
               /* 状态查询失败：保守保持未提交、未批改 */
             }
             const hw: ExternalHomework = {
@@ -247,7 +272,9 @@ export function createTycheSource(cred: TycheCred, fetchLike: FetchLike, days: n
             }
             out.push(hw);
           }
-        } catch {
+        } catch (e) {
+          // R21-A：单课程组失败跳过；但会话失效必须冒泡（触发自动重登）
+          if (isTycheSessionError(e)) throw e;
           /* 单课程组失败跳过 */
         }
       }

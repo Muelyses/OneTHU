@@ -30,15 +30,17 @@ import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
 import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
   clearTuojAutoStatus,
+  clearTycheLogoutSuppress,
   consumeExtHwScrollRequest,
   ensureExtHwCredsLoaded,
   extHwLogin,
   removeExtHwCreds,
+  runYktSessionCheck,
   saveExtHwCreds,
   refreshExtHw,
   useExternalHomework,
 } from "../state/exthw.js";
-import { SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
+import { buildYktCookieExportJson, parseYktCookieExportJson, SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
 import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 
 export function SettingsPage() {
@@ -562,6 +564,11 @@ function ExtHwSection() {
   const [tychePwd, setTychePwd] = useState("");
   const [tycheCookie, setTycheCookie] = useState("");
   const [tycheFormOpen, setTycheFormOpen] = useState(false);
+  // R21-A：记住密码（勾选后 username+password 随凭据信封 AES-GCM 存本机；
+  // 会话失效时用存档账密静默自动重登一次。tycheSavedPwd = 已存档密码的内存回填，
+  // 与 tycheCookie 同性质：只在内存态用于组装保存，不显示明文）
+  const [tycheRemember, setTycheRemember] = useState(false);
+  const [tycheSavedPwd, setTycheSavedPwd] = useState("");
   // DSA OJ
   const [dsaUser, setDsaUser] = useState("");
   const [dsaPwd, setDsaPwd] = useState("");
@@ -596,6 +603,8 @@ function ExtHwSection() {
       setClassicVia(c.tuojClassic?.via);
       setTycheUser(c.tyche?.username ?? "");
       setTycheCookie(c.tyche?.cookie ?? "");
+      setTycheRemember(Boolean(c.tyche?.password));
+      setTycheSavedPwd(c.tyche?.password ?? "");
       setDsaUser(c.dsa?.username ?? "");
       setDsaCookie(c.dsa?.cookie ?? "");
       setDays(String(c.days ?? 30));
@@ -632,7 +641,9 @@ function ExtHwSection() {
 
   const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
-  /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用） */
+  /** 组装待保存凭据；o.* 传入刚登录拿到的 Cookie（state 尚未刷新时用）。
+   *  R21-A：o.tychePwd = 刚登录成功、且勾选「记住密码」时要存档的密码（随 AES-GCM
+   *  信封加密落盘）；未勾选 → 不存密码（并清掉旧存档，即「取消记住」）。 */
   const credsWith = (
     o: {
       ykt?: string;
@@ -641,6 +652,7 @@ function ExtHwSection() {
       classic?: string;
       classicVia?: "cas" | "password";
       tyche?: string;
+      tychePwd?: string;
       dsa?: string;
     } = {},
   ): ExtHwCreds => {
@@ -655,7 +667,13 @@ function ExtHwSection() {
       tuojClassic: cj
         ? { cookie: cj, username: classicUser.trim() || undefined, via: o.classicVia ?? classicVia }
         : undefined,
-      tyche: tc ? { cookie: tc, username: tycheUser.trim() || undefined } : undefined,
+      tyche: tc
+        ? {
+            cookie: tc,
+            username: tycheUser.trim() || undefined,
+            password: tycheRemember ? (o.tychePwd ?? (tycheSavedPwd || undefined)) : undefined,
+          }
+        : undefined,
       dsa: ds ? { cookie: ds, username: dsaUser.trim() || undefined } : undefined,
       days: Math.max(1, Number(days) || 30),
     };
@@ -672,6 +690,84 @@ function ExtHwSection() {
       .then(() => refreshExtHw())
       .then(() => notify("range", "刷新完成。"))
       .catch((e: unknown) => notify("range", `刷新失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /* ── R21-B：雨课堂会话健康 + Cookie 导出/导入（侦查结论：服务端无续期端点，
+   *    保活只能周期性轻量试探；失效只能重登；多设备迁移用导出/导入缓解）── */
+
+  /** 手动触发一次会话健康检查（与 6h 心跳同款：GET basic-info） */
+  const onYktCheckSession = () => {
+    setBusy("ykt-check");
+    setMsg(null);
+    void runYktSessionCheck()
+      .then((st) => {
+        if (!st) {
+          notify("yuketang", "未配置雨课堂会话——请先登录。");
+          return;
+        }
+        if (st.alive === true) notify("yuketang", `会话有效${st.userName ? `（${st.userName}）` : ""}。`);
+        else if (st.alive === false) notify("yuketang", `会话已失效（${st.reason ?? "未知原因"}）——可扫码重登，或导入其他设备导出的 Cookie。`);
+        else notify("yuketang", "检查失败：网络异常，会话状态未知（不判失效）。");
+      })
+      .finally(() => setBusy(null));
+  };
+
+  /** 导出雨课堂 Cookie：文件即完整登录凭据（自带 sensitive 标注），仅存本机自选位置 */
+  const onYktExportCookie = () => {
+    setBusy("ykt-export");
+    setMsg(null);
+    void (async (): Promise<string> => {
+      if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+        throw new Error("浏览器预览不支持导出——请用桌面端。");
+      }
+      const c = await ensureExtHwCredsLoaded();
+      if (!c.yuketang?.cookie?.trim()) throw new Error("未配置雨课堂会话，没有可导出的 Cookie。");
+      const json = buildYktCookieExportJson(c.yuketang);
+      const { invoke } = await import("@tauri-apps/api/core");
+      const date = new Date().toISOString().slice(0, 10);
+      const path = await invoke<string | null>("save_text_file", {
+        filename: `onethu-yuketang-cookie-${date}.json`,
+        contents: json,
+      });
+      if (!path) return "已取消导出。";
+      return `已导出到 ${path}。⚠️ 该文件等同账号凭据：勿放同步盘 / 群聊 / 仓库，导入完成后请删除。`;
+    })()
+      .then((m) => notify("yuketang", m))
+      .catch((e: unknown) => notify("yuketang", `导出失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /** 导入另一台设备导出的 Cookie（免重新扫码）；导入后立即刷新外部作业 */
+  const onYktImportCookie = () => {
+    setBusy("ykt-import");
+    setMsg(null);
+    void (async (): Promise<string> => {
+      if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+        throw new Error("浏览器预览不支持导入——请用桌面端。");
+      }
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const { invoke } = await import("@tauri-apps/api/core");
+      const sel = await open({ multiple: false, filters: [{ name: "雨课堂会话", extensions: ["json"] }] });
+      if (!sel || typeof sel !== "string") return "已取消导入。";
+      const text = await invoke<string>("read_file_text", { path: sel });
+      const parsed = parseYktCookieExportJson(text);
+      const cur = await ensureExtHwCredsLoaded();
+      await saveExtHwCreds({
+        ...cur,
+        yuketang: {
+          cookie: parsed.cookie,
+          uvId: parsed.uvId ?? cur.yuketang?.uvId,
+          phone: parsed.phone ?? cur.yuketang?.phone,
+        },
+      });
+      setYktCookie(parsed.cookie);
+      if (parsed.phone) setYktPhone(parsed.phone);
+      void refreshExtHw();
+      return "已导入雨课堂 Cookie 并保存，正在刷新外部作业。";
+    })()
+      .then((m) => notify("yuketang", m))
+      .catch((e: unknown) => notify("yuketang", `导入失败：${errMsg(e)}`))
       .finally(() => setBusy(null));
   };
 
@@ -734,14 +830,20 @@ function ExtHwSection() {
   const onTycheLogin = () => {
     setBusy("tyche-login");
     setMsg(null);
+    const pwdNow = tychePwd; // async 回调前留档（下面 setTychePwd("") 会清空输入框）
     void extHwLogin
-      .tyche(tycheUser, tychePwd)
+      .tyche(tycheUser, pwdNow)
       .then(async (r) => {
         setTycheCookie(r.cookie);
+        // R21-A：勾选「记住密码」→ 把刚输的密码随凭据信封（AES-GCM）存档，会话失效时静默重登；
+        // 未勾选 → 不存档（credsWith 里 password=undefined，同时覆盖清掉旧存档）
+        if (tycheRemember) setTycheSavedPwd(pwdNow);
+        // R21-A：手动登录成功 → 解除「显式退出」对自动重登的抑制
+        clearTycheLogoutSuppress();
         setTychePwd("");
         setTycheFormOpen(false);
-        await saveExtHwCreds(credsWith({ tyche: r.cookie }));
-        notify("oj", "Tyche 登录成功，已保存。");
+        await saveExtHwCreds(credsWith({ tyche: r.cookie, tychePwd: tycheRemember ? pwdNow : undefined }));
+        notify("oj", tycheRemember ? "Tyche 登录成功，已保存（已记住密码，会话失效将自动重登）。" : "Tyche 登录成功，已保存。");
         void refreshExtHw();
       })
       .catch((e: unknown) => notify("oj", `Tyche 登录失败：${errMsg(e)}`))
@@ -789,6 +891,9 @@ function ExtHwSection() {
           } else if (source === "tyche") {
             setTycheCookie("");
             setTychePwd("");
+            // R21-A：退出 = 清掉「记住密码」态（removeExtHwCreds 已清存档并抑制自动重登）
+            setTycheRemember(false);
+            setTycheSavedPwd("");
           } else {
             setDsaCookie("");
             setDsaPwd("");
@@ -906,6 +1011,59 @@ function ExtHwSection() {
             <div className="exthw-note" role="status">{msg}</div>
           ) : null}
           {ext.errors.yuketang ? <div className="exthw-note is-error">{ext.errors.yuketang}</div> : null}
+          {/* R21-B：会话健康 + 保活状态 + 导出/导入（仅已登录时） */}
+          {configured.yuketang ? (
+            <>
+              <div className="exthw-note">
+                {ext.yktSession.checkedAt === null
+                  ? "会话健康：尚未检查（启动后会自动心跳，约每 6 小时一次；也可手动检查）。"
+                  : ext.yktSession.alive === true
+                    ? `会话健康：有效${ext.yktSession.userName ? `（${ext.yktSession.userName}）` : ""} · 检查于 ${new Date(ext.yktSession.checkedAt).toLocaleTimeString()}`
+                    : ext.yktSession.alive === false
+                      ? `会话健康：已失效（${ext.yktSession.reason}）· 检查于 ${new Date(ext.yktSession.checkedAt).toLocaleTimeString()}`
+                      : "会话健康：未知（上次检查网络异常，不判失效）"}
+              </div>
+              <div style={fieldStyle}>
+                <button className="btn" disabled={busy !== null} onClick={onYktCheckSession}>
+                  {busy === "ykt-check" ? "检查中…" : "检查会话"}
+                </button>
+                <button
+                  className="btn"
+                  disabled={busy !== null}
+                  title="把当前会话导出成文件，供其他设备导入（免重复扫码）。文件等同账号凭据，用完即删。"
+                  onClick={onYktExportCookie}
+                >
+                  {busy === "ykt-export" ? "导出中…" : "导出 Cookie"}
+                </button>
+                <button
+                  className="btn"
+                  disabled={busy !== null}
+                  title="导入其他已登录设备导出的会话文件，免扫码直接恢复登录"
+                  onClick={onYktImportCookie}
+                >
+                  {busy === "ykt-import" ? "导入中…" : "导入 Cookie"}
+                </button>
+              </div>
+              {ext.yktSession.alive === false ? (
+                <div className="exthw-note is-error">
+                  会话已失效：作业页将拉不到雨课堂数据。可「一键重登（扫码）」，或在其他已登录设备「导出
+                  Cookie」后在此「导入 Cookie」恢复。
+                  <div style={{ marginTop: 6 }}>
+                    <button
+                      className="btn btn-primary"
+                      disabled={busy !== null}
+                      onClick={() => {
+                        setYktWebOpen(false);
+                        setYktQrOpen(true);
+                      }}
+                    >
+                      一键重登（扫码）
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </>
+          ) : null}
           {yktQrOpen ? (
             <YktQrPanel
               onCancel={() => setYktQrOpen(false)}
@@ -1044,7 +1202,7 @@ function ExtHwSection() {
               ) : null}
             </OjSourceRow>
 
-            {/* Tyche：仅用户名 + 密码（校内或 sslvpn） */}
+            {/* Tyche：用户名 + 密码（校内或 sslvpn）；R21-A 支持记住密码 + 会话失效静默自动重登 */}
             <OjSourceRow
               name={SOURCE_NAMES.tyche}
               logged={configured.tyche}
@@ -1066,7 +1224,13 @@ function ExtHwSection() {
                   </button>
                 ) : undefined
               }
-              note={ext.errors.tyche ? <div className="exthw-note is-error">{ext.errors.tyche}</div> : undefined}
+              note={
+                ext.errors.tyche ? (
+                  <div className="exthw-note is-error">{ext.errors.tyche}</div>
+                ) : tycheRemember && configured.tyche ? (
+                  <div className="exthw-note">已记住密码：会话失效将自动重新登录（静默进行，失败才会提示）。</div>
+                ) : undefined
+              }
             >
               {tycheFormOpen ? (
                 <div className="exthw-src-body">
@@ -1076,6 +1240,16 @@ function ExtHwSection() {
                     <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
                       {busy === "tyche-login" ? "登录中…" : "登录"}
                     </button>
+                  </div>
+                  {/* R21-A：记住密码 → 会话失效时用存档账密静默自动重登一次（同源 ≥10min、每进程 ≤3 次） */}
+                  <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12, opacity: 0.9 }}>
+                    <input type="checkbox" checked={tycheRemember} onChange={(e) => setTycheRemember(e.target.checked)} />
+                    记住密码（会话失效后自动重新登录）
+                  </label>
+                  <div style={{ marginTop: 4, fontSize: 12, opacity: 0.65 }}>
+                    {tycheRemember
+                      ? "密码将以 AES-GCM 密文存本机（与其它凭据同路），不进日志、不上传；退出登录即清除。"
+                      : "不勾选则只保存本次会话，失效后需手动重新登录。"}
                   </div>
                 </div>
               ) : null}

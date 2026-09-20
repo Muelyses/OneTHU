@@ -204,8 +204,12 @@ export type { VenueBuilding, VenueDevKind, VenueSameLevel, VenueScene, VenueSess
 
 /* 外部作业源（雨课堂 / TUOJ 系 / Tyche / DSA OJ）—— 只读拉取，凭据由宿主注入 */
 export * as exthw from "./exthw/index.js";
-export { createExternalSources, refreshExternalHomework, SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES, yuketangSendSmsCode, yuketangVerifyLogin, tuojLogin, tuojRoam, TuojCasError, isTuojNoCoursesError, TuojSessionError, isTuojSessionError, TUOJ_CLASSIC_BASE, dsaLogin, DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, DSA_BASE, tycheLogin, captureCookies, yuketangBuildCookie, yuketangQrStart, yuketangQrPoll, runYuketangQrLogin, yuketangCookieFromHeader } from "./exthw/index.js";
+export { createExternalSources, refreshExternalHomework, SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES, yuketangSendSmsCode, yuketangVerifyLogin, tuojLogin, tuojRoam, TuojCasError, isTuojNoCoursesError, TuojSessionError, isTuojSessionError, TUOJ_CLASSIC_BASE, dsaLogin, DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, DSA_BASE, tycheLogin, captureCookies, yuketangBuildCookie, yuketangQrStart, yuketangQrPoll, runYuketangQrLogin, yuketangCookieFromHeader, createYuketangSource, TycheSessionError, isTycheSessionError, YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } from "./exthw/index.js";
 export type { ExternalHomework, ExtHwCreds, ExtHwSourceId, ExtHwCategory, ExtHwLoginResult, TuojSourceId, TuojCreds, TuojSourceConfig, HomeworkSource, RegisteredHomeworkSource, CreateExternalSourcesDeps, RefreshExternalHomeworkDeps, RefreshExternalHomeworkResult, TuojRoamResult, YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } from "./exthw/index.js";
+/* R20-B1/B2：雨课堂作业详情（归一化只读类型；实例经 createYuketangSource(...).getExerciseDetail 取） */
+export type { YkExerciseDetail, YkProblem, YkComment, YkAttachment, YkMyStatus, YuketangSource } from "./exthw/index.js";
+/* R21-B：雨课堂会话失效归一 / 健康检查 / Cookie 导出导入（多设备迁移缓解） */
+export type { YktSessionHealth, YuketangSourceHooks, YktCookieExport } from "./exthw/index.js";
 
 // 日程云同步（CalDAV / iCalendar）
 export * as caldav from "./caldav/index.js";

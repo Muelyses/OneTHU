@@ -12,6 +12,7 @@ import { IconChevron, IconSearch } from "../../components/Icons.js";
 import { useApp } from "../../state/context.js";
 import { useLearnData } from "../../state/data.js";
 import { homeworkChip } from "./shared.js";
+import { openHomeworkRow } from "../../lib/homeworkEntry.js";
 import type { CourseFile, CourseInfo, Homework, Notification } from "@onethu/core";
 
 /* ---------- 分词：空白切词 + 中文 2-gram ---------- */
@@ -183,7 +184,10 @@ function SearchCourseRow({ c, tokens, score, max, delay }: { c: CourseInfo; toke
 
 function SearchHomeworkRow({ h, courseName, tokens, score, max, delay }: { h: Homework; courseName?: string; tokens: string[]; score: number; max: number; delay: number }) {
   const { navigate } = useApp();
-  const go = () => navigate("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from: "learn-search" });
+  // R20-B2b：外部作业行此前直接 navigate 站内详情（漏接：外部源没有站内详情记录）。
+  // 统一收敛到 openHomeworkRow 三态分流（雨课堂参数齐备 → 原生详情；其余外部源 →
+  // R20-A 通道；内部作业 → 站内详情），与全部作业/课程详情/今日页同一口径。
+  const go = () => openHomeworkRow(h, { navigate, from: "learn-search", courseName });
   const chip = homeworkChip(h);
   return (
     <div

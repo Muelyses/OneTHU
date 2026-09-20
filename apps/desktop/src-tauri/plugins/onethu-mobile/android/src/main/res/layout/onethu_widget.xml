@@ -2,7 +2,7 @@
 <!--
   桌面小组件布局（RemoteViews 受限控件集：LinearLayout / TextView / ImageView）。
 
-  JS 侧算好快照（标题 / 至多三行条目 / 脚注）后推到原生，这里只负责摆位置——
+  JS 侧算好快照（标题 / 至多五行条目 / 脚注）后推到原生，这里只负责摆位置——
   小组件进程里没有 WebView，也没有会话，任何需要网络或解析的逻辑都不在这里做。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -46,6 +46,26 @@
 
     <TextView
         android:id="@+id/onethu_widget_row3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textColor="#0F1115" />
+
+    <TextView
+        android:id="@+id/onethu_widget_row4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textColor="#0F1115" />
+
+    <TextView
+        android:id="@+id/onethu_widget_row5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"

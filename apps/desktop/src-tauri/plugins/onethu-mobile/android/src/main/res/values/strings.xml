@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="onethu_widget_desc">课程与截止，或你收藏的内容</string>
+    <string name="onethu_widget_shortcut_label">OneTHU · 快捷方式 1×1</string>
+    <string name="onethu_widget_shortcut_desc">一个功能页或收藏原子的桌面快捷方式</string>
+    <string name="onethu_widget_icon_desc">原子图标</string>
     <string name="onethu_widget_label">OneTHU · 标准 3×2</string>
     <string name="onethu_widget_square_label">OneTHU · 方块 2×2</string>
     <string name="onethu_widget_narrow_label">OneTHU · 窄条 2×1</string>

@@ -38,6 +38,17 @@
              四者共用同一套布局与同一份快照，只是初始占位不同；放置后仍可自由拖动改尺寸
              （见 OnethuWidget.kt 的 rowBudget：行数按实际高度决定）。 -->
         <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShortcut"
+            android:label="@string/onethu_widget_shortcut_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_shortcut_info" />
+        </receiver>
+        <receiver
             android:name="app.onethu.mobile.OnethuWidgetProvider"
             android:label="@string/onethu_widget_label"
             android:exported="true">
@@ -117,6 +128,15 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/onethu_widget_slot3_info" />
         </receiver>
+
+        <!-- 小组件配置入口：放置时系统拉起它，它把「配哪一块」记成落点再拉起应用。
+             exported=true 是必须的——拉起方是启动器（另一个 UID）；activity 本身不显示界面。 -->
+        <activity
+            android:name="app.onethu.mobile.OnethuWidgetConfigActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay" />
 
         <!-- 点击落点广播（小组件与通知共用）：PendingIntent 里跑不了代码，
              先落到这里存 target 再拉起 App。exported=false：只由本应用的 PendingIntent 触发。 -->

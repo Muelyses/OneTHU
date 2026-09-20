@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  宿主小组件「1×1 快捷方式」的元信息（初始占位 1 列 × 1 行）。
+
+  形态对标桌面快捷方式（图标 + 名称），内容由用户绑定：某个功能页 / 某个收藏原子。
+  与其他形态共用同一份实例内容与同一套渲染，只是初始占位最小；放置后仍可拖大，
+  拖大后同一份内容会按占位改画（图标居中、可显示副标题）。
+
+  - android:configure：放置时先拉起配置活动（转发到应用里的选择层）。
+  - minResize 与初始占位一致：1×1 是这套形态的下界。
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
+    android:minResizeWidth="40dp"
+    android:minResizeHeight="40dp"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/onethu_widget_shortcut"
+    android:configure="app.onethu.mobile.OnethuWidgetConfigActivity"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/onethu_widget_shortcut_desc" />

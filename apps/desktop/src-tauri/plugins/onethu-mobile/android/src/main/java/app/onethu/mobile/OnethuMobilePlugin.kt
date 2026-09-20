@@ -64,7 +64,8 @@ class OpenWebModalArgs {
     lateinit var url: String
 }
 
-/** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释） */
+/** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释）：
+ *  `{ "instances": { "<appWidgetId>": {…} }, "slots": { "1": {…} } }` */
 @InvokeArg
 class WidgetPushArgs {
     lateinit var snapshot: String
@@ -506,12 +507,53 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             val args = invoke.parseArgs(WidgetPushArgs::class.java)
             val ctx = activity.applicationContext
             // 校验一次 JSON：坏快照宁可不写，也不能让小组件渲染时崩
-            JSONObject(args.snapshot)
-            WidgetStore.save(ctx, args.snapshot)
+            val root = JSONObject(args.snapshot)
+            // 宿主家族按实例（appWidgetId）各存一份内容；插件槽位仍是全局一份
+            val instances = root.optJSONObject("instances")
+            val live = mutableSetOf<Int>()
+            if (instances != null) {
+                for (key in instances.keys()) {
+                    val id = key.toIntOrNull() ?: continue
+                    live.add(id)
+                    WidgetStore.saveInstance(ctx, id, instances.getJSONObject(key).toString())
+                }
+            }
+            root.optJSONObject("slots")?.let { WidgetStore.saveSlots(ctx, it.toString()) }
+            // 已被移除的小组件：顺手清掉它的内容（否则 appWidgetId 复用时会串内容）
+            WidgetStore.pruneInstances(ctx, live)
             activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "push-failed"))
+        }
+    }
+
+    /** 桌面上每一块宿主机小组件的清单：id / provider / 占位宽高。
+     *  应用据此为「每一块」算内容——内容绑定在实例上，就必须先知道有哪些实例。 */
+    @Command
+    fun widgetInstances(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            val manager = AppWidgetManager.getInstance(ctx)
+            val out = JSONArray()
+            if (manager != null) {
+                for (cls in OnethuBaseWidget.hostProviders()) {
+                    for (id in manager.getAppWidgetIds(ComponentName(ctx, cls))) {
+                        val (w, h) = OnethuBaseWidget.sizeOf(manager, id)
+                        out.put(
+                            JSObject()
+                                .put("id", id)
+                                .put("provider", cls.simpleName)
+                                .put("w", w)
+                                .put("h", h)
+                                .put("bound", WidgetStore.loadInstance(ctx, id) != null)
+                        )
+                    }
+                }
+            }
+            invoke.resolve(JSObject().put("ok", true).put("instances", out))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "instances-failed"))
         }
     }
 
@@ -530,9 +572,9 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 // 宿主有四种形态，桌面上的数量要累加（任一形态放置都算「宿主已放置」）
                 if (key == null) host += n else slots.put(key, n)
             }
-            val snap = WidgetStore.load(ctx)
+            val snap = WidgetStore.loadSlots(ctx)
             val slotContent = JSONObject()
-            snap?.optJSONObject("slots")?.let { s ->
+            snap?.let { s ->
                 for (k in s.keys()) slotContent.put(k, s.optJSONObject(k)?.optString("title").orEmpty())
             }
             // 系统侧到底登记了哪几个小组件 provider：这正是「选择器里看不到小组件」的第一现场

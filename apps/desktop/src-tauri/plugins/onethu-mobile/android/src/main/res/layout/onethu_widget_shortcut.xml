@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  1×1 快捷方式小组件布局（RemoteViews 受限控件集）。
+
+  形态对标桌面快捷方式：一个图标 + 一行名称，点开直达对应功能页/原子。
+  图标不是原生资源，而是应用在前台把原子图标栅格化成 PNG（data URL）随快照推来的——
+  小组件进程里既没有 WebView 也拿不到插件的 SVG。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/onethu_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/onethu_widget_bg"
+    android:padding="6dp">
+
+    <ImageView
+        android:id="@+id/onethu_widget_icon"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/onethu_widget_icon_desc" />
+
+    <TextView
+        android:id="@+id/onethu_widget_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="11sp"
+        android:textColor="#0F1115" />
+</LinearLayout>

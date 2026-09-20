@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
-import { explainNetworkError } from "../lib/transport.js";
+import { explainNetworkError, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
 import {
   buildZipTree,
@@ -365,7 +365,8 @@ type ReadyView =
 
 type Phase =
   | { s: "loading" }
-  | { s: "error"; msg: string }
+  /** msg = 给人看的话；raw = 原生/网络的原话（同一句话就不重复显示） */
+  | { s: "error"; msg: string; raw?: string }
   | { s: "ready"; view: ReadyView };
 
 /** 按扩展名（辅以 mime 兜底）把抓到的二进制路由成可渲染视图 */
@@ -758,7 +759,8 @@ export function FilePreviewHost() {
         setPhase({ s: "ready", view });
       } catch (err) {
         if (!alive) return;
-        setPhase({ s: "error", msg: errMsg(err) });
+        const raw = rawErrorText(err).trim();
+        setPhase({ s: "error", msg: errMsg(err), raw: raw && raw !== errMsg(err) ? raw : undefined });
       }
     })();
     return () => {
@@ -856,6 +858,11 @@ export function FilePreviewHost() {
           {phase.s === "error" ? (
             <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
               <Empty text={`预览加载失败：${phase.msg}`} />
+              {phase.raw ? (
+                <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", maxWidth: 640, textAlign: "center", overflowWrap: "anywhere" }}>
+                  原生返回：{phase.raw}
+                </div>
+              ) : null}
               <div style={{ display: "flex", gap: 8 }}>
                 <button className="btn" onClick={retry}>重试</button>
                 <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>

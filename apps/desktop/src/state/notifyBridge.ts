@@ -60,6 +60,40 @@ export async function openNotifySettings(what: "channels" | "exact-alarm" | "app
   }
 }
 
+/** 排一批通知（载荷字段与原生契约一致：id/at/title/body/channel/target） */
+export async function scheduleNotifications(
+  items: Array<{ id: string; at: number; title: string; body: string; channel?: string; target?: string }>,
+): Promise<{ ok: boolean; scheduled: number; reason?: string }> {
+  try {
+    const raw = (await invoke<Record<string, unknown>>("notify_schedule", {
+      items: JSON.stringify(items.map((x) => ({ channel: "briefing", target: "", ...x }))),
+    })) as { scheduled?: number; reason?: string };
+    const scheduled = Number(raw?.scheduled ?? 0);
+    return { ok: scheduled === items.length && items.length > 0, scheduled, reason: typeof raw?.reason === "string" ? raw.reason : undefined };
+  } catch (e) {
+    return { ok: false, scheduled: 0, reason: String(e).slice(0, 120) };
+  }
+}
+
+/** 系统侧待投递的通知 id（含插件通知） */
+export async function fetchPendingIds(): Promise<string[]> {
+  try {
+    const raw = (await invoke<{ ids?: string[] }>("notify_pending")) ?? {};
+    return Array.isArray(raw.ids) ? raw.ids : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function cancelNotifications(ids: string[]): Promise<void> {
+  if (!ids.length) return;
+  try {
+    await invoke("notify_cancel", { ids: JSON.stringify(ids) });
+  } catch {
+    /* 撤销失败无害：下一轮对齐会再撤一次 */
+  }
+}
+
 /** 立即发一条测试通知 */
 export async function sendTestNotification(): Promise<boolean> {
   try {

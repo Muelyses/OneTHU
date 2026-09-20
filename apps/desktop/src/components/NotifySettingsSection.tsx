@@ -11,8 +11,13 @@ import { useEffect, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Switch } from "./Layout.js";
 import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.js";
-import { fetchNotifyStatus, openNotifySettings, sendTestNotification, type NativeNotifyStatus } from "../state/notifyBridge.js";
+import {
+  cancelNotifications, fetchNotifyStatus, fetchPendingIds, openNotifySettings,
+  scheduleNotifications, sendTestNotification, type NativeNotifyStatus,
+} from "../state/notifyBridge.js";
+import { fetchWidgetStatus } from "../state/widgetBridge.js";
 import { notifyHint } from "../state/notifyStatus.js";
+import { runNotifyDoctor, type DoctorReport } from "../state/notifyDoctor.js";
 import { ensureNotifyRuntime } from "../state/notifySources.js";
 import type { NotifyPlanItem, NotifySettings } from "../state/notifyPlan.js";
 
@@ -51,6 +56,7 @@ export function NotifySettingsSection(): ReactNode {
   const [plan, setPlan] = useState<NotifyPlanItem[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [report, setReport] = useState<DoctorReport | null>(null);
 
   const patch = (p: Partial<NotifySettings>): void => {
     const next = saveNotifySettings(p);
@@ -100,6 +106,25 @@ export function NotifySettingsSection(): ReactNode {
     granted: status?.granted === true,
     exact: status?.exact !== false,
   });
+
+  /** 一键自检：逐层探（后端/授权/精确提醒/小组件/排程回读/真实投递），给出可贴回的结论 */
+  const onDiagnose = async (): Promise<void> => {
+    setBusy(true);
+    try {
+      const r = await runNotifyDoctor({
+        status: fetchNotifyStatus,
+        scheduleProbe: (probe) => scheduleNotifications([{ ...probe, channel: "briefing", target: "" }]),
+        pending: fetchPendingIds,
+        cancel: cancelNotifications,
+        testSend: sendTestNotification,
+        widgetStatus: fetchWidgetStatus,
+      });
+      setReport(r);
+      setMsg(null);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <>
@@ -186,6 +211,9 @@ export function NotifySettingsSection(): ReactNode {
           <button className="btn" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>
             试一下
           </button>
+          <button className="btn btn-ghost" disabled={busy} title="逐层检查：后端 / 授权 / 精确提醒 / 小组件 / 排程回读 / 真实投递" onClick={() => void onDiagnose()}>
+            {busy ? "检查中…" : "自检"}
+          </button>
           {hint.action ? (
             <button
               className="btn btn-ghost"
@@ -231,6 +259,26 @@ export function NotifySettingsSection(): ReactNode {
           立即应用
         </button>
       </div>
+
+      {report ? (
+        <div style={{ padding: "8px 2px", borderTop: "1px solid var(--border-soft)", marginTop: 6 }}>
+          <div style={{ fontSize: "var(--text-sm)", fontWeight: 500, color: report.ok ? "var(--text-1)" : "var(--red)", marginBottom: 6 }}>
+            {report.summary}
+          </div>
+          {report.steps.map((st) => (
+            <div key={st.id} style={{ display: "flex", gap: 8, fontSize: "var(--text-xs)", lineHeight: "18px", marginTop: 3 }}>
+              <span style={{ flex: "none", width: 54, color: st.status === "fail" ? "var(--red)" : st.status === "warn" ? "var(--amber)" : "var(--green)" }}>
+                {st.status === "fail" ? "不通过" : st.status === "warn" ? "提示" : "通过"}
+              </span>
+              <span style={{ flex: "none", width: 76, color: "var(--text-2)" }}>{st.label}</span>
+              <span style={{ color: "var(--text-3)", minWidth: 0 }}>{st.detail}</span>
+            </div>
+          ))}
+          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 6 }}>
+            自检会把这段结果贴给我即可定位（含「探针清理」说明自检没有留下垃圾通知）。
+          </div>
+        </div>
+      ) : null}
 
       {msg ? (
         <div style={{ fontSize: "var(--text-sm)", color: "var(--text-3)", padding: "6px 2px" }}>{msg}</div>

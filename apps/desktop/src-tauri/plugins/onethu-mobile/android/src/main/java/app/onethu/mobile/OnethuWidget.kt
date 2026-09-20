@@ -99,6 +99,14 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             OnethuWidgetSlot3::class.java,
         )
 
+        /** 槽位键 → provider 类（诊断与刷新共用；null = 宿主小组件） */
+        fun providerEntries(): List<Pair<String?, Class<*>>> = listOf(
+            null to OnethuWidgetProvider::class.java,
+            "1" to OnethuWidgetSlot1::class.java,
+            "2" to OnethuWidgetSlot2::class.java,
+            "3" to OnethuWidgetSlot3::class.java,
+        )
+
         /** App 前台刷新快照后调用：让所有已放置的小组件立刻重画（不等系统 30 分钟轮询） */
         fun refreshAll(ctx: Context) {
             val manager = AppWidgetManager.getInstance(ctx) ?: return

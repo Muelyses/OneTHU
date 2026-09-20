@@ -14,9 +14,11 @@ package app.onethu.mobile
 
 import android.Manifest
 import android.app.Activity
+import android.appwidget.AppWidgetManager
 import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
+import android.content.ComponentName
 import android.content.Intent
 import android.provider.Settings
 import android.content.pm.PackageManager
@@ -510,6 +512,38 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "push-failed"))
+        }
+    }
+
+    /** 小组件落地状态：桌面上放了几个、每个槽位几个、快照时间与槽位内容。
+     *  存在的意义是把「用户说没看到」变成可查的数字——自检链路要用。 */
+    @Command
+    fun widgetStatus(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            val manager = AppWidgetManager.getInstance(ctx)
+            var host = 0
+            val slots = JSONObject()
+            for ((key, cls) in OnethuBaseWidget.providerEntries()) {
+                val n = manager?.getAppWidgetIds(ComponentName(ctx, cls))?.size ?: 0
+                if (key == null) host = n else slots.put(key, n)
+            }
+            val snap = WidgetStore.load(ctx)
+            val slotContent = JSONObject()
+            snap?.optJSONObject("slots")?.let { s ->
+                for (k in s.keys()) slotContent.put(k, s.optJSONObject(k)?.optString("title").orEmpty())
+            }
+            invoke.resolve(
+                JSObject()
+                    .put("ok", true)
+                    .put("hostPlaced", host)
+                    .put("slotsPlaced", slots)
+                    .put("hasSnapshot", snap != null)
+                    .put("snapshotAt", snap?.optLong("updatedAt") ?: 0L)
+                    .put("slotTitles", slotContent)
+            )
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "widget-status-failed"))
         }
     }
 

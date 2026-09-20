@@ -517,7 +517,7 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `nav.openAtom(ref)` | `nav` | 打开一个原子（等价用户点收藏夹里那一项：跳功能页 / 切聚合页页签 / 打开官方服务页）；解析不出返回 `false`，不会跳空白页。见 §20 |
 | `nav.usage(limit?)` | `nav` | 本机使用统计：`{total, kinds, top[], recent[]}`（每项含 `kind`/`key`/`title`/`n`/`last`，可直接交给 `nav.openAtom`）。只有本机点击记录，不含任何校园数据；缺省 10 条、上限 30 |
 | `nav.clearUsage()` | `nav` | 清空本机使用统计（用户主动要求时用；**不影响收藏夹**） |
-| `services.search(query, limit?)` | `info:read` | 检索在线服务（服务大厅）目录，返回 `{id,name,department,url}[]`；**会发校园请求**（先校验会话再取目录），只在 `nav.searchAtoms` 本机命中为空时才该调用。容忍口语简称：「亲友预约」能命中「亲友来访预约」。结果顺带写回本机原子缓存 |
+| `services.search(query, limit?)` | `info:read` | 检索在线服务（服务大厅）目录，返回 `{id,name,department,url,score}[]`；**会发校园请求**（先校验会话再取目录），只在 `nav.searchAtoms` 本机命中为空时才该调用。容忍口语简称：「亲友预约」≥40 命中「亲友来访预约」；换了后半截的（「亲友预约」↔「亲友入校报备」）以 20~39 分进候选。结果顺带写回本机原子缓存 |
 | `services.open(service)` | `info:read` | 在应用内打开服务官方页（桌面独立窗口 / Android 全屏 WebView，与主窗口共享登录态）；`url` 需来自 `search`；打不开返回 `false` |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
@@ -620,3 +620,18 @@ const reply = (await res.json()).choices[0].message.content;
 1. **统计绝不改写收藏夹**。收藏是用户的显式意图；推荐只是入口，收纳与否由用户按星号。
 2. 统计只在本机，含的是「点过什么」，不含成绩、课程内容等任何校园数据；插件要读
    必须声明 `nav` 权限，且用户可以一键清空（`nav.clearUsage`）。
+
+### 20.2 服务名打分（`services.search` 的 `score`）
+
+分数档位（实现与测试在 `apps/desktop/src/lib/serviceMatch.ts` + `tools/service-match-test.mjs`）：
+
+| 分数 | 含义 | 调用方该怎么用 |
+|---|---|---|
+| 100 | 完全相等 | 直接打开 |
+| 80 ~ 95 | 名字包含查询 | 直接打开 |
+| 70 | 查询包含名字（用户说得更长） | 直接打开 |
+| 40 ~ 60 | 子序列命中（省字，顺序一致） | 直接打开（`SERVICE_CONFIDENT` 线） |
+| 20 ~ 35 | 近似（最长公共子串 ≥2 中文字） | **只作候选**：先让用户确认叫法 |
+| 0 | 不匹配 | 当作没有 |
+
+这条把握线是给「宁可不跳、也不跳错」用的：跳错一个官方页比多问一句贵得多。

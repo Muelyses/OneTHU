@@ -596,7 +596,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           .filter((x) => x.score > 0)
           .sort((a, b) => b.score - a.score || a.s.name.length - b.s.name.length)
           .slice(0, n)
-          .map(({ s }) => ({ id: s.id, name: s.name, department: s.department, url: s.url }));
+          .map(({ s, score }) => ({ id: s.id, name: s.name, department: s.department, url: s.url, score }));
       },
       /** 应用内打开服务官方页：与用户点在线服务那一条完全同一条链路（同一登录态） */
       open: async (service: { id?: string; name?: string; url?: string }) => {

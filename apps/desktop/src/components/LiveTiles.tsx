@@ -10,7 +10,7 @@
  * key 解码用本地 split（与 atoms.dec 同一 ~ 分隔语义），避免 atoms ↔ 本件循环引用。
  */
 import { useEffect, useState } from "react";
-import { getWasherDevices } from "@onethu/core";
+import { getWasherDevices, washerCacheSuffix, washerProviderOf } from "@onethu/core";
 import { useApp } from "../state/context.js";
 import { cacheGet, cacheFetch } from "../state/cache.js";
 import { universalFetch } from "../lib/transport.js";
@@ -65,6 +65,7 @@ function StatusLine({ live, loading }: { live: Live | null; loading: boolean }):
 export function WasherTileStatus({ atomKey }: { atomKey: string }): React.ReactNode {
   const { status } = useApp();
   const [bId, bName, hlsh, dev] = splitKey(atomKey);
+  const provider = washerProviderOf(hlsh);
   const [live, setLive] = useState<Live | null>(null);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -75,8 +76,8 @@ export function WasherTileStatus({ atomKey }: { atomKey: string }): React.ReactN
     }
     let alive = true;
     setLoading(true);
-    fetchFresh("fav.washer." + bId + "." + (hlsh === "1" ? "h" : "j"), WASHER_TTL, () =>
-      getWasherDevices(universalFetch, { id: bId, name: bName ?? "", hlsh: hlsh === "1" }),
+    fetchFresh("fav.washer." + bId + "." + washerCacheSuffix(hlsh), WASHER_TTL, () =>
+      getWasherDevices(universalFetch, { id: bId ?? "", name: bName ?? "", provider }),
     )
       .then((floors) => {
         if (!alive) return;
@@ -87,6 +88,9 @@ export function WasherTileStatus({ atomKey }: { atomKey: string }): React.ReactN
         else if (w.status === "idle") setLive({ text: "空闲", tone: "ok" });
         else if (w.status === "working")
           setLive({ text: w.eta > 0 ? "使用中 · 剩 " + w.eta + " 分钟" : "使用中", tone: "busy" });
+        else if (w.status === "standby") setLive({ text: "待机", tone: "muted" });
+        else if (w.status === "offline") setLive({ text: "离线", tone: "muted" });
+        else if (w.status === "error") setLive({ text: "故障", tone: "bad" });
         else setLive({ text: "状态未知", tone: "muted" });
         setLoading(false);
       })
@@ -98,7 +102,7 @@ export function WasherTileStatus({ atomKey }: { atomKey: string }): React.ReactN
     return () => {
       alive = false;
     };
-  }, [status, bId, bName, hlsh, dev]);
+  }, [status, bId, bName, hlsh, provider, dev]);
   return <StatusLine live={live} loading={loading} />;
 }
 

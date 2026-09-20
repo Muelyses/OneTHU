@@ -77,6 +77,9 @@ export interface LearnNav {
   /** 楼栋展示名兜底（原子 key 里自带，列表未就绪时也能显示） */
   washerBuildingName?: string;
   /** 楼栋是否海乐生活点位（key 自带） */
+  /** 洗衣机楼栋所属数据源（"0" 捷利 / "1" 海乐生活 / "2" 小兰智慧）；缺省按捷利 */
+  washerBuildingProvider?: string;
+  /** @deprecated 旧深链只带布尔（true = 海乐生活）：保留读取，新的都走 washerBuildingProvider */
   washerBuildingHlsh?: boolean;
   /** 洗衣机：楼内要高亮滚动的设备名 */
   washerMachine?: string;

@@ -113,9 +113,14 @@ export type { KongjianSpace, KongjianSlot, KongjianPage, KongjianRecord } from "
 export { VALID_RECEIPT_TITLES, sportsIdInfoList } from "./info/sports.js";
 export { ClassroomStatus } from "./info/types.js";
 
-// 洗衣机（thu-info-app washer.tsx 移植：捷利 + 海乐生活公开接口，无需校内会话）
-export { getWasherBuildingGroups, getWasherDevices } from "./info/washer.js";
-export type { WasherBuilding, WasherBuildingGroup, WasherDevice } from "./info/washer.js";
+// 洗衣机（thu-info-app 移植：捷利 + 海乐生活 + 小兰智慧公开接口，无需校内会话）
+export {
+  getWasherBuildingGroups, getWasherDevices, compareWasherNames, xiaolanStatus,
+  washerProviderCode, washerProviderOf, washerCacheSuffix, WASHER_PROVIDER_LABEL,
+} from "./info/washer.js";
+export type {
+  WasherBuilding, WasherBuildingGroup, WasherDevice, WasherProvider, WasherStatus,
+} from "./info/washer.js";
 
 // 订水（thu-info-app network/water.ts 移植：清华水站公开接口）
 export {

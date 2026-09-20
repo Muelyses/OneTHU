@@ -11,7 +11,7 @@
  *   · 抓不到就不写（老实用静态说明），绝不在桌面上编一个状态；
  *   · 与 LiveTiles 共用缓存键：同一楼栋/教室，方卡抓过的小组件直接用，不重复请求。
  */
-import { getWasherDevices } from "@onethu/core";
+import { getWasherDevices, washerCacheSuffix, washerProviderOf } from "@onethu/core";
 import { cacheGet, cacheFetch } from "./cache.js";
 import { universalFetch } from "../lib/transport.js";
 import { info } from "../lib/clients.js";
@@ -50,11 +50,12 @@ export async function warmLiveData(refs: AtomRef[], timeoutMs = 6000): Promise<v
     if (ref.kind === "washer-m" || ref.kind === "washer-b") {
       const [bId, bName, hlsh] = splitKey(ref.key);
       if (!bId) continue;
-      const key = `fav.washer.${bId}.${hlsh === "1" ? "h" : "j"}`;
+      const key = `fav.washer.${bId}.${washerCacheSuffix(hlsh)}`;
       if (seen.has(key)) continue;
       seen.add(key);
       jobs.push(
-        fetchFresh(key, WASHER_TTL, () => getWasherDevices(universalFetch, { id: bId, name: bName ?? "", hlsh: hlsh === "1" }))
+        fetchFresh(key, WASHER_TTL, () =>
+          getWasherDevices(universalFetch, { id: bId, name: bName ?? "", provider: washerProviderOf(hlsh) }))
           .catch(() => undefined),
       );
       continue;
@@ -118,7 +119,7 @@ export function liveDetail(ref: AtomRef, now = Date.now()): { rows: LiveRow[]; f
   if (ref.kind === "washer-m") {
     const [bId, bName, hlsh, dev] = splitKey(ref.key);
     if (!bId) return null;
-    const all = readWashers(`fav.washer.${bId}.${hlsh === "1" ? "h" : "j"}`);
+    const all = readWashers(`fav.washer.${bId}.${washerCacheSuffix(hlsh)}`);
     if (!all) return null;
     const hit = all.find((x) => (x.name || x.location || x.type || "设备") === dev);
     return hit ? washerMachineDetail(hit, all, bName ?? "本楼") : null;
@@ -128,7 +129,7 @@ export function liveDetail(ref: AtomRef, now = Date.now()): { rows: LiveRow[]; f
   if (ref.kind === "washer-b") {
     const [bId, bName, hlsh] = splitKey(ref.key);
     if (!bId) return null;
-    const all = readWashers(`fav.washer.${bId}.${hlsh === "1" ? "h" : "j"}`);
+    const all = readWashers(`fav.washer.${bId}.${washerCacheSuffix(hlsh)}`);
     return all && all.length ? washerBuildingDetail(all, bName ?? "本楼") : null;
   }
 

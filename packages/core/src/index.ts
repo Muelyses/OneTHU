@@ -225,3 +225,6 @@ export {
   knownNameMappings, resetPseudoMappings,
   PSEUDO_NAMES, GRADE_SCALE,
 } from "./privacy/desensitize.js";
+
+// 二级课表格子 id 解析（a{session}_{day}，口径与 info app parseScript 一致）
+export { parseCellAnchor } from "./zhjwxk/anchor.js";

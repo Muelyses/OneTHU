@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
+import { isAndroidHost } from "../lib/yktWebview.js";
 import { normalizeWebvpnUrl } from "@onethu/core";
 import { explainNetworkError, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
@@ -163,8 +164,18 @@ const ZIP_EXTS = new Set(["zip", "jar"]);
 const OFFICE_EXTS = new Set(["docx", "xlsx", "pptx"]);
 /** 文本/zip 解码上限：超过则引导下载（防止 atob 大文件卡 UI） */
 const DECODE_LIMIT = 20 * 1024 * 1024;
-/** 预览抓取上限：再大就不走 IPC（base64 回传会把 WebView 拖死），直接引导下载 */
+/** 预览抓取上限：再大就不走 IPC（base64 回传会把 WebView 拖死），直接引导下载。
+ *  上限按宿主分档：桌面 48MB；**安卓 WebView 收紧到 10MB**——二进制要以 base64
+ *  经 IPC 回传，20MB 的 PDF 就是 ~27MB 字符串，安卓侧会卡死/白屏（用户实录
+ *  2026-09-20「手机端 PDF 预览坏了，其他都行」）。宁可早拒并给出「下载/另存为/
+ *  系统应用」的明确出路，也不要把 WebView 拖死。 */
 const PREVIEW_MAX_BYTES = 48 * 1024 * 1024;
+const PREVIEW_MAX_BYTES_ANDROID = 10 * 1024 * 1024;
+
+/** 当前宿主的预览上限（安卓收紧，见上） */
+function previewCap(): number {
+  return isAndroidHost ? PREVIEW_MAX_BYTES_ANDROID : PREVIEW_MAX_BYTES;
+}
 /** zip 内文本条目内联预览的大小上限 */
 const ZIP_TEXT_LIMIT = 200 * 1024;
 /** xlsx 单表最多渲染的行/列数（超出提示截断） */
@@ -234,12 +245,12 @@ async function fetchBinary(url: string): Promise<FetchedBinary> {
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
   const { invoke } = await import("@tauri-apps/api/core");
-  // 预览上限与超时都放大：二进制要以 base64 经 IPC 回传，默认 8MB/12s 是给正文图片的，
-  // 课件 PDF/Office 常常几十 MB、几秒起步——用图片的参数去看文件必然「有些文件打不开」。
+  // 预览上限与超时按文件预览调（默认 8MB/12s 是给正文图片的）：桌面放宽到 48MB，
+  // 安卓因 base64 IPC 限制收紧到 10MB（见 PREVIEW_MAX_BYTES_ANDROID 注释）。
   const out = await invoke<{ mime: string; data: string }>("fetch_binary", {
     url: target,
     cookies: jarCookies,
-    maxBytes: PREVIEW_MAX_BYTES,
+    maxBytes: previewCap(),
     timeoutSecs: 60,
   });
   const mime = (out.mime || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";

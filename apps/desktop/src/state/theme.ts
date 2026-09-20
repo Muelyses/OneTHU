@@ -503,3 +503,15 @@ export function themeSchedule(): { followSystem: boolean; dayThemeId: string | n
 export function hasTheme(id: string): boolean {
   return state.installed.some((t) => t.id === id);
 }
+
+/** 当前是否深色主题（内嵌 WebView 据此开启算法暗化：官方页自带黑字在深色下会隐形）。
+ *  以 documentElement 的 color-scheme 为唯一真源——它是 applyTheme 写下去的同一信号。 */
+export function currentThemeIsDark(): boolean {
+  try {
+    const root = document.documentElement;
+    if (root.style.colorScheme === "dark") return true;
+    return typeof getComputedStyle === "function" && getComputedStyle(root).colorScheme === "dark";
+  } catch {
+    return false;
+  }
+}

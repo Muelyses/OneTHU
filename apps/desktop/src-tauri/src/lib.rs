@@ -2520,7 +2520,7 @@ fn open_web_modal(url: String) -> Result<(), String> {
 
 #[cfg(mobile)]
 #[tauri::command]
-async fn open_web_modal(app: tauri::AppHandle, url: String) -> Result<(), String> {
+async fn open_web_modal(app: tauri::AppHandle, url: String, dark: Option<bool>) -> Result<(), String> {
     // scheme 白名单：非 http(s) 一律拒绝（Kotlin 侧再兜底一次）
     if !(url.starts_with("http://") || url.starts_with("https://")) {
         return Err(format!("拒绝在应用内 WebView 打开非 http(s) 链接: {url}"));
@@ -2532,7 +2532,12 @@ async fn open_web_modal(app: tauri::AppHandle, url: String) -> Result<(), String
     // 用户关闭（按钮 / 返回键）才 resolve，Dialog 生命周期即本次浏览；
     // async 版本等待，不阻塞工作线程（与 open_ykt_window 同款写法）。
     let _: serde_json::Value = handle
-        .run_mobile_plugin_async("openWebModal", serde_json::json!({ "url": url }))
+        .run_mobile_plugin_async(
+            "openWebModal",
+            // dark：应用当前是否深色主题 → Kotlin 侧开「算法暗化」，让官方页（THUbook/
+            // 在线服务）自带的黑字在深色下变白（2026-09-20 用户实录：字看不见）
+            serde_json::json!({ "url": url, "dark": dark.unwrap_or(false) }),
+        )
         .await
         .map_err(|e| e.to_string())?;
     Ok(())

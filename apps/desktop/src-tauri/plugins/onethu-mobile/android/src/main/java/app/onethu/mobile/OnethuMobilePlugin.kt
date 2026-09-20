@@ -36,6 +36,7 @@ import androidx.activity.result.ActivityResult
 import app.tauri.annotation.ActivityCallback
 import android.webkit.CookieManager
 import android.webkit.WebView
+import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import app.tauri.annotation.Command
@@ -68,6 +69,9 @@ class OpenWebModalArgs {
     /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
+    /** 应用当前是否深色主题（2026-09-20）：true 时对 WebView 开启「算法暗化」——
+     *  官方页（THUbook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
+    var dark: Boolean = false
 }
 
 /** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释）：
@@ -387,9 +391,10 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 web.webViewClient = WebViewClient()
 
                 // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显
+                val chromeBg = Color.WHITE
                 val root = LinearLayout(activity).apply {
                     orientation = LinearLayout.VERTICAL
-                    setBackgroundColor(Color.WHITE)
+                    setBackgroundColor(chromeBg)
                 }
                 root.addView(
                     web,
@@ -503,13 +508,31 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 web.settings.setSupportZoom(true)
                 web.settings.builtInZoomControls = true
                 web.settings.displayZoomControls = false
+                // 深色主题（2026-09-20）：官方页自带配色不跟随应用主题，深色下正文是黑字。
+                // 走 WebView 的「算法暗化」（AndroidX WebKit 官方推荐）把整页转深色、
+                // 正文转白；旧 WebView 退回 FORCE_DARK_ON 分支。
+                if (args.dark) {
+                    web.setBackgroundColor(Color.parseColor("#111315"))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        try {
+                            // 平台算法暗化：整页转深色、正文转白。不用 androidx.webkit
+                            // 的 WebSettingsCompat —— 插件模块没有该依赖（会 Unresolved
+                            // reference）。API 29+ 覆盖全部目标机型（用户机 Android 12+）。
+                            @Suppress("DEPRECATION")
+                            web.settings.forceDark = WebSettings.FORCE_DARK_ON
+                        } catch (_: Throwable) {
+                            /* 个别内核禁用该开关：至少背景已是深色 */
+                        }
+                    }
+                }
                 // 只读浏览：不设 JavascriptInterface、不注入初始化脚本
                 web.webViewClient = WebViewClient()
 
                 // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显（R18b 同款）
+                val chromeBg = if (args.dark) Color.parseColor("#111315") else Color.WHITE
                 val root = LinearLayout(activity).apply {
                     orientation = LinearLayout.VERTICAL
-                    setBackgroundColor(Color.WHITE)
+                    setBackgroundColor(chromeBg)
                 }
                 root.addView(
                     web,
@@ -519,7 +542,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
                     setPadding(24, 16, 24, 16)
-                    setBackgroundColor(Color.WHITE)
+                    setBackgroundColor(chromeBg)
                 }
                 val browserBtn = Button(activity).apply {
                     text = "在系统浏览器打开"
@@ -528,8 +551,8 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 }
                 val closeBtn = Button(activity).apply {
                     text = "关闭"
-                    setTextColor(Color.parseColor("#1F2329"))
-                    setBackgroundColor(Color.parseColor("#E5E5E5"))
+                    setTextColor(if (args.dark) Color.parseColor("#E8E8E8") else Color.parseColor("#1F2329"))
+                    setBackgroundColor(if (args.dark) Color.parseColor("#2A2D31") else Color.parseColor("#E5E5E5"))
                 }
                 val browserLp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 browserLp.marginEnd = 16

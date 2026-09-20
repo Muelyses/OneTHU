@@ -11,6 +11,7 @@ import { PluginPermissionError, type OnethuApi, type PluginPermission } from "./
 
 import { invoke } from "@tauri-apps/api/core";
 import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listThemes, themeSchedule } from "../state/theme.js";
+import { currentThemeIsDark } from "../state/theme.js";
 import { refreshExtHw } from "../state/exthw.js";
 import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
 import { AuthRequiredError } from "@onethu/core";
@@ -537,7 +538,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       webModal: async (url: string): Promise<void> => {
         gate(perms, "webview", "ui.webModal");
         if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
-        await invoke("open_web_modal", { url });
+        await invoke("open_web_modal", { url, dark: currentThemeIsDark() });
       },
       /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式。 */
       confirm: async (msg: string, opts?: { danger?: boolean }): Promise<boolean> => {

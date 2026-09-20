@@ -68,9 +68,11 @@ export interface ExternalHomework {
   graded?: boolean;
   /** 是否旁听课堂（雨课堂 courses/list `role===6`；role 5=正式、未知 role 不标，保守） */
   audited?: boolean;
-  /** 考试得分（仅已提交且已出分；未提交/未出分不设，避免 0 分误导） */
+  /** 得分（仅已提交且已出分/已批改时设置，避免误导性显示为 0 分）：
+   *  考试 = /v/exam/cover 的 result.score（R9）；已批改作业 = 已批改题 my_score 合计（R20-B3） */
   score?: number;
-  /** 考试卷面满分（与 score 成对出现；取自 /v/exam/cover 的 total_score） */
+  /** 卷面满分（与 score 成对出现）：考试 = /v/exam/cover 的 total_score；
+   *  已批改作业 = 题面 content.score 合计（R20-B3；题面分值全缺失时不设） */
   totalScore?: number;
   /** R20-B2：雨课堂作业详情参数 leaf_type_id（get_exercise_list 路径段；仅 yuketang 源设置，
    *  其余源恒缺省）。移动端原生详情页（YktAssignmentDetailPage）据此拉整卷明细。 */

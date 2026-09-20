@@ -10,6 +10,8 @@
  *   （2026-09-19 实测攻克，判定见 docs 十三节）
  * - 已批改（R16 21.1，2026-09-19 实测判别器）：作业 `problems[].user.status` 4=已批改 /
  *   3=已交未批，`user.my_score` -1 为未批占位；试卷复用 /v/exam/cover 的已出分条件。
+ *   已批改作业分数（R20-B3）：同响应已含全部数据，status 4 题的 my_score 合计 +
+ *   content.score 合计（卷面满分），仅整卷已批改时透出（入口显示「已批改 · 30/40」）。
  * - 详情链接（R16b，学生端深链，无头浏览器实测 2026-09-19）：作业
  *   `…/ai-workspace/lms-graph/{classroom_id}/exercise/{leaf_id}?is_chapter=1`，
  *   试卷 `…/ai-workspace/lms-graph/{classroom_id}/quiz/{leaf_id}?is_chapter=1`；
@@ -226,7 +228,9 @@ interface YktItem {
   skuId?: string;
 }
 
-/** 单条提交状态查询结果（作业与试卷共用；score/totalScore 仅试卷已出分时给） */
+/** 单条提交状态查询结果（作业与试卷共用）。
+ *  score/totalScore：试卷已出分时给（R9）；作业仅整卷已批改时给（R20-B3，已批题有效分合计）。
+ *  未出分 / 未批改一律不设（避免 0 分误导）。 */
 interface YktStatusResult {
   submitted: boolean;
   submittedCount?: number;
@@ -235,6 +239,11 @@ interface YktStatusResult {
   totalScore?: number;
   /** 是否已批改（R16 21.1）；无法判定时不设（调用方按 false 处理） */
   graded?: boolean;
+}
+
+/** 分数求和去浮点尾差（0.1+0.2 型；分数量级实测最多两位小数，round 到百分位安全） */
+function roundScore(n: number): number {
+  return Math.round(n * 100) / 100;
 }
 
 /** `user.my_score` 是否为「未批改」占位（-1 / -1.00 / "-1.00" 等，R16 21.1 实测） */
@@ -296,6 +305,11 @@ async function mapLimited<T>(items: T[], limit: number, fn: (item: T) => Promise
  * 已批改（R16 21.1，保守）：已提交且不存在「已作答但未批改」的题；
  * 「已作答」= `user.my_answer.content` 非空或整卷 `answer_count>0`；
  * 「未批改」= `user.status === 3` 或 `user.my_score` 为 -1 占位（含 "-1.00"）。
+ * 分数（R20-B3，霖需求：已批改作业像考试一样在入口显示分数）：与详情同一响应里就有
+ * 全部数据，零额外请求 —— score = 已批改题（status 4 且非 -1 占位，真实 0 分照算）的
+ * my_score 合计，totalScore = 题面 content.score 合计；**仅整卷已批改（graded）时透出**
+ * （对齐试卷「已出分才给分」口径，未批改不显示）；无一题有有效分 → 不设 score（缺数据
+ * 不谎报 0）；卷面满分合计为 0（content.score 全缺失）→ 只给 score 不给 totalScore。
  * 仅用于作业（type 19）；试卷（type 20）改用 fetchYktExamStatus。
  */
 async function fetchYktStatus(
@@ -322,6 +336,10 @@ async function fetchYktStatus(
   const answerCount = typeof ac === "number" && Number.isFinite(ac) ? ac : 0;
   let answered = 0;
   let answeredUngraded = false;
+  // R20-B3：分数合计 —— score = 已批改题有效分求和；totalScore = 题面分值求和
+  let scoreSum = 0;
+  let scoreSeen = false;
+  let totalScoreSum = 0;
   for (const p of problems) {
     const user = (p["user"] ?? {}) as Record<string, unknown>;
     const my = (user["my_answer"] ?? {}) as Record<string, unknown>;
@@ -332,15 +350,30 @@ async function fetchYktStatus(
     if (answeredThis && (user["status"] === 3 || isUnscoredPlaceholder(user["my_score"]))) {
       answeredUngraded = true;
     }
+    // 题面分值（content.score；缺失/非数字不计入卷面满分）
+    const pcScore = toNum((p["content"] as Record<string, unknown> | undefined)?.["score"]);
+    if (pcScore !== undefined) totalScoreSum += pcScore;
+    // 已批改题的有效分：status 4 且非 -1 占位（真实 0 分照算）
+    if (user["status"] === 4) {
+      const ms = toNum(user["my_score"]);
+      if (ms !== undefined && !isUnscoredPlaceholder(user["my_score"])) {
+        scoreSum += ms;
+        scoreSeen = true;
+      }
+    }
   }
   const submitted = answerCount > 0 || answered > 0;
   const submittedCount = answered > 0 ? answered : answerCount;
+  // 无题目明细（problems 为空）时无法判定批改状态 → 保守 false
+  const graded = submitted && problems.length > 0 && !answeredUngraded;
   return {
     submitted,
     submittedCount: submittedCount > 0 ? submittedCount : undefined,
     totalCount: problems.length > 0 ? problems.length : undefined,
-    // 无题目明细（problems 为空）时无法判定批改状态 → 保守 false
-    graded: submitted && problems.length > 0 && !answeredUngraded,
+    graded,
+    // R20-B3：仅整卷已批改透分（未批改不显示，入口 UI 口径与考试一致）
+    ...(graded && scoreSeen ? { score: roundScore(scoreSum) } : {}),
+    ...(graded && scoreSeen && totalScoreSum > 0 ? { totalScore: roundScore(totalScoreSum) } : {}),
   };
 }
 

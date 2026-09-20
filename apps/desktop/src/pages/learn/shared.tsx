@@ -14,6 +14,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
 import { openHomeworkRow } from "../../lib/homeworkEntry.js";
+import { homeworkEntryScoreText } from "../../lib/yktDetail.js";
 import { Card } from "../../components/Layout.js";
 import { IconBell, IconChevron } from "../../components/Icons.js";
 import { CollectStar } from "../../components/Collect.js";
@@ -335,13 +336,8 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
   const chip = homeworkChip(h);
   // 已批改直接显示成绩（thu-app learnHome「已批改 (分数)」语义）：等级码经 gradeLabel 转文字
   const gradeScore = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
-  // 外部考试分数（R9）：已提交且已出分时显示「已提交 · 60/100」（对齐已批改语义）
-  const examScore =
-    h.submitted && h.score !== undefined
-      ? h.totalScore !== undefined
-        ? `${h.score}/${h.totalScore}`
-        : String(h.score)
-      : "";
+  // 外部源分数（R9 考试 + R20-B3 已批改雨课堂作业同口径）：已提交且带分 → 「已批改 · 30/40」
+  const examScore = homeworkEntryScoreText(h);
   const score = gradeScore || examScore;
   return (
     <div

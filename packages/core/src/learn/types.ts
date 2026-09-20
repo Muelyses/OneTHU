@@ -67,7 +67,8 @@ export interface Homework {
   kind?: "homework" | "exam";
   /** 外部作业所属课堂是否旁听（仅外部作业，透出自 ExternalHomework.audited） */
   audited?: boolean;
-  /** 外部考试得分 / 卷面满分（仅已提交且已出分的外部考试） */
+  /** 外部考试得分 / 卷面满分（仅已提交且已出分的考试；R20-B3 起已批改雨课堂作业同口径：
+   *  score = 已批改题得分合计、totalScore = 卷面满分；未批改不设 → 入口不显示） */
   score?: number;
   totalScore?: number;
   /** R20-B2：雨课堂原生详情页拉取参数 leaf_type_id（仅 yuketang 透出自

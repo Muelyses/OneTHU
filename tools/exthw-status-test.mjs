@@ -134,6 +134,10 @@ console.log("\n[雨课堂]");
             { type: 19, id: 21, title: "混合批改作业", classroom_id: 1, content: { leaf_type_id: 104, leaf_id: 22, sku_id: 952, score_d: FUTURE } },
             { type: 19, id: 22, title: "缺 sku 作业", classroom_id: 1, content: { leaf_type_id: 105, leaf_id: 23, score_d: FUTURE } },
             { type: 19, id: 23, title: "缺 leaf 作业", classroom_id: 1, content: { leaf_type_id: 106, sku_id: 953, score_d: FUTURE } },
+            // R20-B3：已批改作业分数（score = 已批题 my_score 合计 / totalScore = content.score 合计）
+            { type: 19, id: 24, title: "零分已批改作业", classroom_id: 1, content: { leaf_type_id: 107, leaf_id: 24, sku_id: 954, score_d: FUTURE } },
+            { type: 19, id: 25, title: "缺分已批改作业", classroom_id: 1, content: { leaf_type_id: 108, leaf_id: 25, sku_id: 955, score_d: FUTURE } },
+            { type: 19, id: 26, title: "无满分已批改作业", classroom_id: 1, content: { leaf_type_id: 109, leaf_id: 26, sku_id: 956, score_d: FUTURE } },
             { type: 20, id: 12, title: "已交试卷", classroom_id: 1, content: { leaf_type_id: 200, leaf_id: 7, sku_id: 900, score_d: FUTURE } },
             { type: 20, id: 13, title: "未交试卷", classroom_id: 1, content: { leaf_type_id: 201, leaf_id: 8, sku_id: 901, score_d: FUTURE } },
             { type: 20, id: 14, title: "无 result 试卷", classroom_id: 1, content: { leaf_type_id: 202, leaf_id: 9, sku_id: 902, score_d: FUTURE } },
@@ -163,14 +167,15 @@ console.log("\n[雨课堂]");
     { match: (u) => u.includes("/get_exercise_list/101/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: { content: "" } } }, { user: { my_answer: {} } }] } } },
     { match: (u) => u.includes("/get_exercise_list/300/"), body: { data: { answer_count: 1, problems: [{ user: { my_answer: { content: "<p>y</p>" } } }] } } },
     // R16 21.1：已批改三态（status 4 + 真实分 = 已批改；status 3 / my_score -1 占位 = 已交未批；无 user = 未交）
+    // R20-B3：题面分值 content.score 同响应可得（score 合计 / 满分合计的映射输入）
     {
       match: (u) => u.includes("/get_exercise_list/102/"),
       body: {
         data: {
           answer_count: 2,
           problems: [
-            { user: { status: 4, my_score: "30.00", comment: "很好", my_answer: { content: "<p>a</p>" } } },
-            { user: { status: 4, my_score: "0.00", my_answer: { content: "<p>b</p>" } } },
+            { content: { score: 20 }, user: { status: 4, my_score: "30.00", comment: "很好", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 20 }, user: { status: 4, my_score: "0.00", my_answer: { content: "<p>b</p>" } } },
           ],
         },
       },
@@ -181,8 +186,8 @@ console.log("\n[雨课堂]");
         data: {
           answer_count: 2,
           problems: [
-            { user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>a</p>" } } },
-            { user: { status: 3, my_score: -1, my_answer: { content: "<p>b</p>" } } },
+            { content: { score: 20 }, user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 20 }, user: { status: 3, my_score: -1, my_answer: { content: "<p>b</p>" } } },
           ],
         },
       },
@@ -194,14 +199,45 @@ console.log("\n[雨课堂]");
         data: {
           answer_count: 2,
           problems: [
-            { user: { status: 4, my_score: "30.00", my_answer: { content: "<p>a</p>" } } },
-            { user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>b</p>" } } },
+            { content: { score: 15 }, user: { status: 4, my_score: "30.00", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 15 }, user: { status: 3, my_score: "-1.00", my_answer: { content: "<p>b</p>" } } },
           ],
         },
       },
     },
     { match: (u) => u.includes("/get_exercise_list/105/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: {} } }] } } },
     { match: (u) => u.includes("/get_exercise_list/106/"), body: { data: { answer_count: 0, problems: [{ user: { my_answer: {} } }] } } },
+    // R20-B3：分数映射边界 —— 真实 0 分 / 无一题有有效分 / 题面分值缺失
+    {
+      match: (u) => u.includes("/get_exercise_list/107/"),
+      body: {
+        data: {
+          answer_count: 2,
+          problems: [
+            { content: { score: 10 }, user: { status: 4, my_score: "0.00", my_answer: { content: "<p>a</p>" } } },
+            { content: { score: 10 }, user: { status: 4, my_score: 0, my_answer: { content: "<p>b</p>" } } },
+          ],
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/108/"),
+      body: {
+        data: {
+          answer_count: 1,
+          problems: [{ content: { score: 10 }, user: { status: 4, my_answer: { content: "<p>a</p>" } } }],
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/109/"),
+      body: {
+        data: {
+          answer_count: 1,
+          problems: [{ user: { status: 4, my_score: 8, my_answer: { content: "<p>a</p>" } } }],
+        },
+      },
+    },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, total_score: 100, result: { status: 5, unfinished_count: 0, score: 60, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, total_score: 100, result: { status: 6, unfinished_count: 31, score: 0, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, total_score: 100, result: null } } },
@@ -212,7 +248,7 @@ console.log("\n[雨课堂]");
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 15, "拉到 15 条作业");
+  eq(items.length, 18, "拉到 18 条作业");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   eq(byTitle.get("已交作业")?.submitted, true, "answer_count>0 → 已提交");
   eq(byTitle.get("已交作业")?.submittedCount, 1, "已交作业 submittedCount=1（有内容的题目数）");
@@ -225,6 +261,19 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("已交未批作业")?.graded, false, "status=3 + my_score=-1（含数字 -1）→ graded=false");
   eq(byTitle.get("混合批改作业")?.graded, false, "混合场景（有已作答未批改题）→ 保守 graded=false");
   eq(byTitle.get("未交作业")?.graded, false, "无 user（未交）→ graded=false");
+  // R20-B3：已批改作业分数（对齐考试口径：已提交且带分 → 入口显示「已批改 · 30/40」）
+  eq(byTitle.get("已批改作业")?.score, 30, "已批改作业 score=30（status4 真实分合计 30+0，含真实 0 分）");
+  eq(byTitle.get("已批改作业")?.totalScore, 40, "已批改作业 totalScore=40（题面 content.score 合计）");
+  eq(byTitle.get("零分已批改作业")?.graded, true, "全 0 分且 status4 → graded=true（0 分是真实结果非占位）");
+  eq(byTitle.get("零分已批改作业")?.score, 0, "真实 0 分 → score=0 照实透出");
+  eq(byTitle.get("零分已批改作业")?.totalScore, 20, "真实 0 分 → totalScore=20 照设（显示「0/20」）");
+  eq(byTitle.get("缺分已批改作业")?.graded, true, "status4 但 my_score 缺失 → 不判「未批改」（保守 graded=true）");
+  eq(byTitle.get("缺分已批改作业")?.score, undefined, "无一题有有效分 → 不设 score（缺数据不谎报 0 分）");
+  eq(byTitle.get("无满分已批改作业")?.score, 8, "题面 content.score 缺失 → 仍透出 score（入口显示裸分数）");
+  eq(byTitle.get("无满分已批改作业")?.totalScore, undefined, "题面分值全缺失 → 不设 totalScore（满分合计为 0 不给）");
+  eq(byTitle.get("已交未批作业")?.score, undefined, "未批改 → 不设 score（未批改不显示）");
+  eq(byTitle.get("混合批改作业")?.score, undefined, "混合批改（graded=false）→ 即使单题有分也不设 score");
+  eq(byTitle.get("已交作业")?.score, undefined, "已提交无批改信息 → 不设 score");
   // R16b：作业/试卷学生端深链（ai-workspace lms-graph），仅需 leaf_id；缺 leaf_id 回退旧课程日志页
   eq(
     byTitle.get("已批改作业")?.url,
@@ -275,7 +324,7 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("未交试卷")?.graded, false, "未提交试卷 → graded=false");
   eq(byTitle.get("无 result 试卷")?.graded, false, "result 缺失 → graded=false");
   const hwCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
-  eq(hwCalls.length, 8, "仅作业（type 19）走 get_exercise_list");
+  eq(hwCalls.length, 11, "仅作业（type 19）走 get_exercise_list（11 份，分数与状态同一响应零额外请求）");
   ok(
     hwCalls.every((c) => c.headers["xtbz"] === "ykt"),
     "作业状态请求均带 XTBZ: ykt",

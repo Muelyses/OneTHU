@@ -62,6 +62,15 @@ export function yktScoreText(n: number): string {
   return String(n);
 }
 
+/** 入口行分数文案（R9 考试口径；R20-B3 起已批改雨课堂作业共用同一函数同一显示位）：
+ *  已提交且带分 → "X/Y"（有卷面满分）/ "X"；未提交 / 无分（未出分 / 未批改）→ "" 不显示。
+ *  「何时有分」由 core 决定（作业仅整卷已批改合计透出、试卷仅已出分透出），这里只管显示——
+ *  两端（PC/移动）共用 HomeworkRow，一套 UI 自动生效。 */
+export function homeworkEntryScoreText(h: { submitted?: boolean; score?: number; totalScore?: number }): string {
+  if (!h.submitted || h.score === undefined) return "";
+  return h.totalScore !== undefined ? `${yktScoreText(h.score)}/${yktScoreText(h.totalScore)}` : yktScoreText(h.score);
+}
+
 /** 单题批改徽标：已批改（蓝，有分带分数）/ 已交未批（绿）/ 未作答（灰） */
 export function yktStatusChip(p: { myStatus: YkMyStatus; myScore?: number }): { text: string; cls: string } {
   if (p.myStatus === "graded") {

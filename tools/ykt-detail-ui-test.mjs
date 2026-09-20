@@ -24,8 +24,8 @@
  *      openHomeworkRow（lib/homeworkEntry.ts），不得自拼判定 / 直连详情页；原生详情页保留
  *      「浏览器打开」备用出口（openExternalHomework：桌面系统浏览器 / 移动 R20-A WebView）。
  *  [6] R20-B3：老师评语去重 dedupeYktRemarks（remark 与 comment[] 同文只渲染一处，优先具名
- *      批注口径；不同文全保留；批注间自身去重）+ 详情页评语区接线静态审计
- *      （入口分数口径 homeworkEntryScoreText 属 feat 提交，见 docs 28.10.3）。
+ *      批注口径；不同文全保留；批注间自身去重）+ 入口分数口径 homeworkEntryScoreText
+ *      （考试 / 已批改雨课堂作业共用：已提交且带分 → "X/Y"；无分不显示）+ 两处接线静态审计。
  *
  * 覆盖边界：homeworkEntry.ts openHomeworkRow / toHomework 的 externalLeafTypeId/
  * externalClassroomId 两行映射与 state/exthw.ts fetchYktExerciseDetail 依赖
@@ -52,7 +52,7 @@ registerHooks({
   },
 });
 
-const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks } = await import(
+const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks, homeworkEntryScoreText } = await import(
   "../apps/desktop/src/lib/yktDetail.ts"
 );
 
@@ -420,12 +420,26 @@ console.log("\n[6] R20-B3：dedupeYktRemarks（评语去重）+ homeworkEntrySco
   deepEq(dedupeYktRemarks({ remark: "只有总评", comments: [] }), { remark: "只有总评" }, "空批注数组 → 只留总评");
   deepEq(dedupeYktRemarks({ comments: [{ content: "只有批注" }] }), { comments: [{ content: "只有批注" }] }, "无总评 → 只留批注");
 
-  // 6f. 接线静态审计：详情页必须走去重口径，不得残留旧的直渲染（防双显回归）
+  // 6f. 入口分数口径（考试既有口径回归 + 已批改作业新场景共用）
+  eq(homeworkEntryScoreText({ submitted: true, score: 60, totalScore: 100 }), "60/100", "考试：已出分 → 60/100（回归）");
+  eq(homeworkEntryScoreText({ submitted: true, score: 30, totalScore: 40 }), "30/40", "已批改作业：合计分/满分 → 30/40");
+  eq(homeworkEntryScoreText({ submitted: true, score: 8 }), "8", "卷面满分缺失 → 裸分数");
+  eq(homeworkEntryScoreText({ submitted: true, score: 0, totalScore: 20 }), "0/20", "真实 0 分 + 满分 → 0/20 照实显示");
+  eq(homeworkEntryScoreText({ submitted: true, score: 2.5 }), "2.5", "半分不带尾零");
+  eq(homeworkEntryScoreText({ submitted: false, score: 60, totalScore: 100 }), "", "未提交 → 不显示（有分也不显）");
+  eq(homeworkEntryScoreText({ score: 60 }), "", "submitted 缺省（falsy）→ 不显示");
+  eq(homeworkEntryScoreText({ submitted: true }), "", "已交未批改（无分）→ 不显示（作业场景核心口径）");
+  eq(homeworkEntryScoreText({}), "", "全缺 → 空串");
+
+  // 6g. 接线静态审计：两处 UI 必须走新口径，不得残留旧的直渲染 / 内联拼接
   const { readFileSync } = await import("node:fs");
   const readSrc = (rel) => readFileSync(new URL(rel, import.meta.url), "utf8");
   const page = readSrc("../apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx");
   ok(page.includes("dedupeYktRemarks(p)") && page.includes("remarkView"), "详情页评语区走 dedupeYktRemarks 去重口径");
   ok(!page.includes("p.remark") && !page.includes("p.comments"), "详情页不再直渲染原始 remark / comments（防双显回归）");
+  const shared = readSrc("../apps/desktop/src/pages/learn/shared.tsx");
+  ok(shared.includes("homeworkEntryScoreText(h)"), "入口行分数统一走 homeworkEntryScoreText（考试 / 已批改作业同口径）");
+  ok(!shared.includes("h.score !== undefined") || shared.includes("homeworkEntryScoreText"), "旧内联分数拼接已收敛进纯函数");
 }
 
 console.log(`\n═══ R20-B2/B3 雨课堂详情页单测：${pass} 通过 / ${fail} 失败 ═══`);

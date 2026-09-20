@@ -11,6 +11,8 @@
     android:minHeight="110dp"
     android:targetCellWidth="3"
     android:targetCellHeight="2"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/onethu_widget"
     android:resizeMode="horizontal|vertical"

@@ -31,9 +31,15 @@
 
         <!-- 桌面小组件：AppWidgetProvider 必须 exported=true（系统要投递
              APPWIDGET_UPDATE 广播），meta-data 指向 androidx 之外的 appwidget-provider
-             元信息（最小尺寸/初始布局/30 分钟轮询）。 -->
+             元信息（初始占位/初始布局/30 分钟轮询）。
+
+             宿主小组件声明四种形态（3×2 标准 / 2×2 方块 / 2×1 窄条 / 4×1 长条）：
+             选择器里能直接选的形态数 = provider 数，故形态只能靠多声明 provider 给出来。
+             四者共用同一套布局与同一份快照，只是初始占位不同；放置后仍可自由拖动改尺寸
+             （见 OnethuWidget.kt 的 rowBudget：行数按实际高度决定）。 -->
         <receiver
             android:name="app.onethu.mobile.OnethuWidgetProvider"
+            android:label="@string/onethu_widget_label"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -41,6 +47,39 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/onethu_widget_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetSquare"
+            android:label="@string/onethu_widget_square_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_square_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetNarrow"
+            android:label="@string/onethu_widget_narrow_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_narrow_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetStrip"
+            android:label="@string/onethu_widget_strip_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_strip_info" />
         </receiver>
 
         <!-- 插件小组件槽位 1..3：Android 不允许运行时注册 provider，故预留固定槽位；

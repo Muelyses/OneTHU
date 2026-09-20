@@ -88,23 +88,46 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         for (id in appWidgetIds) render(context, manager, id)
     }
 
+    /** 用户拖动改尺寸时立刻按新尺寸重排（不重排会留着一屏错位） */
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        manager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle,
+    ) {
+        render(context, manager, appWidgetId)
+    }
+
     companion object {
         private const val ROW_IDS = 3
 
-        /** 全部 provider（宿主 + 三个插件槽位）；新增槽位时只改这一处与清单 */
+        /**
+         * 全部 provider（宿主四种形态 + 三个插件槽位）；新增形态时只改这一处与清单。
+         *
+         * 为什么宿主有四种形态：`targetCellWidth/Height` 是**每个 provider 一份**的静态元信息，
+         * 选择器里能直接选的形态数 = provider 数。只声明一个 3×2 的话，想要一条 2×1 长条的用户
+         * 得先放上再拖动改尺寸——多一步且不直观。四种形态共用同一套布局与同一份快照，
+         * 只是初始占位不同（放置后照样能自由拖动）。
+         */
         private val PROVIDERS = listOf(
-            OnethuWidgetProvider::class.java,
+            OnethuWidgetProvider::class.java,   // 标准 3×2
+            OnethuWidgetSquare::class.java,     // 方块 2×2
+            OnethuWidgetNarrow::class.java,     // 窄条 2×1
+            OnethuWidgetStrip::class.java,      // 长条 4×1
             OnethuWidgetSlot1::class.java,
             OnethuWidgetSlot2::class.java,
             OnethuWidgetSlot3::class.java,
         )
 
-        /** 槽位键 → provider 类（诊断与刷新共用；null = 宿主小组件） */
-        fun providerEntries(): List<Pair<String?, Class<*>>> = listOf(
-            null to OnethuWidgetProvider::class.java,
-            "1" to OnethuWidgetSlot1::class.java,
-            "2" to OnethuWidgetSlot2::class.java,
-            "3" to OnethuWidgetSlot3::class.java,
+        /** 槽位键 / provider 类 / 诊断名（诊断与刷新共用；槽位键 null = 宿主小组件） */
+        fun providerEntries(): List<Triple<String?, Class<*>, String>> = listOf(
+            Triple(null, OnethuWidgetProvider::class.java, "宿主 3×2"),
+            Triple(null, OnethuWidgetSquare::class.java, "宿主 2×2"),
+            Triple(null, OnethuWidgetNarrow::class.java, "宿主 2×1"),
+            Triple(null, OnethuWidgetStrip::class.java, "宿主 4×1"),
+            Triple("1", OnethuWidgetSlot1::class.java, "槽位 1"),
+            Triple("2", OnethuWidgetSlot2::class.java, "槽位 2"),
+            Triple("3", OnethuWidgetSlot3::class.java, "槽位 3"),
         )
 
         /** App 前台刷新快照后调用：让所有已放置的小组件立刻重画（不等系统 30 分钟轮询） */
@@ -123,18 +146,53 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             else -> null
         }
 
+        /**
+         * 按小组件当前占位决定显示几行——**同一套布局靠可见性自适应**，不额外声明多套 layout：
+         *   · 2×1（矮条）  → 标题 + 1 行，无脚注
+         *   · 2×2          → 标题 + 2 行 + 脚注
+         *   · 3×2 及以上   → 标题 + 3 行 + 脚注
+         * 尺寸取自 AppWidgetOptions 的 MIN_HEIGHT（dp），系统在拖动与旋转时都会更新。
+         */
+        private fun rowBudget(manager: AppWidgetManager, widgetId: Int): Int {
+            val opts = try {
+                manager.getAppWidgetOptions(widgetId)
+            } catch (e: Exception) {
+                null
+            }
+            val h = opts?.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0) ?: 0
+            return when {
+                h <= 0 -> 3        // 拿不到尺寸（老系统/首次）→ 按默认 3 行渲染
+                h < 90 -> 1        // 2×1
+                h < 150 -> 2       // 2×2
+                else -> 3          // 3×2 及以上
+            }
+        }
+
+        /** 矮条的紧凑内边距：12dp 的留白在 2×1（约 40dp 高）里会把内容挤出可视区 */
+        private fun applyCompactPadding(ctx: Context, views: RemoteViews, compact: Boolean) {
+            val d = ctx.resources.displayMetrics.density
+            val px = { v: Int -> (v * d).toInt() }
+            if (compact) views.setViewPadding(R.id.onethu_widget_root, px(8), px(6), px(8), px(6))
+            else views.setViewPadding(R.id.onethu_widget_root, px(12), px(12), px(12), px(12))
+        }
+
         private fun renderFor(ctx: Context, manager: AppWidgetManager, widgetId: Int, slot: String?) {
+            val maxRows = rowBudget(manager, widgetId)
             val views = RemoteViews(ctx.packageName, R.layout.onethu_widget)
             val snap = WidgetStore.load(ctx)
             val content = if (slot == null) snap else snap?.optJSONObject("slots")?.optJSONObject(slot)
 
             if (content == null) {
-                // 未绑定 / 尚无快照：给一条可读的引导，不留空白
+                // 未绑定 / 尚无快照：给一条可读的引导，不留空白（标题保留：槽位小组件要说明是第几个）
+                applyCompactPadding(ctx, views, maxRows == 1)
                 views.setTextViewText(
                     R.id.onethu_widget_title,
                     if (slot == null) "OneTHU" else "OneTHU 插件小组件 $slot",
                 )
-                views.setTextViewText(R.id.onethu_widget_row1, if (slot == null) "打开 OneTHU 刷新数据" else "尚无插件占用此槽位")
+                views.setTextViewText(
+                    R.id.onethu_widget_row1,
+                    if (slot == null) "打开 OneTHU 刷新数据" else "尚无插件占用此槽位",
+                )
                 views.setViewVisibility(R.id.onethu_widget_row1, View.VISIBLE)
                 views.setViewVisibility(R.id.onethu_widget_row2, View.GONE)
                 views.setViewVisibility(R.id.onethu_widget_row3, View.GONE)
@@ -148,6 +206,11 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             }
 
             val rows = content.optJSONArray("rows")
+            // 矮条（2×1）里标题是冗余的（用户自己知道放的是什么），把这一行让给内容：
+            // 隐藏标题、收紧内边距，于是「一行内容 + 脚注」都放得下，而不是被裁掉半行。
+            val compact = maxRows == 1
+            applyCompactPadding(ctx, views, compact)
+            views.setViewVisibility(R.id.onethu_widget_title, if (compact) View.GONE else View.VISIBLE)
             views.setTextViewText(
                 R.id.onethu_widget_title,
                 content.optString("title").takeIf { it.isNotEmpty() } ?: "OneTHU",
@@ -156,7 +219,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             val slotIds = intArrayOf(R.id.onethu_widget_row1, R.id.onethu_widget_row2, R.id.onethu_widget_row3)
             for (i in 0 until ROW_IDS) {
                 val viewId = slotIds[i]
-                val row = rows?.optJSONObject(i)
+                val row = if (i < maxRows) rows?.optJSONObject(i) else null
                 val text = row?.optString("text").orEmpty()
                 if (text.isEmpty()) {
                     views.setViewVisibility(viewId, View.GONE)
@@ -167,6 +230,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 views.setTextViewText(viewId, if (sub.isEmpty()) text else "$text · $sub")
             }
 
+            // 脚注（「3 节课 · 2 个截止」）在矮条里也要留着：那里已经让出了标题行，放得下
             val footer = content.optString("footer").orEmpty()
             views.setViewVisibility(R.id.onethu_widget_footer, if (footer.isEmpty()) View.GONE else View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_footer, footer)
@@ -191,8 +255,26 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
     }
 }
 
-/** 宿主小组件：今日课程与作业截止（快照根字段） */
+/** 宿主小组件（标准 3×2）：今日课程与作业截止（快照根字段） */
 class OnethuWidgetProvider : OnethuBaseWidget() {
+    override fun slotKey(): String? = null
+}
+
+/* 宿主小组件的另外三种初始形态：内容与逻辑完全一致（都读快照根字段、都按实际高度决定行数），
+   区别只在清单里声明的初始占位尺寸——让选择器直接给出「方块 / 窄条 / 长条」三种选择。 */
+
+/** 方块 2×2 */
+class OnethuWidgetSquare : OnethuBaseWidget() {
+    override fun slotKey(): String? = null
+}
+
+/** 窄条 2×1 */
+class OnethuWidgetNarrow : OnethuBaseWidget() {
+    override fun slotKey(): String? = null
+}
+
+/** 长条 4×1 */
+class OnethuWidgetStrip : OnethuBaseWidget() {
     override fun slotKey(): String? = null
 }
 

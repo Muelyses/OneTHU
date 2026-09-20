@@ -14,12 +14,14 @@
  *  [4] sanitize / 图片 / 杂项：script 与容器标签剔除、on* 事件与 javascript: 链去活性、
  *      hardenYktImgs / imgSrcsOf / imgFileName / shouldAttachYktCookies（Cookie 不外泄第三方）
  *  [5] buildYktProblemDoc 拼装降级：字体挂载 vs 剥 class、extraCss 仅在真渲染出 katex 时进、
- *      文档头（no-referrer / base）/ clampDocHeight
+ *      文档头（no-referrer / base）/ clampDocHeight、加密 span 规则合法性（回退栈不得是
+ *      CSS 全局关键字——R20-B3「`,inherit` 致规则被引擎丢弃」乱码根因的回归网）
  *  [6] KaTeX 集成烟测（真实 vendor/katex.mjs，Node 可直引）：渲染器加载、单公式失败抛错由
  *      safeRender 兜回原文、extraCss 门禁端到端
  *  [7] 接线静态审计（漏接回归网）：详情页四处正文全走 ProblemBody、无 dangerouslySetInnerHTML
  *      残留；ProblemBody 沙箱无 allow-same-origin、消息带 ev.source 校验、字体强刷仅一次；
- *      yktAssets 走磁盘缓存（state_read/write）+ magic + 退避判定
+ *      yktAssets 走磁盘缓存（state_read/write）+ magic + 退避判定 + 失败不驻留进程内记忆；
+ *      文档内脚本就绪判定 = document.fonts.load + 计算样式生效双确认
  *
  * 覆盖边界：yktAssets.ts / yktKatex.ts 的 Tauri invoke 往返与 ProblemBody.tsx 的 React 层
  * 由 pnpm typecheck + [7] 静态审计 + 真机烟测覆盖（docs 28.10）。
@@ -226,6 +228,22 @@ console.log("\n[5] buildYktProblemDoc 拼装（字体挂载 / 剥 class / extraC
   const doc1 = yb.buildYktProblemDoc({ html: ENC, fontDataUrl: "data:font/ttf;base64,AAECAw==" });
   ok(doc1.includes('@font-face{font-family:"YktEncrypted";src:url(data:font/ttf;base64,AAECAw==)'), "有字体数据 → @font-face 内联 data URL");
   ok(doc1.includes("xuetangx-com-encrypted-font"), "有字体数据 → 加密 class 保留");
+
+  // R20-B3 根因回归网：加密 span 规则必须是「合法」font-family 列表。
+  // CSS 全局关键字（inherit/initial/unset/…）作为列表项 → 整条声明在解析期被引擎
+  // 静默丢弃 → span 永远用正文字体渲染（乱码），@font-face 无人引用保持 unloaded，
+  // 而 document.fonts.load 照样成功 → 就绪判定误报 OK（R20-B3 PC 实测根因）。
+  const cssAll = yb.YKT_DOC_CSS;
+  const ruleAt = cssAll.indexOf(`.${yb.YKT_ENCRYPTED_FONT_CLASS}{`);
+  ok(ruleAt >= 0, "文档样式含加密 span 规则");
+  const encRule = ruleAt >= 0 ? cssAll.slice(ruleAt, cssAll.indexOf("}", ruleAt) + 1) : "";
+  ok(encRule.includes(`font-family:"${yb.YKT_FONT_FAMILY}",`), "span 规则先列加密字体族");
+  ok(!new RegExp(
+    `font-family:"${yb.YKT_FONT_FAMILY}",\\s*(inherit|initial|unset|revert|revert-layer|default)\\b`,
+  ).test(encRule), "回退不是 CSS 全局关键字（`,inherit` 曾让整条规则失效——根因回归网）");
+  ok(encRule.includes(yb.YKT_DOC_FONT_STACK), "回退栈 = 正文同栈常量（字体失败时观感≈普通正文）");
+  ok(cssAll.includes(`font:14px/1.65 ${yb.YKT_DOC_FONT_STACK};`) && encRule.includes(yb.YKT_DOC_FONT_STACK), "body 与加密 span 共用同一字体栈常量（不漂移）");
+  ok(doc1.includes(`.${yb.YKT_ENCRYPTED_FONT_CLASS}{font-family:"${yb.YKT_FONT_FAMILY}",`), "拼装产物里 span 规则随 @font-face 进文档");
   const doc2 = yb.buildYktProblemDoc({ html: "<p>题干</p>", extraCss: ".KATEXMARK{color:red}" });
   ok(!doc2.includes("KATEXMARK"), "无 katex 产物 → extraCss 不进（零开销）");
   const doc3 = yb.buildYktProblemDoc({
@@ -310,10 +328,15 @@ console.log("\n[7] 接线静态审计（详情页 / ProblemBody / yktAssets 漏�
   ok(assets.includes("state_read") && assets.includes("state_write"), "yktAssets：字体缓存落应用数据目录（不进仓库）");
   ok(assets.includes("fetch_binary"), "yktAssets：字体/图片走 Rust fetch_binary（带 Referer）");
   ok(assets.includes("YKT_FONT_MAX_B64_LEN"), "yktAssets：异常大文件不入缓存");
+  ok(assets.includes("mem.delete(clean)"), "yktAssets：失败结果不驻留进程内记忆（退避窗口后可重试）");
 
   const body = readSrc("../apps/desktop/src/lib/yktBody.ts");
   ok(body.includes("YKT_FONT_CACHE_TTL_MS = 7 * 24 * 3600 * 1000"), "yktBody：字体缓存 TTL = 7 天");
   ok(body.includes("YKT_FONT_FAIL_BACKOFF_MS = 10 * 60 * 1000"), "yktBody：失败退避 = 10 分钟");
+  // R20-B3 就绪判定双确认回归网：fonts.load 成功 ≠ 生效，还须计算样式含加密族
+  ok(body.includes("document.fonts.load"), "文档内脚本：就绪判定等 document.fonts.load 完成");
+  ok(body.includes("getComputedStyle(el).fontFamily"), "文档内脚本：font-ok 前校验字体族在计算样式真正生效（防「字体 loaded + 规则失效」误报 OK）");
+  ok(!/YKT_FONT_FAMILY\}",\s*inherit/.test(body), "yktBody：加密 span 规则无 `,inherit` 非法列表项（R20-B3 根因回归网）");
 
   const katexGlue = readSrc("../apps/desktop/src/lib/yktKatex.ts");
   ok(katexGlue.includes('import("../vendor/katex/katex.mjs")'), "yktKatex：离线 vendor 包（无运行时 CDN）");

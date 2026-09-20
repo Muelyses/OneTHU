@@ -31,6 +31,17 @@ export const YKT_DOC_BASE = "https://pro.yuketang.cn/";
 /** 加密字体的 font-family 名（文档内 @font-face 与 span 规则共用） */
 export const YKT_FONT_FAMILY = "YktEncrypted";
 
+/**
+ * 文档内正文字体栈（body 与加密 span 的回退栈共用同一常量，不许漂移）。
+ * ⚠️ 加密 span 规则必须写成 `font-family:"YktEncrypted",<本栈>`——CSS 全局关键字
+ * （inherit/initial/unset/…）**不能**作为 font-family 列表的一项，出现即整条声明
+ * 在解析期被静默丢弃：R20-B3 曾写 `",inherit"`，导致规则全平台失效、span 永远用
+ * 正文字体渲染加密原字符（= 乱码），且 @font-face 因无人引用保持 unloaded、
+ * document.fonts.load 却仍成功 → 就绪判定误报 OK、无任何降级信号（霖 PC 实测根因）。
+ */
+export const YKT_DOC_FONT_STACK =
+  "-apple-system,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',system-ui,sans-serif";
+
 /** 字体缓存 TTL：超期自动重取（URL 每份作业唯一，TTL 主要兜 CDN 换 key 与脏缓存） */
 export const YKT_FONT_CACHE_TTL_MS = 7 * 24 * 3600 * 1000;
 
@@ -408,14 +419,15 @@ export interface YktDocBuildOptions {
 /** 文档内样式：浅色定稿（官方内容黑字白底，与应用主题解耦，两端一致） */
 export const YKT_DOC_CSS = [
   "html,body{margin:0;padding:0}",
-  "body{font:14px/1.65 -apple-system,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',system-ui,sans-serif;",
+  `body{font:14px/1.65 ${YKT_DOC_FONT_STACK};`,
   "color:#222;background:transparent;overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}",
   "p{margin:0 0 8px}p:last-child{margin-bottom:0}",
   "img{max-width:100%;height:auto;border-radius:4px}",
   "table{border-collapse:collapse;max-width:100%}th,td{border:1px solid #ddd;padding:4px 8px;font-size:12px}",
   "pre{white-space:pre-wrap;overflow-wrap:anywhere}",
   "a{color:#1a73e8;text-decoration:underline}",
-  `.${YKT_ENCRYPTED_FONT_CLASS}{font-family:"${YKT_FONT_FAMILY}",inherit}`,
+  // 回退栈必须与 body 同栈（YKT_DOC_FONT_STACK）：字体加载失败/未覆盖的字符 ≈ 普通正文观感
+  `.${YKT_ENCRYPTED_FONT_CLASS}{font-family:"${YKT_FONT_FAMILY}",${YKT_DOC_FONT_STACK}}`,
   ".ykt-img-fallback{display:flex;align-items:center;gap:6px;padding:10px 12px;margin:4px 0;border:1px dashed #bbb;border-radius:6px;color:#666;font-size:12px;background:#fafafa;overflow-wrap:anywhere}",
 ].join("");
 
@@ -425,7 +437,8 @@ export const YKT_DOC_CSS = [
  *  - ykt:height      内容高度（load/ResizeObserver/延时三保险，组件据其设 iframe 高）；
  *  - ykt:img-fail    图片直挂失败 → 组件代理重试（fetch_binary 带 Referer）；
  *  - ykt:img-data/-giveup：代理结果回填 / 放弃 → 占位框+文件名；
- *  - ykt:font-fail/-ok   加密字体实装校验（document.fonts），失败触发组件强刷重取；
+ *  - ykt:font-fail/-ok   加密字体实装校验（document.fonts 载入 + 计算样式生效双确认），
+ *    失败触发组件强刷重取；
  *  - ykt:link        链接点击 → 组件用系统浏览器打开（防 iframe 内跳走）。
  */
 export const YKT_DOC_SCRIPT_TEMPLATE = [
@@ -452,6 +465,11 @@ export const YKT_DOC_SCRIPT_TEMPLATE = [
   'for(var i=0;i<spans.length;i++){if((spans[i].textContent||"").replace(/\\s/g,"").length){has=true;break}}',
   'if(!has||!document.fonts||!document.fonts.load){return}',
   'document.fonts.load(\'16px "\'+FAMILY+\'"\').then(function(fs){var ok=false;for(var k=0;k<fs.length;k++){if(fs[k].status==="loaded"){ok=true}}',
+  // 双确认：字体载入成功还不够，font-family 规则必须真的生效（计算样式含加密族）。
+  // 规则被引擎丢弃/类名不匹配时 document.fonts.load 照样成功——R20-B3 的静默乱码正是
+  // 「字体 loaded + 规则失效」的组合，只查 fonts 会误报 OK。
+  'if(ok){var el=null;for(var m=0;m<spans.length;m++){if((spans[m].textContent||"").replace(/\\s/g,"").length){el=spans[m];break}}',
+  'if(el&&(getComputedStyle(el).fontFamily||"").indexOf(FAMILY)<0){ok=false}}',
   'post({type:ok?"ykt:font-ok":"ykt:font-fail"});h()}).catch(function(){post({type:"ykt:font-fail"})})}',
   'function boot(){armAll();fontCheck();h();window.addEventListener("load",h);',
   'if("ResizeObserver" in window){try{new ResizeObserver(h).observe(document.documentElement)}catch(e){}}',

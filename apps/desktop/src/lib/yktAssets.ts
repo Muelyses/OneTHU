@@ -116,6 +116,9 @@ export async function loadYktFont(url: string, opts: { force?: boolean; cookies?
     const got = await fetchFontFromNet(clean, opts.cookies ?? "");
     if (!got) {
       lastFailAt.set(clean, Date.now());
+      // 失败结果不驻留进程内记忆：否则后续加载永远命中这条失败的 Promise，
+      // 10min 退避窗口（fontDownloadAllowed）形同虚设，重启前再无重试机会。
+      mem.delete(clean);
       void logDebug(`R20-B3 加密字体获取失败，降级普通字体：${clean.slice(0, 200)}`);
       return null;
     }

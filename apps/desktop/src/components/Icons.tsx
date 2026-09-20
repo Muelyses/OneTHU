@@ -215,6 +215,13 @@ export const IconFolderPlus = (p: SVGProps<SVGSVGElement>) => (
 );
 
 /** 收藏星标（CollectStar 用；fill 由调用方以 CSS 控制） */
+export const IconPin = (p: SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" {...p}>
+    <path d="M9.5 1.8 14.2 6.5l-2.6 1.1-3 3-1.4 3.4-1-1-2.8-2.8-1-1 3.4-1.4 3-3z" />
+    <path d="M3.2 12.8 1.6 14.4" />
+  </svg>
+);
+
 export const IconStar = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="m12 3.6 2.5 5.2 5.7.7-4.2 3.9 1.1 5.6-5.1-2.8-5.1 2.8 1.1-5.6-4.2-3.9 5.7-.7z" />
@@ -226,6 +233,7 @@ export const IconStar = (p: SVGProps<SVGSVGElement>) => (
 export const FOLDER_ICONS: Record<string, (p: SVGProps<SVGSVGElement>) => ReactElement> = {
   folder: IconFolder,
   star: IconStar,
+  pin: IconPin,
   today: IconToday,
   learn: IconLearn,
   schedule: IconSchedule,

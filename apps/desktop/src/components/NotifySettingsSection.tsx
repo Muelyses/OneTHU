@@ -141,17 +141,18 @@ export function NotifySettingsSection(): ReactNode {
         <div>
           <div className="setting-title">提醒</div>
           <div className="setting-desc">
-            把日程上的事推到系统通知：课程与考试开课前、作业 DDL 到期前，另有每日早报。
-            投递走后端：{status?.backend ?? "检测中…"}。
+            把课程、日程与作业 DDL 推到系统通知，另有每日早报。打开后可细调下面的提前量与静默时段。
           </div>
         </div>
         <Switch on={s.enabled} onChange={(v) => patch({ enabled: v })} label="提醒总开关" />
       </div>
 
+      {s.enabled ? (
+      <>
       <div className="setting-row">
         <div>
-          <div className="setting-title">课程与考试提前量</div>
-          <div className="setting-desc">按课表与考试安排提前提醒；静默时段内的提醒会顺延到时段结束。</div>
+          <div className="setting-title">课程与日程提前量</div>
+          <div className="setting-desc">按课表、考试与自定义日程提前提醒。</div>
         </div>
         <select
           className="input"
@@ -169,8 +170,8 @@ export function NotifySettingsSection(): ReactNode {
         <div>
           <div className="setting-title">作业 DDL 提醒</div>
           <div className="setting-desc">
-            提前量沿用网络学堂首页「DDL 提醒」的设置（全局默认 + 单作业覆盖）；
-            截止时刻落在静默时段且已来不及顺延时，改在静默开始前发出——不会因为静默把提醒吞掉。
+            提前量沿用网络学堂首页的「DDL 提醒」设置（全局默认 + 单作业覆盖）。
+            与课程不同：静默时段内顺手延会错过截止时，改在静默开始前发出。
           </div>
         </div>
         <Switch on={s.ddl} onChange={(v) => patch({ ddl: v })} label="作业 DDL 提醒" />
@@ -179,7 +180,7 @@ export function NotifySettingsSection(): ReactNode {
       <div className="setting-row">
         <div>
           <div className="setting-title">每日早报</div>
-          <div className="setting-desc">当天有课或有截止时才发；空日不打扰。</div>
+          <div className="setting-desc">当天有课、有日程或有截止时才发。</div>
         </div>
         <select
           className="input"
@@ -196,7 +197,7 @@ export function NotifySettingsSection(): ReactNode {
       <div className="setting-row">
         <div>
           <div className="setting-title">静默时段</div>
-          <div className="setting-desc">这段时间内不打扰（跨夜为常态）；落在其中的提醒顺延到时段结束。</div>
+          <div className="setting-desc">这段时间内不打扰（可跨夜）；落在其中的提醒顺延到时段结束。</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <select className="input" style={{ width: 96 }} value={s.quietFrom} onChange={(e) => patch({ quietFrom: e.target.value })}>
@@ -208,6 +209,8 @@ export function NotifySettingsSection(): ReactNode {
           </select>
         </div>
       </div>
+      </>
+      ) : null}
 
       <div className="setting-row">
         <div>
@@ -242,46 +245,44 @@ export function NotifySettingsSection(): ReactNode {
         </div>
       </div>
 
+      {pluginNotifs.length > 0 ? (
       <div className="setting-row">
         <div>
           <div className="setting-title">插件通知</div>
           <div className="setting-desc">
-            {pluginNotifs.length === 0
-              ? "当前没有插件排下的通知。插件通知归插件所有：宿主重排自己的提醒时不会动它，插件停用或卸载时会自动收回。"
-              : pluginNotifs.map((g) => `${g.pluginId}（${g.ids.length} 条）`).join("；")}
+            {pluginNotifs.map((g) => `${g.pluginId}（${g.ids.length} 条）`).join("；")}
+            <span style={{ color: "var(--text-3)" }}>　插件通知归插件所有，不由上面的总开关控制。</span>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
           <button className="btn btn-ghost" onClick={() => void refreshPluginNotifs()}>
             刷新
           </button>
-          {pluginNotifs.length > 0 ? (
-            <button
-              className="btn btn-ghost plg-danger"
-              onClick={() => {
-                const all = pluginNotifs.flatMap((g) => g.ids);
-                void cancelNotifications(all).then(() => {
-                  setMsg(`已撤销 ${all.length} 条插件通知`);
-                  return refreshPluginNotifs();
-                });
-              }}
-            >
-              全部撤销
-            </button>
-          ) : null}
+          <button
+            className="btn btn-ghost plg-danger"
+            onClick={() => {
+              const all = pluginNotifs.flatMap((g) => g.ids);
+              void cancelNotifications(all).then(() => {
+                setMsg(`已撤销 ${all.length} 条插件通知`);
+                return refreshPluginNotifs();
+              });
+            }}
+          >
+            全部撤销
+          </button>
         </div>
       </div>
+      ) : null}
 
+      {s.enabled ? (
       <div className="setting-row">
         <div>
           <div className="setting-title">即将提醒</div>
           <div className="setting-desc">
-            {!s.enabled
-              ? "总开关已关闭（不会发出任何提醒）。"
-              : plan.length === 0
-                ? "未来几天没有需要提醒的事项。"
-                : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join("；") +
-                  (plan.length > 3 ? ` …共 ${plan.length} 条` : "")}
+            {plan.length === 0
+              ? "未来几天没有需要提醒的事项。"
+              : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join("；") +
+                (plan.length > 3 ? ` …共 ${plan.length} 条` : "")}
           </div>
         </div>
         <button
@@ -298,6 +299,7 @@ export function NotifySettingsSection(): ReactNode {
           立即应用
         </button>
       </div>
+      ) : null}
 
       {report ? (
         <div style={{ padding: "8px 2px", borderTop: "1px solid var(--border-soft)", marginTop: 6 }}>

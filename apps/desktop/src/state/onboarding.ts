@@ -76,7 +76,10 @@ export function applyScenarios(scenarioIds: string[], orientation: HomeOrientati
  * 其它卡保持现有栏位与顺序——用户改完不会觉得首页被"重刷"了一遍。
  */
 export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation): void {
-  const keepSet = new Set(keep);
+  // 兜底：一张都不留 = 首页空白（用户实录：以为在"选"，其实把默认勾选的点掉了）。
+  // 宁可留一张今日概览，也不能交出"打开什么都看不见"的首页。
+  const safeKeep: HomeCardId[] = keep.length > 0 ? keep : ["today-overview"];
+  const keepSet = new Set(safeKeep);
   const saved = resolveLayout(HOME_CARD_META, loadLayout(orientation));
   const items: HomeLayoutItem[] = saved.map((it) => {
     if (keepSet.has(it.id)) return it;
@@ -88,6 +91,21 @@ export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation
   const collapsed = { ...loadCollapsedDefaults() };
   for (const def of HOME_CARD_META) if (!keepSet.has(def.id)) collapsed[def.id] = true;
   saveCollapsedDefaults(collapsed);
+
+  // 留痕：这类"用户以为选了、实际全关"的情况必须能从日志看出来
+  void import("../lib/clients.js")
+    .then((m) =>
+      m.logLine(
+        `[ONBOARD] 今日页卡片落盘：留 ${safeKeep.length} 张（${safeKeep.join(",")}）${keep.length === 0 ? " ← 用户未留任何卡，已兜底保留今日概览" : ""} · 朝向=${orientation}`,
+      ),
+    )
+    .catch(() => undefined);
+}
+
+/** 首页布局被清空时的自救：恢复注册表默认（今日页空白的那个状态一键回来） */
+export function restoreDefaultTodayCards(orientation: HomeOrientation): void {
+  saveLayout(resolveLayout(HOME_CARD_META, null), orientation);
+  saveCollapsedDefaults({});
 }
 
 /** 导览里可勾选的今日卡片：只列**默认可见**的展示卡（入口卡仍在「添加卡片」里） */

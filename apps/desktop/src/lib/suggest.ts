@@ -21,10 +21,12 @@ export interface Suggestion {
   why: string;
 }
 
+/** 起步项：必须是**真实存在的页面原子 key**（此前写了 "thos"，注册表里没有这个 key，
+ *  会被 resolveAtom 静默丢掉——推荐位看着"没内容"就是这么来的）。 */
 const STARTER_KEYS = [
   "reserve-lib",
   "reserve-classroom",
-  "thos",
+  "reserve-sports",
   "learn-assignments",
   "learn-search",
   "mail",

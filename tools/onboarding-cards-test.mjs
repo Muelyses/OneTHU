@@ -33,6 +33,18 @@ assert.ok(
   "todayChoosableCards 必须由 HOME_CARD_META 过滤（bespoke 且非 defaultHidden）派生",
 );
 const cardSrc = readFileSync(new URL("../apps/desktop/src/lib/homeCards.ts", import.meta.url), "utf8");
+
+// ⑤ 「猜你喜欢」的起步项必须都是注册表里真实存在的页面原子 key：
+//    曾经写了 "thos"（注册表里没有这个 key）→ resolveAtom 返回 null → 整条推荐被丢掉
+const suggestSrc = readFileSync(new URL("../apps/desktop/src/lib/suggest.ts", import.meta.url), "utf8");
+const atomSrc = readFileSync(new URL("../apps/desktop/src/state/atoms.tsx", import.meta.url), "utf8");
+const pageKeys = new Set(
+  [...atomSrc.slice(atomSrc.indexOf("export const PAGE_ATOMS"), atomSrc.indexOf("export function recordPageAtomUse")).matchAll(/key: "([a-z0-9-]+)"/g)].map((m) => m[1]),
+);
+const starterBlock = suggestSrc.slice(suggestSrc.indexOf("const STARTER_KEYS"), suggestSrc.indexOf("];", suggestSrc.indexOf("const STARTER_KEYS")));
+const starterKeys = [...starterBlock.matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
+assert.ok(starterKeys.length >= 4, `起步项应有若干条（实际 ${starterKeys.length}）`);
+for (const k of starterKeys) assert.ok(pageKeys.has(k), `起步项 ${k} 必须是真实存在的页面原子 key`);
 for (const sc of SCENARIOS) {
   for (const id of sc.keep) {
     assert.ok(cardSrc.includes(`"${id}"`), `场景 ${sc.id} 引用的卡片 ${id} 必须存在于 homeCards 注册表`);

@@ -302,11 +302,23 @@ export function OnboardingTour(): React.ReactNode {
 
         {step === 3 ? (
           <>
-            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>今日页留哪些卡？</h3>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>
+              今日页留哪些卡？
+              <span style={{ marginLeft: 8, fontSize: 12.5, fontWeight: 400, color: "var(--text-3, #999)" }}>
+                已留 {keepCards.length} 张
+              </span>
+            </h3>
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)", lineHeight: 1.6 }}>
               现在默认是<b>全面版</b>首页：内容一次给全。点一下取消 = 这张卡先收进「添加卡片」，
               以后在首页「编辑 → 添加卡片」里随时能加回来。
+              <b>「最近使用 / 猜你喜欢」要先用一阵才有内容</b>（刚装好时会显示一句说明），
+              想第一眼就看到东西的话，留着「今日概览 / 日程与提醒 / 未提交作业」这几张。
             </p>
+            {keepCards.length === 0 ? (
+              <p style={{ margin: "0 0 10px", fontSize: 12.5, lineHeight: 1.7, color: "var(--red, #d33)" }}>
+                一张都没留的话，今日页会没有任何卡片。至少留一张（推荐「今日概览」）。
+              </p>
+            ) : null}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {CARD_CHOICES.map((c) => {
                 const on = keepCards.includes(c.id);

@@ -3,7 +3,7 @@
  *
  * 为什么需要：THUbook（thubook.help）正文是整段 HTML 直接注入渲染的，源站正文里
  * 普遍带行内颜色（`style="color:#000"`、`<font color="#333">`、`bgcolor="#fff"`）。
- * 行内样式优先级高于我们的 `.thubook-body { color: var(--text) }`，于是在**深色主题下
+ * 行内样式优先级高于我们的 `.thubook-body { color: var(--text-1) }`，于是在**深色主题下
  * 正文仍是黑字**（用户实录 2026-09-20：THUbook 正文黑夜模式还是黑字）。
  *
  * 做法：只摘掉颜色类声明/属性（color / background / background-color / bgcolor /

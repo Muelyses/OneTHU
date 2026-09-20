@@ -72,7 +72,7 @@ function groupOf(path: string): string {
 }
 
 const BODY_STYLE = `
-.thubook-body { font-size: 14px; line-height: 1.75; color: var(--text, #1f2329); max-width: 760px; margin: 0 auto; }
+.thubook-body { font-size: 14px; line-height: 1.75; color: var(--text-1, #1f2329); max-width: 760px; margin: 0 auto; }
 .thubook-body h1, .thubook-body h2, .thubook-body h3, .thubook-body h4 { margin: 1.2em 0 .5em; line-height: 1.4; }
 .thubook-body h1 { font-size: 1.45em; } .thubook-body h2 { font-size: 1.25em; } .thubook-body h3 { font-size: 1.1em; }
 .thubook-body p { margin: .6em 0; }
@@ -80,12 +80,12 @@ const BODY_STYLE = `
 .thubook-body li { margin: .25em 0; }
 .thubook-body a { color: #3d8bfd; text-decoration: none; }
 .thubook-body a:hover { text-decoration: underline; }
-.thubook-body code { background: var(--bg-hover, #f4f5f7); padding: .1em .4em; border-radius: 4px; font-size: .9em; }
-.thubook-body pre { background: var(--bg-hover, #f4f5f7); padding: 12px; border-radius: 8px; overflow-x: auto; }
+.thubook-body code { background: var(--surface-3, #f4f5f7); padding: .1em .4em; border-radius: 4px; font-size: .9em; }
+.thubook-body pre { background: var(--surface-3, #f4f5f7); padding: 12px; border-radius: 8px; overflow-x: auto; }
 .thubook-body pre code { background: none; padding: 0; }
 .thubook-body table { border-collapse: collapse; margin: .8em 0; width: 100%; display: block; overflow-x: auto; }
 .thubook-body th, .thubook-body td { border: 1px solid var(--border, #e5e6eb); padding: 6px 10px; font-size: 13px; }
-.thubook-body th { background: var(--bg-hover, #f4f5f7); }
+.thubook-body th { background: var(--surface-3, #f4f5f7); }
 .thubook-body blockquote { border-left: 3px solid var(--border, #e5e6eb); margin: .8em 0; padding: .2em 1em; color: var(--text-2, #555); }
 .thubook-body img { max-width: min(100%, 480px); max-height: 320px; height: auto; border-radius: 8px; display: block; margin: .6em 0; }
 .thubook-body hr { border: none; border-top: 1px solid var(--border, #e5e6eb); margin: 1.2em 0; }
@@ -240,7 +240,7 @@ export default function ThubookPage(): ReactNode {
                       style={{
                         flex: 1, textAlign: "left", fontSize: 13, fontWeight: 700, padding: "7px 8px", borderRadius: 7,
                         border: "none", cursor: "pointer", background: current === g.path ? "var(--accent, #6d7ff0)" : "transparent",
-                        color: current === g.path ? "#fff" : "var(--text, #1f2329)",
+                        color: current === g.path ? "#fff" : "var(--text-1, #1f2329)",
                       }}
                     >
                       {g.label}

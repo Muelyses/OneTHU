@@ -248,7 +248,7 @@ interface Draft {
 }
 /** 居中弹窗（黑色遮罩）：编辑日程 / 课程详情共用骨架，风格同 TabManageModal */
 const MODAL_MASK = { position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 } as const;
-const MODAL_PANEL = { width: "100%", maxWidth: 440, maxHeight: "84vh", overflowY: "auto", background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" } as const;
+const MODAL_PANEL = { width: "100%", maxWidth: 440, maxHeight: "84vh", overflowY: "auto", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" } as const;
 
 const emptyDraft = (date: string, canCloud: boolean): Draft => ({
   title: "", date, start: "08:00", end: "09:35", allDay: false, location: "", note: "",
@@ -919,7 +919,7 @@ export function SchedulePage() {
                       {/* 空周提示（网格照常渲染，提示浮于其上不挡交互） */}
                       {entries.length === 0 ? (
                         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 4 }}>
-                          <span style={{ fontSize: 13, color: "var(--text-3, #999)", background: "var(--bg-elev, #fff)", padding: "6px 14px", borderRadius: 8, boxShadow: "0 1px 4px rgba(0,0,0,.08)" }}>
+                          <span style={{ fontSize: 13, color: "var(--text-3, #999)", background: "var(--surface, #fff)", padding: "6px 14px", borderRadius: 8, boxShadow: "0 1px 4px rgba(0,0,0,.08)" }}>
                             {winLoading ? "正在从教务系统取数…" : "本周暂无排课与日程"}
                           </span>
                         </div>
@@ -1081,7 +1081,7 @@ export function SchedulePage() {
                             key={i}
                             title="点击查看详情"
                             onClick={() => setDetail({ ...m })}
-                            style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--bg-hover, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline", cursor: "pointer" }}
+                            style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--surface-3, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline", cursor: "pointer" }}
                           >
                             <span style={{ fontWeight: 600, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {m.src === "hw" ? `⏰ ${m.courseName}` : m.courseName}
@@ -1104,7 +1104,7 @@ export function SchedulePage() {
                       <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
                         ⏰ {detail.courseName}
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text, #1f2329)" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text-1, #1f2329)" }}>
                         <span style={{ color: "var(--text-3, #999)" }}>课程</span>
                         <span>{detail.location ?? "—"}</span>
                         <span style={{ color: "var(--text-3, #999)" }}>截止</span>
@@ -1131,7 +1131,7 @@ export function SchedulePage() {
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
                     {detail.src === "exam" ? "考试详情" : "课程详情"}
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text, #1f2329)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text-1, #1f2329)" }}>
                     <span style={{ color: "var(--text-3, #999)" }}>名称</span>
                     <span style={{ fontWeight: 600 }}>{detail.courseName}</span>
                     <span style={{ color: "var(--text-3, #999)" }}>时间</span>

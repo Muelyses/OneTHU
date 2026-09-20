@@ -155,7 +155,7 @@ const openReviews = (v: { code: string; seq: string; name: string; teacher: stri
 
 /* ══════════ 弹窗（自带表面色，不依赖 Card 上下文变量）══════════ */
 const maskStyle: React.CSSProperties = { position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 620, maxHeight: "78vh", display: "flex", flexDirection: "column", background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" };
+const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 620, maxHeight: "78vh", display: "flex", flexDirection: "column", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" };
 const panelHead: React.CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: "1px solid var(--border, #eee)" };
 const panelBody: React.CSSProperties = { padding: "12px 16px", overflowY: "auto", fontSize: 13, lineHeight: 1.65 };
 
@@ -739,7 +739,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
   const selStyle: React.CSSProperties = { height: 26, fontSize: 12, flex: 1, minWidth: 96 };
   return (
     <>
-      <Card style={{ padding: "8px 10px", marginBottom: 10, position: "sticky", top: 0, zIndex: 8, background: "var(--paper, #faf8f2)", borderColor: "var(--amber)" }}>
+      <Card style={{ padding: "8px 10px", marginBottom: 10, position: "sticky", top: 0, zIndex: 8, background: "var(--surface-2, #faf8f2)", borderColor: "var(--amber)" }}>
         <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text-2)" }}>
           📌 北大、北外课程时间为通知附件形式（含单双周），<b>无法在筛选栏按时间筛选</b>。开放选课通知：
           <button className="btn" style={{ marginLeft: 6, padding: "1px 8px", fontSize: 11 }} onClick={() => navigate("info", { infoNewsQuery: "北京大学 北京外国语大学" })}>北大·北外本科</button>
@@ -1148,7 +1148,7 @@ function PlanSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
           const cr = items.reduce((a, c) => a + c.credits, 0);
           const cov = items.filter((c) => c.covered).reduce((a, c) => a + c.credits, 0);
           return (
-            <div key={g} style={{ padding: "10px 14px", borderRadius: 16, background: "var(--bg-elev, #fff)", boxShadow: "inset 0 0 0 1px rgba(127,127,127,.12), 0 4px 18px rgba(28,39,64,.06)", flex: 1, minWidth: 100, cursor: "pointer" }} onClick={() => { planGroupClick?.(g); }}>
+            <div key={g} style={{ padding: "10px 14px", borderRadius: 16, background: "var(--surface, #fff)", boxShadow: "inset 0 0 0 1px rgba(127,127,127,.12), 0 4px 18px rgba(28,39,64,.06)", flex: 1, minWidth: 100, cursor: "pointer" }} onClick={() => { planGroupClick?.(g); }}>
               <div style={{ fontSize: 22, fontWeight: 700, color: cov >= cr ? "var(--green)" : "var(--accent)" }}>{cov}<small style={{ fontSize: 12, fontWeight: 400, color: "var(--text-3)" }}>/{cr}学分</small></div>
               <div style={{ fontSize: 11, color: "var(--text-3)", marginTop: 2 }}>{g} ({items.length}门)</div>
             </div>
@@ -1499,7 +1499,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
             // 余量按 (课号,班次) 精确匹配——同课号多班次只按课号会串行（简介串台同款病）
             const vol = wb.courses.find((r) => r.c.code === s.code && String(r.c.seq || "0") === String(s.seq || "0"))?.q?.qRemaining;
             return (
-              <div key={`${s.code}_${s.seq || "0"}_${i}`} style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 2, fontSize: 12, padding: "6px 8px", borderRadius: 10, background: "var(--bg-elev, #f7f7f8)", border: "1px solid var(--border)" }}>
+              <div key={`${s.code}_${s.seq || "0"}_${i}`} style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 2, fontSize: 12, padding: "6px 8px", borderRadius: 10, background: "var(--surface, #f7f7f8)", border: "1px solid var(--border)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
                   <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600, cursor: "pointer" }} title={`点击搜索：${s.name}（${s.code}）`} onClick={() => jumpTo(s.code, "all", s.seq)}>
                     {s.name}{s.teacher ? <span style={{ color: "var(--text-3)", fontWeight: 400 }}> {s.teacher}</span> : null}

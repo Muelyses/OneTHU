@@ -9,6 +9,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useFavs } from "../state/favs.js";
 import { ensureWidgetRuntime } from "../state/notifySources.js";
+import { fetchWidgetStatus, type NativeWidgetStatus } from "../state/widgetBridge.js";
 import type { WidgetInstanceInfo } from "../state/widgetRuntime.js";
 import { fetchWidgetInstances } from "../state/widgetBridge.js";
 import {
@@ -23,6 +24,9 @@ export function WidgetSettingsSection(): ReactNode {
   const favs = useFavs();
   const backend = useNotifyBackend();
   const [instances, setInstances] = useState<WidgetInstanceInfo[] | null>(null);
+  /** null = 读取失败（与「读到 0 块」是两回事，不能都显示成「正在读取」） */
+  const [readFailed, setReadFailed] = useState(false);
+  const [status, setStatus] = useState<NativeWidgetStatus | null>(null);
   const [map, setMap] = useState(() => loadWidgetInstances());
   const [msg, setMsg] = useState<string | null>(null);
   /** 默认内容选「快捷方式」时要挑原子 */
@@ -31,8 +35,11 @@ export function WidgetSettingsSection(): ReactNode {
   const android = backend === "android";
 
   const refresh = async (): Promise<void> => {
-    setInstances(await fetchWidgetInstances());
+    const list = await fetchWidgetInstances();
+    setReadFailed(list === null);
+    setInstances(list ?? []);
     setMap(loadWidgetInstances());
+    setStatus(await fetchWidgetStatus());
   };
 
   useEffect(() => {
@@ -66,11 +73,13 @@ export function WidgetSettingsSection(): ReactNode {
         <div>
           <div className="setting-title">桌面上的小组件</div>
           <div className="setting-desc">
-            {instances === null
-              ? "正在读取…"
-              : instances.length === 0
-                ? "桌面上还没有 OneTHU 小组件：长按桌面 → 小组件 → 选「OneTHU」，放好一块会自动弹出选择层。"
-                : `共 ${instances.length} 块，每块各显示各的（点「换内容」改这一块）。`}
+            {readFailed
+              ? "读取失败：小组件后端没回应（若是刚装的版本，先完全退出应用再打开一次）。"
+              : instances === null
+                ? "正在读取…"
+                : instances.length === 0
+                  ? "桌面上还没有 OneTHU 小组件：长按桌面 → 小组件 → 选「OneTHU」，放好一块会自动弹出选择层。"
+                  : `共 ${instances.length} 块，每块各显示各的（点「换内容」改这一块）。`}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
@@ -78,6 +87,21 @@ export function WidgetSettingsSection(): ReactNode {
           <button className="btn btn-ghost" onClick={() => void refresh()}>重新读取</button>
         </div>
       </div>
+
+      {/* 形态登记情况：选择器里「看不到某个尺寸」时，先确认系统到底登记了哪几个 provider */}
+      {status ? (
+        <div className="setting-row">
+          <div>
+            <div className="setting-title">系统已登记的小组件形态</div>
+            <div className="setting-desc">
+              {status.providersRegistered.length === 0
+                ? "一个都没登记：清单没合并进 APK（这属于打包问题，请把这一行反馈给我）。"
+                : `${status.providersRegistered.length} 个：${status.providersRegistered.join("、")}`}
+              <span style={{ color: "var(--text-3)" }}>　桌面长按 → 小组件里能选到的就是这几个。</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {(instances ?? []).map((inst) => (
         <div className="setting-row" key={inst.id}>

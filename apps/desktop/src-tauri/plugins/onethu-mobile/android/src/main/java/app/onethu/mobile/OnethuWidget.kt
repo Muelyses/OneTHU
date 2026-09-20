@@ -157,11 +157,11 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
          * 只是初始占位不同（放置后照样能自由拖动）。
          */
         private val PROVIDERS = listOf(
-            OnethuWidgetShortcut::class.java,   // 1×1 快捷方式
-            OnethuWidgetNarrow::class.java,     // 2×1 窄条
-            OnethuWidgetSquare::class.java,     // 2×2 方块
-            OnethuWidgetProvider::class.java,   // 3×2 标准
-            OnethuWidgetStrip::class.java,      // 4×1 长条
+            OnethuWidgetShape1Shortcut::class.java,   // 1×1 快捷方式
+            OnethuWidgetShape2Narrow::class.java,     // 2×1 窄条
+            OnethuWidgetShape3Square::class.java,     // 2×2 方块
+            OnethuWidgetShape4Standard::class.java,   // 3×2 标准
+            OnethuWidgetShape5Strip::class.java,      // 4×1 长条
             OnethuWidgetSlot1::class.java,
             OnethuWidgetSlot2::class.java,
             OnethuWidgetSlot3::class.java,
@@ -169,11 +169,11 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
 
         /** 槽位键 / provider 类 / 诊断名（诊断与刷新共用；槽位键 null = 宿主小组件） */
         fun providerEntries(): List<Triple<String?, Class<*>, String>> = listOf(
-            Triple(null, OnethuWidgetShortcut::class.java, "宿主 1×1"),
-            Triple(null, OnethuWidgetNarrow::class.java, "宿主 2×1"),
-            Triple(null, OnethuWidgetSquare::class.java, "宿主 2×2"),
-            Triple(null, OnethuWidgetProvider::class.java, "宿主 3×2"),
-            Triple(null, OnethuWidgetStrip::class.java, "宿主 4×1"),
+            Triple(null, OnethuWidgetShape1Shortcut::class.java, "宿主 1×1"),
+            Triple(null, OnethuWidgetShape2Narrow::class.java, "宿主 2×1"),
+            Triple(null, OnethuWidgetShape3Square::class.java, "宿主 2×2"),
+            Triple(null, OnethuWidgetShape4Standard::class.java, "宿主 3×2 标准"),
+            Triple(null, OnethuWidgetShape5Strip::class.java, "宿主 4×1"),
             Triple("1", OnethuWidgetSlot1::class.java, "槽位 1"),
             Triple("2", OnethuWidgetSlot2::class.java, "槽位 2"),
             Triple("3", OnethuWidgetSlot3::class.java, "槽位 3"),
@@ -252,6 +252,8 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private fun renderPlaceholder(ctx: Context, manager: AppWidgetManager, widgetId: Int, slot: String?) {
             if (slot == null && isShortcutProvider(manager, widgetId)) {
                 val views = RemoteViews(ctx.packageName, R.layout.onethu_widget_shortcut)
+                // 空框看着像坏了：先用应用图标占位，用户一看就知道「还没选东西」
+                views.setImageViewResource(R.id.onethu_widget_icon, ctx.applicationInfo.icon)
                 views.setTextViewText(R.id.onethu_widget_label, "点一下选择")
                 views.setOnClickPendingIntent(R.id.onethu_widget_root, clickPending(ctx, "widget-config:$widgetId", 0))
                 manager.updateAppWidget(widgetId, views)
@@ -280,7 +282,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             } catch (e: Exception) {
                 null
             } ?: return false
-            return provider.className == OnethuWidgetShortcut::class.java.name
+            return provider.className == OnethuWidgetShape1Shortcut::class.java.name
         }
 
         /** 列表形态：标题 + 若干行（每行「主文 · 副文」）+ 脚注。用于日程/DDL 与单原子详情 */
@@ -449,27 +451,27 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
    区别只在清单里声明的初始占位尺寸——让选择器直接给出各种形状。 */
 
 /** 1×1 快捷方式：一个图标 + 名称（功能页 / 原子） */
-class OnethuWidgetShortcut : OnethuBaseWidget() {
+class OnethuWidgetShape1Shortcut : OnethuBaseWidget() {
     override fun slotKey(): String? = null
 }
 
 /** 2×1 窄条 */
-class OnethuWidgetNarrow : OnethuBaseWidget() {
+class OnethuWidgetShape2Narrow : OnethuBaseWidget() {
     override fun slotKey(): String? = null
 }
 
 /** 2×2 方块 */
-class OnethuWidgetSquare : OnethuBaseWidget() {
+class OnethuWidgetShape3Square : OnethuBaseWidget() {
     override fun slotKey(): String? = null
 }
 
 /** 3×2 标准（日程与 DDL 的常见形态） */
-class OnethuWidgetProvider : OnethuBaseWidget() {
+class OnethuWidgetShape4Standard : OnethuBaseWidget() {
     override fun slotKey(): String? = null
 }
 
 /** 4×1 长条 */
-class OnethuWidgetStrip : OnethuBaseWidget() {
+class OnethuWidgetShape5Strip : OnethuBaseWidget() {
     override fun slotKey(): String? = null
 }
 

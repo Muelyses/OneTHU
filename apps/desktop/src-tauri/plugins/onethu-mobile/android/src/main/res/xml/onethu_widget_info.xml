@@ -16,6 +16,7 @@
     android:minResizeWidth="110dp"
     android:minResizeHeight="40dp"
     android:updatePeriodMillis="1800000"
+    android:previewLayout="@layout/onethu_widget_preview_list"
     android:initialLayout="@layout/onethu_widget"
     android:configure="app.onethu.mobile.OnethuWidgetConfigActivity"
     android:resizeMode="horizontal|vertical"

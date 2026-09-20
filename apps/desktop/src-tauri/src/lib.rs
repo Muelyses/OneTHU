@@ -2299,6 +2299,30 @@ fn widget_status() -> serde_json::Value {
     serde_json::json!({ "ok": false, "reason": "not-android" })
 }
 
+/// 桌面上每一块宿主机小组件的清单（id / provider / 占位宽高 / 是否已有内容）。
+///
+/// 内容按实例绑定，所以「桌面上有哪几块」必须先问原生——AppWidgetManager 才知道。
+/// 这条命令曾经漏接（Kotlin 与 JS 都写好了，中间的 Rust 桥没补），后果是运行时拿不到实例、
+/// 推不出去任何内容：桌面永远显示「点一下选择内容」，点开又让用户绑定，形成死循环。
+#[cfg(mobile)]
+#[tauri::command]
+async fn widget_instances(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("widgetInstances", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn widget_instances() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-android", "instances": [] })
+}
+
 /// 打开系统通知设置页（渠道管理 / 精确闹钟授权都在系统设置里，应用只能带路）
 #[cfg(mobile)]
 #[tauri::command]
@@ -2659,7 +2683,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

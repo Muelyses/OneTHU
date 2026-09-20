@@ -69,8 +69,14 @@ export function NotifyBridge(): ReactNode {
       }
     };
     document.addEventListener("visibilitychange", take);
+    // 已被拉到前台的应用再被点击时，visibilitychange 不一定触发（同任务栈单例复用），
+    // 故焦点事件也消费一次：否则用户点了小组件却什么都没发生
+    window.addEventListener("focus", take);
     void take();      // 冷启动路径：App 由点击拉起时立刻消费
-    return () => document.removeEventListener("visibilitychange", take);
+    return () => {
+      document.removeEventListener("visibilitychange", take);
+      window.removeEventListener("focus", take);
+    };
   }, [status, navigate]);
 
   // 绑定层挂在这里：它要在整个应用范围内可用（桌面点小组件、收藏夹页「上桌面」都会唤起）

@@ -38,7 +38,7 @@
              四者共用同一套布局与同一份快照，只是初始占位不同；放置后仍可自由拖动改尺寸
              （见 OnethuWidget.kt 的 rowBudget：行数按实际高度决定）。 -->
         <receiver
-            android:name="app.onethu.mobile.OnethuWidgetShortcut"
+            android:name="app.onethu.mobile.OnethuWidgetShape1Shortcut"
             android:label="@string/onethu_widget_shortcut_label"
             android:exported="true">
             <intent-filter>
@@ -49,29 +49,7 @@
                 android:resource="@xml/onethu_widget_shortcut_info" />
         </receiver>
         <receiver
-            android:name="app.onethu.mobile.OnethuWidgetProvider"
-            android:label="@string/onethu_widget_label"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/onethu_widget_info" />
-        </receiver>
-        <receiver
-            android:name="app.onethu.mobile.OnethuWidgetSquare"
-            android:label="@string/onethu_widget_square_label"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/onethu_widget_square_info" />
-        </receiver>
-        <receiver
-            android:name="app.onethu.mobile.OnethuWidgetNarrow"
+            android:name="app.onethu.mobile.OnethuWidgetShape2Narrow"
             android:label="@string/onethu_widget_narrow_label"
             android:exported="true">
             <intent-filter>
@@ -82,7 +60,29 @@
                 android:resource="@xml/onethu_widget_narrow_info" />
         </receiver>
         <receiver
-            android:name="app.onethu.mobile.OnethuWidgetStrip"
+            android:name="app.onethu.mobile.OnethuWidgetShape3Square"
+            android:label="@string/onethu_widget_square_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_square_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape4Standard"
+            android:label="@string/onethu_widget_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_info" />
+        </receiver>
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetShape5Strip"
             android:label="@string/onethu_widget_strip_label"
             android:exported="true">
             <intent-filter>

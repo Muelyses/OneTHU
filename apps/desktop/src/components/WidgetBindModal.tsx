@@ -13,10 +13,12 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AtomPickerModal } from "./Collect.js";
+import { IconCard, IconFile, IconFolder, IconToday } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { resolveAtom } from "../state/atoms.js";
 import { showToast } from "../state/toast.js";
 import { fetchWidgetInstances } from "../state/widgetBridge.js";
+import { ensureWidgetRuntime } from "../state/notifySources.js";
 import type { WidgetInstanceInfo } from "../state/widgetRuntime.js";
 import {
   bindWidgetInstance, describeBinding, loadWidgetInstances, unbindWidgetInstance, type WidgetBinding,
@@ -26,11 +28,11 @@ import { useNotifyBackend } from "./useNotifyBackend.js";
 
 /** provider 类名 → 形态标签（原生报回类名，这里给用户看得懂的名字） */
 const SHAPES: Record<string, string> = {
-  OnethuWidgetShortcut: "1×1 快捷方式",
-  OnethuWidgetNarrow: "2×1 窄条",
-  OnethuWidgetSquare: "2×2 方块",
-  OnethuWidgetProvider: "3×2 标准",
-  OnethuWidgetStrip: "4×1 长条",
+  OnethuWidgetShape1Shortcut: "1×1 快捷方式",
+  OnethuWidgetShape2Narrow: "2×1 窄条",
+  OnethuWidgetShape3Square: "2×2 方块",
+  OnethuWidgetShape4Standard: "3×2 标准",
+  OnethuWidgetShape5Strip: "4×1 长条",
 };
 
 export function shapeLabel(inst: WidgetInstanceInfo): string {
@@ -49,11 +51,16 @@ export function bindingSummary(binding: WidgetBinding, favs: { folders: Record<s
 }
 
 /** 四类内容的说明（选择界面文案与设置页共用一份口径） */
-export const CONTENT_KINDS: Array<{ kind: "today" | "detail" | "folder" | "shortcut"; label: string; desc: string }> = [
-  { kind: "today", label: "日程与 DDL", desc: "今天的课、考试与作业截止（最常用的一块）" },
-  { kind: "detail", label: "一个原子占满", desc: "课程、作业、洗衣机…显示它的详情，拉得越高行数越多" },
-  { kind: "folder", label: "收藏夹图标组", desc: "把某个收藏夹嵌到桌面：若干原子图标并列，各自可点" },
-  { kind: "shortcut", label: "快捷方式", desc: "一个功能页或原子的图标快捷方式（1×1 起）" },
+export const CONTENT_KINDS: Array<{
+  kind: "today" | "detail" | "folder" | "shortcut";
+  label: string;
+  desc: string;
+  icon: typeof IconToday;
+}> = [
+  { kind: "today", label: "日程与 DDL", desc: "今天的课、考试与作业截止（最常用的一块）", icon: IconToday },
+  { kind: "detail", label: "一个原子占满", desc: "课程、作业、洗衣机…显示它的详情，拉得越高行数越多", icon: IconFile },
+  { kind: "folder", label: "收藏夹图标组", desc: "把某个收藏夹嵌到桌面：若干原子图标并列，各自可点", icon: IconFolder },
+  { kind: "shortcut", label: "快捷方式", desc: "一个功能页或原子的图标快捷方式（1×1 起）", icon: IconCard },
 ];
 
 export function WidgetBindModal(): ReactNode {
@@ -88,6 +95,15 @@ export function WidgetBindModal(): ReactNode {
 
   const bind = (id: number | string, binding: WidgetBinding): void => {
     bindWidgetInstance(id, binding);
+    // 用户此刻正看着桌面：立刻重推一次，别等订阅链上的防抖。
+    // 再补一次：放置流程里系统可能还没把这块登记进 AppWidgetManager（配置活动刚返回），
+    // 第一次推送里没有它，补推这一次才不会让用户看到「绑好了但桌面还是占位」。
+    void (async () => {
+      const rt = await ensureWidgetRuntime();
+      await rt.syncNow();
+      await new Promise((r) => setTimeout(r, 2500));
+      await rt.syncNow();
+    })();
     done(`已绑定：${bindingSummary(binding, favs.data)}`);
   };
 
@@ -119,11 +135,14 @@ export function WidgetBindModal(): ReactNode {
               </div>
             ) : null}
             {(instances ?? []).map((inst) => (
-              <button key={inst.id} className="btn" style={{ width: "100%", marginBottom: 8 }} onClick={() => bind(inst.id, binding)}>
-                {shapeLabel(inst)}
-                <span style={{ color: "var(--text-3)", marginLeft: 8 }}>
-                  {bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: "today" }, favs.data)}
-                </span>
+              <button key={inst.id} className="home-modal-row" onClick={() => bind(inst.id, binding)}>
+                <span className="home-entry-icon"><IconCard width={17} height={17} /></span>
+                <div className="home-modal-text">
+                  <div className="home-entry-name">{shapeLabel(inst)}</div>
+                  <div className="home-entry-hint">
+                    当前：{bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: "today" }, favs.data)}
+                  </div>
+                </div>
               </button>
             ))}
           </div>
@@ -147,11 +166,12 @@ export function WidgetBindModal(): ReactNode {
           <div className="home-modal-hint">
             当前：{bindingSummary(cur, favs.data)}。桌面上可以同时放多块，各显示各的。
           </div>
-          {CONTENT_KINDS.map((k) => (
+          {CONTENT_KINDS.map((k) => {
+            const Icon = k.icon;
+            return (
             <button
               key={k.kind}
-              className="btn"
-              style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 8 }}
+              className="home-modal-row"
               onClick={() => {
                 if (k.kind === "today") bind(id, { kind: "today" });
                 else if (k.kind === "folder") {
@@ -163,10 +183,14 @@ export function WidgetBindModal(): ReactNode {
                 } else setPicker(k.kind);
               }}
             >
-              <strong>{k.label}</strong>
-              <span style={{ display: "block", color: "var(--text-3)", fontSize: "var(--text-xs)" }}>{k.desc}</span>
+              <span className="home-entry-icon"><Icon width={17} height={17} /></span>
+              <div className="home-modal-text">
+                <div className="home-entry-name">{k.label}</div>
+                <div className="home-entry-hint">{k.desc}</div>
+              </div>
             </button>
-          ))}
+            );
+          })}
 
           {cur.kind !== "today" ? (
             <button
@@ -192,9 +216,12 @@ export function WidgetBindModal(): ReactNode {
             <div className="home-modal-body">
               <div className="home-modal-hint">夹里的原子会以图标并列显示在这块小组件上（放不下的自动略过）。</div>
               {Object.values(favs.data.folders).map((f) => (
-                <button key={f.id} className="btn" style={{ width: "100%", marginBottom: 8 }} onClick={() => bind(id, { kind: "folder", folderId: f.id })}>
-                  {f.title}
-                  <span style={{ color: "var(--text-3)", marginLeft: 8 }}>{f.items.filter((it) => it.t === "a").length} 个原子</span>
+                <button key={f.id} className="home-modal-row" onClick={() => bind(id, { kind: "folder", folderId: f.id })}>
+                  <span className="home-entry-icon"><IconFolder width={17} height={17} /></span>
+                  <div className="home-modal-text">
+                    <div className="home-entry-name">{f.title}</div>
+                    <div className="home-entry-hint">{f.items.filter((it) => it.t === "a").length} 个原子（放不下的自动略过）</div>
+                  </div>
                 </button>
               ))}
             </div>

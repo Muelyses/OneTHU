@@ -18,7 +18,7 @@ import {
 } from "../lib/homeCards.js";
 
 export { SCENARIOS, cardsForScenarios, cardsOfScenario, type Scenario } from "../lib/onboardingCards.js";
-import { cardsForScenarios, SCENARIOS } from "../lib/onboardingCards.js";
+import { cardsForScenarios, planTodayCards, SCENARIOS } from "../lib/onboardingCards.js";
 
 const KEY = "onethu.onboarded.v1";
 
@@ -76,27 +76,29 @@ export function applyScenarios(scenarioIds: string[], orientation: HomeOrientati
  * 其它卡保持现有栏位与顺序——用户改完不会觉得首页被"重刷"了一遍。
  */
 export function applyTodayCards(keep: HomeCardId[], orientation: HomeOrientation): void {
-  // 兜底：一张都不留 = 首页空白（用户实录：以为在"选"，其实把默认勾选的点掉了）。
-  // 宁可留一张今日概览，也不能交出"打开什么都看不见"的首页。
   const safeKeep: HomeCardId[] = keep.length > 0 ? keep : ["today-overview"];
-  const keepSet = new Set(safeKeep);
-  const saved = resolveLayout(HOME_CARD_META, loadLayout(orientation));
-  const items: HomeLayoutItem[] = saved.map((it) => {
-    if (keepSet.has(it.id)) return it;
-    return { ...it, col: "off", collapsed: true };
-  });
-  saveLayout(items, orientation);
+  // 两个朝向都写：用户的选择与横竖屏无关；只写一个朝向会让另一个朝向留着旧的"全关"布局
+  // （事故原型：导览在 landscape 下改，窗口一变形又看到空白）
+  for (const o of ["portrait", "landscape"] as HomeOrientation[]) {
+    const saved = resolveLayout(HOME_CARD_META, loadLayout(o));
+    const { items, empty } = planTodayCards(safeKeep, saved, HOME_CARD_META);
+    // 兜底：真算出来一张可见的都没有 → 给一份注册表默认布局，绝不交出空白首页
+    saveLayout(empty ? resolveLayout(HOME_CARD_META, null) : items, o);
+  }
 
-  // 被收起来的卡默认折叠，回到首页不会又把一屏塞满
+  // 被收起的卡默认折叠，留下的卡展开（刚选完就该看得见内容）
+  const keepSet = new Set(safeKeep);
   const collapsed = { ...loadCollapsedDefaults() };
-  for (const def of HOME_CARD_META) if (!keepSet.has(def.id)) collapsed[def.id] = true;
+  for (const def of HOME_CARD_META) collapsed[def.id] = !keepSet.has(def.id);
   saveCollapsedDefaults(collapsed);
 
-  // 留痕：这类"用户以为选了、实际全关"的情况必须能从日志看出来
+  // 留痕：这类"以为选了、其实还关着 / 一张没留"的情况必须能从日志看出来
   void import("../lib/clients.js")
     .then((m) =>
       m.logLine(
-        `[ONBOARD] 今日页卡片落盘：留 ${safeKeep.length} 张（${safeKeep.join(",")}）${keep.length === 0 ? " ← 用户未留任何卡，已兜底保留今日概览" : ""} · 朝向=${orientation}`,
+        `[ONBOARD] 今日页卡片落盘：留 ${safeKeep.length} 张（${safeKeep.join(",")}）${
+          keep.length === 0 ? " ← 用户未留任何卡，已兜底保留今日概览" : ""
+        } · 两个朝向同步`,
       ),
     )
     .catch(() => undefined);

@@ -13,22 +13,29 @@ import { TABS as LIFE_TABS } from "../pages/info/LifePage.js";
 import { loadTabLayout, saveTabLayout } from "../lib/tabLayout.js";
 import { useApp } from "../state/context.js";
 import { useFavs } from "../state/favs.js";
+import { NAV } from "./Layout.js";
 
-/** 侧栏内置功能（与 Layout.tsx 的 NAV 同源；选课按用户要求**不参与**询问） */
-const NAV_ITEMS: Array<{ page: string; label: string }> = [
-  { page: "today", label: "今日" },
-  { page: "learn", label: "网络学堂" },
-  { page: "schedule", label: "日程" },
-  { page: "trace", label: "寻迹" },
-  { page: "mail", label: "邮箱" },
-  { page: "cloud", label: "云盘" },
-  { page: "thubook", label: "THUbook" },
-  { page: "info", label: "信息" },
-  { page: "life", label: "生活" },
-  { page: "reserve", label: "预约" },
-  { page: "thos", label: "在线服务" },
-  { page: "otherinfo", label: "其他 Info 应用" },
-];
+/** 侧栏内置功能：直接复用 Layout 的 NAV（含图标），只补一句"里面有啥"。
+ *  选课按用户要求不参与询问。 */
+const PAGE_HINTS: Record<string, string> = {
+  today: "未交作业 · 截止 · 今日课程",
+  learn: "作业 · 通知 · 文件 · 讨论区",
+  schedule: "课表 · 日程 · 提醒",
+  trace: "今日日程地图 · 去哪 · 多久",
+  mail: "清华邮箱收发",
+  cloud: "清华云盘文件",
+  thubook: "清华手册 · 校园指南",
+  info: "成绩 · 考试 · 学籍 · 新闻",
+  life: "校园卡 · 电费 · 洗衣机 · 网络",
+  reserve: "座位 · 研讨间 · 场馆",
+  thos: "学校在线服务（报备等）",
+  otherinfo: "其他 Info 应用入口",
+};
+const NAV_ITEMS = NAV.filter((n) => n.page !== "zhjwxk").map((n) => ({
+  page: n.page as string,
+  label: n.label,
+  icon: n.icon,
+}));
 
 /** 二级页签清单（key 与各页 loadTabLayout 一致） */
 const TAB_GROUPS: Array<{ key: string; title: string; tabs: Array<{ id: string; label: string }> }> = [
@@ -113,11 +120,37 @@ export function OnboardingTour(): React.ReactNode {
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)" }}>
               点一下取消 = 收进「已折叠」，不是删掉。
             </p>
-            {NAV_ITEMS.map((n) =>
-              row(keepPages.includes(n.page), n.label, "", () =>
-                setKeepPages((p) => (p.includes(n.page) ? p.filter((x) => x !== n.page) : [...p, n.page])),
-              ),
-            )}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {NAV_ITEMS.map((n) => {
+                const on = keepPages.includes(n.page);
+                const Icon = n.icon as (p: { width?: number; height?: number }) => React.ReactNode;
+                return (
+                  <button
+                    key={n.page}
+                    onClick={() =>
+                      setKeepPages((p) => (p.includes(n.page) ? p.filter((x) => x !== n.page) : [...p, n.page]))
+                    }
+                    style={{
+                      display: "flex", gap: 9, alignItems: "flex-start", textAlign: "left",
+                      padding: "10px 11px", borderRadius: 10, cursor: "pointer",
+                      border: on ? "1px solid var(--accent, #4176e6)" : "1px solid var(--border, #e5e6eb)",
+                      background: on ? "var(--accent-soft, rgba(65,118,230,.08))" : "var(--surface, #fff)",
+                      opacity: on ? 1 : 0.55,
+                    }}
+                  >
+                    <span style={{ flex: "none", marginTop: 1, color: on ? "var(--accent, #4176e6)" : "var(--text-3, #999)" }}>
+                      <Icon width={16} height={16} />
+                    </span>
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: "block", fontWeight: 600, fontSize: 13.5 }}>{n.label}</span>
+                      <span style={{ display: "block", fontSize: 11.5, color: "var(--text-3, #999)", lineHeight: 1.5 }}>
+                        {PAGE_HINTS[n.page] ?? ""}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </>
         ) : null}
 

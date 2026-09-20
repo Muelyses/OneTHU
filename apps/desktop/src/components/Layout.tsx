@@ -31,7 +31,7 @@ function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: obj
   }));
 }
 
-const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> = [
+export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> = [
   { page: "today", label: "今日", icon: IconToday },
   { page: "learn", label: "网络学堂", icon: IconLearn },
   { page: "schedule", label: "日程", icon: IconSchedule },

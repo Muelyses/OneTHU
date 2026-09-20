@@ -73,6 +73,12 @@ class NotifyScheduleArgs {
     lateinit var items: String
 }
 
+/** 是否要发起授权请求（缺省 false：只查状态） */
+@InvokeArg
+class NotifyPermissionArgs {
+    var request: Boolean = false
+}
+
 /** 要撤销的通知 id 数组（JSON 字符串） */
 @InvokeArg
 class NotifyCancelArgs {
@@ -518,7 +524,13 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
 
     @Command
     fun notifyPermission(invoke: Invoke) {
-        if (!hasNotificationPermission()) {
+        // request=false（设置页只查状态）不弹权限框；用户主动开启提醒 / 点「试一下」才请求
+        val want = try {
+            invoke.parseArgs(NotifyPermissionArgs::class.java).request
+        } catch (e: Exception) {
+            false
+        }
+        if (want && !hasNotificationPermission()) {
             requestPermissionForAliases(arrayOf("notifications"), invoke, "notificationPermissionCallback")
             return
         }

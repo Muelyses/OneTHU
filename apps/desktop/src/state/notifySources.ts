@@ -1,9 +1,13 @@
 /**
- * 通知运行时的生产接线：真实数据订阅 + 真实取数，装进 notifyRuntime。
+ * 通知/小组件的生产接线：真实订阅 + 真实取数 + 单例运行时。
  *
- * 运行时本身不 import 数据层（否则它会被 .tsx 拖成不可测），所以「哪些数据变化要触发
- * 重算」这份清单落在这里：learn 快照（作业/课程）、外部作业源、两级提醒设置、课表。
+ * 运行时做成单例的原因：设置页要能「立即应用」「预览即将提醒」，而启动时按下的那条链
+ * 必须和它是同一份——两条调度链并行会互相撤销对方的排程（同一批 id 反复排/撤）。
+ *
+ * 后端类型由原生回答（`notify_backend`），不猜 UA：tauri.conf.json 为适配 Android
+ * 的 wengine 指纹固定了 Windows 版 Chrome UA，UA 判定在本项目里不可靠。
  */
+import { invoke } from "@tauri-apps/api/core";
 import { subscribeCampusData, subscribeLearnData } from "./data.js";
 import { subscribeExtHw } from "./exthw.js";
 import { subscribeHwRemind } from "./hwRemind.js";
@@ -11,6 +15,9 @@ import { collectNotifyInputs } from "./notifyInputs.js";
 import { createNotifyRuntime, type NotifyRuntime } from "./notifyRuntime.js";
 import { createWidgetRuntime, type WidgetRuntime } from "./widgetRuntime.js";
 import type { NotifyInvoke } from "./notifyScheduler.js";
+
+export type NotifyRuntimeHandle = NotifyRuntime;
+export type WidgetRuntimeHandle = WidgetRuntime;
 
 /** 四处数据源任一变化都重算计划（防抖在运行时里，订阅这里只做转发） */
 export function subscribeNotifySources(fn: () => void): () => void {
@@ -25,37 +32,58 @@ export function subscribeNotifySources(fn: () => void): () => void {
   };
 }
 
-/** 运行时句柄（组件持有以便卸载时停掉） */
-export type NotifyRuntimeHandle = NotifyRuntime;
+const invokeBridge: NotifyInvoke = (cmd, args) => invoke(cmd, args ?? {});
 
-/** 小组件运行时句柄（组件持有以便卸载时停掉） */
-export type WidgetRuntimeHandle = WidgetRuntime;
+let backendKind = "unknown";
+let notifyRuntime: NotifyRuntime | null = null;
+let widgetRuntime: WidgetRuntime | null = null;
 
-/** 小组件运行时：同一条数据订阅，独立推送链路（不受通知总开关影响） */
-export function startWidgetRuntime(deps: {
-  invoke: NotifyInvoke;
-  backendAvailable: boolean;
-  onError?: (m: string) => void;
-}): WidgetRuntime {
-  return createWidgetRuntime({
-    invoke: deps.invoke,
-    backendAvailable: deps.backendAvailable,
-    onError: deps.onError,
-    collect: collectNotifyInputs,
-    subscribe: subscribeNotifySources,
-  });
+/** 探测本机通知后端（android / macos / windows / none）；结果缓存 */
+export async function detectNotifyBackend(): Promise<string> {
+  if (backendKind !== "unknown") return backendKind;
+  try {
+    backendKind = await invoke<string>("notify_backend");
+  } catch {
+    backendKind = "none";
+  }
+  return backendKind;
 }
 
-export function startNotifyRuntime(deps: {
-  invoke: NotifyInvoke;
-  backendAvailable: boolean;
-  onError?: (m: string) => void;
-}): NotifyRuntime {
-  return createNotifyRuntime({
-    invoke: deps.invoke,
-    backendAvailable: deps.backendAvailable,
-    onError: deps.onError,
+export function currentNotifyBackend(): string {
+  return backendKind;
+}
+
+/** 懒启动单例（首次会先探测后端）；后端为 none 时也会返回运行时，只是所有动作会跳过 */
+export async function ensureNotifyRuntime(): Promise<NotifyRuntime> {
+  if (notifyRuntime) return notifyRuntime;
+  const kind = await detectNotifyBackend();
+  notifyRuntime = createNotifyRuntime({
+    invoke: invokeBridge,
+    backendAvailable: kind !== "none",
+    onError: (m) => console.warn("[notify]", m),
     collect: collectNotifyInputs,
     subscribe: subscribeNotifySources,
   });
+  return notifyRuntime;
+}
+
+export async function ensureWidgetRuntime(): Promise<WidgetRuntime> {
+  if (widgetRuntime) return widgetRuntime;
+  const kind = await detectNotifyBackend();
+  widgetRuntime = createWidgetRuntime({
+    invoke: invokeBridge,
+    backendAvailable: kind === "android",   // 小组件只有 Android 有承载（桌面端明确不做）
+    onError: (m) => console.warn("[widget]", m),
+    collect: collectNotifyInputs,
+    subscribe: subscribeNotifySources,
+  });
+  return widgetRuntime;
+}
+
+/** 登出/卸载时收摊 */
+export function releaseNotifyRuntimes(): void {
+  notifyRuntime?.stop();
+  widgetRuntime?.stop();
+  notifyRuntime = null;
+  widgetRuntime = null;
 }

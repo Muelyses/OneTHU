@@ -45,6 +45,19 @@ base64 = "0.22"
 onethu-harness-core = { path = "../../../plugins/OneTHU-Harness/core" }
 tauri-plugin-geolocation = "2.3.3"
 
+# macOS 系统通知：UNUserNotificationCenter（objc2 绑定，见 src/notify_macos.rs）。
+# 与日历插件同源依赖，版本对齐避免重复编译两套 objc2。
+[target.'cfg(target_os = "macos")'.dependencies]
+block2 = "0.6"
+objc2 = { version = "0.6", features = ["alloc", "std"] }
+objc2-foundation = { version = "0.3", default-features = false, features = [
+  "std", "NSString", "NSArray", "NSError", "NSObject", "NSBundle",
+] }
+objc2-user-notifications = { version = "0.3", default-features = false, features = [
+  "std", "block2", "UNUserNotificationCenter", "UNNotificationContent",
+  "UNNotificationRequest", "UNNotificationSettings", "UNNotificationTrigger",
+] }
+
 [profile.release]
 strip = true
 lto = true

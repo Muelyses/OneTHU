@@ -2,6 +2,9 @@
 
 use serde::{Deserialize, Serialize};
 
+mod notify;
+#[cfg(target_os = "macos")]
+mod notify_macos;
 mod mail;
 mod seafile;
 mod harness_embed;
@@ -2172,13 +2175,19 @@ async fn widget_take_target(app: tauri::AppHandle) -> Result<serde_json::Value, 
 
 #[cfg(mobile)]
 #[tauri::command]
-async fn notify_permission(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+async fn notify_permission(
+    app: tauri::AppHandle,
+    request: Option<bool>,
+) -> Result<serde_json::Value, String> {
     let handle = app
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0
         .clone();
     handle
-        .run_mobile_plugin_async("notifyPermission", serde_json::json!({}))
+        .run_mobile_plugin_async(
+            "notifyPermission",
+            serde_json::json!({ "request": request.unwrap_or(false) }),
+        )
         .await
         .map_err(|e| e.to_string())
 }
@@ -2251,34 +2260,49 @@ async fn notify_take_target(app: tauri::AppHandle) -> Result<serde_json::Value, 
 /* 桌面端（macOS / Windows）：暂以 not-implemented 占位，由 src/notify.rs 实现后替换。
  * 返回结构与其他未实现路径一致（ok:false + reason），前端据此在设置页显示「本平台暂不支持」。 */
 
-#[cfg(desktop)]
+/// 本机通知后端类型（前端据此决定是否启动调度链；macOS/Windows/Android 各不同）
+#[cfg(mobile)]
 #[tauri::command]
-fn notify_permission() -> serde_json::Value {
-    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop" })
+fn notify_backend() -> String {
+    "android".into()
 }
 
 #[cfg(desktop)]
 #[tauri::command]
-fn notify_schedule(_items: String) -> serde_json::Value {
-    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "scheduled": 0 })
+fn notify_backend() -> String {
+    notify::backend()
+}
+
+/// 查询/请求通知授权。`request=false` 只查状态（首次打开设置页不该弹系统框），
+/// 用户在设置页主动开启提醒或点「试一下」时才传 true。
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_permission(request: Option<bool>) -> serde_json::Value {
+    notify::permission(request.unwrap_or(false))
 }
 
 #[cfg(desktop)]
 #[tauri::command]
-fn notify_cancel(_ids: String) -> serde_json::Value {
-    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "cancelled": 0 })
+fn notify_schedule(items: String) -> serde_json::Value {
+    notify::schedule(&items)
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn notify_cancel(ids: String) -> serde_json::Value {
+    notify::cancel(&ids)
 }
 
 #[cfg(desktop)]
 #[tauri::command]
 fn notify_pending() -> serde_json::Value {
-    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "ids": [] })
+    notify::pending()
 }
 
 #[cfg(desktop)]
 #[tauri::command]
 fn notify_test() -> serde_json::Value {
-    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop" })
+    notify::test()
 }
 
 #[cfg(desktop)]
@@ -2575,7 +2599,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,notify_backend,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

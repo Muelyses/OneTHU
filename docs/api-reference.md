@@ -176,17 +176,30 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `lastAt` | number | 最近一次刷新完成时间（毫秒时间戳） |
 | `configured` | boolean | 是否已配置任一作业源；为 `false` 时调用方不应使用本接口数据 |
 
-`items` 元素字段：
+`items` 元素（`ExternalHomework`）：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
+| `id` | string | 源内稳定唯一标识（列表 key 与去重，不含 `ext:` 前缀） |
 | `source` | string | 源标识：`yuketang`、`tuoj`、`tuojClassic`、`tyche`、`dsa` |
-| `course` / `title` | string | 课程名与作业标题 |
-| `deadline` | string \| null | 截止时间，格式 `"YYYY-MM-DD HH:MM"` |
-| `url` | string \| null | 详情链接 |
-| `submitted` | boolean | 提交状态。由各源独立查询得出，查询失败或无法判定时为 `false` |
-| `graded` | boolean | 批改状态，仅部分源提供 |
-| `score` | number \| null | 得分，仅已批改时非空 |
+| `courseName` / `title` | string | 课程名与作业标题 |
+| `deadline` | string | 截止时间，统一为 `"YYYY-MM-DD HH:MM"`（本地时区） |
+| `kind` | `"homework"` \| `"exam"` | 作业或试卷 |
+| `url` | string? | 详情链接（指向学生端页面） |
+| `submitted` | boolean | 提交状态。各源独立查询得出；查询失败或无法判定时为 `false`（保守） |
+| `submittedCount` / `totalCount` | number? | 已提交题数 / 总题数（仅雨课堂有精确数据） |
+| `graded` | boolean? | 批改状态。目前仅雨课堂可判定，其余源缺省视为未批改 |
+| `audited` | boolean? | 是否旁听课堂（雨课堂 `role===6`；未知 role 不标记） |
+| `score` | number? | 得分，**仅在已提交且已出分/已批改时设置**（不谎报 0 分） |
+| `totalScore` | number? | 卷面满分，与 `score` 成对出现；题面分值全缺失时不设 |
+| `leafTypeId` / `classroomId` | string? | 雨课堂整卷明细参数（`get_exercise_list` 的路径段与 `classroom_id`），供应用内原生详情页使用 |
+
+**得分口径**（雨课堂）：考试取 `/v/exam/cover` 的 `result.score`；已批改作业取「已批改题目的
+有效得分合计」，满分取「题面分值合计」——两者均只在**整卷已批改**时透出，避免「交了一半就显示
+一个分数」的误导。详情页与批改评语的呈现方式见 [external-homework.md](./external-homework.md)。
+
+注意到 `exthw.*` 只有 `snapshot()` 与 `refresh()` 两个方法：**作业详情页与提交入口属于应用内
+功能**（原生页面 + 内嵌官方作答页），不经插件 API 暴露，插件侧只读取聚合快照。
 
 ```jsonc
 {
@@ -553,7 +566,12 @@ const reply = (await res.json()).choices[0].message.content;
 | `zhjwxk` | 选课系统 | — |
 | `settings` / `plugins` | 设置 / 插件管理 | — |
 | `plugin:<插件id>:<页签id>` | 插件自建功能页（`registerTab`，见 plugin-development §6.3） | — |
-| `learn-course` 等 | 学堂详情页 | `courseId`、`itemId` |
+| `learn-course` | 课程详情 | `courseId`；`courseTab`（`notices`/`assignments`/`files`/`groups`/`forum`）、`bbsBoard` 可直达板块 |
+| `learn-assignments` / `learn-notices` / `learn-files` | 学堂聚合列表 | `courseId` 可限定课程 |
+| `learn-assignment-detail` / `learn-notice-detail` / `learn-file-detail` | 作业 / 通知 / 文件只读详情 | `courseId`、`itemId` |
+| `learn-forum-thread` | 讨论区话题 | `courseId`、`itemId`（话题）、`bqid`（板块） |
+| `learn-ykt-detail` | 雨课堂作业原生详情（只读，见 external-homework.md） | `ykt`：`{ leafTypeId, classroomId, externalUrl?, title?, deadline?, courseName?, kind? }` |
+| `trace` / `otherinfo` / `thos` / `mail` / `cloud` / `thubook` / `folder` | 寻迹 / 其他 Info 应用 / 在线服务 / 邮箱 / 云盘 / THUbook / 收藏夹 | `folder` 需 `folderId` |
 
 插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向
 该路由。插件未安装、已停用或未注册该页签时，页面显示降级提示而非空白。

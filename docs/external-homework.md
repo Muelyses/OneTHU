@@ -21,10 +21,13 @@
 | `courseName` / `title` | string | 课程名与作业标题 |
 | `deadline` | string | 截止时间，格式 `"YYYY-MM-DD HH:MM"` |
 | `kind` | `"homework"` \| `"exam"` | 作业或试卷 |
-| `url` | string? | 详情链接 |
+| `url` | string? | 详情链接（学生端页面） |
 | `submitted` | boolean | 提交状态 |
-| `graded` | boolean? | 批改状态，仅部分源提供 |
-| `score` | number? | 得分，仅已批改时有效 |
+| `submittedCount` / `totalCount` | number? | 已提交题数 / 总题数（仅雨课堂有精确数据） |
+| `graded` | boolean? | 批改状态，仅雨课堂可判定 |
+| `audited` | boolean? | 是否旁听课堂（雨课堂 `role===6`） |
+| `score` / `totalScore` | number? | 得分与卷面满分，**仅在已提交且已出分/已批改时设置** |
+| `leafTypeId` / `classroomId` | string? | 雨课堂整卷明细参数，供原生详情页拉取 |
 
 ## 2. 源与登录方式
 
@@ -53,6 +56,24 @@
   批改，`score` 为各题得分之和。
 - DSA OJ：不提供批改结果——课程详情接口的 `assignmentList[]` 只有标题与截止时间，
   无得分字段，故 `graded` 与 `score` 恒为空。
+
+## 3.1 雨课堂原生详情与提交入口（R20–R21）
+
+雨课堂的作业正文是加密字体 + LaTeX + 外链图片的组合，官方页面在应用内直接打开会缺字体、
+缺公式、图片 401。R20 起改为**原生详情页**：正文在应用内渲染，不跳浏览器。
+
+| 能力 | 实现要点 |
+|---|---|
+| 题干渲染 | 正文进本地 `srcdoc` 沙箱 iframe（无网络权限、脚本白名单）；**加密字体**取自响应里的 `data.font`（`exam_font_<hash>.ttf`），下载后以 `@font-face` 应用，缓存 7 天、失败 10 分钟内不重试 |
+| 公式 | KaTeX 随包内置（`vendor/katex`，懒加载），`$…$` 与 `$$…$$` 本地渲染，正文不外传 |
+| 图片 | 经应用侧带会话 Cookie 代理取回后内联（`data:`），避免 iframe 里的 401 |
+| 降级 | 字体/公式/图片任一环节失败都逐级降级（纯文本 → 提示条），**永不白屏** |
+| 分数与评语 | 已批改作业在入口处直接显示 `X/Y`（与考试同一显示位）；详情页按题给出得分、我的作答与老师评语（总评与具名批注同文时去重，避免同一条评语渲染两次） |
+| 提交入口（第一阶段） | 内嵌官方作答页（`WebView`）+ 注入会话 Cookie，资格判定为纯函数；**试卷不显示任何提交入口**（只读红线不变） |
+| 会话保活（R21-B） | 会话健康检查 + 保活 + Cookie 导出/导入，降低“打开时已掉登录”的概率；Tyche 侧登录失效静默自动重登（R21-A） |
+
+只读红线：外部作业源**只读取**标题、课程、截止时间、提交/批改状态与题干正文用于展示；
+提交动作只经官方作答页（用户自己在页内操作），应用不代提交、不答题、不抓取提交接口。
 
 ## 4. 会话失效恢复
 
@@ -98,6 +119,10 @@ DSA OJ 不接入清华统一认证，没有可用的自动恢复通道：会话�
 | `tools/exthw-status-test.mjs` | 聚合状态机、状态判定、频控逻辑；DSA OJ 的 `endDate` 容错解析与会话失效判定 |
 | `tools/tuoj-cas-test.mjs` | CAS 漫游、二次认证提示、重新漫游 |
 | `tools/ykt-qr-test.mjs` | 扫码状态机、保活服务生命周期、传输层超时 |
+| `tools/ykt-body-test.mjs` | 题干正文渲染（加密字体栈合法性、LaTeX 与图片处理、降级链） |
+| `tools/ykt-detail-ui-test.mjs` | 详情页纯函数：分数文案、评语去重、作答态映射 |
+| `tools/ykt-exercise-detail-test.mjs` | `get_exercise_list` → 详情模型映射（含组作业与缺分边界） |
+| `tools/ykt-detail-smoke.mjs` / `tools/ykt-session-smoke.mjs` | 真实凭据下的详情拉取与会话保活冒烟（环境变量同上一行） |
 | `tools/exthw-smoke.mjs` | 真实凭据下的端到端验证（环境变量 `YKT_COOKIE`、`TUOJ_COOKIE`、`TUOJ_CLASSIC_COOKIE`、`TYCHE_COOKIE`、`DSA_COOKIE`） |
 
 ## 7. 接入记录
@@ -111,4 +136,8 @@ DSA OJ 不接入清华统一认证，没有可用的自动恢复通道：会话�
 | TUOJ（AI 版） | 初始版本 | 统一认证漫游为默认通道，另可配置独立账密直连；返回 401 / 403 触发一次自动重漫游，设备信任与二次认证均有可操作引导 |
 | Tyche | 初始版本 | 复用统一认证漫游；批改结果取 `task/Status` 的 `submissionList[]`，按 `pid` 汇总最新一次提交 |
 | TUOJ（经典版） | R15 20.1 | 站点 `oj.cs.tsinghua.edu.cn` 与 AI 版接口行为一致，复用同一套客户端实现，仅 base URL 与漫游回调不同 |
+| 雨课堂（原生详情） | R20-A / B2 / B3 | 原生只读详情页（题干加密字体、KaTeX 公式、图片代理、srcdoc 沙箱，永不白屏）；已批改作业入口显示 `X/Y`，评语按题结构化呈现；加密字体根因是 `font-family` 里混入 CSS 全局关键字 `inherit` 导致整条声明被丢弃 |
+| 雨课堂（提交入口） | R20-C1 | 内嵌官方作答页 + 注入会话 Cookie，资格为纯函数；试卷不显示提交入口 |
+| Tyche（静默重登） | R21-A | 登录失效时按 R19 的 TUOJ 会话失效模式静默重漫游一次；图形验证码场景给可操作引导 |
+| 雨课堂（会话保活） | R21-B | 会话健康检查 / 保活 / Cookie 导出导入；保活有效性实验协议待回填 |
 | DSA OJ | R15 20.1 / 20.2 | 站点 `dsa.cs.tsinghua.edu.cn/oj/`，老式 Bootstrap/jQuery 站，接口均为 `POST` form-urlencoded，会话靠 Cookie；登录为邮箱 + 密码，无统一认证；截止时间取 `assignment.endDate`，其格式不确定（站点标注 UTC+8），故按多格式容错解析；提交状态保守判定为未提交（`status` 语义待联调确认）；不提供批改结果；只读——仅拉标题、课程与截止时间，不提交、不抓题目正文 |

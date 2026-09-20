@@ -14,7 +14,8 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
-import { openExternalHomework } from "../lib/extHwBrowse.js";
+import { openExternalHomework, isAndroidHostEnv } from "../lib/extHwBrowse.js";
+import { pickYktDetailEntry } from "../lib/yktDetail.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type Homework, type ScheduleEntry } from "@onethu/core";
 
@@ -183,6 +184,23 @@ export function HomeworkRows({
             style={{ animationDelay: i * 35 + "ms" }}
             onClick={() => {
               if (external) {
+                // R20-B2：Android 宿主的雨课堂条目直达原生只读详情页（learn-ykt-detail）；
+                // 其余保持 R20-A 现状（openExternalHomework 内部分流，桌面行为零变化）。
+                if (pickYktDetailEntry(isAndroidHostEnv(), h) === "native") {
+                  navigate("learn-ykt-detail", {
+                    ykt: {
+                      leafTypeId: h.externalLeafTypeId ?? "",
+                      classroomId: h.externalClassroomId ?? "",
+                      externalUrl: h.externalUrl,
+                      title: h.title,
+                      deadline: h.deadline,
+                      courseName: h.courseName ?? courseName(h.courseId),
+                      kind: h.kind,
+                    },
+                    from: "today",
+                  });
+                  return;
+                }
                 // R20-A：Android 宿主改走应用内全屏 WebView 桌面模式（分流在 openExternalHomework）
                 if (h.externalUrl) void openExternalHomework(h.externalUrl);
                 return;

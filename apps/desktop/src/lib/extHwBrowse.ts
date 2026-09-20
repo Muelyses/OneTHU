@@ -19,9 +19,17 @@
  * 异常）时降级回系统浏览器，绝不把链接吞掉。
  */
 import { invoke } from "@tauri-apps/api/core";
-import { pickExtHwOpenChannel } from "./androidHost.js";
+import { isAndroidNavigator, pickExtHwOpenChannel } from "./androidHost.js";
 import { isTauri } from "./transport.js";
 import { openExternal } from "../pages/info/openExternal.js";
+
+/** R20-B2：当前宿主是否为「Android 应用内」（Tauri + isAndroidNavigator 多信号，
+ *  与 R20-A 的 webview 通道判定同口径）。纯信号采集放在这（不可 Node 直测），
+ *  纯判定在 ./yktDetail.ts pickYktDetailEntry（tools/ykt-detail-ui-test.mjs 直测）。 */
+export function isAndroidHostEnv(): boolean {
+  const nav = typeof navigator === "undefined" ? null : navigator;
+  return isTauri && isAndroidNavigator(nav);
+}
 
 /** 外部作业（雨课堂等）详情链接点击的统一入口。 */
 export async function openExternalHomework(rawUrl: string): Promise<void> {

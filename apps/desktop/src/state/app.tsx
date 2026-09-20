@@ -30,12 +30,15 @@ export type Page =
   | "learn-assignment-detail" // 作业只读详情（courseId+itemId）
   | "learn-notice-detail" // 通知只读详情（courseId+itemId）
   | "learn-forum-thread" // 讨论区话题阅读/回复（courseId+threadId）
-  | "learn-file-detail"; // 文件详情（courseId+itemId）
+  | "learn-file-detail" // 文件详情（courseId+itemId）
+  | "learn-ykt-detail"; // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
 
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
 export interface LearnNav {
   courseId?: string;
   itemId?: string;
+  /** R20-B2：雨课堂作业原生详情页（learn-ykt-detail）参数（必带） */
+  ykt?: YktNav;
   /** 讨论区：话题所属板块 id（viewTlById 原生链接必带 tabbh+bqid，缺失会被甩登录壳页） */
   bqid?: string;
   /** 讨论区板块直达（板块原子深链）：课程详情落 forum tab 且 BbsPanel 初始选中该板块 */
@@ -105,6 +108,28 @@ export interface LearnNav {
 }
 
 const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "info", "life", "reserve", "zhjwxk", "thos", "plugins", "folder", "settings"] as const; // trace 漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+
+/**
+ * R20-B2：雨课堂作业原生详情页参数。
+ * 拉取参数（leafTypeId+classroomId）来自列表行的 core R20-B2 透出字段；
+ * 其余为列表行已知信息，仅作「详情未回来时」的头部兜底（详情回来后以详情数据为准）。
+ */
+export interface YktNav {
+  /** get_exercise_list 的 leaf_type_id（core getExerciseDetail 第一参；缺失页面渲染参数缺失错误态） */
+  leafTypeId: string;
+  /** classroom_id（core getExerciseDetail 第二参） */
+  classroomId: string;
+  /** 官方网页直链（「在网页中打开」备用入口，R20-A 分流不变；可空） */
+  externalUrl?: string;
+  /** 作业名（列表行 title；详情 name 覆盖） */
+  title?: string;
+  /** 截止时间 "YYYY-MM-DD HH:MM"（列表行 deadline；详情响应无整卷截止字段，恒用列表值） */
+  deadline?: string;
+  /** 课程名（列表行 courseName） */
+  courseName?: string;
+  /** 作业类型（列表行 kind；exam=试卷 —— 红线：试卷页同样不渲染任何提交相关入口） */
+  kind?: "homework" | "exam";
+}
 
 /** 子页归属的一级页（侧栏高亮 / hash 用） */
 export function topLevelPage(p: Page): Page {

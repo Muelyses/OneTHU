@@ -88,19 +88,17 @@ function VenueNote({ text, onRetry }: { text: string; onRetry?: () => void }) {
     </div>
   );
 }
-import { VenueTwoFactorRequired, venueBookingEmbedUrl, venueClient, venueHasToken, venueLogout, venueScenes, venueLogin, venueSilentLogin, venueSubmit2FA, venueSend2FACode } from "../../lib/venue.js";
+import { VenueTwoFactorRequired, openVenueInApp, venueClient, venueHasToken, venueLogout, venueScenes, venueLogin, venueSilentLogin, venueSubmit2FA, venueSend2FACode } from "../../lib/venue.js";
 import type { TwoFactorMethod, VenueBuilding, VenueDevKind } from "@onethu/core";
 import { useApp } from "../../state/context.js";
 import { TabEmpty, logTabErr, tabErrorText } from "./tabStates.js";
 import { openExternal } from "./openExternal.js";
+import { currentThemeIsDark } from "../../state/theme.js";
 
 /** 体育系统官方预约页深链（应用内不提交预约，一律引导到此）：
  *  官方 SPA（hash 路由）venueHub 页按场次类别 sysNo 分流，兜底与场地类
  *  统一落 reserveList?uuid=；该页读 uuid 后 newSceneType 自动定位到对应
  *  场馆场次列表（实测抓包 chunk-0e504f6d，仅认 uuid，无日期参数）。 */
-/** 体育系统官方首页（外部浏览器登录入口：真预约深链在官方浏览器未登录时会被弹回登录页） */
-const VENUE_HOME_URL = "https://www.sports.tsinghua.edu.cn/venue/index.html#/home";
-
 const venueWebUrl = (sceneUuid: string) =>
   `https://www.sports.tsinghua.edu.cn/venue/index.html#/reserveList?uuid=${encodeURIComponent(sceneUuid)}`;
 
@@ -488,33 +486,24 @@ export function VenueSportsTab({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authed, venue?.uuid, date, building, room, devKind, classEnum, useType]);
 
-  /* —— 内嵌官方预约页（主窗口 tab 内 iframe，不弹独立窗口）：URL 携带
-     ?token=<JWT>（官方 SPA 开机即认的 SSO 载体）+ 深链直达所选场馆。
-     预约由用户在官方页面上手动完成；无 token 时回落系统浏览器。第 12 条红线不变 —— */
-  const [bookingEmbed, setBookingEmbed] = useState<string | null>(null);
-  /* 预约两步走：第一步先去官方首页登录（外部浏览器），点完确认后才放出真预约按钮。
-     确认状态落 localStorage——官方登录态在浏览器 cookie 里持久，确认过一次以后直达。 */
-  const [venueLoginDone, setVenueLoginDone] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem("onethu.venue.loginConfirmed") === "1";
-    } catch {
-      return false;
-    }
-  });
-  const confirmVenueLogin = (): void => {
-    setVenueLoginDone(true);
-    try {
-      localStorage.setItem("onethu.venue.loginConfirmed", "1");
-    } catch {
-      /* 隐私模式：仅本次会话内生效 */
-    }
-  };
+  /* —— 官方预约页：**应用内**打开且共享同一登录态（用户拍板 2026-09-20：
+     照在线服务的经验复用凭据——手机端全屏 WebView、电脑端独立窗口），不再把用户
+     丢去系统浏览器重登。登录态由 Rust 侧注入官方 origin；预约仍由用户手动完成。 */
   const goOfficialBooking = useCallback(() => {
     if (!venue) return;
-    void venueBookingEmbedUrl(venue.uuid).then((embed) => {
-      if (embed) setBookingEmbed(embed);
-      else void openExternal(venueWebUrl(venue.uuid));
-    });
+    const url = venueWebUrl(venue.uuid);
+    void (async () => {
+      // 有票直接就开；没票先静默换票（失败再开授权窗口兜底），仍不行才回落系统浏览器
+      if (!venueHasToken()) {
+        const ok = await venueLogin();
+        if (!ok) {
+          void openExternal(url);
+          return;
+        }
+      }
+      const opened = await openVenueInApp(url, currentThemeIsDark());
+      if (!opened) void openExternal(url);
+    })();
   }, [venue]);
 
   /* —— 退订 —— */
@@ -873,75 +862,23 @@ export function VenueSportsTab({
             >
               根据清华大学体育部场馆中心 2025 年 12 月 3 日发布的公告 七、12、如有用户通过脚本软件或插件等非正常途径预定场地，一经发现并核实，对该用户封禁预订权限 6 个月，并函告相关院系或单位。OneTHU 仅提供场馆情况查询，请点击按钮前往官网预约；如果不当使用源码进行预约，违反本项目开源准则，后果自负。
             </div>
-            {!venueLoginDone ? (
-              <>
-                <div style={{ fontSize: 13, marginBottom: 8 }}>
-                  第一步：先在系统浏览器打开体育系统并登录（登录一次即可，之后不用重复）。
-                  未登录直接进预约页会被强制弹回登录。
-                </div>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    void openExternal(VENUE_HOME_URL);
-                    confirmVenueLogin();
-                  }}
-                >
-                  ① 打开体育系统登录
-                </button>
-              </>
-            ) : (
-              <>
-                <button className="btn btn-primary" onClick={goOfficialBooking}>
-                  去体育系统网页预约
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  style={{ marginLeft: 8 }}
-                  title="登录态失效时点这里重新在系统浏览器登录"
-                  onClick={() => void openExternal(VENUE_HOME_URL)}
-                >
-                  重新登录
-                </button>
-              </>
-            )}
+            <button className="btn btn-primary" onClick={goOfficialBooking}>
+              在应用内打开官方预约页
+            </button>
+            <button
+              className="btn btn-ghost"
+              style={{ marginLeft: 8 }}
+              title="应用内页面打不开时走系统浏览器（需在浏览器里登录一次）"
+              onClick={() => void openExternal(venueWebUrl(venue!.uuid))}
+            >
+              改用系统浏览器
+            </button>
+            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8, lineHeight: 1.6 }}>
+              官方页面在 OneTHU 内以自己的窗口打开（安卓为全屏页面），登录态与刚才查询场馆时用的
+              那一份相同，不需要重新登录；预约提交一律由你在官方页面上操作。
+            </div>
           </Card>
 
-          {bookingEmbed ? (
-            <Card style={{ marginBottom: 16, padding: "12px 14px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 8,
-                }}
-              >
-                <div style={{ fontWeight: 600 }}>官方预约 · 官方原页（已共享登录）</div>
-                <button
-                  className="btn"
-                  style={{ height: 26, padding: "0 10px", fontSize: 12 }}
-                  onClick={() => setBookingEmbed(null)}
-                >
-                  收起
-                </button>
-              </div>
-              <iframe
-                src={bookingEmbed}
-                title="体育系统官方预约"
-                style={{
-                  width: "100%",
-                  height: "72vh",
-                  border: "1px solid var(--border)",
-                  borderRadius: 8,
-                  background: "#fff",
-                  display: "block",
-                }}
-              />
-              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8, lineHeight: 1.6 }}>
-                以上为体育部官方网页（OneTHU 内嵌展示，已带入同一登录态）；预约提交一律在官方页面内由你本人操作。
-              </div>
-            </Card>
-          ) : null}
         </>
       ) : null}
 

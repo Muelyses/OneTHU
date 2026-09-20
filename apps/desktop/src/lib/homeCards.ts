@@ -24,7 +24,7 @@ import type { ReactNode } from "react";
 import type { LearnNav, Page } from "../state/app.js";
 import {
   IconBell, IconCalendar, IconCard, IconCheck, IconExternal, IconFile, IconFlag,
-  IconIn, IconInfo, IconPen, IconRefresh, IconSchedule, IconSearch, IconToday, IconXk,
+  IconIn, IconInfo, IconPen, IconRefresh, IconSchedule, IconSearch, IconStar, IconToday, IconXk,
 } from "../components/Icons.js";
 
 /** 首页卡片 id（注册表唯一键，localStorage 里也用它） */
@@ -38,7 +38,8 @@ export type HomeCardId =
   | "learn-semester" | "learn-search"
   | "life-hygiene" | "life-invoice" | "life-payroll" | "life-gradincome" | "life-network"
   | "info-fitness" | "info-evaluation" | "info-calendar"
-  | "reserve-classroom" | "reserve-sports" | "reserve-kongjian";
+  | "reserve-classroom" | "reserve-sports" | "reserve-kongjian"
+  | "recent" | "for-you";
 
 /** 渲染栏位：main=主栏（宽） rail=侧栏（窄） */
 export type HomeCol = "main" | "rail";
@@ -98,6 +99,11 @@ export const HOME_CARD_META: HomeCardDef[] = [
   { id: "resv", title: "今日预约", kind: "bespoke", icon: IconSchedule, defaultCol: "rail", defaultOrder: 2, aside: "座位 · 研讨间 · 点击管理" },
   { id: "classes", title: "今日课程", kind: "bespoke", icon: IconToday, defaultCol: "rail", defaultOrder: 3, aside: "点击打开课表" },
   { id: "news", title: "订阅新闻", kind: "bespoke", icon: IconExternal, defaultCol: "rail", defaultOrder: 4 },
+  /* 按本机使用习惯生成（lib/usage.ts + lib/suggest.ts）：卡体为空时整卡不渲染
+     （没点过东西就看不到「最近使用」，没有可推的就看不到「猜你喜欢」）。
+     只是入口，**绝不替用户收藏任何东西**——星号仍由用户自己按。 */
+  { id: "recent", title: "最近使用", kind: "bespoke", icon: IconRefresh, defaultCol: "rail", defaultOrder: 5, aside: "你刚点过的" },
+  { id: "for-you", title: "猜你喜欢", kind: "bespoke", icon: IconStar, defaultCol: "rail", defaultOrder: 6, aside: "按使用习惯推荐" },
 
   /* —— entry：一键入口卡（默认全部隐藏；除选课二级菜单外所有二级菜单都做入口，
         选课一级菜单本身也是入口，故无 learn 一级入口） —— */

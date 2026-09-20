@@ -645,6 +645,12 @@ OH 对话内可直接把信息收进用户收藏夹，与插件收藏共用同�
 外部插件也能吃到同一能力：清单声明 `nav` 权限后调用 `nav.searchAtoms` /
 `nav.openAtom`，即可实现「插件里说个名字，应用跳到那个页面」。
 
+**OH 也读本机使用统计**（`nav.usage`，api-reference §20.1）：`query_usage` 工具
+回答「我最近都在用什么」，并可把返回的 `kind`/`key` 直接交给 `open_page` 打开。
+今日页的「最近使用 / 猜你喜欢」两张卡（默认在侧栏、卡体为空则整卡不渲染）与它
+同源——都由 `lib/usage.ts` + `lib/suggest.ts` 驱动，**只记「点过什么」，绝不
+自动改用户收藏夹**。
+
 
 ### 9.4 OH 联动插件（MCP 之外的扩展通道）
 
@@ -734,6 +740,7 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 | 版本 | 变更 |
 |---|---|
+| v1.13 | 今日页新增「最近使用 / 猜你喜欢」两张按本机使用习惯生成的卡（空则不渲染）；插件 API `nav` 新增 `usage` / `clearUsage`；OH 新增 `query_usage` 工具 |
 | v1.12 | 插件 API `nav` 新增 `searchAtoms` / `openAtom`（按名字检索并打开任意原子，检索只查静态注册表 + 本机缓存）；OH 新增 `open_page` 工具（一句话直达在线服务/课程/实体，§9.3）；在线服务目录注册为原子种类 `thos-service`（星号收藏与 OH 直达同一份引用） |
 | v1.11 | 小组件内容改为**按块绑定**（日程与 DDL / 一个原子占满 / 收藏夹图标组 / 快捷方式四类），宿主新增 1×1 快捷方式形态（共五种），放置时经 configure 流程直接弹出选择层，原子图标在应用侧栅格化成 PNG 后下发；插件 API 改为 `widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback` |
 | v1.10 | 宿主小组件内容可选（今天 / 收藏夹 / 收藏原子，设置页与收藏夹页双入口）、四种初始形态（3×2 / 2×2 / 2×1 / 4×1，行数按占位自适应）、点击落点支持页面参数；插件 API 新增 `widget.getSource` / `widget.setSource` / `widget.folders` |

@@ -30,6 +30,7 @@ import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
 import { INFO_APPS, infoAppUrl } from "../lib/infoApps.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { recordAtomUse } from "../lib/usage.js";
 import { getMailHead } from "./mail.js";
 import { syncCloudCal, syncHwToCloud } from "./cloudCal.js";
 import { showToast } from "./toast.js";
@@ -200,6 +201,33 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "reserve-kongjian", title: "公共空间", sub: "预约页 · 宿舍公共空间预约", icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "kongjian" } },
 ];
 
+/**
+ * 页面级使用统计（侧边栏 / 今日入口卡进页面时调用）：把 (page, params) 对回
+ * PAGE_ATOMS 里最贴切的那条页面原子并记一笔——「最近使用」卡要能点回去，
+ * 就必须落成原子（页面 id 本身不是原子）。
+ * 匹配优先级：page 相同且参数子集完全命中 > page 相同。params 里的 tab 类字段
+ * 也参与比较，故「生活页 → 洗衣机」和「生活页 → 宿舍」分得清。
+ */
+export function recordPageAtomUse(page: Page, params?: LearnNav | null): void {
+  const same = PAGE_ATOMS.filter((a) => a.page === page);
+  if (same.length === 0) return;
+  const keys = Object.keys(params ?? {}) as Array<keyof LearnNav>;
+  let best: (typeof same)[number] | null = null;
+  let bestScore = -1;
+  for (const a of same) {
+    const ap = (a.params ?? {}) as LearnNav;
+    let score = 0;
+    for (const k of keys) if (ap[k] !== undefined && ap[k] === (params as LearnNav)[k]) score += 2;
+    if (a.params && Object.keys(a.params).length === 0) score += 0.5;
+    if (score > bestScore) {
+      bestScore = score;
+      best = a;
+    }
+  }
+  if (!best) return;
+  recordAtomUse({ kind: "page", key: best.key }, { title: best.title, sub: best.sub, group: best.group });
+}
+
 /** 页头星标用：key 命中 PAGE_ATOMS 才返回引用（防手写 key 漂移出野原子） */
 export function pageAtomRef(key: string): AtomRef | null {
   return PAGE_ATOMS.some((a) => a.key === key) ? { kind: "page", key } : null;
@@ -233,8 +261,21 @@ export const WIDGET_ATOMS: WidgetAtom[] = [
 
 /* ══════════ 实体原子工厂 ══════════ */
 
+/**
+ * 原子视图工厂：**所有**解析出来的原子都在这里统一包一层「使用记录」（今日页
+ * 「最近使用 / 猜你喜欢」的数据源）。放这儿是因为收藏夹点击、OH（nav.openAtom）、
+ * 桌面小组件、搜索弹层最终都走 view.open —— 一处包好，全链路都记上。
+ * 与收藏无关：统计只写本机 localStorage，绝不自动改动用户的收藏夹。
+ */
 function view(partial: Omit<AtomView, "atom"> & { atom: AtomRef }): AtomView {
-  return partial;
+  const inner = partial.open;
+  return {
+    ...partial,
+    open: (nav) => {
+      recordAtomUse(partial.atom, { title: partial.title, sub: partial.sub, group: partial.group });
+      inner(nav);
+    },
+  };
 }
 
 /** 解析原子：注册表未知的 kind/key 返回 null（渲染处直接丢弃） */

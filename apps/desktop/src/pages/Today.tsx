@@ -34,9 +34,60 @@ import { readSubs } from "./info/newsSearch.js";
 import { openExternal } from "./info/openExternal.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type ScheduleEntry } from "@onethu/core";
+import { recentAtomUses, type UsageEntry } from "../lib/usage.js";
+import { suggestAtoms } from "../lib/suggest.js";
+import { resolveAtom } from "../state/atoms.js";
 
 /** 轻路由签名（与 AppState.navigate 一致） */
 type Nav = (page: Page, params?: LearnNav) => void;
+
+/* ══════════ 最近使用 / 猜你喜欢（本机统计驱动，卡体为空则整卡不渲染） ══════════ */
+
+/** 一行 = 一个原子：图标 + 标题 + 说明 + 可选「为什么推给你」 */
+function AtomUseRows({
+  rows,
+  onOpen,
+}: {
+  rows: Array<{ ref: { kind: string; key: string }; title: string; sub?: string; why?: string }>;
+  onOpen: (page: Page, params?: LearnNav) => void;
+}) {
+  return (
+    <div className="list">
+      {rows.map((r, i) => {
+        const view = resolveAtom(r.ref);
+        if (!view) return null;
+        const Icon = view.icon;
+        return (
+          <button
+            key={r.ref.kind + "~" + r.ref.key}
+            className="row"
+            style={{ animationDelay: `${Math.min(i, 12) * 25}ms`, width: "100%", textAlign: "left" }}
+            title={view.sub}
+            onClick={() => view.open((p, params) => onOpen(p, params as LearnNav))}
+          >
+            <span className="wb-kind-icon" aria-hidden="true">
+              <Icon width={16} height={16} />
+            </span>
+            <span className="row-main">
+              <span className="row-title">{r.title}</span>
+              <span className="row-sub">{r.why ? r.why + " · " + (r.sub ?? view.sub ?? "") : (r.sub ?? view.sub ?? "")}</span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** 最近使用：按最后一次点击倒序（最多 6 条；没点过任何东西 → 空数组 → 卡不渲染） */
+function recentRows(): UsageEntry[] {
+  return recentAtomUses(6).filter((e) => e.title);
+}
+
+/** 猜你喜欢：同类推荐 + 起步项（绝不会是已收藏/已用过的） */
+function suggestRows(): Array<{ ref: { kind: string; key: string }; title: string; sub?: string; why?: string }> {
+  return suggestAtoms(5).map((s) => ({ ref: s.ref, title: s.title, sub: s.sub, why: s.why }));
+}
 
 /* ══════════ CardShell（统一卡片外壳：标题行 + 折叠 + 编辑工具） ══════════ */
 
@@ -501,6 +552,21 @@ export function TodayPage() {
     },
     notices: {
       render: () => <NoticeRows items={data?.notifications ?? []} navigate={navigate} />,
+    },
+    recent: {
+      // 没点过东西 → 整卡不渲染（今日页不会留一张空推荐卡）
+      render: () => {
+        const rows = recentRows();
+        return rows.length ? (
+          <AtomUseRows rows={rows.map((e) => ({ ref: { kind: e.kind, key: e.key }, title: e.title ?? "", sub: e.sub }))} onOpen={navigate} />
+        ) : null;
+      },
+    },
+    "for-you": {
+      render: () => {
+        const rows = suggestRows();
+        return rows.length ? <AtomUseRows rows={rows} onOpen={navigate} /> : null;
+      },
     },
     cardEntry: {
       render: () => <CardBalanceBody balance={card.data?.info.balance ?? null} navigate={navigate} />,

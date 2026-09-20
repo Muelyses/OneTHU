@@ -23,6 +23,7 @@ import android.content.Intent
 import android.provider.Settings
 import android.provider.DocumentsContract
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -87,6 +88,9 @@ class OpenWebModalArgs {
     /** Cookie 归属域（如 https://webvpn.tsinghua.edu.cn/）。空 = 用 url 的 origin。
      *  2026-09-20：此前硬编码成 pro.yuketang.cn，非雨课堂的官方页（在线服务/THOS）种不进去。 */
     var cookieUrl: String = ""
+    /** 可选的「登录态注入脚本」（体育系统官方预约页用）：官方 SPA 开机读
+     *  localStorage["token"]，故须在页面脚本之前写入。仅内存传递，绝不打印/落盘。 */
+    var injectJs: String = ""
 }
 
 /** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释）：
@@ -130,6 +134,22 @@ class NotifyCancelArgs {
  * 直接改 CSSOM 则不受页面 CSP 的 style-src 限制（<style> 注入会被拦），
  * 且每次 onPageFinished 重跑，站内翻页也不会失效。
  */
+/**
+ * 体育系统官方预约页的登录态注入骨架（2026-09-20，与 Rust `venue_seed_js` 同语义）：
+ * 官方 SPA 开机读 localStorage["token"]/["headers"]，故在 onPageStarted 与
+ * onPageFinished 各注入一次，并在首次加载完成后重载一次——保证第二遍启动时
+ * localStorage 里已经有票（首次注入若晚于 SPA 启动，页面会先弹登录）。
+ * 脚本由 Rust 侧拼好（JWT 在 invoke 参数里传入），此处只做执行，不落任何日志。
+ */
+private fun runInjectJs(web: WebView, js: String) {
+    if (js.isBlank()) return
+    try {
+        web.evaluateJavascript(js, null)
+    } catch (_: Throwable) {
+        /* 注入失败不致命：页面会自行要求登录 */
+    }
+}
+
 private const val DARK_INJECT_JS = """
 (function(){
   if (window.__othDark) { window.__othPaint && window.__othPaint(); return; }
@@ -648,16 +668,29 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                         }
                     }
                 }
-                // 只读浏览：不设 JavascriptInterface；深色时在每次页面加载完成注入涂白脚本
-                web.webViewClient = if (args.dark) {
-                    object : WebViewClient() {
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            view?.evaluateJavascript(DARK_INJECT_JS, null)
+                // 只读浏览：不设 JavascriptInterface；深色时在每次页面加载完成注入涂白脚本。
+                // 体育系统预约页额外注入登录态（injectJs）：先于页面脚本写一次，加载完成
+                // 后再写一次并重载一遍，确保 SPA 启动时就已有票（否则先弹登录页）。
+                val needInject = args.injectJs.isNotBlank()
+                var reinjected = false
+                web.webViewClient = object : WebViewClient() {
+                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                        super.onPageStarted(view, url, favicon)
+                        if (needInject) runInjectJs(view ?: return, args.injectJs)
+                    }
+
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        if (args.dark) view?.evaluateJavascript(DARK_INJECT_JS, null)
+                        if (needInject && !reinjected) {
+                            reinjected = true
+                            runInjectJs(view ?: return, args.injectJs)
+                            // 同源才回灌重载（跨域跳转到登录门户时不重载，避免打转）
+                            val host = try { java.net.URI(args.url).host } catch (e: Throwable) { null }
+                            val now = try { java.net.URI(url ?: "") .host } catch (e: Throwable) { null }
+                            if (host != null && host == now) view?.loadUrl(args.url)
                         }
                     }
-                } else {
-                    WebViewClient()
                 }
 
                 // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显（R18b 同款）

@@ -62,37 +62,14 @@ const base = {
   eq("作业：脚注给出结论", gone.footer, "已提交或已过期");
 }
 
-/* ③ 洗衣机：有实时缓存才写，没有就不写 */
-{
-  const cache = {
-    "fav.washer.b1.j": [
-      { floor: "1F", washers: [{ name: "洗衣机A", status: "working", eta: 23 }, { name: "洗衣机B", status: "idle" }] },
-      { floor: "2F", washers: [{ name: "洗衣机C", status: "idle" }] },
-    ],
-  };
-  const deps = { ...base, readCache: (k) => cache[k] ?? null };
-  const one = atomDetail({ kind: "washer-m", key: "b1~紫荆1号楼~0~洗衣机A" }, { title: "洗衣机A" }, deps);
-  eq("洗衣机：状态行", one.rows[0].text, "使用中 · 剩 23 分钟");
-  eq("洗衣机：位置", one.rows[0].sub, "1F");
-  eq("洗衣机：脚注是楼栋", one.footer, "紫荆1号楼");
-  const idle = atomDetail({ kind: "washer-m", key: "b1~紫荆1号楼~0~洗衣机B" }, { title: "洗衣机B" }, deps);
-  eq("洗衣机：空闲", idle.rows[0].text, "空闲");
-  const bld = atomDetail({ kind: "washer-b", key: "b1~紫荆1号楼~0" }, { title: "紫荆1号楼" }, deps);
-  eq("楼栋：空闲统计", bld.rows[0].text, "空闲 2 / 3 台");
-  const noCache = atomDetail({ kind: "washer-m", key: "b1~紫荆1号楼~0~洗衣机A" }, { title: "洗衣机A" }, base);
-  eq("没打开过洗衣机页：不猜状态", noCache, null);
-  const missing = atomDetail({ kind: "washer-m", key: "b1~紫荆1号楼~0~不存在的洗衣机" }, { title: "x" }, deps);
-  eq("设备找不到：不写", missing, null);
-}
-
-/* ④ 其余原子：不硬凑（原子自己的说明已经够了） */
+/* ③ 其余原子：不硬凑（原子自己的说明已经够了；实时类原子见 widgetLive） */
 {
   eq("新闻：无补充", atomDetail({ kind: "news", key: "n1~某新闻~信息门户" }, { title: "某新闻" }, base), null);
   eq("功能页：无补充", atomDetail({ kind: "page", key: "learn" }, { title: "网络学堂" }, base), null);
-  eq("教室：暂时无补充（实时数据不在同步缓存里）", atomDetail({ kind: "classroom-r", key: "六教~六教~6A215" }, { title: "6A215" }, base), null);
+  eq("教室：本模块不掺和（占用情况由 widgetLive 抓取后解读）", atomDetail({ kind: "classroom-r", key: "六教~六教~6A215" }, { title: "6A215" }, base), null);
 }
 
-/* ⑤ 行数上限可注入（原生按占位决定能画几行） */
+/* ④ 行数上限可注入（原生按占位决定能画几行） */
 {
   const d = atomDetail({ kind: "course", key: "1~数据结构~张三~2025" }, { title: "数据结构" }, { ...base, maxRows: 1 });
   eq("maxRows=1 时只算一行", d.rows.length, 1);

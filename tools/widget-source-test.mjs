@@ -32,7 +32,11 @@ const atoms = {
   "page:learn": { title: "网络学堂", sub: "作业与通知", target: { page: "learn" } },
   "page:card": { title: "校园卡", sub: "余额 ¥23.4", target: { page: "info", params: { infoTab: "card" } } },
   "course:1~数据结构~张三~2025": { title: "数据结构", sub: "张三 · 课程", target: { page: "learn-course", params: { courseId: "1" } } },
-  "washer-m:b1~紫荆1号楼~0~洗衣机A": { title: "洗衣机A", sub: "紫荆1号楼", target: { page: "life", params: { washerMachine: "洗衣机A" } } },
+  "washer-m:b1~紫荆1号楼~0~洗衣机A": {
+    title: "洗衣机A", sub: "紫荆1号楼",
+    // 与真实原子一致：落到洗衣机页要带一整套参数，少一个就退回生活首页
+    target: { page: "life", params: { lifeTab: "washer", washerBuildingId: "b1", washerBuildingName: "紫荆1号楼", washerBuildingHlsh: false, washerMachine: "洗衣机A" } },
+  },
   "news:n1~某条新闻~信息门户": { title: "某条新闻", sub: "信息门户", target: { page: "info", params: { infoNewsId: "n1" } } },
 };
 
@@ -60,7 +64,18 @@ const deps = (extra = {}) => ({
   eq("图标组：标题", r.title, "常用");
   eq("图标组：只取原子，跳过子夹", r.items.map((i) => i.label), ["网络学堂", "校园卡"]);
   eq("图标组：每个图标带自己的落点", r.items[0].target, "learn");
-  eq("图标组：标题落点是那个收藏夹", [r.target, r.params], ["folder", { folderId: "f1" }]);
+  ok("图标组：带参数的落点不能被吃掉（洗衣机/课程这类原子全靠它）",
+     resolveWidgetSource({ kind: "folder", folderId: "washers" }, {
+       folders: { washers: { title: "洗衣机", items: [{ t: "a", atom: { kind: "washer-m", key: "b1~紫荆1号楼~0~洗衣机A" } }] } },
+       resolveAtom: (ref) => atoms[`${ref.kind}:${ref.key}`] ?? null,
+     }).items[0].target.startsWith("life?lifeTab=washer&washerBuildingId=b1"));
+  eq("详情：落点带参数（课程要带 courseId，否则是一片空白课）",
+     resolveWidgetSource({ kind: "detail", atom: { kind: "course", key: "1~数据结构~张三~2025" } }, deps()).target,
+     "learn-course?courseId=1");
+  eq("快捷方式：落点带参数",
+     resolveWidgetSource({ kind: "shortcut", atom: { kind: "page", key: "card" } }, deps()).target,
+     "info?infoTab=card");
+  eq("图标组：标题落点是那个收藏夹", r.target, "folder?folderId=f1");
   const empty = resolveWidgetSource({ kind: "folder", folderId: "empty" }, deps());
   eq("空夹：返回 null（回落日程与 DDL，而不是空面板）", empty, null);
   const gone = resolveWidgetSource({ kind: "folder", folderId: "nope" }, deps());
@@ -90,7 +105,7 @@ const deps = (extra = {}) => ({
   eq("详情：首行是原子自己", [r.rows[0].text, r.rows[0].sub], ["数据结构", "张三 · 课程"]);
   eq("详情：接上补充行", r.rows[1].text, "明天 10:00 六教6A215");
   eq("详情：脚注来自补充行", r.footer, "3 次待上");
-  eq("详情：落点到原子本身", [r.target, r.params], ["learn-course", { courseId: "1" }]);
+  eq("详情：落点到原子本身（含参数）", r.target, "learn-course?courseId=1");
   const noExtra = resolveWidgetSource({ kind: "detail", atom: { kind: "news", key: "n1~某条新闻~信息门户" } }, deps());
   eq("详情：没有补充行时只用原子自己", noExtra.rows.length, 1);
   eq("详情：没有补充行时脚注为空", noExtra.footer, "");
@@ -103,7 +118,7 @@ const deps = (extra = {}) => ({
   eq("快捷方式：形态", r.kind, "shortcut");
   eq("快捷方式：名称", r.label, "校园卡");
   eq("快捷方式：副标题", r.sub, "余额 ¥23.4");
-  eq("快捷方式：落点", [r.target, r.params], ["info", { infoTab: "card" }]);
+  eq("快捷方式：落点", r.target, "info?infoTab=card");
   eq("快捷方式：带着原子引用（供栅格化图标）", r.ref, { kind: "page", key: "card" });
   eq("快捷方式：长名字截断到 8 字", resolveWidgetSource({ kind: "shortcut", atom: { kind: "page", key: "card" } },
     { folders: {}, resolveAtom: () => ({ title: "一二三四五六七八九十", target: { page: "today" } }) }).label, "一二三四五六七八…");

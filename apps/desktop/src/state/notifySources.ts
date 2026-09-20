@@ -9,7 +9,7 @@
  */
 import { invoke } from "@tauri-apps/api/core";
 import { subscribeCampusData, subscribeLearnData } from "./data.js";
-import { cacheGet } from "./cache.js";
+import { runWithoutSemesterSwitch } from "./data.js";
 import { onCloudCalChange } from "./cloudCal.js";
 import { subscribeExtHw } from "./exthw.js";
 import { subscribeHwRemind } from "./hwRemind.js";
@@ -20,6 +20,7 @@ import { muteToasts } from "./toast.js";
 import { resolveWidgetSource } from "./widgetSource.js";
 import { subscribeWidgetInstances } from "./widgetInstances.js";
 import { atomDetail } from "./widgetDetail.js";
+import { liveDetail, warmLiveData } from "./widgetLive.js";
 import { fetchWidgetInstances } from "./widgetBridge.js";
 import { collectNotifyInputs } from "./notifyInputs.js";
 import { createNotifyRuntime, type NotifyRuntime } from "./notifyRuntime.js";
@@ -99,6 +100,9 @@ function resolveBindingProd(binding: Parameters<typeof resolveWidgetSource>[0], 
     maxIcons: hint.maxIcons,
     // 详情补充行：用应用已有数据（课表、作业、实时缓存）把「一个原子占满」填满
     detail: (ref) => {
+      // 实时优先：教室占用 / 洗衣机状态（warmLiveData 刚抓过，这里同步读缓存）
+      const live = liveDetail(ref as never);
+      if (live) return { rows: live.rows, footer: live.footer };
       const v = resolveAtom(ref as never);
       if (!v) return null;
       const inputs = collectNotifyInputs(Date.now());
@@ -106,10 +110,6 @@ function resolveBindingProd(binding: Parameters<typeof resolveWidgetSource>[0], 
         schedule: inputs.schedule,
         homework: inputs.homework,
         now: Date.now(),
-        readCache: (key) => {
-          const hit = cacheGet<unknown>(key);
-          return hit ? hit.data : null;
-        },
       });
       return d ? { rows: d.rows, footer: d.footer } : null;
     },
@@ -120,11 +120,14 @@ function resolveBindingProd(binding: Parameters<typeof resolveWidgetSource>[0], 
       // 而不是在注册表里再维护一份 page/params（两份必然漂移）。
       // 注意 open 可能弹提示（如插件页未启用），故进静音区。
       let hit: { page: string; params?: Record<string, unknown> } | null = null;
+      // 静音：这类 open 闭包里既有 toast 也有切学期等副作用，后台算快照时都不该真的发生
       muteToasts(() => {
         try {
-          v.open(((page: string, params?: Record<string, unknown>) => {
-            hit = { page: String(page), params };
-          }) as never);
+          runWithoutSemesterSwitch(() => {
+            v.open(((page: string, params?: Record<string, unknown>) => {
+              hit = { page: String(page), params };
+            }) as never);
+          });
         } catch {
           /* 个别原子 open 依赖运行时态：取不到就回落收藏夹落点 */
         }
@@ -145,6 +148,8 @@ export async function ensureWidgetRuntime(): Promise<WidgetRuntime> {
     subscribe: subscribeNotifySources,
     listInstances: fetchWidgetInstances,
     resolveBinding: resolveBindingProd,
+    // 下沉原子的实时数据：算快照前顺手抓一遍（带超时，失败就算了）
+    warm: (refs) => warmLiveData(refs as never),
   });
   return widgetRuntime;
 }

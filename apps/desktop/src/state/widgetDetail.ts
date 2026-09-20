@@ -1,11 +1,9 @@
 /**
  * 「一个原子占满一块小组件」时，除了原子自己的说明还能写什么。
  *
- * 这是小组件「拉长能看到细节」的来源：原生没有业务语义，算不了「这门课下次什么时候上」
- * 「这台洗衣机还要多久」。能算的只有应用——但只能在**已有数据**里算：
- *   · 课表 / 作业是应用自己在内存与缓存里就有的；
- *   · 洗衣机状态来自实时缓存（用户打开过洗衣机页就有），拿不到就老实不写这一行。
- * 宁可少一行，也不要猜一个数字写到桌面上。
+ * 这是小组件「拉长能看到细节」的来源：原生没有业务语义，算不了「这门课下次什么时候上」。
+ * 本模块只做**纯计算**（课表、作业都在内存里）；需要联网的下沉原子（教室占用、洗衣机状态）
+ * 在 state/widgetLive.ts：那边负责抓取 + 解读，本模块拿不到就少写一行，绝不猜。
  *
  * 纯函数 + 注入依赖，故可直测。
  */
@@ -20,8 +18,6 @@ export interface DetailRow {
 export interface WidgetDetailDeps {
   schedule: PlanScheduleEntry[];
   homework: PlanHomework[];
-  /** 读实时缓存（洗衣机等）：拿不到返回 null */
-  readCache: (key: string) => unknown;
   now: number;
   /** 最多补几行（原生按占位决定；这里给个上界免得白算） */
   maxRows?: number;
@@ -102,24 +98,6 @@ export function atomDetail(
       rows: at > 0 ? [{ text: `截止 ${dayLabel(at, deps.now)} ${hm(at)}`, sub: at > deps.now ? left(at - deps.now) : undefined }] : [],
       footer: hw.submitted ? "已提交" : "未提交",
     };
-  }
-
-  /* 洗衣机（单台）：还要多久 / 是否空闲 */
-  if (ref.kind === "washer-m" || ref.kind === "washer-b") {
-    const [bId, bName, hlsh, dev] = ref.key.split("~");
-    const cached = deps.readCache(`fav.washer.${bId}.${hlsh === "1" ? "h" : "j"}`) as
-      | Array<{ name?: string; floor?: string; washers?: Array<{ name?: string; location?: string; type?: string; status?: string; eta?: number }> }>
-      | null;
-    if (!Array.isArray(cached)) return null;                 // 没打开过洗衣机页：不猜
-    const all = cached.flatMap((f) => (f.washers ?? []).map((w) => ({ w, floor: f.floor })));
-    if (ref.kind === "washer-b") {
-      const idle = all.filter((x) => x.w.status === "idle").length;
-      return { rows: [{ text: `空闲 ${idle} / ${all.length} 台` }], footer: clip(bName, 12) };
-    }
-    const hit = all.find((x) => (x.w.name || x.w.location || x.w.type || "设备") === dev);
-    if (!hit) return null;
-    const text = hit.w.status === "idle" ? "空闲" : hit.w.status === "working" ? (hit.w.eta && hit.w.eta > 0 ? `使用中 · 剩 ${hit.w.eta} 分钟` : "使用中") : "状态未知";
-    return { rows: [{ text, sub: clip(hit.floor ?? "", 10) }], footer: clip(bName, 12) };
   }
 
   return null;   // 其余原子：原子自己的说明已经够了，不硬凑

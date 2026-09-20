@@ -86,8 +86,10 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   Android 不允许运行时注册 provider，走**固定槽位**（3 个）按声明顺序占位。
   **图标也要应用侧算**：小组件里没有 WebView，插件的 SVG 与宿主 React 图标在那边都不存在，
   故 `state/widgetIcon.ts` 在前台把原子图标渲染成 SVG → canvas → PNG（按原子缓存）随内容下发。
-  详情行同理（`state/widgetDetail.ts`）：课程下次上课、作业截止、洗衣机实时状态都只有应用算得出，
-  而**拿不到实时数据就不写**——桌面上写错的数字比空着更糟。点击落点是「页面 + 参数」的自描述
+  详情行同理：课程下次上课与作业截止由 `state/widgetDetail.ts` 从内存算，**下沉原子**（教室占用、
+  洗衣机状态）由 `state/widgetLive.ts` 在算快照前顺手抓一遍（与收藏夹方卡共用缓存键，带超时），
+  解读逻辑放在纯函数 `state/widgetLiveParse.ts`（「现在第几节」「哪几节空着」全在时间边界上出错，
+  必须能直测）；**拿不到实时数据就不写**——桌面上写错的数字比空着更糟。点击落点是「页面 + 参数」的自描述
   字符串（`folder?folderId=f1`，编解码在 `state/widgetTarget.ts`，布尔会被还原——字符串 `"false"`
   在 JS 里是真值），应用回前台时取走并解析后导航；未绑定那块的落点是 `widget-config:<id>`，
   应用据此弹出选择层而不是跳到一个空页面。

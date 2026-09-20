@@ -221,7 +221,23 @@ export function getSelectedSemester(): string | null {
   return selectedSemester;
 }
 
+/**
+ * 静音区间：后台任务（算小组件内容时复跑原子的 open 闭包取落点）会调到带副作用的原子打开
+ * 逻辑，其中最要紧的是切学期——那是用户可见的状态变更，绝不能因为「后台算了一次快照」就发生。
+ */
+let quietSemester = false;
+export function runWithoutSemesterSwitch<T>(fn: () => T): T {
+  const prev = quietSemester;
+  quietSemester = true;
+  try {
+    return fn();
+  } finally {
+    quietSemester = prev;
+  }
+}
+
 export function setSelectedSemester(id: string | null): void {
+  if (quietSemester) return;          // 静音区间内忽略（见 runWithoutSemesterSwitch）
   if (selectedSemester === id) return;
   selectedSemester = id;
   cache = null;

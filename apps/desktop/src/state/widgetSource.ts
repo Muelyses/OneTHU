@@ -10,6 +10,7 @@
  */
 import type { AtomRef } from "./favorites.js";
 import type { WidgetBinding } from "./widgetInstances.js";
+import { encodeWidgetTarget } from "./widgetTarget.js";
 
 /** 与 widgetSnapshot 的行同形（此处重复声明以避免循环依赖） */
 export interface SourceRow {
@@ -17,11 +18,17 @@ export interface SourceRow {
   sub?: string;
 }
 
-/** 解析结果：四类内容里除「今天」之外的三种（今天由 widgetSnapshot 直接算） */
+/**
+ * 解析结果：四类内容里除「今天」之外的三种（今天由 widgetSnapshot 直接算）。
+ *
+ * `target` 一律是**已编码**的落点字符串（`life?lifeTab=washer&washerBuildingId=…`）：
+ * 曾经这里只带 page、把 params 留在旁边，结果图标组那条路上 params 被漏掉，用户点洗衣机
+ * 落到生活首页、点课程落到空白课。落点必须在源头就是完整字符串，后面每一层只负责搬运。
+ */
 export type ResolvedInstance =
-  | { kind: "detail"; title: string; rows: SourceRow[]; footer: string; target: string; params?: Record<string, unknown> }
-  | { kind: "grid"; title: string; target: string; params?: Record<string, unknown>; items: Array<{ label: string; ref: AtomRef; target: string; params?: Record<string, unknown> }> }
-  | { kind: "shortcut"; label: string; sub: string; target: string; params?: Record<string, unknown>; ref: AtomRef };
+  | { kind: "detail"; title: string; rows: SourceRow[]; footer: string; target: string }
+  | { kind: "grid"; title: string; target: string; items: Array<{ label: string; ref: AtomRef; target: string }> }
+  | { kind: "shortcut"; label: string; sub: string; target: string; ref: AtomRef };
 
 export interface WidgetSourceDeps {
   /** 收藏夹表：id → { title, items } */
@@ -45,15 +52,19 @@ function clip(s: string, n: number): string {
 }
 
 /** 收藏夹内的原子（子收藏夹自身不进图标组：图标组是「原子并列」，嵌夹会没有图标可画） */
-function atomsOfFolder(folderId: string, deps: WidgetSourceDeps, max: number): Array<{ label: string; ref: AtomRef; target: string; params?: Record<string, unknown> }> {
+function atomsOfFolder(folderId: string, deps: WidgetSourceDeps, max: number): Array<{ label: string; ref: AtomRef; target: string }> {
   const folder = deps.folders[folderId];
   if (!folder) return [];
-  const out: Array<{ label: string; ref: AtomRef; target: string; params?: Record<string, unknown> }> = [];
+  const out: Array<{ label: string; ref: AtomRef; target: string }> = [];
   for (const item of folder.items) {
     if (item.t !== "a") continue;                 // 子收藏夹：跳过（图标组里没有可画的图标）
     const meta = deps.resolveAtom(item.atom);
     if (!meta) continue;                          // 原子已失效：跳过（与收藏夹页的降级一致）
-    out.push({ label: clip(meta.title, 6), ref: item.atom, target: meta.target?.page ?? "", params: meta.target?.params });
+    out.push({
+      label: clip(meta.title, 6),
+      ref: item.atom,
+      target: encodeWidgetTarget(meta.target?.page ?? "", meta.target?.params ?? null),
+    });
     if (out.length >= max) break;
   }
   return out;
@@ -71,13 +82,7 @@ export function resolveWidgetSource(binding: WidgetBinding, deps: WidgetSourceDe
     if (!folder) return null;
     const items = atomsOfFolder(binding.folderId, deps, max);
     if (items.length === 0) return null;          // 空夹（或全是失效原子）：回落今日视图而不是空面板
-    return {
-      kind: "grid",
-      title: clip(folder.title, 12),
-      target: "folder",
-      params: { folderId: binding.folderId },
-      items,
-    };
+    return { kind: "grid", title: clip(folder.title, 12), target: encodeWidgetTarget("folder", { folderId: binding.folderId }), items };
   }
 
   if (binding.kind === "detail") {
@@ -91,8 +96,7 @@ export function resolveWidgetSource(binding: WidgetBinding, deps: WidgetSourceDe
       title: clip(meta.title, 18),
       rows,
       footer: extra?.footer ?? "",
-      target: meta.target?.page ?? "",
-      params: meta.target?.params,
+      target: encodeWidgetTarget(meta.target?.page ?? "", meta.target?.params ?? null),
     };
   }
 
@@ -103,8 +107,7 @@ export function resolveWidgetSource(binding: WidgetBinding, deps: WidgetSourceDe
       kind: "shortcut",
       label: clip(meta.title, 8),
       sub: clip(meta.sub ?? "", 16),
-      target: meta.target?.page ?? "",
-      params: meta.target?.params,
+      target: encodeWidgetTarget(meta.target?.page ?? "", meta.target?.params ?? null),
       ref: binding.atom,
     };
   }

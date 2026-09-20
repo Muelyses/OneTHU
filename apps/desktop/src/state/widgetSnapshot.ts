@@ -45,7 +45,8 @@ export interface WidgetSnapshot {
   kind?: "list";
 }
 
-/** 图标组形态：若干原子图标并列（收藏夹 = 内嵌的文件夹） */
+/** 图标组形态：若干原子图标并列（收藏夹 = 内嵌的文件夹）。
+ *  落点一律是已编码字符串（`encodeWidgetTarget` 的产物），构造器不再拆开重组。 */
 export interface WidgetGridSnapshot {
   kind: "grid";
   updatedAt: number;

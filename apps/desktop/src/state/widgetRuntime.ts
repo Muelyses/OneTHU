@@ -51,6 +51,9 @@ export interface WidgetRuntimeDeps {
   resolveBinding?: (binding: WidgetBinding, hint: { maxIcons: number }) => ResolvedInstance | null;
   /** 原子图标栅格化（缺省用 widgetIcon 的实现；测试里可注入固定值） */
   iconPng?: (ref: { kind: string; key: string }, size: number) => Promise<string | null>;
+  /** 抓取「桌面上正显示的那些原子」需要的实时数据（教室占用 / 洗衣机状态）。
+   *  必须在算内容之前 await：小组件进程没有网络，实时值只能在这条链上补。 */
+  warm?: (refs: Array<{ kind: string; key: string }>) => Promise<void>;
   debounceMs?: number;
   tickMs?: number;
 }
@@ -79,14 +82,12 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
   const icon = deps.iconPng ?? atomIconPng;
 
   /** 某一块的内容：绑定解析失败一律回落「日程与 DDL」，不在桌面上留空白卡片 */
-  async function contentFor(binding: WidgetBinding, inst: WidgetInstanceInfo, today: WidgetSnapshot, now: number): Promise<WidgetInstanceContent> {
-    if (binding.kind === "today" || !deps.resolveBinding) return today;
-    const resolved = deps.resolveBinding(binding, { maxIcons: gridCapacity(inst.w, inst.h) });
-    if (!resolved) return today;
+  async function contentFor(binding: WidgetBinding, resolved: ResolvedInstance | null, today: WidgetSnapshot, now: number): Promise<WidgetInstanceContent> {
+    if (binding.kind === "today" || !resolved) return today;
     if (resolved.kind === "detail") {
       return buildDetailSnapshot({
         title: resolved.title, rows: resolved.rows, footer: resolved.footer,
-        target: resolved.target, params: resolved.params, now,
+        target: resolved.target, now,
       });
     }
     if (resolved.kind === "grid") {
@@ -94,11 +95,11 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
       for (const it of resolved.items) {
         items.push({ label: it.label, icon: (await icon(it.ref, 72)) ?? undefined, target: it.target });
       }
-      return buildGridSnapshot({ title: resolved.title, items, target: resolved.target, params: resolved.params, now });
+      return buildGridSnapshot({ title: resolved.title, items, target: resolved.target, now });
     }
     return buildShortcutSnapshot({
       label: resolved.label, sub: resolved.sub, icon: (await icon(resolved.ref, 96)) ?? undefined,
-      target: resolved.target, params: resolved.params, now,
+      target: resolved.target, now,
     });
   }
 
@@ -119,8 +120,28 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     const contents: Record<string, WidgetInstanceContent> = {};
     if (insts) {
       const map = loadWidgetInstances();
+      // 两趟：先把每块绑定的原子解析出来，抓齐实时数据（教室占用 / 洗衣机状态）再算内容——
+      // 「本节空闲」「还剩 23 分钟」这类值只有应用抓得到，小组件进程里没有网络。
+      const resolvedById = new Map<number, ReturnType<NonNullable<WidgetRuntimeDeps["resolveBinding"]>>>();
+      const need: Array<{ kind: string; key: string }> = [];
       for (const inst of insts) {
-        contents[String(inst.id)] = await contentFor(bindingOf(inst.id, map), inst, today, now);
+        const binding = bindingOf(inst.id, map);
+        const resolved = binding.kind === "today" ? null : deps.resolveBinding?.(binding, { maxIcons: gridCapacity(inst.w, inst.h) }) ?? null;
+        resolvedById.set(inst.id, resolved);
+        if (!resolved) continue;
+        if (resolved.kind === "grid") for (const it of resolved.items) need.push(it.ref);
+        else if (resolved.kind === "shortcut") need.push(resolved.ref);
+        else need.push(binding.kind === "detail" ? binding.atom : { kind: "", key: "" });
+      }
+      if (deps.warm && need.length) {
+        try {
+          await deps.warm(need);
+        } catch {
+          /* 抓不到就少写几行实时状态，绝不因此中断推送 */
+        }
+      }
+      for (const inst of insts) {
+        contents[String(inst.id)] = await contentFor(bindingOf(inst.id, map), resolvedById.get(inst.id) ?? null, today, now);
       }
       // 绑定表跟着实际存在的实例走：桌面上没了就清掉，避免越积越多
       pruneWidgetInstances(insts.map((i) => i.id));

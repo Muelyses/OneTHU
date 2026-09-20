@@ -161,14 +161,27 @@ export function OnboardingTour(): React.ReactNode {
               同上一页：点一下取消 = 该页签先隐藏（在该页的「管理」里能加回来）。
             </p>
             {TAB_GROUPS.map((g) => (
-              <div key={g.key} style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 12.5, color: "var(--text-3, #999)", margin: "6px 0" }}>{g.title}</div>
-                {g.tabs.map((t) => {
-                  const k = `${g.key}:${t.id}`;
-                  return row(keepTabs.includes(k), t.label, "", () =>
-                    setKeepTabs((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k])),
-                  );
-                })}
+              <div key={g.key} style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 12.5, color: "var(--text-3, #999)", margin: "6px 0 8px" }}>{g.title}</div>
+                {/* 页签按 chip 排（与页内页签栏同观感），不做成大方块 */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {g.tabs.map((t) => {
+                    const k = `${g.key}:${t.id}`;
+                    const on = keepTabs.includes(k);
+                    return (
+                      <button
+                        key={k}
+                        className={on ? "btn btn-primary" : "btn"}
+                        style={{ fontSize: 12.5, padding: "4px 10px", opacity: on ? 1 : 0.5 }}
+                        onClick={() =>
+                          setKeepTabs((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]))
+                        }
+                      >
+                        {on ? "✓ " : ""}{t.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </>

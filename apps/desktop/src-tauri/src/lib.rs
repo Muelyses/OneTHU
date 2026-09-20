@@ -759,7 +759,9 @@ pub(crate) async fn fetch_attachment(
         .await
         .map_err(|e| e.to_string())?;
     if !resp.status().is_success() {
-        return Err(format!("HTTP {}", resp.status()));
+        // 带上 URL：404 必须能一眼看出是哪条链接（历史上正是靠这条线索才发现走错了端点）
+        eprintln!("[onethu] fetch_attachment {} {}", resp.status(), url);
+        return Err(format!("HTTP {} — {}", resp.status(), url));
     }
     let content_disposition = resp
         .headers()
@@ -973,7 +975,8 @@ async fn fetch_binary(
         .await
         .map_err(|e| e.to_string())?;
     if !resp.status().is_success() {
-        return Err(format!("HTTP {}", resp.status()));
+        eprintln!("[onethu] fetch_binary {} {}", resp.status(), url);
+        return Err(format!("HTTP {} — {}", resp.status(), url));
     }
     let mime = resp
         .headers()

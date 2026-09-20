@@ -29,6 +29,7 @@ import {
 } from "../../lib/yktBody.js";
 import { fetchYktImageAsDataUrl, loadYktFont } from "../../lib/yktAssets.js";
 import { loadYktLatexBundle, type YktLatexBundle } from "../../lib/yktKatex.js";
+import { currentThemeIsDark, useThemes } from "../../state/theme.js";
 import { openExternal } from "../../pages/info/openExternal.js";
 
 export interface ProblemBodyProps {
@@ -53,6 +54,10 @@ interface YktDocMessage {
 }
 
 export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", className }: ProblemBodyProps) {
+  // 文档在 opaque origin 的 iframe 里，继承不到主题变量 → 必须按档重建：
+  // useThemes() 订阅主题变化，切换日夜即重渲染并重算 dark。
+  useThemes();
+  const dark = currentThemeIsDark();
   const [doc, setDoc] = useState("");
   const [height, setHeight] = useState(YKT_FRAME_MIN_H);
   const frameRef = useRef<HTMLIFrameElement | null>(null);
@@ -72,11 +77,12 @@ export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", cl
           fontDataUrl,
           render: bundleRef.current?.render,
           extraCss: bundleRef.current?.inlineCss,
+          dark,
         }),
       );
       setHeight(YKT_FRAME_MIN_H);
     },
-    [html],
+    [html, dark],
   );
 
   /* 首建：渲染器与字体并行取，任一失败各自降级，不影响另一环 */

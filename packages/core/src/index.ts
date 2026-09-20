@@ -6,7 +6,9 @@ export type { CookieJar, CookieRecord, FetchLike, HttpClientOptions } from "./ht
 
 // 加密
 export * as webvpn from "./crypto/webvpn.js";
-export { encodeUrl as webvpnEncodeUrl, decodeUrl as webvpnDecodeUrl, webvpnWrap } from "./crypto/webvpn.js";
+export {
+  encodeUrl as webvpnEncodeUrl, decodeUrl as webvpnDecodeUrl, webvpnWrap, normalizeWebvpnUrl,
+} from "./crypto/webvpn.js";
 export * as sm2crypto from "./crypto/sm2.js";
 export { decryptResponse } from "./crypto/decryptResponse.js";
 
@@ -188,7 +190,7 @@ export type {
   XkFlag,
 } from "./zhjwxk/client.js";
 
-export { LEARN_FILE_DOWNLOAD, LEARN_PREFIX } from "./learn/urls.js";
+export { LEARN_FILE_DOWNLOAD, LEARN_PREFIX, learnAbsoluteUrl } from "./learn/urls.js";
 export { setWebvpnLog } from "./auth/demoLogin.js";
 
 /* courseX（tsinghua.app 课表共享库）——免凭证公开查询，上传不接入（无公开登录渠道） */

@@ -816,10 +816,9 @@ export class LearnClient {
       // 无文件下载参数 = 不是附件（页面导航/锚点），绝不冒充附件名
       if (!id && !dl) continue;
       const name = decodeText(a[2]!.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
-      const path = dl ?? href;
-      const downloadUrl = path.startsWith("http")
-        ? path
-        : urls.LEARN_PREFIX + (path.startsWith("/") ? path : "/" + path);
+      // 页面经 webvpn 取回时 href 可能已是 `/https/<hex>/…` 包装形态：交给 learnAbsoluteUrl
+      // 判断（再拼一次 LEARN_PREFIX 就是双重包装 → 404，真机踩过）
+      const downloadUrl = urls.learnAbsoluteUrl(dl ?? href);
       const size = decodeText(/<span[^>]*class="[^"]*color[^"]*"[^>]*>([^<]*)<\/span>/i.exec(block)?.[1] ?? "").trim();
       return { id, name, downloadUrl, size: size || undefined };
     }
@@ -952,10 +951,8 @@ export class LearnClient {
     const params = new URLSearchParams(q >= 0 ? href.slice(q + 1) : "");
     const id = params.get("wjid") ?? params.get("fileId") ?? "";
     const dl = params.get("downloadUrl");
-    const path = dl ?? href;
-    const downloadUrl = path.startsWith("http")
-      ? path
-      : urls.LEARN_PREFIX + (path.startsWith("/") ? path : "/" + path);
+    // 同附件锚点：通知页也是经 webvpn 取回的，href 可能已带 `/https/<hex>/` 前缀
+    const downloadUrl = urls.learnAbsoluteUrl(dl ?? href);
     const name = decodeText(pick[2]!.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
     const size = decodeText(
       /id="attachment"[^>]*>[\s\S]*?<span[^>]*class="[^"]*color[^"]*"[^>]*>([^<]*)<\/span>/i.exec(html)?.[1] ?? "",

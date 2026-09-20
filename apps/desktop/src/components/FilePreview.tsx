@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
+import { normalizeWebvpnUrl } from "@onethu/core";
 import { explainNetworkError, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
 import {
@@ -226,7 +227,8 @@ interface FetchedBinary {
 }
 
 async function fetchBinary(url: string): Promise<FetchedBinary> {
-  const target = withLearnCsrf(url); // learn 下载端点缺 _csrf 会回 HTML 错误页
+  // 归一：页面里取到的链接可能已被网关包装（双重包装会 404，见 crypto/webvpn.normalizeWebvpnUrl）
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)

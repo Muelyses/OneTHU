@@ -11,6 +11,7 @@ import {
   makeFingerprint,
   webvpnDecodeUrl,
   webvpnWrap,
+  normalizeWebvpnUrl,
   PUBLIC_DIRECT_HOSTS,
   type CredentialStore,
   type SessionData,
@@ -691,7 +692,7 @@ export async function downloadLearnFile(fileId: string, filename: string): Promi
  * 返回落盘位置；用户取消返回 null（取消不是错误，调用方别弹报错）。
  */
 export async function saveLearnUrlAs(url: string, filename: string): Promise<string | null> {
-  const target = withLearnCsrf(url);
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)
@@ -703,7 +704,8 @@ export async function saveLearnUrlAs(url: string, filename: string): Promise<str
 /** 任意 learn 资源下载（作业/通知附件端点与课件不同，由 core 解析出完整 downloadUrl）。
  *  落盘名以前端传入的 filename 为准；Rust 侧会用响应 Content-Disposition 的真名兜底。 */
 export async function downloadLearnUrl(url: string, filename: string): Promise<string> {
-  const target = withLearnCsrf(url);
+  // 归一：历史缓存/其它路径可能给出双重包装的 webvpn 地址（真机 404 事故），这里兜住
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)
@@ -715,7 +717,7 @@ export async function downloadLearnUrl(url: string, filename: string): Promise<s
 /** 正文图片 → dataURL：webview 的 <img> 不携带应用会话 Cookie，
  *  直挂 learn 地址只会得到登录页；须由应用侧带 Cookie 抓取后内联。 */
 export async function fetchImageAsDataUrl(url: string): Promise<string> {
-  const target = withLearnCsrf(url);
+  const target = withLearnCsrf(normalizeWebvpnUrl(url));
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)

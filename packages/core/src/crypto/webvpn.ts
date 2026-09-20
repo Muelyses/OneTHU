@@ -68,12 +68,31 @@ export function decodeUrl(maybeWebvpn: string): string | null {
   }
 }
 
+/**
+ * 双重包装自愈：`…/https/<hexA>/https/<hexB>/…` → 只保留**最内层**那一层包装。
+ *
+ * 真机事故：learn 页面经 webvpn 取回时，wengine 已把页面里的链接改写成 `/https/<hex>/…`，
+ * 而 LEARN_PREFIX 本身就是包装后的 learn 根，再拼一次就成了两层包装，服务端 404
+ * （通知附件的预览与下载全废）。解析处已经不会再拼错，这里是兜底：**任何**路径拼错
+ * 都不该以 404 收场，宁可自愈成最内层那一层。
+ */
+export function normalizeWebvpnUrl(url: string): string {
+  const m = /^https?:\/\/webvpn\.tsinghua\.edu\.cn\/(.*)$/i.exec(url);
+  if (!m) return url;
+  const path = m[1]!;
+  const hits = [...path.matchAll(/https\/[0-9a-f]{16,}\//gi)];
+  if (hits.length <= 1) return url;
+  const last = hits[hits.length - 1]!;
+  return `${WEBVPN_ROOT}/${path.slice(last.index ?? 0)}`;
+}
+
 /** HttpClient.webVPNEncoder 的默认实现 */
 export function webvpnWrap(url: string): string {
-  if (url.startsWith(WEBVPN_ROOT)) return url;
+  const healed = normalizeWebvpnUrl(url);
+  if (healed.startsWith(WEBVPN_ROOT)) return healed;
   try {
-    return encodeUrl(url);
+    return encodeUrl(healed);
   } catch {
-    return url;
+    return healed;
   }
 }

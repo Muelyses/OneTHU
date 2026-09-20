@@ -20,6 +20,11 @@
  *    自动重拉（新 Cookie 生效）；同源并发失效 in-flight 去重；进程级频控（同源 ≥10min、
  *    每源每进程 ≤3 次，与 TUOJ 独立计数）；重登仍失败文案同款前缀；非会话错误 / 未注入
  *    钩子不重登；tycheLogin 登录链路（挑战 token / sha1 双哈希 / vcode 拒绝 / 错误映射）
+ *  - R21-B：雨课堂会话失效归一（401/403、errcode=401000、code=50000、非 JSON 四特征 →
+ *    YktSessionError；网络断不误判）；checkSession 健康检查（有效含归属人 / 各失效原因 /
+ *    网络断 alive=null 不谎报）；Cookie 轮换捕获回写（x-onethu-set-cookie 白名单合并、
+ *    后续请求即用新值、无轮换零回调）；Cookie 导出/导入往返与各类拒绝；
+ *    refreshExternalHomework 对 yuketang 失效不做静默重登（无自动重登路径）
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
 import { createTuojSource, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "../packages/core/src/exthw/tuoj.ts";
@@ -1320,6 +1325,227 @@ if (!canResolveTs) {
     const r = await tuojLogin("2026000000", "pw", fetchLike, CLASSIC_BASE);
     eq(r.cookie, "session=x", "经典 TUOJ 账密登录取回 Cookie");
     ok(calls[0].url.startsWith(CLASSIC_BASE), "经典 TUOJ 账密登录打到经典 base");
+  }
+}
+
+/* ───────── R21-B：雨课堂会话失效归一 / 健康检查 / Cookie 轮换 / 导出导入 ───────── */
+console.log("\n[雨课堂 R21-B 会话/保活/导出导入]");
+{
+  const { YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } = await import(
+    "../packages/core/src/exthw/yuketang.ts"
+  );
+  const jsonRes = (body, status = 200, extraHeaders = {}) =>
+    new Response(typeof body === "string" ? body : JSON.stringify(body), {
+      status,
+      headers: { "Content-Type": "application/json", ...extraHeaders },
+    });
+
+  // ① 错误归一矩阵：四特征 → YktSessionError
+  {
+    let err;
+    try {
+      await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("unauthorized", { status: 401 }), 30).fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err), "①HTTP 401 → YktSessionError");
+    ok(err instanceof Error && err.message.includes("会话已失效") && err.message.includes("401"), "①401 文案含「会话已失效」与状态码");
+
+    const h403 = await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("", { status: 403 }), 30).checkSession();
+    eq(h403.alive, false, "①HTTP 403 checkSession alive=false");
+    eq(h403.reason, "http403", "①403 reason=http403");
+
+    const f401k = makeFetch([
+      { match: (u) => u.includes("/v2/api/web/courses/list"), body: { errcode: 401000, errmsg: "Session not exists" } },
+    ]);
+    err = undefined;
+    try {
+      await createYuketangSource({ cookie: "sessionid=x" }, f401k, 30).fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err) && err instanceof Error && err.message.includes("401000"), "①courses errcode=401000 → 会话错误含 401000");
+
+    err = undefined;
+    try {
+      await createYuketangSource(
+        { cookie: "sessionid=x" },
+        makeFetch([{ match: (u) => u.includes("/get_exercise_list/"), body: { errcode: 401000, errmsg: "Session not exists" } }]),
+        30,
+      ).getExerciseDetail("7001", "77");
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err) && err instanceof Error && err.message.includes("401000"), "①详情 errcode=401000 → 会话错误含 401000");
+
+    const h50000 = await createYuketangSource(
+      { cookie: "sessionid=x" },
+      async () => jsonRes({ code: 50000, msg: "UNAUTHENTICATED", data: "" }),
+      30,
+    ).checkSession();
+    eq(h50000.alive, false, "①basic-info code=50000 alive=false");
+    eq(h50000.reason, "unauthenticated", "①50000 reason=unauthenticated");
+
+    const hHtml = await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("<html>login</html>", { status: 200 }), 30).checkSession();
+    eq(hHtml.alive, false, "①非 JSON（登录壳）alive=false");
+    eq(hHtml.reason, "non-json", "①非 JSON reason=non-json");
+
+    err = undefined;
+    try {
+      await createYuketangSource({ cookie: "sessionid=x" }, async () => new Response("<html>login</html>", { status: 200 }), 30).fetch();
+    } catch (e) {
+      err = e;
+    }
+    ok(isYktSessionError(err), "①courses 返回非 JSON → YktSessionError");
+
+    ok(isYktSessionError(new YktSessionError()), "①YktSessionError 实例判定成立");
+    ok(!isYktSessionError(new Error("boom")), "①普通 Error 不判会话失效");
+    if (canResolveTs) {
+      const { TuojSessionError } = await import("../packages/core/src/exthw/index.ts");
+      ok(!isYktSessionError(new TuojSessionError()), "①不与 TUOJ 会话错误混淆");
+    }
+  }
+
+  // ② 会话有效：alive=true + 宽松取归属人；basic-info 无需 XTBZ 头
+  {
+    const calls = [];
+    const f = async (url, init = {}) => {
+      calls.push({ url: String(url), headers: init.headers ?? {} });
+      return jsonRes({ code: 0, msg: "", data: { name: "张三", username: "zhangsan" } });
+    };
+    const h = await createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, f, 30).checkSession();
+    eq(h.alive, true, "②code=0 → 会话有效");
+    eq(h.userName, "张三", "②宽松取到归属人姓名");
+    ok(h.checkedAt > 0, "②记录检查时间");
+    eq(calls.length, 1, "②健康检查只打一个请求");
+    ok(calls[0].url.includes("/api/v3/user/basic-info"), "②打到 basic-info");
+    ok(!Object.keys(calls[0].headers).some((k) => k.toLowerCase() === "xtbz"), "②basic-info 无需 XTBZ 头");
+  }
+
+  // ③ 网络断：alive=null（未知，不谎报失效），且不抛
+  {
+    const h = await createYuketangSource(
+      { cookie: "sessionid=x" },
+      async () => {
+        throw new TypeError("fetch failed");
+      },
+      30,
+    ).checkSession();
+    eq(h.alive, null, "③网络断 alive=null");
+    eq(h.reason, "network", "③网络断 reason=network");
+  }
+
+  // ④ Cookie 轮换捕获：Set-Cookie 白名单合并 → 回调一次 → 后续请求即用新值
+  {
+    const calls = [];
+    const refreshes = [];
+    const rotated = {
+      "Content-Type": "application/json",
+      "x-onethu-set-cookie": JSON.stringify(["sessionid=NEW; Path=/; HttpOnly", "randomtoken=zz; Path=/", "uv_id=2598; Path=/"]),
+    };
+    const f = async (url, init = {}) => {
+      calls.push({ url: String(url), cookie: (init.headers ?? {})["Cookie"] ?? "" });
+      if (String(url).includes("/v2/api/web/courses/list")) {
+        return jsonRes({ errcode: 0, data: { list: [{ classroom_id: 1, name: "线代", role: 5 }] } }, 200, rotated);
+      }
+      return jsonRes({ errcode: 0, data: { activities: [] } });
+    };
+    await createYuketangSource({ cookie: "sessionid=OLD; uv_id=2598; xtbz=ykt" }, f, 30, { onCookieRefresh: (c) => refreshes.push(c) }).fetch();
+    eq(refreshes.length, 1, "④轮换恰好回调一次");
+    ok(refreshes[0].includes("sessionid=NEW"), "④轮换后的 Cookie 带新 sessionid");
+    ok(!refreshes[0].includes("randomtoken"), "④非白名单字段（randomtoken）不并入");
+    ok(refreshes[0].includes("xtbz=ykt") && refreshes[0].includes("uv_id=2598"), "④原有字段保留");
+    ok(calls.length >= 2, "④课程后跟随了后续请求");
+    ok(calls[0].cookie.includes("sessionid=OLD"), "④首发用旧 sessionid");
+    ok(calls[1].cookie.includes("sessionid=NEW"), "④轮换后请求立即用新 sessionid");
+    ok(calls.every((c) => !c.cookie.includes("randomtoken")), "④请求头永不带非白名单字段");
+
+    // 无轮换 → 零回调
+    const refreshes2 = [];
+    await createYuketangSource(
+      { cookie: "sessionid=OLD" },
+      async () => jsonRes({ errcode: 0, data: { list: [] } }),
+      30,
+      { onCookieRefresh: (c) => refreshes2.push(c) },
+    ).fetch();
+    eq(refreshes2.length, 0, "④无 Set-Cookie → 不回调");
+  }
+
+  // ⑤ mergeYktCookiePairs 纯函数：换值 / 追加 / 忽略非白名单
+  {
+    const m = mergeYktCookiePairs("sessionid=a; uv_id=2598", new Map([["sessionid", "b"], ["platform_id", "3"]]));
+    ok(m.includes("sessionid=b") && m.includes("platform_id=3") && m.includes("uv_id=2598"), "⑤换值 / 追加白名单字段 / 保留原有");
+    eq(mergeYktCookiePairs("sessionid=a", new Map([["random", "z"]])), "sessionid=a", "⑤非白名单字段忽略");
+    eq(mergeYktCookiePairs("sessionid=a", new Map()), "sessionid=a", "⑤空 pairs 原样返回");
+  }
+
+  // ⑥ Cookie 导出 / 导入往返与拒绝
+  {
+    const text = buildYktCookieExportJson({ cookie: "sessionid=abc; uv_id=2598", uvId: "2598", phone: "13800000000" }, new Date("2026-09-20T04:00:00Z"));
+    const j = JSON.parse(text);
+    eq(j.kind, YKT_COOKIE_EXPORT_KIND, "⑥导出 kind 标识");
+    eq(j.version, 1, "⑥导出 version=1");
+    eq(j.sensitive, true, "⑥sensitive 敏感标注恒真");
+    ok(typeof j.warn === "string" && j.warn.length > 10, "⑥warn 警示文案（脱离 UI 也在）");
+    ok(j.exportedAt.startsWith("2026-09-20"), "⑥导出时间（ISO）");
+    const back = parseYktCookieExportJson(text);
+    eq(back.cookie, "sessionid=abc; uv_id=2598", "⑥导入回读 cookie");
+    eq(back.uvId, "2598", "⑥导入回读 uvId");
+    eq(back.phone, "13800000000", "⑥导入回读 phone");
+    const j2 = JSON.parse(buildYktCookieExportJson({ cookie: "sessionid=abc" }));
+    eq(j2.phone, undefined, "⑥phone 缺省不设");
+
+    let berr;
+    try {
+      buildYktCookieExportJson({ cookie: "uv_id=2598" });
+    } catch (e) {
+      berr = e;
+    }
+    ok(berr instanceof Error && berr.message.includes("sessionid"), "⑥缺 sessionid 拒绝导出");
+
+    let perr;
+    try {
+      parseYktCookieExportJson("not json");
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("JSON"), "⑥坏 JSON 拒绝导入");
+    try {
+      parseYktCookieExportJson(JSON.stringify({ kind: "other", version: 1, cookie: "sessionid=a" }));
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("类型不符"), "⑥kind 不符拒绝导入");
+    try {
+      parseYktCookieExportJson(JSON.stringify({ kind: YKT_COOKIE_EXPORT_KIND, version: 2, cookie: "sessionid=a" }));
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("版本"), "⑥版本不符拒绝导入");
+    try {
+      parseYktCookieExportJson(JSON.stringify({ kind: YKT_COOKIE_EXPORT_KIND, version: 1, cookie: "uv_id=2598" }));
+    } catch (e) {
+      perr = e;
+    }
+    ok(perr instanceof Error && perr.message.includes("sessionid"), "⑥会话串缺 sessionid 拒绝导入");
+  }
+
+  // ⑦ 编排层：yuketang 失效只进 errors（无自动重登路径，不加前缀、不触发 Tyche 重登）
+  if (canResolveTs) {
+    const { refreshExternalHomework, resetTycheSessionRetryState, resetTuojSessionRetryState } = await import(
+      "../packages/core/src/exthw/index.ts"
+    );
+    resetTycheSessionRetryState();
+    resetTuojSessionRetryState();
+    const creds = { yuketang: { cookie: "sessionid=dead", uvId: "2598" } };
+    const r = await refreshExternalHomework({
+      getCreds: () => creds,
+      fetchLike: async () => new Response("unauthorized", { status: 401 }),
+    });
+    ok(typeof r.errors.yuketang === "string" && r.errors.yuketang.includes("会话已失效"), "⑦yuketang 失效文案进 errors 且含「会话已失效」");
+    ok(!r.errors.yuketang.includes("已尝试自动重新登录"), "⑦无静默重登路径 → 不加自动重登前缀");
+    eq(r.reloginTyche, false, "⑦不误触发 Tyche 自动重登");
+    eq(r.items.length, 0, "⑦yuketang 单源失效时 items 为空");
   }
 }
 

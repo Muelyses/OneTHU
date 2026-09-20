@@ -573,6 +573,98 @@ export async function removeExtHwCreds(source: ExtHwSourceId): Promise<void> {
   if (source === "tyche") markTycheLoggedOut();
 }
 
+/* ── R21-B：雨课堂会话保活心跳 + 健康检查 + Cookie 轮换回写 ──
+ * 侦查结论（docs 三十节，2026-09-20 真连 + 前端 bundle 全量端点挖掘）：雨课堂**没有**
+ * 会话续期/刷新端点，sessionid 由服务端 Django 管理，客户端无法「续命」→ 保活只能靠
+ * 周期性轻量已授权请求试探/触发服务端会话续期（是否滑动能推迟过期属实验验证项）。
+ * 这里实现三件事：
+ * ① 6h 一次心跳：GET /api/v3/user/basic-info（最轻的已授权请求）+ 结果记入快照；
+ * ② 服务端若在响应里轮换 Cookie（Set-Cookie 白名单字段）→ 合并后用 AES-GCM 信封
+ *   存回凭据（侦查未见轮换证据，属兜底）；
+ * ③ 健康检查结果（含失效原因）供设置页「检查会话」与失效引导（一键重登/导入）展示。
+ * 全程静默 + log_debug；**绝不**打印 Cookie 内容。 */
+
+/** 心跳周期：6h（霖反馈会话约 24h 失效——6h 足够密；实验结论待 docs 三十节回填） */
+export const YKT_HEARTBEAT_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
+/** 雨课堂会话健康状态（进快照；checkedAt=null = 从未检查过） */
+export interface YktSessionState {
+  /** true=有效；false=已失效；null=未知（未检查 / 网络断，不谎报） */
+  alive: boolean | null;
+  /** 失效原因（alive=false：http401 / http403 / errcode=401000 / unauthenticated / non-json；
+   *  alive=null：network） */
+  reason?: string;
+  /** 会话归属人姓名（basic-info 能取到时；仅展示用） */
+  userName?: string;
+  /** 检查完成时间（ms） */
+  checkedAt: number | null;
+}
+
+let yktSession: YktSessionState = { alive: null, checkedAt: null };
+let yktHbTimer: ReturnType<typeof setInterval> | null = null;
+let yktHbKickoff: ReturnType<typeof setTimeout> | null = null;
+let yktHbBusy = false;
+
+/** 服务端轮换 Cookie 的存回（onCookieRefresh 钩子）：并入现有凭据后 AES-GCM 信封整体落盘 */
+async function saveYktCookieRefresh(cookie: string): Promise<void> {
+  const cur = getExtHwCreds();
+  const prev = cur.yuketang;
+  await saveExtHwCreds({ ...cur, yuketang: { cookie, ...(prev?.uvId ? { uvId: prev.uvId } : {}), ...(prev?.phone ? { phone: prev.phone } : {}) } });
+  void logLine("R21-B 雨课堂会话：服务端轮换 Cookie，已合并存回凭据（AES-GCM）");
+}
+
+/**
+ * 立即做一次会话健康检查（心跳单次动作；设置页「检查会话」同款）。
+ * 未配置雨课堂 → 返回 null（不动快照）。永不抛出；结果写入快照 yktSession。
+ */
+export async function runYktSessionCheck(): Promise<YktSessionState | null> {
+  await ensureExtHwCredsLoaded().catch(() => undefined);
+  const cred = getExtHwCreds().yuketang;
+  if (!cred?.cookie?.trim()) return null;
+  if (yktHbBusy) return null;
+  yktHbBusy = true;
+  try {
+    const src = createYuketangSource(cred, universalFetch, getExtHwCreds().days ?? 30, {
+      onCookieRefresh: (c) => {
+        void saveYktCookieRefresh(c);
+      },
+    });
+    const h = await src.checkSession();
+    yktSession = { alive: h.alive, reason: h.reason, userName: h.userName, checkedAt: h.checkedAt };
+    if (h.alive === true) {
+      void logLine(`R21-B 雨课堂心跳：会话有效${h.userName ? `（${h.userName}）` : ""}`);
+    } else if (h.alive === false) {
+      void logLine(`R21-B 雨课堂心跳：会话已失效（${h.reason}），请重新登录或导入 Cookie`);
+    } else {
+      void logLine("R21-B 雨课堂心跳：网络异常，会话状态未知（不判失效）");
+    }
+    rebuild();
+    return yktSession;
+  } catch (e) {
+    // checkSession 本身不抛（内部已归一），防御性兜底
+    yktSession = { alive: null, reason: "network", checkedAt: Date.now() };
+    void logLine(`R21-B 雨课堂心跳异常：${(e instanceof Error ? e.message : String(e)).slice(0, 200)}`);
+    rebuild();
+    return yktSession;
+  } finally {
+    yktHbBusy = false;
+  }
+}
+
+/** 启动保活心跳（幂等）：启动 15s 后先查一次（避开启动刷新高峰），此后每 6h 一次。 */
+export function startYktHeartbeat(): void {
+  if (yktHbTimer) return;
+  if (!yktHbKickoff) {
+    yktHbKickoff = setTimeout(() => {
+      yktHbKickoff = null;
+      void runYktSessionCheck();
+    }, 15_000);
+  }
+  yktHbTimer = setInterval(() => {
+    void runYktSessionCheck();
+  }, YKT_HEARTBEAT_INTERVAL_MS);
+}
+
 /* ── 内存缓存 + 订阅 ── */
 
 export type ExtHwState = "idle" | "loading" | "ready";
@@ -588,6 +680,8 @@ export interface ExtHwSnapshot {
   /** TUOJ 系统一认证自动登录状态（R11 16.2；R15 按源分：tuoj / tuojClassic；
    *  仅自动路径维护，手动登录会复位对应源） */
   tuojAuto: TuojAutoMap;
+  /** R21-B：雨课堂会话健康状态（心跳 / 手动「检查会话」维护；checkedAt=null = 未检查） */
+  yktSession: YktSessionState;
 }
 
 let items: ExternalHomework[] = [];
@@ -597,9 +691,9 @@ let lastAt = 0;
 const listeners = new Set<() => void>();
 
 /** useSyncExternalStore 要求 getSnapshot 引用稳定 —— 变更时才重建 */
-let snapshot: ExtHwSnapshot = { items, errors, state, lastAt, configured: false, tuojAuto };
+let snapshot: ExtHwSnapshot = { items, errors, state, lastAt, configured: false, tuojAuto, yktSession };
 function rebuild(): void {
-  snapshot = { items, errors, state, lastAt, configured: hasAnyExtHwCreds(), tuojAuto };
+  snapshot = { items, errors, state, lastAt, configured: hasAnyExtHwCreds(), tuojAuto, yktSession };
   listeners.forEach((fn) => fn());
 }
 
@@ -725,6 +819,8 @@ export function useExternalHomework(): UseExternalHomework {
   // 应用启动即拉一次（有凭据时）；state 模块级保持，只有首次 idle 才触发
   useEffect(() => {
     if (getExtHwSnapshot().state === "idle") void refreshExtHw();
+    // R21-B：启动保活心跳（幂等；15s 后首查，此后每 6h 一次）
+    startYktHeartbeat();
   }, []);
   return { ...snap, reload };
 }

@@ -33,11 +33,12 @@ import {
   ensureExtHwCredsLoaded,
   extHwLogin,
   removeExtHwCreds,
+  runYktSessionCheck,
   saveExtHwCreds,
   refreshExtHw,
   useExternalHomework,
 } from "../state/exthw.js";
-import { SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
+import { buildYktCookieExportJson, parseYktCookieExportJson, SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
 import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 
 export function SettingsPage() {
@@ -716,6 +717,84 @@ function ExtHwSection() {
       .finally(() => setBusy(null));
   };
 
+  /* ── R21-B：雨课堂会话健康 + Cookie 导出/导入（侦查结论：服务端无续期端点，
+   *    保活只能周期性轻量试探；失效只能重登；多设备迁移用导出/导入缓解）── */
+
+  /** 手动触发一次会话健康检查（与 6h 心跳同款：GET basic-info） */
+  const onYktCheckSession = () => {
+    setBusy("ykt-check");
+    setMsg(null);
+    void runYktSessionCheck()
+      .then((st) => {
+        if (!st) {
+          notify("yuketang", "未配置雨课堂会话——请先登录。");
+          return;
+        }
+        if (st.alive === true) notify("yuketang", `会话有效${st.userName ? `（${st.userName}）` : ""}。`);
+        else if (st.alive === false) notify("yuketang", `会话已失效（${st.reason ?? "未知原因"}）——可扫码重登，或导入其他设备导出的 Cookie。`);
+        else notify("yuketang", "检查失败：网络异常，会话状态未知（不判失效）。");
+      })
+      .finally(() => setBusy(null));
+  };
+
+  /** 导出雨课堂 Cookie：文件即完整登录凭据（自带 sensitive 标注），仅存本机自选位置 */
+  const onYktExportCookie = () => {
+    setBusy("ykt-export");
+    setMsg(null);
+    void (async (): Promise<string> => {
+      if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+        throw new Error("浏览器预览不支持导出——请用桌面端。");
+      }
+      const c = await ensureExtHwCredsLoaded();
+      if (!c.yuketang?.cookie?.trim()) throw new Error("未配置雨课堂会话，没有可导出的 Cookie。");
+      const json = buildYktCookieExportJson(c.yuketang);
+      const { invoke } = await import("@tauri-apps/api/core");
+      const date = new Date().toISOString().slice(0, 10);
+      const path = await invoke<string | null>("save_text_file", {
+        filename: `onethu-yuketang-cookie-${date}.json`,
+        contents: json,
+      });
+      if (!path) return "已取消导出。";
+      return `已导出到 ${path}。⚠️ 该文件等同账号凭据：勿放同步盘 / 群聊 / 仓库，导入完成后请删除。`;
+    })()
+      .then((m) => notify("yuketang", m))
+      .catch((e: unknown) => notify("yuketang", `导出失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
+  /** 导入另一台设备导出的 Cookie（免重新扫码）；导入后立即刷新外部作业 */
+  const onYktImportCookie = () => {
+    setBusy("ykt-import");
+    setMsg(null);
+    void (async (): Promise<string> => {
+      if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
+        throw new Error("浏览器预览不支持导入——请用桌面端。");
+      }
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const { invoke } = await import("@tauri-apps/api/core");
+      const sel = await open({ multiple: false, filters: [{ name: "雨课堂会话", extensions: ["json"] }] });
+      if (!sel || typeof sel !== "string") return "已取消导入。";
+      const text = await invoke<string>("read_file_text", { path: sel });
+      const parsed = parseYktCookieExportJson(text);
+      const cur = await ensureExtHwCredsLoaded();
+      await saveExtHwCreds({
+        ...cur,
+        yuketang: {
+          cookie: parsed.cookie,
+          uvId: parsed.uvId ?? cur.yuketang?.uvId,
+          phone: parsed.phone ?? cur.yuketang?.phone,
+        },
+      });
+      setYktCookie(parsed.cookie);
+      if (parsed.phone) setYktPhone(parsed.phone);
+      void refreshExtHw();
+      return "已导入雨课堂 Cookie 并保存，正在刷新外部作业。";
+    })()
+      .then((m) => notify("yuketang", m))
+      .catch((e: unknown) => notify("yuketang", `导入失败：${errMsg(e)}`))
+      .finally(() => setBusy(null));
+  };
+
   /** TUOJ 系主路径：清华统一认证漫游（零凭据；AI 版 / 经典版仅 base 不同） */
   const onTuojCasLogin = (source: TuojSourceId) => {
     setBusy(`tuoj-cas-${source}`);
@@ -956,6 +1035,59 @@ function ExtHwSection() {
             <div className="exthw-note" role="status">{msg}</div>
           ) : null}
           {ext.errors.yuketang ? <div className="exthw-note is-error">{ext.errors.yuketang}</div> : null}
+          {/* R21-B：会话健康 + 保活状态 + 导出/导入（仅已登录时） */}
+          {configured.yuketang ? (
+            <>
+              <div className="exthw-note">
+                {ext.yktSession.checkedAt === null
+                  ? "会话健康：尚未检查（启动后会自动心跳，约每 6 小时一次；也可手动检查）。"
+                  : ext.yktSession.alive === true
+                    ? `会话健康：有效${ext.yktSession.userName ? `（${ext.yktSession.userName}）` : ""} · 检查于 ${new Date(ext.yktSession.checkedAt).toLocaleTimeString()}`
+                    : ext.yktSession.alive === false
+                      ? `会话健康：已失效（${ext.yktSession.reason}）· 检查于 ${new Date(ext.yktSession.checkedAt).toLocaleTimeString()}`
+                      : "会话健康：未知（上次检查网络异常，不判失效）"}
+              </div>
+              <div style={fieldStyle}>
+                <button className="btn" disabled={busy !== null} onClick={onYktCheckSession}>
+                  {busy === "ykt-check" ? "检查中…" : "检查会话"}
+                </button>
+                <button
+                  className="btn"
+                  disabled={busy !== null}
+                  title="把当前会话导出成文件，供其他设备导入（免重复扫码）。文件等同账号凭据，用完即删。"
+                  onClick={onYktExportCookie}
+                >
+                  {busy === "ykt-export" ? "导出中…" : "导出 Cookie"}
+                </button>
+                <button
+                  className="btn"
+                  disabled={busy !== null}
+                  title="导入其他已登录设备导出的会话文件，免扫码直接恢复登录"
+                  onClick={onYktImportCookie}
+                >
+                  {busy === "ykt-import" ? "导入中…" : "导入 Cookie"}
+                </button>
+              </div>
+              {ext.yktSession.alive === false ? (
+                <div className="exthw-note is-error">
+                  会话已失效：作业页将拉不到雨课堂数据。可「一键重登（扫码）」，或在其他已登录设备「导出
+                  Cookie」后在此「导入 Cookie」恢复。
+                  <div style={{ marginTop: 6 }}>
+                    <button
+                      className="btn btn-primary"
+                      disabled={busy !== null}
+                      onClick={() => {
+                        setYktWebOpen(false);
+                        setYktQrOpen(true);
+                      }}
+                    >
+                      一键重登（扫码）
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </>
+          ) : null}
           {yktQrOpen ? (
             <YktQrPanel
               onCancel={() => setYktQrOpen(false)}

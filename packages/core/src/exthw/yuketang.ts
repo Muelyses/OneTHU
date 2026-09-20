@@ -22,6 +22,23 @@
  * - 会话失效 → errcode=401000
  * ⚠️ host 必须是 pro.yuketang.cn（www. / changjiang. 会 401）
  * ⚠️ 服务端地址硬编码，凭据不再携带 base
+ *
+ * R21-B（会话失效保活/续期，2026-09-20）：
+ * - 侦查结论（真连 + 三份前端 bundle 全量端点挖掘，docs 三十节）：pro.yuketang.cn
+ *   **没有**会话续期/刷新端点（/pc/login/* 与 /api/v3/user/login/* 全家族仅
+ *   web_login / web_logout / app-web-pre-info / app-web-login / send_sms_login_code /
+ *   verify_pwd_login 六个；bundle 里的 heartbeat 是课堂视频心跳，与会话无关）。
+ *   sessionid 由 Django 服务端管理，客户端无从「续命」→ 保活=周期性轻量已授权请求。
+ * - 失效特征归一 `YktSessionError`（isYktSessionError 判定）：HTTP 401/403、
+ *   errcode=401000、v3 系 code=50000 UNAUTHENTICATED、非 JSON（跳登录壳）四种；
+ *   其余错误（网络断 / 5xx / 字段异常）不误判为会话失效。
+ * - `checkSession()`：会话健康检查（GET /api/v3/user/basic-info，最轻的已授权请求），
+ *   网络错误返回 alive=null（未知，不谎报「已失效」）。
+ * - Cookie 轮换回写：传输层若透传 Set-Cookie（x-onethu-set-cookie 通道），按白名单
+ *   （sessionid/csrftoken/uv_id 等）合并进会话串并经 onCookieRefresh 钩子交 desktop
+ *   持久化（AES-GCM 信封）。侦查未见 GET 轮换证据，属「服务端若轮换则不丢」的兜底。
+ * - Cookie 导出/导入：`buildYktCookieExportJson` / `parseYktCookieExportJson`
+ *   （多设备迁移缓解；导出文件自带敏感标注）。
  */
 import type { FetchLike } from "../http.js";
 import type { ExternalHomework, HomeworkSource } from "./types.js";
@@ -33,6 +50,26 @@ const UA =
 interface YktCred {
   cookie: string;
   uvId?: string;
+}
+
+/* ── R21-B：会话失效归一 + 健康检查 + Cookie 轮换回写 / 导出导入 ── */
+
+/**
+ * 雨课堂会话失效（R21-B）。四种实测/约定特征统一归一：
+ * ① HTTP 401/403（网关拒绝）；② errcode=401000「Session not exists」（2026-09-20 死会话实测）；
+ * ③ v3 系 code=50000「UNAUTHENTICATED」（basic-info 死会话实测）；④ 非 JSON（跳登录壳 HTML）。
+ * 其余错误（网络断 / 5xx / 字段异常）**不**归入——避免误导用户重登。
+ */
+export class YktSessionError extends Error {
+  constructor(message = "雨课堂会话已失效，请重新登录（扫码 / 官方网页 / 导入 Cookie）") {
+    super(message);
+    this.name = "YktSessionError";
+  }
+}
+
+/** 是否雨课堂会话失效错误（设置页 / 心跳 / 条幅据此提示重登） */
+export function isYktSessionError(e: unknown): e is YktSessionError {
+  return e instanceof YktSessionError;
 }
 
 /** 毫秒时间戳 → "YYYY-MM-DD HH:MM"（本地时区） */
@@ -67,16 +104,112 @@ async function getJson(
     headers: { Cookie: cookie, "User-Agent": UA, Accept: "application/json, text/plain, */*", ...extraHeaders },
   });
   if (res.status === 401 || res.status === 403) {
-    throw new Error(`雨课堂会话已失效（HTTP ${res.status}），请在设置页更新 Cookie`);
+    // R21-B：401/403 = 网关拒绝 → 会话失效（原样文案，改归一类型）
+    throw new YktSessionError(`雨课堂会话已失效（HTTP ${res.status}），请在设置页重新登录`);
   }
   const body = await res.text();
   let json: unknown;
   try {
     json = JSON.parse(body);
   } catch {
-    throw new Error("雨课堂返回非 JSON（会话可能已失效），请更新 Cookie");
+    // R21-B：非 JSON = 登录壳 HTML（v2 接口死会话的另一表现）→ 会话失效
+    throw new YktSessionError("雨课堂返回非 JSON（会话可能已失效被跳到登录页），请重新登录");
   }
-  return (json ?? {}) as Record<string, unknown>;
+  const obj = (json ?? {}) as Record<string, unknown>;
+  // R21-B：v3 系（如 /api/v3/user/basic-info）死会话实测返回 200 + code=50000 UNAUTHENTICATED
+  if (obj["code"] === 50000) {
+    throw new YktSessionError("雨课堂会话已失效（UNAUTHENTICATED），请在设置页重新登录");
+  }
+  return obj;
+}
+
+/** Cookie 轮换回写白名单：只合并会话相关字段，杜绝把服务端下的杂项（统计/广告位）带进凭据 */
+const COOKIE_MERGE_ALLOW = new Set([
+  "sessionid",
+  "csrftoken",
+  "uv_id",
+  "university_id",
+  "platform_id",
+  "platform_type",
+  "xtbz",
+  "django_language",
+]);
+
+/**
+ * 读取传输层透传的 Set-Cookie 通道（与 login.captureCookies 同口径：数组头 + 逐跳头）。
+ * ⚠️ 故意不复用 login.captureCookies：yuketang.ts 必须保持「零相对导入」——离线 Node
+ * 单测（tools/exthw-status-test.mjs）靠原生 type-stripping 静态导入本模块，`.js`→`.ts`
+ * 重写钩子注册在静态图解析之后。两处实现需同步维护。
+ */
+function yktCaptureSetCookies(res: Response): Map<string, string> {
+  const raws: string[] = [];
+  for (const key of ["x-onethu-set-cookie", "x-onethu-set-cookie-hops"]) {
+    const raw = res.headers.get(key);
+    if (!raw) continue;
+    try {
+      const arr = JSON.parse(raw) as unknown;
+      if (!Array.isArray(arr)) continue;
+      for (const x of arr) {
+        if (typeof x === "string") raws.push(x);
+        else if (x !== null && typeof x === "object" && typeof (x as { l?: unknown }).l === "string") {
+          raws.push((x as { l: string }).l);
+        }
+      }
+    } catch {
+      /* 容忍非法 JSON */
+    }
+  }
+  const pairs = new Map<string, string>();
+  for (const line of raws) {
+    const first = line.split(";")[0] ?? "";
+    const eq = first.indexOf("=");
+    if (eq <= 0) continue;
+    const k = first.slice(0, eq).trim();
+    const v = first.slice(eq + 1).trim();
+    if (k) pairs.set(k, v);
+  }
+  return pairs;
+}
+
+/**
+ * 把传输层捕获到的 Set-Cookie 键值对合并进现有 Cookie 串（R21-B，纯函数）。
+ * 只认白名单字段；同名后者覆盖；原有顺序保持，新字段追加在尾部。
+ */
+export function mergeYktCookiePairs(cookie: string, pairs: Map<string, string>): string {
+  const order: string[] = [];
+  const vals = new Map<string, string>();
+  for (const part of (cookie ?? "").split(";")) {
+    const eq = part.indexOf("=");
+    if (eq <= 0) continue;
+    const k = part.slice(0, eq).trim();
+    const v = part.slice(eq + 1).trim();
+    if (!k) continue;
+    if (!vals.has(k)) order.push(k);
+    vals.set(k, v);
+  }
+  let changed = false;
+  for (const [k, v] of pairs) {
+    if (!COOKIE_MERGE_ALLOW.has(k) || !v) continue;
+    if (vals.get(k) !== v) {
+      if (!vals.has(k)) order.push(k);
+      vals.set(k, v);
+      changed = true;
+    }
+  }
+  if (!changed) return cookie;
+  return order.map((k) => `${k}=${vals.get(k)}`).join("; ");
+}
+
+/** R21-B：会话健康检查结果。alive=null 表示「未知」（网络断等，不谎报失效） */
+export interface YktSessionHealth {
+  alive: boolean | null;
+  /** alive=false 时的判定依据（http401 / http403 / errcode=401000 / unauthenticated / non-json）；
+   *  alive=null 时为 "network" */
+  reason?: string;
+  /** 会话归属人姓名（basic-info 的宽松字段探测；取不到不设，仅展示用） */
+  userName?: string;
+  /** 检查完成时间（ms） */
+  checkedAt: number;
 }
 
 /** 提交状态查询的并发上限（11 门课 × 若干作业；避免打爆服务端） */
@@ -357,6 +490,17 @@ export interface YuketangSource extends HomeworkSource {
   /** 拉单份作业详情（只读）。uvId 缺省回落凭据里的 uvId，再回落清华默认 "2598"。
    *  响应结构异常（errcode≠0 / 缺 data）抛带上下文的错误；单字段缺失不崩。 */
   getExerciseDetail(leafTypeId: string, classroomId: string, uvId?: string): Promise<YkExerciseDetail>;
+  /** R21-B：会话健康检查（GET /api/v3/user/basic-info，最轻的已授权请求）。
+   *  保活心跳与设置页「检查会话」都走它；网络错误返回 alive=null（不谎报失效）。 */
+  checkSession(): Promise<YktSessionHealth>;
+}
+
+/** R21-B：createYuketangSource 可选钩子（既有调用方零改动） */
+export interface YuketangSourceHooks {
+  /** 会话 Cookie 因服务端轮换（Set-Cookie 白名单字段变化）而更新时回调（新 Cookie 串）。
+   *  侦查未见 GET 轮换证据——此钩子是「服务端若轮换则凭据不丢」的兜底；desktop 把
+   *  新 Cookie 用 AES-GCM 信封存回凭据。回调内不得打印 Cookie。 */
+  onCookieRefresh?: (cookie: string) => void;
 }
 
 /** 单题三态（保守）：显式 status 优先（4=已批 / 3=已交未批）；否则看作答痕迹，
@@ -493,6 +637,8 @@ async function fetchExerciseDetail(
   const errcode = body["errcode"];
   if (typeof errcode === "number" && errcode !== 0) {
     const msg = typeof body["errmsg"] === "string" ? ` ${body["errmsg"]}` : "";
+    // R21-B：401000 = 死会话（实测特征）→ 归一为会话错误；其余 errcode 保持通用报错
+    if (errcode === 401000) throw new YktSessionError(`雨课堂会话已失效（errcode=401000${msg}），请在设置页重新登录`);
     throw new Error(`雨课堂作业详情失败：errcode=${errcode}${msg}`);
   }
   const dataRaw = body["data"];
@@ -517,18 +663,66 @@ async function fetchExerciseDetail(
   };
 }
 
-export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: number): YuketangSource {
+export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: number, hooks?: YuketangSourceHooks): YuketangSource {
   const base = BASE;
-  const cookie = authCookie(cred);
+  // R21-B：会话串可变——服务端轮换（Set-Cookie 白名单字段）时原地更新，后续请求即用新值
+  let curCookie = authCookie(cred);
   const uv = (cred.uvId ?? "").trim() || "2598";
+  /** 传输层包装：每次已授权请求后捕获 Set-Cookie（OneTHU 传输层自定义头通道），
+   *  白名单字段有变化 → 更新 curCookie 并回调 onCookieRefresh（desktop 负责加密存回）。
+   *  浏览器原生 fetch 读不到这些头 → 捕获结果恒空 = 零行为变化。 */
+  const yktFetch: FetchLike = async (url, init) => {
+    const res = await fetchLike(url, init);
+    try {
+      const pairs = yktCaptureSetCookies(res);
+      if (pairs.size > 0) {
+        const merged = mergeYktCookiePairs(curCookie, pairs);
+        if (merged !== curCookie) {
+          curCookie = merged;
+          hooks?.onCookieRefresh?.(merged);
+        }
+      }
+    } catch {
+      /* 头解析失败不影响主流程 */
+    }
+    return res;
+  };
   return {
     id: "yuketang",
     name: "雨课堂",
+    /** R21-B：会话健康检查 + 保活心跳载体。GET /api/v3/user/basic-info 是全部已授权
+     *  端点里最轻的（无 XTBZ 要求、无列表遍历）。alive=null 仅网络断等未知态。 */
+    async checkSession(): Promise<YktSessionHealth> {
+      const checkedAt = Date.now();
+      try {
+        const body = await getJson(yktFetch, `${base}/api/v3/user/basic-info`, curCookie);
+        // 死会话特征（code=50000）已在 getJson 归一为 YktSessionError，能走到这即 code=0
+        const data = (body["data"] ?? {}) as Record<string, unknown>;
+        const nameRaw = data["name"] ?? data["username"] ?? data["nickname"];
+        const userName = typeof nameRaw === "string" && nameRaw.trim() ? nameRaw.trim() : undefined;
+        return { alive: true, ...(userName ? { userName } : {}), checkedAt };
+      } catch (e) {
+        if (!isYktSessionError(e)) return { alive: null, reason: "network", checkedAt };
+        const m = e.message;
+        const reason = /HTTP 401/.test(m)
+          ? "http401"
+          : /HTTP 403/.test(m)
+            ? "http403"
+            : /UNAUTHENTICATED/.test(m)
+              ? "unauthenticated"
+              : /非 JSON/.test(m)
+                ? "non-json"
+                : "errcode=401000";
+        return { alive: false, reason, checkedAt };
+      }
+    },
     async fetch(): Promise<ExternalHomework[]> {
-      const coursesBody = await getJson(fetchLike, `${base}/v2/api/web/courses/list?identity=2`, cookie);
+      const coursesBody = await getJson(yktFetch, `${base}/v2/api/web/courses/list?identity=2`, curCookie);
       const errcode = coursesBody["errcode"];
       if (typeof errcode === "number" && errcode !== 0) {
         const msg = typeof coursesBody["errmsg"] === "string" ? ` ${coursesBody["errmsg"]}` : "";
+        // R21-B：401000 = 死会话（2026-09-20 实测特征）→ 归一；其余 errcode 保持通用报错
+        if (errcode === 401000) throw new YktSessionError(`雨课堂会话已失效（errcode=401000${msg}），请在设置页重新登录`);
         throw new Error(`雨课堂课程列表失败：errcode=${errcode}${msg}`);
       }
       const data = (coursesBody["data"] ?? {}) as Record<string, unknown>;
@@ -550,9 +744,9 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
         // 逐课程隔离：单门课失败只跳过，不整体抛
         try {
           const logs = await getJson(
-            fetchLike,
+            yktFetch,
             `${base}/v2/api/web/logs/learn/${cid}?page=0&offset=200&sort=0&actype=-1`,
-            cookie,
+            curCookie,
           );
           const lerr = logs["errcode"];
           if (typeof lerr === "number" && lerr !== 0) throw new Error(`errcode=${lerr}`);
@@ -625,8 +819,8 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
         if (!it.leafTypeId) return;
         try {
           const st = it.isExam
-            ? await fetchYktExamStatus(fetchLike, base, cookie, it.classroomId, it.leafTypeId, it.skuId ?? "")
-            : await fetchYktStatus(fetchLike, base, cookie, uv, it.classroomId, it.leafTypeId);
+            ? await fetchYktExamStatus(yktFetch, base, curCookie, it.classroomId, it.leafTypeId, it.skuId ?? "")
+            : await fetchYktStatus(yktFetch, base, curCookie, uv, it.classroomId, it.leafTypeId);
           it.hw.submitted = st.submitted;
           if (st.submittedCount !== undefined) it.hw.submittedCount = st.submittedCount;
           if (st.totalCount !== undefined) it.hw.totalCount = st.totalCount;
@@ -643,7 +837,74 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
     async getExerciseDetail(leafTypeId: string, classroomId: string, uvId?: string): Promise<YkExerciseDetail> {
       // uvId 参数优先，回落凭据 uvId，再回落清华默认（与 fetch 链路同款兜底）
       const uvFinal = (uvId ?? "").trim() || uv;
-      return fetchExerciseDetail(fetchLike, base, cookie, uvFinal, classroomId, leafTypeId);
+      return fetchExerciseDetail(yktFetch, base, curCookie, uvFinal, classroomId, leafTypeId);
     },
   };
+}
+
+/* ── R21-B：Cookie 导出 / 导入（多设备迁移缓解） ──
+ * 侦查结论：会话无法在服务端续期 → 每台设备都要各自登录一次。缓解：在一台设备登录后
+ * 把 Cookie 导出成文件，其余设备导入即用（免挨个扫码/重登）。
+ * ⚠️ 导出文件 = 完整登录凭据：文件内自带 sensitive/warn 标注；UI 提醒勿放同步盘/群聊，
+ * 用完即删。全程不打印 Cookie 内容，不进日志。 */
+
+/** 导出文件 kind（导入时强校验，防拿错文件） */
+export const YKT_COOKIE_EXPORT_KIND = "onethu.yuketang.session";
+
+/** 导出文件结构（v1）。cookie 为完整可用会话串；uvId/phone 可选回填。 */
+export interface YktCookieExport {
+  kind: typeof YKT_COOKIE_EXPORT_KIND;
+  version: 1;
+  /** 恒 true：标记本文件含登录凭据 */
+  sensitive: true;
+  /** 人读警示（写入文件，脱离 UI 也在） */
+  warn: string;
+  /** ISO 时间 */
+  exportedAt: string;
+  cookie: string;
+  uvId?: string;
+  phone?: string;
+}
+
+/** 构建导出 JSON 文本。cookie 必须含 sessionid=（否则拒绝导出，防止导出无用文件）。 */
+export function buildYktCookieExportJson(cred: { cookie: string; uvId?: string; phone?: string }, now = new Date()): string {
+  const cookie = (cred.cookie ?? "").trim();
+  if (!/(?:^|;\s*)sessionid=[^\s;]+/.test(cookie)) {
+    throw new Error("雨课堂 Cookie 缺少 sessionid，不像有效会话——请先登录再导出");
+  }
+  const out: YktCookieExport = {
+    kind: YKT_COOKIE_EXPORT_KIND,
+    version: 1,
+    sensitive: true,
+    warn: "本文件含雨课堂完整登录会话，等同账号凭据：仅供本人多设备迁移使用，勿放同步盘/群聊/仓库，导入后请删除。",
+    exportedAt: now.toISOString(),
+    cookie,
+    ...(cred.uvId?.trim() ? { uvId: cred.uvId.trim() } : {}),
+    ...(cred.phone?.trim() ? { phone: cred.phone.trim() } : {}),
+  };
+  return JSON.stringify(out, null, 2);
+}
+
+/** 解析并校验导出文件文本 → 可直接存进凭据的会话。任何不符都抛带原因的错误。 */
+export function parseYktCookieExportJson(text: string): { cookie: string; uvId?: string; phone?: string } {
+  let j: unknown;
+  try {
+    j = JSON.parse(text);
+  } catch {
+    throw new Error("导入失败：不是合法 JSON 文件");
+  }
+  const o = (j ?? {}) as Record<string, unknown>;
+  if (o["kind"] !== YKT_COOKIE_EXPORT_KIND) {
+    throw new Error("导入失败：文件类型不符（这不是 OneTHU 导出的雨课堂会话文件）");
+  }
+  if (o["version"] !== 1) {
+    throw new Error("导入失败：文件版本不识别");
+  }
+  const cookie = typeof o["cookie"] === "string" ? o["cookie"].trim() : "";
+  if (!/(?:^|;\s*)sessionid=[^\s;]+/.test(cookie)) {
+    throw new Error("导入失败：文件里没有有效的 sessionid（会话串不完整）");
+  }
+  const uvId = typeof o["uvId"] === "string" && o["uvId"].trim() ? o["uvId"].trim() : undefined;
+  const phone = typeof o["phone"] === "string" && o["phone"].trim() ? o["phone"].trim() : undefined;
+  return { cookie, ...(uvId ? { uvId } : {}), ...(phone ? { phone } : {}) };
 }

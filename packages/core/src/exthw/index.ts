@@ -303,7 +303,9 @@ export type { YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } 
  * R20-B2 增补 YkAttachment（我的作答附件，只读展示）；createYuketangSource 透出到包入口
  * （desktop state 层 fetchYktExerciseDetail 需要自行注入凭据 / universalFetch）。 */
 export type { YkExerciseDetail, YkProblem, YkComment, YkAttachment, YkMyStatus, YuketangSource } from "./yuketang.js";
-export { createYuketangSource } from "./yuketang.js";
+/* R21-B：雨课堂会话失效归一 / 健康检查结果 / Cookie 轮换与导出导入（多设备迁移缓解） */
+export { createYuketangSource, YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } from "./yuketang.js";
+export type { YktSessionHealth, YuketangSourceHooks, YktCookieExport } from "./yuketang.js";
 export { tuojRoam, TuojCasError, extractTicketAnchor, isCasLoginPage, isTuojNoCoursesError } from "./tuojCas.js";
 export type { TuojRoamResult, TuojRoamDeps } from "./tuojCas.js";
 export { TuojSessionError, isTuojSessionError, CLASSIC_BASE as TUOJ_CLASSIC_BASE } from "./tuoj.js";

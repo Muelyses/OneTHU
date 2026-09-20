@@ -150,7 +150,10 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
               // MadModel 免费档对话前兜底：token 到期即续 + 可达性探针（10 分钟缓存）——
               // 校外时把 reachable=0 写进 settings，Rust config 自动回退自费或出提醒文案
               if (id === "onethu.harness") {
-                await preflightMadModel().catch(() => undefined);
+                // 免费档 token 没签出来时直接回准确原因——Rust 侧 api_key 为空只会说
+                // 「尚未配置 API Key」，会把人误导到手填 key 上（用户实录）。
+                const warn = await preflightMadModel().catch(() => null);
+                if (warn) return { type: "chat", ok: false, error: warn };
               }
               const out = await callRust(id, "run", { command: c.id, input });
               // 漏判兜底：免费档请求仍被 IP 门禁弹掉（307）→ 强制重签 + 刷新可达性

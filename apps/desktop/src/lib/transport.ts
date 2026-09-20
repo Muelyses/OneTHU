@@ -176,6 +176,9 @@ export async function nativeFetch(
       h !== "oauth.tsinghua.edu.cn" &&
       h !== "learn.tsinghua.edu.cn" &&
       h !== "mails.tsinghua.edu.cn" &&
+      // MadModel 免费档（2026-09-20）：校园网内直连签发 token，webvpn 包装没有意义
+      // 且会掩盖失败原因（泵里 direct:true 在应用层这层包装里此前未生效）。
+      h !== "madmodel.cs.tsinghua.edu.cn" &&
       !url.startsWith("https://webvpn.tsinghua.edu.cn/")
     ) {
       wireUrl = webvpnWrap(url);

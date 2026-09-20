@@ -362,6 +362,17 @@ export function TodayPage() {
 
   /* ---- 布局持久化状态：首帧即可由注册表元数据对账出完整布局 ---- */
   const [layout, setLayout] = useState<HomeLayoutItem[]>(() => resolveLayout(HOME_CARD_META, loadLayout(oriRef.current)));
+
+  /* 别处改了首页卡片（导览的「今日页留哪些卡」、设置里的恢复默认）→ 立刻重读。
+     没有这条时，导览点完"完成"首页纹丝不动，用户得退出去再进来才看得到。 */
+  useEffect(() => {
+    const on = (): void => {
+      setLayout(resolveLayout(HOME_CARD_META, loadLayout(oriRef.current)));
+      setFoldDefaults(loadCollapsedDefaults());
+    };
+    window.addEventListener("onethu.home.changed", on);
+    return () => window.removeEventListener("onethu.home.changed", on);
+  }, []);
   const [foldDefaults, setFoldDefaults] = useState<Partial<Record<HomeCardId, boolean>>>(() => loadCollapsedDefaults());
   const [editing, setEditing] = useState(false);
   const [addOpen, setAddOpen] = useState(false);

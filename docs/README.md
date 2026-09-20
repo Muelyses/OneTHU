@@ -12,6 +12,7 @@ OneTHU 是清华大学校园助手应用，基于 Tauri v2 与 React 实现，�
 | [api-reference.md](./api-reference.md) | `ctx.onethu.*` 命名空间与方法的完整参考 | 插件开发者 |
 | [外部作业源-需求与实现方案.md](./外部作业源-需求与实现方案.md) | 外部作业源 R15–R21 的设计与实测纪要：接口探测、加密字体与 LaTeX 方案、原生详情页与嵌入式提交入口的实现记录 | 功能贡献者 |
 | [architecture.md](./architecture.md) | 进程模型、会话管线、插件宿主实现、主题系统、模型调度、构建流程 | 宿主贡献者 |
+| [demo-build.md](./demo-build.md) | `demo` 分支脱敏演示版（OneTHU Demo）：与正式版的差异、脱敏口径、构建步骤与残余风险 | 演示 / 出镜使用者 |
 | [external-homework.md](./external-homework.md) | 外部作业源（雨课堂 / TUOJ / Tyche / DSA OJ）的接入方式、凭据维护、故障恢复与接入记录 | 功能使用者与贡献者 |
 
 ## 阅读路径

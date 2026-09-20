@@ -8,7 +8,7 @@
  *
  * 登录流程与正式版完全一致（真实清华统一认证 + 2FA），仅展示层被脱敏。
  */
-export const DESENSITIZE_ENABLED = false;
+export const DESENSITIZE_ENABLED = true;
 
 /** 脱敏版应用标识（demo 分支构建时用于界面角标与日志；正式分支不使用）。 */
 export const DESENSITIZE_BUILD_LABEL = "OneTHU Demo";

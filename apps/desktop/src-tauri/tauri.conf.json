@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "OneTHU",
+  "productName": "OneTHU Demo",
   "version": "0.9.0",
-  "identifier": "app.onethu.desktop",
+  "identifier": "app.onethu.demo",
   "build": {
     "beforeDevCommand": "node ./scripts/prebuild.mjs && pnpm dev",
     "devUrl": "http://127.0.0.1:5180",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "OneTHU",
+        "title": "OneTHU Demo（脱敏演示版）",
         "width": 1240,
         "height": 820,
         "minWidth": 360,

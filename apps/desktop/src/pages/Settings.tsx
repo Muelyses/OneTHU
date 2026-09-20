@@ -1,8 +1,9 @@
 declare const __APP_VERSION__: string;
 import { useEffect, useState } from "react";
-import { loadTabLayout, type TabLayout } from "../lib/tabLayout.js";
+import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
-import { Card, PageHead, SectionHead } from "../components/Layout.js";
+import { Card, PageHead, SectionHead, SegmentedOverflow } from "../components/Layout.js";
+import { TabManageModal } from "../components/TabManageModal.js";
 import { resetOnboarding } from "../state/onboarding.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
@@ -85,6 +86,12 @@ export function SettingsPage() {
   const [tab, setTab] = useState<string>("导览");
   const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
   const settingsTabHidden = settingsTabLayout.hidden;
+  const [manageOpen, setManageOpen] = useState(false);
+  const [tabLayout, setTabLayout] = useState<TabLayout>(() => settingsTabLayout);
+  const applyTabLayout = (l: TabLayout): void => {
+    setTabLayout(l);
+    saveTabLayout("settings", l);
+  };
 
   /** 页签显隐：保留既有分节结构，仅按 .section-head 边界切换各分节 hidden（不移动 DOM 节点） */
   useEffect(() => {
@@ -99,7 +106,7 @@ export function SettingsPage() {
       }
       if (group) el.hidden = group !== tab;
     }
-  }, [tab, settingsTabHidden.join(",")]);
+  }, [tab, tabLayout.hidden.join(",")]);
 
   const { user, logout, navigate } = useApp();
   const favs = useFavs();
@@ -149,21 +156,30 @@ export function SettingsPage() {
 
   return (
     <>
-      <PageHead title="设置" />
-
-      {/* 二级页签：只显示当前分组的设置项；页签顺序与显隐沿用 tabLayout("settings") */}
-      <div className="settings-tabs" style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-        {settingsTabLayout.order.filter((t) => !settingsTabHidden.includes(t)).map((t) => (
-          <button
-            key={t}
-            className={tab === t ? "btn btn-primary" : "btn"}
-            style={{ fontSize: 12.5 }}
-            onClick={() => setTab(t)}
-          >
-            {t}
+      <PageHead
+        title="设置"
+        actions={
+          <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
+            管理栏目
           </button>
-        ))}
-      </div>
+        }
+      />
+
+      <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
+        {settingsTabLayout.order
+          .filter((t) => !tabLayout.hidden.includes(t))
+          .map((t) => (
+            <button
+              key={t}
+              role="tab"
+              aria-selected={tab === t}
+              className={tab === t ? "is-active" : ""}
+              onClick={() => setTab(t)}
+            >
+              {t}
+            </button>
+          ))}
+      </SegmentedOverflow>
 
       <SectionHead title="导览" aside="按场景收起用不到的卡片；随时可重来" />
       <Card>
@@ -586,6 +602,16 @@ export function SettingsPage() {
           ) : null}
         </div>
       </Card>
+      <TabManageModal
+        open={manageOpen}
+        onClose={() => setManageOpen(false)}
+        title="管理设置栏目"
+        tabs={SETTINGS_TAB_ORDER.map((id) => ({ id, label: id }))}
+        layout={tabLayout}
+        onApply={applyTabLayout}
+        onReset={() => applyTabLayout({ order: SETTINGS_TAB_ORDER, hidden: [] })}
+      />
+
     </>
   );
 }

@@ -45,6 +45,30 @@ import {
 import { buildYktCookieExportJson, parseYktCookieExportJson, SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
 import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 
+/** 设置分组（按"你要改什么"索引，而不是按功能罗列）——
+ *  点一下即滚动到对应分节；分节标题保持原位，不重排大段 JSX（低风险）。 */
+const SETTINGS_GROUPS: Array<{ label: string; sections: string[] }> = [
+  { label: "账号", sections: ["账户", "账号与凭据", "安全"] },
+  { label: "通知与提醒", sections: ["通知", "桌面小组件"] },
+  { label: "外观与布局", sections: ["外观", "首页布局", "收藏夹"] },
+  { label: "数据与同步", sections: ["云同步", "外部作业源"] },
+  { label: "下载与存储", sections: ["下载"] },
+  { label: "插件", sections: ["插件"] },
+  { label: "关于", sections: ["关于"] },
+];
+
+/** 按分节标题滚动定位（不改各分节标记本身，避免动到千行 JSX） */
+function jumpToSection(titles: string[]): void {
+  const nodes = Array.from(document.querySelectorAll(".section-head, .sec-title, h2, h3"));
+  for (const t of titles) {
+    const hit = nodes.find((el) => (el.textContent ?? "").trim().startsWith(t));
+    if (hit) {
+      hit.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+  }
+}
+
 export function SettingsPage() {
   const { user, logout, navigate } = useApp();
   const favs = useFavs();
@@ -96,6 +120,14 @@ export function SettingsPage() {
     <>
       <PageHead title="设置" />
 
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+        {SETTINGS_GROUPS.map((g) => (
+          <button key={g.label} className="btn" style={{ fontSize: 12.5 }} onClick={() => jumpToSection(g.sections)}>
+            {g.label}
+          </button>
+        ))}
+      </div>
+
       <SectionHead title="导览" aside="按场景收起用不到的卡片；随时可重来" />
       <Card>
         <div className="setting-row">
@@ -143,7 +175,7 @@ export function SettingsPage() {
       </Card>
 
 
-      <SectionHead title="账户设置" />
+      <SectionHead title="账号与凭据" />
       <Card>
         <div className="setting-row" style={{ alignItems: "flex-start" }}>
           <div>
@@ -378,7 +410,7 @@ export function SettingsPage() {
 
       <DownloadSettings />
 
-      <SectionHead title="首页" />
+      <SectionHead title="首页布局" />
       <Card>
         <div className="setting-row">
           <div>

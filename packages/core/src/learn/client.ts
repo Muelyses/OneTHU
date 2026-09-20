@@ -33,6 +33,7 @@ interface LearnJson {
 }
 
 import { decodeHtmlEntities } from "../info/htmltext.js";
+import { parseLearnTime } from "./time.js";
 
 /** 文本字段实体解码：全量命名/数值实体（mdash/ndash/引号/希腊字母…），
  *  并对残留实体再收一轮（站点偶发双重转义 &amp;mdash; → &mdash; → —）。
@@ -79,40 +80,9 @@ function asArray(v: unknown): unknown[] {
 
 const str = (v: unknown) => String(v ?? "");
 
-/* ---------- 时间解析（对照 thu-app mobile：dayjs 直吃 learn 字符串，
- *  但 learn JSON 的时间字段形态不一，统一在此归一化，杜绝 NaN/Invalid Date） ----------
- *  实测形态：常规 "2025-10-01 12:30(:ss)"、日期-only "2025-09-01"、ISO 串、
- *  毫秒时间戳（数字或数字串）、.NET 前后缀 "/Date(1698150000000+0800)/"，
- *  以及非字符串时的 *Str 兜底字段（learn-lib: fbsj→fbsjStr；learnApi: jzsj→jzsjStr）。 */
+/* 时间解析已剥到 ./time.ts（纯函数、无 HTTP/SM2 依赖）：此处仅为对外导出保持原路径 */
+export { parseLearnTime };
 
-/** learn 时间字段 → Date（本地时区语义，解析失败返回 null）。
- *  core 归一化与 UI（fmtDateTime/timeLeft）共用同一套解析。 */
-export function parseLearnTime(raw: unknown): Date | null {
-  if (raw === null || raw === undefined) return null;
-  // 数字 / 10~14 位纯数字串 = 秒（10 位）或毫秒（13 位）时间戳
-  if (typeof raw === "number" && Number.isFinite(raw)) {
-    return new Date(raw < 1e12 ? raw * 1000 : raw);
-  }
-  const s = String(raw).trim();
-  if (!s) return null;
-  if (/^\d{10,14}$/.test(s)) {
-    const n = Number(s);
-    return new Date(n < 1e12 ? n * 1000 : n);
-  }
-  // .NET JSON 日期前后缀：/Date(1698150000000+0800)/
-  const dotnet = /\/Date\((-?\d+)/.exec(s);
-  if (dotnet?.[1]) return new Date(Number(dotnet[1]));
-  // "YYYY-M-D H:m(:ss)" / "YYYY-M-D"：learn 服务器给的是本地时区语义，
-  // 不能交给 Date.parse（"2025-10-01" 会被当 UTC）→ 手工拆解
-  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/.exec(s);
-  if (m?.[1] && m[2] && m[3]) {
-    const [, y, mo, d, h = "0", mi = "0", se = "0"] = m;
-    return new Date(+y, +mo - 1, +d, +h, +mi, +se);
-  }
-  // 其余（ISO 带 Z/偏移等）交给 Date.parse
-  const t = Date.parse(s);
-  return Number.isNaN(t) ? null : new Date(t);
-}
 
 /** learn 时间字段 → "YYYY-MM-DD HH:mm"（源为日期-only 时保留日期-only；未解析成功返回 ""，
  *  UI 侧不再出现 Invalid Date） */

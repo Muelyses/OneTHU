@@ -25,6 +25,7 @@ import {
 import { info, logLine } from "../lib/clients.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { useApp } from "../state/context.js";
+import { courseColor, SRC_COLOR } from "../lib/courseColor.js";
 import { confirmOk } from "../lib/confirm.js";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 
@@ -77,23 +78,8 @@ interface GridEntry {
   uid?: string;
 }
 
-/** 来源固定色（与日程列表口径一致） */
-const SRC_COLOR: Record<"exam" | "cloud" | "local" | "hw" | "cluster", string> = {
-  exam: "#e5484d", cloud: "#1fa487", local: "#8a8f98",
-  hw: "#e8873a", // 作业 DDL（提前 2h 入格）
-  cluster: "#7048c8", // 重叠缩略块
-};
-
-/** 课程块配色（按课程名稳定取色，同学期同色） */
-const PALETTE = [
-  "#6d7ff0", "#3d8bfd", "#1fa487", "#e07a4f", "#b463d6",
-  "#2f9edb", "#c9971f", "#4caf6e", "#d45c8a", "#7a63e8",
-];
-function colorOf(name: string): string {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return PALETTE[h % PALETTE.length] ?? PALETTE[0] ?? "#6d7ff0";
-}
+/* 课程与来源配色见 lib/courseColor.ts（课表、选课预览、桌面小组件共用一份口径） */
+const colorOf = courseColor;
 
 interface Placed {
   entry: GridEntry;

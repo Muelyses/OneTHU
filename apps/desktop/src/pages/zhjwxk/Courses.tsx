@@ -3,6 +3,7 @@
  * 左栏 = 搜索/筛选chips/筛选selects/课程列表；右栏 = 学分统计·课表预览·暂存草稿·候补·AI。
  * UI 用 OneTHU 设计系统（Card/list/row/chip/btn/input）。
  */
+import { courseColor } from "../../lib/courseColor.js";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from "react";
 import { PageAtomStar } from "../..//components/Collect.js";
 import { createPortal } from "react-dom";
@@ -91,13 +92,8 @@ function clockRangesOf(note: string, time: string): ClockRange[] {
   return out;
 }
 
-/** 课块配色（无概率色时按课名稳定取色，同正式课表） */
-const PV_PALETTE = ["#6d7ff0", "#3d8bfd", "#1fa487", "#e07a4f", "#b463d6", "#2f9edb", "#c9971f", "#4caf6e", "#d45c8a", "#7a63e8"];
-const pvColorOf = (name: string): string => {
-  let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  return PV_PALETTE[h % PV_PALETTE.length] ?? "#6d7ff0";
-};
+/** 课块配色（无概率色时按课名稳定取色，同正式课表：lib/courseColor.ts） */
+const pvColorOf = (name: string): string => courseColor(name);
 
 /** 外校课程标注：课号前缀 PK=北大本科、GPK=北大研究生（2026 秋 38 门）、BW=北外（形如 BW3w0007） */
 type Origin = "北大" | "北大研" | "北外" | "";

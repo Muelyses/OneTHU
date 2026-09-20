@@ -143,8 +143,15 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
     }
 
     companion object {
-        /** 列表布局能画几行（row1..row5） */
-        private const val ROW_IDS = 5
+        /** 列表布局能放几条（slot1..slot5） */
+        private const val SLOT_IDS = 5
+        /** 正文墨色（浅色卡片底上的主文字色） */
+        private const val INK = 0xFF0F1115.toInt()
+        /** 一条内容占的高度（dp）：一条一行，说明在同一条里 */
+        private const val SLOT_H = 22
+        /** 说明文字的颜色（灰）与字号 */
+        private const val SUB_COLOR = 0xFF81858C.toInt()
+        private const val SUB_SP = 10
         /** 图标组布局的格子数（2 行 × 4 列） */
         private const val CELL_IDS = 8
 
@@ -211,17 +218,24 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         }
 
         /**
-         * 列表形态能画几行——**同一套布局靠可见性自适应**，不额外声明多套 layout：
-         *   · 2×1（矮条）→ 1 行；2×2 → 2 行；3×2 → 3 行；拉更高依次 4、5 行。
-         * 尺寸取自 AppWidgetOptions 的 MIN_HEIGHT（dp），系统在拖动与旋转时都会更新。
+         * 列表形态能放几条、要不要带说明——**同一套布局靠可见性自适应**。
+         *
+         * 一条一行（说明用 Span 跟在主文后面，不另占一行），故每条约 22dp；标题 20dp、
+         * 脚注 16dp、内边距 24dp（矮条隐藏标题，只留 12dp）。上限按高度分档，避免出现
+         * 「一屏挤五条」那种密到看不清的排版。
          */
-        private fun rowBudget(h: Int): Int = when {
-            h <= 0 -> 3        // 拿不到尺寸（老系统/首次）→ 按默认 3 行渲染
-            h < 90 -> 1
-            h < 150 -> 2
-            h < 200 -> 3
-            h < 250 -> 4
-            else -> 5
+        private fun listFit(h: Int): Pair<Int, Boolean> {
+            if (h <= 0) return 3 to true           // 拿不到尺寸（老系统/首次）→ 按默认 3 条渲染
+            val padding = if (h < 90) 12 else 24
+            val title = if (h < 90) 0 else 20      // 矮条隐藏标题，把这一行让给内容
+            val footer = if (h < 90) 0 else 16
+            val usable = h - padding - title - footer
+            val cap = when {
+                h < 200 -> 3
+                h < 260 -> 4
+                else -> 5
+            }
+            return minOf(cap, maxOf(1, usable / SLOT_H)) to (h >= 100)
         }
 
         /** 图标组能放几个：列数按宽度、行数按高度（每格约 56dp），最多 2 行 × 4 列 */
@@ -234,7 +248,6 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
 
         private fun renderFor(ctx: Context, manager: AppWidgetManager, widgetId: Int, slot: String?) {
             val (w, h) = sizeOf(manager, widgetId)
-            val maxRows = rowBudget(h)
             val snap = WidgetStore.loadSlots(ctx)
             val content = if (slot == null) WidgetStore.loadInstance(ctx, widgetId) else snap?.optJSONObject("slots")?.optJSONObject(slot)
             if (content == null) {
@@ -244,7 +257,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             when (content.optString("kind", "list")) {
                 "grid" -> renderGrid(ctx, manager, widgetId, content, w, h)
                 "shortcut" -> renderShortcut(ctx, manager, widgetId, content)
-                else -> renderList(ctx, manager, widgetId, content, maxRows)
+                else -> renderList(ctx, manager, widgetId, content, h)
             }
         }
 
@@ -266,7 +279,8 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             views.setViewVisibility(R.id.onethu_widget_title, View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_row1, line)
             views.setViewVisibility(R.id.onethu_widget_row1, View.VISIBLE)
-            for (i in 2..ROW_IDS) views.setViewVisibility(rowId(i), View.GONE)
+            views.setViewVisibility(R.id.onethu_widget_bar1, View.INVISIBLE)
+            for (i in 2..SLOT_IDS) views.setViewVisibility(slotId(i), View.GONE)
             views.setViewVisibility(R.id.onethu_widget_footer, View.GONE)
             views.setOnClickPendingIntent(
                 R.id.onethu_widget_root,
@@ -285,13 +299,15 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             return provider.className == OnethuWidgetShape1Shortcut::class.java.name
         }
 
-        /** 列表形态：标题 + 若干行（每行「主文 · 副文」）+ 脚注。用于日程/DDL 与单原子详情 */
-        private fun renderList(ctx: Context, manager: AppWidgetManager, widgetId: Int, content: JSONObject, maxRows: Int) {
+        /** 列表形态：标题 + 若干条（每条「色条 + 主文 + 小字说明」，一条一行）+ 脚注。
+         *  用于日程与 DDL、单原子详情、以及教室/洗衣机这类实时状态。 */
+        private fun renderList(ctx: Context, manager: AppWidgetManager, widgetId: Int, content: JSONObject, h: Int) {
             val views = RemoteViews(ctx.packageName, R.layout.onethu_widget)
             val rows = content.optJSONArray("rows")
+            val (maxSlots, withSub) = listFit(h)
             // 矮条（2×1）里标题是冗余的（用户自己知道放的是什么），把这一行让给内容：
-            // 隐藏标题、收紧内边距，于是「一行内容 + 脚注」都放得下，而不是被裁掉半行。
-            val compact = maxRows == 1
+            // 隐藏标题、收紧内边距，于是「一条内容 + 脚注」都放得下，而不是被裁掉半行。
+            val compact = h < 90
             applyCompactPadding(ctx, views, compact)
             views.setViewVisibility(R.id.onethu_widget_title, if (compact) View.GONE else View.VISIBLE)
             views.setTextViewText(
@@ -299,21 +315,32 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 content.optString("title").takeIf { it.isNotEmpty() } ?: "OneTHU",
             )
 
-            for (i in 0 until ROW_IDS) {
-                val viewId = rowId(i + 1)
-                val row = if (i < maxRows) rows?.optJSONObject(i) else null
+            for (i in 0 until SLOT_IDS) {
+                val slot = slotId(i + 1)
+                val row = if (i < maxSlots) rows?.optJSONObject(i) else null
                 val text = row?.optString("text").orEmpty()
                 if (text.isEmpty()) {
-                    views.setViewVisibility(viewId, View.GONE)
+                    views.setViewVisibility(slot, View.GONE)
                     continue
                 }
-                val sub = row?.optString("sub").orEmpty()
-                views.setViewVisibility(viewId, View.VISIBLE)
-                views.setTextViewText(viewId, if (sub.isEmpty()) text else "$text · $sub")
+                views.setViewVisibility(slot, View.VISIBLE)
+
+                // 色条：课程色 / 紧迫度色 / 状态色；无色时保留占位但不可见（各行文字对齐）
+                val bar = barId(i + 1)
+                val color = parseColor(row?.optString("color").orEmpty())
+                if (color != null) {
+                    views.setViewVisibility(bar, View.VISIBLE)
+                    views.setInt(bar, "setBackgroundColor", color)
+                } else {
+                    views.setViewVisibility(bar, View.INVISIBLE)
+                }
+
+                val sub = if (withSub) row?.optString("sub").orEmpty() else ""
+                views.setTextViewText(rowId(i + 1), styledRow(text, sub, row, color))
             }
 
-            // 脚注（「3 节课 · 2 个截止」）在矮条里也要留着：那里已经让出了标题行，放得下
-            val footer = content.optString("footer").orEmpty()
+            // 脚注（「3 节课 · 2 个截止」）在矮条里让位给内容
+            val footer = if (withSub) content.optString("footer").orEmpty() else ""
             views.setViewVisibility(R.id.onethu_widget_footer, if (footer.isEmpty()) View.GONE else View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_footer, footer)
             views.setOnClickPendingIntent(
@@ -321,6 +348,51 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 clickPending(ctx, content.optString("target"), 0),
             )
             manager.updateAppWidget(widgetId, views)
+        }
+
+        /**
+         * 一条内容 → 带样式的文字：主文（可加粗、可上色、可按档放大）+ 说明（小字灰）。
+         *
+         * 用 Spannable 而不是多摆几个 TextView：说明跟在主文后面，既省一行高度又保持主次；
+         * 这里用的三种 Span 都是 Parcelable，能跨进程送到启动器（RemoteViews 的限制）。
+         */
+        private fun styledRow(text: String, sub: String, row: JSONObject?, color: Int?): CharSequence {
+            val full = if (sub.isEmpty()) text else "$text　$sub"
+            val sp = android.text.SpannableString(full)
+            val headSp = when (row?.optString("size").orEmpty()) {
+                "lg" -> 17
+                "sm" -> 11
+                else -> 13
+            }
+            sp.setSpan(android.text.style.AbsoluteSizeSpan(headSp, true), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            if (row?.optBoolean("strong", false) == true) {
+                sp.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            sp.setSpan(
+                android.text.style.ForegroundColorSpan(color ?: INK),
+                0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+            if (sub.isNotEmpty()) {
+                sp.setSpan(
+                    android.text.style.AbsoluteSizeSpan(SUB_SP, true),
+                    text.length, full.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+                sp.setSpan(
+                    android.text.style.ForegroundColorSpan(SUB_COLOR),
+                    text.length, full.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                )
+            }
+            return sp
+        }
+
+        /** "#RRGGBB" → Color；解析不出返回 null（当无色处理，不猜） */
+        private fun parseColor(hex: String): Int? {
+            if (hex.length != 7 || !hex.startsWith("#")) return null
+            return try {
+                android.graphics.Color.parseColor(hex)
+            } catch (e: Exception) {
+                null
+            }
         }
 
         /** 图标组形态：收藏夹 = 内嵌的文件夹，若干原子图标并列，每个格子各自可点 */
@@ -381,6 +453,22 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             } catch (e: OutOfMemoryError) {
                 null
             }
+        }
+
+        private fun slotId(n: Int): Int = when (n) {
+            1 -> R.id.onethu_widget_slot1
+            2 -> R.id.onethu_widget_slot2
+            3 -> R.id.onethu_widget_slot3
+            4 -> R.id.onethu_widget_slot4
+            else -> R.id.onethu_widget_slot5
+        }
+
+        private fun barId(n: Int): Int = when (n) {
+            1 -> R.id.onethu_widget_bar1
+            2 -> R.id.onethu_widget_bar2
+            3 -> R.id.onethu_widget_bar3
+            4 -> R.id.onethu_widget_bar4
+            else -> R.id.onethu_widget_bar5
         }
 
         private fun rowId(n: Int): Int = when (n) {

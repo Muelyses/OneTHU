@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  宿主小组件「列表形态」（日程与 DDL / 单原子详情）的选择器预览。
+  宿主小组件「列表形态」（日程与 DDL / 单原子详情 / 教室洗衣机状态）的选择器预览。
 
-  previewLayout（API 31+）让启动器的选择器直接显示这块小组件长什么样：没有它，系统会拿
-  initialLayout 当预览，而我们的 initialLayout 内容都是空的（真实内容由应用算好下发），
-  在选择器里就是几个空框——「看不到 1×1」有一部分正是这个原因。
-  预览里的文字与图标是写死的样例，不参与真实渲染。
+  刻意与真实渲染同构（色条 + 主文 + 小字说明）：选择器里看到的样子就是放到桌面后的样子。
+  预览文字是写死的样例。
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -23,37 +21,72 @@
         android:textColor="#0F1115"
         android:text="今天 9月20日" />
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:maxLines="1"
-        android:textSize="12sp"
-        android:textColor="#0F1115"
-        android:text="10:00 数据结构 · 六教6A215" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:maxLines="1"
-        android:textSize="12sp"
-        android:textColor="#0F1115"
-        android:text="14:00 线性代数 · 三教3200" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:maxLines="1"
-        android:textSize="12sp"
-        android:textColor="#0F1115"
-        android:text="DDL 第三章习题 · 今天 23:59" />
+        android:orientation="horizontal">
 
-    <TextView
+        <TextView
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="#e07a4f" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#0F1115"
+            android:text="10:00 数据结构　六教6A215 · 还有 40 分钟" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:maxLines="1"
-        android:textSize="10sp"
-        android:textColor="#81858C"
-        android:text="2 节课 · 1 个截止" />
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="#3d8bfd" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="normal"
+            android:textColor="#0F1115"
+            android:text="14:00 线性代数　三教3200 · 还有 4 小时" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="8dp"
+            android:background="#e5484d" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#0F1115"
+            android:text="DDL 第三章习题　今天 23:59 · 还有 5 小时" />
+    </LinearLayout>
 </LinearLayout>

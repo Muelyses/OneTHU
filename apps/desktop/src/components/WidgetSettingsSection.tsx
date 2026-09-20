@@ -16,7 +16,7 @@ import {
   bindingOf, loadWidgetInstances, setWidgetFallback, unbindWidgetInstance,
 } from "../state/widgetInstances.js";
 import { requestWidgetBind } from "../state/widgetBindUi.js";
-import { AtomPickerModal } from "./Collect.js";
+import { FavAtomPicker } from "./FavAtomPicker.js";
 import { bindingSummary, shapeLabel } from "./WidgetBindModal.js";
 import { useNotifyBackend } from "./useNotifyBackend.js";
 
@@ -162,7 +162,7 @@ export function WidgetSettingsSection(): ReactNode {
       {msg ? <div style={{ fontSize: "var(--text-sm)", color: "var(--text-3)", padding: "6px 2px" }}>{msg}</div> : null}
 
       {fallbackPicker ? (
-        <AtomPickerModal
+        <FavAtomPicker
           title="默认内容用哪个原子做快捷方式"
           hint="刚放上桌面、还没选内容的那块会先显示它。"
           onPick={(atom) => {

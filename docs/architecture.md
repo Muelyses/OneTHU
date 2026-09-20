@@ -86,6 +86,12 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   Android 不允许运行时注册 provider，走**固定槽位**（3 个）按声明顺序占位。
   **图标也要应用侧算**：小组件里没有 WebView，插件的 SVG 与宿主 React 图标在那边都不存在，
   故 `state/widgetIcon.ts` 在前台把原子图标渲染成 SVG → canvas → PNG（按原子缓存）随内容下发。
+  原生渲染只能用 RemoteViews 白名单里的控件（标了 `@RemoteView` 的类：LinearLayout / TextView /
+  ImageView 等）：**裸 `View` 会让启动器 inflate 失败，整块小组件变成「无法加载」的黑框**；
+  同样地，RemoteViews 不能设加粗（`setTypeface` 要 Typeface 参数，反射式 `setInt` 会直接抛），
+  所以「主次」用每行两个 TextView（粗体/常规）切换可见性 + `setTextViewTextSize` 字号 + 左侧色条
+  （课程色 / 紧迫度色 / 状态色）来表达。一屏放几条必须按**真实高度**算（一条带说明约 38dp），
+  拍一个「矮/中/高」三档会让矮尺寸上的第二行被挤出可视区。
   详情行同理：课程下次上课与作业截止由 `state/widgetDetail.ts` 从内存算，**下沉原子**（教室占用、
   洗衣机状态）由 `state/widgetLive.ts` 在算快照前顺手抓一遍（与收藏夹方卡共用缓存键，带超时），
   解读逻辑放在纯函数 `state/widgetLiveParse.ts`（「现在第几节」「哪几节空着」全在时间边界上出错，

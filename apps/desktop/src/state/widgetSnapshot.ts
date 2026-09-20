@@ -11,14 +11,23 @@
  * 注释），改动需两端同步。
  */
 import { parseLearnTime } from "@onethu/core/src/learn/time.js";
+import { courseColor, urgencyColor } from "../lib/courseColor.js";
 import { encodeWidgetTarget } from "./widgetTarget.js";
 import { effectiveRemind, type HwRemindState } from "./hwRemind.js";
 import { scheduleStart, type PlanHomework, type PlanScheduleEntry } from "./notifyPlan.js";
 
 /** 与 Kotlin 侧约定的快照结构 */
 export interface WidgetRow {
+  /** 主行文字（一眼要看到的：时间 + 事） */
   text: string;
+  /** 次行文字（地点、倒计时、状态补充）；原生在矮尺寸下会自动省略 */
   sub?: string;
+  /** 左侧色条与文字颜色（课程色 / 紧迫度色 / 状态色）；缺省无色条 */
+  color?: string;
+  /** 主行加粗（正在上课、6 小时内的 DDL、实时状态这类必须抢眼的行） */
+  strong?: boolean;
+  /** 字号档：lg 给「最该看到的那一行」，sm 给次要信息 */
+  size?: "sm" | "md" | "lg";
 }
 
 /** 插件小组件的槽位内容（snapshot 里的形态，槽位号为 map 键） */
@@ -83,7 +92,7 @@ export interface WidgetSnapshotInput {
   homework?: PlanHomework[] | null;
   remind: HwRemindState;
   now: number;
-  /** 最多几行（原生布局三行；多余的在 footer 里计数体现） */
+  /** 最多几行（原生按实际高度截断；这里给个上界，多的在 footer 里计数体现） */
   maxRows?: number;
   /** 插件声明的小组件条目：插到课程/DDL 之后（宿主小组件里的插件行） */
   extraRows?: WidgetRow[];
@@ -121,7 +130,7 @@ function left(ms: number): string {
 export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot {
   const now = input.now;
   const today = ymd(now);
-  const maxRows = Math.max(1, input.maxRows ?? 3);
+  const maxRows = Math.max(1, input.maxRows ?? 5);
 
   interface Entry {
     at: number;
@@ -130,22 +139,33 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
   }
   const entries: Entry[] = [];
 
-  /* 今天的课（已开始的也算进来：正在上的课是此刻最该看到的一条） */
+  /* 今天的课：**只留还没上完的**。
+   *
+   * 早先这里把「今天已结束的课」也一起排序，于是一行的小组件显示的是今天第一节课——
+   * 中午看到的还是早上 8 点那节，用户真正要看的是「正在上的」和「下一节」。
+   * 已结束的课不占位，但会记一笔，全部上完时脚注如实说「今天的课已上完」。 */
+  let hadClass = false;
   for (const e of input.schedule ?? []) {
     const start = scheduleStart(e);
     if (start == null || String(e.date ?? "") !== today) continue;
-    const end = String(e.endTime ?? "").trim().replace("：", ":");
-    const isOngoing = end.length >= 4 && (() => {
-      const t = new Date(`${today}T${end.length === 4 ? `0${end}` : end}:00`).getTime();
-      return Number.isFinite(t) && t > now && start <= now;
-    })();
+    hadClass = true;
+    const endText = String(e.endTime ?? "").trim().replace("：", ":");
+    const endMs = endText.length >= 4
+      ? new Date(`${today}T${endText.length === 4 ? `0${endText}` : endText}:00`).getTime()
+      : Number.NaN;
+    const isOngoing = Number.isFinite(endMs) && endMs > now && start <= now;
+    if (Number.isFinite(endMs) && endMs <= now) continue;   // 已上完：不占位
     const loc = clip(e.location ?? "", 12);
+    const leftMs = start - now;
     entries.push({
       at: start,
       kind: "class",
+      // 课程用课表里的同一个颜色：用户在课表里认的就是「紫色那门课」
       row: {
         text: `${hm(start)} ${clip(e.courseName ?? "课程", 14)}`,
-        sub: isOngoing ? "正在上课" : loc || undefined,
+        sub: isOngoing ? `正在上课${loc ? " · " + loc : ""}` : [loc, leftMs > 60_000 ? left(leftMs) : ""].filter(Boolean).join(" · ") || undefined,
+        color: courseColor(String(e.courseName ?? "")),
+        strong: isOngoing,
       },
     });
   }
@@ -159,19 +179,22 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
     const dl = d.getTime();
     if (dl <= now || dl > horizon) continue;
     const lead = effectiveRemind(input.remind, String(h.id ?? ""));
+    const leftDdl = dl - now;
     entries.push({
       at: dl,
       kind: "ddl",
       row: {
         text: `DDL ${clip(h.title ?? "作业", 14)}`,
-        sub: `${ymd(dl) === today ? "今天" : `${new Date(dl).getMonth() + 1}/${new Date(dl).getDate()}`} ${hm(dl)} · ${left(dl - now)}`,
+        sub: `${ymd(dl) === today ? "今天" : `${new Date(dl).getMonth() + 1}/${new Date(dl).getDate()}`} ${hm(dl)} · ${left(leftDdl)}`,
+        color: urgencyColor(leftDdl),
+        strong: leftDdl <= 6 * 3600_000,   // 6 小时内：加粗，别让它淹在列表里
       },
     });
   }
 
   entries.sort((a, b) => a.at - b.at);
 
-  const rows = entries.slice(0, maxRows).map((e) => e.row);
+  const rows = entries.slice(0, maxRows).map((e, i) => (i === 0 ? { ...e.row, size: "lg" as const } : e.row));
   for (const extra of input.extraRows ?? []) {
     if (rows.length >= maxRows) break;
     rows.push(extra);
@@ -184,7 +207,7 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
   if (ddlCount) parts.push(`${ddlCount} 个截止`);
   const more = entries.length - rows.length;
   const footer = parts.length === 0
-    ? "今天没有课与截止"
+    ? (hadClass ? "今天的课已上完" : "今天没有课与截止")
     : `${parts.join(" · ")}${more > 0 ? ` · 还有 ${more} 项` : ""}`;
 
   return {
@@ -247,7 +270,13 @@ export function buildDetailSnapshot(input: {
     title: String(input.title || "详情"),
     updatedAt: input.now,
     target: encodeWidgetTarget(input.target || "today", input.params ?? null),
-    rows: input.rows.slice(0, Math.max(1, input.maxRows ?? 5)).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
+    rows: input.rows.slice(0, Math.max(1, input.maxRows ?? 5)).map((r) => ({
+      text: String(r.text ?? ""),
+      sub: r.sub ? String(r.sub) : undefined,
+      color: r.color,
+      strong: r.strong === true ? true : undefined,
+      size: r.size,
+    })),
     footer: String(input.footer ?? ""),
   };
 }

@@ -53,12 +53,13 @@ const hw = (extra = {}) => ({ id: "h1", title: "第三章习题", deadline: "202
     homework: [hw({ deadline: "2026-09-21 20:00:00" }), hw({ id: "h2", title: "实验报告", deadline: "2026-09-22 12:00:00" })],
     remind: REMIND,
     now: NOW,
+    maxRows: 3,          // 原生按实际高度截断；这里验证截断口径本身
   });
-  eq("最多三行", s.rows.length, 3);
+  eq("截断到 maxRows 行", s.rows.length, 3);
   eq("第一行是正在上的课", s.rows[0].text, "08:00 高等数学");
-  eq("正在上的课标注状态", s.rows[0].sub, "正在上课");
+  eq("正在上的课标注状态与地点", s.rows[0].sub, "正在上课 · 六教6A215");
   eq("第二行是接下来的课", s.rows[1].text, "14:00 大学物理");
-  eq("第二行带地点", s.rows[1].sub, "六教6A215");
+  eq("第二行带地点与倒计时", s.rows[1].sub, "六教6A215 · 还有 5 小时");
   eq("第三行是最近的 DDL", s.rows[2].text, "DDL 第三章习题");
   ok("DDL 副标题带今天与剩余", s.rows[2].sub.startsWith("今天 20:00 · 还有"));
   eq("脚注统计总数并提示截断", s.footer, "3 节课 · 2 个截止 · 还有 2 项");
@@ -109,6 +110,57 @@ const hw = (extra = {}) => ({ id: "h1", title: "第三章习题", deadline: "202
   });
   eq("行满时插件条目不抢位", s.rows.length, 2);
   eq("行满时插件条目不出现", s.rows.some((r) => r.text === "不该出现"), false);
+}
+
+/* 已上完的课不占位：一行的小组件要显示「正在上的」和「下一节」，而不是今天的第一节 */
+{
+  const s = buildWidgetSnapshot({
+    schedule: [
+      cls({ startTime: "08:00", endTime: "09:35", courseName: "早课" }),          // 早已上完
+      cls({ startTime: "10:00", endTime: "11:35", courseName: "数据结构" }),      // 正在上（NOW=09:00 之前？见下）
+      cls({ startTime: "14:00", endTime: "15:35", courseName: "大学物理" }),
+    ],
+    homework: [], remind: REMIND, now: NOW, maxRows: 1,
+  });
+  // NOW = 09:00：早课还没上完（08:00–09:35），故第一行是它且标注正在上课
+  eq("一行时给正在上的课", s.rows[0].text, "08:00 早课");
+  eq("一行时不给已经上完的课", s.rows.some((r) => r.text.includes("08:00")), true);
+  const later = buildWidgetSnapshot({
+    schedule: [
+      cls({ startTime: "08:00", endTime: "09:35", courseName: "早课" }),
+      cls({ startTime: "14:00", endTime: "15:35", courseName: "大学物理" }),
+    ],
+    homework: [], remind: REMIND, now: new Date(2026, 8, 21, 12, 0, 0).getTime(), maxRows: 1,
+  });
+  eq("中午时一行给下一节（不是早上那节）", later.rows[0].text, "14:00 大学物理");
+  const done = buildWidgetSnapshot({
+    schedule: [cls({ startTime: "08:00", endTime: "09:35", courseName: "早课" })],
+    homework: [], remind: REMIND, now: new Date(2026, 8, 21, 12, 0, 0).getTime(),
+  });
+  eq("课都上完时如实说", done.footer, "今天的课已上完");
+  eq("课都上完时没有行", done.rows.length, 0);
+}
+
+/* 主次：课程色、紧迫度加粗、首行大字号 —— 桌面上一眼能不能看出重点全靠这三样 */
+{
+  const { courseColor } = await import("../apps/desktop/src/lib/courseColor.ts");
+  const s = buildWidgetSnapshot({
+    schedule: [cls({ startTime: "10:00" }), cls({ startTime: "14:00", courseName: "线性代数", location: "三教3200" })],
+    homework: [
+      { id: "h9", title: "今晚就交", deadline: "2026-09-21 12:00:00", submitted: false },
+      { id: "h8", title: "下周再说", deadline: "2026-09-26 23:59:00", submitted: false },
+    ],
+    remind: REMIND, now: NOW, maxRows: 4,
+  });
+  eq("课程行带课表同款颜色", s.rows[0].color, courseColor("数据结构"));
+  eq("不同课程不同颜色", s.rows.some((r) => r.color === courseColor("线性代数")), true);
+  eq("首行给大字号", s.rows[0].size, "lg");
+  const urgent = s.rows.find((r) => r.text.includes("今晚就交"));
+  eq("6 小时内的 DDL 加粗", urgent.strong, true);
+  eq("6 小时内的 DDL 用红色", urgent.color, "#e5484d");
+  const later = s.rows.find((r) => r.text.includes("下周再说"));
+  eq("还早的 DDL 不加粗", later.strong === true, false);
+  eq("还早的 DDL 用灰（不抢眼）", later.color, "#8a8f98");
 }
 
 /* 详情形态：就是列表形态（标题 + 若干行 + 脚注），拉得越高行数越多 */

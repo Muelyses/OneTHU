@@ -46,11 +46,14 @@ const BUSY = 2;      // 非 AVAILABLE 即占用
 {
   const d = roomDetail([AVAILABLE, BUSY, AVAILABLE, AVAILABLE, BUSY, AVAILABLE], "6A215", at(9));
   eq("教室详情：首行是状态", [d.rows[0].text, d.rows[0].sub], ["本节空闲", "6A215"]);
+  eq("教室详情：状态行大字加粗带色", [d.rows[0].size, d.rows[0].strong, d.rows[0].color], ["lg", true, "#1fa487"]);
   eq("教室详情：列出今日空闲节次", d.rows[1].text, "今日空闲：第 1、3、4、6 节");
+  eq("教室详情：次要行小字", d.rows[1].size, "sm");
   eq("教室详情：给出当前钟点", d.rows[2].text, "现在第 1 节 08:00–09:45");
   eq("教室详情：脚注", d.footer, "6A215 · 今日占用总览");
   const full = roomDetail([BUSY, BUSY, BUSY, BUSY, BUSY, BUSY], "6A215", at(9));
   eq("全排满时如实说", full.rows[1].text, "今日已排满");
+  eq("占用时状态行转红", full.rows[0].color, "#e5484d");
   eq("没有数据时不写", roomDetail([], "6A215", at(9)), null);
 }
 
@@ -78,11 +81,13 @@ const BUSY = 2;      // 非 AVAILABLE 即占用
     { name: "洗衣机D", status: "idle", floor: "2F" },
   ];
   const one = washerMachineDetail(all[0], all, "紫荆1号楼");
-  eq("单台：状态与剩余", [one.rows[0].text, one.rows[0].sub], ["使用中 · 剩 23 分钟", "1F"]);
-  eq("单台：本楼空闲统计", one.rows[1].text, "紫荆1号楼 共 4 台 · 空闲 3 台");
+  eq("单台：状态与剩余", [one.rows[0].text, one.rows[0].sub], ["使用中 · 剩 23 分钟", "1F · 洗衣机A"]);
+  eq("单台：状态行大字加粗带色（桌面上要一眼看到）", [one.rows[0].size, one.rows[0].strong, one.rows[0].color], ["lg", true, "#e8873a"]);
+  eq("单台：本楼空闲统计", one.rows[1].text, "紫荆1号楼 共 4 台，空闲 3 台");
   eq("单台：脚注给可用时间", one.footer, "约 23 分钟后可用");
   const idle = washerMachineDetail(all[1], all, "紫荆1号楼");
   eq("空闲设备的脚注是「换一台」而不是时间", idle.footer, "点开可换一台");
+  eq("空闲状态用绿色", idle.rows[0].color, "#1fa487");
   const bld = washerBuildingDetail(all, "紫荆1号楼");
   eq("楼栋：总数", bld.rows[0].text, "空闲 3 / 4 台");
   eq("楼栋：按空闲数排楼层", bld.rows.slice(1).map((r) => r.text), ["2F 空闲 2 台", "1F 空闲 1 台"]);

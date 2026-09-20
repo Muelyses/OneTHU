@@ -13,7 +13,7 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { AtomPickerModal } from "./Collect.js";
+import { FavAtomPicker } from "./FavAtomPicker.js";
 import { IconCard, IconFile, IconFolder, IconToday } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { resolveAtom } from "../state/atoms.js";
@@ -253,9 +253,9 @@ export function WidgetBindModal(): ReactNode {
       ) : null}
 
       {picker ? (
-        <AtomPickerModal
+        <FavAtomPicker
           title={picker === "shortcut" ? "选一个原子做快捷方式" : "选一个原子显示详情"}
-          hint={picker === "shortcut" ? "图标 + 名称，放成 1×1 就像桌面快捷方式。" : "这块小组件会被它占满：拉得越高，显示的行数越多。"}
+          hint={picker === "shortcut" ? "图标 + 名称，放成 1×1 就像桌面快捷方式。" : "这块小组件会被它占满：拉得越高，显示的细节越多。"}
           onPick={(atom) => bind(id, { kind: picker, atom })}
           onClose={() => setPicker(null)}
         />

@@ -101,3 +101,78 @@ export function applyScenarios(scenarioIds: string[], orientation: HomeOrientati
   for (const def of meta) if (!keep.has(def.id)) collapsed[def.id] = true;
   saveCollapsedDefaults(collapsed);
 }
+
+
+/** 预算好的使用场景预设（导览首屏二选一：自行选择 / 按场景预设）。
+ *  选预设后仍可返回上一步改选，或改完再进"自行选择"逐项微调。 */
+export interface Preset {
+  id: string;
+  label: string;
+  hint: string;
+  /** 保留在侧栏（展开）的页面；未列出的一律折叠 */
+  pages: string[];
+  /** 二级页签保留项：key → 保留的 tab id（未列出的隐藏） */
+  tabs: Record<string, string[]>;
+  /** 首页保留的场景（走 applyScenarios） */
+  cards: string[];
+}
+
+const ALL_PAGES = [
+  "today", "learn", "schedule", "trace", "mail", "cloud", "thubook",
+  "info", "life", "reserve", "thos", "otherinfo",
+];
+const ALL_TABS = {
+  info: ["report", "fitness", "exams", "evaluation", "calendar", "news", "profile", "courseinfo"],
+  life: ["dorm", "washer", "hygiene", "card", "invoice", "payroll", "gradincome", "network"],
+};
+
+export const PRESETS: Preset[] = [
+  {
+    id: "complete",
+    label: "完整",
+    hint: "所有功能都在侧栏，适合想一次看全的人",
+    pages: ALL_PAGES,
+    tabs: ALL_TABS,
+    cards: ["learn", "life", "schedule", "extend"],
+  },
+  {
+    id: "minimal",
+    label: "极简",
+    hint: "只留今日、网络学堂、信息、生活、在线服务",
+    pages: ["today", "learn", "info", "life", "thos"],
+    tabs: { info: ["report", "exams", "profile"], life: ["card", "dorm", "washer"] },
+    cards: ["learn"],
+  },
+  {
+    id: "reserve",
+    label: "预约狂人",
+    hint: "日程、预约、场馆与宿舍设备为主",
+    pages: ["today", "schedule", "reserve", "life", "thos"],
+    tabs: { info: ["calendar"], life: ["dorm", "washer", "hygiene", "card"] },
+    cards: ["schedule", "life"],
+  },
+  {
+    id: "info",
+    label: "信息大师",
+    hint: "成绩、考试、学籍、新闻与网堂全在",
+    pages: ["today", "learn", "info", "schedule", "thos", "otherinfo"],
+    tabs: { info: ALL_TABS.info, life: ["card", "network"] },
+    cards: ["learn", "schedule", "extend"],
+  },
+];
+
+/** 应用预设：页面折叠 + 页签显隐 + 首页卡片，与手动路径写同一批存储 */
+export function applyPreset(
+  preset: Preset,
+  foldPage: (page: string) => boolean,
+  openPage: (page: string) => boolean,
+): void {
+  for (const p of ALL_PAGES) {
+    if (preset.pages.includes(p)) openPage(p);
+    else foldPage(p);
+  }
+  void applyScenarios(preset.cards, "portrait");
+}
+
+/** 预设与手动路径共用的页签 id 全集（供导览展示与对账） */
+export const TAB_IDS_BY_KEY: Record<string, string[]> = ALL_TABS;

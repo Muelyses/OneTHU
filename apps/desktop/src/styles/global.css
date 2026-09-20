@@ -1831,6 +1831,23 @@
   color: var(--text-2);
 }
 
+/* 文件预览头部：窄屏收紧内边距与按钮，保证「关闭」不被挤出面板 */
+@media (max-width: 480px) {
+  .fp-head {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .fp-head .fp-actions {
+    gap: 6px;
+  }
+
+  .fp-head .btn {
+    padding: 0 10px;
+    font-size: var(--text-sm);
+  }
+}
+
 /* 硬刷新悬浮按钮：固定右下角，全页面（含登录页）可见，触屏友好 */
 .hard-refresh-fab {
   position: fixed;

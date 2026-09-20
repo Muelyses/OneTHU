@@ -693,6 +693,9 @@ const panelStyle: CSSProperties = {
 const headStyle: CSSProperties = {
   display: "flex", alignItems: "center", gap: 8, padding: "10px 14px",
   borderBottom: "1px solid var(--border, #eee)", flexShrink: 0,
+  // 窄屏（手机）把按钮换到第二行，而不是把 ✕ 挤出屏幕：三个按钮 + 文件名 + 元信息
+  // 在 360dp 上挤不下，flex 不换行时最后一个按钮会被顶到面板外面
+  flexWrap: "wrap", rowGap: 8,
 };
 const bodyStyle: CSSProperties = { flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column" };
 
@@ -837,21 +840,23 @@ export function FilePreviewHost() {
     <div style={maskStyle} onClick={close}>
       <style>{DOCX_CSS}</style>
       <div style={panelStyle} onClick={(e) => e.stopPropagation()}>
-        <div style={headStyle}>
-          <b style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13 }} title={cur.name}>
+        <div style={headStyle} className="fp-head">
+          <b style={{ flex: "1 1 120px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13 }} title={cur.name}>
             {cur.name || "文件预览"}
           </b>
           {metaBits.length ? (
             <span style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", flexShrink: 0 }}>{metaBits.join(" · ")}</span>
           ) : null}
-          <span style={{ flex: 1 }} />
-          <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-            {dlBusy ? "下载中…" : "下载"}
-          </button>
-          <button className="btn btn-ghost" disabled={dlBusy} title="这次保存到哪里由你选" onClick={() => void doSaveAs()}>
-            另存为
-          </button>
-          <button className="btn" onClick={close}>✕</button>
+          {/* 按钮组整体靠右且不收缩：空间不够时整组换行，✕ 永远在面板内 */}
+          <span className="fp-actions" style={{ display: "flex", gap: 8, flexShrink: 0, marginLeft: "auto" }}>
+            <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
+              {dlBusy ? "下载中…" : "下载"}
+            </button>
+            <button className="btn btn-ghost" disabled={dlBusy} title="这次保存到哪里由你选" onClick={() => void doSaveAs()}>
+              另存为
+            </button>
+            <button className="btn" onClick={close} aria-label="关闭预览">✕</button>
+          </span>
         </div>
 
         <div style={bodyStyle}>

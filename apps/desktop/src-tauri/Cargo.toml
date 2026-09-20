@@ -65,3 +65,5 @@ codegen-units = 1
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt"] }
+# 单测需要 mock AppHandle（seafile live 测试与 notify 载荷解析测试）
+tauri = { version = "2", features = ["test"] }

@@ -141,3 +141,68 @@ pub fn pending() -> Value {
 pub fn test() -> Value {
     json!({ "ok": false, "reason": "not-implemented-desktop" })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn backend_is_known_value() {
+        let b = backend();
+        // 前端按这个值决定是否启动调度链，返回空串或未约定值会让 macOS 静默不工作
+        assert!(matches!(b.as_str(), "macos" | "windows" | "none"), "未知后端：{b}");
+    }
+
+    #[test]
+    fn parse_items_keeps_valid_and_drops_broken() {
+        let payload = json!([
+            { "id": "ddl:h1:120", "at": 1_760_000_000_000i64, "title": "DDL · 高数", "body": "第三章习题" },
+            { "id": "", "at": 1_760_000_000_000i64 },                 // 缺 id
+            { "id": "x", "at": 0 },                                    // 时刻非法
+            { "at": 1_760_000_000_000i64 }                             // 缺 id
+        ])
+        .to_string();
+        let items = parse_items(&payload).expect("载荷应可解析");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].id, "ddl:h1:120");
+        assert_eq!(items[0].title, "DDL · 高数");
+    }
+
+    #[test]
+    fn parse_items_tolerates_missing_optional_fields() {
+        let payload = json!([{ "id": "class:a", "at": 1_760_000_000_000i64 }]).to_string();
+        let items = parse_items(&payload).expect("载荷应可解析");
+        assert_eq!(items[0].title, "OneTHU");   // 缺标题时的兜底，不该是空串
+        assert_eq!(items[0].body, "");
+    }
+
+    #[test]
+    fn bad_payload_reports_reason_instead_of_panicking() {
+        let v = schedule("{ 不是 JSON");
+        assert_eq!(v["ok"], json!(false));
+        assert_eq!(v["scheduled"], json!(0));
+        assert!(v["reason"].as_str().unwrap_or("").contains("解析失败"));
+    }
+
+    #[test]
+    fn payload_must_be_array() {
+        let v = schedule("{\"id\":\"a\"}");
+        assert_eq!(v["ok"], json!(false));
+        assert!(v["reason"].as_str().unwrap_or("").contains("数组"));
+    }
+
+    #[test]
+    fn parse_ids_ignores_non_strings() {
+        let ids = parse_ids("[\"a\", 1, null, \"b\"]");
+        assert_eq!(ids, vec!["a".to_string(), "b".to_string()]);
+        assert!(parse_ids("不是数组").is_empty());
+    }
+
+    #[test]
+    fn cancel_with_empty_ids_is_ok() {
+        let v = cancel("[]");
+        assert_eq!(v["ok"], json!(true));
+        assert_eq!(v["cancelled"], json!(0));
+    }
+}

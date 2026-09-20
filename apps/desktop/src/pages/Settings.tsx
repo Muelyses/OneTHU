@@ -2,6 +2,7 @@ declare const __APP_VERSION__: string;
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead } from "../components/Layout.js";
+import { resetOnboarding } from "../state/onboarding.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
@@ -94,6 +95,25 @@ export function SettingsPage() {
   return (
     <>
       <PageHead title="设置" />
+
+      <SectionHead title="导览" aside="按场景收起用不到的卡片；随时可重来" />
+      <Card>
+        <div className="setting-row">
+          <div>
+            <div className="setting-name">重新导览</div>
+            <div className="setting-desc">再走一遍首次使用引导（选择场景、收起卡片、建收藏夹）。</div>
+          </div>
+          <button
+            className="btn"
+            onClick={() => {
+              resetOnboarding();
+              location.reload();
+            }}
+          >
+            开始导览
+          </button>
+        </div>
+      </Card>
 
       <SectionHead title="关于" />
       <Card>

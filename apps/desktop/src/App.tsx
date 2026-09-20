@@ -19,6 +19,7 @@ import { SchedulePage } from "./pages/Schedule.js";
 import { MailPage } from "./pages/MailPage.js";
 import CloudPage from "./pages/CloudPage.js";
 import ThubookPage from "./pages/ThubookPage.js";
+import { OnboardingTour } from "./components/OnboardingTour.js";
 import { useToastHost, hideToast } from "./state/toast.js";
 import type { ReactNode } from "react";
 import { TracePage } from "./pages/Trace.js";
@@ -125,6 +126,7 @@ function Routed() {
       <PluginBridge />
       <NotifyBridge />
       {(status === "ready") && <ChatDock />}
+      {status === "ready" ? <OnboardingTour /> : null}
       <FilePreviewHost />
       <ToastHost />
     </>

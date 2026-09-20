@@ -93,18 +93,28 @@ export function SettingsPage() {
     saveTabLayout("settings", l);
   };
 
-  /** 页签显隐：保留既有分节结构，仅按 .section-head 边界切换各分节 hidden（不移动 DOM 节点） */
+  /**
+   * 页签显隐。两个坑（2026-09-20 实测）：
+   *  ① `hidden` 属性会被 app 里的 display 规则压过去 → 必须用行内 style.display；
+   *  ② 各分节并非同一父节点的兄弟：外部作业源 / 下载 / 外观等分节渲染在子组件内部，
+   *     因此必须逐个 .section-head 在**各自父节点内**向后收拢其内容，不能只遍历首层兄弟。
+   */
   useEffect(() => {
-    const anchor = document.querySelector(".section-head");
-    const parent = anchor?.parentElement;
-    if (!parent) return;
-    let group: string | null = null;
-    for (const el of Array.from(parent.children) as HTMLElement[]) {
-      if (el.classList.contains("section-head")) {
-        const title = (el.textContent ?? "").trim();
-        group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+    for (const head of heads) {
+      const title = (head.textContent ?? "").trim();
+      const group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+      if (!group) continue;
+      const show = group === tab;
+      const apply = (el: HTMLElement): void => {
+        el.style.display = show ? "" : "none";
+      };
+      apply(head);
+      let sib = head.nextElementSibling as HTMLElement | null;
+      while (sib && !sib.classList.contains("section-head")) {
+        apply(sib);
+        sib = sib.nextElementSibling as HTMLElement | null;
       }
-      if (group) el.hidden = group !== tab;
     }
   }, [tab, tabLayout.hidden.join(",")]);
 

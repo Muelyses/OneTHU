@@ -39,10 +39,6 @@ export function PayrollTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供银行代发数据，登录后可查看发放记录。" />;
-  }
-
   return (
     <>
       {state === "error" ? (

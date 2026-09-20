@@ -1,12 +1,13 @@
 /**
- * 个人信息页 —— getUserInfo（demo basics.getUserInfo 同款：yyfw 漫游 F315577F…
- * 后正则取名/邮箱；grjbxx 对本应用 403 无权限，仅作兜底）。
- * demo 该接口只提供姓名+邮箱，其余字段留空。
+ * 个人信息页 —— getUserInfo（yyfw 漫游 F315577F… 后正则取名/邮箱；
+ * grjbxx 对本应用 403 无权限，仅作兜底）。
+ * 脱敏版（demo 分支）：姓名 / 学号来自已脱敏的 profile；登录账号走 displayStudentId。
  */
 import { Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
 import { IconRefresh } from "../../components/Icons.js";
 import { useProfile } from "../../state/data.js";
 import { useApp } from "../../state/context.js";
+import { displayStudentId } from "../../lib/privacy.js";
 
 export function ProfileTab() {
   const { user } = useApp();
@@ -14,11 +15,11 @@ export function ProfileTab() {
 
   const rows: Array<[string, string | undefined]> = [
     ["姓名", data?.name],
-    ["学号", data?.studentId || user?.username],
+    ["学号", data?.studentId || displayStudentId(user?.username)],
     ["性别", data?.gender],
     ["院系", data?.department],
     ["专业", data?.major],
-    ["登录账号", user?.username],
+    ["登录账号", displayStudentId(user?.username)],
   ];
 
   return (

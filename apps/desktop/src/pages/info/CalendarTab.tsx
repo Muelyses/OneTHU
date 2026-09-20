@@ -53,10 +53,6 @@ export function CalendarTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供校历图片，登录后可查看学校校历。" />;
-  }
-
   const years = Array.from({ length: 5 }, (_, i) => currentAcademicYear() - i);
 
   return (

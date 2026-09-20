@@ -35,7 +35,7 @@ export function BbsPanel({
   courseName?: string;
   sem?: string;
 }) {
-  const { status, navigate } = useApp();
+  const { navigate } = useApp();
   const [boards, setBoards] = useState<LearnBbsBoard[]>([]);
   // boards 镜像 ref：load 回调读最新板块而不依赖 boards state——
   // 否则每次 setBoards(新数组) → load 身份变 → effect 重跑 load(false,0)，
@@ -55,15 +55,7 @@ export function BbsPanel({
 
   const load = useCallback(
     (append: boolean, start: number) => {
-      if (!courseId || status === "demo") {
-        if (status === "demo") {
-          setBoards([{ bqid: "demo", name: "课程讨论" }]);
-          setThreads(DEMO_THREADS(courseId));
-          setTotal(3);
-          setState("ready");
-        }
-        return;
-      }
+      if (!courseId) return;
       setState("loading");
       setError("");
       const isJh = tab === "__jh__";
@@ -104,7 +96,7 @@ export function BbsPanel({
           setState("error");
         });
     },
-    [courseId, tab, status, initialBoard, courseName, sem],
+    [courseId, tab, initialBoard, courseName, sem],
   );
 
   useEffect(() => {
@@ -151,11 +143,9 @@ export function BbsPanel({
         <button className="btn" onClick={() => reset(() => undefined)} aria-label="刷新讨论列表">
           <IconRefresh />
         </button>
-        {status !== "demo" ? (
-          <button className="btn" onClick={() => setShowNew(true)}>
-            发新话题
-          </button>
-        ) : null}
+        <button className="btn" onClick={() => setShowNew(true)}>
+          发新话题
+        </button>
       </div>
       {state === "loading" && threads === null ? (
         <Card>
@@ -252,7 +242,7 @@ function Badge({ text, tone }: { text: string; tone: "red" | "gold" }) {
 
 export function ForumThreadPage() {
   useLearnNavSemester();
-  const { navParams, status } = useApp();
+  const { navParams } = useApp();
   const { data: learnData } = useLearnData();
   const courseId = navParams?.courseId ?? "";
   const threadId = navParams?.itemId ?? "";
@@ -277,13 +267,6 @@ export function ForumThreadPage() {
     if (!courseId || !threadId) return;
     setState("loading");
     setError("");
-    if (status === "demo") {
-      setHead(DEMO_HEAD(threadId));
-      setPosts(DEMO_POSTS());
-      setHasMore(false);
-      setState("ready");
-      return;
-    }
     learn
       .getBbsThread(courseId, threadId, bqid)
       .then((h) => {
@@ -300,14 +283,13 @@ export function ForumThreadPage() {
         setError(explainNetworkError(e));
         setState("error");
       });
-  }, [courseId, threadId, bqid, status]);
+  }, [courseId, threadId, bqid]);
 
   useEffect(() => {
     load();
   }, [load, nonce]);
 
   const loadMore = () => {
-    if (status === "demo") return;
     const next = page + 1; // ajax 分页页码从 1 起（0 是服务端渲染首屏，接口无效页）
     learn
       .getBbsThreadPosts(courseId, threadId, next, bqid)
@@ -343,7 +325,6 @@ export function ForumThreadPage() {
   };
 
   const downloadAtt = (wjid: string, wjmc: string) => {
-    if (status === "demo") return;
     setDlHint(`下载 ${wjmc}…`);
     downloadLearnUrl(learnUrls.LEARN_BBS_ATTACHMENT(courseId, wjid), wjmc)
       .then((p) => setDlHint(`已保存：${p}`))
@@ -500,62 +481,6 @@ function PostBlock({
     </Card>
   );
 }
-
-/* ══════════ 演示数据 ══════════ */
-
-function DEMO_THREADS(courseId: string): LearnBbsThreadSummary[] {
-  return [
-    { id: "demo-tl-1", title: "Agent选题：艰难的实验设计辅助agent", author: "黄梓安", time: "2026-08-31 16:44", replies: 4, essence: true, pinned: false },
-    { id: "demo-tl-2", title: "关于作业 3 中 DAG 最短路的一个疑问", author: "顾晓", time: "2026-09-01 20:15", replies: 1, essence: false, pinned: false },
-    { id: "demo-tl-3", title: "课程项目分组求助（缺 1 人）", author: "王同学", time: "2026-09-01 15:43", replies: 0, essence: false, pinned: true },
-  ].map((t) => ({ ...t, id: `${courseId}#${t.id}` }));
-}
-
-function DEMO_HEAD(threadId: string): LearnBbsThreadDetail {
-  return {
-    id: threadId,
-    title: "Agent选题：艰难的实验设计辅助agent",
-    author: "黄梓安",
-    time: "2026-08-31 16:44",
-    html: "<p><b>问题背景</b></p><p>选题灵感来源于一个刚入门的科研菜菜：从模糊的 idea 到可复现的实验结果之间有很大 gap，需要反复试错、与 agent 频繁交互调整来填平。（演示数据）</p>",
-    posts: [],
-    replyCount: 4,
-    tabbh: "2",
-    tabid: "demo",
-    bqid: "demo",
-  };
-}
-
-function DEMO_POSTS(): LearnBbsPost[] {
-  return [
-    {
-      hhid: "153664138",
-      author: "顾晓",
-      time: "2026-08-31 17:47",
-      html: "<p>同感。我在想能不能把「实验设计」拆成假设生成 / 变量选择 / 指标定义三段分别给反馈。</p>",
-      attachments: [],
-      children: [
-        {
-          hhid: "153666500",
-          author: "黄梓安",
-          time: "2026-09-01 20:15",
-          html: "<p>可以，我下周整理一版拆解模板贴出来。（演示数据）</p>",
-          attachments: [],
-          children: [],
-        },
-      ],
-    },
-    {
-      hhid: "153667329",
-      author: "李同学",
-      time: "2026-09-01 20:15",
-      html: "<p>求组队！我对 RL 方向的自动调参也很感兴趣。</p>",
-      attachments: [],
-      children: [],
-    },
-  ];
-}
-
 
 /* ══════════ 发新话题（App 内完成；saveTl multipart） ══════════ */
 

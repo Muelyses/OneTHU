@@ -216,3 +216,12 @@ export * as caldav from "./caldav/index.js";
 export { CalDavClient, CalDavError } from "./caldav/client.js";
 export type { CalDavAccount, CalendarInfo, EventMeta } from "./caldav/client.js";
 export type { IcsEvent, IcsRrule, IcsOccurrence } from "./caldav/ics.js";
+
+// 脱敏层（demo 分支构建 OneTHU Demo 用；正式分支 DESENSITIZE_ENABLED=false，纯函数不被调用）
+export { DESENSITIZE_ENABLED, DESENSITIZE_BUILD_LABEL } from "./privacy/config.js";
+export {
+  desensitizeTree, applyDesensitize, isDesensitizeBuild,
+  maskName, maskStudentId, maskText, fakeGrade, fakeScore,
+  knownNameMappings, resetPseudoMappings,
+  PSEUDO_NAMES, GRADE_SCALE,
+} from "./privacy/desensitize.js";

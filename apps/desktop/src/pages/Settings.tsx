@@ -13,6 +13,7 @@ import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js"
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
 import { useApp } from "../state/context.js";
+import { displayStudentId } from "../lib/privacy.js";
 import { useCloudCal, configureCloudCal, disconnectCloudCal, syncCloudCal } from "../state/cloudCal.js";
 import {
   useSystemCal,
@@ -113,7 +114,7 @@ export function SettingsPage() {
         <div className="setting-row">
           <div>
             <div className="setting-title">统一认证</div>
-            <div className="setting-desc">{user?.displayName || user?.username || "未登录"}</div>
+            <div className="setting-desc">{user?.displayName || displayStudentId(user?.username) || "未登录"}</div>
           </div>
           <button className="btn" onClick={() => void logout()}>
             退出登录

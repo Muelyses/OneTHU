@@ -91,7 +91,6 @@ export function WasherTab({
     void loadGroups();
   }, [loadGroups]);
 
-
   /* 深链：设备列表就绪后高亮并滚动到目标设备 */
   useEffect(() => {
     if (dState !== "ready" || !deepMachine) return;
@@ -139,11 +138,6 @@ export function WasherTab({
       }
     }
   }, [groups, gState, deepBuildingId, wantProvider, loadDevices]);
-
-
-  if (status === "demo") {
-    return <Empty text="演示模式不提供洗衣机数据，登录后可查看宿舍楼设备状态。" />;
-  }
 
   return (
     <>

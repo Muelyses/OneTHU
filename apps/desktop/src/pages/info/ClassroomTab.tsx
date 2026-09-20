@@ -168,10 +168,6 @@ export function ClassroomTab({
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [rState, rows, deepRoom]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供空教室数据，登录后可查询本周空闲教室。" />;
-  }
-
   return (
     <>
       <SectionHead

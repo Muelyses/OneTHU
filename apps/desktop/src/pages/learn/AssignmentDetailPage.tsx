@@ -20,7 +20,8 @@ type DescState = "idle" | "skip" | "loading" | "ok" | "error";
 
 export function AssignmentDetailPage() {
   useLearnNavSemester();
-  const { navParams, status } = useApp();
+  const { navParams } = useApp();
+
   const { data, state, error, reload } = useLearnData();
   const [desc, setDesc] = useState("");
   const [descState, setDescState] = useState<DescState>("idle");
@@ -74,10 +75,6 @@ export function AssignmentDetailPage() {
   // 附件懒加载：只存在于作业详情 HTML 页（列表/detail JSON 均不含）
   useEffect(() => {
     if (!h || pageState !== "idle") return;
-    if (status === "demo") {
-      setPageState("skip"); // 演示模式不打真实接口
-      return;
-    }
     setPageState("loading");
     learn
       .getHomeworkPageDetail(courseId, h.id)
@@ -89,7 +86,7 @@ export function AssignmentDetailPage() {
         setPageError(explainNetworkError(err));
         setPageState("error");
       });
-  }, [h, pageState, courseId, status]);
+  }, [h, pageState, courseId]);
 
   const downloadAtt = async (a: LearnAttachment) => {
     setDlBusy(a.id || a.downloadUrl);
@@ -304,7 +301,7 @@ export function AssignmentDetailPage() {
         </Card>
       ) : null}
 
-      {(pageState !== "idle" && pageState !== "skip") || attFound.length ? (
+      {(pageState !== "idle") || attFound.length ? (
         <Card className="detail-sec">
           <div className="detail-sec-head">附件</div>
           {pageState === "loading" ? <div className="detail-meta">正在解析附件…</div> : null}

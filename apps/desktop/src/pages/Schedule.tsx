@@ -311,7 +311,7 @@ export function SchedulePage() {
   const winRetryRef = useRef<{ key: string; count: number }>({ key: "", count: 0 });
   const windowKey = `${ymdOf(viewWindow[0])}_${ymdOf(viewWindow[1])}`;
   useEffect(() => {
-    if (mode !== "timetable" || status === "demo") return; // 列表自取月窗；demo 退 campus 数据
+    if (mode !== "timetable") return; // 列表自取月窗
     let alive = true;
     setWinLoading(true);
     setWinError(null);
@@ -544,7 +544,6 @@ export function SchedulePage() {
       setMsg(`同步失败：${err instanceof Error ? err.message : String(err)}`);
     }
   };
-
 
   /** 手动推一次系统日历：原生直写（Android/macOS；自动跟随在设置页开启），否则 .ics 快照导入 */
   const onSystemCal = async (): Promise<void> => {

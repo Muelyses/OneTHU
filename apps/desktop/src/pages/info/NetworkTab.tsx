@@ -194,10 +194,6 @@ export function NetworkTab() {
     [load],
   );
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供校园网数据，登录后可尝试查询账号与流量。" />;
-  }
-
   return (
     <>
       <SectionHead title="校园网" aside="usereg 自服务 · 验证码登录" />

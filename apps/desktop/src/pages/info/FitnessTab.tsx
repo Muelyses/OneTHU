@@ -40,10 +40,6 @@ export function FitnessTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供体测数据，登录后可查看体质测试成绩。" />;
-  }
-
   return (
     <>
       {state === "error" ? (

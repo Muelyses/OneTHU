@@ -55,7 +55,7 @@ function Routed() {
 
   // learnX 式后台更新：登录后每 30 分钟静默重拉 learn 数据（作业 DDL/提交状态
   // 变化 → 日历同步、灵动岛文案、挂载中的页面自动跟进）；启动 90 秒后先来一轮，
-  // 不用等满 30 分钟。demo 模式数据是静态的，不刷。
+  // 不用等满 30 分钟，前台恢复即刷。
   useEffect(() => {
     if (status !== "ready") return;
     const kick = setTimeout(() => void refreshLearnDataSilently(), 90_000);
@@ -124,7 +124,7 @@ function Routed() {
       {body}
       <PluginBridge />
       <NotifyBridge />
-      {(status === "ready" || status === "demo") && <ChatDock />}
+      {(status === "ready") && <ChatDock />}
       <FilePreviewHost />
       <ToastHost />
     </>

@@ -19,6 +19,7 @@ import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
 const SAVE_FINGER_URL = "https://id.tsinghua.edu.cn/b/doubleAuth/personal/saveFinger";
 import { InfoHelper, roam } from "@onethu/info-lib";
+import { withPrivacy } from "./privacy.js";
 import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
 
 let initialized = false;
@@ -139,7 +140,7 @@ export function initInfoLib(): InfoHelper {
 }
 
 /** InfoHelper 单例（userId/password/fingerGenPrint 驻留内存，供静默重登免 2FA） */
-export const helper = new InfoHelper();
+export const helper = withPrivacy(new InfoHelper(), "helper");
 
 /* ═══════════════ 2FA futures：lib 同步 hooks ⇄ OneTHU 两段式 UI ═══════════════ */
 

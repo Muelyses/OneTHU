@@ -92,10 +92,6 @@ export function CourseInfoTab() {
     }
   }, []);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供课程共享查询，登录后可搜索全校开课的上课地点。" />;
-  }
-
   return (
     <>
       <SectionHead

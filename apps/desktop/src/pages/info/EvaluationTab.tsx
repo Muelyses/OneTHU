@@ -39,10 +39,6 @@ export function EvaluationTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供教学评估数据，登录后可查看问卷进度。" />;
-  }
-
   const pending = (rows ?? []).filter((r) => !r[1]).length;
 
   return (

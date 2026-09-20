@@ -51,10 +51,6 @@ export function HygieneTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供卫生成绩数据，登录后可查看宿舍卫生检查成绩。" />;
-  }
-
   return (
     <>
       <SectionHead title="宿舍卫生成绩" aside="家园网 myhome · 卫生检查成绩单" />

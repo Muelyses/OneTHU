@@ -15,7 +15,6 @@ import { useApp } from "../../state/context.js";
 import { softRecover } from "../../lib/reload.js";
 import { cacheGet, cacheSet } from "../../state/cache.js";
 
-
 function logErr(tag: string, err: unknown): void {
   void logLine(
     "PAGE-ERR " + tag + " " + (err instanceof Error ? err.message : String(err)),
@@ -148,10 +147,6 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
     el.classList.add("fav-dl-flash");
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [deepSection]);
-
-  if (status === "demo") {
-    return <Empty text="演示模式不提供宿舍数据，登录后可查询电费与订水。" />;
-  }
 
   return (
     <>

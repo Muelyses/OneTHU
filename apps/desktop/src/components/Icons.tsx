@@ -118,13 +118,6 @@ export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const IconDemo = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M12 3 4 7v6c0 4.4 3.4 7.4 8 8 4.6-.6 8-3.6 8-8V7z" />
-    <path d="m9 12 2 2 4-4.5" />
-  </svg>
-);
-
 export const IconChevron = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="m9 5 7 7-7 7" />
@@ -228,7 +221,6 @@ export const IconStar = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
 /* ══════════ 收藏夹图标库（FavFolder.icon 键名持久化；未知键回退默认文件夹） ══════════ */
 
 export const FOLDER_ICONS: Record<string, (p: SVGProps<SVGSVGElement>) => ReactElement> = {
@@ -259,7 +251,6 @@ export const IconPlug = (p: SVGProps<SVGSVGElement>) => (
     <path d="M9 7.2V3.4M15 7.2V3.4M6.8 7.2h10.4v3.9a5.2 5.2 0 0 1-5.2 5.2 5.2 5.2 0 0 1-5.2-5.2V7.2ZM12 16.3v4.3" />
   </svg>
 );
-
 
 export function FolderIcon({ name, ...rest }: { name?: string } & SVGProps<SVGSVGElement>) {
   const C = (name && FOLDER_ICONS[name]) || IconFolder;

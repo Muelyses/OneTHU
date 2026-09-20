@@ -53,7 +53,7 @@ export interface ThemeSnapshot {
   systemDark: boolean;
 }
 
-/* ---------- 内置主题（令牌覆盖演示五种气质；全部可删） ---------- */
+/* ---------- 内置主题（令牌覆盖五种气质；全部可删） ---------- */
 
 const BUILTIN_THEMES: ThemeDef[] = [
   {

@@ -74,10 +74,6 @@ export function ScheduleAgenda({
 
   // 翻月拉取该月课程/考试（失败静默：云日程仍显示，课程点标退化为 campus 窗口）
   useEffect(() => {
-    if (status === "demo") {
-      setMonthSchedule(null);
-      return;
-    }
     let alive = true;
     const first = new Date(monthAnchor.getFullYear(), monthAnchor.getMonth(), 1);
     const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);

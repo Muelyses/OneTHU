@@ -172,7 +172,7 @@ export interface PluginContext {
 
 export interface OnethuApi {
   session: {
-    /** "booting"|"connecting"|"2fa"|"logged-out"|"ready"|"demo" */
+    /** "booting"|"connecting"|"2fa"|"logged-out"|"ready" */
     status(): string;
     /** 当前登录名（学号/用户名；未登录 null） */
     username(): string | null;

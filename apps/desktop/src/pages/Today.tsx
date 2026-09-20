@@ -397,7 +397,7 @@ export function TodayPage() {
   );
 
   /** 今天的日程事件：有 date 按 date 精确匹配（数据窗口跨 3 周不会重复），
-   *  无 date（demo）退回 dayOfWeek；按开始时间升序 */
+   *  无 date 退回 dayOfWeek；按开始时间升序 */
   const todayEvents = useMemo<ScheduleEntry[]>(() => {
     const wd = now.getDay() === 0 ? 7 : now.getDay();
     const today = ymd(now);

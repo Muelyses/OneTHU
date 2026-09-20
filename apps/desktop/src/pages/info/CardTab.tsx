@@ -224,7 +224,6 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
 /* --------------------------------- 主组件 --------------------------------- */
 
 export function CardTab({ active = true }: { active?: boolean }) {
-  const { status } = useApp();
   const { data, state, error, reload } = useCard(30);
   const [rchOpen, setRchOpen] = useState(false);
   // 切回本栏时若上次报错（如会话过期）则自动重试一次，不再让用户手动点刷新
@@ -255,11 +254,9 @@ export function CardTab({ active = true }: { active?: boolean }) {
                 {data?.info.cardStatus ? ` · ${data.info.cardStatus}` : ""}
               </div>
             </div>
-            {status !== "demo" ? (
-              <button className="btn btn-primary" style={{ marginLeft: "auto", height: 30 }} onClick={() => setRchOpen(true)}>
-                充值
-              </button>
-            ) : null}
+            <button className="btn btn-primary" style={{ marginLeft: "auto", height: 30 }} onClick={() => setRchOpen(true)}>
+              充值
+            </button>
           </div>
           <div className="card-hero-meta">
             <span>卡号 {data?.info.cardId || "–"}</span>

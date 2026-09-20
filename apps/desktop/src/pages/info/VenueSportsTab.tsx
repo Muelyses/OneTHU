@@ -104,7 +104,6 @@ const VENUE_HOME_URL = "https://www.sports.tsinghua.edu.cn/venue/index.html#/hom
 const venueWebUrl = (sceneUuid: string) =>
   `https://www.sports.tsinghua.edu.cn/venue/index.html#/reserveList?uuid=${encodeURIComponent(sceneUuid)}`;
 
-
 type LoadState = "idle" | "loading" | "error" | "ready";
 
 /** 分 → 元展示（chargingUnitPrice 为分；0/undefined → 免费） */
@@ -586,10 +585,6 @@ export function VenueSportsTab({
     }
     return groups;
   }, [rows, timeFilter]);
-
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供体育场馆预约，登录后可用。" />;
-  }
 
   /* —— 维护窗口：不碰任何网络/登录，直出维护卡（窗口结束自动回到正常流程） —— */
   if (maintain) {

@@ -40,11 +40,14 @@ OneTHU 是对 thu-info-app / learnX / NextTHUxk 的完全重构：统一身份�
 ## 下载与上手
 
 安装包见 [Releases](https://github.com/smartThise/OneTHU/releases)：macOS DMG / Windows EXE / Android APK；
-也可以从 [官网](https://onethu.github.io/) 进入（含功能总览、**实时同步的插件市场**与设计令牌全貌）。
+也可以从 [官网](https://onethu.github.io/) 进入（含功能总览与**实时同步的插件市场**）。
 
 1. 安装后用清华统一认证账号登录（支持双因素认证）；
-2. 也可以在登录页进入**演示模式**先行体验界面；
-3. 数据异常时点右下角**刷新按钮**重试。如果有问题，请及时在 Issue 中提出。
+2. 数据异常时点右下角**刷新按钮**重试。如果有问题，请及时在 Issue 中提出。
+
+需要在不暴露真实姓名 / 学号 / 成绩的前提下演示界面时，用 `demo` 分支构建的
+**OneTHU Demo**（脱敏版：登录与正式版完全一致，姓名与学号替换为化名、成绩为编造成绩，
+课表 / 洗衣机 / 教室等非敏感数据仍为真实数据）。
 
 ## 使用边界与声明
 
@@ -78,7 +81,7 @@ pnpm install      # workspace 全量装依赖
 ### 日常开发
 
 ```bash
-pnpm dev                                  # 纯浏览器预览（Vite dev server，登录页可进"演示模式"先行体验）
+pnpm dev                                  # 纯浏览器预览（Vite dev server；浏览器直连校园网受 CORS 限制）
 pnpm --filter @onethu/desktop tauri:dev   # 原生桌面壳开发模式（Tauri 2，改前端即时热更）
 ```
 

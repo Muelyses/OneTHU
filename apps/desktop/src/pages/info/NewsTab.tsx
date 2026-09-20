@@ -6,7 +6,7 @@
  * 增强：
  * ① 搜索栏（300ms 防抖，全局生效：全部新闻/订阅动态两栏都吃同一搜索词）：
  *    「全部新闻」栏服务端 searchNews（thu-info-lib searchNewsList 同端点）优先，
- *    失败/演示态回退本地打分（newsSearch.tsx，SearchPage 加权思路）；「订阅动态」栏
+ *    失败回退本地打分（newsSearch.tsx，SearchPage 加权思路）；「订阅动态」栏
  *    在订阅取数结果内做本地打分检索。命中词高亮。
  * ② 机构订阅（thu-info-app「动态」tab 金标准移植）：
  *    - 订阅条件以服务端为权威（core getNewsSubscriptionList ←
@@ -187,8 +187,6 @@ export function NewsTab({
   /** 订阅源原子深链：条件就绪后切「订阅动态」并选中同名条件（news-src 原子用） */
   deepSubSource?: string;
 } = {}) {
-  const { status } = useApp();
-  const demo = status === "demo";
   const [page, setPage] = useState(1);
   const { data, state, error, reload } = useNews(page, PAGE_SIZE);
   const [detail, setDetail] = useState<DetailState | null>(null);
@@ -277,9 +275,9 @@ export function NewsTab({
     if (items.length > 0) noteAtomCache({ newsItems: items });
   }, [data]);
 
-  /* 服务端搜索优先（演示态跳过）；失败 → fallback，由本地打分兜底 */
+  /* 服务端搜索优先；失败 → fallback，由本地打分兜底 */
   useEffect(() => {
-    if (!query || demo) {
+    if (!query) {
       setServerResults(null);
       setServerState("idle");
       return;
@@ -301,16 +299,16 @@ export function NewsTab({
     return () => {
       alive = false;
     };
-  }, [query, demo]);
+  }, [query]);
 
-  /* 订阅弹层首次打开拉全量可订阅单位（演示态不拉，用已抓取来源演示本地勾选） */
+  /* 订阅弹层首次打开拉全量可订阅单位（服务端权威集） */
   useEffect(() => {
-    if (!subsOpen || demo || sources) return;
+    if (!subsOpen || sources) return;
     info
       .getNewsSourceList()
       .then((rows) => setSources(rows))
       .catch((err: unknown) => setSourcesErr(explainNetworkError(err)));
-  }, [subsOpen, demo, sources, sourcesErr]);
+  }, [subsOpen, sources, sourcesErr]);
 
   /* Esc 关闭订阅弹层（Courses 弹窗同款） */
   useEffect(() => {
@@ -339,7 +337,6 @@ export function NewsTab({
   /* 服务端订阅条件（权威）：挂载即拉并镜像到本地 UI 缓存；失败静默（先用本地缓存）。
    * subsTick 变化（弹层添加/删除成功后触发）即重拉刷新。 */
   useEffect(() => {
-    if (demo) return;
     let alive = true;
     info
       .getNewsSubscriptionList()
@@ -382,17 +379,15 @@ export function NewsTab({
     return () => {
       alive = false;
     };
-  }, [demo, subsTick]);
+  }, [subsTick]);
 
   /* 订阅动态来源 chips：每个订阅条件一个小子菜单（短标签 = 来源名优先，否则条件
-   * 标题/栏目/关键词；key = 条件 id 即 dyid）。「全部」= 全部条件合并；
-   * 演示态回退本地缓存标签。 */
+   * 标题/栏目/关键词；key = 条件 id 即 dyid）。「全部」= 全部条件合并。 */
   const subChips = useMemo(() => {
-    if (demo) return subs.map((label) => ({ id: label, label }));
     return (subsServer ?? [])
       .filter((c) => c.id)
       .map((c) => ({ id: c.id, label: c.source || c.title || c.channel || c.keyword || `#${c.id}` }));
-  }, [demo, subs, subsServer]);
+  }, [subsServer]);
   /** 选中条件 id（「all」= 全部条件合并分页，不传 dyid） */
   const subDyid = subSel === "all" ? undefined : subSel;
   /* 选中条件已被删除（不在 chips 中）→ 回退「全部」并重置分页 */
@@ -406,21 +401,21 @@ export function NewsTab({
   /* 订阅源原子深链：条件就绪后切「订阅动态」并选中同名条件（仅一次） */
   const deepSubApplied = useRef(false);
   useEffect(() => {
-    if (deepSubApplied.current || !deepSubSource || demo) return;
+    if (deepSubApplied.current || !deepSubSource) return;
     const chip = (subsServer ?? []).find((c) => (c.source || c.title || "").trim() === deepSubSource.trim());
     if (!chip || !chip.id) return;
     deepSubApplied.current = true;
     setSeg("subs");
     setSubSel(chip.id);
     setSubPage(1);
-  }, [deepSubSource, demo, subsServer]);
+  }, [deepSubSource, subsServer]);
 
   /* 订阅动态单一分页列表：进入「订阅动态」栏（或翻页/刷新/切 chip/订阅变化）时取数。
    * POST querySubscribeInfomationPageList{currentPage,dyid?}：「全部」不传 dyid =
    * 服务端按该账号全部订阅条件合并返回；选中 chip 传其条件 dyid 精确取该子菜单列表
    * （thu-info-app「动态」tab 同端点），本地不做任何来源过滤 / 逐条件 fan-out。 */
   useEffect(() => {
-    if (demo || activeSeg !== "subs") return;
+    if (activeSeg !== "subs") return;
     let alive = true;
     setSubFeedState("loading");
     setSubFeedErr(null);
@@ -439,17 +434,10 @@ export function NewsTab({
     return () => {
       alive = false;
     };
-  }, [demo, activeSeg, subPage, subFeedTick, subSel, subDyid]);
-
-  /* 演示态无服务端订阅链：回退到已抓取（demo=DEMO_NEWS）内按缓存来源过滤（含来源 chip） */
-  const subSet = useMemo(() => new Set(subs), [subs]);
-  const demoFeed = useMemo(() => {
-    const base = fetchedList.filter((n) => n.source && subSet.has(n.source)).sort(byDateDesc);
-    return subSel === "all" ? base : base.filter((n) => n.source === subSel);
-  }, [fetchedList, subSet, subSel]);
+  }, [activeSeg, subPage, subFeedTick, subSel, subDyid]);
 
   /* 订阅动态栏的搜索：在订阅分页结果内本地打分（服务端搜索无法圈定订阅范围） */
-  const subItems = demo ? demoFeed : (subFeed ?? []);
+  const subItems = subFeed ?? [];
   const subShown = useMemo(
     () =>
       searching
@@ -458,10 +446,9 @@ export function NewsTab({
     [subItems, searching, tokens, plainBump],
   );
   /* thu-info-app 同判据：返回空页 = 到底；非空页即认为还有下一页 */
-  const subCanNext = (demo ? demoFeed.length : (subFeed?.length ?? 0)) > 0;
+  const subCanNext = (subFeed?.length ?? 0) > 0;
 
-  /* 弹层可添加单位：非演示 = 服务端可订阅单位权威集（fbdwnm 需其 id）；
-   * 演示态回退到已抓取新闻中出现过的来源（本地勾选演示） */
+  /* 弹层可添加单位：服务端可订阅单位权威集（fbdwnm 需其 id） */
   const modalSources = useMemo(() => {
     const seen = new Set<string>();
     const rows: NewsSourceRow[] = [];
@@ -471,16 +458,9 @@ export function NewsTab({
       seen.add(name);
       rows.push({ sourceId: r.sourceId || name, sourceName: name });
     };
-    if (demo) {
-      for (const n of fetchedList) {
-        const name = (n.source ?? "").trim();
-        if (name) push({ sourceId: name, sourceName: name });
-      }
-    } else if (sources) {
-      [...sources].reverse().forEach(push);
-    }
+    if (sources) [...sources].reverse().forEach(push);
     return rows;
-  }, [demo, fetchedList, sources]);
+  }, [sources]);
 
   /** 切换订阅动态来源 chip（按条件 id）：重置分页（「全部」= 全部条件合并分页） */
   const selectSubChip = (id: string) => {
@@ -489,18 +469,9 @@ export function NewsTab({
     setSubPage(1);
   };
 
-  /** 仅演示态：本地缓存勾选（无服务端） */
-  const toggleSub = (name: string) => {
-    setSubs((prev) => {
-      const next = prev.includes(name) ? prev.filter((s) => s !== name) : [...prev, name];
-      writeSubs(next);
-      return next;
-    });
-  };
-
-  /** 单位是否已订阅：非演示看服务端条件（source 名命中），演示看本地缓存 */
+  /** 单位是否已订阅：看服务端条件（source 名命中） */
   const unitSubscribed = (name: string): boolean =>
-    demo ? subs.includes(name) : (subsServer ?? []).some((c) => (c.source || "").trim() === name.trim());
+    (subsServer ?? []).some((c) => (c.source || "").trim() === name.trim());
 
   /* 删除一条服务端订阅条件；成功后刷新条件列表（权威镜像缓存）与订阅动态 */
   const removeCondition = async (c: SubCondition): Promise<void> => {
@@ -519,12 +490,8 @@ export function NewsTab({
   };
 
   /* 弹层点选单位：已订阅 → 删掉同名条件；未订阅 → 用单位 id 添加服务端条件。
-   * 成功后刷新条件列表（权威镜像回本地缓存）与订阅动态。演示态只动本地缓存。 */
+   * 成功后刷新条件列表（权威镜像回本地缓存）与订阅动态。 */
   const toggleUnit = async (unit: NewsSourceRow): Promise<void> => {
-    if (demo) {
-      toggleSub(unit.sourceName);
-      return;
-    }
     setOpErr(null);
     const existing = (subsServer ?? []).filter((c) => (c.source || "").trim() === unit.sourceName.trim());
     setOpBusy(unit.sourceId || unit.sourceName);
@@ -790,7 +757,7 @@ export function NewsTab({
               ))
             )}
           </Card>
-          {!demo && !searching ? (
+          {!searching ? (
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 10 }}>
               <button
                 className="btn"
@@ -945,10 +912,8 @@ export function NewsTab({
                   <div style={{ fontSize: 13, fontWeight: 600, margin: "4px 0 8px" }}>
                     我的订阅{subsServer ? `（${subsServer.length}）` : ""}
                   </div>
-                  {!demo && subsServer === null ? <SkeletonRows rows={2} /> : null}
-                  {demo ? (
-                    <Empty text="演示态无服务端订阅，仅本地缓存演示。" />
-                  ) : subsServer && subsServer.length === 0 ? (
+                  {subsServer === null ? <SkeletonRows rows={2} /> : null}
+                  {subsServer && subsServer.length === 0 ? (
                     <Empty text="暂无订阅条件——在下方点选发布单位即可添加。" />
                   ) : subsServer && subsServer.length > 0 ? (
                     <div style={{ marginBottom: 12 }}>
@@ -987,7 +952,7 @@ export function NewsTab({
                   {sourcesErr ? (
                     <ErrorNote text={`可订阅单位列表加载失败：${sourcesErr}`} />
                   ) : null}
-                  {!demo && !sources && !sourcesErr ? <SkeletonRows rows={3} /> : null}
+                  {!sources && !sourcesErr ? <SkeletonRows rows={3} /> : null}
                   {modalSources.length > 0 ? (
                     <div className="chips">
                       {modalSources.map((s) => {
@@ -1009,7 +974,7 @@ export function NewsTab({
                         );
                       })}
                     </div>
-                  ) : sources && !sourcesErr && !demo ? (
+                  ) : sources && !sourcesErr ? (
                     <Empty text="可订阅单位列表为空。" />
                   ) : null}
                 </div>

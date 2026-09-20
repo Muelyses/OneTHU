@@ -90,11 +90,6 @@ export function CourseDetailPage() {
 
   useEffect(() => {
     if (tab !== "groups" || !courseId) return;
-    if (status === "demo") {
-      setGroups([]);
-      setGroupsState("ready");
-      return;
-    }
     const hit = groupsCache;
     if (hit && hit.courseId === courseId && Date.now() - hit.at < GROUPS_CACHE_TTL) {
       setGroups(hit.data);
@@ -256,7 +251,7 @@ export function CourseDetailPage() {
           />
         ) : !groups || groups.length === 0 ? (
           <Card>
-            <Empty text={status === "demo" ? "演示模式暂无分组数据。" : "本课程暂无分组，或课程未开启分组。"} />
+            <Empty text="本课程暂无分组，或课程未开启分组。" />
           </Card>
         ) : (
           <Card className="list">

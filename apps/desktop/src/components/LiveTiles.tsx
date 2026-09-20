@@ -6,7 +6,7 @@
  * - ClassroomRoomToday：教室长卡体 → 今日 6 大节占用总览（chips + 当前节提示）。
  * 数据走 SWR 缓存层（cacheGet 新鲜度 + cacheFetch 单飞）：同楼栋/同楼的
  * 多张收藏卡共享一个请求；洗衣机 60s / 教室列表 10min / 教室状态 3min 新鲜期。
- * 仅登录态（status==="ready"）抓取；demo/未登录渲染 null（方卡回落静态 sub）。
+ * 仅登录态（status==="ready"）抓取；未登录渲染 null（方卡回落静态 sub）。
  * key 解码用本地 split（与 atoms.dec 同一 ~ 分隔语义），避免 atoms ↔ 本件循环引用。
  */
 import { useEffect, useState } from "react";

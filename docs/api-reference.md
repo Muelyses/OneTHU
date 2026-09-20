@@ -71,7 +71,8 @@ return {
 | `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
 | `css` | `registerCss`（注入全局样式，影响整个应用外观；安装时重点确认） |
 | `webview` | `ui.webModal` |
-| `nav` / `ui` | `nav.go` / `nav.searchAtoms` / `nav.openAtom` / `nav.usage` / `nav.clearUsage` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
+| `nav` / `ui` | `nav.go` / `nav.searchAtoms` / `nav.openAtom` / `nav.usage` / `nav.clearUsage` / `ui.*` |
+| `info:read` | `services.search` / `services.open`（在线服务目录，走校园请求） |（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
 | `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染）、`widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback`（读写桌面上每一块小组件显示的内容） |
@@ -516,6 +517,8 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `nav.openAtom(ref)` | `nav` | 打开一个原子（等价用户点收藏夹里那一项：跳功能页 / 切聚合页页签 / 打开官方服务页）；解析不出返回 `false`，不会跳空白页。见 §20 |
 | `nav.usage(limit?)` | `nav` | 本机使用统计：`{total, kinds, top[], recent[]}`（每项含 `kind`/`key`/`title`/`n`/`last`，可直接交给 `nav.openAtom`）。只有本机点击记录，不含任何校园数据；缺省 10 条、上限 30 |
 | `nav.clearUsage()` | `nav` | 清空本机使用统计（用户主动要求时用；**不影响收藏夹**） |
+| `services.search(query, limit?)` | `info:read` | 检索在线服务（服务大厅）目录，返回 `{id,name,department,url}[]`；**会发校园请求**（先校验会话再取目录），只在 `nav.searchAtoms` 本机命中为空时才该调用。容忍口语简称：「亲友预约」能命中「亲友来访预约」。结果顺带写回本机原子缓存 |
+| `services.open(service)` | `info:read` | 在应用内打开服务官方页（桌面独立窗口 / Android 全屏 WebView，与主窗口共享登录态）；`url` 需来自 `search`；打不开返回 `false` |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
 | `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 用户是否确认；`{danger: true}` 走危险操作样式 |

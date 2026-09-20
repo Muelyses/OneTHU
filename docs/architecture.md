@@ -62,6 +62,12 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   以「主题 id 与插件 id 同名」的约定与模块声明的主题 id 兜底匹配。
 - **市场拉取通道**：插件安装/更新与市场名单刷新优先经 GitHub contents API，raw 域名
   降级兜底（缓存语义差异见 [plugin-development.md §8.4](./plugin-development.md)）。
+- **系统通知投递**：规则在 JS 侧算（`state/notifyPlan.ts` 出计划、`notifyScheduler.ts`
+  与原生实际排程对账），原生只做投递——Android 经 `onethu-mobile` 插件落 AlarmManager，
+  macOS 用 `UNUserNotificationCenter`，Windows 用 WinRT toast + `AddToSchedule`。
+  落点（点击通知打开哪一页）由原生存下、应用回前台时取走并导航；macOS 与 Windows 的
+  深链回调分别需要 App delegate 挂钩与 COM 激活器，当前为系统默认行为（见
+  `src/notify_windows.rs` 文件头）。
 
 ## 4. 主题系统
 
@@ -147,6 +153,8 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | SDK 分流测试 | `node --import ./tools/ts-resolve-register.mjs tools/ts-sdk-test.mjs` |
 | 插件 UI 逻辑测试 | `node --import ./tools/ts-resolve-register.mjs tools/plugin-ui-test.mjs` |
 | 主题插件联动测试 | `node --import ./tools/ts-resolve-register.mjs tools/theme-plugin-sync-test.mjs` |
+| Windows 通知模块编译检查 | `cd tools/win-notify-check && cargo check --target x86_64-pc-windows-msvc` |
+| Rust 单测（通知载荷解析等） | `cd apps/desktop/src-tauri && cargo test --lib` |
 | 市场名单解析测试 | `node --import ./tools/ts-resolve-register.mjs tools/market-parse-test.mjs` |
 
 分支约定：开发在 `dev2` 分支，发布时推送至 `dev3`（GitHub 与清华 Git 两个远端）。

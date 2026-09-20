@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 mod notify;
 #[cfg(target_os = "macos")]
 mod notify_macos;
+#[cfg(target_os = "windows")]
+mod notify_windows;
 mod mail;
 mod seafile;
 mod harness_embed;

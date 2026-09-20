@@ -10,12 +10,14 @@
 
 use serde_json::{json, Value};
 
-/// 单条待排通知（JS 侧载荷的子集；桌面端用不到 channel/target）
+/// 单条待排通知（JS 侧载荷的子集；channel 是 Android 特有概念，桌面端忽略）
 struct Item {
     id: String,
     at: i64,
     title: String,
     body: String,
+    /// 点击落点（Windows 写进 toast 的 launch 属性；macOS 暂未接深链）
+    target: String,
 }
 
 fn parse_items(items_json: &str) -> Result<Vec<Item>, String> {
@@ -33,9 +35,38 @@ fn parse_items(items_json: &str) -> Result<Vec<Item>, String> {
             at,
             title: v.get("title").and_then(Value::as_str).unwrap_or("OneTHU").to_string(),
             body: v.get("body").and_then(Value::as_str).unwrap_or_default().to_string(),
+            target: v.get("target").and_then(Value::as_str).unwrap_or_default().to_string(),
         });
     }
     Ok(out)
+}
+
+/// 1601-01-01 → 1970-01-01 的 100 纳秒数（WinRT DateTime 的纪元）
+pub(crate) const EPOCH_DIFF_100NS: i64 = 116_444_736_000_000_000;
+
+/// Unix 毫秒 → WinRT DateTime 的 100 纳秒计数。
+/// 放在这里而不是 notify_windows 里：纯换算，任何平台都能单测（Windows 模块在 macOS 上编不进来）。
+pub(crate) fn dt_from_unix_ms(ms: i64) -> i64 {
+    ms.saturating_mul(10_000).saturating_add(EPOCH_DIFF_100NS)
+}
+
+/// toast XML 文本转义。标题/正文来自课名与作业名，出现 `&`、`<` 是常态
+/// （如「数据结构 & 算法」），漏转义会让整条 toast 载荷非法、静默失败。
+fn xml_escape(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+}
+
+/// WinRT toast 载荷（ToastGeneric）：launch 承载点击落点
+pub(crate) fn toast_xml(title: &str, body: &str, target: &str) -> String {
+    format!(
+        "<toast launch=\"{}\"><visual><binding template=\"ToastGeneric\"><text>{}</text><text>{}</text></binding></visual></toast>",
+        xml_escape(target),
+        xml_escape(title),
+        xml_escape(body)
+    )
 }
 
 fn parse_ids(ids_json: &str) -> Vec<String> {
@@ -46,13 +77,18 @@ fn parse_ids(ids_json: &str) -> Vec<String> {
         .unwrap_or_default()
 }
 
-/// 本机后端类型：macOS 已接（其余桌面平台待接 WinRT toast）
+/// 本机后端类型（前端据此决定是否启动调度链）
 #[cfg(target_os = "macos")]
 pub fn backend() -> String {
     "macos".into()
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "windows")]
+pub fn backend() -> String {
+    "windows".into()
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub fn backend() -> String {
     "none".into()
 }
@@ -115,29 +151,87 @@ pub fn test() -> Value {
     }
 }
 
-/* ── Windows / 其他桌面（下一轮接入 WinRT toast） ── */
+/* ── Windows（WinRT toast + AddToSchedule） ── */
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "windows")]
+pub fn permission(request: bool) -> Value {
+    match crate::notify_windows::status(request) {
+        Ok(granted) => json!({ "ok": true, "granted": granted, "exact": true, "platform": "windows" }),
+        Err(e) => json!({ "ok": false, "granted": false, "exact": false, "reason": e }),
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub fn schedule(items_json: &str) -> Value {
+    let items = match parse_items(items_json) {
+        Ok(v) => v,
+        Err(e) => return json!({ "ok": false, "scheduled": 0, "reason": e }),
+    };
+    let mut scheduled = 0usize;
+    let mut last_err: Option<String> = None;
+    for it in &items {
+        match crate::notify_windows::add(&it.id, it.at, &it.title, &it.body, &it.target) {
+            Ok(()) => scheduled += 1,
+            Err(e) => last_err = Some(e),
+        }
+    }
+    let failed = items.len() - scheduled;
+    json!({
+        "ok": failed == 0,
+        "scheduled": scheduled,
+        "failed": failed,
+        "exact": true,
+        "reason": last_err.unwrap_or_default()
+    })
+}
+
+#[cfg(target_os = "windows")]
+pub fn cancel(ids_json: &str) -> Value {
+    let ids = parse_ids(ids_json);
+    let n = ids.len();
+    crate::notify_windows::cancel(&ids);
+    json!({ "ok": true, "cancelled": n })
+}
+
+#[cfg(target_os = "windows")]
+pub fn pending() -> Value {
+    match crate::notify_windows::pending_ids() {
+        Ok(ids) => json!({ "ok": true, "ids": ids }),
+        Err(e) => json!({ "ok": false, "ids": [], "reason": e }),
+    }
+}
+
+#[cfg(target_os = "windows")]
+pub fn test() -> Value {
+    match crate::notify_windows::test() {
+        Ok(()) => json!({ "ok": true }),
+        Err(e) => json!({ "ok": false, "reason": e }),
+    }
+}
+
+/* ── 其他桌面平台（Linux 等）：无后端 ── */
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub fn permission(_request: bool) -> Value {
     json!({ "ok": false, "granted": false, "exact": false, "reason": "not-implemented-desktop" })
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub fn schedule(_items_json: &str) -> Value {
     json!({ "ok": false, "scheduled": 0, "reason": "not-implemented-desktop" })
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub fn cancel(_ids_json: &str) -> Value {
     json!({ "ok": false, "cancelled": 0, "reason": "not-implemented-desktop" })
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub fn pending() -> Value {
     json!({ "ok": false, "ids": [], "reason": "not-implemented-desktop" })
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub fn test() -> Value {
     json!({ "ok": false, "reason": "not-implemented-desktop" })
 }
@@ -197,6 +291,29 @@ mod tests {
         let ids = parse_ids("[\"a\", 1, null, \"b\"]");
         assert_eq!(ids, vec!["a".to_string(), "b".to_string()]);
         assert!(parse_ids("不是数组").is_empty());
+    }
+
+    #[test]
+    fn xml_escape_covers_common_course_names() {
+        let xml = toast_xml("DDL · 数据结构 & 算法", "第三章 <习题> 「A>B」", "learn");
+        assert!(xml.contains("数据结构 &amp; 算法"));
+        assert!(xml.contains("第三章 &lt;习题&gt;"));
+        assert!(!xml.contains("<习题>"), "未转义会把载荷弄非法");
+        assert!(xml.contains("launch=\"learn\""));
+        assert!(xml.starts_with("<toast") && xml.ends_with("</toast>"));
+    }
+
+    #[test]
+    fn unix_ms_to_winrt_datetime() {
+        // 纪元差值的来历：1601-01-01 → 1970-01-01 共 11_644_473_600 秒，1 秒 = 10^7 个 100ns
+        assert_eq!(EPOCH_DIFF_100NS, 11_644_473_600i64 * 10_000_000);
+        // 1970-01-01T00:00:00Z 落在纪元差值上；1 秒 = 10^7 个单位
+        assert_eq!(dt_from_unix_ms(0), EPOCH_DIFF_100NS);
+        assert_eq!(dt_from_unix_ms(1000) - dt_from_unix_ms(0), 10_000_000);
+        // 单调性 + 不溢出（2100 年附近的时刻仍为正）
+        let a = dt_from_unix_ms(1_789_862_400_000);
+        let b = dt_from_unix_ms(1_789_862_401_000);
+        assert!(b > a && a > EPOCH_DIFF_100NS);
     }
 
     #[test]

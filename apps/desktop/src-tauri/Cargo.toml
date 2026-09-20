@@ -58,6 +58,14 @@ objc2-user-notifications = { version = "0.3", default-features = false, features
   "UNNotificationRequest", "UNNotificationSettings", "UNNotificationTrigger",
 ] }
 
+# Windows 系统通知：WinRT toast（含定时投递 AddToSchedule）。见 src/notify_windows.rs。
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.61", features = [
+  "Foundation", "Foundation_Collections",
+  "Data_Xml_Dom", "UI_Notifications",
+  "Win32_System_Com", "Win32_System_Registry",
+] }
+
 [profile.release]
 strip = true
 lto = true

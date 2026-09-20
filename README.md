@@ -119,8 +119,34 @@ OneTHU 为开发者封装并开放丰富的统一平台调度接口，鼓励开�
 ## 致谢
 
 核心 API 结论分别验证自 [thu-learn-lib](https://github.com/Harry-Chen/thu-learn-lib)、
-[thu-info-app](https://github.com/thu-info-community/thu-info-app)、[learnX](https://github.com/robertying/learnX)，
-向以上项目的长期维护者致敬。OneTHU 为个人使用的整合重构。
+[thu-info-app](https://github.com/thu-info-community/thu-info-app)、[learnX](https://github.com/robertying/learnX)、
+thu-tok-auto、yuketang-helper-auto，向以上项目的长期维护者致敬。OneTHU 为个人使用的整合重构。
+
+- **THU Info App / thu-info-lib**：数据层移植自上游，经 THU Info 团队**邮件授权**在非商业用途下
+  二次分发（授权截止 **2036-12-31**，邮件原文存档于仓库）。
+- **LearnX**：网络学堂子页与部分交互按其实现移植；其许可为 MIT **并附例外条件**（见下）。
+- **thu-tok-auto**、**yuketang-helper-auto**（均为 MIT）：MadModel 与雨课堂侧的接口结论来源。
+
+各项目的许可条件、授权范围与例外条款汇总在 [LICENSES/THIRD-PARTY.md](./LICENSES/THIRD-PARTY.md)。
+
+## 许可
+
+OneTHU 自有代码以 **MIT** 许可开源（见 [LICENSE](./LICENSE)），**并附两条限制**：
+
+1. **严禁商业用途**；
+2. **严禁用于对清华大学信息服务的攻击性访问**——包括编写或运行抢课、体育场馆/图书馆座位等
+   自动预约提交的插件或脚本、高频批量请求、以及任何规避校方风控与身份校验的行为。
+
+违反任一条，授权立即终止。第三方组件适用其自带许可，其中两点需特别注意：
+
+| 来源 | 许可与限制 |
+|---|---|
+| [THU Info App / thu-info-lib](https://github.com/thu-info-community/thu-info-app) | 上游 BSL 1.1；THU Info 团队邮件授权 OneTHU **非商业用途**二次分发，**截止 2036-12-31** |
+| [LearnX](https://github.com/robertying/learnX) | MIT，但**附带例外**：若您过去或现在任职清华大学信息化技术中心，或您的项目受任何与清华有关的机构资助，则未经授权的使用（含拷贝、修改、再分发，无论是否商用）视为侵权 |
+| thu-tok-auto / yuketang-helper-auto | MIT |
+| cheerio·iconv-lite·sm-crypto·mammoth·xlsx·katex 等 | 各自自带许可（MIT / Apache-2.0 等） |
+
+完整条款见 [LICENSES/THIRD-PARTY.md](./LICENSES/THIRD-PARTY.md)。
 
 ## 版本
 

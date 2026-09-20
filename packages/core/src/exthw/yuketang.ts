@@ -485,6 +485,11 @@ export interface YkProblem {
   allowResults: string[];
   /** 本题重交上限（content.max_retry / problems[].max_retry；缺失 0=不可重交，保守） */
   maxRetry: number;
+  /** R20-C1：本题剩余可提交次数（web 端 `left_times` 同口径，R20-C1 侦查）——
+   *  `user.count - user.my_count`，仅 `count>0`（有明确次数上限）时给；`count<=0`/缺失
+   *  = 不限次（web 端置 999），此时**不设**（undefined = 不限/未知，调用方不得当作 0）。
+   *  仅用于「未超 max_retry」资格判定；真实拦截仍以官方作答页为准。 */
+  remainingRetries?: number;
   myStatus: YkMyStatus;
   /** 仅「已批改」且为有效数字（非 -1 占位）时给——避免未出分显示 0 */
   myScore?: number;
@@ -616,6 +621,12 @@ function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: numbe
   };
   const options = content["Options"];
   if (Array.isArray(options)) problem.options = options as unknown[];
+  // R20-C1：剩余重交次数（web `left_times` 同口径）——count>0 才给（count<=0 = 不限次，
+  // web 端置 999；这里不设，避免把「不限」误判成 0 次）。my_count 缺失按 0（尚未提交）。
+  const retryCount = user ? toNum(user["count"]) : undefined;
+  if (retryCount !== undefined && retryCount > 0) {
+    problem.remainingRetries = retryCount - (toNum(user?.["my_count"]) ?? 0);
+  }
   // 得分仅「已批改」且为有效数字（非 -1 占位，R16 21.1）时给
   const myScoreRaw = user ? user["my_score"] : undefined;
   const myScore = toNum(myScoreRaw);

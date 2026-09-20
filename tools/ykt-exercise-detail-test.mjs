@@ -7,7 +7,9 @@
  *    answer_count / font → fontUrl
  *  - 单题映射：problem_id（String 化）/ index / content{ ProblemType, TypeText, Body,
  *    Options, AllowResults, score, max_retry } / user{ my_answer.content, remark,
- *    comment[], my_score, status }
+ *    comment[], my_score, status, count, my_count }
+ *  - R20-C1 剩余重交次数：user.count>0 → remainingRetries = count - my_count（缺省 0）；
+ *    count<=0/缺失 → 不设（不限/未知，web 端置 999，不得当 0）
  *  - 三态（保守）：status 4=已批改 / 3=已交未批 / 无 user 或（无显式 status 且
  *    answer_count=0 无作答痕迹）→ 未答
  *  - 得分透出条件：仅「已批改」且为有效数字（含真实 0 分）；-1 / "-1.00" 占位、
@@ -174,12 +176,14 @@ console.log("\n[1] 快照归一化（exercise 级 + 单题字段映射）");
   eq(p1.myStatus, "graded", "status 4 → graded");
   eq(p1.myScore, 2, '已批改 + my_score "2.00" → myScore 2（字符串数字）');
   eq(p1.myAnswerHtml, "<p>B</p>", "my_answer.content → myAnswerHtml");
+  eq(p1.remainingRetries, 1, "user.count=1（my_count 缺省 0）→ remainingRetries 1");
   eq(p1.remark, undefined, "空 remark 不设");
   eq(p1.comments, undefined, "空 comment[] 不设");
 
   const p2 = d.problems[1];
   eq(p2.myStatus, "submitted", "status 3 → submitted");
   eq(p2.myScore, undefined, '已交未批 + my_score "-1.00" 占位 → 不透出');
+  eq(p2.remainingRetries, undefined, "无 user.count → remainingRetries 不设（不限/未知）");
   eq(p2.myAnswerHtml, "<p>我的作答（脱敏）</p>", "myAnswerHtml 透传");
   eq(p2.remark, "注意结合课程内容作答", "remark 透传");
   deepEq(
@@ -195,6 +199,7 @@ console.log("\n[1] 快照归一化（exercise 级 + 单题字段映射）");
   eq(p3.myStatus, "unanswered", "无 user → unanswered");
   eq(p3.myAnswerHtml, undefined, "未答不给 myAnswerHtml");
   eq(p3.myScore, undefined, "未答不给 myScore");
+  eq(p3.remainingRetries, undefined, "无 user → remainingRetries 不设");
   deepEq(p3.allowResults, [], "缺 AllowResults → []");
   eq(p3.maxRetry, 0, "缺 content.max_retry → 0（保守）");
   deepEq(p3.options, [], "Options: [] → 空数组透传");
@@ -302,6 +307,19 @@ console.log("\n[4] 缺字段容错（不崩，给默认值）");
     { match: (u) => u.includes("/get_exercise_list/6002/"), body: { data: { problems: [{ content: {} }, {}] } } },
     { match: (u) => u.includes("/get_exercise_list/6003/"), body: { data: { max_retry: "2", problems: [] } } },
     { match: (u) => u.includes("/get_exercise_list/6004/"), body: { data: { font: null, name: null } } },
+    {
+      match: (u) => u.includes("/get_exercise_list/6005/"),
+      body: {
+        data: {
+          problems: [
+            { content: {}, user: { count: 3, my_count: 3 } },
+            { content: {}, user: { count: 0, my_count: 0 } },
+            { content: {}, user: { count: "2", my_count: "1" } },
+            { content: {}, user: { count: 1 } },
+          ],
+        },
+      },
+    },
   ]);
   const src = createYuketangSource({ cookie: "s=1" }, fetchLike, 30);
 
@@ -333,6 +351,13 @@ console.log("\n[4] 缺字段容错（不崩，给默认值）");
   const d4 = await src.getExerciseDetail("6004", "77");
   eq(d4.fontUrl, undefined, "font:null → fontUrl 不设");
   eq(d4.name, "", "name:null → 空串");
+
+  // R20-C1：剩余重交次数口径（web left_times 同款；count<=0 = 不限次不设）
+  const d5 = await src.getExerciseDetail("6005", "77");
+  eq(d5.problems[0].remainingRetries, 0, "count=3 my_count=3 → remainingRetries 0（已用完）");
+  eq(d5.problems[1].remainingRetries, undefined, "count=0 → 不设（不限次，web 端置 999）");
+  eq(d5.problems[2].remainingRetries, 1, 'count="2" my_count="1"（字符串数字）→ 1');
+  eq(d5.problems[3].remainingRetries, 1, "count=1 my_count 缺省 → 1（缺省按 0）");
 }
 
 /* ───────────────── [5] 异常（带上下文抛错） ───────────────── */

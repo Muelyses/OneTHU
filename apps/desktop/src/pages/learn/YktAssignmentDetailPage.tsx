@@ -23,6 +23,14 @@
  *  - 试卷（kind exam / 源 type 20）同样只读，无提交相关 UI；
  *  - 题型 9（外链 OJ）只显示外链跳转（externalUrl → 系统浏览器），不渲染作答区。
  *
+ * R20-C1（本阶段）：详情页新增「作答 / 提交」入口，仅在资格判定
+ * （lib/yktDetail.ts yktSubmitEligibility 纯函数）通过时渲染——未过截止（已过则须
+ * 允许补交且未过补交截止）∧ 未超 max_retry；试卷（exam / type 20 / 6）与全外链题
+ * （题型 9）永不出口（红线）。点击 → 应用内二次确认 → 应用内 WebView 打开 R16b
+ * 学生端直链并注入当前会话 Cookie（lib/yktSubmitWebview.ts，桌面 Rust 窗口 /
+ * 移动 Dialog WebView）；官方页内的确认与拦截原样保留，不替代、不绕过；关闭/返回后
+ * 立即重新拉取真实状态（禁止乐观更新）。
+ *
  * 题干渲染（R20-B3）：题干 / 我的作答 / 作业说明统一走 components/exthw/ProblemBody——
  * 本地内联沙箱文档（sandbox srcdoc iframe）：xuetangx-com-encrypted-font 加密字体经
  * loadYktFont 下载缓存（7 天 TTL / 失败 10min 退避 / magic 校验）挂 @font-face，
@@ -38,7 +46,9 @@ import { ProblemBody } from "../../components/exthw/ProblemBody.js";
 import { useApp } from "../../state/context.js";
 import { fetchYktExerciseDetail, getYktCookie } from "../../state/exthw.js";
 import { explainNetworkError } from "../../lib/transport.js";
+import { confirmOk } from "../../lib/confirm.js";
 import { openExternalHomework } from "../../lib/extHwBrowse.js";
+import { openYktSubmitWebview } from "../../lib/yktSubmitWebview.js";
 import { openExternal } from "../info/openExternal.js";
 import {
   dedupeYktRemarks,
@@ -47,6 +57,7 @@ import {
   yktIsExternalLinkProblem,
   yktScoreText,
   yktStatusChip,
+  yktSubmitEligibility,
   yktTypeText,
 } from "../../lib/yktDetail.js";
 
@@ -141,6 +152,9 @@ export function YktAssignmentDetailPage() {
   const [state, setState] = useState<LoadState>("loading");
   const [errMsg, setErrMsg] = useState("");
   const [tick, setTick] = useState(0);
+  // R20-C1：官方作答页拉起中 / 拉起失败提示（失败不静默吞，给重试）
+  const [submitBusy, setSubmitBusy] = useState(false);
+  const [submitErr, setSubmitErr] = useState("");
 
   const leafTypeId = ykt?.leafTypeId ?? "";
   const classroomId = ykt?.classroomId ?? "";
@@ -188,11 +202,43 @@ export function YktAssignmentDetailPage() {
   const meta = `${ykt.courseName || "雨课堂"}${ykt.deadline ? ` · ${ykt.deadline} 截止` : ""}`;
   const summary = yktExerciseSummary(detail?.problems ?? []);
   const left = timeLeft(ykt.deadline ?? "");
+  // R20-C1：作答/提交入口资格（纯函数；试卷 / 全外链题 / 过截止 / 超次数 → 不出口）
+  const eligibility = yktSubmitEligibility({
+    kind: ykt.kind,
+    deadline: ykt.deadline,
+    lateAllowed: detail?.lateAllowed,
+    lateDeadline: detail?.lateDeadline,
+    maxRetry: detail?.maxRetry,
+    problems: detail?.problems,
+  });
   // R20-B3：题干渲染的资源通道 Cookie（未登录为空串，字体/图片侧自然降级）
   const yktCookie = getYktCookie();
   const openInWeb = (): void => {
     // R20-A 通道（分流在 openExternalHomework）：桌面 = 系统浏览器；移动 = 应用内桌面模式 WebView
     if (ykt.externalUrl) void openExternalHomework(ykt.externalUrl);
+  };
+  /** R20-C1：二次确认 → 应用内 WebView 打开官方作答页 → 关闭后重拉真实状态（禁止乐观更新）。 */
+  const openSubmit = async (): Promise<void> => {
+    const url = ykt.externalUrl;
+    if (!url || submitBusy) return;
+    const ok = await confirmOk(
+      "将打开雨课堂官方作答页完成提交。\n\n页面内是雨课堂官方提交逻辑（含其自身的截止/次数校验与二次确认），请在其中确认后提交；关闭或返回后本页会自动刷新真实状态。",
+    );
+    if (!ok) return;
+    setSubmitBusy(true);
+    setSubmitErr("");
+    try {
+      // 当前会话 Cookie 仅作 invoke 参数内存传递（不打印 / 不落盘）
+      await openYktSubmitWebview(url, getYktCookie());
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setSubmitErr(msg);
+      void invoke("log_debug", { line: `R20-C1 打开官方作答页失败: ${msg.slice(0, 300)}` }).catch(() => undefined);
+    } finally {
+      setSubmitBusy(false);
+      // 关闭/返回后立即重新拉取真实状态（禁止乐观更新）
+      setTick((t) => t + 1);
+    }
   };
 
   let body: ReactNode;
@@ -224,9 +270,12 @@ export function YktAssignmentDetailPage() {
             ) : null}
             <span className={`chip ${summary.chip.cls}`}>{summary.chip.text}</span>
             {ykt.kind === "exam" ? (
-              <span className="tag-exam" title="试卷（B2 只读，无提交入口）">考试</span>
+              <span className="tag-exam" title="试卷（永不提供提交入口）">考试</span>
             ) : null}
           </div>
+          {eligibility.eligible ? (
+            <div className="detail-meta">提交将通过应用内官方作答页完成（雨课堂官方确认 / 拦截原样保留）。</div>
+          ) : null}
         </Card>
 
         <Card className="detail-sec">
@@ -272,7 +321,8 @@ export function YktAssignmentDetailPage() {
           </Card>
         ) : null}
 
-        {/* 题目列表（B2 只读；提交入口属 R20-C，此处永不渲染） */}
+        {/* 题目列表（原生只读；R20-C1 的提交入口是页级「作答 / 提交」按钮，
+            逐题原生作答输入属 R20-C2，此处永不渲染） */}
         {d.problems.length === 0 ? (
           <Card>
             <Empty text="本作业暂无题目明细（可能接口未返回 problems）。" />
@@ -292,6 +342,16 @@ export function YktAssignmentDetailPage() {
         actions={
           <>
             <BackButton to={from} />
+            {eligibility.eligible && ykt.externalUrl ? (
+              <button
+                className="btn btn-primary"
+                disabled={submitBusy}
+                onClick={() => void openSubmit()}
+                title="应用内打开雨课堂官方作答页（官方提交逻辑原样保留）"
+              >
+                {submitBusy ? "作答页已打开…" : "作答 / 提交"}
+              </button>
+            ) : null}
             {ykt.externalUrl ? (
               <button className="btn" onClick={openInWeb} title="桌面 = 系统浏览器打开官方页；移动 = 应用内桌面模式 WebView（R20-A 通道）">
                 浏览器打开
@@ -300,6 +360,11 @@ export function YktAssignmentDetailPage() {
           </>
         }
       />
+      {submitErr ? (
+        <Card>
+          <ErrorNote text={`打开官方作答页失败：${submitErr}`} onRetry={() => void openSubmit()} />
+        </Card>
+      ) : null}
       {body}
     </>
   );

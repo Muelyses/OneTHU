@@ -216,3 +216,103 @@ export function dedupeYktRemarks(p: YktRemarkLike): YktRemarkView {
     ...(out.length > 0 ? { comments: out } : {}),
   };
 }
+
+/* ── R20-C1：作答 / 提交入口资格判定（纯函数） ──────────────────────────────
+ *
+ * 本阶段入口只做一件事：把用户拉进**雨课堂官方作答页**（应用内 WebView），提交
+ * 仍由官方页逻辑完成。资格判定只决定「详情页要不要渲染入口」，不替代/不绕过官方页
+ * 内的任何确认与拦截（官方页自己还会再判截止、次数、确认弹窗）。
+ *
+ * 判定口径（输入只用详情页已有数据 + 列表行截止时间，零新增 IO）：
+ *  1. 红线：试卷（kind=exam / 活动 type 20；type 6 为旧 /subject 链接的试卷别名）
+ *     永远不出入口；全为题型 9（外链 OJ）也不出（站内/官方作业页没有可作答内容）；
+ *  2. 时间窗：未过截止放行；已过截止必须「允许补交」（is_allowed_late_submission）
+ *     且未过补交截止 —— 即霖要求的三条件里「未过截止 ∧ 允许迟交」的落地口径
+ *     （允许迟交是**补交分支**的门，不否定正常按时提交）；
+ *  3. 未超 max_retry：每题有 `remainingRetries`（core R20-C1 新透出，web left_times
+ *     同口径）时，只有**所有题**都明确剩余 0 次才算超；`undefined` = 不限/未知，不拦。
+ *     题目都没有次数信息时用整卷 `maxRetry` 兜底：0（不可重交）且全部题已提交 → 超。
+ *
+ * 真实拦截永远在官方页内（本函数只做入口显隐，宁可多给一次入口也不误藏）。
+ */
+
+/** 资格判定输入（problems 传 YkProblem 子集即可，测试可传普通对象） */
+export interface YktSubmitEligibilityInput {
+  /** 作业类型（列表行 kind；exam = 试卷 → 红线） */
+  kind?: "homework" | "exam";
+  /** 活动源 type（19 作业 / 20 试卷；6 为旧 /subject 链接的试卷别名）——与 kind 双保险 */
+  sourceType?: number;
+  /** 题目列表（题型 / 剩余重交次数 / 三态） */
+  problems?: ReadonlyArray<Pick<YkProblem, "type" | "remainingRetries" | "myStatus">>;
+  /** 截止时间 "YYYY-MM-DD HH:MM"（列表行 deadline；缺失/不可解析 = 无截止约束） */
+  deadline?: string;
+  /** 是否允许补交（detail.lateAllowed） */
+  lateAllowed?: boolean;
+  /** 补交截止 "YYYY-MM-DD HH:MM"（detail.lateDeadline；缺失 = 允许补交即放行） */
+  lateDeadline?: string;
+  /** 整卷重交上限（detail.maxRetry；仅在题目无 per-problem 次数信息时兜底） */
+  maxRetry?: number;
+  /** 当前时间（ms；注入便于测试，缺省 Date.now()） */
+  now?: number;
+}
+
+/** 入口不可渲染的原因（eligible=false 时给，供诊断 / 单测断言） */
+export type YktSubmitBlockReason =
+  | "exam" // 红线：试卷
+  | "no-problems" // 无题目明细（详情未回 / 接口缺 problems）
+  | "external-only" // 红线：全为题型 9（外链 OJ）
+  | "deadline" // 已过截止且不允许补交 / 已过补交截止
+  | "retry-exhausted"; // 已无重交次数
+
+export interface YktSubmitEligibility {
+  eligible: boolean;
+  reason?: YktSubmitBlockReason;
+  /** 剩余重交次数（仅所有题都有次数信息时给；undefined = 不限/未知）——展示用 */
+  remainingRetries?: number;
+}
+
+/** "YYYY-MM-DD HH:MM" / "YYYY/MM/DD HH:MM" / ISO "YYYY-MM-DDTHH:MM" → 本地毫秒；
+ *  不可解析（缺省 / 垃圾串）→ undefined（调用方按「无约束」处理，不误判已过期）。 */
+export function parseYktLocalTime(s: string | undefined): number | undefined {
+  if (typeof s !== "string") return undefined;
+  const m = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})[ T](\d{1,2}):(\d{2})/.exec(s.trim());
+  if (!m) return undefined;
+  const t = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4]), Number(m[5])).getTime();
+  return Number.isFinite(t) ? t : undefined;
+}
+
+/** 作答 / 提交入口资格判定（纯函数，零依赖；口径详见上方说明） */
+export function yktSubmitEligibility(input: YktSubmitEligibilityInput): YktSubmitEligibility {
+  // 红线 1：试卷（kind=exam / 活动 type 20 / 旧链接别名 6）永不出口
+  if (input.kind === "exam" || input.sourceType === 20 || input.sourceType === 6) {
+    return { eligible: false, reason: "exam" };
+  }
+  const problems = input.problems ?? [];
+  if (problems.length === 0) return { eligible: false, reason: "no-problems" };
+  // 红线 2：全为题型 9（外链 OJ）——官方作业页也没有可作答内容
+  if (problems.every((p) => p.type === 9)) return { eligible: false, reason: "external-only" };
+  // 未超 max_retry：所有题都有次数信息且全部 ≤0 才算超；undefined = 不限/未知，不拦
+  const allHaveRetryInfo = problems.every((p) => typeof p.remainingRetries === "number");
+  if (allHaveRetryInfo && problems.every((p) => (p.remainingRetries as number) <= 0)) {
+    return { eligible: false, reason: "retry-exhausted" };
+  }
+  // 兜底：题目都没有次数信息 → 用整卷 maxRetry（0=不可重交）+ 全部题已提交
+  if (!allHaveRetryInfo && problems.every((p) => typeof p.remainingRetries !== "number") && (input.maxRetry ?? 0) <= 0) {
+    const allSubmitted = problems.every((p) => p.myStatus === "submitted" || p.myStatus === "graded");
+    if (allSubmitted) return { eligible: false, reason: "retry-exhausted" };
+  }
+  // 时间窗：未过截止放行；已过截止须允许补交且未过补交截止
+  const now = input.now ?? Date.now();
+  const deadline = parseYktLocalTime(input.deadline);
+  if (deadline !== undefined && now >= deadline) {
+    if (!input.lateAllowed) return { eligible: false, reason: "deadline" };
+    const late = parseYktLocalTime(input.lateDeadline);
+    if (late !== undefined && now >= late) return { eligible: false, reason: "deadline" };
+  }
+  return {
+    eligible: true,
+    ...(allHaveRetryInfo
+      ? { remainingRetries: Math.min(...problems.map((p) => p.remainingRetries as number)) }
+      : {}),
+  };
+}

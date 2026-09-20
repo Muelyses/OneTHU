@@ -26,6 +26,9 @@
  *  [6] R20-B3：老师评语去重 dedupeYktRemarks（remark 与 comment[] 同文只渲染一处，优先具名
  *      批注口径；不同文全保留；批注间自身去重）+ 入口分数口径 homeworkEntryScoreText
  *      （考试 / 已批改雨课堂作业共用：已提交且带分 → "X/Y"；无分不显示）+ 两处接线静态审计。
+ *  [7] R20-C1：作答/提交入口资格 yktSubmitEligibility（红线：试卷 / 全外链题永不出入口；
+ *      时间窗未过截止或允许补交；未超 max_retry）+ parseYktLocalTime 解析口径 +
+ *      详情页接线静态审计（入口仅在 eligible 渲染、二次确认、注入 Cookie、关闭后重拉）。
  *
  * 覆盖边界：homeworkEntry.ts openHomeworkRow / toHomework 的 externalLeafTypeId/
  * externalClassroomId 两行映射与 state/exthw.ts fetchYktExerciseDetail 依赖
@@ -52,7 +55,7 @@ registerHooks({
   },
 });
 
-const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks, homeworkEntryScoreText } = await import(
+const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks, homeworkEntryScoreText, yktSubmitEligibility, parseYktLocalTime } = await import(
   "../apps/desktop/src/lib/yktDetail.ts"
 );
 
@@ -442,5 +445,114 @@ console.log("\n[6] R20-B3：dedupeYktRemarks（评语去重）+ homeworkEntrySco
   ok(!shared.includes("h.score !== undefined") || shared.includes("homeworkEntryScoreText"), "旧内联分数拼接已收敛进纯函数");
 }
 
-console.log(`\n═══ R20-B2/B3 雨课堂详情页单测：${pass} 通过 / ${fail} 失败 ═══`);
+/* ───────────────── [7] R20-C1 作答/提交入口资格判定 ───────────────── */
+console.log("\n[7] R20-C1 作答/提交入口资格 yktSubmitEligibility（纯函数 + 红线）");
+{
+  const T = new Date(2026, 5, 15, 12, 0, 0).getTime(); // 2026-06-15 12:00 本地
+  const future = "2026-06-20 23:59";
+  const past = "2026-06-10 23:59";
+  const hw = (over = {}) => ({
+    kind: "homework",
+    deadline: future,
+    now: T,
+    problems: [{ type: 1, myStatus: "unanswered" }],
+    ...over,
+  });
+
+  // 7a. 红线：试卷 / 全外链题永不出口
+  eq(yktSubmitEligibility(hw({ kind: "exam" })).reason, "exam", "kind=exam → 红线不出入口");
+  eq(yktSubmitEligibility(hw({ sourceType: 20 })).reason, "exam", "活动 type=20（试卷）→ 红线");
+  eq(yktSubmitEligibility(hw({ sourceType: 6 })).reason, "exam", "旧 /subject type=6（试卷别名）→ 红线");
+  eq(yktSubmitEligibility(hw({ kind: "exam", deadline: future })).eligible, false, "试卷即便未过截止也不出");
+  eq(yktSubmitEligibility(hw({ problems: [{ type: 9, myStatus: "unanswered" }] })).reason, "external-only", "全为题型 9 → 红线不出");
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 9 }, { type: 1, myStatus: "unanswered" }] })).eligible,
+    true,
+    "含题型 9 但另有可作答题 → 照常出口（逐题红线在题目卡）",
+  );
+  eq(yktSubmitEligibility(hw({ problems: [] })).reason, "no-problems", "无题目明细 → 不出（详情未回/缺 problems）");
+
+  // 7b. 时间窗：未过截止放行；过截止须允许补交
+  eq(yktSubmitEligibility(hw()).eligible, true, "未过截止 → 出口（不要求 is_allowed_late_submission）");
+  eq(yktSubmitEligibility(hw({ lateAllowed: false })).eligible, true, "未过截止 + 不允许补交 → 仍出口（按时提交）");
+  eq(yktSubmitEligibility(hw({ deadline: past, lateAllowed: false })).reason, "deadline", "过截止 + 不允许补交 → 不出");
+  eq(yktSubmitEligibility(hw({ deadline: past, lateAllowed: true })).eligible, true, "过截止 + 允许补交 + 无补交截止 → 出口");
+  eq(
+    yktSubmitEligibility(hw({ deadline: past, lateAllowed: true, lateDeadline: future })).eligible,
+    true,
+    "补交窗口内 → 出口",
+  );
+  eq(yktSubmitEligibility(hw({ deadline: past, lateAllowed: true, lateDeadline: past })).reason, "deadline", "过补交截止 → 不出");
+  eq(yktSubmitEligibility(hw({ deadline: undefined })).eligible, true, "截止缺失 → 不误判过期，出口");
+  eq(yktSubmitEligibility(hw({ deadline: "垃圾串" })).eligible, true, "截止不可解析 → 不误判过期，出口");
+  eq(
+    yktSubmitEligibility(hw({ now: new Date(2026, 5, 20, 23, 59, 0).getTime() })).eligible,
+    false,
+    "now === 截止整分 → 已过期（>=）",
+  );
+
+  // 7c. 未超 max_retry
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 1, myStatus: "graded", remainingRetries: 0 }] })).reason,
+    "retry-exhausted",
+    "唯一题剩余 0 次 → 超 max_retry 不出",
+  );
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 1, remainingRetries: 0 }, { type: 2, remainingRetries: 2 }] })).eligible,
+    true,
+    "部分题用完但仍有可交题 → 出口",
+  );
+  eq(yktSubmitEligibility(hw({ problems: [{ type: 1, remainingRetries: undefined }] })).eligible, true, "次数未知（不限）→ 不拦");
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 1, remainingRetries: 0 }, { type: 2, remainingRetries: undefined }] })).eligible,
+    true,
+    "一题用完 + 一题不限 → 出口",
+  );
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 1, myStatus: "graded" }], maxRetry: 0 })).reason,
+    "retry-exhausted",
+    "无次数信息 + maxRetry=0 + 全已提交 → 兜底不出",
+  );
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 1, myStatus: "unanswered" }], maxRetry: 0 })).eligible,
+    true,
+    "无次数信息 + maxRetry=0 但未提交 → 出口（首交）",
+  );
+  eq(yktSubmitEligibility(hw({ problems: [{ type: 1, myStatus: "graded" }], maxRetry: 3 })).eligible, true, "无次数信息 + maxRetry>0 → 出口");
+  eq(
+    yktSubmitEligibility(hw({ problems: [{ type: 1, remainingRetries: 3 }, { type: 2, remainingRetries: 1 }] })).remainingRetries,
+    1,
+    "剩余次数展示取最小",
+  );
+
+  // 7d. parseYktLocalTime 解析口径
+  const p = (s) => parseYktLocalTime(s);
+  eq(p("2026-06-15 09:30"), new Date(2026, 5, 15, 9, 30).getTime(), "YYYY-MM-DD HH:MM");
+  eq(p("2026/6/15 9:30"), new Date(2026, 5, 15, 9, 30).getTime(), "YYYY/M/D H:MM");
+  eq(p("2026-06-15T09:30:00"), new Date(2026, 5, 15, 9, 30).getTime(), "ISO T 分隔 + 秒");
+  eq(p(" 2026-06-15 09:30 "), new Date(2026, 5, 15, 9, 30).getTime(), "前后空白容忍");
+  eq(p(""), undefined, "空串 → undefined");
+  eq(p(undefined), undefined, "undefined → undefined");
+  eq(p("2026-06-15"), undefined, "缺时间部分 → undefined");
+
+  // 7e. 详情页接线静态审计（资格门 / 二次确认 / 注入 Cookie / 关闭重拉 / 不打印 Cookie）
+  const { readFileSync } = await import("node:fs");
+  const readSrc = (rel) => readFileSync(new URL(rel, import.meta.url), "utf8");
+  const page = readSrc("../apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx");
+  ok(page.includes("yktSubmitEligibility("), "详情页资格判定走纯函数 yktSubmitEligibility");
+  ok(page.includes("eligibility.eligible") && page.includes("作答 / 提交"), "入口按钮仅在 eligible 时渲染");
+  ok(page.includes("confirmOk("), "打开官方页前有应用内二次确认");
+  ok(page.includes("openYktSubmitWebview(") && page.includes("getYktCookie()"), "入口走应用内 WebView 且注入当前会话 Cookie");
+  ok(page.includes("setTick((t) => t + 1)"), "webview 关闭后重拉真实状态（tick 触发 useEffect）");
+  ok(!/setDetail\([^)]*submitted/.test(page), "无乐观更新（不直接改详情状态）");
+  const submitLib = readSrc("../apps/desktop/src/lib/yktSubmitWebview.ts");
+  ok(submitLib.includes('invoke("open_ykt_submit_window"'), "执行层调 open_ykt_submit_window（桌面窗口 / 移动 Dialog 同一命令）");
+  ok(submitLib.includes('listen("ykt-submit-closed"'), "桌面端以 ykt-submit-closed 事件等待关闭");
+  ok(
+    !/log_debug[^)]*cookie/i.test(submitLib) && !/console\.(log|error)\([^)]*cookie/i.test(submitLib),
+    "执行层不打印 Cookie（内存传递）",
+  );
+}
+
+console.log(`\n═══ R20-B2/B3/C1 雨课堂详情页单测：${pass} 通过 / ${fail} 失败 ═══`);
 if (fail > 0) process.exit(1);

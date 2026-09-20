@@ -57,6 +57,9 @@ class OpenIntentArgs {
 @InvokeArg
 class OpenWebModalArgs {
     lateinit var url: String
+    /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
+     *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
+    var cookie: String = ""
 }
 
 @TauriPlugin(
@@ -376,6 +379,18 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                         invoke.resolve(JSObject())
                     }
                     web.destroy()
+                }
+
+                // R20-C1：可选注入会话 Cookie（官方作答页需要登录态）。逐条 `name=value`
+                // 写入 CookieManager（含 HttpOnly 由系统存储），**绝不打印 Cookie 值**；
+                // 空串 = 不注入，R20-A 只读浏览行为不变。注入在 loadUrl 之前同步完成。
+                if (args.cookie.isNotBlank()) {
+                    for (pair in args.cookie.split(";")) {
+                        val p = pair.trim()
+                        if (p.isEmpty() || !p.contains("=")) continue
+                        cm.setCookie("https://pro.yuketang.cn/", "$p; path=/; domain=.yuketang.cn")
+                    }
+                    cm.flush()
                 }
 
                 web.loadUrl(args.url)

@@ -145,7 +145,7 @@ pub fn schedule(items_json: &str) -> Value {
     let mut scheduled = 0usize;
     let mut last_err: Option<String> = None;
     for it in &items {
-        match crate::notify_macos::add(&it.id, it.at, &it.title, &it.body) {
+        match crate::notify_macos::add(&it.id, it.at, &it.title, &it.body, &it.target) {
             Ok(()) => scheduled += 1,
             Err(e) => last_err = Some(e),
         }
@@ -224,6 +224,40 @@ pub fn cancel(ids_json: &str) -> Value {
     let n = ids.len();
     crate::notify_windows::cancel(&ids);
     json!({ "ok": true, "cancelled": n })
+}
+
+
+
+/* ── 启动初始化 ── */
+
+/// macOS 需要在启动时尽早装 delegate（冷启动点击路径）；其余平台无事可做
+#[cfg(target_os = "macos")]
+pub fn init() {
+    crate::notify_macos::init();
+}
+
+#[cfg(not(target_os = "macos"))]
+pub fn init() {}
+
+/* ── 点击落点取回 ── */
+
+/// macOS：delegate 把点击的通知 id 反查成落点存下来，这里取走（取走即清）
+#[cfg(target_os = "macos")]
+pub fn take_target() -> Value {
+    let target = crate::notify_macos::take_target();
+    json!({ "ok": true, "target": target })
+}
+
+/// Windows：toast 的点击要注册 COM 激活器才能回传（见 notify_windows.rs 文件头），
+/// 当前如实回报未接，前端据此只把应用带到前台。
+#[cfg(target_os = "windows")]
+pub fn take_target() -> Value {
+    json!({ "ok": false, "target": "", "reason": "activation-not-wired" })
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "windows")))]
+pub fn take_target() -> Value {
+    json!({ "ok": false, "target": "", "reason": "not-implemented-desktop" })
 }
 
 #[cfg(target_os = "windows")]

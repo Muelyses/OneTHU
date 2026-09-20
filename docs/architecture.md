@@ -67,9 +67,11 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   自定义日程（含 rrule 展开，用事件自带 alarmMinutes 优先）、未交作业 DDL、每日早报**
   （只有日程的日子也发早报，否则用户会以为「没提醒 = 没事」）——Android 经 `onethu-mobile` 插件落 AlarmManager，
   macOS 用 `UNUserNotificationCenter`，Windows 用 WinRT toast + `AddToSchedule`。
-  落点（点击通知打开哪一页）由原生存下、应用回前台时取走并导航；macOS 与 Windows 的
-  深链回调分别需要 App delegate 挂钩与 COM 激活器，当前为系统默认行为（见
-  `src/notify_windows.rs` 文件头）。
+  落点（点击通知打开哪一页）由原生存下、应用回前台时取走并导航：Android 由点击广播写进
+  SharedPreferences，macOS 由 `UNUserNotificationCenterDelegate` 回调按通知 identifier 反查
+  （映射落盘，以覆盖「点通知冷启动应用」这条路径）；**Windows 尚未接**——toast 点击要注册
+  COM 激活器（`INotificationActivationCallback` + `ToastActivatorCLSID`），当前点击只把应用
+  带到前台（见 `src/notify_windows.rs` 文件头）。
 - **自检（设置 → 通知 → 自检）**：逐层探测后端类型、授权、精确提醒、小组件落地与快照时间、
   排程写入与回读、真实投递，最后撤销探针，给出一份「哪一层不通过」的结论。链路横跨 JS 调度、
   原生桥、系统权限、系统设置四层，用户只能说「没收到」，因此把分层结论做成一次点击的产物，

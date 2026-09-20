@@ -56,6 +56,8 @@ objc2-foundation = { version = "0.3", default-features = false, features = [
 objc2-user-notifications = { version = "0.3", default-features = false, features = [
   "std", "block2", "UNUserNotificationCenter", "UNNotificationContent",
   "UNNotificationRequest", "UNNotificationSettings", "UNNotificationTrigger",
+  # 点击回调（delegate）与读到点击的是哪条通知
+  "UNNotification", "UNNotificationResponse",
 ] }
 
 # Windows 系统通知：WinRT toast（含定时投递 AddToSchedule）。见 src/notify_windows.rs。

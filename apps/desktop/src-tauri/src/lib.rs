@@ -2364,7 +2364,7 @@ fn notify_test() -> serde_json::Value {
 #[cfg(desktop)]
 #[tauri::command]
 fn notify_take_target() -> serde_json::Value {
-    serde_json::json!({ "ok": false, "reason": "not-implemented-desktop", "target": "" })
+    notify::take_target()
 }
 
 /* R20-A：外部作业「桌面模式」内嵌浏览（救急）。移动端点击外部作业详情链接时
@@ -2628,6 +2628,10 @@ tauri::Builder::default()
             });
         })
         .setup(|app| {
+            // 桌面端通知：macOS 尽早装 delegate 并读回落点表——用户可能正是
+            // 「点通知把应用冷启动」的那条路径，晚一步这次点击的落点就丢了。
+            #[cfg(desktop)]
+            notify::init();
             // cookie 仓持久化：启动回种 + 30s 周期落盘（dirty 才写）
             {
                 let handle = app.handle().clone();

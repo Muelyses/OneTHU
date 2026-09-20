@@ -72,6 +72,15 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   （映射落盘，以覆盖「点通知冷启动应用」这条路径）；**Windows 尚未接**——toast 点击要注册
   COM 激活器（`INotificationActivationCallback` + `ToastActivatorCLSID`），当前点击只把应用
   带到前台（见 `src/notify_windows.rs` 文件头）。
+- **桌面小组件（Android）**：内容在 JS 侧算好（`state/widgetSnapshot.ts` 出三行快照，来源可为
+  「今天」或用户指定的收藏夹/收藏原子，后者由纯函数 `state/widgetSource.ts` 解析），原生只把
+  快照摆进 RemoteViews——小组件进程里没有 WebView 与会话，任何需要网络或解析的逻辑都不可能
+  在那边跑。宿主小组件声明四种初始形态（标准 3×2 / 方块 2×2 / 窄条 2×1 / 长条 4×1）：选择器里
+  可选的形态数等于清单里的 provider 数，故形态只能靠多声明 provider 给出（四者共用同一套布局与
+  同一份快照，行数按实际高度自适应，放置后仍可自由拖动）。插件小组件因 Android 不允许运行时
+  注册 provider，走**固定槽位**（3 个）按声明顺序占位。点击落点是「页面 + 参数」的自描述字符串
+  （`folder?folderId=f1`，编解码在 `state/widgetTarget.ts`，布尔会被还原——字符串 `"false"` 在 JS
+  里是真值），应用回前台时取走并解析后导航。
 - **自检（设置 → 通知 → 自检）**：逐层探测后端类型、授权、精确提醒、小组件落地与快照时间、
   排程写入与回读、真实投递，最后撤销探针，给出一份「哪一层不通过」的结论。链路横跨 JS 调度、
   原生桥、系统权限、系统设置四层，用户只能说「没收到」，因此把分层结论做成一次点击的产物，
@@ -168,6 +177,11 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | 通知状态文案测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-status-test.mjs` |
 | 通知自检编排测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-doctor-test.mjs` |
 | 通知 id 约定与归组测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-ids-test.mjs` |
+| 小组件快照测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-snapshot-test.mjs` |
+| 小组件内容来源解析测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-source-test.mjs` |
+| 小组件推送时机测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-runtime-test.mjs` |
+| 插件小组件注册表测试 | `node --import ./tools/ts-resolve-register.mjs tools/plugin-widget-test.mjs` |
+| Android 插件模块 Kotlin 编译 | `cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-mobile:compileDebugKotlin`（清单检查用 `:app:processArmDebugMainManifest`，裸任务名会 ambiguous） |
 | macOS 通知原生链路探针 | `cd apps/desktop/src-tauri && cargo build --features notify-probe --bin notify_probe`，再把二进制放进某个 `OneTHU.app/Contents/MacOS/` 并**改名为 `CFBundleExecutable` 同名**（否则 `NSBundle` 不认包、报 not-bundled），运行即打印授权/排程/回读/撤销四步结果 |
 | Windows 通知模块编译检查 | `cd tools/win-notify-check && cargo check --target x86_64-pc-windows-msvc` |
 | Android 目标交叉检查 | `cd apps/desktop/src-tauri` 后设 `CC_aarch64_linux_android` / `AR_aarch64_linux_android` / `CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER` 指 NDK 的 `aarch64-linux-android24-clang`，再 `cargo check --target aarch64-linux-android`（桌面 `cargo check` 不编译 `#[cfg(mobile)]` 分支，这是唯一能提前发现 Android 侧编译错误的手段） |

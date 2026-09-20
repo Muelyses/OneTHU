@@ -74,7 +74,7 @@ return {
 | `nav` / `ui` | `nav.go` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
-| `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染） |
+| `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染）、`widget.getSource` / `setSource` / `folders`（读写宿主小组件显示的内容） |
 | `notify` | `notify.send` / `notify.cancel` / `notify.status`（发送系统通知，三端） |
 
 ---
@@ -512,6 +512,8 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `notify.cancel(key)` | `notify` | 撤销本插件排下的某条通知 |
 | `notify.status(request?)` | `notify` | 后端与授权状态：`{ok, backend, granted, exact, reason?}`；`request=true` 才发起授权请求 |
 | `widget.list()` / `widget.slots()` | `widget` | 本插件已声明的小组件与所占槽位（未占槽为 `null`）/ 本平台预留槽位数 |
+| `widget.getSource()` / `setSource(source)` | `widget` | 宿主小组件当前显示的内容（`today` / `folder` / `atom`）与改写它；`null` 或 `{kind:"today"}` 恢复默认，目标不存在时返回 `false` 且不写配置 |
+| `widget.folders()` | `widget` | 用户收藏夹清单 `[{id, title}]`，供插件自建选择器 |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 

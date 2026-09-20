@@ -33,7 +33,7 @@ export type LifeTab =
   | "dorm" | "washer" | "hygiene" | "card"
   | "invoice" | "payroll" | "gradincome" | "network";
 
-const TABS: Array<{ id: LifeTab; label: string }> = [
+export const TABS: Array<{ id: LifeTab; label: string }> = [
   { id: "dorm", label: "宿舍" },
   { id: "washer", label: "洗衣机" },
   { id: "hygiene", label: "卫生成绩" },

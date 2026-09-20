@@ -6,6 +6,8 @@
 
 `One App · One Identity · One Campus`
 
+[官网](https://onethu.github.io/)　·　[下载最新版](https://github.com/smartThise/OneTHU/releases/latest)　·　[插件市场](https://onethu.github.io/#market)　·　[设计令牌](https://onethu.github.io/tokens.html)　·　[文档](docs/README.md)
+
 </div>
 
 ---
@@ -37,7 +39,8 @@ OneTHU 是对 thu-info-app / learnX / NextTHUxk 的完全重构：统一身份�
 
 ## 下载与上手
 
-安装包见 [Releases](https://github.com/smartThise/OneTHU/releases)：macOS DMG / Windows EXE / Android APK。
+安装包见 [Releases](https://github.com/smartThise/OneTHU/releases)：macOS DMG / Windows EXE / Android APK；
+也可以从 [官网](https://onethu.github.io/) 进入（含功能总览、**实时同步的插件市场**与设计令牌全貌）。
 
 1. 安装后用清华统一认证账号登录（支持双因素认证）；
 2. 也可以在登录页进入**演示模式**先行体验界面；

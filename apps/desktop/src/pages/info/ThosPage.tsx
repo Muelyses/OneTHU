@@ -73,6 +73,14 @@ function favKey(userId: string): string {
   return `thos-favorites:${userId}`;
 }
 
+/** 预置「常用服务」的一次性标记（只做一次，之后完全由用户增删） */
+function seedKey(userId: string): string {
+  return `thos-favorites-seeded:${userId}`;
+}
+
+/** 常用服务预置项：按名称匹配（服务 id 由学校侧分配，名称更稳定） */
+const SEED_SERVICE_KEYWORDS = ["亲友来访", "缓考"];
+
 function loadFavorites(userId: string): string[] {
   try {
     const raw = localStorage.getItem(favKey(userId));
@@ -111,7 +119,10 @@ export function ThosPage() {
   const generation = useRef(0);
 
   useEffect(() => {
-    setFavorites(loadFavorites(userId));
+    const list = loadFavorites(userId);
+    setFavorites(list);
+    // 有常用服务时默认进「常用服务」而不是「全部服务」（用户定案 2026-09-20）
+    setOnlyFavorites(list.length > 0);
   }, [userId]);
 
   const load = useCallback(async () => {
@@ -162,6 +173,29 @@ export function ThosPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  /** 首次进入：把「亲友来访人员报备」「缓考申请」放进常用服务（只做一次） */
+  useEffect(() => {
+    const items = services?.items ?? [];
+    if (!userId || items.length === 0) return;
+    if (localStorage.getItem(seedKey(userId))) return;
+    if (favorites.length > 0) {
+      localStorage.setItem(seedKey(userId), "1");
+      return;
+    }
+    const seed = SEED_SERVICE_KEYWORDS
+      .map((kw) => items.find((x) => `${x.name}${x.department ?? ""}`.includes(kw))?.id)
+      .filter((x): x is string => Boolean(x));
+    if (seed.length === 0) return;
+    setFavorites(seed);
+    setOnlyFavorites(true);
+    try {
+      localStorage.setItem(favKey(userId), JSON.stringify(seed));
+      localStorage.setItem(seedKey(userId), "1");
+    } catch {
+      /* 存不下也不影响本次会话 */
+    }
+  }, [services, favorites, userId]);
 
   const favorite = (id: string) => {
     const next = favorites.includes(id) ? favorites.filter((x) => x !== id) : [...favorites, id];

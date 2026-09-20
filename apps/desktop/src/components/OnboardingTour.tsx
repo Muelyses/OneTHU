@@ -7,7 +7,7 @@
  *  - 判定"是否第一次"：onethu.onboarded.v1；设置页有常驻「重新导览」。
  */
 import { useState } from "react";
-import { SCENARIOS, applyScenarios, hasOnboarded, markOnboarded } from "../state/onboarding.js";
+import { PRESETS, SCENARIOS, applyScenarios, hasOnboarded, markOnboarded, type Preset } from "../state/onboarding.js";
 import { TABS as INFO_TABS } from "../pages/info/InfoPage.js";
 import { TABS as LIFE_TABS } from "../pages/info/LifePage.js";
 import { loadTabLayout, saveTabLayout } from "../lib/tabLayout.js";
@@ -54,10 +54,32 @@ export function OnboardingTour(): React.ReactNode {
     TAB_GROUPS.flatMap((g) => g.tabs.map((t) => `${g.key}:${t.id}`)),
   );
   const [keepCards, setKeepCards] = useState<string[]>(["learn", "schedule"]);
+  /** 首屏二选一：自行选择（逐项）/ 按场景预设 */
+  const [mode, setMode] = useState<"manual" | "preset">("manual");
+  const [preset, setPreset] = useState<Preset | null>(null);
 
   if (!open) return null;
 
   const finish = (goFavorites: boolean): void => {
+    if (mode === "preset" && preset) {
+      // 预设路径：页面折叠 + 页签显隐 + 首页卡片，全部写既有存储
+      for (const n of NAV_ITEMS) {
+        const foldedNow = favs.data.foldedDefaults.includes(n.page as never);
+        const wantFolded = !preset.pages.includes(n.page);
+        if (wantFolded !== foldedNow) favs.foldSidebar(n.page, true);
+      }
+      for (const g of TAB_GROUPS) {
+        const ids = g.tabs.map((t) => t.id);
+        const keepIds = preset.tabs[g.key] ?? [];
+        saveTabLayout(g.key, { order: ids, hidden: ids.filter((id) => !keepIds.includes(id)) });
+      }
+      applyScenarios(preset.cards, "portrait");
+      markOnboarded();
+      setOpen(false);
+      if (goFavorites) navigate("folder");
+      return;
+    }
+
     // ① 侧栏：没勾的收进「已折叠」区（既有机制，用户随时能展开）
     for (const n of NAV_ITEMS) {
       const foldedNow = favs.data.foldedDefaults.includes(n.page as never);
@@ -108,13 +130,61 @@ export function OnboardingTour(): React.ReactNode {
             <p style={{ margin: "0 0 6px", fontSize: 13.5, lineHeight: 1.75, color: "var(--text-2, #555)" }}>
               接下来用三步把界面调成你自己的样子：<b>侧栏功能 → 各页页签 → 收藏夹</b>。
             </p>
-            <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.75, color: "var(--text-2, #555)" }}>
+            <p style={{ margin: "0 0 14px", fontSize: 13.5, lineHeight: 1.75, color: "var(--text-2, #555)" }}>
               功能一个都不会少，只是不常用的先折起来，随时能展开。
             </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {([
+                ["manual", "自行选择", "逐项决定侧栏功能与页签"],
+                ["preset", "按场景预设", "完整 / 极简 / 预约狂人 / 信息大师"],
+              ] as const).map(([m, label, hint]) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  style={{
+                    textAlign: "left", padding: "12px 13px", borderRadius: 10, cursor: "pointer",
+                    border: mode === m ? "1px solid var(--accent, #4176e6)" : "1px solid var(--border, #e5e6eb)",
+                    background: mode === m ? "var(--accent-soft, rgba(65,118,230,.08))" : "var(--surface, #fff)",
+                  }}
+                >
+                  <span style={{ display: "block", fontWeight: 600, fontSize: 14 }}>{label}</span>
+                  <span style={{ display: "block", marginTop: 2, fontSize: 12, color: "var(--text-3, #999)", lineHeight: 1.5 }}>
+                    {hint}
+                  </span>
+                </button>
+              ))}
+            </div>
           </>
         ) : null}
 
-        {step === 1 ? (
+        {step === 1 && mode === "preset" ? (
+          <>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>选一个场景</h3>
+            <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)" }}>
+              选定后仍可返回上一步改选手动逐项，或随时在设置里重来。
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {PRESETS.map((pr) => (
+                <button
+                  key={pr.id}
+                  onClick={() => setPreset(pr)}
+                  style={{
+                    textAlign: "left", padding: "12px 13px", borderRadius: 10, cursor: "pointer",
+                    border: preset?.id === pr.id ? "1px solid var(--accent, #4176e6)" : "1px solid var(--border, #e5e6eb)",
+                    background: preset?.id === pr.id ? "var(--accent-soft, rgba(65,118,230,.08))" : "var(--surface, #fff)",
+                  }}
+                >
+                  <span style={{ display: "block", fontWeight: 600, fontSize: 14 }}>{pr.label}</span>
+                  <span style={{ display: "block", marginTop: 2, fontSize: 12, color: "var(--text-3, #999)", lineHeight: 1.5 }}>
+                    {pr.hint}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : null}
+
+        {step === 1 && mode === "manual" ? (
           <>
             <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>侧栏要放哪些？</h3>
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)" }}>
@@ -154,7 +224,7 @@ export function OnboardingTour(): React.ReactNode {
           </>
         ) : null}
 
-        {step === 2 ? (
+        {step === 2 && mode === "manual" ? (
           <>
             <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>各页里的页签呢？</h3>
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)" }}>
@@ -221,8 +291,12 @@ export function OnboardingTour(): React.ReactNode {
           {step > 0 ? <button className="btn" onClick={() => setStep((n) => n - 1)}>上一步</button> : null}
           <button className="btn btn-ghost" onClick={() => finish(false)}>跳过</button>
           {step < STEPS - 1 ? (
-            <button className="btn btn-primary" onClick={() => setStep((n) => n + 1)}>
-              下一步（{step + 1}/{STEPS - 1}）
+            <button
+              className="btn btn-primary"
+              disabled={step === 1 && mode === "preset" && !preset}
+              onClick={() => setStep((n) => (mode === "preset" && n === 1 ? 3 : n + 1))}
+            >
+              下一步
             </button>
           ) : (
             <button className="btn btn-primary" onClick={() => finish(true)}>完成，去建收藏夹</button>

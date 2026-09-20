@@ -102,19 +102,33 @@ export const GRADE_SCALE: ReadonlyArray<{ grade: string; point: number }> = [
   { grade: "F", point: 0 },
 ];
 
-/** 抽取权重：演示以 A/B 为主，低档少量出现（保证「编造成绩」看起来像真人成绩单）。 */
-const GRADE_WEIGHTS: ReadonlyArray<number> = [3, 6, 8, 10, 9, 6, 2, 1, 1, 0.4, 0.4, 0.2];
+/**
+ * 编造只用**高分段**：A+/A/A-（4.0）与 B+（3.6）。
+ * 抽取池刻意不含 C/D/F —— 真实成绩单里几乎不存在 1.3 这种绩点，
+ * 演示时出现「军事理论 1.3」会一眼假（用户实录反馈）。
+ */
+const FAKE_GRADE_TIERS: ReadonlyArray<{ grade: string; weight: number }> = [
+  { grade: "A+", weight: 2 },
+  { grade: "A", weight: 4 },
+  { grade: "A-", weight: 4 },
+  { grade: "B+", weight: 5 },
+];
 
-/** 生成一条编造成绩（等级 + 绩点同表一致）。 */
+/** 生成一条编造成绩（只出 4.0 与 3.6 档；等级与绩点取自 GRADE_SCALE 同一行）。 */
 export function fakeGrade(key: string): { grade: string; point: number } {
   const h = hash32(`grade:${key}`);
-  const total = GRADE_WEIGHTS.reduce((a, b) => a + b, 0);
-  let acc = (h % 100000) / 100000 * total;
-  for (let i = 0; i < GRADE_SCALE.length; i++) {
-    acc -= GRADE_WEIGHTS[i]!;
-    if (acc <= 0) return GRADE_SCALE[i]!;
+  const total = FAKE_GRADE_TIERS.reduce((a, t) => a + t.weight, 0);
+  let acc = ((h % 100000) / 100000) * total;
+  let picked = FAKE_GRADE_TIERS[FAKE_GRADE_TIERS.length - 1]!;
+  for (const tier of FAKE_GRADE_TIERS) {
+    acc -= tier.weight;
+    if (acc <= 0) {
+      picked = tier;
+      break;
+    }
   }
-  return GRADE_SCALE[3]!;
+  const row = GRADE_SCALE.find((g) => g.grade === picked.grade)!;
+  return { grade: row.grade, point: row.point };
 }
 
 /** 编造百分制得分：按满分折算到 78%–98%，确定性。 */
@@ -306,3 +320,6 @@ export function desensitizeTree<T>(value: T, seed = ""): T {
 export function isDesensitizeBuild(): boolean {
   return DESENSITIZE_ENABLED;
 }
+
+/** 编造分数只会出现的档位（供测试与界面说明引用）。 */
+export const FAKE_GRADE_POOL: ReadonlyArray<string> = FAKE_GRADE_TIERS.map((t) => t.grade);

@@ -13,7 +13,7 @@
  */
 const {
   applyDesensitize, desensitizeTree, maskName, maskStudentId, maskText,
-  fakeGrade, fakeScore, GRADE_SCALE, PSEUDO_NAMES, resetPseudoMappings,
+  fakeGrade, fakeScore, GRADE_SCALE, FAKE_GRADE_POOL, PSEUDO_NAMES, resetPseudoMappings,
 } = await import("../packages/core/src/privacy/desensitize.ts");
 const { DESENSITIZE_ENABLED } = await import("../packages/core/src/privacy/config.ts");
 
@@ -67,6 +67,17 @@ for (let i = 0; i < 400; i++) {
 }
 ok("400 次编造成绩：等级与绩点始终同表", consistent);
 ok("编造成绩覆盖多个档位", spread.size >= 4);
+eq("编造档位只有 4.0 与 3.6 两档", [...spread].sort().join(","), ["A", "A+", "A-", "B+"].sort().join(","));
+ok("编造成绩不出现低档（D=1.3 这类一眼假的值）", [...spread].every((g) => (table.get(g) ?? 0) >= 3.6));
+ok("编造绩点只有 4.0 / 3.6", [...spread].every((g) => [4.0, 3.6].includes(table.get(g))));
+eq("编造池常量与 GRADE_SCALE 一致", FAKE_GRADE_POOL.every((g) => table.has(g)), true);
+// 真实成绩单形态：整张单子的绩点不应低于 3.6
+const demoReport = applyDesensitize(
+  Array.from({ length: 12 }, (_, i) => ({
+    name: `课程 ${i}`, credit: 2, grade: "A", point: 4, semester: "2024-2025秋", raw: [],
+  })),
+);
+ok("整张编造成绩单的绩点全部 ≥ 3.6", demoReport.every((r) => r.point >= 3.6));
 ok("编造得分落在 78–98 分区间", [1, 2, 3].every((i) => {
   const s = fakeScore(`hw-${i}`, 100);
   return s >= 78 && s <= 98;

@@ -32,8 +32,9 @@ export type Page =
   | "learn-notice-detail" // 通知只读详情（courseId+itemId）
   | "learn-forum-thread" // 讨论区话题阅读/回复（courseId+threadId）
   | "learn-file-detail" // 文件详情（courseId+itemId）
-  | "learn-ykt-detail" // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
-  | `plugin:${string}`; // 插件动态 tab（plugins/tabs.ts 注册表；pageKey = plugin:<pluginId>:<tabId>）
+  | `plugin:${string}` // 插件动态 tab（plugins/tabs.ts 注册表；pageKey = plugin:<pluginId>:<tabId>）
+  | "learn-ykt-detail"; // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
+
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
 export interface LearnNav {
   courseId?: string;
@@ -135,7 +136,8 @@ export interface YktNav {
   kind?: "homework" | "exam";
 }
 
-/** 子页归属的一级页（侧栏高亮 / hash 用）；插件动态 tab（plugin:<id>:<tabId>）保持原值直通 */export function topLevelPage(p: Page): Page {
+/** 子页归属的一级页（侧栏高亮 / hash 用）；插件动态 tab（plugin:<id>:<tabId>）保持原值直通 */
+export function topLevelPage(p: Page): Page {
   if (p.startsWith("plugin:")) return p;
   return (TOP_PAGES as readonly string[]).includes(p) ? p : "learn";
 }

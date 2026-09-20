@@ -4487,6 +4487,92 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   background: var(--primary);
 }
 
+/* ── R20-B2：雨课堂作业原生详情页（learn-ykt-detail，只读；移动端优先，桌面自适应） ── */
+/* 题干/作答正文基础渲染（B2 占位；TODO(R20-B3)：加密字体 @font-face + $…$ LaTeX） */
+.ykt-rich {
+  font-size: var(--text-sm);
+  line-height: 22px;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+.ykt-rich p { margin: 0 0 8px; }
+.ykt-rich p:last-child { margin-bottom: 0; }
+.ykt-rich img { max-width: 100%; border-radius: var(--r-sm); }
+.ykt-rich table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+.ykt-rich th,
+.ykt-rich td { border: 1px solid var(--border); padding: 4px 8px; font-size: var(--text-xs); }
+/* 老师评语纯文本（pre-wrap 保换行） */
+.ykt-plain { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 单题卡（detail-sec 同款左右 0 padding，内容块自带 16px 边距） */
+.ykt-problem { padding: 4px 0 6px; margin-bottom: var(--gap-3); }
+.ykt-problem:last-child { margin-bottom: 0; }
+.ykt-problem-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px 6px;
+}
+.ykt-problem-no { font-size: var(--text-md); }
+.ykt-problem-type {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.ykt-problem-score { font-size: var(--text-xs); color: var(--text-3); }
+.ykt-problem-chip { margin-left: auto; }
+.ykt-problem-body { padding: 2px 16px 10px; }
+
+/* 我的作答（浅底块） / 老师评语（左侧强调条块） */
+.ykt-sec-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+.ykt-ans {
+  margin: 0 16px 10px;
+  padding: 8px 12px;
+  background: var(--surface-3);
+  border-radius: var(--r-sm);
+}
+.ykt-ans-att {
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+.ykt-ans-empty {
+  margin: 0 16px 10px;
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+.ykt-remark {
+  margin: 0 16px 12px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--r-sm);
+  font-size: var(--text-sm);
+}
+.ykt-remark-item + .ykt-remark-item { margin-top: 6px; }
+.ykt-remark-item b { margin-right: 2px; font-size: var(--text-xs); color: var(--text-2); }
+.ykt-ext-btn { margin-top: 8px; }
+
+/* 窄屏（≤480px）：题号/题型/徽标允许整行换行，得分徽标不强制右吸避免拥挤 */
+@media (max-width: 480px) {
+  .ykt-problem-chip { margin-left: 0; }
+  .ykt-problem-head { row-gap: 4px; }
+}
 /* ── 插件市场（安装面板 · 市场页签）── */
 .plg-market-list { display: flex; flex-direction: column; gap: 6px; max-height: 320px; overflow: auto; }
 .plg-market-item {
@@ -4643,90 +4729,3 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 }
 .nav-folders-scroll::-webkit-scrollbar { width: 4px; }
 .nav-folders-scroll::-webkit-scrollbar-thumb { border-radius: 4px; background: var(--border); }
-
-/* ── R20-B2：雨课堂作业原生详情页（learn-ykt-detail，只读；移动端优先，桌面自适应） ── */
-/* 题干/作答正文基础渲染（B2 占位；TODO(R20-B3)：加密字体 @font-face + $…$ LaTeX） */
-.ykt-rich {
-  font-size: var(--text-sm);
-  line-height: 22px;
-  color: var(--text-1);
-  overflow-wrap: anywhere;
-}
-.ykt-rich p { margin: 0 0 8px; }
-.ykt-rich p:last-child { margin-bottom: 0; }
-.ykt-rich img { max-width: 100%; border-radius: var(--r-sm); }
-.ykt-rich table {
-  border-collapse: collapse;
-  margin: 8px 0;
-  max-width: 100%;
-  display: block;
-  overflow-x: auto;
-}
-.ykt-rich th,
-.ykt-rich td { border: 1px solid var(--border); padding: 4px 8px; font-size: var(--text-xs); }
-/* 老师评语纯文本（pre-wrap 保换行） */
-.ykt-plain { white-space: pre-wrap; overflow-wrap: anywhere; }
-
-/* 单题卡（detail-sec 同款左右 0 padding，内容块自带 16px 边距） */
-.ykt-problem { padding: 4px 0 6px; margin-bottom: var(--gap-3); }
-.ykt-problem:last-child { margin-bottom: 0; }
-.ykt-problem-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding: 10px 16px 6px;
-}
-.ykt-problem-no { font-size: var(--text-md); }
-.ykt-problem-type {
-  font-size: var(--text-xs);
-  color: var(--text-3);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 1px 8px;
-}
-.ykt-problem-score { font-size: var(--text-xs); color: var(--text-3); }
-.ykt-problem-chip { margin-left: auto; }
-.ykt-problem-body { padding: 2px 16px 10px; }
-
-/* 我的作答（浅底块） / 老师评语（左侧强调条块） */
-.ykt-sec-label {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--text-3);
-  margin-bottom: 4px;
-}
-.ykt-ans {
-  margin: 0 16px 10px;
-  padding: 8px 12px;
-  background: var(--surface-3);
-  border-radius: var(--r-sm);
-}
-.ykt-ans-att {
-  font-size: var(--text-xs);
-  color: var(--text-2);
-  margin-top: 6px;
-  overflow-wrap: anywhere;
-}
-.ykt-ans-empty {
-  margin: 0 16px 10px;
-  font-size: var(--text-xs);
-  color: var(--text-3);
-}
-.ykt-remark {
-  margin: 0 16px 12px;
-  padding: 8px 12px;
-  border-left: 3px solid var(--accent);
-  background: var(--accent-soft);
-  border-radius: var(--r-sm);
-  font-size: var(--text-sm);
-}
-.ykt-remark-item + .ykt-remark-item { margin-top: 6px; }
-.ykt-remark-item b { margin-right: 2px; font-size: var(--text-xs); color: var(--text-2); }
-.ykt-ext-btn { margin-top: 8px; }
-
-/* 窄屏（≤480px）：题号/题型/徽标允许整行换行，得分徽标不强制右吸避免拥挤 */
-@media (max-width: 480px) {
-  .ykt-problem-chip { margin-left: 0; }
-  .ykt-problem-head { row-gap: 4px; }
-}

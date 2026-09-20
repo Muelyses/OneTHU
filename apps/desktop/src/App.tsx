@@ -112,9 +112,10 @@ function Routed() {
         {page === "learn-notice-detail" && <NoticeDetailPage />}
         {page === "learn-forum-thread" && <ForumThreadPage />}
         {page === "learn-file-detail" && <FileDetailPage />}
-        {page.startsWith("plugin:") && <PluginTabHost pageKey={page} />}
         {/* R20-B2：雨课堂作业原生只读详情页（移动端雨课堂条目直达；桌面亦可打开） */}
-        {page === "learn-ykt-detail" && <YktAssignmentDetailPage />}      </Shell>
+        {page === "learn-ykt-detail" && <YktAssignmentDetailPage />}
+        {page.startsWith("plugin:") && <PluginTabHost pageKey={page} />}
+      </Shell>
     );
   })();
 

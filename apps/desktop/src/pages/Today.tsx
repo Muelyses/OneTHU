@@ -719,8 +719,8 @@ export function TodayPage() {
 
       {flatItems.length === 0 ? (
         <Card>
-          <Empty text="首页暂无卡片——点右上角「编辑」→「添加卡片」挑几张放上来。" />
-          <div style={{ display: "flex", justifyContent: "center", paddingBottom: 14 }}>
+          <Empty text="首页卡片都被收起来了——恢复默认，或自己挑几张。" />
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, paddingBottom: 14 }}>
             <button
               className="btn btn-primary"
               onClick={() => {
@@ -730,6 +730,9 @@ export function TodayPage() {
               }}
             >
               恢复默认布局
+            </button>
+            <button className="btn" onClick={() => setEditing(true)}>
+              自己挑卡片
             </button>
           </div>
         </Card>

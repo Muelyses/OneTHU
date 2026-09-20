@@ -13,9 +13,9 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { loadWidgetSettings, saveWidgetSettings } from "../state/widgetSettings.js";
 import { useNotifyBackend } from "../components/useNotifyBackend.js";
-import { showToast } from "../state/toast.js";
+import { bindingOf, loadWidgetInstances } from "../state/widgetInstances.js";
+import { requestWidgetBind } from "../state/widgetBindUi.js";
 import { Card, Empty, PageHead, SegmentedOverflow } from "../components/Layout.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { FolderIcon, FOLDER_ICONS, IconChevron, IconPen } from "../components/Icons.js";
@@ -117,16 +117,18 @@ export function FolderPage() {
 
 /* ══════════ 桌面小组件：把收藏内容一键放上桌面（仅 Android） ══════════ */
 
-/** 当前是否已经用「这个收藏夹」当小组件内容 */
+/** 桌面上是否已有某块小组件正在显示这个收藏夹 */
 function isWidgetFolder(folderId: string): boolean {
-  const src = loadWidgetSettings().source;
-  return src.kind === "folder" && src.folderId === folderId;
+  const map = loadWidgetInstances();
+  return Object.values(map.byId).some((b) => b.kind === "folder" && b.folderId === folderId);
 }
 
-/** 当前是否已经用「这个原子」当小组件内容 */
+/** 桌面上是否已有某块小组件正在显示这个原子（详情或快捷方式都算） */
 function isWidgetAtom(atom: AtomRef): boolean {
-  const src = loadWidgetSettings().source;
-  return src.kind === "atom" && !!src.atom && src.atom.kind === atom.kind && src.atom.key === atom.key;
+  const map = loadWidgetInstances();
+  return Object.values(map.byId).some(
+    (b) => (b.kind === "detail" || b.kind === "shortcut") && b.atom.kind === atom.kind && b.atom.key === atom.key,
+  );
 }
 
 /** 夹级入口：编辑态工具栏上的「上桌面 / 已在桌面」 */
@@ -138,11 +140,10 @@ function FolderWidgetButton({ folderId }: { folderId: string }): ReactNode {
   return (
     <button
       className="btn"
-      title={on ? "点一下恢复为默认的「今天」内容" : "把本收藏夹的内容显示到桌面小组件"}
+      title={on ? "这块收藏夹已经在桌面某块小组件上" : "把本收藏夹放上桌面小组件（图标组）"}
       onClick={() => {
-        saveWidgetSettings({ source: on ? { kind: "today" } : { kind: "folder", folderId } });
+        requestWidgetBind({ to: "pick", binding: { kind: "folder", folderId } });
         bump((n) => n + 1);
-        showToast(on ? "桌面小组件已恢复为「今天」" : "已把本收藏夹放上桌面小组件");
       }}
     >
       {on ? "已在桌面" : "上桌面"}
@@ -160,12 +161,11 @@ function AtomWidgetButton({ atom }: { atom: AtomRef }): ReactNode {
     <button
       type="button"
       className="icon-btn"
-      title={on ? "点一下恢复为默认的「今天」内容" : "把这个原子显示到桌面小组件"}
+      title={on ? "这个原子已经在桌面某块小组件上" : "把这个原子显示到桌面小组件（详情）"}
       aria-label="显示到桌面小组件"
       onClick={() => {
-        saveWidgetSettings({ source: on ? { kind: "today" } : { kind: "atom", atom: { kind: atom.kind, key: atom.key } } });
+        requestWidgetBind({ to: "pick", binding: { kind: "detail", atom: { kind: atom.kind, key: atom.key } } });
         bump((n) => n + 1);
-        showToast(on ? "桌面小组件已恢复为「今天」" : "已把这个原子放上桌面小组件");
       }}
     >
       桌

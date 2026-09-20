@@ -5,6 +5,7 @@
  * 「用户说桌面上没看到」时第一个要查的东西，所以单独成桥供自检使用。
  */
 import { invoke } from "@tauri-apps/api/core";
+import type { WidgetInstanceInfo } from "./widgetRuntime.js";
 
 export interface NativeWidgetStatus {
   ok: boolean;
@@ -20,6 +21,31 @@ export interface NativeWidgetStatus {
   /** 系统侧已登记的 provider（宿主 / 槽位N）——空数组说明清单合并没生效 */
   providersRegistered: string[];
   reason?: string;
+}
+
+/**
+ * 桌面上每一块小组件的清单（id / provider / 占位宽高 / 是否已有内容）。
+ *
+ * 内容按实例绑定，所以「桌面上有哪几块」这件事必须先问原生——AppWidgetManager 才知道。
+ * 读失败返回 null：调用方据此**不推实例内容、也不允许原生修剪**（否则会把内容误删）。
+ */
+export async function fetchWidgetInstances(): Promise<WidgetInstanceInfo[] | null> {
+  try {
+    const raw = (await invoke<{ ok?: boolean; instances?: WidgetInstanceInfo[] }>("widget_instances")) as {
+      ok?: boolean;
+      instances?: WidgetInstanceInfo[];
+    };
+    if (raw?.ok !== true || !Array.isArray(raw.instances)) return null;
+    return raw.instances.map((i) => ({
+      id: Number(i.id),
+      provider: String(i.provider ?? ""),
+      w: Number(i.w ?? 0),
+      h: Number(i.h ?? 0),
+      bound: i.bound === true,
+    }));
+  } catch {
+    return null;      // 桌面端 not-android：诊断与设置页据此跳过
+  }
 }
 
 export async function fetchWidgetStatus(): Promise<NativeWidgetStatus | null> {

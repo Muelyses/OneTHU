@@ -49,6 +49,34 @@ function wrap<T extends Record<string, unknown>>(obj: T, perms: Set<string>, per
   return out as T;
 }
 
+
+import type { WidgetBinding } from "../state/widgetInstances.js";
+
+/** 校验插件传来的绑定：目标必须真实存在，否则拒绝（改了配置却指向不存在的东西最糟） */
+async function normalizeBinding(raw: unknown): Promise<WidgetBinding | null> {
+  const b = raw as { kind?: string; folderId?: string; atom?: { kind?: string; key?: string } } | null;
+  if (!b || typeof b !== "object") return null;
+  if (b.kind === "today") return { kind: "today" };
+  if (b.kind === "folder") {
+    const { loadFavs } = await import("../state/favorites.js");
+    const id = String(b.folderId ?? "");
+    return id && loadFavs().folders[id] ? { kind: "folder", folderId: id } : null;
+  }
+  if (b.kind === "detail" || b.kind === "shortcut") {
+    const { resolveAtom } = await import("../state/atoms.js");
+    const kind = String(b.atom?.kind ?? "");
+    const key = String(b.atom?.key ?? "");
+    if (!kind || !key || !resolveAtom({ kind, key })) return null;
+    return { kind: b.kind, atom: { kind, key } };
+  }
+  return null;
+}
+
+async function fallbackBinding(): Promise<WidgetBinding> {
+  const { loadWidgetInstances } = await import("../state/widgetInstances.js");
+  return loadWidgetInstances().fallback;
+}
+
 export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   const storageNs = {
     get<T = string>(key: string): T | null {
@@ -818,49 +846,55 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "widget", "widget.slots");
         return pluginWidgets.PLUGIN_WIDGET_SLOTS;
       },
-      /** 宿主小组件当前显示的内容来源（用户可在设置页 / 收藏夹页自行更改） */
-      getSource: async (): Promise<{ kind: string; folderId?: string; atom?: { kind: string; key: string } }> => {
-        gate(perms, "widget", "widget.getSource");
-        const { loadWidgetSettings } = await import("../state/widgetSettings.js");
-        const src = loadWidgetSettings().source;
-        return src.kind === "folder"
-          ? { kind: "folder", folderId: src.folderId ?? "" }
-          : src.kind === "atom" && src.atom
-            ? { kind: "atom", atom: { kind: src.atom.kind, key: src.atom.key } }
-            : { kind: "today" };
+      /** 桌面上每一块小组件及其绑定的内容（插件据此做「一键把本插件内容放上桌面」之类的功能） */
+      instances: async (): Promise<Array<{ id: string; shape: string; binding: unknown }>> => {
+        gate(perms, "widget", "widget.instances");
+        const [{ fetchWidgetInstances }, { loadWidgetInstances, bindingOf }] = await Promise.all([
+          import("../state/widgetBridge.js"),
+          import("../state/widgetInstances.js"),
+        ]);
+        const list = (await fetchWidgetInstances()) ?? [];
+        const map = loadWidgetInstances();
+        return list.map((i) => ({ id: String(i.id), shape: String(i.provider ?? ""), binding: bindingOf(i.id, map) }));
       },
-      /** 改宿主小组件显示的内容；传 null 恢复默认「今天」。名不副实（夹被删/原子失效）返回 false */
-      setSource: async (source: unknown): Promise<boolean> => {
-        gate(perms, "widget", "widget.setSource");
-        const { saveWidgetSettings } = await import("../state/widgetSettings.js");
-        const want = (source ?? null) as { kind?: string; folderId?: string; atom?: { kind?: string; key?: string } } | null;
-        if (want === null || want.kind === "today") {
-          saveWidgetSettings({ source: { kind: "today" } });
-          return true;
-        }
-        if (want.kind === "folder") {
-          const { loadFavs } = await import("../state/favorites.js");
-          const id = String(want.folderId ?? "");
-          if (!id || !loadFavs().folders[id]) return false;
-          saveWidgetSettings({ source: { kind: "folder", folderId: id } });
-          return true;
-        }
-        if (want.kind === "atom") {
-          const { resolveAtom } = await import("../state/atoms.js");
-          const kind = String(want.atom?.kind ?? "");
-          const key = String(want.atom?.key ?? "");
-          if (!kind || !key || !resolveAtom({ kind, key })) return false;
-          saveWidgetSettings({ source: { kind: "atom", atom: { kind, key } } });
-          return true;
-        }
-        return false;
+      /** 新放上桌面、还没选的块用哪份默认内容 */
+      getFallback: async (): Promise<unknown> => {
+        gate(perms, "widget", "widget.getFallback");
+        const { loadWidgetInstances } = await import("../state/widgetInstances.js");
+        return loadWidgetInstances().fallback;
       },
-      /** 用户收藏夹清单（id 与名称）：给插件做一个「显示哪个收藏夹」的选择器 */
-      folders: async (): Promise<Array<{ id: string; title: string }>> => {
-        gate(perms, "widget", "widget.folders");
-        const { loadFavs } = await import("../state/favorites.js");
-        const d = loadFavs();
-        return Object.values(d.folders).map((f) => ({ id: f.id, title: f.title }));
+      setFallback: async (binding: unknown): Promise<boolean> => {
+        gate(perms, "widget", "widget.setFallback");
+        const { setWidgetFallback } = await import("../state/widgetInstances.js");
+        const b = await normalizeBinding(binding);
+        if (!b) return false;
+        setWidgetFallback(b);
+        return true;
+      },
+      /** 绑定某一块的显示内容；传 null 恢复默认。id 不存在或目标失效返回 false */
+      bind: async (id: string, binding: unknown): Promise<boolean> => {
+        gate(perms, "widget", "widget.bind");
+        const [{ fetchWidgetInstances }, { bindWidgetInstance }] = await Promise.all([
+          import("../state/widgetBridge.js"),
+          import("../state/widgetInstances.js"),
+        ]);
+        const list = (await fetchWidgetInstances()) ?? [];
+        if (!list.some((i) => String(i.id) === String(id))) return false;
+        if (binding === null) {
+          bindWidgetInstance(id, (await fallbackBinding()));
+          return true;
+        }
+        const b = await normalizeBinding(binding);
+        if (!b) return false;
+        bindWidgetInstance(id, b);
+        return true;
+      },
+      /** 解除绑定（回到默认内容） */
+      unbind: async (id: string): Promise<boolean> => {
+        gate(perms, "widget", "widget.unbind");
+        const { unbindWidgetInstance } = await import("../state/widgetInstances.js");
+        unbindWidgetInstance(id);
+        return true;
       },
     },
     settings: {

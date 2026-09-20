@@ -397,13 +397,16 @@ export interface OnethuApi {
     list(): Array<{ id: string; title: string; slot: string | null }>;
     /** 本平台的槽位总数（用于提示用户「放到第 N 个小组件」） */
     slots(): number;
-    /** 宿主小组件当前显示的内容来源（"today" / "folder" / "atom"） */
-    getSource(): Promise<{ kind: string; folderId?: string; atom?: { kind: string; key: string } }>;
-    /** 改宿主小组件显示的内容；null 或 { kind: "today" } 恢复默认。
-     *  收藏夹 id 不存在、原子解析不出来时返回 false（不改配置）。 */
-    setSource(source: { kind: "today" } | { kind: "folder"; folderId: string } | { kind: "atom"; atom: { kind: string; key: string } } | null): Promise<boolean>;
-    /** 用户收藏夹清单（id 与名称），供插件自建选择器 */
-    folders(): Promise<Array<{ id: string; title: string }>>;
+    /** 桌面上每一块小组件（appWidgetId）及其绑定的内容 */
+    instances(): Promise<Array<{ id: string; shape: string; binding: unknown }>>;
+    /** 新放置、还没选的块用哪份默认内容 */
+    getFallback(): Promise<unknown>;
+    /** 改默认内容；目标不存在（收藏夹被删 / 原子解析不出）返回 false */
+    setFallback(binding: { kind: "today" } | { kind: "folder"; folderId: string } | { kind: "detail" | "shortcut"; atom: { kind: string; key: string } } | null): Promise<boolean>;
+    /** 绑定某一块的显示内容（id 为 instances() 报回的 id）；目标失效返回 false */
+    bind(id: string, binding: { kind: "today" } | { kind: "folder"; folderId: string } | { kind: "detail" | "shortcut"; atom: { kind: string; key: string } } | null): Promise<boolean>;
+    /** 解除绑定（回到默认内容） */
+    unbind(id: string): Promise<boolean>;
   };
   storage: {
     get<T = string>(key: string): T | null;

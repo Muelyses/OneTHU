@@ -15,7 +15,7 @@ globalThis.localStorage = {
 
 const W = await import("../apps/desktop/src/plugins/pluginWidgets.ts");
 const { registerPluginAtom, unregisterPluginAtoms } = await import("../apps/desktop/src/plugins/pluginAtoms.ts");
-const { buildWidgetSnapshot, serializeWidgetSnapshot } = await import("../apps/desktop/src/state/widgetSnapshot.ts");
+const { serializeWidgetPush } = await import("../apps/desktop/src/state/widgetSnapshot.ts");
 const { registerPluginWidget, unregisterPluginWidgets, pluginWidgetDefs, collectWidgetSlots, PLUGIN_WIDGET_SLOTS, __resetPluginWidgets } = W;
 
 let pass = 0, fail = 0;
@@ -106,20 +106,22 @@ const def = (over = {}) => ({
   ok("显式落点被保留", after.some((s) => s.target === "plugin:p9:detail") || after.length === 3);
 }
 
-/* ⑥ 快照集成：有槽位才写 slots；序列化往返一致 */
+/* ⑥ 推送载荷集成：槽位随载荷下发（载荷由运行时组装，见 widget-runtime-test） */
 {
   __resetPluginWidgets();
   registerPluginWidget(def({ rows: [{ text: "已打卡 3 天", sub: "连续" }] }));
-  const base = { schedule: [], homework: [], remind: { default: 120, items: {} }, now };
-  const without = buildWidgetSnapshot(base);
-  eq("无槽位时不写 slots 字段", "slots" in without, false);
-  const withSlots = buildWidgetSnapshot({ ...base, slots: collectWidgetSlots() });
-  eq("槽位键为槽位号", Object.keys(withSlots.slots ?? {}), ["1"]);
-  eq("槽位内容齐备", Object.keys(withSlots.slots["1"]).sort(), ["footer", "rows", "target", "title"]);
-  eq("槽位标题", withSlots.slots["1"].title, "连续打卡 3 天");
-  eq("宿主小组件自身字段不受影响", withSlots.rows.length, 0);
-  const round = JSON.parse(serializeWidgetSnapshot(withSlots));
+  const slots = {};
+  for (const sl of collectWidgetSlots()) {
+    if (!sl?.slot) continue;
+    slots[String(sl.slot)] = { title: sl.title, rows: sl.rows, footer: sl.footer, target: sl.target };
+  }
+  eq("槽位键为槽位号", Object.keys(slots), ["1"]);
+  eq("槽位内容齐备", Object.keys(slots["1"]).sort(), ["footer", "rows", "target", "title"]);
+  eq("槽位标题", slots["1"].title, "连续打卡 3 天");
+  const round = JSON.parse(serializeWidgetPush({ instances: {}, slots, prune: true }));
   eq("序列化后槽位仍在", round.slots["1"].rows[0].text, "已打卡 3 天");
+  const empty = JSON.parse(serializeWidgetPush({ instances: {}, slots: {}, prune: true }));
+  eq("没有插件声明时槽位为空对象", Object.keys(empty.slots), []);
 }
 
 /* ⑦ 注册表变更通知：插件重新声明/注销时宿主才能立刻跟上 */
@@ -141,13 +143,13 @@ const def = (over = {}) => ({
   __resetPluginWidgets();
 }
 
-/* ⑧ 快照丢弃无槽位号的脏输入 */
+/* ⑧ 无槽位号的脏输入不占槽位 */
 {
-  const snap = buildWidgetSnapshot({
-    schedule: [], homework: [], remind: { default: 120, items: {} }, now,
-    slots: [{ slot: "", title: "坏的", rows: [], footer: "", target: "" }],
-  });
-  eq("无槽位号不写 slots", "slots" in snap, false);
+  __resetPluginWidgets();
+  const bad = { ...def(), id: "bad" };
+  registerPluginWidget({ ...bad, rows: [] });
+  eq("一行都不剩的声明不占槽位", collectWidgetSlots().length, 0);
+  __resetPluginWidgets();
 }
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);

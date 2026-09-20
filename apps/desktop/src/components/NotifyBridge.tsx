@@ -19,6 +19,8 @@ import {
   releaseNotifyRuntimes,
 } from "../state/notifySources.js";
 import { parseWidgetTarget } from "../state/widgetTarget.js";
+import { requestWidgetBind } from "../state/widgetBindUi.js";
+import { WidgetBindModal } from "./WidgetBindModal.js";
 
 export function NotifyBridge(): ReactNode {
   const { status, navigate } = useApp();
@@ -54,7 +56,14 @@ export function NotifyBridge(): ReactNode {
         const raw = await invoke<{ ok?: boolean; target?: string }>("notify_take_target");
         const target = raw?.target ?? "";
         const parsed = parseWidgetTarget(target);
-        if (parsed) navigate(parsed.page as never, parsed.params as never);
+        if (!parsed) return;
+        // 小组件「还没选内容」时点它会落在这里：拉起选择层，而不是跳到一个空页面
+        const m = /^widget-config:(-?\d+)$/.exec(parsed.page);
+        if (m) {
+          requestWidgetBind({ to: "instance", id: m[1]! });
+          return;
+        }
+        navigate(parsed.page as never, parsed.params as never);
       } catch {
         /* 无后端的平台返回 not-implemented：静默 */
       }
@@ -64,5 +73,6 @@ export function NotifyBridge(): ReactNode {
     return () => document.removeEventListener("visibilitychange", take);
   }, [status, navigate]);
 
-  return null;
+  // 绑定层挂在这里：它要在整个应用范围内可用（桌面点小组件、收藏夹页「上桌面」都会唤起）
+  return <WidgetBindModal />;
 }

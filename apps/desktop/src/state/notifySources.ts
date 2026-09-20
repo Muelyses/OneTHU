@@ -9,6 +9,7 @@
  */
 import { invoke } from "@tauri-apps/api/core";
 import { subscribeCampusData, subscribeLearnData } from "./data.js";
+import { cacheGet } from "./cache.js";
 import { onCloudCalChange } from "./cloudCal.js";
 import { subscribeExtHw } from "./exthw.js";
 import { subscribeHwRemind } from "./hwRemind.js";
@@ -16,8 +17,10 @@ import { subscribePluginWidgets } from "../plugins/pluginWidgets.js";
 import { loadFavs } from "./favorites.js";
 import { resolveAtom } from "./atoms.js";
 import { muteToasts } from "./toast.js";
-import { resolveWidgetSource, type ResolvedSource } from "./widgetSource.js";
-import { loadWidgetSettings, subscribeWidgetSettings } from "./widgetSettings.js";
+import { resolveWidgetSource } from "./widgetSource.js";
+import { subscribeWidgetInstances } from "./widgetInstances.js";
+import { atomDetail } from "./widgetDetail.js";
+import { fetchWidgetInstances } from "./widgetBridge.js";
 import { collectNotifyInputs } from "./notifyInputs.js";
 import { createNotifyRuntime, type NotifyRuntime } from "./notifyRuntime.js";
 import { createWidgetRuntime, type WidgetRuntime } from "./widgetRuntime.js";
@@ -36,7 +39,7 @@ export function subscribeNotifySources(fn: () => void): () => void {
     subscribeCampusData(fn),
     subscribePluginWidgets(fn),
     onCloudCalChange(fn),
-    subscribeWidgetSettings(fn),      // 改「小组件显示什么」要立刻重推
+    subscribeWidgetInstances(fn),     // 改「某一块小组件显示什么」要立刻重推
   ];
   return () => {
     for (const u of unsubs) u();
@@ -88,12 +91,28 @@ export async function ensureNotifyRuntime(): Promise<NotifyRuntime> {
   return notifyRuntime;
 }
 
-/** 生产实现：把用户配置解析成小组件内容（收藏夹 / 收藏原子） */
-function resolveWidgetSourceProd(): ResolvedSource | null {
-  const settings = loadWidgetSettings();
+/** 生产实现：把某一块小组件绑定的内容解析成原生可画的数据（收藏夹 / 原子详情 / 快捷方式） */
+function resolveBindingProd(binding: Parameters<typeof resolveWidgetSource>[0], hint: { maxIcons: number }) {
   const favs = loadFavs();
-  return resolveWidgetSource(settings, {
+  return resolveWidgetSource(binding, {
     folders: favs.folders as never,
+    maxIcons: hint.maxIcons,
+    // 详情补充行：用应用已有数据（课表、作业、实时缓存）把「一个原子占满」填满
+    detail: (ref) => {
+      const v = resolveAtom(ref as never);
+      if (!v) return null;
+      const inputs = collectNotifyInputs(Date.now());
+      const d = atomDetail(ref, { title: v.title, sub: v.sub }, {
+        schedule: inputs.schedule,
+        homework: inputs.homework,
+        now: Date.now(),
+        readCache: (key) => {
+          const hit = cacheGet<unknown>(key);
+          return hit ? hit.data : null;
+        },
+      });
+      return d ? { rows: d.rows, footer: d.footer } : null;
+    },
     resolveAtom: (ref) => {
       const v = resolveAtom(ref as never);
       if (!v) return null;
@@ -124,7 +143,8 @@ export async function ensureWidgetRuntime(): Promise<WidgetRuntime> {
     onError: (m) => console.warn("[widget]", m),
     collect: collectNotifyInputs,
     subscribe: subscribeNotifySources,
-    resolveSource: resolveWidgetSourceProd,
+    listInstances: fetchWidgetInstances,
+    resolveBinding: resolveBindingProd,
   });
   return widgetRuntime;
 }

@@ -1,5 +1,9 @@
 /**
- * 桌面小组件快照（纯计算，可测）：把「今天还剩什么」压成原生能画的三行字。
+ * 桌面小组件快照（纯计算，可测）：把「这块小组件要显示的东西」压成原生能画的数据。
+ *
+ * 内容**按实例**（appWidgetId）各算一份：桌面上可以同时放「日程与 DDL」「一个原子占满的
+ * 详情」「收藏夹图标组」「1×1 快捷方式」，互不影响。推送载荷形如
+ * `{ instances: { "<appWidgetId>": {…} }, slots: { "1": {…} }, prune }`。
  *
  * 小组件进程里没有 WebView、没有会话，凭据又是 WebCrypto 加密存在 localStorage 的，
  * 原生拿不到明文——所以**凡是需要网络或解析的判断都必须在 App 前台算完**，原生只负责
@@ -37,9 +41,40 @@ export interface WidgetSnapshot {
   target: string;
   rows: WidgetRow[];
   footer: string;
-  /** 插件小组件槽位（槽位号 → 内容）；为空时不写该字段。
-   *  宿主小组件不读它，槽位小组件（原生 OnethuWidgetSlotNProvider）读自己那一键。 */
-  slots?: Record<string, WidgetSlotContent>;
+  /** 列表形态标记：原生据此选布局（缺省即 list，兼容插件槽位内容） */
+  kind?: "list";
+}
+
+/** 图标组形态：若干原子图标并列（收藏夹 = 内嵌的文件夹） */
+export interface WidgetGridSnapshot {
+  kind: "grid";
+  updatedAt: number;
+  title: string;
+  /** 点击标题落的页面（通常是那个收藏夹） */
+  target: string;
+  /** 每个格子：标签 + 图标（data URL PNG）+ 自己的落点 */
+  items: Array<{ label: string; icon?: string; target: string }>;
+}
+
+/** 快捷方式形态：一个图标 + 一行名称（1×1 起；拖大后图标居中显示） */
+export interface WidgetShortcutSnapshot {
+  kind: "shortcut";
+  updatedAt: number;
+  label: string;
+  sub?: string;
+  icon?: string;
+  target: string;
+}
+
+export type WidgetInstanceContent = WidgetSnapshot | WidgetGridSnapshot | WidgetShortcutSnapshot;
+
+/** 推送载荷：实例内容 + 插件槽位内容 + 是否允许原生修剪已移除实例的内容 */
+export interface WidgetPushPayload {
+  instances: Record<string, WidgetInstanceContent>;
+  slots: Record<string, WidgetSlotContent>;
+  /** 只有在成功读到「桌面上有哪些实例」时才允许修剪——
+   *  取实例列表失败时若还修剪，会把所有小组件内容误删。 */
+  prune: boolean;
 }
 
 export interface WidgetSnapshotInput {
@@ -51,13 +86,6 @@ export interface WidgetSnapshotInput {
   maxRows?: number;
   /** 插件声明的小组件条目：插到课程/DDL 之后（宿主小组件里的插件行） */
   extraRows?: WidgetRow[];
-  /** 插件小组件的槽位内容（来自 plugins/pluginWidgets.ts 的 collectWidgetSlots） */
-  slots?: WidgetSlotInput[];
-  /** 点击落点覆盖（设置里指定「点开哪个页面」；给了就无视内容来源的默认落点） */
-  targetOverride?: string | null;
-  /** 自定义内容来源（用户把小组件设为「某收藏夹 / 某原子」时由 widgetSource 解析得到）。
-   *  给定时宿主小组件显示它，而不是默认的「今天」视图。 */
-  custom?: { title: string; rows: WidgetRow[]; footer: string; target: string; params?: Record<string, unknown> } | null;
 }
 
 function ymd(ms: number): string {
@@ -91,19 +119,6 @@ function left(ms: number): string {
  */
 export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot {
   const now = input.now;
-  // 用户指定了内容来源：直接用它（widgetRuntime 已把收藏夹/原子解析成行）
-  if (input.custom) {
-    const { title, rows, footer, target, params } = input.custom;
-    return {
-      title: String(title || "我的收藏"),
-      updatedAt: now,
-      target: input.targetOverride
-        ? encodeWidgetTarget(input.targetOverride, null)
-        : encodeWidgetTarget(target || "folder", params ?? null),
-      rows: (rows ?? []).slice(0, 3).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
-      footer: String(footer ?? ""),
-    };
-  }
   const today = ymd(now);
   const maxRows = Math.max(1, input.maxRows ?? 3);
 
@@ -171,28 +186,81 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
     ? "今天没有课与截止"
     : `${parts.join(" · ")}${more > 0 ? ` · 还有 ${more} 项` : ""}`;
 
-  const slotMap: Record<string, WidgetSlotContent> = {};
-  for (const slot of input.slots ?? []) {
-    if (!slot?.slot) continue;
-    slotMap[String(slot.slot)] = {
-      title: String(slot.title ?? "插件小组件"),
-      rows: (slot.rows ?? []).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
-      footer: String(slot.footer ?? ""),
-      target: String(slot.target ?? ""),
-    };
-  }
-
   return {
     title: `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`,
     updatedAt: now,
-    target: input.targetOverride ? encodeWidgetTarget(input.targetOverride, null) : "today",
+    target: "today",
     rows,
     footer,
-    ...(Object.keys(slotMap).length ? { slots: slotMap } : {}),
   };
 }
 
 /** 序列化为推送用的 JSON（原生只认字符串载荷） */
+/** 空列表内容（绑定不可用时的兜底：不推空卡，直接回落日程与 DDL） */
+export function buildGridSnapshot(input: {
+  title: string;
+  items: Array<{ label: string; icon?: string; target: string }>;
+  target: string;
+  params?: Record<string, unknown>;
+  now: number;
+}): WidgetGridSnapshot {
+  return {
+    kind: "grid",
+    updatedAt: input.now,
+    title: String(input.title || "收藏"),
+    target: encodeWidgetTarget(input.target || "folder", input.params ?? null),
+    items: input.items.slice(0, 8).map((it) => ({ label: String(it.label ?? ""), icon: it.icon, target: it.target })),
+  };
+}
+
+export function buildShortcutSnapshot(input: {
+  label: string;
+  sub?: string;
+  icon?: string;
+  target: string;
+  params?: Record<string, unknown>;
+  now: number;
+}): WidgetShortcutSnapshot {
+  return {
+    kind: "shortcut",
+    updatedAt: input.now,
+    label: String(input.label ?? ""),
+    sub: input.sub ? String(input.sub) : undefined,
+    icon: input.icon,
+    target: encodeWidgetTarget(input.target || "today", input.params ?? null),
+  };
+}
+
+/** 详情形态：就是列表形态（标题 + 若干行 + 脚注），拉得越高行数越多 */
+export function buildDetailSnapshot(input: {
+  title: string;
+  rows: WidgetRow[];
+  footer?: string;
+  target: string;
+  params?: Record<string, unknown>;
+  now: number;
+  maxRows?: number;
+}): WidgetSnapshot {
+  return {
+    kind: "list",
+    title: String(input.title || "详情"),
+    updatedAt: input.now,
+    target: encodeWidgetTarget(input.target || "today", input.params ?? null),
+    rows: input.rows.slice(0, Math.max(1, input.maxRows ?? 5)).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
+    footer: String(input.footer ?? ""),
+  };
+}
+
+/** 推送载荷序列化：实例 + 槽位 + prune 标记 */
+export function serializeWidgetPush(p: WidgetPushPayload): string {
+  const instances: Record<string, unknown> = {};
+  for (const [id, content] of Object.entries(p.instances ?? {})) {
+    if (!content) continue;
+    instances[String(id)] = content;
+  }
+  return JSON.stringify({ instances, slots: p.slots ?? {}, prune: p.prune === true });
+}
+
 export function serializeWidgetSnapshot(s: WidgetSnapshot): string {
   return JSON.stringify(s);
 }

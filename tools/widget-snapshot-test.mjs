@@ -12,7 +12,10 @@ globalThis.localStorage = {
   removeItem: (k) => void store.delete(k),
 };
 
-const { buildWidgetSnapshot, serializeWidgetSnapshot } = await import("../apps/desktop/src/state/widgetSnapshot.ts");
+const {
+  buildWidgetSnapshot, serializeWidgetSnapshot, buildDetailSnapshot, buildGridSnapshot,
+  buildShortcutSnapshot, serializeWidgetPush,
+} = await import("../apps/desktop/src/state/widgetSnapshot.ts");
 
 let pass = 0, fail = 0;
 const eq = (name, a, b) => {
@@ -108,45 +111,57 @@ const hw = (extra = {}) => ({ id: "h1", title: "第三章习题", deadline: "202
   eq("行满时插件条目不出现", s.rows.some((r) => r.text === "不该出现"), false);
 }
 
-/* 自定义来源：用户把小组件设为「某收藏夹 / 某原子」时，快照整张换成它 */
+/* 详情形态：就是列表形态（标题 + 若干行 + 脚注），拉得越高行数越多 */
 {
-  const s = buildWidgetSnapshot({
-    schedule: [cls()], homework: [hw()], remind: REMIND, now: NOW,
-    custom: {
-      title: "常用", rows: [{ text: "网络学堂", sub: "作业与通知" }, { text: "图书馆座位" }],
-      footer: "4 项 · 还有 2 项", target: "folder", params: { folderId: "f1" },
-    },
+  const s = buildDetailSnapshot({
+    title: "数据结构", rows: [{ text: "数据结构", sub: "张三 · 课程" }, { text: "明天 10:00 六教6A215", sub: "还有 18 小时" }],
+    footer: "3 次待上", target: "learn-course", params: { courseId: "1" }, now: NOW,
   });
-  eq("自定义来源：标题", s.title, "常用");
-  eq("自定义来源：行内容", s.rows.map((r) => r.text), ["网络学堂", "图书馆座位"]);
-  eq("自定义来源：脚注", s.footer, "4 项 · 还有 2 项");
-  eq("自定义来源：落点带参数", s.target, "folder?folderId=f1");
-  ok("自定义来源：今日课程让位", !s.rows.some((r) => r.text.includes("数据结构")));
+  eq("详情：形态标记", s.kind, "list");
+  eq("详情：标题", s.title, "数据结构");
+  eq("详情：行", s.rows.map((r) => r.text), ["数据结构", "明天 10:00 六教6A215"]);
+  eq("详情：落点带参数", s.target, "learn-course?courseId=1");
+  eq("详情：脚注", s.footer, "3 次待上");
+  eq("详情：行数上限", buildDetailSnapshot({ title: "x", rows: [1, 2, 3, 4, 5, 6, 7].map((n) => ({ text: `第${n}` })), target: "today", now: NOW }).rows.length, 5);
 }
 
-/* 自定义来源：行数上限 3（原生最多画三行），且缺 target 时兜底到收藏夹页 */
+/* 图标组形态：每个格子各有落点；没有图标的格子留给原生（退回系统图标） */
 {
-  const s = buildWidgetSnapshot({
-    schedule: [], homework: [], remind: REMIND, now: NOW,
-    custom: { title: "", rows: [1, 2, 3, 4, 5].map((n) => ({ text: `第${n}项` })), footer: "", target: "" },
+  const g = buildGridSnapshot({
+    title: "常用", target: "folder", params: { folderId: "f1" }, now: NOW,
+    items: [{ label: "网络学堂", icon: "data:image/png;base64,AAA", target: "learn" }, { label: "校园卡", target: "info?infoTab=card" }],
   });
-  eq("自定义来源：超过三行只留三行", s.rows.length, 3);
-  eq("自定义来源：标题为空时兜底", s.title, "我的收藏");
-  eq("自定义来源：无落点时兜底收藏夹页", s.target, "folder");
+  eq("图标组：形态标记", g.kind, "grid");
+  eq("图标组：标题落点", g.target, "folder?folderId=f1");
+  eq("图标组：格子落点各自独立", g.items.map((i) => i.target), ["learn", "info?infoTab=card"]);
+  eq("图标组：图标可选", g.items[1].icon, undefined);
+  const many = buildGridSnapshot({ title: "x", target: "folder", now: NOW, items: Array.from({ length: 12 }, (_, i) => ({ label: `第${i}`, target: "today" })) });
+  eq("图标组：原生画得下的上限（8 格）", many.items.length, 8);
 }
 
-/* 落点覆盖：设置里指定「点开哪个页面」，内容来源的默认落点让位 */
+/* 快捷方式形态：图标 + 名称 */
 {
-  const s = buildWidgetSnapshot({
-    schedule: [cls()], homework: [], remind: REMIND, now: NOW, targetOverride: "schedule",
+  const t = buildShortcutSnapshot({ label: "校园卡", sub: "余额 ¥23.4", icon: "data:image/png;base64,BBB", target: "info", params: { infoTab: "card" }, now: NOW });
+  eq("快捷方式：形态标记", t.kind, "shortcut");
+  eq("快捷方式：名称与副标题", [t.label, t.sub], ["校园卡", "余额 ¥23.4"]);
+  eq("快捷方式：落点带参数", t.target, "info?infoTab=card");
+}
+
+/* 推送载荷：实例 + 槽位 + prune 标记（prune=false 时原生绝不清内容） */
+{
+  const raw = serializeWidgetPush({
+    instances: { "12": { kind: "list", title: "今天", updatedAt: NOW, target: "today", rows: [], footer: "" } },
+    slots: { "1": { title: "打卡", rows: [{ text: "3 天" }], footer: "", target: "plugin:x" } },
+    prune: true,
   });
-  eq("落点覆盖：默认内容也能改落点", s.target, "schedule");
-  ok("落点覆盖：内容不受影响", s.rows.some((r) => r.text.includes("数据结构")));
-  const s2 = buildWidgetSnapshot({
-    schedule: [], homework: [], remind: REMIND, now: NOW, targetOverride: "learn",
-    custom: { title: "常用", rows: [{ text: "网络学堂" }], footer: "", target: "folder", params: { folderId: "f1" } },
-  });
-  eq("落点覆盖：压过自定义来源的落点", s2.target, "learn");
+  const p = JSON.parse(raw);
+  eq("载荷：实例键", Object.keys(p.instances), ["12"]);
+  eq("载荷：槽位键", Object.keys(p.slots), ["1"]);
+  eq("载荷：prune 标记", p.prune, true);
+  const noPrune = JSON.parse(serializeWidgetPush({ instances: {}, slots: {}, prune: false }));
+  eq("载荷：不允许修剪时为 false", noPrune.prune, false);
+  const dropped = JSON.parse(serializeWidgetPush({ instances: { "9": null }, slots: {}, prune: false }));
+  eq("载荷：空内容不写进键", Object.keys(dropped.instances), []);
 }
 
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);

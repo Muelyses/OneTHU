@@ -195,7 +195,13 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
 }
 
 /** 原子搜索添加弹层（收藏夹页「添加」） */
-export function AtomPickerModal({ onPick, onClose }: { onPick: (atom: AtomRef) => void; onClose: () => void }) {
+export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹", hint }: {
+  onPick: (atom: AtomRef) => void;
+  onClose: () => void;
+  /** 标题与说明可覆盖：收藏夹「添加原子」与小组件「选一个原子」共用同一个搜索层 */
+  title?: string;
+  hint?: string;
+}) {
   const [q, setQ] = useState("");
   const [picked, setPicked] = useState<AtomRef | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -214,7 +220,7 @@ export function AtomPickerModal({ onPick, onClose }: { onPick: (atom: AtomRef) =
     <div className="home-modal-mask" onClick={onClose}>
       <div className="home-modal collect-modal" role="dialog" aria-modal="true" aria-label="搜索并添加原子" onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
-          <h3>添加到收藏夹</h3>
+          <h3>{title}</h3>
           <button className="btn btn-ghost" onClick={onClose}>关闭</button>
         </div>
         <div className="home-modal-body">
@@ -230,6 +236,7 @@ export function AtomPickerModal({ onPick, onClose }: { onPick: (atom: AtomRef) =
           </div>
           {q.trim() === "" ? (
             <div className="home-modal-hint">
+              {hint ? <>{hint}<br /></> : null}
               支持搜索：全部功能页面与今日组件；本机已见过的实体（课程、作业、文件、通知、新闻、洗衣机楼栋、教学楼、体育场馆、研讨间类型、图书馆）——先打开过对应页面，具体实体才会进入搜索。
             </div>
           ) : results.length === 0 ? (

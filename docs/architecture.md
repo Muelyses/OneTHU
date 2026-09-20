@@ -72,15 +72,25 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   （映射落盘，以覆盖「点通知冷启动应用」这条路径）；**Windows 尚未接**——toast 点击要注册
   COM 激活器（`INotificationActivationCallback` + `ToastActivatorCLSID`），当前点击只把应用
   带到前台（见 `src/notify_windows.rs` 文件头）。
-- **桌面小组件（Android）**：内容在 JS 侧算好（`state/widgetSnapshot.ts` 出三行快照，来源可为
-  「今天」或用户指定的收藏夹/收藏原子，后者由纯函数 `state/widgetSource.ts` 解析），原生只把
-  快照摆进 RemoteViews——小组件进程里没有 WebView 与会话，任何需要网络或解析的逻辑都不可能
-  在那边跑。宿主小组件声明四种初始形态（标准 3×2 / 方块 2×2 / 窄条 2×1 / 长条 4×1）：选择器里
-  可选的形态数等于清单里的 provider 数，故形态只能靠多声明 provider 给出（四者共用同一套布局与
-  同一份快照，行数按实际高度自适应，放置后仍可自由拖动）。插件小组件因 Android 不允许运行时
-  注册 provider，走**固定槽位**（3 个）按声明顺序占位。点击落点是「页面 + 参数」的自描述字符串
-  （`folder?folderId=f1`，编解码在 `state/widgetTarget.ts`，布尔会被还原——字符串 `"false"` 在 JS
-  里是真值），应用回前台时取走并解析后导航。
+- **桌面小组件（Android）**：内容在 JS 侧算好（`state/widgetSnapshot.ts` 出「今天」的内容与
+  各形态构造器，`state/widgetSource.ts` 把用户绑定解析成行或图标），原生只把内容摆进 RemoteViews
+  ——小组件进程里没有 WebView 与会话，任何需要网络或解析的逻辑都不可能在那边跑。
+  **内容按块绑定**（`state/widgetInstances.ts`，键是 appWidgetId）：桌面上可以同时放日程与 DDL、
+  一个原子占满的详情、一个收藏夹的图标组、一个 1×1 快捷方式，四类内容互不影响；绑定的入口是
+  AppWidget 的 configure 流程（放置时由 `OnethuWidgetConfigActivity` 把 `widget-config:<id>` 记成
+  落点再拉起应用，应用显示选择层），也可以点桌面上未绑定的那块或到设置页逐块改。原生按
+  appWidgetId 存内容，实例清单由 `widget_instances` 命令报回（读不到时**不允许原生修剪**，
+  否则会误删所有内容）。宿主小组件声明五种初始形态（1×1 快捷方式 / 2×1 / 2×2 / 3×2 / 4×1）：
+  选择器里可选的形态数等于清单里的 provider 数，故形态只能靠多声明 provider 给出（五者共用同一套
+  渲染与同一份实例内容，行数与图标格数按实际占位自适应，放置后仍可自由拖动）。插件小组件因
+  Android 不允许运行时注册 provider，走**固定槽位**（3 个）按声明顺序占位。
+  **图标也要应用侧算**：小组件里没有 WebView，插件的 SVG 与宿主 React 图标在那边都不存在，
+  故 `state/widgetIcon.ts` 在前台把原子图标渲染成 SVG → canvas → PNG（按原子缓存）随内容下发。
+  详情行同理（`state/widgetDetail.ts`）：课程下次上课、作业截止、洗衣机实时状态都只有应用算得出，
+  而**拿不到实时数据就不写**——桌面上写错的数字比空着更糟。点击落点是「页面 + 参数」的自描述
+  字符串（`folder?folderId=f1`，编解码在 `state/widgetTarget.ts`，布尔会被还原——字符串 `"false"`
+  在 JS 里是真值），应用回前台时取走并解析后导航；未绑定那块的落点是 `widget-config:<id>`，
+  应用据此弹出选择层而不是跳到一个空页面。
 - **自检（设置 → 通知 → 自检）**：逐层探测后端类型、授权、精确提醒、小组件落地与快照时间、
   排程写入与回读、真实投递，最后撤销探针，给出一份「哪一层不通过」的结论。链路横跨 JS 调度、
   原生桥、系统权限、系统设置四层，用户只能说「没收到」，因此把分层结论做成一次点击的产物，
@@ -179,6 +189,7 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | 通知 id 约定与归组测试 | `node --import ./tools/ts-resolve-register.mjs tools/notify-ids-test.mjs` |
 | 小组件快照测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-snapshot-test.mjs` |
 | 小组件内容来源解析测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-source-test.mjs` |
+| 小组件详情补充测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-detail-test.mjs` |
 | 小组件推送时机测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-runtime-test.mjs` |
 | 插件小组件注册表测试 | `node --import ./tools/ts-resolve-register.mjs tools/plugin-widget-test.mjs` |
 | Android 插件模块 Kotlin 编译 | `cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-mobile:compileDebugKotlin`（清单检查用 `:app:processArmDebugMainManifest`，裸任务名会 ambiguous） |

@@ -191,5 +191,37 @@ const fake = maskName("顾晓");
 eq("maskText 替换已登记姓名", maskText("顾晓：同感。"), `${fake}：同感。`);
 ok("maskText 替换 10 位学号", maskText("学号 2025013388 已提交").includes("2025013388") === false);
 
+
+/* ── 7. 端到端：隐私代理包裹真实客户端形态 ──
+   真机事故预防：Reflect.get 的 receiver 若传 proxy，「读私有字段的 getter」会抛
+   Cannot read private member —— 客户端里有大量 #private 字段，必须覆盖这一形态。 */
+const { withPrivacy, DESENSITIZE_BUILD } = await import("../apps/desktop/src/lib/privacy.ts");
+class FakeClient {
+  #secret = "private-ok";
+  #calls = 0;
+  async getUserInfo() { this.#calls++; return { name: "顾晓", studentId: "2025013388" }; }
+  getReport() { return [{ name: "人工智能导论", credit: 2, grade: "A", point: 4, semester: "2024-2025秋", raw: [] }]; }
+  async getWashers() { return [{ name: "紫荆 1 号楼", devices: [{ name: "1 号机", remainMinutes: 12 }] }]; }
+  get secret() { return this.#secret; }
+  get calls() { return this.#calls; }
+}
+const probe = withPrivacy(new FakeClient(), "probe");
+let privateOk = true;
+try { probe.secret; } catch { privateOk = false; }
+ok("代理下读私有字段的 getter 不抛异常", privateOk);
+eq("代理下 getter 返回原值", probe.secret, "private-ok");
+const probeUser = await probe.getUserInfo();
+eq("代理下私有字段计数生效（this 绑定正确）", probe.calls, 1);
+if (DESENSITIZE_BUILD) {
+  ne("demo 分支：代理包裹后异步结果被脱敏（姓名）", probeUser.name, "顾晓");
+  ne("demo 分支：代理包裹后异步结果被脱敏（学号）", probeUser.studentId, "2025013388");
+  const probeReport = probe.getReport()[0];
+  ok("demo 分支：同步结果成绩与绩点同表", table.get(probeReport.grade) === probeReport.point);
+} else {
+  eq("正式分支：代理不改动结果（原样）", probeUser, { name: "顾晓", studentId: "2025013388" });
+}
+const probeWashers = await probe.getWashers();
+eq("代理下非敏感数据（洗衣机）原样", probeWashers, [{ name: "紫荆 1 号楼", devices: [{ name: "1 号机", remainMinutes: 12 }] }]);
+
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);

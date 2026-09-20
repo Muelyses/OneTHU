@@ -492,17 +492,34 @@ export function VenueSportsTab({
   const goOfficialBooking = useCallback(() => {
     if (!venue) return;
     const url = venueWebUrl(venue.uuid);
+    // 整段必须自己兜住异常：换票链会抛 VenueTwoFactorRequired（要弹 2FA 面板），
+    // 其它失败也要给出可见反馈。此前这里用 `void (async () => …)()` 裸跑——一旦抛异常
+    // 就是一次"点了没反应"（用户实录：在线服务/体育点了都没动静，不弹窗也不开浏览器）。
     void (async () => {
-      // 有票直接就开；没票先静默换票（失败再开授权窗口兜底），仍不行才回落系统浏览器
-      if (!venueHasToken()) {
-        const ok = await venueLogin();
-        if (!ok) {
-          void openExternal(url);
+      try {
+        // 有票直接就开；没票先静默换票（失败再开授权窗口兜底），仍不行才回落系统浏览器
+        if (!venueHasToken()) {
+          const ok = await venueLogin();
+          if (!ok) {
+            void openExternal(url);
+            return;
+          }
+        }
+        const opened = await openVenueInApp(url, currentThemeIsDark());
+        if (!opened) void openExternal(url);
+      } catch (err) {
+        logTabErr("VENUE-BOOK", err);
+        if (err instanceof VenueTwoFactorRequired) {
+          // 需要二次认证：交给页面上的 2FA 面板，别在这里默默吞掉
+          setTwoFA({ methods: err.methods });
+          setTwoFAType(err.methods[0]?.type ?? null);
+          setTwoFASent(false);
+          setAuthMsg("该账号需要二次认证，请在下方完成后再打开预约页。");
           return;
         }
+        setNoticeMsg(`打开官方预约页失败：${tabErrorText(err)}（已改用系统浏览器）`);
+        void openExternal(url);
       }
-      const opened = await openVenueInApp(url, currentThemeIsDark());
-      if (!opened) void openExternal(url);
     })();
   }, [venue]);
 

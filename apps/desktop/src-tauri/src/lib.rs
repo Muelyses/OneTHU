@@ -1667,7 +1667,9 @@ async fn thos_open_portal(
             combined.split("; ").filter(|x| x.contains('=')).count(),
             &url[..url.len().min(60)]
         ));
-        let _: Result<serde_json::Value, _> = handle
+        // 错误必须冒出去：以前这里把 Result 丢进 `_`，插件侧一旦拒绝（Kotlin 抛错、
+        // 活动不可用等）JS 侧仍当成功 → 用户看到的是"点了没反应"（2026-09-20 实录）。
+        let opened: Result<serde_json::Value, _> = handle
             .run_mobile_plugin_async(
                 "openWebModal",
                 serde_json::json!({
@@ -1678,6 +1680,10 @@ async fn thos_open_portal(
                 }),
             )
             .await;
+        if let Err(e) = &opened {
+            thos_log(&format!("[THOS-SEED] 应用内浏览窗口打开失败：{e}"));
+        }
+        opened.map_err(|e| format!("应用内浏览窗口打开失败：{e}"))?;
         // 对话框已关闭 → 反向回灌（用户在官方页里做的登录/续期同步回原生 jar）
         for base in [
             "https://webvpn.tsinghua.edu.cn/",
@@ -2992,7 +2998,7 @@ async fn venue_open_portal_impl(
         token.len(),
         &url[..url.len().min(60)]
     ));
-    let _: Result<serde_json::Value, _> = handle
+    let opened: Result<serde_json::Value, _> = handle
         .run_mobile_plugin_async(
             "openWebModal",
             serde_json::json!({
@@ -3002,6 +3008,10 @@ async fn venue_open_portal_impl(
             }),
         )
         .await;
+    if let Err(e) = &opened {
+        venue_log(&format!("[VENUE-PORTAL] 应用内浏览窗口打开失败：{e}"));
+    }
+    opened.map_err(|e| format!("应用内浏览窗口打开失败：{e}"))?;
     Ok(())
 }
 

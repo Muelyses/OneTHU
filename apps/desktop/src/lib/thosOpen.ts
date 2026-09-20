@@ -23,10 +23,25 @@ export async function openThosInApp(url: string): Promise<void> {
   }
   // 无记住凭据也可走链：账密传空时，id 表单页会在浏览窗口内要求手动输入一次
   const remembered = await loadRemembered();
-  await invoke("thos_open_portal", {
-    url: routeThosUrl(url),
-    username: remembered?.username ?? "",
-    password: remembered?.password ?? "",
-    dark: currentThemeIsDark(),
-  });
+  const target = routeThosUrl(url);
+  try {
+    await invoke("thos_open_portal", {
+      url: target,
+      username: remembered?.username ?? "",
+      password: remembered?.password ?? "",
+      dark: currentThemeIsDark(),
+    });
+  } catch (err) {
+    // 绝不静默：此前这里直接 await，异常一路冒到 void 调用处被吞掉 → 用户看到"点了没反应"
+    // （实录 2026-09-20：在线服务点服务、体育点预约都不弹窗也不开浏览器）。
+    const [{ logLine }, { showToast }, { openExternal }] = await Promise.all([
+      import("./clients.js"),
+      import("../state/toast.js"),
+      import("../pages/info/openExternal.js"),
+    ]);
+    const reason = err instanceof Error ? err.message : String(err);
+    void logLine(`[THOS-PORTAL] 应用内打开失败（${reason}）→ 回落系统浏览器`);
+    showToast("应用内打开失败，已改用系统浏览器");
+    await openExternal(target);
+  }
 }

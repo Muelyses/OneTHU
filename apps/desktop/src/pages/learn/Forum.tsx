@@ -529,7 +529,7 @@ function NewThreadDialog({
     >
       <div
         style={{
-          background: "var(--bg-card, #fff)",
+          background: "var(--surface, #fff)",
           borderRadius: 14,
           padding: 16,
           width: "min(640px, 94vw)",

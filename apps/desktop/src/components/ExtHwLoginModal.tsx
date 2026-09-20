@@ -30,7 +30,7 @@ import {
 
 /** 与 CardTab 充值弹窗同款遮罩 / 面板（移动端也留出 24px 边距、限高可滚动） */
 const maskStyle: React.CSSProperties = { position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
+const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
 
 type YktChannel = "qr" | "web" | "sms";
 
@@ -143,7 +143,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
     padding: "6px 8px",
     borderRadius: 8,
     background: "rgba(26,111,212,0.08)",
-    color: "var(--text, #1f2329)",
+    color: "var(--text-1, #1f2329)",
     textAlign: "left",
   };
 
@@ -154,7 +154,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         padding: 12,
         border: "1px solid var(--border, #e5e5e5)",
         borderRadius: 10,
-        background: "var(--bg-2, rgba(0,0,0,0.02))",
+        background: "var(--surface-2, rgba(0,0,0,0.02))",
       }}
     >
       <div style={{ textAlign: "center" }}>
@@ -195,7 +195,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
             本机扫码会切走 App，可能被系统冻结导致登录失败。
           </div>
         )}
-        {err ? <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
+        {err ? <div style={{ color: "var(--red, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
       </div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
         <button className="btn" onClick={() => setNonce((n) => n + 1)}>
@@ -290,7 +290,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
         padding: 12,
         border: "1px solid var(--border, #e5e5e5)",
         borderRadius: 10,
-        background: "var(--bg-2, rgba(0,0,0,0.02))",
+        background: "var(--surface-2, rgba(0,0,0,0.02))",
       }}
     >
       <div style={{ fontSize: 13, lineHeight: 1.6 }}>
@@ -299,7 +299,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
         登录成功后回到本页，点击「我已登录，读取会话」。
       </div>
       {err ? (
-        <div style={{ color: "var(--danger, #c04848)", fontSize: 12, marginTop: 8, whiteSpace: "pre-wrap" }}>{err}</div>
+        <div style={{ color: "var(--red, #c04848)", fontSize: 12, marginTop: 8, whiteSpace: "pre-wrap" }}>{err}</div>
       ) : null}
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10, flexWrap: "wrap" }}>
         <button className="btn btn-primary" disabled={phase === "reading"} onClick={read}>

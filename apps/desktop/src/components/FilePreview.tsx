@@ -433,7 +433,7 @@ const zipMetaStyle: CSSProperties = { color: "var(--text-3, #9aa1ac)", flexShrin
 function crumbStyle(active: boolean): CSSProperties {
   return {
     cursor: "pointer", background: "none", border: "none", padding: 0, fontSize: 12.5,
-    color: active ? "var(--text, #1f2329)" : "var(--accent, #1677ff)",
+    color: active ? "var(--text-1, #1f2329)" : "var(--accent, #1677ff)",
     fontWeight: active ? 600 : 400,
   };
 }
@@ -618,7 +618,7 @@ function XlsxView({ sheets }: { sheets: XlsxSheetView[] }) {
   const sheet = sheets[Math.min(idx, sheets.length - 1)] ?? sheets[0]!;
   const thStyle: CSSProperties = {
     border: "1px solid var(--border, #e0e0e0)", padding: "4px 8px", textAlign: "left",
-    fontWeight: 600, whiteSpace: "nowrap", background: "var(--bg-hover, rgba(127,127,127,.06))",
+    fontWeight: 600, whiteSpace: "nowrap", background: "var(--surface-3, rgba(127,127,127,.06))",
   };
   const tdStyle: CSSProperties = {
     border: "1px solid var(--border, #e0e0e0)", padding: "4px 8px",
@@ -698,7 +698,7 @@ const maskStyle: CSSProperties = {
 };
 const panelStyle: CSSProperties = {
   width: "100%", maxWidth: 920, maxHeight: "88vh", display: "flex", flexDirection: "column",
-  background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)",
+  background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)",
   borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", overflow: "hidden",
 };
 const headStyle: CSSProperties = {

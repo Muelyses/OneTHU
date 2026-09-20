@@ -884,8 +884,8 @@
 .exthw-more { padding: 2px 6px; color: var(--text-2); }
 
 .exthw-note { margin-top: 6px; font-size: var(--text-sm); line-height: 20px; color: var(--text-3); }
-.exthw-note.is-warn { color: var(--warning, #b7791f); }
-.exthw-note.is-error { color: var(--danger, #c04848); }
+.exthw-note.is-warn { color: var(--amber, #b7791f); }
+.exthw-note.is-error { color: var(--red, #c04848); }
 
 /* ---------- 空态 / 错误 ---------- */
 
@@ -2524,7 +2524,7 @@
   align-items: center;
   gap: 6px;
   padding: 7px 10px;
-  background: var(--bg-elev, #fff);
+  background: var(--surface, #fff);
   border: 1px solid var(--border);
   border-radius: 999px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
@@ -2665,7 +2665,7 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 .rich-editor .ql-toolbar.ql-snow {
   border: 1px solid var(--border);
   border-radius: 10px 10px 0 0;
-  background: var(--bg-card, #fff);
+  background: var(--surface, #fff);
 }
 .rich-editor .ql-container.ql-snow {
   border: 1px solid var(--border);
@@ -4233,7 +4233,7 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 }
 
 .cloud-error {
-  color: var(--danger, #e5484d);
+  color: var(--red, #e5484d);
   padding: 8px 12px;
   font-size: var(--text-xs);
 }
@@ -4381,7 +4381,7 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   border-radius: 10px;
   padding: 10px 12px;
   margin: 4px 0 12px;
-  background: var(--surface-1);
+  background: var(--surface);
   color: var(--text-1);
 }
 .thos-note {

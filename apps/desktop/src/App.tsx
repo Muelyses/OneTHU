@@ -71,7 +71,7 @@ function Routed() {
       return (
         <div className="login-wrap">
           <BrandLogo size={40} />
-          <div style={{ color: "var(--ink-3)", fontSize: "var(--text-sm)", marginTop: 18 }}>正在恢复会话…</div>
+          <div style={{ color: "var(--text-3)", fontSize: "var(--text-sm)", marginTop: 18 }}>正在恢复会话…</div>
         </div>
       );
     }

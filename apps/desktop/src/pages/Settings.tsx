@@ -272,7 +272,7 @@ export function SettingsPage() {
               <div className="setting-desc">
                 日历「OneTHU 日程」· 上次同步 {syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString() : "—"} · {syscal.lastCount} 条。课表与日程变化后会自动更新（含提前 15 分钟的课程提醒）。
                 {syscal.lastError ? (
-                  <div style={{ marginTop: 6, color: "var(--danger, #c04848)" }}>最近一次同步失败：{syscal.lastError}</div>
+                  <div style={{ marginTop: 6, color: "var(--red, #c04848)" }}>最近一次同步失败：{syscal.lastError}</div>
                 ) : null}
                 {sysMsg ? <div style={{ marginTop: 6, color: "var(--text-2)" }}>{sysMsg}</div> : null}
               </div>
@@ -426,7 +426,7 @@ export function SettingsPage() {
           <div style={{ marginTop: 12 }}>
             <textarea
               className="input"
-              style={{ width: "100%", minHeight: 120, fontFamily: "var(--mono, monospace)", fontSize: 12 }}
+              style={{ width: "100%", minHeight: 120, fontFamily: "var(--font-mono, monospace)", fontSize: 12 }}
               placeholder={"粘贴收藏夹 JSON（设置页导出的格式）…"}
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
@@ -934,7 +934,7 @@ function ExtHwSection() {
       </>
     );
   };
-  const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--mono, monospace)", fontSize: 12 } as const;
+  const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--font-mono, monospace)", fontSize: 12 } as const;
   const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
   const srcRows: Array<{ id: ExtHwSourceId; label: string; logged: boolean }> = (
     ["yuketang", "tuoj", "tuojClassic", "tyche", "dsa"] as const
@@ -1341,7 +1341,7 @@ function ExtHwSection() {
                   return (
                     <div key={id} style={{ fontSize: 13, color: "var(--text-2)" }}>
                       {label}：{logged ? "已登录" : "未登录"} ·{" "}
-                      {err ? <span style={{ color: "var(--danger, #c04848)" }}>需重新登录</span> : `${count} 条`}
+                      {err ? <span style={{ color: "var(--red, #c04848)" }}>需重新登录</span> : `${count} 条`}
                     </div>
                   );
                 })}

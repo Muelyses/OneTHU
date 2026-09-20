@@ -78,7 +78,7 @@ export function WidgetSettingsSection(): ReactNode {
               : instances === null
                 ? "正在读取…"
                 : instances.length === 0
-                  ? "桌面上还没有 OneTHU 小组件：长按桌面 → 小组件 → 选「OneTHU」，放好一块会自动弹出选择层。"
+                  ? "还没有小组件：长按桌面 → 小组件 → OneTHU，放好后会自动询问显示什么。"
                   : `共 ${instances.length} 块，每块各显示各的（点「换内容」改这一块）。`}
           </div>
         </div>

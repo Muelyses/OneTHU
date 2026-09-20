@@ -399,7 +399,7 @@ export function SettingsPage() {
                 }
                 void clip
                   .writeText(json)
-                  .then(() => setFavMsg("收藏夹 JSON 已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
+                  .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
                   .catch(() => setFavMsg("复制失败：剪贴板被拒绝，可改用导入框反向核对。"));
               }}
             >
@@ -427,7 +427,7 @@ export function SettingsPage() {
             <textarea
               className="input"
               style={{ width: "100%", minHeight: 120, fontFamily: "var(--font-mono, monospace)", fontSize: 12 }}
-              placeholder={"粘贴收藏夹 JSON（设置页导出的格式）…"}
+              placeholder={"粘贴收藏夹内容（另一台设备导出的）…"}
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
             />
@@ -438,7 +438,7 @@ export function SettingsPage() {
                 onClick={() => {
                   const parsed = parseFavs(importText);
                   if (!parsed) {
-                    setFavMsg("导入失败：JSON 结构不合法（需要 onethu.favs.v1 导出格式）。");
+                    setFavMsg("导入失败：内容格式不对，请粘贴本应用导出的内容。");
                     return;
                   }
                   favs.replaceAll(parsed);
@@ -472,7 +472,7 @@ export function SettingsPage() {
         <div className="setting-row">
           <div>
             <div className="setting-title">插件管理</div>
-            <div className="setting-desc">Rust 骨干与 JS 模块的安装、启停、权限与运行轨迹</div>
+            <div className="setting-desc">插件的安装、启停、权限与运行记录</div>
           </div>
           <button className="btn" onClick={() => navigate("plugins")}>
             进入插件页
@@ -723,7 +723,7 @@ function ExtHwSection() {
         throw new Error("浏览器预览不支持导出——请用桌面端。");
       }
       const c = await ensureExtHwCredsLoaded();
-      if (!c.yuketang?.cookie?.trim()) throw new Error("未配置雨课堂会话，没有可导出的 Cookie。");
+      if (!c.yuketang?.cookie?.trim()) throw new Error("雨课堂还没登录，没有可导出的登录状态。");
       const json = buildYktCookieExportJson(c.yuketang);
       const { invoke } = await import("@tauri-apps/api/core");
       const date = new Date().toISOString().slice(0, 10);
@@ -765,7 +765,7 @@ function ExtHwSection() {
       setYktCookie(parsed.cookie);
       if (parsed.phone) setYktPhone(parsed.phone);
       void refreshExtHw();
-      return "已导入雨课堂 Cookie 并保存，正在刷新外部作业。";
+      return "已导入雨课堂登录状态，正在刷新外部作业。";
     })()
       .then((m) => notify("yuketang", m))
       .catch((e: unknown) => notify("yuketang", `导入失败：${errMsg(e)}`))
@@ -1005,7 +1005,7 @@ function ExtHwSection() {
               R18b 25.3.2：桌面端该入口隐藏，文案不再引导到它。 */}
           <div className="exthw-note">
             {YKT_WEB_LOGIN_AVAILABLE
-              ? "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信扫码，或用「官方网页登录」在应用内完成扫码 / 短信登录。"
+              ? "雨课堂已开启图形验证码：请用微信扫码，或选「官方网页登录」。"
               : "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。"}
           </div>
           {msg && msgArea === "yuketang" ? (
@@ -1034,7 +1034,7 @@ function ExtHwSection() {
                   title="把当前会话导出成文件，供其他设备导入（免重复扫码）。文件等同账号凭据，用完即删。"
                   onClick={onYktExportCookie}
                 >
-                  {busy === "ykt-export" ? "导出中…" : "导出 Cookie"}
+                  {busy === "ykt-export" ? "导出中…" : "导出登录状态"}
                 </button>
                 <button
                   className="btn"
@@ -1042,7 +1042,7 @@ function ExtHwSection() {
                   title="导入其他已登录设备导出的会话文件，免扫码直接恢复登录"
                   onClick={onYktImportCookie}
                 >
-                  {busy === "ykt-import" ? "导入中…" : "导入 Cookie"}
+                  {busy === "ykt-import" ? "导入中…" : "导入登录状态"}
                 </button>
               </div>
               {ext.yktSession.alive === false ? (
@@ -1249,7 +1249,7 @@ function ExtHwSection() {
                   </label>
                   <div style={{ marginTop: 4, fontSize: 12, opacity: 0.65 }}>
                     {tycheRemember
-                      ? "密码将以 AES-GCM 密文存本机（与其它凭据同路），不进日志、不上传；退出登录即清除。"
+                      ? "密码以密文存在本机，不上传、不进日志；退出登录即清除。"
                       : "不勾选则只保存本次会话，失效后需手动重新登录。"}
                   </div>
                 </div>
@@ -1324,9 +1324,9 @@ function ExtHwSection() {
                 </button>
                 {advanced ? (
                   <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
-                    <textarea className="input" style={taStyle} placeholder="雨课堂 Cookie（sessionid / csrftoken / uv_id …）" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="TUOJ（AI 版）Cookie（session / session.sig）" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）Cookie（session / session.sig）" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="雨课堂登录状态" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="TUOJ（AI 版）登录状态" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
                     <textarea className="input" style={taStyle} placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(e) => setTycheCookie(e.target.value)} />
                     <textarea className="input" style={taStyle} placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(e) => setDsaCookie(e.target.value)} />
                     <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点上方「保存」生效。</div>

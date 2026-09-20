@@ -421,7 +421,7 @@ export function AssignmentDetailPage() {
                     className="btn btn-ghost"
                     style={{ height: 22, padding: "0 8px", fontSize: 11, color: "var(--red)" }}
                     disabled={subBusy}
-                    title="独立操作：直接向网堂发撤回请求（isDeleted=1）。必交附件的作业会被服务器拒绝并提示"
+                    title="直接向网络学堂发撤回请求；必交附件的作业会被拒绝并提示"
                     onClick={() => void doRemove()}
                   >
                     撤回附件

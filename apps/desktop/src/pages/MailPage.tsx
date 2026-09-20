@@ -215,7 +215,7 @@ export function MailPage(): React.ReactNode {
       <div className="card mail-guide">
         <IconMail style={{ width: 40, height: 40 }} />
         <h2>邮箱待配置</h2>
-        <p>邮箱 tab 与云日历共用同一个清华邮箱 + 授权码。先在「设置 → 云同步」配置，即可在这里收发邮件。</p>
+        <p>邮箱与云日历共用同一个清华邮箱：先在「设置 → 云同步」配置。</p>
         <button className="btn btn-primary" onClick={() => navigate("settings")}>去设置</button>
       </div>
     );

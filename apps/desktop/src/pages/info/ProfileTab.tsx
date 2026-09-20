@@ -26,7 +26,7 @@ export function ProfileTab() {
     <>
       <SectionHead
         title="个人信息"
-        aside="yyfw 漫游（demo 同款）"
+        aside="由信息门户提供"
         /* actions 参数不存在，刷新按钮放下方标题行右缘 */
       />
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>

@@ -31,3 +31,7 @@ gradle/**
 
 # 工具目录里的 cargo 构建产物（tools/win-notify-check 等）：一次误提交曾把 628MB 带进历史
 tools/*/target/
+
+# 本机 AI 编码工具（Reasonix 等）在仓库根留下的会话状态：属于个人开发环境，
+# 不该进版本库（历史上 0.1.0 那次误提交过一份）
+.reasonix/

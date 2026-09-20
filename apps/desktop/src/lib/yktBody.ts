@@ -1,3 +1,5 @@
+import { stripInlineColors } from "./htmlTheme.js";
+
 /**
  * R20-B3：雨课堂题干 / 我的作答 HTML 的**本地内联渲染管线**（纯逻辑，零依赖）。
  *
@@ -408,6 +410,8 @@ export interface YktDocBuildOptions {
   fontDataUrl?: string;
   /** LaTeX 渲染器（组件层注入 katex；不传 = 原样保留 $…$） */
   render?: LatexRender;
+  /** 当前是否深色主题（决定文档内样式档；主题切换由调用方重建文档） */
+  dark?: boolean;
   /**
    * 额外样式（如 vendor/katex 的 katexInlineCss，srcdoc iframe 是 opaque origin，
    * 加载不了应用包内资源，样式必须随文档字符串进）。仅当 LaTeX 真渲染出了内容
@@ -416,20 +420,44 @@ export interface YktDocBuildOptions {
   extraCss?: string;
 }
 
-/** 文档内样式：浅色定稿（官方内容黑字白底，与应用主题解耦，两端一致） */
-export const YKT_DOC_CSS = [
-  "html,body{margin:0;padding:0}",
-  `body{font:14px/1.65 ${YKT_DOC_FONT_STACK};`,
-  "color:#222;background:transparent;overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}",
-  "p{margin:0 0 8px}p:last-child{margin-bottom:0}",
-  "img{max-width:100%;height:auto;border-radius:4px}",
-  "table{border-collapse:collapse;max-width:100%}th,td{border:1px solid #ddd;padding:4px 8px;font-size:12px}",
-  "pre{white-space:pre-wrap;overflow-wrap:anywhere}",
-  "a{color:#1a73e8;text-decoration:underline}",
-  // 回退栈必须与 body 同栈（YKT_DOC_FONT_STACK）：字体加载失败/未覆盖的字符 ≈ 普通正文观感
-  `.${YKT_ENCRYPTED_FONT_CLASS}{font-family:"${YKT_FONT_FAMILY}",${YKT_DOC_FONT_STACK}}`,
-  ".ykt-img-fallback{display:flex;align-items:center;gap:6px;padding:10px 12px;margin:4px 0;border:1px dashed #bbb;border-radius:6px;color:#666;font-size:12px;background:#fafafa;overflow-wrap:anywhere}",
-].join("");
+/**
+ * 文档内样式（浅色 / 深色两档）。
+ *
+ * 这份文档跑在 `sandbox="allow-scripts"` 的 **opaque origin** iframe 里，**继承不到
+ * 应用主题的 CSS 变量**（父文档的 custom property 不跨 opaque origin 生效），所以深浅
+ * 两档必须各自写死颜色——原先只有浅色档，深色主题下正文保持 #222 黑字（用户实录：
+ * 雨课堂黑夜模式 LaTeX 区域还是白底黑字）。由调用方按当前主题选档
+ * （buildYktProblemDoc 的 dark 参数），主题切换由组件重建文档。
+ */
+export function yktDocCss(dark: boolean): string {
+  // 深色档取应用 night 主题的正文/边框色，保证「和外面看起来是一套」
+  const ink = dark ? "#e8ebf2" : "#222";
+  const border = dark ? "rgba(255,255,255,0.18)" : "#ddd";
+  const link = dark ? "#6b9bff" : "#1a73e8";
+  const paleInk = dark ? "#7d8494" : "#666";
+  const paleBg = dark ? "rgba(255,255,255,0.06)" : "#fafafa";
+  const paleBorder = dark ? "rgba(255,255,255,0.22)" : "#bbb";
+  return [
+    "html,body{margin:0;padding:0}",
+    `body{font:14px/1.65 ${YKT_DOC_FONT_STACK};`,
+    `color:${ink};background:transparent;overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}`,
+    "p{margin:0 0 8px}p:last-child{margin-bottom:0}",
+    "img{max-width:100%;height:auto;border-radius:4px}",
+    `table{border-collapse:collapse;max-width:100%}th,td{border:1px solid ${border};padding:4px 8px;font-size:12px}`,
+    "pre{white-space:pre-wrap;overflow-wrap:anywhere}",
+    `a{color:${link};text-decoration:underline}`,
+    // 深色档再兜一层：官方正文/KaTeX 产物里的行内色都压不过档位配色
+    dark ? "body,body *{color:inherit!important;background-color:transparent!important}" : "",
+    // 回退栈必须与 body 同栈（YKT_DOC_FONT_STACK）：字体加载失败/未覆盖的字符 ≈ 普通正文观感
+    `.${YKT_ENCRYPTED_FONT_CLASS}{font-family:"${YKT_FONT_FAMILY}",${YKT_DOC_FONT_STACK}}`,
+    `.ykt-img-fallback{display:flex;align-items:center;gap:6px;padding:10px 12px;margin:4px 0;border:1px dashed ${paleBorder};border-radius:6px;color:${paleInk};font-size:12px;background:${paleBg};overflow-wrap:anywhere}`,
+    // 长公式在深色底上允许横向滚动，避免被裁
+    ".katex-display{overflow-x:auto;overflow-y:hidden}",
+  ].join("");
+}
+
+/** 浅色档（兼容旧引用；新代码请用 yktDocCss(dark) 取档） */
+export const YKT_DOC_CSS = yktDocCss(false);
 
 /**
  * 文档内脚本（静态字符串，buildYktProblemDoc 里把 __YKT_FONT__ 换成字体族名）。
@@ -482,6 +510,8 @@ export const YKT_DOC_SCRIPT_TEMPLATE = [
  *  纯字符串拼装，任何一步失败都只影响该步的降级路径，不抛错。 */
 export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
   let body = sanitizeForInlineDoc(opts.html ?? "");
+  // 深色档：先剥掉官方正文里写死的颜色（与 THUbook 同源处理），再由档位样式接管配色
+  if (opts.dark) body = stripInlineColors(body);
   const hasEnc = needsEncryptedFont(body);
   let fontFace = "";
   if (hasEnc && opts.fontDataUrl) {
@@ -503,7 +533,7 @@ export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
     '<!DOCTYPE html><html><head><meta charset="utf-8">' +
     '<meta name="referrer" content="no-referrer">' +
     `<base href="${YKT_DOC_BASE}">` +
-    `<style>${YKT_DOC_CSS}${extra}${fontFace}</style></head><body>${body}` +
+    `<style>${yktDocCss(opts.dark === true)}${extra}${fontFace}</style></head><body>${body}` +
     `<script>${script}</script></body></html>`
   );
 }

@@ -663,10 +663,16 @@ function SettingsBody({ id, rec }: { id: string; rec: any }): ReactNode {
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
+  // 自动维护字段（MadModel token 等）永远以**当前实时值**保存：草稿是打开面板那一刻的
+  // 快照，泵在此之后签发的 token 会被陈旧草稿覆盖成空 → 免费档静默失效（用户实录 2026-09-20）
+  const liveSettings: Record<string, string> = { ...(rec.settings ?? {}) };
+
   const save = (): void => {
     setSaving(true);
     try {
-      updatePlugin(id, { settings: { ...draft } });
+      const payload: Record<string, string> = { ...draft };
+      for (const f of fields as any[]) if (f.auto) payload[f.key] = liveSettings[f.key] ?? "";
+      updatePlugin(id, { settings: payload });
       setSavedAt(new Date().toLocaleTimeString("zh-CN", { hour12: false }));
     } finally {
       setSaving(false);
@@ -698,7 +704,10 @@ function SettingsBody({ id, rec }: { id: string; rec: any }): ReactNode {
           {fields.map((f: any) => (
             <label key={f.key} className="plg-setting">
               <span>{f.label}</span>
-              {f.type === "select" ? (
+              {f.auto ? (
+                /* 自动维护：只读展示实时值（不受草稿影响），避免手改与误覆盖 */
+                <input className="input" type="text" readOnly value={liveSettings[f.key] ?? ""} placeholder="（尚未签发）" />
+              ) : f.type === "select" ? (
                 <select
                   className="input"
                   value={draft[f.key] ?? ""}

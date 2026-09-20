@@ -123,6 +123,9 @@ export function LearnPage() {
           </>
         }
       />
+      <div className="row-sub" style={{ margin: "0 0 10px" }}>
+        雨课堂与 OJ 的作业同步在「设置 → 数据与同步」里配置（登录一次后作业会自动并入「全部作业」）。
+      </div>
 
       {state === "error" ? <ErrorNote text={error ?? ""} onRetry={() => void reload()} /> : null}
 

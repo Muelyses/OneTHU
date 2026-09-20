@@ -217,8 +217,9 @@ export const IconFolderPlus = (p: SVGProps<SVGSVGElement>) => (
 /** 收藏星标（CollectStar 用；fill 由调用方以 CSS 控制） */
 export const IconPin = (p: SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" {...p}>
-    <path d="M9.5 1.8 14.2 6.5l-2.6 1.1-3 3-1.4 3.4-1-1-2.8-2.8-1-1 3.4-1.4 3-3z" />
-    <path d="M3.2 12.8 1.6 14.4" />
+    {/* 图钉（pushpin）：钉帽 + 钉身 + 针尖，避免与星号混淆 */}
+    <path d="M9.6 1.6h4.8v1.6l-1.6 1.6v3.2L10.4 10.4H5.6L3.2 8V4.8L1.6 3.2V1.6z" />
+    <path d="M8 10.4v4" />
   </svg>
 );
 

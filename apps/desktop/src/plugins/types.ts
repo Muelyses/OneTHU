@@ -87,6 +87,9 @@ export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: st
 export interface PluginSettingField {
   key: string;
   label: string;
+  /** 自动维护字段（宿主/插件自己写入，如 MadModel token）：设置面板只读展示，
+   *  且保存时**不**用面板草稿覆盖——否则打开面板后泵刚签发的值会被草稿清空 */
+  auto?: boolean;
   type?: "text" | "password" | "textarea" | "select";
   /** select 类型的选项集 */
   options?: Array<{ value: string; label: string }>;

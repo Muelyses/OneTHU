@@ -364,8 +364,8 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     { key: "priceOut", label: "输出价格 $/1M tokens（自费模式）", type: "text", default: "1.10" },
     { key: "budget", label: "Token 预算（USD，到量停；自费模式）", type: "text", default: "2" },
     { key: "maxSteps", label: "单次任务最大步数", type: "text", default: "16" },
-    { key: "madmodelToken", label: "MadModel Token（自动维护，勿手改）", type: "text", default: "" },
-    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护，勿手改）", type: "text", default: "" },
+    { key: "madmodelToken", label: "MadModel Token（自动维护）", type: "text", default: "", auto: true },
+    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护）", type: "text", default: "", auto: true },
   ],
 };
 

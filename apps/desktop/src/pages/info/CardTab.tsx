@@ -127,6 +127,11 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
               onChange={(e) => setAmount(e.target.value)}
               style={{ marginBottom: 10 }}
             />
+            {!valid ? (
+              <div style={{ fontSize: 12, color: "var(--red, #c04848)", marginBottom: 8 }}>
+                充值金额需在 10 ~ 1000 元之间（全渠道下限统一 10 元，官方收银台同样起步 10 元）
+              </div>
+            ) : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
               {RCH_CHANNELS.map((c) => (
                 <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13 }}>

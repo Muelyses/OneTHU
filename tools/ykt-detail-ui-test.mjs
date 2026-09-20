@@ -23,6 +23,9 @@
  *      收藏夹作业卡（HomeWidgets.tsx）、全局搜索（SearchPage.tsx）三处点击点必须统一走
  *      openHomeworkRow（lib/homeworkEntry.ts），不得自拼判定 / 直连详情页；原生详情页保留
  *      「浏览器打开」备用出口（openExternalHomework：桌面系统浏览器 / 移动 R20-A WebView）。
+ *  [6] R20-B3：老师评语去重 dedupeYktRemarks（remark 与 comment[] 同文只渲染一处，优先具名
+ *      批注口径；不同文全保留；批注间自身去重）+ 详情页评语区接线静态审计
+ *      （入口分数口径 homeworkEntryScoreText 属 feat 提交，见 docs 28.10.3）。
  *
  * 覆盖边界：homeworkEntry.ts openHomeworkRow / toHomework 的 externalLeafTypeId/
  * externalClassroomId 两行映射与 state/exthw.ts fetchYktExerciseDetail 依赖
@@ -49,7 +52,7 @@ registerHooks({
   },
 });
 
-const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText } = await import(
+const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks } = await import(
   "../apps/desktop/src/lib/yktDetail.ts"
 );
 
@@ -354,5 +357,76 @@ console.log("\n[5] 入口接线静态审计（所有点击点统一 openHomework
   ok(!page.includes("在网页中打开"), "旧文案「在网页中打开」已统一为「浏览器打开」");
 }
 
-console.log(`\n═══ R20-B2 雨课堂原生详情页单测：${pass} 通过 / ${fail} 失败 ═══`);
+/* ───────────────── [6] R20-B3：评语去重 + 入口分数口径 ───────────────── */
+console.log("\n[6] R20-B3：dedupeYktRemarks（评语去重）+ homeworkEntryScoreText（入口分数）");
+{
+  // 6a. 霖实测形态：总评与具名批注同文 → 只渲染批注行（批注人「盛洁」保留，总评不再重复）
+  deepEq(
+    dedupeYktRemarks({ remark: "写得不错", comments: [{ name: "盛洁", content: "写得不错" }] }),
+    { comments: [{ name: "盛洁", content: "写得不错" }] },
+    "总评 ≡ 具名批注 → 丢总评留批注（去重核心场景）",
+  );
+  deepEq(
+    dedupeYktRemarks({ remark: "写得不错 \n", comments: [{ name: "盛洁", content: "  写得不错" }] }),
+    { comments: [{ name: "盛洁", content: "  写得不错" }] },
+    "空白差异不影响同文判定",
+  );
+  deepEq(
+    dedupeYktRemarks({ remark: "盛洁：写得不错", comments: [{ name: "盛洁", content: "写得不错" }] }),
+    { comments: [{ name: "盛洁", content: "写得不错" }] },
+    "总评内嵌「名：内容」形态 ≡ 批注 → 去重",
+  );
+  deepEq(
+    dedupeYktRemarks({ remark: "盛洁:写得不错", comments: [{ name: "盛洁", content: "写得不错" }] }),
+    { comments: [{ name: "盛洁", content: "写得不错" }] },
+    "冒号全半角折叠后同文 → 去重",
+  );
+  deepEq(
+    dedupeYktRemarks({ remark: "注意格式", comments: [{ name: "盛洁", content: "注意格式" }, { content: "第三题重做" }] }),
+    { comments: [{ name: "盛洁", content: "注意格式" }, { content: "第三题重做" }] },
+    "具名同文 + 不同文批注并存 → 总评去重，两条批注全保留",
+  );
+
+  // 6b. 无名批注同文 → 两形态渲染相同，保留总评、丢批注
+  deepEq(dedupeYktRemarks({ remark: "好", comments: [{ content: "好" }] }), { remark: "好" }, "总评 ≡ 无名批注 → 留总评丢批注（渲染等价）");
+
+  // 6c. 不同文 → 全保留（红线：去重不许丢评语）
+  deepEq(
+    dedupeYktRemarks({ remark: "总评：良好", comments: [{ name: "盛洁", content: "第二题订正" }] }),
+    { remark: "总评：良好", comments: [{ name: "盛洁", content: "第二题订正" }] },
+    "总评与批注不同文 → 都保留",
+  );
+  deepEq(
+    dedupeYktRemarks({ remark: "丙", comments: [{ content: "甲" }, { content: "乙" }] }),
+    { remark: "丙", comments: [{ content: "甲" }, { content: "乙" }] },
+    "三段互异评语全保留且顺序不变",
+  );
+
+  // 6d. 批注之间自身去重（首条优先；总评缺位时也生效）
+  deepEq(
+    dedupeYktRemarks({ comments: [{ content: "同文" }, { name: "李四", content: "同文" }, { name: "王五", content: "另一句" }] }),
+    { comments: [{ content: "同文" }, { name: "王五", content: "另一句" }] },
+    "批注间同文 → 留首条（无总评场景）",
+  );
+  deepEq(
+    dedupeYktRemarks({ comments: [{ content: "x" }, { content: "x" }, { content: "x" }] }),
+    { comments: [{ content: "x" }] },
+    "三条全同文 → 收敛为一条",
+  );
+
+  // 6e. 空值形态：字段缺省 = 不渲染该层；全空 → 整节隐藏
+  deepEq(dedupeYktRemarks({}), {}, "无总评无批注 → 空对象（评语区隐藏）");
+  deepEq(dedupeYktRemarks({ remark: "  ", comments: [{ content: "   " }] }), {}, "纯空白评语 ≡ 无（不渲染空行）");
+  deepEq(dedupeYktRemarks({ remark: "只有总评", comments: [] }), { remark: "只有总评" }, "空批注数组 → 只留总评");
+  deepEq(dedupeYktRemarks({ comments: [{ content: "只有批注" }] }), { comments: [{ content: "只有批注" }] }, "无总评 → 只留批注");
+
+  // 6f. 接线静态审计：详情页必须走去重口径，不得残留旧的直渲染（防双显回归）
+  const { readFileSync } = await import("node:fs");
+  const readSrc = (rel) => readFileSync(new URL(rel, import.meta.url), "utf8");
+  const page = readSrc("../apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx");
+  ok(page.includes("dedupeYktRemarks(p)") && page.includes("remarkView"), "详情页评语区走 dedupeYktRemarks 去重口径");
+  ok(!page.includes("p.remark") && !page.includes("p.comments"), "详情页不再直渲染原始 remark / comments（防双显回归）");
+}
+
+console.log(`\n═══ R20-B2/B3 雨课堂详情页单测：${pass} 通过 / ${fail} 失败 ═══`);
 if (fail > 0) process.exit(1);

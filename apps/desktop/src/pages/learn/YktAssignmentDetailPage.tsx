@@ -41,6 +41,7 @@ import { explainNetworkError } from "../../lib/transport.js";
 import { openExternalHomework } from "../../lib/extHwBrowse.js";
 import { openExternal } from "../info/openExternal.js";
 import {
+  dedupeYktRemarks,
   yktAttachmentsText,
   yktExerciseSummary,
   yktIsExternalLinkProblem,
@@ -57,7 +58,8 @@ function fmtMaxRetry(n: number | undefined): string {
 }
 
 /** 老师评语（remark / comments）按纯文本渲染：实测快照均为纯文本（非 HTML），
- *  纯文本 + pre-wrap 不会吃掉换行，也避免把评语当 HTML 注入。 */
+ *  纯文本 + pre-wrap 不会吃掉换行，也避免把评语当 HTML 注入。
+ *  R20-B3 fix：两字段同文时只渲染一处（dedupeYktRemarks，保留具名批注口径）。 */
 function YktPlainText({ text }: { text: string }) {
   return <div className="ykt-plain">{text}</div>;
 }
@@ -70,7 +72,10 @@ function ProblemCard({ p, fontUrl, cookies }: { p: YkProblem; fontUrl?: string; 
   const ext9 = yktIsExternalLinkProblem(p);
   const attText = yktAttachmentsText(p.myAnswerAttachments);
   const hasAnswer = Boolean(p.myAnswerHtml || attText);
-  const hasRemark = Boolean(p.remark || p.comments?.length);
+  // R20-B3 fix：remark 与 comment[] 同文时只渲染一处（雨课堂已批改题两字段常同文，
+  // 详见 lib/yktDetail.ts dedupeYktRemarks 口径说明）；不同文时全部保留。
+  const remarkView = dedupeYktRemarks(p);
+  const hasRemark = Boolean(remarkView.remark || remarkView.comments?.length);
   return (
     <Card className="ykt-problem">
       <div className="ykt-problem-head">
@@ -113,8 +118,8 @@ function ProblemCard({ p, fontUrl, cookies }: { p: YkProblem; fontUrl?: string; 
           {hasRemark ? (
             <div className="ykt-remark">
               <div className="ykt-sec-label">老师评语</div>
-              {p.remark ? <YktPlainText text={p.remark} /> : null}
-              {(p.comments ?? []).map((c, i) => (
+              {remarkView.remark ? <YktPlainText text={remarkView.remark} /> : null}
+              {(remarkView.comments ?? []).map((c, i) => (
                 <div className="ykt-remark-item" key={i}>
                   {c.name ? <b>{c.name}：</b> : null}
                   <YktPlainText text={c.content} />

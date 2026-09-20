@@ -1,5 +1,6 @@
 declare const __APP_VERSION__: string;
 import { useEffect, useState } from "react";
+import { loadTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead } from "../components/Layout.js";
 import { resetOnboarding } from "../state/onboarding.js";
@@ -69,7 +70,37 @@ function jumpToSection(titles: string[]): void {
   }
 }
 
+/** 设置页的二级页签（与信息页 / 生活页同形态）：标题 → 页签分组 */
+const SETTINGS_TAB_OF: Record<string, string> = {
+  导览: "导览", 关于: "关于", 账户: "账号", 账号与凭据: "账号", 安全: "账号",
+  云同步: "数据与同步", 外部作业源: "数据与同步",
+  首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
+  通知: "通知与提醒", 桌面小组件: "通知与提醒",
+  插件: "插件", 下载: "下载与存储",
+};
+const SETTINGS_TAB_ORDER = ["导览", "账号", "通知与提醒", "外观与布局", "数据与同步", "下载与存储", "插件", "关于"];
+
 export function SettingsPage() {
+  /** 当前二级页签（默认「导览」） */
+  const [tab, setTab] = useState<string>("导览");
+  const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
+  const settingsTabHidden = settingsTabLayout.hidden;
+
+  /** 页签显隐：保留既有分节结构，仅按 .section-head 边界切换各分节 hidden（不移动 DOM 节点） */
+  useEffect(() => {
+    const anchor = document.querySelector(".section-head");
+    const parent = anchor?.parentElement;
+    if (!parent) return;
+    let group: string | null = null;
+    for (const el of Array.from(parent.children) as HTMLElement[]) {
+      if (el.classList.contains("section-head")) {
+        const title = (el.textContent ?? "").trim();
+        group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+      }
+      if (group) el.hidden = group !== tab;
+    }
+  }, [tab, settingsTabHidden.join(",")]);
+
   const { user, logout, navigate } = useApp();
   const favs = useFavs();
   const [favMsg, setFavMsg] = useState<string | null>(null);
@@ -120,10 +151,16 @@ export function SettingsPage() {
     <>
       <PageHead title="设置" />
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-        {SETTINGS_GROUPS.map((g) => (
-          <button key={g.label} className="btn" style={{ fontSize: 12.5 }} onClick={() => jumpToSection(g.sections)}>
-            {g.label}
+      {/* 二级页签：只显示当前分组的设置项；页签顺序与显隐沿用 tabLayout("settings") */}
+      <div className="settings-tabs" style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+        {settingsTabLayout.order.filter((t) => !settingsTabHidden.includes(t)).map((t) => (
+          <button
+            key={t}
+            className={tab === t ? "btn btn-primary" : "btn"}
+            style={{ fontSize: 12.5 }}
+            onClick={() => setTab(t)}
+          >
+            {t}
           </button>
         ))}
       </div>

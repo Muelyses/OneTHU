@@ -62,8 +62,10 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   以「主题 id 与插件 id 同名」的约定与模块声明的主题 id 兜底匹配。
 - **市场拉取通道**：插件安装/更新与市场名单刷新优先经 GitHub contents API，raw 域名
   降级兜底（缓存语义差异见 [plugin-development.md §8.4](./plugin-development.md)）。
-- **系统通知投递**：规则在 JS 侧算（`state/notifyPlan.ts` 出计划、`notifyScheduler.ts`
-  与原生实际排程对账），原生只做投递——Android 经 `onethu-mobile` 插件落 AlarmManager，
+- **系统通知投递**：规则在 JS 侧算（`state/notifyPlan.ts` 出计划、`state/notifyInputs.ts`
+  取数、`notifyScheduler.ts` 与原生实际排程对账），原生只做投递；覆盖对象为**课表与考试、
+  自定义日程（含 rrule 展开，用事件自带 alarmMinutes 优先）、未交作业 DDL、每日早报**
+  （只有日程的日子也发早报，否则用户会以为「没提醒 = 没事」）——Android 经 `onethu-mobile` 插件落 AlarmManager，
   macOS 用 `UNUserNotificationCenter`，Windows 用 WinRT toast + `AddToSchedule`。
   落点（点击通知打开哪一页）由原生存下、应用回前台时取走并导航；macOS 与 Windows 的
   深链回调分别需要 App delegate 挂钩与 COM 激活器，当前为系统默认行为（见

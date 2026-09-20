@@ -13,18 +13,19 @@
 import { parseLearnTime } from "@onethu/core/src/learn/time.js";
 import { effectiveRemind, type HwRemindState } from "./hwRemind.js";
 
-export type NotifyKind = "class" | "exam" | "ddl" | "briefing";
+export type NotifyKind = "class" | "exam" | "event" | "ddl" | "briefing";
 
 /** 通知渠道（Android NotificationChannel 分档口径；三端共用同一套分档） */
 export type NotifyChannel = "course" | "ddl" | "briefing";
 
 export const NOTIFY_CHANNEL_NAMES: Record<NotifyChannel, string> = {
-  course: "课程与考试",
+  course: "课程与日程",
   ddl: "作业截止",
   briefing: "每日早报",
 };
 
-/** 通知属于哪个渠道（后端据此选 Android 渠道 / 前端据此分组显示） */
+/** 通知属于哪个渠道（后端据此选 Android 渠道 / 前端据此分组显示）。
+ *  自定义日程与课程同档：都是「到点要去做的事」，同一渠道便于用户一次关掉或调级。 */
 export function channelOf(kind: NotifyKind): NotifyChannel {
   return kind === "ddl" ? "ddl" : kind === "briefing" ? "briefing" : "course";
 }
@@ -82,6 +83,19 @@ export interface PlanScheduleEntry {
   courseName?: string;
   location?: string | null;
   category?: string | null;
+}
+
+/** 自定义日程（本地或云同步日历）的展开实例：与课程同档处理，但可用事件自带的提前量 */
+export interface PlanEventEntry {
+  /** 稳定标识（事件的 uid + 实例起点，保证同一场次 id 不变） */
+  uid: string;
+  summary: string;
+  location?: string | null;
+  /** 起点（毫秒） */
+  start: number;
+  allDay?: boolean;
+  /** 事件自带的提前量（分钟）；缺省用设置里的课程提前量 */
+  alarmMinutes?: number | null;
 }
 
 export interface PlanHomework {
@@ -202,6 +216,12 @@ export function fmtDeadline(ms: number, now: number): string {
   return `${d.getMonth() + 1}月${d.getDate()}日 ${hm}`;
 }
 
+/** 毫秒 → "HH:MM"（本地时区；日程事件只有绝对时刻，没有 startTime 字符串） */
+function fmtMsHM(ms: number): string {
+  const d = new Date(ms);
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
 function dayKey(ms: number): string {
   const d = new Date(ms);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -220,6 +240,7 @@ function fmtMD(ms: number): string {
  */
 export function buildNotifyPlan(input: {
   schedule?: PlanScheduleEntry[] | null;
+  events?: PlanEventEntry[] | null;
   homework?: PlanHomework[] | null;
   remind: HwRemindState;
   settings?: Partial<NotifySettings> | null;
@@ -265,6 +286,29 @@ export function buildNotifyPlan(input: {
     }
   }
 
+  /* ①b 自定义日程：与课程同档，但优先用事件自带的提前量（用户对该场次的显式选择）。
+   *  全天事件跳过——它没有「提前多久到」的语义，提醒它只会变成噪音。 */
+  for (const e of input.events ?? []) {
+    if (e.allDay) continue;
+    const start = e.start;
+    if (!Number.isFinite(start) || start <= now) continue;
+    const lead = typeof e.alarmMinutes === "number" && e.alarmMinutes >= 0 ? e.alarmMinutes : s.classLead;
+    if (lead <= 0) continue;
+    const summary = clip(e.summary || "日程", 16);
+    const loc = clip(e.location ?? "", 18);
+    const q = planFireTime(start - lead * 60_000, start, s.quietFrom, s.quietTo, now, "drop");
+    if (!q) continue;
+    push({
+      id: `event:${e.uid}:${start}:${lead}`,
+      kind: "event",
+      at: q.at,
+      title: `${fmtMsHM(start)} ${summary}`,
+      body: joinParts([loc, `${lead} 分钟后开始`]),
+      page: "schedule",
+      ...(q.shifted ? { shifted: true } : {}),
+    }, start);
+  }
+
   /* ② 作业 DDL：提前量取两级模型（单作业覆盖 → 全局默认） */
   if (s.ddl) {
     for (const h of input.homework ?? []) {
@@ -307,7 +351,11 @@ export function buildNotifyPlan(input: {
         const d = parseLearnTime(h.deadline);
         return !!d && dayKey(d.getTime()) === key;
       });
-      if (courses.length === 0 && dues.length === 0) continue;
+      // 自定义日程也算「今天有安排」：只有日程的日子同样该有早报，否则用户会以为没提醒就是没事
+      const eventsToday = (input.events ?? []).filter(
+        (e) => !e.allDay && Number.isFinite(e.start) && dayKey(e.start) === key,
+      );
+      if (courses.length === 0 && dues.length === 0 && eventsToday.length === 0) continue;
       const first = courses[0];
       const q = planFireTime(at, end, s.quietFrom, s.quietTo, now, "drop");
       if (!q) continue;
@@ -318,6 +366,7 @@ export function buildNotifyPlan(input: {
         title: `${i === 0 ? "今天" : i === 1 ? "明天" : fmtMD(cursor.getTime())} · ${fmtMD(cursor.getTime())}`,
         body: joinParts([
           courses.length ? `${courses.length} 节课${first ? `（${fmtHM(first.startTime)} 起）` : ""}` : null,
+          eventsToday.length ? `${eventsToday.length} 个日程` : null,
           dues.length ? `${dues.length} 个截止` : null,
         ]),
         page: i === 0 && key === nowDay ? "today" : "schedule",

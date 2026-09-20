@@ -5,7 +5,7 @@
 // 系统到点仍会发（force-stop 除外），重启后由 BOOT_COMPLETED 重排。
 //
 // 三个渠道分档（Android 8+ 用户可单独关某一档，这是「渠道管理」的落地形式）：
-//   onethu_course   课程与考试
+//   onethu_course   课程与日程（含自定义日程）
 //   onethu_ddl      作业截止
 //   onethu_briefing 每日早报
 //
@@ -100,7 +100,7 @@ object NotifyCenter {
     const val CH_BRIEFING = "onethu_briefing"
 
     private val CHANNELS = listOf(
-        Triple(CH_COURSE, "课程与考试", "上课前与开考前提醒"),
+        Triple(CH_COURSE, "课程与日程", "上课前、开考前与自定义日程提醒"),
         Triple(CH_DDL, "作业截止", "作业 DDL 提醒"),
         Triple(CH_BRIEFING, "每日早报", "当天课程与截止汇总"),
     )

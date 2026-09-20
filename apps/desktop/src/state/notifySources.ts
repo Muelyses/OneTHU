@@ -9,6 +9,7 @@
  */
 import { invoke } from "@tauri-apps/api/core";
 import { subscribeCampusData, subscribeLearnData } from "./data.js";
+import { onCloudCalChange } from "./cloudCal.js";
 import { subscribeExtHw } from "./exthw.js";
 import { subscribeHwRemind } from "./hwRemind.js";
 import { subscribePluginWidgets } from "../plugins/pluginWidgets.js";
@@ -29,6 +30,7 @@ export function subscribeNotifySources(fn: () => void): () => void {
     subscribeHwRemind(fn),
     subscribeCampusData(fn),
     subscribePluginWidgets(fn),
+    onCloudCalChange(fn),
   ];
   return () => {
     for (const u of unsubs) u();

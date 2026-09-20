@@ -164,6 +164,69 @@ eq("空日不发早报", buildNotifyPlan({ schedule: [], homework: [], remind: R
 eq("早报时刻已过的当天不发", buildNotifyPlan({ schedule: [cls({ date: "2026-09-21", startTime: "20:00" })], homework: [], remind: REMIND, settings: S, now: NOW }).filter((x) => x.kind === "briefing").length, 0);
 eq("briefingAt=null → 无早报", buildNotifyPlan({ schedule: [cls()], homework: [], remind: REMIND, settings: { ...S, briefingAt: null }, now: NOW }).filter((x) => x.kind === "briefing").length, 0);
 
+/* ── 自定义日程（与课程同档，但可用事件自带提前量） ── */
+{
+  const ev = (over = {}) => ({ uid: "u1", summary: "组会", location: "东主楼 10-203", start: T(2026, 9, 22, 10, 0), ...over });
+  const p = buildNotifyPlan({ schedule: [], events: [ev()], homework: [], remind: REMIND, settings: S, now: NOW });
+  const e = of(p, "event");
+  eq("日程生成一条提醒", e.length, 1);
+  eq("日程触发 = 开始前默认提前量", dateOf(e[0].at) + " " + hm(e[0].at), "2026-09-22 09:45");
+  eq("日程标题含时间与标题", e[0].title, "10:00 组会");
+  ok("日程正文含地点与提前量", e[0].body.includes("东主楼 10-203") && e[0].body.includes("15 分钟后开始"));
+  eq("日程深链到日程页", e[0].page, "schedule");
+  ok("id 含 uid、起点与提前量（同一场次稳定）", e[0].id.startsWith("event:u1:") && e[0].id.includes(`:${T(2026, 9, 22, 10, 0)}:`) && e[0].id.endsWith(":15"));
+}
+{
+  // 事件自带 alarmMinutes：用户对这一场次的显式选择，优先于设置
+  const p = buildNotifyPlan({
+    schedule: [], events: [{ uid: "u2", summary: "面试", start: T(2026, 9, 22, 9, 0), alarmMinutes: 60 }],
+    homework: [], remind: REMIND, settings: S, now: NOW,
+  });
+  eq("事件自带提前量生效", hm(of(p, "event")[0].at), "08:00");
+  eq("id 跟随提前量", of(p, "event")[0].id.endsWith(":60"), true);
+}
+eq("全天事件不提醒（没有「提前多久到」的语义）", of(buildNotifyPlan({
+  schedule: [], events: [{ uid: "u3", summary: "假期", start: T(2026, 9, 22, 0, 0), allDay: true }],
+  homework: [], remind: REMIND, settings: S, now: NOW,
+}), "event").length, 0);
+eq("已开始的日程不提醒", of(buildNotifyPlan({
+  schedule: [], events: [{ uid: "u4", summary: "过期", start: T(2026, 9, 20, 10, 0) }],
+  homework: [], remind: REMIND, settings: S, now: NOW,
+}), "event").length, 0);
+eq("课程提前量为 0 时日程也不提醒", of(buildNotifyPlan({
+  schedule: [], events: [{ uid: "u5", summary: "组会", start: T(2026, 9, 22, 10, 0) }],
+  homework: [], remind: REMIND, settings: { ...S, classLead: 0 }, now: NOW,
+}), "event").length, 0);
+eq("日程与课程同档渠道", channelOf("event"), "course");
+eq("渠道名反映日程", NOTIFY_CHANNEL_NAMES.course, "课程与日程");
+{
+  // 深夜日程：顺延会晚于事件本身 → 丢弃（与课程同口径，不做 DDL 那种「静默前最后一分钟」）
+  const p = buildNotifyPlan({
+    schedule: [], events: [{ uid: "u6", summary: "夜跑", start: T(2026, 9, 22, 0, 5) }],
+    homework: [], remind: REMIND, settings: S, now: NOW,
+  });
+  eq("静默冲突的日程按课程口径丢弃", of(p, "event").length, 0);
+}
+{
+  // 只有日程的那天也发早报：否则用户会以为「没提醒 = 没事」
+  const p = buildNotifyPlan({
+    schedule: [], events: [{ uid: "u7", summary: "组会", start: T(2026, 9, 22, 10, 0) }],
+    homework: [], remind: REMIND, settings: S, now: NOW,
+  });
+  const briefs = of(p, "briefing");
+  eq("只有日程的日子仍发早报", briefs.length, 1);
+  ok("早报正文包含日程数", briefs[0].body.includes("1 个日程"));
+  eq("早报不含课程/截止", briefs[0].body.includes("节课") || briefs[0].body.includes("截止"), false);
+}
+{
+  // 全天事件不算「今天有安排需要提醒」的日程数（它是背景信息，不该占早报计数）
+  const p = buildNotifyPlan({
+    schedule: [], events: [{ uid: "u8", summary: "假期", start: T(2026, 9, 22, 0, 0), allDay: true }],
+    homework: [], remind: REMIND, settings: S, now: NOW,
+  });
+  eq("全天事件不触发早报", of(p, "briefing").length, 0);
+}
+
 /* ── 排序 / 上限 / 渠道 / 幂等 ── */
 {
   const many = Array.from({ length: 100 }, (_, i) => hw({ id: `h${i}`, deadline: `2026-09-2${(i % 3) + 2} 12:00:00` }));

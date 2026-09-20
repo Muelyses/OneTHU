@@ -6,12 +6,15 @@
  *   ② 本文件拉的是 data/exthw（一路到 .tsx），Node 无法直跑；剥开之后 notifyRuntime
  *      就能在测试里注入假数据源，时机逻辑可断言。
  */
+import { expandEventSet } from "@onethu/core/src/caldav/ics.js";
 import { getCampusSnapshot, getLearnSnapshot } from "./data.js";
+import { getCloudEvents, getLocalEvents } from "./cloudCal.js";
 import { getExtHwSnapshot, toHomework } from "./exthw.js";
-import type { PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
+import type { PlanEventEntry, PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
 
 export function collectNotifyInputs(now = Date.now()): {
   schedule: PlanScheduleEntry[];
+  events: PlanEventEntry[];
   homework: PlanHomework[];
 } {
   const campus = getCampusSnapshot();
@@ -43,5 +46,29 @@ export function collectNotifyInputs(now = Date.now()): {
     }),
   ];
 
-  return { schedule, homework };
+  return { schedule, events: collectCalendarEvents(now), homework };
+}
+
+/** 未来 8 天内的自定义日程（本地 + 云同步日历），按 rrule 展开成具体场次。
+ *  事件自带的 alarmMinutes 优先于设置里的默认提前量——那是用户对这一场次的显式选择。 */
+function collectCalendarEvents(now: number): PlanEventEntry[] {
+  const horizon = now + 8 * 86_400_000;
+  const sources = [...getLocalEvents(), ...getCloudEvents()];
+  if (sources.length === 0) return [];
+  const byUid = new Map(sources.map((e) => [e.uid, e]));
+  const out: PlanEventEntry[] = [];
+  for (const occ of expandEventSet(sources, now, horizon)) {
+    const src = byUid.get(occ.uid);
+    out.push({
+      // 只给 uid：实例起点由 notifyPlan 的 id 组成（event:<uid>:<start>:<lead>）承担，
+      // 同一场次重复展开得到的 id 因此稳定
+      uid: occ.uid,
+      summary: occ.summary,
+      location: occ.location ?? null,
+      start: occ.start,
+      allDay: occ.allDay === true,
+      alarmMinutes: typeof src?.alarmMinutes === "number" ? src.alarmMinutes : null,
+    });
+  }
+  return out;
 }

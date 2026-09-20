@@ -2104,6 +2104,66 @@ async fn stop_qr_keep_alive(app: tauri::AppHandle) -> Result<serde_json::Value, 
         .map_err(|e| e.to_string())
 }
 
+/* 桌面小组件（Android）：JS 把渲染好的快照推给原生，原生存 SharedPreferences 并重画
+ * 已放置的小组件；启动后取走「用户点的是哪个落点」。桌面端无小组件，一律返回 not-android。 */
+
+#[cfg(desktop)]
+#[tauri::command]
+fn widget_push(_snapshot: String) -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-android" })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn widget_clear() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-android" })
+}
+
+#[cfg(desktop)]
+#[tauri::command]
+fn widget_take_target() -> serde_json::Value {
+    serde_json::json!({ "ok": false, "reason": "not-android", "target": "" })
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn widget_push(app: tauri::AppHandle, snapshot: String) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("widgetPush", serde_json::json!({ "snapshot": snapshot }))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn widget_clear(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("widgetClear", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn widget_take_target(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    handle
+        .run_mobile_plugin_async("widgetTakeTarget", serde_json::json!({}))
+        .await
+        .map_err(|e| e.to_string())
+}
+
 /* R20-A：外部作业「桌面模式」内嵌浏览（救急）。移动端点击外部作业详情链接时
  * 不丢给系统浏览器，改走 onethu-mobile 插件（Kotlin openWebModal）的全屏 Dialog
  * WebView：桌面 UA + useWideViewPort/概览模式 + 可缩放，只读浏览（不注入脚本、
@@ -2392,7 +2452,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
-            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,open_web_modal,open_sports_window,venue_sso_set,
+            open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,open_web_modal,open_sports_window,venue_sso_set,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

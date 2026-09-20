@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  小组件元信息。
+
+  - minWidth/minHeight：2 列 × 2 行的最小占用（Android 12 起以 targetCell* 为准）。
+  - updatePeriodMillis=1800000：系统允许的最小刷新间隔（30 分钟）。真正的新鲜度靠
+    App 前台刷新后主动 push 快照 + 点击打开 App 重算，不靠这里轮询。
+  - widgetCategory=home_screen：仅桌面（不做锁屏小组件——锁屏下没有交互上下文）。
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/onethu_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/onethu_widget_desc" />

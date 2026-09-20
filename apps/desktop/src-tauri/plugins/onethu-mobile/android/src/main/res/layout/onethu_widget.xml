@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  桌面小组件布局（RemoteViews 受限控件集：LinearLayout / TextView / ImageView）。
+
+  JS 侧算好快照（标题 / 至多三行条目 / 脚注）后推到原生，这里只负责摆位置——
+  小组件进程里没有 WebView，也没有会话，任何需要网络或解析的逻辑都不在这里做。
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/onethu_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/onethu_widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/onethu_widget_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#0F1115"
+        android:text="今日" />
+
+    <TextView
+        android:id="@+id/onethu_widget_row1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textColor="#0F1115" />
+
+    <TextView
+        android:id="@+id/onethu_widget_row2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textColor="#0F1115" />
+
+    <TextView
+        android:id="@+id/onethu_widget_row3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="12sp"
+        android:textColor="#0F1115" />
+
+    <TextView
+        android:id="@+id/onethu_widget_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="10sp"
+        android:textColor="#81858C" />
+</LinearLayout>

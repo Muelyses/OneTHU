@@ -40,6 +40,7 @@ import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
 import app.tauri.plugin.Plugin
+import org.json.JSONObject
 import java.io.File
 import java.net.URLConnection
 
@@ -57,6 +58,12 @@ class OpenIntentArgs {
 @InvokeArg
 class OpenWebModalArgs {
     lateinit var url: String
+}
+
+/** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释） */
+@InvokeArg
+class WidgetPushArgs {
+    lateinit var snapshot: String
 }
 
 @TauriPlugin(
@@ -456,6 +463,48 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
             invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "stop-failed"))
+        }
+    }
+
+    /* ── 桌面小组件（AppWidgetProvider）──
+     * 前端把渲染好的快照推过来（widgetPush），原生存进 SharedPreferences 并立刻重画
+     * 所有已放置的小组件；widgetTakeTarget 供 App 启动后取走「用户点的是哪个落点」。
+     * 小组件侧不做任何网络/解析——它连 WebView 都没有。 */
+
+    @Command
+    fun widgetPush(invoke: Invoke) {
+        try {
+            val args = invoke.parseArgs(WidgetPushArgs::class.java)
+            val ctx = activity.applicationContext
+            // 校验一次 JSON：坏快照宁可不写，也不能让小组件渲染时崩
+            JSONObject(args.snapshot)
+            WidgetStore.save(ctx, args.snapshot)
+            activity.runOnUiThread { OnethuWidgetProvider.refreshAll(ctx) }
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "push-failed"))
+        }
+    }
+
+    @Command
+    fun widgetClear(invoke: Invoke) {
+        try {
+            val ctx = activity.applicationContext
+            WidgetStore.clear(ctx)
+            activity.runOnUiThread { OnethuWidgetProvider.refreshAll(ctx) }
+            invoke.resolve(JSObject().put("ok", true))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "clear-failed"))
+        }
+    }
+
+    @Command
+    fun widgetTakeTarget(invoke: Invoke) {
+        try {
+            val target = WidgetStore.takeTarget(activity.applicationContext)
+            invoke.resolve(JSObject().put("ok", true).put("target", target))
+        } catch (e: Exception) {
+            invoke.resolve(JSObject().put("ok", false).put("reason", e.message ?: "take-failed"))
         }
     }
 }

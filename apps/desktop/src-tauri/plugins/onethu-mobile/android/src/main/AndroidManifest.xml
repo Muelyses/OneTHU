@@ -23,5 +23,25 @@
             android:name="app.onethu.mobile.QrKeepAliveService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- 桌面小组件：AppWidgetProvider 必须 exported=true（系统要投递
+             APPWIDGET_UPDATE 广播），meta-data 指向 androidx 之外的 appwidget-provider
+             元信息（最小尺寸/初始布局/30 分钟轮询）。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/onethu_widget_info" />
+        </receiver>
+
+        <!-- 点击落点广播：PendingIntent 里跑不了代码，先落到这里存 target 再拉起 App。
+             exported=false：只由本应用自己的 PendingIntent 触发。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetClickReceiver"
+            android:exported="false" />
     </application>
 </manifest>

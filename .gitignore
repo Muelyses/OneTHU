@@ -24,3 +24,7 @@ gradle/**
 
 # 本机 exFAT 规避配置（com.apple.provenance → ._* → tauri build.rs panic）——机器本地路径勿入库
 **/.cargo/config.toml
+
+# AppleDouble 资源叉（外接 exFAT 卷上写文件必生）：曾在 Android res 目录出现，
+# 会被 aapt/manifest merger 当资源读进去报重复类——一律不入库
+._*

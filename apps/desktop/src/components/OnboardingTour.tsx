@@ -60,7 +60,19 @@ export function OnboardingTour(): React.ReactNode {
 
   if (!open) return null;
 
-  const finish = (goFavorites: boolean): void => {
+  const finish = (): void => {
+    try {
+      applySelection();
+    } catch {
+      /* 任一步写入失败都不能影响应用可用性：忽略并照常结束导览 */
+    } finally {
+      markOnboarded();
+      setOpen(false);
+    }
+  };
+
+  /** 把当前选择落到既有存储（预设 / 手动两条路径共用；异常由调用方兜住） */
+  const applySelection = (): void => {
     if (mode === "preset" && preset) {
       // 预设路径：页面折叠 + 页签显隐 + 首页卡片，全部写既有存储
       for (const n of NAV_ITEMS) {
@@ -74,9 +86,6 @@ export function OnboardingTour(): React.ReactNode {
         saveTabLayout(g.key, { order: ids, hidden: ids.filter((id) => !keepIds.includes(id)) });
       }
       applyScenarios(preset.cards, "portrait");
-      markOnboarded();
-      setOpen(false);
-      if (goFavorites) navigate("folder");
       return;
     }
 
@@ -94,9 +103,6 @@ export function OnboardingTour(): React.ReactNode {
     }
     // ③ 首页卡片：按场景收起其余
     applyScenarios(keepCards, "portrait");
-    markOnboarded();
-    setOpen(false);
-    if (goFavorites) navigate("folder");
   };
 
   /** 示例收藏夹：点击即完成一次完整收藏流程（建夹 → 放原子），并说明"万物皆可收藏"。
@@ -118,18 +124,6 @@ export function OnboardingTour(): React.ReactNode {
       setOpen(false);
       navigate("folder", { folderId: id });
     }
-  };
-
-  /** 「去建收藏夹」：有夹就进第一个；没有就先建示例夹再进——不允许跳到空夹 */
-  const goToFolder = (): void => {
-    const first = favs.data.order[0];
-    if (first) {
-      markOnboarded();
-      setOpen(false);
-      navigate("folder", { folderId: first });
-      return;
-    }
-    seedDemoFolder(true);
   };
 
   const panel: React.CSSProperties = {
@@ -331,7 +325,7 @@ export function OnboardingTour(): React.ReactNode {
 
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
           {step > 0 ? <button className="btn" onClick={() => setStep((n) => n - 1)}>上一步</button> : null}
-          <button className="btn btn-ghost" onClick={() => finish(false)}>跳过</button>
+          <button className="btn btn-ghost" onClick={finish}>跳过</button>
           {step < STEPS - 1 ? (
             <button
               className="btn btn-primary"
@@ -341,7 +335,7 @@ export function OnboardingTour(): React.ReactNode {
               下一步
             </button>
           ) : (
-            <button className="btn btn-primary" onClick={goToFolder}>完成，去收藏夹</button>
+            <button className="btn btn-primary" onClick={finish}>完成</button>
           )}
         </div>
       </div>

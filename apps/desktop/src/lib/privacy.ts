@@ -6,7 +6,7 @@
  * - 正式分支 DESENSITIZE_ENABLED=false 时，desensitizeTree 原样返回，包裹几乎零开销；
  *   demo 分支打开后，姓名 / 学号 / 成绩在离开客户端的那一刻就被替换，界面代码零改动。
  */
-import { desensitizeTree, isDesensitizeBuild, maskName, maskStudentId } from "@onethu/core";
+import { desensitizeTree, isDesensitizeBuild, maskName, maskStudentId } from "@onethu/core/src/privacy/desensitize.js";
 
 /** 是否当前构建为脱敏版（界面据此显示角标）。 */
 export const DESENSITIZE_BUILD = isDesensitizeBuild();
@@ -15,8 +15,10 @@ export const DESENSITIZE_BUILD = isDesensitizeBuild();
 export function withPrivacy<T extends object>(target: T, seed: string): T {
   if (!DESENSITIZE_BUILD) return target;
   return new Proxy(target, {
-    get(obj, prop, recv) {
-      const value = Reflect.get(obj, prop, recv) as unknown;
+    get(obj, prop) {
+      // receiver 必须传 obj 本身：传 proxy 会让「读私有字段的 getter」抛
+      // TypeError（Cannot read private member …）——真机上会直接白屏。
+      const value = Reflect.get(obj, prop, obj) as unknown;
       if (typeof value !== "function") return value;
       return (...args: unknown[]): unknown => {
         const label = `${seed}.${String(prop)}`;

@@ -107,11 +107,29 @@ export function OnboardingTour(): React.ReactNode {
     { kind: "page", key: "reserve-classroom" },  // 空教室（预约页的二级页签）
   ];
   const [seeded, setSeeded] = useState(false);
-  const seedDemoFolder = (): void => {
+  const seedDemoFolder = (goTo: boolean): void => {
     const id = favs.create("示例收藏夹", null);
     if (!id) return;
     for (const atom of SEED_ATOMS) favs.addAtom(id, atom);
     setSeeded(true);
+    // 必须带 folderId 跳转：FolderPage 以 navParams.folderId 为根（缺省渲染"不存在"的空夹）
+    if (goTo) {
+      markOnboarded();
+      setOpen(false);
+      navigate("folder", { folderId: id });
+    }
+  };
+
+  /** 「去建收藏夹」：有夹就进第一个；没有就先建示例夹再进——不允许跳到空夹 */
+  const goToFolder = (): void => {
+    const first = favs.data.order[0];
+    if (first) {
+      markOnboarded();
+      setOpen(false);
+      navigate("folder", { folderId: first });
+      return;
+    }
+    seedDemoFolder(true);
   };
 
   const panel: React.CSSProperties = {
@@ -287,9 +305,9 @@ export function OnboardingTour(): React.ReactNode {
               className={seeded ? "btn" : "btn btn-primary"}
               disabled={seeded}
               style={{ width: "100%", marginBottom: 10 }}
-              onClick={seedDemoFolder}
+              onClick={() => seedDemoFolder(false)}
             >
-              {seeded ? "✓ 示例收藏夹已创建（含 3 项）" : "创建示例收藏夹（含 3 项）"}
+              {seeded ? "✓ 示例收藏夹已创建（含 3 项）" : "创建示例收藏夹并进入（含 3 项）"}
             </button>
             <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)" }}>
               下面还可按场景收起首页卡片，不需要的直接点掉。
@@ -323,7 +341,7 @@ export function OnboardingTour(): React.ReactNode {
               下一步
             </button>
           ) : (
-            <button className="btn btn-primary" onClick={() => finish(true)}>完成，去建收藏夹</button>
+            <button className="btn btn-primary" onClick={goToFolder}>完成，去收藏夹</button>
           )}
         </div>
       </div>

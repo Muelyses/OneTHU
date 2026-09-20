@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { stripInlineColors } from "../lib/htmlTheme.js";
 import type { ReactNode } from "react";
 import { Card, PageHead } from "../components/Layout.js";
 import { universalFetch } from "../lib/transport.js";
@@ -60,7 +61,9 @@ function extractMain(html: string): { title: string; html: string } {
   });
   const main = doc.querySelector("main") ?? doc.querySelector(".theme-hope-content") ?? doc.body;
   const title = doc.querySelector("title")?.textContent?.trim() ?? "";
-  return { title, html: main?.innerHTML ?? "" };
+  // 源站正文带行内颜色会压过主题令牌（深色主题下正文仍是黑字，用户实录 2026-09-20）
+  // → 出解析时就去色，正文颜色一律由 .thubook-body 继承主题令牌
+  return { title, html: stripInlineColors(main?.innerHTML ?? "") };
 }
 
 function groupOf(path: string): string {

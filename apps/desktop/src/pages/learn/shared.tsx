@@ -3,6 +3,7 @@
  * 数据统一来自 useLearnData（state/data.ts），行点击经 app 轻路由进只读详情页。
  */
 import { useEffect, useRef, useState } from "react";
+import { stripInlineColors } from "../../lib/htmlTheme.js";
 import type { CSSProperties, ReactNode } from "react";
 import type { CourseFile, Homework, Notification } from "@onethu/core";
 import { LEARN_PREFIX, LEARN_FILE_DOWNLOAD, parseLearnTime } from "@onethu/core";
@@ -202,7 +203,9 @@ export function RichContent({ html, fallback = "暂无内容。" }: { html?: str
   if (!text && !/<(img|table|a)\b/i.test(html ?? "")) {
     return <div className="empty">{fallback}</div>;
   }
-  return <div className="rich" ref={ref} dangerouslySetInnerHTML={{ __html: html ?? "" }} />;
+  // 学堂正文里也带行内颜色（通知/作业正文由服务端渲染）→ 深色主题下同样会黑字，
+  // 与 THUbook 同源处理：剥掉颜色声明，正文继承主题令牌（htmlTheme.stripInlineColors）
+  return <div className="rich" ref={ref} dangerouslySetInnerHTML={{ __html: stripInlineColors(html ?? "") }} />;
 }
 
 /* ---------- 导航 ---------- */

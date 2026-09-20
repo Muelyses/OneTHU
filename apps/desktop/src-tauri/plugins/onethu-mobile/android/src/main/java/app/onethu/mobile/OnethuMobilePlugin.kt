@@ -106,6 +106,54 @@ class NotifyCancelArgs {
     lateinit var ids: String
 }
 
+/**
+ * 深色主题下把官方页「正文黑字」涂白（2026-09-20）。
+ *
+ * 为什么不用 WebView 自带的算法暗化：`WebSettings.setForceDark` 在 targetSdk ≥ 33 时
+ * **被系统忽略**（本应用 targetSdk 36），而替代 API（WebSettingsCompat
+ * .setAlgorithmicDarkeningAllowed）需要 androidx.webkit —— 插件模块没有该依赖。
+ * 直接改 CSSOM 则不受页面 CSP 的 style-src 限制（<style> 注入会被拦），
+ * 且每次 onPageFinished 重跑，站内翻页也不会失效。
+ */
+private const val DARK_INJECT_JS = """
+(function(){
+  if (window.__othDark) { window.__othPaint && window.__othPaint(); return; }
+  window.__othDark = 1;
+  var INK = '#E9E9E9', LINK = '#7AA2F7', PALE = 0.55;
+  function lum(c){
+    var m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(c || '');
+    if (!m) return null;
+    return (0.299 * m[1] + 0.587 * m[2] + 0.114 * m[3]) / 255;
+  }
+  function paint(){
+    var de = document.documentElement, b = document.body;
+    de.style.setProperty('background-color', '#111315', 'important');
+    if (b) b.style.setProperty('background-color', '#111315', 'important');
+    var els = (b || de).querySelectorAll('*');
+    for (var i = 0; i < els.length; i++){
+      var el = els[i], t = el.tagName;
+      if (t === 'IMG' || t === 'VIDEO' || t === 'CANVAS' || t === 'IFRAME' || t === 'SVG' || t === 'PATH') continue;
+      try {
+        var cs = getComputedStyle(el);
+        var l = lum(cs.color);
+        if (l !== null && l < PALE) el.style.setProperty('color', (t === 'A' ? LINK : INK), 'important');
+        var bg = lum(cs.backgroundColor);
+        if (bg !== null && bg > PALE) el.style.setProperty('background-color', 'transparent', 'important');
+      } catch (e) {}
+    }
+  }
+  window.__othPaint = paint;
+  paint();
+  document.addEventListener('DOMContentLoaded', paint);
+  setTimeout(paint, 600); setTimeout(paint, 2000); setTimeout(paint, 5000);
+  try {
+    var t = null;
+    new MutationObserver(function(){ if (t) return; t = setTimeout(function(){ t = null; paint(); }, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+})()
+"""
+
 @TauriPlugin(
     permissions = [
         // R18c：API 33+ 展示前台服务常驻通知需运行时权限（清单在插件库 Manifest 声明）
@@ -525,8 +573,17 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                         }
                     }
                 }
-                // 只读浏览：不设 JavascriptInterface、不注入初始化脚本
-                web.webViewClient = WebViewClient()
+                // 只读浏览：不设 JavascriptInterface；深色时在每次页面加载完成注入涂白脚本
+                web.webViewClient = if (args.dark) {
+                    object : WebViewClient() {
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            view?.evaluateJavascript(DARK_INJECT_JS, null)
+                        }
+                    }
+                } else {
+                    WebViewClient()
+                }
 
                 // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显（R18b 同款）
                 val chromeBg = if (args.dark) Color.parseColor("#111315") else Color.WHITE

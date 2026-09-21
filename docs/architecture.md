@@ -53,7 +53,7 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   路由为 `plugin:<插件id>:<页签id>`；`PluginTabHost` 渲染页头与挂载容器，容器常驻
   （切页仅切换显示，插件内部状态保留），容器经 `setTabRoot` 登记后由插件全权渲染。
   注册表的快照按 emit 重建并缓存，订阅端（`useSyncExternalStore`）不得拿到每次新建
-  的数组，否则无限重渲染导致白屏。插件的渲染回调异常在页面内提示，不静默吞掉。
+  的数组，否则无限重渲染导致白屏。插件的渲染回调异常在页面内提示，不静默忽略。
 - **侧栏分组**：内置入口（含折叠组）、插件功能页、收藏夹三段分列并各带分组标题；
   收藏夹段限高滚动，收藏数量增长不挤压「新建收藏夹」与折叠组。
 - **主题归属**：主题定义与提供它的插件是同一份状态。`installTheme` 记录 `owner`
@@ -62,61 +62,61 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
   以「主题 id 与插件 id 同名」的约定与模块声明的主题 id 兜底匹配。
 - **市场拉取通道**：插件安装/更新与市场名单刷新优先经 GitHub contents API，raw 域名
   降级兜底（缓存语义差异见 [plugin-development.md §8.4](./plugin-development.md)）。
-- **系统通知投递**：规则在 JS 侧算（`state/notifyPlan.ts` 出计划、`state/notifyInputs.ts`
-  取数、`notifyScheduler.ts` 与原生实际排程对账），原生只做投递；覆盖对象为**课表与考试、
+- **系统通知投递**：规则在 JS 侧计算（`state/notifyPlan.ts` 生成计划、`state/notifyInputs.ts`
+  取数、`notifyScheduler.ts` 与原生实际排程对账），原生仅负责投递；覆盖对象为**课表与考试、
   自定义日程（含 rrule 展开，用事件自带 alarmMinutes 优先）、未交作业 DDL、每日早报**
-  （只有日程的日子也发早报，否则用户会以为「没提醒 = 没事」）——Android 经 `onethu-mobile` 插件落 AlarmManager，
+  （仅含日程的日期同样发送早报，避免用户将无提醒理解为无待办事项）：Android 经 `onethu-mobile` 插件落 AlarmManager，
   macOS 用 `UNUserNotificationCenter`，Windows 用 WinRT toast + `AddToSchedule`。
-  落点（点击通知打开哪一页）由原生存下、应用回前台时取走并导航：Android 由点击广播写进
+  落点（点击通知打开的页面）由原生存储、应用回前台时读取并导航：Android 由点击广播写入
   SharedPreferences，macOS 由 `UNUserNotificationCenterDelegate` 回调按通知 identifier 反查
-  （映射落盘，以覆盖「点通知冷启动应用」这条路径）；**Windows 尚未接**——toast 点击要注册
-  COM 激活器（`INotificationActivationCallback` + `ToastActivatorCLSID`），当前点击只把应用
+  （映射落盘，以覆盖「点通知冷启动应用」这条路径）；**Windows 尚未接入**：toast 点击需注册
+  COM 激活器（`INotificationActivationCallback` + `ToastActivatorCLSID`），当前点击仅将应用
   带到前台（见 `src/notify_windows.rs` 文件头）。
-- **桌面小组件（Android）**：内容在 JS 侧算好（`state/widgetSnapshot.ts` 出「今天」的内容与
-  各形态构造器，`state/widgetSource.ts` 把用户绑定解析成行或图标），原生只把内容摆进 RemoteViews
-  ——小组件进程里没有 WebView 与会话，任何需要网络或解析的逻辑都不可能在那边跑。
-  **内容按块绑定**（`state/widgetInstances.ts`，键是 appWidgetId）：桌面上可以同时放日程与 DDL、
-  一个原子占满的详情、一个收藏夹的图标组、一个 1×1 快捷方式，四类内容互不影响；绑定的入口是
-  AppWidget 的 configure 流程（放置时由 `OnethuWidgetConfigActivity` 把 `widget-config:<id>` 记成
-  落点再拉起应用，应用显示选择层），也可以点桌面上未绑定的那块或到设置页逐块改。原生按
+- **桌面小组件（Android）**：内容在 JS 侧计算完成（`state/widgetSnapshot.ts` 生成「今天」的内容与
+  各形态构造器，`state/widgetSource.ts` 将用户绑定解析为行或图标），原生仅负责将内容填入 RemoteViews。
+  小组件进程不含 WebView 与会话，任何需要网络或解析的逻辑均无法在该进程执行。
+  **内容按块绑定**（`state/widgetInstances.ts`，键为 appWidgetId）：桌面可同时放置日程与 DDL、
+  单个原子占满的详情、一个收藏夹的图标组、一个 1×1 快捷方式，四类内容互不影响；绑定的入口是
+  AppWidget 的 configure 流程（放置时由 `OnethuWidgetConfigActivity` 将 `widget-config:<id>` 记录为
+  落点后拉起应用，应用显示选择层），亦可点击桌面上未绑定的实例或在设置页逐块修改。原生按
   appWidgetId 存内容，实例清单由 `widget_instances` 命令报回（读不到时**不允许原生修剪**，
   否则会误删所有内容）。宿主小组件声明五种初始形态（1×1 快捷方式 / 2×1 / 2×2 / 3×2 / 4×1）：
-  选择器里可选的形态数等于清单里的 provider 数，故形态只能靠多声明 provider 给出（五者共用同一套
-  渲染与同一份实例内容，行数与图标格数按实际占位自适应，放置后仍可自由拖动）。插件小组件因
-  Android 不允许运行时注册 provider，走**固定槽位**（3 个）按声明顺序占位。
-  **图标也要应用侧算**：小组件里没有 WebView，插件的 SVG 与宿主 React 图标在那边都不存在，
-  故 `state/widgetIcon.ts` 在前台把原子图标渲染成 SVG → canvas → PNG（按原子缓存）随内容下发。
+  选择器内可选的形态数等于清单中的 provider 数，故形态只能通过多声明 provider 提供（五者共用同一套
+  渲染与同一份实例内容，行数与图标格数按实际占位自适应，放置后仍可自由拖动）。插件小组件由于
+  Android 不允许运行时注册 provider，采用**固定槽位**（3 个）按声明顺序占位。
+  **图标同样由应用侧计算**：小组件中不含 WebView，插件的 SVG 与宿主 React 图标在该进程中均不可用，
+  故 `state/widgetIcon.ts` 在前台将原子图标渲染为 SVG → canvas → PNG（按原子缓存）随内容下发。
   原生渲染只能用 RemoteViews 白名单里的控件（标了 `@RemoteView` 的类：LinearLayout / TextView /
-  ImageView 等）：**裸 `View` 会让启动器 inflate 失败，整块小组件变成「无法加载」的黑框**；
-  同样地，RemoteViews 不能设加粗（`setTypeface` 要 Typeface 参数，反射式 `setInt` 会直接抛），
-  所以「主次」用每行两个 TextView（粗体/常规）切换可见性 + `setTextViewTextSize` 字号 + 左侧色条
-  （课程色 / 紧迫度色 / 状态色）来表达。一屏放几条必须按**真实高度**算（一条带说明约 38dp），
-  拍一个「矮/中/高」三档会让矮尺寸上的第二行被挤出可视区。
-  详情行同理：课程下次上课与作业截止由 `state/widgetDetail.ts` 从内存算，**下沉原子**（教室占用、
-  洗衣机状态）由 `state/widgetLive.ts` 在算快照前顺手抓一遍（与收藏夹方卡共用缓存键，带超时），
-  解读逻辑放在纯函数 `state/widgetLiveParse.ts`（「现在第几节」「哪几节空着」全在时间边界上出错，
-  必须能直测）；**拿不到实时数据就不写**——桌面上写错的数字比空着更糟。点击落点是「页面 + 参数」的自描述
-  字符串（`folder?folderId=f1`，编解码在 `state/widgetTarget.ts`，布尔会被还原——字符串 `"false"`
-  在 JS 里是真值），应用回前台时取走并解析后导航；未绑定那块的落点是 `widget-config:<id>`，
-  应用据此弹出选择层而不是跳到一个空页面。
+  ImageView 等）：**未列入白名单的 `View` 会导致启动器 inflate 失败，整个小组件显示为「无法加载」的黑框**；
+  同样地，RemoteViews 不能设置加粗（`setTypeface` 需要 Typeface 参数，反射式 `setInt` 会直接抛出异常），
+  故主次层级通过每行两个 TextView（粗体/常规）切换可见性、`setTextViewTextSize` 字号与左侧色条
+  （课程色 / 紧迫度色 / 状态色）表达。单屏可显示的行数必须按**真实高度**计算（一条带说明约 38dp），
+  采用「矮/中/高」三档估算会导致矮尺寸上的第二行被挤出可视区。
+  详情行同理：课程下次上课与作业截止由 `state/widgetDetail.ts` 从内存计算，**下沉原子**（教室占用、
+  洗衣机状态）由 `state/widgetLive.ts` 在计算快照前统一抓取一次（与收藏夹方卡共用缓存键，带超时），
+  解读逻辑放在纯函数 `state/widgetLiveParse.ts`（「现在第几节」「哪几节空着」的判断均在时间边界上易出错，
+  必须可直接测试）；**拿不到实时数据时不写入**：桌面上显示错误数字的代价高于留空。点击落点是「页面 + 参数」的自描述
+  字符串（`folder?folderId=f1`，编解码在 `state/widgetTarget.ts`，布尔值会被还原，字符串 `"false"`
+  在 JS 中为真值），应用回前台时读取并解析后导航；未绑定实例的落点是 `widget-config:<id>`，
+  应用据此弹出选择层，而非跳转至空页面。
 - **雨课堂题干原生渲染与提交入口**：外部作业源的正文是「加密字体 + LaTeX + 外链图片」的组合，
-  直接内嵌官方页面在应用里必然缺字体、缺公式、图片 401。做法是**正文本地渲染**：正文进 `srcdoc`
-  沙箱 iframe（脚本白名单、无网络权限），加密字体取自响应里 `data.font` 指向的 TTF 并以
+  在应用内直接内嵌官方页面会缺字体、缺公式，图片返回 401。做法是**正文本地渲染**：正文置于 `srcdoc`
+  沙箱 iframe（脚本白名单、无网络权限），加密字体取自响应中 `data.font` 指向的 TTF 并以
   `@font-face` 应用（缓存 7 天，失败 10 分钟退避），公式用**随包内置的 KaTeX**（`vendor/katex`，
-  懒加载，正文不外传），图片经应用侧带会话 Cookie 代理取回后内联；任一环节失败逐级降级到纯文本 +
-  提示条，**永不白屏**。分数与评语走结构化数据（`my_score` / `remark` / `comment[]`，同文去重），
+  懒加载，正文不外传），图片经应用侧带会话 Cookie 代理取回后内联；任一环节失败逐级降级至纯文本 +
+  提示条，**不会出现白屏**。分数与评语使用结构化数据（`my_score` / `remark` / `comment[]`，同文去重），
   考试与已批改作业共用同一个显示函数与显示位。提交入口第一阶段内嵌官方作答页（`WebView`）并注入
-  会话 Cookie，资格判定做成纯函数；**试卷不显示任何提交入口**——只读是硬红线，应用不代提交。
+  会话 Cookie，资格判定实现为纯函数；**试卷不显示任何提交入口**：只读为硬性约束，应用不代提交。
 - **自检（设置 → 通知 → 自检）**：逐层探测后端类型、授权、精确提醒、小组件落地与快照时间、
-  排程写入与回读、真实投递，最后撤销探针，给出一份「哪一层不通过」的结论。链路横跨 JS 调度、
-  原生桥、系统权限、系统设置四层，用户只能说「没收到」，因此把分层结论做成一次点击的产物，
+  排程写入与回读、真实投递，最后撤销探针，给出「哪一层不通过」的结论。链路横跨 JS 调度、
+  原生桥、系统权限、系统设置四层，用户仅能反馈「没收到」，因此将分层结论实现为一次点击即可获得的输出，
   编排逻辑在 `state/notifyDoctor.ts`（副作用全注入，可测）。
-- **渠道管理与授权引导**：渠道与精确闹钟授权都在系统设置里，应用只能带路——`notify_open_settings`
-  按 `channels` / `exact-alarm` / `app` 打开对应系统页（Android 走 `Settings.ACTION_*`，
-  macOS/Windows 走 URL scheme）。设置页显示什么文案、给不给按钮，由纯函数
-  `state/notifyStatus.ts` 决定（每种「后端 × 授权 × 精确」组合都要讲到点上，故单独可测）。
+- **渠道管理与授权引导**：渠道与精确闹钟授权均在系统设置中，应用只能引导用户前往系统设置：`notify_open_settings`
+  按 `channels` / `exact-alarm` / `app` 打开对应系统页（Android 使用 `Settings.ACTION_*`，
+  macOS/Windows 使用 URL scheme）。设置页显示的文案与是否提供按钮，由纯函数
+  `state/notifyStatus.ts` 决定（每种「后端 × 授权 × 精确」组合均需给出准确文案，故单独可测）。
 
-## 3.x 洗衣机数据源（三家）
+## 3.x 洗衣机数据源（三个数据源）
 
 `packages/core/src/info/washer.ts` 移植自 thu-info-app（含其 2026-09 新增的小兰智慧）：
 
@@ -126,11 +126,11 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | 海乐生活 | `yshz-user.haier-ioc.com` | 按清华两个坐标搜点位，只收名字含「清华」且非「清华中学」者 |
 | 小兰智慧 | `wash-ltd-thu.aajax.top` | 第三方代理按机构 id 返回「楼栋 → 房间 → 设备」；上游 2026-09 新增 |
 
-三处都是公开服务，不经校内会话（避免被 WebVPN 包装）。**楼栋用 `provider` 区分而不是布尔**：
-数据源从一个变三个后「是不是海乐」立刻不够用，且楼栋 id 在不同数据源之间会重名——原子深链
-必须带上数据源才能回到同一台设备（原子 key 第三段存 `"0"/"1"/"2"`，缺失或旧值一律按捷利解释，
-老收藏照常可用；实时缓存键后缀 `j`/`h`/`x` 同理，否则两家同名楼栋会互相串状态）。
-设备状态也按上游口径细分：**待机（可用未启动）与离线（网络掉线）不是故障**，各自单列。
+三处都是公开服务，不经校内会话（避免被 WebVPN 包装）。**楼栋用 `provider` 区分而非布尔值**：
+数据源由一个增至三个后，「是否为海乐」已不足以区分，且楼栋 id 在不同数据源之间会重名，原子深链
+必须携带数据源才能回到同一台设备（原子 key 第三段存 `"0"/"1"/"2"`，缺失或旧值一律按捷利解释，
+原有收藏仍可正常使用；实时缓存键后缀 `j`/`h`/`x` 同理，否则两个数据源的同名楼栋会发生状态串扰）。
+设备状态也按上游口径细分：**待机（可用未启动）与离线（网络断开）不是故障**，各自单列。
 
 ## 4. 主题系统
 
@@ -142,7 +142,7 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 
 - 开启 `followSystem` 后，通过 `matchMedia("(prefers-color-scheme: dark)")` 监听系统
   深色模式变化，在 `dayThemeId` 与 `nightThemeId` 两个主题之间切换。
-- 手动调用 `apply` 会关闭跟随模式，以保证「手动选择即固定」的语义。
+- 手动调用 `apply` 会关闭跟随模式，以保证手动选择后保持固定的语义。
 - 声明 `dark: true` 的主题激活时，将 `document.documentElement.style.colorScheme`
   设为 `dark`，使原生控件与滚动条同步切换；切换回浅色主题或默认外观时恢复 `light`，
   维持原有针对 Android WebView 强制反色的防护。
@@ -224,8 +224,8 @@ Rust 插件的 `onethu.call` 请求经 webview 门面执行相同校验。协议
 | 小组件详情补充测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-detail-test.mjs` |
 | 小组件推送时机测试 | `node --import ./tools/ts-resolve-register.mjs tools/widget-runtime-test.mjs` |
 | 插件小组件注册表测试 | `node --import ./tools/ts-resolve-register.mjs tools/plugin-widget-test.mjs` |
-| Android 插件模块 Kotlin 编译 | `cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-mobile:compileDebugKotlin`（清单检查用 `:app:processArmDebugMainManifest`，裸任务名会 ambiguous） |
-| macOS 通知原生链路探针 | `cd apps/desktop/src-tauri && cargo build --features notify-probe --bin notify_probe`，再把二进制放进某个 `OneTHU.app/Contents/MacOS/` 并**改名为 `CFBundleExecutable` 同名**（否则 `NSBundle` 不认包、报 not-bundled），运行即打印授权/排程/回读/撤销四步结果 |
+| Android 插件模块 Kotlin 编译 | `cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-mobile:compileDebugKotlin`（清单检查用 `:app:processArmDebugMainManifest`，不限定模块的任务名会产生歧义） |
+| macOS 通知原生链路探针 | `cd apps/desktop/src-tauri && cargo build --features notify-probe --bin notify_probe`，再把二进制放进某个 `OneTHU.app/Contents/MacOS/` 并**改名为与 `CFBundleExecutable` 同名**（否则 `NSBundle` 无法识别包并报 not-bundled），运行即打印授权/排程/回读/撤销四步结果 |
 | Windows 通知模块编译检查 | `cd tools/win-notify-check && cargo check --target x86_64-pc-windows-msvc` |
 | Android 目标交叉检查 | `cd apps/desktop/src-tauri` 后设 `CC_aarch64_linux_android` / `AR_aarch64_linux_android` / `CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER` 指 NDK 的 `aarch64-linux-android24-clang`，再 `cargo check --target aarch64-linux-android`（桌面 `cargo check` 不编译 `#[cfg(mobile)]` 分支，这是唯一能提前发现 Android 侧编译错误的手段） |
 | Rust 单测（通知载荷解析等） | `cd apps/desktop/src-tauri && cargo test --lib` |

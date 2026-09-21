@@ -51,7 +51,7 @@ return {
 | 权限 | 覆盖的接口 |
 |---|---|
 | `user:read` | `session.*`、`user.*` |
-| `info:read` | `info.*`、`coursex.*` |
+| `info:read` | `info.*`、`coursex.*`、`services.search` / `services.open`（在线服务目录，发起校园请求） |
 | `learn:read` / `learn:write` | `learn.*` 的读方法 / 写方法 |
 | `venue:read` / `venue:book` | `venue` 查询 / 退订 |
 | `xk:read` | `xk.*` |
@@ -71,8 +71,8 @@ return {
 | `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
 | `css` | `registerCss`（注入全局样式，影响整个应用外观；安装时重点确认） |
 | `webview` | `ui.webModal` |
-| `nav` / `ui` | `nav.go` / `nav.searchAtoms` / `nav.openAtom` / `nav.usage` / `nav.clearUsage` / `ui.*` |
-| `info:read` | `services.search` / `services.open`（在线服务目录，走校园请求） |（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
+| `nav` | `nav.go` / `nav.searchAtoms` / `nav.openAtom` / `nav.usage` / `nav.clearUsage` |
+| `ui` | `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
 | `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染）、`widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback`（读写桌面上每一块小组件显示的内容） |
@@ -191,15 +191,15 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `submittedCount` / `totalCount` | number? | 已提交题数 / 总题数（仅雨课堂有精确数据） |
 | `graded` | boolean? | 批改状态。目前仅雨课堂可判定，其余源缺省视为未批改 |
 | `audited` | boolean? | 是否旁听课堂（雨课堂 `role===6`；未知 role 不标记） |
-| `score` | number? | 得分，**仅在已提交且已出分/已批改时设置**（不谎报 0 分） |
+| `score` | number? | 得分，**仅在已提交且已出分 / 已批改时设置**（未出分时不返回 0） |
 | `totalScore` | number? | 卷面满分，与 `score` 成对出现；题面分值全缺失时不设 |
 | `leafTypeId` / `classroomId` | string? | 雨课堂整卷明细参数（`get_exercise_list` 的路径段与 `classroom_id`），供应用内原生详情页使用 |
 
 **得分口径**（雨课堂）：考试取 `/v/exam/cover` 的 `result.score`；已批改作业取「已批改题目的
-有效得分合计」，满分取「题面分值合计」——两者均只在**整卷已批改**时透出，避免「交了一半就显示
-一个分数」的误导。详情页与批改评语的呈现方式见 [external-homework.md](./external-homework.md)。
+有效得分合计」，满分取「题面分值合计」；两者均只在**整卷已批改**时透出，避免在批改完成前
+返回部分分数造成误导。详情页与批改评语的呈现方式见 [external-homework.md](./external-homework.md)。
 
-注意到 `exthw.*` 只有 `snapshot()` 与 `refresh()` 两个方法：**作业详情页与提交入口属于应用内
+`exthw.*` 只提供 `snapshot()` 与 `refresh()` 两个方法：**作业详情页与提交入口属于应用内
 功能**（原生页面 + 内嵌官方作答页），不经插件 API 暴露，插件侧只读取聚合快照。
 
 ```jsonc
@@ -271,7 +271,7 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `learn.tsinghua.edu.cn` | 直连 |
 | 其余校内域名（`info`、`zhjw.cic`、各院系系统等） | 经 webvpn 包装 |
 
-白名单域为实测结论所致：这些域名经包装会导致会话隔离或票据失效，因此即便指定
+白名单依据实测结论确定：这些域名经包装会导致会话隔离或票据失效，因此即便指定
 `mode: "webvpn"` 也保持直连。
 
 **统一认证（CAS）对接的系统**：会话存活时直接请求业务地址即可。未认证请求会被
@@ -514,17 +514,17 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 |---|---|---|
 | `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §19 |
 | `nav.searchAtoms(query, limit?)` | `nav` | 按关键词检索全应用可跳转原子，返回 `{kind, key, title, sub?, group}[]`（缺省 12 条，上限 50）。只查静态注册表 + 本机缓存，**不发起任何校园请求** |
-| `nav.openAtom(ref)` | `nav` | 打开一个原子（等价用户点收藏夹里那一项：跳功能页 / 切聚合页页签 / 打开官方服务页）；解析不出返回 `false`，不会跳空白页。见 §20 |
-| `nav.usage(limit?)` | `nav` | 本机使用统计：`{total, kinds, top[], recent[]}`（每项含 `kind`/`key`/`title`/`n`/`last`，可直接交给 `nav.openAtom`）。只有本机点击记录，不含任何校园数据；缺省 10 条、上限 30 |
-| `nav.clearUsage()` | `nav` | 清空本机使用统计（用户主动要求时用；**不影响收藏夹**） |
-| `services.search(query, limit?)` | `info:read` | 检索在线服务（服务大厅）目录，返回 `{id,name,department,url,score}[]`；**会发校园请求**（先校验会话再取目录），只在 `nav.searchAtoms` 本机命中为空时才该调用。容忍口语简称：「亲友预约」≥40 命中「亲友来访预约」；换了后半截的（「亲友预约」↔「亲友入校报备」）以 20~39 分进候选。结果顺带写回本机原子缓存 |
-| `services.open(service)` | `info:read` | 在应用内打开服务官方页（桌面独立窗口 / Android 全屏 WebView，与主窗口共享登录态）；`url` 需来自 `search`；打不开返回 `false` |
+| `nav.openAtom(ref)` | `nav` | 打开一个原子，行为等同于用户点击收藏夹中的同一项（跳转功能页 / 切换聚合页页签 / 打开官方服务页）；无法解析时返回 `false`，不会进入空白页。见 §20 |
+| `nav.usage(limit?)` | `nav` | 本机使用统计：`{total, kinds, top[], recent[]}`（每项含 `kind`/`key`/`title`/`n`/`last`，可直接交给 `nav.openAtom`）。仅含本机点击记录，不含校园数据；缺省 10 条，上限 30 |
+| `nav.clearUsage()` | `nav` | 清空本机使用统计（仅在用户主动要求时调用；**不影响收藏夹**） |
+| `services.search(query, limit?)` | `info:read` | 检索在线服务（服务大厅）目录，返回 `{id,name,department,url,score}[]`。**会发起校园请求**（先校验会话再取目录），仅在 `nav.searchAtoms` 的本机检索无结果时调用。支持简称匹配：「亲友预约」以 40 分以上命中「亲友来访预约」；仅后缀不同的名称（如「亲友预约」与「亲友入校报备」）以 20~39 分进入候选。命中结果写回本机原子缓存 |
+| `services.open(service)` | `info:read` | 在应用内打开服务官方页（桌面独立窗口 / Android 全屏 WebView，与主窗口共享登录态）；`url` 须来自 `search`；打开失败返回 `false` |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
-| `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 用户是否确认；`{danger: true}` 走危险操作样式 |
-| `ui.form(title, fields)` | `ui` | 通用表单弹窗，`fields` 为 `{key, label, kind?, placeholder?, default?, required?, options?}[]`（kind: text/textarea/password/select）；resolve 键值对象，取消 resolve `null` |
+| `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 值表示用户是否确认；`{danger: true}` 使用危险操作样式 |
+| `ui.form(title, fields)` | `ui` | 通用表单弹窗，`fields` 为 `{key, label, kind?, placeholder?, default?, required?, options?}[]`（kind: text/textarea/password/select）；resolve 为键值对象，取消时 resolve `null` |
 | `ui.clipboard.write(text)` | `ui` | 写系统剪贴板 |
-| `ui.clipboard.read()` | `clipboard:read` | 读系统剪贴板（敏感：可读密码管理器复制的口令，权限单列） |
+| `ui.clipboard.read()` | `clipboard:read` | 读取系统剪贴板（敏感权限：可读取密码管理器复制的口令，单独列示） |
 | `ui.getTabRoot(pageKey)` / `ui.onTabReady(pageKey, cb)` | `ui` | 本插件功能页的 DOM 挂载容器（自由渲染）；仅限 `plugin:<本插件id>:` 前缀 |
 | `favorites.add(key, folderId?)` / `favorites.list()` | `ui` | 收藏本插件原子：key 形如 `<tabId>~<原子key>`，kind 自动补全为本插件；`list` 返回本插件已被收藏的收藏夹与 key。见 plugin-development §6.4 |
 | `favorites.addAtom(ref, meta?, folderId?)` / `favorites.kinds()` | `ui` | 收藏任意已注册种类的原子（跨插件）：`ref` 为 `{kind, key}`，`meta` 提供展示元数据且在该种类未注册时内联注册为静态种类（OH 收藏工具经此通道）；`kinds` 列出全部可收藏种类 |
@@ -533,8 +533,8 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `notify.status(request?)` | `notify` | 后端与授权状态：`{ok, backend, granted, exact, reason?}`；`request=true` 才发起授权请求 |
 | `widget.list()` / `widget.slots()` | `widget` | 本插件已声明的小组件与所占槽位（未占槽为 `null`）/ 本平台预留槽位数 |
 | `widget.instances()` | `widget` | 桌面上每一块小组件：`[{id, shape, binding}]`（binding 形如 `{kind:"today"}` / `{kind:"folder",folderId}` / `{kind:"detail"\|"shortcut",atom}`） |
-| `widget.bind(id, binding)` / `widget.unbind(id)` | `widget` | 给某一块换内容 / 恢复默认；目标不存在（收藏夹被删、原子解析不出）返回 `false` 且不写配置。插件不能添加或删除小组件 |
-| `widget.getFallback()` / `widget.setFallback(binding)` | `widget` | 新放置、还没选内容的块用哪份默认内容 |
+| `widget.bind(id, binding)` / `widget.unbind(id)` | `widget` | 切换某一块的内容 / 恢复默认；目标不存在（收藏夹已删除、原子无法解析）时返回 `false`，且不写入配置。插件不能添加或删除小组件 |
+| `widget.getFallback()` / `widget.setFallback(binding)` | `widget` | 新放置且尚未选择内容的小组件所使用的默认内容 |
 | `storage.get(key)` / `set(key, value)` / `keys()` / `remove(key)` | `storage` | 插件私有键值存储，按插件标识隔离，JSON 序列化，卸载时清除 |
 | `settings.get()` | `storage` | 返回用户在插件设置页填写的值 |
 
@@ -583,55 +583,56 @@ const reply = (await res.json()).choices[0].message.content;
 插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向
 该路由。插件未安装、已停用或未注册该页签时，页面显示降级提示而非空白。
 
-## 20. 原子（`{kind, key}`）——收藏与「一句话直达」的共同底座
+## 20. 原子（`{kind, key}`）：收藏与「一句话直达」的共同引用
 
-**万物原子化**：应用里每一个可跳转的对象——功能页面、今日组件、操作、课程、作业、
-通知、文件、在线服务、场馆、教学楼、洗衣机楼、图书馆、新闻、插件自定义条目——都
-表示为一个原子引用 `{ kind, key }`。收藏夹只存引用（`favorites.addAtom(ref, meta?)`），
-点击时由宿主解析成页面跳转，因此**同一个引用在收藏夹、桌面小组件、OH 对话、插件
-搜索里行为完全一致**。
+应用内所有可跳转对象均以原子引用 `{ kind, key }` 表示，包括功能页面、今日组件、操作、
+课程、作业、通知、文件、在线服务、场馆、教学楼、洗衣机楼、图书馆、新闻与插件自定义条目。
+收藏夹只保存引用（`favorites.addAtom(ref, meta?)`），点击时由宿主解析为页面跳转，因此同一
+引用在收藏夹、桌面小组件、OH 对话与插件搜索中的行为一致。
 
 - **kind**：原子种类。`page` / `action` / `widget-*` 等为静态注册；`course` /
-  `assignment` / `thos-service` / `sports-v` … 为动态实体（数据来自本机缓存）；
+  `assignment` / `thos-service` / `sports-v` 等为动态实体（数据来自本机缓存）；
   `plugin:<插件id>` 为插件注册的种类。
-- **key**：种类内稳定标识，由宿主 `enc(...parts)` 用 `~` 连接、`dec(key)` 拆回。
-  调用方不要自己拼 key——用 `nav.searchAtoms` 拿到的 `key` 原样回传即可。
+- **key**：种类内的稳定标识，由宿主 `enc(...parts)` 以 `~` 连接、`dec(key)` 还原。
+  调用方不应自行拼接 key，应将 `nav.searchAtoms` 返回的 `key` 原样回传。
 - **`thos-service`**：在线服务（服务大厅）条目，key = `enc(id, name, department)`。
-  由在线服务页打开过目录后写入本机缓存，故「星号收藏」与「OH 一句话打开亲友来访」
-  共用同一份引用；打开动作走应用内官方页面（三端一致：桌面独立窗口、Android 全屏
-  WebView，登录态与主窗口共享）。
-- **解析不出即失效**：`nav.openAtom` 对已删数据 / 已停用插件的引用返回 `false`，
-  收藏夹与桌面小组件也会降级显示（不写空页面）。插件据此回话，不要承诺做不到的事。
+  由在线服务页打开过目录后写入本机缓存，收藏与「一句话直达」共用同一份引用；打开动作在
+  应用内官方页面完成（三端一致：桌面独立窗口、Android 全屏 WebView，登录态与主窗口共享）。
+- **无法解析即视为失效**：`nav.openAtom` 对已删除数据或已停用插件的引用返回 `false`；
+  收藏夹与桌面小组件降级显示，不进入空白页面。插件应据此组织回复，不应承诺无法完成的
+  操作。
 
-**检索面**：`nav.searchAtoms(query, limit?)` 只查静态注册表 + 本机缓存，**不发任何
-校园请求**——所以它快、离线可用，但只认识本机出现过的实体。宿主内实现真源见
+**检索范围**：`nav.searchAtoms(query, limit?)` 只检索静态注册表与本机缓存，**不发起任何
+校园请求**，因此响应快且离线可用，但只能返回本机出现过的实体。宿主侧实现真源见
 `apps/desktop/src/state/atoms.tsx`（`searchAtoms` / `resolveAtom`）。
 
 ### 20.1 本机使用统计（`nav.usage`）
 
-今日页的「最近使用」「猜你喜欢」与 OH 的 `query_usage` 都读同一份记录：
-`onethu.usage.counts.v1`（每项 `{n, last, title?, sub?, group?}`，最多 120 条）。
-记录点在应用内部：侧边栏/入口卡进页面（`recordPageAtomUse`）与**任何**原子被打开
-（`resolveAtom` 返回的 `open` 统一记一笔），因此收藏夹点击、桌面小组件、OH
-`openAtom` 全部计入。
+今日页的「最近使用」「猜你喜欢」与 OH 的 `query_usage` 读取同一份记录
+`onethu.usage.counts.v1`，每项为 `{n, last, title?, sub?, group?}`，最多 120 条。
+记录点位于应用内部：由侧边栏或入口卡进入页面（`recordPageAtomUse`），以及任意原子被打开
+（`resolveAtom` 返回的 `open` 统一记录）。因此收藏夹点击、桌面小组件与 OH `openAtom`
+均计入统计。
 
-两条硬边界：
+两条约束：
 
-1. **统计绝不改写收藏夹**。收藏是用户的显式意图；推荐只是入口，收纳与否由用户按星号。
-2. 统计只在本机，含的是「点过什么」，不含成绩、课程内容等任何校园数据；插件要读
-   必须声明 `nav` 权限，且用户可以一键清空（`nav.clearUsage`）。
+1. **统计不改写收藏夹**。收藏代表用户的显式意图，推荐仅作为入口，是否收藏由用户决定。
+2. **统计仅存于本机**，内容为入口使用次数，不含成绩、课程内容等校园数据；插件读取须声明
+   `nav` 权限，用户可随时清空（`nav.clearUsage`）。
 
 ### 20.2 服务名打分（`services.search` 的 `score`）
 
-分数档位（实现与测试在 `apps/desktop/src/lib/serviceMatch.ts` + `tools/service-match-test.mjs`）：
+分值定义如下（实现与测试：`apps/desktop/src/lib/serviceMatch.ts`、
+`tools/service-match-test.mjs`）：
 
-| 分数 | 含义 | 调用方该怎么用 |
+| 分值 | 判定 | 调用方处理 |
 |---|---|---|
-| 100 | 完全相等 | 直接打开 |
-| 80 ~ 95 | 名字包含查询 | 直接打开 |
-| 70 | 查询包含名字（用户说得更长） | 直接打开 |
-| 40 ~ 60 | 子序列命中（省字，顺序一致） | 直接打开（`SERVICE_CONFIDENT` 线） |
-| 20 ~ 35 | 近似（最长公共子串 ≥2 中文字） | **只作候选**：先让用户确认叫法 |
-| 0 | 不匹配 | 当作没有 |
+| 100 | 与服务名完全相等 | 直接打开 |
+| 80 ~ 95 | 服务名包含查询串 | 直接打开 |
+| 70 | 查询串包含服务名 | 直接打开 |
+| 40 ~ 60 | 查询串为服务名子序列（字符顺序一致，可不连续） | 直接打开（`SERVICE_CONFIDENT` 阈值） |
+| 20 ~ 35 | 近似匹配（最长公共子串不少于 2 个汉字） | 仅作候选：先请用户确认服务名称 |
+| 0 | 不匹配 | 视为无匹配 |
 
-这条把握线是给「宁可不跳、也不跳错」用的：跳错一个官方页比多问一句贵得多。
+`SERVICE_CONFIDENT`（40 分）为自动打开的下限，低于该分值只返回候选，由用户确认后再打开。
+该阈值用于保证跳转正确性：误跳转至错误官方页面的代价高于一次确认。

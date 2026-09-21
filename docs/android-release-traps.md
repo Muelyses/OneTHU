@@ -58,7 +58,7 @@ WebView 直连 `devUrl`。当时的判据 `strings | grep 5180` **两种构建�
 
 现状：
 
-| 件 | 位置/用法 |
+| 项 | 位置/用法 |
 |---|---|
 | 日志落点 | 安卓 `app_data_dir/logs/onethu-debug.log`（16MB 轮转）；桌面 `/tmp/onethu-debug.log` |
 | Rust 侧写入 | `debug_log_line(line)`（`LOG_APP: OnceLock<AppHandle>` 在 setup 注入） |

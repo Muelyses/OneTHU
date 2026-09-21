@@ -175,3 +175,17 @@ CI 的 `tauri build` 产物资产内嵌、永不出现 5180；出现即说明拿
 **遗留**：若仍复现，唯一可能是指令悬挂（设备相关）。下次 adb 时一次定位：
 点一下 → `adb logcat -d | grep -E "THOS-UI|THOS-SEED|VENUE-PORTAL"`——
 有 [THOS-UI] 无 [THOS-SEED] = JS→Rust 断；有 [THOS-SEED] 无窗口 = 插件侧问题。
+
+## 追加（09-21 下午二轮）：「跳浏览器」显性化 + 真机诊断通道
+
+- **在线服务跳浏览器** = 应用内打开一直在失败（此前静默），新包按设计回落浏览器把失败显性化
+  了。失败原因此前只进 logcat（安卓 log_debug 无 /tmp 落点），用户读不到——信息断层。
+  本轮：①失败原因直接进 toast（截 60 字）；②`loadRemembered` 纳入 try（它 reject 时
+  此前整条链无声死掉）；③日志落 `app_data_dir/logs/onethu-debug.log`，设置→关于→
+  「导出日志」一键转存系统下载（saveDownload 桥）。下一次点击即可拿到确切失败原因。
+- **校内启动 20s**：reqwest 缺省 20s 对上，但哪一段吃的需要实测。本轮
+  `loadReal` 分段计时（LR-STAGE +ms）+ `http_request` 逐跳计时（NATIVE-HOP 状态+毫秒）
+  全部落日志文件，导出即得。疑似方向（待数据证实/证伪）：校内对某直连/公网端点 hang 满
+  超时而校外快速失败；或 webvpn 包装链校内 RTT 膨胀。
+- info app 机制对照：其 RN 网络层与 WebView 共用同一 CookieManager，会话天然互通；
+  我们等价物 = openWebModal 进页种票/出页回灌。机制无差，失败在链路某处，待日志定位。

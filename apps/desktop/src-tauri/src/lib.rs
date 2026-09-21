@@ -225,49 +225,114 @@ fn trace_key() -> String {
 /// 调试日志文件路径：所有写点统一走这里（Windows 下 /tmp 语义为「当前盘根 \tmp\」）。
 const DEBUG_LOG_PATH: &str = "/tmp/onethu-debug.log";
 
+/// 调试日志落点。R21：安卓此前只有 logcat（无 /tmp），用户拿不到日志、真机问题
+/// 全靠猜（2026-09-21「在线服务跳浏览器」「校内启动 20s」两个实录的教训）——
+/// 现在安卓落 app_data_dir/logs/onethu-debug.log，设置页可一键转存系统下载。
+fn debug_log_path() -> std::path::PathBuf {
+    if let Some(app) = LOG_APP.get() {
+        #[cfg(target_os = "android")]
+        {
+            use tauri::Manager;
+            if let Ok(dir) = app.path().app_data_dir() {
+                return dir.join("logs").join("onethu-debug.log");
+            }
+        }
+        let _ = app;
+    }
+    std::path::PathBuf::from(DEBUG_LOG_PATH)
+}
+
+/// setup 时注入全局句柄（命令/内部日志统一取落点，不必层层穿参）
+static LOG_APP: std::sync::OnceLock<tauri::AppHandle> = std::sync::OnceLock::new();
+
+/// Rust 侧直接写调试日志（逐跳计时 / THOS-SEED / VENUEVIEW 等）——与 JS log_debug 同一落点。
+fn debug_log_line(line: &str) {
+    let path = debug_log_path();
+    if let Some(parent) = path.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let ok = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&path)
+        .ok()
+        .and_then(|mut f| std::io::Write::write_all(&mut f, format!("{line}\n").as_bytes()).ok());
+    if ok.is_none() {
+        // 落盘失败（理论罕见）→ logcat 兜底，真机 adb 仍可读
+        #[cfg(target_os = "android")]
+        unsafe {
+            extern "C" {
+                fn __android_log_write(prio: i32, tag: *const u8, text: *const u8) -> i32;
+            }
+            let full = format!("{line}\0");
+            __android_log_write(4, b"onethu\0".as_ptr(), full.as_ptr() as *const u8);
+        }
+    }
+}
+
 /// 打开调试日志（append）。写前先 `create_dir_all(parent)`——Windows 上 `\tmp\`
 /// 常不存在，此前 `File::create` 失败被 `let _` 吞掉，霖机器整条调试链静默失效
 /// （R10 15.1-3：log_debug / thos_log / venue_log 三处统一走本 helper）。
-fn open_debug_log() -> Option<std::fs::File> {
-    if let Some(parent) = std::path::Path::new(DEBUG_LOG_PATH).parent() {
-        let _ = std::fs::create_dir_all(parent);
-    }
-    std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(DEBUG_LOG_PATH)
-        .ok()
-}
-
 #[tauri::command]
 fn log_debug(line: String) -> Result<(), String> {
-    use std::io::Write;
     // 体积闸门：超 16MB 轮转为 .old（防 HTML dump 类循环刷盘——曾灌到 1GB）
-    if let Ok(meta) = std::fs::metadata(DEBUG_LOG_PATH) {
+    let path = debug_log_path();
+    if let Ok(meta) = std::fs::metadata(&path) {
         if meta.len() > 16 * 1024 * 1024 {
-            let _ = std::fs::rename(DEBUG_LOG_PATH, format!("{DEBUG_LOG_PATH}.old"));
+            let _ = std::fs::rename(&path, path.with_extension("log.old"));
         }
     }
-    let mut f = match open_debug_log() {
-        Some(f) => f,
-        // Android 无 /tmp（2026-09-06 真机实录：调试通道整体静默失效）→ 落 logcat，
-        // adb 直读。__android_log_write 是 NDK 公共符号（liblog），零依赖直链。
-        None => {
-            #[cfg(target_os = "android")]
-            unsafe {
-                extern "C" {
-                    fn __android_log_write(prio: i32, tag: *const u8, text: *const u8) -> i32;
-                }
-                let full = format!("{}\0", line);
-                __android_log_write(4, b"onethu\0".as_ptr(), full.as_ptr() as *const u8);
-            }
-            #[cfg(not(target_os = "android"))]
-            let _ = &line;
-            return Ok(());
-        }
-    };
-    let _ = writeln!(f, "{}", line);
+    debug_log_line(&line);
     Ok(())
+}
+
+/// 导出调试日志：安卓转存系统「下载」（复用 saveDownload 桥），桌面落下载目录。
+/// 返回用户可说的落点（「下载/onethu-debug.log」或桌面绝对路径）。
+#[tauri::command]
+fn debug_log_export(app: tauri::AppHandle) -> Result<String, String> {
+    let src = debug_log_path();
+    let bytes = std::fs::read(&src).map_err(|e| {
+        if e.kind() == std::io::ErrorKind::NotFound {
+            "还没有日志：先复现一次问题再导出".to_string()
+        } else {
+            format!("读取日志失败: {e}")
+        }
+    })?;
+    let name = "onethu-debug.log";
+    #[cfg(target_os = "android")]
+    {
+        use tauri::Manager;
+        let dir = app
+            .path()
+            .app_cache_dir()
+            .map_err(|e| format!("无法定位缓存目录: {e}"))?
+            .join("onethu-dl");
+        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+        let tmp = dir.join(name);
+        std::fs::write(&tmp, &bytes).map_err(|e| e.to_string())?;
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        let r: serde_json::Value = handle
+            .run_mobile_plugin(
+                "saveDownload",
+                serde_json::json!({ "path": tmp.to_string_lossy(), "name": name }),
+            )
+            .map_err(|e| e.to_string())?;
+        if let Some(dir) = r.get("dir").and_then(|v| v.as_str()) {
+            return Ok(format!("{dir}/{name}"));
+        }
+        return Ok(tmp.to_string_lossy().into_owned());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let dir = downloads::directory(&app)?;
+        std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+        let path = dir.join(name);
+        std::fs::write(&path, &bytes).map_err(|e| e.to_string())?;
+        Ok(path.to_string_lossy().into_owned())
+    }
 }
 
 /* ---------------- 外链系统浏览器 ----------------
@@ -1174,7 +1239,7 @@ async fn http_native(
             let sent = reqwest::cookie::CookieStore::cookies(NATIVE_JAR_ARC.as_ref(), &url)
                 .and_then(|c: reqwest::header::HeaderValue| c.to_str().ok().map(|s: &str| s.to_string()))
                 .unwrap_or_else(|| "(无)".into());
-            println!("[NATIVE-STORE] {} → {}", url.host_str().unwrap_or("?"), sent);
+            debug_log_line(&format!("[NATIVE-STORE] {} → {}", url.host_str().unwrap_or("?"), sent));
         }
         for (k, v) in &input.headers {
             let lower = k.to_lowercase();
@@ -1187,11 +1252,14 @@ async fn http_native(
         if let Some(b) = &body_bytes {
             req = req.body(b.clone());
         }
+        let hop_t0 = std::time::Instant::now();
         let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
+        let hop_ms = hop_t0.elapsed().as_millis();
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
-        println!("[NATIVE-HOP{}] {} {} {}", _hop, status.as_u16(), method_cur.as_str(), resp.url().as_str().chars().take(210).collect::<String>());
+        // R21 逐跳计时入文件：定位「校内启动 20s」吃在哪一跳（logcat 读不到的旧痛）
+        debug_log_line(&format!("[NATIVE-HOP{}] {} {}ms {} {}", _hop, status.as_u16(), hop_ms, method_cur.as_str(), resp.url().as_str().chars().take(210).collect::<String>()));
 
         let mut headers = HashMap::new();
         let mut set_cookies = Vec::new();
@@ -1457,16 +1525,13 @@ fn eid_fill_script(username: &str, password: &str) -> String {
 /// webview 线程的 JNIEnv + WebView 对象，见 tauri 2.11 webview/mod.rs:2359）。
 /// 注入后 webview 加载 webvpn/thos URL 即带完整会话——用户零二次登录，
 /// 与上游 thu-info-app #950（RN WebView 共享平台 CookieManager）同构。
-/// THOS 链日志直写 /tmp/onethu-debug.log（println 的 stdout 在 wrapper 下落点不明）
+/// THOS 链日志直写调试日志（println 的 stdout 在 wrapper 下落点不明；安卓可导出）
 fn thos_log(line: &str) {
-    use std::io::Write;
     let ts = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_millis())
         .unwrap_or(0);
-    if let Some(mut f) = open_debug_log() {
-        let _ = writeln!(f, "THOS-LOG {} | {}", ts, line);
-    }
+    debug_log_line(&format!("THOS-LOG {ts} | {line}"));
 }
 
 /// 深色主题下把官方页「正文黑字」涂白（与 Kotlin 侧 DARK_INJECT_JS 同一份脚本；
@@ -2877,10 +2942,7 @@ const VENUE_ORIGIN: &str = "https://www.sports.tsinghua.edu.cn";
 
 /// venueview 反代留痕（与 log_debug 同文件，便于一次点击全链路取证）
 fn venue_log(msg: &str) {
-    use std::io::Write;
-    if let Some(mut f) = open_debug_log() {
-        let _ = writeln!(f, "{} | [VENUEVIEW] {}", chrono_now(), msg);
-    }
+    debug_log_line(&format!("{} | [VENUEVIEW] {}", chrono_now(), msg));
 }
 
 /// 场馆内嵌页 SSO token（前端开 iframe 前推给 Rust；反代对每个 HTML 文档
@@ -3224,6 +3286,7 @@ tauri::Builder::default()
             });
         })
         .setup(|app| {
+            let _ = LOG_APP.set(app.handle().clone());
             // R21 dev 构建守卫（用户实录：有 Windows 同学拿到的是 dev/手动 cargo 构建，
             // 双击打开就是 127.0.0.1:5180 拒绝连接——`is_dev()` 构建里资产不打进程序，
             // devUrl 编译期烤死，WebView 一定去连它；vite 没跑就是浏览器错误页）。
@@ -3278,7 +3341,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
+            log_debug,debug_log_export,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,
             open_external,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,venue_sso_set,venue_open_portal,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])

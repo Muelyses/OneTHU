@@ -12,7 +12,10 @@ OneTHU 是清华大学校园助手应用，基于 Tauri v2 与 React 实现，�
 | [api-reference.md](./api-reference.md) | `ctx.onethu.*` 命名空间与方法的完整参考 | 插件开发者 |
 | [外部作业源-需求与实现方案.md](./外部作业源-需求与实现方案.md) | 外部作业源 R15–R21 的设计与实测纪要：接口探测、加密字体与 LaTeX 方案、原生详情页与嵌入式提交入口的实现记录 | 功能贡献者 |
 | [architecture.md](./architecture.md) | 进程模型、会话管线、插件宿主实现、主题系统、模型调度、构建流程 | 宿主贡献者 |
+| [demo-build.md](./demo-build.md) | `demo` 分支脱敏演示版（OneTHU Demo）：与正式版的差异、脱敏口径、构建步骤与残余风险 | 演示 / 出镜使用者 |
 | [external-homework.md](./external-homework.md) | 外部作业源（雨课堂 / TUOJ / Tyche / DSA OJ）的接入方式、凭据维护、故障恢复与接入记录 | 功能使用者与贡献者 |
+| [android-release-traps.md](./android-release-traps.md) | 安卓 release 构建陷阱（`@InvokeArg`、R8、UA 伪装、构建判据）与无 adb 真机取证通道（日志导出、计时埋点） | 宿主贡献者 |
+| [ui-copy-audit.md](./ui-copy-audit.md) | UI 文案纪律审计：禁用词与字数规则、历次用户反馈的根因与修法留痕 | 界面贡献者 |
 
 ## 阅读路径
 
@@ -29,6 +32,8 @@ OneTHU 是清华大学校园助手应用，基于 Tauri v2 与 React 实现，�
 - OH 扩展（收藏工具 / 联动其他插件 / 接 MCP 服务器）：读
   [plugin-development.md §9.3–9.5](./plugin-development.md)。
 - 修改宿主实现：读 [architecture.md](./architecture.md)，构建命令见该文档 §8。
+- 改安卓插件 / 排查真机问题：读 [android-release-traps.md](./android-release-traps.md)。
+- 写用户可见文案：读 [ui-copy-audit.md](./ui-copy-audit.md)，并跑 `pnpm lint:ui-copy`。
 
 ## 接口真源
 

@@ -1575,6 +1575,12 @@ const DARK_PAINT_JS: &str = r#"(function(){
 })()"#;
 
 /// 桌面端：独立子窗口打开官方服务页，并在导航前种入会话票（macOS / Windows）。
+/// ⚠️ 线程模型（Windows 古老白屏 bug 的最终结论，2026-09-21）：**建窗必须走 async
+/// 命令（tokio 工作线程），绝不能在 sync 命令 / 主线程里 build**——Tauri 官方文档
+/// 明文警告「Windows 上 WebviewWindowBuilder 在同步命令与事件处理器中会死锁」
+///（WebView2 创建要泵消息，主线程正被 sync 命令占着 → 白屏无响应、缩放黑块、
+/// 关不掉、进程拖死，eid/作答/sports 三个 sync 命令与 R18b 的雨课堂窗口全是此病）。
+/// 窗口工作线程内部自建自管（set_cookie/navigate 同线程），前端 invoke 透明。
 #[cfg(desktop)]
 async fn thos_portal_window(
     app: &tauri::AppHandle,
@@ -1591,13 +1597,6 @@ async fn thos_portal_window(
     if let Some(w) = app.get_webview_window(label) {
         let _ = w.close();
     }
-    let mut builder = WebviewWindowBuilder::new(
-        app,
-        label,
-        WebviewUrl::External("https://webvpn.tsinghua.edu.cn/".parse().unwrap()),
-    )
-    .title("在线服务 · OneTHU")
-    .inner_size(1100.0, 820.0);
     // UA 必须与主窗口一致（tauri.conf.json 里硬编码的 Chrome/79）：
     // **wengine 按客户端指纹（UA）管会话**，UA 不同就是另一个客户端，我们种进去的
     // webvpn 票不算数 → 子窗口照样被弹登录页（2026-09-20 实测：日志显示「已种 8 条」
@@ -1608,6 +1607,13 @@ async fn thos_portal_window(
         .windows
         .first()
         .and_then(|w| w.user_agent.clone());
+    let mut builder = WebviewWindowBuilder::new(
+        app,
+        label,
+        WebviewUrl::External("https://webvpn.tsinghua.edu.cn/".parse().unwrap()),
+    )
+    .title("在线服务 · OneTHU")
+    .inner_size(1100.0, 820.0);
     if let Some(ua) = main_ua.as_deref() {
         builder = builder.user_agent(ua);
     }
@@ -1644,8 +1650,6 @@ async fn thos_portal_window(
         if main_ua.is_some() { "同主窗口" } else { "默认" },
         &target[..target.len().min(60)]
     ));
-    win.navigate(target.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
-        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -2156,7 +2160,7 @@ async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
 pub fn run() {
     #[cfg(desktop)]
 #[tauri::command]
-fn open_eid_window(
+async fn open_eid_window(
     app: tauri::AppHandle,
     username: String,
     password: String,
@@ -2232,7 +2236,7 @@ fn open_eid_window(
 
 #[cfg(desktop)]
 #[tauri::command]
-fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
+async fn open_ykt_window(app: tauri::AppHandle) -> Result<String, String> {
     use tauri::webview::WebviewWindowBuilder;
     use tauri::WebviewUrl;
     let label = "yktlogin";
@@ -2343,7 +2347,7 @@ fn close_ykt_window(app: tauri::AppHandle) -> Result<(), String> {
 
 #[cfg(desktop)]
 #[tauri::command]
-fn open_sports_window(app: tauri::AppHandle) -> Result<String, String> {
+async fn open_sports_window(app: tauri::AppHandle) -> Result<String, String> {
     use tauri::webview::WebviewWindowBuilder;
     use tauri::WebviewUrl;
     let label = "venueauth";
@@ -2848,7 +2852,7 @@ async fn open_web_modal(app: tauri::AppHandle, url: String, dark: Option<bool>) 
 
 #[cfg(desktop)]
 #[tauri::command]
-fn open_ykt_submit_window(app: tauri::AppHandle, url: String, cookie: String) -> Result<(), String> {
+async fn open_ykt_submit_window(app: tauri::AppHandle, url: String, cookie: String) -> Result<(), String> {
     use tauri::webview::{Cookie, WebviewWindowBuilder};
     use tauri::WebviewUrl;
     // scheme 白名单：非 http(s) 一律拒绝
@@ -2990,28 +2994,12 @@ async fn venue_open_portal_impl(
     if let Some(w) = app.get_webview_window(label) {
         let _ = w.close();
     }
-    // 先建在体育系统源根（同 origin），注入脚本与 Cookie 都落在同一个域上
-    let mut builder = WebviewWindowBuilder::new(
-        app,
-        label,
-        WebviewUrl::External(format!("{VENUE_ORIGIN}/venue/index.html").parse().unwrap()),
-    )
-    .title("场馆预约 · OneTHU")
-    .inner_size(1100.0, 820.0)
-    .initialization_script(venue_seed_js(token));
     let main_ua = app
         .config()
         .app
         .windows
         .first()
         .and_then(|w| w.user_agent.clone());
-    if let Some(ua) = main_ua.as_deref() {
-        builder = builder.user_agent(ua);
-    }
-    if dark {
-        builder = builder.initialization_script(DARK_PAINT_JS);
-    }
-    let win = builder.build().map_err(|e| e.to_string())?;
     // 顺带把原生 jar 里 sports 域的票种进去（官方页若用 Cookie 走 SSO，这里就一并共享）
     let pairs: Vec<String> = {
         let jar = NATIVE_JAR_ARC.0.read().unwrap();
@@ -3024,6 +3012,22 @@ async fn venue_open_portal_impl(
             Err(_) => Vec::new(),
         }
     };
+    // 先建在体育系统源根（同 origin），注入脚本与 Cookie 都落在同一个域上
+    let mut builder = WebviewWindowBuilder::new(
+        app,
+        label,
+        WebviewUrl::External(format!("{VENUE_ORIGIN}/venue/index.html").parse().unwrap()),
+    )
+    .title("场馆预约 · OneTHU")
+    .inner_size(1100.0, 820.0)
+    .initialization_script(venue_seed_js(token));
+    if let Some(ua) = main_ua.as_deref() {
+        builder = builder.user_agent(ua);
+    }
+    if dark {
+        builder = builder.initialization_script(DARK_PAINT_JS);
+    }
+    let win = builder.build().map_err(|e| e.to_string())?;
     let mut seeded = 0usize;
     for pair in &pairs {
         if let Ok(c) = Cookie::parse(format!("{pair}; Domain=www.sports.tsinghua.edu.cn; Path=/")) {

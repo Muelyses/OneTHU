@@ -1,5 +1,3 @@
-import { stripInlineColors } from "./htmlTheme.js";
-
 /**
  * R20-B3：雨课堂题干 / 我的作答 HTML 的**本地内联渲染管线**（纯逻辑，零依赖）。
  *
@@ -410,54 +408,155 @@ export interface YktDocBuildOptions {
   fontDataUrl?: string;
   /** LaTeX 渲染器（组件层注入 katex；不传 = 原样保留 $…$） */
   render?: LatexRender;
-  /** 当前是否深色主题（决定文档内样式档；主题切换由调用方重建文档） */
-  dark?: boolean;
   /**
    * 额外样式（如 vendor/katex 的 katexInlineCss，srcdoc iframe 是 opaque origin，
    * 加载不了应用包内资源，样式必须随文档字符串进）。仅当 LaTeX 真渲染出了内容
    * （产物含 class="katex）才拼入，无公式 / 渲染全失败的文档零开销。
    */
   extraCss?: string;
+  /**
+   * 主题配色（R20-B3 fix ②）：组件层从**运行时实际生效的设计令牌**读取
+   * （主题是可插拔的，暗色不止一个、浅色也可能是米白等自定义底色，不能假设
+   * 明暗二元）。缺省 = 历史浅色定稿（DEFAULT_YKT_DOC_THEME），行为与旧版一致。
+   */
+  theme?: YktDocTheme;
+  /**
+   * 剥行内色器（暗底主题用，上游 1861e4e 同源能力）：暗底时把官方正文写死的
+   * color/bgcolor 剥掉，交给主题档配色。做成**注入式**是为了保持本模块零依赖
+   * （stripInlineColors 在 lib/htmlTheme.ts，走 DOMParser；yktBody 要能被 Node
+   * 直引测试）。不传 = 不剥（亮底无需）。
+   */
+  stripColors?: (html: string) => string;
 }
 
+/** 沙箱文档配色（R20-B3 fix ②）：由组件层读当前主题令牌注入，纯数据便于直测 */
+export interface YktDocTheme {
+  /** 正文文字色（--text-1） */
+  text: string;
+  /** 次要文字色（--text-2：占位框文字等） */
+  textSoft: string;
+  /** 文档底色：容器链上第一个不透明背景色（亮主题通常白、暗主题随主题面） */
+  bg: string;
+  /** 边线色（表格 / 占位框虚线，--border） */
+  border: string;
+  /** 链接色（--accent） */
+  link: string;
+  /** 占位框底色（--surface-3） */
+  fallbackBg: string;
+}
+
+/** 历史浅色定稿（buildYktProblemDoc 未传 theme 时的缺省，观感与旧版逐字节一致） */
+export const DEFAULT_YKT_DOC_THEME: YktDocTheme = {
+  text: "#222",
+  textSoft: "#666",
+  bg: "transparent",
+  border: "#ddd",
+  link: "#1a73e8",
+  fallbackBg: "#fafafa",
+};
+
 /**
- * 文档内样式（浅色 / 深色两档）。
- *
- * 这份文档跑在 `sandbox="allow-scripts"` 的 **opaque origin** iframe 里，**继承不到
- * 应用主题的 CSS 变量**（父文档的 custom property 不跨 opaque origin 生效），所以深浅
- * 两档必须各自写死颜色——原先只有浅色档，深色主题下正文保持 #222 黑字（用户实录：
- * 雨课堂黑夜模式 LaTeX 区域还是白底黑字）。由调用方按当前主题选档
- * （buildYktProblemDoc 的 dark 参数），主题切换由组件重建文档。
+ * 颜色令牌净化（纯）：只放行像颜色的值（#hex / rgb() / rgba() / hsl() / hsla() /
+ * color() / transparent），其余一律回退。主题变量的值来自插件（受信代码），但
+ * 这些值要拼进 srcdoc 的 <style>，一个畸形/恶意值就能把样式表揉碎——净化是
+ * 低成本高收益的最后防线。不接受 var(...) / light-dark(...) 等引用形态：srcdoc
+ * 是 opaque origin，引用外部令牌毫无意义，只能是要字面量。
  */
-export function yktDocCss(dark: boolean): string {
-  // 深色档取应用 night 主题的正文/边框色，保证「和外面看起来是一套」
-  const ink = dark ? "#e8ebf2" : "#222";
-  const border = dark ? "rgba(255,255,255,0.18)" : "#ddd";
-  const link = dark ? "#6b9bff" : "#1a73e8";
-  const paleInk = dark ? "#7d8494" : "#666";
-  const paleBg = dark ? "rgba(255,255,255,0.06)" : "#fafafa";
-  const paleBorder = dark ? "rgba(255,255,255,0.22)" : "#bbb";
+export function sanitizeDocColor(v: unknown, fallback: string): string {
+  if (typeof v !== "string") return fallback;
+  const s = v.trim().toLowerCase();
+  if (!s || s.length > 64) return fallback;
+  if (s === "transparent") return s;
+  if (/^#[0-9a-f]{3,8}$/.test(s)) return s;
+  if (/^(rgba?|hsla?|color)\([^()]*\)$/.test(s)) return s;
+  return fallback;
+}
+
+/** 底色是否偏暗（纯）：算相对亮度，暗底 → 需要剥官方行内色 + 行内色兜底规则。
+ *  合并纪要：上游 1861e4e 用「明/暗两档」布尔驱动同样的事；本实现按霖口径不假设
+ *  明暗二元（主题可插拔、浅色也可能自定义），故以**解析出的实际底色亮度**判定，
+ *  任何主题下语义一致。解析不出（transparent / 畸形值）→ 视为亮色不剥（保守）。 */
+/** sRGB 相对亮度（纯）：解析不出 → null。hex（3/4/6/8 位）与 rgb()/rgba() 字面量。 */
+export function cssColorLuminance(v: string): number | null {
+  const s = sanitizeDocColor(v, "");
+  if (!s || s === "transparent") return null;
+  let r = -1;
+  let g = -1;
+  let b = -1;
+  const hex = /^#([0-9a-f]{3,8})$/.exec(s);
+  if (hex) {
+    const h = hex[1] ?? "";
+    const d = (i: number): number =>
+      h.length <= 4
+        ? parseInt(h.charAt(i).repeat(2), 16)
+        : parseInt(h.slice(i * 2, i * 2 + 2), 16);
+    r = d(0);
+    g = d(1);
+    b = d(2);
+  } else {
+    const m = /^(rgba?)\(([^)]*)\)$/.exec(s);
+    if (!m) return null;
+    const parts = (m[2] ?? "").split(/[,/\s]+/).filter(Boolean);
+    if (parts.length < 3) return null;
+    const num = (x: string): number => (x.endsWith("%") ? (parseFloat(x) / 100) * 255 : parseFloat(x));
+    r = num(parts[0] ?? "");
+    g = num(parts[1] ?? "");
+    b = num(parts[2] ?? "");
+  }
+  if (![r, g, b].every((x) => Number.isFinite(x) && x >= 0 && x <= 255)) return null;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+}
+
+/** 底色是否偏暗（纯）：亮度 < 0.5。解析不出 → false（保守视亮）。 */
+export function isDarkBgColor(bg: string): boolean {
+  const l = cssColorLuminance(bg);
+  return l !== null && l < 0.5;
+}
+
+/** 文字是否为亮色（纯）：亮度 > 0.65 —— 亮字意味着外面是暗主题（R20-B3 fix② 真机回归） */
+export function isLightTextColor(v: string): boolean {
+  const l = cssColorLuminance(v);
+  return l !== null && l > 0.65;
+}
+
+/** 沙箱文档该不该走暗底（纯）：底色暗 ∨ 文字亮。底色解析失败（transparent）时
+ *  亮文字是暗主题的最后信号——绝不允许再出现「白画布黑字」（霖真机 2026-09-21）。 */
+export function yktDocIsDark(t: YktDocTheme): boolean {
+  return isDarkBgColor(t.bg) || isLightTextColor(t.text);
+}
+
+/** 文档内样式：按主题配色拼装（浅色定稿 = DEFAULT_YKT_DOC_THEME 的输出） */
+export function yktDocCss(t: YktDocTheme = DEFAULT_YKT_DOC_THEME): string {
+  const dark = yktDocIsDark(t);
+  // 暗底自检兜底：底色没解析出来（transparent）→ 强制中性暗纸面（对齐上游 night 档）；
+  // 文字是暗色（解析失败回退 #222 之类）→ 强制亮墨，暗底上不可见字比白底更伤
+  const bg = dark && (!t.bg || t.bg === "transparent") ? "#16181d" : t.bg;
+  const text = dark && (cssColorLuminance(t.text) ?? 1) < 0.35 ? "#e8ebf2" : t.text;
   return [
     "html,body{margin:0;padding:0}",
+    // 底色必须显式给定（不能 transparent 兜底）：Chromium 系对 color-scheme 为
+    // light 的 srcdoc 画布会刷白——暗色主题下「题干白底」的 R20-B3 fix ② 根因
     `body{font:14px/1.65 ${YKT_DOC_FONT_STACK};`,
-    `color:${ink};background:transparent;overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}`,
+    `color:${text};background:${bg};overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}`,
+    // color-scheme 跟档：画布默认色 / 滚动条 / 表单控件随暗底（画布兜底第二道）
+    dark ? "html{color-scheme:dark}" : "",
     "p{margin:0 0 8px}p:last-child{margin-bottom:0}",
     "img{max-width:100%;height:auto;border-radius:4px}",
-    `table{border-collapse:collapse;max-width:100%}th,td{border:1px solid ${border};padding:4px 8px;font-size:12px}`,
+    `table{border-collapse:collapse;max-width:100%}th,td{border:1px solid ${t.border};padding:4px 8px;font-size:12px}`,
     "pre{white-space:pre-wrap;overflow-wrap:anywhere}",
-    `a{color:${link};text-decoration:underline}`,
-    // 深色档再兜一层：官方正文/KaTeX 产物里的行内色都压不过档位配色
+    `a{color:${t.link};text-decoration:underline}`,
+    // 暗底再兜一层（上游 1861e4e 引入）：漏剥的官方/KaTeX 行内色压不过主题配色
     dark ? "body,body *{color:inherit!important;background-color:transparent!important}" : "",
     // 回退栈必须与 body 同栈（YKT_DOC_FONT_STACK）：字体加载失败/未覆盖的字符 ≈ 普通正文观感
     `.${YKT_ENCRYPTED_FONT_CLASS}{font-family:"${YKT_FONT_FAMILY}",${YKT_DOC_FONT_STACK}}`,
-    `.ykt-img-fallback{display:flex;align-items:center;gap:6px;padding:10px 12px;margin:4px 0;border:1px dashed ${paleBorder};border-radius:6px;color:${paleInk};font-size:12px;background:${paleBg};overflow-wrap:anywhere}`,
-    // 长公式在深色底上允许横向滚动，避免被裁
+    `.ykt-img-fallback{display:flex;align-items:center;gap:6px;padding:10px 12px;margin:4px 0;border:1px dashed ${t.border};border-radius:6px;color:${t.textSoft};font-size:12px;background:${t.fallbackBg};overflow-wrap:anywhere}`,
+    // 长公式横向滚动（上游 1861e4e 引入），任何主题下都适用
     ".katex-display{overflow-x:auto;overflow-y:hidden}",
   ].join("");
 }
 
-/** 浅色档（兼容旧引用；新代码请用 yktDocCss(dark) 取档） */
-export const YKT_DOC_CSS = yktDocCss(false);
+/** 旧常量名保留：未传主题时的文档样式（= 浅色定稿），既有测试与调用兼容 */
+export const YKT_DOC_CSS = yktDocCss(DEFAULT_YKT_DOC_THEME);
 
 /**
  * 文档内脚本（静态字符串，buildYktProblemDoc 里把 __YKT_FONT__ 换成字体族名）。
@@ -506,12 +605,39 @@ export const YKT_DOC_SCRIPT_TEMPLATE = [
   "})();",
 ].join("\n");
 
+/** R20-C2：官方 img.kfformula 公式 → $…$ / $$…$$ 文本，交给既有 KaTeX 管线渲染。
+ *  官方提交态公式是 `<img class="kfformula" src=data:… data-latex="…" data-display="…">`，
+ *  官方渲染端只读 data-latex（§31.5）；本应用沙箱直接转成 TeX 定界文本走 renderLatexInHtml。
+ *  属性顺序不定 → 逐 attr 抓取；src 忽略（kityformula 截图，我们用 KaTeX 重排）。
+ *  纯字符串变换（零依赖），在 sanitize **之前**跑（sanitize 会剥 data-* 丢公式）。 */
+export function convertKfformulaToTex(html: string): string {
+  if (!html.includes("kfformula")) return html;
+  const unescapeAttr = (s: string): string =>
+    s
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  return html.replace(/<img\b[^>]*\bclass="[^"]*\bkfformula\b[^"]*"[^>]*>/gi, (tag) => {
+    const raw = /\bdata-latex="([^"]*)"/i.exec(tag)?.[1];
+    if (raw === undefined) return tag;
+    const tex = unescapeAttr(raw).trim();
+    if (!tex) return "";
+    const display = /\bdata-display="([^"]*)"/i.exec(tag)?.[1] ?? "inline";
+    return display === "block" ? `\n$$${tex}$$\n` : `$${tex}$`;
+  });
+}
+
 /** 把服务端 HTML 加工成内联文档（sanitize → 加密字体 → LaTeX → 图片加固 → 拼装）。
  *  纯字符串拼装，任何一步失败都只影响该步的降级路径，不抛错。 */
 export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
-  let body = sanitizeForInlineDoc(opts.html ?? "");
-  // 深色档：先剥掉官方正文里写死的颜色（与 THUbook 同源处理），再由档位样式接管配色
-  if (opts.dark) body = stripInlineColors(body);
+  // R20-C2：kfformula 公式先转 TeX 文本再 sanitize（sanitize 会剥 data-* 属性丢公式）
+  let body = convertKfformulaToTex(opts.html ?? "");
+  body = sanitizeForInlineDoc(body);
+  // 暗底主题：先剥掉官方正文里写死的颜色（上游 1861e4e 引入、与 THUbook 同源），
+  // 由主题档样式接管配色——按解析出的底色亮度判定（isDarkBgColor），非明暗二元
+  if (opts.theme && yktDocIsDark(opts.theme) && opts.stripColors) body = opts.stripColors(body);
   const hasEnc = needsEncryptedFont(body);
   let fontFace = "";
   if (hasEnc && opts.fontDataUrl) {
@@ -528,12 +654,14 @@ export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
     opts.extraCss && body.includes('class="katex')
       ? opts.extraCss
       : "";
+  // 配色：传了 theme 用主题色（组件层已净化），没传 = 历史浅色定稿
+  const css = opts.theme ? yktDocCss(opts.theme) : YKT_DOC_CSS;
   const script = YKT_DOC_SCRIPT_TEMPLATE.split("__YKT_FONT__").join(YKT_FONT_FAMILY);
   return (
     '<!DOCTYPE html><html><head><meta charset="utf-8">' +
     '<meta name="referrer" content="no-referrer">' +
     `<base href="${YKT_DOC_BASE}">` +
-    `<style>${yktDocCss(opts.dark === true)}${extra}${fontFace}</style></head><body>${body}` +
+    `<style>${css}${extra}${fontFace}</style></head><body>${body}` +
     `<script>${script}</script></body></html>`
   );
 }

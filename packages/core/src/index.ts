@@ -210,6 +210,13 @@ export type { ExternalHomework, ExtHwCreds, ExtHwSourceId, ExtHwCategory, ExtHwL
 export type { YkExerciseDetail, YkProblem, YkComment, YkAttachment, YkMyStatus, YuketangSource } from "./exthw/index.js";
 /* R21-B：雨课堂会话失效归一 / 健康检查 / Cookie 导出导入（多设备迁移缓解） */
 export type { YktSessionHealth, YuketangSourceHooks, YktCookieExport } from "./exthw/index.js";
+/* R20-C2 P2：主观题提交 + 正文插图上传类型（⛔ docs §32 学术红线：提交 API 禁止进插件工具清单） */
+export type {
+  YktSubmitResult,
+  YktSubmitAttachment,
+  YktSubmitSubjectiveOptions,
+  YktInlineImageUploadOptions,
+} from "./exthw/index.js";
 
 // 日程云同步（CalDAV / iCalendar）
 export * as caldav from "./caldav/index.js";

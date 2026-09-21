@@ -13,6 +13,7 @@ import { invalidateLearnCache, useLearnData } from "../../state/data.js";
 import { BackButton, RichContent, fmtDateTime, gradeLabel, timeLeft } from "./shared.js";
 import { useLearnNavSemester } from "./shared.js";
 import { openExternal } from "../info/openExternal.js";
+import { isAndroidNavigator } from "../../lib/androidHost.js";
 import { parseLearnTime } from "@onethu/core";
 import type { HomeworkPageDetail, LearnAttachment } from "@onethu/core";
 
@@ -34,6 +35,10 @@ export function AssignmentDetailPage() {
   const [subBusy, setSubBusy] = useState(false);
   const [subMsg, setSubMsg] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  // 拍照直接上传（R21c，参照雨课堂作答编辑器）：capture=environment 直调后置相机。
+  // 判定必须走多信号 isAndroidNavigator——主窗口 UA 被伪装成 Windows，裸 UA 判定恒 false。
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const isAndroid = useMemo(() => isAndroidNavigator(navigator), []);
   const subTouched = useRef(false); // 用户改过输入框后不再用上次提交内容预填
   /* 动作分离（用户语义）：提交恒走 isDeleted=0（正文+所选新附件一次覆盖）；
      撤回附件是附件区里的独立按钮、独立请求（isDeleted=1），与提交互不掺和 */
@@ -401,6 +406,31 @@ export function AssignmentDetailPage() {
                 onChange={(e) => setSubFile(e.target.files?.[0] ?? null)}
                 disabled={subBusy}
               />
+              {isAndroid ? (
+                <>
+                  <input
+                    ref={cameraRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0] ?? null;
+                      if (f) setSubFile(f);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    className="btn"
+                    style={{ fontSize: 12 }}
+                    disabled={subBusy}
+                    title="调起后置相机拍照，拍完与选文件一样先预览再提交"
+                    onClick={() => cameraRef.current?.click()}
+                  >
+                    📷 拍照上传
+                  </button>
+                </>
+              ) : null}
               {subFile ? (
                 <span style={{ display: "inline-flex", gap: 6, alignItems: "center", color: "var(--accent)" }}>
                   将上传：{subFile.name}

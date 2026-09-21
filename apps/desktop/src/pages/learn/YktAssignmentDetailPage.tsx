@@ -179,19 +179,12 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
   if (exhausted) {
     return (
       <div className="ykt-ans ykt-answer-panel">
-        <div className="ykt-ans-empty">本题主观作答次数已用尽（官方校验）。如需修改请走官方页（若其允许）。</div>
+        <div className="ykt-ans-empty">本题作答次数已用尽</div>
       </div>
     );
   }
   return (
     <div className="ykt-ans ykt-answer-panel">
-      <div className="ykt-answer-head">
-        <b>本页作答</b>
-        <span className="ykt-answer-meta">
-          {p.myStatus === "submitted" || p.myStatus === "graded" ? "已提交 · 本次提交将覆盖旧答案" : "未提交"}
-          {unlimited ? " · 不限次" : ` · 剩余 ${remaining} 次`}
-        </span>
-      </div>
       <YktSubjectiveEditor
         value={html}
         onChange={setHtml}
@@ -208,9 +201,8 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
           onClick={() => void doSubmit()}
           title="提交后可在剩余次数内重做（覆盖旧答案）"
         >
-          {busy ? "提交中…" : uploading > 0 ? `图片上传中（${uploading}）…` : unlimited ? "提交作答" : `提交作答（剩余 ${remaining} 次）`}
+          {busy ? "提交中…" : uploading > 0 ? "图片上传中…" : unlimited ? "提交作答" : `提交（剩余 ${remaining} 次）`}
         </button>
-        <span className="ykt-answer-tip">提交内容 = 你在此撰写/插入的文字与图片（应用不做任何内容生成）</span>
       </div>
     </div>
   );

@@ -19,13 +19,15 @@ import "react-quill-new/dist/quill.snow.css";
 import { prepImageForUpload, uploadFileName } from "../../lib/yktImagePrep.js";
 import { uploadYktInlineImage } from "../../state/exthw.js";
 import { loadYktLatexBundle } from "../../lib/yktKatex.js";
+import { isAndroidNavigator } from "../../lib/androidHost.js";
 
 /* ── Quill 定制 blot：img.kfformula（官方公式图）作为一等 embed，编辑中不被误改 ── */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const ImageBlot: any = Quill.import("formats/image");
 
-/** 编辑器内的公式芯片 src：SVG data-uri 显示 TeX 源码（提交时换官方 1px gif）。 */
+/** 编辑器内的公式芯片 src：中性灰芯片显示 TeX 源码（半透明底 + 中灰字，亮暗主题都可读；
+ *  img 无法读 CSS 变量，故用双主题中立色；提交时换官方 1px gif，src 不参与官方渲染）。 */
 function formulaChipSrc(latex: string): string {
   const w = Math.min(640, Math.max(40, Math.ceil(latex.length * 7.4) + 20));
   const esc = latex
@@ -35,8 +37,8 @@ function formulaChipSrc(latex: string): string {
     .replace(/"/g, "&quot;");
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="26">` +
-    `<rect width="100%" height="100%" rx="4" fill="#fff3c4" stroke="#e0c878"/>` +
-    `<text x="7" y="18" font-family="monospace" font-size="12.5" fill="#6b5400">${esc}</text>` +
+    `<rect width="100%" height="100%" rx="4" fill="rgba(128,132,140,0.16)" stroke="rgba(128,132,140,0.35)"/>` +
+    `<text x="7" y="18" font-family="monospace" font-size="12.5" fill="#9aa0a8">${esc}</text>` +
     `</svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
@@ -92,6 +94,13 @@ export function toSubmitHtml(editorHtml: string): string {
 
 /* ── 组件 ── */
 
+/** 判定所需的宿主信号（androidHost.AndroidHostSignals 的结构子集） */
+interface AndroidHostSignalsLike {
+  userAgent?: string;
+  platform?: string;
+  userAgentData?: { platform?: string } | null;
+}
+
 export interface YktSubjectiveEditorProps {
   /** 受控 HTML（Quill root innerHTML 语义） */
   value: string;
@@ -121,6 +130,9 @@ const FORMATS = ["bold", "italic", "underline", "color", "background", "list", "
 
 export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
   const { value, onChange, classroomId, onUploadingChange, onError, disabled } = props;
+  // 桌面 = 从文件上传；Android 宿主 = 拍照上传（isAndroidNavigator 多信号判定，
+  // tauri.conf 伪装 UA 也不误判，见 androidHost.ts 头注）
+  const isAndroid = useMemo(() => isAndroidNavigator(navigator as AndroidHostSignalsLike), []);
   const quillRef = useRef<ReactQuill | null>(null);
   const pickRef = useRef<HTMLInputElement | null>(null);
   const cameraRef = useRef<HTMLInputElement | null>(null);
@@ -288,10 +300,10 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
         onChange={onChange}
         modules={modules}
         formats={FORMATS}
-        placeholder={props.placeholder ?? "在此作答：可输入文字、粘贴/拖拽/拍摄解题图片、插入公式…"}
+        placeholder={props.placeholder ?? "在此作答…"}
         readOnly={disabled}
       />
-      {/* 隐藏文件入口：选图 + 拍照（移动端 capture 直调相机，docs §32.1） */}
+      {/* 隐藏文件入口：选图（桌面）+ 拍照（移动端 capture 直调相机，docs §32.1） */}
       <input
         ref={pickRef}
         type="file"
@@ -316,13 +328,17 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
       />
       <div className="ykt-editor-foot">
         {uploading > 0 ? (
-          <span className="ykt-editor-uploading">图片上传中（{uploading}）…完成后才能提交</span>
+          <span className="ykt-editor-uploading">图片上传中…</span>
         ) : (
-          <button type="button" className="btn btn-sm ykt-camera-btn" disabled={disabled} onClick={() => cameraRef.current?.click()}>
-            📷 拍照上传
+          <button
+            type="button"
+            className="btn btn-sm ykt-img-btn"
+            disabled={disabled}
+            onClick={() => (isAndroid ? cameraRef.current?.click() : pickRef.current?.click())}
+          >
+            {isAndroid ? "📷 拍照上传" : "📎 从文件上传"}
           </button>
         )}
-        <span className="ykt-editor-tip">图片将插入正文（AI 判卷读取正文；请勿使用附件通道）</span>
       </div>
 
       {formulaOpen ? (

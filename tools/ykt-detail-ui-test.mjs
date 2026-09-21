@@ -570,7 +570,8 @@ console.log("\n[8] 折叠区块：默认展开 / 两区块可折叠 / 不记忆�
   ok(csBody.includes("aria-expanded={open}"), "折叠头带 aria-expanded（无障碍）");
   ok(csBody.includes("setOpen((v) => !v)"), "点击切换开合");
   ok(csBody.includes("{open ? children : null}"), "折叠时内容不渲染（含 ProblemBody iframe，省的是真开销）");
-  ok(await cssHasToggle(), "折叠头样式（按钮复位 + 小箭头）已入全局样式表");
+  ok(cssHasToggle(), "折叠头样式（按钮复位 + 小箭头）已入全局样式表");
+  ok((await cssHasToggle()) && (await cssHas("ykt-sec-hint")) && (await cssHas(".ykt-sec-toggle.is-closed")), "折叠可见性信号（尾部提示文字 + 收起态样式）已入全局样式表");
   // 主题配色接线静态审计（fix ②）：组件读实时主题注入文档
   const pb = readFileSync(new URL("../apps/desktop/src/components/exthw/ProblemBody.tsx", import.meta.url), "utf8");
   ok(pb.includes("theme: readYktDocTheme(wrapRef.current)"), "ProblemBody 以运行时主题配色构建沙箱文档（不假设明暗二元）");
@@ -578,9 +579,13 @@ console.log("\n[8] 折叠区块：默认展开 / 两区块可折叠 / 不记忆�
 }
 
 async function cssHasToggle() {
+  return cssHas(".ykt-sec-toggle") && cssHas(".ykt-sec-caret");
+}
+
+async function cssHas(needle) {
   const { readFileSync } = await import("node:fs");
   const css = readFileSync(new URL("../apps/desktop/src/styles/global.css", import.meta.url), "utf8");
-  return css.includes(".ykt-sec-toggle") && css.includes(".ykt-sec-caret");
+  return css.includes(needle);
 }
 
 console.log(`\n═══ R20-B2/B3/C1 雨课堂详情页单测：${pass} 通过 / ${fail} 失败 ═══`);

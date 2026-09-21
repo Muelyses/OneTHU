@@ -376,6 +376,19 @@ console.log("\n[8] 主题配色：yktDocCss / sanitizeDocColor / buildYktProblem
   eq(yb.sanitizeDocColor("", "FB"), "FB", "空串回退");
   eq(yb.sanitizeDocColor(undefined, "FB"), "FB", "非字符串回退");
   eq(yb.sanitizeDocColor("#".repeat(70), "FB"), "FB", "超长值回退（长度上限）");
+
+  // 暗底自检兜底（霖真机回归：底色解析失败时「白画布黑字」绝不允许再出现）
+  ok(yb.isLightTextColor("#e8eaf0") && !yb.isLightTextColor("#222"), "isLightTextColor 亮度口径");
+  const darkText = { text: "#e8eaf0", textSoft: "#9aa0aa", bg: "transparent", border: "#33363d", link: "#7aa2ff", fallbackBg: "#22252c" };
+  const cssFallback = yb.yktDocCss(darkText);
+  ok(yb.yktDocIsDark(darkText), "底色没解析出来但文字亮 → 判定暗主题");
+  ok(cssFallback.includes("html{color-scheme:dark}"), "暗档带 color-scheme:dark（画布兜底第二道）");
+  ok(cssFallback.includes("background:#16181d"), "底色 transparent → 强制中性暗纸面");
+  ok(!cssFallback.includes("color:#222"), "暗档不再回退黑字");
+  const darkBgDarkText = { ...dark, text: "#222" };
+  const cssClamp = yb.yktDocCss(darkBgDarkText);
+  ok(cssClamp.includes("color:#e8ebf2"), "暗底 + 暗文字 → 亮墨兜底（暗底上不可见字比白底更伤）");
+  ok(!yb.yktDocIsDark(yb.DEFAULT_YKT_DOC_THEME), "默认浅色定稿仍是亮档");
 }
 
 console.log(`\n═══ R20-B3 题干内联渲染单测：${pass} 通过 / ${fail} 失败 ═══`);

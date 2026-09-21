@@ -476,9 +476,10 @@ export function sanitizeDocColor(v: unknown, fallback: string): string {
  *  合并纪要：上游 1861e4e 用「明/暗两档」布尔驱动同样的事；本实现按霖口径不假设
  *  明暗二元（主题可插拔、浅色也可能自定义），故以**解析出的实际底色亮度**判定，
  *  任何主题下语义一致。解析不出（transparent / 畸形值）→ 视为亮色不剥（保守）。 */
-export function isDarkBgColor(bg: string): boolean {
-  const s = sanitizeDocColor(bg, "");
-  if (!s || s === "transparent") return false;
+/** sRGB 相对亮度（纯）：解析不出 → null。hex（3/4/6/8 位）与 rgb()/rgba() 字面量。 */
+export function cssColorLuminance(v: string): number | null {
+  const s = sanitizeDocColor(v, "");
+  if (!s || s === "transparent") return null;
   let r = -1;
   let g = -1;
   let b = -1;
@@ -494,29 +495,51 @@ export function isDarkBgColor(bg: string): boolean {
     b = d(2);
   } else {
     const m = /^(rgba?)\(([^)]*)\)$/.exec(s);
-    if (!m) return false;
-    const parts = m[2]!.split(/[,/\s]+/).filter(Boolean);
-    if (parts.length < 3) return false;
-    const num = (v: string): number =>
-      v.endsWith("%") ? (parseFloat(v) / 100) * 255 : parseFloat(v);
-    r = num(parts[0]!);
-    g = num(parts[1]!);
-    b = num(parts[2]!);
+    if (!m) return null;
+    const parts = (m[2] ?? "").split(/[,/\s]+/).filter(Boolean);
+    if (parts.length < 3) return null;
+    const num = (x: string): number => (x.endsWith("%") ? (parseFloat(x) / 100) * 255 : parseFloat(x));
+    r = num(parts[0] ?? "");
+    g = num(parts[1] ?? "");
+    b = num(parts[2] ?? "");
   }
-  if (![r, g, b].every((v) => Number.isFinite(v) && v >= 0 && v <= 255)) return false;
-  // W3C 相对亮度（sRGB 简化式）：< 0.5 视为暗底
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5;
+  if (![r, g, b].every((x) => Number.isFinite(x) && x >= 0 && x <= 255)) return null;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+}
+
+/** 底色是否偏暗（纯）：亮度 < 0.5。解析不出 → false（保守视亮）。 */
+export function isDarkBgColor(bg: string): boolean {
+  const l = cssColorLuminance(bg);
+  return l !== null && l < 0.5;
+}
+
+/** 文字是否为亮色（纯）：亮度 > 0.65 —— 亮字意味着外面是暗主题（R20-B3 fix② 真机回归） */
+export function isLightTextColor(v: string): boolean {
+  const l = cssColorLuminance(v);
+  return l !== null && l > 0.65;
+}
+
+/** 沙箱文档该不该走暗底（纯）：底色暗 ∨ 文字亮。底色解析失败（transparent）时
+ *  亮文字是暗主题的最后信号——绝不允许再出现「白画布黑字」（霖真机 2026-09-21）。 */
+export function yktDocIsDark(t: YktDocTheme): boolean {
+  return isDarkBgColor(t.bg) || isLightTextColor(t.text);
 }
 
 /** 文档内样式：按主题配色拼装（浅色定稿 = DEFAULT_YKT_DOC_THEME 的输出） */
 export function yktDocCss(t: YktDocTheme = DEFAULT_YKT_DOC_THEME): string {
-  const dark = isDarkBgColor(t.bg);
+  const dark = yktDocIsDark(t);
+  // 暗底自检兜底：底色没解析出来（transparent）→ 强制中性暗纸面（对齐上游 night 档）；
+  // 文字是暗色（解析失败回退 #222 之类）→ 强制亮墨，暗底上不可见字比白底更伤
+  const bg = dark && (!t.bg || t.bg === "transparent") ? "#16181d" : t.bg;
+  const text = dark && (cssColorLuminance(t.text) ?? 1) < 0.35 ? "#e8ebf2" : t.text;
   return [
     "html,body{margin:0;padding:0}",
     // 底色必须显式给定（不能 transparent 兜底）：Chromium 系对 color-scheme 为
     // light 的 srcdoc 画布会刷白——暗色主题下「题干白底」的 R20-B3 fix ② 根因
     `body{font:14px/1.65 ${YKT_DOC_FONT_STACK};`,
-    `color:${t.text};background:${t.bg};overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}`,
+    `color:${text};background:${bg};overflow:hidden;word-break:break-word;-webkit-text-size-adjust:100%}`,
+    // color-scheme 跟档：画布默认色 / 滚动条 / 表单控件随暗底（画布兜底第二道）
+    dark ? "html{color-scheme:dark}" : "",
     "p{margin:0 0 8px}p:last-child{margin-bottom:0}",
     "img{max-width:100%;height:auto;border-radius:4px}",
     `table{border-collapse:collapse;max-width:100%}th,td{border:1px solid ${t.border};padding:4px 8px;font-size:12px}`,
@@ -588,7 +611,7 @@ export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
   let body = sanitizeForInlineDoc(opts.html ?? "");
   // 暗底主题：先剥掉官方正文里写死的颜色（上游 1861e4e 引入、与 THUbook 同源），
   // 由主题档样式接管配色——按解析出的底色亮度判定（isDarkBgColor），非明暗二元
-  if (opts.theme && isDarkBgColor(opts.theme.bg) && opts.stripColors) body = opts.stripColors(body);
+  if (opts.theme && yktDocIsDark(opts.theme) && opts.stripColors) body = opts.stripColors(body);
   const hasEnc = needsEncryptedFont(body);
   let fontFace = "";
   if (hasEnc && opts.fontDataUrl) {

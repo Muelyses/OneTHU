@@ -58,10 +58,39 @@ interface YktDocMessage {
 
 /* ──────────────── 主题配色读取（R20-B3 fix ②） ──────────────── */
 
-/** 读 :root 上实际生效的 CSS 变量（主题 = :root[data-theme] 变量覆盖，computed 值即最终值） */
-function rootVar(name: string): string {
+/** 颜色归一化画布（惰性建一次）：任意 CSS 颜色串（oklch/color(srgb)/color-mix/…）
+ *  交给引擎自己解析，读回的 computed 值必是 hex/rgba 字面量——下游纯函数只认这些。 */
+let normCtx: CanvasRenderingContext2D | null | undefined;
+function normalizeColor(v: string): string {
+  if (!v) return v;
   try {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    if (normCtx === undefined) {
+      const c = document.createElement("canvas");
+      c.width = 1;
+      c.height = 1;
+      normCtx = c.getContext("2d");
+    }
+    if (!normCtx) return v;
+    normCtx.fillStyle = "#000000"; // 先放一个必成功的值，防上一次非法赋值残留
+    normCtx.fillStyle = v;
+    return normCtx.fillStyle;
+  } catch {
+    return v;
+  }
+}
+
+/** 探针读值：把 CSS 值（通常 `var(--x, fallback)`）挂进真实容器读 computed color——var 链 / color-mix /
+ *  回退值全部由引擎解析完，再画布归一化。比直接读 :root 变量更彻底（变量可能在
+ *  非 :root 层定义，或值是引用形态）。 */
+function probeColor(container: Element | null, cssValue: string): string {
+  try {
+    const probe = document.createElement("span");
+    probe.style.color = cssValue;
+    probe.style.display = "none";
+    (container ?? document.body).appendChild(probe);
+    const v = getComputedStyle(probe).color;
+    probe.remove();
+    return normalizeColor(v);
   } catch {
     return "";
   }
@@ -82,9 +111,9 @@ function resolveEffectiveBg(el: Element | null): string {
     if (m) {
       const parts = (m[1] ?? "").split(/[,/\s]+/).filter(Boolean);
       const a = parts.length >= 4 ? Number(parts[3] ?? "1") : 1;
-      if (!(Number.isFinite(a) && a < 0.01)) return bg; // 不透明 → 就用它
+      if (!(Number.isFinite(a) && a < 0.01)) return normalizeColor(bg); // 不透明 → 就用它
     } else if (bg && bg !== "transparent") {
-      return bg;
+      return normalizeColor(bg);
     }
     cur = cur.parentElement;
   }
@@ -96,12 +125,12 @@ function resolveEffectiveBg(el: Element | null): string {
  *  绝不假设「明/暗」二元。 */
 export function readYktDocTheme(container: Element | null): YktDocTheme {
   return {
-    text: sanitizeDocColor(rootVar("--text-1"), DEFAULT_YKT_DOC_THEME.text),
-    textSoft: sanitizeDocColor(rootVar("--text-2"), DEFAULT_YKT_DOC_THEME.textSoft),
+    text: sanitizeDocColor(probeColor(container, "var(--text-1, #222)"), DEFAULT_YKT_DOC_THEME.text),
+    textSoft: sanitizeDocColor(probeColor(container, "var(--text-2, #666)"), DEFAULT_YKT_DOC_THEME.textSoft),
     bg: sanitizeDocColor(resolveEffectiveBg(container), DEFAULT_YKT_DOC_THEME.bg),
-    border: sanitizeDocColor(rootVar("--border"), DEFAULT_YKT_DOC_THEME.border),
-    link: sanitizeDocColor(rootVar("--accent"), DEFAULT_YKT_DOC_THEME.link),
-    fallbackBg: sanitizeDocColor(rootVar("--surface-3"), DEFAULT_YKT_DOC_THEME.fallbackBg),
+    border: sanitizeDocColor(probeColor(container, "var(--border, #ddd)"), DEFAULT_YKT_DOC_THEME.border),
+    link: sanitizeDocColor(probeColor(container, "var(--accent, #1a73e8)"), DEFAULT_YKT_DOC_THEME.link),
+    fallbackBg: sanitizeDocColor(probeColor(container, "var(--surface-3, #fafafa)"), DEFAULT_YKT_DOC_THEME.fallbackBg),
   };
 }
 

@@ -77,7 +77,9 @@ function YktPlainText({ text }: { text: string }) {
 
 /** 可折叠区块头（R20-B3 fix ③）：「我的作答」「老师评语」支持折叠/展开。
  *  口径（霖 2026-09-21）：**不记忆**——每次进入详情页一律默认展开；折叠只在当次
- *  浏览内有效。纯展示开关，不影响数据拉取。 */
+ *  浏览内有效。纯展示开关，不影响数据拉取。
+ *  可见性（霖真机反馈「看不出能折叠」）：整头做成 chip 按钮——底色块 + 悬停反馈 +
+ *  箭头转向 + 尾部「收起/展开」文字，多重信号一眼可点。 */
 function CollapsibleSection({
   label,
   children,
@@ -90,15 +92,16 @@ function CollapsibleSection({
     <>
       <button
         type="button"
-        className="ykt-sec-toggle"
+        className={`ykt-sec-toggle${open ? "" : " is-closed"}`}
         aria-expanded={open}
-        title={open ? "折叠" : "展开"}
+        title={open ? "点击收起" : "点击展开"}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="ykt-sec-caret" aria-hidden="true">
           {open ? "▾" : "▸"}
         </span>
         <span className="ykt-sec-label">{label}</span>
+        <span className="ykt-sec-hint">{open ? "收起" : "展开"}</span>
       </button>
       {open ? children : null}
     </>

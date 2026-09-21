@@ -306,7 +306,7 @@ ctx.registerCommand({ id: "today", title: "今日概览" }, async () => ({
 | 方法 | 权限 | 用途 |
 |---|---|---|
 | `ui.toast(text)` | `ui` | 底部提示 3 秒 |
-| `ui.confirm(msg, {danger?})` | `ui` | 应用内确认弹窗（Promise 化），危险操作传 `{danger: true}` |
+| `ui.confirm(msg, {danger?, title?, confirmText?})` | `ui` | 应用内确认弹窗（Promise 化）；危险样式传 `{danger: true}`，**并请显式给 `title` 与 `confirmText`**（宿主兜底是通用措辞，写死场景文案会串味） |
 | `ui.form(title, fields)` | `ui` | 通用表单弹窗：text/textarea/password/select 字段，resolve 键值对象（取消为 null） |
 | `ui.clipboard.write(text)` | `ui` | 写剪贴板 |
 | `ui.clipboard.read()` | `clipboard:read` | 读剪贴板（敏感权限，单列） |

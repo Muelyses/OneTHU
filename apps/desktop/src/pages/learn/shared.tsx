@@ -15,7 +15,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
 import { openHomeworkRow } from "../../lib/homeworkEntry.js";
-import { confirmDanger } from "../../lib/confirm.js";
+import { CONFIRM_IGNORE_HW, confirmDanger } from "../../lib/confirm.js";
 import { ignoreHw, unignoreHw, useHwIgnored } from "../../state/hwIgnore.js";
 import { homeworkEntryScoreText } from "../../lib/yktDetail.js";
 import { Card } from "../../components/Layout.js";
@@ -349,7 +349,7 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
     }
     const ok = await confirmDanger(
       `确定要忽略《${h.title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，也不再推送任何截止提醒——请自行留意错过截止的后果。可在「已忽略」栏中恢复。`,
-      "忽略这条作业，请确认！",
+      CONFIRM_IGNORE_HW,
     );
     if (ok) ignoreHw(h.id, h.title);
   };

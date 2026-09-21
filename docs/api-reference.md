@@ -521,7 +521,7 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | `services.open(service)` | `info:read` | 在应用内打开服务官方页（桌面独立窗口 / Android 全屏 WebView，与主窗口共享登录态）；`url` 须来自 `search`；打开失败返回 `false` |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
-| `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 值表示用户是否确认；`{danger: true}` 使用危险操作样式 |
+| `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 值表示用户是否确认；`{danger: true}` 使用危险操作样式，`{title, confirmText}` 自定标题与确认按钮文案（危险样式建议显式给，宿主兜底为「此操作不可撤销，请确认 / 确认执行」） |
 | `ui.form(title, fields)` | `ui` | 通用表单弹窗，`fields` 为 `{key, label, kind?, placeholder?, default?, required?, options?}[]`（kind: text/textarea/password/select）；resolve 为键值对象，取消时 resolve `null` |
 | `ui.clipboard.write(text)` | `ui` | 写系统剪贴板 |
 | `ui.clipboard.read()` | `clipboard:read` | 读取系统剪贴板（敏感权限：可读取密码管理器复制的口令，单独列示） |

@@ -363,7 +363,13 @@ export interface OnethuApi {
   ui: {
     toast(text: string): void;
     /** 应用内确认弹窗（Promise 化）；opts.danger 走危险操作样式（红色确认钮）。需 ui 权限 */
-    confirm(msg: string, opts?: { danger?: boolean }): Promise<boolean>;
+    /** 危险样式（`danger: true`）时建议显式给 `title` 与 `confirmText`：
+     *  宿主通用兜底文案是「此操作不可撤销，请确认 / 确认执行」，写死场景措辞会让
+     *  不同场景互相串味（R21c 实录：忽略作业弹窗曾显示「即将退选 / 确认退选」）。 */
+    confirm(
+      msg: string,
+      opts?: { danger?: boolean; title?: string; confirmText?: string },
+    ): Promise<boolean>;
     /** 通用表单弹窗：fields 为 FormField[]（text/textarea/password/select），
      *  resolve 键值对象；用户取消 resolve null。需 ui 权限 */
     form(title: string, fields: Array<{

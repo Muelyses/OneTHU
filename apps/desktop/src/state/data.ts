@@ -1,5 +1,5 @@
 /** 校园数据钩子：全部取自 @onethu/core（登录后按学期聚合课程 / 作业 / 通知 / 文件 / 课表 / 用户）。 */
-import { confirmOk, confirmDanger } from "../lib/confirm.js";
+import { CONFIRM_DROP_COURSE, confirmOk, confirmDanger } from "../lib/confirm.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { universalFetch, nativeFetch } from "../lib/transport.js";
 import type { XkCourseDetail, ZhjwxkSession, BasicUserInfo, CalendarData, CalendarSemester, CardInfo, CardTransaction, CourseFile, CourseInfo, DeadlineItem, ExamEntry, Homework, NewsItem, Notification, QueueCandidate, ReportRow, ScheduleEntry, SelectedCourse, SemesterInfo, XkCourse, XkFlag, XkLevelTableRow, XkQueueInfo, XkSelectedRow, XkVolInfo } from "@onethu/core";
@@ -1787,7 +1787,7 @@ export function useXkWorkbench(): XkWorkbench {
       }
       for (let i = 0; i < toDrop.length; i++) {
         // 每退一门都过玻璃警告弹窗（用户令：让人意识到这是真实退课）
-        if (!(await confirmDanger(`「${toDrop[i]!.name}」（${toDrop[i]!.code}_${toDrop[i]!.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`))) {
+        if (!(await confirmDanger(`「${toDrop[i]!.name}」（${toDrop[i]!.code}_${toDrop[i]!.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, CONFIRM_DROP_COURSE))) {
           setProgress(`已取消：${toDrop[i]!.name} 不退选，提交中止（已执行部分不受影响）`);
           break;
         }

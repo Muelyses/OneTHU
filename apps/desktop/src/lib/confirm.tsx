@@ -6,7 +6,14 @@
  */
 import { useSyncExternalStore } from "react";
 
-type Pending = { msg: string; resolve: (v: boolean) => void; danger?: boolean; title?: string };
+type Pending = {
+  msg: string;
+  resolve: (v: boolean) => void;
+  danger?: boolean;
+  /** 危险弹窗标题与确认按钮文案：由调用方按场景给（默认通用措辞） */
+  title?: string;
+  confirmText?: string;
+};
 let pending: Pending | null = null;
 const listeners = new Set<() => void>();
 
@@ -23,15 +30,30 @@ export function confirmOk(msg: string): Promise<boolean> {
  * 危险操作确认（退课等不可逆操作）：大号玻璃弹窗 + ⚠️ + 红色确认钮。
  * 用户令：有人没意识到退选是真实退课——每退一门课都要醒目警告。
  */
-/** 危险操作确认。`title` 可换掉默认的「即将退选，请确认！」——那是退选场景的专用
- *  措辞（R21c 教训：忽略作业复用该组件时标题被照抄成「即将退选」，用户当场发现）。 */
-export function confirmDanger(msg: string, title = "即将退选，请确认！"): Promise<boolean> {
+/** 危险操作确认。标题与确认按钮文案**由调用方给**：
+ *  R21c 教训——组件里曾把「即将退选 / 确认退选」写死，忽略作业复用时整屏照抄退选文案，
+ *  用户当场发现。默认值只作通用兜底，具体场景（退选/忽略/删除…）一律显式传。 */
+export function confirmDanger(
+  msg: string,
+  opts: { title?: string; confirmText?: string } = {},
+): Promise<boolean> {
   return new Promise((resolve) => {
     pending?.resolve(false);
-    pending = { msg, resolve, danger: true, title };
+    pending = {
+      msg,
+      resolve,
+      danger: true,
+      title: opts.title ?? "此操作不可撤销，请确认",
+      confirmText: opts.confirmText ?? "确认执行",
+    };
     listeners.forEach((l) => l());
   });
 }
+
+/** 场景措辞预设：**措辞属于场景、不属于组件**——组件只提供通用兜底。
+ *  R21c 实录：忽略作业复用了退选弹窗，整屏照抄「即将退选 / 确认退选」，用户当场发现。 */
+export const CONFIRM_DROP_COURSE = { title: "即将退选，请确认！", confirmText: "确认退选" } as const;
+export const CONFIRM_IGNORE_HW = { title: "忽略这条作业，请确认！", confirmText: "确认忽略" } as const;
 
 export function answerConfirm(v: boolean): void {
   pending?.resolve(v);
@@ -58,11 +80,11 @@ export function ConfirmHost(): React.ReactNode {
       <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ ...glass, borderRadius: 20, padding: "26px 26px 20px", maxWidth: 440, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 46, lineHeight: 1, marginBottom: 14 }}>⚠️</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>{cur.title ?? "即将退选，请确认！"}</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
           <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "rgba(28,39,64,.75)" }}>{cur.msg}</div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
             <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14 }} onClick={() => answerConfirm(false)}>取消</button>
-            <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14, background: "#e5484d", borderColor: "#e5484d", color: "#fff", boxShadow: "0 6px 20px rgba(229,72,77,.35)" }} onClick={() => answerConfirm(true)}>确认退选</button>
+            <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14, background: "#e5484d", borderColor: "#e5484d", color: "#fff", boxShadow: "0 6px 20px rgba(229,72,77,.35)" }} onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确认执行"}</button>
           </div>
         </div>
       </div>

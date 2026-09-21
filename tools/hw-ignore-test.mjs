@@ -79,12 +79,40 @@ assert.ok(row.includes("已忽略") && row.includes("恢复"), "已忽略标记�
 assert.ok(/e\.stopPropagation\(\)/.test(row), "行内按钮不得触发行点击导航");
 // 忽略与作业状态无关：入口常驻，不得挂在 remind 开关上（未交/已交/已批都要能忽略）
 assert.ok(!/\{remind \|\| isIgnored \?/.test(row), "忽略入口必须常驻（不随 remind 条件渲染）");
-// 弹窗标题不得照抄退选场景（用户实录：「确认退选是什么鬼东西」）
-assert.ok(row.includes('"忽略这条作业，请确认！"'), "忽略确认必须用自己的标题");
+// 弹窗措辞不得照抄退选场景（用户实录：「确认退选是什么鬼东西」）——见下方预设断言
 const confirmLib = read("apps/desktop/src/lib/confirm.tsx");
-assert.ok(/export function confirmDanger\(msg: string, title = "即将退选，请确认！"\)/.test(confirmLib),
-  "confirmDanger 必须支持自定义标题（默认仍为退选文案，不影响既有调用）");
-assert.ok(/cur\.title \?\? "即将退选，请确认！"/.test(confirmLib), "弹窗标题必须取自请求而非写死");
+// 措辞属于场景、不属于组件：组件只提供通用兜底，且标题/按钮都必须取自请求
+assert.ok(/export function confirmDanger\(\s*msg: string,\s*opts: \{ title\?: string; confirmText\?: string \} = \{\},\s*\)/.test(confirmLib),
+  "confirmDanger 必须接受 { title, confirmText }");
+assert.ok(/cur\.title \?\? "此操作不可撤销，请确认"/.test(confirmLib), "标题取自请求，兜底为通用措辞");
+assert.ok(/cur\.confirmText \?\? "确认执行"/.test(confirmLib), "确认按钮文案同样取自请求（此前写死「确认退选」）");
+assert.ok(!/确认退选<\/button>/.test(confirmLib), "组件内不得再写死「确认退选」");
+assert.ok(/export const CONFIRM_DROP_COURSE = \{ title: "即将退选，请确认！", confirmText: "确认退选" \} as const;/.test(confirmLib),
+  "退选措辞必须集中成场景预设");
+assert.ok(/export const CONFIRM_IGNORE_HW = \{ title: "忽略这条作业，请确认！", confirmText: "确认忽略" \} as const;/.test(confirmLib),
+  "忽略措辞必须集中成场景预设");
+
+// 每个危险调用方都要声明自己的场景措辞（退选 3 处 / 忽略 1 处）
+const dropCallers = ["apps/desktop/src/pages/zhjwxk/Courses.tsx", "apps/desktop/src/state/data.ts"];
+for (const f of dropCallers) {
+  const src = read(f);
+  const calls = src.split("confirmDanger(").length - 1;
+  const tagged = src.split(/CONFIRM_DROP_COURSE|DROP_CONFIRM/).length - 1;
+  assert.ok(tagged >= calls, `${f}：${calls} 处危险确认必须都带上退选场景措辞`);
+}
+assert.ok(row.includes("CONFIRM_IGNORE_HW"), "忽略场景必须用忽略措辞预设（不得再传裸字符串标题）");
+
+// 插件 API 必须透传标题与按钮文案（可控制 UI 的接口同样不能写死场景措辞）
+const facade = read("apps/desktop/src/plugins/facade.ts");
+assert.ok(/opts\?: \{ danger\?: boolean; title\?: string; confirmText\?: string \}/.test(facade),
+  "插件 ui.confirm 必须支持 { title, confirmText }");
+assert.ok(/confirmDanger\(String\(msg \?\? ""\), \{/.test(facade), "插件危险确认必须透传两个文案字段");
+const ptypes = read("apps/desktop/src/plugins/types.ts");
+assert.ok(/opts\?: \{ danger\?: boolean; title\?: string; confirmText\?: string \}/.test(ptypes),
+  "插件类型声明必须同步（插件作者可见的 API 面）");
+const devdoc = read("docs/plugin-development.md");
+const apidoc = read("docs/api-reference.md");
+assert.ok(devdoc.includes("confirmText") && apidoc.includes("confirmText"), "插件文档必须写明 title/confirmText");
 
 /* ---------- [3b] 课程页：忽略优先级最高 + 自带忽略栏 ---------- */
 const course = read("apps/desktop/src/pages/learn/CourseDetailPage.tsx");

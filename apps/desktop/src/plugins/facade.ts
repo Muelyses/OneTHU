@@ -620,11 +620,20 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
         await invoke("open_web_modal", { url, dark: currentThemeIsDark() });
       },
-      /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式。 */
-      confirm: async (msg: string, opts?: { danger?: boolean }): Promise<boolean> => {
+      /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式；
+       *  danger 时 `title` / `confirmText` 由插件按场景给（宿主只提供通用兜底措辞）。 */
+      confirm: async (
+        msg: string,
+        opts?: { danger?: boolean; title?: string; confirmText?: string },
+      ): Promise<boolean> => {
         gate(perms, "ui", "ui.confirm");
         const { confirmOk, confirmDanger } = await import("../lib/confirm.js");
-        return opts?.danger ? confirmDanger(String(msg ?? "")) : confirmOk(String(msg ?? ""));
+        return opts?.danger
+          ? confirmDanger(String(msg ?? ""), {
+              title: typeof opts.title === "string" ? opts.title : undefined,
+              confirmText: typeof opts.confirmText === "string" ? opts.confirmText : undefined,
+            })
+          : confirmOk(String(msg ?? ""));
       },
       /** 通用表单弹窗：字段定义见类型 FormField；resolve 键值对象，取消 resolve null。 */
       form: async (title: string, fields: FormField[]): Promise<Record<string, string> | null> => {

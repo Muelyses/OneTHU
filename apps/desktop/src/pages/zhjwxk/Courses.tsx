@@ -13,7 +13,7 @@ import { nextVolCheckpoint, useXkWorkbench, type XkSearchMeta, type XkStageItem 
 import { useApp } from "../../state/context.js";
 import type { XkCourseDetail } from "@onethu/core";   // 【教评#31冻结】XkRatingRow 已注释
 import { tbEnsureIndex, tbFetchReviews, tbMatch, tbStars, tbCourseUrl, tbWriteUrl, type TbEntry, type TbReviews } from "../../lib/xkreviews.js";
-import { confirmOk, confirmDanger } from "../../lib/confirm.js";
+import { CONFIRM_DROP_COURSE as DROP_CONFIRM, confirmOk, confirmDanger } from "../../lib/confirm.js";
 import { openExternal } from "../info/openExternal.js";
 import {
   allowedFlags, calcProb, checkPlanCoverage, dayName, findPreviewConflicts, fullProbGrid, occupancyOf, typeCodeToFlag, volColor,
@@ -1093,7 +1093,7 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
             <button className="btn" disabled={!(r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1)) || wb.busy !== null} title={r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy - 1)}>▲</button>
             <button className="btn" disabled={!(r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1)) || wb.busy !== null} title={r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy + 1)}>▼</button>
             <button className="btn" disabled={inStage} onClick={() => wb.addToStage(r, r.flag, r.zy || 3)}>{inStage ? "已暂存" : "暂存"}</button>
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void (async () => { if (await confirmDanger(`「${r.name}」（${r.c.code}_${r.c.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`)) await wb.drop(r.c.code, r.c.seq, false); })()}>退选</button>
+            <button className="btn" disabled={wb.busy !== null} onClick={() => void (async () => { if (await confirmDanger(`「${r.name}」（${r.c.code}_${r.c.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, DROP_CONFIRM)) await wb.drop(r.c.code, r.c.seq, false); })()}>退选</button>
           </div>
         ) : state === "candidate" ? (
           <div className="row-sub" style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
@@ -1309,7 +1309,7 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
     if (mode === "selected") {
       const c = wb.courses.find((x) => x.c.code === code && String(x.c.seq || "0") === String(seq));
       const name = c?.name || code;
-      if (!(await confirmDanger(`「${name}」（${code}_${seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`))) return;
+      if (!(await confirmDanger(`「${name}」（${code}_${seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, DROP_CONFIRM))) return;
       await wb.drop(code, seq, false);
     } else if (mode === "stage") {
       const x = wb.stageCart.find((y) => y.code === code && String(y.seq || "0") === String(seq || "0"));

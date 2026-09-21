@@ -120,3 +120,58 @@
 3. 一键自救：首页真的一张卡都没有时，空白提示里直接给「恢复默认布局」按钮（不必去翻编辑/添加卡片）；
 4. 两张推荐卡改为**空态说明**（不再整卡消失）：只留这两张卡的用户不会对着空白发愣；
    并修掉「猜你喜欢」起步项里的假 key（`thos` 注册表里不存在 → 整条推荐被静默丢掉）。
+
+---
+
+# 附：2026-09-21 批次（R21）——四条用户反馈的根因与修法
+
+## ① PDF 手机预览回归（「0.9.0 当时可以」）
+
+**根因不是 pdf.js 写错，而是它根本没跑过**：`FilePreview` 用裸 UA 正则判安卓
+（`/android/i.test(navigator.userAgent)`），但主窗口 UA 被 tauri.conf.json 伪装成
+Windows Chrome/79（webvpn 票绑定）→ 真机恒 false → 9-13 的 pdf.js 分支从未在真机
+执行，一直渲染安卓上空白的 `<embed>`。这正是 `androidHost.ts` R18c 修过的同族坑。
+
+修法（`FilePreview.tsx` + `lib/androidHost.ts:choosePdfRenderMode`）：
+- 安卓判定走多信号（UA + userAgentData + platform）；
+- `navigator.pdfViewerEnabled` 为真（内核自带渲染器）→ 回到 `<embed>`（观感最好）；
+  否则走 pdf.js canvas 自绘，**modern → legacy 两级构建兜底**（老内核缺
+  `Promise.withResolvers` 等 API 时 legacy 有垫片）；
+- 失败必留痕（`[FILE-PREVIEW]`，logcat 可抓）+「换内嵌渲染」「系统应用打开」双出口。
+
+护栏：`tools/pdf-render-mode-test.mjs`（分档断言 + **全 src 扫描禁止再出现裸 UA 判安卓**）。
+
+## ②③ 安卓小组件：刷新延迟 + 深色跟随
+
+**延迟根因**：「JS 算、原生画」架构里快照文本是推送时刻算死的（"还有 9 小时"），
+`updatePeriodMillis` 30 分钟重画的还是同一句旧话。**深色根因**：布局/卡片底硬编码浅色。
+
+修法（`widgetSnapshot.ts` 契约扩展 + `OnethuWidget.kt` 重画重算 + `WidgetTicker`）：
+- 快照行新增机器时间字段 `at/until/rel/loc` + 快照级 `counts/titleAt`；
+- 原生每次重画按**当前时钟**重算：倒计时文案、正在上课（加粗+次行重排）、
+  过期行剔除（从顶重新装填）、脚注计数、标题日期；
+- 触发 = 30 分钟兜底自续 tick + 最近 at/until 翻转点的 AlarmManager 精准闹钟
+  （`setExactAndAllowWhileIdle`，未授权降级 `setAndAllowWhileIdle`；重启由既有
+  BOOT receiver 覆盖——`refreshAll` 现在会自动重排 tick）；
+- 深色：布局色抽 `values(-night)/widget_colors.xml`、卡底 `drawable-night/onethu_widget_bg`，
+  启动器重 inflate 自动跟随系统；行内 Span 色渲染时按 uiMode 选盘。
+
+语义锚 = `state/widgetNativeRender.ts`（两端同步的纯函数参考），
+护栏 = `tools/widget-native-render-test.mjs`。
+
+## ④ Windows 用户端出现 127.0.0.1:5180
+
+CI 的 `tauri build` 产物资产内嵌、永不出现 5180；出现即说明拿到的是 **dev/手动 cargo
+构建**（与 0.7.2 安卓事故同族：判据只能是构建方式，`strings` 找端点串两种构建都命中）。
+修法：`lib.rs` setup 首部 dev 守卫——`tauri::is_dev()` 且 dev server 连不上时弹原生
+对话框说明「这是开发版构建，请安装正式版」后退出，不再让用户对着浏览器错误页猜。
+
+## ⑤ 在线服务/体育点击 webview 无反应
+
+逐环节静态排查：Rust 移动端链路错误已冒出（265cc35）、Kotlin openWebModal 无静默
+拒绝路径、`openThosInApp`/`openVenueInApp` 失败必 toast/回落浏览器。本轮归一：
+`ThosPage.openOfficial` 原是第三份内联复份链（失败只 setError，横幅不显眼时等于
+没反应），已委托 `openThosInApp`，打开链全应用只剩一份。
+**遗留**：若仍复现，唯一可能是指令悬挂（设备相关）。下次 adb 时一次定位：
+点一下 → `adb logcat -d | grep -E "THOS-UI|THOS-SEED|VENUE-PORTAL"`——
+有 [THOS-UI] 无 [THOS-SEED] = JS→Rust 断；有 [THOS-SEED] 无窗口 = 插件侧问题。

@@ -3224,6 +3224,29 @@ tauri::Builder::default()
             });
         })
         .setup(|app| {
+            // R21 dev 构建守卫（用户实录：有 Windows 同学拿到的是 dev/手动 cargo 构建，
+            // 双击打开就是 127.0.0.1:5180 拒绝连接——`is_dev()` 构建里资产不打进程序，
+            // devUrl 编译期烤死，WebView 一定去连它；vite 没跑就是浏览器错误页）。
+            // 与 0.7.2 安卓事故同根：判据只能是构建方式，不能用 strings 找端点串。
+            // 有了这个对话框，拿到错误构建的用户第一眼就知道该去装正式版。
+            if tauri::is_dev() {
+                let dev_up = std::net::TcpStream::connect_timeout(
+                    &"127.0.0.1:5180".parse().expect("static addr"),
+                    std::time::Duration::from_millis(800),
+                )
+                .is_ok();
+                if !dev_up {
+                    eprintln!("[ONETHU] dev build but dev server 127.0.0.1:5180 unreachable");
+                    use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
+                    app.dialog()
+                        .message("这是开发版构建，界面资源没有打进程序（需要先启动开发服务器）。日常使用请安装正式版：从发布页下载安装包，或联系分发者要 tauri build 的产物。")
+                        .title("OneTHU 开发版")
+                        .kind(MessageDialogKind::Warning)
+                        .blocking_show();
+                    app.handle().exit(1);
+                    return Ok(());
+                }
+            }
             // 桌面端通知：macOS 尽早装 delegate 并读回落点表——用户可能正是
             // 「点通知把应用冷启动」的那条路径，晚一步这次点击的落点就丢了。
             #[cfg(desktop)]

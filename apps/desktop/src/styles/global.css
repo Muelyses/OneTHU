@@ -776,7 +776,9 @@
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  /* 流光高光走令牌：亮色=白光扫过，暗色主题（凝夜）覆盖为低透明度白光，
+     避免暗底上一道刺眼白带（霖实测「暗黑模式下的流光还是白色模式的」）。 */
+  background: linear-gradient(90deg, transparent, var(--skeleton-shine, rgba(255, 255, 255, 0.6)), transparent);
   animation: shimmer 1.4s infinite;
 }
 

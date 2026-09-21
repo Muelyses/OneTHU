@@ -173,6 +173,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
       "--surface-2": "#1a2030",
       "--surface-3": "#232b3d",
       "--skeleton": "rgba(255, 255, 255, 0.06)",
+      "--skeleton-shine": "rgba(255, 255, 255, 0.12)",
       "--border": "rgba(255, 255, 255, 0.1)",
       "--border-soft": "rgba(255, 255, 255, 0.05)",
       "--border-strong": "rgba(255, 255, 255, 0.18)",

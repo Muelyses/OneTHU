@@ -1574,6 +1574,27 @@ const DARK_PAINT_JS: &str = r#"(function(){
   } catch (e) {}
 })()"#;
 
+/// 桌面端：把「建窗 + set_cookie + navigate」整段窗口操作调度到**主线程**执行，
+/// 结果经 channel 送回。wry/tao 窗口必须活在有事件泵的线程上——sync 命令本就跑在
+/// 主线程（eid/ykt/sports 窗口一直没事），**async 命令跑在 tokio 工作线程，直接建窗
+/// 在 Windows 上 = 白屏无响应、缩放留黑块、关不掉、主窗口关了进程还拖着**
+///（霖真机实录的古老 bug；THOS 在线服务 / 体育场馆两条 async 路径中招，2026-09-21 根治）。
+/// ⚠️ 只准在 async / 工作线程上下文调用：在主线程调用会「等一个排在当前任务后面的
+/// 闭包」直接死锁。
+#[cfg(desktop)]
+fn window_op_on_main<T: Send + 'static>(
+    app: &tauri::AppHandle,
+    op: impl FnOnce() -> Result<T, String> + Send + 'static,
+) -> Result<T, String> {
+    let (tx, rx) = std::sync::mpsc::channel();
+    app.run_on_main_thread(move || {
+        let _ = tx.send(op());
+    })
+    .map_err(|e| format!("调度主线程执行窗口操作失败: {e}"))?;
+    let inner = rx.recv().map_err(|_| "主线程窗口操作通道已关闭".to_string())?;
+    inner
+}
+
 /// 桌面端：独立子窗口打开官方服务页，并在导航前种入会话票（macOS / Windows）。
 #[cfg(desktop)]
 async fn thos_portal_window(
@@ -1591,13 +1612,6 @@ async fn thos_portal_window(
     if let Some(w) = app.get_webview_window(label) {
         let _ = w.close();
     }
-    let mut builder = WebviewWindowBuilder::new(
-        app,
-        label,
-        WebviewUrl::External("https://webvpn.tsinghua.edu.cn/".parse().unwrap()),
-    )
-    .title("在线服务 · OneTHU")
-    .inner_size(1100.0, 820.0);
     // UA 必须与主窗口一致（tauri.conf.json 里硬编码的 Chrome/79）：
     // **wengine 按客户端指纹（UA）管会话**，UA 不同就是另一个客户端，我们种进去的
     // webvpn 票不算数 → 子窗口照样被弹登录页（2026-09-20 实测：日志显示「已种 8 条」
@@ -1608,44 +1622,68 @@ async fn thos_portal_window(
         .windows
         .first()
         .and_then(|w| w.user_agent.clone());
-    if let Some(ua) = main_ua.as_deref() {
-        builder = builder.user_agent(ua);
-    }
-    if dark {
-        builder = builder.initialization_script(DARK_PAINT_JS);
-    }
-    let win = builder.build().map_err(|e| e.to_string())?;
-    // 逐条注入（绝不打印 Cookie 值）。**每条都必须带自己的 Domain**：
-    //   ① 三组票分属 webvpn / thos / id 三个域，缺域就全落到当前页 origin（webvpn），
-    //      id/thos 的票等于没种；
-    //   ② wry 的 set_cookie 对「无域 cookie」是**静默丢弃**——返回 Ok、计数照涨，
-    //      日志看着"种了 8 条"而页面依旧弹登录（2026-09-20 两度踩坑：一次是漏 Domain，
-    //      一次是这份修复只存在于工作区没入库，重建二进制后回归）。
-    let mut seeded = 0usize;
-    for (base, header) in seeds {
-        let host = match url::Url::parse(base).ok().and_then(|u| u.host_str().map(str::to_string)) {
-            Some(h) if !h.is_empty() => h,
-            _ => continue,
-        };
-        for pair in header.split("; ") {
-            let pair = pair.trim();
-            if pair.is_empty() || !pair.contains('=') {
-                continue;
-            }
-            if let Ok(c) = Cookie::parse(format!("{pair}; Domain={host}; Path=/")) {
-                if win.set_cookie(c).is_ok() {
-                    seeded += 1;
+    let dark = dark;
+    let target_owned = target.to_string();
+    let seeds = seeds.to_vec();
+    let app2 = app.clone();
+    let label2 = label.to_string();
+    // ⚠️ 本函数是 async（tokio 工作线程）：建窗必须在主线程（window_op_on_main），
+    // 否则 Windows 上白屏/黑块/关不掉（见 window_op_on_main 文档）。
+    let (seeded, ua_same) = window_op_on_main(app, move || {
+        let mut builder = WebviewWindowBuilder::new(
+            &app2,
+            &label2,
+            WebviewUrl::External("https://webvpn.tsinghua.edu.cn/".parse().unwrap()),
+        )
+        .title("在线服务 · OneTHU")
+        .inner_size(1100.0, 820.0);
+        if let Some(ua) = main_ua.as_deref() {
+            builder = builder.user_agent(ua);
+        }
+        if dark {
+            builder = builder.initialization_script(DARK_PAINT_JS);
+        }
+        let win = builder.build().map_err(|e| e.to_string())?;
+        // 逐条注入（绝不打印 Cookie 值）。**每条都必须带自己的 Domain**：
+        //   ① 三组票分属 webvpn / thos / id 三个域，缺域就全落到当前页 origin（webvpn），
+        //      id/thos 的票等于没种；
+        //   ② wry 的 set_cookie 对「无域 cookie」是**静默丢弃**——返回 Ok、计数照涨，
+        //      日志看着"种了 8 条"而页面依旧弹登录（2026-09-20 两度踩坑：一次是漏 Domain，
+        //      一次是这份修复只存在于工作区没入库，重建二进制后回归）。
+        let mut seeded = 0usize;
+        for (base, header) in &seeds {
+            let host = match url::Url::parse(base)
+                .ok()
+                .and_then(|u| u.host_str().map(str::to_string))
+            {
+                Some(h) if !h.is_empty() => h,
+                _ => continue,
+            };
+            for pair in header.split("; ") {
+                let pair = pair.trim();
+                if pair.is_empty() || !pair.contains('=') {
+                    continue;
+                }
+                if let Ok(c) = Cookie::parse(format!("{pair}; Domain={host}; Path=/")) {
+                    if win.set_cookie(c).is_ok() {
+                        seeded += 1;
+                    }
                 }
             }
         }
-    }
+        win.navigate(
+            target_owned
+                .parse()
+                .map_err(|e| format!("目标 URL 解析失败: {e}"))?,
+        )
+        .map_err(|e| e.to_string())?;
+        Ok((seeded, main_ua.is_some()))
+    })?;
     thos_log(&format!(
         "[THOS-SEED] 独立窗口已种 {seeded} 条会话票（UA={}）→ {}",
-        if main_ua.is_some() { "同主窗口" } else { "默认" },
+        if ua_same { "同主窗口" } else { "默认" },
         &target[..target.len().min(60)]
     ));
-    win.navigate(target.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
-        .map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -2990,28 +3028,12 @@ async fn venue_open_portal_impl(
     if let Some(w) = app.get_webview_window(label) {
         let _ = w.close();
     }
-    // 先建在体育系统源根（同 origin），注入脚本与 Cookie 都落在同一个域上
-    let mut builder = WebviewWindowBuilder::new(
-        app,
-        label,
-        WebviewUrl::External(format!("{VENUE_ORIGIN}/venue/index.html").parse().unwrap()),
-    )
-    .title("场馆预约 · OneTHU")
-    .inner_size(1100.0, 820.0)
-    .initialization_script(venue_seed_js(token));
     let main_ua = app
         .config()
         .app
         .windows
         .first()
         .and_then(|w| w.user_agent.clone());
-    if let Some(ua) = main_ua.as_deref() {
-        builder = builder.user_agent(ua);
-    }
-    if dark {
-        builder = builder.initialization_script(DARK_PAINT_JS);
-    }
-    let win = builder.build().map_err(|e| e.to_string())?;
     // 顺带把原生 jar 里 sports 域的票种进去（官方页若用 Cookie 走 SSO，这里就一并共享）
     let pairs: Vec<String> = {
         let jar = NATIVE_JAR_ARC.0.read().unwrap();
@@ -3024,22 +3046,51 @@ async fn venue_open_portal_impl(
             Err(_) => Vec::new(),
         }
     };
-    let mut seeded = 0usize;
-    for pair in &pairs {
-        if let Ok(c) = Cookie::parse(format!("{pair}; Domain=www.sports.tsinghua.edu.cn; Path=/")) {
-            if win.set_cookie(c).is_ok() {
-                seeded += 1;
+    let token_len = token.len();
+    let token = token.to_string();
+    let url_owned = url.to_string();
+    let app2 = app.clone();
+    let label2 = label.to_string();
+    // ⚠️ async 命令跑在 tokio 工作线程：建窗必须调度回主线程（window_op_on_main），
+    // 否则 Windows 上白屏/黑块/关不掉（霖真机实录的古老 bug 本尊）。
+    let (seeded, ua_same) = window_op_on_main(app, move || {
+        // 先建在体育系统源根（同 origin），注入脚本与 Cookie 都落在同一个域上
+        let mut builder = WebviewWindowBuilder::new(
+            &app2,
+            &label2,
+            WebviewUrl::External(format!("{VENUE_ORIGIN}/venue/index.html").parse().unwrap()),
+        )
+        .title("场馆预约 · OneTHU")
+        .inner_size(1100.0, 820.0)
+        .initialization_script(venue_seed_js(&token));
+        if let Some(ua) = main_ua.as_deref() {
+            builder = builder.user_agent(ua);
+        }
+        if dark {
+            builder = builder.initialization_script(DARK_PAINT_JS);
+        }
+        let win = builder.build().map_err(|e| e.to_string())?;
+        let mut seeded = 0usize;
+        for pair in &pairs {
+            if let Ok(c) = Cookie::parse(format!("{pair}; Domain=www.sports.tsinghua.edu.cn; Path=/")) {
+                if win.set_cookie(c).is_ok() {
+                    seeded += 1;
+                }
             }
         }
-    }
-    venue_log(&format!(
-        "[VENUE-PORTAL] 独立窗口：注入登录态（{} 字节）+ {seeded} 条 Cookie，UA={}",
-        token.len(),
-        if main_ua.is_some() { "同主窗口" } else { "默认" }
-    ));
-    win.navigate(url.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
+        win.navigate(
+            url_owned
+                .parse()
+                .map_err(|e| format!("目标 URL 解析失败: {e}"))?,
+        )
         .map_err(|e| e.to_string())?;
-    let _ = win.set_focus();
+        let _ = win.set_focus();
+        Ok((seeded, main_ua.is_some()))
+    })?;
+    venue_log(&format!(
+        "[VENUE-PORTAL] 独立窗口：注入登录态（{token_len} 字节）+ {seeded} 条 Cookie，UA={}",
+        if ua_same { "同主窗口" } else { "默认" }
+    ));
     Ok(())
 }
 

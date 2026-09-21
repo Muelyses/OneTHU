@@ -25,6 +25,9 @@ const ok = (name, cond) => eq(name, !!cond, true);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const T = (y, mo, d, h = 0, mi = 0) => new Date(y, mo - 1, d, h, mi, 0, 0).getTime();
+// 课程日期必须相对当前时间生成：钉死日期一过 10:00，课程就掉出 7 天规划窗口（2026-09-21 时间炸弹实录）
+const CLS_DATE = (() => { const d = new Date(Date.now() + 86_400_000); const p2 = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`; })();
 const hw = (id, deadline) => ({ id, title: "第三章习题", deadline, submitted: false, courseName: "数据结构" });
 
 function harness({ hold = hw("h1", "2026-09-22 23:59:59"), failOn = null } = {}) {
@@ -53,7 +56,7 @@ function harness({ hold = hw("h1", "2026-09-22 23:59:59"), failOn = null } = {})
     invoke,
     setNow: (ms) => { nowValue = ms; },
     collect: () => ({
-      schedule: [{ date: "2026-09-21", startTime: "10:00", courseName: "数据结构", location: "六教6A215", category: "课程" }],
+      schedule: [{ date: CLS_DATE, startTime: "10:00", courseName: "数据结构", location: "六教6A215", category: "课程" }],
       homework: hold ? [hold] : [],
     }),
     subscribe: (fn) => { listeners.push(fn); return () => { const i = listeners.indexOf(fn); if (i >= 0) listeners.splice(i, 1); }; },

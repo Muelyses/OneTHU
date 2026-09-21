@@ -20,9 +20,11 @@ import { useApp } from "../../state/context.js";
 import { useCard } from "../../state/data.js";
 import { info } from "../../lib/clients.js";
 import { openAlipayDeepLink, openExternal } from "./openExternal.js";
+import { isAndroidNavigator } from "../../lib/androidHost.js";
 
-/** 移动端判定（安卓 WebView UA 恒含 Android）：决定出「调起支付宝」还是纯扫码 UI */
-const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+/** 移动端判定（R21：多信号——主窗口 UA 被伪装成 Windows，裸 UA 正则恒 false，
+ *  曾让真机上「调起支付宝」通道从不出现）：决定出「调起支付宝」还是纯扫码 UI */
+const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 
 const incomeRe = /充值|圈存|补助/;
 const isIncome = (t: CardTransaction): boolean =>

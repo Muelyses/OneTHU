@@ -12,6 +12,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { checkPermissions, getCurrentPosition, requestPermissions } from "@tauri-apps/plugin-geolocation";
 import "leaflet/dist/leaflet.css";
 import { caldav, type ScheduleEntry } from "@onethu/core";
+import { isAndroidNavigator } from "../lib/androidHost.js";
 import { useApp } from "../state/context.js";
 import { useCampusData } from "../state/data.js";
 import { useCloudCal } from "../state/cloudCal.js";
@@ -144,8 +145,10 @@ export function TracePage(): React.ReactNode {
       try {
         // Android/iOS：getCurrentPosition 本身不请求运行时权限——必须先
         // requestPermissions 触发系统弹窗，否则永远静默失败（真机实锤）
+        // R21：Android 信号必须走多信号判定（真机 UA 被伪装成 Windows）
         const isMobile =
-          typeof navigator !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent);
+          isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined) ||
+          (typeof navigator !== "undefined" && /iPhone|iPad/i.test(navigator.userAgent));
         if (isMobile) {
           // 先查现状：已授权就不用再弹；已拒绝（尤其"拒绝且不再询问"）→ 直接给出
           // 去系统设置的引导，别让用户对着"定位不准"猜

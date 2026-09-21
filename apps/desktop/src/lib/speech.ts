@@ -8,9 +8,12 @@ let cachedSupported: boolean | null = null;
 /**
  * 命令名路由：Android 走 onethu-speech 插件（Kotlin SpeechRecognizer），
  * 其余平台走 app 主 crate 命令（macOS speech.m / SFSpeechRecognizer 桥）。
- * WebView UA 含 "Android" 即按 Android 处理（桌面 WKWebView 不含）。
+ * R21：判定走多信号（UA + userAgentData + platform）——主窗口 UA 被 tauri.conf
+ * 伪装成 Windows Chrome/79（webvpn 票绑定），裸 UA 判定在真机恒 false，
+ * 会让 Android 永远去调不存在的 app-crate 命令（语音整条静默失效）。
  */
-const isAndroid = typeof navigator !== "undefined" && navigator.userAgent.includes("Android");
+import { isAndroidNavigator } from "./androidHost.js";
+const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 const cmd = (name: string): string => (isAndroid ? `plugin:onethu-speech|${name}` : name);
 
 export async function speechAvailable(): Promise<boolean> {

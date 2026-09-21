@@ -13,6 +13,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
 import { isAndroidHost } from "../lib/yktWebview.js";
+import { choosePdfRenderMode, isAndroidNavigator } from "../lib/androidHost.js";
 import { normalizeWebvpnUrl } from "@onethu/core";
 import { explainNetworkError, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
@@ -25,8 +26,16 @@ import {
 } from "../lib/zipTree.js";
 import type { PptxSlide, ZipEntry, ZipNode } from "../lib/zipTree.js";
 
-/* 安卓 WebView 无内嵌 PDF 能力（embed 空白）；桌面 WKWebView 可 embed */
-const IS_ANDROID_WEBVIEW = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+/* ⚠️ 安卓宿主判定绝不能用裸 UA 正则（R21 修正）：主窗口 UA 被 tauri.conf.json 伪装成
+ * Windows Chrome/79（webvpn 票绑定），裸 UA 正则在真机恒 false —— 正是
+ * 9-13 的 pdf.js 内嵌预览在真机从未执行、PDF 预览一直空白（用户实录 09-21）的根因。
+ * 必须走 androidHost 的多信号判定（UA + userAgentData + platform）。 */
+const IS_ANDROID_HOST = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
+/** 本内核是否自带 PDF 渲染器（Chromium 96+ 标准信号；旧内核无此属性 → undefined） */
+const PDF_VIEWER_ENABLED =
+  typeof navigator !== "undefined" && "pdfViewerEnabled" in navigator
+    ? (navigator as Navigator & { pdfViewerEnabled?: boolean }).pdfViewerEnabled === true
+    : undefined;
 
 /* ---------- pdf.js 内嵌 PDF 预览（安卓 WebView 无原生 PDF 能力） ---------- */
 
@@ -49,7 +58,35 @@ interface PdfDocLike {
   getPage(n: number): Promise<PdfPageLike>;
 }
 
-function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean; dlMsg: string }): React.ReactNode {
+/** pdf.js 现代版构建对内核要求很高（如 Promise.withResolvers 需要 Chromium 119+），
+ *  老内核 WebView 会直接抛错——失败自动换 legacy 构建（自带面向旧环境的转译与垫片），
+ *  两轮都失败才把错误交回 UI。留痕用 console（安卓上可被 logcat 抓到），便于下次排障。 */
+async function loadPdfDoc(dataUrl: string): Promise<PdfDocLike> {
+  const variants = [
+    { mod: () => import("pdfjs-dist"), worker: () => import("pdfjs-dist/build/pdf.worker.min.mjs?url"), tag: "modern" },
+    {
+      mod: () => import("pdfjs-dist/legacy/build/pdf.mjs"),
+      worker: () => import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url"),
+      tag: "legacy",
+    },
+  ] as const;
+  let lastErr: unknown = null;
+  for (const v of variants) {
+    try {
+      const pdfjs = await v.mod();
+      pdfjs.GlobalWorkerOptions.workerSrc = (await v.worker()).default;
+      const d = await pdfjs.getDocument({ data: dataUrlBytes(dataUrl) }).promise;
+      if (v.tag === "legacy") console.info("[FILE-PREVIEW] legacy 兜底解析成功");
+      return d as unknown as PdfDocLike;
+    } catch (e) {
+      lastErr = e;
+      console.error(`[FILE-PREVIEW] pdf.js(${v.tag}) 解析失败`, e);
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr ?? "未知错误"));
+}
+
+function PdfCanvasView({ dataUrl, onOpenExternally, onSwitchToEmbed, pdfBusy, dlMsg }: { dataUrl: string; onOpenExternally: () => Promise<void>; onSwitchToEmbed: () => void; pdfBusy: boolean; dlMsg: string }): React.ReactNode {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [doc, setDoc] = useState<PdfDocLike | null>(null);
@@ -63,13 +100,17 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl:
     setPageNo(1);
     (async () => {
       try {
-        const pdfjs = await import("pdfjs-dist");
-        const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
-        pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
-        const d = await pdfjs.getDocument({ data: dataUrlBytes(dataUrl) }).promise;
-        if (!cancelled) setDoc(d as unknown as PdfDocLike);
+        const d = await loadPdfDoc(dataUrl);
+        if (!cancelled) setDoc(d);
       } catch (e) {
-        if (!cancelled) setErr(`PDF 解析失败：${e instanceof Error ? e.message : String(e)}`.slice(0, 160));
+        if (cancelled) return;
+        // 老内核缺现代 API（如 Promise.withResolvers）时给一句能看懂的归因，不堆原始报错
+        const oldKernel = typeof (Promise as { withResolvers?: unknown }).withResolvers !== "function";
+        setErr(
+          oldKernel
+            ? "本机网页内核较低，无法内嵌解析，请用「系统应用打开」。"
+            : `PDF 解析失败：${e instanceof Error ? e.message : String(e)}`.slice(0, 160),
+        );
       }
     })();
     return () => {
@@ -115,7 +156,10 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl:
     return (
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 24 }}>
         <div style={{ fontSize: 12.5, color: "var(--red, #e5484d)", textAlign: "center" }}>{err}</div>
-        <button className="btn" disabled={pdfBusy} onClick={() => void onOpenExternally()}>用系统应用打开</button>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+          <button className="btn" disabled={pdfBusy} onClick={() => void onOpenExternally()}>用系统应用打开</button>
+          <button className="btn btn-ghost" onClick={onSwitchToEmbed}>换内嵌渲染</button>
+        </div>
       </div>
     );
   }
@@ -132,6 +176,7 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl:
         <button className="btn btn-ghost" disabled={pdfBusy} title="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>
           {pdfBusy ? "调起中…" : "系统应用"}
         </button>
+        <button className="btn btn-ghost" title="自绘画面异常时，换用本机自带的方式渲染" onClick={onSwitchToEmbed}>换内嵌渲染</button>
       </div>
       {dlMsg ? <div style={{ fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 8px 8px" }}>{dlMsg}</div> : null}
     </div>
@@ -728,6 +773,7 @@ export function FilePreviewHost() {
     _open = (t) => {
       seqRef.current += 1;
       setDlMsg("");
+      setPdfForceEmbed(false);
       setCur({ name: t.name, url: t.url, seq: seqRef.current });
     };
     return () => {
@@ -813,8 +859,10 @@ export function FilePreviewHost() {
     }
   }, [cur, dlBusy]);
 
-  /* 安卓 WebView 无 PDF 渲染能力：下载到临时文件后交系统应用 */
-  const pdfEmbedded = !IS_ANDROID_WEBVIEW;
+  /* PDF 渲染通道：桌面/自带渲染器的内核 → embed；其余安卓 → pdf.js 自绘。
+   * 用户可从自绘界面手动「换内嵌渲染」覆盖（判错时的人工出口），换文件即复位。 */
+  const [pdfForceEmbed, setPdfForceEmbed] = useState(false);
+  const pdfEmbedded = pdfForceEmbed || choosePdfRenderMode({ android: IS_ANDROID_HOST, pdfViewerEnabled: PDF_VIEWER_ENABLED }) === "embed";
   const [pdfBusy, setPdfBusy] = useState(false);
   const openPdfExternally = async (): Promise<void> => {
     if (!cur || pdfBusy) return;
@@ -907,12 +955,12 @@ export function FilePreviewHost() {
             pdfEmbedded ? (
               <embed src={view.dataUrl} type="application/pdf" style={{ width: "100%", height: "70vh", border: "none" }} />
             ) : (
-              /* 安卓 WebView 无内嵌 PDF 渲染器（embed 一律空白，用户实锤）——
-                 pdf.js canvas 内嵌预览（learnX 原生渲染器的 WebView 等价物），
-                 「系统应用打开」保留为辅助出口 */
+              /* 安卓且本内核无自带 PDF 渲染器：pdf.js canvas 自绘（modern→legacy 两级兜底），
+                 「系统应用打开」与「换内嵌渲染」保留为人工出口 */
               <PdfCanvasView
                 dataUrl={view.dataUrl}
                 onOpenExternally={openPdfExternally}
+                onSwitchToEmbed={() => setPdfForceEmbed(true)}
                 pdfBusy={pdfBusy}
                 dlMsg={dlMsg}
               />

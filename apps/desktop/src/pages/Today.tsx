@@ -34,6 +34,7 @@ import { restoreDefaultTodayCards } from "../state/onboarding.js";
 import { readSubs } from "./info/newsSearch.js";
 import { openExternal } from "./info/openExternal.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
+import { useIgnoredHw } from "../state/hwIgnore.js";
 import { parseLearnTime, type ScheduleEntry } from "@onethu/core";
 import { recentAtomUses, type UsageEntry } from "../lib/usage.js";
 import { suggestAtoms } from "../lib/suggest.js";
@@ -473,12 +474,14 @@ export function TodayPage() {
    *  合并外部作业（雨课堂/TUOJ/Tyche/DSA OJ）——未配置凭据时 extHw 恒为空，零回归 */
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  // R21c：忽略状态（忽略后不再出现在首页作业区，仍可在「全部作业 → 已忽略」找回）
+  const ignored = useIgnoredHw();
   const unsubmitted = useMemo(
     () =>
       [...(data?.homework ?? []), ...extHw]
-        .filter((h) => !h.submitted)
+        .filter((h) => !h.submitted && !ignored.has(h.id)) // R21c：已忽略不进首页作业区
         .sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, extHw],
+    [data, extHw, ignored],
   );
 
   /** 今天的日程事件：有 date 按 date 精确匹配（数据窗口跨 3 周不会重复），

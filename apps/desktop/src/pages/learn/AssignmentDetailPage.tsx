@@ -188,8 +188,14 @@ export function AssignmentDetailPage() {
   const opFail = (e: unknown): void => {
     setSubOk(false);
     const msg = e instanceof Error ? e.message : explainNetworkError(e);
+    // R21c 用户令：调试现场只进日志，不给用户看（此前把 lastDebug 拼在提示尾部）
     const dbg = (learn.lastDebug ?? "").trim();
-    setSubMsg(msg + (dbg ? "｜现场：" + dbg.slice(-160) : ""));
+    if (dbg) {
+      void import("../../lib/clients.js")
+        .then((m) => m.logLine(`LEARN-OPFAIL ${msg} | 现场：${dbg.slice(0, 400)}`))
+        .catch(() => undefined);
+    }
+    setSubMsg(msg);
   };
 
   /** 提交（独立动作，恒走 isDeleted=0）：正文 + 所选新附件（若有）一次覆盖提交 */

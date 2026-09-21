@@ -10,6 +10,7 @@ import { expandEventSet } from "@onethu/core/src/caldav/ics.js";
 import { getCampusSnapshot, getLearnSnapshot } from "./data.js";
 import { getCloudEvents, getLocalEvents } from "./cloudCal.js";
 import { getExtHwSnapshot, toHomework } from "./exthw.js";
+import { ignoredHwList } from "./hwIgnore.js";
 import type { PlanEventEntry, PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
 
 export function collectNotifyInputs(now = Date.now()): {
@@ -30,6 +31,9 @@ export function collectNotifyInputs(now = Date.now()): {
     category: e.category ?? null,
   }));
 
+  // R21c：被忽略的作业不进提醒计划（用户口径：忽略后不再提醒、不再进日程）
+  const ignored = ignoredHwList();
+  const ignoredIds = new Set(ignored.map((e) => e.id));
   const homework: PlanHomework[] = [
     // 网络学堂：deadline 已是 "YYYY-MM-DD HH:MM"
     ...(learn?.homework ?? []).map((h) => ({
@@ -44,7 +48,7 @@ export function collectNotifyInputs(now = Date.now()): {
       const h = toHomework(e);
       return { id: h.id, title: h.title, deadline: h.deadline, submitted: h.submitted, courseName: h.courseName };
     }),
-  ];
+  ].filter((h) => !ignoredIds.has(h.id));
 
   return { schedule, events: collectCalendarEvents(now), homework };
 }

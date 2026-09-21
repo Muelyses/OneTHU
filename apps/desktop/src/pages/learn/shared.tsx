@@ -15,6 +15,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
 import { openHomeworkRow } from "../../lib/homeworkEntry.js";
+import { confirmDanger } from "../../lib/confirm.js";
+import { ignoreHw, unignoreHw, useHwIgnored } from "../../state/hwIgnore.js";
 import { homeworkEntryScoreText } from "../../lib/yktDetail.js";
 import { Card } from "../../components/Layout.js";
 import { IconBell, IconChevron } from "../../components/Icons.js";
@@ -331,12 +333,25 @@ function HwRemindButton({ h }: { h: Homework }) {
 
 export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem, remind }: RowProps & { h: Homework; showGrade?: boolean; sem?: string; remind?: boolean }) {
   const { navigate } = useApp();
+  // R21c：忽略状态。已忽略的行灰显并标「已忽略」，可在此就地恢复；忽略需二次确认
+  // （弹窗写明后果）；入口在全部作业、各学科作业、搜索结果里都出现（共用本组件）。
+  const isIgnored = useHwIgnored(h.id);
   // R20-B2b：行点击统一走 openHomeworkRow 三态分流（雨课堂参数齐备 → learn-ykt-detail
   // 原生详情，全平台默认原生；其余外部源 → R20-A 通道；内部作业 → 站内详情）。
   const go = () => {
     openHomeworkRow(h, { navigate, from, courseName });
   };
   const chip = homeworkChip(h);
+  const toggleIgnore = async (): Promise<void> => {
+    if (isIgnored) {
+      unignoreHw(h.id);
+      return;
+    }
+    const ok = await confirmDanger(
+      `确定要忽略《${h.title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，也不再推送任何截止提醒——请自行留意错过截止的后果。可在「全部作业 → 已忽略」中恢复。`,
+    );
+    if (ok) ignoreHw(h.id, h.title);
+  };
   // 已批改直接显示成绩（thu-app learnHome「已批改 (分数)」语义）：等级码经 gradeLabel 转文字
   const gradeScore = showGrade && h.graded && h.grade !== undefined && h.grade !== "" ? gradeLabel(h.grade) : "";
   // 外部源分数（R9 考试 + R20-B3 已批改雨课堂作业同口径）：已提交且带分 → 「已批改 · 30/40」
@@ -344,8 +359,8 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
   const score = gradeScore || examScore;
   return (
     <div
-      className="row row-click"
-      style={style}
+      className={`row row-click${isIgnored ? " is-hw-ignored" : ""}`}
+      style={isIgnored ? { ...style, opacity: 0.55 } : style}
       role="button"
       tabIndex={0}
       onClick={go}
@@ -370,7 +385,21 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
       </span>
       {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation）。R10 15.3：外部作业
           的 h.id（ext:source:...）稳定可用，提醒链路只需 deadline/title，一并放开 */}
-      {remind ? <HwRemindButton h={h} /> : null}
+      {isIgnored ? <span className="chip chip-gray" title="已忽略：不提醒、不进作业区与日程">已忽略</span> : null}
+      {remind || isIgnored ? (
+        <button
+          className="btn btn-ghost hw-ignore-btn"
+          style={{ height: 22, padding: "0 8px", fontSize: 11, flex: "none" }}
+          title={isIgnored ? "恢复：重新参与提醒与显示" : "忽略：不再提醒，也不在作业区与日程显示"}
+          onClick={(e) => {
+            e.stopPropagation();
+            void toggleIgnore();
+          }}
+        >
+          {isIgnored ? "恢复" : "忽略"}
+        </button>
+      ) : null}
+      {remind && !isIgnored ? <HwRemindButton h={h} /> : null}
       {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收。
           R10 15.3：外部作业复用同款拼接（courseId=ext:source、id=ext:...，稳定唯一） */}
       <CollectStar atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, courseName ?? "", sem ?? "") }} title={h.title} />

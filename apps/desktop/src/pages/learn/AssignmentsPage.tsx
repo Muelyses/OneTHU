@@ -15,15 +15,18 @@ import {
   useExternalHomework,
 } from "../../state/exthw.js";
 import { BackButton, HomeworkRow, semesterText } from "./shared.js";
+import { useIgnoredHw } from "../../state/hwIgnore.js";
 import { useLearnNavSemester } from "./shared.js";
 
-type Filter = "unfinished" | "overdue" | "submitted" | "graded" | "all";
+type Filter = "unfinished" | "overdue" | "submitted" | "graded" | "ignored" | "all";
 
 const FILTERS: Array<{ key: Filter; label: string }> = [
   { key: "unfinished", label: "进行中" },
   { key: "overdue", label: "已逾期" },
   { key: "submitted", label: "已交" },
   { key: "graded", label: "已批" },
+  // R21c：忽略的作业从常规分组移出、单独成组——可在此查看与恢复
+  { key: "ignored", label: "已忽略" },
   { key: "all", label: "全部" },
 ];
 
@@ -153,18 +156,23 @@ export function AssignmentsPage() {
 
   /** 外部作业（雨课堂/TUOJ/Tyche）归一化；未配置凭据时恒为空数组（零回归） */
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  // R21c：忽略状态（订阅同一份快照：行内忽略/恢复立刻反映到分组与计数）
+  const ignored = useIgnoredHw();
 
   const groups = useMemo(() => {
     const hw = [...(data?.homework ?? []), ...extHw].sort((a, b) => a.deadline.localeCompare(b.deadline));
+    // R21c：忽略的作业只出现在「已忽略」组，常规分组与「全部」都不再显示
+    const live = hw.filter((h) => !ignored.has(h.id));
     return {
       // 进行中 = 未交且未逾期（含 deadline 解析失败者，保守不判逾期）
-      unfinished: hw.filter((h) => !h.submitted && !isOverdue(h)),
-      overdue: hw.filter(isOverdue),
-      submitted: hw.filter((h) => h.submitted && !h.graded),
-      graded: hw.filter((h) => h.graded),
-      all: hw,
+      unfinished: live.filter((h) => !h.submitted && !isOverdue(h)),
+      overdue: live.filter(isOverdue),
+      submitted: live.filter((h) => h.submitted && !h.graded),
+      graded: live.filter((h) => h.graded),
+      ignored: hw.filter((h) => ignored.has(h.id)),
+      all: live,
     };
-  }, [data, extHw]);
+  }, [data, extHw, ignored]);
 
   const list = groups[filter];
   // R10 15.4：页头只留学期文本；各分组计数已并入 SegmentedOverflow 各 tab（含「全部」），
@@ -213,7 +221,7 @@ export function AssignmentsPage() {
       {state === "loading" && !data ? (
         <SkeletonRows rows={6} />
       ) : state === "error" && !data ? null : list.length === 0 ? (
-        <Card><Empty text={filter === "unfinished" ? "没有进行中的作业。" : filter === "overdue" ? "没有已逾期未交的作业。" : "该分组暂无作业。"} /></Card>
+        <Card><Empty text={filter === "unfinished" ? "没有进行中的作业。" : filter === "overdue" ? "没有已逾期未交的作业。" : filter === "ignored" ? "没有已忽略的作业。" : "该分组暂无作业。"} /></Card>
       ) : (
         <Card className="list">
           {list.map((h, i) => (

@@ -14,6 +14,7 @@ import { BackButton, RichContent, fmtDateTime, gradeLabel, timeLeft } from "./sh
 import { useLearnNavSemester } from "./shared.js";
 import { openExternal } from "../info/openExternal.js";
 import { isAndroidNavigator } from "../../lib/androidHost.js";
+import { clearNeedFile, isNeedFile, markNeedFile } from "../../state/learnAttachmentReq.js";
 import { parseLearnTime } from "@onethu/core";
 import type { HomeworkPageDetail, LearnAttachment } from "@onethu/core";
 
@@ -38,6 +39,8 @@ export function AssignmentDetailPage() {
   // 拍照直接上传（R21c，参照雨课堂作答编辑器）：capture=environment 直调后置相机。
   // 判定必须走多信号 isAndroidNavigator——主窗口 UA 被伪装成 Windows，裸 UA 判定恒 false。
   const cameraRef = useRef<HTMLInputElement>(null);
+  /** 该作业是否已被服务端判定为必须带附件（附件区显示提示；提交前预检） */
+  const [needFileHint, setNeedFileHint] = useState(false);
   const isAndroid = useMemo(() => isAndroidNavigator(navigator), []);
   const subTouched = useRef(false); // 用户改过输入框后不再用上次提交内容预填
   /* 动作分离（用户语义）：提交恒走 isDeleted=0（正文+所选新附件一次覆盖）；
@@ -54,6 +57,10 @@ export function AssignmentDetailPage() {
     () => data?.homework.find((x) => x.courseId === courseId && x.id === itemId) ?? null,
     [data, courseId, itemId],
   );
+  // 该作业是否被服务端判定过「必须带附件」：进页时按本地记忆回填
+  useEffect(() => {
+    setNeedFileHint(isNeedFile(h?.id ?? ""));
+  }, [h?.id]);
   const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [data, courseId]);
 
   // 说明懒加载：列表 content 为空时经 learn.getHomeworkDetail(baseId) 兜底（thu-learn-lib 同款接口）
@@ -189,6 +196,13 @@ export function AssignmentDetailPage() {
   const doSubmit = async (): Promise<void> => {
     if (subBusy) return;
     if (!subFile && richEmpty(subContent)) { setSubOk(false); setSubMsg("请填写提交内容或选择附件"); return; }
+    // R21c 预检：该作业曾被服务端以「请上传附件」拒绝 → 无附件提交必再被拒，
+    // 本地直接拦下（不发请求），并把原因说清楚。
+    if (!subFile && isNeedFile(h.id)) {
+      setSubOk(false);
+      setSubMsg("本作业要求必须带附件：请选择文件或拍照上传后再提交");
+      return;
+    }
     setSubBusy(true);
     setSubMsg("");
     try {
@@ -200,7 +214,16 @@ export function AssignmentDetailPage() {
         file = new File([file], customName.trim() + ext, { type: file.type });
       }
       const r = await learn.submitHomework(h.id, { content: subContent, file, remove: false });
-      if (!r.ok) throw new Error(r.msg || "提交失败");
+      if (!r.ok) {
+        const why = r.msg ?? "";
+        if (/请上传附件/.test(why)) {
+          markNeedFile(h.id); // 服务端权威判定：记下来，之后本地预检拦下
+          setNeedFileHint(true);
+          throw new Error("本作业要求必须带附件：请选择文件或拍照上传后再提交");
+        }
+        throw new Error(why || "提交失败");
+      }
+      clearNeedFile(h.id); // 本次带附件提交成功 → 要求以最新为准
       setSubOk(true);
       setSubMsg("提交成功");
       setSubContent("");
@@ -462,6 +485,9 @@ export function AssignmentDetailPage() {
                 <span style={{ color: "var(--text-dim, #888)", fontSize: 12 }}>提交后新附件将替换已上传附件</span>
               ) : null}
             </div>
+            {needFileHint ? (
+              <div className="exthw-note is-warn">本作业要求必须带附件：请选择文件或拍照上传后再提交。</div>
+            ) : null}
             {subFile ? (
               <input
                 className="input"

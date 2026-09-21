@@ -274,38 +274,17 @@ export function ThosPage() {
 
   /** 内嵌官方页：rust 在 webview 内自动完成 THOS 漫游链（id 表单页自动填表
    *  SM2 提交 → thu-oauth callback → webvpn 票落地 webview cookie），随后
-   *  top-level 导航到目标页——零二次登录。桌面走系统浏览器。 */
+   *  top-level 导航到目标页——零二次登录。
+   *  R21：这里曾内联复份整条打开链、失败只 setError（横幅不显眼时等于"点了没反应"）；
+   *  现委托 openThosInApp——失败 toast 明示 + 回落系统浏览器，打开链全应用只剩一份。 */
   const openOfficial = async (url: string) => {
     try {
       const { logLine } = await import("../../lib/clients.js");
       await logLine(`[THOS-UI] openOfficial 入口 demo=${demo} url=${url.slice(0, 60)}`);
     } catch { /* noop */ }
     if (demo || !url) return;
-    try {
-      const [{ routeThosUrl }, { invoke }, { isTauri }, { loadRemembered }] = await Promise.all([
-        import("@onethu/info-lib"),
-        import("@tauri-apps/api/core"),
-        import("../../lib/transport.js"),
-        import("../../lib/clients.js"),
-      ]);
-      if (!isTauri) {
-        window.open(routeThosUrl(url), "_blank");
-        return;
-      }
-      // 无记住凭据也可走链：账密传空，id 表单出现时用户在 webview 内手动输入
-      // 一次（链继续自动完成）——桌面首次/未开记住密码时的必经路径
-      const remembered = await loadRemembered();
-      const { currentThemeIsDark } = await import("../../state/theme.js");
-      await invoke("thos_open_portal", {
-        url: routeThosUrl(url),
-        username: remembered?.username ?? "",
-        password: remembered?.password ?? "",
-        // 深色主题：桌面用 initialization_script、安卓用 onPageFinished 注入涂白脚本
-        dark: currentThemeIsDark(),
-      });
-    } catch (e) {
-      setError(`打开官方页失败：${String(e)}`);
-    }
+    const { openThosInApp } = await import("../../lib/thosOpen.js");
+    await openThosInApp(url);
   };
 
   const rows = tab === "services" ? [] : (tasks[tab]?.items ?? []);

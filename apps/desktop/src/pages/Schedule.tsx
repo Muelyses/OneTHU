@@ -10,6 +10,7 @@ import { PageAtomStar } from "../components/Collect.js";
 import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
 import { useCalendar, useCampusData } from "../state/data.js";
+import { ignoredHwList } from "../state/hwIgnore.js";
 import { useScheduleWindow, WINDOW_PRESETS, FULL_DAY, hhmm as hhmmWin } from "../state/scheduleWindow.js";
 import { cacheSet } from "../state/cache.js";
 import { isAuthError, learnUrls } from "@onethu/core";
@@ -433,7 +434,11 @@ export function SchedulePage() {
     }
     // 作业 DDL 入格：learn + 外源（雨课堂/TUOJ/Tyche/DSA OJ）统一 Homework，
     // deadline 前 2h → deadline 画成一个 DDL 块（橙色；已提交降透明由渲染层处理）
-    const hwAll = [...(campus.data?.homework ?? []), ...extHw.items.map(toHomework)];
+    // R21c：已忽略的作业不进日程格（用户口径：忽略后不在日程显示）
+    const ignoredIds = new Set(ignoredHwList().map((e) => e.id));
+    const hwAll = [...(campus.data?.homework ?? []), ...extHw.items.map(toHomework)].filter(
+      (h) => !ignoredIds.has(h.id),
+    );
     for (const h of hwAll) {
       if (!h.deadline) continue;
       const d = new Date(String(h.deadline).replace(/-/g, "/"));

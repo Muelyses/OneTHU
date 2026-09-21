@@ -67,6 +67,44 @@ assert.ok(/\{ key: "ignored", label: "已忽略" \}/.test(assigns), "「全部�
 assert.ok(/const live = hw\.filter\(\(h\) => !ignored\.has\(h\.id\)\)/.test(assigns), "常规分组必须剔除已忽略");
 assert.ok(/ignored: hw\.filter\(\(h\) => ignored\.has\(h\.id\)\)/.test(assigns), "已忽略分组要能找回来");
 
+/* ---------- [2b] 所有「面向用户的作业聚合点」都要接忽略过滤 ----------
+ * 教训（用户实录）：第一版只过滤了「全部作业/首页作业区/提醒」，网络学堂首页的
+ * 「未交作业」大数字与每门课卡片的「未交 N」、首页小组件的未交统计、日程里的作业
+ * DDL 全都还在算已忽略的作业。聚合点必须逐个点名，不能靠记得。 */
+const HW_AGGREGATORS = [
+  "apps/desktop/src/pages/Learn.tsx",                  // 网络学堂首页：未交总数 + 每课未交数
+  "apps/desktop/src/pages/Today.tsx",                  // 今日页作业区
+  "apps/desktop/src/pages/learn/AssignmentsPage.tsx",  // 全部作业分组
+  "apps/desktop/src/pages/learn/CourseDetailPage.tsx", // 各学科作业栏 + 计数
+  "apps/desktop/src/components/HomeWidgets.tsx",       // 首页小组件：未交卡片与 DDL 行
+  "apps/desktop/src/pages/Schedule.tsx",               // 日程：作业 DDL 入格
+  "apps/desktop/src/state/notifyInputs.ts",            // 提醒计划（通知 + 小组件快照同源）
+];
+for (const f of HW_AGGREGATORS) {
+  const src = read(f);
+  assert.ok(/hwIgnore\.js/.test(src), `${f} 未接忽略过滤（聚合点必须逐个点名）`);
+  assert.ok(/ignored/.test(src), `${f} 未使用忽略状态`);
+}
+// 反向护栏：除详情页（单条）与搜索页（用户显式检索，保留并标「已忽略」）外，
+// 任何在本目录树里聚合 data?.homework 的文件都必须接忽略过滤
+const { readdirSync, statSync } = await import("node:fs");
+const walk = (dir, out = []) => {
+  for (const e of readdirSync(dir)) {
+    const fp = `${dir}/${e}`;
+    if (statSync(fp).isDirectory()) walk(fp, out);
+    else if (/\.tsx?$/.test(e)) out.push(fp);
+  }
+  return out;
+};
+const root = new URL("../apps/desktop/src", import.meta.url).pathname;
+const EXEMPT = [/AssignmentDetailPage\.tsx$/, /SearchPage\.tsx$/, /widgetRuntime\.ts$/, /hwIgnore\.ts$/];
+for (const fp of walk(root)) {
+  if (EXEMPT.some((re) => re.test(fp))) continue;
+  const src = readFileSync(fp, "utf8");
+  if (!/data\?\.homework/.test(src)) continue;
+  assert.ok(/hwIgnore\.js/.test(src), `${fp.replace(root, "src")} 聚合了作业却没接忽略过滤`);
+}
+
 /* ---------- [3] 入口与文案 ---------- */
 const shared = read("apps/desktop/src/pages/learn/shared.tsx");
 const row = shared.slice(shared.indexOf("export function HomeworkRow("), shared.indexOf("\nexport function ", shared.indexOf("export function HomeworkRow(") + 10));

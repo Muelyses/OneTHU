@@ -11,6 +11,7 @@ import { CollectStar } from "../components/Collect.js";
 import { enc } from "../state/atoms.js";
 import { useLearnData } from "../state/data.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
+import { useIgnoredHw } from "../state/hwIgnore.js";
 import { fmtRemindOffset, setHwDefault, useHwDefault } from "../state/hwRemind.js";
 import { HwRemindPop, semesterText } from "./learn/shared.js";
 
@@ -70,19 +71,22 @@ export function LearnPage() {
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
 
+  // R21c：忽略优先级最高——所有对用户展示的计数/列表都不含已忽略作业
+  const ignored = useIgnoredHw();
+
   const stats = useMemo(() => {
-    const hw = [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted);
+    const hw = [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted && !ignored.has(h.id));
     return {
       unfinished: hw.length,
       notifications: (data?.notifications ?? []).length,
       files: (data?.files ?? []).length,
     };
-  }, [data, extHw]);
+  }, [data, extHw, ignored]);
 
   const courseStats = useMemo(() => {
     const m = new Map<string, { hw: number; notices: number; files: number }>();
     for (const h of data?.homework ?? []) {
-      if (h.submitted) continue;
+      if (h.submitted || ignored.has(h.id)) continue; // 已忽略不计入课程卡片计数
       const s = m.get(h.courseId) ?? { hw: 0, notices: 0, files: 0 };
       s.hw += 1;
       m.set(h.courseId, s);
@@ -98,7 +102,7 @@ export function LearnPage() {
       m.set(f.courseId, s);
     }
     return m;
-  }, [data]);
+  }, [data, ignored]);
 
   return (
     <>

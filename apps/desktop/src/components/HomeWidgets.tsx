@@ -15,6 +15,7 @@ import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNe
 import { readSubs } from "../pages/info/newsSearch.js";
 import { openExternal } from "../pages/info/openExternal.js";
 import { openHomeworkRow } from "../lib/homeworkEntry.js";
+import { useIgnoredHw } from "../state/hwIgnore.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type Homework, type ScheduleEntry } from "@onethu/core";
 
@@ -359,9 +360,13 @@ export function TodayOverviewWidget() {
   // 合并外部作业（雨课堂/TUOJ/Tyche/DSA OJ）：未配置凭据时 extHw 恒为空，与改动前完全一致
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const ignored = useIgnoredHw(); // R21c：忽略的作业不计入任何统计与列表
   const unsubmitted = useMemo(
-    () => [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted).sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, extHw],
+    () =>
+      [...(data?.homework ?? []), ...extHw]
+        .filter((h) => !h.submitted && !ignored.has(h.id)) // R21c：已忽略不进未交统计
+        .sort((a, b) => a.deadline.localeCompare(b.deadline)),
+    [data, extHw, ignored],
   );
   const dueSoon = useMemo(
     () =>
@@ -447,9 +452,13 @@ export function HomeworkWidget(): ReactNode {
   // 合并外部作业：与「全部作业」页同口径（未配置凭据时恒为空数组）
   const ext = useExternalHomework();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const ignored = useIgnoredHw(); // R21c：忽略的作业不计入任何统计与列表
   const unsubmitted = useMemo(
-    () => [...(data?.homework ?? []), ...extHw].filter((h) => !h.submitted).sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, extHw],
+    () =>
+      [...(data?.homework ?? []), ...extHw]
+        .filter((h) => !h.submitted && !ignored.has(h.id)) // R21c：已忽略不进未交统计
+        .sort((a, b) => a.deadline.localeCompare(b.deadline)),
+    [data, extHw, ignored],
   );
   const courseName = (courseId: string) => data?.courses.find((c) => c.id === courseId)?.name ?? "课程";
   return <HomeworkRows loading={state === "loading" && !data} rows={unsubmitted} courseName={courseName} navigate={navigate} />;

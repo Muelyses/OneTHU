@@ -3055,6 +3055,18 @@ async fn venue_open_portal_impl(
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0
         .clone();
+    // R21 用户实录：移动 UA 下体育部系统会把桌面路由（/venue/index.html#/reserveList）
+    // 302 到「移动版已登录首页」——桌面路由在移动端不存在。移动 WebView 一律重写到
+    // 移动 SPA 的同义直达路由（uuid 参数同名），配合移动 UA 出正常移动版布局。
+    let url = if url.contains("/venue/index.html") {
+        let rewritten = url
+            .replace("/venue/index.html", "/venue/mobile/index.html")
+            .replace("#/reserveList?", "#/pagesReserve/reserveDetail/newIndex?");
+        venue_log(&format!("[VENUE-PORTAL] 移动端路由重写 → {}", &rewritten[..rewritten.len().min(80)]));
+        rewritten
+    } else {
+        url.to_string()
+    };
     venue_log(&format!(
         "[VENUE-PORTAL] 移动端全屏浏览：注入登录态（{} 字节）→ {}",
         token.len(),

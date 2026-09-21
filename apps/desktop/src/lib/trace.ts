@@ -14,6 +14,7 @@
  * Key 策略（用户拍板）：个人 Web 服务 key 混淆后内置（量小，非安全边界，仅防脚本扫库）。
  */
 import { pickPoi, withCampusPrefix, type PoiCandidate } from "./poiPick.js";
+import { isAndroidNavigator } from "./androidHost.js";
 import { universalFetch } from "./transport.js";
 
 /* ── Key 通道：运行时注入 → Rust trace_key 命令（XOR 0x5A 混淆存储）──
@@ -309,8 +310,8 @@ export function navUrl(
   }
 }
 
-/** Android 判定（语音桥同款 UA 判别） */
-const IS_ANDROID = typeof navigator !== "undefined" && /Android/.test(navigator.userAgent);
+/** Android 判定（R21：多信号——主窗口 UA 被伪装成 Windows，裸 UA 正则恒 false） */
+const IS_ANDROID = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 
 /**
  * 导航链接（平台感知）：

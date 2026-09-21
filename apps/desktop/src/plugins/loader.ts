@@ -1,5 +1,6 @@
 /** 插件加载器：blob 动态 import + 权限门面注入 + 生命周期（安装/启用/停用/删除） */
 import { buildApi } from "./facade.js";
+import { isAndroidNavigator } from "../lib/androidHost.js";
 import { installTheme, removePluginThemes, type ThemeDef } from "../state/theme.js";
 import { registerPluginWidget, unregisterPluginWidgets } from "./pluginWidgets.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
@@ -383,7 +384,7 @@ async function isAndroid(): Promise<boolean> {
     const { invoke } = await import("@tauri-apps/api/core");
     androidFlag = await invoke<boolean>("os_is_android");
   } catch {
-    androidFlag = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+    androidFlag = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
   }
   return androidFlag;
 }

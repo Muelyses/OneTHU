@@ -605,10 +605,36 @@ export const YKT_DOC_SCRIPT_TEMPLATE = [
   "})();",
 ].join("\n");
 
+/** R20-C2：官方 img.kfformula 公式 → $…$ / $$…$$ 文本，交给既有 KaTeX 管线渲染。
+ *  官方提交态公式是 `<img class="kfformula" src=data:… data-latex="…" data-display="…">`，
+ *  官方渲染端只读 data-latex（§31.5）；本应用沙箱直接转成 TeX 定界文本走 renderLatexInHtml。
+ *  属性顺序不定 → 逐 attr 抓取；src 忽略（kityformula 截图，我们用 KaTeX 重排）。
+ *  纯字符串变换（零依赖），在 sanitize **之前**跑（sanitize 会剥 data-* 丢公式）。 */
+export function convertKfformulaToTex(html: string): string {
+  if (!html.includes("kfformula")) return html;
+  const unescapeAttr = (s: string): string =>
+    s
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&");
+  return html.replace(/<img\b[^>]*\bclass="[^"]*\bkfformula\b[^"]*"[^>]*>/gi, (tag) => {
+    const raw = /\bdata-latex="([^"]*)"/i.exec(tag)?.[1];
+    if (raw === undefined) return tag;
+    const tex = unescapeAttr(raw).trim();
+    if (!tex) return "";
+    const display = /\bdata-display="([^"]*)"/i.exec(tag)?.[1] ?? "inline";
+    return display === "block" ? `\n$$${tex}$$\n` : `$${tex}$`;
+  });
+}
+
 /** 把服务端 HTML 加工成内联文档（sanitize → 加密字体 → LaTeX → 图片加固 → 拼装）。
  *  纯字符串拼装，任何一步失败都只影响该步的降级路径，不抛错。 */
 export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
-  let body = sanitizeForInlineDoc(opts.html ?? "");
+  // R20-C2：kfformula 公式先转 TeX 文本再 sanitize（sanitize 会剥 data-* 属性丢公式）
+  let body = convertKfformulaToTex(opts.html ?? "");
+  body = sanitizeForInlineDoc(body);
   // 暗底主题：先剥掉官方正文里写死的颜色（上游 1861e4e 引入、与 THUbook 同源），
   // 由主题档样式接管配色——按解析出的底色亮度判定（isDarkBgColor），非明暗二元
   if (opts.theme && yktDocIsDark(opts.theme) && opts.stripColors) body = opts.stripColors(body);

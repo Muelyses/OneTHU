@@ -307,8 +307,11 @@ console.log("\n[7] 接线静态审计（详情页 / ProblemBody / yktAssets 漏�
   eq((page.match(/<ProblemBody /g) ?? []).length, 4, "详情页：四处正文全走 ProblemBody（题型9题干/普通题干/我的作答/作业说明）");
   ok(page.includes("components/exthw/ProblemBody.js"), "详情页：ProblemBody 从 components/exthw 引入");
   ok(page.includes("getYktCookie(") && page.includes("d.fontUrl"), "详情页：Cookie 与整卷字体 URL 下传");
-  // 红线：B3 只换渲染，不新增任何提交入口（详情页无提交处理器/提交按钮文案）
-  ok(!page.includes("onSubmit") && !page.includes("提交答案") && !page.includes("submitAnswer"), "详情页：无提交处理器/提交文案（只读红线）");
+  // 红线（B3 定稿 / R20-C2 修订）：渲染层零提交语义不变；详情页自 R20-C2 起有逐题
+  // 原生作答入口（霖钦定，docs §31.2/§32）——但提交只能经 YktAnswerPanel 的确认对话框
+  // 路径，护栏细断言见 tools/c2-redline-test.mjs（确认框/无 AI 生成/插件宿主不可达）。
+  // 此处仍禁止的：无确认路径的 React 提交处理器（onSubmit=）、整页提交文案、旧命名。
+  ok(!page.includes("onSubmit=") && !page.includes("提交答案") && !page.includes("submitAnswer"), "详情页：无裸提交处理器/旧提交文案（提交走 C2 确认框路径）");
 
   const comp = readSrc("../apps/desktop/src/components/exthw/ProblemBody.tsx");
   ok(comp.includes('sandbox="allow-scripts"'), "ProblemBody：iframe 沙箱 allow-scripts");

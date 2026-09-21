@@ -257,17 +257,18 @@ fn debug_log_line(line: &str) {
         .open(&path)
         .ok()
         .and_then(|mut f| std::io::Write::write_all(&mut f, format!("{line}\n").as_bytes()).ok());
-    if ok.is_none() {
-        // 落盘失败（理论罕见）→ logcat 兜底，真机 adb 仍可读
-        #[cfg(target_os = "android")]
-        unsafe {
-            extern "C" {
-                fn __android_log_write(prio: i32, tag: *const u8, text: *const u8) -> i32;
-            }
-            let full = format!("{line}\0");
-            __android_log_write(4, b"onethu\0".as_ptr(), full.as_ptr() as *const u8);
+    // Android：**始终**镜像一份到 logcat（tag=onethu）。落盘文件在应用私有目录，
+    // 真机 adb 读不到（release 包 run-as 不可用、导出要用户手点），而排查真机问题恰恰
+    // 需要实时现场 → `adb logcat -s onethu:V` 即可跟着复现看日志。
+    #[cfg(target_os = "android")]
+    unsafe {
+        extern "C" {
+            fn __android_log_write(prio: i32, tag: *const u8, text: *const u8) -> i32;
         }
+        let full = format!("{line}\0");
+        __android_log_write(4, b"onethu\0".as_ptr(), full.as_ptr() as *const u8);
     }
+    let _ = ok;
 }
 
 /// 打开调试日志（append）。写前先 `create_dir_all(parent)`——Windows 上 `\tmp\`

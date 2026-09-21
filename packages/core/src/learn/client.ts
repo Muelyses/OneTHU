@@ -389,9 +389,16 @@ function parseBbsPostJson(raw: unknown): LearnBbsPost {
   };
 }
 
-/** 会话失效（请求回了登录页/网关页 HTML）——#withRelogin 捕获后静默重登一次再重试。
+/** 会话失效（请求回了登录页 HTML）——#withRelogin 捕获后静默重登一次再重试。
  *  继承 AuthRequiredError：既有 catch 兼容不变。 */
 class SessionExpiredError extends AuthRequiredError {}
+
+/** 真·登录页特征：learn 登录页标题 / id 登录表单 / oauth 跳转。
+ *  注意区分**服务器错误页**（Tomcat 400/500）——那是请求本身被拒（字段缺失、请求体
+ *  没送到），重登毫无用处；R21c 真机实录：FormData 被序列化成 "[object FormData]" 导致
+ *  tjzy 回 400，旧代码一律当「会话已过期」，把真因掩盖了整整一轮排查。 */
+const LEARN_LOGIN_PAGE_RE =
+  /sm2publicKey|name="i_pass"|登录页\s*-\s*清华大学网络学堂|电子身份服务系统|\/do\/off\/ui\/auth\/login\//i;
 
 export class LearnClient {
   #http: HttpClient;
@@ -785,7 +792,15 @@ export class LearnClient {
       // R21c：抛标记交 #withRelogin 静默重登后重试一次，重试仍失败才回过期提示。
       if (/<(!DOCTYPE|html)/i.test(res.slice(0, 200))) {
         this.lastDebug = "TJZY-HTML " + res.slice(0, 400).replace(/\s+/g, " ");
-        throw new SessionExpiredError("submit-html");
+        // 只有真登录页才值得静默重登；服务器错误页如实报错（别再指向会话）
+        if (LEARN_LOGIN_PAGE_RE.test(res)) throw new SessionExpiredError("submit-html");
+        const status = /HTTP Status (\d{3})/.exec(res)?.[1] ?? "";
+        return {
+          ok: false,
+          msg: status
+            ? `提交失败：服务器拒绝请求（HTTP ${status}），详情见运行日志`
+            : "提交失败：服务器返回错误页，详情见运行日志",
+        };
       }
       try {
         const data = JSON.parse(res) as { result?: string; msg?: string };

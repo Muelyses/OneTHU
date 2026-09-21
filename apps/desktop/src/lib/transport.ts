@@ -7,6 +7,8 @@
  */
 import type { FetchLike } from "@onethu/core";
 import { webvpnWrap } from "@onethu/core";
+// R21c：body 序列化的唯一真源（FormData→multipart / 二进制→base64）
+import { serializeFetchBody } from "./bodySerialize.js";
 
 export const isTauri =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -130,18 +132,25 @@ export async function nativeCookieClear(): Promise<void> {
 
 export async function nativeFetch(
   url: string,
-  init: { method?: string; body?: string | URLSearchParams; headers?: Record<string, string>; timeoutMs?: number } = {},
+  init: {
+    method?: string;
+    body?: string | URLSearchParams | FormData | Uint8Array;
+    headers?: Record<string, string>;
+    timeoutMs?: number;
+  } = {},
 ): Promise<Response> {
   const { invoke } = await import("@tauri-apps/api/core");
-  // body 统一压成 string（2026-09-17 实录：URLSearchParams 直接传会被 invoke
+  // body 统一压成 string / base64（2026-09-17 实录：URLSearchParams 直接传会被 invoke
   // 序列化成 map，Rust HttpInput.body 要 string——learn 作业/通知 POST 全灭根因）
-  let bodyStr: string | null = null;
-  let wasFormEncoded = false;
-  if (typeof init.body === "string") bodyStr = init.body;
-  else if (init.body instanceof URLSearchParams) {
-    bodyStr = init.body.toString();
-    wasFormEncoded = true;
-  } else if (init.body != null) bodyStr = String(init.body);
+  //
+  // R21c 真机定案（作业提交 400「Required String parameter 'xszyid' is not present」）：
+  // FormData 此前**不在此函数的类型与分支里**，落到 String(body) = "[object FormData]"
+  // 发出，且没有 multipart 的 Content-Type → learn 的 Tomcat 直接 400。网络学堂专线
+  // （learnHttp）全部请求都走本函数，所以作业/附件提交一直不通；同日 tauriFetch 早前
+  // 已修 FormData，两个包装因此长期分叉 —— 现统一到 serializeFetchBody 单一真源。
+  const ser = await serializeFetchBody(init.body);
+  let bodyStr: string | null = ser.bodyStr;
+  let bodyB64: string | null = ser.bodyB64;
   // headers 归一化（2026-09-17 定案）：HttpClient.request 传的是 Headers 类实例，
   // invoke 的 JSON 序列化把它变 {}——Content-Type 全丢，learn 的 Tomcat 对
   // 无 Content-Type 的 POST body 回 400（作业/通知全灭根因）。
@@ -155,12 +164,11 @@ export async function nativeFetch(
       );
     }
   }
-  // 老 tauriFetch 的 ??= 默认必须保留（2026-09-17 讨论区回归根因）：
-  // #bbsPost 只带 X-Requested-With/Referer，不设 Content-Type——裸奔的
-  // form POST 会被 learn Tomcat 回 400。作业/分组调用方显式设了所以活着。
-  if (bodyStr != null && wasFormEncoded && !Object.keys(plainHeaders).some((k) => k.toLowerCase() === "content-type")) {
-    plainHeaders["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
-  }
+  // Content-Type 补默认必须保留（2026-09-17 讨论区回归根因）：#bbsPost 只带
+  // X-Requested-With/Referer，不设 Content-Type——裸奔的 form POST 会被 learn
+  // Tomcat 回 400。multipart（FormData）同样必须带上 boundary，否则服务器不解析。
+  const hasContentType = Object.keys(plainHeaders).some((k) => k.toLowerCase() === "content-type");
+  if (!hasContentType && ser.contentType) plainHeaders["Content-Type"] = ser.contentType;
   // lib 原始请求的域名分流（2026-09-17 三案同源定案）：nativeFetch 此前 URL
   // 原样进 rust = 校内域（card/seat.lib/info2021/zhjwxk…）校外直连超时——
   // 圈存「请确认校园网/WebVPN 可达」、图书馆极慢、选课部分链路全栽这里。
@@ -192,7 +200,7 @@ export async function nativeFetch(
       method: init.method ?? "GET",
       headers: plainHeaders,
       body: bodyStr,
-      body_b64: null,
+      body_b64: bodyB64,
     },
   });
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -253,84 +261,19 @@ function collectHeaders(init: RequestInit): Record<string, string> {
  *   是 UTF-8 字符串，二进制经字符串通道会损坏，必须 base64。
  * 返回 textBody / b64Body 二选一（恒有一个为 null）。
  */
-async function serializeFormData(
-  fd: FormData,
-): Promise<{ textBody: string | null; b64Body: string | null; contentType: string }> {
-  const boundary =
-    "----onethuForm" + Math.random().toString(16).slice(2) + Date.now().toString(16);
-  const enc = new TextEncoder();
-  type Chunk = string | Uint8Array;
-  const chunks: Chunk[] = [];
-  let hasFile = false;
-  for (const [name, value] of fd.entries()) {
-    const disp = `Content-Disposition: form-data; name="${name}"`;
-    if (typeof value === "string") {
-      chunks.push(`--${boundary}\r\n${disp}\r\n\r\n${value}\r\n`);
-    } else {
-      hasFile = true;
-      const fileName = (value instanceof File && value.name ? value.name : "blob").replace(
-        /[\r\n"]/g,
-        "_",
-      );
-      const mime = value instanceof File && value.type ? value.type : "application/octet-stream";
-      chunks.push(`--${boundary}\r\n${disp}; filename="${fileName}"\r\nContent-Type: ${mime}\r\n\r\n`);
-      chunks.push(new Uint8Array(await value.arrayBuffer()));
-      chunks.push("\r\n");
-    }
-  }
-  chunks.push(`--${boundary}--\r\n`);
-  const contentType = `multipart/form-data; boundary=${boundary}`;
-  if (!hasFile) {
-    return { textBody: chunks.join(""), b64Body: null, contentType };
-  }
-  const byteChunks = chunks.map((c) => (typeof c === "string" ? enc.encode(c) : c));
-  const total = byteChunks.reduce((n, b) => n + b.length, 0);
-  const out = new Uint8Array(total);
-  let off = 0;
-  for (const b of byteChunks) {
-    out.set(b, off);
-    off += b.length;
-  }
-  let bin = "";
-  const CHUNK = 0x8000;
-  for (let i = 0; i < out.length; i += CHUNK) {
-    const sub = Array.from(out.subarray(i, Math.min(i + CHUNK, out.length)));
-    bin += String.fromCharCode(...sub);
-  }
-  return { textBody: null, b64Body: btoa(bin), contentType };
-}
-
 export async function tauriFetch(url: string, init: RequestInit = {}): Promise<Response> {
   let currentUrl = url;
   let method = (init.method ?? "GET").toUpperCase();
-  let body = typeof init.body === "string" ? init.body : undefined;
-  let bodyB64: string | undefined;
   // R17 23.1：signal / timeoutMs 为 core 侧扩展字段（FetchLike 的 RequestInit 之外）
   const signal = init.signal ?? undefined;
   const timeoutMs = (init as RequestInit & { timeoutMs?: number }).timeoutMs;
   const headers = collectHeaders(init);
-  if (init.body instanceof URLSearchParams) {
-    body = init.body.toString();
-    headers["Content-Type"] ??= "application/x-www-form-urlencoded;charset=UTF-8";
-  } else if (init.body instanceof FormData) {
-    // 此前 FormData 落到 body=undefined：POST 空体发出，作业提交（tjzy）必然失败。
-    const serialized = await serializeFormData(init.body);
-    if (serialized.textBody !== null) {
-      body = serialized.textBody;
-    } else {
-      bodyB64 = serialized.b64Body ?? undefined;
-    }
-    headers["Content-Type"] ??= serialized.contentType;
-  } else if (init.body instanceof Uint8Array) {
-    // R20-C2：二进制 body（雨课堂插图通道 core 手拼 multipart 是 Uint8Array——fetch
-    // 规范的合法 BodyInit，浏览器原生 fetch 直接支持）。invoke 的 body 是 UTF-8 字符串，
-    // 二进制经字符串通道会损坏（与 FormData 文件 part 同理）→ base64 走 body_b64。
-    let bin = "";
-    for (let i = 0; i < init.body.length; i += 0x8000) {
-      bin += String.fromCharCode(...init.body.subarray(i, i + 0x8000));
-    }
-    bodyB64 = btoa(bin);
-  }
+  // R21c：与 nativeFetch 共用同一实现（此前各一份，FormData 只在这里被修过）。
+  const ser = await serializeFetchBody(init.body);
+  // 302/303 的 POST 转 GET 时会被清空（下方重定向语义），故用 let
+  let body: string | undefined = ser.bodyStr ?? undefined;
+  let bodyB64: string | undefined = ser.bodyB64 ?? undefined;
+  if (ser.contentType) headers["Content-Type"] ??= ser.contentType;
   const redirect = init.redirect ?? "follow";
   // 上游对齐（2026-09-17，读 thu-info-app/packages/thu-info-lib 原源）：RN 的
   // okhttp 原生跟随一切重定向——包括被 302 引回 webvpn 登录页的「舞步」：带着

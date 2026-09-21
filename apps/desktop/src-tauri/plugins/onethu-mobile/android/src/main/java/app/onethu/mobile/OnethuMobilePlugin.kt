@@ -566,6 +566,12 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
             "Chrome/79.0.3945.88 Safari/537.36"
 
+    /** 移动模式 UA：体育部预订系统是老系统、无响应式布局，桌面 UA + 宽视口会把
+     *  页面挤成一坨（用户实录 2026-09-21）；移动 UA 让它出移动版布局。 */
+    private val mobileUserAgent =
+        "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) " +
+            "Chrome/120.0.0.0 Mobile Safari/537.36"
+
     /**
      * 打开本应用的系统设置页（2026-09-20）。
      *
@@ -646,8 +652,12 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 cm.setAcceptThirdPartyCookies(web, true)
                 web.settings.javaScriptEnabled = true
                 web.settings.domStorageEnabled = true
-                // 桌面模式：桌面 UA + 视口按 meta 渲染 + 整页概览 + 双指/控件缩放
-                web.settings.userAgentString = desktopUserAgent
+                // UA 按域分流（R21 用户实录）：体育部预订系统（无响应式老站）走移动
+                // UA 出移动版布局；其余（webvpn 包装的在线服务页等桌面页）维持桌面模式。
+                val uaHost = try { java.net.URI(args.url).host ?: "" } catch (_: Throwable) { "" }
+                web.settings.userAgentString =
+                    if (uaHost.contains("sports.tsinghua")) mobileUserAgent else desktopUserAgent
+                // 视口按 meta 渲染 + 整页概览 + 双指/控件缩放
                 web.settings.useWideViewPort = true
                 web.settings.loadWithOverviewMode = true
                 web.settings.setSupportZoom(true)

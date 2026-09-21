@@ -20,7 +20,7 @@ export function muteToasts<T>(fn: () => T): T {
     muted = prev;
   }
 }
-export function showToast(text: string): void {
+export function showToast(text: string, ms = 2800): void {
   if (muted) return;
   current = text;
   if (timer) clearTimeout(timer);
@@ -28,7 +28,7 @@ export function showToast(text: string): void {
   timer = setTimeout(() => {
     current = null;
     emit();
-  }, 2800);
+  }, ms);
 }
 export function hideToast(): void {
   current = null;

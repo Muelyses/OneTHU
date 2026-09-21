@@ -6,8 +6,9 @@
  *    （NAV 的 foldedDefaults 就是它的消费方），二级页签写**既有** `saveTabLayout`；
  *  - 判定"是否第一次"：onethu.onboarded.v1；设置页有常驻「重新导览」。
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PRESETS, SCENARIOS, applyTodayCards, cardsForScenarios, cardsOfScenario, hasOnboarded, markOnboarded, todayChoosableCards, type Preset } from "../state/onboarding.js";
+import { askNotifyPermissionOnce } from "../state/notifyPermissionAsk.js";
 import { TABS as INFO_TABS } from "../pages/info/InfoPage.js";
 import { TABS as LIFE_TABS } from "../pages/info/LifePage.js";
 import { loadTabLayout, saveTabLayout } from "../lib/tabLayout.js";
@@ -74,6 +75,16 @@ export function OnboardingTour(): React.ReactNode {
     setPreset(pr);
     setKeepCards(cardsForScenarios(pr.cards));
   };
+
+  // R21：导览结束（或本就无需导览）后一次性申请通知权限——与定位权限同一套
+  // 「在用户第一次真正需要时问」的原则；已问过则静默跳过，不打扰。
+  useEffect(() => {
+    if (open) return; // 导览开着时先不弹，避免两层弹窗叠在一起
+    const t = window.setTimeout(() => {
+      void askNotifyPermissionOnce();
+    }, 800);
+    return () => window.clearTimeout(t);
+  }, [open]);
 
   if (!open) return null;
 

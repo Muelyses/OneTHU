@@ -177,7 +177,7 @@ export function SettingsPage() {
                 resetOnboarding();
                 location.reload();
               }}
-              title="重新走一遍首次使用引导"
+              title="重新运行首次使用引导"
             >
               导览
             </button>
@@ -240,7 +240,7 @@ export function SettingsPage() {
             <div className="setting-title">清华电子身份（信任因子 / 密码管理）</div>
             <div className="setting-desc">
               在原生窗口打开 id.tsinghua.edu.cn，自动填入账号密码（有图形验证码时需手动输入）。
-              <b>注意：删除信任因子或修改密码可能导致 OneTHU 退出登录</b>，需重新登录一次。
+              <b>删除信任因子或修改密码可能导致 OneTHU 退出登录</b>，需重新登录一次。
             </div>
             {eidMsg ? (
               <div style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }}>{eidMsg}</div>
@@ -252,16 +252,16 @@ export function SettingsPage() {
               const creds = session.getIdCredentials();
               if (!creds) {
                 void openUrl("https://id.tsinghua.edu.cn/do/outoflogin/login/mainUi/login")
-                  .then(() => setEidMsg("已在系统浏览器打开电子身份，请手动输入账号密码。"))
+                  .then(() => setEidMsg("已在系统浏览器打开，请手动输入账号密码"))
                   .catch((e: unknown) => setEidMsg(`打开失败：${e instanceof Error ? e.message : String(e)}`));
                 return;
               }
               const openInBrowser = () =>
                 openUrl("https://id.tsinghua.edu.cn/do/outoflogin/login/mainUi/login")
-                  .then(() => setEidMsg("已在系统浏览器打开电子身份（多窗口自动填入仅桌面端支持）"))
+                  .then(() => setEidMsg("已在系统浏览器打开（自动填入仅在桌面端可用）"))
                   .catch((e: unknown) => setEidMsg(`打开失败：${e instanceof Error ? e.message : String(e)}`));
               void invoke("open_eid_window", { username: creds.username, password: creds.password })
-                .then(() => setEidMsg("已打开电子身份窗口（账号密码已自动填入）"))
+                .then(() => setEidMsg("电子身份窗口已打开，账号密码已自动填入"))
                 .catch(() => void openInBrowser());
             }}
           >
@@ -357,7 +357,7 @@ export function SettingsPage() {
                       .finally(() => setCalBusy(false));
                   }}
                 >
-                  {calBusy ? "连接中…" : "保存并测试"}
+                  {calBusy ? "连接中…" : "保存并验证"}
                 </button>
               </div>
               {calMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }}>{calMsg}</div> : null}
@@ -396,7 +396,7 @@ export function SettingsPage() {
                   setSysMsg(null);
                   void syncSystemCalendar()
                     .then((r) =>
-                      setSysMsg(r.skipped ? "内容无变化，系统日历已是最新。" : `已同步：写入 ${r.added} 条（清理旧 ${r.removed} 条）。`),
+                      setSysMsg(r.skipped ? "内容无变化，系统日历已是最新" : `已同步：写入 ${r.added} 条（清理旧 ${r.removed} 条）。`),
                     )
                     .catch((e: unknown) => setSysMsg(`同步失败：${e instanceof Error ? e.message : String(e)}`))
                     .finally(() => setSysBusy(false));
@@ -409,7 +409,7 @@ export function SettingsPage() {
                 disabled={sysBusy}
                 onClick={() => {
                   void disableSystemCalendar()
-                    .then(() => setSysMsg("已停止自动同步；已写入的日历与事件保留。"))
+                    .then(() => setSysMsg("已停止自动同步，已写入的日历与事件保留"))
                     .catch((e: unknown) => setSysMsg(String(e instanceof Error ? e.message : e)));
                 }}
               >
@@ -451,7 +451,7 @@ export function SettingsPage() {
                     setSysBusy(true);
                     setSysMsg(null);
                     void enableSystemCalendar()
-                      .then(() => setSysMsg("已开启：系统日历「OneTHU 日程」写入完成，此后自动保持最新。"))
+                      .then(() => setSysMsg("系统日历「OneTHU 日程」已写入，此后自动保持最新"))
                       .catch((e: unknown) => setSysMsg(`开启失败：${e instanceof Error ? e.message : String(e)}`))
                       .finally(() => setSysBusy(false));
                   }}
@@ -504,13 +504,13 @@ export function SettingsPage() {
                 const json = JSON.stringify(favs.data);
                 const clip = navigator.clipboard;
                 if (!clip?.writeText) {
-                  setFavMsg("剪贴板不可用——请用「导入」框核对，或截图反馈。");
+                  setFavMsg("剪贴板不可用，请改用导入框核对");
                   return;
                 }
                 void clip
                   .writeText(json)
                   .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
-                  .catch(() => setFavMsg("复制失败：剪贴板被拒绝，可改用导入框反向核对。"));
+                  .catch(() => setFavMsg("复制失败，可改用导入框核对"));
               }}
             >
               导出（复制 JSON）
@@ -548,7 +548,7 @@ export function SettingsPage() {
                 onClick={() => {
                   const parsed = parseFavs(importText);
                   if (!parsed) {
-                    setFavMsg("导入失败：内容格式不对，请粘贴本应用导出的内容。");
+                    setFavMsg("导入失败：格式不正确，请粘贴本应用导出的内容");
                     return;
                   }
                   favs.replaceAll(parsed);
@@ -596,8 +596,8 @@ export function SettingsPage() {
             <div className="setting-title">记住的密码</div>
             <div className="setting-desc">
               {hasSaved
-                ? "已在本机保存；刷新/重启后自动登录。"
-                : "未保存。登录页勾选「记住密码」即可启用。"}
+                ? "已在本机保存，重启后自动登录"
+                : "未保存；登录时勾选「记住密码」即可启用"}
             </div>
           </div>
           {hasSaved ? (
@@ -829,7 +829,7 @@ function ExtHwSection() {
         }
         if (st.alive === true) notify("yuketang", `会话有效${st.userName ? `（${st.userName}）` : ""}。`);
         else if (st.alive === false) notify("yuketang", `会话已失效（${st.reason ?? "未知原因"}）——可扫码重登，或导入其他设备导出的 Cookie。`);
-        else notify("yuketang", "检查失败：网络异常，会话状态未知（不判失效）。");
+        else notify("yuketang", "检查失败：网络异常，会话状态未知");
       })
       .finally(() => setBusy(null));
   };
@@ -840,10 +840,10 @@ function ExtHwSection() {
     setMsg(null);
     void (async (): Promise<string> => {
       if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
-        throw new Error("浏览器预览不支持导出——请用桌面端。");
+        throw new Error("浏览器预览不支持导出，请在桌面端操作");
       }
       const c = await ensureExtHwCredsLoaded();
-      if (!c.yuketang?.cookie?.trim()) throw new Error("雨课堂还没登录，没有可导出的登录状态。");
+      if (!c.yuketang?.cookie?.trim()) throw new Error("尚未登录雨课堂，无可导出的登录状态");
       const json = buildYktCookieExportJson(c.yuketang);
       const { invoke } = await import("@tauri-apps/api/core");
       const date = new Date().toISOString().slice(0, 10);
@@ -865,7 +865,7 @@ function ExtHwSection() {
     setMsg(null);
     void (async (): Promise<string> => {
       if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
-        throw new Error("浏览器预览不支持导入——请用桌面端。");
+        throw new Error("浏览器预览不支持导入，请在桌面端操作");
       }
       const { open } = await import("@tauri-apps/plugin-dialog");
       const { invoke } = await import("@tauri-apps/api/core");
@@ -964,7 +964,7 @@ function ExtHwSection() {
         setTychePwd("");
         setTycheFormOpen(false);
         await saveExtHwCreds(credsWith({ tyche: r.cookie, tychePwd: tycheRemember ? pwdNow : undefined }));
-        notify("oj", tycheRemember ? "Tyche 登录成功，已保存（已记住密码，会话失效将自动重登）。" : "Tyche 登录成功，已保存。");
+        notify("oj", tycheRemember ? "Tyche 登录成功，已记住密码" : "Tyche 登录成功，已保存。");
         void refreshExtHw();
       })
       .catch((e: unknown) => notify("oj", `Tyche 登录失败：${errMsg(e)}`))
@@ -1049,7 +1049,7 @@ function ExtHwSection() {
           </div>
         ) : null}
         {st.kind === "no-courses" ? (
-          <div className="exthw-note">统一认证已通过，但未返回课程（可能未注册 / 未选课）。</div>
+          <div className="exthw-note">统一认证已通过，未返回课程（可能未注册或未选课）。</div>
         ) : null}
       </>
     );
@@ -1349,7 +1349,7 @@ function ExtHwSection() {
                 ext.errors.tyche ? (
                   <div className="exthw-note is-error">{ext.errors.tyche}</div>
                 ) : tycheRemember && configured.tyche ? (
-                  <div className="exthw-note">已记住密码：会话失效将自动重新登录（静默进行，失败才会提示）。</div>
+                  <div className="exthw-note">已记住密码，登录状态失效时自动重新登录。</div>
                 ) : undefined
               }
             >
@@ -1449,7 +1449,7 @@ function ExtHwSection() {
                     <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
                     <textarea className="input" style={taStyle} placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(e) => setTycheCookie(e.target.value)} />
                     <textarea className="input" style={taStyle} placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(e) => setDsaCookie(e.target.value)} />
-                    <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点上方「保存」生效。</div>
+                    <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点击上方「保存」生效。</div>
                   </div>
                 ) : null}
               </div>
@@ -1579,7 +1579,7 @@ function DebugLogRow() {
     <div className="setting-row">
       <div>
         <div className="setting-title">运行日志</div>
-        <div className="setting-desc">{where ? `已导出：${where}` : "问题排查用；一键导出到系统下载"}</div>
+        <div className="setting-desc">{where ? `已导出：${where}` : "用于问题排查，导出到系统下载"}</div>
       </div>
       <button className="btn" disabled={busy} onClick={() => void run()}>
         {busy ? "导出中…" : "导出日志"}

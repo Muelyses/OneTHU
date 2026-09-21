@@ -56,29 +56,31 @@ import java.net.URLConnection
 
 @InvokeArg
 class SaveDownloadArgs {
-    lateinit var path: String
+    var path: String = ""
     var name: String = ""
 }
 
 @InvokeArg
 class OpenIntentArgs {
-    lateinit var url: String
+    var url: String = ""
 }
 
 @InvokeArg
 class ReadCookiesArgs {
-    lateinit var url: String
+    var url: String = ""
 }
 
+@InvokeArg
 class SeedCookiesArgs {
     /** 目标 origin（如 https://webvpn.tsinghua.edu.cn/） */
-    lateinit var url: String
+    var url: String = ""
     /** "k=v; k2=v2" 原文（仅在内存传递，绝不落盘/打印内容） */
-    lateinit var cookie: String
+    var cookie: String = ""
 }
 
+@InvokeArg
 class OpenWebModalArgs {
-    lateinit var url: String
+    var url: String = ""
     /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
@@ -97,13 +99,13 @@ class OpenWebModalArgs {
  *  `{ "instances": { "<appWidgetId>": {…} }, "slots": { "1": {…} } }` */
 @InvokeArg
 class WidgetPushArgs {
-    lateinit var snapshot: String
+    var snapshot: String = ""
 }
 
 /** 待排程的通知条目数组（JSON 字符串，结构见 OnethuNotify.kt 顶部注释） */
 @InvokeArg
 class NotifyScheduleArgs {
-    lateinit var items: String
+    var items: String = ""
 }
 
 /** 要打开哪个系统设置页：channels（渠道，可带 channel）/ exact-alarm / app */
@@ -122,7 +124,7 @@ class NotifyPermissionArgs {
 /** 要撤销的通知 id 数组（JSON 字符串） */
 @InvokeArg
 class NotifyCancelArgs {
-    lateinit var ids: String
+    var ids: String = ""
 }
 
 /**
@@ -564,6 +566,12 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
             "Chrome/79.0.3945.88 Safari/537.36"
 
+    /** 移动模式 UA：体育部预订系统是老系统、无响应式布局，桌面 UA + 宽视口会把
+     *  页面挤成一坨（用户实录 2026-09-21）；移动 UA 让它出移动版布局。 */
+    private val mobileUserAgent =
+        "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) " +
+            "Chrome/120.0.0.0 Mobile Safari/537.36"
+
     /**
      * 打开本应用的系统设置页（2026-09-20）。
      *
@@ -644,8 +652,12 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 cm.setAcceptThirdPartyCookies(web, true)
                 web.settings.javaScriptEnabled = true
                 web.settings.domStorageEnabled = true
-                // 桌面模式：桌面 UA + 视口按 meta 渲染 + 整页概览 + 双指/控件缩放
-                web.settings.userAgentString = desktopUserAgent
+                // UA 按域分流（R21 用户实录）：体育部预订系统（无响应式老站）走移动
+                // UA 出移动版布局；其余（webvpn 包装的在线服务页等桌面页）维持桌面模式。
+                val uaHost = try { java.net.URI(args.url).host ?: "" } catch (_: Throwable) { "" }
+                web.settings.userAgentString =
+                    if (uaHost.contains("sports.tsinghua")) mobileUserAgent else desktopUserAgent
+                // 视口按 meta 渲染 + 整页概览 + 双指/控件缩放
                 web.settings.useWideViewPort = true
                 web.settings.loadWithOverviewMode = true
                 web.settings.setSupportZoom(true)

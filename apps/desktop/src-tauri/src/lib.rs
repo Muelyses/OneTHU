@@ -3059,6 +3059,18 @@ async fn venue_open_portal_impl(
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0
         .clone();
+    // R21 用户实录：移动 UA 下体育部系统会把桌面路由（/venue/index.html#/reserveList）
+    // 302 到「移动版已登录首页」——桌面路由在移动端不存在。移动 WebView 一律重写到
+    // 移动 SPA 的同义直达路由（uuid 参数同名），配合移动 UA 出正常移动版布局。
+    let url = if url.contains("/venue/index.html") {
+        let rewritten = url
+            .replace("/venue/index.html", "/venue/mobile/index.html")
+            .replace("#/reserveList?", "#/pagesReserve/reserveDetail/newIndex?");
+        venue_log(&format!("[VENUE-PORTAL] 移动端路由重写 → {}", &rewritten[..rewritten.len().min(80)]));
+        rewritten
+    } else {
+        url.to_string()
+    };
     venue_log(&format!(
         "[VENUE-PORTAL] 移动端全屏浏览：注入登录态（{} 字节）→ {}",
         token.len(),
@@ -3291,6 +3303,20 @@ tauri::Builder::default()
         })
         .setup(|app| {
             let _ = LOG_APP.set(app.handle().clone());
+            // R21 网络诊断：解析结果落日志（v4/v6 混合与否是「校内每请求 5s」的
+            // 关键证据——IPv6 先超时再回落 v4 的连接 stall 每条新连接付一次）
+            {
+                let app2 = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    match tokio::net::lookup_host("webvpn.tsinghua.edu.cn:443").await {
+                        Ok(addrs) => {
+                            let list = addrs.map(|a| a.to_string()).collect::<Vec<_>>().join(", ");
+                            crate::debug_log_line(&format!("[NET-RESOLVE] webvpn.tsinghua.edu.cn → {list}"));
+                        }
+                        Err(e) => crate::debug_log_line(&format!("[NET-RESOLVE] webvpn 解析失败: {e}")),
+                    }
+                });
+            }
             // R21 dev 构建守卫（用户实录：有 Windows 同学拿到的是 dev/手动 cargo 构建，
             // 双击打开就是 127.0.0.1:5180 拒绝连接——`is_dev()` 构建里资产不打进程序，
             // devUrl 编译期烤死，WebView 一定去连它；vite 没跑就是浏览器错误页）。

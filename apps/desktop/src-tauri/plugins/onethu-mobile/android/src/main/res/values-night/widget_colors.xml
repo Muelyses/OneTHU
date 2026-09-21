@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 系统深色时启动器解析到的文字色（卡底同步见 drawable-night/onethu_widget_bg） -->
+<resources>
+    <color name="onethu_widget_ink">#E8EBF2</color>
+    <color name="onethu_widget_sub">#9AA1AC</color>
+</resources>

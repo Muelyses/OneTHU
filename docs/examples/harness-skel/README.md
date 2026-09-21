@@ -1,6 +1,6 @@
 # OneTHU Rust 插件骨架（协议已验证）
 
-与宿主 JSON-RPC 握手的最小可编译骨架。详细协议：`docs/plugin-development.md` §6。
+与宿主 JSON-RPC 握手的最小可编译骨架。详细协议：`docs/plugin-development.md` §9.1。
 
 ```bash
 cargo build --release

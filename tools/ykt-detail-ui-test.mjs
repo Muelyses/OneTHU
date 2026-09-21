@@ -554,5 +554,34 @@ console.log("\n[7] R20-C1 作答/提交入口资格 yktSubmitEligibility（纯�
   );
 }
 
+/* ───────── [8] 折叠/展开「我的作答」「老师评语」（R20-B3 fix ③）+ 主题配色接线（fix ②） ───────── */
+console.log("\n[8] 折叠区块：默认展开 / 两区块可折叠 / 不记忆（静态审计）");
+{
+  const { readFileSync } = await import("node:fs");
+  const page = readFileSync(new URL("../apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx", import.meta.url), "utf8");
+
+  ok(page.includes("function CollapsibleSection("), "折叠收敛为独立 CollapsibleSection 组件");
+  ok(/const \[open, setOpen\] = useState\(true\)/.test(page), "默认展开（useState(true)，不记忆口径）");
+  // 两个区块都走折叠头；组件本体不写死区块名（切片止于 ProblemCard 的注释，防注释串味）
+  const csBody = page.slice(page.indexOf("function CollapsibleSection("), page.indexOf("/** 单题卡"));
+  ok(!csBody.includes("我的作答") && !csBody.includes("老师评语"), "CollapsibleSection 本体不写死区块名（label 由调用方传）");
+  ok(page.includes('<CollapsibleSection label="我的作答">'), "「我的作答」区块接入折叠头");
+  ok(page.includes('<CollapsibleSection label="老师评语">'), "「老师评语」区块接入折叠头");
+  ok(csBody.includes("aria-expanded={open}"), "折叠头带 aria-expanded（无障碍）");
+  ok(csBody.includes("setOpen((v) => !v)"), "点击切换开合");
+  ok(csBody.includes("{open ? children : null}"), "折叠时内容不渲染（含 ProblemBody iframe，省的是真开销）");
+  ok(await cssHasToggle(), "折叠头样式（按钮复位 + 小箭头）已入全局样式表");
+  // 主题配色接线静态审计（fix ②）：组件读实时主题注入文档
+  const pb = readFileSync(new URL("../apps/desktop/src/components/exthw/ProblemBody.tsx", import.meta.url), "utf8");
+  ok(pb.includes("theme: readYktDocTheme(wrapRef.current)"), "ProblemBody 以运行时主题配色构建沙箱文档（不假设明暗二元）");
+  ok(pb.includes("onethu-theme-style") && pb.includes("MutationObserver"), "主题切换经 MutationObserver 触发文档重建");
+}
+
+async function cssHasToggle() {
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(new URL("../apps/desktop/src/styles/global.css", import.meta.url), "utf8");
+  return css.includes(".ykt-sec-toggle") && css.includes(".ykt-sec-caret");
+}
+
 console.log(`\n═══ R20-B2/B3/C1 雨课堂详情页单测：${pass} 通过 / ${fail} 失败 ═══`);
 if (fail > 0) process.exit(1);

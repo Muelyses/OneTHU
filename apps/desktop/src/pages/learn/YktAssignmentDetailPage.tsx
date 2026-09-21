@@ -75,6 +75,36 @@ function YktPlainText({ text }: { text: string }) {
   return <div className="ykt-plain">{text}</div>;
 }
 
+/** 可折叠区块头（R20-B3 fix ③）：「我的作答」「老师评语」支持折叠/展开。
+ *  口径（霖 2026-09-21）：**不记忆**——每次进入详情页一律默认展开；折叠只在当次
+ *  浏览内有效。纯展示开关，不影响数据拉取。 */
+function CollapsibleSection({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(true); // 默认展开，不记忆
+  return (
+    <>
+      <button
+        type="button"
+        className="ykt-sec-toggle"
+        aria-expanded={open}
+        title={open ? "折叠" : "展开"}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="ykt-sec-caret" aria-hidden="true">
+          {open ? "▾" : "▸"}
+        </span>
+        <span className="ykt-sec-label">{label}</span>
+      </button>
+      {open ? children : null}
+    </>
+  );
+}
+
 /** 单题卡：序号 + 题型 + 分值 + 批改徽标；题干 / 我的作答 + 附件 / 老师评语。
  *  题型 9（外链 OJ）：只渲染外链跳转（红线），作答与评语区一律不给。
  *  题干 / 作答正文（R20-B3）：ProblemBody 内联沙箱渲染（加密字体 + LaTeX + 图片代理）。 */
@@ -119,23 +149,25 @@ function ProblemCard({ p, fontUrl, cookies }: { p: YkProblem; fontUrl?: string; 
           ) : null}
           {hasAnswer ? (
             <div className="ykt-ans">
-              <div className="ykt-sec-label">我的作答</div>
-              {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题我的作答`} /> : null}
-              {attText ? <div className="ykt-ans-att">附件：{attText}</div> : null}
+              <CollapsibleSection label="我的作答">
+                {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题我的作答`} /> : null}
+                {attText ? <div className="ykt-ans-att">附件：{attText}</div> : null}
+              </CollapsibleSection>
             </div>
           ) : p.myStatus === "unanswered" ? (
             <div className="ykt-ans-empty">未作答</div>
           ) : null}
           {hasRemark ? (
             <div className="ykt-remark">
-              <div className="ykt-sec-label">老师评语</div>
-              {remarkView.remark ? <YktPlainText text={remarkView.remark} /> : null}
-              {(remarkView.comments ?? []).map((c, i) => (
-                <div className="ykt-remark-item" key={i}>
-                  {c.name ? <b>{c.name}：</b> : null}
-                  <YktPlainText text={c.content} />
-                </div>
-              ))}
+              <CollapsibleSection label="老师评语">
+                {remarkView.remark ? <YktPlainText text={remarkView.remark} /> : null}
+                {(remarkView.comments ?? []).map((c, i) => (
+                  <div className="ykt-remark-item" key={i}>
+                    {c.name ? <b>{c.name}：</b> : null}
+                    <YktPlainText text={c.content} />
+                  </div>
+                ))}
+              </CollapsibleSection>
             </div>
           ) : null}
         </>

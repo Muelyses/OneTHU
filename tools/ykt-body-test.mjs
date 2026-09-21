@@ -343,5 +343,40 @@ console.log("\n[7] 接线静态审计（详情页 / ProblemBody / yktAssets 漏�
   ok(katexGlue.includes("throwOnError: true") && katexGlue.includes("trust: false"), "yktKatex：单公式失败抛错兜原文 + 不信任外链命令");
 }
 
+/* ───────────────── [8] 主题配色（R20-B3 fix ②） ───────────────── */
+console.log("\n[8] 主题配色：yktDocCss / sanitizeDocColor / buildYktProblemDoc theme 注入");
+{
+  // 缺省 = 历史浅色定稿（逐字节兼容旧观感与旧测试）
+  eq(yb.yktDocCss(yb.DEFAULT_YKT_DOC_THEME), yb.YKT_DOC_CSS, "yktDocCss(默认主题) === YKT_DOC_CSS（浅色定稿不漂移）");
+  ok(yb.DEFAULT_YKT_DOC_THEME.bg === "transparent", "默认底色 transparent（未接主题时的历史行为）");
+
+  // 自定义主题色生效：暗色主题 / 米白浅色主题都只是「另一组字面量」
+  const dark = { text: "#e8eaf0", textSoft: "#9aa0aa", bg: "#16181d", border: "#33363d", link: "#7aa2ff", fallbackBg: "#22252c" };
+  const cssDark = yb.yktDocCss(dark);
+  ok(cssDark.includes(`color:${dark.text}`) && cssDark.includes(`background:${dark.bg}`), "body 文字/底色来自主题");
+  ok(cssDark.includes(`border:1px solid ${dark.border}`), "表格边线来自主题");
+  ok(cssDark.includes(`a{color:${dark.link}`), "链接色来自主题");
+  ok(cssDark.includes(`background:${dark.fallbackBg}`) && cssDark.includes(`color:${dark.textSoft}`), "图片占位框底/字色来自主题");
+  ok(cssDark.includes(`.${yb.YKT_ENCRYPTED_FONT_CLASS}{font-family:"${yb.YKT_FONT_FAMILY}",`), "加密 span 规则随主题拼装保留");
+
+  // 主题注入走 buildYktProblemDoc
+  const docT = yb.buildYktProblemDoc({ html: "<p>题干</p>", theme: dark });
+  ok(docT.includes(`color:${dark.text}`) && docT.includes(`background:${dark.bg}`), "buildYktProblemDoc 接受 theme 并注入文档");
+  const docD = yb.buildYktProblemDoc({ html: "<p>题干</p>" });
+  ok(docD.includes("color:#222"), "未传 theme → 浅色定稿（行为不变）");
+
+  // sanitizeDocColor：只放行像颜色的字面量，畸形值/注入形态一律回退
+  eq(yb.sanitizeDocColor("#E8EAF0", "FB"), "#e8eaf0", "hex 放行（大小写归一）");
+  eq(yb.sanitizeDocColor("rgba(15, 17, 21, 0.87)", "FB"), "rgba(15, 17, 21, 0.87)", "rgba() 放行");
+  eq(yb.sanitizeDocColor("hsl(220 10% 90%)", "FB"), "hsl(220 10% 90%)", "hsl() 放行");
+  eq(yb.sanitizeDocColor("transparent", "FB"), "transparent", "transparent 放行");
+  eq(yb.sanitizeDocColor("var(--x)", "FB"), "FB", "var() 引用不放行（opaque origin 无意义）");
+  eq(yb.sanitizeDocColor("red}body{display:none", "FB"), "FB", "CSS 注入形态不放行");
+  eq(yb.sanitizeDocColor("url(javascript:x)", "FB"), "FB", "url() 不放行");
+  eq(yb.sanitizeDocColor("", "FB"), "FB", "空串回退");
+  eq(yb.sanitizeDocColor(undefined, "FB"), "FB", "非字符串回退");
+  eq(yb.sanitizeDocColor("#".repeat(70), "FB"), "FB", "超长值回退（长度上限）");
+}
+
 console.log(`\n═══ R20-B3 题干内联渲染单测：${pass} 通过 / ${fail} 失败 ═══`);
 if (fail > 0) process.exit(1);

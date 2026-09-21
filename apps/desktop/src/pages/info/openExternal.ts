@@ -8,13 +8,15 @@
  *  5) 末级兜底：复制链接到剪贴板，由用户手动打开。
  */
 import { isTauri } from "../../lib/transport.js";
+import { isAndroidNavigator } from "../../lib/androidHost.js";
 
 export async function openExternal(rawUrl: string): Promise<void> {
   // 1) 白名单校验：非法字符串 / 非 http(s) 一律拒绝；
   //    Android 例外：intent:// App 深链（地图导航跳 App）——严格校验
   //    #Intent; + package= 存在才放行（防任意协议注入），且跳过 opener
   //    插件通道直走 Rust open_external（opener 只认 http(s)）
-  const isAndroid = typeof navigator !== "undefined" && /Android/.test(navigator.userAgent);
+  //    （R21：安卓判定必须走多信号——主窗口 UA 被伪装成 Windows，裸 UA 正则恒 false）
+  const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
   if (
     isAndroid &&
     rawUrl.startsWith("intent://") &&

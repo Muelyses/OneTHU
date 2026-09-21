@@ -43,10 +43,6 @@ export function InvoiceTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供电子发票数据，登录后可在财务系统查看。" />;
-  }
-
   const rows = data?.data ?? [];
   const total = data?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));

@@ -14,7 +14,8 @@
     "tauri:build": "find src-tauri -name ._-\\* -delete; find src-tauri -name ._* ! -name . -delete; tauri build",
     "build:harness": "node scripts/build-harness.mjs",
     "tauri:app": "bash scripts/dev-app.sh",
-    "tauri:raw": "find src-tauri -name ._-\\* -delete; find src-tauri -name ._* ! -name . -delete; tauri dev"
+    "tauri:raw": "find src-tauri -name ._-\\* -delete; find src-tauri -name ._* ! -name . -delete; tauri dev",
+    "lint:ui-copy": "node ../../tools/ui-copy-lint.mjs"
   },
   "dependencies": {
     "@onethu/core": "workspace:*",

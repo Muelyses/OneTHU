@@ -12,6 +12,10 @@
  * 不共享 cookie，内嵌 webview 的 cookie 桥是后续增强，不阻塞本期。
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CollectStar } from "../../components/Collect.js";
+import { SEED_KEYWORDS, loadSeedState, pickSeedServices } from "../../lib/thosSeed.js";
+import { enc, noteAtomCache } from "../../state/atoms.js";
+import { IconPin } from "../../components/Icons.js";
 import type {
   ThosCounts,
   ThosPage,
@@ -73,6 +77,25 @@ function favKey(userId: string): string {
   return `thos-favorites:${userId}`;
 }
 
+function recentKey(userId: string): string {
+  return `thos-recent:${userId}`;
+}
+
+function loadRecent(userId: string): string[] {
+  try {
+    const value = JSON.parse(localStorage.getItem(recentKey(userId)) ?? "[]");
+    return Array.isArray(value) ? value.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/** 预置「常用服务」的一次性标记（只做一次，之后完全由用户增删） */
+function seedKey(userId: string): string {
+  return `thos-favorites-seeded:${userId}`;
+}
+
+
 function loadFavorites(userId: string): string[] {
   try {
     const raw = localStorage.getItem(favKey(userId));
@@ -92,6 +115,11 @@ const DATE_LABEL: Record<ThosTaskKind, string> = {
   phases: "申请时间",
 };
 
+/** 还没匹配上的预置关键词（仅用于日志说明"为什么常用里少一项"） */
+function SEED_KEYWORDS_LEFT(done: string[]): string[] {
+  return SEED_KEYWORDS.filter((k) => !done.includes(k));
+}
+
 export function ThosPage() {
   const { user, navParams } = useApp();
   const userId = user?.username ?? "";
@@ -104,6 +132,8 @@ export function ThosPage() {
   const [tasks, setTasks] = useState<Partial<Record<ThosTaskKind, ThosPage<ThosTask>>>>({});
   const [services, setServices] = useState<ThosPage<ThosService>>();
   const [favorites, setFavorites] = useState<string[]>([]);
+  /** 最近打开过的服务（排序依据：收藏优先，其次最近使用，其余保持学校原序） */
+  const [recent, setRecent] = useState<string[]>([]);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
@@ -111,7 +141,14 @@ export function ThosPage() {
   const generation = useRef(0);
 
   useEffect(() => {
-    setFavorites(loadFavorites(userId));
+    setRecent(loadRecent(userId));
+  }, [userId]);
+
+  useEffect(() => {
+    const list = loadFavorites(userId);
+    setFavorites(list);
+    // 有常用服务时默认进「常用服务」而不是「全部服务」（用户定案 2026-09-20）
+    setOnlyFavorites(list.length > 0);
   }, [userId]);
 
   const load = useCallback(async () => {
@@ -163,6 +200,67 @@ export function ThosPage() {
     void load();
   }, [load]);
 
+  /** 服务目录就绪 → 写入原子缓存：收藏面板可检索、OH 可一句话命中并打开 */
+  useEffect(() => {
+    const items = services?.items ?? [];
+    if (items.length === 0) return;
+    noteAtomCache({
+      thosServices: items.map((x) => ({ id: x.id, name: x.name, department: x.department, url: x.url })),
+    });
+  }, [services]);
+
+  /** 记录一次服务打开（用于"最近使用"排序；与收藏互不影响） */
+  const recall = (id: string): void => {
+    if (!id) return;
+    const next = [id, ...recent.filter((x) => x !== id)].slice(0, 20);
+    setRecent(next);
+    try {
+      localStorage.setItem(recentKey(userId), JSON.stringify(next));
+    } catch {
+      /* 存不下不影响会话 */
+    }
+  };
+
+  /** 首启预置：把「亲友（来访/入校报备）」与「缓考」铆进常用服务。
+   *  逐关键词记账 + 口语容错匹配（学校侧正式名与用户口语常有出入，见 lib/thosSeed.ts）；
+   *  漏掉的关键词不记账，下次进页面继续补；匹配规则升级会重补一次（修本次事故）。 */
+  useEffect(() => {
+    const items = services?.items ?? [];
+    if (!userId || items.length === 0) return;
+    const state = loadSeedState(localStorage.getItem(seedKey(userId)));
+    const { ids, done } = pickSeedServices(items, favorites, state.done);
+    const changed = done.length !== state.done.length;
+    if (ids.length === 0) {
+      if (changed) {
+        try {
+          localStorage.setItem(seedKey(userId), JSON.stringify({ v: state.v, done }));
+        } catch {
+          /* 存不下不影响本次会话 */
+        }
+      }
+      return;
+    }
+    const next = [...favorites, ...ids];
+    setFavorites(next);
+    setOnlyFavorites(true);
+    // 留痕（不打印服务 id 之外的东西）：预置是"静默功能"，出问题只能靠日志定位
+    void import("../../lib/clients.js")
+      .then((m) => {
+        const names = items.filter((x) => ids.includes(x.id)).map((x) => x.name);
+        const pending = SEED_KEYWORDS_LEFT(done);
+        return m.logLine(
+          `[THOS-SEED] 常用服务预置：${names.join(" / ") || "无"}${pending.length ? `（未匹配待补：${pending.join("、")}）` : ""}`,
+        );
+      })
+      .catch(() => undefined);
+    try {
+      localStorage.setItem(favKey(userId), JSON.stringify(next));
+      localStorage.setItem(seedKey(userId), JSON.stringify({ v: state.v, done }));
+    } catch {
+      /* 存不下也不影响本次会话 */
+    }
+  }, [services, favorites, userId]);
+
   const favorite = (id: string) => {
     const next = favorites.includes(id) ? favorites.filter((x) => x !== id) : [...favorites, id];
     setFavorites(next);
@@ -176,35 +274,17 @@ export function ThosPage() {
 
   /** 内嵌官方页：rust 在 webview 内自动完成 THOS 漫游链（id 表单页自动填表
    *  SM2 提交 → thu-oauth callback → webvpn 票落地 webview cookie），随后
-   *  top-level 导航到目标页——零二次登录。桌面走系统浏览器。 */
+   *  top-level 导航到目标页——零二次登录。
+   *  R21：这里曾内联复份整条打开链、失败只 setError（横幅不显眼时等于"点了没反应"）；
+   *  现委托 openThosInApp——失败 toast 明示 + 回落系统浏览器，打开链全应用只剩一份。 */
   const openOfficial = async (url: string) => {
     try {
       const { logLine } = await import("../../lib/clients.js");
       await logLine(`[THOS-UI] openOfficial 入口 demo=${demo} url=${url.slice(0, 60)}`);
     } catch { /* noop */ }
     if (demo || !url) return;
-    try {
-      const [{ routeThosUrl }, { invoke }, { isTauri }, { loadRemembered }] = await Promise.all([
-        import("@onethu/info-lib"),
-        import("@tauri-apps/api/core"),
-        import("../../lib/transport.js"),
-        import("../../lib/clients.js"),
-      ]);
-      if (!isTauri) {
-        window.open(routeThosUrl(url), "_blank");
-        return;
-      }
-      // 无记住凭据也可走链：账密传空，id 表单出现时用户在 webview 内手动输入
-      // 一次（链继续自动完成）——桌面首次/未开记住密码时的必经路径
-      const remembered = await loadRemembered();
-      await invoke("thos_open_portal", {
-        url: routeThosUrl(url),
-        username: remembered?.username ?? "",
-        password: remembered?.password ?? "",
-      });
-    } catch (e) {
-      setError(`打开官方页失败：${String(e)}`);
-    }
+    const { openThosInApp } = await import("../../lib/thosOpen.js");
+    await openThosInApp(url);
   };
 
   const rows = tab === "services" ? [] : (tasks[tab]?.items ?? []);
@@ -226,15 +306,23 @@ export function ThosPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pending, query, tab],
   );
-  const serviceRows = useMemo(
-    () =>
-      (services?.items ?? []).filter(
-        (x) =>
-          (!onlyFavorites || favorites.includes(x.id)) &&
-          `${x.name} ${x.department}`.toLowerCase().includes(query.toLowerCase()),
-      ),
-    [services, onlyFavorites, favorites, query],
-  );
+  const serviceRows = useMemo(() => {
+    const rows = (services?.items ?? []).filter(
+      (x) =>
+        (!onlyFavorites || favorites.includes(x.id)) &&
+        `${x.name} ${x.department}`.toLowerCase().includes(query.toLowerCase()),
+    );
+    // 可解释排序：已收藏 → 最近打开过 → 其余保持学校原序（稳定排序，不改动同档内相对次序）
+    const rank = new Map(recent.map((id, i) => [id, i] as const));
+    return [...rows].sort((a, b) => {
+      const fa = favorites.includes(a.id) ? 0 : 1;
+      const fb = favorites.includes(b.id) ? 0 : 1;
+      if (fa !== fb) return fa - fb;
+      const ra = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+      const rb = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+      return ra - rb;
+    });
+  }, [services, onlyFavorites, favorites, query, recent]);
   const page = tab === "services" ? services : tasks[tab];
   const complete = page?.complete && (tab !== "todo" || tasks.active?.complete);
 
@@ -270,15 +358,6 @@ export function ThosPage() {
           <span>点选服务直接跳转对应页面，不再经过服务大厅。</span>
         </div>
       </div>
-      <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
-        {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
-        {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>
-          tabBtn(kind, `${KIND_LABEL[kind]} ${(counts as Record<string, number | undefined> | undefined)?.[kind] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }),
-        )}
-        {tabBtn("services-fav", `常用 ${favorites.length}`, tab === "services" && onlyFavorites, () => { setTab("services"); setOnlyFavorites(favorites.length > 0); setQuery(""); })}
-        {tabBtn("services-all", "全部服务", tab === "services" && !onlyFavorites, () => { setTab("services"); setOnlyFavorites(false); setQuery(""); })}
-      </div>
-
       <input
         className="thos-search"
         aria-label="搜索在线服务"
@@ -292,6 +371,16 @@ export function ThosPage() {
             : "搜索事项（标题/节点/编号）"
         }
       />
+
+      <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
+        {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
+        {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>
+          tabBtn(kind, `${KIND_LABEL[kind]} ${(counts as Record<string, number | undefined> | undefined)?.[kind] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }),
+        )}
+        {tabBtn("services-fav", `常用 ${favorites.length}`, tab === "services" && onlyFavorites, () => { setTab("services"); setOnlyFavorites(favorites.length > 0); setQuery(""); })}
+        {tabBtn("services-all", "全部服务", tab === "services" && !onlyFavorites, () => { setTab("services"); setOnlyFavorites(false); setQuery(""); })}
+      </div>
+
 
       {error ? <ErrorNote text={error} onRetry={() => void load()} /> : null}
       {busy && !page ? <SkeletonRows rows={4} /> : null}
@@ -314,9 +403,14 @@ export function ThosPage() {
                 <button
                   className="row-main thos-service-open"
                   aria-label={`打开服务 ${item.name}`}
-                  onClick={() => openOfficial(item.url)}
+                  onClick={() => {
+                    recall(item.id);
+                    void openOfficial(item.url);
+                  }}
                 >
-                  <strong>{item.name}</strong>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <strong>{item.name}</strong>
+                  </span>
                   <span className="dim">{item.department || "部门未提供"}</span>
                   {item.kind ? (
                     <span className="chip chip-amber">
@@ -324,13 +418,24 @@ export function ThosPage() {
                     </span>
                   ) : null}
                 </button>
-                <button
-                  className="btn btn-ghost thos-fav"
-                  aria-label={favorites.includes(item.id) ? "取消收藏" : "收藏服务"}
-                  onClick={() => favorite(item.id)}
-                >
-                  {favorites.includes(item.id) ? "★" : "☆"}
-                </button>
+                {/* 两个动作语义互不相同，故并列：
+                    星号 = 统一收藏原子（收进任意收藏夹）；图钉 = 仅"在常用"（排序置顶） */}
+                <span className="thos-service-actions">
+                  <CollectStar
+                    atom={{ kind: "thos-service", key: enc(item.id, item.name, item.department ?? "") }}
+                    title={item.name}
+                  />
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    aria-label={favorites.includes(item.id) ? `取消常用 ${item.name}` : `加入常用 ${item.name}`}
+                    title={favorites.includes(item.id) ? "取消常用" : "钉在常用"}
+                    style={{ color: favorites.includes(item.id) ? "var(--accent, #4176e6)" : "var(--text-3, #999)", flex: "none" }}
+                    onClick={() => favorite(item.id)}
+                  >
+                    <IconPin width={14} height={14} />
+                  </button>
+                </span>
               </div>
             </Card>
           ))}

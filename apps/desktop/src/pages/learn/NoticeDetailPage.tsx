@@ -16,10 +16,11 @@ import type { LearnAttachment } from "@onethu/core";
 
 export function NoticeDetailPage() {
   useLearnNavSemester();
-  const { navParams, status } = useApp();
+  const { navParams } = useApp();
+
   const { data, state, error, reload } = useLearnData();
   const [att, setAtt] = useState<LearnAttachment | null>(null);
-  const [attState, setAttState] = useState<"idle" | "loading" | "ok" | "error" | "skip">("idle");
+  const [attState, setAttState] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [attErr, setAttErr] = useState("");
   const [dlHint, setDlHint] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -36,10 +37,6 @@ export function NoticeDetailPage() {
   // 附件地址懒加载：fjmc 只有文件名，下载地址在详情 HTML 页（thu-learn-lib parseNotificationDetail）
   useEffect(() => {
     if (!n || !n.attachmentName || attState !== "idle") return;
-    if (status === "demo") {
-      setAttState("skip"); // 演示模式不打真实接口
-      return;
-    }
     setAttState("loading");
     learn
       .getNotificationPageDetail(courseId, n.id)
@@ -51,7 +48,7 @@ export function NoticeDetailPage() {
         setAttErr(explainNetworkError(err));
         setAttState("error");
       });
-  }, [n, attState, courseId, status]);
+  }, [n, attState, courseId]);
 
   const doDownload = async (a: LearnAttachment) => {
     setDownloading(true);
@@ -130,7 +127,7 @@ export function NoticeDetailPage() {
               <button className="btn btn-ghost" onClick={retryAtt}>重试</button>
             </div>
           ) : null}
-          {attState === "ok" || attState === "skip" ? (
+          {attState === "ok" ? (
             att ? (
               <div className="kv kv-wide">
                 <span>{att.name || n.attachmentName}{att.size ? `（${att.size}）` : ""}</span>
@@ -152,7 +149,7 @@ export function NoticeDetailPage() {
             ) : (
               <div className="kv kv-wide">
                 <span>{n.attachmentName}</span>
-                <span className="chip chip-gray">{attState === "skip" ? "演示数据（网页端下载）" : "网页端下载"}</span>
+                <span className="chip chip-gray">网页端下载</span>
               </div>
             )
           ) : null}

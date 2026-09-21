@@ -18,8 +18,10 @@ import { markLoginAttempt, loginCooldownLeftMs, consumeLoginFailedPublicKey } fr
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
 const SAVE_FINGER_URL = "https://id.tsinghua.edu.cn/b/doubleAuth/personal/saveFinger";
-import { InfoHelper, roam } from "@onethu/info-lib";
-import { sm2crypto, makeFingerprint, webvpnDecodeUrl, type TwoFactorMethod } from "@onethu/core";
+import { InfoHelper, roam, verifyAndReLogin } from "@onethu/info-lib";
+import { loadRemembered } from "./clients.js";
+import { withPrivacy } from "./privacy.js";
+import { sm2crypto, makeFingerprint, webvpnDecodeUrl, parseCellAnchor, type TwoFactorMethod } from "@onethu/core";
 
 let initialized = false;
 
@@ -139,7 +141,7 @@ export function initInfoLib(): InfoHelper {
 }
 
 /** InfoHelper 单例（userId/password/fingerGenPrint 驻留内存，供静默重登免 2FA） */
-export const helper = new InfoHelper();
+export const helper = withPrivacy(new InfoHelper(), "helper");
 
 /* ═══════════════ 2FA futures：lib 同步 hooks ⇄ OneTHU 两段式 UI ═══════════════ */
 
@@ -185,7 +187,11 @@ helper.twoFactorAuthHook = () =>
 helper.trustFingerprintHook = async () => pendingTrust;
 helper.trustFingerprintNameHook = async () => "OneTHU";
 helper.twoFactorAuthLimitHook = async () => {
+  // info app 在该钩子里提醒用户清理；我们此前只写日志 → 测试者只看到「一直校验中」
+  // 却不知原因（群反馈 + MCCF 实例：清掉 6~7 条旧信任记录后立刻能进）。
   void log("2FA 受信设备数达上限（登录继续，本次未信任）");
+  const { showToast } = await import("../state/toast.js");
+  showToast("受信设备数已达上限：本次登录不会记住本设备。可到 id.tsinghua.edu.cn 删除旧的「信任浏览器」后重试。");
 };
 
 /* ═══════════════ 登录链 ═══════════════ */
@@ -365,7 +371,48 @@ export async function libRoamLearn(): Promise<boolean> {
   }
 }
 
+/**
+ * 把「记住密码」的凭据与持久化的受信指纹灌进 lib 的 helper。
+ *
+ * info app 的静默重登靠的是 `helper.userId / helper.password`（**持久化字段**），
+ * 所以它任何时刻都能重登；我们此前只依赖内存里的 `inflight`——进程一重启
+ * （安卓被系统杀掉是常态）就没法自愈，用户看到的就是「被踢出登录」。
+ *
+ * 指纹同理：`helper.fingerGenPrint` 为空时 id 会要求 2FA，静默重登必失败
+ * （2026-09-18 已实锤过一次；libForceRelogin 里修了，libEnsureSession 没同步修）。
+ */
+async function hydrateLibCredentials(): Promise<boolean> {
+  const h = helper as unknown as { userId: string; password: string; fingerGenPrint?: string };
+  if (!h.userId || !h.password) {
+    const remembered = await loadRemembered().catch(() => null);
+    if (remembered?.username && remembered.password) {
+      h.userId = remembered.username;
+      h.password = remembered.password;
+      void log(`LIB-CRED 从「记住密码」回灌凭据（${remembered.username.slice(0, 4)}****）`);
+    }
+  }
+  const f3 = sessionFinger3 || h.fingerGenPrint || "";
+  if (f3) h.fingerGenPrint = f3;
+  return Boolean(h.userId && h.password);
+}
+
 export async function libEnsureSession(): Promise<boolean> {
+  // ① 对齐 info app：凭据 + 受信指纹先就位（否则重启后无从重登）
+  const hasCreds = await hydrateLibCredentials();
+  // ② 权威探活 + 按需重登（info app 的 verifyAndReLogin 同源实现）：
+  //    取用户信息比对 ryh——活着且是本人 → 无需重登；否则用 helper 上的凭据重登。
+  //    比原来「webvpn 端点里有 XSRF-TOKEN 就算活」强：后者只证明网关发了票，
+  //    不证明 info 域会话是本人的活会话，会「假活」→ 后续 401 → 用户被踢。
+  if (hasCreds && loginCooldownLeftMs() <= 0) {
+    try {
+      const relogged = await verifyAndReLogin(helper); // 返回 false = 会话还活着
+      if (relogged) void log("LIB-ENSURE 静默重登成功（verifyAndReLogin）");
+      return true;
+    } catch (e) {
+      // 需要 2FA / 网络异常 → 落到下面的轻探针，仍活着就别误判成死
+      void log(`LIB-ENSURE verifyAndReLogin 失败：${e instanceof Error ? e.message : e}`);
+    }
+  }
   try {
     // 探针走原生通道（Rust 仓=权威会话，重定向透明跟完）+ 现行 info 域
     // （info2021 已被服务端弃用，旧探针永远探死 → 每轮误触发重登循环）
@@ -429,10 +476,14 @@ export const getSecondaryEntries = async (
   for (const m of script.matchAll(reg)) {
     const detail = (m[1] ?? "").replace(/\s/g, "");
     const title = m[2] ?? "";
-    const anchor = (m[3] ?? "").split(/[a_]/).filter(Boolean);
-    const day = Number(anchor[0]);
-    const session = Number(anchor[1]);
-    if (!day || !session) continue;
+    // 格子 id = a{session}_{day}（口径见 core parseCellAnchor / info app parseScript）。
+    // 此前这里把 day/session 读反 → 二级课表（实验室课为主）整体错位并与主课表重复。
+    const anchor = parseCellAnchor(m[3] ?? "");
+    if (!anchor) {
+      void log(`SECONDARY-ANCHOR-SKIP 无法解析格子 id=${m[3] ?? ""} 课程=${title}`).catch(() => undefined);
+      continue;
+    }
+    const { session, day } = anchor;
     const begin = beginList[session - 1] || "08:00";
     const endT = endList[session - 1] || "09:35";
     const loc = /[(（]([^，,]+)[，,]/.exec(detail)?.[1] ?? "待定";
@@ -461,8 +512,7 @@ export async function libForceRelogin(): Promise<boolean> {
   // 受信凭据喂给 lib：helper.fingerGenPrint 是内存变量，boot 恢复/进程重启后
   // 为空 → libLogin 传空指纹 → id 要 2FA → 强制重登必撞墙（02:23 实录
   // "lib 重登失败 → 回退自清仓"）。sessionFinger3（持久层）优先喂入。
-  (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint =
-    sessionFinger3 || (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
+  await hydrateLibCredentials(); // 凭据 + 受信指纹统一从持久层回灌
   const r = await libLogin(username, password, helper.fingerprint).catch(() => null);
   return r?.state === "ready";
 }

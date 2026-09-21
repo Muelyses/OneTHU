@@ -91,7 +91,6 @@ export function WasherTab({
     void loadGroups();
   }, [loadGroups]);
 
-
   /* 深链：设备列表就绪后高亮并滚动到目标设备 */
   useEffect(() => {
     if (dState !== "ready" || !deepMachine) return;
@@ -140,16 +139,11 @@ export function WasherTab({
     }
   }, [groups, gState, deepBuildingId, wantProvider, loadDevices]);
 
-
-  if (status === "demo") {
-    return <Empty text="演示模式不提供洗衣机数据，登录后可查看宿舍楼设备状态。" />;
-  }
-
   return (
     <>
       <SectionHead
         title="洗衣机"
-        aside="捷利 cleverschool · 海乐生活 haier-ioc · 小兰智慧（公开接口）"
+        aside="数据来自三家：捷利 · 海乐生活 · 小兰智慧"
       />
       {gState === "error" ? <ErrorNote text={gError ?? ""} onRetry={() => void loadGroups()} /> : null}
       {gState === "loading" && !groups ? (

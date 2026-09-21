@@ -10,6 +10,7 @@ import { PageAtomStar } from "../components/Collect.js";
 import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
 import { useCalendar, useCampusData } from "../state/data.js";
+import { useScheduleWindow, WINDOW_PRESETS, FULL_DAY, hhmm as hhmmWin } from "../state/scheduleWindow.js";
 import { cacheSet } from "../state/cache.js";
 import { isAuthError, learnUrls } from "@onethu/core";
 import { softRecover } from "../lib/reload.js";
@@ -38,8 +39,14 @@ const BEGIN_MIN = BEGIN_TIME.map(toMin);
 const END_MIN = END_TIME.map(toMin);
 /** 24 小时全轴 */
 const PX_PER_MIN = 0.52;
-const AXIS_BEGIN = 0;
-const AXIS_END = 24 * 60;
+/** 时段下拉选项：起点 00–23、终点 01–24（整点；分钟级留待后续需要再放开） */
+const WIN_FROM_OPTS = Array.from({ length: 24 }, (_, h) => h * 60);
+const WIN_TO_OPTS = Array.from({ length: 24 }, (_, i) => (i + 1) * 60);
+
+/** 显示区间（分钟）：**可被用户设置覆盖**（state/scheduleWindow.ts）。
+ *  默认全天＝保持既有观感；y() 每次调用读当前值，因此所有调用点自动跟随。 */
+let AXIS_BEGIN = 0;
+let AXIS_END = 24 * 60;
 const y = (min: number) => (min - AXIS_BEGIN) * PX_PER_MIN;
 /** "HH:MM" → 距 0:00 分钟（非法/缺省返回 null） */
 const hmToMin = (t?: string): number | null => {
@@ -248,7 +255,7 @@ interface Draft {
 }
 /** 居中弹窗（黑色遮罩）：编辑日程 / 课程详情共用骨架，风格同 TabManageModal */
 const MODAL_MASK = { position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 } as const;
-const MODAL_PANEL = { width: "100%", maxWidth: 440, maxHeight: "84vh", overflowY: "auto", background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" } as const;
+const MODAL_PANEL = { width: "100%", maxWidth: 440, maxHeight: "84vh", overflowY: "auto", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" } as const;
 
 const emptyDraft = (date: string, canCloud: boolean): Draft => ({
   title: "", date, start: "08:00", end: "09:35", allDay: false, location: "", note: "",
@@ -256,6 +263,8 @@ const emptyDraft = (date: string, canCloud: boolean): Draft => ({
 });
 
 export function SchedulePage() {
+  // 展示时段（用户可选；默认全天）。放在最前：下面所有 y()/刻度都依赖它
+  const [win, setWin] = useScheduleWindow();
   const campus = useCampusData();
   const calendar = useCalendar();
   const extHw = useExternalHomework();
@@ -267,6 +276,8 @@ export function SchedulePage() {
     if (getCloudCalConfig()) void syncCloudCal().catch(() => undefined);
   }, []);
 
+  /** 「显示时段」弹层开关 */
+  const [winOpen, setWinOpen] = useState(false);
   /** 视图模式：时间轴（周网格 24h）/ 列表（月历+所选日清单） */
   const [mode, setMode] = useState<"timetable" | "agenda">("timetable");
   /** 日期锚点：任意日期，导航无边界（1970–2099） */
@@ -311,7 +322,7 @@ export function SchedulePage() {
   const winRetryRef = useRef<{ key: string; count: number }>({ key: "", count: 0 });
   const windowKey = `${ymdOf(viewWindow[0])}_${ymdOf(viewWindow[1])}`;
   useEffect(() => {
-    if (mode !== "timetable" || status === "demo") return; // 列表自取月窗；demo 退 campus 数据
+    if (mode !== "timetable") return; // 列表自取月窗
     let alive = true;
     setWinLoading(true);
     setWinError(null);
@@ -470,14 +481,18 @@ export function SchedulePage() {
     return ymdOf(w) === ymdOf(weekStart);
   }, [weekStart]);
   const todayIdx = useMemo(() => (new Date().getDay() + 6) % 7, []);
+  // 展示时段（用户可选，默认全天）：直接改轴区间，所有 y() 调用随之生效
+  AXIS_BEGIN = win.from;
+  AXIS_END = win.to;
   const canvasH = y(AXIS_END) + 12;
 
-  /** 半小时刻度序列（24h） */
+  /** 半小时刻度序列（跟随显示区间；起点对齐到 30 分钟刻度） */
   const halfHours = useMemo(() => {
     const out: number[] = [];
-    for (let m = AXIS_BEGIN; m <= AXIS_END; m += 30) out.push(m);
+    const start = Math.ceil(win.from / 30) * 30;
+    for (let m = start; m <= win.to; m += 30) out.push(m);
     return out;
-  }, []);
+  }, [win.from, win.to]);
 
   /** 24h 轴自动定位：当前时刻（当前周）或 6:30 */
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -485,8 +500,8 @@ export function SchedulePage() {
     const el = scrollRef.current;
     if (!el || mode !== "timetable") return;
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    const target = inCurrentWeek ? Math.max(nowMin - 45, 0) : 6 * 60 + 30;
-    el.scrollTop = Math.max(0, y(target) - 8);
+    const target = inCurrentWeek ? Math.max(nowMin - 45, win.from) : Math.max(6 * 60 + 30, win.from);
+    el.scrollTop = Math.max(0, y(Math.min(target, win.to)) - 8);
   }, [mode, weekStart, inCurrentWeek]);
 
   /* ---------- 筛选器：自绘（无原生日期控件） ---------- */
@@ -544,7 +559,6 @@ export function SchedulePage() {
       setMsg(`同步失败：${err instanceof Error ? err.message : String(err)}`);
     }
   };
-
 
   /** 手动推一次系统日历：原生直写（Android/macOS；自动跟随在设置页开启），否则 .ics 快照导入 */
   const onSystemCal = async (): Promise<void> => {
@@ -724,6 +738,63 @@ export function SchedulePage() {
             {lbl}
           </button>
         ))}
+        {/* 显示时段：24h 全轴会把 17–19 这类空档也铺出来（"整体下移不美观"），
+            但直接砍掉会丢 6:30 升旗 / 晚间自定义日程——所以交给用户自己选，
+            默认全天（既有观感不变）。选择落 localStorage，两端共享。 */}
+        <div style={{ position: "relative" }}>
+          <button className="btn" onClick={() => setWinOpen((v) => !v)} title="选择课表显示的时间段">
+            时段 {hhmmWin(win.from)}–{hhmmWin(win.to)}
+          </button>
+          {winOpen ? (
+            <>
+              <div style={{ position: "fixed", inset: 0, zIndex: 20 }} onClick={() => setWinOpen(false)} />
+              <div
+                style={{
+                  position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 21,
+                  background: "var(--surface, #fff)", color: "var(--text-1, #1f2329)",
+                  border: "1px solid var(--border, #e5e6eb)", borderRadius: 10,
+                  boxShadow: "0 10px 30px rgba(0,0,0,.14)", padding: 10, minWidth: 250,
+                }}
+              >
+                <div style={{ fontSize: 12, color: "var(--text-3, #999)", marginBottom: 6 }}>
+                  显示时段（只影响画布，不改数据；默认全天）
+                </div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 8 }}>
+                  <select
+                    className="input"
+                    aria-label="起始时间"
+                    value={win.from}
+                    onChange={(e) => setWin({ ...win, from: Number(e.target.value) })}
+                  >
+                    {WIN_FROM_OPTS.map((m) => (<option key={m} value={m}>{hhmmWin(m)}</option>))}
+                  </select>
+                  <span style={{ color: "var(--text-3, #999)" }}>–</span>
+                  <select
+                    className="input"
+                    aria-label="结束时间"
+                    value={win.to}
+                    onChange={(e) => setWin({ ...win, to: Number(e.target.value) })}
+                  >
+                    {WIN_TO_OPTS.map((m) => (<option key={m} value={m}>{hhmmWin(m)}</option>))}
+                  </select>
+                </div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {WINDOW_PRESETS.map((p) => (
+                    <button
+                      key={p.label}
+                      className={win.from === p.win.from && win.to === p.win.to ? "btn btn-primary" : "btn"}
+                      style={{ fontSize: 12 }}
+                      onClick={() => setWin(p.win)}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                  <button className="btn" style={{ fontSize: 12 }} onClick={() => setWin(FULL_DAY)}>恢复全天</button>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </div>
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: 12, color: "var(--text-3, #999)" }}>
           {canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置"}
@@ -920,7 +991,7 @@ export function SchedulePage() {
                       {/* 空周提示（网格照常渲染，提示浮于其上不挡交互） */}
                       {entries.length === 0 ? (
                         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none", zIndex: 4 }}>
-                          <span style={{ fontSize: 13, color: "var(--text-3, #999)", background: "var(--bg-elev, #fff)", padding: "6px 14px", borderRadius: 8, boxShadow: "0 1px 4px rgba(0,0,0,.08)" }}>
+                          <span style={{ fontSize: 13, color: "var(--text-3, #999)", background: "var(--surface, #fff)", padding: "6px 14px", borderRadius: 8, boxShadow: "0 1px 4px rgba(0,0,0,.08)" }}>
                             {winLoading ? "正在从教务系统取数…" : "本周暂无排课与日程"}
                           </span>
                         </div>
@@ -990,12 +1061,15 @@ export function SchedulePage() {
                           })()
                         : null}
                       {/* 事件块（可点击） */}
-                      {placed.map((p, i) => {
+                      {placed.filter((p) => p.endMin > AXIS_BEGIN && p.beginMin < AXIS_END).map((p, i) => {
                         const laneW = 100 / p.lanes;
                         const leftPct = ((p.day * 100) + p.lane * laneW) / 7;
                         const widthPct = laneW / 7;
-                        const top = y(p.beginMin) + 2;
-                        const height = Math.max((p.endMin - p.beginMin) * PX_PER_MIN - 5, 24);
+                        // 跨区间的事件按边界裁切（区间外不画，避免负 top 溢出画布）
+                        const drawBegin = Math.max(p.beginMin, AXIS_BEGIN);
+                        const drawEnd = Math.min(p.endMin, AXIS_END);
+                        const top = y(drawBegin) + 2;
+                        const height = Math.max((drawEnd - drawBegin) * PX_PER_MIN - 5, 24);
                         const compact = height < 44;
                         return (
                           <div
@@ -1082,7 +1156,7 @@ export function SchedulePage() {
                             key={i}
                             title="点击查看详情"
                             onClick={() => setDetail({ ...m })}
-                            style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--bg-hover, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline", cursor: "pointer" }}
+                            style={{ fontSize: 12.5, padding: "7px 10px", borderRadius: 8, background: "var(--surface-3, #f4f5f7)", display: "flex", gap: 8, alignItems: "baseline", cursor: "pointer" }}
                           >
                             <span style={{ fontWeight: 600, flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {m.src === "hw" ? `⏰ ${m.courseName}` : m.courseName}
@@ -1105,7 +1179,7 @@ export function SchedulePage() {
                       <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
                         ⏰ {detail.courseName}
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text, #1f2329)" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text-1, #1f2329)" }}>
                         <span style={{ color: "var(--text-3, #999)" }}>课程</span>
                         <span>{detail.location ?? "—"}</span>
                         <span style={{ color: "var(--text-3, #999)" }}>截止</span>
@@ -1132,7 +1206,7 @@ export function SchedulePage() {
                   <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
                     {detail.src === "exam" ? "考试详情" : "课程详情"}
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text, #1f2329)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", rowGap: 8, fontSize: 13, color: "var(--text-1, #1f2329)" }}>
                     <span style={{ color: "var(--text-3, #999)" }}>名称</span>
                     <span style={{ fontWeight: 600 }}>{detail.courseName}</span>
                     <span style={{ color: "var(--text-3, #999)" }}>时间</span>

@@ -239,10 +239,6 @@ export function SportsTab() {
     });
   }, [res]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供体育预约，登录后可预约体育场馆。" />;
-  }
-
   const closed = res !== null && res.init <= 0;
   const phoneOk = PHONE_RE.test(phone.trim());
 

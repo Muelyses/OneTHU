@@ -420,6 +420,13 @@ export interface YktDocBuildOptions {
    * 明暗二元）。缺省 = 历史浅色定稿（DEFAULT_YKT_DOC_THEME），行为与旧版一致。
    */
   theme?: YktDocTheme;
+  /**
+   * 剥行内色器（暗底主题用，上游 1861e4e 同源能力）：暗底时把官方正文写死的
+   * color/bgcolor 剥掉，交给主题档配色。做成**注入式**是为了保持本模块零依赖
+   * （stripInlineColors 在 lib/htmlTheme.ts，走 DOMParser；yktBody 要能被 Node
+   * 直引测试）。不传 = 不剥（亮底无需）。
+   */
+  stripColors?: (html: string) => string;
 }
 
 /** 沙箱文档配色（R20-B3 fix ②）：由组件层读当前主题令牌注入，纯数据便于直测 */
@@ -465,8 +472,45 @@ export function sanitizeDocColor(v: unknown, fallback: string): string {
   return fallback;
 }
 
+/** 底色是否偏暗（纯）：算相对亮度，暗底 → 需要剥官方行内色 + 行内色兜底规则。
+ *  合并纪要：上游 1861e4e 用「明/暗两档」布尔驱动同样的事；本实现按霖口径不假设
+ *  明暗二元（主题可插拔、浅色也可能自定义），故以**解析出的实际底色亮度**判定，
+ *  任何主题下语义一致。解析不出（transparent / 畸形值）→ 视为亮色不剥（保守）。 */
+export function isDarkBgColor(bg: string): boolean {
+  const s = sanitizeDocColor(bg, "");
+  if (!s || s === "transparent") return false;
+  let r = -1;
+  let g = -1;
+  let b = -1;
+  const hex = /^#([0-9a-f]{3,8})$/.exec(s);
+  if (hex) {
+    const h = hex[1] ?? "";
+    const d = (i: number): number =>
+      h.length <= 4
+        ? parseInt(h.charAt(i).repeat(2), 16)
+        : parseInt(h.slice(i * 2, i * 2 + 2), 16);
+    r = d(0);
+    g = d(1);
+    b = d(2);
+  } else {
+    const m = /^(rgba?)\(([^)]*)\)$/.exec(s);
+    if (!m) return false;
+    const parts = m[2]!.split(/[,/\s]+/).filter(Boolean);
+    if (parts.length < 3) return false;
+    const num = (v: string): number =>
+      v.endsWith("%") ? (parseFloat(v) / 100) * 255 : parseFloat(v);
+    r = num(parts[0]!);
+    g = num(parts[1]!);
+    b = num(parts[2]!);
+  }
+  if (![r, g, b].every((v) => Number.isFinite(v) && v >= 0 && v <= 255)) return false;
+  // W3C 相对亮度（sRGB 简化式）：< 0.5 视为暗底
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5;
+}
+
 /** 文档内样式：按主题配色拼装（浅色定稿 = DEFAULT_YKT_DOC_THEME 的输出） */
 export function yktDocCss(t: YktDocTheme = DEFAULT_YKT_DOC_THEME): string {
+  const dark = isDarkBgColor(t.bg);
   return [
     "html,body{margin:0;padding:0}",
     // 底色必须显式给定（不能 transparent 兜底）：Chromium 系对 color-scheme 为
@@ -478,9 +522,13 @@ export function yktDocCss(t: YktDocTheme = DEFAULT_YKT_DOC_THEME): string {
     `table{border-collapse:collapse;max-width:100%}th,td{border:1px solid ${t.border};padding:4px 8px;font-size:12px}`,
     "pre{white-space:pre-wrap;overflow-wrap:anywhere}",
     `a{color:${t.link};text-decoration:underline}`,
+    // 暗底再兜一层（上游 1861e4e 引入）：漏剥的官方/KaTeX 行内色压不过主题配色
+    dark ? "body,body *{color:inherit!important;background-color:transparent!important}" : "",
     // 回退栈必须与 body 同栈（YKT_DOC_FONT_STACK）：字体加载失败/未覆盖的字符 ≈ 普通正文观感
     `.${YKT_ENCRYPTED_FONT_CLASS}{font-family:"${YKT_FONT_FAMILY}",${YKT_DOC_FONT_STACK}}`,
     `.ykt-img-fallback{display:flex;align-items:center;gap:6px;padding:10px 12px;margin:4px 0;border:1px dashed ${t.border};border-radius:6px;color:${t.textSoft};font-size:12px;background:${t.fallbackBg};overflow-wrap:anywhere}`,
+    // 长公式横向滚动（上游 1861e4e 引入），任何主题下都适用
+    ".katex-display{overflow-x:auto;overflow-y:hidden}",
   ].join("");
 }
 
@@ -538,6 +586,9 @@ export const YKT_DOC_SCRIPT_TEMPLATE = [
  *  纯字符串拼装，任何一步失败都只影响该步的降级路径，不抛错。 */
 export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
   let body = sanitizeForInlineDoc(opts.html ?? "");
+  // 暗底主题：先剥掉官方正文里写死的颜色（上游 1861e4e 引入、与 THUbook 同源），
+  // 由主题档样式接管配色——按解析出的底色亮度判定（isDarkBgColor），非明暗二元
+  if (opts.theme && isDarkBgColor(opts.theme.bg) && opts.stripColors) body = opts.stripColors(body);
   const hasEnc = needsEncryptedFont(body);
   let fontFace = "";
   if (hasEnc && opts.fontDataUrl) {

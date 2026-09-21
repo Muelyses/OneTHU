@@ -34,7 +34,7 @@ import { CourseInfoTab } from "./CourseInfoTab.js";
 
 export type InfoTab = "report" | "fitness" | "exams" | "evaluation" | "calendar" | "news" | "profile" | "courseinfo";
 
-const TABS: Array<{ id: InfoTab; label: string }> = [
+export const TABS: Array<{ id: InfoTab; label: string }> = [
   { id: "report", label: "成绩" },
   { id: "fitness", label: "体测成绩" },
   { id: "exams", label: "考试" },

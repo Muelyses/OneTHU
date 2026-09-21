@@ -1074,3 +1074,5 @@ export class InfoHelper {
 }
 
 export {roam, clearOutstandingLogin};
+/** 静默重登（info app 同源）：取用户信息比对 ryh 判活，死则用 helper 上的凭据重登 */
+export {verifyAndReLogin} from "./lib/core";

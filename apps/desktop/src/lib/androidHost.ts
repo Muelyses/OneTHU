@@ -71,3 +71,26 @@ export function pickExtHwOpenChannel(
   if (tauri && isAndroidNavigator(nav)) return "webview";
   return "browser";
 }
+
+/* ---------- R21：文件预览 PDF 渲染通道的纯分流判定 ----------
+ * 背景（2026-09-21「手机 PDF 预览还是不行」的根因）：FilePreview 旧实现用
+ * `/android/i.test(navigator.userAgent)` 判定安卓，但主窗口 UA 被 tauri.conf.json
+ * 伪装成 Windows Chrome/79（webvpn 票绑定，见本文件顶部说明）→ 真机恒 false →
+ * 9-13 做的 pdf.js 内嵌预览在真机上从未执行，一直渲染安卓上空白/被下载的 <embed>。
+ *
+ * 判定规则：
+ *  - 非 Android（桌面 WKWebView / WebView2 / 浏览器）：原生支持内嵌 PDF → "embed"；
+ *  - Android 且 `navigator.pdfViewerEnabled === true`（本 WebView 自带 PDF 渲染器，
+ *    Chromium 96+ 标准信号）：embed 观感最好（缩放/翻页/选中文本）→ "embed"；
+ *  - 其余 Android（无内置渲染器）：pdf.js canvas 自绘 → "canvas"；
+ *    pdf.js 失败时 UI 提供「换内嵌渲染」人工兜底 + 「系统应用打开」，绝不静默。 */
+export type PdfRenderMode = "embed" | "canvas";
+
+export function choosePdfRenderMode(signals: {
+  android: boolean;
+  /** navigator.pdfViewerEnabled；旧内核无此属性时为 undefined */
+  pdfViewerEnabled?: boolean;
+}): PdfRenderMode {
+  if (!signals.android) return "embed";
+  return signals.pdfViewerEnabled === true ? "embed" : "canvas";
+}

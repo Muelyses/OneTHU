@@ -1480,6 +1480,10 @@ export class InfoClient {
    * 安全约定：下单不自动重试；响应（学号/收款链接）不写入任何调试日志。
    */
   async cardRechargeQrcode(amountYuan: number, channel: "alipay" | "wechat"): Promise<string> {
+    // 硬栅栏（2026-09-20）：全渠道最低 10 元。UI 只是第一道；服务端对银行卡圈存
+    // 本就拒 10 元以下（cardpay.inputtxamtgreater10），扫码同理——核心层再拦一次，
+    // 任何调用方（含插件、Harness、未来新 UI）都不可能绕过。
+    if (!(amountYuan >= 10)) throw new Error("充值金额不得低于 10 元");
     return this.#withCardSession(async () => {
       const user = await this.#ensureCardSession();
       const payload =
@@ -1526,6 +1530,10 @@ export class InfoClient {
   /** 银行卡圈存（card.ts cardRechargeFromBank 会话版；txamt 单位为分）。
    *  returncode=ERROR 时 lib 提示：请用其他支付方式，或 6:00~20:40 再试。 */
   async cardRechargeFromBank(amountYuan: number): Promise<void> {
+    // 硬栅栏（2026-09-20）：全渠道最低 10 元。UI 只是第一道；服务端对银行卡圈存
+    // 本就拒 10 元以下（cardpay.inputtxamtgreater10），扫码同理——核心层再拦一次，
+    // 任何调用方（含插件、Harness、未来新 UI）都不可能绕过。
+    if (!(amountYuan >= 10)) throw new Error("充值金额不得低于 10 元");
     await this.#withCardSession(async () => {
       const user = await this.#ensureCardSession();
       const res = await this.#cardFetch<{ returncode?: string }>(urls.CARD_RECHARGE_BANK(), {

@@ -4,9 +4,10 @@ import type { TwoFactorMethod } from "@onethu/core";
 import { isTauri } from "../lib/transport.js";
 import { loadRemembered } from "../lib/clients.js";
 import { useApp } from "../state/context.js";
+import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 
 export function LoginPage() {
-  const { login, enterDemo, status, error } = useApp();
+  const { login, status, error } = useApp();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // 记住密码：默认勾选；已有存档时预填（本机混淆存储，Settings 可清除）
@@ -83,10 +84,13 @@ export function LoginPage() {
 
         <div className="login-foot">
           <span>使用清华大学统一身份认证</span>
-          <button className="btn-ghost btn" onClick={enterDemo}>
-            演示模式
-          </button>
         </div>
+        {DESENSITIZE_BUILD ? (
+          <p className="login-note">
+            脱敏演示版：登录与正式版完全相同，姓名 / 学号替换为化名与编造学号、成绩为编造成绩；
+            课表、教室、洗衣机等非敏感数据仍是真实数据。
+          </p>
+        ) : null}
       </div>
     </div>
   );

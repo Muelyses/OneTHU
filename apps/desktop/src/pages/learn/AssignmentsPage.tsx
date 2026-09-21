@@ -115,7 +115,7 @@ function ExtHwSourceErrorNote() {
       <div className="browser-hint ext-hw-hint">
         <span className="ext-hw-hint-text">
           {rows.map(({ id, name, err }) => (
-            <div key={id} style={{ color: "var(--danger, #c04848)" }}>
+            <div key={id} style={{ color: "var(--red, #c04848)" }}>
               {name}：{err}
             </div>
           ))}

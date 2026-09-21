@@ -14,11 +14,8 @@
  * 只搜本机已见过的数据——搜索框绝不主动轰炸校内服务）。
  */
 import type { ReactNode } from "react";
-import {
-  IconBell, IconCalendar, IconCard, IconCheck, IconExternal, IconFile, IconFlag,
-  IconFolder, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconToday, IconTrace, IconXk,
-  IconCloud,
-} from "../components/Icons.js";
+import { openThosInApp } from "../lib/thosOpen.js";
+import { IconBell, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconThos, IconToday, IconTrace, IconXk } from "../components/Icons.js";
 import {
   AgendaWidget, CardBalanceWidget, HomeworkWidget, RecentNoticesWidget, SubsNewsWidget,
   TodayClassesWidget, TodayOverviewWidget, TodayResvWidget,
@@ -33,6 +30,7 @@ import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
 import { INFO_APPS, infoAppUrl } from "../lib/infoApps.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { recordAtomUse } from "../lib/usage.js";
 import { getMailHead } from "./mail.js";
 import { syncCloudCal, syncHwToCloud } from "./cloudCal.js";
 import { showToast } from "./toast.js";
@@ -96,6 +94,8 @@ export interface AtomDynCache {
   courseXCourses?: Array<{ sem: string; id: string; name: string; teacher?: string }>;
   /** 讨论区板块（BbsPanel 板块列表就绪后写入） */
   bbsBoards?: Array<{ courseId: string; bqid: string; name: string; courseName?: string; sem?: string }>;
+  /** 在线服务目录（ThosPage 就绪后写入；id 为原子 key，url 供打开） */
+  thosServices?: Array<{ id: string; name: string; department?: string; url?: string }>;
   /** 讨论区话题（BbsPanel 列表页就绪后写入；bqid 为所属板块） */
   bbsThreads?: Array<{ courseId: string; bqid: string; id: string; title: string; courseName?: string; sem?: string }>;
 }
@@ -201,6 +201,33 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "reserve-kongjian", title: "公共空间", sub: "预约页 · 宿舍公共空间预约", icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "kongjian" } },
 ];
 
+/**
+ * 页面级使用统计（侧边栏 / 今日入口卡进页面时调用）：把 (page, params) 对回
+ * PAGE_ATOMS 里最贴切的那条页面原子并记一笔——「最近使用」卡要能点回去，
+ * 就必须落成原子（页面 id 本身不是原子）。
+ * 匹配优先级：page 相同且参数子集完全命中 > page 相同。params 里的 tab 类字段
+ * 也参与比较，故「生活页 → 洗衣机」和「生活页 → 宿舍」分得清。
+ */
+export function recordPageAtomUse(page: Page, params?: LearnNav | null): void {
+  const same = PAGE_ATOMS.filter((a) => a.page === page);
+  if (same.length === 0) return;
+  const keys = Object.keys(params ?? {}) as Array<keyof LearnNav>;
+  let best: (typeof same)[number] | null = null;
+  let bestScore = -1;
+  for (const a of same) {
+    const ap = (a.params ?? {}) as LearnNav;
+    let score = 0;
+    for (const k of keys) if (ap[k] !== undefined && ap[k] === (params as LearnNav)[k]) score += 2;
+    if (a.params && Object.keys(a.params).length === 0) score += 0.5;
+    if (score > bestScore) {
+      bestScore = score;
+      best = a;
+    }
+  }
+  if (!best) return;
+  recordAtomUse({ kind: "page", key: best.key }, { title: best.title, sub: best.sub, group: best.group });
+}
+
 /** 页头星标用：key 命中 PAGE_ATOMS 才返回引用（防手写 key 漂移出野原子） */
 export function pageAtomRef(key: string): AtomRef | null {
   return PAGE_ATOMS.some((a) => a.key === key) ? { kind: "page", key } : null;
@@ -234,8 +261,21 @@ export const WIDGET_ATOMS: WidgetAtom[] = [
 
 /* ══════════ 实体原子工厂 ══════════ */
 
+/**
+ * 原子视图工厂：**所有**解析出来的原子都在这里统一包一层「使用记录」（今日页
+ * 「最近使用 / 猜你喜欢」的数据源）。放这儿是因为收藏夹点击、OH（nav.openAtom）、
+ * 桌面小组件、搜索弹层最终都走 view.open —— 一处包好，全链路都记上。
+ * 与收藏无关：统计只写本机 localStorage，绝不自动改动用户的收藏夹。
+ */
 function view(partial: Omit<AtomView, "atom"> & { atom: AtomRef }): AtomView {
-  return partial;
+  const inner = partial.open;
+  return {
+    ...partial,
+    open: (nav) => {
+      recordAtomUse(partial.atom, { title: partial.title, sub: partial.sub, group: partial.group });
+      inner(nav);
+    },
+  };
 }
 
 /** 解析原子：注册表未知的 kind/key 返回 null（渲染处直接丢弃） */
@@ -299,6 +339,21 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
       atom: ref, title: w.title, sub: w.sub, icon: w.icon, group: w.group,
       widget: w.body,
       open: (nav) => nav(w.page, w.params ? { ...w.params } : undefined),
+    });
+  }
+  if (kind === "thos-service") {
+    const [id, name, department] = dec(key);
+    if (!id) return null;
+    return view({
+      atom: ref,
+      title: name || "在线服务",
+      sub: department ? "在线服务 · " + department : "在线服务",
+      icon: IconThos,
+      group: "在线服务",
+      open: () => {
+        const svc = (dyn.thosServices ?? []).find((x) => x.id === id);
+        if (svc?.url) void openThosInApp(svc.url);
+      },
     });
   }
   if (kind === "course") {
@@ -577,6 +632,8 @@ export function searchAtoms(query: string, limit = 24): AtomHit[] {
   for (const b of dyn.bbsBoards ?? []) if (match(b.name, b.courseName)) push(hit({ atom: { kind: "bbs-board", key: enc(b.courseId, b.bqid, b.name, b.courseName ?? "", b.sem ?? "") }, title: b.name, sub: (b.courseName ? b.courseName + " · " : "") + "讨论区板块", icon: IconLearn, group: "网络学堂" }));
   for (const t of dyn.bbsThreads ?? []) if (match(t.title, t.courseName)) push(hit({ atom: { kind: "forum", key: enc(t.courseId, t.id, t.bqid, t.title, t.courseName ?? "", t.sem ?? "") }, title: t.title, sub: (t.courseName ? t.courseName + " · " : "") + "讨论区话题", icon: IconLearn, group: "网络学堂" }));
   for (const a of INFO_APPS) if (match(a.name, a.cat)) push(hit({ atom: { kind: "infoapp", key: enc(a.cat, a.name, a.id) }, title: a.name, sub: a.cat + " · Info 应用", icon: IconExternal, group: "Info 应用" }));
+  // 在线服务目录（ThosPage 打开过一次即入缓存）——OH「一句话打开亲友来访」即命中这里
+  for (const s of dyn.thosServices ?? []) if (match(s.name, s.department)) push(hit({ atom: { kind: "thos-service", key: enc(s.id, s.name, s.department ?? "") }, title: s.name, sub: (s.department ? s.department + " · " : "") + "在线服务", icon: IconThos, group: "在线服务" }));
   // 收藏夹跳转原子（全部夹：根 + 子，标题命中即出）
   for (const f of Object.values(loadFavs().folders)) if (match(f.title)) push(hit({ atom: { kind: "folder", key: f.id }, title: f.title, sub: "收藏夹 · 点击直达", icon: IconFolder, group: "我的收藏夹" }));
 

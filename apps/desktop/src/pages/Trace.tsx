@@ -9,9 +9,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import L from "leaflet";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentPosition, requestPermissions } from "@tauri-apps/plugin-geolocation";
+import { checkPermissions, getCurrentPosition, requestPermissions } from "@tauri-apps/plugin-geolocation";
 import "leaflet/dist/leaflet.css";
 import { caldav, type ScheduleEntry } from "@onethu/core";
+import { isAndroidNavigator } from "../lib/androidHost.js";
 import { useApp } from "../state/context.js";
 import { useCampusData } from "../state/data.js";
 import { useCloudCal } from "../state/cloudCal.js";
@@ -90,6 +91,10 @@ export function TracePage(): React.ReactNode {
   const [mode, setMode] = useState<TravelMode>(() => (localStorage.getItem(LS_MODE) as TravelMode) ?? "walk");
   const [mapApp, setMapApp] = useState<MapApp>(() => (localStorage.getItem(LS_APP) as MapApp) ?? "amap");
   const [origin, setOrigin] = useState<{ lng: number; lat: number; source: "gps" | "saved" | "default" } | null>(null);
+  /** 定位权限结论：denied=系统已拒绝（不会再弹窗，需去系统设置手动开）——
+   *  此前静默回落清华园中心，用户只看到"定位不准"却不知原因（群反馈 2026-09-20：
+   *  HyperOS/ColorOS 上「根本没弹窗也没索要」）。 */
+  const [geoDenied, setGeoDenied] = useState(false);
   const [markers, setMarkers] = useState<MarkerData[] | null>(null);
   const [unresolved, setUnresolved] = useState<string[]>([]);   // 检索不到/无地点的原始地点串
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -140,13 +145,29 @@ export function TracePage(): React.ReactNode {
       try {
         // Android/iOS：getCurrentPosition 本身不请求运行时权限——必须先
         // requestPermissions 触发系统弹窗，否则永远静默失败（真机实锤）
+        // R21：Android 信号必须走多信号判定（真机 UA 被伪装成 Windows）
         const isMobile =
-          typeof navigator !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent);
+          isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined) ||
+          (typeof navigator !== "undefined" && /iPhone|iPad/i.test(navigator.userAgent));
         if (isMobile) {
-          await Promise.race([
-            requestPermissions(['location']),
-            new Promise<null>((resolve) => window.setTimeout(() => resolve(null), 12_000)),
-          ]).catch(() => undefined);
+          // 先查现状：已授权就不用再弹；已拒绝（尤其"拒绝且不再询问"）→ 直接给出
+          // 去系统设置的引导，别让用户对着"定位不准"猜
+          let granted = false;
+          try {
+            const cur = await checkPermissions();
+            granted = cur.location === "granted";
+          } catch { /* 插件不可用 */ }
+          if (!granted) {
+            try {
+              const after = await Promise.race([
+                requestPermissions(["location"]),
+                new Promise<null>((resolve) => window.setTimeout(() => resolve(null), 12_000)),
+              ]);
+              granted = (after as { location?: string } | null)?.location === "granted";
+            } catch { /* 拒绝 */ }
+          }
+          if (!granted) setGeoDenied(true);
+          else setGeoDenied(false);
         }
         const p = await Promise.race([
           getCurrentPosition({ enableHighAccuracy: true, timeout: 9000, maximumAge: 5 * 60_000 }),
@@ -445,6 +466,15 @@ export function TracePage(): React.ReactNode {
         </div>
       ) : null}
       {err ? <div className="trace-note trace-note-err">{err}</div> : null}
+      {geoDenied ? (
+        <div className="trace-note">
+          系统未授予定位权限（可能已被拒绝两次，Android 不会再弹窗）。已改用清华园中心计算 ETA。
+          <button className="btn trace-retry" onClick={() => void locate()}>再次请求</button>
+          <button className="btn trace-retry" onClick={() => void import("@tauri-apps/api/core").then((m) => m.invoke("open_app_settings").catch(() => undefined))}>
+            去系统设置
+          </button>
+        </div>
+      ) : null}
       {origin?.source === "default" ? (
         <div className="trace-note">未获取到定位（已回退清华园中心），ETA 以此计算。
           <button className="btn trace-retry" onClick={() => void locate()}>重试定位</button>

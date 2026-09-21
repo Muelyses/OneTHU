@@ -87,6 +87,9 @@ export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: st
 export interface PluginSettingField {
   key: string;
   label: string;
+  /** 自动维护字段（宿主/插件自己写入，如 MadModel token）：设置面板只读展示，
+   *  且保存时**不**用面板草稿覆盖——否则打开面板后泵刚签发的值会被草稿清空 */
+  auto?: boolean;
   type?: "text" | "password" | "textarea" | "select";
   /** select 类型的选项集 */
   options?: Array<{ value: string; label: string }>;
@@ -172,7 +175,7 @@ export interface PluginContext {
 
 export interface OnethuApi {
   session: {
-    /** "booting"|"connecting"|"2fa"|"logged-out"|"ready"|"demo" */
+    /** "booting"|"connecting"|"2fa"|"logged-out"|"ready" */
     status(): string;
     /** 当前登录名（学号/用户名；未登录 null） */
     username(): string | null;
@@ -339,6 +342,23 @@ export interface OnethuApi {
   nav: {
     /** 应用内跳转（page 见接口指南「页面路由」；params 如 { reserveTab: "room" }） */
     go(page: string, params?: Record<string, unknown>): void;
+    /** 按关键词检索全应用可跳转原子（功能页面 / 今日组件 / 本机已见过的课程·作业·通知·
+     *  在线服务等）。只查静态注册表 + 本机缓存，**绝不发起校园请求**；
+     *  与 nav.openAtom 配对即「一句话直达」。需 nav 权限 */
+    searchAtoms(query: string, limit?: number): Promise<Array<{ kind: string; key: string; title: string; sub?: string; group: string }>>;
+    /** 打开一个原子（等价用户点收藏夹里的那一项：跳功能页 / 切聚合页页签 / 开服务页）。
+     *  该原子未注册或已失效时返回 false——**不会跳空白页**，调用方据此回话。需 nav 权限 */
+    openAtom(ref: { kind: string; key: string }): Promise<boolean>;
+    /** 本机使用统计（只含「点过什么」，不含任何校园数据）：总次数、种类数、
+     *  使用最多的若干项（带 kind/key，可直接交给 nav.openAtom 打开）。需 nav 权限 */
+    usage(limit?: number): Promise<{
+      total: number;
+      kinds: number;
+      top: Array<{ kind: string; key: string; title: string; group: string; n: number; last: number }>;
+      recent: Array<{ kind: string; key: string; title: string; n: number; last: number }>;
+    }>;
+    /** 清空本机使用统计（用户主动要求「别再记了」时用）。需 nav 权限 */
+    clearUsage(): Promise<void>;
   };
   ui: {
     toast(text: string): void;
@@ -375,6 +395,18 @@ export interface OnethuApi {
     addAtom(ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void;
     /** 列出全部可收藏的插件原子种类 */
     kinds(): Array<{ kind: string; group: string; source: "registered" | "static" }>;
+  };
+  /** 在线服务（服务大厅）目录：本机缓存检索不到时的兜底通道。需 info:read */
+  services: {
+    /** 按名字检索服务目录（**会发起校园请求**：先校验会话再取目录，仅在没有本地缓存时才该调用）。
+     *  匹配容忍口语简称（「亲友预约」能命中「亲友来访预约」，甚至「亲友入校报备」这类
+     *  换了后半截的名字也会以低分进候选），最多 limit 条（缺省 10、上限 50）。
+     *  `score` 见 lib/serviceMatch.ts：≥40 = 有把握可直达，20~39 = 只作候选，务必先向用户确认。
+     *  结果同时写入本机原子缓存，之后 nav.searchAtoms / nav.openAtom 即可离线命中 */
+    search(query: string, limit?: number): Promise<Array<{ id: string; name: string; department?: string; url: string; score: number }>>;
+    /** 在应用内打开某个服务官方页（桌面独立窗口 / Android 全屏 WebView，共享同一登录态）。
+     *  url 必须来自 search 结果；打不开（无 url / 宿主不支持）返回 false */
+    open(service: { id?: string; name?: string; url?: string }): Promise<boolean>;
   };
   /** 系统通知（三端）：插件自定内容与时刻；通知 id 归插件所有，宿主重排不会撤它 */
   notify: {

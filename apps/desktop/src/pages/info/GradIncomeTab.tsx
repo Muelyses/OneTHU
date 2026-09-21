@@ -59,10 +59,6 @@ export function GradIncomeTab() {
     void load();
   }, [load]);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供研究生收入数据，登录后可查看发放记录。" />;
-  }
-
   const total = (rows ?? []).reduce((s, r) => s + (r.afterTax ?? 0), 0);
 
   return (

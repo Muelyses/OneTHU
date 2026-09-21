@@ -53,7 +53,7 @@ export interface ThemeSnapshot {
   systemDark: boolean;
 }
 
-/* ---------- 内置主题（令牌覆盖演示五种气质；全部可删） ---------- */
+/* ---------- 内置主题（令牌覆盖五种气质；全部可删） ---------- */
 
 const BUILTIN_THEMES: ThemeDef[] = [
   {
@@ -502,4 +502,16 @@ export function themeSchedule(): { followSystem: boolean; dayThemeId: string | n
 /** 插件侧查询：某主题 id 是否已在架上（供 loader 提示覆盖安装） */
 export function hasTheme(id: string): boolean {
   return state.installed.some((t) => t.id === id);
+}
+
+/** 当前是否深色主题（内嵌 WebView 据此开启算法暗化：官方页自带黑字在深色下会隐形）。
+ *  以 documentElement 的 color-scheme 为唯一真源——它是 applyTheme 写下去的同一信号。 */
+export function currentThemeIsDark(): boolean {
+  try {
+    const root = document.documentElement;
+    if (root.style.colorScheme === "dark") return true;
+    return typeof getComputedStyle === "function" && getComputedStyle(root).colorScheme === "dark";
+  } catch {
+    return false;
+  }
 }

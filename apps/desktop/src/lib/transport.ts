@@ -176,6 +176,9 @@ export async function nativeFetch(
       h !== "oauth.tsinghua.edu.cn" &&
       h !== "learn.tsinghua.edu.cn" &&
       h !== "mails.tsinghua.edu.cn" &&
+      // MadModel 免费档（2026-09-20）：校园网内直连签发 token，webvpn 包装没有意义
+      // 且会掩盖失败原因（泵里 direct:true 在应用层这层包装里此前未生效）。
+      h !== "madmodel.cs.tsinghua.edu.cn" &&
       !url.startsWith("https://webvpn.tsinghua.edu.cn/")
     ) {
       wireUrl = webvpnWrap(url);
@@ -330,7 +333,7 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
   // lib 的 webvpnRequest maxHops 25（10 曾在链中段打爆：重定向次数超限）
   const maxHops = 25;
 
-  // 逐跳 cookie 记忆（demo webvpnRequest 的做法）：302 中间跳下发的会话 Cookie 绝不能丢。
+  // 逐跳 cookie 记忆（webvpn POC 的 webvpnRequest 做法）：302 中间跳下发的会话 Cookie 绝不能丢。
   // 三层优先级：初始头(seed) < 本跳真实域会话(provider) < 链内新发(chain)。
   const seedCookies = new Map<string, string>();
   const chainCookies = new Map<string, string>();
@@ -352,7 +355,7 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
   let chainEverVpn = url.startsWith("https://webvpn.tsinghua.edu.cn/");
   for (let hop = 0; hop <= maxHops; hop++) {
     // 本跳真实域的会话 cookie：包装 URL 解码出原始域（如 wrapped id 跳需要 id 桶
-    // 的 JSESSIONID，否则 CAS 看不到 SSO 会话、链条断在登录页——demo 扁平 jar 天然带上）
+    // 的 JSESSIONID，否则 CAS 看不到 SSO 会话、链条断在登录页——POC 的扁平 jar 天然带上）
     const pairs = new Map<string, string>(seedCookies);
     const extra = hopCookieProvider?.(currentUrl);
     if (extra) {
@@ -410,7 +413,7 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
         // 舞步检测（2026-09-13 蜂窝实录）：webvpn 会话死时，各包装请求各自被 302
         // 进 webvpn 登录舞 → N 条并行舞各自落地新 wengine 票据互烧 → 会话永远半死
         // （每 2s 一轮 XK-DANCE、恢复成功 43s 又死）。停跳打标交上层单飞重建；
-        // 合法舞者（demoLogin）走 manual 逐跳不受影响。
+        // 合法舞者（登录链）走 manual 逐跳不受影响。
         // lib 登录链例外（2026-09-16 真机实录）：oauth 兑付落点
         // /login?oauth_login=true&code=… 是登录流程本身的最后一跳（服务端兑付
         // code 后再 302 到门户落地页）——误判成死舞步会把登录链掐死在半空
@@ -509,7 +512,7 @@ export function explainNetworkError(err: unknown): string {
     return `${raw}：服务端拒绝了这次请求（登录态过期或该文件无权限）`;
   }
   if (!isTauri && /fetch|network|Failed to fetch/i.test(raw)) {
-    return "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev，或先用演示模式。";
+    return "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev。";
   }
   if (/网络错误|timed? ?out|timeout/i.test(raw)) {
     return "网络超时：请确认校园网 / WebVPN 可达。";

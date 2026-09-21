@@ -50,7 +50,6 @@ function EmailBindHint({ text }: { text: string }) {
   );
 }
 
-
 function logErr(tag: string, err: unknown): void {
   void logLine(
     "PAGE-ERR " + tag + " " + (err instanceof Error ? err.message : String(err)),
@@ -620,10 +619,6 @@ export function LibRoomTab({
       setPendingCancel(null);
     }
   };
-
-  if (status === "demo") {
-    return <Empty text="演示模式不提供研讨间数据，登录后可查询与预约。" />;
-  }
 
   const canSubmit =
     target !== null && beg !== "" && end !== "" && !busy && target.res.minUser <= 1;

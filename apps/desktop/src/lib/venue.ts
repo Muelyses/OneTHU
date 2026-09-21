@@ -43,6 +43,34 @@ export function venueHasToken(): boolean {
   return readStoredToken() !== null;
 }
 
+/** 当前体育系统登录票（未过期才返回；仅供「应用内官方页共享登录态」使用） */
+export function getVenueToken(): string | null {
+  return readStoredToken();
+}
+
+/**
+ * 应用内打开体育系统官方页（桌面独立窗口 / Android 全屏 WebView），**共享同一登录态**：
+ * 桌面把 JWT 经 initialization_script 注入官方 origin 的 localStorage，Android 走
+ * Kotlin 注入同款脚本——与在线服务同一套经验（复用凭据 + 同 UA），用户不必再去
+ * 系统浏览器重登一遍。返回 false 表示当前环境做不到（调用方回落系统浏览器）。
+ * 预约动作仍由用户在官方页面手动完成（体育部公告第 12 条）。
+ */
+export async function openVenueInApp(url: string, dark: boolean): Promise<boolean> {
+  const token = getVenueToken();
+  if (!isTauri || !token) {
+    void logLine("[VENUE-PORTAL] 无可复用登录态或非桌面宿主 → 回落系统浏览器");
+    return false;
+  }
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("venue_open_portal", { token, url, dark });
+    return true;
+  } catch (err) {
+    void logLine("[VENUE-PORTAL] 应用内打开失败 " + String(err));
+    return false;
+  }
+}
+
 export function setVenueToken(token: string | null): void {
   try {
     if (token) globalThis.localStorage?.setItem(TOKEN_KEY, token);

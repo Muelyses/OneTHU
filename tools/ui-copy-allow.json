@@ -1,0 +1,60 @@
+{
+  "apps/desktop/src/pages/Plugins.tsx": [
+    {
+      "text": "Rust 核心已编进 App",
+      "why": "插件形态说明：面向会装 sidecar 插件的用户，必须点明核心已内置"
+    },
+    {
+      "text": "参数（空格分隔",
+      "why": "插件作者向：sidecar 启动参数"
+    },
+    {
+      "text": "环境变量（KEY=VALUE",
+      "why": "插件作者向：sidecar 环境变量"
+    },
+    {
+      "text": "浏览器预览装不了 Rust 插件",
+      "why": "只在浏览器预览（开发者场景）出现，文案必须给出 pnpm 命令"
+    },
+    {
+      "text": "选择插件压缩包（manifest.json",
+      "why": "插件作者向：安装包结构"
+    },
+    {
+      "text": "压缩包不是 rust 插件",
+      "why": "插件作者向：kind 校验报错"
+    },
+    {
+      "text": "选择插件文件夹内的 manifest.json",
+      "why": "插件作者向：从文件夹安装"
+    },
+    {
+      "text": "manifest.json 缺 id/name",
+      "why": "插件作者向：清单校验报错"
+    },
+    {
+      "text": "manifest.kind 须为 rust",
+      "why": "插件作者向：清单校验报错"
+    },
+    {
+      "text": "Rust 骨干插件",
+      "why": "插件类型标签（内置 Rust 骨干），信息价值高于术语洁癖"
+    },
+    {
+      "text": "选择 manifest.json（系统文件对话框）",
+      "why": "插件作者向：从文件夹安装"
+    },
+    {
+      "text": "二进制须与 manifest.json 同目录",
+      "why": "插件作者向：sidecar 目录约定"
+    },
+    {
+      "text": "user/repo 或 https://github.com/user/repo",
+      "why": "插件作者向：仓库地址格式"
+    },
+    {
+      "text": "从仓库根目录拉取 plugin.js",
+      "why": "插件作者向：仓库安装约定"
+    }
+  ]
+}

@@ -23,9 +23,11 @@ import android.content.Intent
 import android.provider.Settings
 import android.provider.DocumentsContract
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.Gravity
@@ -36,6 +38,7 @@ import androidx.activity.result.ActivityResult
 import app.tauri.annotation.ActivityCallback
 import android.webkit.CookieManager
 import android.webkit.WebView
+import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import app.tauri.annotation.Command
@@ -63,11 +66,31 @@ class OpenIntentArgs {
 }
 
 @InvokeArg
+class ReadCookiesArgs {
+    lateinit var url: String
+}
+
+class SeedCookiesArgs {
+    /** 目标 origin（如 https://webvpn.tsinghua.edu.cn/） */
+    lateinit var url: String
+    /** "k=v; k2=v2" 原文（仅在内存传递，绝不落盘/打印内容） */
+    lateinit var cookie: String
+}
+
 class OpenWebModalArgs {
     lateinit var url: String
     /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
+    /** 应用当前是否深色主题（2026-09-20）：true 时对 WebView 开启「算法暗化」——
+     *  官方页（THUbook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
+    var dark: Boolean = false
+    /** Cookie 归属域（如 https://webvpn.tsinghua.edu.cn/）。空 = 用 url 的 origin。
+     *  2026-09-20：此前硬编码成 pro.yuketang.cn，非雨课堂的官方页（在线服务/THOS）种不进去。 */
+    var cookieUrl: String = ""
+    /** 可选的「登录态注入脚本」（体育系统官方预约页用）：官方 SPA 开机读
+     *  localStorage["token"]，故须在页面脚本之前写入。仅内存传递，绝不打印/落盘。 */
+    var injectJs: String = ""
 }
 
 /** 小组件快照（JSON 字符串，结构见 OnethuWidget.kt 顶部注释）：
@@ -101,6 +124,70 @@ class NotifyPermissionArgs {
 class NotifyCancelArgs {
     lateinit var ids: String
 }
+
+/**
+ * 深色主题下把官方页「正文黑字」涂白（2026-09-20）。
+ *
+ * 为什么不用 WebView 自带的算法暗化：`WebSettings.setForceDark` 在 targetSdk ≥ 33 时
+ * **被系统忽略**（本应用 targetSdk 36），而替代 API（WebSettingsCompat
+ * .setAlgorithmicDarkeningAllowed）需要 androidx.webkit —— 插件模块没有该依赖。
+ * 直接改 CSSOM 则不受页面 CSP 的 style-src 限制（<style> 注入会被拦），
+ * 且每次 onPageFinished 重跑，站内翻页也不会失效。
+ */
+/**
+ * 体育系统官方预约页的登录态注入骨架（2026-09-20，与 Rust `venue_seed_js` 同语义）：
+ * 官方 SPA 开机读 localStorage["token"]/["headers"]，故在 onPageStarted 与
+ * onPageFinished 各注入一次，并在首次加载完成后重载一次——保证第二遍启动时
+ * localStorage 里已经有票（首次注入若晚于 SPA 启动，页面会先弹登录）。
+ * 脚本由 Rust 侧拼好（JWT 在 invoke 参数里传入），此处只做执行，不落任何日志。
+ */
+private fun runInjectJs(web: WebView, js: String) {
+    if (js.isBlank()) return
+    try {
+        web.evaluateJavascript(js, null)
+    } catch (_: Throwable) {
+        /* 注入失败不致命：页面会自行要求登录 */
+    }
+}
+
+private const val DARK_INJECT_JS = """
+(function(){
+  if (window.__othDark) { window.__othPaint && window.__othPaint(); return; }
+  window.__othDark = 1;
+  var INK = '#E9E9E9', LINK = '#7AA2F7', PALE = 0.55;
+  function lum(c){
+    var m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(c || '');
+    if (!m) return null;
+    return (0.299 * m[1] + 0.587 * m[2] + 0.114 * m[3]) / 255;
+  }
+  function paint(){
+    var de = document.documentElement, b = document.body;
+    de.style.setProperty('background-color', '#111315', 'important');
+    if (b) b.style.setProperty('background-color', '#111315', 'important');
+    var els = (b || de).querySelectorAll('*');
+    for (var i = 0; i < els.length; i++){
+      var el = els[i], t = el.tagName;
+      if (t === 'IMG' || t === 'VIDEO' || t === 'CANVAS' || t === 'IFRAME' || t === 'SVG' || t === 'PATH') continue;
+      try {
+        var cs = getComputedStyle(el);
+        var l = lum(cs.color);
+        if (l !== null && l < PALE) el.style.setProperty('color', (t === 'A' ? LINK : INK), 'important');
+        var bg = lum(cs.backgroundColor);
+        if (bg !== null && bg > PALE) el.style.setProperty('background-color', 'transparent', 'important');
+      } catch (e) {}
+    }
+  }
+  window.__othPaint = paint;
+  paint();
+  document.addEventListener('DOMContentLoaded', paint);
+  setTimeout(paint, 600); setTimeout(paint, 2000); setTimeout(paint, 5000);
+  try {
+    var t = null;
+    new MutationObserver(function(){ if (t) return; t = setTimeout(function(){ t = null; paint(); }, 300); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+})()
+"""
 
 @TauriPlugin(
     permissions = [
@@ -387,9 +474,10 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 web.webViewClient = WebViewClient()
 
                 // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显
+                val chromeBg = Color.WHITE
                 val root = LinearLayout(activity).apply {
                     orientation = LinearLayout.VERTICAL
-                    setBackgroundColor(Color.WHITE)
+                    setBackgroundColor(chromeBg)
                 }
                 root.addView(
                     web,
@@ -476,9 +564,69 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
             "Chrome/79.0.3945.88 Safari/537.36"
 
+    /**
+     * 打开本应用的系统设置页（2026-09-20）。
+     *
+     * 用途：定位等运行时权限被用户拒绝两次后，Android 不再弹窗，requestPermissions 静默
+     * 返回 denied——此时唯一出路是让用户去系统设置里手动打开。部分 ROM（HyperOS/ColorOS）
+     * 首次请求就可能被静默拒绝，所以这个入口必须有。
+     */
+    @Command
+    fun openAppSettings(invoke: Invoke) {
+        activity.runOnUiThread {
+            try {
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", activity.packageName, null),
+                )
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+                invoke.resolve()
+            } catch (e: Throwable) {
+                invoke.reject("打开系统设置失败: ${e.message}")
+            }
+        }
+    }
+
+    /**
+     * 把 Rust 侧会话票种进 WebView 的 CookieManager（2026-09-20）。
+     *
+     * 为什么必须走这里：info app 的官方页之所以永不二次验证，是因为 RN 的网络层与 WebView
+     * **共用同一个 Android CookieManager**。Tauri 侧 Rust(reqwest) 自带 jar，WebView 拿不到，
+     * 于是我们早先试过 JNI 反射调 CookieManagerAdapter.setCookie——华为新版 WebView glue 的
+     * 签名变了，直接 NoSuchMethodError，只能退化成 JS 在目标 origin 写 document.cookie
+     * （要求恰好落在同源文档、还会被站点自己的 Set-Cookie 覆盖）→ 表现就是「每次打开都要重新验证」。
+     *
+     * 这里直接用 android.webkit.CookieManager（**非反射**，与 RN 同一条 API），种完 flush，
+     * WebView 之后再导航就天然带会话；种进去的是持久 Cookie，后续打开也在。
+     */
+    @Command
+    fun seedWebViewCookies(invoke: Invoke) {
+        val args = invoke.parseArgs(SeedCookiesArgs::class.java)
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.setAcceptCookie(true)
+                var n = 0
+                for (pair in args.cookie.split("; ")) {
+                    if (!pair.contains("=")) continue
+                    cm.setCookie(args.url, "$pair; Path=/; Secure")
+                    n++
+                }
+                cm.flush()
+                invoke.resolve()
+                Log.i("onethu", "[COOKIE-SEED] $n 条 → ${args.url}")
+            } catch (e: Throwable) {
+                invoke.reject("种会话 Cookie 失败: ${e.message}")
+            }
+        }
+    }
+
     /** 全屏 Dialog WebView 打开任意 http(s) 页面（桌面模式 + 可缩放）。
      *  回传 {}：用户点「关闭」或按返回键即销毁，无任何数据回读。 */
     @Command
+
+
     fun openWebModal(invoke: Invoke) {
         val args = invoke.parseArgs(OpenWebModalArgs::class.java)
         // scheme 白名单：非 http(s) 一律拒绝（Rust 侧已校验一次，这里兜底）
@@ -503,13 +651,53 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 web.settings.setSupportZoom(true)
                 web.settings.builtInZoomControls = true
                 web.settings.displayZoomControls = false
-                // 只读浏览：不设 JavascriptInterface、不注入初始化脚本
-                web.webViewClient = WebViewClient()
+                // 深色主题（2026-09-20）：官方页自带配色不跟随应用主题，深色下正文是黑字。
+                // 走 WebView 的「算法暗化」（AndroidX WebKit 官方推荐）把整页转深色、
+                // 正文转白；旧 WebView 退回 FORCE_DARK_ON 分支。
+                if (args.dark) {
+                    web.setBackgroundColor(Color.parseColor("#111315"))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        try {
+                            // 平台算法暗化：整页转深色、正文转白。不用 androidx.webkit
+                            // 的 WebSettingsCompat —— 插件模块没有该依赖（会 Unresolved
+                            // reference）。API 29+ 覆盖全部目标机型（用户机 Android 12+）。
+                            @Suppress("DEPRECATION")
+                            web.settings.forceDark = WebSettings.FORCE_DARK_ON
+                        } catch (_: Throwable) {
+                            /* 个别内核禁用该开关：至少背景已是深色 */
+                        }
+                    }
+                }
+                // 只读浏览：不设 JavascriptInterface；深色时在每次页面加载完成注入涂白脚本。
+                // 体育系统预约页额外注入登录态（injectJs）：先于页面脚本写一次，加载完成
+                // 后再写一次并重载一遍，确保 SPA 启动时就已有票（否则先弹登录页）。
+                val needInject = args.injectJs.isNotBlank()
+                var reinjected = false
+                web.webViewClient = object : WebViewClient() {
+                    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                        super.onPageStarted(view, url, favicon)
+                        if (needInject) runInjectJs(view ?: return, args.injectJs)
+                    }
+
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        if (args.dark) view?.evaluateJavascript(DARK_INJECT_JS, null)
+                        if (needInject && !reinjected) {
+                            reinjected = true
+                            runInjectJs(view ?: return, args.injectJs)
+                            // 同源才回灌重载（跨域跳转到登录门户时不重载，避免打转）
+                            val host = try { java.net.URI(args.url).host } catch (e: Throwable) { null }
+                            val now = try { java.net.URI(url ?: "") .host } catch (e: Throwable) { null }
+                            if (host != null && host == now) view?.loadUrl(args.url)
+                        }
+                    }
+                }
 
                 // 竖向布局：WebView weight=1 铺满剩余空间，底部按钮条固定常显（R18b 同款）
+                val chromeBg = if (args.dark) Color.parseColor("#111315") else Color.WHITE
                 val root = LinearLayout(activity).apply {
                     orientation = LinearLayout.VERTICAL
-                    setBackgroundColor(Color.WHITE)
+                    setBackgroundColor(chromeBg)
                 }
                 root.addView(
                     web,
@@ -519,7 +707,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
                     setPadding(24, 16, 24, 16)
-                    setBackgroundColor(Color.WHITE)
+                    setBackgroundColor(chromeBg)
                 }
                 val browserBtn = Button(activity).apply {
                     text = "在系统浏览器打开"
@@ -528,8 +716,8 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 }
                 val closeBtn = Button(activity).apply {
                     text = "关闭"
-                    setTextColor(Color.parseColor("#1F2329"))
-                    setBackgroundColor(Color.parseColor("#E5E5E5"))
+                    setTextColor(if (args.dark) Color.parseColor("#E8E8E8") else Color.parseColor("#1F2329"))
+                    setBackgroundColor(if (args.dark) Color.parseColor("#2A2D31") else Color.parseColor("#E5E5E5"))
                 }
                 val browserLp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 browserLp.marginEnd = 16
@@ -577,10 +765,19 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 // 写入 CookieManager（含 HttpOnly 由系统存储），**绝不打印 Cookie 值**；
                 // 空串 = 不注入，R20-A 只读浏览行为不变。注入在 loadUrl 之前同步完成。
                 if (args.cookie.isNotBlank()) {
+                    // 归属域：优先 cookieUrl；否则取 target url 的 origin（不再写死雨课堂）
+                    val seedUrl = args.cookieUrl.ifBlank {
+                        try {
+                            val u = java.net.URI(args.url)
+                            "${u.scheme}://${u.host}/"
+                        } catch (e: Throwable) {
+                            args.url
+                        }
+                    }
                     for (pair in args.cookie.split(";")) {
                         val p = pair.trim()
                         if (p.isEmpty() || !p.contains("=")) continue
-                        cm.setCookie("https://pro.yuketang.cn/", "$p; path=/; domain=.yuketang.cn")
+                        cm.setCookie(seedUrl, "$p; path=/")
                     }
                     cm.flush()
                 }
@@ -593,6 +790,28 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 )
             } catch (e: Exception) {
                 invoke.reject(e.message ?: "打开内嵌浏览窗口失败")
+            }
+        }
+    }
+
+    /**
+     * 读取任意 URL 在 WebView CookieManager 里的 Cookie（含 HttpOnly），回传 { cookie }。
+     *
+     * 用途（2026-09-20）：内嵌官方页关掉后，把 WebView 侧可能已刷新的会话票**回灌原生 jar**
+     * —— 这就是「共享登录状态」的反向桥：Rust jar 是权威会话，进页面时种进去，出来时收回来，
+     * 用户在官方页里完成的登录/续期也能被应用复用。
+     */
+    @Command
+    fun readWebViewCookies(invoke: Invoke) {
+        val args = invoke.parseArgs(ReadCookiesArgs::class.java)
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                val ret = JSObject()
+                ret.put("cookie", cm.getCookie(args.url) ?: "")
+                invoke.resolve(ret)
+            } catch (e: Throwable) {
+                invoke.reject("读取 WebView Cookie 失败: ${e.message}")
             }
         }
     }

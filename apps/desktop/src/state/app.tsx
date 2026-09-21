@@ -142,7 +142,7 @@ export function topLevelPage(p: Page): Page {
   return (TOP_PAGES as readonly string[]).includes(p) ? p : "learn";
 }
 
-export type SessionStatus = "booting" | "logged-out" | "connecting" | "2fa" | "ready" | "demo";
+export type SessionStatus = "booting" | "logged-out" | "connecting" | "2fa" | "ready";
 
 export interface SessionUser {
   username: string;
@@ -169,7 +169,6 @@ export interface AppState {
   submit2FA: (type: string, code: string, trust: boolean) => Promise<void>;
   send2FA: (type: string) => Promise<void>;
   sendLearn2FA: (type: string) => Promise<void>;
-  enterDemo: () => void;
   backToLogin: () => void;
   logout: () => Promise<void>;
   dismissError: () => void;
@@ -295,6 +294,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     setPage(p);
     setNavParams(params ?? null);
+    // 本机使用统计（今日页「最近使用」的数据源）：动态 import 回避 app↔atoms 的模块环
+    void import("./atoms.js")
+      .then((m) => m.recordPageAtomUse(p, params ?? null))
+      .catch(() => undefined);
   }, []);
 
   const login = useCallback(
@@ -364,12 +367,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setStatus("logged-out");
   }, []);
 
-  const enterDemo = useCallback(() => {
-    setUser({ username: "demo", displayName: "演示账户" });
-    setStatus("demo");
-    navigate("today");
-  }, [navigate]);
-
   const logout = useCallback(async () => {
     await clients.logout();
     setUser(null);
@@ -391,12 +388,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       submit2FA,
       send2FA,
       sendLearn2FA,
-      enterDemo,
       backToLogin,
       logout,
       dismissError: () => setError(null),
     }),
-    [status, user, page, navParams, error, twoFactor, navigate, login, submit2FA, send2FA, sendLearn2FA, enterDemo, backToLogin, logout],
+    [status, user, page, navParams, error, twoFactor, navigate, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

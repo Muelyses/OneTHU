@@ -511,6 +511,13 @@ const st = await ctx.onethu.notify.status(true);   // 传 true 才会发起授�
 两者使用同一仓库格式约定，均仅覆盖 JS 插件；Rust 插件含平台二进制，仍经压缩包或
 文件夹安装（见 §3 与安装面板）。
 
+**许可**：插件是独立仓库，许可由作者自定——宿主不限制、也不代管插件的授权方式。
+官方示例插件（[hello](https://github.com/smartThise/OneTHU-plugin-hello)、
+[barbie](https://github.com/smartThise/OneTHU-theme-barbie)）一律以 **MIT** 开源，可自由使用；
+主程序自身的许可与第三方组件约定见主仓库 [LICENSE](../LICENSE) 与
+[LICENSES/THIRD-PARTY.md](../LICENSES/THIRD-PARTY.md)（后者的限制针对主程序分发，
+不扩张到插件）。建议插件仓库根目录附 `LICENSE` 并在 README 注明。
+
 ### 8.1 仓库格式
 
 插件仓库根目录提供 `plugin.js`（或 `index.js`、`main.js`），内容为单文件 ES 模块：
@@ -627,6 +634,31 @@ OH 对话内可直接把信息收进用户收藏夹，与插件收藏共用同�
 自动补全，落点为「对话收藏」分组；同一 key 重复收藏不重复添加。该分组的卡片当前
 点击提示来源（OH 尚无自建功能页），OH 提供功能页后可改为深链。
 
+**一句话直达**：OH 的 `open_page` 工具走宿主 `nav.searchAtoms` + `nav.openAtom`
+（见 api-reference §17），所以「打开亲友来访」这类说法无需事先约定路由——检索到
+什么就能打开什么。检索面 = 静态注册表（功能页面 / 今日组件 / 操作原子）+ 本机缓存
+（课程、作业、通知、文件、在线服务、场馆、教学楼、洗衣机楼、图书馆、新闻…）。
+两点边界：①`nav.searchAtoms` **不发任何校园请求**，所以只认本机已出现过的实体；
+②`nav.openAtom` 解析不出原子时返回 `false`，回话应说「先在对应页面打开一次」，
+而不是宣称应用做不到。
+
+**在线服务不需要先打开过**：OH 的 `open_page` 在本地检索为空时会兜底调一次
+`services.search`（宿主门面，走校园服务大厅目录，声明 `info:read` 权限即可用），
+按口语名打分（「亲友预约」→「亲友来访预约」≥40 直接开；只有 20~39 分的近似名
+如「亲友入校报备」则**只回候选、不跳转**，先让用户确认叫法）后 `services.open` 在应用内打开官方页；
+查询失败与「目录里确实没有」要分开说，别把失败讲成学校没这个服务；
+命中的目录同时写回本机原子缓存，此后本地检索即可离线命中。同一条兜底通道插件也能用
+（api-reference §17），所以「插件里说个简称，应用跳到官方页」是可行的。
+
+外部插件也能吃到同一能力：清单声明 `nav` 权限后调用 `nav.searchAtoms` /
+`nav.openAtom`，即可实现「插件里说个名字，应用跳到那个页面」。
+
+**OH 也读本机使用统计**（`nav.usage`，api-reference §20.1）：`query_usage` 工具
+回答「我最近都在用什么」，并可把返回的 `kind`/`key` 直接交给 `open_page` 打开。
+今日页的「最近使用 / 猜你喜欢」两张卡（默认在侧栏、卡体为空则整卡不渲染）与它
+同源——都由 `lib/usage.ts` + `lib/suggest.ts` 驱动，**只记「点过什么」，绝不
+自动改用户收藏夹**。
+
 
 ### 9.4 OH 联动插件（MCP 之外的扩展通道）
 
@@ -716,6 +748,10 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 | 版本 | 变更 |
 |---|---|
+| v1.15 | 服务名匹配改为分档打分（100/80+/70/40+/20~35，`SERVICE_CONFIDENT=40`）：≥40 才自动打开，近似名只回候选让用户确认；`services.search` 返回 `score`；OH 兜底查询失败时如实上报（不再一律说「没有相近名称」） |
+| v1.14 | 插件 API 新增 `services.search` / `services.open`（在线服务目录检索 + 应用内打开，容忍口语简称）；OH `open_page` 本地未命中时自动兜底服务目录（§9.3） |
+| v1.13 | 今日页新增「最近使用 / 猜你喜欢」两张按本机使用习惯生成的卡（空则不渲染）；插件 API `nav` 新增 `usage` / `clearUsage`；OH 新增 `query_usage` 工具 |
+| v1.12 | 插件 API `nav` 新增 `searchAtoms` / `openAtom`（按名字检索并打开任意原子，检索只查静态注册表 + 本机缓存）；OH 新增 `open_page` 工具（一句话直达在线服务/课程/实体，§9.3）；在线服务目录注册为原子种类 `thos-service`（星号收藏与 OH 直达同一份引用） |
 | v1.11 | 小组件内容改为**按块绑定**（日程与 DDL / 一个原子占满 / 收藏夹图标组 / 快捷方式四类），宿主新增 1×1 快捷方式形态（共五种），放置时经 configure 流程直接弹出选择层，原子图标在应用侧栅格化成 PNG 后下发；插件 API 改为 `widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback` |
 | v1.10 | 宿主小组件内容可选（今天 / 收藏夹 / 收藏原子，设置页与收藏夹页双入口）、四种初始形态（3×2 / 2×2 / 2×1 / 4×1，行数按占位自适应）、点击落点支持页面参数；插件 API 新增 `widget.getSource` / `widget.setSource` / `widget.folders` |
 | v1.9 | 插件小组件与系统通知：§6.5 声明式桌面小组件（`ctx.registerWidget`，3 个预留槽位、原子行解析、点击落点）与 §6.6 系统通知（`onethu.notify.send/cancel/status`，通知 id 归插件）；新增权限 `widget`、`notify` |

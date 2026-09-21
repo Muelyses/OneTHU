@@ -13,7 +13,7 @@
 
 **异步性**：除 `session.*`、`ui.toast`、`ui.getTabRoot`、`ui.onTabReady`、
 `favorites.add` / `favorites.addAtom` / `favorites.kinds`、`storage.*`、`nav.go` 外均为
-异步方法，返回 `Promise`。
+异步方法，返回 `Promise`（`nav.searchAtoms` / `nav.openAtom` 亦为异步）。
 
 **错误**
 
@@ -71,7 +71,8 @@ return {
 | `plugins:call` | `plugins.list` / `plugins.call`（联动插件：列出并执行其他已启用插件的命令，含写操作） |
 | `css` | `registerCss`（注入全局样式，影响整个应用外观；安装时重点确认） |
 | `webview` | `ui.webModal` |
-| `nav` / `ui` | `nav.go` / `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
+| `nav` / `ui` | `nav.go` / `nav.searchAtoms` / `nav.openAtom` / `nav.usage` / `nav.clearUsage` / `ui.*` |
+| `info:read` | `services.search` / `services.open`（在线服务目录，走校园请求） |（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
 | `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染）、`widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback`（读写桌面上每一块小组件显示的内容） |
@@ -176,17 +177,30 @@ await ctx.onethu.theme.setFollowSystem(true);
 | `lastAt` | number | 最近一次刷新完成时间（毫秒时间戳） |
 | `configured` | boolean | 是否已配置任一作业源；为 `false` 时调用方不应使用本接口数据 |
 
-`items` 元素字段：
+`items` 元素（`ExternalHomework`）：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
+| `id` | string | 源内稳定唯一标识（列表 key 与去重，不含 `ext:` 前缀） |
 | `source` | string | 源标识：`yuketang`、`tuoj`、`tuojClassic`、`tyche`、`dsa` |
-| `course` / `title` | string | 课程名与作业标题 |
-| `deadline` | string \| null | 截止时间，格式 `"YYYY-MM-DD HH:MM"` |
-| `url` | string \| null | 详情链接 |
-| `submitted` | boolean | 提交状态。由各源独立查询得出，查询失败或无法判定时为 `false` |
-| `graded` | boolean | 批改状态，仅部分源提供 |
-| `score` | number \| null | 得分，仅已批改时非空 |
+| `courseName` / `title` | string | 课程名与作业标题 |
+| `deadline` | string | 截止时间，统一为 `"YYYY-MM-DD HH:MM"`（本地时区） |
+| `kind` | `"homework"` \| `"exam"` | 作业或试卷 |
+| `url` | string? | 详情链接（指向学生端页面） |
+| `submitted` | boolean | 提交状态。各源独立查询得出；查询失败或无法判定时为 `false`（保守） |
+| `submittedCount` / `totalCount` | number? | 已提交题数 / 总题数（仅雨课堂有精确数据） |
+| `graded` | boolean? | 批改状态。目前仅雨课堂可判定，其余源缺省视为未批改 |
+| `audited` | boolean? | 是否旁听课堂（雨课堂 `role===6`；未知 role 不标记） |
+| `score` | number? | 得分，**仅在已提交且已出分/已批改时设置**（不谎报 0 分） |
+| `totalScore` | number? | 卷面满分，与 `score` 成对出现；题面分值全缺失时不设 |
+| `leafTypeId` / `classroomId` | string? | 雨课堂整卷明细参数（`get_exercise_list` 的路径段与 `classroom_id`），供应用内原生详情页使用 |
+
+**得分口径**（雨课堂）：考试取 `/v/exam/cover` 的 `result.score`；已批改作业取「已批改题目的
+有效得分合计」，满分取「题面分值合计」——两者均只在**整卷已批改**时透出，避免「交了一半就显示
+一个分数」的误导。详情页与批改评语的呈现方式见 [external-homework.md](./external-homework.md)。
+
+注意到 `exthw.*` 只有 `snapshot()` 与 `refresh()` 两个方法：**作业详情页与提交入口属于应用内
+功能**（原生页面 + 内嵌官方作答页），不经插件 API 暴露，插件侧只读取聚合快照。
 
 ```jsonc
 {
@@ -499,6 +513,12 @@ const r = await ctx.onethu.plugins.call("onethu.dept-notices", "fetch", "");
 | 方法 | 权限 | 说明 |
 |---|---|---|
 | `nav.go(page, params?)` | `nav` | 应用内跳转，路由表见 §19 |
+| `nav.searchAtoms(query, limit?)` | `nav` | 按关键词检索全应用可跳转原子，返回 `{kind, key, title, sub?, group}[]`（缺省 12 条，上限 50）。只查静态注册表 + 本机缓存，**不发起任何校园请求** |
+| `nav.openAtom(ref)` | `nav` | 打开一个原子（等价用户点收藏夹里那一项：跳功能页 / 切聚合页页签 / 打开官方服务页）；解析不出返回 `false`，不会跳空白页。见 §20 |
+| `nav.usage(limit?)` | `nav` | 本机使用统计：`{total, kinds, top[], recent[]}`（每项含 `kind`/`key`/`title`/`n`/`last`，可直接交给 `nav.openAtom`）。只有本机点击记录，不含任何校园数据；缺省 10 条、上限 30 |
+| `nav.clearUsage()` | `nav` | 清空本机使用统计（用户主动要求时用；**不影响收藏夹**） |
+| `services.search(query, limit?)` | `info:read` | 检索在线服务（服务大厅）目录，返回 `{id,name,department,url,score}[]`；**会发校园请求**（先校验会话再取目录），只在 `nav.searchAtoms` 本机命中为空时才该调用。容忍口语简称：「亲友预约」≥40 命中「亲友来访预约」；换了后半截的（「亲友预约」↔「亲友入校报备」）以 20~39 分进候选。结果顺带写回本机原子缓存 |
+| `services.open(service)` | `info:read` | 在应用内打开服务官方页（桌面独立窗口 / Android 全屏 WebView，与主窗口共享登录态）；`url` 需来自 `search`；打不开返回 `false` |
 | `ui.toast(text)` | `ui` | 底部提示，显示 3 秒 |
 | `ui.webModal(url)` | `webview` | 在应用内 WebView 模态窗口打开地址（Android 端用于浏览外部页面）；仅支持 `https://`；桌面端抛出错误，调用方应捕获后改用系统浏览器 |
 | `ui.confirm(msg, opts?)` | `ui` | 应用内确认弹窗（Promise 化），resolve 用户是否确认；`{danger: true}` 走危险操作样式 |
@@ -553,7 +573,65 @@ const reply = (await res.json()).choices[0].message.content;
 | `zhjwxk` | 选课系统 | — |
 | `settings` / `plugins` | 设置 / 插件管理 | — |
 | `plugin:<插件id>:<页签id>` | 插件自建功能页（`registerTab`，见 plugin-development §6.3） | — |
-| `learn-course` 等 | 学堂详情页 | `courseId`、`itemId` |
+| `learn-course` | 课程详情 | `courseId`；`courseTab`（`notices`/`assignments`/`files`/`groups`/`forum`）、`bbsBoard` 可直达板块 |
+| `learn-assignments` / `learn-notices` / `learn-files` | 学堂聚合列表 | `courseId` 可限定课程 |
+| `learn-assignment-detail` / `learn-notice-detail` / `learn-file-detail` | 作业 / 通知 / 文件只读详情 | `courseId`、`itemId` |
+| `learn-forum-thread` | 讨论区话题 | `courseId`、`itemId`（话题）、`bqid`（板块） |
+| `learn-ykt-detail` | 雨课堂作业原生详情（只读，见 external-homework.md） | `ykt`：`{ leafTypeId, classroomId, externalUrl?, title?, deadline?, courseName?, kind? }` |
+| `trace` / `otherinfo` / `thos` / `mail` / `cloud` / `thubook` / `folder` | 寻迹 / 其他 Info 应用 / 在线服务 / 邮箱 / 云盘 / THUbook / 收藏夹 | `folder` 需 `folderId` |
 
 插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向
 该路由。插件未安装、已停用或未注册该页签时，页面显示降级提示而非空白。
+
+## 20. 原子（`{kind, key}`）——收藏与「一句话直达」的共同底座
+
+**万物原子化**：应用里每一个可跳转的对象——功能页面、今日组件、操作、课程、作业、
+通知、文件、在线服务、场馆、教学楼、洗衣机楼、图书馆、新闻、插件自定义条目——都
+表示为一个原子引用 `{ kind, key }`。收藏夹只存引用（`favorites.addAtom(ref, meta?)`），
+点击时由宿主解析成页面跳转，因此**同一个引用在收藏夹、桌面小组件、OH 对话、插件
+搜索里行为完全一致**。
+
+- **kind**：原子种类。`page` / `action` / `widget-*` 等为静态注册；`course` /
+  `assignment` / `thos-service` / `sports-v` … 为动态实体（数据来自本机缓存）；
+  `plugin:<插件id>` 为插件注册的种类。
+- **key**：种类内稳定标识，由宿主 `enc(...parts)` 用 `~` 连接、`dec(key)` 拆回。
+  调用方不要自己拼 key——用 `nav.searchAtoms` 拿到的 `key` 原样回传即可。
+- **`thos-service`**：在线服务（服务大厅）条目，key = `enc(id, name, department)`。
+  由在线服务页打开过目录后写入本机缓存，故「星号收藏」与「OH 一句话打开亲友来访」
+  共用同一份引用；打开动作走应用内官方页面（三端一致：桌面独立窗口、Android 全屏
+  WebView，登录态与主窗口共享）。
+- **解析不出即失效**：`nav.openAtom` 对已删数据 / 已停用插件的引用返回 `false`，
+  收藏夹与桌面小组件也会降级显示（不写空页面）。插件据此回话，不要承诺做不到的事。
+
+**检索面**：`nav.searchAtoms(query, limit?)` 只查静态注册表 + 本机缓存，**不发任何
+校园请求**——所以它快、离线可用，但只认识本机出现过的实体。宿主内实现真源见
+`apps/desktop/src/state/atoms.tsx`（`searchAtoms` / `resolveAtom`）。
+
+### 20.1 本机使用统计（`nav.usage`）
+
+今日页的「最近使用」「猜你喜欢」与 OH 的 `query_usage` 都读同一份记录：
+`onethu.usage.counts.v1`（每项 `{n, last, title?, sub?, group?}`，最多 120 条）。
+记录点在应用内部：侧边栏/入口卡进页面（`recordPageAtomUse`）与**任何**原子被打开
+（`resolveAtom` 返回的 `open` 统一记一笔），因此收藏夹点击、桌面小组件、OH
+`openAtom` 全部计入。
+
+两条硬边界：
+
+1. **统计绝不改写收藏夹**。收藏是用户的显式意图；推荐只是入口，收纳与否由用户按星号。
+2. 统计只在本机，含的是「点过什么」，不含成绩、课程内容等任何校园数据；插件要读
+   必须声明 `nav` 权限，且用户可以一键清空（`nav.clearUsage`）。
+
+### 20.2 服务名打分（`services.search` 的 `score`）
+
+分数档位（实现与测试在 `apps/desktop/src/lib/serviceMatch.ts` + `tools/service-match-test.mjs`）：
+
+| 分数 | 含义 | 调用方该怎么用 |
+|---|---|---|
+| 100 | 完全相等 | 直接打开 |
+| 80 ~ 95 | 名字包含查询 | 直接打开 |
+| 70 | 查询包含名字（用户说得更长） | 直接打开 |
+| 40 ~ 60 | 子序列命中（省字，顺序一致） | 直接打开（`SERVICE_CONFIDENT` 线） |
+| 20 ~ 35 | 近似（最长公共子串 ≥2 中文字） | **只作候选**：先让用户确认叫法 |
+| 0 | 不匹配 | 当作没有 |
+
+这条把握线是给「宁可不跳、也不跳错」用的：跳错一个官方页比多问一句贵得多。

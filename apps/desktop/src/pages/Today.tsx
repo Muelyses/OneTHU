@@ -21,7 +21,7 @@ import type { LearnNav, Page } from "../state/app.js";
 import { useCampusData, useCard, useTodayCalendar, useTodayDeadlines, useTodayNewsFeed, useTodayReservations } from "../state/data.js";
 import {
   AgendaRows, CardBalanceBody, ClassRows, EntryCard, HomeworkRows, NewsRows, NoticeRows, ResvRows,
-  SECTION_OF, WEEKDAYS, calDaysUntil, deadlineMs, countdownChip, ymd,
+  RowClick, SECTION_OF, WEEKDAYS, calDaysUntil, deadlineMs, countdownChip, ymd,
   type AgendaRow,
 } from "../components/HomeWidgets.js";
 import {
@@ -30,13 +30,87 @@ import {
   HOME_CARD_META,
   type HomeCardDef, type HomeCardId, type HomeCol, type HomeLayoutItem,
 } from "../lib/homeCards.js";
+import { restoreDefaultTodayCards } from "../state/onboarding.js";
 import { readSubs } from "./info/newsSearch.js";
 import { openExternal } from "./info/openExternal.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { parseLearnTime, type ScheduleEntry } from "@onethu/core";
+import { recentAtomUses, type UsageEntry } from "../lib/usage.js";
+import { suggestAtoms } from "../lib/suggest.js";
+import { resolveAtom } from "../state/atoms.js";
 
 /** 轻路由签名（与 AppState.navigate 一致） */
 type Nav = (page: Page, params?: LearnNav) => void;
+
+/* ══════════ 最近使用 / 猜你喜欢（本机统计驱动，卡体为空则整卡不渲染） ══════════ */
+
+/** 一行 = 一个原子。样式与「最近通知」等同款行（tl-bar + 标题/说明 + 右侧箭头）：
+ *  之前用一个 accent-soft 的方形图标底，摆在首页像一排小按钮，"原子选择条"很怪。 */
+function AtomUseRows({
+  rows,
+  onOpen,
+  emptyText,
+}: {
+  rows: Array<{ ref: { kind: string; key: string }; title: string; sub?: string; why?: string }>;
+  onOpen: (page: Page, params?: LearnNav) => void;
+  /** 没有内容时显示的说明（**不再整卡消失**：只留这两张卡的用户会看到空白首页） */
+  emptyText: string;
+}) {
+  const views = rows
+    .map((r) => ({ r, view: resolveAtom(r.ref) }))
+    .filter((x): x is { r: (typeof rows)[number]; view: NonNullable<ReturnType<typeof resolveAtom>> } => !!x.view);
+  if (views.length === 0) {
+    return (
+      <Card className="list">
+        <Empty text={emptyText} />
+      </Card>
+    );
+  }
+  return (
+    <Card className="list">
+      {views.map(({ r, view }, i) => (
+        <RowClick
+          key={r.ref.kind + "~" + r.ref.key}
+          style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}
+          onClick={() => view.open((p, params) => onOpen(p, params as LearnNav))}
+        >
+          <div className="tl-bar" style={{ background: "var(--border-strong)" }} />
+          <div className="tl-main">
+            <div className="tl-title">{r.title || view.title}</div>
+            <div className="tl-sub">
+              {r.why ? `${r.why} · ${r.sub ?? view.sub ?? ""}` : (r.sub ?? view.sub ?? "")}
+            </div>
+          </div>
+          <IconChevron className="row-caret" width={14} height={14} />
+        </RowClick>
+      ))}
+    </Card>
+  );
+}
+
+/** 空态留痕：这类卡"没内容"必须能在日志里看出来，否则用户只看到一片空白 */
+let emptyLogged: Record<string, boolean> = {};
+function logEmpty(which: string): void {
+  if (emptyLogged[which]) return;
+  emptyLogged[which] = true;
+  void import("../lib/clients.js")
+    .then((m) => m.logLine(`[TODAY-CARD] ${which} 暂无内容（显示空态说明）`))
+    .catch(() => undefined);
+}
+
+/** 最近使用：按最后一次点击倒序（最多 6 条；没点过任何东西 → 空数组 → 显示空态说明） */
+function recentRows(): UsageEntry[] {
+  const rows = recentAtomUses(6).filter((e) => e.title);
+  if (rows.length === 0) logEmpty("最近使用");
+  return rows;
+}
+
+/** 猜你喜欢：同类推荐 + 起步项（绝不会是已收藏/已用过的） */
+function suggestRows(): Array<{ ref: { kind: string; key: string }; title: string; sub?: string; why?: string }> {
+  const rows = suggestAtoms(5).map((s) => ({ ref: s.ref, title: s.title, sub: s.sub, why: s.why }));
+  if (rows.length === 0) logEmpty("猜你喜欢");
+  return rows;
+}
 
 /* ══════════ CardShell（统一卡片外壳：标题行 + 折叠 + 编辑工具） ══════════ */
 
@@ -288,6 +362,17 @@ export function TodayPage() {
 
   /* ---- 布局持久化状态：首帧即可由注册表元数据对账出完整布局 ---- */
   const [layout, setLayout] = useState<HomeLayoutItem[]>(() => resolveLayout(HOME_CARD_META, loadLayout(oriRef.current)));
+
+  /* 别处改了首页卡片（导览的「今日页留哪些卡」、设置里的恢复默认）→ 立刻重读。
+     没有这条时，导览点完"完成"首页纹丝不动，用户得退出去再进来才看得到。 */
+  useEffect(() => {
+    const on = (): void => {
+      setLayout(resolveLayout(HOME_CARD_META, loadLayout(oriRef.current)));
+      setFoldDefaults(loadCollapsedDefaults());
+    };
+    window.addEventListener("onethu.home.changed", on);
+    return () => window.removeEventListener("onethu.home.changed", on);
+  }, []);
   const [foldDefaults, setFoldDefaults] = useState<Partial<Record<HomeCardId, boolean>>>(() => loadCollapsedDefaults());
   const [editing, setEditing] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -397,7 +482,7 @@ export function TodayPage() {
   );
 
   /** 今天的日程事件：有 date 按 date 精确匹配（数据窗口跨 3 周不会重复），
-   *  无 date（demo）退回 dayOfWeek；按开始时间升序 */
+   *  无 date 退回 dayOfWeek；按开始时间升序 */
   const todayEvents = useMemo<ScheduleEntry[]>(() => {
     const wd = now.getDay() === 0 ? 7 : now.getDay();
     const today = ymd(now);
@@ -502,6 +587,25 @@ export function TodayPage() {
     notices: {
       render: () => <NoticeRows items={data?.notifications ?? []} navigate={navigate} />,
     },
+    recent: {
+      // 空态**不隐藏整卡**：只留这张卡的用户否则看到的是一片空白（用户实录）
+      render: () => (
+        <AtomUseRows
+          rows={recentRows().map((e) => ({ ref: { kind: e.kind, key: e.key }, title: e.title ?? "", sub: e.sub }))}
+          onOpen={navigate}
+          emptyText="还没有使用记录——在应用里点开几个页面或服务，最近用过的就会出现在这里。"
+        />
+      ),
+    },
+    "for-you": {
+      render: () => (
+        <AtomUseRows
+          rows={suggestRows()}
+          onOpen={navigate}
+          emptyText="暂时没有可推荐的——用一会儿再来看，或到「编辑 → 添加卡片」挑你要的卡片。"
+        />
+      ),
+    },
     cardEntry: {
       render: () => <CardBalanceBody balance={card.data?.info.balance ?? null} navigate={navigate} />,
     },
@@ -539,6 +643,18 @@ export function TodayPage() {
 
   /** 竖屏展示序列：主栏在前、侧栏在后串成一条（与旧布局竖向堆叠顺序一致） */
   const flatItems = useMemo(() => (portrait ? [...mainItems, ...railItems] : mainItems), [portrait, mainItems, railItems]);
+
+  // 布局留痕：卡片系统完全由 localStorage 驱动，"首页怎么空了"只能靠这一行回放
+  // （记录已落位的卡 id 与朝向；每次进入今日页一行，便于对照设置里的选择）
+  useEffect(() => {
+    void import("../lib/clients.js")
+      .then((m) =>
+        m.logLine(
+          `[TODAY] 朝向=${orientation} 主栏=[${mainItems.map((i) => i.id).join(",")}] 侧栏=[${railItems.map((i) => i.id).join(",")}] 收起=${layout.filter((i) => i.col === "off").length}`,
+        ),
+      )
+      .catch(() => undefined);
+  }, [orientation, mainItems, railItems, layout]);
 
   const renderCard = (it: PlacedCard, index: number, list: PlacedCard[]) => {
     const def = defById.get(it.id);
@@ -614,7 +730,22 @@ export function TodayPage() {
 
       {flatItems.length === 0 ? (
         <Card>
-          <Empty text="首页暂无卡片——点右上角「编辑」→「添加卡片」挑几张放上来。" />
+          <Empty text="首页卡片都被收起来了——恢复默认，或自己挑几张。" />
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, paddingBottom: 14 }}>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                // 一键自救：恢复注册表默认布局（今天页空白大多来自导览里"以为在选、其实全点掉"）
+                restoreDefaultTodayCards(orientation);
+                setLayout(resolveLayout(HOME_CARD_META, null));
+              }}
+            >
+              恢复默认布局
+            </button>
+            <button className="btn" onClick={() => setEditing(true)}>
+              自己挑卡片
+            </button>
+          </div>
         </Card>
       ) : null}
 

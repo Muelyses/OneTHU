@@ -5,12 +5,14 @@ import { universalFetch } from "../lib/transport.js";
 import { navGo, sessionStatus } from "./bridges.js";
 import { venueClient } from "../lib/venue.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { normalizeServiceName, serviceScore } from "../lib/serviceMatch.js";
 import { explainNetworkError } from "../lib/transport.js";
 import { getPlugin, pluginStorageKey, updatePlugin } from "./registry.js";
 import { PluginPermissionError, type OnethuApi, type PluginPermission } from "./types.js";
 
 import { invoke } from "@tauri-apps/api/core";
 import { activateTheme, setDayNightTheme, setFollowSystem, activeThemeId, listThemes, themeSchedule } from "../state/theme.js";
+import { currentThemeIsDark } from "../state/theme.js";
 import { refreshExtHw } from "../state/exthw.js";
 import { session as appSession, logLine, http as campusHttp, learn as campusLearn } from "../lib/clients.js";
 import { AuthRequiredError } from "@onethu/core";
@@ -526,6 +528,85 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "nav", "nav.go");
         if (!navGo(page, params)) throw new Error("导航桥未就绪（应用启动中）");
       },
+      /** 原子检索：静态注册表（功能页/今日组件/操作）+ 本机缓存（课程/作业/通知/在线服务…）。
+       *  动态 import 与 normalizeBinding 同法，回避 facade↔atoms 的模块环。 */
+      searchAtoms: async (query: string, limit?: number) => {
+        gate(perms, "nav", "nav.searchAtoms");
+        const { searchAtoms } = await import("../state/atoms.js");
+        const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 12;
+        return searchAtoms(String(query ?? ""), n).map((h) => ({ kind: h.kind, key: h.key, title: h.title, sub: h.sub, group: h.group }));
+      },
+      /** 使用统计：只读本机 localStorage 的点击记录（不含校园数据），用于「用户常用什么」 */
+      usage: async (limit?: number) => {
+        gate(perms, "nav", "nav.usage");
+        const { usageStats, topAtomUses, recentAtomUses } = await import("../lib/usage.js");
+        const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 10;
+        const s = usageStats();
+        return {
+          total: s.total,
+          kinds: s.kinds,
+          top: topAtomUses(n).map((e) => ({
+            kind: e.kind, key: e.key, title: e.title ?? e.key, group: e.group ?? "", n: e.n, last: e.last,
+          })),
+          recent: recentAtomUses(n).map((e) => ({
+            kind: e.kind, key: e.key, title: e.title ?? e.key, n: e.n, last: e.last,
+          })),
+        };
+      },
+      clearUsage: async () => {
+        gate(perms, "nav", "nav.clearUsage");
+        const { clearUsage } = await import("../lib/usage.js");
+        clearUsage();
+      },
+      /** 打开原子：复用收藏夹那套 view.open(nav)，故插件点开的页面与用户自己点收藏完全一致 */
+      openAtom: async (ref: { kind: string; key: string }) => {
+        gate(perms, "nav", "nav.openAtom");
+        const kind = String(ref?.kind ?? "");
+        const key = String(ref?.key ?? "");
+        if (!kind || !key) return false;
+        const { resolveAtom } = await import("../state/atoms.js");
+        const view = resolveAtom({ kind, key });
+        if (!view) return false;
+        view.open((page, params) => navGo(page, params as Record<string, unknown> | undefined));
+        return true;
+      },
+    },
+    services: {
+      /** 在线服务目录检索：本机原子缓存搜不到时的兜底（会发一次校园请求）。
+       *  匹配容忍口语简称，命中判据见 serviceScore；结果顺带写回原子缓存。 */
+      search: async (query: string, limit?: number) => {
+        gate(perms, "info:read", "services.search");
+        const q = normalizeServiceName(String(query ?? ""));
+        if (!q) return [];
+        const { initInfoLib } = await import("../lib/infoLib.js");
+        const helper = initInfoLib();
+        await helper.prepareThosSession();
+        const page = await helper.getThosServices();
+        const items = (page?.items ?? []).filter((s) => s.name);
+        const n = Number.isFinite(limit) ? Math.max(1, Math.min(50, Number(limit))) : 10;
+        // 目录整份写回本机缓存：之后 OH / 收藏搜索都能离线命中同一批服务
+        if (items.length > 0) {
+          const { noteAtomCache } = await import("../state/atoms.js");
+          noteAtomCache({
+            thosServices: items.map((x) => ({ id: x.id, name: x.name, department: x.department, url: x.url })),
+          });
+        }
+        return items
+          .map((s) => ({ s, score: serviceScore(s.name, q) }))
+          .filter((x) => x.score > 0)
+          .sort((a, b) => b.score - a.score || a.s.name.length - b.s.name.length)
+          .slice(0, n)
+          .map(({ s, score }) => ({ id: s.id, name: s.name, department: s.department, url: s.url, score }));
+      },
+      /** 应用内打开服务官方页：与用户点在线服务那一条完全同一条链路（同一登录态） */
+      open: async (service: { id?: string; name?: string; url?: string }) => {
+        gate(perms, "info:read", "services.open");
+        const url = String(service?.url ?? "");
+        if (!/^https?:\/\//.test(url)) return false;
+        const { openThosInApp } = await import("../lib/thosOpen.js");
+        await openThosInApp(url);
+        return true;
+      },
     },
     ui: {
       toast: (text: string) => {
@@ -537,7 +618,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       webModal: async (url: string): Promise<void> => {
         gate(perms, "webview", "ui.webModal");
         if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
-        await invoke("open_web_modal", { url });
+        await invoke("open_web_modal", { url, dark: currentThemeIsDark() });
       },
       /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式。 */
       confirm: async (msg: string, opts?: { danger?: boolean }): Promise<boolean> => {

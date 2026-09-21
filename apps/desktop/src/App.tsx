@@ -19,6 +19,7 @@ import { SchedulePage } from "./pages/Schedule.js";
 import { MailPage } from "./pages/MailPage.js";
 import CloudPage from "./pages/CloudPage.js";
 import ThubookPage from "./pages/ThubookPage.js";
+import { OnboardingTour } from "./components/OnboardingTour.js";
 import { useToastHost, hideToast } from "./state/toast.js";
 import type { ReactNode } from "react";
 import { TracePage } from "./pages/Trace.js";
@@ -55,7 +56,7 @@ function Routed() {
 
   // learnX 式后台更新：登录后每 30 分钟静默重拉 learn 数据（作业 DDL/提交状态
   // 变化 → 日历同步、灵动岛文案、挂载中的页面自动跟进）；启动 90 秒后先来一轮，
-  // 不用等满 30 分钟。demo 模式数据是静态的，不刷。
+  // 不用等满 30 分钟，前台恢复即刷。
   useEffect(() => {
     if (status !== "ready") return;
     const kick = setTimeout(() => void refreshLearnDataSilently(), 90_000);
@@ -71,7 +72,7 @@ function Routed() {
       return (
         <div className="login-wrap">
           <BrandLogo size={40} />
-          <div style={{ color: "var(--ink-3)", fontSize: "var(--text-sm)", marginTop: 18 }}>正在恢复会话…</div>
+          <div style={{ color: "var(--text-3)", fontSize: "var(--text-sm)", marginTop: 18 }}>正在恢复会话…</div>
         </div>
       );
     }
@@ -124,7 +125,8 @@ function Routed() {
       {body}
       <PluginBridge />
       <NotifyBridge />
-      {(status === "ready" || status === "demo") && <ChatDock />}
+      {(status === "ready") && <ChatDock />}
+      {status === "ready" ? <OnboardingTour /> : null}
       <FilePreviewHost />
       <ToastHost />
     </>

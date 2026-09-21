@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 小组件文字色（浅色卡）。夜色变体在 values-night/ —— 布局引用资源名，
+     启动器重inflate 时按系统深色自动解析，无需任何设置项（R21）。 -->
+<resources>
+    <color name="onethu_widget_ink">#0F1115</color>
+    <color name="onethu_widget_sub">#81858C</color>
+</resources>

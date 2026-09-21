@@ -20,7 +20,8 @@ type DescState = "idle" | "skip" | "loading" | "ok" | "error";
 
 export function AssignmentDetailPage() {
   useLearnNavSemester();
-  const { navParams, status } = useApp();
+  const { navParams } = useApp();
+
   const { data, state, error, reload } = useLearnData();
   const [desc, setDesc] = useState("");
   const [descState, setDescState] = useState<DescState>("idle");
@@ -74,10 +75,6 @@ export function AssignmentDetailPage() {
   // 附件懒加载：只存在于作业详情 HTML 页（列表/detail JSON 均不含）
   useEffect(() => {
     if (!h || pageState !== "idle") return;
-    if (status === "demo") {
-      setPageState("skip"); // 演示模式不打真实接口
-      return;
-    }
     setPageState("loading");
     learn
       .getHomeworkPageDetail(courseId, h.id)
@@ -89,7 +86,7 @@ export function AssignmentDetailPage() {
         setPageError(explainNetworkError(err));
         setPageState("error");
       });
-  }, [h, pageState, courseId, status]);
+  }, [h, pageState, courseId]);
 
   const downloadAtt = async (a: LearnAttachment) => {
     setDlBusy(a.id || a.downloadUrl);
@@ -225,7 +222,7 @@ export function AssignmentDetailPage() {
         const why = r.msg ?? "";
         throw new Error(
           /请上传附件/.test(why)
-            ? "该作业要求必须带附件，网堂不允许只删不传——请直接选新附件提交替换"
+            ? "该作业要求必须带附件，网络学堂不允许只删不传——请直接选新附件提交替换"
             : why || "撤回失败",
         );
       }
@@ -304,7 +301,7 @@ export function AssignmentDetailPage() {
         </Card>
       ) : null}
 
-      {(pageState !== "idle" && pageState !== "skip") || attFound.length ? (
+      {(pageState !== "idle") || attFound.length ? (
         <Card className="detail-sec">
           <div className="detail-sec-head">附件</div>
           {pageState === "loading" ? <div className="detail-meta">正在解析附件…</div> : null}
@@ -424,7 +421,7 @@ export function AssignmentDetailPage() {
                     className="btn btn-ghost"
                     style={{ height: 22, padding: "0 8px", fontSize: 11, color: "var(--red)" }}
                     disabled={subBusy}
-                    title="独立操作：直接向网堂发撤回请求（isDeleted=1）。必交附件的作业会被服务器拒绝并提示"
+                    title="直接向网络学堂发撤回请求；必交附件的作业会被拒绝并提示"
                     onClick={() => void doRemove()}
                   >
                     撤回附件

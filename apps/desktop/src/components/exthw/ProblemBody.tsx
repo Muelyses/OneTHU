@@ -30,6 +30,7 @@ import {
   sanitizeDocColor,
   type YktDocTheme,
 } from "../../lib/yktBody.js";
+import { stripInlineColors } from "../../lib/htmlTheme.js";
 import { fetchYktImageAsDataUrl, loadYktFont } from "../../lib/yktAssets.js";
 import { loadYktLatexBundle, type YktLatexBundle } from "../../lib/yktKatex.js";
 import { openExternal } from "../../pages/info/openExternal.js";
@@ -129,6 +130,7 @@ export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", cl
           render: bundleRef.current?.render,
           extraCss: bundleRef.current?.inlineCss,
           theme: readYktDocTheme(wrapRef.current),
+          stripColors: stripInlineColors,
         }),
       );
       setHeight(YKT_FRAME_MIN_H);

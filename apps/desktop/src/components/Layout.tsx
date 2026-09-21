@@ -3,7 +3,8 @@ import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState, ty
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type Page } from "../state/app.js";
-import { IconChevron, IconDemo, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPlug, IconSchedule, IconSettings, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook } from "./Icons.js";
+import { DESENSITIZE_BUILD } from "../lib/privacy.js";
+import { IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPlug, IconSchedule, IconSettings, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
@@ -30,7 +31,7 @@ function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: obj
   }));
 }
 
-const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> = [
+export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> = [
   { page: "today", label: "今日", icon: IconToday },
   { page: "learn", label: "网络学堂", icon: IconLearn },
   { page: "schedule", label: "日程", icon: IconSchedule },
@@ -226,12 +227,12 @@ export function Slogan({ size = 13 }: { size?: number }) {
 }
 
 export function Shell({ children }: { children: ReactNode }) {
-  const { status, page: rawPage, navigate, navParams } = useApp();
+  const { page: rawPage, navigate, navParams } = useApp();
+
   const favs = useFavs();
   const pluginNav = usePluginNavEntries();
   const navAll = [...NAV, ...pluginNav];
   const page = topLevelPage(rawPage);
-  const demo = status === "demo";
   const [navOpen, setNavOpen] = useState(false);
   const [navClosing, setNavClosing] = useState(false);
   /** 「已折叠收藏夹（N）」组展开态（会话态，不持久化） */
@@ -433,17 +434,10 @@ export function Shell({ children }: { children: ReactNode }) {
           {navContent()}
         </nav>
         <div className="sidebar-foot">
-          {demo ? (
-            <span className="foot-badge foot-badge-demo">
-              <IconDemo width={12} height={12} />
-              演示模式
-            </span>
-          ) : (
-            <span className="foot-badge">
-              <span className="dot" style={{ background: "var(--green)" }} />
-              就绪
-            </span>
-          )}
+          <span className="foot-badge">
+            <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
+            {DESENSITIZE_BUILD ? "脱敏演示版" : "就绪"}
+          </span>
         </div>
       </aside>
       {/* 移动端：左滑抽屉（≤860px 由 CSS 显示；入口是页头标题胶囊） */}
@@ -458,17 +452,10 @@ export function Shell({ children }: { children: ReactNode }) {
               {navContent(() => closeNav())}
             </nav>
             <div className="drawer-foot">
-              {demo ? (
-                <span className="foot-badge foot-badge-demo">
-                  <IconDemo width={12} height={12} />
-                  演示模式
-                </span>
-              ) : (
-                <span className="foot-badge">
-                  <span className="dot" style={{ background: "var(--green)" }} />
-                  就绪
-                </span>
-              )}
+              <span className="foot-badge">
+                <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
+                {DESENSITIZE_BUILD ? "脱敏演示版" : "就绪"}
+              </span>
             </div>
           </aside>
         </>

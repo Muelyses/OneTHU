@@ -22,7 +22,6 @@ import { explainNetworkError } from "../../lib/transport.js";
 import { softRecover } from "../../lib/reload.js";
 import { useApp } from "../../state/context.js";
 
-
 function logErr(tag: string, err: unknown): void {
   void logLine(
     "PAGE-ERR " + tag + " " + (err instanceof Error ? err.message : String(err)),
@@ -598,10 +597,6 @@ export function LibraryTab({
       setPendingCancel(null);
     }
   };
-
-  if (status === "demo") {
-    return <Empty text="演示模式不提供图书馆数据，登录后可查询座位与预约。" />;
-  }
 
   const lib = (libs ?? []).find((l) => l.id === libId);
   const floor = (floors ?? []).find((f) => f.id === floorId);

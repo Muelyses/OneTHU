@@ -20,6 +20,7 @@ import {
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
 import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
+import { withPrivacy } from "./privacy.js";
 
 export type { TwoFactorMethod };
 
@@ -227,7 +228,8 @@ learnHttp.nativeSeedHook = (url, pair) => {
   }
   void nativeSeedCookies(url, [`${pair}; Path=/`]);
 };
-export const learn = new LearnClient(learnHttp);
+// 脱敏版（demo 分支）在取数出口统一过一遍：姓名 / 学号 / 成绩在离开客户端时就被替换
+export const learn = withPrivacy(new LearnClient(learnHttp), "learn");
 // learn 静默重登的账密供应（路径二兜底）：login() 后内存中即有（pendingSecret），
 // 设备指纹信任链随 session——不需要再碰 infoLib 的凭据箱。
 learn.credentialProvider = () => {
@@ -239,7 +241,7 @@ learn.credentialProvider = () => {
     finger3: session.finger3,
   };
 };
-export const info = new InfoClient(http);
+export const info = withPrivacy(new InfoClient(http), "info");
 
 export const session = new CampusSession({
   http,

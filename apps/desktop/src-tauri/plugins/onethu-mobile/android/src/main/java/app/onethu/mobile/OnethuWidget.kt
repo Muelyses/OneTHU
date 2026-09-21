@@ -16,12 +16,21 @@
 //     { "kind": "shortcut", "label": "校园卡", "icon": "data:image/png;base64,…",
 //                            "sub": "余额 ¥23.4", "target": "info?infoTab=card" }
 //
+// R21（2026-09-21「上课了还显示还有 9 小时」）：快照行带机器时间字段，原生重画时按
+// **当前时钟**重算，App 不在前台也能说真话：
+//   row.at（epoch，事件开始）/ row.until（epoch，下课时刻）/ row.rel（"class"|"ddl"）
+//   / row.loc（上课地点）；快照级 counts{classes,ddls,more,hadClass} 与 titleAt。
+//   重画语义唯一参考：JS state/widgetNativeRender.ts（改语义先改那里再两端同步）。
+//   重画的触发 = 30 分钟兜底自续 tick + 最近的 at/until 翻转点精准闹钟（WidgetTicker）。
+//
 // 未绑定的实例显示「点一下选择显示内容」，点击落点 widget-config:<appWidgetId>，
 // 由应用打开绑定层（也可以长按小组件 → 编辑，走同样的落点）。
 
 package app.onethu.mobile
 
+import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.res.Configuration
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.BroadcastReceiver
@@ -80,6 +89,28 @@ object WidgetStore {
         prefs(ctx).edit().clear().apply()
     }
 
+    /** 所有快照行里的未来翻转点（at/until），供排下一次重画闹钟（R21） */
+    fun transitionTimes(ctx: Context, now: Long): List<Long> {
+        val out = mutableListOf<Long>()
+        fun scan(obj: JSONObject?) {
+            val rows = obj?.optJSONArray("rows") ?: return
+            for (i in 0 until rows.length()) {
+                val r = rows.optJSONObject(i) ?: continue
+                for (k in listOf("at", "until")) {
+                    val t = r.optLong(k, 0L)
+                    if (t > now) out.add(t)
+                }
+            }
+        }
+        scan(loadSlots(ctx))
+        for (k in prefs(ctx).all.keys) {
+            if (!k.startsWith(PREFIX_INSTANCE)) continue
+            val id = k.removePrefix(PREFIX_INSTANCE).toIntOrNull() ?: continue
+            scan(loadInstance(ctx, id))
+        }
+        return out
+    }
+
     private fun parse(raw: String?): JSONObject? {
         if (raw == null) return null
         return try {
@@ -125,6 +156,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, appWidgetIds: IntArray) {
         for (id in appWidgetIds) render(context, manager, id)
+        scheduleNextTick(context)
     }
 
     /** 用户拖动改尺寸时立刻按新尺寸重排（不重排会留着一屏错位） */
@@ -135,6 +167,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         newOptions: android.os.Bundle,
     ) {
         render(context, manager, appWidgetId)
+        scheduleNextTick(context)
     }
 
     /** 小组件被移除：清掉它的内容 */
@@ -145,13 +178,52 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
     companion object {
         /** 列表布局能放几条（slot1..slot5） */
         private const val SLOT_IDS = 5
+        /** 兜底自续 tick：没有任何翻转点时也要隔这么久重画一次（顺带跨午夜换标题） */
+        private const val FALLBACK_TICK_MS = 30 * 60_000L
+        /** 两次重画的最小间隔：防异常快照把闹钟排成紧密循环 */
+        private const val MIN_TICK_GAP_MS = 60_000L
         /** 正文墨色（浅色卡片底上的主文字色） */
         private const val INK = 0xFF0F1115.toInt()
+        /** 深色卡片底上的正文墨色（自动跟随系统深色，无需设置项） */
+        private const val INK_NIGHT = 0xFFE8EBF2.toInt()
         /** 一条内容占的高度（dp）：一条一行，说明在同一条里 */
         private const val SLOT_H = 22
         /** 说明文字的颜色（灰）与字号 */
         private const val SUB_COLOR = 0xFF81858C.toInt()
-        private const val SUB_SP = 10
+        /** 深色卡片上的说明灰 */
+        private const val SUB_COLOR_NIGHT = 0xFF9AA1AC.toInt()
+
+        /** 系统深色？（渲染时读当前 uiMode；布局色走 values-night 自动跟随，Span 色在此选盘） */
+        private fun isNight(ctx: Context): Boolean =
+            (ctx.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_YES) != 0
+
+        private fun inkOf(ctx: Context): Int = if (isNight(ctx)) INK_NIGHT else INK
+        private fun subOf(ctx: Context): Int = if (isNight(ctx)) SUB_COLOR_NIGHT else SUB_COLOR
+
+        /** 「还有 40 分钟」/「还有 3 小时」/「还有 2 天」（口径同 JS widgetNativeRender.leftText） */
+        private fun leftText(ms: Long): String {
+            val m = Math.max(1, Math.round(ms / 60000.0))
+            return when {
+                m < 60 -> "还有 $m 分钟"
+                m < 2880 -> "还有 ${Math.round(m / 60.0)} 小时"
+                else -> "还有 ${Math.round(m / 1440.0)} 天"
+            }
+        }
+
+        /** 本地日期键 "YYYY-MM-DD"（隔天残留守卫用） */
+        private fun dayKey(ms: Long): String {
+            val c = java.util.Calendar.getInstance()
+            c.timeInMillis = ms
+            return String.format("%04d-%02d-%02d", c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH) + 1, c.get(java.util.Calendar.DAY_OF_MONTH))
+        }
+
+        /** "HH:MM"（DDL 次行用） */
+        private fun hmOf(ms: Long): String {
+            val c = java.util.Calendar.getInstance()
+            c.timeInMillis = ms
+            return String.format("%02d:%02d", c.get(java.util.Calendar.HOUR_OF_DAY), c.get(java.util.Calendar.MINUTE))
+        }
+        private const val SUB_SP = 11
         /** 图标组布局的格子数（2 行 × 4 列） */
         private const val CELL_IDS = 8
 
@@ -196,6 +268,21 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 val ids = manager.getAppWidgetIds(ComponentName(ctx, cls))
                 for (widgetId in ids) renderFor(ctx, manager, widgetId, slotKeyOf(cls))
             }
+            scheduleNextTick(ctx)
+        }
+
+        /**
+         * 排下一次重画（R21 新鲜度的关键一环）：取「最近的行翻转点（at/until）」，
+         * 一个都没有就 30 分钟兜底自续。到点由 WidgetTicker 唤醒重画——重画本身按
+         * 当前时钟重算倒计时/正在上课/过期剔除，再排再下一次，自我延续。
+         */
+        fun scheduleNextTick(ctx: Context) {
+            val now = System.currentTimeMillis()
+            var next = now + FALLBACK_TICK_MS
+            for (t in WidgetStore.transitionTimes(ctx, now)) {
+                if (t >= now + MIN_TICK_GAP_MS && t < next) next = t
+            }
+            WidgetTicker.schedule(ctx, next)
         }
 
         private fun slotKeyOf(cls: Class<*>): String? = when (cls) {
@@ -300,47 +387,60 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         }
 
         /** 列表形态：标题 + 若干条（每条「色条 + 主文 + 小字说明」，一条一行）+ 脚注。
-         *  用于日程与 DDL、单原子详情、以及教室/洗衣机这类实时状态。 */
+         *  用于日程与 DDL、单原子详情、以及教室/洗衣机这类实时状态。
+         *  R21：带 at/until/rel 的行先经 nativeRow 重算（可见性/次行/加粗随当前时钟），
+         *  过期行剔除后从顶上重新装填；脚注与标题同步重算。语义锚 = widgetNativeRender.ts。 */
         private fun renderList(ctx: Context, manager: AppWidgetManager, widgetId: Int, content: JSONObject, h: Int) {
             val views = RemoteViews(ctx.packageName, R.layout.onethu_widget)
             val rows = content.optJSONArray("rows")
+            val now = System.currentTimeMillis()
             val (maxSlots, withSub) = listFit(h)
             // 矮条（2×1）里标题是冗余的（用户自己知道放的是什么），把这一行让给内容：
             // 隐藏标题、收紧内边距，于是「一条内容 + 脚注」都放得下，而不是被裁掉半行。
             val compact = h < 90
             applyCompactPadding(ctx, views, compact)
             views.setViewVisibility(R.id.onethu_widget_title, if (compact) View.GONE else View.VISIBLE)
-            views.setTextViewText(
-                R.id.onethu_widget_title,
-                content.optString("title").takeIf { it.isNotEmpty() } ?: "OneTHU",
-            )
+            views.setTextViewText(R.id.onethu_widget_title, titleOf(content, now))
 
-            for (i in 0 until SLOT_IDS) {
-                val slot = slotId(i + 1)
-                val row = if (i < maxSlots) rows?.optJSONObject(i) else null
-                val text = row?.optString("text").orEmpty()
-                if (text.isEmpty()) {
-                    views.setViewVisibility(slot, View.GONE)
-                    continue
+            val ink = inkOf(ctx)
+            val subC = subOf(ctx)
+            var packed = 0
+            var visClasses = 0
+            var visDdls = 0
+            if (rows != null) {
+                for (i in 0 until rows.length()) {
+                    if (packed >= maxSlots) break
+                    val row = rows.optJSONObject(i) ?: continue
+                    val (visible, text, rowSub) = nativeRow(row, now)
+                    if (!visible) continue
+                    val sub = if (withSub) rowSub else ""
+                    if (text.isEmpty() && sub.isEmpty()) continue
+
+                    val slot = slotId(packed + 1)
+                    views.setViewVisibility(slot, View.VISIBLE)
+
+                    // 色条：课程色 / 紧迫度色 / 状态色；无色时保留占位但不可见（各行文字对齐）
+                    val bar = barId(packed + 1)
+                    val color = parseColor(row.optString("color").orEmpty())
+                    if (color != null) {
+                        views.setViewVisibility(bar, View.VISIBLE)
+                        views.setInt(bar, "setBackgroundColor", color)
+                    } else {
+                        views.setViewVisibility(bar, View.INVISIBLE)
+                    }
+
+                    views.setTextViewText(rowId(packed + 1), styledRow(text, sub, row, color, ink, subC))
+                    when (row.optString("rel")) {
+                        "class" -> visClasses++
+                        "ddl" -> visDdls++
+                    }
+                    packed++
                 }
-                views.setViewVisibility(slot, View.VISIBLE)
-
-                // 色条：课程色 / 紧迫度色 / 状态色；无色时保留占位但不可见（各行文字对齐）
-                val bar = barId(i + 1)
-                val color = parseColor(row?.optString("color").orEmpty())
-                if (color != null) {
-                    views.setViewVisibility(bar, View.VISIBLE)
-                    views.setInt(bar, "setBackgroundColor", color)
-                } else {
-                    views.setViewVisibility(bar, View.INVISIBLE)
-                }
-
-                val sub = if (withSub) row?.optString("sub").orEmpty() else ""
-                views.setTextViewText(rowId(i + 1), styledRow(text, sub, row, color))
             }
+            for (i in packed + 1..SLOT_IDS) views.setViewVisibility(slotId(i), View.GONE)
 
-            // 脚注（「3 节课 · 2 个截止」）在矮条里让位给内容
-            val footer = if (withSub) content.optString("footer").orEmpty() else ""
+            // 脚注：按仍可见的行重计（矮条里让位给内容）
+            val footer = if (withSub) footerOf(content, now, visClasses, visDdls) else ""
             views.setViewVisibility(R.id.onethu_widget_footer, if (footer.isEmpty()) View.GONE else View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_footer, footer)
             views.setOnClickPendingIntent(
@@ -350,26 +450,99 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             manager.updateAppWidget(widgetId, views)
         }
 
+        /** 标题：快照有 titleAt 就按当前日期重写「今天 M月d日」（跨午夜不再挂昨天的日期） */
+        private fun titleOf(content: JSONObject, now: Long): String {
+            val base = content.optString("title").takeIf { it.isNotEmpty() } ?: "OneTHU"
+            if (content.optLong("titleAt", 0L) <= 0L) return base
+            val c = java.util.Calendar.getInstance()
+            c.timeInMillis = now
+            return "今天 ${c.get(java.util.Calendar.MONTH) + 1}月${c.get(java.util.Calendar.DAY_OF_MONTH)}日"
+        }
+
+        /**
+         * 单行重算 → (可见, 主文, 次行)。与 JS widgetNativeRender.nativeRow 逐条对齐：
+         *  - 无 at：非时间性行原样；
+         *  - class：下课剔除；正在上课加粗 + 次行「正在上课 · 地点」；
+         *    未开始次行「地点 · 还有 X」；隔天残留剔除；无结束时刻过点当结束；
+         *  - ddl：过点剔除；未到次行「今天/M/d HH:MM · 还有 X」。
+         *  加粗在 styledRow 内按「正在上课 / 6 小时内 DDL」判定，与此处语义互补。
+         */
+        private fun nativeRow(row: JSONObject, now: Long): Triple<Boolean, String, String> {
+            val text = row.optString("text").orEmpty()
+            val subSnap = row.optString("sub").orEmpty()
+            val at = if (row.has("at")) row.optLong("at", 0L) else 0L
+            val until = if (row.has("until")) row.optLong("until", 0L) else 0L
+            val rel = row.optString("rel")
+            if (at <= 0L) return Triple(true, text, subSnap)
+
+            if (rel == "class") {
+                if (at <= now && dayKey(at) != dayKey(now)) return Triple(false, "", "")   // 隔天残留
+                if (until > 0L && until <= now) return Triple(false, "", "")               // 已下课
+                val loc = row.optString("loc").orEmpty()
+                if (until > 0L && at <= now && now < until) {
+                    return Triple(true, text, listOf("正在上课", loc).filter { it.isNotEmpty() }.joinToString(" · "))
+                }
+                if (until == 0L && at <= now) return Triple(false, "", "")                 // 无结束时刻，过点当结束
+                return Triple(true, text, listOf(loc, leftText(at - now)).filter { it.isNotEmpty() }.joinToString(" · "))
+            }
+
+            // ddl（及其他过点失效型）
+            if (at <= now) return Triple(false, "", "")
+            val sameDay = dayKey(at) == dayKey(now)
+            val dayLabel = if (sameDay) "今天" else {
+                val c = java.util.Calendar.getInstance()
+                c.timeInMillis = at
+                "${c.get(java.util.Calendar.MONTH) + 1}/${c.get(java.util.Calendar.DAY_OF_MONTH)}"
+            }
+            return Triple(true, text, "$dayLabel ${hmOf(at)} · ${leftText(at - now)}")
+        }
+
+        /** 脚注重算：按仍可见的行计数；全空时按「快照当天且有过课」说「今天的课已上完」 */
+        private fun footerOf(content: JSONObject, now: Long, visClasses: Int, visDdls: Int): String {
+            val counts = content.optJSONObject("counts")
+            val parts = mutableListOf<String>()
+            if (visClasses > 0) parts.add("$visClasses 节课")
+            if (visDdls > 0) parts.add("$visDdls 个截止")
+            if (parts.isEmpty()) {
+                val hadClass = counts?.optBoolean("hadClass", false) == true
+                val titleAt = content.optLong("titleAt", 0L)
+                return if (hadClass && (titleAt <= 0L || dayKey(titleAt) == dayKey(now))) "今天的课已上完"
+                else "今天没有课与截止"
+            }
+            val more = counts?.optInt("more", 0) ?: 0
+            return parts.joinToString(" · ") + if (more > 0) " · 还有 $more 项" else ""
+        }
+
         /**
          * 一条内容 → 带样式的文字：主文（可加粗、可上色、可按档放大）+ 说明（小字灰）。
          *
          * 用 Spannable 而不是多摆几个 TextView：说明跟在主文后面，既省一行高度又保持主次；
          * 这里用的三种 Span 都是 Parcelable，能跨进程送到启动器（RemoteViews 的限制）。
          */
-        private fun styledRow(text: String, sub: String, row: JSONObject?, color: Int?): CharSequence {
+        private fun styledRow(text: String, sub: String, row: JSONObject?, color: Int?, ink: Int, subColor: Int): CharSequence {
             val full = if (sub.isEmpty()) text else "$text　$sub"
             val sp = android.text.SpannableString(full)
+            // 2026-09-20 用户反馈「安卓小组件字体很小」→ 整体 +1sp（主文 13→14、
+            // 强调 17→18、小档 11→12），说明小字 SUB_SP 同步 10→11。
             val headSp = when (row?.optString("size").orEmpty()) {
-                "lg" -> 17
-                "sm" -> 11
-                else -> 13
+                "lg" -> 18
+                "sm" -> 12
+                else -> 14
             }
+            // R21：加粗判定随当前时钟——正在上课（until>now≥at）或 6 小时内的 DDL，
+            // 与快照自带的 strong 取并集（正在上课就算快照写死 false 也要抢眼）。
+            val now = System.currentTimeMillis()
+            val at = if (row?.has("at") == true) row.optLong("at", 0L) else 0L
+            val until = if (row?.has("until") == true) row.optLong("until", 0L) else 0L
+            val ongoing = until > 0L && at in 1..now && now < until
+            val ddlSoon = row?.optString("rel").orEmpty() == "ddl" && at > now && at - now <= 6 * 3600_000L
+            val bold = row?.optBoolean("strong", false) == true || ongoing || ddlSoon
             sp.setSpan(android.text.style.AbsoluteSizeSpan(headSp, true), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            if (row?.optBoolean("strong", false) == true) {
+            if (bold) {
                 sp.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             sp.setSpan(
-                android.text.style.ForegroundColorSpan(color ?: INK),
+                android.text.style.ForegroundColorSpan(color ?: ink),
                 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
             if (sub.isNotEmpty()) {
@@ -378,7 +551,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                     text.length, full.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
                 sp.setSpan(
-                    android.text.style.ForegroundColorSpan(SUB_COLOR),
+                    android.text.style.ForegroundColorSpan(subColor),
                     text.length, full.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
                 )
             }
@@ -574,4 +747,41 @@ class OnethuWidgetSlot2 : OnethuBaseWidget() {
 
 class OnethuWidgetSlot3 : OnethuBaseWidget() {
     override fun slotKey(): String = "3"
+}
+
+/** 小组件重画闹钟：到点唤醒 → 全部重画（重画按当前时钟重算 + 排下一次，自我延续）。
+ *  与通知闹钟同一套权限纪律：API 31+ 优先精确、未授权降级 setAndAllowWhileIdle。 */
+object WidgetTicker {
+    private const val REQUEST_CODE = 0x0A77
+
+    fun schedule(ctx: Context, at: Long) {
+        val app = ctx.applicationContext
+        val mgr = app.getSystemService(AlarmManager::class.java) ?: return
+        val pi = PendingIntent.getBroadcast(
+            app,
+            REQUEST_CODE,
+            Intent(app, OnethuWidgetTickReceiver::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        try {
+            if (OnethuNotifyReceiver.canExact(app)) {
+                mgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+            } else {
+                mgr.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+            }
+        } catch (e: SecurityException) {
+            try {
+                mgr.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+            } catch (e2: Exception) {
+                // 闹钟彻底不可用：退回系统 30 分钟轮询 + 打开应用必刷新，不崩
+            }
+        }
+    }
+}
+
+/** 到点重画广播：refreshAll 内部会重新排下一次 tick。 */
+class OnethuWidgetTickReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        OnethuBaseWidget.refreshAll(context)
+    }
 }

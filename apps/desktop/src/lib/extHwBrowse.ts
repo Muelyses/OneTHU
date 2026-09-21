@@ -20,6 +20,7 @@
  * 异常）时降级回系统浏览器，绝不把链接吞掉。
  */
 import { invoke } from "@tauri-apps/api/core";
+import { currentThemeIsDark } from "../state/theme.js";
 import { pickExtHwOpenChannel } from "./androidHost.js";
 import { isTauri } from "./transport.js";
 import { openExternal } from "../pages/info/openExternal.js";
@@ -38,7 +39,7 @@ export async function openExternalHomework(rawUrl: string): Promise<void> {
   if (channel === "webview") {
     try {
       // Android：应用内全屏 WebView 桌面模式（用户关闭才 resolve）
-      await invoke("open_web_modal", { url: rawUrl });
+      await invoke("open_web_modal", { url: rawUrl, dark: currentThemeIsDark() });
       return;
     } catch (e) {
       // 通道异常（桌面 stub 被误调 / 插件出错）：降级系统浏览器，不吞链接

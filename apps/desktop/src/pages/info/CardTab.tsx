@@ -20,9 +20,11 @@ import { useApp } from "../../state/context.js";
 import { useCard } from "../../state/data.js";
 import { info } from "../../lib/clients.js";
 import { openAlipayDeepLink, openExternal } from "./openExternal.js";
+import { isAndroidNavigator } from "../../lib/androidHost.js";
 
-/** 移动端判定（安卓 WebView UA 恒含 Android）：决定出「调起支付宝」还是纯扫码 UI */
-const isAndroid = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+/** 移动端判定（R21：多信号——主窗口 UA 被伪装成 Windows，裸 UA 正则恒 false，
+ *  曾让真机上「调起支付宝」通道从不出现）：决定出「调起支付宝」还是纯扫码 UI */
+const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 
 const incomeRe = /充值|圈存|补助/;
 const isIncome = (t: CardTransaction): boolean =>
@@ -50,7 +52,7 @@ const RCH_CHANNELS: Array<{ key: RchChannel; label: string; hint: string }> = [
 ];
 
 const maskStyle: React.CSSProperties = { position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--bg-elev, #ffffff)", color: "var(--text, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
+const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
 
 function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () => void; onPaid: () => void }) {
   const [step, setStep] = useState<RchStep>("form");
@@ -62,9 +64,10 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
   if (!open) return null;
 
   const amt = Number(amount);
-  // 银行卡圈存服务端下限 10 元（cardpay.inputtxamtgreater10，2026-09-17 实录）；
-  // 微信/支付宝扫码充值无此限制
-  const minAmt = channel === "bank" ? 10 : 1;
+  // 全渠道下限统一 10 元（2026-09-20 定案）：银行卡圈存服务端本就拒 10 元以下
+  // （cardpay.inputtxamtgreater10，2026-09-17 实录），微信/支付宝官方收银台同样
+  // 起步 10 元（真机实录「至少充 10 块」）——三端统一成一条规则，不再分渠道。
+  const minAmt = 10;
   const valid = Number.isFinite(amt) && amt >= minAmt && amt <= 1000 && Math.round(amt * 100) === amt * 100;
   const close = () => {
     setStep("form");
@@ -81,7 +84,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
     if (channel === "bank") {
       const h = new Date().getHours() + new Date().getMinutes() / 60;
       if (h < 6 || h >= 20 + 40 / 60) {
-        setErr("当前不在银行卡圈存时段（6:00~20:40）。请改用扫码充值，或明天 6:00 后再试。");
+        setErr("银行卡圈存限 6:00~20:40：请改用扫码充值，或明天再试。");
         setBusy(false);
         return;
       }
@@ -121,17 +124,22 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             <input
               className="input"
               inputMode="decimal"
-              placeholder="自定义金额（1 ~ 1000 元）"
+              placeholder="自定义金额（10 ~ 1000 元）"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               style={{ marginBottom: 10 }}
             />
+            {!valid ? (
+              <div style={{ fontSize: 12, color: "var(--red, #c04848)", marginBottom: 8 }}>
+                充值金额需在 10 ~ 1000 元之间（全渠道下限统一 10 元，官方收银台同样起步 10 元）
+              </div>
+            ) : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
               {RCH_CHANNELS.map((c) => (
                 <label key={c.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13 }}>
                   <input type="radio" checked={channel === c.key} onChange={() => {
                     setChannel(c.key);
-                    if (c.key === "bank" && Number(amount) < 10) setAmount("20");
+                    if (Number(amount) < 10) setAmount("20"); // 全渠道下限 10 元，低于则抬到 20
                   }} />
                   <span>
                     <b>{c.label}</b>
@@ -224,7 +232,6 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
 /* --------------------------------- 主组件 --------------------------------- */
 
 export function CardTab({ active = true }: { active?: boolean }) {
-  const { status } = useApp();
   const { data, state, error, reload } = useCard(30);
   const [rchOpen, setRchOpen] = useState(false);
   // 切回本栏时若上次报错（如会话过期）则自动重试一次，不再让用户手动点刷新
@@ -255,11 +262,9 @@ export function CardTab({ active = true }: { active?: boolean }) {
                 {data?.info.cardStatus ? ` · ${data.info.cardStatus}` : ""}
               </div>
             </div>
-            {status !== "demo" ? (
-              <button className="btn btn-primary" style={{ marginLeft: "auto", height: 30 }} onClick={() => setRchOpen(true)}>
-                充值
-              </button>
-            ) : null}
+            <button className="btn btn-primary" style={{ marginLeft: "auto", height: 30 }} onClick={() => setRchOpen(true)}>
+              充值
+            </button>
           </div>
           <div className="card-hero-meta">
             <span>卡号 {data?.info.cardId || "–"}</span>

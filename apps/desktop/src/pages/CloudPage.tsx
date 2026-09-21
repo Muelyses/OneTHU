@@ -113,7 +113,7 @@ export default function CloudPage(): ReactNode {
           <ol>
             <li>点下面按钮，用清华账号登录云盘网页端</li>
             <li>页面里找 <b>Web API Auth Token</b> 区域，点「生成链接」</li>
-            <li>复制展示的 token 粘贴到此处</li>
+            <li>粘贴下图中的访问口令</li>
           </ol>
           <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
             <button className="btn primary" onClick={() => openExternal(TOKEN_PAGE)}>打开授权页面</button>
@@ -122,7 +122,7 @@ export default function CloudPage(): ReactNode {
             <input
               className="input"
               style={{ flex: 1, minWidth: 200 }}
-              placeholder="粘贴 Seafile API Token"
+              placeholder="粘贴云盘访问口令"
               value={tokenInput}
               onChange={(e) => setTokenInput(e.target.value.trim())}
             />

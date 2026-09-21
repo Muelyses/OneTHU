@@ -92,10 +92,6 @@ export function CourseInfoTab() {
     }
   }, []);
 
-  if (status === "demo") {
-    return <TabEmpty text="演示模式不提供课程共享查询，登录后可搜索全校开课的上课地点。" />;
-  }
-
   return (
     <>
       <SectionHead
@@ -146,7 +142,7 @@ export function CourseInfoTab() {
         <SkeletonRows rows={6} />
       ) : state === "ready" ? (
         (courses?.length ?? 0) === 0 ? (
-          <TabEmpty text="共享库中未找到匹配的课程——换个关键词试试，或该课尚未被共享（覆盖取决于大家的参与）。" />
+          <TabEmpty text="没找到匹配课程：换个关键词，或该课还没被共享。" />
         ) : (
           <>
             <SectionHead title="搜索结果" aside={`共 ${courses!.length} 条 · 点行查看时间地点`} />

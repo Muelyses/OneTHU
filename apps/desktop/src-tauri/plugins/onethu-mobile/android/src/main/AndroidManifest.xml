@@ -149,6 +149,12 @@
             android:name="app.onethu.mobile.OnethuNotifyReceiver"
             android:exported="false" />
 
+        <!-- 小组件重画 tick（R21 新鲜度）：到点全部重画（按当前时钟重算）+ 排下一次。
+             exported=false：只由本应用的 AlarmManager PendingIntent 触发。 -->
+        <receiver
+            android:name="app.onethu.mobile.OnethuWidgetTickReceiver"
+            android:exported="false" />
+
         <!-- 开机 / 应用升级后重排所有未到点的通知与小组件 -->
         <receiver
             android:name="app.onethu.mobile.OnethuBootReceiver"

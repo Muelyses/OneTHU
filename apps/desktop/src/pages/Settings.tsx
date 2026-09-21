@@ -1,10 +1,14 @@
 declare const __APP_VERSION__: string;
 import { useEffect, useState } from "react";
+import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
-import { Card, PageHead, SectionHead } from "../components/Layout.js";
+import { Card, PageHead, SectionHead, SegmentedOverflow } from "../components/Layout.js";
+import { TabManageModal } from "../components/TabManageModal.js";
+import { resetOnboarding } from "../state/onboarding.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
+import { showToast } from "../state/toast.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { clearRemembered, loadRemembered, session, isTauri } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
@@ -13,6 +17,7 @@ import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js"
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
 import { useApp } from "../state/context.js";
+import { displayStudentId } from "../lib/privacy.js";
 import { useCloudCal, configureCloudCal, disconnectCloudCal, syncCloudCal } from "../state/cloudCal.js";
 import {
   useSystemCal,
@@ -43,7 +48,77 @@ import {
 import { buildYktCookieExportJson, parseYktCookieExportJson, SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
 import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 
+/** 设置分组（按"你要改什么"索引，而不是按功能罗列）——
+ *  点一下即滚动到对应分节；分节标题保持原位，不重排大段 JSX（低风险）。 */
+const SETTINGS_GROUPS: Array<{ label: string; sections: string[] }> = [
+  { label: "账号", sections: ["账户", "账号与凭据", "安全"] },
+  { label: "通知与提醒", sections: ["通知", "桌面小组件"] },
+  { label: "外观与布局", sections: ["外观", "首页布局", "收藏夹"] },
+  { label: "数据与同步", sections: ["云同步", "外部作业源"] },
+  { label: "下载与存储", sections: ["下载"] },
+  { label: "插件", sections: ["插件"] },
+  { label: "关于", sections: ["关于"] },
+];
+
+/** 按分节标题滚动定位（不改各分节标记本身，避免动到千行 JSX） */
+function jumpToSection(titles: string[]): void {
+  const nodes = Array.from(document.querySelectorAll(".section-head, .sec-title, h2, h3"));
+  for (const t of titles) {
+    const hit = nodes.find((el) => (el.textContent ?? "").trim().startsWith(t));
+    if (hit) {
+      hit.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+  }
+}
+
+/** 设置页的二级页签（与信息页 / 生活页同形态）：标题 → 页签分组 */
+const SETTINGS_TAB_OF: Record<string, string> = {
+  关于: "关于", 账户: "账号", 账号与凭据: "账号", 安全: "账号",
+  云同步: "数据与同步", 外部作业源: "数据与同步",
+  首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
+  通知: "通知与提醒", 桌面小组件: "通知与提醒",
+  插件: "插件", 下载: "下载与存储",
+};
+const SETTINGS_TAB_ORDER = ["账号", "通知与提醒", "外观与布局", "数据与同步", "下载与存储", "插件", "关于"];
+
 export function SettingsPage() {
+  /** 当前二级页签（默认第一个栏目） */
+  const [tab, setTab] = useState<string>(SETTINGS_TAB_ORDER[0] ?? "账号");
+  const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
+  const settingsTabHidden = settingsTabLayout.hidden;
+  const [manageOpen, setManageOpen] = useState(false);
+  const [tabLayout, setTabLayout] = useState<TabLayout>(() => settingsTabLayout);
+  const applyTabLayout = (l: TabLayout): void => {
+    setTabLayout(l);
+    saveTabLayout("settings", l);
+  };
+
+  /**
+   * 页签显隐。两个坑（2026-09-20 实测）：
+   *  ① `hidden` 属性会被 app 里的 display 规则压过去 → 必须用行内 style.display；
+   *  ② 各分节并非同一父节点的兄弟：外部作业源 / 下载 / 外观等分节渲染在子组件内部，
+   *     因此必须逐个 .section-head 在**各自父节点内**向后收拢其内容，不能只遍历首层兄弟。
+   */
+  useEffect(() => {
+    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+    for (const head of heads) {
+      const title = (head.textContent ?? "").trim();
+      const group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+      if (!group) continue;
+      const show = group === tab;
+      const apply = (el: HTMLElement): void => {
+        el.style.display = show ? "" : "none";
+      };
+      apply(head);
+      let sib = head.nextElementSibling as HTMLElement | null;
+      while (sib && !sib.classList.contains("section-head")) {
+        apply(sib);
+        sib = sib.nextElementSibling as HTMLElement | null;
+      }
+    }
+  }, [tab, tabLayout.hidden.join(",")]);
+
   const { user, logout, navigate } = useApp();
   const favs = useFavs();
   const [favMsg, setFavMsg] = useState<string | null>(null);
@@ -92,7 +167,42 @@ export function SettingsPage() {
 
   return (
     <>
-      <PageHead title="设置" />
+      <PageHead
+        title="设置"
+        actions={
+          <>
+            <button
+              className="btn"
+              onClick={() => {
+                resetOnboarding();
+                location.reload();
+              }}
+              title="重新走一遍首次使用引导"
+            >
+              导览
+            </button>
+            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
+              管理栏目
+            </button>
+          </>
+        }
+      />
+
+      <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
+        {settingsTabLayout.order
+          .filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t))
+          .map((t) => (
+            <button
+              key={t}
+              role="tab"
+              aria-selected={tab === t}
+              className={tab === t ? "is-active" : ""}
+              onClick={() => setTab(t)}
+            >
+              {t}
+            </button>
+          ))}
+      </SegmentedOverflow>
 
       <SectionHead title="关于" />
       <Card>
@@ -106,6 +216,7 @@ export function SettingsPage() {
           </button>
         </div>
         <UpdateRow />
+        <DebugLogRow />
       </Card>
 
       <SectionHead title="账户" />
@@ -113,7 +224,7 @@ export function SettingsPage() {
         <div className="setting-row">
           <div>
             <div className="setting-title">统一认证</div>
-            <div className="setting-desc">{user?.displayName || user?.username || "未登录"}</div>
+            <div className="setting-desc">{user?.displayName || displayStudentId(user?.username) || "未登录"}</div>
           </div>
           <button className="btn" onClick={() => void logout()}>
             退出登录
@@ -122,7 +233,7 @@ export function SettingsPage() {
       </Card>
 
 
-      <SectionHead title="账户设置" />
+      <SectionHead title="账号与凭据" />
       <Card>
         <div className="setting-row" style={{ alignItems: "flex-start" }}>
           <div>
@@ -271,7 +382,7 @@ export function SettingsPage() {
               <div className="setting-desc">
                 日历「OneTHU 日程」· 上次同步 {syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString() : "—"} · {syscal.lastCount} 条。课表与日程变化后会自动更新（含提前 15 分钟的课程提醒）。
                 {syscal.lastError ? (
-                  <div style={{ marginTop: 6, color: "var(--danger, #c04848)" }}>最近一次同步失败：{syscal.lastError}</div>
+                  <div style={{ marginTop: 6, color: "var(--red, #c04848)" }}>最近一次同步失败：{syscal.lastError}</div>
                 ) : null}
                 {sysMsg ? <div style={{ marginTop: 6, color: "var(--text-2)" }}>{sysMsg}</div> : null}
               </div>
@@ -357,7 +468,7 @@ export function SettingsPage() {
 
       <DownloadSettings />
 
-      <SectionHead title="首页" />
+      <SectionHead title="首页布局" />
       <Card>
         <div className="setting-row">
           <div>
@@ -398,7 +509,7 @@ export function SettingsPage() {
                 }
                 void clip
                   .writeText(json)
-                  .then(() => setFavMsg("收藏夹 JSON 已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
+                  .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
                   .catch(() => setFavMsg("复制失败：剪贴板被拒绝，可改用导入框反向核对。"));
               }}
             >
@@ -425,8 +536,8 @@ export function SettingsPage() {
           <div style={{ marginTop: 12 }}>
             <textarea
               className="input"
-              style={{ width: "100%", minHeight: 120, fontFamily: "var(--mono, monospace)", fontSize: 12 }}
-              placeholder={"粘贴收藏夹 JSON（设置页导出的格式）…"}
+              style={{ width: "100%", minHeight: 120, fontFamily: "var(--font-mono, monospace)", fontSize: 12 }}
+              placeholder={"粘贴收藏夹内容（另一台设备导出的）…"}
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
             />
@@ -437,7 +548,7 @@ export function SettingsPage() {
                 onClick={() => {
                   const parsed = parseFavs(importText);
                   if (!parsed) {
-                    setFavMsg("导入失败：JSON 结构不合法（需要 onethu.favs.v1 导出格式）。");
+                    setFavMsg("导入失败：内容格式不对，请粘贴本应用导出的内容。");
                     return;
                   }
                   favs.replaceAll(parsed);
@@ -471,7 +582,7 @@ export function SettingsPage() {
         <div className="setting-row">
           <div>
             <div className="setting-title">插件管理</div>
-            <div className="setting-desc">Rust 骨干与 JS 模块的安装、启停、权限与运行轨迹</div>
+            <div className="setting-desc">插件的安装、启停、权限与运行记录</div>
           </div>
           <button className="btn" onClick={() => navigate("plugins")}>
             进入插件页
@@ -496,6 +607,16 @@ export function SettingsPage() {
           ) : null}
         </div>
       </Card>
+      <TabManageModal
+        open={manageOpen}
+        onClose={() => setManageOpen(false)}
+        title="管理设置栏目"
+        tabs={SETTINGS_TAB_ORDER.map((id) => ({ id, label: id }))}
+        layout={tabLayout}
+        onApply={applyTabLayout}
+        onReset={() => applyTabLayout({ order: SETTINGS_TAB_ORDER, hidden: [] })}
+      />
+
     </>
   );
 }
@@ -722,7 +843,7 @@ function ExtHwSection() {
         throw new Error("浏览器预览不支持导出——请用桌面端。");
       }
       const c = await ensureExtHwCredsLoaded();
-      if (!c.yuketang?.cookie?.trim()) throw new Error("未配置雨课堂会话，没有可导出的 Cookie。");
+      if (!c.yuketang?.cookie?.trim()) throw new Error("雨课堂还没登录，没有可导出的登录状态。");
       const json = buildYktCookieExportJson(c.yuketang);
       const { invoke } = await import("@tauri-apps/api/core");
       const date = new Date().toISOString().slice(0, 10);
@@ -764,7 +885,7 @@ function ExtHwSection() {
       setYktCookie(parsed.cookie);
       if (parsed.phone) setYktPhone(parsed.phone);
       void refreshExtHw();
-      return "已导入雨课堂 Cookie 并保存，正在刷新外部作业。";
+      return "已导入雨课堂登录状态，正在刷新外部作业。";
     })()
       .then((m) => notify("yuketang", m))
       .catch((e: unknown) => notify("yuketang", `导入失败：${errMsg(e)}`))
@@ -933,7 +1054,7 @@ function ExtHwSection() {
       </>
     );
   };
-  const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--mono, monospace)", fontSize: 12 } as const;
+  const taStyle = { width: "100%", minHeight: 64, fontFamily: "var(--font-mono, monospace)", fontSize: 12 } as const;
   const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
   const srcRows: Array<{ id: ExtHwSourceId; label: string; logged: boolean }> = (
     ["yuketang", "tuoj", "tuojClassic", "tyche", "dsa"] as const
@@ -1004,7 +1125,7 @@ function ExtHwSection() {
               R18b 25.3.2：桌面端该入口隐藏，文案不再引导到它。 */}
           <div className="exthw-note">
             {YKT_WEB_LOGIN_AVAILABLE
-              ? "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信扫码，或用「官方网页登录」在应用内完成扫码 / 短信登录。"
+              ? "雨课堂已开启图形验证码：请用微信扫码，或选「官方网页登录」。"
               : "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。"}
           </div>
           {msg && msgArea === "yuketang" ? (
@@ -1033,7 +1154,7 @@ function ExtHwSection() {
                   title="把当前会话导出成文件，供其他设备导入（免重复扫码）。文件等同账号凭据，用完即删。"
                   onClick={onYktExportCookie}
                 >
-                  {busy === "ykt-export" ? "导出中…" : "导出 Cookie"}
+                  {busy === "ykt-export" ? "导出中…" : "导出登录状态"}
                 </button>
                 <button
                   className="btn"
@@ -1041,7 +1162,7 @@ function ExtHwSection() {
                   title="导入其他已登录设备导出的会话文件，免扫码直接恢复登录"
                   onClick={onYktImportCookie}
                 >
-                  {busy === "ykt-import" ? "导入中…" : "导入 Cookie"}
+                  {busy === "ykt-import" ? "导入中…" : "导入登录状态"}
                 </button>
               </div>
               {ext.yktSession.alive === false ? (
@@ -1248,7 +1369,7 @@ function ExtHwSection() {
                   </label>
                   <div style={{ marginTop: 4, fontSize: 12, opacity: 0.65 }}>
                     {tycheRemember
-                      ? "密码将以 AES-GCM 密文存本机（与其它凭据同路），不进日志、不上传；退出登录即清除。"
+                      ? "密码以密文存在本机，不上传、不进日志；退出登录即清除。"
                       : "不勾选则只保存本次会话，失效后需手动重新登录。"}
                   </div>
                 </div>
@@ -1323,9 +1444,9 @@ function ExtHwSection() {
                 </button>
                 {advanced ? (
                   <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
-                    <textarea className="input" style={taStyle} placeholder="雨课堂 Cookie（sessionid / csrftoken / uv_id …）" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="TUOJ（AI 版）Cookie（session / session.sig）" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）Cookie（session / session.sig）" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="雨课堂登录状态" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="TUOJ（AI 版）登录状态" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
+                    <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
                     <textarea className="input" style={taStyle} placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(e) => setTycheCookie(e.target.value)} />
                     <textarea className="input" style={taStyle} placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(e) => setDsaCookie(e.target.value)} />
                     <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点上方「保存」生效。</div>
@@ -1340,7 +1461,7 @@ function ExtHwSection() {
                   return (
                     <div key={id} style={{ fontSize: 13, color: "var(--text-2)" }}>
                       {label}：{logged ? "已登录" : "未登录"} ·{" "}
-                      {err ? <span style={{ color: "var(--danger, #c04848)" }}>需重新登录</span> : `${count} 条`}
+                      {err ? <span style={{ color: "var(--red, #c04848)" }}>需重新登录</span> : `${count} 条`}
                     </div>
                   );
                 })}
@@ -1435,6 +1556,35 @@ function DownloadSettings() {
         </div>
       </Card>
     </>
+  );
+}
+
+/* ── 运行日志导出（真机问题取证：安卓日志落应用数据目录，一键转存系统下载）── */
+function DebugLogRow() {
+  const [busy, setBusy] = useState(false);
+  const [where, setWhere] = useState<string | null>(null);
+  const run = async (): Promise<void> => {
+    setBusy(true);
+    try {
+      const path = await invoke<string>("debug_log_export");
+      setWhere(path);
+      showToast("日志已导出到系统下载");
+    } catch (err) {
+      showToast(String(err instanceof Error ? err.message : err).slice(0, 60));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="setting-row">
+      <div>
+        <div className="setting-title">运行日志</div>
+        <div className="setting-desc">{where ? `已导出：${where}` : "问题排查用；一键导出到系统下载"}</div>
+      </div>
+      <button className="btn" disabled={busy} onClick={() => void run()}>
+        {busy ? "导出中…" : "导出日志"}
+      </button>
+    </div>
   );
 }
 

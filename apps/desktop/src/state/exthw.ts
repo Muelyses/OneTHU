@@ -34,6 +34,7 @@ import {
   yuketangSendSmsCode,
   yuketangVerifyLogin,
 } from "@onethu/core";
+import { maskValue } from "../lib/privacy.js";
 import type {
   ExtHwCreds,
   ExtHwSourceId,
@@ -734,13 +735,13 @@ export function refreshExtHw(): Promise<void> {
     // 尊重「显式退出」抑制；漫游与重试全程静默，失败仅落 errors / tuojAuto 状态供设置页展示。
     // R21-A：Tyche 会话失效（status=login / 401 / 跳登录页）→ 记住密码时静默自动重登一次
     // 并重拉；频控 / in-flight 去重 / 失败文案前缀都在 core，显式退出抑制在本模块。
-    const next = await refreshExternalHomework({
+    const next = maskValue(await refreshExternalHomework({
       getCreds: () => getExtHwCreds(),
       fetchLike: universalFetch,
       http,
       rerouteTuoj: (source) => maybeAutoTuojCas(source, { force: true, relaxThrottle: true }),
       reloginTyche: () => maybeAutoTycheRelogin(),
-    });
+    }), "exthw");
     items = next.items;
     errors = next.errors;
     state = "ready";

@@ -1,5 +1,6 @@
 /** 插件加载器：blob 动态 import + 权限门面注入 + 生命周期（安装/启用/停用/删除） */
 import { buildApi } from "./facade.js";
+import { isAndroidNavigator } from "../lib/androidHost.js";
 import { installTheme, removePluginThemes, type ThemeDef } from "../state/theme.js";
 import { registerPluginWidget, unregisterPluginWidgets } from "./pluginWidgets.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
@@ -150,7 +151,10 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
               // MadModel 免费档对话前兜底：token 到期即续 + 可达性探针（10 分钟缓存）——
               // 校外时把 reachable=0 写进 settings，Rust config 自动回退自费或出提醒文案
               if (id === "onethu.harness") {
-                await preflightMadModel().catch(() => undefined);
+                // 免费档 token 没签出来时直接回准确原因——Rust 侧 api_key 为空只会说
+                // 「尚未配置 API Key」，会把人误导到手填 key 上（用户实录）。
+                const warn = await preflightMadModel().catch(() => null);
+                if (warn) return { type: "chat", ok: false, error: warn };
               }
               const out = await callRust(id, "run", { command: c.id, input });
               // 漏判兜底：免费档请求仍被 IP 门禁弹掉（307）→ 强制重签 + 刷新可达性
@@ -361,8 +365,8 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     { key: "priceOut", label: "输出价格 $/1M tokens（自费模式）", type: "text", default: "1.10" },
     { key: "budget", label: "Token 预算（USD，到量停；自费模式）", type: "text", default: "2" },
     { key: "maxSteps", label: "单次任务最大步数", type: "text", default: "16" },
-    { key: "madmodelToken", label: "MadModel Token（自动维护，勿手改）", type: "text", default: "" },
-    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护，勿手改）", type: "text", default: "" },
+    { key: "madmodelToken", label: "MadModel Token（自动维护）", type: "text", default: "", auto: true },
+    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护）", type: "text", default: "", auto: true },
   ],
 };
 
@@ -380,7 +384,7 @@ async function isAndroid(): Promise<boolean> {
     const { invoke } = await import("@tauri-apps/api/core");
     androidFlag = await invoke<boolean>("os_is_android");
   } catch {
-    androidFlag = typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+    androidFlag = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
   }
   return androidFlag;
 }

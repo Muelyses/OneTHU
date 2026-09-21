@@ -1,11 +1,11 @@
 /**
  * 极简 CDP 客户端（WebView DevTools 协议）——Demo Flow 自动化的眼睛与手。
  *
- * 为什么不用 uiautomator / 坐标：实测本应用 WebView **不向 uiautomator 暴露可访问性节点**
- * （dump 出来只有一个空 WebView），而坐标写死在换设备/换字号后必崩。CDP 直接读写渲染进程里的
- * 真实 DOM：元素文字、坐标、滚动都能拿到，点击用 Input.dispatchMouseEvent（可信事件）。
+ * 为什么不用 uiautomator / 硬编码坐标：实测本应用 WebView **不向 uiautomator 暴露可访问性
+ * 节点**（dump 出来只有一个空 WebView），而坐标写死在换设备/换字号后必崩。CDP 直接读写渲染
+ * 进程里的真实 DOM：元素文字、坐标、滚动都能拿到，点击用 Input.dispatchMouseEvent（可信事件）。
  *
- * 连接方式：adb forward tcp:<port> localabstract:webview_devtools_remote_<pid>
+ * 连接：adb forward tcp:<port> localabstract:webview_devtools_remote_<pid>
  */
 import { execFileSync } from "node:child_process";
 
@@ -13,19 +13,26 @@ export function adb(args, opts = {}) {
   return execFileSync("adb", args, { encoding: "utf8", ...opts });
 }
 
-/** 找到应用 WebView 的 devtools socket 名（release 也可能开着，实测 demo 包是开的） */
-export function webviewSocket(pkg) {
-  const pid = adb(["shell", "pidof", pkg]).trim();
-  if (!pid) throw new Error(`应用未运行：${pkg}`);
-  const socks = adb(["shell", "cat", "/proc/net/unix"]).split("\n");
-  const hit = socks.map((l) => l.trim().split(/\s+/).pop()).find((n) => n?.startsWith("@webview_devtools_remote_"));
-  if (!hit) throw new Error("未找到 WebView devtools socket（该构建未开启调试）");
-  return { pid, socket: hit.replace(/^@/, "") };
+/** 找到应用 WebView 的 devtools socket（release 包也可能开着，实测 demo 包是开的）。
+ *  应用在后台/未启动时 socket 可能不存在 → 自动拉起应用再试几次（演示脚本不该因这个失败）。 */
+export function webviewSocket(pkg, { tries = 6, gapMs = 1200 } = {}) {
+  for (let i = 0; i < tries; i++) {
+    const socks = adb(["shell", "cat", "/proc/net/unix"]).split("\n");
+    const hit = socks.map((l) => l.trim().split(/\s+/).pop()).find((n) => n?.startsWith("@webview_devtools_remote_"));
+    if (hit) return hit.replace(/^@/, "");
+    if (i === 0 && pkg) {
+      try { adb(["shell", "monkey", "-p", pkg, "-c", "android.intent.category.LAUNCHER", "1"], { stdio: "ignore" }); } catch { /* 拉起失败再试 */ }
+    }
+    const until = Date.now() + gapMs;
+    while (Date.now() < until) { /* 等应用起来（同步阻塞，保持脚本简单） */ }
+  }
+  throw new Error("未找到 WebView devtools socket（该构建未开启调试，或应用始终未启动）");
 }
 
 /** 建立 CDP 连接：adb forward → /json 列表 → WebSocket */
 export async function connectCdp(pkg, port = 9222) {
-  const { pid, socket } = webviewSocket(pkg);
+  void pkg;
+  const socket = webviewSocket(pkg);
   try { adb(["forward", "--remove", `tcp:${port}`], { stdio: "ignore" }); } catch { /* 没有旧的 */ }
   adb(["forward", `tcp:${port}`, `localabstract:${socket}`]);
 
@@ -60,31 +67,27 @@ export async function connectCdp(pkg, port = 9222) {
       }, 15000);
     });
 
-  /** 在页面里求值（返回 JSON 化的结果） */
+  /** 在页面里求值（返回 JSON 化结果） */
   const evaluate = async (expression) => {
     const r = await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
     if (r.exceptionDetails) throw new Error(`页面求值异常：${r.exceptionDetails.text}`);
     return r.result?.value;
   };
 
-  return { send, evaluate, pid, close: () => ws.close() };
+  return { send, evaluate, close: () => ws.close() };
 }
 
-/** 人类化等待：带 ±25% 抖动，避免"机械秒点" */
+/** 人类化等待：±25% 抖动，避免机械秒点 */
 export function human(ms) {
   const jitter = ms * 0.25;
   return new Promise((r) => setTimeout(r, Math.round(ms - jitter + Math.random() * jitter * 2)));
 }
 
-/**
- * 找到可见元素（按文字/属性），返回中心点与文本——CDP 版的「看懂界面」。
- * 多个命中时取最靠上、面积合理的那个（避免拿到隐藏节点或整页容器）。
- */
+/** 找到可见元素（文字或 aria-label/title/placeholder 命中），取最靠上的合理命中 */
 export const FIND_JS = (needle) => `(() => {
   const needle = ${JSON.stringify(needle)};
-  const all = [...document.querySelectorAll('*')];
   const hits = [];
-  for (const el of all) {
+  for (const el of document.querySelectorAll('*')) {
     const own = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
     const txt = own || (el.children.length === 0 ? (el.textContent || '').trim() : '');
     const attr = (el.getAttribute('aria-label') || el.getAttribute('title') || el.getAttribute('placeholder') || '').trim();
@@ -97,5 +100,5 @@ export const FIND_JS = (needle) => `(() => {
     hits.push({ text: (txt || attr).slice(0, 60), x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2), w: Math.round(r.width), h: Math.round(r.height), cls: String(el.className || '').slice(0, 60) });
   }
   hits.sort((a, b) => (a.w * a.h) - (b.w * b.h));
-  return hits.slice(0, 6);
+  return hits.slice(0, 8);
 })()`;

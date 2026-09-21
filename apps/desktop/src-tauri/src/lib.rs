@@ -3287,6 +3287,20 @@ tauri::Builder::default()
         })
         .setup(|app| {
             let _ = LOG_APP.set(app.handle().clone());
+            // R21 网络诊断：解析结果落日志（v4/v6 混合与否是「校内每请求 5s」的
+            // 关键证据——IPv6 先超时再回落 v4 的连接 stall 每条新连接付一次）
+            {
+                let app2 = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    match tokio::net::lookup_host("webvpn.tsinghua.edu.cn:443").await {
+                        Ok(addrs) => {
+                            let list = addrs.map(|a| a.to_string()).collect::<Vec<_>>().join(", ");
+                            crate::debug_log_line(&format!("[NET-RESOLVE] webvpn.tsinghua.edu.cn → {list}"));
+                        }
+                        Err(e) => crate::debug_log_line(&format!("[NET-RESOLVE] webvpn 解析失败: {e}")),
+                    }
+                });
+            }
             // R21 dev 构建守卫（用户实录：有 Windows 同学拿到的是 dev/手动 cargo 构建，
             // 双击打开就是 127.0.0.1:5180 拒绝连接——`is_dev()` 构建里资产不打进程序，
             // devUrl 编译期烤死，WebView 一定去连它；vite 没跑就是浏览器错误页）。

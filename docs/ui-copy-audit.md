@@ -189,3 +189,15 @@ CI 的 `tauri build` 产物资产内嵌、永不出现 5180；出现即说明拿
   超时而校外快速失败；或 webvpn 包装链校内 RTT 膨胀。
 - info app 机制对照：其 RN 网络层与 WebView 共用同一 CookieManager，会话天然互通；
   我们等价物 = openWebModal 进页种票/出页回灌。机制无差，失败在链路某处，待日志定位。
+
+## 定案（09-21 晚，用户日志实锤）
+
+**在线服务/体育「点了没反应→跳浏览器」真因**：`SeedCookiesArgs`/`OpenWebModalArgs`
+漏了 `@InvokeArg` 注解——tauri Android 靠它生成 Jackson 构造器并 keep；R8 release 包下
+`parseArgs` 必炸（`no Creators`），debug 包不跑 R8 所以桌面期测试全是好的。修法：补注解 +
+Args 全部去 lateinit + consumer-rules 整包 keep 兜底。此教训对后续新增插件命令通用：
+**参数类必须 @InvokeArg**。
+
+**校内 20s**：日志实锤每 webvpn 请求 4-6.4s（含 wengine-vpn/cookie 5.8s），外网同链
+300-500ms/请求 → 冷启动=漫游链(12s)+并行抓取(9.4s)。启动链已加 NET-RESOLVE 解析日志
+（v4/v6 混合判定 IPv6 连接 stall 假说），等下一份校内日志定 mitigation。

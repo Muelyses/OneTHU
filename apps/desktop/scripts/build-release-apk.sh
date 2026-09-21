@@ -1,5 +1,9 @@
 #!/bin/bash
-# 脱敏演示版 APK 构建器（demo 分支专用）。
+# 正式版 APK 构建器（发布线 dev2/dev3 专用；demo 分支用 build-demo-apk.sh）。
+#
+# 与 demo 脚本的差别：工程用 ~/onethu-android（正式标识 app.onethu.desktop）、
+# 输出名带版本号、**构建前校验发布线不变量**（不脱敏 + 正式身份）——2026-09-21 曾把
+# demo 专属提交（脱敏开关/独立应用身份）误合进发布线，这道校验先拦住再谈构建。
 #
 # 为什么需要这个脚本：Tauri 生成的 Android 工程**不能放在 exFAT 卷**上——
 # Gradle 会把它自己写出的 AppleDouble 副档（`._drawable`、`._X.class`）当成真实
@@ -20,7 +24,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 TAURI_DIR="$REPO/apps/desktop/src-tauri"
 GEN="$TAURI_DIR/gen/android"
-PROJ_PRIMARY="$HOME/onethu-android-demo"
+PROJ_PRIMARY="$HOME/onethu-android"
 OUT_DIR="${ONETHU_APK_OUT:-$HOME/Desktop/OneTHU-builds}"
 CARGO_TARGET="${CARGO_TARGET_DIR:-$HOME/Library/Caches/onethu/cargo-target}"
 
@@ -48,7 +52,7 @@ if [ ! -d "$PROJ_PRIMARY" ]; then
     echo "· 把 gen/android 实体目录搬到内盘：$PROJ_PRIMARY"
     mv "$GEN" "$PROJ_PRIMARY"
   else
-    echo "✗ 内盘工程不存在（${PROJ_PRIMARY}）。请先在 demo 分支跑："
+    echo "✗ 内盘工程不存在（${PROJ_PRIMARY}）。请先在发布线跑："
     echo "    rm -f $GEN && pnpm --filter @onethu/desktop exec tauri android init --ci"
     echo "  生成后本脚本会自动把它搬到内盘。"
     exit 1
@@ -78,6 +82,27 @@ if needle in t:
         '            workingDir(if (File(rootDirRel).isAbsolute) File(rootDirRel) else File(project.projectDir, rootDirRel))')
     io.open(btask, 'w', encoding='utf-8').write(t)
     print('· BuildTask.kt 支持绝对 rootDirRel')
+PY
+
+# ②.5 发布线不变量：脱敏必须关、身份必须是正式包名（构建前拦住，别打出一个脱敏/异包名正式版）
+python3 - "$REPO" <<'PY'
+import io, json, re, sys
+repo = sys.argv[1]
+conf = json.load(io.open(repo + '/apps/desktop/src-tauri/tauri.conf.json', encoding='utf-8'))
+priv = io.open(repo + '/packages/core/src/privacy/config.ts', encoding='utf-8').read()
+bad = []
+if conf.get('identifier') != 'app.onethu.desktop':
+    bad.append('identifier=%s（应为 app.onethu.desktop）' % conf.get('identifier'))
+if conf.get('productName') != 'OneTHU':
+    bad.append('productName=%s（应为 OneTHU）' % conf.get('productName'))
+if 'export const DESENSITIZE_ENABLED = false;' not in priv:
+    bad.append('脱敏开关不是 false（正式版不得脱敏）')
+if bad:
+    print('✗ 发布线不变量未满足，拒绝构建：')
+    for b in bad:
+        print('  - ' + b)
+    sys.exit(1)
+print('· 发布线不变量通过（OneTHU / app.onethu.desktop / 不脱敏）')
 PY
 
 # ③ 符号链接指向内盘工程
@@ -111,18 +136,26 @@ SRC="${APK:-$UNSIGNED}"
 [ -n "$SRC" ] || { echo "✗ 没找到产物 APK"; exit 1; }
 mkdir -p "$OUT_DIR"
 STAMP="$(date +%m%d-%H%M)"
-OUT="$OUT_DIR/OneTHU-demo-$STAMP.apk"
+VERSION="$(python3 -c "import json,sys;print(json.load(open('$TAURI_DIR/tauri.conf.json'))['version'])" 2>/dev/null || echo 0.0.0)"
+OUT="$OUT_DIR/OneTHU-$VERSION-$STAMP.apk"
 BT="$(ls -d "$ANDROID_HOME"/build-tools/* 2>/dev/null | tail -1)"
 "$BT/zipalign" -p -f 4 "$SRC" "$OUT"
-"$BT/apksigner" sign --ks "$HOME/.android/debug.keystore" --ks-key-alias androiddebugkey \
-  --ks-pass pass:android --key-pass pass:android "$OUT"
+# 签名：默认用 debug keystore —— 与线上 Release（v0.9.0 资产）同证书（Android Debug），
+# 内测同学可直接覆盖升级。若要改用正式 keystore，给 ONETHU_KEYSTORE / ONETHU_KS_PASS /
+# ONETHU_KEY_PASS / ONETHU_KEY_ALIAS（注意：换证书后老用户必须卸载重装）。
+KS="${ONETHU_KEYSTORE:-$HOME/.android/debug.keystore}"
+KS_ALIAS="${ONETHU_KEY_ALIAS:-androiddebugkey}"
+KS_PASS="${ONETHU_KS_PASS:-android}"
+KEY_PASS="${ONETHU_KEY_PASS:-android}"
+"$BT/apksigner" sign --ks "$KS" --ks-key-alias "$KS_ALIAS" \
+  --ks-pass "pass:$KS_PASS" --key-pass "pass:$KEY_PASS" "$OUT"
 
 echo
 echo "✓ 产物：$OUT ($(du -h "$OUT" | cut -f1))"
 "$BT/aapt2" dump badging "$OUT" 2>/dev/null | head -3 || true
 echo "· 安装：adb install -r \"$OUT\""
 
-# ⑦ 复原 gen/android 指向（避免影响正式版构建）——基准是**入库的**符号链接目标
+# ⑦ 复原 gen/android 指向——基准是**入库的**符号链接目标
 COMMITTED_LINK="$(git -C "$REPO" cat-file -p HEAD:apps/desktop/src-tauri/gen/android 2>/dev/null || true)"
 if [ -n "$COMMITTED_LINK" ] && [ "$COMMITTED_LINK" != "$PROJ_PRIMARY" ]; then
   git -C "$REPO" checkout -- apps/desktop/src-tauri/gen/android

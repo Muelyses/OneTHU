@@ -8,7 +8,9 @@
  *
  * 登录流程与正式版完全一致（真实清华统一认证 + 2FA），仅展示层被脱敏。
  */
-export const DESENSITIZE_ENABLED = true;
+// 发布线（dev2/dev3）：脱敏关闭。demo 分支该值为 true —— 两线**唯一**的代码差异，
+// 由 tools/release-line-check.mjs 守护（2026-09-21 曾被 demo 专属提交泄漏进发布线）。
+export const DESENSITIZE_ENABLED = false;
 
 /** 脱敏版应用标识（demo 分支构建时用于界面角标与日志；正式分支不使用）。 */
 export const DESENSITIZE_BUILD_LABEL = "OneTHU Demo";

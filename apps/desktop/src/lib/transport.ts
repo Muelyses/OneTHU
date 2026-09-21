@@ -321,6 +321,15 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
       bodyB64 = serialized.b64Body ?? undefined;
     }
     headers["Content-Type"] ??= serialized.contentType;
+  } else if (init.body instanceof Uint8Array) {
+    // R20-C2：二进制 body（雨课堂插图通道 core 手拼 multipart 是 Uint8Array——fetch
+    // 规范的合法 BodyInit，浏览器原生 fetch 直接支持）。invoke 的 body 是 UTF-8 字符串，
+    // 二进制经字符串通道会损坏（与 FormData 文件 part 同理）→ base64 走 body_b64。
+    let bin = "";
+    for (let i = 0; i < init.body.length; i += 0x8000) {
+      bin += String.fromCharCode(...init.body.subarray(i, i + 0x8000));
+    }
+    bodyB64 = btoa(bin);
   }
   const redirect = init.redirect ?? "follow";
   // 上游对齐（2026-09-17，读 thu-info-app/packages/thu-info-lib 原源）：RN 的

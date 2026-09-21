@@ -50,11 +50,18 @@ pub async fn plugin_spawn(
     }
     plugin_kill_inner(&state, &plugin_id).await;
 
-    let mut child = Command::new(&path)
-        .args(args.unwrap_or_default())
+    let mut cmd = Command::new(&path);
+    cmd.args(args.unwrap_or_default())
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
-        .stderr(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+    // Windows：控制台子系统子进程（onethu-harness.exe 等 stdio 工具）默认被分配
+    // 新控制台 → 开机自启 / 每次重连会话重新激活插件都弹一个黑终端糊脸，且窗口
+    // 寿命=子进程寿命（不会自己关）。CREATE_NO_WINDOW 让它无窗口运行，stdio 管道
+    // 照常，宿主读流逻辑零变化。
+    #[cfg(windows)]
+    cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+    let mut child = cmd
         .spawn()
         .map_err(|e| format!("插件进程启动失败：{e}"))?;
     let mut stdin = child.stdin.take().ok_or("无法取得插件 stdin")?;

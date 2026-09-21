@@ -114,7 +114,15 @@ pub fn open_settings(what: &str) -> Value {
         "exact-alarm" => "ms-settings:notifications",
         _ => "ms-settings:notifications",
     };
-    match std::process::Command::new("cmd").args(["/C", "start", "", target]).status() {
+    // CREATE_NO_WINDOW：cmd.exe 是控制台程序，不压掉会闪一个黑框
+    let st = {
+        use std::os::windows::process::CommandExt;
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", target])
+            .creation_flags(0x0800_0000)
+            .status()
+    };
+    match st {
         Ok(st) if st.success() => json!({ "ok": true }),
         Ok(st) => json!({ "ok": false, "reason": format!("cmd 退出码 {:?}", st.code()) }),
         Err(e) => json!({ "ok": false, "reason": e.to_string() }),

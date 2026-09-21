@@ -35,3 +35,4 @@ tools/*/target/
 # 本机 AI 编码工具（Reasonix 等）在仓库根留下的会话状态：属于个人开发环境，
 # 不该进版本库（历史上 0.1.0 那次误提交过一份）
 .reasonix/
+docs/BUILD-AGENT-GUIDE.md

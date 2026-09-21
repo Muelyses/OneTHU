@@ -10,6 +10,13 @@
  *    comment[], my_score, status, count, my_count }
  *  - R20-C1 剩余重交次数：user.count>0 → remainingRetries = count - my_count（缺省 0）；
  *    count<=0/缺失 → 不设（不限/未知，web 端置 999，不得当 0）
+ *  - R20-C2 新字段映射：user.count → totalCount（原值，缺失不设）/ user.my_count → usedCount
+ *    （缺失按 0 参与计算但字段仅在存在时设置）/ user.submit_time → submitTime（毫秒 →
+ *    "YYYY-MM-DD HH:MM"，缺失/非数字/0 不设）/ user.submission_status → submissionStatus
+ *    （原样透传，存在才设）
+ *  - R20-C2 late_submission 双口径容错（不下结论，28.11 vs 28.1 冲突待 P1b）：数字（毫秒）
+ *    → lateDeadline；对象含 deduct_score → lateDeductScore（此时 lateDeadline 不设）；
+ *    对象无 deduct_score / 都不是 → 均不设
  *  - 三态（保守）：status 4=已批改 / 3=已交未批 / 无 user 或（无显式 status 且
  *    answer_count=0 无作答痕迹）→ 未答
  *  - 得分透出条件：仅「已批改」且为有效数字（含真实 0 分）；-1 / "-1.00" 占位、
@@ -177,6 +184,11 @@ console.log("\n[1] 快照归一化（exercise 级 + 单题字段映射）");
   eq(p1.myScore, 2, '已批改 + my_score "2.00" → myScore 2（字符串数字）');
   eq(p1.myAnswerHtml, "<p>B</p>", "my_answer.content → myAnswerHtml");
   eq(p1.remainingRetries, 1, "user.count=1（my_count 缺省 0）→ remainingRetries 1");
+  // R20-C2：count 原值透传；my_count/submit_time/submission_status 缺失不设（28.4 快照无这些字段）
+  eq(p1.totalCount, 1, "user.count=1 → totalCount 1（原值）");
+  eq(p1.usedCount, undefined, "user.my_count 缺失 → usedCount 不设");
+  eq(p1.submitTime, undefined, "user.submit_time 缺失 → submitTime 不设");
+  eq(p1.submissionStatus, undefined, "user.submission_status 缺失 → submissionStatus 不设");
   eq(p1.remark, undefined, "空 remark 不设");
   eq(p1.comments, undefined, "空 comment[] 不设");
 
@@ -200,6 +212,11 @@ console.log("\n[1] 快照归一化（exercise 级 + 单题字段映射）");
   eq(p3.myAnswerHtml, undefined, "未答不给 myAnswerHtml");
   eq(p3.myScore, undefined, "未答不给 myScore");
   eq(p3.remainingRetries, undefined, "无 user → remainingRetries 不设");
+  // R20-C2：无 user → 四个新字段一律不设
+  eq(p3.totalCount, undefined, "无 user → totalCount 不设");
+  eq(p3.usedCount, undefined, "无 user → usedCount 不设");
+  eq(p3.submitTime, undefined, "无 user → submitTime 不设");
+  eq(p3.submissionStatus, undefined, "无 user → submissionStatus 不设");
   deepEq(p3.allowResults, [], "缺 AllowResults → []");
   eq(p3.maxRetry, 0, "缺 content.max_retry → 0（保守）");
   deepEq(p3.options, [], "Options: [] → 空数组透传");
@@ -358,6 +375,15 @@ console.log("\n[4] 缺字段容错（不崩，给默认值）");
   eq(d5.problems[1].remainingRetries, undefined, "count=0 → 不设（不限次，web 端置 999）");
   eq(d5.problems[2].remainingRetries, 1, 'count="2" my_count="1"（字符串数字）→ 1');
   eq(d5.problems[3].remainingRetries, 1, "count=1 my_count 缺省 → 1（缺省按 0）");
+  // R20-C2：totalCount / usedCount 原值透传（含 0 与字符串数字；my_count 缺失不设）
+  eq(d5.problems[0].totalCount, 3, "count=3 → totalCount 3（原值）");
+  eq(d5.problems[0].usedCount, 3, "my_count=3 → usedCount 3（原值）");
+  eq(d5.problems[1].totalCount, 0, "count=0 → totalCount 0（原值透传，不限次判定看 remainingRetries）");
+  eq(d5.problems[1].usedCount, 0, "my_count=0 → usedCount 0（原值透传）");
+  eq(d5.problems[2].totalCount, 2, 'count="2" → totalCount 2（字符串数字）');
+  eq(d5.problems[2].usedCount, 1, 'my_count="1" → usedCount 1（字符串数字）');
+  eq(d5.problems[3].totalCount, 1, "count=1 → totalCount 1");
+  eq(d5.problems[3].usedCount, undefined, "my_count 缺失 → usedCount 不设");
 }
 
 /* ───────────────── [5] 异常（带上下文抛错） ───────────────── */
@@ -376,6 +402,109 @@ console.log("\n[5] 异常路径");
   await rejects(() => src.getExerciseDetail("7004", "77"), "会话已失效", "HTTP 401 → 抛会话失效");
   await rejects(() => src.getExerciseDetail("", "77"), "leafTypeId", "空 leafTypeId → 抛参数错误");
   await rejects(() => src.getExerciseDetail("   ", "77"), "leafTypeId", "空白 leafTypeId → 抛参数错误");
+}
+
+/* ───────────────── [6] R20-C2 新字段映射（有值 / 缺失 / 对象形态 late_submission） ───────────────── */
+console.log("\n[6] R20-C2 新字段（totalCount/usedCount/submitTime/submissionStatus + late_submission 双口径）");
+{
+  const submitMs = 1760000000000;
+  // 与 core fmtLocal 同式的本地时间格式化（时区无关，用于生成期望值）
+  const fmt = (ms) => {
+    const d = new Date(ms);
+    const p = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+  const mkBody = (lateSubmission, user) => ({
+    errcode: 0,
+    data: {
+      name: "C2",
+      is_allowed_late_submission: true,
+      ...(lateSubmission !== undefined ? { late_submission: lateSubmission } : {}),
+      answer_count: 1,
+      problems: [
+        {
+          problem_id: 9001,
+          index: 1,
+          content: { ProblemType: 5, TypeText: "主观题", Body: "<p>x</p>", score: 5 },
+          ...(user !== undefined ? { user } : {}),
+        },
+      ],
+    },
+  });
+  const fetchLike = makeFetch([
+    // ① 有值：四个新字段全给 + 数字形态 late_submission → lateDeadline
+    {
+      match: (u) => u.includes("/get_exercise_list/8101/"),
+      body: mkBody(submitMs, { count: 5, my_count: 2, submit_time: submitMs, submission_status: 2, my_answer: { content: "<p>a</p>" } }),
+    },
+    // ② 缺失：user 无新字段、data 无 late_submission → 全部不设
+    { match: (u) => u.includes("/get_exercise_list/8102/"), body: mkBody(undefined, { my_answer: {} }) },
+    // ③ 对象形态 late_submission（docs §28.11：含 deduct_score）→ lateDeductScore，lateDeadline 不设
+    {
+      match: (u) => u.includes("/get_exercise_list/8103/"),
+      body: mkBody({ deduct_score: 2, deadline: "2026-01-01" }, { count: 3, my_count: 1, submit_time: submitMs, submission_status: 1 }),
+    },
+    // ③b 对象但无 deduct_score → 两者都不设
+    { match: (u) => u.includes("/get_exercise_list/8104/"), body: mkBody({ other: 1 }, {}) },
+    // ④ 字符串数字：count/my_count/submit_time/submission_status 均为数字串 → 照常解析
+    {
+      match: (u) => u.includes("/get_exercise_list/8105/"),
+      body: mkBody("1760000000000", { count: "4", my_count: "1", submit_time: "1760000000000", submission_status: "3" }),
+    },
+    // ⑤ 0 值：late_submission=0 / submit_time=0 → falsy 同官方 truthiness 口径，不设
+    { match: (u) => u.includes("/get_exercise_list/8106/"), body: mkBody(0, { submit_time: 0, count: 0 }) },
+  ]);
+  const src = createYuketangSource({ cookie: "s=1" }, fetchLike, 30);
+
+  // ① 有值
+  const d1 = await src.getExerciseDetail("8101", "77");
+  eq(d1.problems[0].totalCount, 5, "user.count=5 → totalCount 5（原值）");
+  eq(d1.problems[0].usedCount, 2, "user.my_count=2 → usedCount 2（原值）");
+  eq(d1.problems[0].remainingRetries, 3, "remainingRetries 语义不变：5-2=3");
+  eq(d1.problems[0].submitTime, fmt(submitMs), "user.submit_time（毫秒）→ submitTime 本地 YYYY-MM-DD HH:MM");
+  eq(d1.problems[0].submissionStatus, 2, "user.submission_status=2 → submissionStatus 2（原样透传）");
+  eq(d1.lateDeadline, fmt(submitMs), "late_submission 数字（毫秒）→ lateDeadline（R20-B2 行为不变）");
+  eq(d1.lateDeductScore, undefined, "数字形态 → lateDeductScore 不设");
+
+  // ② 缺失
+  const d2 = await src.getExerciseDetail("8102", "77");
+  eq(d2.problems[0].totalCount, undefined, "user.count 缺失 → totalCount 不设");
+  eq(d2.problems[0].usedCount, undefined, "user.my_count 缺失 → usedCount 不设");
+  eq(d2.problems[0].submitTime, undefined, "user.submit_time 缺失 → submitTime 不设");
+  eq(d2.problems[0].submissionStatus, undefined, "user.submission_status 缺失 → submissionStatus 不设");
+  eq(d2.lateDeadline, undefined, "late_submission 缺失 → lateDeadline 不设");
+  eq(d2.lateDeductScore, undefined, "late_submission 缺失 → lateDeductScore 不设");
+
+  // ③ 对象形态（含 deduct_score）
+  const d3 = await src.getExerciseDetail("8103", "77");
+  eq(d3.lateDeductScore, 2, "late_submission 对象 deduct_score=2 → lateDeductScore 2");
+  eq(d3.lateDeadline, undefined, "对象形态 → lateDeadline 不设（不下结论，待 P1b 定稿）");
+  eq(d3.problems[0].submitTime, fmt(submitMs), "对象形态 late_submission 不影响题级 submitTime 映射");
+  eq(d3.problems[0].submissionStatus, 1, "对象形态 late_submission 不影响题级 submissionStatus 映射");
+  eq(d3.problems[0].remainingRetries, 2, "对象形态 late_submission 不影响 remainingRetries（3-1=2）");
+
+  // ③b 对象但无 deduct_score
+  const d4 = await src.getExerciseDetail("8104", "77");
+  eq(d4.lateDeductScore, undefined, "对象无 deduct_score → lateDeductScore 不设");
+  eq(d4.lateDeadline, undefined, "对象无 deduct_score → lateDeadline 不设");
+  eq(d4.problems[0].totalCount, undefined, "无 user → totalCount 不设");
+
+  // ④ 字符串数字
+  const d5 = await src.getExerciseDetail("8105", "77");
+  eq(d5.problems[0].totalCount, 4, 'count="4"（数字串）→ totalCount 4');
+  eq(d5.problems[0].usedCount, 1, 'my_count="1"（数字串）→ usedCount 1');
+  eq(d5.problems[0].remainingRetries, 3, "数字串 4-1 → remainingRetries 3");
+  eq(d5.problems[0].submitTime, fmt(submitMs), 'submit_time="1760000000000"（数字串）→ submitTime');
+  eq(d5.problems[0].submissionStatus, 3, 'submission_status="3"（数字串）→ submissionStatus 3');
+  eq(d5.lateDeadline, fmt(submitMs), 'late_submission="1760000000000"（数字串）→ lateDeadline');
+
+  // ⑤ 0 值
+  const d6 = await src.getExerciseDetail("8106", "77");
+  eq(d6.lateDeadline, undefined, "late_submission=0 → lateDeadline 不设");
+  eq(d6.lateDeductScore, undefined, "late_submission=0 → lateDeductScore 不设");
+  eq(d6.problems[0].submitTime, undefined, "submit_time=0（官方 falsy，视作未提交）→ submitTime 不设");
+  eq(d6.problems[0].totalCount, 0, "count=0 → totalCount 0（原值透传）");
+  eq(d6.problems[0].remainingRetries, undefined, "count=0 → remainingRetries 语义不变（不设）");
 }
 
 console.log(`\n合计：${pass} 通过 / ${fail} 失败`);

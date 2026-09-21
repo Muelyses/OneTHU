@@ -307,8 +307,11 @@ console.log("\n[7] 接线静态审计（详情页 / ProblemBody / yktAssets 漏�
   eq((page.match(/<ProblemBody /g) ?? []).length, 4, "详情页：四处正文全走 ProblemBody（题型9题干/普通题干/我的作答/作业说明）");
   ok(page.includes("components/exthw/ProblemBody.js"), "详情页：ProblemBody 从 components/exthw 引入");
   ok(page.includes("getYktCookie(") && page.includes("d.fontUrl"), "详情页：Cookie 与整卷字体 URL 下传");
-  // 红线：B3 只换渲染，不新增任何提交入口（详情页无提交处理器/提交按钮文案）
-  ok(!page.includes("onSubmit") && !page.includes("提交答案") && !page.includes("submitAnswer"), "详情页：无提交处理器/提交文案（只读红线）");
+  // 红线（B3 定稿 / R20-C2 修订）：渲染层零提交语义不变；详情页自 R20-C2 起有逐题
+  // 原生作答入口（霖钦定，docs §31.2/§32）——但提交只能经 YktAnswerPanel 的确认对话框
+  // 路径，护栏细断言见 tools/c2-redline-test.mjs（确认框/无 AI 生成/插件宿主不可达）。
+  // 此处仍禁止的：无确认路径的 React 提交处理器（onSubmit=）、整页提交文案、旧命名。
+  ok(!page.includes("onSubmit=") && !page.includes("提交答案") && !page.includes("submitAnswer"), "详情页：无裸提交处理器/旧提交文案（提交走 C2 确认框路径）");
 
   const comp = readSrc("../apps/desktop/src/components/exthw/ProblemBody.tsx");
   ok(comp.includes('sandbox="allow-scripts"'), "ProblemBody：iframe 沙箱 allow-scripts");
@@ -341,6 +344,54 @@ console.log("\n[7] 接线静态审计（详情页 / ProblemBody / yktAssets 漏�
   const katexGlue = readSrc("../apps/desktop/src/lib/yktKatex.ts");
   ok(katexGlue.includes('import("../vendor/katex/katex.mjs")'), "yktKatex：离线 vendor 包（无运行时 CDN）");
   ok(katexGlue.includes("throwOnError: true") && katexGlue.includes("trust: false"), "yktKatex：单公式失败抛错兜原文 + 不信任外链命令");
+}
+
+/* ───────────────── [8] 主题配色（R20-B3 fix ②） ───────────────── */
+console.log("\n[8] 主题配色：yktDocCss / sanitizeDocColor / buildYktProblemDoc theme 注入");
+{
+  // 缺省 = 历史浅色定稿（逐字节兼容旧观感与旧测试）
+  eq(yb.yktDocCss(yb.DEFAULT_YKT_DOC_THEME), yb.YKT_DOC_CSS, "yktDocCss(默认主题) === YKT_DOC_CSS（浅色定稿不漂移）");
+  ok(yb.DEFAULT_YKT_DOC_THEME.bg === "transparent", "默认底色 transparent（未接主题时的历史行为）");
+
+  // 自定义主题色生效：暗色主题 / 米白浅色主题都只是「另一组字面量」
+  const dark = { text: "#e8eaf0", textSoft: "#9aa0aa", bg: "#16181d", border: "#33363d", link: "#7aa2ff", fallbackBg: "#22252c" };
+  const cssDark = yb.yktDocCss(dark);
+  ok(cssDark.includes(`color:${dark.text}`) && cssDark.includes(`background:${dark.bg}`), "body 文字/底色来自主题");
+  ok(cssDark.includes(`border:1px solid ${dark.border}`), "表格边线来自主题");
+  ok(cssDark.includes(`a{color:${dark.link}`), "链接色来自主题");
+  ok(cssDark.includes(`background:${dark.fallbackBg}`) && cssDark.includes(`color:${dark.textSoft}`), "图片占位框底/字色来自主题");
+  ok(cssDark.includes(`.${yb.YKT_ENCRYPTED_FONT_CLASS}{font-family:"${yb.YKT_FONT_FAMILY}",`), "加密 span 规则随主题拼装保留");
+
+  // 主题注入走 buildYktProblemDoc
+  const docT = yb.buildYktProblemDoc({ html: "<p>题干</p>", theme: dark });
+  ok(docT.includes(`color:${dark.text}`) && docT.includes(`background:${dark.bg}`), "buildYktProblemDoc 接受 theme 并注入文档");
+  const docD = yb.buildYktProblemDoc({ html: "<p>题干</p>" });
+  ok(docD.includes("color:#222"), "未传 theme → 浅色定稿（行为不变）");
+
+  // sanitizeDocColor：只放行像颜色的字面量，畸形值/注入形态一律回退
+  eq(yb.sanitizeDocColor("#E8EAF0", "FB"), "#e8eaf0", "hex 放行（大小写归一）");
+  eq(yb.sanitizeDocColor("rgba(15, 17, 21, 0.87)", "FB"), "rgba(15, 17, 21, 0.87)", "rgba() 放行");
+  eq(yb.sanitizeDocColor("hsl(220 10% 90%)", "FB"), "hsl(220 10% 90%)", "hsl() 放行");
+  eq(yb.sanitizeDocColor("transparent", "FB"), "transparent", "transparent 放行");
+  eq(yb.sanitizeDocColor("var(--x)", "FB"), "FB", "var() 引用不放行（opaque origin 无意义）");
+  eq(yb.sanitizeDocColor("red}body{display:none", "FB"), "FB", "CSS 注入形态不放行");
+  eq(yb.sanitizeDocColor("url(javascript:x)", "FB"), "FB", "url() 不放行");
+  eq(yb.sanitizeDocColor("", "FB"), "FB", "空串回退");
+  eq(yb.sanitizeDocColor(undefined, "FB"), "FB", "非字符串回退");
+  eq(yb.sanitizeDocColor("#".repeat(70), "FB"), "FB", "超长值回退（长度上限）");
+
+  // 暗底自检兜底（霖真机回归：底色解析失败时「白画布黑字」绝不允许再出现）
+  ok(yb.isLightTextColor("#e8eaf0") && !yb.isLightTextColor("#222"), "isLightTextColor 亮度口径");
+  const darkText = { text: "#e8eaf0", textSoft: "#9aa0aa", bg: "transparent", border: "#33363d", link: "#7aa2ff", fallbackBg: "#22252c" };
+  const cssFallback = yb.yktDocCss(darkText);
+  ok(yb.yktDocIsDark(darkText), "底色没解析出来但文字亮 → 判定暗主题");
+  ok(cssFallback.includes("html{color-scheme:dark}"), "暗档带 color-scheme:dark（画布兜底第二道）");
+  ok(cssFallback.includes("background:#16181d"), "底色 transparent → 强制中性暗纸面");
+  ok(!cssFallback.includes("color:#222"), "暗档不再回退黑字");
+  const darkBgDarkText = { ...dark, text: "#222" };
+  const cssClamp = yb.yktDocCss(darkBgDarkText);
+  ok(cssClamp.includes("color:#e8ebf2"), "暗底 + 暗文字 → 亮墨兜底（暗底上不可见字比白底更伤）");
+  ok(!yb.yktDocIsDark(yb.DEFAULT_YKT_DOC_THEME), "默认浅色定稿仍是亮档");
 }
 
 console.log(`\n═══ R20-B3 题干内联渲染单测：${pass} 通过 / ${fail} 失败 ═══`);

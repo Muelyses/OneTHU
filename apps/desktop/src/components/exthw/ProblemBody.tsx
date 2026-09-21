@@ -21,15 +21,18 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  DEFAULT_YKT_DOC_THEME,
   YKT_DOC_BASE,
   YKT_FRAME_MIN_H,
   buildYktProblemDoc,
   clampDocHeight,
   needsEncryptedFont,
+  sanitizeDocColor,
+  type YktDocTheme,
 } from "../../lib/yktBody.js";
+import { stripInlineColors } from "../../lib/htmlTheme.js";
 import { fetchYktImageAsDataUrl, loadYktFont } from "../../lib/yktAssets.js";
 import { loadYktLatexBundle, type YktLatexBundle } from "../../lib/yktKatex.js";
-import { currentThemeIsDark, useThemes } from "../../state/theme.js";
 import { openExternal } from "../../pages/info/openExternal.js";
 
 export interface ProblemBodyProps {
@@ -53,22 +56,100 @@ interface YktDocMessage {
   dataUrl?: unknown;
 }
 
+/* ──────────────── 主题配色读取（R20-B3 fix ②） ──────────────── */
+
+/** 颜色归一化画布（惰性建一次）：任意 CSS 颜色串（oklch/color(srgb)/color-mix/…）
+ *  交给引擎自己解析，读回的 computed 值必是 hex/rgba 字面量——下游纯函数只认这些。 */
+let normCtx: CanvasRenderingContext2D | null | undefined;
+function normalizeColor(v: string): string {
+  if (!v) return v;
+  try {
+    if (normCtx === undefined) {
+      const c = document.createElement("canvas");
+      c.width = 1;
+      c.height = 1;
+      normCtx = c.getContext("2d");
+    }
+    if (!normCtx) return v;
+    normCtx.fillStyle = "#000000"; // 先放一个必成功的值，防上一次非法赋值残留
+    normCtx.fillStyle = v;
+    return normCtx.fillStyle;
+  } catch {
+    return v;
+  }
+}
+
+/** 探针读值：把 CSS 值（通常 `var(--x, fallback)`）挂进真实容器读 computed color——var 链 / color-mix /
+ *  回退值全部由引擎解析完，再画布归一化。比直接读 :root 变量更彻底（变量可能在
+ *  非 :root 层定义，或值是引用形态）。 */
+function probeColor(container: Element | null, cssValue: string): string {
+  try {
+    const probe = document.createElement("span");
+    probe.style.color = cssValue;
+    probe.style.display = "none";
+    (container ?? document.body).appendChild(probe);
+    const v = getComputedStyle(probe).color;
+    probe.remove();
+    return normalizeColor(v);
+  } catch {
+    return "";
+  }
+}
+
+/** 从 el 沿祖先链找第一个不透明背景色（沙箱文档的底色用它，随所在容器自适应）。
+ *  全链透明（理论不该发生）→ "transparent"（引擎会按 light 画布刷白，亮主题无损）。 */
+function resolveEffectiveBg(el: Element | null): string {
+  let cur: Element | null = el;
+  while (cur) {
+    let bg = "";
+    try {
+      bg = getComputedStyle(cur).backgroundColor;
+    } catch {
+      return "transparent";
+    }
+    const m = /rgba?\(([^)]+)\)/i.exec(bg);
+    if (m) {
+      const parts = (m[1] ?? "").split(/[,/\s]+/).filter(Boolean);
+      const a = parts.length >= 4 ? Number(parts[3] ?? "1") : 1;
+      if (!(Number.isFinite(a) && a < 0.01)) return normalizeColor(bg); // 不透明 → 就用它
+    } else if (bg && bg !== "transparent") {
+      return normalizeColor(bg);
+    }
+    cur = cur.parentElement;
+  }
+  return "transparent";
+}
+
+/** 从当前 DOM 读一份沙箱配色（所有值过 sanitizeDocColor，畸形值回退浅色定稿）。
+ *  主题可插拔（暗色不止一个、浅色可能是米白），所以只信运行时 computed 值，
+ *  绝不假设「明/暗」二元。 */
+export function readYktDocTheme(container: Element | null): YktDocTheme {
+  return {
+    text: sanitizeDocColor(probeColor(container, "var(--text-1, #222)"), DEFAULT_YKT_DOC_THEME.text),
+    textSoft: sanitizeDocColor(probeColor(container, "var(--text-2, #666)"), DEFAULT_YKT_DOC_THEME.textSoft),
+    bg: sanitizeDocColor(resolveEffectiveBg(container), DEFAULT_YKT_DOC_THEME.bg),
+    border: sanitizeDocColor(probeColor(container, "var(--border, #ddd)"), DEFAULT_YKT_DOC_THEME.border),
+    link: sanitizeDocColor(probeColor(container, "var(--accent, #1a73e8)"), DEFAULT_YKT_DOC_THEME.link),
+    fallbackBg: sanitizeDocColor(probeColor(container, "var(--surface-3, #fafafa)"), DEFAULT_YKT_DOC_THEME.fallbackBg),
+  };
+}
+
 export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", className }: ProblemBodyProps) {
-  // 文档在 opaque origin 的 iframe 里，继承不到主题变量 → 必须按档重建：
-  // useThemes() 订阅主题变化，切换日夜即重渲染并重算 dark。
-  useThemes();
-  const dark = currentThemeIsDark();
   const [doc, setDoc] = useState("");
   const [height, setHeight] = useState(YKT_FRAME_MIN_H);
   const frameRef = useRef<HTMLIFrameElement | null>(null);
+  /** 外层容器：主题底色 / 变更观测的锚点（iframe 自身可能尚未挂载） */
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   /** 当前生效的 katex 产物（渲染器 + 内联样式；字体强刷重建文档时复用，避免二次加载） */
   const bundleRef = useRef<YktLatexBundle | null>(null);
   /** 构建序号：html/fontUrl 变更后，旧异步结果一律作废 */
   const buildSeq = useRef(0);
   /** 字体强刷只许一次（防「缓存坏 → 强刷 → 又坏」打转） */
   const fontRetried = useRef(false);
+  /** 主题代数：主题/容器底色变化时 +1 触发文档重建（R20-B3 fix ②） */
+  const [themeTick, setThemeTick] = useState(0);
 
-  /** 用当前入参 + 已加载的渲染器/字体重建文档（初建与强刷共用；调用方先核对 buildSeq） */
+  /** 用当前入参 + 已加载的渲染器/字体 + **当下实时主题**重建文档（初建与强刷共用） */
   const rebuild = useCallback(
     (fontDataUrl: string | undefined) => {
       setDoc(
@@ -77,12 +158,13 @@ export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", cl
           fontDataUrl,
           render: bundleRef.current?.render,
           extraCss: bundleRef.current?.inlineCss,
-          dark,
+          theme: readYktDocTheme(wrapRef.current),
+          stripColors: stripInlineColors,
         }),
       );
       setHeight(YKT_FRAME_MIN_H);
     },
-    [html, dark],
+    [html, themeTick],
   );
 
   /* 首建：渲染器与字体并行取，任一失败各自降级，不影响另一环 */
@@ -149,9 +231,35 @@ export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", cl
     return () => window.removeEventListener("message", onMsg);
   }, [cookies, fontUrl, rebuild]);
 
+  /* 主题切换 → 重建文档（R20-B3 fix ②）：观测点与 theme.ts applyTheme 的三条写入路径
+   * 一一对应——① documentElement 的 data-theme / style（colorScheme）属性；② 主题
+   * <style id="onethu-theme-style"> 的文本被整体替换（characterData / childList）；
+   * ③ 该 style 元素被创建 / 挪动（head childList）。触发时先比对实时配色，真变了才
+   * setThemeTick，避免无关 DOM 抖动打出无意义的重建。 */
+  useEffect(() => {
+    let lastKey = "";
+    const fire = (): void => {
+      const t = readYktDocTheme(wrapRef.current);
+      const key = JSON.stringify(t);
+      if (key === lastKey) return;
+      const first = lastKey === "";
+      lastKey = key;
+      if (!first) setThemeTick((n) => n + 1); // 首次只是登记基线，初建 effect 自会用当下主题
+    };
+    fire();
+    const root = document.documentElement;
+    const mo = new MutationObserver(fire);
+    mo.observe(root, { attributes: true, attributeFilter: ["data-theme", "style", "class"] });
+    const head = document.head;
+    if (head) mo.observe(head, { childList: true });
+    let styleEl = document.getElementById("onethu-theme-style");
+    if (styleEl) mo.observe(styleEl, { characterData: true, childList: true, subtree: true });
+    return () => mo.disconnect();
+  }, []);
+
   if (!html) return null;
   return (
-    <div className={className}>
+    <div className={className} ref={wrapRef}>
       <iframe
         ref={frameRef}
         title={title}

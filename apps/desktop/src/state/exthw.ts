@@ -44,6 +44,9 @@ import type {
   YkExerciseDetail,
   YktQrPhase,
   YktQrPollResult,
+  YktSubmitAttachment,
+  YktSubmitResult,
+  YuketangSource,
 } from "@onethu/core";
 import { universalFetch } from "../lib/transport.js";
 import { http, info, logLine, persist } from "../lib/clients.js";
@@ -812,6 +815,47 @@ export async function fetchYktExerciseDetail(leafTypeId: string, classroomId: st
   }
   const src = createYuketangSource(cred, universalFetch, creds.days ?? 30);
   return src.getExerciseDetail(leafTypeId, classroomId);
+}
+
+/** 构建带凭据/传输层的雨课堂 source（提交 / 插图上传共用）。未登录抛错。 */
+function requireYktSource(): YuketangSource {
+  const creds = getExtHwCreds();
+  const cred = creds.yuketang;
+  if (!cred || !cred.cookie.trim()) {
+    throw new Error("雨课堂未登录：请先在 设置 → 外部作业源 登录雨课堂");
+  }
+  return createYuketangSource(cred, universalFetch, creds.days ?? 30);
+}
+
+/**
+ * R20-C2 P3：主观题提交（state 层薄包装）。
+ * ⛔ 学术红线（docs §32）：本函数仅供作答编辑器在**用户显式点击提交并确认**后调用；
+ * 不得注册进插件宿主工具清单，不得被任何自动化路径（定时器/事件代理/AI 工具循环）触发。
+ */
+export async function submitYktSubjective(opts: {
+  classroomId: string;
+  problemId: number | string;
+  contentHtml: string;
+  attachments?: YktSubmitAttachment[];
+}): Promise<YktSubmitResult> {
+  const src = requireYktSource();
+  return src.submitYktProblemSubjective({
+    classroomId: opts.classroomId,
+    problemId: opts.problemId,
+    contentHtml: opts.contentHtml,
+    ...(opts.attachments ? { attachments: opts.attachments } : {}),
+  });
+}
+
+/** R20-C2 P3：正文内联插图上传（用户拖拽/粘贴/拍照/选图的图片，走官方插图通道）。 */
+export async function uploadYktInlineImage(opts: {
+  classroomId: string;
+  fileName: string;
+  mime: string;
+  bytes: Uint8Array;
+}): Promise<{ fileUrl: string }> {
+  const src = requireYktSource();
+  return src.uploadExerciseInlineImage(opts);
 }
 
 /* ── React hook ── */

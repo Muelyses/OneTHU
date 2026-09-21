@@ -43,8 +43,9 @@ import type { YkExerciseDetail, YkProblem } from "@onethu/core";
 import { BackButton, timeLeft } from "./shared.js";
 import { Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
 import { ProblemBody } from "../../components/exthw/ProblemBody.js";
+import { YktSubjectiveEditor, toSubmitHtml } from "../../components/exthw/YktSubjectiveEditor.js";
 import { useApp } from "../../state/context.js";
-import { fetchYktExerciseDetail, getYktCookie } from "../../state/exthw.js";
+import { fetchYktExerciseDetail, getYktCookie, submitYktSubjective } from "../../state/exthw.js";
 import { explainNetworkError } from "../../lib/transport.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { openExternalHomework } from "../../lib/extHwBrowse.js";
@@ -75,10 +76,143 @@ function YktPlainText({ text }: { text: string }) {
   return <div className="ykt-plain">{text}</div>;
 }
 
+/** 可折叠区块头（R20-B3 fix ③）：「我的作答」「老师评语」支持折叠/展开。
+ *  口径（霖 2026-09-21）：**不记忆**——每次进入详情页一律默认展开；折叠只在当次
+ *  浏览内有效。纯展示开关，不影响数据拉取。
+ *  可见性（霖真机反馈「看不出能折叠」）：整头做成 chip 按钮——底色块 + 悬停反馈 +
+ *  箭头转向 + 尾部「收起/展开」文字，多重信号一眼可点。 */
+function CollapsibleSection({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(true); // 默认展开，不记忆
+  return (
+    <>
+      <button
+        type="button"
+        className={`ykt-sec-toggle${open ? "" : " is-closed"}`}
+        aria-expanded={open}
+        title={open ? "点击收起" : "点击展开"}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="ykt-sec-caret" aria-hidden="true">
+          {open ? "▾" : "▸"}
+        </span>
+        <span className="ykt-sec-label">{label}</span>
+        <span className="ykt-sec-hint">{open ? "收起" : "展开"}</span>
+      </button>
+      {open ? children : null}
+    </>
+  );
+}
+
+/** R20-C2：逐题原生作答面板（主观题，docs §31.2 / §32 学术红线）。
+ *  草稿：localStorage 按 classroom+题 持久化（官方同款语义；提交成功即清）。
+ *  提交：编辑器 HTML → toSubmitHtml（官方公式形态 + UEditor 包裹）→ 用户确认对话框
+ *  （展示剩余次数）→ core submitYktProblemSubjective → 成功后重拉真实状态（禁止乐观更新）。
+ *  ⛔ 红线：无任何 AI 生成入口；提交只能由用户点击本按钮触发。 */
+function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classroomId: string; onSubmitted: () => void }) {
+  const draftKey = `onethu-ykt-draft-${classroomId}-${p.problemId}`;
+  const [html, setHtml] = useState(() => {
+    try {
+      return localStorage.getItem(draftKey) ?? p.myAnswerHtml ?? "";
+    } catch {
+      return p.myAnswerHtml ?? "";
+    }
+  });
+  const [uploading, setUploading] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    // 草稿防抖落盘（600ms）；提交成功后 removeItem，重进以服务端 my_answer 回填
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, html);
+      } catch {
+        /* 存储满/隐私模式：草稿降级为仅内存 */
+      }
+    }, 600);
+    return () => clearTimeout(t);
+  }, [html, draftKey]);
+
+  const remaining = p.remainingRetries;
+  const unlimited = typeof remaining !== "number" || remaining >= 999;
+  const exhausted = typeof remaining === "number" && remaining <= 0;
+  const hasContent = html.replace(/<[^>]*>/g, "").trim().length > 0 || /<img\b/i.test(html);
+
+  const doSubmit = async (): Promise<void> => {
+    if (busy || uploading > 0) return;
+    const content = toSubmitHtml(html);
+    if (!hasContent) {
+      setErr("作答内容为空：请输入文字或插入解题图片。");
+      return;
+    }
+    const ok = await confirmOk(
+      `确认提交第 ${p.index} 题作答？\n\n剩余提交次数：${unlimited ? "不限次" : `${remaining} 次`}\n提交将覆盖此前的作答（雨课堂官方截止/次数校验同步生效）。`,
+    );
+    if (!ok) return;
+    setBusy(true);
+    setErr("");
+    try {
+      await submitYktSubjective({ classroomId, problemId: p.problemId, contentHtml: content });
+      try {
+        localStorage.removeItem(draftKey);
+      } catch {
+        /* ignore */
+      }
+      onSubmitted();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setErr(msg);
+      void invoke("log_debug", {
+        line: `R20-C2 主观题提交失败（problem=${p.problemId}）: ${msg.slice(0, 300)}`,
+      }).catch(() => undefined);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (exhausted) {
+    return (
+      <div className="ykt-ans ykt-answer-panel">
+        <div className="ykt-ans-empty">本题作答次数已用尽</div>
+      </div>
+    );
+  }
+  return (
+    <div className="ykt-ans ykt-answer-panel">
+      <YktSubjectiveEditor
+        value={html}
+        onChange={setHtml}
+        classroomId={classroomId}
+        onUploadingChange={setUploading}
+        onError={setErr}
+        disabled={busy}
+      />
+      {err ? <div className="ykt-answer-err">{err}</div> : null}
+      <div className="ykt-answer-actions">
+        <button
+          className="btn btn-primary"
+          disabled={busy || uploading > 0 || !hasContent}
+          onClick={() => void doSubmit()}
+          title="提交后可在剩余次数内重做（覆盖旧答案）"
+        >
+          {busy ? "提交中…" : uploading > 0 ? "图片上传中…" : unlimited ? "提交作答" : `提交（剩余 ${remaining} 次）`}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** 单题卡：序号 + 题型 + 分值 + 批改徽标；题干 / 我的作答 + 附件 / 老师评语。
  *  题型 9（外链 OJ）：只渲染外链跳转（红线），作答与评语区一律不给。
- *  题干 / 作答正文（R20-B3）：ProblemBody 内联沙箱渲染（加密字体 + LaTeX + 图片代理）。 */
-function ProblemCard({ p, fontUrl, cookies }: { p: YkProblem; fontUrl?: string; cookies: string }) {
+ *  题干 / 作答正文（R20-B3）：ProblemBody 内联沙箱渲染（加密字体 + LaTeX + 图片代理）。
+ *  R20-C2：answer 槽位渲染逐题原生作答编辑器（主观题 + 资格通过时）。 */
+function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: string; cookies: string; answer?: ReactNode }) {
   const chip = yktStatusChip(p);
   const ext9 = yktIsExternalLinkProblem(p);
   const attText = yktAttachmentsText(p.myAnswerAttachments);
@@ -117,25 +251,28 @@ function ProblemCard({ p, fontUrl, cookies }: { p: YkProblem; fontUrl?: string; 
               <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题题干`} />
             </div>
           ) : null}
+          {answer}
           {hasAnswer ? (
             <div className="ykt-ans">
-              <div className="ykt-sec-label">我的作答</div>
-              {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题我的作答`} /> : null}
-              {attText ? <div className="ykt-ans-att">附件：{attText}</div> : null}
+              <CollapsibleSection label="我的作答">
+                {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题我的作答`} /> : null}
+                {attText ? <div className="ykt-ans-att">附件：{attText}</div> : null}
+              </CollapsibleSection>
             </div>
           ) : p.myStatus === "unanswered" ? (
             <div className="ykt-ans-empty">未作答</div>
           ) : null}
           {hasRemark ? (
             <div className="ykt-remark">
-              <div className="ykt-sec-label">老师评语</div>
-              {remarkView.remark ? <YktPlainText text={remarkView.remark} /> : null}
-              {(remarkView.comments ?? []).map((c, i) => (
-                <div className="ykt-remark-item" key={i}>
-                  {c.name ? <b>{c.name}：</b> : null}
-                  <YktPlainText text={c.content} />
-                </div>
-              ))}
+              <CollapsibleSection label="老师评语">
+                {remarkView.remark ? <YktPlainText text={remarkView.remark} /> : null}
+                {(remarkView.comments ?? []).map((c, i) => (
+                  <div className="ykt-remark-item" key={i}>
+                    {c.name ? <b>{c.name}：</b> : null}
+                    <YktPlainText text={c.content} />
+                  </div>
+                ))}
+              </CollapsibleSection>
             </div>
           ) : null}
         </>
@@ -321,14 +458,26 @@ export function YktAssignmentDetailPage() {
           </Card>
         ) : null}
 
-        {/* 题目列表（原生只读；R20-C1 的提交入口是页级「作答 / 提交」按钮，
-            逐题原生作答输入属 R20-C2，此处永不渲染） */}
+        {/* 题目列表（R20-C2：主观题在资格通过时渲染逐题原生作答编辑器；
+            客观题/试卷/超次数仍只读——官方页兜底入口保留） */}
         {d.problems.length === 0 ? (
           <Card>
             <Empty text="本作业暂无题目明细（可能接口未返回 problems）。" />
           </Card>
         ) : (
-          d.problems.map((p) => <ProblemCard key={p.problemId || p.index} p={p} fontUrl={d.fontUrl} cookies={yktCookie} />)
+          d.problems.map((p) => (
+            <ProblemCard
+              key={p.problemId || p.index}
+              p={p}
+              fontUrl={d.fontUrl}
+              cookies={yktCookie}
+              answer={
+                p.type === 5 && p.problemId && eligibility.eligible ? (
+                  <YktAnswerPanel p={p} classroomId={classroomId} onSubmitted={() => setTick((t) => t + 1)} />
+                ) : undefined
+              }
+            />
+          ))
         )}
       </>
     );

@@ -67,6 +67,15 @@ function checkRelease(label, read, exists) {
     if (exists("apps/desktop/scripts/build-demo-apk.sh")) {
       failures.push(`${label}：出现 demo 专属脚本 apps/desktop/scripts/build-demo-apk.sh`);
     }
+    // 入库的 gen/android 是符号链接（值随构建机不同），但发布线不该指向 demo 工程
+    try {
+      const link = read("apps/desktop/src-tauri/gen/android").trim();
+      if (link.includes("onethu-android-demo")) {
+        failures.push(`${label}：gen/android 软链指向 demo 工程（${link}）`);
+      }
+    } catch {
+      /* 不是符号链接或读不到：跳过 */
+    }
   } catch (e) {
     failures.push(`${label}：读取失败 ${String(e).slice(0, 80)}`);
   }

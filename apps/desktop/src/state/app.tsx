@@ -304,19 +304,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (username: string, password: string, remember = true) => {
       setStatus("connecting");
       setError(null);
-      try {
-        const result = await clients.login(username, password, { remember });
-        if (result.state === "need-2fa") {
-          setTwoFactor({ username, password, methods: result.methods });
+      const finish = (r: Awaited<ReturnType<typeof clients.login>>): void => {
+        if (r.state === "need-2fa") {
+          setTwoFactor({ username, password, methods: r.methods });
           setStatus("2fa");
           return;
         }
         setUser({ username });
         setStatus("ready");
         navigate("today");
-      } catch (err) {
-        setStatus("logged-out");
-        setError(explainNetworkError(err));
+      };
+      try {
+        const result = await clients.login(username, password, { remember });
+        finish(result);
+      } catch (firstErr) {
+        // R21c：登录链半路断（校园网冷漫游，一跳 4-6s 是常态）≠ 凭据错——
+        // 用刚输入的同一凭据静默重试一次，两次都失败才回登录页；重试期间保持
+        // connecting 态（spinner），用户感知是「多转了一会儿」而不是「被踹出来」。
+        void import("../lib/clients.js")
+          .then(({ logLine }) => logLine(`LOGIN-RETRY 首次失败，静默重试一次：${String(firstErr).slice(0, 120)}`))
+          .catch(() => undefined);
+        try {
+          const second = await clients.login(username, password, { remember });
+          finish(second);
+        } catch (secondErr) {
+          setStatus("logged-out");
+          setError(explainNetworkError(secondErr));
+        }
       }
     },
     [navigate],

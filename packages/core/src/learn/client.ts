@@ -389,6 +389,10 @@ function parseBbsPostJson(raw: unknown): LearnBbsPost {
   };
 }
 
+/** 会话失效（请求回了登录页/网关页 HTML）——#withRelogin 捕获后静默重登一次再重试。
+ *  继承 AuthRequiredError：既有 catch 兼容不变。 */
+class SessionExpiredError extends AuthRequiredError {}
+
 export class LearnClient {
   #http: HttpClient;
   #csrf: string | null = null;
@@ -529,9 +533,22 @@ export class LearnClient {
     }
   }
 
-  /** 会话失效直接上抛，由 CampusSession/UI 决定是否重登录（密码不落盘，core 不自动重试） */
+  /** 会话失效 → 静默重登一次再重试（R21c 用户口径：有记住的账密就该静默恢复，
+   *  不该把用户踹回登录页）。仅对 SessionExpiredError 生效——启动期无会话的
+   *  AuthRequiredError（#requireCsrf）仍直接上抛，避免无凭据时空转重登。
+   *  只重试一次：重登成功仍过期说明会话层真坏了，交还上层提示。 */
   async #withRelogin<T>(fn: () => Promise<T>): Promise<T> {
-    return fn();
+    try {
+      return await fn();
+    } catch (e) {
+      if (!(e instanceof SessionExpiredError)) throw e;
+      this.#http.debug?.("LEARN-RELOGIN 会话失效，静默重登后重试一次");
+      if (!(await this.silentRelogin())) {
+        this.#http.debug?.("LEARN-RELOGIN 静默重登失败，交还上层");
+        throw e;
+      }
+      return await fn();
+    }
   }
 
   #requireCsrf(): string {
@@ -754,7 +771,8 @@ export class LearnClient {
     studentHomeworkId: string,
     opts: { content?: string; file?: File | null; remove?: boolean },
   ): Promise<{ ok: boolean; msg?: string }> {
-    return this.#withRelogin(async () => {
+    try {
+      return await this.#withRelogin(async () => {
       const fd = new FormData();
       fd.append("xszyid", studentHomeworkId);
       fd.append("zynr", opts.content ?? "");
@@ -763,10 +781,11 @@ export class LearnClient {
       fd.append("isDeleted", opts.remove ? "1" : "0");
       const url = this.#withCsrf(urls.LEARN_PREFIX + "/b/wlxt/kczy/zy/student/tjzy");
       const res = await this.#http.postForm(url, fd);
-      // 返回 HTML = 会话失效被重定向到登录页（learnApi 同款判定），不能当成功吞掉
+      // 返回 HTML = 会话失效被重定向到登录页/网关页（learnApi 同款判定），不能当成功吞掉。
+      // R21c：抛标记交 #withRelogin 静默重登后重试一次，重试仍失败才回过期提示。
       if (/<(!DOCTYPE|html)/i.test(res.slice(0, 200))) {
         this.lastDebug = "TJZY-HTML " + res.slice(0, 400).replace(/\s+/g, " ");
-        return { ok: false, msg: "会话已过期，请重新登录后再提交" };
+        throw new SessionExpiredError("submit-html");
       }
       try {
         const data = JSON.parse(res) as { result?: string; msg?: string };
@@ -780,7 +799,13 @@ export class LearnClient {
         this.lastDebug = "TJZY-NONJSON " + res.slice(0, 400).replace(/\s+/g, " ");
         return { ok: false, msg: "返回非 JSON（可能未登录或接口变更）" };
       }
-    });
+      });
+    } catch (e) {
+      if (e instanceof SessionExpiredError) {
+        return { ok: false, msg: "会话已过期，请重新登录后再提交" };
+      }
+      throw e;
+    }
   }
 
   async getHomeworkDetail(baseId: string): Promise<{ description: string }> {

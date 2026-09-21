@@ -41,6 +41,20 @@
  *   持久化（AES-GCM 信封）。侦查未见 GET 轮换证据，属「服务端若轮换则不丢」的兜底。
  * - Cookie 导出/导入：`buildYktCookieExportJson` / `parseYktCookieExportJson`
  *   （多设备迁移缓解；导出文件自带敏感标注）。
+ *
+ * R20-C2 P2（主观题提交 + 正文插图 core 能力，2026-09-21）：
+ * - `submitYktProblemSubjective()`：POST /mooc-api/v1/lms/exercise/problem_apply/
+ *   （docs §28.11 表 A 主观行 + §31.6 P1b 实发成功），answer =
+ *   {content, time:"0", oSubject:{attachments:{filelist}}}；成功响应**无 errcode 包裹**
+ *   （直接是 data 层字段 count/my_count/my_score/submit_time/…），my_score -1 占位不透出。
+ * - `uploadExerciseInlineImage()`：正文内联插图（AI 判卷可读的主通道）= OSS 表单直传 +
+ *   callback（§31.5-② 逆向 + P1b 实测修正：token 在 data.token，表单含
+ *   success_action_status=200，file 字段最后，file_url 由 callback 下发）。
+ *   与作业附件 STS（exercise_attachment）是两条通道，勿混；解题图片禁入附件（产品约束）。
+ * - CSRF 双提交（§31.6 P1b 实测）：写端点必须带 X-CSRFToken 头且与 Cookie csrftoken
+ *   **同值**即过（Django 只比对 header==cookie，不要求服务端签发）。ensureCsrf()：
+ *   凭据已有 csrftoken → 原值取用；没有 → 逐请求自签 16 字节随机 hex（无状态、不持久化；
+ *   P1b 纪要曾写「自签并持久化」，P2 定稿改为逐请求独立自签，效果等价）。
  */
 import type { FetchLike } from "../http.js";
 import type { ExternalHomework, HomeworkSource } from "./types.js";
@@ -93,6 +107,38 @@ function authCookie(c: YktCred): string {
   if (!has("xtbz")) extras.push("xtbz=ykt");
   if (!has("django_language")) extras.push("django_language=zh-cn");
   return extras.length ? `${cookie}; ${extras.join("; ")}` : cookie;
+}
+
+/** 16 字节 CSPRNG → 32 位 hex（R20-C2 P2 CSRF 自签用；极老运行时无 webcrypto 时回退
+ *  Math.random，仅为不崩——Django 只做同值比对，对熵源无要求）。 */
+function randomHexToken(): string {
+  const bytes = new Uint8Array(16);
+  const g = (globalThis as { crypto?: { getRandomValues?: (a: Uint8Array) => Uint8Array } }).crypto;
+  if (g && typeof g.getRandomValues === "function") {
+    g.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+  }
+  let s = "";
+  for (const b of bytes) s += b.toString(16).padStart(2, "0");
+  return s;
+}
+
+/**
+ * R20-C2 P2：CSRF 双提交（docs §31.6 P1b 实测）。Django DRF 只校验
+ * 「X-CSRFToken 头 == Cookie csrftoken 同值」，不要求服务端签发（自签随机 token
+ * 实测直接通过）。凭据 Cookie 已带 csrftoken → 原样取值；没有 → 生成随机 hex 追加进
+ * **本次请求**的 Cookie 头。两种情况都返回 token 供 X-CSRFToken 头使用。
+ * ⚠️ 无状态、不持久化：每次写请求独立自签（Django 逐请求比对 header==cookie），
+ * 不污染凭据、不写回 cred。
+ */
+function ensureCsrf(cookie: string): { cookie: string; token: string } {
+  const c = (cookie ?? "").trim();
+  const m = /(?:^|;\s*)csrftoken=([^;]*)/.exec(c);
+  const existing = m?.[1]?.trim();
+  if (existing) return { cookie: c, token: existing };
+  const token = randomHexToken();
+  return { cookie: c ? `${c}; csrftoken=${token}` : `csrftoken=${token}`, token };
 }
 
 async function getJson(
@@ -551,6 +597,15 @@ export interface YuketangSource extends HomeworkSource {
   /** R21-B：会话健康检查（GET /api/v3/user/basic-info，最轻的已授权请求）。
    *  保活心跳与设置页「检查会话」都走它；网络错误返回 alive=null（不谎报失效）。 */
   checkSession(): Promise<YktSessionHealth>;
+  /** R20-C2 P2：主观题逐题提交（POST problem_apply，§28.11 表 A + §31.6 P1b 实测）。
+   *  CSRF 双提交自动处理（凭据无 csrftoken 时逐请求自签，见 ensureCsrf）。
+   *  错误归一：CSRF 拦截 403 → Error（非会话错误）；401/403 / errcode=401000 / 非 JSON
+   *  → YktSessionError；其余 errcode≠0 → Error。非空校验由 UI 层负责。 */
+  submitYktProblemSubjective(opts: YktSubmitSubjectiveOptions): Promise<YktSubmitResult>;
+  /** R20-C2 P2：正文内联插图上传（AI 判卷可读的主通道；附件通道仅兜底）。
+   *  OSS 表单直传 + callback（§31.5-② 逆向 + P1b 实测修正），返回 callback 的
+   *  data.file_url。classroomId 当前预留不发送（端点不带，见 YktInlineImageUploadOptions）。 */
+  uploadExerciseInlineImage(opts: YktInlineImageUploadOptions): Promise<{ fileUrl: string }>;
 }
 
 /** R21-B：createYuketangSource 可选钩子（既有调用方零改动） */
@@ -754,6 +809,310 @@ async function fetchExerciseDetail(
   };
 }
 
+/* ───────────────── R20-C2 P2：主观题提交 + 正文插图上传（写端点，§31.5/§31.6） ───────────────── */
+
+/** R20-C2 P2：附件兜底通道的 filelist 条目（oSubject.attachments.filelist[]，§28.11 表 A
+ *  + §31.5.2 字段清单）。
+ *  ⚠️ 产品约束（§31.6）：**解题图片禁入附件**——各科老师强调 AI 判卷读不到附件内容，
+ *  图片一律走 uploadExerciseInlineImage 正文插图通道；附件仅文档类兜底 + UI 提示文案。 */
+export interface YktSubmitAttachment {
+  fileID?: string;
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  fileUrl: string;
+}
+
+/** R20-C2 P2：主观题提交入参 */
+export interface YktSubmitSubjectiveOptions {
+  classroomId: string | number;
+  problemId: number | string;
+  /** 编辑器产出的正文 HTML（已含内联 `<img src=file_url>`，若有） */
+  contentHtml: string;
+  /** 附件兜底通道的 filelist 条目（可选；解题图片禁入附件，见 YktSubmitAttachment 注） */
+  attachments?: YktSubmitAttachment[];
+  /** 提交耗时串，默认 "0"（官方 web 端恒定默认值，§31.5.2：bundle 内从未改写） */
+  time?: string;
+}
+
+/** R20-C2 P2：主观题提交结果（problem_apply 成功响应归一；P1b 实测无 errcode 包裹） */
+export interface YktSubmitResult {
+  /** user.count：总可交次数口径（left_times = count − my_count 的被减数） */
+  count?: number;
+  /** user.my_count：已用次数（本次提交后已递增） */
+  myCount?: number;
+  /** submit_time（毫秒）→ "YYYY-MM-DD HH:MM" 本地时区；缺失 / 非数字 / <=0 不设 */
+  submitTime?: string;
+  /** my_score；-1 / "-1.00" 占位（未批改）不透出（对齐 YkProblem.myScore 口径，R16 21.1） */
+  myScore?: number;
+  isShowAnswer?: boolean;
+  exerciseIsShowAnswer?: boolean;
+  isShowExplain?: boolean;
+  /** my_answer 归一（源字段 attachment → attachments 原样数组；空 / 缺失不设） */
+  myAnswer?: { content?: string; attachments?: unknown[] };
+}
+
+/** R20-C2 P2：正文内联插图上传入参。
+ *  ⚠️ classroomId 目前预留：P1b 实测的 get_aliyun_oss_token?upload_type=ue 不带
+ *  classroom_id（§31.5-② 同），透传无效；保留入参是为了 UI 侧调用面稳定。 */
+export interface YktInlineImageUploadOptions {
+  classroomId: string | number;
+  fileName: string;
+  mime: string;
+  bytes: Uint8Array;
+}
+
+/**
+ * 主观题逐题提交（R20-C2 P2，docs §31.6 P1b 实发成功）：
+ * POST /mooc-api/v1/lms/exercise/problem_apply/
+ * body = {classroom_id:Number, problem_id:Number,
+ *         answer:{content, time, oSubject:{attachments:{filelist}}}}（§28.11 表 A 主观行）。
+ * 头：Cookie（ensureCsrf 补 csrftoken）+ XTBZ: ykt + Content-Type: application/json +
+ * X-CSRFToken + Referer: pro.yuketang.cn（官方 SPA = getCookie("csrftoken") 双提交）。
+ * 成功响应无 errcode 包裹 → 归一 YktSubmitResult。错误路径：
+ * ① 401/403 且 body 含 CSRF → CSRF 拦截 Error（**不是**会话失效，重试/检查双提交实现）；
+ * ② 401/403 其他 → YktSessionError；③ 200 + errcode≠0 → 按 errcode/errmsg（401000 → 会话错误）；
+ * ④ 非 JSON → YktSessionError。
+ * 非空校验（正文/附件任一非空）由 UI 层负责（§31.2 P3 三态校验），core 保持薄。
+ */
+async function submitYktProblemSubjectiveImpl(
+  fetchLike: FetchLike,
+  base: string,
+  cookie: string,
+  opts: YktSubmitSubjectiveOptions,
+): Promise<YktSubmitResult> {
+  const cid = Number(opts.classroomId);
+  const pid = Number(opts.problemId);
+  // ⚠️ Number("") === 0：空串/空白串入参必须显式拦截，不能只看 isFinite
+  if (!Number.isFinite(cid) || (typeof opts.classroomId === "string" && !opts.classroomId.trim())) {
+    throw new Error("雨课堂主观题提交失败：classroomId 需为数字");
+  }
+  if (!Number.isFinite(pid) || (typeof opts.problemId === "string" && !String(opts.problemId).trim())) {
+    throw new Error("雨课堂主观题提交失败：problemId 需为数字");
+  }
+  const csrf = ensureCsrf(cookie);
+  const res = await fetchLike(`${base}/mooc-api/v1/lms/exercise/problem_apply/`, {
+    method: "POST",
+    headers: {
+      Cookie: csrf.cookie,
+      "User-Agent": UA,
+      Accept: "application/json, text/plain, */*",
+      XTBZ: "ykt",
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrf.token,
+      Referer: `${BASE}/`,
+    },
+    body: JSON.stringify({
+      classroom_id: cid,
+      problem_id: pid,
+      answer: {
+        content: typeof opts.contentHtml === "string" ? opts.contentHtml : "",
+        time: opts.time ?? "0",
+        oSubject: { attachments: { filelist: Array.isArray(opts.attachments) ? opts.attachments : [] } },
+      },
+    }),
+  });
+  if (res.status === 401 || res.status === 403) {
+    let text = "";
+    try {
+      text = await res.text();
+    } catch {
+      /* body 读不到按无 CSRF 文本处理 */
+    }
+    // §31.6：Django DRF 403「CSRF Failed: CSRF cookie not set」——双提交问题，非会话失效
+    if (/CSRF/i.test(text)) {
+      throw new Error(
+        `提交被 CSRF 拦截（HTTP ${res.status}：X-CSRFToken 头与 Cookie csrftoken 必须同值，请重试；持续出现请反馈）`,
+      );
+    }
+    throw new YktSessionError(`雨课堂会话已失效（HTTP ${res.status}），请在设置页重新登录`);
+  }
+  const text = await res.text();
+  let json: unknown;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new YktSessionError("雨课堂返回非 JSON（会话可能已失效被跳到登录页），请重新登录");
+  }
+  const obj = (json ?? {}) as Record<string, unknown>;
+  const errcode = toNum(obj["errcode"]);
+  if (errcode !== undefined && errcode !== 0) {
+    const msg = typeof obj["errmsg"] === "string" ? ` ${obj["errmsg"]}` : "";
+    // R21-B：401000 = 死会话（实测特征）→ 归一为会话错误；其余 errcode 保持通用报错
+    if (errcode === 401000) throw new YktSessionError(`雨课堂会话已失效（errcode=401000${msg}），请在设置页重新登录`);
+    throw new Error(`雨课堂主观题提交失败：errcode=${errcode}${msg}`);
+  }
+  if (obj["code"] === 50000) {
+    throw new YktSessionError("雨课堂会话已失效（UNAUTHENTICATED），请在设置页重新登录");
+  }
+  return normalizeSubmitResult(obj);
+}
+
+/** problem_apply 成功响应（data 层字段，P1b 实测）→ YktSubmitResult；缺字段不崩。 */
+function normalizeSubmitResult(obj: Record<string, unknown>): YktSubmitResult {
+  const out: YktSubmitResult = {};
+  const count = toNum(obj["count"]);
+  if (count !== undefined) out.count = count;
+  const myCount = toNum(obj["my_count"]);
+  if (myCount !== undefined) out.myCount = myCount;
+  const submitMs = toNum(obj["submit_time"]);
+  if (submitMs !== undefined && submitMs > 0) out.submitTime = fmtLocal(submitMs);
+  const myScoreRaw = obj["my_score"];
+  if (!isUnscoredPlaceholder(myScoreRaw)) {
+    const myScore = toNum(myScoreRaw);
+    if (myScore !== undefined) out.myScore = myScore;
+  }
+  const isShow = obj["is_show_answer"];
+  if (typeof isShow === "boolean") out.isShowAnswer = isShow;
+  const exShow = obj["exercise_is_show_answer"];
+  if (typeof exShow === "boolean") out.exerciseIsShowAnswer = exShow;
+  const explain = obj["is_show_explain"];
+  if (typeof explain === "boolean") out.isShowExplain = explain;
+  const myRaw = obj["my_answer"];
+  if (myRaw !== null && typeof myRaw === "object") {
+    const ma = myRaw as Record<string, unknown>;
+    const content = typeof ma["content"] === "string" && ma["content"].length > 0 ? ma["content"] : undefined;
+    const atts = Array.isArray(ma["attachment"]) && ma["attachment"].length > 0 ? (ma["attachment"] as unknown[]) : undefined;
+    if (content !== undefined || atts !== undefined) {
+      out.myAnswer = {
+        ...(content !== undefined ? { content } : {}),
+        ...(atts !== undefined ? { attachments: atts } : {}),
+      };
+    }
+  }
+  return out;
+}
+
+/**
+ * 正文内联插图上传（R20-C2 P2：AI 判卷可读的主通道，§31.5-② 逆向 + P1b 真机实测修正）。
+ * 两步：
+ * ① GET /c27/online_courseware/service/get_aliyun_oss_token/?upload_type=ue（Cookie+XTBZ）
+ *    → 实测 {msg, data:{token:{accessid, bucket, callback(整段 base64 原样透传),
+ *    dir(末尾带 /), expire, host, policy, signature}}}；
+ * ② 手拼 multipart/form-data（实测成功字段序：OSSAccessKeyId / policy / Signature / key /
+ *    callback / success_action_status=200 / file——**file 字段必须最后**；key =
+ *    {dir}{Date.now()}-{文件名}，§31.5-② bundle 注释 r.dir+Date.now()-文件名，dir 自带尾斜杠）
+ *    POST 到 token.host（实测 https://{bucket}.oss-cn-beijing.aliyuncs.com），头带
+ *    Origin + Referer: pro.yuketang.cn（官方 patch 从页面发自带，独立传输层需显式补；
+ *    ⚠️ 不带 ykt Cookie——跨域凭据不外泄，OSS 也不需要）。
+ * 响应体即 OSS callback 回执：实测 {msg, data:{filename, file_url, error_message, size},
+ * success:true} → fileUrl = data.file_url（实测 thu-oplat.xuetangx.com 域，非 OSS host 域）。
+ * 校验 success / error_message / errcode 三道（后者兼容 §31.5 记录的 errcode 形状）。
+ * ⚠️ core 零 Node/Tauri 专属 API：multipart 用 TextEncoder 手拼 Uint8Array（BodyInit 标准形态），
+ * 二进制传输能力由应用侧 fetchLike 提供；callback 字段是服务端下发的 base64 串，原样透传不解包。
+ */
+async function uploadExerciseInlineImageImpl(
+  fetchLike: FetchLike,
+  base: string,
+  cookie: string,
+  opts: YktInlineImageUploadOptions,
+): Promise<{ fileUrl: string }> {
+  const fileName = (opts.fileName ?? "").trim();
+  if (!fileName) throw new Error("雨课堂插图上传失败：fileName 为空");
+  const mime = (opts.mime ?? "").trim() || "application/octet-stream";
+  const bytes = opts.bytes;
+  if (!bytes || bytes.length === 0) throw new Error("雨课堂插图上传失败：文件内容为空");
+  // ① OSS 表单直传 token（getJson 复用会话失效归一：401/403 / 非 JSON / code 50000）
+  const tokenBody = await getJson(
+    fetchLike,
+    `${base}/c27/online_courseware/service/get_aliyun_oss_token/?upload_type=ue`,
+    cookie,
+    { XTBZ: "ykt" },
+  );
+  const terr = toNum(tokenBody["errcode"]);
+  if (terr !== undefined && terr !== 0) {
+    const msg = typeof tokenBody["errmsg"] === "string" ? ` ${tokenBody["errmsg"]}` : "";
+    if (terr === 401000) throw new YktSessionError(`雨课堂会话已失效（errcode=401000${msg}），请在设置页重新登录`);
+    throw new Error(`雨课堂插图上传失败：OSS token 获取失败 errcode=${terr}${msg}`);
+  }
+  // token 位置防御：P1b 实测在 data.token；兼容 data 直接展开 / 顶层字段的形状（逐层浅合并，
+  // data.token 优先级最高）
+  const dataRaw = tokenBody["data"];
+  let token: Record<string, unknown> = { ...tokenBody };
+  if (dataRaw !== null && typeof dataRaw === "object") {
+    token = { ...token, ...(dataRaw as Record<string, unknown>) };
+    const tInner = (dataRaw as Record<string, unknown>)["token"];
+    if (tInner !== null && typeof tInner === "object") {
+      token = { ...token, ...(tInner as Record<string, unknown>) };
+    }
+  }
+  const host = toStr(token["host"]).trim();
+  const accessId = toStr(token["accessid"]).trim();
+  const policy = toStr(token["policy"]).trim();
+  const signature = toStr(token["signature"]).trim();
+  const dir = toStr(token["dir"]).trim();
+  const callback = toStr(token["callback"]).trim();
+  if (!host || !accessId || !policy || !signature) {
+    throw new Error("雨课堂插图上传失败：OSS token 响应缺 host/accessid/policy/signature");
+  }
+  // ② multipart 手拼：字段段全 UTF-8 编码（policy/callback 为 base64 ASCII；key 含原始文件名），
+  //    文件字节段保持原样不编码；文件字段必须最后（OSS 按表单序处理，官方 patch 同序）。
+  const key = `${dir}${Date.now()}-${fileName}`;
+  const boundary = `----OneTHUYktUE${randomHexToken()}`;
+  const enc = new TextEncoder();
+  const chunks: Uint8Array[] = [];
+  const pushField = (name: string, value: string) => {
+    chunks.push(enc.encode(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`));
+  };
+  pushField("OSSAccessKeyId", accessId);
+  pushField("policy", policy);
+  pushField("Signature", signature);
+  pushField("key", key);
+  if (callback) pushField("callback", callback);
+  pushField("success_action_status", "200");
+  chunks.push(
+    enc.encode(
+      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\n` +
+        `Content-Type: ${mime}\r\n\r\n`,
+    ),
+  );
+  chunks.push(bytes);
+  chunks.push(enc.encode(`\r\n--${boundary}--\r\n`));
+  const total = chunks.reduce((n, c) => n + c.length, 0);
+  const body = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) {
+    body.set(c, off);
+    off += c.length;
+  }
+  const res = await fetchLike(host, {
+    method: "POST",
+    headers: {
+      "Content-Type": `multipart/form-data; boundary=${boundary}`,
+      Origin: BASE,
+      Referer: `${BASE}/`,
+      "User-Agent": UA,
+      Accept: "application/json, text/plain, */*",
+    },
+    body,
+  });
+  const text = await res.text();
+  let json: unknown;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    // OSS 侧错误多为 XML（SignatureDoesNotMatch 等），不是登录壳——不归一会话错误
+    throw new Error(`雨课堂插图上传失败：OSS 响应非 JSON（HTTP ${res.status}）`);
+  }
+  const obj = (json ?? {}) as Record<string, unknown>;
+  // callback 回执校验：P1b 实测 {msg, data:{filename, file_url, error_message, size}, success:true}；
+  // success=false / errcode≠0 / error_message 非空三道都拦（errcode 兼容 §31.5 旧记录形状，
+  // 其 errmsg 一并透出；error_message 是实测形状的字段）
+  const dataObj = (obj["data"] ?? {}) as Record<string, unknown>;
+  const errMessage = (toStr(dataObj["error_message"]) || toStr(obj["errmsg"])).trim();
+  const cbErrcode = toNum(obj["errcode"]);
+  if (obj["success"] === false) {
+    throw new Error(`雨课堂插图上传失败：OSS callback success=false${errMessage ? `：${errMessage}` : ""}`);
+  }
+  if (cbErrcode !== undefined && cbErrcode !== 0) {
+    throw new Error(`雨课堂插图上传失败：OSS callback errcode=${cbErrcode}${errMessage ? ` ${errMessage}` : ""}`);
+  }
+  if (errMessage) throw new Error(`雨课堂插图上传失败：OSS callback 报错：${errMessage}`);
+  const fileUrl = toStr(dataObj["file_url"]).trim();
+  if (!fileUrl) throw new Error("雨课堂插图上传失败：OSS callback 响应缺 data.file_url");
+  return { fileUrl };
+}
+
 export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: number, hooks?: YuketangSourceHooks): YuketangSource {
   const base = BASE;
   // R21-B：会话串可变——服务端轮换（Set-Cookie 白名单字段）时原地更新，后续请求即用新值
@@ -929,6 +1288,14 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
       // uvId 参数优先，回落凭据 uvId，再回落清华默认（与 fetch 链路同款兜底）
       const uvFinal = (uvId ?? "").trim() || uv;
       return fetchExerciseDetail(yktFetch, base, curCookie, uvFinal, classroomId, leafTypeId);
+    },
+    async submitYktProblemSubjective(opts: YktSubmitSubjectiveOptions): Promise<YktSubmitResult> {
+      // curCookie 是可变会话串（Set-Cookie 轮换回写），每次取当前值；CSRF 双提交在 impl 内做
+      return submitYktProblemSubjectiveImpl(yktFetch, base, curCookie, opts);
+    },
+    async uploadExerciseInlineImage(opts: YktInlineImageUploadOptions): Promise<{ fileUrl: string }> {
+      // Cookie 只用于 ① token GET；② OSS POST 不带 Cookie（跨域凭据不外泄，OSS 也不需要）
+      return uploadExerciseInlineImageImpl(yktFetch, base, curCookie, opts);
     },
   };
 }

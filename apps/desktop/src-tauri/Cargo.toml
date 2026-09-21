@@ -66,6 +66,7 @@ windows = { version = "0.61", features = [
   "Foundation", "Foundation_Collections",
   "Data_Xml_Dom", "UI_Notifications",
   "Win32_System_Com", "Win32_System_Registry",
+  "Win32_Security", # RegCreateKeyExW 在该 feature 下（notify_windows.rs 注册表写入）
 ] }
 
 [features]

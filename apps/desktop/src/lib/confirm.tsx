@@ -6,7 +6,7 @@
  */
 import { useSyncExternalStore } from "react";
 
-type Pending = { msg: string; resolve: (v: boolean) => void; danger?: boolean };
+type Pending = { msg: string; resolve: (v: boolean) => void; danger?: boolean; title?: string };
 let pending: Pending | null = null;
 const listeners = new Set<() => void>();
 
@@ -23,10 +23,12 @@ export function confirmOk(msg: string): Promise<boolean> {
  * 危险操作确认（退课等不可逆操作）：大号玻璃弹窗 + ⚠️ + 红色确认钮。
  * 用户令：有人没意识到退选是真实退课——每退一门课都要醒目警告。
  */
-export function confirmDanger(msg: string): Promise<boolean> {
+/** 危险操作确认。`title` 可换掉默认的「即将退选，请确认！」——那是退选场景的专用
+ *  措辞（R21c 教训：忽略作业复用该组件时标题被照抄成「即将退选」，用户当场发现）。 */
+export function confirmDanger(msg: string, title = "即将退选，请确认！"): Promise<boolean> {
   return new Promise((resolve) => {
     pending?.resolve(false);
-    pending = { msg, resolve, danger: true };
+    pending = { msg, resolve, danger: true, title };
     listeners.forEach((l) => l());
   });
 }
@@ -56,7 +58,7 @@ export function ConfirmHost(): React.ReactNode {
       <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div style={{ ...glass, borderRadius: 20, padding: "26px 26px 20px", maxWidth: 440, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 46, lineHeight: 1, marginBottom: 14 }}>⚠️</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>即将退选，请确认！</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>{cur.title ?? "即将退选，请确认！"}</div>
           <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "rgba(28,39,64,.75)" }}>{cur.msg}</div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
             <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14 }} onClick={() => answerConfirm(false)}>取消</button>

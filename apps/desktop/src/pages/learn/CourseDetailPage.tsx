@@ -12,6 +12,7 @@ import { useLearnData } from "../../state/data.js";
 import { learn } from "../../lib/clients.js";
 import { explainNetworkError } from "../../lib/transport.js";
 import { BackButton, FileRow, HomeworkRow, NoticeRow, semesterText } from "./shared.js";
+import { useIgnoredHw } from "../../state/hwIgnore.js";
 import { useLearnNavSemester } from "./shared.js";
 import { BbsPanel } from "./Forum.js";
 
@@ -26,12 +27,14 @@ const TABS: Array<{ key: Tab; label: string }> = [
 ];
 
 /** 作业状态筛选（AssignmentsPage 同款口径：未提交 / 已提交未批改 / 已批改 / 全部） */
-type HwFilter = "unfinished" | "submitted" | "graded" | "all";
+type HwFilter = "unfinished" | "submitted" | "graded" | "ignored" | "all";
 
 const HW_FILTERS: Array<{ key: HwFilter; label: string }> = [
   { key: "unfinished", label: "未提交" },
   { key: "submitted", label: "已提交" },
   { key: "graded", label: "已批改" },
+  // R21c：忽略优先级最高——本课程的忽略作业只出现在这一栏，其余栏一律不含
+  { key: "ignored", label: "已忽略" },
   { key: "all", label: "全部" },
 ];
 
@@ -69,18 +72,21 @@ export function CourseDetailPage() {
       .sort((a, b) => a.deadline.localeCompare(b.deadline)),
     [data, courseId],
   );
+  const ignored = useIgnoredHw(); // R21c：忽略状态（课程页也要过滤 + 自己的忽略栏）
 
   // 作业筛选（默认「全部」：进入页面行为与旧版一致），各组计数供 chip 展示
   const [hwFilter, setHwFilter] = useState<HwFilter>("all");
-  const hwGroups = useMemo(
-    () => ({
-      unfinished: homework.filter((h) => !h.submitted),
-      submitted: homework.filter((h) => h.submitted && !h.graded),
-      graded: homework.filter((h) => h.graded),
-      all: homework,
-    }),
-    [homework],
-  );
+  const hwGroups = useMemo(() => {
+    // R21c：忽略的作业从本课程所有常规栏移出，只在「已忽略」栏里（可恢复）
+    const live = homework.filter((h) => !ignored.has(h.id));
+    return {
+      unfinished: live.filter((h) => !h.submitted),
+      submitted: live.filter((h) => h.submitted && !h.graded),
+      graded: live.filter((h) => h.graded),
+      ignored: homework.filter((h) => ignored.has(h.id)),
+      all: live,
+    };
+  }, [homework, ignored]);
   const hwList = hwGroups[hwFilter];
   const files = useMemo(
     () => (data?.files ?? []).filter((f) => f.courseId === courseId)
@@ -119,7 +125,8 @@ export function CourseDetailPage() {
 
   const counts: Partial<Record<Tab, number>> = {
     notices: notices.length,
-    assignments: homework.length,
+    // R21c：计数只算参与中的作业（忽略的不计入，避免「3 条」点进去只剩 2 条）
+    assignments: homework.filter((h) => !ignored.has(h.id)).length,
     files: files.length,
     groups: groups?.length,
   };
@@ -209,7 +216,7 @@ export function CourseDetailPage() {
               ))}
             </SegmentedOverflow>
             {hwList.length === 0 ? (
-              <Card><Empty text="该状态下暂无作业。" /></Card>
+              <Card><Empty text={hwFilter === "ignored" ? "本课程没有已忽略的作业。" : "该状态下暂无作业。"} /></Card>
             ) : (
               <Card className="list">
                 {hwList.map((h, i) => (

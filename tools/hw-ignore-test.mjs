@@ -77,6 +77,23 @@ assert.ok(row.includes("错过截止的后果"), "确认弹窗必须写明后果
 assert.ok(row.includes("ignoreHw(") && row.includes("unignoreHw("), "必须有忽略与恢复两个动作");
 assert.ok(row.includes("已忽略") && row.includes("恢复"), "已忽略标记与恢复入口都要有");
 assert.ok(/e\.stopPropagation\(\)/.test(row), "行内按钮不得触发行点击导航");
+// 忽略与作业状态无关：入口常驻，不得挂在 remind 开关上（未交/已交/已批都要能忽略）
+assert.ok(!/\{remind \|\| isIgnored \?/.test(row), "忽略入口必须常驻（不随 remind 条件渲染）");
+// 弹窗标题不得照抄退选场景（用户实录：「确认退选是什么鬼东西」）
+assert.ok(row.includes('"忽略这条作业，请确认！"'), "忽略确认必须用自己的标题");
+const confirmLib = read("apps/desktop/src/lib/confirm.tsx");
+assert.ok(/export function confirmDanger\(msg: string, title = "即将退选，请确认！"\)/.test(confirmLib),
+  "confirmDanger 必须支持自定义标题（默认仍为退选文案，不影响既有调用）");
+assert.ok(/cur\.title \?\? "即将退选，请确认！"/.test(confirmLib), "弹窗标题必须取自请求而非写死");
+
+/* ---------- [3b] 课程页：忽略优先级最高 + 自带忽略栏 ---------- */
+const course = read("apps/desktop/src/pages/learn/CourseDetailPage.tsx");
+assert.ok(/\{ key: "ignored", label: "已忽略" \}/.test(course), "每门课必须有自己的「已忽略」栏");
+assert.ok(/const live = homework\.filter\(\(h\) => !ignored\.has\(h\.id\)\)/.test(course),
+  "课程页常规栏必须剔除已忽略");
+assert.ok(/ignored: homework\.filter\(\(h\) => ignored\.has\(h\.id\)\)/.test(course), "课程页忽略栏要能列出来");
+assert.ok(/assignments: homework\.filter\(\(h\) => !ignored\.has\(h\.id\)\)\.length/.test(course),
+  "课程页作业计数也不得含已忽略");
 
 /* ---------- [4] 调试现场只进日志 ---------- */
 const detail = read("apps/desktop/src/pages/learn/AssignmentDetailPage.tsx");

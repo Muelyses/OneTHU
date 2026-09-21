@@ -348,7 +348,8 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
       return;
     }
     const ok = await confirmDanger(
-      `确定要忽略《${h.title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，也不再推送任何截止提醒——请自行留意错过截止的后果。可在「全部作业 → 已忽略」中恢复。`,
+      `确定要忽略《${h.title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，也不再推送任何截止提醒——请自行留意错过截止的后果。可在「已忽略」栏中恢复。`,
+      "忽略这条作业，请确认！",
     );
     if (ok) ignoreHw(h.id, h.title);
   };
@@ -386,19 +387,18 @@ export function HomeworkRow({ h, courseName, from, style, showGrade = false, sem
       {/* DDL 提醒（作业列表页启用；行点击导航要 stopPropagation）。R10 15.3：外部作业
           的 h.id（ext:source:...）稳定可用，提醒链路只需 deadline/title，一并放开 */}
       {isIgnored ? <span className="chip chip-gray" title="已忽略：不提醒、不进作业区与日程">已忽略</span> : null}
-      {remind || isIgnored ? (
-        <button
-          className="btn btn-ghost hw-ignore-btn"
-          style={{ height: 22, padding: "0 8px", fontSize: 11, flex: "none" }}
-          title={isIgnored ? "恢复：重新参与提醒与显示" : "忽略：不再提醒，也不在作业区与日程显示"}
-          onClick={(e) => {
-            e.stopPropagation();
-            void toggleIgnore();
-          }}
-        >
-          {isIgnored ? "恢复" : "忽略"}
-        </button>
-      ) : null}
+      {/* 忽略/恢复：任何状态（未交/已交/已批）的作业都能忽略，故常驻（不随 remind 开关） */}
+      <button
+        className="btn btn-ghost hw-ignore-btn"
+        style={{ height: 22, padding: "0 8px", fontSize: 11, flex: "none" }}
+        title={isIgnored ? "恢复：重新参与提醒与显示" : "忽略：不再提醒，也不在作业区与日程显示"}
+        onClick={(e) => {
+          e.stopPropagation();
+          void toggleIgnore();
+        }}
+      >
+        {isIgnored ? "恢复" : "忽略"}
+      </button>
       {remind && !isIgnored ? <HwRemindButton h={h} /> : null}
       {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收。
           R10 15.3：外部作业复用同款拼接（courseId=ext:source、id=ext:...，稳定唯一） */}

@@ -101,7 +101,7 @@ export function NotifySettingsSection(): ReactNode {
       const st = await fetchNotifyStatus(true);
       setStatus(st);
       const sent = await sendTestNotification();
-      setMsg(sent ? "已发出测试通知——看到了就说明这条链通了" : `测试失败：${st.granted ? "投递失败，看日志" : "通知未授权"}`);
+      setMsg(sent ? "测试通知已发送；未收到请检查系统通知设置" : `测试失败：${st.granted ? "投递失败，请运行诊断查看原因" : "通知未授权"}`);
     } catch (e) {
       setMsg(`测试失败：${String(e).slice(0, 80)}`);
     } finally {
@@ -129,6 +129,8 @@ export function NotifySettingsSection(): ReactNode {
       });
       setReport(r);
       setMsg(null);
+      // R21：诊断即刷新状态——此前「自检」与「重新检测」两个按钮语义重叠
+      void refreshStatus();
       void refreshPluginNotifs();
     } finally {
       setBusy(false);
@@ -197,7 +199,7 @@ export function NotifySettingsSection(): ReactNode {
       <div className="setting-row">
         <div>
           <div className="setting-title">静默时段</div>
-          <div className="setting-desc">这段时间内不打扰（可跨夜）；落在其中的提醒顺延到时段结束。</div>
+          <div className="setting-desc">该时段内不发送提醒，落在其中的提醒顺延至时段结束。</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <select className="input" style={{ width: 96 }} value={s.quietFrom} onChange={(e) => patch({ quietFrom: e.target.value })}>
@@ -214,17 +216,17 @@ export function NotifySettingsSection(): ReactNode {
 
       <div className="setting-row">
         <div>
-          <div className="setting-title">权限与系统设置</div>
+          <div className="setting-title">通知权限</div>
           <div className="setting-desc" style={hint.level === "error" ? { color: "var(--red)" } : undefined}>
             {status === null ? "检测中…" : hint.text}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
           <button className="btn" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>
-            试一下
+            发送测试通知
           </button>
-          <button className="btn btn-ghost" disabled={busy} title="逐层检查：后端 / 授权 / 精确提醒 / 小组件 / 排程回读 / 真实投递" onClick={() => void onDiagnose()}>
-            {busy ? "检查中…" : "自检"}
+          <button className="btn btn-ghost" disabled={busy} title="逐项检查授权、提醒排程与真实投递" onClick={() => void onDiagnose()}>
+            {busy ? "检查中…" : "诊断"}
           </button>
           {hint.action ? (
             <button
@@ -232,16 +234,13 @@ export function NotifySettingsSection(): ReactNode {
               title={`打开：${hint.action.label}`}
               onClick={() => {
                 void openNotifySettings(hint.action!.kind).then((okOpen) => {
-                  if (!okOpen) setMsg("打开系统设置失败，请在系统设置里手动找到本应用的通知");
+                  if (!okOpen) setMsg("未能打开系统设置，请手动前往本应用的通知设置");
                 });
               }}
             >
               {hint.action.label}
             </button>
           ) : null}
-          <button className="btn btn-ghost" onClick={() => void refreshStatus()}>
-            重新检测
-          </button>
         </div>
       </div>
 
@@ -251,7 +250,7 @@ export function NotifySettingsSection(): ReactNode {
           <div className="setting-title">插件通知</div>
           <div className="setting-desc">
             {pluginNotifs.map((g) => `${g.pluginId}（${g.ids.length} 条）`).join("；")}
-            <span style={{ color: "var(--text-3)" }}>　插件通知归插件所有，不由上面的总开关控制。</span>
+            <span style={{ color: "var(--text-3)" }}>　以上通知由插件自行管理，不受总开关影响。</span>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
@@ -277,10 +276,10 @@ export function NotifySettingsSection(): ReactNode {
       {s.enabled ? (
       <div className="setting-row">
         <div>
-          <div className="setting-title">即将提醒</div>
+          <div className="setting-title">近期提醒</div>
           <div className="setting-desc">
             {plan.length === 0
-              ? "未来几天没有需要提醒的事项。"
+              ? "近期没有需要提醒的事项。"
               : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join("；") +
                 (plan.length > 3 ? ` …共 ${plan.length} 条` : "")}
           </div>

@@ -50,7 +50,7 @@ export function WidgetSettingsSection(): ReactNode {
     const rt = await ensureWidgetRuntime();
     const okNow = await rt.syncNow();
     await refresh();
-    setMsg(okNow ? "已刷新桌面内容" : "刷新失败：原生未接受（详情见日志）");
+    setMsg(okNow ? "桌面小组件已刷新" : "刷新失败，详情见运行日志");
   };
 
   if (!android) {
@@ -74,17 +74,17 @@ export function WidgetSettingsSection(): ReactNode {
           <div className="setting-title">桌面上的小组件</div>
           <div className="setting-desc">
             {readFailed
-              ? "读取失败：小组件后端没回应（若是刚装的版本，先完全退出应用再打开一次）。"
+              ? "读取失败；若为刚安装的版本，请完全退出应用后重新打开"
               : instances === null
                 ? "正在读取…"
                 : instances.length === 0
-                  ? "还没有小组件：长按桌面 → 小组件 → OneTHU，放好后会自动询问显示什么。"
+                  ? "尚未添加小组件：桌面长按 → 小组件 → OneTHU，添加后可选择显示内容"
                   : `共 ${instances.length} 块，每块各显示各的（点「换内容」改这一块）。`}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
           <button className="btn btn-ghost" onClick={() => void pushNow()}>立即刷新</button>
-          <button className="btn btn-ghost" onClick={() => void refresh()}>重新读取</button>
+          <button className="btn btn-ghost" onClick={() => void refresh()}>重新载入</button>
         </div>
       </div>
 
@@ -95,9 +95,9 @@ export function WidgetSettingsSection(): ReactNode {
             <div className="setting-title">系统已登记的小组件形态</div>
             <div className="setting-desc">
               {status.providersRegistered.length === 0
-                ? "一个都没登记：清单没合并进 APK（这属于打包问题，请把这一行反馈给我）。"
+                ? "未登记任何形态，请将本行内容反馈给开发者"
                 : `${status.providersRegistered.length} 个：${status.providersRegistered.join("、")}`}
-              <span style={{ color: "var(--text-3)" }}>　桌面长按 → 小组件里能选到的就是这几个。</span>
+              <span style={{ color: "var(--text-3)" }}>　桌面「小组件」列表中可选的即以下形态。</span>
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@ export function WidgetSettingsSection(): ReactNode {
           <div className="setting-title">新小组件的默认内容</div>
           <div className="setting-desc">
             刚放上桌面、还没选的块用它兜底：{bindingSummary(map.fallback, favs.data)}。
-            <span style={{ color: "var(--text-3)" }}>　放上去时系统会直接弹出选择层，一般用不到这一项。</span>
+            <span style={{ color: "var(--text-3)" }}>　添加时系统会自动弹出选择层，通常无需设置。</span>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
@@ -164,7 +164,7 @@ export function WidgetSettingsSection(): ReactNode {
       {fallbackPicker ? (
         <FavAtomPicker
           title="默认内容用哪个原子做快捷方式"
-          hint="刚放上桌面、还没选内容的那块会先显示它。"
+          hint="尚未选择内容时，桌面小组件先显示此项。"
           onPick={(atom) => {
             setFallbackPicker(false);
             setWidgetFallback({ kind: "shortcut", atom });

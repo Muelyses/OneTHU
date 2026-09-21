@@ -490,6 +490,19 @@ export interface YkProblem {
    *  = 不限次（web 端置 999），此时**不设**（undefined = 不限/未知，调用方不得当作 0）。
    *  仅用于「未超 max_retry」资格判定；真实拦截仍以官方作答页为准。 */
   remainingRetries?: number;
+  /** R20-C2：user.count 原值（官方 `left_times = count − my_count` 的被减数；缺失不设，
+   *  0 / 负值也原样透出——「不限次」判定口径见 remainingRetries） */
+  totalCount?: number;
+  /** R20-C2：user.my_count 原值（已用重交次数；缺失按 0 参与计算但**字段仅在存在时设置**，
+   *  与 remainingRetries 同款写法） */
+  usedCount?: number;
+  /** R20-C2：user.submit_time（毫秒时间戳 → "YYYY-MM-DD HH:MM" 本地时区）。官方提交器
+   *  （docs §28.11）单题「已提交」判定 = `!!user.submit_time`，不看 submission_status；
+   *  缺失 / 非数字 / <=0（0 与官方 falsy 口径一致）不设 */
+  submitTime?: string;
+  /** R20-C2：user.submission_status 原样透传（存在且可解析为数字才设；官方提交器**不**用它
+   *  判定已提交，仅透出供 UI 参考） */
+  submissionStatus?: number;
   myStatus: YkMyStatus;
   /** 仅「已批改」且为有效数字（非 -1 占位）时给——避免未出分显示 0 */
   myScore?: number;
@@ -514,8 +527,15 @@ export interface YkExerciseDetail {
   maxRetry: number;
   /** 是否允许补交（data.is_allowed_late_submission，仅显式 true；红线：仅允许时开放提交） */
   lateAllowed: boolean;
-  /** 补交截止（data.late_submission，毫秒时间戳 → "YYYY-MM-DD HH:MM"；缺失/非数字不设） */
+  /** 补交口径（⚠️ 双口径容错，不下结论）：`data.late_submission` 逆向发现是**对象**
+   *  （含 `deduct_score` 补交扣分，docs §28.11），而 §28.1/28.4 曾记录它是毫秒时间戳——
+   *  两种口径冲突，待 P1b 真机复核定稿。当前实现：数字（>0）→ `lateDeadline`（毫秒 →
+   *  "YYYY-MM-DD HH:MM" 本地时区）；对象且含可解析 `deduct_score` → `lateDeductScore`，
+   *  此时 lateDeadline 不设；两者都不是 → 都不设。 */
   lateDeadline?: string;
+  /** R20-C2：补交扣分（late_submission 为对象形态且 deduct_score 可解析时给；数字形态
+   *  或缺失不设。单位待 P1b 真机复核：官方文案「补交扣分：{deduct_score}」） */
+  lateDeductScore?: number;
   /** 已作答题数（data.answer_count；缺失 0） */
   answerCount: number;
   /** data.font：该次作业的加密字体文件 URL（docs 28.4 实测，下载后 @font-face 应用） */
@@ -598,8 +618,9 @@ function toProblemExternalUrl(content: Record<string, unknown>): string | undefi
   return typeof u === "string" && /^https?:\/\//i.test(u.trim()) ? u.trim() : undefined;
 }
 
-/** problems[] 单项 → YkProblem。submission_status / review_detail / content_score 等字段
- *  实测存在但归一化暂不透出（B2 如需再加）；缺字段不崩。 */
+/** problems[] 单项 → YkProblem。review_detail / content_score / appeal_info 等字段
+ *  实测存在但归一化暂不透出（如需再加）；R20-C2 已透出 user.{count, my_count,
+ *  submit_time, submission_status}（官方命名映射，见 YkProblem 注释）；缺字段不崩。 */
 function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: number): YkProblem {
   const content = (p["content"] ?? {}) as Record<string, unknown>;
   const userRaw = p["user"];
@@ -623,9 +644,13 @@ function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: numbe
   if (Array.isArray(options)) problem.options = options as unknown[];
   // R20-C1：剩余重交次数（web `left_times` 同口径）——count>0 才给（count<=0 = 不限次，
   // web 端置 999；这里不设，避免把「不限」误判成 0 次）。my_count 缺失按 0（尚未提交）。
+  // R20-C2：totalCount / usedCount 把 left_times 的两个操作数原值透传（缺失不设）。
   const retryCount = user ? toNum(user["count"]) : undefined;
+  const usedRaw = user ? toNum(user["my_count"]) : undefined;
+  if (retryCount !== undefined) problem.totalCount = retryCount;
+  if (usedRaw !== undefined) problem.usedCount = usedRaw;
   if (retryCount !== undefined && retryCount > 0) {
-    problem.remainingRetries = retryCount - (toNum(user?.["my_count"]) ?? 0);
+    problem.remainingRetries = retryCount - (usedRaw ?? 0);
   }
   // 得分仅「已批改」且为有效数字（非 -1 占位，R16 21.1）时给
   const myScoreRaw = user ? user["my_score"] : undefined;
@@ -649,6 +674,13 @@ function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: numbe
     if (typeof user["remark"] === "string" && user["remark"].trim()) problem.remark = user["remark"];
     const comments = toComments(user["comment"]);
     if (comments) problem.comments = comments;
+    // R20-C2：单题提交时间（官方「已提交」判定 = !!submit_time，docs §28.11）。
+    // 毫秒时间戳 → fmtLocal；缺失 / 非数字 / <=0（0 与官方 falsy 口径一致）不设。
+    const submitMs = toNum(user["submit_time"]);
+    if (submitMs !== undefined && submitMs > 0) problem.submitTime = fmtLocal(submitMs);
+    // R20-C2：submission_status 原样透传（官方提交器不用它判定已提交，仅参考）
+    const subStatus = toNum(user["submission_status"]);
+    if (subStatus !== undefined) problem.submissionStatus = subStatus;
   }
   return problem;
 }
@@ -659,9 +691,13 @@ function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: numbe
  * ⚠️ 必须带请求头 `XTBZ: ykt`（同 fetchYktStatus）。
  * 字段映射（docs 28.4 实测）：exercise 级 name / description / max_retry /
  * is_allowed_late_submission / answer_count / font；R20-B2 增补 late_submission → lateDeadline；
+ * R20-C2 改双口径容错（数字毫秒 → lateDeadline / 对象含 deduct_score → lateDeductScore，
+ * ⚠️ 28.11 与 28.1 口径冲突待 P1b 真机定稿）；
  * problems[].content{ ProblemType, TypeText,
  * Body, Options, AllowResults, score, max_retry }、problems[].user{ my_answer{content, attachment},
- * remark, comment[], my_score, status }；题型 9 透出 content.data.answer_problem_url。
+ * remark, comment[], my_score, status, count, my_count, submit_time, submission_status }（后四者
+ * R20-C2 透出为 totalCount/usedCount/submitTime/submissionStatus）；题型 9 透出
+ * content.data.answer_problem_url。
  * 异常保守口径：errcode≠0 / 缺 data → throw 带上下文；单字段缺失 → 默认值不崩。
  */
 async function fetchExerciseDetail(
@@ -693,14 +729,25 @@ async function fetchExerciseDetail(
   const answerCount = toNumOr(data["answer_count"], 0);
   const problemsRaw = Array.isArray(data["problems"]) ? (data["problems"] as Array<Record<string, unknown>>) : [];
   const font = data["font"];
-  // R20-B2：补交截止（毫秒时间戳，docs 28.1/28.4 实测字段 late_submission）
-  const lateMs = toNum(data["late_submission"]);
+  // R20-C2：补交口径**双容错**（不下结论，待 P1b 真机复核——docs §28.11 逆向纪要称
+  // late_submission 是对象（含 deduct_score 补交扣分），而 §28.1/28.4 旧记录称毫秒时间戳，
+  // 两种口径冲突）：
+  //  - 数字（毫秒时间戳）→ lateDeadline（R20-B2 行为不变；对象时 toNum 天然取不到 → 不设）；
+  //  - 对象且 deduct_score 可解析 → lateDeductScore（该口径下 lateDeadline 不设）；
+  //  - 都不是 → 两者都不设。
+  const lateRaw = data["late_submission"];
+  const lateMs = toNum(lateRaw);
+  const lateDeduct =
+    lateRaw !== null && typeof lateRaw === "object"
+      ? toNum((lateRaw as Record<string, unknown>)["deduct_score"])
+      : undefined;
   return {
     name: toStr(data["name"]),
     description: toStr(data["description"]),
     maxRetry: toNumOr(data["max_retry"], 0),
     lateAllowed: data["is_allowed_late_submission"] === true,
     ...(lateMs !== undefined && lateMs > 0 ? { lateDeadline: fmtLocal(lateMs) } : {}),
+    ...(lateDeduct !== undefined ? { lateDeductScore: lateDeduct } : {}),
     answerCount,
     ...(typeof font === "string" && font.trim() ? { fontUrl: font } : {}),
     problems: problemsRaw.map((p, i) => toYkProblem(p, i, answerCount)),

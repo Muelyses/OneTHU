@@ -56,29 +56,31 @@ import java.net.URLConnection
 
 @InvokeArg
 class SaveDownloadArgs {
-    lateinit var path: String
+    var path: String = ""
     var name: String = ""
 }
 
 @InvokeArg
 class OpenIntentArgs {
-    lateinit var url: String
+    var url: String = ""
 }
 
 @InvokeArg
 class ReadCookiesArgs {
-    lateinit var url: String
+    var url: String = ""
 }
 
+@InvokeArg
 class SeedCookiesArgs {
     /** 目标 origin（如 https://webvpn.tsinghua.edu.cn/） */
-    lateinit var url: String
+    var url: String = ""
     /** "k=v; k2=v2" 原文（仅在内存传递，绝不落盘/打印内容） */
-    lateinit var cookie: String
+    var cookie: String = ""
 }
 
+@InvokeArg
 class OpenWebModalArgs {
-    lateinit var url: String
+    var url: String = ""
     /** R20-C1：可选的会话 Cookie 原文（`name=value; …`）。仅用于官方作答页注入，
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
@@ -97,13 +99,13 @@ class OpenWebModalArgs {
  *  `{ "instances": { "<appWidgetId>": {…} }, "slots": { "1": {…} } }` */
 @InvokeArg
 class WidgetPushArgs {
-    lateinit var snapshot: String
+    var snapshot: String = ""
 }
 
 /** 待排程的通知条目数组（JSON 字符串，结构见 OnethuNotify.kt 顶部注释） */
 @InvokeArg
 class NotifyScheduleArgs {
-    lateinit var items: String
+    var items: String = ""
 }
 
 /** 要打开哪个系统设置页：channels（渠道，可带 channel）/ exact-alarm / app */
@@ -122,7 +124,7 @@ class NotifyPermissionArgs {
 /** 要撤销的通知 id 数组（JSON 字符串） */
 @InvokeArg
 class NotifyCancelArgs {
-    lateinit var ids: String
+    var ids: String = ""
 }
 
 /**

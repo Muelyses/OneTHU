@@ -28,6 +28,19 @@ export interface WidgetRow {
   strong?: boolean;
   /** 字号档：lg 给「最该看到的那一行」，sm 给次要信息 */
   size?: "sm" | "md" | "lg";
+  /* —— R21 小组件新鲜度（2026-09-21「上课了还显示还有 9 小时」）——
+   * 上面 sub 里的倒计时是推送时刻算死的：App 不在前台就不推新快照，原生 30 分钟
+   * 轮询重画的还是同一句旧话。下面三个机器字段让**原生渲染时按当前时钟重算**
+   * （倒计时文案 / 正在上课 / 过期行剔除），快照本身无需重推。
+   * 缺省（0/undefined）＝非时间性行（插件行、实时状态行），原生保持快照原文。 */
+  /** 事件开始时刻（epoch ms）：课程上课 / DDL 截止 */
+  at?: number;
+  /** 事件结束时刻（epoch ms）：课程下课；DDL 无此字段（过点即失效） */
+  until?: number;
+  /** 行的类型（原生据此重算次行与过期判定） */
+  rel?: "class" | "ddl";
+  /** 上课地点（class 行专用；原生「正在上课」重排次行用） */
+  loc?: string;
 }
 
 /** 插件小组件的槽位内容（snapshot 里的形态，槽位号为 map 键） */
@@ -46,12 +59,16 @@ export interface WidgetSlotInput extends WidgetSlotContent {
 export interface WidgetSnapshot {
   title: string;
   updatedAt: number;
+  /** 快照归属的那一天（epoch ms）。原生隔天重画时据此换标题、并把前一天的课行清掉 */
+  titleAt: number;
   /** 点击小组件要落的页面（App 启动后经 widget_take_target 取走） */
   target: string;
   rows: WidgetRow[];
   footer: string;
   /** 列表形态标记：原生据此选布局（缺省即 list，兼容插件槽位内容） */
   kind?: "list";
+  /** 行数的静态账（原生重画时重算可见数，消失的行不再计入） */
+  counts?: { classes: number; ddls: number; more: number; hadClass: boolean };
 }
 
 /** 图标组形态：若干原子图标并列（收藏夹 = 内嵌的文件夹）。
@@ -166,6 +183,11 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
         sub: isOngoing ? `正在上课${loc ? " · " + loc : ""}` : [loc, leftMs > 60_000 ? left(leftMs) : ""].filter(Boolean).join(" · ") || undefined,
         color: courseColor(String(e.courseName ?? "")),
         strong: isOngoing,
+        // 机器字段：原生渲染时按当前时钟重算倒计时/正在上课/过期剔除（R21）
+        at: start,
+        until: Number.isFinite(endMs) ? endMs : undefined,
+        rel: "class",
+        loc: loc || undefined,
       },
     });
   }
@@ -188,6 +210,9 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
         sub: `${ymd(dl) === today ? "今天" : `${new Date(dl).getMonth() + 1}/${new Date(dl).getDate()}`} ${hm(dl)} · ${left(leftDdl)}`,
         color: urgencyColor(leftDdl),
         strong: leftDdl <= 6 * 3600_000,   // 6 小时内：加粗，别让它淹在列表里
+        // 机器字段：原生重算「还有 X」，过点即失效剔除（R21）
+        at: dl,
+        rel: "ddl",
       },
     });
   }
@@ -213,9 +238,11 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
   return {
     title: `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`,
     updatedAt: now,
+    titleAt: now,
     target: "today",
     rows,
     footer,
+    counts: { classes: classCount, ddls: ddlCount, more: Math.max(0, more), hadClass },
   };
 }
 
@@ -269,6 +296,7 @@ export function buildDetailSnapshot(input: {
     kind: "list",
     title: String(input.title || "详情"),
     updatedAt: input.now,
+    titleAt: input.now,
     target: encodeWidgetTarget(input.target || "today", input.params ?? null),
     rows: input.rows.slice(0, Math.max(1, input.maxRows ?? 5)).map((r) => ({
       text: String(r.text ?? ""),

@@ -31,5 +31,5 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:textSize="11sp"
-        android:textColor="#0F1115" />
+        android:textColor="@color/onethu_widget_ink" />
 </LinearLayout>

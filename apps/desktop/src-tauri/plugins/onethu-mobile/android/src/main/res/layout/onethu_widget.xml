@@ -25,7 +25,7 @@
         android:ellipsize="end"
         android:textSize="13sp"
         android:textStyle="bold"
-        android:textColor="#0F1115"
+        android:textColor="@color/onethu_widget_ink"
         android:text="今日" />
 
     <LinearLayout
@@ -55,7 +55,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="13sp"
-            android:textColor="#0F1115" />
+            android:textColor="@color/onethu_widget_ink" />
     </LinearLayout>
 
     <LinearLayout
@@ -85,7 +85,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="13sp"
-            android:textColor="#0F1115" />
+            android:textColor="@color/onethu_widget_ink" />
     </LinearLayout>
 
     <LinearLayout
@@ -115,7 +115,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="13sp"
-            android:textColor="#0F1115" />
+            android:textColor="@color/onethu_widget_ink" />
     </LinearLayout>
 
     <LinearLayout
@@ -145,7 +145,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="13sp"
-            android:textColor="#0F1115" />
+            android:textColor="@color/onethu_widget_ink" />
     </LinearLayout>
 
     <LinearLayout
@@ -175,7 +175,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="13sp"
-            android:textColor="#0F1115" />
+            android:textColor="@color/onethu_widget_ink" />
     </LinearLayout>
 
     <TextView
@@ -186,5 +186,5 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:textSize="10sp"
-        android:textColor="#81858C" />
+        android:textColor="@color/onethu_widget_sub" />
 </LinearLayout>

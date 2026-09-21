@@ -21,10 +21,11 @@ export async function openThosInApp(url: string): Promise<void> {
     window.open(routeThosUrl(url), "_blank");
     return;
   }
-  // 无记住凭据也可走链：账密传空时，id 表单页会在浏览窗口内要求手动输入一次
-  const remembered = await loadRemembered();
   const target = routeThosUrl(url);
   try {
+    // 无记住凭据也可走链：账密传空时，id 表单页会在浏览窗口内要求手动输入一次。
+    // R21：挪进 try——它一旦 reject，整条链在 invoke 之前就死了，外面什么都不会发生。
+    const remembered = await loadRemembered();
     await invoke("thos_open_portal", {
       url: target,
       username: remembered?.username ?? "",
@@ -41,7 +42,8 @@ export async function openThosInApp(url: string): Promise<void> {
     ]);
     const reason = err instanceof Error ? err.message : String(err);
     void logLine(`[THOS-PORTAL] 应用内打开失败（${reason}）→ 回落系统浏览器`);
-    showToast("应用内打开失败，已改用系统浏览器");
+    // R21：原因直接进 toast——安卓日志此前只有 logcat，用户读不到，失败原因等于黑箱
+    showToast(`应用内打开失败：${reason.slice(0, 60)}（改用浏览器）`);
     await openExternal(target);
   }
 }

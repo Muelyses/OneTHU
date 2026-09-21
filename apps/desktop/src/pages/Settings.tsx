@@ -8,6 +8,7 @@ import { resetOnboarding } from "../state/onboarding.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
+import { showToast } from "../state/toast.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { clearRemembered, loadRemembered, session, isTauri } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
@@ -215,6 +216,7 @@ export function SettingsPage() {
           </button>
         </div>
         <UpdateRow />
+        <DebugLogRow />
       </Card>
 
       <SectionHead title="账户" />
@@ -1554,6 +1556,35 @@ function DownloadSettings() {
         </div>
       </Card>
     </>
+  );
+}
+
+/* ── 运行日志导出（真机问题取证：安卓日志落应用数据目录，一键转存系统下载）── */
+function DebugLogRow() {
+  const [busy, setBusy] = useState(false);
+  const [where, setWhere] = useState<string | null>(null);
+  const run = async (): Promise<void> => {
+    setBusy(true);
+    try {
+      const path = await invoke<string>("debug_log_export");
+      setWhere(path);
+      showToast("日志已导出到系统下载");
+    } catch (err) {
+      showToast(String(err instanceof Error ? err.message : err).slice(0, 60));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="setting-row">
+      <div>
+        <div className="setting-title">运行日志</div>
+        <div className="setting-desc">{where ? `已导出：${where}` : "问题排查用；一键导出到系统下载"}</div>
+      </div>
+      <button className="btn" disabled={busy} onClick={() => void run()}>
+        {busy ? "导出中…" : "导出日志"}
+      </button>
+    </div>
   );
 }
 

@@ -67,10 +67,15 @@ function fmtDate(d: Date): string {
 }
 
 async function loadReal(): Promise<CampusData> {
+  // R21 分段计时：定位「校内启动 20s」到底吃在哪一段（配合设置页日志导出，免 adb）
+  const bootT = performance.now();
+  const stage = (label: string): void => {
+    void logLine(`LR-STAGE ${label} +${Math.round(performance.now() - bootT)}ms`).catch(() => undefined);
+  };
   const semester = await learn.getCurrentSemester();
-  void logLine(`LR-STAGE 学期=${semester.id}`).catch(() => undefined);
+  stage(`学期=${semester.id}`);
   const courses = await learn.getCourseList(semester.id);
-  void logLine(`LR-STAGE 课程数=${courses.length}`).catch(() => undefined);
+  stage(`课程数=${courses.length}`);
   const ids = courses.map((c) => c.id);
   const start = new Date();
   start.setDate(start.getDate() - 7);
@@ -115,6 +120,7 @@ async function loadReal(): Promise<CampusData> {
       }))
       .catch(() => null),
   ]);
+  stage("并行四路抓取完");
   void logLine(`LR-STAGE 完成 hw=${homework.length} ntf=${notifications.length} files=${files.length}`).catch(() => undefined);
   return { courses, homework, notifications, files, schedule, user };
 }

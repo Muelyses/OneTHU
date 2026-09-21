@@ -9,6 +9,19 @@
 import { useEffect, useState } from "react";
 import { PRESETS, SCENARIOS, applyTodayCards, cardsForScenarios, cardsOfScenario, hasOnboarded, markOnboarded, todayChoosableCards, type Preset } from "../state/onboarding.js";
 import { askNotifyPermissionOnce } from "../state/notifyPermissionAsk.js";
+import {
+  connectCloudDisk,
+  connectMail,
+  connectYuketang,
+  ensureAccountStatusLoaded,
+  loginDsa,
+  loginTyche,
+  type AccountStatus,
+} from "../state/accountSetup.js";
+import { accountErrMsg } from "../state/accountSetup.js";
+import { YktQrPanel, YktWebLoginPanel } from "./ExtHwLoginModal.js";
+import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
+import { openExternal } from "../pages/info/openExternal.js";
 import { TABS as INFO_TABS } from "../pages/info/InfoPage.js";
 import { TABS as LIFE_TABS } from "../pages/info/LifePage.js";
 import { loadTabLayout, saveTabLayout } from "../lib/tabLayout.js";
@@ -52,6 +65,26 @@ const TAB_GROUPS: Array<{ key: string; title: string; tabs: Array<{ id: string; 
   { key: "life", title: "生活页的页签", tabs: LIFE_TABS as Array<{ id: string; label: string }> },
 ];
 
+/** 清华云盘 Web API Token 生成页（与 CloudPage 同一入口） */
+const CLOUD_TOKEN_PAGE = "https://cloud.tsinghua.edu.cn/profile/#get-auth-token";
+
+const acctIntro: React.CSSProperties = { margin: "0 0 12px", fontSize: 13, color: "var(--text-3, #999)", lineHeight: 1.55 };
+const acctInput: React.CSSProperties = { width: "100%", marginBottom: 8 };
+
+/** 已配置标识：填过的项只做标识，输入区照常展示（用户定案 2026-09-21） */
+function AcctBadge({ on }: { on: boolean }): React.ReactNode {
+  return (
+    <span
+      style={{
+        marginLeft: 8, fontSize: 12, fontWeight: 400,
+        color: on ? "var(--green, #2e9e5b)" : "var(--text-3, #999)",
+      }}
+    >
+      {on ? "已配置" : "未配置"}
+    </span>
+  );
+}
+
 export function OnboardingTour(): React.ReactNode {
   const { navigate } = useApp();
   const favs = useFavs();
@@ -85,6 +118,39 @@ export function OnboardingTour(): React.ReactNode {
     }, 800);
     return () => window.clearTimeout(t);
   }, [open]);
+
+  // ── R21b：账号接入步骤（5–8）。复用设置页同一套 state（state/accountSetup.ts），
+  // 不复制登录实现；已配置只标识、输入区照常展示；每一步都可跳过。 ──
+  const [acct, setAcct] = useState<AccountStatus>({ yuketang: false, tyche: false, dsa: false, mail: false, cloud: false });
+  const [yktPanel, setYktPanel] = useState<"none" | "qr" | "web">("none");
+  const [tycheUser, setTycheUser] = useState("");
+  const [tychePwd, setTychePwd] = useState("");
+  const [dsaUser, setDsaUser] = useState("");
+  const [dsaPwd, setDsaPwd] = useState("");
+  const [mailAddr, setMailAddr] = useState("");
+  const [mailCode, setMailCode] = useState("");
+  const [cloudToken, setCloudToken] = useState("");
+  const [acctBusy, setAcctBusy] = useState<string | null>(null);
+  const [acctMsg, setAcctMsg] = useState<string | null>(null);
+
+  // 导览打开时加载一次接入状态（凭据解密 + 模块缓存）；失败按未配置展示
+  useEffect(() => {
+    if (!open) return;
+    void ensureAccountStatusLoaded().then(setAcct);
+  }, [open]);
+
+  /** 统一跑一个接入动作：busy、结果消息、徽标刷新一并处理 */
+  const runAcct = (key: string, label: string, task: () => Promise<AccountStatus>): void => {
+    setAcctBusy(key);
+    setAcctMsg(null);
+    void task()
+      .then((st) => {
+        setAcct(st);
+        setAcctMsg(`${label}成功`);
+      })
+      .catch((e: unknown) => setAcctMsg(`${label}失败：${accountErrMsg(e)}`))
+      .finally(() => setAcctBusy(null));
+  };
 
   if (!open) return null;
 
@@ -174,7 +240,8 @@ export function OnboardingTour(): React.ReactNode {
     </button>
   );
 
-  const STEPS = 5;
+  // 0–4 界面定制；5–8 账号接入（雨课堂 / OJ / 邮箱 / 云盘），新旧用户都展示
+  const STEPS = 9;
   return (
     <div style={panel} role="dialog" aria-modal="true" aria-label="首次使用导览">
       <div style={box}>
@@ -394,9 +461,139 @@ export function OnboardingTour(): React.ReactNode {
           </>
         ) : null}
 
+        {/* ── 账号接入（R21b）：每步可跳过；已配置只标识不隐藏 ── */}
+        {step === 5 ? (
+          <>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>雨课堂<AcctBadge on={acct.yuketang} /></h3>
+            <p style={acctIntro}>
+              把雨课堂作业并入作业流。支持微信扫码；Android 还可在应用内打开官方登录页（含手机号验证码）。
+            </p>
+            {yktPanel === "qr" ? (
+              <YktQrPanel
+                onCancel={() => setYktPanel("none")}
+                onSuccess={(cookie) =>
+                  runAcct("ykt", "雨课堂登录", () =>
+                    connectYuketang(cookie).then((st) => {
+                      setYktPanel("none");
+                      return st;
+                    }))
+                }
+              />
+            ) : yktPanel === "web" ? (
+              <YktWebLoginPanel
+                onCancel={() => setYktPanel("none")}
+                onSuccess={(cookie) =>
+                  runAcct("ykt", "雨课堂登录", () =>
+                    connectYuketang(cookie).then((st) => {
+                      setYktPanel("none");
+                      return st;
+                    }))
+                }
+              />
+            ) : (
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button className="btn btn-primary" disabled={acctBusy !== null} onClick={() => setYktPanel("qr")}>
+                  微信扫码登录
+                </button>
+                {YKT_WEB_LOGIN_AVAILABLE ? (
+                  <button className="btn" disabled={acctBusy !== null} onClick={() => setYktPanel("web")}>
+                    官方网页登录（手机号验证码）
+                  </button>
+                ) : null}
+              </div>
+            )}
+            <p style={{ ...acctIntro, marginTop: 12, marginBottom: 0 }}>
+              已登录过可直接下一步；之后可在 设置 → 外部作业源 退出或重登。
+            </p>
+          </>
+        ) : null}
+
+        {step === 6 ? (
+          <>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>OJ 平台<AcctBadge on={acct.tyche || acct.dsa} /></h3>
+            <p style={acctIntro}>配其中任意一个即可，也可以全部跳过；会话失效时在 设置 → 外部作业源 重登。</p>
+            {[
+              {
+                key: "tyche", label: "Tyche", done: acct.tyche,
+                user: tycheUser, setUser: setTycheUser, pwd: tychePwd, setPwd: setTychePwd,
+                run: () => runAcct("tyche", "Tyche 登录", () => loginTyche(tycheUser, tychePwd)),
+              },
+              {
+                key: "dsa", label: "DSA OJ", done: acct.dsa,
+                user: dsaUser, setUser: setDsaUser, pwd: dsaPwd, setPwd: setDsaPwd,
+                run: () => runAcct("dsa", "DSA OJ 登录", () => loginDsa(dsaUser, dsaPwd)),
+              },
+            ].map((o) => (
+              <div key={o.key} style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{o.label}</div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <input className="input" style={{ width: 150 }} placeholder="账号" value={o.user}
+                    onChange={(e) => o.setUser(e.target.value)} />
+                  <input className="input" style={{ width: 150 }} type="password" placeholder="密码" value={o.pwd}
+                    onChange={(e) => o.setPwd(e.target.value)} />
+                  <button className="btn" disabled={acctBusy !== null} onClick={o.run}>
+                    {acctBusy === o.key ? "登录中…" : "登录"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : null}
+
+        {step === 7 ? (
+          <>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>清华邮箱日历<AcctBadge on={acct.mail} /></h3>
+            <p style={acctIntro}>连接后云端的个人日程也会进应用；只读拉取，不在日历端写入。</p>
+            <input className="input" style={acctInput} placeholder="完整邮箱（如 someone@mails.tsinghua.edu.cn）"
+              value={mailAddr} onChange={(e) => setMailAddr(e.target.value)} />
+            <input className="input" style={acctInput} type="password" placeholder="客户端专用密码"
+              value={mailCode} onChange={(e) => setMailCode(e.target.value)} />
+            <button className="btn btn-primary" disabled={acctBusy !== null}
+              onClick={() => runAcct("mail", "邮箱日历连接", () => connectMail(mailAddr, mailCode))}>
+              {acctBusy === "mail" ? "连接中…" : "保存并验证"}
+            </button>
+            <p style={{ ...acctIntro, marginTop: 12, marginBottom: 0 }}>
+              客户端专用密码获取：清华大学电子邮件系统网站 → 设置 → 安全设置 → 客户端专用密码。
+            </p>
+          </>
+        ) : null}
+
+        {step === 8 ? (
+          <>
+            <h3 style={{ margin: "0 0 4px", fontSize: 17 }}>清华云盘<AcctBadge on={acct.cloud} /></h3>
+            <p style={acctIntro}>{/* ui-copy-lint-ok: 厂商字段原名——「Web API Auth Token」是云盘设置页里的入口名，必须按名索骥 */}粘贴 Web API Auth Token 即可浏览与下载云盘文件。</p>
+            <input className="input" style={acctInput} placeholder="Web API Auth Token"
+              value={cloudToken} onChange={(e) => setCloudToken(e.target.value)} />
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button className="btn btn-primary" disabled={acctBusy !== null}
+                onClick={() => runAcct("cloud", "云盘连接", () => connectCloudDisk(cloudToken))}>
+                {acctBusy === "cloud" ? "连接中…" : "保存并验证"}
+              </button>
+              <button className="btn btn-ghost" onClick={() => void openExternal(CLOUD_TOKEN_PAGE)}>
+                打开生成页面
+              </button>
+            </div>
+            <p style={{ ...acctIntro, marginTop: 12, marginBottom: 0 }}>
+              Token 获取：清华云盘网站 → 设置 → Web API Auth Token → 生成（一次性生成，长期有效）。
+            </p>
+          </>
+        ) : null}
+
+        {acctMsg ? (
+          <p style={{ margin: "10px 0 0", fontSize: 12.5, color: acctMsg.includes("成功") ? "var(--green, #2e9e5b)" : "var(--red, #d64541)" }}>
+            {acctMsg}
+          </p>
+        ) : null}
+
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
           {step > 0 ? <button className="btn" onClick={() => setStep((n) => n - 1)}>上一步</button> : null}
-          <button className="btn btn-ghost" onClick={finish}>跳过</button>
+          {step >= 5 ? (
+            <button className="btn btn-ghost" onClick={() => (step < STEPS - 1 ? setStep(step + 1) : finish())}>
+              跳过此步
+            </button>
+          ) : (
+            <button className="btn btn-ghost" onClick={finish}>跳过</button>
+          )}
           {step < STEPS - 1 ? (
             <button
               className="btn btn-primary"

@@ -94,3 +94,21 @@ const offenders = [];
 })(SRC_ROOT);
 assert.deepEqual(offenders, [], `发现裸 UA 判安卓残留（改走 androidHost 多信号）:\n${offenders.join("\n")}`);
 console.log("同族扫描：apps/desktop/src 无裸 UA 判安卓残留 ✓");
+
+/* ── 护栏（R23）：FilePreview 早返回之后不得再调用 Hook ──
+ * 上游 98f863d 把 PDF 诊断 useEffect 放在 `if (!cur) return null` 之后：点开预览时
+ * 本次渲染比上次多一个 Hook → React 抛「Rendered more hooks than during the previous
+ * render」→ 各端点预览即崩（Windows 整窗白屏）。此处静态钉住，防同类复发。 */
+{
+  const src = readFileSync(join(SRC_ROOT, "components/FilePreview.tsx"), "utf8");
+  const early = src.indexOf("if (!cur) return null;");
+  assert.ok(early > 0, "FilePreview 应保留 `if (!cur) return null` 早返回");
+  const after = src.slice(early);
+  const hookAfter = /\buse(State|Effect|Ref|Callback|Memo|LayoutEffect|Reducer|Context|SyncExternalStore)\s*\(/.exec(after);
+  assert.equal(
+    hookAfter,
+    null,
+    `FilePreview 早返回之后出现 Hook 调用（会整窗白屏）：${hookAfter?.[0]}`,
+  );
+  console.log("FilePreview 早返回后无 Hook 调用（防整窗白屏）✓");
+}

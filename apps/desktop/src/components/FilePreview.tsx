@@ -942,6 +942,19 @@ export function FilePreviewHost() {
     }
   };
 
+  // 诊断：PDF 一律自绘；把平台与内核信号落一行日志（客户端排查时不用猜）。
+  // ⚠️ 必须在下方 `if (!cur) return null` **之前**——Hook 不能条件调用：放在早返回之后
+  // 会让「打开预览」这次渲染比上一次多一个 Hook，React 直接抛
+  // 「Rendered more hooks than during the previous render」并**整窗白屏**
+  // （上游 98f863d 引入的回归，各端点预览即崩，Windows 最明显）。
+  const pdfDiagKey = phase.s === "ready" && phase.view.kind === "pdf" ? phase.view.dataUrl : null;
+  useEffect(() => {
+    if (!pdfDiagKey) return;
+    void import("../lib/clients.js")
+      .then((m) => m.logLine(`PDF-MODE canvas android=${IS_ANDROID_HOST} windows=${IS_WINDOWS_HOST} viewer=${String(PDF_VIEWER_ENABLED)}`))
+      .catch(() => undefined);
+  }, [pdfDiagKey]);
+
   if (!cur) return null;
 
   const retry = () => {
@@ -952,13 +965,6 @@ export function FilePreviewHost() {
   };
 
   const view = phase.s === "ready" ? phase.view : null;
-  // 诊断：PDF 一律自绘；把平台与内核信号落一行日志（客户端排查时不用猜）
-  useEffect(() => {
-    if (view?.kind !== "pdf") return;
-    void import("../lib/clients.js")
-      .then((m) => m.logLine(`PDF-MODE canvas android=${IS_ANDROID_HOST} windows=${IS_WINDOWS_HOST} viewer=${String(PDF_VIEWER_ENABLED)}`))
-      .catch(() => undefined);
-  }, [view?.kind === "pdf" ? view.dataUrl : null]);
   const metaBits: string[] = [];
   if (view) {
     if (view.size) metaBits.push(fmtBytes(view.size));

@@ -371,14 +371,15 @@ export function TodayOverviewWidget() {
   // R23（霖需求）：外部平台同步未完成期间不冒充最终数——先显示网络学堂已到账部分 +
   // 动态省略号（如「3…」），同步完成后落为全量数（如 6）
   const learnOnlyUnsubmitted = useMemo(
-    () => (data?.homework ?? []).filter((h) => !h.submitted && !ignored.has(h.id)).length,
+    () => (data?.homework ?? []).filter((h) => !h.submitted && !ignored.has(h.id) && !h.audited).length,
     [data, ignored],
   );
   const extPending = ext.configured && (ext.state === "idle" || ext.state === "loading");
   const unsubmitted = useMemo(
     () =>
       [...(data?.homework ?? []), ...extHw]
-        .filter((h) => !h.submitted && !ignored.has(h.id)) // R21c：已忽略不进未交统计
+        // R21c：已忽略不进未交统计；R23：旁听作业单列在「全部作业」页，不计入未交总数/列表
+        .filter((h) => !h.submitted && !ignored.has(h.id) && !h.audited)
         .sort((a, b) => a.deadline.localeCompare(b.deadline)),
     [data, extHw, ignored],
   );
@@ -482,7 +483,8 @@ export function HomeworkWidget(): ReactNode {
   const unsubmitted = useMemo(
     () =>
       [...(data?.homework ?? []), ...extHw]
-        .filter((h) => !h.submitted && !ignored.has(h.id)) // R21c：已忽略不进未交统计
+        // R21c：已忽略不进未交统计；R23：旁听作业单列在「全部作业」页，不计入未交总数/列表
+        .filter((h) => !h.submitted && !ignored.has(h.id) && !h.audited)
         .sort((a, b) => a.deadline.localeCompare(b.deadline)),
     [data, extHw, ignored],
   );

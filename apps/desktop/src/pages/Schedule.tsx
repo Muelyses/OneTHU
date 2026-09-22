@@ -437,7 +437,8 @@ export function SchedulePage() {
     // R21c：已忽略的作业不进日程格（用户口径：忽略后不在日程显示）
     const ignoredIds = new Set(ignoredHwList().map((e) => e.id));
     const hwAll = [...(campus.data?.homework ?? []), ...extHw.items.map(toHomework)].filter(
-      (h) => !ignoredIds.has(h.id),
+      // R23：已忽略 + 旁听都不进日程格（旁听不评分、非正式课程）
+      (h) => !ignoredIds.has(h.id) && !h.audited,
     );
     for (const h of hwAll) {
       if (!h.deadline) continue;

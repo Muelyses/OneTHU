@@ -13,6 +13,7 @@ import { BackButton, RichContent, fmtDateTime } from "./shared.js";
 import { useLearnNavSemester } from "./shared.js";
 import { openExternal } from "../info/openExternal.js";
 import { DownloadOpenButtons } from "../../components/DownloadOpenButtons.js";
+import { markNoticeReadLocally, noticeHasRead, useNoticeReadVersion } from "../../lib/noticeRead.js";
 import type { LearnAttachment } from "@onethu/core";
 
 export function NoticeDetailPage() {
@@ -35,9 +36,18 @@ export function NoticeDetailPage() {
   );
   const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [data, courseId]);
 
-  // 附件地址懒加载：fjmc 只有文件名，下载地址在详情 HTML 页（thu-learn-lib parseNotificationDetail）
+  // R23：打开通知即置读（本地覆盖立即生效；服务端 sfyd 要等下次拉列表，且此前只有
+  // 「有附件」的通知才会请求详情页 → 无附件的通知永远置不了读，表现为「点开还是未读」）
+  useNoticeReadVersion(); // 订阅本地已读集合：置读后立即刷新「未读」chip（值本身不需要）
   useEffect(() => {
-    if (!n || !n.attachmentName || attState !== "idle") return;
+    if (n) markNoticeReadLocally(n.courseId, n.id);
+  }, [n?.courseId, n?.id]);
+
+  // 附件地址懒加载 + 置读：**总是**请求详情 HTML 页（thu-learn-lib parseNotificationDetail）。
+  // 服务端在 beforeViewXs 上置读，这里不再以「有附件」为前置条件；无附件声明的通知抓取
+  // 失败不打扰用户（静默当无附件）。
+  useEffect(() => {
+    if (!n || attState !== "idle") return;
     setAttState("loading");
     learn
       .getNotificationPageDetail(courseId, n.id)
@@ -46,6 +56,10 @@ export function NoticeDetailPage() {
         setAttState("ok");
       })
       .catch((err) => {
+        if (!n.attachmentName) {
+          setAttState("ok"); // 只为置读/兜底找附件，失败静默
+          return;
+        }
         setAttErr(explainNetworkError(err));
         setAttState("error");
       });
@@ -108,7 +122,7 @@ export function NoticeDetailPage() {
           {n.important ? (
             <span className="chip chip-red"><span className="dot" />重要</span>
           ) : null}
-          {n.hasRead === false ? (
+          {!noticeHasRead(n.hasRead, n.courseId, n.id) ? (
             <span className="chip chip-blue"><span className="dot" />未读</span>
           ) : null}
         </div>
@@ -117,7 +131,7 @@ export function NoticeDetailPage() {
         ) : null}
       </Card>
 
-      {n.attachmentName ? (
+      {n.attachmentName || att ? (
         <Card className="detail-sec">
           <div className="detail-sec-head">附件</div>
           {attState === "loading" ? <div className="detail-meta">正在解析附件…</div> : null}

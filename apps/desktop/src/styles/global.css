@@ -4950,6 +4950,12 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   50% { opacity: 1; }
 }
 /* 下载完成提示右侧「打开文件 / 打开目录」小按钮（与同排蓝字等高） */
+/* 下载完成提示：文字与「打开文件/打开目录」相邻（.error-note 默认两端对齐会把它们拉开） */
+.dl-done-note {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
 .dl-open-btns {
   display: inline-flex;
   gap: 4px;

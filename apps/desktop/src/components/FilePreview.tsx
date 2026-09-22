@@ -142,7 +142,7 @@ class PreviewErrorBoundary extends Component<
   }
 }
 
-function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg, dlPath }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean; dlMsg: string; dlPath: string }): React.ReactNode {
+function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean; dlMsg: string }): React.ReactNode {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [doc, setDoc] = useState<PdfDocLike | null>(null);
@@ -234,12 +234,7 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg, dlPath }: { 
         </button>
         <button className="btn btn-ghost" title="用本机 PDF 应用打开（要打印/目录时用）" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
       </div>
-      {dlMsg ? (
-        <div style={{ fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 8px 8px", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          <span>{dlMsg}</span>
-          {dlPath ? <DownloadOpenButtons path={dlPath} /> : null}
-        </div>
-      ) : null}
+      {dlMsg ? <div style={{ fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 8px 8px" }}>{dlMsg}</div> : null}
     </div>
   );
 }
@@ -1043,7 +1038,6 @@ export function FilePreviewHost() {
               onOpenExternally={openPdfExternally}
               pdfBusy={pdfBusy}
               dlMsg={dlMsg}
-              dlPath={dlPath}
             />
           ) : null}
 
@@ -1106,8 +1100,11 @@ export function FilePreviewHost() {
         </div>
 
         {dlMsg ? (
-          <div style={{ flexShrink: 0, padding: "6px 14px", fontSize: 12, borderTop: "1px solid var(--border, #eee)", color: "var(--accent)", wordBreak: "break-all" }}>
-            {dlMsg}
+          /* 面板底部下载/另存为提示：右侧挂「打开文件 / 打开目录」（R23 需求；此前误加在
+             PDF 画布内部与 Windows 门闸里，用户看到的这条反而没有按钮） */
+          <div style={{ flexShrink: 0, padding: "6px 14px", fontSize: 12, borderTop: "1px solid var(--border, #eee)", color: "var(--accent)", wordBreak: "break-all", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+            <span>{dlMsg}</span>
+            {dlPath ? <DownloadOpenButtons path={dlPath} /> : null}
           </div>
         ) : null}
       </div>

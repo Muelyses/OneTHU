@@ -27,6 +27,8 @@ import {
   resolveZipNode,
 } from "../lib/zipTree.js";
 import type { PptxSlide, ZipEntry, ZipNode } from "../lib/zipTree.js";
+import { parsePptxModel } from "../lib/pptxRender.js";
+import type { PptxModel, PptxPara, PptxShape } from "../lib/pptxRender.js";
 
 /* ⚠️ 安卓宿主判定绝不能用裸 UA 正则（R21 修正）：主窗口 UA 被 tauri.conf.json 伪装成
  * Windows Chrome/79（webvpn 票绑定），裸 UA 正则在真机恒 false —— 正是
@@ -57,7 +59,9 @@ function dataUrlBytes(dataUrl: string): Uint8Array {
 /** pdf.js 文档的最小结构面（避免整包类型耦合） */
 interface PdfPageLike {
   getViewport(o: { scale: number }): { width: number; height: number };
-  render(o: { canvasContext: CanvasRenderingContext2D; viewport: { width: number; height: number }; transform?: number[] }): { promise: Promise<void> };
+  /** cancel()：pdf.js 的 RenderTask 取消接口——换缩放/离开渲染窗口时必须先取消并等 promise
+   *  结束，否则同一 canvas 上的并发 render() 会抛 "Cannot use the same canvas..." */
+  render(o: { canvasContext: CanvasRenderingContext2D; viewport: { width: number; height: number }; transform?: number[] }): { promise: Promise<void>; cancel: () => void };
 }
 interface PdfDocLike {
   numPages: number;
@@ -143,18 +147,153 @@ class PreviewErrorBoundary extends Component<
   }
 }
 
+/** 单页画布：只有落在"当前页 ±2"窗口内才渲染，离开窗口卸载（一页 1000×1400 约 5MB 位图，
+ *  长讲义几十页全渲染会把 WebView 拖爆）；卸载后回到视野会自动重渲染。 */
+function PdfPage({
+  doc,
+  no,
+  width,
+  active,
+  register,
+}: {
+  doc: PdfDocLike;
+  no: number;
+  width: number;
+  active: boolean;
+  register: (no: number, el: HTMLDivElement | null) => void;
+}): React.ReactNode {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  /** 当前页在飞的 render task：换缩放/离开窗口时先取消并等它结束，避免同 canvas 并发渲染 */
+  const taskRef = useRef<{ cancel: () => void; promise: Promise<void> } | null>(null);
+  const [ratio, setRatio] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  // 先拿本页宽高比占位，保证滚动条长度稳定（失败退 A4 比例）
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const base = (await doc.getPage(no)).getViewport({ scale: 1 });
+        if (!cancelled && base.width > 0) setRatio(base.height / base.width);
+      } catch {
+        if (!cancelled) setRatio(1.414);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [doc, no]);
+
+  useEffect(() => {
+    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    setErr(null); // 重新进入渲染窗口：清掉上一轮的失败提示（缩放后通常能正常渲染）
+    let cancelled = false;
+    void (async () => {
+      // 同一块 canvas 上不能并发 render()：缩放（width 变化）或进出渲染窗口都会重跑本效果，
+      // 必须先把上一次的 render task 取消并**等它真正结束**，否则 pdf.js 直接抛
+      // "Cannot use the same canvas during multiple render() operations"（霖实测第 3 页）。
+      const prev = taskRef.current;
+      taskRef.current = null;
+      if (prev) {
+        try {
+          prev.cancel();
+        } catch {
+          // 已经结束：忽略
+        }
+        try {
+          await prev.promise;
+        } catch {
+          // 取消/失败是预期路径，错误在下面按 cancelled 与异常类型过滤
+        }
+      }
+      if (cancelled) return;
+      try {
+        const page = await doc.getPage(no);
+        if (cancelled) return;
+        const base = page.getViewport({ scale: 1 });
+        const vp = page.getViewport({ scale: width / base.width });
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(vp.width * dpr);
+        canvas.height = Math.round(vp.height * dpr);
+        canvas.style.width = `${Math.round(vp.width)}px`;
+        canvas.style.height = `${Math.round(vp.height)}px`;
+        const ctx = canvas.getContext("2d");
+        if (!ctx || cancelled) return;
+        const task = page.render({
+          canvasContext: ctx,
+          viewport: vp,
+          transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : undefined,
+        });
+        taskRef.current = task;
+        await task.promise;
+        if (taskRef.current === task) taskRef.current = null;
+      } catch (e) {
+        // 取消（滚动离开/缩放重排）不是错误，不该弹给用户
+        const name = e instanceof Error ? e.name : "";
+        if (!cancelled && name !== "RenderingCancelledException") {
+          setErr(`第 ${no} 页渲染失败：${e instanceof Error ? e.message : String(e)}`.slice(0, 120));
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+      const t = taskRef.current;
+      if (t) {
+        try {
+          t.cancel();
+        } catch {
+          // 忽略：任务可能刚好完成
+        }
+      }
+    };
+  }, [doc, no, width, active]);
+
+  return (
+    <div
+      ref={(el) => register(no, el)}
+      data-pdf-page={no}
+      style={{
+        width,
+        height: Math.round(width * (ratio ?? 1.414)),
+        margin: "0 auto 12px",
+        background: "#fff",
+        borderRadius: 6,
+        boxShadow: "var(--shadow-1)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      {err ? (
+        <div style={{ fontSize: 11.5, color: "var(--red, #e5484d)", padding: 12, textAlign: "center" }}>{err}</div>
+      ) : active ? (
+        <canvas ref={canvasRef} style={{ display: "block" }} />
+      ) : (
+        <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>第 {no} 页</div>
+      )}
+    </div>
+  );
+}
+
+/** PDF 预览：**连续滚动**（R26 霖需求：翻页不是必须的）+ 适应宽度/缩放 + 页码跳转。
+ *  渲染策略：只渲染当前页 ±2，其余留等比占位——长讲义也不会把内存吃满。 */
 function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean; dlMsg: string }): React.ReactNode {
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const pagesRef = useRef(new Map<number, HTMLDivElement>());
   const [doc, setDoc] = useState<PdfDocLike | null>(null);
-  const [pageNo, setPageNo] = useState(1);
   const [err, setErr] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [fitW, setFitW] = useState(0);
+  const [cur, setCur] = useState(1);
 
   useEffect(() => {
     let cancelled = false;
     setDoc(null);
     setErr(null);
-    setPageNo(1);
+    setCur(1);
     (async () => {
       try {
         const d = await loadPdfDoc(dataUrl);
@@ -175,47 +314,58 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl:
     };
   }, [dataUrl]);
 
+  // 适应宽度基准：容器可用宽（窗口/面板尺寸变化要跟着重排）
   useEffect(() => {
-    if (!doc) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const page = await doc.getPage(pageNo);
-        const canvas = canvasRef.current;
-        const wrap = wrapRef.current;
-        if (!canvas || !wrap || cancelled) return;
-        const base = page.getViewport({ scale: 1 });
-        const availW = Math.max(220, (wrap.clientWidth || 360) - 16);
-        const scale = availW / base.width;
-        const vp = page.getViewport({ scale });
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.round(vp.width * dpr);
-        canvas.height = Math.round(vp.height * dpr);
-        canvas.style.width = `${Math.round(vp.width)}px`;
-        canvas.style.height = `${Math.round(vp.height)}px`;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        await page.render({
-          canvasContext: ctx,
-          viewport: vp,
-          transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : undefined,
-        }).promise;
-      } catch (e) {
-        if (!cancelled) setErr(`页面渲染失败：${e instanceof Error ? e.message : String(e)}`.slice(0, 160));
-      }
-    })();
+    const el = wrapRef.current;
+    if (!el || !doc) return;
+    const update = () => setFitW(Math.max(220, el.clientWidth - 24));
+    update();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
+    ro?.observe(el);
+    window.addEventListener("resize", update);
     return () => {
-      cancelled = true;
+      ro?.disconnect();
+      window.removeEventListener("resize", update);
     };
-  }, [doc, pageNo]);
+  }, [doc]);
+
+  const width = Math.max(160, Math.round((fitW || 360) * zoom));
+
+  /** 当前页 = 视口上沿（+40px 余量）之上最后一页 */
+  const onScroll = useCallback(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const probe = el.scrollTop + 40;
+    let best = 1;
+    for (const [no, node] of pagesRef.current) {
+      if (node.offsetTop <= probe && no > best) best = no;
+    }
+    setCur(best);
+  }, []);
+
+  const register = useCallback((no: number, el: HTMLDivElement | null) => {
+    if (el) pagesRef.current.set(no, el);
+    else pagesRef.current.delete(no);
+  }, []);
+
+  const jump = useCallback(
+    (n: number) => {
+      if (!doc) return;
+      const target = Math.min(doc.numPages, Math.max(1, n));
+      const node = pagesRef.current.get(target);
+      const wrap = wrapRef.current;
+      if (node && wrap) wrap.scrollTo({ top: Math.max(0, node.offsetTop - 8), behavior: "smooth" });
+      setCur(target);
+    },
+    [doc],
+  );
 
   if (err) {
     return (
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 24 }}>
         <div style={{ fontSize: 12.5, color: "var(--red, #e5484d)", textAlign: "center" }}>{err}</div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-          <button className="btn" disabled={pdfBusy} onClick={() => void onOpenExternally()}>用系统应用打开</button>
-          <button className="btn btn-ghost" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
+          <button className="btn" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
         </div>
       </div>
     );
@@ -224,18 +374,32 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl:
     return <div style={{ padding: 28, textAlign: "center", color: "var(--text-3)", fontSize: 12.5 }}>PDF 解析中…</div>;
   }
   return (
-    <div ref={wrapRef} style={{ flex: 1, overflow: "auto", padding: "8px 8px 0", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <canvas ref={canvasRef} style={{ borderRadius: 6, boxShadow: "var(--shadow-1)", background: "#fff", maxWidth: "100%" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0 10px", position: "sticky", bottom: 0, width: "100%", justifyContent: "center", flexWrap: "wrap" }}>
-        <button className="btn" disabled={pageNo <= 1} onClick={() => setPageNo((n) => Math.max(1, n - 1))}>‹</button>
-        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 64, textAlign: "center" }}>{pageNo} / {doc.numPages}</span>
-        <button className="btn" disabled={pageNo >= doc.numPages} onClick={() => setPageNo((n) => Math.min(doc.numPages, n + 1))}>›</button>
-        <button className="btn btn-ghost" disabled={pdfBusy} title="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>
-          {pdfBusy ? "调起中…" : "系统应用"}
-        </button>
-        <button className="btn btn-ghost" title="用本机 PDF 应用打开（要打印/目录时用）" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      {/* 连续滚动区：position:relative 让页码定位用 offsetTop（相对滚动容器） */}
+      <div
+        ref={wrapRef}
+        onScroll={onScroll}
+        style={{ flex: 1, minHeight: 0, position: "relative", overflow: "auto", padding: "10px 12px 0", background: "rgba(127,127,127,.06)" }}
+      >
+        {Array.from({ length: doc.numPages }, (_, i) => i + 1).map((no) => (
+          <PdfPage key={no} doc={doc} no={no} width={width} active={Math.abs(no - cur) <= 2} register={register} />
+        ))}
+        <div style={{ height: 8 }} />
       </div>
-      {dlMsg ? <div style={{ fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 8px 8px" }}>{dlMsg}</div> : null}
+      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
+        <button className="btn" disabled={cur <= 1} title="上一页" onClick={() => jump(cur - 1)}>‹</button>
+        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 64, textAlign: "center" }}>{cur} / {doc.numPages}</span>
+        <button className="btn" disabled={cur >= doc.numPages} title="下一页" onClick={() => jump(cur + 1)}>›</button>
+        <span style={{ width: 8 }} />
+        <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
+        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
+        <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
+        <button className="btn btn-ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</button>
+        <button className="btn btn-ghost" disabled={pdfBusy} title="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>
+          {pdfBusy ? "调起中…" : "系统应用打开"}
+        </button>
+      </div>
+      {dlMsg ? <div style={{ flexShrink: 0, fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 10px 8px" }}>{dlMsg}</div> : null}
     </div>
   );
 }
@@ -264,6 +428,16 @@ const TEXT_EXTS = new Set([
 ]);
 const ZIP_EXTS = new Set(["zip", "jar"]);
 const OFFICE_EXTS = new Set(["docx", "xlsx", "pptx"]);
+/** 旧版二进制 Office / WPS 格式：结构是 OLE 复合文档，应用内无法渲染——给出明确提示而不是
+ *  笼统的"暂不支持在线预览"（霖 2026-09-22：「pptx 没法预览」的典型来源之一就是老师发的 .ppt） */
+const LEGACY_OFFICE_HINT: Record<string, string> = {
+  ppt: "旧版 .ppt 不支持应用内预览，请下载查看（另存为 .pptx 可预览）",
+  doc: "旧版 .doc 不支持应用内预览，请下载查看（另存为 .docx 可预览）",
+  xls: "旧版 .xls 不支持应用内预览，请下载查看（另存为 .xlsx 可预览）",
+  dps: "旧版 .dps 不支持应用内预览，请下载查看（另存为 .pptx 可预览）",
+  wps: "旧版 .wps 不支持应用内预览，请下载查看（另存为 .docx 可预览）",
+  et: "旧版 .et 不支持应用内预览，请下载查看（另存为 .xlsx 可预览）",
+};
 /** 文本/zip 解码上限：超过则引导下载（防止 atob 大文件卡 UI） */
 const DECODE_LIMIT = 20 * 1024 * 1024;
 /** 预览抓取上限：再大就不走 IPC（base64 回传会把 WebView 拖死），直接引导下载。
@@ -418,7 +592,9 @@ interface ZipPayload {
 type OfficeView =
   | { kind: "docx"; html: string; zip: ZipPayload; size: number }
   | { kind: "xlsx"; sheets: XlsxSheetView[]; zip: ZipPayload; size: number }
-  | { kind: "pptx"; slides: PptxSlide[]; zip: ZipPayload; size: number };
+  | { kind: "pptx"; model: PptxModel; zip: ZipPayload; size: number; notice?: string }
+  /** 渲染模型失败时的退路：文字大纲（仍比"什么都没有"强，且明说已回退） */
+  | { kind: "pptx-outline"; slides: PptxSlide[]; zip: ZipPayload; size: number; notice: string };
 
 /** 按扩展名本地解析 Office；任何失败抛 Error，由调用方回退内部文件树 */
 async function parseOffice(name: string, zip: ZipPayload, size: number): Promise<OfficeView> {
@@ -461,8 +637,14 @@ async function parseOffice(name: string, zip: ZipPayload, size: number): Promise
   }
 
   if (ext === "pptx") {
-    const slides = await extractPptxSlides(zip.bytes, zip.entries);
-    return { kind: "pptx", slides, zip, size };
+    try {
+      const model = await parsePptxModel(zip.bytes, zip.entries);
+      return { kind: "pptx", model, zip, size };
+    } catch (e) {
+      // 畸形/结构不常见的 pptx：退到文字大纲（页面仍能看到每页要点），并说明已回退
+      const slides = await extractPptxSlides(zip.bytes, zip.entries);
+      return { kind: "pptx-outline", slides, zip, size, notice: `幻灯片渲染失败（${errMsg(e)}），已回退为文字大纲` };
+    }
   }
 
   throw new Error("未知 Office 格式");
@@ -476,7 +658,7 @@ type ReadyView =
   | { kind: "text"; text: string; mojibake: boolean; size: number }
   | { kind: "zip"; zip: ZipPayload; office: boolean; notice?: string; size: number }
   | OfficeView
-  | { kind: "other"; mime: string; size: number };
+  | { kind: "other"; mime: string; size: number; hint?: string };
 
 type Phase =
   | { s: "loading" }
@@ -499,7 +681,7 @@ function routeByExt(name: string, bin: FetchedBinary): ReadyView {
   if (isText || isZip) {
     if (size > DECODE_LIMIT) {
       // 超限不进内存解码，走下载兜底
-      return { kind: "other", mime: bin.mime, size };
+      return { kind: "other", mime: bin.mime, size, hint: LEGACY_OFFICE_HINT[ext] };
     }
     const bytes = base64ToBytes(bin.b64);
     if (isZip) {
@@ -510,7 +692,7 @@ function routeByExt(name: string, bin: FetchedBinary): ReadyView {
     return { kind: "text", text, mojibake, size };
   }
 
-  return { kind: "other", mime: bin.mime, size };
+  return { kind: "other", mime: bin.mime, size, hint: LEGACY_OFFICE_HINT[ext] };
 }
 
 /* ---------- zip 层级树浏览（逐层进入 + 面包屑 + 文本条目内联预览） ---------- */
@@ -788,6 +970,208 @@ function PptxView({ slides }: { slides: PptxSlide[] }) {
           ) : null}
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ---------- pptx 真渲染（R26）：按幻灯片几何绝对定位，等宽等比缩放 ---------- */
+
+/** 逻辑页宽：16:9 时 1pt 恰好 ≈ 1px（12192000EMU = 13.333in → 960/13.333/72 = 1） */
+const PPTX_LOGICAL_W = 960;
+
+/** 单个形状：几何从 EMU 换算成逻辑页 px，颜色/字号/对齐取自解析出的 run 属性 */
+function PptxShapeView({ shape, model, pxPerPt }: { shape: PptxShape; model: PptxModel; pxPerPt: number }): React.ReactNode {
+  const toPx = (emu: number): number => (emu / model.cx) * PPTX_LOGICAL_W;
+  const box: CSSProperties = {
+    position: "absolute",
+    left: toPx(shape.x),
+    top: toPx(shape.y),
+    width: toPx(shape.w),
+    height: toPx(shape.h),
+  };
+
+  if (shape.kind === "image") {
+    return <img src={shape.dataUrl} alt="" style={{ ...box, objectFit: "contain" }} />;
+  }
+
+  if (shape.kind === "line") {
+    // 直线/连接线：横线（高度≈0）或竖线（宽度≈0），按 1px 实线画
+    const vertical = shape.h >= shape.w;
+    return (
+      <div
+        style={{
+          ...box,
+          height: vertical ? box.height : 1,
+          width: vertical ? 1 : box.width,
+          background: shape.color ?? "#c9ced6",
+        }}
+      />
+    );
+  }
+
+  if (shape.kind === "unsupported") {
+    return (
+      <div
+        style={{
+          ...box,
+          border: "1px dashed var(--border, #c9ced6)",
+          borderRadius: 4,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 11,
+          color: "var(--text-3, #9aa1ac)",
+          background: "rgba(127,127,127,.05)",
+        }}
+      >
+        {shape.label}
+      </div>
+    );
+  }
+
+  if (shape.kind === "table") {
+    return (
+      <div style={{ ...box, overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, color: "#111" }}>
+          <tbody>
+            {shape.rows.map((row, ri) => (
+              <tr key={ri}>
+                {row.map((cell, ci) => (
+                  <td key={ci} style={{ border: "1px solid #b9bfc8", padding: "2px 5px", verticalAlign: "top" }}>
+                    {cell.map((p, pi) => (
+                      <div key={pi}>{p.runs.map((r) => r.text).join("")}</div>
+                    ))}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        ...box,
+        background: shape.fill,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: shape.anchor === "ctr" ? "center" : shape.anchor === "b" ? "flex-end" : "flex-start",
+        padding: 6,
+        overflow: "hidden",
+      }}
+    >
+      {shape.paras.map((p: PptxPara, pi: number) => (
+        <div
+          key={pi}
+          style={{
+            display: "flex",
+            gap: 4,
+            marginLeft: p.lvl * 16,
+            textAlign: p.align === "ctr" ? "center" : p.align === "r" ? "right" : "left",
+            justifyContent: p.align === "ctr" ? "center" : p.align === "r" ? "flex-end" : "flex-start",
+          }}
+        >
+          {p.bullet ? <span style={{ flex: "none" }}>{p.bullet}</span> : null}
+          <span style={{ flex: 1, wordBreak: "break-word" }}>
+            {p.runs.map((r, ri) => (
+              <span
+                key={ri}
+                style={{
+                  fontSize: (r.sizePt ?? 18) * pxPerPt,
+                  fontWeight: r.bold ? 700 : 400,
+                  fontStyle: r.italic ? "italic" : undefined,
+                  textDecoration: r.underline ? "underline" : undefined,
+                  color: r.color ?? "#111",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {r.text}
+              </span>
+            ))}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** pptx 页面视图：**连续滚动**的多页渲染（与 PDF 同一交互），等比缩放适应面板宽度。 */
+function PptxSlidesView({ model }: { model: PptxModel }): React.ReactNode {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [fit, setFit] = useState(1);
+  const [zoom, setZoom] = useState(1);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const update = () => setFit(Math.max(0.2, (el.clientWidth || PPTX_LOGICAL_W) / PPTX_LOGICAL_W));
+    update();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
+    ro?.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  if (!model.slides.length) return <Empty text="未解析到幻灯片内容" />;
+  const pageH = Math.round((PPTX_LOGICAL_W * model.cy) / model.cx);
+  const k = fit * zoom;
+  const pxPerPt = PPTX_LOGICAL_W / (model.cx / 914400) / 72;
+
+  return (
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div ref={wrapRef} style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "10px 12px 0", background: "rgba(127,127,127,.06)" }}>
+        {model.slides.map((sl) => (
+          <div key={sl.no} style={{ margin: "0 auto 14px", width: Math.round(PPTX_LOGICAL_W * k) }}>
+            <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", padding: "2px 0" }}>
+              第 {sl.no} 页 / 共 {model.slides.length} 页
+            </div>
+            <div style={{ position: "relative", width: Math.round(PPTX_LOGICAL_W * k), height: Math.round(pageH * k) }}>
+              <div
+                data-pptx-page={sl.no}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: PPTX_LOGICAL_W,
+                  height: pageH,
+                  background: "#fff",
+                  boxShadow: "var(--shadow-1)",
+                  borderRadius: 6,
+                  overflow: "hidden",
+                  transform: `scale(${k})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                {sl.shapes.map((sh, i) => (
+                  <PptxShapeView key={i} shape={sh} model={model} pxPerPt={pxPerPt} />
+                ))}
+              </div>
+            </div>
+            {sl.notes ? (
+              <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", padding: "4px 2px 0", wordBreak: "break-word" }}>
+                备注：{sl.notes}
+              </div>
+            ) : null}
+          </div>
+        ))}
+        <div style={{ height: 8 }} />
+      </div>
+      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
+        <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>连续滚动查看全部页面</span>
+        <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
+        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
+        <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
+        <button className="btn btn-ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</button>
+        {model.unsupported > 0 ? (
+          <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>{model.unsupported} 个图表/对象未渲染</span>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -1075,16 +1459,21 @@ export function FilePreviewHost() {
             </OfficeShell>
           ) : null}
 
-          {view?.kind === "pptx" ? (
+          {view?.kind === "pptx" || view?.kind === "pptx-outline" ? (
             <OfficeShell key={`p${cur.seq}`} zip={view.zip}>
-              <PptxView slides={view.slides} />
+              {view.kind === "pptx" ? <PptxSlidesView model={view.model} /> : <PptxView slides={view.slides} />}
+              {"notice" in view && view.notice ? (
+                <div style={{ padding: "6px 12px 8px", fontSize: 11.5, color: "var(--text-3, #9aa1ac)", wordBreak: "break-all" }}>
+                  {view.notice}
+                </div>
+              ) : null}
             </OfficeShell>
           ) : null}
 
           {view?.kind === "other" ? (
             <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 12, alignItems: "center", justifyContent: "center", flex: 1 }}>
-              <Empty text="该格式暂不支持在线预览" />
-              <div style={{ fontSize: 12, color: "var(--text-3, #9aa1ac)" }}>
+              <Empty text={view.hint ?? "该格式暂不支持在线预览"} />
+              <div style={{ fontSize: 12, color: "var(--text-3, #9aa1ac)", textAlign: "center" }}>
                 {view.mime}
                 {view.size ? ` · ${fmtBytes(view.size)}` : ""}
               </div>

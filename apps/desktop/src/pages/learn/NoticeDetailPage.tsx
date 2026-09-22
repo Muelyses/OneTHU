@@ -12,6 +12,7 @@ import { useLearnData } from "../../state/data.js";
 import { BackButton, RichContent, fmtDateTime } from "./shared.js";
 import { useLearnNavSemester } from "./shared.js";
 import { openExternal } from "../info/openExternal.js";
+import { DownloadOpenButtons } from "../../components/DownloadOpenButtons.js";
 import type { LearnAttachment } from "@onethu/core";
 
 export function NoticeDetailPage() {
@@ -22,7 +23,7 @@ export function NoticeDetailPage() {
   const [att, setAtt] = useState<LearnAttachment | null>(null);
   const [attState, setAttState] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [attErr, setAttErr] = useState("");
-  const [dlHint, setDlHint] = useState<string | null>(null);
+  const [dlHint, setDlHint] = useState<{ text: string; path?: string } | null>(null);
   const [downloading, setDownloading] = useState(false);
 
   const courseId = navParams?.courseId ?? "";
@@ -55,9 +56,9 @@ export function NoticeDetailPage() {
     setDlHint(null);
     try {
       const path = await downloadLearnUrl(a.downloadUrl, a.name || `learn-attachment-${a.id}`);
-      setDlHint(`已下载到：${path}`);
+      setDlHint({ text: `已下载到：${path}`, path });
     } catch (err) {
-      setDlHint("下载失败：" + explainNetworkError(err));
+      setDlHint({ text: "下载失败：" + explainNetworkError(err) });
     } finally {
       setDownloading(false);
     }
@@ -157,8 +158,10 @@ export function NoticeDetailPage() {
       ) : null}
 
       {dlHint ? (
-        <div className="error-note" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>
-          <span>{dlHint}</span>
+        <div className="error-note dl-done-note" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>
+          <span>{dlHint.text}</span>
+          {/* R23：下载完成就地给「打开文件/打开目录」（霖需求；失败态无 path 不渲染按钮） */}
+          {dlHint.path ? <DownloadOpenButtons path={dlHint.path} /> : null}
         </div>
       ) : null}
 

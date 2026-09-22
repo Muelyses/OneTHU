@@ -17,6 +17,7 @@ import { isAndroidNavigator, isWindowsNavigator } from "../lib/androidHost.js";
 import { normalizeWebvpnUrl } from "@onethu/core";
 import { explainNetworkError, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
+import { DownloadOpenButtons } from "./DownloadOpenButtons.js";
 import {
   buildZipTree,
   extractEntryBytes,
@@ -133,7 +134,7 @@ class PreviewErrorBoundary extends Component<{ children: ReactNode; onRetry?: ()
   }
 }
 
-function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean; dlMsg: string }): React.ReactNode {
+function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg, dlPath }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean; dlMsg: string; dlPath: string }): React.ReactNode {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [doc, setDoc] = useState<PdfDocLike | null>(null);
@@ -225,7 +226,12 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy, dlMsg }: { dataUrl:
         </button>
         <button className="btn btn-ghost" title="用本机 PDF 应用打开（要打印/目录时用）" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
       </div>
-      {dlMsg ? <div style={{ fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 8px 8px" }}>{dlMsg}</div> : null}
+      {dlMsg ? (
+        <div style={{ fontSize: 11.5, color: "var(--text-3)", wordBreak: "break-all", padding: "0 8px 8px", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          <span>{dlMsg}</span>
+          {dlPath ? <DownloadOpenButtons path={dlPath} /> : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -816,6 +822,7 @@ export function FilePreviewHost() {
   /** Windows 上「仍要尝试预览」的低调出口（默认 false：直接给下载路径，不冒白屏的险） */
   const [winTryPreview, setWinTryPreview] = useState(false);
   const [dlMsg, setDlMsg] = useState("");
+  const [dlPath, setDlPath] = useState("");  // R23：下载成功的目标路径（供「打开文件/目录」按钮）
   const seqRef = useRef(0);
 
   useEffect(() => {
@@ -885,8 +892,10 @@ export function FilePreviewHost() {
     try {
       const path = await downloadLearnUrl(cur.url, cur.name || "download");
       setDlMsg(`已下载到：${path}`);
+      setDlPath(path);
     } catch (err) {
       setDlMsg("下载失败：" + errMsg(err));
+      setDlPath("");
     } finally {
       setDlBusy(false);
     }
@@ -900,6 +909,7 @@ export function FilePreviewHost() {
     try {
       const path = await saveLearnUrlAs(cur.url, cur.name || "download");
       setDlMsg(path ? `已保存到：${path}` : "已取消另存为。");
+      setDlPath(path ?? "");
     } catch (err) {
       setDlMsg("另存为失败：" + errMsg(err));
     } finally {
@@ -1020,7 +1030,10 @@ export function FilePreviewHost() {
                 <button className="btn btn-ghost" onClick={() => setWinTryPreview(true)}>仍要尝试预览</button>
               </div>
               {dlMsg ? (
-                <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-3)", wordBreak: "break-all" }}>{dlMsg}</div>
+                <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-3)", wordBreak: "break-all", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span>{dlMsg}</span>
+                  {dlPath ? <DownloadOpenButtons path={dlPath} /> : null}
+                </div>
               ) : null}
             </div>
           ) : (
@@ -1043,6 +1056,7 @@ export function FilePreviewHost() {
               onOpenExternally={openPdfExternally}
               pdfBusy={pdfBusy}
               dlMsg={dlMsg}
+              dlPath={dlPath}
             />
           ) : null}
 

@@ -18,6 +18,7 @@ import { normalizeWebvpnUrl } from "@onethu/core";
 import { explainNetworkError, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
 import { DownloadOpenButtons } from "./DownloadOpenButtons.js";
+import { openLocalPath } from "../lib/localFile.js";
 import {
   buildZipTree,
   extractEntryBytes,
@@ -934,8 +935,7 @@ export function FilePreviewHost() {
     setDlMsg("");
     try {
       const path = await downloadLearnUrl(cur.url, cur.name || "preview.pdf");
-      const { openPath } = await import("@tauri-apps/plugin-opener");
-      await openPath(path);
+      await openLocalPath(path);
     } catch (err) {
       setDlMsg("打开失败：" + (err instanceof Error ? err.message : String(err)));
     } finally {

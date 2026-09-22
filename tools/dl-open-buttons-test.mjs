@@ -50,8 +50,32 @@ assert.deepEqual(offenders, [], `出现下载提示但未接「打开文件/打�
 /* 组件自身：桌面才显示（Android 下载落在私有目录，无「定位」语义）+ 失败降级为 toast */
 const btn = read("components/DownloadOpenButtons.tsx");
 assert.ok(/isAndroidNavigator/.test(btn) && /return null/.test(btn), "Android 上必须不显示（无定位语义）");
-assert.ok(/openPath\(path\)/.test(btn) && /revealItemInDir\(path\)/.test(btn), "两个动作分别是打开文件与定位文件");
+assert.ok(/openLocalPath\(path\)/.test(btn) && /revealLocalPath\(path\)/.test(btn), "两个动作分别是打开文件与定位文件");
 assert.ok(/showToast/.test(btn), "失败要降级为 toast，不得抛出");
+
+/* 图标：必须用应用内联线性图标（随提示条继承蓝色），不得用 emoji */
+assert.ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(btn), "不得使用 emoji 图标（要线条图标）");
+assert.ok(/<IconFile /.test(btn) && /<IconFolder /.test(btn), "两个按钮要用 IconFile / IconFolder 线条图标");
+
+/* 通道：不得再用官方 opener 插件的 openPath / revealItemInDir —— 其命令权限之外还要配
+ * capability 路径 scope，只给命令权限会报「Not allowed to open path ...」；下载位置由用户
+ * 决定、白名单覆盖不全，故走自写 Rust 命令。 */
+assert.ok(!/plugin-opener/.test(btn), "不得走 opener 插件（会被路径 scope 拒绝）");
+const lib = read("lib/localFile.ts");
+assert.ok(/invoke\("onethu_open_path", \{ path \}\)/.test(lib), "打开文件必须调用自写命令 onethu_open_path");
+assert.ok(/invoke\("onethu_reveal_path", \{ path \}\)/.test(lib), "打开目录必须调用自写命令 onethu_reveal_path");
+for (const [p, label] of [["components/FilePreview.tsx", "PDF「系统应用打开」"], ["pages/Schedule.tsx", "日程导出 ics 后打开"]]) {
+  const src = read(p);
+  assert.ok(!/openPath\(/.test(src) && /openLocalPath\(/.test(src), `${label}必须改用自写命令（同一 Not allowed 问题）`);
+}
+
+/* Rust 侧：命令存在 + 已注册 + 只放行绝对且存在的路径 */
+const rs = readFileSync(new URL("../apps/desktop/src-tauri/src/lib.rs", import.meta.url), "utf8");
+assert.ok(/fn onethu_open_path\(path: String\)/.test(rs) && /fn onethu_reveal_path\(path: String\)/.test(rs),
+  "Rust 侧必须有 onethu_open_path / onethu_reveal_path 命令");
+assert.ok(/onethu_open_path,onethu_reveal_path/.test(rs), "两个命令必须注册进 invoke_handler");
+assert.ok(/is_absolute\(\)/.test(rs) && /p\.exists\(\)/.test(rs), "Rust 侧只放行绝对且已存在的路径");
+assert.ok(/raw_arg/.test(rs) && /0x0800_0000/.test(rs), "Windows 用 raw_arg 逐段追加 + CREATE_NO_WINDOW");
 
 /* 样式：图标按钮可见、且提示条不与按钮两端拉开 */
 const css = readFileSync(join(SRC, "styles/global.css"), "utf8");

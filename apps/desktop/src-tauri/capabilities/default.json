@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "主窗口能力：核心权限 + opener 插件（外链系统浏览器 + 打开/定位本地文件；自定义命令不需要插件授权）",
+  "description": "主窗口能力：核心权限 + opener 插件（仅外链系统浏览器；打开/定位本地文件走自写命令，自定义命令不需要插件授权）",
   "windows": [
     "main"
   ],
@@ -15,8 +15,6 @@
     "onethu-speech:default",
     "geolocation:allow-check-permissions",
     "geolocation:allow-request-permissions",
-    "onethu-mobile:default",
-    "opener:allow-open-path",
-    "opener:allow-reveal-item-in-dir"
+    "onethu-mobile:default"
   ]
 }

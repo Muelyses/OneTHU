@@ -4964,7 +4964,11 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
 }
 .dl-open-btn {
   height: 22px;
-  width: 26px;
+  width: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
   padding: 0;
   font-size: 12px;

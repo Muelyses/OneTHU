@@ -123,4 +123,23 @@ console.log("[6] 真实调用点：垫片先于能力探测，且没有引入 di
   ok(!/disableFontFace/.test(body), "不再使用 disableFontFace（它会让现代构建画出无字体文本）");
 }
 
+
+console.log("[7] 结构性守卫：pdf.js 现代构建用到的新内核 API 必须都在垫片清单里");
+{
+  // R27 的教训——漏一个 API 不会报错到 UI，只会让 pdf.js 静默降级（字体退化成系统字体）。
+  // 升级 pdfjs-dist 时这条会先响，提醒把新依赖补进 ensurePdfRuntimeShims()。
+  const fs = await import("node:fs");
+  const worker = fs.readFileSync("apps/desktop/node_modules/pdfjs-dist/build/pdf.worker.mjs", "utf8");
+  const main = fs.readFileSync("apps/desktop/node_modules/pdfjs-dist/build/pdf.mjs", "utf8");
+  const src = fs.readFileSync("apps/desktop/src/lib/pdf-runtime.ts", "utf8");
+  const shimBody = src.slice(src.indexOf("export function ensurePdfRuntimeShims"));
+  const KNOWN = ["getOrInsertComputed", "withResolvers", "sumPrecise"];
+  for (const api of KNOWN) {
+    if (!worker.includes(api) && !main.includes(api)) continue; // 该版本不再依赖，跳过
+    ok(shimBody.includes(api), `pdf.js 依赖 ${api} → 垫片清单里有它`);
+  }
+  // 反向：垫片清单里不该有 pdf.js 完全用不到的 API（避免清单虚胖）
+  ok(/sumPrecise/.test(worker), "pdf.js 现代构建确实调用 Math.sumPrecise（本 bug 的根因）");
+}
+
 console.log(`\npdf 运行时垫片：${pass} 断言全部通过`);

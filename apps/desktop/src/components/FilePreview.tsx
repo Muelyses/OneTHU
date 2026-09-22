@@ -29,6 +29,7 @@ import {
 import type { PptxSlide, ZipEntry, ZipNode } from "../lib/zipTree.js";
 import { parsePptxModel } from "../lib/pptxRender.js";
 import type { PptxModel, PptxPara, PptxShape } from "../lib/pptxRender.js";
+import { ensurePdfRuntimeShims, hasModernPdfRuntime } from "../lib/pdf-runtime.js";
 
 /* ⚠️ 安卓宿主判定绝不能用裸 UA 正则（R21 修正）：主窗口 UA 被 tauri.conf.json 伪装成
  * Windows Chrome/79（webvpn 票绑定），裸 UA 正则在真机恒 false —— 正是
@@ -72,14 +73,17 @@ interface PdfDocLike {
  *  老内核 WebView 会直接抛错——失败自动换 legacy 构建（自带面向旧环境的转译与垫片），
  *  两轮都失败才把错误交回 UI。留痕用 console（安卓上可被 logcat 抓到），便于下次排障。 */
 async function loadPdfDoc(dataUrl: string): Promise<PdfDocLike> {
-  const variants = [
-    { mod: () => import("pdfjs-dist"), worker: () => import("pdfjs-dist/build/pdf.worker.min.mjs?url"), tag: "modern" },
-    {
-      mod: () => import("pdfjs-dist/legacy/build/pdf.mjs"),
-      worker: () => import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url"),
-      tag: "legacy",
-    },
-  ] as const;
+  ensurePdfRuntimeShims();
+  const modernOk = hasModernPdfRuntime();
+  const modern = { mod: () => import("pdfjs-dist"), worker: () => import("pdfjs-dist/build/pdf.worker.min.mjs?url"), tag: "modern" } as const;
+  const legacy = {
+    mod: () => import("pdfjs-dist/legacy/build/pdf.mjs"),
+    worker: () => import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url"),
+    tag: "legacy",
+  } as const;
+  // 内核缺新 API 时先上 legacy（自带垫片）；否则先用体积更小的现代构建
+  const variants = modernOk ? ([modern, legacy] as const) : ([legacy, modern] as const);
+  if (!modernOk) console.info("[FILE-PREVIEW] 内核缺 pdf.js v6 依赖的新 API，优先 legacy 构建");
   let lastErr: unknown = null;
   for (const v of variants) {
     try {

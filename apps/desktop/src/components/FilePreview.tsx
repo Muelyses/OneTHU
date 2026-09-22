@@ -98,8 +98,13 @@ async function loadPdfDoc(dataUrl: string): Promise<PdfDocLike> {
  * 抛错都会让整棵 React 树卸载 → 整个应用白屏，用户只看到「什么都没了」。边界把错误收在
  * 预览面板内部：显示原因 + 重试，应用其余部分不受影响。
  */
-class PreviewErrorBoundary extends Component<{ children: ReactNode; onRetry?: () => void }, { err: string | null }> {
-  constructor(props: { children: ReactNode; onRetry?: () => void }) {
+/** Windows 预览失败时的兜底提示（R24：不再默认拒绝渲染，改为出错时说明 + 下载出口） */
+const WIN_PREVIEW_NOTE = "预览仍出错时，请用上方「下载」查看。";
+class PreviewErrorBoundary extends Component<
+  { children: ReactNode; onRetry?: () => void; note?: string },
+  { err: string | null }
+> {
+  constructor(props: { children: ReactNode; onRetry?: () => void; note?: string }) {
     super(props);
     this.state = { err: null };
   }
@@ -119,6 +124,9 @@ class PreviewErrorBoundary extends Component<{ children: ReactNode; onRetry?: ()
     return (
       <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
         <div style={{ color: "var(--red)", marginBottom: 8 }}>预览渲染出错，已停在这一条上（应用其余功能不受影响）。</div>
+        {this.props.note ? (
+          <div style={{ color: "var(--text-3)", marginBottom: 8 }}>{this.props.note}</div>
+        ) : null}
         <div style={{ color: "var(--text-3)", marginBottom: 12, wordBreak: "break-all" }}>{this.state.err.slice(0, 300)}</div>
         <button
           className="btn"
@@ -819,8 +827,6 @@ export function FilePreviewHost() {
   const [cur, setCur] = useState<OpenState | null>(null);
   const [phase, setPhase] = useState<Phase>({ s: "loading" });
   const [dlBusy, setDlBusy] = useState(false);
-  /** Windows 上「仍要尝试预览」的低调出口（默认 false：直接给下载路径，不冒白屏的险） */
-  const [winTryPreview, setWinTryPreview] = useState(false);
   const [dlMsg, setDlMsg] = useState("");
   const [dlPath, setDlPath] = useState("");  // R23：下载成功的目标路径（供「打开文件/目录」按钮）
   const seqRef = useRef(0);
@@ -1017,33 +1023,8 @@ export function FilePreviewHost() {
             </div>
           ) : null}
 
-          {IS_WINDOWS_HOST && !winTryPreview ? (
-            /* Windows 文件预览**暂不可用**（2026-09-21 用户定案）：WebView2 上点开任意预览
-               都会白屏，而排查成本远高于收益（用户原话「win 的构建维护成本太高了」）。
-               所以这里不再尝试渲染，直接给出明确说明与下载出口——下载后本地用系统应用打开
-               是可用路径。保留一个低调的「仍要尝试」出口：将来要在 Windows 上接着排查时，
-               不用改代码就能进到渲染分支（同时错误边界会把崩溃收在面板内）。 */
-            <div style={{ padding: 16, fontSize: 13, lineHeight: 1.8 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>Windows 暂不支持应用内预览</div>
-              <div style={{ color: "var(--text-3)", marginBottom: 4 }}>
-                已知问题：Windows 端打开预览会白屏，暂未修复。请下载后用系统自带应用查看。
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
-                <button className="btn btn-primary" disabled={dlBusy} onClick={() => void doDownload()}>
-                  {dlBusy ? "下载中…" : "下载"}
-                </button>
-                <button className="btn" disabled={dlBusy} onClick={() => void doSaveAs()}>另存为…</button>
-                <button className="btn btn-ghost" onClick={() => setWinTryPreview(true)}>仍要尝试预览</button>
-              </div>
-              {dlMsg ? (
-                <div style={{ marginTop: 10, fontSize: 12, color: "var(--text-3)", wordBreak: "break-all", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                  <span>{dlMsg}</span>
-                  {dlPath ? <DownloadOpenButtons path={dlPath} /> : null}
-                </div>
-              ) : null}
-            </div>
-          ) : (
-          <PreviewErrorBoundary onRetry={retry}>
+          <PreviewErrorBoundary onRetry={retry} note={IS_WINDOWS_HOST ? WIN_PREVIEW_NOTE : undefined}>
+
           {view?.kind === "image" ? (
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 12, background: "rgba(127,127,127,.05)", minHeight: 220 }}>
               <img
@@ -1122,7 +1103,6 @@ export function FilePreviewHost() {
             </div>
           ) : null}
           </PreviewErrorBoundary>
-          )}
         </div>
 
         {dlMsg ? (

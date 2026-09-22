@@ -69,9 +69,10 @@ interface PdfDocLike {
   getPage(n: number): Promise<PdfPageLike>;
 }
 
-/** pdf.js 现代版构建对内核要求很高（如 Promise.withResolvers 需要 Chromium 119+），
- *  老内核 WebView 会直接抛错——失败自动换 legacy 构建（自带面向旧环境的转译与垫片），
- *  两轮都失败才把错误交回 UI。留痕用 console（安卓上可被 logcat 抓到），便于下次排障。 */
+/** pdf.js 现代版构建对内核要求很高（Promise.withResolvers、Math.sumPrecise 等），
+ *  老内核 WebView 会在渲染期抛错或静默退化成系统字体——先补垫片（见 lib/pdf-runtime.ts），
+ *  失败自动换 legacy 构建（自带面向旧环境的转译与垫片），两轮都失败才把错误交回 UI。
+ *  留痕用 console（安卓上可被 logcat 抓到），便于下次排障。 */
 async function loadPdfDoc(dataUrl: string): Promise<PdfDocLike> {
   ensurePdfRuntimeShims();
   const modernOk = hasModernPdfRuntime();

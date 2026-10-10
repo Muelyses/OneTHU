@@ -20,6 +20,8 @@ import android.os.Build
 import android.provider.Settings
 import android.webkit.WebView
 import androidx.core.content.ContextCompat
+import androidx.activity.result.ActivityResult
+import app.tauri.annotation.ActivityCallback
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.Permission
@@ -67,6 +69,10 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
 
     /** overlayShow 正在等麦克风授权回调（回调里要继续启动悬浮层） */
     private var pendingShow = false
+
+    /** 附件选择：回调时要知道选的是哪一类、以及拍照时的出图文件 */
+    private var pendingPickKind = "file"
+    private var pendingPickFile: java.io.File? = null
 
     init {
         // 越早注册越好：服务起来之前就要能判断「OneTHU 自己是不是在前台」
@@ -265,6 +271,76 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
         invoke.resolve(ret)
     }
 
+    /** 附件选择（拍照 / 相册 / 上传，需求 6）。
+     *
+     *  为什么必须由前端发起这个命令：Tauri 的 activity result 只能经「带 Invoke 的
+     *  startActivityForResult + @ActivityCallback」回传（raw startActivityForResult 的结果
+     *  WryActivity 不会转发给插件）。所以串法是：原生面板点「拍照/相册/上传」→ 事件
+     *  `attachRequest{kind}` 推给 JS → JS 调本命令拉起系统选择器 → 本命令把结果物化成
+     *  cacheDir 里的真实文件后，再以 **事件 `attach`**（`{type:"attach", path, name, mime, size}`）
+     *  推回 JS → 由 lib/overlayAndroid.ts 交给 lib/attach.ts 的 attachFromPath + sendToOh
+     *  走**同一条**发送通道（不新增第二条链）。 */
+    @Command
+    fun overlayPickAttach(invoke: Invoke) {
+        val kind = invoke.getArgs().optString("kind", "file")
+        pendingPickKind = kind
+        activity.runOnUiThread {
+            try {
+                var plan = OverlayPicker.plan(activity, kind)
+                pendingPickFile = plan.outFile
+                try {
+                    startActivityForResult(invoke, plan.intent, "onPickAttach")
+                } catch (_: android.content.ActivityNotFoundException) {
+                    // 相册选择器不可用（部分 ROM 精简）→ 退回文档选择器，同样零权限
+                    plan = OverlayPicker.planFallback()
+                    pendingPickFile = null
+                    startActivityForResult(invoke, plan.intent, "onPickAttach")
+                }
+            } catch (e: Throwable) {
+                invoke.reject("打开选择器失败：${e.message}")
+            }
+        }
+    }
+
+    @ActivityCallback
+    private fun onPickAttach(invoke: Invoke?, result: ActivityResult) {
+        if (invoke == null) return
+        val kind = pendingPickKind
+        val out = pendingPickFile
+        pendingPickFile = null
+        if (result.resultCode != Activity.RESULT_OK) {
+            val ret = JSObject()
+            ret.put("ok", false)
+            ret.put("cancelled", true)
+            invoke.resolve(ret)
+            return
+        }
+        Thread {
+            try {
+                val f = OverlayPicker.materialize(activity, kind, out, result.data)
+                if (f == null) {
+                    activity.runOnUiThread { invoke.reject("没有取到可用的文件") }
+                    return@Thread
+                }
+                val info = org.json.JSONObject().apply {
+                    put("path", f.absolutePath)
+                    put("name", f.name)
+                    put("mime", OverlayPicker.mimeOf(f))
+                    put("size", f.length())
+                }
+                // {type:"attach", path, name, mime, size} 推给宿主 JS（发送链唯一入口）
+                OverlayEvents.emit("attach", 0, 0, null, info)
+                val ret = JSObject()
+                ret.put("ok", true)
+                ret.put("name", f.name)
+                activity.runOnUiThread { invoke.resolve(ret) }
+            } catch (e: Throwable) {
+                val msg = e.message ?: "读取选择结果失败"
+                activity.runOnUiThread { invoke.reject(msg) }
+            }
+        }.start()
+    }
+
     /** 诊断（设置页/报告用）：权限、是否在显示、形态、关闭标记 */
     @Command
     fun overlayStatus(invoke: Invoke) {
@@ -276,6 +352,19 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
         ret.put("closedByUser", OverlayPrefs.closedByUser(activity))
         // 本体在前台时悬浮层会被主动隐藏，这是预期行为（不是没启动成功）
         ret.put("appForeground", AppForeground.isForeground)
+        // 真机取证字段（荣耀 logcat 被滤掉，只能靠命令读回来核对）：
+        // workW/workH=算出来的屏幕；ballX/ballY=最终球坐标；windowKind=实际挂着的窗口
+        // （ball/bar/panel/none/both(BUG)）；orbAttached+panelAttached=true 即不变量 1 被破坏。
+        val dbg = OverlayService.liveDebug()
+        if (dbg != null) {
+            val keys = arrayOf(
+                "workW", "workH", "ballDp", "ballPx", "ballX", "ballY", "placedFromSaved",
+                "windowKind", "orbAttached", "panelAttached", "suspended", "mode", "voiceSource",
+            )
+            for (k in keys) {
+                if (dbg.has(k)) ret.put(k, dbg.get(k))
+            }
+        }
         invoke.resolve(ret)
     }
 }

@@ -16,5 +16,6 @@ permissions = [
   "allow-overlay-poll-event",
   "allow-overlay-ack-events",
   "allow-overlay-push-ui",
+  "allow-overlay-pick-attach",
   "allow-overlay-status",
 ]

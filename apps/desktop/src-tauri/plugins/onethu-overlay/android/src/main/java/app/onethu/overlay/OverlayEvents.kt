@@ -12,13 +12,29 @@ object OverlayEvents {
     private const val TTL_MS = 6_000L
     private const val MAX_KEEP = 64
 
-    private class Ev(val id: Long, val type: String, val x: Int, val y: Int, val at: Long, val text: String?) {
+    private class Ev(
+        val id: Long,
+        val type: String,
+        val x: Int,
+        val y: Int,
+        val at: Long,
+        val text: String?,
+        val extra: org.json.JSONObject?,
+    ) {
         fun toJson(): org.json.JSONObject = org.json.JSONObject().apply {
             put("id", id)
             put("type", type)
             put("x", x)
             put("y", y)
             if (text != null) put("text", text)
+            // extra 的字段直接摊平进事件体（如 attach 事件的 path/name/mime/size）
+            if (extra != null) {
+                val it = extra.keys()
+                while (it.hasNext()) {
+                    val k = it.next()
+                    put(k, extra.get(k))
+                }
+            }
         }
     }
 
@@ -26,11 +42,11 @@ object OverlayEvents {
     private val queue = mutableListOf<Ev>()
     private var nextId = 1L
 
-    /** 入队并立即推一次（type: tap | hold | release | drag | closed | submit） */
-    fun emit(type: String, x: Int = 0, y: Int = 0, text: String? = null) {
+    /** 入队并立即推一次（type: tap | drag | closed | submit | attachRequest | attach） */
+    fun emit(type: String, x: Int = 0, y: Int = 0, text: String? = null, extra: org.json.JSONObject? = null) {
         val ev: Ev
         synchronized(lock) {
-            ev = Ev(nextId++, type, x, y, System.currentTimeMillis(), text)
+            ev = Ev(nextId++, type, x, y, System.currentTimeMillis(), text, extra)
             queue.add(ev)
             while (queue.size > MAX_KEEP) queue.removeAt(0)
         }

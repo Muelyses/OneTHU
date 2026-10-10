@@ -75,6 +75,8 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private var ballX = 0
     private var ballY = 0
     private var placedOnce = false
+    private var cachedW = 0
+    private var cachedH = 0
 
     // ── 手势状态 ──
     private var downRawX = 0f
@@ -86,6 +88,28 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private var cancelArmed = false
     private var holdRun: Runnable? = null
     private var lastDragEmit = 0L
+    private var followUp: Runnable? = null
+
+    /** 只允许有一个延时后续动作（两条提示路径互斥） */
+    private fun scheduleFollowUp(delayMs: Long, action: () -> Unit) {
+        cancelFollowUp()
+        val r = Runnable {
+            followUp = null
+            try {
+                action()
+            } catch (_: Throwable) {
+                /* 忽略 */
+            }
+        }
+        followUp = r
+        main.postDelayed(r, delayMs)
+    }
+
+    private fun cancelFollowUp() {
+        followUp?.let { main.removeCallbacks(it) }
+        followUp = null
+    }
+
     private val voiceGuard = Runnable {
         if (voiceState == "listening") {
             Log.w(TAG, "语音条超过 30s：强制收尾")
@@ -101,6 +125,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private var voicePartial = ""
     private var voiceLevel = 0f
     private var voiceState = "off" // off | listening
+    private var voiceSource = "orb" // orb（球→条，同一窗口内变形）| panel（面板内语音行，不切窗）
     private var barHint = ""
     private var busyNow = false
 
@@ -108,48 +133,125 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     fun isShowing(): Boolean = !suspended && (orbAttached || panelAttached)
 
+    /** 当前挂着的窗口种类（不变量 1 的自检输出） */
+    fun windowKind(): String = when {
+        orbAttached && panelAttached -> "both(BUG)"
+        panelAttached -> "panel"
+        orbAttached -> if (modeCur == "bar") "bar" else "ball"
+        else -> "none"
+    }
+
+    /** 真机取证用（overlay_status 会带出去）：荣耀的 logcat 被滤掉，只能靠命令读回来核对
+     *  算出来的屏幕尺寸、最终球坐标、实际挂着的窗口。 */
+    fun debugInfo(): JSONObject {
+        val (w, h) = screenSize()
+        val ballPx = ballWinPx()
+        return JSONObject().apply {
+            put("workW", w)
+            put("workH", h)
+            put("ballDp", OverlayViews.BALL_DP)
+            put("ballPx", ballPx)
+            put("ballX", ballX)
+            put("ballY", ballY)
+            put("placedFromSaved", placedOnce)
+            put("windowKind", windowKind())
+            put("orbAttached", orbAttached)
+            put("panelAttached", panelAttached)
+            put("suspended", suspended)
+            put("mode", modeCur)
+            put("voiceSource", voiceSource)
+        }
+    }
+
     /* ────────────────────────── 对外形态控制 ────────────────────────── */
 
-    /** 显示悬浮层：**默认只出球**（task-11 ③：未点击时不允许有任何面板/雾块） */
+    /** 显示悬浮层：**默认只出球**（task-11 ③：未点击时不允许有任何面板/雾块）
+     *
+     *  硬不变量 2：这是 `overlay_show` / 开机广播 / 被杀自救 / 进程重启后**唯一**的入口，
+     *  它只会 add 球窗；面板窗懒创建（只有用户点球才建）。 */
     fun showBallOnly() {
         dark = OverlayViews.isDarkUi(ctx)
         modeCur = "ball"
         ensureOrb()
         detachPanel(false)
         if (!suspended) {
+            detachOrb()
             attachOrb()
             applyOrbShape("ball", animate = false)
         }
         memoryMode()
+        enforceSingleWindow()
     }
 
-    /** 前端 overlay_set_mode 落到这里；幂等 */
+    /**
+     * 硬不变量 1：**同一时刻只允许存在一个 overlay 窗口**（ball ⊕ bar ⊕ panel）。
+     *
+     * 所有形态切换都收敛到这一个方法：一律「先摘旧的、再挂新的」，不存在两个窗口并存的时刻；
+     * 结束后再跑一次 enforceSingleWindow() 自愈（真机上出现过球窗与面板窗同时挂着 → 截图上
+     * 球 + 半屏雾 + 输入行同时在屏幕上）。
+     */
+    private fun switchTo(kind: String, animate: Boolean) {
+        when (kind) {
+            "panel" -> {
+                detachOrb()
+                attachPanel(animate)
+                modeCur = "panel"
+            }
+            "bar" -> {
+                detachPanel(false)
+                ensureOrb()
+                attachOrb()
+                applyOrbShape("bar", animate)
+                modeCur = "bar"
+            }
+            else -> {
+                detachPanel(animate)
+                ensureOrb()
+                detachOrb()
+                attachOrb()
+                applyOrbShape("ball", animate)
+                modeCur = "ball"
+            }
+        }
+        memoryMode()
+        enforceSingleWindow()
+    }
+
+    /** 不变量自愈：万一还有两条路径让两个窗口并存，这里强制摘掉面板（球优先） */
+    private fun enforceSingleWindow() {
+        if (orbAttached && panelAttached) {
+            Log.w(TAG, "不变量被破坏：球窗与面板窗同时存在 → 强制摘掉面板窗")
+            detachPanel(false)
+        }
+    }
+
+    /** 前端 overlay_set_mode 落到这里；幂等；一律经 switchTo 保证单窗 */
     fun setMode(m: String) {
         when (m) {
             "hidden" -> hide()
             "panel" -> {
-                modeCur = "panel"
-                memoryMode()
-                if (suspended) return
-                attachPanel(true)
-                raiseOrb() // 球留在面板之上：再点球就能收起（task-11 ③）
+                if (suspended) {
+                    modeCur = "panel"
+                    memoryMode()
+                    return
+                }
+                switchTo("panel", true)
             }
             "bar" -> {
-                modeCur = "bar"
-                memoryMode()
-                if (suspended) return
-                ensureOrb()
-                attachOrb()
-                applyOrbShape("bar", animate = true)
+                if (suspended) {
+                    modeCur = "bar"
+                    memoryMode()
+                    return
+                }
+                switchTo("bar", true)
             }
             else -> {
-                modeCur = "ball"
-                memoryMode()
-                if (suspended) return
-                ensureOrb()
-                attachOrb()
-                applyOrbShape("ball", animate = true)
-                detachPanel(true)
+                if (suspended) {
+                    modeCur = "ball"
+                    memoryMode()
+                    return
+                }
+                switchTo("ball", true)
             }
         }
     }
@@ -181,6 +283,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     /** 系统深浅色变化：重建视图（窗口此时多半是摘掉的，重建成本可忽略） */
     fun onUiModeChanged() {
+        refreshScreen()
         val next = OverlayViews.isDarkUi(ctx)
         if (next == dark) return
         dark = next
@@ -222,12 +325,38 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     }
 
     private fun resetVoiceState() {
+        cancelFollowUp()
         voiceState = "off"
         voicePartial = ""
         voiceLevel = 0f
         barHint = ""
         cancelArmed = false
+        showPanelVoice(false)
+        voiceSource = "orb"
         renderBar()
+    }
+
+    /**
+     * 面板内语音行显隐（单窗不变量：面板里说话不切窗）。
+     *
+     * ⚠️ **不能把输入块设成 GONE**：用户长按的正是输入块里的「发送」，
+     * 把它的祖先隐藏会立刻取消这条手势流（ACTION_CANCEL）→ 抬手事件丢失。
+     * 所以这里只把语音行显示出来（用 alpha 给输入块一点「让步」的视觉反馈），
+     * 布局与可见性都不动被按住的那个视图。
+     */
+    private fun showPanelVoice(on: Boolean) {
+        val p = panel ?: return
+        p.voiceRow.visibility = if (on) View.VISIBLE else View.GONE
+        p.inputBlock.alpha = if (on) 0.45f else 1f
+        p.input.alpha = if (on) 0.45f else 1f
+        if (!on) {
+            try {
+                p.input.clearFocus()
+                p.content.requestFocus()
+            } catch (_: Throwable) {
+                /* 忽略 */
+            }
+        }
     }
 
     /* ────────────────────────── 前端状态 → 原生界面 ────────────────────────── */
@@ -291,9 +420,6 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     }
 
     private fun renderBar() {
-        val o = orb ?: return
-        o.wave.amplitude = voiceLevel
-        o.wave.animating = voiceState == "listening"
         val t = when {
             cancelArmed -> "松开取消"
             barHint.isNotEmpty() -> barHint
@@ -302,7 +428,18 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             jsTranscript.isNotEmpty() -> jsTranscript
             else -> "长按说话"
         }
-        o.barText.text = t
+        orb?.let {
+            it.wave.amplitude = voiceLevel
+            it.wave.animating = voiceState == "listening" && voiceSource == "orb"
+            it.barText.text = t
+        }
+        if (voiceSource == "panel") {
+            panel?.let {
+                it.voiceWave.amplitude = voiceLevel
+                it.voiceWave.animating = voiceState == "listening"
+                it.voiceText.text = t
+            }
+        }
     }
 
     /* ────────────────────────── 窗口建立 / 形态 ────────────────────────── */
@@ -310,10 +447,19 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private fun ensureOrb() {
         if (orb != null) return
         val root = OverlayViews.windowRoot(themed)
-        val ballPair = OverlayViews.buildBall(themed, dark)
+        val ball = OverlayViews.buildBall(themed, dark)
         val barTriple = OverlayViews.buildBar(themed, dark)
         root.setOnTouchListener { v, e -> onOrbTouch(v, e) }
-        orb = OrbHolder(root, ballPair.first, ballPair.second, barTriple.first, barTriple.second, barTriple.third)
+        orb = OrbHolder(root, ball, barTriple.first, barTriple.second, barTriple.third)
+        // 球固定 54dp、居中放进球窗（窗口多出的 8dp 是给轻投影留的）
+        root.addView(
+            ball,
+            FrameLayout.LayoutParams(
+                OverlayViews.dp(ctx, OverlayViews.BALL_DP),
+                OverlayViews.dp(ctx, OverlayViews.BALL_DP),
+                Gravity.CENTER,
+            ),
+        )
         orbLp = orbParams()
     }
 
@@ -349,29 +495,12 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         orbAttached = false
     }
 
-    /** 面板打开时把球提到最上层（再点球 = 收起） */
-    private fun raiseOrb() {
-        val o = orb ?: return
-        val lp = orbLp ?: return
-        if (!orbAttached) {
-            attachOrb()
-            return
-        }
-        try {
-            wm.removeView(o.root)
-        } catch (_: Throwable) {
-            /* 已被移除 */
-        }
-        orbAttached = false
-        if (addWindow(o.root, lp)) orbAttached = true
-    }
-
     /** 球 ↔ 条：同一个透明根，换子 View + 改窗口尺寸/位置 */
     private fun applyOrbShape(shape: String, animate: Boolean) {
         val lp = orbLp ?: return
         val o = orb ?: return
         val root = o.root
-        val ballPx = OverlayViews.dp(ctx, OverlayViews.BALL_DP)
+        val ballPx = ballWinPx()
         val barPx = OverlayViews.dp(ctx, OverlayViews.BAR_DP)
 
         root.removeAllViews()
@@ -391,15 +520,20 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             root.addView(
                 o.ball,
                 FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    OverlayViews.dp(ctx, OverlayViews.BALL_DP),
+                    OverlayViews.dp(ctx, OverlayViews.BALL_DP),
+                    Gravity.CENTER,
                 ),
             )
             lp.width = ballPx
             lp.height = ballPx
-            val p = defaultBallPos(ballPx)
-            lp.x = clampX(if (placedOnce) ballX else p.first, ballPx)
-            lp.y = clampY(if (placedOnce) ballY else p.second, ballPx)
+            val pos = if (placedOnce) {
+                Pair(clampX(ballX, ballPx), clampY(ballY, ballPx))
+            } else {
+                loadBallPos(ballPx)
+            }
+            lp.x = pos.first
+            lp.y = pos.second
             ballX = lp.x
             ballY = lp.y
         }
@@ -426,6 +560,13 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         if (!addWindow(p.root, lp)) return false
         panelAttached = true
         renderMessages(rebuild = true)
+        // 焦点交给容器（不是 EditText）：否则窗口一挂上系统就可能自动弹输入法
+        try {
+            p.input.clearFocus()
+            p.content.requestFocus()
+        } catch (_: Throwable) {
+            /* 忽略 */
+        }
         if (animate) {
             p.root.translationY = lp.height.toFloat()
             p.root.animate().translationY(0f)
@@ -461,8 +602,80 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     private fun wirePanel(p: PanelHolder) {
         p.closeBtn.setOnClickListener { host.onCloseRequested() }
-        p.input.setOnClickListener { showIme(p) }
-        p.input.setOnFocusChangeListener { _, has -> if (has) showIme(p) }
+        p.collapseBtn.setOnClickListener { switchTo("ball", true) }
+        // 输入行手感（真机反馈：「长按只是在输入框里面光标」）：
+        //   单击 = 聚焦键盘（输入法只在用户点它时才弹，不再 onFocusChange 自动弹）
+        //   长按 ≥450ms = 进语音（面板内就地出条：雾带 + 波纹 + 转写）
+        //   按住上划 >110dp = 松手取消
+        var inputHold = false
+        var inputRun: Runnable? = null
+        var inputDownY = 0f
+        p.input.setOnTouchListener { v, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    inputDownY = e.rawY
+                    inputHold = false
+                    cancelArmed = false
+                    cancelFollowUp()
+                    val r = Runnable {
+                        inputRun = null
+                        inputHold = true
+                        try {
+                            v.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                        } catch (_: Throwable) {
+                            /* 无马达 */
+                        }
+                        startVoiceFromPanel()
+                    }
+                    inputRun = r
+                    main.postDelayed(r, HOLD_MS)
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (inputHold) {
+                        val up = inputDownY - e.rawY
+                        val armed = up > OverlayViews.dp(ctx, CANCEL_DP)
+                        if (armed != cancelArmed) {
+                            cancelArmed = armed
+                            renderBar()
+                        }
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    inputRun?.let { main.removeCallbacks(it) }
+                    inputRun = null
+                    if (inputHold) {
+                        if (cancelArmed) {
+                            voice.cancel()
+                            resetVoiceState()
+                        } else {
+                            voice.finish() // 松手整句直接发出
+                        }
+                        cancelArmed = false
+                    } else {
+                        showIme(p) // 单击才聚焦键盘
+                    }
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    inputRun?.let { main.removeCallbacks(it) }
+                    inputRun = null
+                    if (inputHold) {
+                        voice.cancel()
+                        resetVoiceState()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // 附件三入口（需求 6）：把「要哪种选择器」推给前端，前端调插件命令拉起系统选择器
+        // （Tauri 的 activity result 只能经插件命令回传，见报告；发送链路仍只有 attach.ts 一条）
+        p.camBtn.setOnClickListener { OverlayEvents.emit("attachRequest", 0, 0, "camera") }
+        p.galBtn.setOnClickListener { OverlayEvents.emit("attachRequest", 0, 0, "gallery") }
+        p.fileBtn.setOnClickListener { OverlayEvents.emit("attachRequest", 0, 0, "file") }
         p.input.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 submitInput(p)
@@ -549,9 +762,13 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         host.onSubmitText(t)
     }
 
+    /** 面板里长按说话：**不切窗**（切窗会摘掉手指正按着的面板 → ACTION_UP 丢失），
+     *  改为面板内就地显示语音行（点点波纹 + 转写）。 */
     private fun startVoiceFromPanel() {
+        cancelFollowUp()
         ensurePanel()
-        setMode("bar") // 条盖在面板之上（球窗在面板之后挂载）
+        voiceSource = "panel"
+        showPanelVoice(true)
         voice.start()
     }
 
@@ -581,6 +798,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         voiceState = "off"
         voiceLevel = 0f
         main.removeCallbacks(voiceGuard)
+        showPanelVoice(false)
         host.onVoiceEnd()
         renderBar()
     }
@@ -603,16 +821,17 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         renderBar()
         if (t.isNotEmpty()) {
             cancelArmed = false
+            showPanelVoice(false)
             setMode("panel")
             sendUserText(t)
         } else {
             barHint = "没听清，再说一次"
             renderBar()
-            main.postDelayed({
+            scheduleFollowUp(1200L) {
                 barHint = ""
                 renderBar()
-                setMode("ball")
-            }, 1200L)
+                switchTo("ball", true)
+            }
         }
     }
 
@@ -625,13 +844,15 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         voicePartial = ""
         voiceLevel = 0f
         renderBar()
-        // 不静默：条内给文案，1.4s 后自动展开面板，用户可以直接打字
-        main.postDelayed({
+        // 不静默：条内（或面板内语音行）给文案，1.4s 后自动展开面板，用户可以直接打字
+        scheduleFollowUp(1400L) {
             if (barHint.isNotEmpty()) {
                 barHint = ""
+                showPanelVoice(false)
+                renderBar()
                 setMode("panel")
             }
-        }, 1400L)
+        }
     }
 
     /* ────────────────────────── 球/条手势 ────────────────────────── */
@@ -646,6 +867,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
                 moved = false
                 holdFired = false
                 cancelArmed = false
+                cancelFollowUp()
                 if (modeCur != "bar") armHold()
                 true
             }
@@ -666,7 +888,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
                 } else if (moved && !holdFired && modeCur == "ball") {
                     val lp = orbLp
                     if (lp != null) {
-                        val ballPx = OverlayViews.dp(ctx, OverlayViews.BALL_DP)
+                        val ballPx = ballWinPx()
                         lp.x = clampX((startBallX + dx).toInt(), ballPx)
                         lp.y = clampY((startBallY + dy).toInt(), ballPx)
                         ballX = lp.x
@@ -750,6 +972,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             }
             modeCur = "bar"
             memoryMode()
+            voiceSource = "orb"
             applyOrbShape("bar", animate = true)
             voice.start() // 能力探测在里面；取不到麦会走 onUnavailable（条内文案 + 展开面板）
         }
@@ -764,7 +987,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     private fun snapToNearestEdge(v: View) {
         val lp = orbLp ?: return
-        val ballPx = OverlayViews.dp(ctx, OverlayViews.BALL_DP)
+        val ballPx = ballWinPx()
         val target = clampX(
             if (lp.x + ballPx / 2 < screenW() / 2) 0 else (screenW() - ballPx),
             ballPx,
@@ -801,6 +1024,9 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     /* ────────────────────────── 参数 / 工具 ────────────────────────── */
 
+    /** 球窗边长（球 54dp + 投影留白 16dp） */
+    private fun ballWinPx(): Int = OverlayViews.dp(ctx, OverlayViews.BALL_WIN_DP)
+
     private fun overlayType(): Int =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -810,7 +1036,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         }
 
     private fun orbParams(): WindowManager.LayoutParams {
-        val ballPx = OverlayViews.dp(ctx, OverlayViews.BALL_DP)
+        val ballPx = ballWinPx()
         val lp = WindowManager.LayoutParams(
             ballPx,
             ballPx,
@@ -821,12 +1047,10 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             PixelFormat.TRANSLUCENT,
         )
         lp.gravity = Gravity.TOP or Gravity.START
-        val def = defaultBallPos(ballPx)
-        val sx = OverlayPrefs.ballX(ctx)
-        val sy = OverlayPrefs.ballY(ctx)
-        placedOnce = sx != Int.MIN_VALUE && sy != Int.MIN_VALUE
-        lp.x = clampX(if (placedOnce) sx else def.first, ballPx)
-        lp.y = clampY(if (placedOnce) sy else def.second, ballPx)
+        refreshScreen()
+        val pos = loadBallPos(ballPx)
+        lp.x = clampX(pos.first, ballPx)
+        lp.y = clampY(pos.second, ballPx)
         ballX = lp.x
         ballY = lp.y
         return lp
@@ -846,7 +1070,9 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             PixelFormat.TRANSLUCENT,
         )
         lp.gravity = Gravity.BOTTOM or Gravity.START
-        lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        // ADJUST_RESIZE 让面板能被键盘顶起；STATE_ALWAYS_HIDDEN 明确「不自动弹」
+        lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
         return lp
     }
 
@@ -860,12 +1086,90 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         }
     }
 
-    private fun screenW(): Int = ctx.resources.displayMetrics.widthPixels
+    /**
+     * 屏幕尺寸（悬浮层可用区域）。
+     * 优先 `WindowManager.currentWindowMetrics.bounds`（API 30+，悬浮窗的真实边界），
+     * 取不到或数值不合理（<320dp）时回落 displayMetrics —— 真机上出现过窗口被算成 215×215
+     * 的小方块，必须挡住这种坏值。结果缓存，窗口创建/主题切换时刷新。
+     */
+    private fun screenSize(): Pair<Int, Int> {
+        if (cachedW > 0 && cachedH > 0) return cachedW to cachedH
+        val minPx = OverlayViews.dp(ctx, 320)
+        var w = 0
+        var h = 0
+        if (Build.VERSION.SDK_INT >= 30) {
+            try {
+                val b = wm.currentWindowMetrics.bounds
+                w = b.width()
+                h = b.height()
+            } catch (_: Throwable) {
+                w = 0
+                h = 0
+            }
+        }
+        if (w < minPx || h < minPx) {
+            val dw = ctx.resources.displayMetrics.widthPixels
+            val dh = ctx.resources.displayMetrics.heightPixels
+            if (dw >= minPx && dh >= minPx) {
+                w = dw
+                h = dh
+            }
+        }
+        if (w < minPx || h < minPx) {
+            // 两个来源都不合理：兜一个保守的常见尺寸，宁可位置略偏也不要出小方块
+            w = minPx
+            h = OverlayViews.dp(ctx, 640)
+            Log.w(TAG, "屏幕尺寸异常，回落保守值 ${w}x$h")
+        }
+        cachedW = w
+        cachedH = h
+        return w to h
+    }
 
-    private fun screenH(): Int = ctx.resources.displayMetrics.heightPixels
+    private fun refreshScreen() {
+        cachedW = 0
+        cachedH = 0
+        screenSize()
+    }
 
-    private fun defaultBallPos(ballPx: Int): Pair<Int, Int> =
-        Pair((screenW() - ballPx - OverlayViews.dp(ctx, 6)).coerceAtLeast(0), screenH() / 3)
+    private fun screenW(): Int = screenSize().first
+
+    private fun screenH(): Int = screenSize().second
+
+    /** 默认位置：**右侧、导航栏上方** —— 按**球**（不是球窗）算 right 12dp / bottom 128dp，
+     *  再把窗口留白（BALL_WIN - BALL）/2 = 8dp 补偿回去，保证视觉上就是 12/128。 */
+    private fun defaultBallPos(ballPx: Int): Pair<Int, Int> {
+        val (w, h) = screenSize()
+        val inset = OverlayViews.dp(ctx, (OverlayViews.BALL_WIN_DP - OverlayViews.BALL_DP) / 2)
+        val x = (w - ballPx - OverlayViews.dp(ctx, 12) + inset).coerceAtLeast(0)
+        val y = (h - ballPx - OverlayViews.dp(ctx, 128) + inset)
+            .coerceAtLeast(OverlayViews.dp(ctx, 24))
+        return x to y
+    }
+
+    /**
+     * 读回上次的球位置；**非法/越界一律回落默认并顺手修掉存档**
+     * （真机实录：重启后球落在 x=0 左边缘垂直中部，看着像默认值算错）。
+     */
+    private fun loadBallPos(ballPx: Int): Pair<Int, Int> {
+        val def = defaultBallPos(ballPx)
+        val sx = OverlayPrefs.ballX(ctx)
+        val sy = OverlayPrefs.ballY(ctx)
+        if (sx == Int.MIN_VALUE || sy == Int.MIN_VALUE) {
+            placedOnce = false
+            return def
+        }
+        val (w, h) = screenSize()
+        val ok = sx in 0..(w - ballPx) && sy in 0..(h - ballPx)
+        if (!ok) {
+            Log.w(TAG, "存档球坐标越界（$sx,$sy 屏 ${w}x$h）→ 回落默认并修掉")
+            OverlayPrefs.setBall(ctx, def.first, def.second)
+            placedOnce = false
+            return def
+        }
+        placedOnce = true
+        return sx to sy
+    }
 
     private fun clampX(x: Int, ballPx: Int): Int = x.coerceIn(0, (screenW() - ballPx).coerceAtLeast(0))
 
@@ -881,8 +1185,8 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         const val SLIDE_MS = 240L
         const val SLIDE_OUT_MS = 160L
 
-        /** 面板高度占比（task-11 ③：约下半屏 46%） */
-        const val PANEL_RATIO = 0.46f
+        /** 面板高度占比：半屏（雾要铺满整块面板） */
+        const val PANEL_RATIO = 0.50f
 
         /** 语音条最长 30s：万一抬手事件丢了，也不至于永远占着麦 */
         const val VOICE_MAX_MS = 30_000L

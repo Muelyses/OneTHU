@@ -111,9 +111,10 @@ class OverlayService : Service() {
                 windows?.setMode(m)
             }
             else -> {
-                // 恢复默认：**只出球**（task-11 ③）
-                val m = intent?.getStringExtra(EXTRA_MODE)
-                if (m == "panel" || m == "bar") windows?.setMode(m) else windows?.showBallOnly()
+                // 硬不变量 2：这条路径（overlay_show / 开机广播 / 被杀自救 / 进程重启后的首个
+                // intent）**一律只 add 球窗** —— 不看 EXTRA_MODE、不读上次形态。
+                // 面板窗只有用户点球（ACTION_MODE=panel）时才懒创建。
+                windows?.showBallOnly()
                 updateNotification()
             }
         }
@@ -165,6 +166,9 @@ class OverlayService : Service() {
     }
 
     fun currentMode(): String = if (windowShowing()) windows?.mode() ?: "hidden" else "hidden"
+
+    /** 真机取证（overlay_status 带出去）：原生算出来的屏幕尺寸/球坐标/实际窗口种类 */
+    fun debugInfo(): org.json.JSONObject? = windows?.debugInfo()
 
     private fun windowShowing(): Boolean = windows?.isShowing() == true
 
@@ -293,6 +297,8 @@ class OverlayService : Service() {
         private var live: OverlayService? = null
 
         fun currentModeOrNull(): String? = live?.currentMode()
+
+        fun liveDebug(): org.json.JSONObject? = live?.debugInfo()
 
         /** 显示悬浮层（只出球）。应用在前台时也不会显示——由 AppForeground 开关 */
         fun start(ctx: Context, mode: String) {

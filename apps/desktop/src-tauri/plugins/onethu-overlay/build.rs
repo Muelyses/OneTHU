@@ -14,6 +14,7 @@ fn main() {
         "overlay_poll_event",
         "overlay_ack_events",
         "overlay_push_ui",
+        "overlay_pick_attach",
         "overlay_status",
     ];
     let result = tauri_plugin::Builder::new(commands)

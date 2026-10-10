@@ -16,7 +16,7 @@ cc = "1"
 jni = "0.21"
 
 encoding_rs = "0.8"
-tauri = { version = "2", features = ["devtools"] }
+tauri = { version = "2", features = ["devtools", "macos-private-api"] }
 # 外链走系统浏览器：webview 内 window.open/<a target=_blank> 均无效
 tauri-plugin-opener = "2"
 tauri-plugin-onethu-calendar = { path = "plugins/onethu-calendar" }

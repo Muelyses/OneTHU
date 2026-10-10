@@ -65,6 +65,11 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const [typing, setTyping] = useState(false);
   const [sheetFiles, setSheetFiles] = useState<AttachFile[] | null>(null);
   const holdTimer = useRef<number | null>(null);
+  /** 事件 effect 依赖是 []（不该频繁重挂），所以 voice 必须用 ref 镜像——
+   *  否则 release 分支读到的永远是挂载那一刻的 "off"，松手永远收不了尾（桌面浮层实测踩到）。 */
+  const voiceRef = useRef<"off" | "listening" | "sending">("off");
+  const pressStart = useRef<{ x: number; y: number } | null>(null);
+  const draggedRef = useRef(false);
   const pollTimer = useRef<number | null>(null);
   const levelTimer = useRef<number | null>(null);
   const cancelRef = useRef(false);
@@ -90,6 +95,10 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
     return () => window.removeEventListener("pointermove", onMove);
   }, [voice]);
 
+  useEffect(() => {
+    voiceRef.current = voice;
+  }, [voice]);
+
   // 原生手势 → UI 状态机
   useEffect(() => {
     let un: (() => void) | null = null;
@@ -105,7 +114,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           setMode("bar");
           void overlaySetMode("bar");
           void startVoice();
-        } else if (e.type === "release" && voice === "listening") {
+        } else if (e.type === "release" && voiceRef.current === "listening") {
           void finishVoice();
         } else if (e.type === "submit") {
           void send(e.text ?? "");
@@ -234,19 +243,38 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         }}
         onPointerDown={(e) => {
           pressY.current = e.clientY;
+          pressStart.current = { x: e.clientX, y: e.clientY };
+          draggedRef.current = false;
           holdTimer.current = window.setTimeout(() => {
             holdTimer.current = null;
+            if (draggedRef.current) return; // 已经在拖窗口：不进语音
             setMode("bar");
             void overlaySetMode("bar");
             void startVoice();
           }, HOLD_MS);
         }}
+        onPointerMove={(e) => {
+          const st = pressStart.current;
+          if (!st) return;
+          if (Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > 6) {
+            draggedRef.current = true;
+            if (holdTimer.current) {
+              window.clearTimeout(holdTimer.current);
+              holdTimer.current = null;
+            }
+          }
+        }}
         onPointerUp={() => {
+          const wasDrag = draggedRef.current;
+          draggedRef.current = false;
+          pressStart.current = null;
           if (holdTimer.current) {
             window.clearTimeout(holdTimer.current);
             holdTimer.current = null;
-            setMode("panel");
-            void overlaySetMode("panel");
+            if (!wasDrag) {
+              setMode("panel");
+              void overlaySetMode("panel");
+            }
           }
         }}
       >

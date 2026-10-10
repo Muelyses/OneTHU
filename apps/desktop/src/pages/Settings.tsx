@@ -7,6 +7,7 @@ import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { ImSettingsSection } from "../components/ImSettingsSection.js";
+import { VoiceSettingsSection } from "../components/VoiceSettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { showToast } from "../state/toast.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -92,7 +93,7 @@ const SETTINGS_TAB_OF: Record<string, string> = {
   关于: "关于", 账户: "账号", 账号与绑定: "账号", 安全: "账号",
   云同步: "数据与同步", 外部作业源: "数据与同步",
   首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
-  通知: "通知与提醒", 桌面小组件: "通知与提醒",
+  通知: "通知与提醒", 桌面小组件: "通知与提醒", 语音合成: "通知与提醒",
   插件: "插件", 下载: "下载与存储", 帮助: "帮助",
 };
 /* 页签清单与高级页签定义已挪到 state/settingsMode.ts（命令面板与护栏共用同一份，见该文件注释） */
@@ -641,6 +642,10 @@ export function SettingsPage() {
       <SectionHead title="桌面小组件" />
       <Card>
         <WidgetSettingsSection />
+      </Card>
+      <SectionHead title="语音合成" />
+      <Card>
+        <VoiceSettingsSection />
       </Card>
       <SectionHead title="IM 通道" />
       <Card>

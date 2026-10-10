@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  语音合成不需要任何运行时权限（麦克风是 STT 的事，TTS 只往扬声器送声音）。
+
+  但 Android 11（API 30）起的包可见性会挡住「系统里装了哪些 TTS 引擎」：官方要求
+  使用 TextToSpeech 的应用显式声明 TTS_SERVICE 查询意图，否则拿不到引擎/音色列表
+  （TextToSpeech 初始化可能直接失败）。这里按官方写法声明 queries；合并进主 manifest 后
+  与宿主已有的 queries 取并集，不影响其他插件。
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+</manifest>

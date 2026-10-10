@@ -87,6 +87,20 @@ fn read_file_text(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("读取失败：{e}"))
 }
 
+/// 读本地文件为 base64（附件通路：本地路径 → JS 侧 File/bytes）。
+/// 默认上限 64MB；超限直接报错而不是截断（避免悄悄传坏文件）。base64 膨胀 ~33%，调用方自担内存。
+#[tauri::command]
+fn read_file_base64(path: String, max_bytes: Option<u64>) -> Result<String, String> {
+    use base64::Engine as _;
+    let limit = max_bytes.unwrap_or(64 * 1024 * 1024);
+    let meta = std::fs::metadata(&path).map_err(|e| format!("读取失败：{e}"))?;
+    if meta.len() > limit {
+        return Err(format!("文件过大：{} 字节（上限 {}）", meta.len(), limit));
+    }
+    let bytes = std::fs::read(&path).map_err(|e| format!("读取失败：{e}"))?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
+}
+
 // ── 寻迹：高德 Web 服务 Key（编译期经 build.rs 注入；XOR 0x5A 混淆）──
 // 常量来自 OUT_DIR/trace_key.rs，由 build.rs 从环境变量 TRACE_AMAP_KEY 或
 // src-tauri/.env 生成（.env 已 gitignore，见 .env.example）——源码/仓库/JS
@@ -4203,6 +4217,7 @@ tauri::Builder::default()
         .plugin(tauri_plugin_onethu_mobile::init())
         .plugin(tauri_plugin_onethu_calendar::init())
         .plugin(tauri_plugin_onethu_speech::init())
+        .plugin(tauri_plugin_onethu_tts::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(std::sync::Mutex::new(None::<String>) as VenueSsoState)
         .manage(plugins::PluginHost::default())
@@ -4288,7 +4303,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,debug_log_export,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
+            log_debug,debug_log_export,read_file_text,read_file_base64,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
             seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,
             im_media::im_peek_text,

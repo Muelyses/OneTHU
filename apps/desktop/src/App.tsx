@@ -45,6 +45,7 @@ import { installedPlugins, subscribe } from "./plugins/loader.js";
 import { getPluginTab, lastTabError, setTabRoot } from "./plugins/tabs.js";
 import type { Page } from "./state/app.js";
 import { ChatDock } from "./plugins/ChatDock.js";
+import { GlobalOrb } from "./components/GlobalOrb.js";
 import { refreshLearnDataSilently, startLearnAutoRefresh, stopLearnAutoRefresh } from "./state/data.js";
 import { useNavDirection } from "./lib/motion.js";
 
@@ -119,6 +120,9 @@ function Routed() {
       })
       .catch(() => undefined);
   }, [status]);
+
+  // 悬浮球窗口：只出全局悬浮球（红线：这条路径绝不把主窗口拉到前台）
+  if (IS_OVERLAY_WINDOW) return <GlobalOrb />;
 
   const body = (() => {
     if (status === "booting") {
@@ -250,6 +254,11 @@ function ToastHost(): ReactNode {
     </div>
   );
 }
+
+// 悬浮球窗口：桌面悬浮窗 / 安卓系统悬浮层都以 index.html?window=overlay 装载本前端，
+// 只渲染全局悬浮球，不装载主界面（也避免在后台窗口里跑登录/同步等重活）。
+const IS_OVERLAY_WINDOW = typeof window !== "undefined"
+  && new URLSearchParams(window.location.search).get("window") === "overlay";
 
 export function App() {
   return (

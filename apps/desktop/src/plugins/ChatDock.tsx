@@ -30,6 +30,8 @@ import { IconClock, IconDownload, IconPlus, IconUpload, IconX } from "../compone
 import { HarnessMark } from "../components/HarnessMark.js";
 import { useIslandText } from "../state/island.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
+import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
+import { useVoicePrefs } from "../state/voicePrefs.js";
 import { openExternal } from "../pages/info/openExternal.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -69,12 +71,15 @@ const VOICE_FINAL_GRACE_MS = 320;
 const WAVE_DOTS = 7;
 /** 电平轮询间隔：比转写轮询（180ms）快一点，波纹才跟得上嘴 */
 const LEVEL_POLL_MS = 90;
-/** 雾里只显示转写末尾若干字：长句保持一行，突出「最新说出的词」 */
+/** 雾状字幕只显示转写末尾若干字：长句保持一行，突出「最新说出的词」 */
 const LIVE_TAIL_CHARS = 34;
+/** 语音结束后字幕多留一拍再淡出（渐出；与条收窄的 300ms 节奏对齐） */
+const SUB_LINGER_MS = 240;
 
-/** 语音态内容（灵动岛与面板入口条共用）：波纹点 + 雾中实时转写 + 一行提示。
+/** 语音态条内内容（灵动岛与面板入口条共用）：只剩**随音量跳动的波纹点** + 一行提示。
+ *  识别出的字一律放条**上方**那层雾状字幕带（VoiceSubtitle）——两处不重复显示（Lead 2026-10-10 口径）。
  *  点的高度/透明度由 ChatDock 的电平循环直接写 DOM 样式（不进 React 状态，60fps 不重渲染）。 */
-function VoiceBar({ live, hint }: { live: string; hint: string }): ReactNode {
+function VoiceBar({ hint }: { hint: string }): ReactNode {
   return (
     <span className="dock-voicebar">
       <span className="dock-wave" aria-hidden="true">
@@ -82,9 +87,34 @@ function VoiceBar({ live, hint }: { live: string; hint: string }): ReactNode {
           <i className="dock-wave-dot" key={i} />
         ))}
       </span>
-      <span className="dock-voicebar-live">{live}</span>
       <span className="dock-voicebar-hint">{hint}</span>
     </span>
+  );
+}
+
+/** 条**上方**的雾状字幕带：雾里显示目前识别出来的字（用户原话：「上面稍微一层雾状，
+ *  上面显示着目前识别出来的字」）。比条更宽、更淡，雾与字两端渐隐（mask / 动画都在 CSS）。
+ *  key=text：识别结果一变就重新淡入一次（140ms，只动透明度不动位置——不抖）。 */
+function VoiceSubtitle({ text, out }: { text: string; out: boolean }): ReactNode {
+  return (
+    <div className={"dock-voice-sub" + (out ? " is-out" : "")} role="status" aria-live="polite">
+      <span className="dock-voice-sub-text" key={text}>{text}</span>
+    </div>
+  );
+}
+
+/** 小喇叭（「朗读这一条」）：出声时两个波纹弧呼吸（CSS `.dock-speak.is-on` 驱动）。
+ *  内联在这里而不是 components/Icons.tsx —— 那个文件不在本轮写域内。 */
+function IconSpeak({ on }: { on: boolean }): ReactNode {
+  return (
+    <svg
+      width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+    >
+      <path d="M11.4 5.2 6.9 8.6H4.3a1 1 0 0 0-1 1v4.8a1 1 0 0 0 1 1h2.6l4.5 3.4z" />
+      <path d="M15.2 9.4a4.2 4.2 0 0 1 0 5.2" className={on ? "dock-speak-wave" : undefined} />
+      <path d="M18.1 6.8a8.2 8.2 0 0 1 0 10.4" className={on ? "dock-speak-wave" : undefined} />
+    </svg>
   );
 }
 
@@ -157,6 +187,13 @@ interface MsgListProps {
   trace: string[];
   confirmCard: string | null;
   busy: boolean;
+  /** 本机有无原生 TTS（桌面 false → 不渲染朗读按钮，不留死按钮） */
+  ttsOk: boolean;
+  /** 「自动朗读」开关：只用来保证按钮文案/状态与设置页一致（真出声与否由 lib/tts 判） */
+  autoSpeak: boolean;
+  /** 正在朗读的那一条（按文本认；null = 没在念） */
+  speakingText: string | null;
+  onSpeak: (t: string) => void;
   scrollRef: React.RefObject<HTMLDivElement | null>;
   onSend: (t: string) => void;
   onPick: (t: string) => void;
@@ -203,6 +240,23 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             <div className="dock-msg dock-md">
               <Markdown remarkPlugins={[remarkGfm]}>{m.text}</Markdown>
             </div>
+            {/* 需求 4：朗读这一条（手动＝明确意图，无视静音开关；再点一次＝停） */}
+            {p.ttsOk ? (
+              <div className="dock-msg-ops">
+                <button
+                  className={"dock-speak" + (p.speakingText === m.text ? " is-on" : "")}
+                  onClick={() => p.onSpeak(m.text)}
+                  title={
+                    p.speakingText === m.text ? "停止朗读"
+                      : p.autoSpeak ? "朗读这一条（已开自动朗读）" : "朗读这一条（当前静音，点它就念）"
+                  }
+                  aria-label={p.speakingText === m.text ? "停止朗读" : "朗读这一条"}
+                  aria-pressed={p.speakingText === m.text}
+                >
+                  <IconSpeak on={p.speakingText === m.text} />
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div key={i} className="dock-msg dock-msg-user">{m.text}</div>
@@ -262,6 +316,15 @@ export function ChatDock(): ReactNode {
   const [pressing, setPressing] = useState(false); // 按住未到长按阈值：给一点「准备」反馈
   const [inputMode, setInputMode] = useState(false); // 文本输入框是否展开（默认收起，只留入口按钮）
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  /* 需求 4（TTS）：朗读状态。autoSpeak 默认 false＝静音，所有自动朗读路径都靠 lib/tts 现读偏好兜底；
+     组件这份 prefs 只负责界面一致（按钮文案/状态与设置页同一份快照）。 */
+  const prefs = useVoicePrefs();
+  const [ttsOk, setTtsOk] = useState(false); // 本机有无原生 TTS（桌面 false）
+  const [speakingText, setSpeakingText] = useState<string | null>(null); // 正在念的那条（按文本认）
+  /* 朗读代次：每次"开始念"+1。Tauri 的事件通道与 invoke 回执没有顺序保证——自己发起的
+     ttsStop() 回来的那个 done 属于上一代，不能拿它把新一轮刚点亮的图标灭掉。 */
+  const speakGen = useRef(0);
+  const [subLinger, setSubLinger] = useState(false); // 语音结束后字幕多留一拍（渐出）
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
   const islandText = useIslandText();
   const pressTimer = useRef<number | null>(null); // 长按计时（null=未按/已触发语音）
@@ -505,6 +568,18 @@ export function ChatDock(): ReactNode {
     deltaBuf.current = "";
     const answer = typeof r?.answer === "string" ? r.answer : r?.error != null ? `⚠ ${r.error}` : "(空响应)";
     setMsgs((v) => [...v, { role: "assistant", text: answer, meta: { think: thinkRef.current, trace: traceRef.current } }]);
+    /* 需求 4 自动朗读的**触发点**：就在「回复完成」这一步（紧随回答入列）。
+       只念真回答（报错/空响应不念）；静音保证＝speakReply 内部**现读** voicePrefs.autoSpeak
+       （默认 false）后直接 return false，连 TTS 引擎都不问。这里刻意不读组件的 prefs 快照：
+       finalize 会被 send() 的旧闭包调用，读渲染快照会陈旧（漏判用户刚在设置页打开的开关）。 */
+    if (r?.error == null && answer.trim()) {
+      void speakReply(answer).then((ok) => {
+        if (ok) {
+          speakGen.current += 1; // 真出声了才点亮图标（静音/不支持时不假装在念）
+          setSpeakingText(answer);
+        }
+      });
+    }
     setStream(null);
     setThinkOpen(false); // 回答落定 → 链折叠（随 meta 挂在本条回答上，可展开回看）
     setTrace([]);
@@ -540,6 +615,8 @@ export function ChatDock(): ReactNode {
   const send = useCallback(async (raw: string): Promise<void> => {
     const text = raw.trim();
     if (!pid || busyRef.current || !text) return;
+    void ttsStop(); // 朗读中用户发新消息：先掐掉，别和新回答抢耳朵
+    setSpeakingText(null);
     const seq = ++runSeq.current;
     finalizedFor.current = 0;
     foreignRun.current = false; // 本地运行启动：此后的事件都属本地（IM 单飞队列不会并发进来）
@@ -636,6 +713,8 @@ export function ChatDock(): ReactNode {
   };
 
   const newSession = async (): Promise<void> => {
+    void ttsStop(); // 会话换掉了：正在念的那条一起停，图标状态同步收
+    setSpeakingText(null);
     if (busyRef.current) {
       // 打断中也能开新会话：强制解锁，迟到回包作废
       hardStop("已打断，开新会话");
@@ -656,6 +735,8 @@ export function ChatDock(): ReactNode {
   };
 
   const switchSession = async (id: string): Promise<void> => {
+    void ttsStop();
+    setSpeakingText(null);
     if (busyRef.current) {
       hardStop("已打断，切换会话");
       await new Promise((r) => setTimeout(r, 60));
@@ -838,6 +919,44 @@ export function ChatDock(): ReactNode {
     if (inputMode) inputRef.current?.focus();
   }, [inputMode]);
 
+  /* 本机 TTS 能力（一次探测）：桌面端插件如实回 false → 不渲染朗读按钮，也不会出现点不动的死状态 */
+  useEffect(() => {
+    void ttsSupported().then(setTtsOk);
+  }, []);
+
+  /* 原生「念完了 / 被停了 / 出错了」→ 收口图标；error 不弹任何东西，最多 console 一行（Lead 口径） */
+  useEffect(() => {
+    let alive = true;
+    let dispose: (() => void) | null = null;
+    void onTtsDone((reason) => {
+      if (!alive) return;
+      /* 只收"自己这一代"的图标：代次已被新一轮顶掉 = 这条 done 是上一代的残留（120ms 后核对） */
+      const g = speakGen.current;
+      window.setTimeout(() => {
+        if (alive && speakGen.current === g) setSpeakingText(null);
+      }, 120);
+      if (reason.startsWith("error")) console.warn("[dock] 朗读异常结束：", reason);
+    }).then((d) => {
+      dispose = d;
+      if (!alive) d(); // 订阅比卸载晚到：立刻退订，别泄漏
+    });
+    return () => {
+      alive = false;
+      dispose?.();
+    };
+  }, []);
+
+  /* 字幕渐出：语音结束后多留 SUB_LINGER_MS（也覆盖「识别完 → 面板滑入」那一拍），
+     否则条一收窄字幕就瞬闪消失。 */
+  useEffect(() => {
+    if (voice !== "off") {
+      setSubLinger(true);
+      return;
+    }
+    const t = window.setTimeout(() => setSubLinger(false), SUB_LINGER_MS);
+    return () => window.clearTimeout(t);
+  }, [voice]);
+
   // 兜底：按住期间窗口失焦（Cmd+Tab、切换空间等），pointerup 不会到达按钮，语音会
   // 悬死。失焦时若语音仍在进行则立即收尾。
   useEffect(() => {
@@ -903,8 +1022,11 @@ export function ChatDock(): ReactNode {
     await new Promise((r) => setTimeout(r, VOICE_FINAL_GRACE_MS)); // 识别器收尾出最终结果
     const final = (await speechPoll()).trim();
     setVoice("off");
-    setVoiceText("");
-    if (!final) return; // 什么都没听到：安静收场，不发空消息
+    if (!final) {
+      setVoiceText(""); // 什么都没听到：安静收场，不发空消息
+      return;
+    }
+    // 这里**不清** voiceText：字幕要多留一拍做渐出（清空由下次 enterVoice 负责）
     if (busyRef.current) {
       // ohAsk 的 send 被 busy 守卫挡住会静默吞掉这一句——明说，别让用户以为识别失败了
       showVoiceFail("小OH 正在回答，稍后再长按说");
@@ -915,8 +1037,27 @@ export function ChatDock(): ReactNode {
     window.setTimeout(() => setSlidIn(false), 700);
   };
 
+  /** 手动「朗读这一条」：用户当场点的＝明确意图，走 previewSpeak 强制出声（无视静音开关）；
+   *  再点同一条＝停。自动朗读那条路径完全交给 speakReply 内部判 autoSpeak（见 finalize）。 */
+  const speakOne = useCallback((text: string): void => {
+    if (speakingText === text) {
+      void ttsStop();
+      setSpeakingText(null);
+      return;
+    }
+    void (async () => {
+      await ttsStop(); // 换条目：先掐上一条，避免两段叠着念
+      if (await previewSpeak(text)) {
+        speakGen.current += 1;
+        setSpeakingText(text);
+      }
+    })();
+  }, [speakingText]);
+
   /* ── 长按语音的按下/抬起：灵动岛与面板入口条共用同一套 450ms 语义 ── */
   const beginHold = (host: "island" | "entry"): void => {
+    void ttsStop(); // 开始长按说话 → 正在念的回答立刻让路（两个声音别打架）
+    setSpeakingText(null);
     setVoiceFail(null);
     setVoiceHost(host);
     setPressing(true); // 先给「准备中」的轻微反馈，越过 450ms 才真的长起来
@@ -1002,12 +1143,18 @@ export function ChatDock(): ReactNode {
 
   if (!pid) return null;
   const budgetPct = usage.budgetUsd ? Math.min(100, ((usage.totalCostUsd ?? 0) / usage.budgetUsd) * 100) : 0;
-  /* 语音态：雾里的实时转写（只留末尾几字，长句也保持一行）+ 右侧一行提示 */
-  const voiceHint = voice === "arming" ? "首次需在系统弹窗里允许" : voice === "sending" ? "正在发送…" : "松手直发 OH";
+  /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
+  const voiceHint = voice === "arming" ? "首次需弹窗允许" : voice === "sending" ? "正在发送…" : "松手直发 OH";
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
+  const subText = voice === "off" ? liveShown : voice === "arming" ? "正在启动语音…" : liveShown || "请说话…";
 
   return (
     <>
+      {/* 条**上方**的雾状字幕带：长按期间雾里显示目前识别出来的字（比条更宽、更淡、两端渐隐） */}
+      {(voice !== "off" || subLinger) && subText.trim() ? (
+        <VoiceSubtitle text={subText} out={voice === "off"} />
+      ) : null}
+
       {/* 灵动岛胶囊：底部中央（单击=面板入口，长按=语音；长按期间自然变长 + 雾 + 波纹） */}
       <button
         className={"dock-island" + (pressing ? " is-press" : "") + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "")}
@@ -1031,9 +1178,9 @@ export function ChatDock(): ReactNode {
           <>
             {/* 雾：backdrop-filter 模糊 + 顶部柔和高光（深浅色都成立） */}
             <span className="dock-island-fog" aria-hidden="true" />
-            {/* 雾里的内容：随音量跳动的点点波纹 + 实时识别出的字 + 一行提示 */}
+            {/* 条内：随音量跳动的点点波纹 + 一行提示（识别出的字在条上方的雾状字幕带里） */}
             <span className="dock-island-voice">
-              <VoiceBar live={voice === "arming" ? "正在启动语音…" : liveShown || "请说话…"} hint={voiceHint} />
+              <VoiceBar hint={voiceHint} />
             </span>
           </>
         ) : null}
@@ -1093,6 +1240,10 @@ export function ChatDock(): ReactNode {
             trace={trace}
             confirmCard={confirmCard}
             busy={busy}
+            ttsOk={ttsOk}
+            autoSpeak={prefs.autoSpeak}
+            speakingText={speakingText}
+            onSpeak={speakOne}
             scrollRef={scrollRef}
             onSend={(t) => void send(t)}
             onPick={(t) => { setInput(t); setInputMode(true); }}
@@ -1132,7 +1283,7 @@ export function ChatDock(): ReactNode {
                 onKeyDown={onEntryKeyDown}
               >
                 {voice !== "off" ? (
-                  <VoiceBar live={voice === "arming" ? "正在启动语音…" : liveShown || "请说话…"} hint={voiceHint} />
+                  <VoiceBar hint={voiceHint} />
                 ) : voiceFail && voiceHost === "entry" ? (
                   <span className="dock-entry-fail">{voiceFail}</span>
                 ) : (

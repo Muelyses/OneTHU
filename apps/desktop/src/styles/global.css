@@ -3384,8 +3384,9 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 }
 .dock-island.is-voice .dock-island-voice { opacity: 1; }
 
-/* ── 语音条内容（灵动岛 / 面板入口条共用） ── */
-.dock-voicebar { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+/* ── 语音条内容（灵动岛 / 面板入口条共用）：只有波纹点 + 一行提示 ──
+   识别出的字在条上方的雾状字幕带（.dock-voice-sub）里，这里不再重复。 */
+.dock-voicebar { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; flex: 1; min-width: 0; }
 .dock-wave { display: inline-flex; align-items: center; gap: 4px; height: 24px; flex: none; }
 /* 波纹点：高度（scaleY）与透明度由 JS 每帧按音量写入；取不到电平时走时间正弦（永不空转） */
 .dock-wave-dot {
@@ -3400,28 +3401,62 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
     color-mix(in srgb, var(--dsw-alias-brand-primary, var(--md-sys-color-primary)) 45%, transparent));
   will-change: transform, opacity;
 }
-/* 雾里的实时转写（只显示末尾几字，长句也保持一行；左缘柔和淡出，不硬切） */
-.dock-voicebar-live {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--dsw-alias-label-primary, var(--text-1));
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px);
-  mask-image: linear-gradient(90deg, transparent, #000 12px);
-}
+/* 提示贴条右端（波纹居中，构图对称；提示不参与居中计算） */
 .dock-voicebar-hint {
-  flex: none;
+  position: absolute;
+  right: 0;
   font-size: var(--text-xxs, 11px);
   color: var(--dsw-alias-label-secondary, var(--text-3));
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
+
+/* ── 条**上方**的雾状字幕带（用户原话：「上面稍微一层雾状，上面显示着目前识别出来的字」）──
+   比条更宽、不透明度更低、两端渐隐（mask 同时作用在雾与字上）；波纹留在条上，字只在这一层出现。 */
+.dock-voice-sub {
+  position: fixed;
+  left: 50%;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* 条（18+54）之上 8px */
+  transform: translateX(-50%);
+  z-index: 9993; /* 面板 9992 之上：面板开着长按入口条时，字幕照样浮在面上 */
+  width: min(91vw, 560px);
+  max-width: calc(100vw - 20px);
+  padding: 12px 24px;
+  border: 1px solid var(--dsw-alias-border-l2, var(--border));
+  border-radius: var(--dsw-radius-xl, 20px);
+  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-2, var(--md-sys-color-surface-container-high)) 46%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 11%, #000 89%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 11%, #000 89%, transparent);
+  pointer-events: none;
+  animation: dock-sub-in 0.34s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.dock-voice-sub.is-out { animation: dock-sub-out 0.24s ease-in both; }
+@keyframes dock-sub-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes dock-sub-out {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+}
+/* 识别结果一变就柔和淡入一次：只动透明度、不动位置（140ms 短于 180ms 轮询，不会一直半透明） */
+.dock-voice-sub-text {
+  display: block;
+  font-size: var(--md-sys-typescale-body); /* 14px：正文档，不越字阶 */
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0.2px;
+  text-align: center;
+  color: var(--dsw-alias-label-primary, var(--text-1));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: dock-sub-fade 0.14s ease both;
+}
+@keyframes dock-sub-fade { from { opacity: 0.72; } }
 .dock-island-logo {
   display: inline-flex;
   align-items: center;
@@ -3539,6 +3574,7 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 @media (prefers-reduced-motion: reduce) {
   .dock-island, .dock-panel, .dock-voice-toast, .dock-island-fog, .dock-island-voice,
   .dock-island-idle, .dock-wave-dot, .dock-entry,
+  .dock-voice-sub, .dock-voice-sub-text, .dock-speak, .dock-speak-wave,
   .dock-msg, .dock-think, .dock-confirm, .dock-history, .dock-chip,
   .dock-hero-ch, .dock-empty-chips {
     animation: none !important;
@@ -3731,6 +3767,29 @@ html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 12p
 }
 .dock-confirm-text { font-size: var(--text-sm); line-height: 1.5; color: var(--text-1); white-space: pre-wrap; }
 .dock-confirm-ops { display: flex; gap: 6px; margin-top: 8px; }
+
+/* 「朗读这一条」（需求 4）：平时低调，hover/触屏可见；出声时小喇叭的两道波纹呼吸 */
+.dock-msg-ops { display: flex; gap: 4px; margin-top: 4px; }
+.dock-speak {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.18s ease, color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.dock-msg-assistant:hover .dock-speak { opacity: 1; }
+.dock-speak:hover { color: var(--accent); border-color: var(--accent-border); background: var(--accent-soft); opacity: 1; }
+.dock-speak.is-on { opacity: 1; color: var(--accent); border-color: var(--accent-border); background: var(--accent-soft); }
+.dock-speak.is-on .dock-speak-wave { animation: dock-speak-wave 1.1s ease-in-out infinite; }
+@keyframes dock-speak-wave { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
 
 /* 入口条（输入区默认形态，取代常驻的「问点什么」输入框）：点击输入、长按说话；
    长按即就地长成语音条（高度/圆角/背景与胶囊同一套过渡）。 */
@@ -5448,6 +5507,7 @@ html.is-phone .cloud-search input {
   /* OH 灵动岛抬到底栏上方，避免与 5 Tab 重合（面板展开时仍覆盖底栏，属模态行为） */
   .dock-island { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
   .dock-voice-toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px) + 60px); }
+  .dock-voice-sub { bottom: calc(144px + env(safe-area-inset-bottom, 0px)); }
   /* 新 IA：移动端侧边栏（抽屉）退役——底栏 5 Tab + 服务目录页承接全部入口；
      汉堡钮一并隐藏（JSX 暂保留，M1 收尾时删） */
   .drawer-mask, .drawer, .topbar-menu { display: none; }

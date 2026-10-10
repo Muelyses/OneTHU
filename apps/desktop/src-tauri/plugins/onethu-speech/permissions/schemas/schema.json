@@ -295,6 +295,18 @@
       "type": "string",
       "oneOf": [
         {
+          "description": "Enables the speech_level command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-speech-level",
+          "markdownDescription": "Enables the speech_level command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the speech_level command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-speech-level",
+          "markdownDescription": "Denies the speech_level command without any pre-configured scope."
+        },
+        {
           "description": "Enables the speech_poll command without any pre-configured scope.",
           "type": "string",
           "const": "allow-speech-poll",
@@ -343,10 +355,10 @@
           "markdownDescription": "Denies the speech_supported command without any pre-configured scope."
         },
         {
-          "description": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`",
+          "description": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别、读取输入电平（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`\n- `allow-speech-level`",
           "type": "string",
           "const": "default",
-          "markdownDescription": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`"
+          "markdownDescription": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别、读取输入电平（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`\n- `allow-speech-level`"
         }
       ]
     }

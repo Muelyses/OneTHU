@@ -1,7 +1,7 @@
 ## Default Permission
 
 允许使用灵动岛语音输入：
-查询支持平台、开始/轮询/停止原生语音识别（需麦克风权限）。
+查询支持平台、开始/轮询/停止原生语音识别、读取输入电平（需麦克风权限）。
 
 #### This default permission set includes the following:
 

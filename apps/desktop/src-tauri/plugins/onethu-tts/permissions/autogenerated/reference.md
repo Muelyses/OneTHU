@@ -39,12 +39,38 @@ Enables the tts_prepare command without any pre-configured scope.
 <tr>
 <td>
 
+`onethu-tts:deny-tts-prepare`
+
+</td>
+<td>
+
+Denies the tts_prepare command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 `onethu-tts:allow-tts-set-backend`
 
 </td>
 <td>
 
 Enables the tts_set_backend command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-tts:deny-tts-set-backend`
+
+</td>
+<td>
+
+Denies the tts_set_backend command without any pre-configured scope.
 
 </td>
 </tr>
@@ -65,12 +91,38 @@ Enables the tts_speak command without any pre-configured scope.
 <tr>
 <td>
 
+`onethu-tts:deny-tts-speak`
+
+</td>
+<td>
+
+Denies the tts_speak command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 `onethu-tts:allow-tts-status`
 
 </td>
 <td>
 
 Enables the tts_status command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-tts:deny-tts-status`
+
+</td>
+<td>
+
+Denies the tts_status command without any pre-configured scope.
 
 </td>
 </tr>
@@ -91,6 +143,19 @@ Enables the tts_stop command without any pre-configured scope.
 <tr>
 <td>
 
+`onethu-tts:deny-tts-stop`
+
+</td>
+<td>
+
+Denies the tts_stop command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 `onethu-tts:allow-tts-supported`
 
 </td>
@@ -104,12 +169,38 @@ Enables the tts_supported command without any pre-configured scope.
 <tr>
 <td>
 
+`onethu-tts:deny-tts-supported`
+
+</td>
+<td>
+
+Denies the tts_supported command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
 `onethu-tts:allow-tts-voices`
 
 </td>
 <td>
 
 Enables the tts_voices command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-tts:deny-tts-voices`
+
+</td>
+<td>
+
+Denies the tts_voices command without any pre-configured scope.
 
 </td>
 </tr>

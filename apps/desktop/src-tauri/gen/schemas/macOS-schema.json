@@ -2571,10 +2571,16 @@
           "markdownDescription": "Denies the mobile_supported command without any pre-configured scope."
         },
         {
-          "description": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`",
+          "description": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别、读取输入电平（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`\n- `allow-speech-level`",
           "type": "string",
           "const": "onethu-speech:default",
-          "markdownDescription": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`"
+          "markdownDescription": "允许使用灵动岛语音输入：\n查询支持平台、开始/轮询/停止原生语音识别、读取输入电平（需麦克风权限）。\n\n#### This default permission set includes:\n\n- `allow-speech-supported`\n- `allow-speech-start`\n- `allow-speech-poll`\n- `allow-speech-stop`\n- `allow-speech-level`"
+        },
+        {
+          "description": "Enables the speech_level command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-speech:allow-speech-level",
+          "markdownDescription": "Enables the speech_level command without any pre-configured scope."
         },
         {
           "description": "Enables the speech_poll command without any pre-configured scope.",
@@ -2601,6 +2607,12 @@
           "markdownDescription": "Enables the speech_supported command without any pre-configured scope."
         },
         {
+          "description": "Denies the speech_level command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-speech:deny-speech-level",
+          "markdownDescription": "Denies the speech_level command without any pre-configured scope."
+        },
+        {
           "description": "Denies the speech_poll command without any pre-configured scope.",
           "type": "string",
           "const": "onethu-speech:deny-speech-poll",
@@ -2623,6 +2635,96 @@
           "type": "string",
           "const": "onethu-speech:deny-speech-supported",
           "markdownDescription": "Denies the speech_supported command without any pre-configured scope."
+        },
+        {
+          "description": "允许使用语音合成（TTS）：\n查询支持与引擎状态、初始化引擎、朗读/停止、读取中文音色列表、切换后端。\n（不需要额外运行时权限；Android 11+ 的 TTS 引擎可见性由 AndroidManifest 的 queries 声明）\n\n#### This default permission set includes:\n\n- `allow-tts-supported`\n- `allow-tts-prepare`\n- `allow-tts-speak`\n- `allow-tts-stop`\n- `allow-tts-status`\n- `allow-tts-voices`\n- `allow-tts-set-backend`",
+          "type": "string",
+          "const": "onethu-tts:default",
+          "markdownDescription": "允许使用语音合成（TTS）：\n查询支持与引擎状态、初始化引擎、朗读/停止、读取中文音色列表、切换后端。\n（不需要额外运行时权限；Android 11+ 的 TTS 引擎可见性由 AndroidManifest 的 queries 声明）\n\n#### This default permission set includes:\n\n- `allow-tts-supported`\n- `allow-tts-prepare`\n- `allow-tts-speak`\n- `allow-tts-stop`\n- `allow-tts-status`\n- `allow-tts-voices`\n- `allow-tts-set-backend`"
+        },
+        {
+          "description": "Enables the tts_prepare command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-prepare",
+          "markdownDescription": "Enables the tts_prepare command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the tts_set_backend command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-set-backend",
+          "markdownDescription": "Enables the tts_set_backend command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the tts_speak command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-speak",
+          "markdownDescription": "Enables the tts_speak command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the tts_status command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-status",
+          "markdownDescription": "Enables the tts_status command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the tts_stop command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-stop",
+          "markdownDescription": "Enables the tts_stop command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the tts_supported command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-supported",
+          "markdownDescription": "Enables the tts_supported command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the tts_voices command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:allow-tts-voices",
+          "markdownDescription": "Enables the tts_voices command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_prepare command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-prepare",
+          "markdownDescription": "Denies the tts_prepare command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_set_backend command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-set-backend",
+          "markdownDescription": "Denies the tts_set_backend command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_speak command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-speak",
+          "markdownDescription": "Denies the tts_speak command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_status command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-status",
+          "markdownDescription": "Denies the tts_status command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_stop command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-stop",
+          "markdownDescription": "Denies the tts_stop command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_supported command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-supported",
+          "markdownDescription": "Denies the tts_supported command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the tts_voices command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-tts:deny-tts-voices",
+          "markdownDescription": "Denies the tts_voices command without any pre-configured scope."
         },
         {
           "description": "This permission set allows opening `mailto:`, `tel:`, `https://` and `http://` urls using their default application\nas well as reveal file in directories using default file explorer\n#### This default permission set includes:\n\n- `allow-open-url`\n- `allow-reveal-item-in-dir`\n- `allow-default-urls`",

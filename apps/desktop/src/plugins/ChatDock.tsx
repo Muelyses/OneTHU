@@ -26,17 +26,27 @@ import remarkGfm from "remark-gfm";
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
 import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
-import { IconClock, IconDownload, IconPlus, IconUpload, IconX } from "../components/Icons";
+import { IconClock, IconDownload, IconOrb, IconPlus, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
+import { AttachTray } from "../components/AttachTray.js";
+import { buildOhMessage, formatSize, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
 import { HarnessMark } from "../components/HarnessMark.js";
 import { useIslandText } from "../state/island.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
-import { useVoicePrefs } from "../state/voicePrefs.js";
+import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
+import { requestSettingsTab } from "../state/settingsMode.js";
+import { isOverlayClosedByUser, onOverlayEvent, overlayHide, overlayShow, overlaySupported, setOverlayClosedByUser } from "../lib/overlay.js";
+import { isAndroidNavigator } from "../lib/androidHost.js";
 import { openExternal } from "../pages/info/openExternal.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 const OPEN_KEY = "onethu.chatdock.open";
+
+/* 平台判定：安卓才有「显示在其他应用上层」这道系统权限窗。
+   桌面端现在 overlayDesktop 还是骨架（supported=false）→ 按钮本就不渲染；
+   等桌面适配器落地、按钮在桌面出现时，这条判定能保证不去误跳安卓授权页。 */
+const IS_ANDROID = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 
 /* ══════════ OH 直达（UI/UX 改造 §2.7 P0：搜索页「问 OH」透传） ══════════
  * 模块级 pending 请求 + useSyncExternalStore：外部（如 ServicesPage 搜索）调
@@ -67,6 +77,8 @@ function ohPromptSnapshot(): OhPromptReq | null {
 const VOICE_HOLD_MS = 450;
 /** 松手后等待识别器吐最终结果的宽限 */
 const VOICE_FINAL_GRACE_MS = 320;
+/** 上划取消的位移阈值（px）：与微信同量级——按住后向上拉过它，松手就丢弃识别文本、不发送 */
+const CANCEL_PULL_PX = 56;
 /** 波纹点个数（5~9 档，取 7：克制的节奏感）——高度/透明度由电平驱动 */
 const WAVE_DOTS = 7;
 /** 电平轮询间隔：比转写轮询（180ms）快一点，波纹才跟得上嘴 */
@@ -103,26 +115,27 @@ function VoiceSubtitle({ text, out }: { text: string; out: boolean }): ReactNode
   );
 }
 
-/** 小喇叭（「朗读这一条」）：出声时两个波纹弧呼吸（CSS `.dock-speak.is-on` 驱动）。
- *  内联在这里而不是 components/Icons.tsx —— 那个文件不在本轮写域内。 */
-function IconSpeak({ on }: { on: boolean }): ReactNode {
-  return (
-    <svg
-      width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
-    >
-      <path d="M11.4 5.2 6.9 8.6H4.3a1 1 0 0 0-1 1v4.8a1 1 0 0 0 1 1h2.6l4.5 3.4z" />
-      <path d="M15.2 9.4a4.2 4.2 0 0 1 0 5.2" className={on ? "dock-speak-wave" : undefined} />
-      <path d="M18.1 6.8a8.2 8.2 0 0 1 0 10.4" className={on ? "dock-speak-wave" : undefined} />
-    </svg>
-  );
-}
-
 interface ViewMsg {
   role: "user" | "assistant";
   text: string;
   /** 链元数据（R7）：本条回答的思考链与工具调用链，折叠可展开回看 */
   meta?: { think?: string; trace?: string[] };
+}
+
+/** 水合结果与本地视图的合并 —— 修 2026-10-10「语音发出的消息在面板里被吞」的竞态。
+ *
+ *  `export_session` 的快照可能比本地视图**旧**：本地刚 push 的用户消息、或刚落定还没落库的回答，
+ *  都可能不在快照里。所以这里**绝不能整体替换**（旧实现是 `setMsgs(view)`）——那正是「两边消息都被吞」
+ *  的成因。规则（纯函数）：
+ *   ① export 是本地视图的前缀（本地更新）→ 原样保留本地视图；
+ *   ② 否则以 export 为底，把本地多出来（export 里没有的）按原顺序续在后面。 */
+function mergeHydrated(view: ViewMsg[], cur: ViewMsg[]): ViewMsg[] {
+  // 索引取值可能是 undefined（noUncheckedIndexedAccess）：显式收窄
+  const same = (a: ViewMsg | undefined, b: ViewMsg | undefined): boolean =>
+    !!a && !!b && a.role === b.role && a.text === b.text;
+  if (view.length <= cur.length && view.every((m, i) => same(m, cur[i]))) return cur;
+  const tail = cur.filter((m) => !view.some((x) => same(x, m)));
+  return tail.length > 0 ? [...view, ...tail] : view;
 }
 
 /** 可折叠链块：思考过程 / 工具调用（流式期展开，落定折叠，随时展开回看） */
@@ -253,7 +266,7 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
                   aria-label={p.speakingText === m.text ? "停止朗读" : "朗读这一条"}
                   aria-pressed={p.speakingText === m.text}
                 >
-                  <IconSpeak on={p.speakingText === m.text} />
+                  <IconSpeak width={15} height={15} />
                 </button>
               </div>
             ) : null}
@@ -325,9 +338,19 @@ export function ChatDock(): ReactNode {
      ttsStop() 回来的那个 done 属于上一代，不能拿它把新一轮刚点亮的图标灭掉。 */
   const speakGen = useRef(0);
   const [subLinger, setSubLinger] = useState(false); // 语音结束后字幕多留一拍（渐出）
+  /* 需求 5：OH 对话界面里的悬浮球入口。能力先探测（桌面 false → 不渲染按钮）；
+     「本次已关闭」标记与设置页共用同一份 localStorage（lib/overlay.ts 的 CLOSED_KEY）。 */
+  const [overlayOk, setOverlayOk] = useState(false);
+  const [overlayOff, setOverlayOff] = useState(() => isOverlayClosedByUser());
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
   const islandText = useIslandText();
   const pressTimer = useRef<number | null>(null); // 长按计时（null=未按/已触发语音）
+  /* 上划取消：按下点 + 连续进度 + 是否越过阈值——**判定一律读 ref**，
+     渲染快照（state）会滞后一帧，松手瞬间按快照判会误发/误取消。 */
+  const holdStartY = useRef<number | null>(null);
+  const cancelPctRef = useRef(0);
+  const cancelArmedRef = useRef(false);
+  const [cancelling, setCancelling] = useState(false); // 只驱动文案与类名（颜色连续量走 --dock-cancel）
   const [msgs, setMsgs] = useState<ViewMsg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -343,6 +366,9 @@ export function ChatDock(): ReactNode {
   const [think, setThink] = useState("");
   const [thinkOpen, setThinkOpen] = useState(true);
   const hydratedFor = useRef<string | null>(null);
+  /* 「这个 pid 至少成功水合过一次」——关面板会清 hydratedFor（允许下次重开重水合），
+     但 ohAsk 直达路径要据此判断本地视图可不可信（见 ohReq effect）。 */
+  const everHydratedFor = useRef<string | null>(null);
   const seenEv = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   /* 运行代次：打断/强停/换插件后作废迟到回包；busyRef 是 busy 的即时镜像（异步闭包防陈旧） */
@@ -466,14 +492,16 @@ export function ChatDock(): ReactNode {
             if (m.role === "user" && m.content) view.push({ role: "user", text: m.content });
             else if (m.role === "assistant" && m.content) view.push({ role: "assistant", text: m.content });
           }
-          setMsgs(view);
+          // 合并而非整体替换：export 快照可能比本地视图旧（在途轮次还没落库）——见 mergeHydrated
+          setMsgs((cur) => mergeHydrated(view, cur));
           if (s.usage) setUsage((u) => ({ ...u, sessionPrompt: s.usage.prompt, sessionCompletion: s.usage.completion, sessionCostUsd: s.cost_usd }));
-        } else {
-          setMsgs([]);
+        } else if (!busyRef.current) {
+          setMsgs([]); // 读不到会话：本地无在途运行才允许清空（有在途时宁可不刷新）
         }
       } catch {
-        setMsgs([]);
+        if (!busyRef.current) setMsgs([]);
       }
+      everHydratedFor.current = pid; // 记「本 pid 已水合过」：ohAsk 直达时据此跳过重水合
       try {
         const t: any = await callRust(pid, "run", { command: "usage_report" });
         if (t?.ok && t.totals) {
@@ -612,7 +640,7 @@ export function ChatDock(): ReactNode {
     setConfirmCard(null);
   };
 
-  const send = useCallback(async (raw: string): Promise<void> => {
+  const send = useCallback(async (raw: string, bubble?: string): Promise<void> => {
     const text = raw.trim();
     if (!pid || busyRef.current || !text) return;
     void ttsStop(); // 朗读中用户发新消息：先掐掉，别和新回答抢耳朵
@@ -624,7 +652,7 @@ export function ChatDock(): ReactNode {
     lastEvAt.current = Date.now();
     busyRef.current = true;
     setBusy(true);
-    setMsgs((v) => [...v, { role: "user", text }]);
+    setMsgs((v) => [...v, { role: "user", text: bubble?.trim() || text }]);
     setStream("");
     setThink("");
     setThinkOpen(true);
@@ -682,6 +710,12 @@ export function ChatDock(): ReactNode {
       clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
+    /* 修竞态（用户实录「我的消息和他的消息都被吞掉了」）：这条路径 = **关着的面板被打开 + 立刻发送**，
+       而关面板时 hydratedFor 已被清空 → 水合 effect 会紧接着拉 export_session，且很可能在新一轮
+       落库**之前**取到快照 → 旧实现的 setMsgs(view) 会把刚 push 的用户消息（甚至整轮问答）冲掉。
+       本地视图只要已水合过就是可信的，于是**在本帧（setOpen 之前）把水合标记补上**，
+       水合 effect 的 deps 里 open 会变，必须赶在它之前生效。 */
+    if (pid && everHydratedFor.current === pid) hydratedFor.current = pid;
     setOpen(true);
     setUnread(0);
     void send(ohReq.text);
@@ -897,11 +931,12 @@ export function ChatDock(): ReactNode {
         smooth += (target - smooth) * 0.16; // 电平跳变被摊平（ease-in-out 的观感）
         if (!Number.isFinite(smooth)) smooth = 0;
         const amp = 0.42 + 0.58 * smooth; // 无电平时 0.42：正弦照常呼吸
+        const dim = 1 - 0.55 * cancelPctRef.current; // 上划取消候选：波纹整体压暗（随位移连续）
         dots.forEach((el, i) => {
           const s = 0.5 + 0.5 * Math.sin(t * 5.2 - i * 0.62);
           const h = Math.min(1.28, Math.max(0.18, 0.26 + s * amp));
           el.style.transform = `scaleY(${h.toFixed(3)})`;
-          el.style.opacity = (0.34 + 0.66 * s * (0.5 + 0.5 * smooth)).toFixed(3);
+          el.style.opacity = ((0.34 + 0.66 * s * (0.5 + 0.5 * smooth)) * dim).toFixed(3);
         });
         raf = window.requestAnimationFrame(tick);
       };
@@ -913,6 +948,15 @@ export function ChatDock(): ReactNode {
       if (poll != null) window.clearInterval(poll);
     };
   }, [voice]);
+
+  // 卸载：语音还在进行就按取消收尾（停识别器 + 清掉全局的取消进度变量）
+  useEffect(() => () => {
+    if (voicePhaseRef.current !== "idle") {
+      voicePhaseRef.current = "idle";
+      speechStop();
+    }
+    document.documentElement.style.setProperty("--dock-cancel", "0");
+  }, []);
 
   // 文本输入模式展开即聚焦（移动端顺势弹出键盘）
   useEffect(() => {
@@ -946,6 +990,44 @@ export function ChatDock(): ReactNode {
     };
   }, []);
 
+  /* 悬浮球：本机能力（桌面端 supported=false → 按钮根本不渲染，不留死按钮） */
+  useEffect(() => {
+    void overlaySupported().then(setOverlayOk);
+  }, []);
+
+  /* 重读「本次已关闭」标记的时机（同一文档内改 localStorage 不会触发 storage 事件）：
+     ① 面板每次打开（设置页 → 通知与提醒 → 悬浮球 里可能刚改过）；② 应用重新获得焦点
+     （从系统悬浮层授权页回来时也走这条）。 */
+  useEffect(() => {
+    if (open) setOverlayOff(isOverlayClosedByUser());
+  }, [open]);
+  useEffect(() => {
+    const sync = (): void => setOverlayOff(isOverlayClosedByUser());
+    window.addEventListener("focus", sync);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      window.removeEventListener("focus", sync);
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
+
+  /* 用户在悬浮层的雾上点「本次关闭」→ 原生回传 closed → 把本按钮同步成已关闭态
+     （订阅一次，卸载退订；桌面无适配器时 overlay.ts 会给一个 no-op 退订函数） */
+  useEffect(() => {
+    let alive = true;
+    let dispose: (() => void) | null = null;
+    void onOverlayEvent((e) => {
+      if (alive && e.type === "closed") setOverlayOff(true);
+    }).then((d) => {
+      dispose = d;
+      if (!alive) d();
+    });
+    return () => {
+      alive = false;
+      dispose?.();
+    };
+  }, []);
+
   /* 字幕渐出：语音结束后多留 SUB_LINGER_MS（也覆盖「识别完 → 面板滑入」那一拍），
      否则条一收窄字幕就瞬闪消失。 */
   useEffect(() => {
@@ -961,7 +1043,7 @@ export function ChatDock(): ReactNode {
   // 悬死。失焦时若语音仍在进行则立即收尾。
   useEffect(() => {
     const onBlur = (): void => {
-      if (voicePhaseRef.current !== "idle") void finishVoice();
+      if (voicePhaseRef.current !== "idle") void finishVoice(true); // 失焦：按取消（不误发）
     };
     window.addEventListener("blur", onBlur);
     return () => window.removeEventListener("blur", onBlur);
@@ -1003,18 +1085,28 @@ export function ChatDock(): ReactNode {
   };
 
   /** 松手：收最终文本 → **整句直接喂给 OH**（ohAsk：开面板 + 直接发送）。
-   *  不进输入框、不建新会话（2026-10-10 用户拍板：识别结果就是一条完整消息）。 */
-  const finishVoice = async (): Promise<void> => {
+   *  不进输入框、不建新会话（2026-10-10 用户拍板：识别结果就是一条完整消息）。
+   *  cancel=true（上划取消 / pointercancel / 失焦）→ 丢弃识别文本，**不发送**。 */
+  const finishVoice = async (cancel = false): Promise<void> => {
     // 守卫读 phase ref（真时序），不读渲染快照的 voice——启动窗口内松手也能正确收尾
     if (voicePhaseRef.current === "idle") return;
     const started = voicePhaseRef.current === "active";
     voicePhaseRef.current = "idle";
     setPressing(false);
+    resetCancelPull();
     if (!started) {
       // 尚未进入监听：无需等识别器收尾
       speechStop();
       setVoice("off");
       setVoiceText("");
+      return;
+    }
+    if (cancel) {
+      // 上划取消：直接收，不等最终结果（反正要丢），也不发送
+      speechStop();
+      setVoice("off");
+      setVoiceText("");
+      showVoiceFail("已取消");
       return;
     }
     setVoice("sending");
@@ -1037,6 +1129,76 @@ export function ChatDock(): ReactNode {
     window.setTimeout(() => setSlidIn(false), 700);
   };
 
+  /** 「自动朗读」开关（对话界面的入口；设置页 通知与提醒 → 语音合成 是同源开关，同一份 prefs）：
+   *  点击 = 切 autoSpeak（读现读值，不用渲染快照，避免连点丢状态）；长按/右键 = 跳到设置页那个分区。 */
+  const toggleAutoSpeak = (): void => {
+    const next = !readVoicePrefs().autoSpeak;
+    setVoicePrefs({ autoSpeak: next });
+    setNotice(next ? "已开启自动朗读：OH 的回复会念出来" : "已静音：OH 的回复不再自动朗读");
+  };
+  const openVoiceSettings = (): void => {
+    requestSettingsTab("通知与提醒"); // 语音合成分区在这个页签（Settings.tsx 的 SETTINGS_TAB_OF）
+    if (!navGo("settings")) return;
+    if (open) toggle(); // 面板挡着设置页：顺手收起，落点就是那个分区
+  };
+
+  /** 悬浮球入口：关着 → 先要「显示在其他应用上层」权限，再清标记 + overlayShow()；
+   *  开着 → overlayHide() + 记「本次已关闭」（用户在本体的这个入口随时能重开）。 */
+  const toggleOverlay = useCallback(async (): Promise<void> => {
+    if (!isOverlayClosedByUser()) {
+      // 本次关闭
+      try {
+        await overlayHide();
+        setOverlayClosedByUser(true);
+        setOverlayOff(true);
+        setNotice("悬浮球已本次关闭（这里可随时重开）");
+      } catch (e) {
+        setNotice(`悬浮球关闭失败：${e instanceof Error ? e.message : String(e)}`);
+      }
+      return;
+    }
+    // 重新打开：安卓系统悬浮窗必须先把权限拿到（动态引入：桌面端不该被带进这个模块）
+    if (IS_ANDROID) {
+      const { hasOverlayPermission, requestOverlayPermission } = await import("../lib/overlayAndroid.js");
+      if (!(await hasOverlayPermission())) {
+        await requestOverlayPermission(); // 拉起系统授权页（应用内不弹自定义弹窗）
+        setNotice("已跳转系统授权页：打开「显示在其他应用上层」后回来再点一次");
+        return;
+      }
+    }
+    setOverlayClosedByUser(false);
+    setOverlayOff(false);
+    try {
+      await overlayShow();
+      setNotice("悬浮球已打开");
+    } catch (e) {
+      // 起不来就别假装开着：标记退回「已关闭」，用户可再点一次重试
+      setOverlayClosedByUser(true);
+      setOverlayOff(true);
+      setNotice(`悬浮球打开失败：${e instanceof Error ? e.message : String(e)}（可再点一次重试）`);
+    }
+  }, []);
+
+  /** 附件（需求 6）：AttachTray 取到文件 → 面板里加一条**用户气泡** +
+   *  经既有 chat 通道把附件消息交给 OH（等价于给 sendToOh 注入一个宿主发送器，但不动全局）。
+   *  默认通道只是 `askOh()` 问一次，面板里看不到这条气泡——所以这里必须自己接管。 */
+  const sendAttached = useCallback(async (files: AttachFile[]): Promise<void> => {
+    if (files.length === 0) return;
+    try {
+      if (busyRef.current) {
+        setNotice("小OH 正在回答，稍后再发附件");
+        return;
+      }
+      const label = `［附件］${files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、")}`;
+      const message = await buildOhMessage(files); // 含名称/类型/大小/本地路径（文本类还带内容预览）
+      await send(message, label);
+    } catch (e) {
+      setNotice(`附件发送失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      releaseAttachPreviews(files); // 所有权已交给宿主：预览地址由宿主回收
+    }
+  }, [send]);
+
   /** 手动「朗读这一条」：用户当场点的＝明确意图，走 previewSpeak 强制出声（无视静音开关）；
    *  再点同一条＝停。自动朗读那条路径完全交给 speakReply 内部判 autoSpeak（见 finalize）。 */
   const speakOne = useCallback((text: string): void => {
@@ -1054,8 +1216,41 @@ export function ChatDock(): ReactNode {
     })();
   }, [speakingText]);
 
+  /* ── 上划取消（微信式）─────────────────────────────────────────────
+     位移进度 0..1 连续写进 :root 的 --dock-cancel（CSS 用它做颜色渐变，不引发重渲染）；
+     是否算「取消」只读 cancelArmedRef（迟滞：跨 56px 才算取消，回落到 0.85×阈值以下算反悔）。 */
+  const applyCancelPull = (clientY: number): void => {
+    const y0 = holdStartY.current;
+    if (y0 == null) return;
+    const dy = y0 - clientY; // 向上为正
+    const pct = Math.max(0, Math.min(1, dy / CANCEL_PULL_PX));
+    cancelPctRef.current = pct;
+    document.documentElement.style.setProperty("--dock-cancel", pct.toFixed(3));
+    const armed = cancelArmedRef.current ? pct > 0.85 : pct >= 1;
+    if (armed !== cancelArmedRef.current) {
+      cancelArmedRef.current = armed;
+      setCancelling(armed);
+    }
+  };
+  const resetCancelPull = (): void => {
+    holdStartY.current = null;
+    cancelPctRef.current = 0;
+    cancelArmedRef.current = false;
+    document.documentElement.style.setProperty("--dock-cancel", "0");
+    setCancelling(false);
+  };
+  /** 按住期间的 pointermove：两个宿主共用（指针已被 setPointerCapture 捕获，事件必到按钮） */
+  const onHoldMove = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    if (holdStartY.current == null) return; // 没在按住（正常移动/惯性滑动）
+    applyCancelPull(e.clientY);
+  };
+
   /* ── 长按语音的按下/抬起：灵动岛与面板入口条共用同一套 450ms 语义 ── */
-  const beginHold = (host: "island" | "entry"): void => {
+  const beginHold = (host: "island" | "entry", clientY: number): void => {
+    holdStartY.current = clientY;
+    cancelPctRef.current = 0;
+    cancelArmedRef.current = false;
+    document.documentElement.style.setProperty("--dock-cancel", "0");
     void ttsStop(); // 开始长按说话 → 正在念的回答立刻让路（两个声音别打架）
     setSpeakingText(null);
     setVoiceFail(null);
@@ -1068,21 +1263,25 @@ export function ChatDock(): ReactNode {
       void enterVoice();
     }, VOICE_HOLD_MS);
   };
-  /** 抬起：未到阈值 → 走调用方的点击语义；已进语音 → 收尾 */
+  /** 抬起：未到阈值 → 走调用方的点击语义；已进语音 → 收尾（取消判定读 ref，不看快照） */
   const endHold = (onTap: () => void): void => {
     setPressing(false);
+    const pulled = cancelArmedRef.current;
     if (pressTimer.current != null) {
       window.clearTimeout(pressTimer.current);
       pressTimer.current = null;
+      resetCancelPull();
+      if (pulled) return; // 还没进语音就上划离开：点击也一并取消（微信式，不发不点）
       onTap();
       return;
     }
-    void finishVoice();
+    const cancel = cancelArmedRef.current;
+    void finishVoice(cancel);
   };
 
   const onIslandPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    beginHold("island");
+    beginHold("island", e.clientY);
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
     } catch {
@@ -1094,16 +1293,17 @@ export function ChatDock(): ReactNode {
   // 语音会悬死。捕获丢失且语音仍在进行 → 立即收尾（正常路径 up 先释放捕获，此处 idle 无副作用）。
   const onIslandLostCapture = (): void => {
     setPressing(false);
-    if (voicePhaseRef.current !== "idle") void finishVoice();
+    if (voicePhaseRef.current !== "idle") void finishVoice(true); // 捕获丢失：宁可丢一句，也不误发
   };
   const onIslandPointerCancel = (): void => {
     setPressing(false);
     if (pressTimer.current != null) {
       window.clearTimeout(pressTimer.current);
       pressTimer.current = null;
+      resetCancelPull();
       return;
     }
-    void finishVoice();
+    void finishVoice(true); // 系统手势抢占：按取消处理
   };
   const onIslandKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>): void => {
     if (e.key === "Enter" || e.key === " ") {
@@ -1115,7 +1315,7 @@ export function ChatDock(): ReactNode {
   /* 面板入口条：点 = 展开原文本输入框；长按 = 语音（与岛同一套手势，文案说得到做得到） */
   const onEntryPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    beginHold("entry");
+    beginHold("entry", e.clientY);
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
     } catch {
@@ -1124,15 +1324,16 @@ export function ChatDock(): ReactNode {
   };
   const onEntryPointerUp = (): void => endHold(() => setInputMode(true));
   const onEntryLostCapture = (): void => {
-    if (voicePhaseRef.current !== "idle") void finishVoice();
+    if (voicePhaseRef.current !== "idle") void finishVoice(true);
   };
   const onEntryPointerCancel = (): void => {
     if (pressTimer.current != null) {
       window.clearTimeout(pressTimer.current);
       pressTimer.current = null;
+      resetCancelPull();
       return;
     }
-    void finishVoice();
+    void finishVoice(true);
   };
   const onEntryKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>): void => {
     if (e.key === "Enter" || e.key === " ") {
@@ -1144,9 +1345,13 @@ export function ChatDock(): ReactNode {
   if (!pid) return null;
   const budgetPct = usage.budgetUsd ? Math.min(100, ((usage.totalCostUsd ?? 0) / usage.budgetUsd) * 100) : 0;
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
-  const voiceHint = voice === "arming" ? "首次需弹窗允许" : voice === "sending" ? "正在发送…" : "松手直发 OH";
+  const voiceHint = cancelling && voice !== "off"
+    ? "松开取消"
+    : voice === "arming" ? "首次需弹窗允许" : voice === "sending" ? "正在发送…" : "松手直发 OH";
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
-  const subText = voice === "off" ? liveShown : voice === "arming" ? "正在启动语音…" : liveShown || "请说话…";
+  const subText = cancelling && voice !== "off"
+    ? "松开取消"
+    : voice === "off" ? liveShown : voice === "arming" ? "正在启动语音…" : liveShown || "请说话…";
 
   return (
     <>
@@ -1160,6 +1365,7 @@ export function ChatDock(): ReactNode {
         className={"dock-island" + (pressing ? " is-press" : "") + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "")}
         aria-label="OneTHU 对话（点击输入，长按说话）"
         onPointerDown={onIslandPointerDown}
+        onPointerMove={onHoldMove}
         onPointerUp={onIslandPointerUp}
         onPointerCancel={onIslandPointerCancel}
         onLostPointerCapture={onIslandLostCapture}
@@ -1223,6 +1429,29 @@ export function ChatDock(): ReactNode {
                   e.target.value = "";
                 }}
               />
+              {ttsOk ? (
+                <button
+                  className={"btn dock-btn dock-ico dock-tts" + (prefs.autoSpeak ? " is-on" : "")}
+                  title={prefs.autoSpeak ? "自动朗读已开启（点击改静音；长按进语音合成设置）" : "当前静音（点击开自动朗读；长按进语音合成设置）"}
+                  aria-label={prefs.autoSpeak ? "关闭自动朗读" : "开启自动朗读"}
+                  aria-pressed={prefs.autoSpeak}
+                  onClick={toggleAutoSpeak}
+                  onContextMenu={(e) => { e.preventDefault(); openVoiceSettings(); }}
+                >
+                  {prefs.autoSpeak ? <IconSpeak /> : <IconSpeakOff />}
+                </button>
+              ) : null}
+              {overlayOk ? (
+                <button
+                  className={"btn dock-btn dock-ico dock-orb" + (overlayOff ? " is-off" : "")}
+                  title={overlayOff ? "悬浮球已关闭，点此重新打开" : "悬浮球已开启，再点一次可本次关闭"}
+                  aria-label={overlayOff ? "打开悬浮球" : "本次关闭悬浮球"}
+                  aria-pressed={!overlayOff}
+                  onClick={() => void toggleOverlay()}
+                >
+                  <IconOrb />
+                </button>
+              ) : null}
               <button className="btn dock-btn dock-ico" title="收起" aria-label="收起" onClick={toggle}>
                 <IconX />
               </button>
@@ -1250,6 +1479,10 @@ export function ChatDock(): ReactNode {
             onToggleThink={() => setThinkOpen((o) => !o)}
             onMsgsClick={onMsgsClick}
           />
+          {/* 附件入口（需求 6）：输入行之上，薄薄一条——不抢输入框的视觉重心 */}
+          <div className="dock-attach">
+            <AttachTray onPicked={sendAttached} />
+          </div>
           <div className="dock-input-row">
             {inputMode ? (
               <textarea
@@ -1277,6 +1510,7 @@ export function ChatDock(): ReactNode {
                 className={"dock-entry" + (voice !== "off" ? " is-voice" : "") + (voiceFail && voiceHost === "entry" ? " is-fail" : "")}
                 aria-label="点击输入，长按说话"
                 onPointerDown={onEntryPointerDown}
+                onPointerMove={onHoldMove}
                 onPointerUp={onEntryPointerUp}
                 onPointerCancel={onEntryPointerCancel}
                 onLostPointerCapture={onEntryLostCapture}

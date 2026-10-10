@@ -301,6 +301,34 @@ export const IconArrowUp = (p: SVGProps<SVGSVGElement>) => (
 
 
 
+/* ── 对话坞使用（ball-ui）：朗读 / 静音 / 悬浮球 ── */
+
+/** 小喇叭（朗读这一条）：出声时两道声波由 `.dock-speak.is-on .dock-speak-wave` 呼吸 */
+export const IconSpeak = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M11.4 5.2 6.9 8.6H4.3a1 1 0 0 0-1 1v4.8a1 1 0 0 0 1 1h2.6l4.5 3.4z" />
+    <path className="dock-speak-wave" d="M15.2 9.4a4.2 4.2 0 0 1 0 5.2" />
+    <path className="dock-speak-wave" d="M18.1 6.8a8.2 8.2 0 0 1 0 10.4" />
+  </svg>
+);
+
+/** 小喇叭 + 斜杠（当前静音）：与 IconSpeak 同一副喇叭，只是没声波 */
+export const IconSpeakOff = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M11.4 5.2 6.9 8.6H4.3a1 1 0 0 0-1 1v4.8a1 1 0 0 0 1 1h2.6l4.5 3.4z" />
+    <path d="M15.4 9.6l4.2 4.8" />
+  </svg>
+);
+
+/** 悬浮球（需求 5 的入口）：小球 + 一圈虚线轨道 */
+export const IconOrb = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="5.8" />
+    <circle cx="12" cy="12" r="2.1" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="12" r="9.6" strokeDasharray="1.2 3.2" opacity="0.55" />
+  </svg>
+);
+
 export function FolderIcon({ name, ...rest }: { name?: string } & SVGProps<SVGSVGElement>) {
   const C = (name && FOLDER_ICONS[name]) || IconFolder;
   return <C {...rest} />;

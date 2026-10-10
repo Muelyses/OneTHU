@@ -87,6 +87,26 @@ fn read_file_text(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("读取失败：{e}"))
 }
 
+/// 写临时文件（附件通路的反向：JS 侧字节 → 本地路径）。
+/// 经 <input>/相机/滤镜拿到的字节没有路径，而 seafile_upload、作业提交、讨论区发帖都吃 localPath；
+/// 落点 = 系统临时目录/onethu-tmp/，只取文件名（防目录穿越），同名覆盖，返回绝对路径。
+#[tauri::command]
+fn write_temp_file(name: String, data_base64: String) -> Result<String, String> {
+    use base64::Engine as _;
+    let safe = std::path::Path::new(&name)
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "attach.bin".to_string());
+    let dir = std::env::temp_dir().join("onethu-tmp");
+    std::fs::create_dir_all(&dir).map_err(|e| format!("建目录失败：{e}"))?;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64.as_bytes())
+        .map_err(|e| format!("base64 解码失败：{e}"))?;
+    let path = dir.join(safe);
+    std::fs::write(&path, bytes).map_err(|e| format!("写入失败：{e}"))?;
+    Ok(path.to_string_lossy().to_string())
+}
+
 /// 读本地文件为 base64（附件通路：本地路径 → JS 侧 File/bytes）。
 /// 默认上限 64MB；超限直接报错而不是截断（避免悄悄传坏文件）。base64 膨胀 ~33%，调用方自担内存。
 #[tauri::command]
@@ -4304,7 +4324,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,debug_log_export,read_file_text,read_file_base64,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
+            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
             seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,
             im_media::im_peek_text,

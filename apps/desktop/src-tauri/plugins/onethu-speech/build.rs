@@ -1,6 +1,6 @@
 //! 生成移动端胶水与 allow-* 权限文件（tauri-plugin 标准构建）
 fn main() {
-    let commands = &["speech_supported", "speech_start", "speech_poll", "speech_stop"];
+    let commands = &["speech_supported", "speech_start", "speech_poll", "speech_stop", "speech_level"];
     let result = tauri_plugin::Builder::new(commands)
         .android_path("android")
         .try_build();

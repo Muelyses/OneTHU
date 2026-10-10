@@ -6,10 +6,13 @@
  *  v3 交互（用户拍板，灵动岛）：
  *  - 底部中央胶囊（左 OH 标识 + 右智能文本），不再拖拽；
  *  - 智能文本：30 分钟内日程 → 「地点·还有X分钟」；提醒窗口内作业 → 「作业名·还有X分钟」；
- *    默认「聊点什么吧！」；文本切换键盘下坠动画，胶囊宽度随内容伸缩；
+ *    默认「点击输入，长按说话」（state/island.ts 的入口文案）；文本切换键盘下坠动画，胶囊宽度随内容伸缩；
  *  - 点击向上展开 50% 高 × 86% 宽面板（不全屏），关闭缩回；
- *  - 长按 → 胶囊拉长 + 波纹 → 原生语音识别（macOS SFSpeechRecognizer 桥），
- *    实时转写显示在雾白下半屏遮罩；松手 → 滑动特效 → 新对话并填入文本；
+ *  - 长按（≥450ms）→ 胶囊**自然变长**（宽度/圆角/高度/背景 300ms 同过渡）+ 一层雾
+ *    （backdrop-filter）+ 随音量跳动的点点波纹，雾里实时显示识别出的字；
+ *    松手 → 整句经 ohAsk() **作为完整一条消息直接喂给 OH**（不进输入框，2026-10-10 用户拍板）；
+ *  - 单击 → 展开面板；面板底部默认只留一行入口按钮「点击输入，长按说话」，
+ *    点它才展开原来的文本输入框（长按它同样进语音；桌面无原生识别时明确降级提示）；
  *  - 会话切换不清空累计用量（总量跨会话持久，仅本会话计数归零）。
  */
 import {
@@ -26,7 +29,7 @@ import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
 import { IconClock, IconDownload, IconPlus, IconUpload, IconX } from "../components/Icons";
 import { HarnessMark } from "../components/HarnessMark.js";
 import { useIslandText } from "../state/island.js";
-import { speechAvailable, speechPoll, speechStart, speechStop } from "../lib/speech.js";
+import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
 import { openExternal } from "../pages/info/openExternal.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -62,6 +65,28 @@ function ohPromptSnapshot(): OhPromptReq | null {
 const VOICE_HOLD_MS = 450;
 /** 松手后等待识别器吐最终结果的宽限 */
 const VOICE_FINAL_GRACE_MS = 320;
+/** 波纹点个数（5~9 档，取 7：克制的节奏感）——高度/透明度由电平驱动 */
+const WAVE_DOTS = 7;
+/** 电平轮询间隔：比转写轮询（180ms）快一点，波纹才跟得上嘴 */
+const LEVEL_POLL_MS = 90;
+/** 雾里只显示转写末尾若干字：长句保持一行，突出「最新说出的词」 */
+const LIVE_TAIL_CHARS = 34;
+
+/** 语音态内容（灵动岛与面板入口条共用）：波纹点 + 雾中实时转写 + 一行提示。
+ *  点的高度/透明度由 ChatDock 的电平循环直接写 DOM 样式（不进 React 状态，60fps 不重渲染）。 */
+function VoiceBar({ live, hint }: { live: string; hint: string }): ReactNode {
+  return (
+    <span className="dock-voicebar">
+      <span className="dock-wave" aria-hidden="true">
+        {Array.from({ length: WAVE_DOTS }, (_, i) => (
+          <i className="dock-wave-dot" key={i} />
+        ))}
+      </span>
+      <span className="dock-voicebar-live">{live}</span>
+      <span className="dock-voicebar-hint">{hint}</span>
+    </span>
+  );
+}
 
 interface ViewMsg {
   role: "user" | "assistant";
@@ -232,7 +257,11 @@ export function ChatDock(): ReactNode {
   // 启动中（含 await speechAvailable/speechStart 的窗口）；active=已开始监听
   const voicePhaseRef = useRef<"idle" | "starting" | "active">("idle");
   const [voiceText, setVoiceText] = useState("");
-  const [voiceFail, setVoiceFail] = useState<string | null>(null); // 失败原因：留在遮罩上 2.6s 再散
+  const [voiceFail, setVoiceFail] = useState<string | null>(null); // 失败原因：在本次长按的宿主上亮 2.6s 再散
+  const [voiceHost, setVoiceHost] = useState<"island" | "entry">("island"); // 失败文案落在哪（岛 / 面板入口条）
+  const [pressing, setPressing] = useState(false); // 按住未到长按阈值：给一点「准备」反馈
+  const [inputMode, setInputMode] = useState(false); // 文本输入框是否展开（默认收起，只留入口按钮）
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
   const islandText = useIslandText();
   const pressTimer = useRef<number | null>(null); // 长按计时（null=未按/已触发语音）
@@ -746,6 +775,69 @@ export function ChatDock(): ReactNode {
     return () => window.clearInterval(t);
   }, [voice]);
 
+  /* 波纹点动画：音量电平（speech_level → 0..1）驱动。
+     - 直接写 DOM 样式（转写文本仍走 180ms 的 state 通道）——60fps 不引发 React 重渲染；
+     - 电平每 LEVEL_POLL_MS 拉一次 + 指数平滑：变化滞后一拍 → 观感「柔」，不抖；
+     - 取不到电平（桌面端 / 识别器不给 onRmsChanged）时振幅有下限 0.42 —— 退化为**时间正弦**，
+       始终在动；NaN/越界一律夹回 0..1，不存在空转或 NaN；
+     - 宿主可能是岛、也可能是面板里的入口条，两个都刷（只有可见的那个看得见）。 */
+  useEffect(() => {
+    if (voice === "off") return;
+    const dots = Array.from(document.querySelectorAll<HTMLElement>(".dock-wave-dot"));
+    if (dots.length === 0) return;
+    const reduce = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let alive = true;
+    let raf = 0;
+    let target = 0; // 最新电平
+    let smooth = 0; // 平滑后电平：驱动振幅与透明度
+    let poll: number | null = null;
+
+    const pull = (): void => {
+      void speechLevel().then((v) => {
+        if (alive) target = Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0;
+      });
+    };
+    if (voice === "listening") {
+      pull();
+      poll = window.setInterval(pull, LEVEL_POLL_MS);
+    }
+
+    if (reduce) {
+      // 系统「减弱动态效果」：静帧点列（只留轻微高低差），连 rAF 都不开
+      dots.forEach((el, i) => {
+        el.style.transform = `scaleY(${(0.44 + (i % 3) * 0.14).toFixed(2)})`;
+        el.style.opacity = "0.55";
+      });
+    } else {
+      const t0 = performance.now();
+      const tick = (now: number): void => {
+        if (!alive) return;
+        const t = (now - t0) / 1000;
+        smooth += (target - smooth) * 0.16; // 电平跳变被摊平（ease-in-out 的观感）
+        if (!Number.isFinite(smooth)) smooth = 0;
+        const amp = 0.42 + 0.58 * smooth; // 无电平时 0.42：正弦照常呼吸
+        dots.forEach((el, i) => {
+          const s = 0.5 + 0.5 * Math.sin(t * 5.2 - i * 0.62);
+          const h = Math.min(1.28, Math.max(0.18, 0.26 + s * amp));
+          el.style.transform = `scaleY(${h.toFixed(3)})`;
+          el.style.opacity = (0.34 + 0.66 * s * (0.5 + 0.5 * smooth)).toFixed(3);
+        });
+        raf = window.requestAnimationFrame(tick);
+      };
+      raf = window.requestAnimationFrame(tick);
+    }
+    return () => {
+      alive = false;
+      if (raf) window.cancelAnimationFrame(raf);
+      if (poll != null) window.clearInterval(poll);
+    };
+  }, [voice]);
+
+  // 文本输入模式展开即聚焦（移动端顺势弹出键盘）
+  useEffect(() => {
+    if (inputMode) inputRef.current?.focus();
+  }, [inputMode]);
+
   // 兜底：按住期间窗口失焦（Cmd+Tab、切换空间等），pointerup 不会到达按钮，语音会
   // 悬死。失焦时若语音仍在进行则立即收尾。
   useEffect(() => {
@@ -756,7 +848,7 @@ export function ChatDock(): ReactNode {
     return () => window.removeEventListener("blur", onBlur);
   }, []);
 
-  /** 语音失败：遮罩上亮 2.6s（notice 在面板内，关着面板时看不见） */
+  /** 语音失败：在本次长按的那个宿主上亮 2.6s（岛=雾状浮片，面板内=入口条内联；notice 看不见） */
   const showVoiceFail = (msg: string): void => {
     setVoice("off");
     setVoiceText("");
@@ -768,7 +860,8 @@ export function ChatDock(): ReactNode {
     if (voicePhaseRef.current !== "starting") return; // 防重入
     if (!(await speechAvailable())) {
       voicePhaseRef.current = "idle";
-      showVoiceFail("此设备暂不支持原生语音识别（macOS 需 pnpm tauri:app 方式运行并授权）");
+      // 桌面端/未提供系统识别服务的机子：明确降级文案，别静默（需求 5）
+      showVoiceFail(speechUnavailableHint());
       return;
     }
     setVoice("arming");
@@ -790,12 +883,14 @@ export function ChatDock(): ReactNode {
     }
   };
 
-  /** 松手：收最终文本 → 滑动特效开面板 → 新对话 + 填入（不自动发送，先看一眼再回车） */
+  /** 松手：收最终文本 → **整句直接喂给 OH**（ohAsk：开面板 + 直接发送）。
+   *  不进输入框、不建新会话（2026-10-10 用户拍板：识别结果就是一条完整消息）。 */
   const finishVoice = async (): Promise<void> => {
     // 守卫读 phase ref（真时序），不读渲染快照的 voice——启动窗口内松手也能正确收尾
     if (voicePhaseRef.current === "idle") return;
     const started = voicePhaseRef.current === "active";
     voicePhaseRef.current = "idle";
+    setPressing(false);
     if (!started) {
       // 尚未进入监听：无需等识别器收尾
       speechStop();
@@ -809,47 +904,59 @@ export function ChatDock(): ReactNode {
     const final = (await speechPoll()).trim();
     setVoice("off");
     setVoiceText("");
-    if (!final) return; // 什么都没听到：安静收场
-    setSlidIn(true);
-    localStorage.setItem(OPEN_KEY, "1");
-    setClosing(false);
-    setOpen(true);
-    setUnread(0);
-    await newSession();
-    setInput(final); // 填入输入框；用户确认后回车发送
+    if (!final) return; // 什么都没听到：安静收场，不发空消息
+    if (busyRef.current) {
+      // ohAsk 的 send 被 busy 守卫挡住会静默吞掉这一句——明说，别让用户以为识别失败了
+      showVoiceFail("小OH 正在回答，稍后再长按说");
+      return;
+    }
+    setSlidIn(true); // 面板滑动进场（区别于点击的 morph）
+    ohAsk(final); // ← 唯一出口：完整一条消息直接发给 OH
     window.setTimeout(() => setSlidIn(false), 700);
+  };
+
+  /* ── 长按语音的按下/抬起：灵动岛与面板入口条共用同一套 450ms 语义 ── */
+  const beginHold = (host: "island" | "entry"): void => {
+    setVoiceFail(null);
+    setVoiceHost(host);
+    setPressing(true); // 先给「准备中」的轻微反馈，越过 450ms 才真的长起来
+    pressTimer.current = window.setTimeout(() => {
+      pressTimer.current = null;
+      setPressing(false);
+      voicePhaseRef.current = "starting";
+      void enterVoice();
+    }, VOICE_HOLD_MS);
+  };
+  /** 抬起：未到阈值 → 走调用方的点击语义；已进语音 → 收尾 */
+  const endHold = (onTap: () => void): void => {
+    setPressing(false);
+    if (pressTimer.current != null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+      onTap();
+      return;
+    }
+    void finishVoice();
   };
 
   const onIslandPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    setVoiceFail(null);
-    pressTimer.current = window.setTimeout(() => {
-      pressTimer.current = null;
-      voicePhaseRef.current = "starting";
-      void enterVoice();
-    }, VOICE_HOLD_MS);
+    beginHold("island");
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
     } catch {
       /* 捕获失败仍可长按 */
     }
   };
-  const onIslandPointerUp = (): void => {
-    if (pressTimer.current != null) {
-      // 未到长按阈值 = 点击：开/收面板
-      window.clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-      toggle();
-      return;
-    }
-    void finishVoice();
-  };
+  const onIslandPointerUp = (): void => endHold(toggle); // 未到阈值 = 点击：开/收面板
   // 兜底：pointer capture 被 WebView 丢弃（系统手势等）时，指针事件不再到达按钮，
   // 语音会悬死。捕获丢失且语音仍在进行 → 立即收尾（正常路径 up 先释放捕获，此处 idle 无副作用）。
   const onIslandLostCapture = (): void => {
+    setPressing(false);
     if (voicePhaseRef.current !== "idle") void finishVoice();
   };
   const onIslandPointerCancel = (): void => {
+    setPressing(false);
     if (pressTimer.current != null) {
       window.clearTimeout(pressTimer.current);
       pressTimer.current = null;
@@ -864,52 +971,79 @@ export function ChatDock(): ReactNode {
     }
   };
 
+  /* 面板入口条：点 = 展开原文本输入框；长按 = 语音（与岛同一套手势，文案说得到做得到） */
+  const onEntryPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    beginHold("entry");
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* 捕获失败仍可长按 */
+    }
+  };
+  const onEntryPointerUp = (): void => endHold(() => setInputMode(true));
+  const onEntryLostCapture = (): void => {
+    if (voicePhaseRef.current !== "idle") void finishVoice();
+  };
+  const onEntryPointerCancel = (): void => {
+    if (pressTimer.current != null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+      return;
+    }
+    void finishVoice();
+  };
+  const onEntryKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>): void => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setInputMode(true);
+    }
+  };
+
   if (!pid) return null;
   const budgetPct = usage.budgetUsd ? Math.min(100, ((usage.totalCostUsd ?? 0) / usage.budgetUsd) * 100) : 0;
+  /* 语音态：雾里的实时转写（只留末尾几字，长句也保持一行）+ 右侧一行提示 */
+  const voiceHint = voice === "arming" ? "首次需在系统弹窗里允许" : voice === "sending" ? "正在发送…" : "松手直发 OH";
+  const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
 
   return (
     <>
-      {/* 语音遮罩（雾白半透明下半屏）：长按期间实时转写 */}
-      {voice !== "off" || voiceFail ? (
-        <div className={"dock-voice-mask" + (voice === "sending" || voiceFail ? " is-out" : "")} aria-live="polite">
-          {voiceFail ? (
-            <>
-              <div className="dock-voice-live">{voiceFail}</div>
-              <div className="dock-voice-hint">稍后自动关闭</div>
-            </>
-          ) : (
-            <>
-              <div className="dock-voice-live">{voice === "arming" ? "正在启动语音…" : voiceText || "请说话…"}</div>
-              <div className="dock-voice-hint">{voice === "arming" ? "首次需在系统授权窗点允许" : "松手发送 · 说话内容将填入新对话"}</div>
-            </>
-          )}
-        </div>
-      ) : null}
-
-      {/* 灵动岛胶囊：底部中央 */}
+      {/* 灵动岛胶囊：底部中央（单击=面板入口，长按=语音；长按期间自然变长 + 雾 + 波纹） */}
       <button
-        className={"dock-island" + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "")}
-        aria-label="OneTHU 对话（点击展开，长按语音输入）"
+        className={"dock-island" + (pressing ? " is-press" : "") + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "")}
+        aria-label="OneTHU 对话（点击输入，长按说话）"
         onPointerDown={onIslandPointerDown}
         onPointerUp={onIslandPointerUp}
         onPointerCancel={onIslandPointerCancel}
         onLostPointerCapture={onIslandLostCapture}
         onKeyDown={onIslandKeyDown}
       >
-        <span className="dock-island-logo"><HarnessMark size={15} /></span>
-        <span className="dock-island-text" key={islandText}>
-          {[...islandText].map((ch, i) => (
-            <i key={i} style={{ animationDelay: `${i * 26}ms` }}>{ch === " " ? "\u00A0" : ch}</i>
-          ))}
+        {/* 常态内容：标识 + 智能文本（语音态淡出，位置让给波纹条；仍在流里，不给宽度过渡添乱） */}
+        <span className="dock-island-idle">
+          <span className="dock-island-logo"><HarnessMark size={15} /></span>
+          <span className="dock-island-text" key={islandText}>
+            {[...islandText].map((ch, i) => (
+              <i key={i} style={{ animationDelay: `${i * 26}ms` }}>{ch === " " ? "\u00A0" : ch}</i>
+            ))}
+          </span>
         </span>
-        {unread > 0 && !open ? <span className="dock-badge">{unread > 9 ? "9+" : unread}</span> : null}
         {voice !== "off" ? (
           <>
-            <span className="dock-island-ripple" />
-            <span className="dock-island-ripple r2" />
+            {/* 雾：backdrop-filter 模糊 + 顶部柔和高光（深浅色都成立） */}
+            <span className="dock-island-fog" aria-hidden="true" />
+            {/* 雾里的内容：随音量跳动的点点波纹 + 实时识别出的字 + 一行提示 */}
+            <span className="dock-island-voice">
+              <VoiceBar live={voice === "arming" ? "正在启动语音…" : liveShown || "请说话…"} hint={voiceHint} />
+            </span>
           </>
         ) : null}
+        {unread > 0 && !open ? <span className="dock-badge">{unread > 9 ? "9+" : unread}</span> : null}
       </button>
+
+      {/* 语音失败的雾状浮片：本次长按发生在岛上时（发生在面板里时落在入口条内联） */}
+      {voiceFail && voiceHost === "island" ? (
+        <div className="dock-voice-toast" role="status" aria-live="polite">{voiceFail}</div>
+      ) : null}
 
       {open || closing ? (
         <div
@@ -961,29 +1095,54 @@ export function ChatDock(): ReactNode {
             busy={busy}
             scrollRef={scrollRef}
             onSend={(t) => void send(t)}
-            onPick={(t) => setInput(t)}
+            onPick={(t) => { setInput(t); setInputMode(true); }}
             onToggleThink={() => setThinkOpen((o) => !o)}
             onMsgsClick={onMsgsClick}
           />
           <div className="dock-input-row">
-            <textarea
-              className="dock-input"
-              rows={1}
-              placeholder={busy ? "执行中，可打断…" : "问点什么，回车发送"}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                  e.preventDefault();
-                  const t = input;
-                  setInput("");
-                  void send(t);
-                }
-              }}
-            />
+            {inputMode ? (
+              <textarea
+                ref={inputRef}
+                className="dock-input"
+                rows={1}
+                placeholder={busy ? "执行中，可打断…" : "问点什么，回车发送"}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onBlur={() => { if (!input.trim()) setInputMode(false); }} // 空着点走 = 收起，回到入口按钮
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault();
+                    const t = input;
+                    setInput("");
+                    void send(t);
+                  } else if (e.key === "Escape") {
+                    setInputMode(false);
+                  }
+                }}
+              />
+            ) : (
+              /* 默认形态：一行入口按钮（点=输入框，长按=语音）——不再是常驻的「问点什么」输入框 */
+              <button
+                className={"dock-entry" + (voice !== "off" ? " is-voice" : "") + (voiceFail && voiceHost === "entry" ? " is-fail" : "")}
+                aria-label="点击输入，长按说话"
+                onPointerDown={onEntryPointerDown}
+                onPointerUp={onEntryPointerUp}
+                onPointerCancel={onEntryPointerCancel}
+                onLostPointerCapture={onEntryLostCapture}
+                onKeyDown={onEntryKeyDown}
+              >
+                {voice !== "off" ? (
+                  <VoiceBar live={voice === "arming" ? "正在启动语音…" : liveShown || "请说话…"} hint={voiceHint} />
+                ) : voiceFail && voiceHost === "entry" ? (
+                  <span className="dock-entry-fail">{voiceFail}</span>
+                ) : (
+                  <span className="dock-entry-label">点击输入，长按说话</span>
+                )}
+              </button>
+            )}
             {busy ? (
               <button className="btn dock-send" aria-label="打断" onClick={stop}>■</button>
-            ) : (
+            ) : inputMode ? (
               <button
                 className="btn btn-primary dock-send" aria-label="发送" disabled={!input.trim()}
                 onClick={() => {
@@ -992,7 +1151,7 @@ export function ChatDock(): ReactNode {
                   void send(t);
                 }}
               >↑</button>
-            )}
+            ) : null}
           </div>
           <div className="dock-foot" title="R6：token 用量与价格统计（由插件精确上报；累计跨会话保留）">
             <span>本会话 {usage.sessionPrompt ?? 0}+{usage.sessionCompletion ?? 0} tok · {fmtUsd(usage.sessionCostUsd)}</span>

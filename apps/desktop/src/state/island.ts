@@ -5,7 +5,7 @@
  * ① 30 分钟内即将开始的日程 → 「地点·还有X分钟」
  * ② 提醒窗口内临近 DDL 的未交作业 → 「作业名·还有X分钟/小时/天」（窗口=用户设的
  *    提醒时间；未设提醒的默认 2 小时内才现身，避免常驻刷屏）
- * ③ 「聊点什么吧！」
+ * ③ 「点击输入，长按说话」（无智能文案时的入口文案）
  *
  * 数据源为模块级快照（getCampusSnapshot/getLearnSnapshot，无网络副作用），
  * 15 秒 tick + 渲染时读取；ChatDock 任何重渲染都会拿到最新快照。
@@ -15,7 +15,10 @@ import { parseLearnTime } from "@onethu/core";
 import { getCampusSnapshot, getLearnSnapshot } from "./data.js";
 import { effectiveRemind, getHwRemindState, type HwRemindState } from "./hwRemind.js";
 
-export const ISLAND_DEFAULT_TEXT = "聊点什么吧！";
+/** 灵动岛入口文案（2026-10-10 用户拍板）：单击进输入框、长按说话。 */
+export const ISLAND_ENTRY_TEXT = "点击输入，长按说话";
+/** 无智能文案时的胶囊文本 = 入口文案（旧的「聊点什么吧！」由它取代）。 */
+export const ISLAND_DEFAULT_TEXT = ISLAND_ENTRY_TEXT;
 
 function fmtLeft(ms: number): string {
   const m = Math.max(1, Math.round(ms / 60_000));

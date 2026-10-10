@@ -9,6 +9,7 @@
 - `allow-speech-start`
 - `allow-speech-poll`
 - `allow-speech-stop`
+- `allow-speech-level`
 
 ## Permission Table
 
@@ -18,6 +19,32 @@
 <th>Description</th>
 </tr>
 
+
+<tr>
+<td>
+
+`onethu-speech:allow-speech-level`
+
+</td>
+<td>
+
+Enables the speech_level command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-speech:deny-speech-level`
+
+</td>
+<td>
+
+Denies the speech_level command without any pre-configured scope.
+
+</td>
+</tr>
 
 <tr>
 <td>

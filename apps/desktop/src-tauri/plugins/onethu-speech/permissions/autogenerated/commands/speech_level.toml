@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-speech-level"
+description = "Enables the speech_level command without any pre-configured scope."
+commands.allow = ["speech_level"]
+
+[[permission]]
+identifier = "deny-speech-level"
+description = "Denies the speech_level command without any pre-configured scope."
+commands.deny = ["speech_level"]

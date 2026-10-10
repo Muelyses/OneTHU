@@ -2,6 +2,8 @@
  * 原生语音识别客户端（灵动岛长按）。
  * macOS：SFSpeechRecognizer 桥（speech.m，需 .app bundle + 麦克风/语音识别描述串）。
  * 其他平台/纯浏览器：speechAvailable() = false，长按给出提示而非静默失败。
+ * 电平 speechLevel()：安卓 SpeechRecognizer.onRmsChanged → 0..1，驱动灵动岛波纹点；
+ * 取不到（桌面/主 crate 无该命令/识别器不给 rms）恒 0，前端退化为时间正弦。
  */
 let cachedSupported: boolean | null = null;
 
@@ -50,4 +52,31 @@ export function speechStop(): void {
     .catch(() => {
       /* 已尽力 */
     });
+}
+
+/** 长按语音不可用时的降级说明（桌面端 / 未提供系统识别服务的安卓机），直接上屏给用户看 */
+export function speechUnavailableHint(): string {
+  return isAndroid
+    ? "此设备未提供系统语音识别：先在系统设置里启用「语音服务」再长按"
+    : "桌面端暂不支持原生语音识别：点「点击输入，长按说话」用键盘输入";
+}
+
+/** 电平链路失败一次即永久降级（如 macOS 走主 crate，没有 speech_level 命令）：
+ *  免得每个轮询周期都打一次必败的 invoke；降级后恒 0，波纹点退化为时间正弦。 */
+let levelUnsupported = false;
+
+/**
+ * 当前输入电平 0..1（SpeechRecognizer.onRmsChanged，Kotlin 侧已归一化）。
+ * 恒返回有限数：取不到就返回 0（调用方据此退化为时间正弦，不会 NaN / 不会空转）。
+ */
+export async function speechLevel(): Promise<number> {
+  if (levelUnsupported) return 0;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    const v = await invoke<number>(cmd("speech_level"));
+    return Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0;
+  } catch {
+    levelUnsupported = true;
+    return 0;
+  }
 }

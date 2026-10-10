@@ -3311,12 +3311,17 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+  /* 长按变长的观感来源：宽度/高度/圆角/背景/阴影同一条 300ms 曲线一起过渡（不瞬移、不拉伸）。
+     注：宽度用 min-width 过渡——width:auto 无法与长度插值。 */
   transition:
-    width 0.42s cubic-bezier(0.22, 1.15, 0.36, 1),
+    min-width 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-radius 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    background-color 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 0.3s cubic-bezier(0.22, 1.2, 0.36, 1),
     opacity 0.2s ease,
-    border-color 0.2s,
-    box-shadow 0.2s,
+    border-color 0.25s,
+    box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
     color 0.2s;
   animation: dock-island-in 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) both;
 }
@@ -3327,12 +3332,95 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   opacity: 0;
   pointer-events: none;
 }
-/* 长按语音：拉长 + 点亮 */
+/* 按住未到长按阈值：只加深一点阴影的「准备」反馈（不位移、不抖） */
+.dock-island.is-press {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16), 0 12px 30px rgba(0, 0, 0, 0.16);
+}
+
+/* ── 长按语音：自然变长 ─────────────────────────────────────────────
+   长度靠 min-width（可与基础 138px 平滑插值），圆角/高度/背景/阴影同步过渡；
+   颜色一律走 token（--dsw-alias-* 缺失时回落仓库既有 System token），深浅色同时成立。 */
 .dock-island.is-voice {
-  transform: translateX(-50%) scale(1.3, 1.18);
-  color: var(--accent);
-  border-color: var(--accent-border);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.2), 0 0 0 4px var(--accent-soft);
+  min-width: min(74vw, 420px);
+  height: 54px;
+  padding: 0 16px;
+  border-radius: var(--dsw-radius-lg, var(--md-sys-shape-corner-extra-large));
+  border-color: var(--dsw-alias-border-l2, var(--border));
+  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-1, var(--md-sys-color-surface-container-lowest)) 58%, transparent);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  color: var(--dsw-alias-label-primary, var(--text-1));
+}
+/* 常态内容（标识 + 智能文本）：语音态淡出（仍在流里，宽度由 min-width 主导，不给过渡添乱） */
+.dock-island-idle {
+  display: inline-flex;
+  align-items: center;
+  gap: inherit; /* 与胶囊同间距（不另写一个网格外的值） */
+  transition: opacity 0.22s ease;
+}
+.dock-island.is-voice .dock-island-idle { opacity: 0; }
+/* 雾层：backdrop-filter 模糊 + 顶部一道柔和高光（深色下不刺眼） */
+.dock-island-fog {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  backdrop-filter: blur(16px) saturate(1.35);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.02) 62%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.dock-island.is-voice .dock-island-fog { opacity: 1; }
+/* 雾里的内容（波纹 + 转写 + 提示）：稍晚一点点淡入，让「变长」先发生 */
+.dock-island-voice {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  /* inset:0 的包含块是胶囊内边距盒，这里再给 16px 才能与常态内容的左缘对齐 */
+  padding: 0 16px;
+  opacity: 0;
+  transition: opacity 0.26s ease 0.08s;
+}
+.dock-island.is-voice .dock-island-voice { opacity: 1; }
+
+/* ── 语音条内容（灵动岛 / 面板入口条共用） ── */
+.dock-voicebar { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.dock-wave { display: inline-flex; align-items: center; gap: 4px; height: 24px; flex: none; }
+/* 波纹点：高度（scaleY）与透明度由 JS 每帧按音量写入；取不到电平时走时间正弦（永不空转） */
+.dock-wave-dot {
+  display: block;
+  width: 4px;
+  height: 22px;
+  border-radius: var(--dsw-radius-xs, 4px);
+  transform: scaleY(0.4);
+  transform-origin: 50% 50%;
+  background: linear-gradient(180deg,
+    var(--dsw-alias-brand-primary, var(--md-sys-color-primary)),
+    color-mix(in srgb, var(--dsw-alias-brand-primary, var(--md-sys-color-primary)) 45%, transparent));
+  will-change: transform, opacity;
+}
+/* 雾里的实时转写（只显示末尾几字，长句也保持一行；左缘柔和淡出，不硬切） */
+.dock-voicebar-live {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--dsw-alias-label-primary, var(--text-1));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px);
+  mask-image: linear-gradient(90deg, transparent, #000 12px);
+}
+.dock-voicebar-hint {
+  flex: none;
+  font-size: var(--text-xxs, 11px);
+  color: var(--dsw-alias-label-secondary, var(--text-3));
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .dock-island-logo {
   display: inline-flex;
@@ -3368,52 +3456,35 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 }
 @keyframes dock-island-ch { from { transform: translateY(-13px); opacity: 0; } }
 @keyframes dock-island-in { from { transform: translateX(-50%) translateY(26px) scale(0.6); opacity: 0; } }
-/* 长按波纹（双圈交替扩散） */
-.dock-island-ripple {
-  position: absolute;
-  inset: -1px;
-  border-radius: var(--r-pill);
-  pointer-events: none;
-  animation: dock-ripple 1.15s ease-out infinite;
-}
-.dock-island-ripple.r2 { animation-delay: 0.55s; }
-@keyframes dock-ripple {
-  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
-  to { box-shadow: 0 0 0 24px color-mix(in srgb, var(--accent) 0%, transparent); }
-}
-
-/* 语音遮罩：雾白半透明下半屏，实时转写 */
-.dock-voice-mask {
+/* 语音失败的雾状浮片（浮在岛上）：雾 = 半透明 + backdrop-filter + 细边框；
+   2.6s 后自行淡出（JS 同刻卸载，时长对齐 2600ms）。 */
+.dock-voice-toast {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 46vh;
-  z-index: 9990;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 24px;
-  background: rgba(244, 245, 247, 0.78); /* 雾白（用户拍板；两种主题都偏白雾） */
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  backdrop-filter: blur(16px) saturate(1.2);
-  animation: dock-voice-in 0.26s ease-out both;
-}
-.dock-voice-mask.is-out { animation: dock-voice-out 0.22s ease-in both; }
-@keyframes dock-voice-in { from { opacity: 0; transform: translateY(18%); } }
-@keyframes dock-voice-out { to { opacity: 0; transform: translateY(14%); } }
-.dock-voice-live {
-  max-width: 86%;
-  font-size: 20px;
-  font-weight: 650;
+  left: 50%;
+  z-index: 9992;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 60px);
+  transform: translateX(-50%);
+  max-width: min(86vw, 420px);
+  padding: 12px 16px;
+  border: 1px solid var(--dsw-alias-border-l2, var(--border));
+  border-radius: var(--dsw-radius-md, var(--md-sys-shape-corner-large));
+  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-2, var(--surface-2)) 84%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.16);
+  color: var(--dsw-alias-label-primary, var(--text-1));
+  font-size: var(--text-xs);
+  line-height: 1.5;
   text-align: center;
-  line-height: 1.45;
-  color: #1f2328; /* 雾白底上永远深字 */
-  overflow-wrap: anywhere;
+  pointer-events: none;
+  animation: dock-voice-toast 2.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
-.dock-voice-hint { font-size: var(--text-xs); color: #6b7280; }
+@keyframes dock-voice-toast {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.98); }
+  7% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  88% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.99); }
+}
 
 .dock-badge {
   position: absolute;
@@ -3466,13 +3537,16 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 
 /* 无障碍：系统减弱动态效果时，全部 dock 动画/过渡退场 */
 @media (prefers-reduced-motion: reduce) {
-  .dock-island, .dock-panel, .dock-voice-mask, .dock-island-ripple,
+  .dock-island, .dock-panel, .dock-voice-toast, .dock-island-fog, .dock-island-voice,
+  .dock-island-idle, .dock-wave-dot, .dock-entry,
   .dock-msg, .dock-think, .dock-confirm, .dock-history, .dock-chip,
   .dock-hero-ch, .dock-empty-chips {
     animation: none !important;
     transition: none !important;
   }
   .dock-hero-ch, .dock-empty-chips { opacity: 1; }
+  /* 语音态：雾与内容直接可见（JS 侧同时退化为静帧点列，不开 rAF） */
+  .dock-island.is-voice .dock-island-fog, .dock-island.is-voice .dock-island-voice { opacity: 1; }
 }
 
 .dock-head {
@@ -3657,6 +3731,56 @@ html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 12p
 }
 .dock-confirm-text { font-size: var(--text-sm); line-height: 1.5; color: var(--text-1); white-space: pre-wrap; }
 .dock-confirm-ops { display: flex; gap: 6px; margin-top: 8px; }
+
+/* 入口条（输入区默认形态，取代常驻的「问点什么」输入框）：点击输入、长按说话；
+   长按即就地长成语音条（高度/圆角/背景与胶囊同一套过渡）。 */
+.dock-entry {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition:
+    min-height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-radius 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    background-color 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 0.25s,
+    box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 0.2s;
+}
+.dock-entry:hover { border-color: var(--accent-border); color: var(--text-1); }
+.dock-entry-label { flex: 1; min-width: 0; }
+.dock-entry.is-voice {
+  min-height: 46px;
+  border-radius: var(--dsw-radius-md, var(--r-md));
+  border-color: var(--dsw-alias-border-l2, var(--border));
+  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-1, var(--md-sys-color-surface-container-lowest)) 58%, transparent);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  color: var(--dsw-alias-label-primary, var(--text-1));
+}
+/* 失败文案就地落在入口条里（本次长按发生在面板内时） */
+.dock-entry.is-fail {
+  border-color: color-mix(in srgb, var(--md-sys-color-error) 42%, transparent);
+  background-color: color-mix(in srgb, var(--md-sys-color-error) 8%, transparent);
+}
+.dock-entry-fail {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--md-sys-color-error);
+}
 
 .dock-input-row {
   display: flex;
@@ -5323,6 +5447,7 @@ html.is-phone .cloud-search input {
   .hard-refresh-fab { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   /* OH 灵动岛抬到底栏上方，避免与 5 Tab 重合（面板展开时仍覆盖底栏，属模态行为） */
   .dock-island { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+  .dock-voice-toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px) + 60px); }
   /* 新 IA：移动端侧边栏（抽屉）退役——底栏 5 Tab + 服务目录页承接全部入口；
      汉堡钮一并隐藏（JSX 暂保留，M1 收尾时删） */
   .drawer-mask, .drawer, .topbar-menu { display: none; }

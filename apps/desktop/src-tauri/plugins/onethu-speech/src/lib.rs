@@ -1,7 +1,8 @@
 //! OneTHU 灵动岛语音输入插件（Android）。
 //!
 //! 会话式长按模型：JS 按住胶囊 → speech_start（运行时麦克风权限 + 启动识别）
-//! → speech_poll 每 ~180ms 拿部分转写 → speech_stop 收最终文本。
+//! → speech_poll 每 ~180ms 拿部分转写 → speech_stop 收最终文本；
+//! speech_level 每 ~90ms 拿输入电平（0..1）驱动灵动岛波纹点。
 //! Kotlin 侧 SpeechRecognizer + RecognitionListener（onPartialResults 实时更新）。
 //!
 //! macOS 的语音走 app 主 crate 的 speech.m 桥（SFSpeechRecognizer），不经本插件；
@@ -32,6 +33,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             commands::speech_start,
             commands::speech_poll,
             commands::speech_stop,
+            commands::speech_level,
         ])
         .setup(|app, api| {
             #[cfg(not(target_os = "android"))]

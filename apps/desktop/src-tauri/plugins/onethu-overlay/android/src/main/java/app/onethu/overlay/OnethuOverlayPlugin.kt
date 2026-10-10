@@ -15,12 +15,15 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
 import android.webkit.WebView
+import androidx.core.content.ContextCompat
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.Permission
+import app.tauri.annotation.PermissionCallback
 import app.tauri.annotation.TauriPlugin
 import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
@@ -55,9 +58,25 @@ class OverlayPushArgs {
         // API 33+ 常驻通知需要运行时权限；渠道与通知都在插件库 Manifest 里声明。
         // 是否请求由前端决定（应用内「打开悬浮球」时问一次，与 onethu-mobile 的扫码保活同款）。
         Permission(strings = [Manifest.permission.POST_NOTIFICATIONS], alias = "notifications"),
+        // 长按说话的麦克风权限：**必须在本体仍在前台时拿到**——切到别的应用后既弹不出授权框，
+        // 也拿不到 microphone 前台服务类型（Android 14+/15+ 禁止后台加 while-in-use 类型）。
+        Permission(strings = [Manifest.permission.RECORD_AUDIO], alias = "mic"),
     ],
 )
 class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
+
+    /** overlayShow 正在等麦克风授权回调（回调里要继续启动悬浮层） */
+    private var pendingShow = false
+
+    init {
+        // 越早注册越好：服务起来之前就要能判断「OneTHU 自己是不是在前台」
+        // （前台时悬浮层必须整体隐藏——用户要求本体内部不出现悬浮球）
+        try {
+            AppForeground.register(activity.application)
+        } catch (_: Throwable) {
+            /* 注册失败：退化为「视为不在前台」，行为等同旧版 */
+        }
+    }
 
     /** tauri-android 在 WebView 建好后回调这里：拿到宿主 WebView 用于事件直推（见 OverlayBridge） */
     override fun load(webView: WebView) {
@@ -118,21 +137,60 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve(ret)
             return
         }
+        // 顺路把麦克风权限要下来：只有本体在前台时才能弹授权框；也只有这时服务才能把
+        // microphone 前台服务类型挂上（用户切走之后长按说话才可能真的取到麦）。被拒也不拦路。
+        if (!hasMic() && AppForeground.isForeground) {
+            pendingShow = true
+            try {
+                requestPermissionForAliases(arrayOf("mic"), invoke, "micPermissionCallback")
+                return
+            } catch (_: Throwable) {
+                pendingShow = false
+            }
+        }
+        finishShow(invoke)
+    }
+
+    /** 麦克风授权回调：无论给没给都继续显示悬浮层（取不到麦时条内会提示改用键盘） */
+    @PermissionCallback
+    fun micPermissionCallback(invoke: Invoke) {
+        val wasPending = pendingShow
+        pendingShow = false
+        if (wasPending) {
+            finishShow(invoke)
+        } else {
+            // 非本命令发起的回调：也要 resolve，不能让前端 Promise 悬着
+            val ret = JSObject()
+            ret.put("ok", true)
+            ret.put("mic", hasMic())
+            invoke.resolve(ret)
+        }
+    }
+
+    private fun finishShow(invoke: Invoke) {
         activity.runOnUiThread {
             try {
                 OverlayPrefs.setEnabled(activity, true)
                 OverlayPrefs.setClosedByUser(activity, false)
-                val stored = OverlayPrefs.mode(activity)
-                val mode = if (stored == "panel" || stored == "bar") stored else "ball"
-                OverlayService.start(activity, mode)
+                // 一律只出球：不沿用上次形态（上次停在面板时不能一显示就是半屏雾）
+                OverlayPrefs.setMode(activity, "ball")
+                OverlayService.start(activity, "ball")
                 val ret = JSObject()
                 ret.put("ok", true)
-                ret.put("mode", mode)
+                ret.put("mode", "ball")
+                ret.put("mic", hasMic())
                 invoke.resolve(ret)
             } catch (e: Throwable) {
                 invoke.reject("启动悬浮层失败：${e.message}")
             }
         }
+    }
+
+    private fun hasMic(): Boolean = try {
+        ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
+    } catch (_: Throwable) {
+        false
     }
 
     /** 「本次关闭悬浮球」：停服务 + 记「用户本次已关闭」（重启/被杀都不再自动弹回） */
@@ -216,6 +274,8 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
         ret.put("showing", OverlayService.running && (OverlayService.currentModeOrNull() ?: "hidden") != "hidden")
         ret.put("mode", OverlayService.currentModeOrNull() ?: OverlayPrefs.mode(activity))
         ret.put("closedByUser", OverlayPrefs.closedByUser(activity))
+        // 本体在前台时悬浮层会被主动隐藏，这是预期行为（不是没启动成功）
+        ret.put("appForeground", AppForeground.isForeground)
         invoke.resolve(ret)
     }
 }

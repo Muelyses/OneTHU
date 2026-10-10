@@ -1,18 +1,21 @@
-// OneTHU 悬浮球前台服务：悬浮窗的宿主与保活主体。
+// OneTHU 悬浮球前台服务：悬浮窗的宿主与保活主体。（task-11 返工版）
 //
 // 前台服务类型为什么是 specialUse（不是 dataSync）：
 //   Android 14+ 每种 FGS 类型有额度限制，本仓库曾因 dataSync 超限崩溃。
 //   specialUse 无每日额度，适合「用户主动开启、长期可见」的常驻悬浮层，
 //   并在 Manifest 里用 PROPERTY_SPECIAL_USE_FGS_SUBTYPE 申报用途。
 //   microphone 类型只为「悬浮层里长按说话」保留：仅当 RECORD_AUDIO 已授予、
-//   且服务是在应用仍处前台时启动的，后台取麦才被系统放行；加类型失败时回滚，
-//   绝不让它把整个服务带崩（Android 14 后台不允许加 while-in-use 类型）。
+//   且是在应用仍处前台时加上，后台取麦才被系统放行；加类型失败时回滚，绝不让服务崩。
 //
-// 被杀后的恢复入口（三条，都不需要用户手动点）：
-//   ① START_STICKY：系统重建服务 → onStartCommand 收到 null intent → 按持久化开关恢复；
-//   ② 自救闹钟：onDestroy/onTaskRemoved 里排 20s 后一条广播（ACTION_RESTART）；
+// 本应用在前台时：球/面板/条全部隐藏（用户要求「本体内部不需要出现悬浮球」），
+// 由 AppForeground（ActivityLifecycleCallbacks）通知过来，服务转发给窗口层。
+//
+// 被杀后的恢复入口（三条，都以「用户开着且没点过本次关闭」为闸门）：
+//   ① START_STICKY：系统重建服务 → onStartCommand(null) → 恢复成球；
+//   ② 自救闹钟：onDestroy/onTaskRemoved 里排 15~20s 后一条广播（ACTION_RESTART）；
 //   ③ 开机 / 应用升级：OverlayBootReceiver 收 BOOT_COMPLETED / MY_PACKAGE_REPLACED。
-//   三条都只在「用户开着且没点过本次关闭」时生效（OverlayPrefs.shouldAutoRestore）。
+//   ⚠️ Android 15+ 移除了「持有 SYSTEM_ALERT_WINDOW 即可后台启动 FGS」的豁免，
+//      ②在 Android 16 上可能被拒（已 try/catch，不循环重排）。
 //
 // 红线：本服务不启动任何 Activity、不把 OneTHU 主窗口拉到前台。通知点击只切形态。
 
@@ -29,6 +32,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -54,16 +58,32 @@ class OverlayService : Service() {
             }
 
             override fun onSubmitText(text: String) {
-                // 面板输入框 → 前端（GlobalOrb 收到 submit 后走 askOh）
+                // 语音整句与键盘输入都从这里出去（task-11 ④：同一条发送通道）
                 OverlayEvents.emit("submit", 0, 0, text)
             }
+
+            override fun onVoiceStart() {
+                ensureMicType()
+            }
+
+            override fun onVoiceEnd() {
+                dropMicType()
+            }
         })
+        // 本体前台态：前台时全部隐藏，离开本应用再只出球
+        AppForeground.onChange = { fg ->
+            main.post {
+                windows?.setSuspended(fg)
+                updateNotification()
+            }
+        }
+        AppForeground.register(application)
+        windows?.setSuspended(AppForeground.isForeground)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action ?: ACTION_START
         if (action == ACTION_CLOSE) {
-            // 通知「本次关闭」：服务可能已不存在，这里最多是重复关闭，幂等
             closeEverywhere()
             return START_NOT_STICKY
         }
@@ -73,36 +93,39 @@ class OverlayService : Service() {
             return START_NOT_STICKY
         }
         running = true
-        // 应用仍在前台时的启动：如果麦克风权限已给，就顺手把 microphone 类型拿到手，
-        // 这样切到别的应用后长按说话才有机会取到麦（后台再加类型会被系统拒）。
         if (action == ACTION_START) {
-            maybeAddMicType()
+            // 应用仍在前台时的启动：麦克风权限已给就顺手把 microphone 类型拿到手，
+            // 这样切到别的应用后长按说话才有机会取到麦（后台再加会被系统拒）。
+            ensureMicTypeIfGranted()
         }
         when (action) {
             ACTION_TOGGLE -> {
-                val w = windows
-                val next = if (w != null && w.mode() == "panel") "ball" else "panel"
-                w?.setMode(next)
-                updateNotification()
+                // 通知点击只切形态（红线：绝不拉起 OneTHU 本体）；本体在前台时它没意义
+                if (!AppForeground.isForeground) {
+                    val w = windows
+                    w?.setMode(if (w.mode() == "panel") "ball" else "panel")
+                }
             }
             ACTION_MODE -> {
                 val m = intent?.getStringExtra(EXTRA_MODE) ?: "ball"
                 windows?.setMode(m)
-                updateNotification()
             }
             else -> {
-                val stored = intent?.getStringExtra(EXTRA_MODE) ?: OverlayPrefs.mode(this)
-                val mode = if (stored == "panel" || stored == "bar") stored else "ball"
-                val dark = intent?.getBooleanExtra(EXTRA_DARK, false) ?: false
-                windows?.show(mode, dark)
+                // 恢复默认：**只出球**（task-11 ③）
+                val m = intent?.getStringExtra(EXTRA_MODE)
+                if (m == "panel" || m == "bar") windows?.setMode(m) else windows?.showBallOnly()
                 updateNotification()
             }
         }
         return START_STICKY
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        windows?.onUiModeChanged()
+    }
+
     override fun onTaskRemoved(rootIntent: Intent?) {
-        // 用户划掉最近任务：服务不停（stopWithTask=false），但顺手排一条自救广播
         if (OverlayPrefs.shouldAutoRestore(this)) scheduleSelfRescue(this, 15_000L)
         super.onTaskRemoved(rootIntent)
     }
@@ -110,10 +133,10 @@ class OverlayService : Service() {
     override fun onDestroy() {
         running = false
         live = null
+        AppForeground.onChange = null
         windows?.destroy()
         windows = null
         if (OverlayPrefs.shouldAutoRestore(this)) {
-            // 被 ROM 杀掉 / 服务被停但用户没关：20s 后自救一次（幂等，不循环重排）
             scheduleSelfRescue(this, 20_000L)
         }
         super.onDestroy()
@@ -136,50 +159,46 @@ class OverlayService : Service() {
 
     /* ────────────────────── 前端推来的界面状态 ────────────────────── */
 
-    /** overlay_push_ui 落到这里：渲染 + 按 listening 调整前台服务类型 */
+    /** overlay_push_ui 落到这里：渲染消息（本机语音不再依赖它，故不再由此调 FGS 类型） */
     fun postUi(stateJson: String) {
-        main.post {
-            windows?.pushUi(stateJson)
-            val listening = try {
-                org.json.JSONObject(stateJson).optBoolean("listening", false)
-            } catch (_: Throwable) {
-                false
-            }
-            setMicType(listening)
-        }
+        main.post { windows?.pushUi(stateJson) }
     }
 
-    fun currentMode(): String = windows?.mode() ?: "hidden"
+    fun currentMode(): String = if (windowShowing()) windows?.mode() ?: "hidden" else "hidden"
 
-    /** 正在说话 → 尝试把 microphone 类型加到前台服务上；结束 → 摘掉 */
+    private fun windowShowing(): Boolean = windows?.isShowing() == true
+
+    /* ────────────────────── 前台服务 / 麦克风类型 ────────────────────── */
+
+    private fun hasMic(): Boolean =
+        ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
+
+    private fun ensureMicTypeIfGranted() {
+        if (hasMic()) setMicType(true)
+    }
+
+    /** 说话开始：尝试把 microphone 类型加到前台服务上 */
+    private fun ensureMicType() {
+        if (!hasMic()) return
+        setMicType(true)
+    }
+
+    private fun dropMicType() {
+        setMicType(false)
+    }
+
     private fun setMicType(on: Boolean) {
         if (on == micTyped) return
-        if (on) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !=
-                PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            micTyped = true
-        } else {
-            micTyped = false
-        }
+        if (on && !hasMic()) return
+        micTyped = on
         if (!startForegroundCompat(notifTypes())) {
-            // 回滚：Android 14 在后台加 while-in-use 类型会抛，保持原类型继续跑
-            micTyped = !micTyped
+            // 回滚：Android 14+/15+ 在后台加 while-in-use 类型会抛，保持原类型继续跑
+            micTyped = !on
             startForegroundCompat(notifTypes())
+            Log.w(TAG, "mic 类型切换被拒（后台限制？），已回滚")
         }
     }
-
-    private fun maybeAddMicType() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            setMicType(true)
-        }
-    }
-
-    /* ────────────────────── 前台服务 / 通知 ────────────────────── */
 
     private fun notifTypes(): Int {
         var t = ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
@@ -218,20 +237,22 @@ class OverlayService : Service() {
     /** 常驻通知：点按只切换形态（绝不拉起 OneTHU 本体），另给一个「本次关闭」动作 */
     private fun buildNotification(): Notification {
         val icon = applicationInfo.icon.takeIf { it != 0 } ?: android.R.drawable.ic_dialog_info
+        val body = if (AppForeground.isForeground) {
+            "回到桌面或其他应用即可看到球"
+        } else {
+            "点按切换对话面板；长按球说话"
+        }
         val b = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(icon)
             .setContentTitle("OneTHU 悬浮球已开启")
-            .setContentText("点按切换对话面板；长按悬浮球说话")
+            .setContentText(body)
             .setOngoing(true)
             .setShowWhen(false)
             .setSilent(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or
             (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
-        // 点通知 = 悬浮层内切换球/面板（不进应用）
-        b.setContentIntent(
-            PendingIntent.getService(this, REQ_TOGGLE, intent(ACTION_TOGGLE), flags),
-        )
+        b.setContentIntent(PendingIntent.getService(this, REQ_TOGGLE, intent(ACTION_TOGGLE), flags))
         b.addAction(0, "本次关闭", PendingIntent.getService(this, REQ_CLOSE, intent(ACTION_CLOSE), flags))
         return b.build()
     }
@@ -262,9 +283,8 @@ class OverlayService : Service() {
         const val ACTION_CLOSE = "app.onethu.overlay.CLOSE"
         const val ACTION_RESTART = "app.onethu.overlay.RESTART"
         const val EXTRA_MODE = "mode"
-        const val EXTRA_DARK = "dark"
 
-        /** 前台服务是否在跑（插件命令据此做幂等短路）；live 同时用于同进程直推界面状态 */
+        /** 前台服务是否在跑（插件命令据此做幂等短路）；live 用于同进程直推界面状态 */
         @Volatile
         var running: Boolean = false
             private set
@@ -274,7 +294,7 @@ class OverlayService : Service() {
 
         fun currentModeOrNull(): String? = live?.currentMode()
 
-        /** 显示悬浮球（应用在前台时调；缺权限时插件已提前挡掉） */
+        /** 显示悬浮层（只出球）。应用在前台时也不会显示——由 AppForeground 开关 */
         fun start(ctx: Context, mode: String) {
             val i = Intent(ctx, OverlayService::class.java)
                 .setAction(ACTION_START)
@@ -286,9 +306,11 @@ class OverlayService : Service() {
         fun command(ctx: Context, action: String, mode: String? = null) {
             try {
                 if (running) {
-                    ctx.startService(Intent(ctx, OverlayService::class.java).setAction(action).apply {
-                        if (mode != null) putExtra(EXTRA_MODE, mode)
-                    })
+                    ctx.startService(
+                        Intent(ctx, OverlayService::class.java).setAction(action).apply {
+                            if (mode != null) putExtra(EXTRA_MODE, mode)
+                        },
+                    )
                 } else if (OverlayPrefs.shouldAutoRestore(ctx)) {
                     val i = Intent(ctx, OverlayService::class.java).setAction(action)
                     if (mode != null) i.putExtra(EXTRA_MODE, mode)
@@ -299,7 +321,7 @@ class OverlayService : Service() {
             }
         }
 
-        /** 同进程直推界面状态（不经过 Intent，避免 180ms 一次的电平更新打爆 binder） */
+        /** 同进程直推界面状态（不经过 Intent，避免高频电平更新打爆 binder） */
         fun pushUi(json: String) {
             live?.postUi(json)
         }

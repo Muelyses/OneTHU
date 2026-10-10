@@ -29,6 +29,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 长按说话（悬浮层里用自己的 SpeechRecognizer）：麦克风权限本体已由 onethu-speech 声明，
+         这里重复声明仅为自解释 + 与 FOREGROUND_SERVICE_MICROPHONE 配对（merger 会去重）。 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- 重启 / 应用升级后恢复悬浮球（仅当用户没点过「本次关闭悬浮球」） -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- 长按吸附 / 语音条起始的触感反馈（普通权限） -->

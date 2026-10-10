@@ -27,7 +27,9 @@ class OverlayBootReceiver : BroadcastReceiver() {
         }
         if (!OverlayPrefs.shouldAutoRestore(context)) return
         try {
-            OverlayService.start(context, OverlayPrefs.mode(context))
+            // 一律只出球：不沿用上次形态（上次停在面板时不能一恢复就是半屏雾）
+            OverlayPrefs.setMode(context, "ball")
+            OverlayService.start(context, "ball")
         } catch (e: Throwable) {
             Log.w(OverlayService.TAG, "自动恢复悬浮球失败（后台启动限制？）：${e.message}")
         }

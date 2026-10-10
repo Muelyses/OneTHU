@@ -3384,6 +3384,36 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 }
 .dock-island.is-voice .dock-island-voice { opacity: 1; }
 
+/* 雾心色（深浅各一套）：浅色＝偏白的雾（真实雾是把背后内容「罩白」，比页面底色深的灰只能变暗、
+   在纯白底上等于看不见）；深色＝比页面底色亮一档的面（#232b3d on #0e1117）。 */
+.dock-voice-sub,
+.dock-island.is-voice::after {
+  --fog-core: var(--dsw-alias-bg-layer-1, var(--md-sys-color-surface-container-lowest));
+}
+:root[data-scheme="dark"] .dock-voice-sub,
+:root[data-scheme="dark"] .dock-island.is-voice::after {
+  --fog-core: var(--dsw-alias-bg-layer-2, var(--md-sys-color-surface-container-high));
+}
+
+/* 条自己升起的一团雾晕（加分项）：让「条」与「上方雾团」之间没有边界——无边框、纯径向 + blur。
+   z-index:-1 = 压在条自身背景之上、波纹点之下（负 z 子元素在父背景之后、内容之前绘制）。 */
+.dock-island.is-voice::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 40%;
+  width: 132%;
+  height: 120px;
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--fog-core) 34%, transparent),
+    transparent 76%);
+  filter: blur(18px);
+  opacity: 0.5;
+}
+
 /* ── 语音条内容（灵动岛 / 面板入口条共用）：只有波纹点 + 一行提示 ──
    识别出的字在条上方的雾状字幕带（.dock-voice-sub）里，这里不再重复。 */
 .dock-voicebar { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; flex: 1; min-width: 0; }
@@ -3411,51 +3441,75 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   white-space: nowrap;
 }
 
-/* ── 条**上方**的雾状字幕带（用户原话：「上面稍微一层雾状，上面显示着目前识别出来的字」）──
-   比条更宽、不透明度更低、两端渐隐（mask 同时作用在雾与字上）；波纹留在条上，字只在这一层出现。 */
+/* ── 条**上方**的自然雾团（用户原话：「上面稍微一层雾状，上面显示着目前识别出来的字」）──
+   2026-10-10 用户当场纠偏：「怎么这么明显的条带？雾状是自然雾，不是一条雾」——
+   所以这里刻意**没有容器**：无边框、无矩形投影、无有意义的圆角；背景是「中心浓、四周透明」的
+   径向雾团；并且连 backdrop-filter 的模糊也一起被**双轴径向 mask** 羽化
+   （只把平铺背景换成径向、mask 仍是横向 linear，上下边缘依旧会被元素矩形切一刀 → 还是条）。
+   几何：锚的是**盒子的下边缘**（bar_top − 32px）。这样 1 行时雾心正好落在条顶上方 12px，
+   2 行时盒子自动长高、文字整体上移，最后一行的底边仍在条顶之上 8px——不会压到条上。 */
 .dock-voice-sub {
   position: fixed;
   left: 50%;
-  bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* 条（18+54）之上 8px */
+  /* 锚点 = 条顶（18 + 54 = 72px）− 32px = 40px；手机版另给（见手机媒体查询） */
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  z-index: 9993; /* 面板 9992 之上：面板开着长按入口条时，雾照样浮在面上 */
+  width: min(96vw, 720px);
+  max-width: calc(100vw - 8px);
+  box-sizing: border-box; /* 显式声明：本文件没有全局 border-box，不写就是 content-box（720 会变 808，mask 算不住） */
+  /* 竖向 40：把雾团拉高（26 会做成 7:1 的扁平椭圆，视觉上仍容易被读成「条」），同时给 mask 留出零边距 */
+  padding: 40px 44px;
   transform: translateX(-50%);
-  z-index: 9993; /* 面板 9992 之上：面板开着长按入口条时，字幕照样浮在面上 */
-  width: min(91vw, 560px);
-  max-width: calc(100vw - 20px);
-  padding: 12px 24px;
-  border: 1px solid var(--dsw-alias-border-l2, var(--border));
-  border-radius: var(--dsw-radius-xl, 20px);
-  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-2, var(--md-sys-color-surface-container-high)) 46%, transparent);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  backdrop-filter: blur(20px) saturate(1.3);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 11%, #000 89%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 11%, #000 89%, transparent);
+  /* 雾团：中心 0.42α → 46% 处 0.22α → 78% 处透明（四周没有直边）。
+     叠的第二层是错位的次级雾心（偏左上、更小）——单一压平色块怎么羽化都是"一条"，
+     两层不同大小/位置的径向叠起来才有云的层次（不引入任何硬边：两层都是透明收尾）。 */
+  background:
+    radial-gradient(30% 56% at 41% 46%,
+      color-mix(in srgb, var(--fog-core) 30%, transparent) 0%,
+      transparent 72%),
+    radial-gradient(52% 74% at 52% 57%,
+      color-mix(in srgb, var(--fog-core) 42%, transparent) 0%,
+      color-mix(in srgb, var(--fog-core) 22%, transparent) 46%,
+      transparent 78%);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  backdrop-filter: blur(20px) saturate(1.25);
+  /* 双轴径向 mask：让**模糊本身**也化开。半径取 54%/48%（而不是 72%/88%）是因为
+     「透明点」在 88% 半径处，必须落在盒子**内部**，否则元素边界会把羽化一刀切掉：
+       横向 0.88×0.54×720 = 342px < 半宽 360px ✓（余量 18px）
+       纵向 0.88×0.44×101 = 39.1px < 半高 50.5px ✓（1 行；2 行时 47.2 < 61 ✓）
+     —— 若照 Lead 原值 72%/88%：横向透明点要 456px > 半宽 360px，元素边界处还剩 ~0.4α 的模糊 = 依旧可见直边 */
+  -webkit-mask-image: radial-gradient(54% 44% at 50% 50%, #000 34%, rgba(0, 0, 0, 0.55) 62%, transparent 88%);
+  mask-image: radial-gradient(54% 44% at 50% 50%, #000 34%, rgba(0, 0, 0, 0.55) 62%, transparent 88%);
   pointer-events: none;
-  animation: dock-sub-in 0.34s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation: dock-fog-in 0.36s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
-.dock-voice-sub.is-out { animation: dock-sub-out 0.24s ease-in both; }
-@keyframes dock-sub-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+.dock-voice-sub.is-out { animation: dock-fog-out 0.26s ease-in both; }
+@keyframes dock-fog-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
-@keyframes dock-sub-out {
+@keyframes dock-fog-out {
   from { opacity: 1; transform: translateX(-50%) translateY(0); }
-  to { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 0; transform: translateX(-50%) translateY(-6px); }
 }
-/* 识别结果一变就柔和淡入一次：只动透明度、不动位置（140ms 短于 180ms 轮询，不会一直半透明） */
+/* 雾里的字：不靠容器保证可读 —— 极柔 text-shadow（浅 .14 / 深 .5）；
+   允许两行，文字不会把雾撑出直边（雾的边界只由 mask 决定，与文字宽度无关）。
+   一变就柔和淡入一次：只动透明度、不动位置（140ms 短于 180ms 轮询，不会一直半透明）。 */
 .dock-voice-sub-text {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-size: var(--md-sys-typescale-body); /* 14px：正文档，不越字阶 */
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.5;
   letter-spacing: 0.2px;
   text-align: center;
   color: var(--dsw-alias-label-primary, var(--text-1));
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.14);
   animation: dock-sub-fade 0.14s ease both;
 }
+:root[data-scheme="dark"] .dock-voice-sub-text { text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5); }
 @keyframes dock-sub-fade { from { opacity: 0.72; } }
 .dock-island-logo {
   display: inline-flex;
@@ -5507,7 +5561,7 @@ html.is-phone .cloud-search input {
   /* OH 灵动岛抬到底栏上方，避免与 5 Tab 重合（面板展开时仍覆盖底栏，属模态行为） */
   .dock-island { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
   .dock-voice-toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px) + 60px); }
-  .dock-voice-sub { bottom: calc(144px + env(safe-area-inset-bottom, 0px)); }
+  .dock-voice-sub { bottom: calc(102px + env(safe-area-inset-bottom, 0px)); } /* 条顶 134 − 32 */
   /* 新 IA：移动端侧边栏（抽屉）退役——底栏 5 Tab + 服务目录页承接全部入口；
      汉堡钮一并隐藏（JSX 暂保留，M1 收尾时删） */
   .drawer-mask, .drawer, .topbar-menu { display: none; }

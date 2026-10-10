@@ -15,6 +15,7 @@ import {
   type OverlayMode,
 } from "../lib/overlay.js";
 import { askOh } from "../im/oh.js";
+import { overlayPushUi } from "../lib/overlay.js";
 import { speechAvailable, speechPoll, speechStart, speechStop } from "../lib/speech.js";
 
 const HOLD_MS = 450;
@@ -38,14 +39,26 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
     void (async () => {
       un = await onOverlayEvent((e) => {
         if (e.type === "tap") {
-          setMode((m) => (m === "panel" ? "ball" : "panel"));
-          void overlaySetMode(mode === "panel" ? "ball" : "panel");
+          // 修 stale closure：按函数式更新取「当下」的 mode（旧写法捕获首渲染值，恒发 panel）
+          setMode((m) => {
+            const next: OverlayMode = m === "panel" ? "ball" : "panel";
+            void overlaySetMode(next);
+            return next;
+          });
         } else if (e.type === "hold") {
           setMode("bar");
           void overlaySetMode("bar");
           void startVoice();
         } else if (e.type === "release" && voice === "listening") {
           void finishVoice();
+        } else if (e.type === "submit") {
+          // 原生面板键入的文本直接进 OH（与语音同一条通道：ohAsk → 发送）
+          setMode((m) => {
+            const next: OverlayMode = "panel";
+            void overlaySetMode(next);
+            return next;
+          });
+          void send(e.text ?? "");
         } else if (e.type === "closed") {
           setOverlayClosedByUser(true);
           setMode("hidden");
@@ -58,7 +71,13 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   }, []);
 
   const startVoice = useCallback(async (): Promise<void> => {
-    if (!(await speechAvailable())) return;
+    if (!(await speechAvailable())) {
+      // 荣耀/华为「仅前台麦克风」：别的应用在前台时取不到麦 → 诚实地引导到键盘输入，而不是静默失败
+      setVoiceText("此环境取不到麦克风（系统限制），点球打开面板用键盘输入");
+      setMode("panel");
+      void overlaySetMode("panel");
+      return;
+    }
     setVoice("listening");
     setVoiceText("");
     try {
@@ -92,6 +111,19 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
     setMode("panel");
     await overlaySetMode("panel");
   }, []);
+
+  // 状态推送：原生壳（安卓系统悬浮层）用原生 UI 渲染，必须由前端把内容推过去
+  useEffect(() => {
+    void overlayPushUi({
+      messages: msgs,
+      transcript: voiceText,
+      level: 0,
+      listening: voice === "listening",
+      busy: voice === "sending",
+      mode,
+      theme: document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+    });
+  }, [msgs, voiceText, voice, mode]);
 
   const send = useCallback(async (text: string): Promise<void> => {
     const t = text.trim();

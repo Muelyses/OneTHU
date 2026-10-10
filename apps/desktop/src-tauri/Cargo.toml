@@ -23,6 +23,7 @@ tauri-plugin-onethu-calendar = { path = "plugins/onethu-calendar" }
 tauri-plugin-onethu-speech = { path = "plugins/onethu-speech" }
 tauri-plugin-onethu-mobile = { path = "plugins/onethu-mobile" }
 tauri-plugin-onethu-tts = { path = "plugins/onethu-tts" }
+tauri-plugin-onethu-overlay = { path = "plugins/onethu-overlay" }
 # Rust 插件安装：系统文件对话框选 manifest.json（Tauri v2 的 webview File 无 .path）
 tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }

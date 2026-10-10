@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-overlay-push-ui"
+description = "Enables the overlay_push_ui command without any pre-configured scope."
+commands.allow = ["overlay_push_ui"]
+
+[[permission]]
+identifier = "deny-overlay-push-ui"
+description = "Denies the overlay_push_ui command without any pre-configured scope."
+commands.deny = ["overlay_push_ui"]

@@ -1,0 +1,20 @@
+"$schema" = "schemas/schema.json"
+
+[default]
+description = """
+允许使用全局悬浮球（Android 系统级悬浮层）：
+查询支持与授权状态、拉起悬浮层授权页、显示/本次关闭悬浮球、切换形态
+（球 / 语音条 / 半屏面板）、收取手势事件、推送界面状态。
+"""
+permissions = [
+  "allow-overlay-supported",
+  "allow-overlay-has-permission",
+  "allow-overlay-request-permission",
+  "allow-overlay-show",
+  "allow-overlay-hide",
+  "allow-overlay-set-mode",
+  "allow-overlay-poll-event",
+  "allow-overlay-ack-events",
+  "allow-overlay-push-ui",
+  "allow-overlay-status",
+]

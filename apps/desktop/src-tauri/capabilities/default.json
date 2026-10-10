@@ -16,6 +16,7 @@
     "geolocation:allow-check-permissions",
     "geolocation:allow-request-permissions",
     "onethu-mobile:default",
-    "onethu-tts:default"
+    "onethu-tts:default",
+    "onethu-overlay:default"
   ]
 }

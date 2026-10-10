@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-overlay-has-permission"
+description = "Enables the overlay_has_permission command without any pre-configured scope."
+commands.allow = ["overlay_has_permission"]
+
+[[permission]]
+identifier = "deny-overlay-has-permission"
+description = "Denies the overlay_has_permission command without any pre-configured scope."
+commands.deny = ["overlay_has_permission"]

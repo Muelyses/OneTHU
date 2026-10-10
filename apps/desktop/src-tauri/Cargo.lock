@@ -2753,6 +2753,7 @@ dependencies = [
  "tauri-plugin-geolocation",
  "tauri-plugin-onethu-calendar",
  "tauri-plugin-onethu-mobile",
+ "tauri-plugin-onethu-overlay",
  "tauri-plugin-onethu-speech",
  "tauri-plugin-onethu-tts",
  "tauri-plugin-opener",
@@ -4259,6 +4260,17 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-onethu-mobile"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+]
+
+[[package]]
+name = "tauri-plugin-onethu-overlay"
 version = "0.1.0"
 dependencies = [
  "log",

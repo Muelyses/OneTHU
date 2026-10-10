@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  OneTHU 全局悬浮球（Android 系统级悬浮层）。
+
+  本文件位于仓库内的插件模块，由 manifest merger 合并进 app 模块
+  （gen/android 实际工程不入库、本机软链到 /home/lin/onethu-android），
+  因此权限与 Service 声明随仓库入库，无需改本地工程。
+
+  ★ 需要 Lead 在 app 模块确认合并结果（见报告「需要 Lead 做的」）：
+    - uses-permission: SYSTEM_ALERT_WINDOW / FOREGROUND_SERVICE /
+      FOREGROUND_SERVICE_SPECIAL_USE / FOREGROUND_SERVICE_MICROPHONE /
+      POST_NOTIFICATIONS / RECEIVE_BOOT_COMPLETED / VIBRATE
+    - service: app.onethu.overlay.OverlayService（specialUse|microphone）
+    - receiver: app.onethu.overlay.OverlayBootReceiver（BOOT_COMPLETED / MY_PACKAGE_REPLACED）
+
+  前台服务类型为什么是 specialUse：
+    Android 14+ 各 FGS 类型有额度限制（本仓库曾因 dataSync 超限崩溃）。
+    specialUse 无每日额度，是「常驻悬浮层」这类长期可见用户主动开启能力的正解
+    （需要 android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE 声明用途）。
+    microphone 仅为「悬浮层里长按说话」保留：仅当 RECORD_AUDIO 已经授予、
+    且在应用仍处前台时启动，才允许后台取麦（见 OverlayService.startVoiceType）。
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 悬浮窗：appop（非运行时权限），经 Settings.canDrawOverlays 判定 +
+         ACTION_MANAGE_OVERLAY_PERMISSION 引导用户授权 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 重启 / 应用升级后恢复悬浮球（仅当用户没点过「本次关闭悬浮球」） -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 长按吸附 / 语音条起始的触感反馈（普通权限） -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application>
+        <!-- 悬浮球前台服务：常驻通知 + 常驻 WindowManager 悬浮窗。
+             exported=false（只由本应用启动）；stopWithTask=false（划掉最近任务不停服）。 -->
+        <service
+            android:name="app.onethu.overlay.OverlayService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="specialUse|microphone">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="global_overlay_ball" />
+        </service>
+
+        <!-- 恢复入口：开机 / 应用升级后按持久化开关自动恢复；
+             另接服务自杀前的自救闹钟（ACTION_RESTART）。 -->
+        <receiver
+            android:name="app.onethu.overlay.OverlayBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

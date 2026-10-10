@@ -15,10 +15,12 @@ import { isAndroidNavigator } from "./androidHost.js";
 export type OverlayMode = "hidden" | "ball" | "bar" | "panel";
 
 export interface OverlayEvent {
-  type: "tap" | "hold" | "release" | "drag" | "closed";
+  type: "tap" | "hold" | "release" | "drag" | "closed" | "submit";
   /** drag 时的屏幕坐标（物理像素，右/下为正）；原生侧给多少填多少 */
   x?: number;
   y?: number;
+  /** submit：原生面板里键入的文本（安卓系统悬浮层走原生 UI 时用） */
+  text?: string;
 }
 
 export interface OverlayAdapter {
@@ -27,6 +29,9 @@ export interface OverlayAdapter {
   hide(): Promise<void>;
   setMode(m: OverlayMode): Promise<void>;
   onEvent(cb: (e: OverlayEvent) => void): Promise<() => void>;
+  /** 可选：把前端状态推给原生壳渲染（安卓系统悬浮层用原生 UI 时必需）。
+   *  桌面端不实现 → 天然降级；调用方不要依赖它的返回值。 */
+  pushUi?(state: unknown): Promise<void>;
 }
 
 const isAndroid =
@@ -81,6 +86,16 @@ export async function onOverlayEvent(cb: (e: OverlayEvent) => void): Promise<() 
   const a = await getAdapter();
   if (!a) return () => undefined;
   return await a.onEvent(cb);
+}
+
+/** 把前端状态（消息/转写/电平/形态/主题）推给原生壳；无该方法时静默降级。 */
+export async function overlayPushUi(state: unknown): Promise<void> {
+  const a = (await getAdapter()) as unknown as { pushUi?: (x: unknown) => Promise<void> } | null;
+  try {
+    await a?.pushUi?.(state);
+  } catch {
+    /* 原生壳不在/版本旧：忽略 */
+  }
 }
 
 /** 悬浮球是否处于「本次已关闭」状态（用户在本体里重新打开前一直保持） */

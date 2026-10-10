@@ -18,15 +18,17 @@
  * 字节经 `fileToBytes()`（File.arrayBuffer，不落盘）取。只有原生侧给的路径（桌面文件对话框、
  * 安卓原生桥将来落地）才有真路径。
  *
- * ## 关于 OH
- * OH 目前**不是多模态**：harness 只吃 `{command:"chat", input:string}`。所以 `sendToOh()`
- * 把「附件就绪 + 名称/类型/大小/本地路径 + 文本类附件的内容预览」拼成一段文本发给它，
- * **不是**把图片喂给模型（别误会成打通了看图）。要真正看图得等 harness 支持图片输入。
+ * ## 关于 OH 与多模态
+ * OH（harness）自 2026-10-11 起支持图像输入：`run {command:"chat", input, attachments?}`，
+ * 附件里的图片（≤4 张、≤6MB）由本模块读成 base64 随消息带上；**是否真按图像喂模型由
+ * harness 侧的「多模态」设置开关决定**（开着 = content 变 `[{type:"text"},{type:"image_url"}]`
+ * 的 parts 数组；关着 = 图片只以文字说明与预览带出）。前端不镜像那个开关——
+ * 状态只有一个真源，避免两处判断打架。非图片附件仍然只带名称/类型/大小与文本预览。
  */
 import { invoke } from "@tauri-apps/api/core";
 import { isTauri } from "./transport.js";
 import { isAndroidNavigator } from "./androidHost.js";
-import { askOh } from "../im/oh.js";
+import { askOh, type OhAttachment } from "../im/oh.js";
 import { bytesToBase64, splitDataUrl } from "./imageSave.js";
 import { logLine } from "./clients.js";
 
@@ -310,6 +312,60 @@ export function setOhSender(fn: OhAttachSender | null): void {
   ohSender = fn;
 }
 
+/* ── 多模态附件计划（2026-10-11）：把图片字节随消息带上，是否真按图像喂模型由 harness 开关决定 ── */
+
+/** 单条消息最多随图几张（与 harness 侧 `MAX_ATTACH_IMAGES` 对齐） */
+export const MAX_OH_IMAGES = 4;
+/** 单张图原始字节上限（与 harness 侧 ~6MB 口径对齐；超了读盘也会被拒） */
+export const MAX_OH_IMAGE_BYTES = 6 * 1024 * 1024;
+
+/** 「这条消息实际能带上什么」——发给 OH 前算一次，结果同时用于正文说明与 run params */
+export interface OhAttachPlan {
+  /** 真正随消息发出去的图片（≤4 张、≤6MB、字节读得到） */
+  attachments: OhAttachment[];
+  /** 想发但没发的（超张数 / 太大 / 读不出来），逐条给原因——**绝不静默丢件** */
+  skipped: Array<{ name: string; reason: string }>;
+}
+
+/** 发给 OH 的结果：成功时把答复一并带回来（面板/宿主可据此显示「OH 说…」） */
+export interface OhSendResult {
+  ok: boolean;
+  answer?: string;
+  /** 本次按图像随消息附带的图片数（0 = 只有文字说明） */
+  images: number;
+  /** 没随图发出去的图片数（原因见正文里的「附件说明」） */
+  skippedImages: number;
+}
+
+/**
+ * 选图 → base64：只带 `image/*` 且 ≤6MB 的，最多 4 张。
+ * **前端不判断多模态开关**（那状态在 harness 侧设置里）：一律把图带上，
+ * 由 harness 按 `multimodal` 决定是按图像喂模型还是退化成文字说明（唯一真源、不两处判断）。
+ */
+export async function buildOhAttachments(files: AttachFile[]): Promise<OhAttachPlan> {
+  const attachments: OhAttachment[] = [];
+  const skipped: Array<{ name: string; reason: string }> = [];
+  for (const f of files) {
+    if (!f.mime.startsWith("image/")) continue; // 非图片本来就只有元信息进正文
+    if (attachments.length >= MAX_OH_IMAGES) {
+      skipped.push({ name: f.name, reason: `一条消息最多带 ${MAX_OH_IMAGES} 张图` });
+      continue;
+    }
+    if (f.size > MAX_OH_IMAGE_BYTES) {
+      skipped.push({ name: f.name, reason: `超过 ${MAX_OH_IMAGE_BYTES / 1048576}MB` });
+      continue;
+    }
+    try {
+      // maxBytes 同时兜住「size 未知但文件巨大」的路径分支（超限直接报错而不是截断）
+      const bytes = await fileToBytes(f, MAX_OH_IMAGE_BYTES);
+      attachments.push({ name: f.name, mime: f.mime || "image/jpeg", dataBase64: bytesToBase64(bytes) });
+    } catch (e) {
+      skipped.push({ name: f.name, reason: e instanceof Error ? e.message : "读不到内容" });
+    }
+  }
+  return { attachments, skipped };
+}
+
 function isTextLike(f: AttachFile): boolean {
   if (f.mime.startsWith("image/")) return false;
   return f.mime.startsWith("text/") || /json|xml|csv|yaml|javascript|typescript|markdown/i.test(f.mime) || TEXT_EXT.test(f.name);
@@ -334,8 +390,12 @@ async function previewOf(f: AttachFile): Promise<string | null> {
   return null;
 }
 
-/** 拼「附件就绪」那条文本消息（纯函数 + 一次文本预览读盘；导出是为了可测/可复用） */
-export async function buildOhMessage(files: AttachFile[], text?: string): Promise<string> {
+/**
+ * 拼「附件就绪」那条文本消息（纯函数 + 一次文本预览读盘；导出是为了可测/可复用）。
+ * `plan` 决定最后那段「附件说明」怎么写——**说必须与实际发出去的东西一致**：
+ * 带了图就说带了图（并指出由多模态开关决定是否真按图像读），没带的逐条写原因。
+ */
+export async function buildOhMessage(files: AttachFile[], text?: string, plan?: OhAttachPlan): Promise<string> {
   const parts: string[] = [];
   const head = (text ?? "").trim();
   if (head) parts.push(head);
@@ -350,31 +410,51 @@ export async function buildOhMessage(files: AttachFile[], text?: string): Promis
     if (preview) lines.push(`内容预览：\n${preview}`);
     parts.push(lines.join("\n"));
   }
-  parts.push(
-    "【附件说明】以上为设备本地文件，仅名称/类型/大小随消息带出（图片内容不会上传）。需要处理请告知：转存云盘 / 交作业 / 发讨论区。",
-  );
+  const sent = plan?.attachments.length ?? 0;
+  const skipped = plan?.skipped ?? [];
+  const note: string[] = ["【附件说明】以上为设备本地文件，仅名称/类型/大小随消息带出。"];
+  if (sent > 0) {
+    note.push(
+      `其中 ${sent} 张图片已随消息附上（是否按图像模态读取，取决于「设置 → 插件 → OneTHU Harness → 多模态」开关）。`,
+    );
+  }
+  if (skipped.length > 0) {
+    note.push(`未随图发送：${skipped.map((s) => `${s.name}（${s.reason}）`).join("、")}。`);
+  }
+  note.push("需要处理请告知：转存云盘 / 交作业 / 发讨论区。");
+  parts.push(note.join("\n"));
   return parts.join("\n\n");
 }
 
 /**
  * 把附件作为**一条完整消息**交给 OH（需求 6）。
- * 默认通道 `askOh()`：纯前端、不打开任何窗口（悬浮层红线）；宿主若想让消息出现在自己的
- * 对话流里，先 `setOhSender()` 注入自己的发送函数（或给 AttachTray 传 onPicked）。
+ * - 默认通道 `askOh()`：纯前端、不打开任何窗口（悬浮层红线）；宿主若想让消息出现在自己的
+ *   对话流里，先 `setOhSender()` 注入自己的发送函数（或给 AttachTray 传 onPicked）；
+ * - 图片（≤4 张、≤6MB）**一律随消息带上字节**，多模态开关在 harness 侧判断（见 buildOhAttachments）；
+ * - 失败仍是**抛错**（既有调用方 GlobalOrb/AttachTray 靠 catch 显示错误，不改语义）；
+ *   成功返回 `OhSendResult`（面板的「问 OH」动作据此显示 OH 的答复）。
  */
-export async function sendToOh(files: AttachFile[], text?: string): Promise<void> {
+export async function sendToOh(files: AttachFile[], text?: string): Promise<OhSendResult> {
   if (files.length === 0) {
     void logLine("[附件] 没有附件可发送，已跳过").catch(() => undefined);
-    return;
+    return { ok: true, images: 0, skippedImages: 0 };
   }
-  const message = await buildOhMessage(files, text);
+  const plan = await buildOhAttachments(files);
+  const message = await buildOhMessage(files, text, plan);
   const sender = ohSender;
   if (sender) {
     await sender(message, files, text);
-    return;
+    return { ok: true, images: plan.attachments.length, skippedImages: plan.skipped.length };
   }
-  const r = await askOh(message);
+  const r = await askOh(message, plan.attachments);
   if (r.error) throw new Error(r.error);
-  void logLine(`[附件] 已交给 OH：${files.length} 个文件${r.answer ? `，回复 ${String(r.answer).slice(0, 60)}` : ""}`).catch(
-    () => undefined,
-  );
+  void logLine(
+    `[附件] 已交给 OH：${files.length} 个文件（随图 ${plan.attachments.length} 张）${r.answer ? `，回复 ${String(r.answer).slice(0, 60)}` : ""}`,
+  ).catch(() => undefined);
+  return {
+    ok: true,
+    answer: typeof r.answer === "string" ? r.answer : undefined,
+    images: plan.attachments.length,
+    skippedImages: plan.skipped.length,
+  };
 }

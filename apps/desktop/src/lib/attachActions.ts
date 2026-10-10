@@ -71,6 +71,10 @@ export interface AttachActionResult {
   /** 远端确认的字节数（seafile_upload 返回值） */
   size?: number;
   ui?: AttachActionUi;
+  /** OH 的答复文本（只有「问 OH」这个动作用；由 AttachActionsSheet 直接显示） */
+  answer?: string;
+  /** 本次按图像随消息附带的图片数（「问 OH」动作；多模态关时为 0） */
+  images?: number;
 }
 
 function fail(error: string, extra: Partial<AttachActionResult> = {}): AttachActionResult {

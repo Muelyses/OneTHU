@@ -17,7 +17,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { CourseInfo, Homework } from "@onethu/core";
-import { formatSize, type AttachFile } from "../lib/attach.js";
+import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
 import {
   postDiscussion, rememberedCloudTarget, saveAllToCloud, submitHomework,
   type AttachActionUi, type AttachActionResult, type ConfirmFn,
@@ -31,7 +31,7 @@ import { confirmOk } from "../lib/confirm.js";
 import { isTauri } from "../lib/transport.js";
 import { IconX } from "./Icons.js";
 
-export type AttachActionId = "cloud" | "homework" | "discussion";
+export type AttachActionId = "cloud" | "homework" | "discussion" | "oh";
 
 export interface AttachActionDone {
   action: AttachActionId;
@@ -53,6 +53,7 @@ const ACTIONS: Array<{ id: AttachActionId; label: string }> = [
   { id: "cloud", label: "转存云盘" },
   { id: "homework", label: "交作业" },
   { id: "discussion", label: "发讨论区" },
+  { id: "oh", label: "问 OH" },
 ];
 
 /** 路由 → 人话（`needUi` 提示用；不引导航，导航归宿主） */
@@ -379,6 +380,22 @@ export function AttachActionsSheet({
     }
   }, [askConfirm, boardId, boards, body, courseId, courses, finish, first, mode, threadId, title]);
 
+  /** ④ 问 OH（需求 6 的「OH 直接收附件」）：把附件作为一条完整消息发给 OH。
+   *  图片会随消息带上字节，**是否真按图像喂模型由 harness 的多模态开关决定**
+   *  （前端不镜像那个状态）；答案直接显示在结果区。 */
+  const runOh = useCallback(async (): Promise<void> => {
+    setBusy(true);
+    setResult(null);
+    try {
+      const r = await sendToOh(files);
+      finish("oh", { ok: true, answer: r.answer, images: r.images });
+    } catch (e) {
+      finish("oh", { ok: false, error: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setBusy(false);
+    }
+  }, [files, finish]);
+
   /** needUi 的官方页兜底：雨课堂官方作答页（带当前会话 Cookie，用户自己提交） */
   const [officialBusy, setOfficialBusy] = useState(false);
   const openOfficial = useCallback(async (url: string): Promise<void> => {
@@ -674,11 +691,36 @@ export function AttachActionsSheet({
           </div>
         ) : null}
 
+        {/* ── ④ 问 OH（把附件作为一条消息发给 OH） ── */}
+        {action === "oh" ? (
+          <div>
+            <div className="ohaa-note">
+              把附件作为**一条完整消息**发给 OH（不弹输入框，直接发）。
+              {files.some((f) => f.mime.startsWith("image/"))
+                ? "图片会随消息带上：开了「多模态」开关时按图像模态直接喂给模型（图片文字都能读）；没开时只发送文字说明与预览。"
+                : "非图片附件只带名称/类型/大小与文本预览。"}
+              开关位置：设置 → 插件 → OneTHU Harness → 多模态。
+            </div>
+            <div className="ohaa-note">
+              {many ? `${files.length} 个附件会一起发；` : ""}
+              图片单条最多 4 张、单张 ≤6MB，超出的会在正文里写明原因（不会静默丢件）。
+            </div>
+            <div className="ohaa-foot">
+              <button className="btn" type="button" onClick={close}>取消</button>
+              <button className="btn btn-primary" type="button" disabled={busy} onClick={() => void runOh()}>
+                {busy ? "发送中…" : "发给 OH"}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         {/* ── 结果 ── */}
         {showResult && r ? (
           <div className={`ohaa-result ${r.ok ? "ok" : r.needUi ? "warn" : "err"}`}>
             {r.ok ? `✅ ${r.path ? `已上传：${r.path}` : "已完成"}` : `${r.needUi ? "⚠️ 需要你继续一步" : "❌ 没做成"}\n${r.error ?? ""}`}
             {r.needUi ? `\n${uiHint(r.ui)}` : ""}
+            {r.ok && r.answer ? `\n\nOH：${r.answer}` : ""}
+            {r.ok && typeof r.images === "number" ? `\n（本次随消息附带 ${r.images} 张图片）` : ""}
             {r.needUi && r.ui?.officialUrl && r.ui.officialChannel === "ykt-submit-webview" && isTauri ? (
               <div style={{ marginTop: 8 }}>
                 <button className="btn btn-primary" type="button" disabled={officialBusy}

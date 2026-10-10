@@ -10,7 +10,7 @@
 //! 线程模型：agent 线程串行处理 run 请求（chat 一轮跑完才接下一发）；
 //! 桥线程专等 webview 回执；打断是 AtomicBool 快路径（stdio 读线程同款语义）。
 
-use onethu_harness_core::{activate_commands, dispatch, Emit, Host};
+use onethu_harness_core::{activate_commands, dispatch_run, Emit, Host};
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -204,11 +204,9 @@ pub async fn harness_start(
                     AgentMsg::Run { method, params, reply } => match method.as_str() {
                         "run" => {
                             ctx.reset_interrupt();
-                            let command =
-                                params.get("command").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                            let input =
-                                params.get("input").and_then(|v| v.as_str()).unwrap_or("").to_string();
-                            let out = dispatch(&mut ctx, &emit, &command, &input);
+                            // command/input/attachments（可选多模态附件）的解析统一在
+                            // core::dispatch_run——两个宿主共用同一份参数解析
+                            let out = dispatch_run(&mut ctx, &emit, &params);
                             let _ = reply.send(Ok(out));
                         }
                         "activate" => {
@@ -267,12 +265,10 @@ pub async fn harness_call(
         if method == "run" {
             let command = params.get("command").and_then(|v| v.as_str()).unwrap_or("");
             if command != "chat" && !command.is_empty() {
-                let command = command.to_string();
-                let input = params.get("input").and_then(|v| v.as_str()).unwrap_or("").to_string();
                 let mut ctx =
                     AgentCtx { call_tx: live.call_tx.clone(), interrupt: live.interrupt.clone() };
                 let emit = AgentEmit { app, plugin_id: plugin_id.clone() };
-                return Ok(dispatch(&mut ctx, &emit, &command, &input));
+                return Ok(dispatch_run(&mut ctx, &emit, &params));
             }
         }
         let (tx, rx) = mpsc::channel::<Result<Value, String>>();

@@ -359,6 +359,13 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
     { key: "model", label: "模型（自费模式用；免费档固定 DeepSeek-V4-Flash）", type: "text", default: "deepseek-chat" },
     { key: "thinking", label: "思考模式（DeepSeek 自动切 reasoner）", type: "text", default: "off" },
+    // 多模态开关（2026-10-11）：**必须与 plugins/OneTHU-Harness/manifest.json 里的同名字段
+    // 逐字段同序**——seedBuiltinHarness 的清单自愈走 JSON.stringify 字符串比对，
+    // 两处不一致会让「内置 OH 已刷新」每次开机都触发一遍。
+    { key: "multimodal", label: "多模态（图片输入；madmodel V4.1-Flash / deepseek-v4-vision 等支持）", type: "select", options: [
+      { value: "off", label: "关闭（图片只传路径与文字预览）" },
+      { value: "on", label: "开启（图片按图像模态直接喂给模型）" },
+    ], default: "off" },
     { key: "maxContext", label: "上下文预算（tokens，超出裁剪）", type: "text", default: "24000" },
     { key: "stream", label: "流式输出（off 回退非流式）", type: "text", default: "on" },
     { key: "priceIn", label: "输入价格 $/1M tokens（自费模式）", type: "text", default: "0.27" },

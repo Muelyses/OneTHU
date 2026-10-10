@@ -19,6 +19,8 @@ import {
   type OverlayMode,
 } from "../lib/overlay.js";
 import { askOh } from "../im/oh.js";
+import { AttachTray } from "./AttachTray.js";
+import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop } from "../lib/speech.js";
 
 const HOLD_MS = 450;
@@ -348,6 +350,25 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         ) : null}
       </div>
 
+      {/* 需求 6：附件入口就在悬浮球打开后的这个位置（拍照 / 相册 / 上传，单张图片可先修一下再发） */}
+      <div style={{ position: "relative", zIndex: 1, marginTop: 8 }}>
+        <AttachTray
+          onPicked={async (files: AttachFile[]) => {
+            const summary = files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、");
+            setMsgs((m) => [...m, { role: "user", text: `［附件］${summary}` }]);
+            scrollToEnd();
+            setTyping(true);
+            try {
+              await sendToOh(files);
+            } catch (e) {
+              setMsgs((m) => [...m, { role: "oh", text: `（附件发送失败：${e instanceof Error ? e.message : String(e)}）` }]);
+            } finally {
+              setTyping(false);
+              scrollToEnd();
+            }
+          }}
+        />
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();

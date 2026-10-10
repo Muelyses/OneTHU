@@ -26,7 +26,7 @@ import remarkGfm from "remark-gfm";
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
 import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
-import { IconClock, IconDownload, IconOrb, IconPlus, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
+import { IconClock, IconDownload, IconPlus, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
 import { AttachTray } from "../components/AttachTray.js";
 import { buildOhMessage, formatSize, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
 import { HarnessMark } from "../components/HarnessMark.js";
@@ -35,7 +35,7 @@ import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, spee
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { isOverlayClosedByUser, onOverlayEvent, overlayHide, overlayShow, overlaySupported, setOverlayClosedByUser } from "../lib/overlay.js";
+
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { openExternal } from "../pages/info/openExternal.js";
 
@@ -77,8 +77,9 @@ function ohPromptSnapshot(): OhPromptReq | null {
 const VOICE_HOLD_MS = 450;
 /** 松手后等待识别器吐最终结果的宽限 */
 const VOICE_FINAL_GRACE_MS = 320;
-/** 上划取消的位移阈值（px）：与微信同量级——按住后向上拉过它，松手就丢弃识别文本、不发送 */
-const CANCEL_PULL_PX = 56;
+/** 上划取消的位移阈值（px）：按住后**向上拉到取消区**再松手才算取消。
+ *  2026-10-10 用户反馈「取消太快了」→ 56 → 110（并让 0→阈值 之间只是**提示区**，不产生任何后果）。 */
+const CANCEL_PULL_PX = 110;
 /** 波纹点个数（5~9 档，取 7：克制的节奏感）——高度/透明度由电平驱动 */
 const WAVE_DOTS = 7;
 /** 电平轮询间隔：比转写轮询（180ms）快一点，波纹才跟得上嘴 */
@@ -338,10 +339,6 @@ export function ChatDock(): ReactNode {
      ttsStop() 回来的那个 done 属于上一代，不能拿它把新一轮刚点亮的图标灭掉。 */
   const speakGen = useRef(0);
   const [subLinger, setSubLinger] = useState(false); // 语音结束后字幕多留一拍（渐出）
-  /* 需求 5：OH 对话界面里的悬浮球入口。能力先探测（桌面 false → 不渲染按钮）；
-     「本次已关闭」标记与设置页共用同一份 localStorage（lib/overlay.ts 的 CLOSED_KEY）。 */
-  const [overlayOk, setOverlayOk] = useState(false);
-  const [overlayOff, setOverlayOff] = useState(() => isOverlayClosedByUser());
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
   const islandText = useIslandText();
   const pressTimer = useRef<number | null>(null); // 长按计时（null=未按/已触发语音）
@@ -990,44 +987,6 @@ export function ChatDock(): ReactNode {
     };
   }, []);
 
-  /* 悬浮球：本机能力（桌面端 supported=false → 按钮根本不渲染，不留死按钮） */
-  useEffect(() => {
-    void overlaySupported().then(setOverlayOk);
-  }, []);
-
-  /* 重读「本次已关闭」标记的时机（同一文档内改 localStorage 不会触发 storage 事件）：
-     ① 面板每次打开（设置页 → 通知与提醒 → 悬浮球 里可能刚改过）；② 应用重新获得焦点
-     （从系统悬浮层授权页回来时也走这条）。 */
-  useEffect(() => {
-    if (open) setOverlayOff(isOverlayClosedByUser());
-  }, [open]);
-  useEffect(() => {
-    const sync = (): void => setOverlayOff(isOverlayClosedByUser());
-    window.addEventListener("focus", sync);
-    document.addEventListener("visibilitychange", sync);
-    return () => {
-      window.removeEventListener("focus", sync);
-      document.removeEventListener("visibilitychange", sync);
-    };
-  }, []);
-
-  /* 用户在悬浮层的雾上点「本次关闭」→ 原生回传 closed → 把本按钮同步成已关闭态
-     （订阅一次，卸载退订；桌面无适配器时 overlay.ts 会给一个 no-op 退订函数） */
-  useEffect(() => {
-    let alive = true;
-    let dispose: (() => void) | null = null;
-    void onOverlayEvent((e) => {
-      if (alive && e.type === "closed") setOverlayOff(true);
-    }).then((d) => {
-      dispose = d;
-      if (!alive) d();
-    });
-    return () => {
-      alive = false;
-      dispose?.();
-    };
-  }, []);
-
   /* 字幕渐出：语音结束后多留 SUB_LINGER_MS（也覆盖「识别完 → 面板滑入」那一拍），
      否则条一收窄字幕就瞬闪消失。 */
   useEffect(() => {
@@ -1141,43 +1100,6 @@ export function ChatDock(): ReactNode {
     if (!navGo("settings")) return;
     if (open) toggle(); // 面板挡着设置页：顺手收起，落点就是那个分区
   };
-
-  /** 悬浮球入口：关着 → 先要「显示在其他应用上层」权限，再清标记 + overlayShow()；
-   *  开着 → overlayHide() + 记「本次已关闭」（用户在本体的这个入口随时能重开）。 */
-  const toggleOverlay = useCallback(async (): Promise<void> => {
-    if (!isOverlayClosedByUser()) {
-      // 本次关闭
-      try {
-        await overlayHide();
-        setOverlayClosedByUser(true);
-        setOverlayOff(true);
-        setNotice("悬浮球已本次关闭（这里可随时重开）");
-      } catch (e) {
-        setNotice(`悬浮球关闭失败：${e instanceof Error ? e.message : String(e)}`);
-      }
-      return;
-    }
-    // 重新打开：安卓系统悬浮窗必须先把权限拿到（动态引入：桌面端不该被带进这个模块）
-    if (IS_ANDROID) {
-      const { hasOverlayPermission, requestOverlayPermission } = await import("../lib/overlayAndroid.js");
-      if (!(await hasOverlayPermission())) {
-        await requestOverlayPermission(); // 拉起系统授权页（应用内不弹自定义弹窗）
-        setNotice("已跳转系统授权页：打开「显示在其他应用上层」后回来再点一次");
-        return;
-      }
-    }
-    setOverlayClosedByUser(false);
-    setOverlayOff(false);
-    try {
-      await overlayShow();
-      setNotice("悬浮球已打开");
-    } catch (e) {
-      // 起不来就别假装开着：标记退回「已关闭」，用户可再点一次重试
-      setOverlayClosedByUser(true);
-      setOverlayOff(true);
-      setNotice(`悬浮球打开失败：${e instanceof Error ? e.message : String(e)}（可再点一次重试）`);
-    }
-  }, []);
 
   /** 附件（需求 6）：AttachTray 取到文件 → 面板里加一条**用户气泡** +
    *  经既有 chat 通道把附件消息交给 OH（等价于给 sendToOh 注入一个宿主发送器，但不动全局）。
@@ -1439,17 +1361,6 @@ export function ChatDock(): ReactNode {
                   onContextMenu={(e) => { e.preventDefault(); openVoiceSettings(); }}
                 >
                   {prefs.autoSpeak ? <IconSpeak /> : <IconSpeakOff />}
-                </button>
-              ) : null}
-              {overlayOk ? (
-                <button
-                  className={"btn dock-btn dock-ico dock-orb" + (overlayOff ? " is-off" : "")}
-                  title={overlayOff ? "悬浮球已关闭，点此重新打开" : "悬浮球已开启，再点一次可本次关闭"}
-                  aria-label={overlayOff ? "打开悬浮球" : "本次关闭悬浮球"}
-                  aria-pressed={!overlayOff}
-                  onClick={() => void toggleOverlay()}
-                >
-                  <IconOrb />
                 </button>
               ) : null}
               <button className="btn dock-btn dock-ico" title="收起" aria-label="收起" onClick={toggle}>

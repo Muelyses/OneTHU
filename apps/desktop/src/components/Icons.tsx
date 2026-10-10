@@ -77,6 +77,21 @@ export const IconPen = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const IconCamera = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h1.2a1.5 1.5 0 0 0 1.28-.72l.54-.9A1.5 1.5 0 0 1 9.8 4.6h4.4a1.5 1.5 0 0 1 1.28.72l.54.9A1.5 1.5 0 0 0 17.3 7h1.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z" />
+    <circle cx="12" cy="12.8" r="3.2" />
+  </svg>
+);
+
+export const IconImage = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="1.8" />
+    <circle cx="9" cy="10" r="1.6" />
+    <path d="m4.5 18 5-5 3.2 3.2 2.6-2.6 4.2 4.4" />
+  </svg>
+);
+
 export const IconUpload = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M12 16V5" />

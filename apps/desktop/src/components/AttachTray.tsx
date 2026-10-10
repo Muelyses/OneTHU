@@ -10,12 +10,13 @@
  * 图片会先进滤镜编辑（需求 8）：单选图片才弹（多选时逐张编辑太重，直接发原图）。
  * 编辑取消 = 这次不发送（不做「替你决定发原图」这种事）。
  */
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactElement, type ReactNode, type SVGProps } from "react";
 import {
   attachFromDataUrl, fileToBlob, pickCamera, pickFiles, pickGallery, releaseAttachPreviews, sendToOh,
   type AttachFile,
 } from "../lib/attach.js";
 import { ImageFilterSheet, type FilterResult } from "./ImageFilterSheet.js";
+import { IconCamera, IconImage, IconUpload } from "./Icons.js";
 import { logLine } from "../lib/clients.js";
 
 export interface AttachTrayProps {
@@ -29,10 +30,11 @@ export interface AttachTrayProps {
 
 type Source = "camera" | "gallery" | "file";
 
-const SOURCES: Array<{ id: Source; label: string; title: string }> = [
-  { id: "camera", label: "📷 拍照", title: "调起相机拍一张" },
-  { id: "gallery", label: "🖼 相册", title: "从相册选图片" },
-  { id: "file", label: "📎 上传", title: "选任意文件" },
+/** 三个入口：线性图标 + 短标签（2026-10-10 用户：emoji 占地方又不好看 → 全换 Icons 基座） */
+const SOURCES: Array<{ id: Source; label: string; title: string; icon: (p: SVGProps<SVGSVGElement>) => ReactElement }> = [
+  { id: "camera", label: "拍照", title: "调起相机拍一张", icon: IconCamera },
+  { id: "gallery", label: "相册", title: "从相册选图片", icon: IconImage },
+  { id: "file", label: "上传", title: "选任意文件", icon: IconUpload },
 ];
 
 interface Editing {
@@ -45,7 +47,17 @@ function msgOf(e: unknown): string {
 }
 
 const TRAY_CSS = `
-.oh-attach { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.oh-attach { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.oh-attach-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px 5px 8px; font-size: 12.5px; line-height: 1.2;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.12));
+  border-radius: 999px; background: transparent; color: inherit;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.oh-attach-btn:hover { background: color-mix(in srgb, var(--dsw-alias-bg-layer-2, #f2f2f4) 55%, transparent); }
+.oh-attach-btn[disabled] { opacity: .55; cursor: default; }
+.oh-attach-btn svg { width: 15px; height: 15px; opacity: .82; }
 .oh-attach-note { font-size: 12px; color: var(--dsw-alias-label-secondary, #5c6370); }
 `;
 
@@ -141,13 +153,16 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
       {SOURCES.map((s) => (
         <button
           key={s.id}
-          className="btn"
+          className="oh-attach-btn"
           type="button"
           title={s.title}
           disabled={busy !== null}
           onClick={() => void pick(s.id)}
         >
-          {busy === s.id ? "打开中…" : s.label}
+          {busy === s.id ? <span>打开中…</span> : (<>
+            <s.icon />
+            <span>{s.label}</span>
+          </>)}
         </button>
       ))}
       {note ? <span className="oh-attach-note" aria-live="polite">{note}</span> : null}

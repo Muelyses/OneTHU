@@ -46,6 +46,27 @@ const textShadow = "0 1px 14px color-mix(in srgb, var(--dsw-alias-bg-base, #fff)
 
 /** 雾只做**背景层**：绝对定位 + pointer-events:none，文字层永远不吃 mask
  *  （用户要求「渲染还是渲染完整的」——把 mask 加在含文字的容器上会把首尾行渐隐掉）。 */
+/** 面板雾（用户口径 2026-10-11）：**从底部铺满、向上渐变变淡**，不是一片径向团。
+ *  纵向 linear-gradient 做填充，mask 让 backdrop 模糊也一起随高度化掉。 */
+const fogSheet = (extra?: CSSProperties): CSSProperties => ({
+  position: "absolute",
+  inset: 0,
+  zIndex: 0,
+  pointerEvents: "none",
+  backgroundImage:
+    "linear-gradient(to top,"
+    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 88%, transparent) 0%,"
+    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 70%, transparent) 38%,"
+    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 40%, transparent) 68%,"
+    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 14%, transparent) 88%,"
+    + " transparent 100%)",
+  backdropFilter: "blur(20px) saturate(1.25)",
+  WebkitBackdropFilter: "blur(20px) saturate(1.25)",
+  maskImage: "linear-gradient(to top, #000 0%, #000 58%, rgba(0,0,0,.55) 82%, transparent 100%)",
+  WebkitMaskImage: "linear-gradient(to top, #000 0%, #000 58%, rgba(0,0,0,.55) 82%, transparent 100%)",
+  ...extra,
+});
+
 const fogBack = (extra?: CSSProperties): CSSProperties => ({
   ...fogLayer,
   position: "absolute",
@@ -234,12 +255,14 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         role="button"
         aria-label="OH 悬浮球：单击打开对话，长按说话"
         style={{
-          ...fogLayer,
-          maskImage: "none", WebkitMaskImage: "none",
-          position: "fixed", right: 12, bottom: 128, width: 54, height: 54, borderRadius: "50%",
+          position: "fixed", right: 12, bottom: 128, width: 58, height: 58, borderRadius: "50%",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontWeight: 700, fontSize: 15, letterSpacing: 0.4, userSelect: "none", touchAction: "none", zIndex: 9999,
-          border: "none", textShadow,
+          fontWeight: 700, fontSize: 13, letterSpacing: 0, userSelect: "none", touchAction: "none", zIndex: 9999,
+          // 用户口径：球**不用雾**（实底 + 细边框，与本体内悬浮岛同语言）
+          background: "var(--dsw-alias-bg-layer-1, #fff)",
+          color: "var(--dsw-alias-label-primary, #1c1f24)",
+          border: "1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.12))",
+          boxShadow: "0 4px 18px rgba(0,0,0,.16)",
         }}
         onPointerDown={(e) => {
           pressY.current = e.clientY;
@@ -278,7 +301,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           }
         }}
       >
-        OH
+        （OH）
       </div>
     );
   }
@@ -337,7 +360,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         border: "none",
       }}
     >
-      <div aria-hidden style={fogBack({ inset: "-4% -6%" })} />
+      <div aria-hidden style={fogSheet()} />
       <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <span style={{ fontSize: 12, letterSpacing: 1.6, opacity: 0.55 }}>OH</span>
         <button

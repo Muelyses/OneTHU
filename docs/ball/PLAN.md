@@ -103,7 +103,9 @@
 | `src-tauri/plugins/onethu-overlay/**`（Android Kotlin + Rust 壳）、`src/lib/overlayAndroid.ts` | **ball-overlay-android** |
 | `src-tauri/src/overlay_win.rs`（新文件）、`src/lib/overlayDesktop.ts` | **ball-overlay-desktop** |
 | `src/pages/Settings.tsx`、`src/App.tsx`、`src-tauri/Cargo.toml`、`src-tauri/src/lib.rs`、`capabilities/*`、`gen/*`、`docs/ball/**` | **Lead** |
-| `lib/overlay.ts`、`components/GlobalOrb.tsx`、`lib/attach*.ts` | **Lead** |
+| `lib/overlay.ts`、`components/GlobalOrb.tsx` | **Lead** |
+| `lib/attach.ts`、`lib/imageFilters.ts`、`components/AttachTray.tsx`、`components/ImageFilterSheet.tsx` | **ball-attach**（已交付） |
+| `lib/attachActions.ts`、`components/AttachActionsSheet.tsx` | **ball-action**（已交付） |
 | `docs/im-cloud/**`、`docs/memory-cloud/**`、`plugins/OneTHU-Harness/**` | 别人（别碰） |
 
 ## 5. 自检命令（交付前必跑，只读）

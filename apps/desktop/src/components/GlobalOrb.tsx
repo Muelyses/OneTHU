@@ -21,6 +21,7 @@ import {
 import { askOh } from "../im/oh.js";
 import { AttachTray } from "./AttachTray.js";
 import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
+import { AttachActionsSheet } from "./AttachActionsSheet.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop } from "../lib/speech.js";
 
 const HOLD_MS = 450;
@@ -62,6 +63,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const [input, setInput] = useState("");
   const [level, setLevel] = useState(0);
   const [typing, setTyping] = useState(false);
+  const [sheetFiles, setSheetFiles] = useState<AttachFile[] | null>(null);
   const holdTimer = useRef<number | null>(null);
   const pollTimer = useRef<number | null>(null);
   const levelTimer = useRef<number | null>(null);
@@ -357,15 +359,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             const summary = files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、");
             setMsgs((m) => [...m, { role: "user", text: `［附件］${summary}` }]);
             scrollToEnd();
-            setTyping(true);
-            try {
-              await sendToOh(files);
-            } catch (e) {
-              setMsgs((m) => [...m, { role: "oh", text: `（附件发送失败：${e instanceof Error ? e.message : String(e)}）` }]);
-            } finally {
-              setTyping(false);
-              scrollToEnd();
-            }
+            setSheetFiles(files); // 需求 7：拿到附件就先给动作选择（转存云盘 / 交作业 / 发讨论区）
           }}
         />
       </div>
@@ -389,6 +383,21 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           }}
         />
       </form>
+      {sheetFiles ? (
+        <AttachActionsSheet
+          files={sheetFiles}
+          onClose={() => setSheetFiles(null)}
+          onDone={(d) => {
+            const r = (d as { result?: { ok?: boolean; path?: string; error?: string } })?.result;
+            setMsgs((m) => [...m, {
+              role: "oh",
+              text: r?.ok ? `已处理附件${r.path ? `：${r.path}` : ""}` : `附件动作未完成${r?.error ? `：${r.error}` : ""}`,
+            }]);
+            setSheetFiles(null);
+            scrollToEnd();
+          }}
+        />
+      ) : null}
     </div>
   );
 });

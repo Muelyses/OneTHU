@@ -28,7 +28,8 @@ import { commandsSnapshot, subscribeCommands } from "./loader.js";
 import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
 import { IconClock, IconDownload, IconPlus, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
 import { AttachTray } from "../components/AttachTray.js";
-import { buildOhMessage, formatSize, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
+import { AttachActionsSheet, type AttachActionDone } from "../components/AttachActionsSheet.js";
+import { formatSize, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
 import { HarnessMark } from "../components/HarnessMark.js";
 import { useIslandText } from "../state/island.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
@@ -339,6 +340,9 @@ export function ChatDock(): ReactNode {
      ttsStop() 回来的那个 done 属于上一代，不能拿它把新一轮刚点亮的图标灭掉。 */
   const speakGen = useRef(0);
   const [subLinger, setSubLinger] = useState(false); // 语音结束后字幕多留一拍（渐出）
+  /* 附件动作面板（需求 7）：拿到附件后待处理的那批（生命周期归本组件，关面板时回收预览地址） */
+  const [sheetFiles, setSheetFiles] = useState<AttachFile[] | null>(null);
+  const sheetRef = useRef<AttachFile[] | null>(null); // 同一批附件的即时镜像（关面板回收预览用）
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
   const islandText = useIslandText();
   const pressTimer = useRef<number | null>(null); // 长按计时（null=未按/已触发语音）
@@ -946,12 +950,13 @@ export function ChatDock(): ReactNode {
     };
   }, [voice]);
 
-  // 卸载：语音还在进行就按取消收尾（停识别器 + 清掉全局的取消进度变量）
+  // 卸载：语音还在进行就按取消收尾（停识别器 + 解冻页面 + 清掉全局的取消进度变量）
   useEffect(() => () => {
     if (voicePhaseRef.current !== "idle") {
       voicePhaseRef.current = "idle";
       speechStop();
     }
+    document.body.classList.remove("dock-voice-lock");
     document.documentElement.style.setProperty("--dock-cancel", "0");
   }, []);
 
@@ -1101,25 +1106,30 @@ export function ChatDock(): ReactNode {
     if (open) toggle(); // 面板挡着设置页：顺手收起，落点就是那个分区
   };
 
-  /** 附件（需求 6）：AttachTray 取到文件 → 面板里加一条**用户气泡** +
-   *  经既有 chat 通道把附件消息交给 OH（等价于给 sendToOh 注入一个宿主发送器，但不动全局）。
-   *  默认通道只是 `askOh()` 问一次，面板里看不到这条气泡——所以这里必须自己接管。 */
-  const sendAttached = useCallback(async (files: AttachFile[]): Promise<void> => {
+  /** 附件（需求 6+7）：AttachTray 取到文件 → ① 面板里记一条**用户气泡**；
+   *  ② 弹出动作面板（转存云盘 / 交作业 / 发讨论区）。与悬浮面板（GlobalOrb）同一套口径：
+   *  气泡由宿主渲染，动作执行在 AttachActionsSheet 内部，结果回来再提示 / 导航。 */
+  const attachPicked = useCallback((files: AttachFile[]): void => {
     if (files.length === 0) return;
-    try {
-      if (busyRef.current) {
-        setNotice("小OH 正在回答，稍后再发附件");
-        return;
-      }
-      const label = `［附件］${files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、")}`;
-      const message = await buildOhMessage(files); // 含名称/类型/大小/本地路径（文本类还带内容预览）
-      await send(message, label);
-    } catch (e) {
-      setNotice(`附件发送失败：${e instanceof Error ? e.message : String(e)}`);
-    } finally {
-      releaseAttachPreviews(files); // 所有权已交给宿主：预览地址由宿主回收
-    }
-  }, [send]);
+    const summary = files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、");
+    setMsgs((v) => [...v, { role: "user", text: `［附件］${summary}` }]);
+    sheetRef.current = files;
+    setSheetFiles(files);
+  }, []);
+
+  /** 动作面板收口：成功/失败给一行提示；需要回本体某页才能继续的（result.ui.route）直接导航。
+   *  **不关面板**：needUi 时面板里还有「打开官方作答页」按钮，关掉就没得点了。 */
+  const attachDone = useCallback((d: AttachActionDone): void => {
+    const r = d.result;
+    setNotice(r.ok ? `附件已处理${r.path ? `：${r.path}` : ""}` : `附件动作未完成${r.error ? `：${r.error}` : ""}`);
+    if (r.ui?.route) navGo(r.ui.route, r.ui.params as Record<string, unknown> | undefined);
+  }, []);
+
+  const attachClosed = useCallback((): void => {
+    releaseAttachPreviews(sheetRef.current ?? []); // 生命周期归宿主：面板关掉即回收预览地址
+    sheetRef.current = null;
+    setSheetFiles(null);
+  }, []);
 
   /** 手动「朗读这一条」：用户当场点的＝明确意图，走 previewSpeak 强制出声（无视静音开关）；
    *  再点同一条＝停。自动朗读那条路径完全交给 speakReply 内部判 autoSpeak（见 finalize）。 */
@@ -1140,7 +1150,7 @@ export function ChatDock(): ReactNode {
 
   /* ── 上划取消（微信式）─────────────────────────────────────────────
      位移进度 0..1 连续写进 :root 的 --dock-cancel（CSS 用它做颜色渐变，不引发重渲染）；
-     是否算「取消」只读 cancelArmedRef（迟滞：跨 56px 才算取消，回落到 0.85×阈值以下算反悔）。 */
+     是否算「取消」只读 cancelArmedRef（迟滞：跨阈值才 arm，回落到 0.85×阈值以下算反悔）。 */
   const applyCancelPull = (clientY: number): void => {
     const y0 = holdStartY.current;
     if (y0 == null) return;
@@ -1155,6 +1165,7 @@ export function ChatDock(): ReactNode {
     }
   };
   const resetCancelPull = (): void => {
+    document.body.classList.remove("dock-voice-lock"); // 手指抬起/取消：解冻页面
     holdStartY.current = null;
     cancelPctRef.current = 0;
     cancelArmedRef.current = false;
@@ -1169,6 +1180,9 @@ export function ChatDock(): ReactNode {
 
   /* ── 长按语音的按下/抬起：灵动岛与面板入口条共用同一套 450ms 语义 ── */
   const beginHold = (host: "island" | "entry", clientY: number): void => {
+    /* 语音手势期间冻结页面：touch-action 沿祖先链取交集，body 上写 none 就等于整页不许滚。
+       这样「上划取消」不会再带着页面一起上滑，浏览器也不会把这次触摸判成滚动而抢走指针。 */
+    document.body.classList.add("dock-voice-lock");
     holdStartY.current = clientY;
     cancelPctRef.current = 0;
     cancelArmedRef.current = false;
@@ -1325,7 +1339,12 @@ export function ChatDock(): ReactNode {
           className={"dock-panel" + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
           role="dialog"
           aria-label="OneTHU Harness 对话"
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
+          {/* 面板自己接住点按，且不再冒泡：应用里的委托监听不该把「面板内的点按」当页面点击。
+              命中区域被动画缩放搞小的那段历史见 global.css 的 keyframes 注释。 */}
           <div className="dock-head">
             <span className="dock-title" title="小OH"><HarnessMark size={15} /></span>
             <div className="dock-ops">
@@ -1392,8 +1411,11 @@ export function ChatDock(): ReactNode {
           />
           {/* 附件入口（需求 6）：输入行之上，薄薄一条——不抢输入框的视觉重心 */}
           <div className="dock-attach">
-            <AttachTray onPicked={sendAttached} />
+            <AttachTray onPicked={attachPicked} />
           </div>
+          {sheetFiles ? (
+            <AttachActionsSheet files={sheetFiles} onClose={attachClosed} onDone={attachDone} />
+          ) : null}
           <div className="dock-input-row">
             {inputMode ? (
               <textarea

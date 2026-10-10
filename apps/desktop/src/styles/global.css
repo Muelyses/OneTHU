@@ -3310,7 +3310,10 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: manipulation;
+  /* 手势锁定（2026-10-10 用户实录「一上划就取消」）：manipulation 允许浏览器把上划当**页面滚动**，
+     于是指针被抢走 → pointercancel/lostpointercapture → 按取消收场，页面还跟着滚。
+     none＝这块区域的手势（含纵向）全归我们，页面不滚、指针不被抢。静态写死，不靠 pressing 加类。 */
+  touch-action: none;
   /* 长按变长的观感来源：宽度/高度/圆角/背景/阴影同一条 300ms 曲线一起过渡（不瞬移、不拉伸）。
      注：宽度用 min-width 过渡——width:auto 无法与长度插值。 */
   transition:
@@ -3553,7 +3556,15 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   animation: dock-island-ch 0.34s cubic-bezier(0.2, 0.85, 0.3, 1.3) both;
 }
 @keyframes dock-island-ch { from { transform: translateY(-13px); opacity: 0; } }
-@keyframes dock-island-in { from { transform: translateX(-50%) translateY(26px) scale(0.6); opacity: 0; } }
+/* 注意：这里刻意**不加 scale**——带缩放时元素的命中区域会一起缩，动画期间的点按会穿透到页面
+   （见 dock-panel-in 的注释与 2026-10-10 的实测）。透视变形只用位移 + 透明度。 */
+@keyframes dock-island-in { from { transform: translateX(-50%) translateY(26px); opacity: 0; } }
+/* 语音手势期间冻结页面：touch-action 沿祖先链取交集，body 上写 none 就等于整页不许滚 */
+body.dock-voice-lock {
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 /* 语音失败的雾状浮片（浮在岛上）：雾 = 半透明 + backdrop-filter + 细边框；
    2.6s 后自行淡出（JS 同刻卸载，时长对齐 2600ms）。 */
 .dock-voice-toast {
@@ -3613,6 +3624,8 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   max-height: calc(100vh - 36px);
   display: flex;
   flex-direction: column;
+  /* 面板自己接住点按：绝不依赖「下层恰好没元素」。命中区域＝面板矩形本身（见下面 keyframes 注释） */
+  pointer-events: auto;
   background: var(--md-sys-color-surface-container-lowest);
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -3625,11 +3638,17 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 }
 /* 语音松手后的滑动进场（区别于点击的 morph） */
 .dock-panel.is-slide { animation: dock-panel-slide 0.42s cubic-bezier(0.22, 1.05, 0.36, 1) both; }
+/* ⚠️ 命中盒陷阱（2026-10-10 用户实录「点 OH 时后面遮挡的作业/通知被一起点开」）：
+   进场动画原来是 scale(0.18, 0.1)——**变换会把命中区域一起缩小**，于是「点击岛 → 面板在 pointerup
+   里挂载 → 紧随其后的 click 按坐标重新命中」这一拍，岛上离中心较远的点落在缩略框之外 → 命中页面
+   底下的作业行。实测（冻结动画取 elementFromPoint）：t=0 时 scale=(0.180,0.100)，岛左端(中心-170px)
+   命中 row；t=80ms scale≈(0.79,0.77) 才命中面板。所以这里只留位移 + 透明度 + 圆角 morph，
+   **命中区域从第一帧就是最终矩形**；观感仍是「从岛的位置化开」。 */
 @keyframes dock-panel-in {
-  from { opacity: 0.25; transform: translateX(-50%) scale(0.18, 0.1); border-radius: var(--r-pill); }
+  from { opacity: 0.25; transform: translateX(-50%) translateY(14px); border-radius: var(--r-pill); }
 }
 @keyframes dock-panel-out {
-  to { opacity: 0; transform: translateX(-50%) scale(0.2, 0.12); border-radius: var(--r-pill); }
+  to { opacity: 0; transform: translateX(-50%) translateY(10px); border-radius: var(--r-pill); }
 }
 @keyframes dock-panel-slide { from { opacity: 0; transform: translateX(-50%) translateY(46%); } }
 
@@ -3698,6 +3717,10 @@ html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 12p
 .dock-msgs {
   flex: 1;
   overflow-y: auto;
+  /* 只让消息区自己纵向滚；overscroll-behavior 防「滚到底继续带动页面」 */
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -3886,7 +3909,7 @@ html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 12p
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: manipulation;
+  touch-action: none; /* 同 .dock-island：入口条上的纵向手势也归我们（上划取消要用） */
   transition:
     min-height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
     border-radius 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),

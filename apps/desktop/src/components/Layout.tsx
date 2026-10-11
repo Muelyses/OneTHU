@@ -7,6 +7,7 @@ import { useExpanded } from "../state/usePlatformLayout.js";
 import { useSidebarCollapsed } from "../state/uiPrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
 import { requestOhEntry } from "./OhSettingsPage.js";
+import { ohOpenNow, requestPluginsList, subscribeOhMirror } from "../pages/Plugins.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
@@ -370,6 +371,8 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 
   /** 侧栏/抽屉共用导航内容 */
+  // 桌面钉底三格框的高亮：同样是「子状态优先」（与 LevelBox 一致）
+  const ohOpenSide = useSyncExternalStore(subscribeOhMirror, ohOpenNow);
   const navContent = (onAfter?: () => void) => {
     const unfoldedDefaults = NAV.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
     // 分区小标题（§2.8.1）：分组取自导航注册表的 category，新 IA 的今日/待办归「总览」。
@@ -537,7 +540,7 @@ export function Shell({ children }: { children: ReactNode }) {
             设置
           </button>
           <button
-            className={"nav-item" + (page === "plugins" ? " is-active" : "")}
+            className={"nav-item" + (page === "plugins" && !ohOpenSide ? " is-active" : "")}
             style={{ flex: 1, height: 26, justifyContent: "center", padding: 0 }}
             onClick={() => {
               onAfter?.();
@@ -547,7 +550,7 @@ export function Shell({ children }: { children: ReactNode }) {
             插件
           </button>
           <button
-            className="nav-item"
+            className={"nav-item" + (ohOpenSide ? " is-active" : "")}
             style={{ flex: "1.5 1 0", height: 26, justifyContent: "center", padding: 0, fontSize: "var(--text-xs)", whiteSpace: "nowrap" }}
             onClick={() => {
               onAfter?.();
@@ -707,15 +710,25 @@ export function PageHead({
 
 /** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— **所有页面同一个容器、同高、三格齐全**。
  *  ③ 只列已启用的主题？无关；这里只管导航。手机与桌面同款（桌面侧栏那份是同形态的纵向变体）。 */
-export function LevelBox({ active }: { active: "settings" | "plugins" | "oh" }): ReactNode {
-  const { navigate } = useApp();
+export function LevelBox(): ReactNode {
+  const { navigate, page } = useApp();
+  /** ① 高亮**按子状态推导**：OH 子页打开 → 第三格；否则按路由 → 设置 / 插件。
+   *  （此前各调用方传死 active="plugins"，导致进了子页第三格不变蓝、且看着像卡住） */
+  const ohOpen = useSyncExternalStore(subscribeOhMirror, ohOpenNow);
+  const active: "settings" | "plugins" | "oh" = ohOpen ? "oh" : page === "settings" ? "settings" : "plugins";
   const cell = (id: "settings" | "plugins" | "oh", label: string, extra?: CSSProperties): ReactNode => (
     <button
       className={"nav-item" + (active === id ? " is-active" : "")}
       style={{ flex: 1, height: 26, justifyContent: "center", padding: 0, ...extra }}
       onClick={() => {
-        if (id === "settings") navigate("settings");
+        if (id === "settings") {
+          /* 离开插件页也顺手清掉子页状态：保证"从任何地方再进插件"都是列表默认态 */
+          requestPluginsList();
+          navigate("settings");
+        }
         else if (id === "plugins") {
+          /* ① 用户实测：停在 OH 子页时点「插件」格必须**回列表**——关子页状态 + 导航双管齐下 */
+          requestPluginsList();
           navigate("plugins");
         } else {
           requestOhEntry();

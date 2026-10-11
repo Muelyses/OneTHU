@@ -227,7 +227,7 @@ export function SettingsPage() {
       />
 
       {/* ① 手机端「我的」页顶部：**三格齐全**（设置 | 插件 | OneTHU Harness），与插件页/子页同一个组件 */}
-      {isPhone ? <LevelBox active="settings" /> : null}
+      {isPhone ? <LevelBox /> : null}
 
       <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
         {settingsTabLayout.order
@@ -1780,8 +1780,8 @@ function AppearanceSection(): ReactNode {
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
           {/* ③ 两个按钮并列、同一套胶囊口径：安装（市场 + 主题筛选）｜管理（主题插件的启用/停用） */}
           <button
-            className="chip"
-            style={{ height: 28, padding: "0 12px", fontSize: "var(--text-xs)", flex: "none" }}
+            className="btn btn-primary"
+            style={{ flex: "none" }}
             title="到插件市场安装主题（自动筛选「主题」类别）"
             onClick={() => {
               requestPluginsView({ view: "market", category: "theme" });
@@ -1791,8 +1791,8 @@ function AppearanceSection(): ReactNode {
             安装主题
           </button>
           <button
-            className="chip"
-            style={{ height: 28, padding: "0 12px", fontSize: "var(--text-xs)", flex: "none" }}
+            className="btn btn-primary"
+            style={{ flex: "none" }}
             title="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）"
             onClick={() => {
               /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */

@@ -83,6 +83,44 @@ const pluginsViewListeners = new Set<() => void>();
 let lastPluginsView: "mine" | "market" = "mine";
 let lastPluginsCat: "all" | "theme" | "general" = "all";
 
+/* ── ①-OH 子页状态镜像（2026-10-11 用户实测：第三格不高亮）──
+   高亮必须按**子状态**推导：ohOpen=true → 高亮第三格；否则按路由（设置/插件）。
+   子状态在 PluginsPage 内部，所以这里放一个可订阅镜像给三格框读。 */
+let ohOpenMirror = false;
+const ohMirrorListeners = new Set<() => void>();
+
+export function ohOpenNow(): boolean {
+  return ohOpenMirror;
+}
+export function subscribeOhMirror(f: () => void): () => void {
+  ohMirrorListeners.add(f);
+  return () => {
+    ohMirrorListeners.delete(f);
+  };
+}
+function setOhOpenMirror(v: boolean): void {
+  if (ohOpenMirror === v) return;
+  ohOpenMirror = v;
+  for (const f of ohMirrorListeners) f();
+}
+
+/** ① 回插件列表（用户实测 bug 的根因修复）：只 `navigate("plugins")` 是不够的——
+ *  若已经停在插件页且 ohOpen=true，页面不会变。这个一次性请求让**子页状态被显式关掉**。
+ *  与其它请求同款机制：写旗标 → 通知 → 消费即清；可重复、可逆。 */
+let pendingList = false;
+const listListeners = new Set<() => void>();
+
+export function requestPluginsList(): void {
+  pendingList = true;
+  for (const f of listListeners) f();
+}
+
+function takePluginsList(): boolean {
+  const v = pendingList;
+  pendingList = false;
+  return v;
+}
+
 export function requestPluginsView(req: PluginsViewReq): void {
   pendingPluginsView = { ...req };
   for (const f of pluginsViewListeners) f();
@@ -165,6 +203,11 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   /** OH 内联设置面板的「草稿有改动」标记（就地渲染时不再弹确认窗，标记仅为兼容其 props） */
   const ohDirtyRef = useRef(false);
 
+  /* ①-OH 子页状态 → 共享镜像（三格框据此高亮第三格） */
+  useEffect(() => {
+    setOhOpenMirror(ohOpen);
+  }, [ohOpen]);
+
   /* ⑤ 记住筛选状态（会话内）：离开插件页再回来不丢 */
   useEffect(() => {
     lastPluginsView = view;
@@ -176,14 +219,25 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   useEffect(() => {
     const apply = (): void => {
       const req = takePluginsView();
-      if (!req) return;
-      if (req.view) setView(req.view);
-      if (req.category) setCat(req.category);
+      if (req) {
+        if (req.view) setView(req.view);
+        if (req.category) setCat(req.category);
+      }
+      /* 顺序固定：先关子页（list）、后开子页（entry）——同一次 tick 里以"最后表达的意图"为准 */
+      if (takePluginsList()) setOhOpen(false);
+      if (consumeOhEntry()) setOhOpen(true);
     };
     apply();
     pluginsViewListeners.add(apply);
+    /* ① 「插件」格请求：显式关子页（这就是"点完 OH 回不到插件"的根因） */
+    const applyList = (): void => {
+      if (takePluginsList()) setOhOpen(false);
+    };
+    applyList();
+    listListeners.add(applyList);
     return () => {
       pluginsViewListeners.delete(apply);
+      listListeners.delete(applyList);
     };
   }, []);
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
@@ -193,7 +247,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   }, []);
   /* ① 用户拍板：三个并列（设置 / 插件 / OneTHU Harness），**用共享组件 LevelBox**——
      任何页面同一个容器、同高、三格齐全；每页自己的大标题照旧保留（框是框、标题是标题）。 */
-  const dualEntry = isPhone ? <LevelBox active="plugins" /> : null;
+  const dualEntry = isPhone ? <LevelBox /> : null;
   /** ⑤「安装插件」按层级归位：放页头右侧，不再挤在类别筛选那一行里 */
   const installBtn = (
     <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
@@ -236,7 +290,8 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
           title="OneTHU Harness"
           meta={<span>基础设置 / 高级配置</span>}
         />
-        {isPhone ? <LevelBox active="oh" /> : null}
+                {/* 子页也带三格框（第三格高亮由子状态推导，不再传死 active） */}
+        {isPhone ? <LevelBox /> : null}
         <Card>
           <OhSettingsPage advancedPanels={ohAdvancedPanels} />
         </Card>

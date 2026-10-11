@@ -581,7 +581,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     }
 
     private fun renderAutoSpeak() {
-        panel?.autoSpeakBtn?.text = if (autoSpeak) "自动朗读：开" else "自动朗读：关"
+        panel?.autoSpeakBtn?.text = if (autoSpeak) "朗读 开" else "朗读 关"
     }
 
     /** 滚动到底：连发两次是因为新内容要等一次布局才有正确的高度（用户：停在回复中间） */
@@ -651,7 +651,9 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private fun buildMessageBubble(msg: PushMsg, animate: Boolean): FrameLayout {
         val user = msg.role == "user"
         val light = !dark
-        val maxW = (screenW() * 0.84f).toInt()
+        // 可用宽度：小窗内容宽（去掉 14dp×2 内缩）与「≤84% 屏宽」取小
+        val panelInnerW = (screenW() - 2 * OverlayViews.dp(ctx, OverlayViews.PANEL_EDGE_DP))
+        val maxW = minOf((screenW() * 0.84f).toInt(), panelInnerW)
         val bubble = GlassBubble(themed).apply {
             tailFor(user)
             fillTop = OverlayViews.glassFill(light, top = true)
@@ -664,9 +666,10 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         }
         val inner = LinearLayout(themed).apply {
             orientation = LinearLayout.VERTICAL
+            // 垂直 ≤9dp、水平 ≤13dp（用户：气泡不能比文字高很多）
             setPadding(
-                OverlayViews.dp(ctx, 14), OverlayViews.dp(ctx, 11),
-                OverlayViews.dp(ctx, 14), OverlayViews.dp(ctx, 11),
+                OverlayViews.dp(ctx, OverlayViews.BUBBLE_PAD_H_DP), OverlayViews.dp(ctx, OverlayViews.BUBBLE_PAD_V_DP),
+                OverlayViews.dp(ctx, OverlayViews.BUBBLE_PAD_H_DP), OverlayViews.dp(ctx, OverlayViews.BUBBLE_PAD_V_DP),
             )
         }
 
@@ -685,7 +688,8 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
         // markdown 文本块（气泡内）
         if (msg.text.isNotBlank()) {
-            val textMaxW = (maxW - OverlayViews.dp(ctx, 28)).coerceAtLeast(OverlayViews.dp(ctx, 80))
+            val textMaxW = (maxW - 2 * OverlayViews.dp(ctx, OverlayViews.BUBBLE_PAD_H_DP))
+                .coerceAtLeast(OverlayViews.dp(ctx, 80))
             val blocks = OverlayMd.render(themed, msg.text, dark) { url -> openLink(url) }
             for (b in blocks) {
                 if (b is android.widget.TextView) b.maxWidth = textMaxW
@@ -708,7 +712,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             say.textSize = 12f
             say.setTextColor(OverlayViews.ink(dark))
             say.alpha = 0.9f
-            say.setPadding(0, OverlayViews.dp(ctx, 2), OverlayViews.dp(ctx, 6), 0)
+            say.setPadding(0, 0, OverlayViews.dp(ctx, 6), 0)
             OverlayViews.shadow(say)
             val readText = msg.text
             say.setOnClickListener { OverlayEvents.emit("speak", 0, 0, readText) }
@@ -747,7 +751,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
      */
     fun echoLocalAttachment(path: String, name: String) {
         attachSending = true
-        val msg = PushMsg("user", "📎 $name", listOf(path), "sending")
+        val msg = PushMsg("user", "附件：$name", listOf(path), "sending")
         if (panel == null || !panelAttached) {
             // 面板没开：排队，等面板挂上时先显示（JS 权威状态随后会整体重建）
             pendingEchoes.add(msg)

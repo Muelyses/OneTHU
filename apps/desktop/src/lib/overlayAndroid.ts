@@ -361,7 +361,7 @@ async function sendNativeAttach(raw: NativeOverlayEvent): Promise<void> {
   const name = typeof raw.name === "string" ? raw.name : undefined;
   // 立刻入列（带缩略图路径 + sending 态）：原生在此之前已经本地回显过一次，
   // 这里的 push 是权威状态 —— 面板关掉也留在列表里，下次打开照样看得到这条与它的回复。
-  const mine: NativeMsg = { role: "user", text: `📎 ${name ?? "附件"}`, images: [path], status: "sending" };
+  const mine: NativeMsg = { role: "user", text: `附件：${name ?? "（未命名）"}`, images: [path], status: "sending" };
   nativeMsgs.push(mine);
   nativeBusy = true;
   void syncNativeUi();

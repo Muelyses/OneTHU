@@ -532,3 +532,77 @@ cd apps/desktop/src-tauri && cargo check --target aarch64-linux-android   # 本�
 | 自然弹出 | 时长/曲线/只给最新一条的逻辑 | **弹出是否「自然」**、连续多条到达时是否跟手不打架 |
 | 附件气泡 | 同材质 + 缩略图圆角 | 缩略图在玻璃底上的观感 |
 | 滚动 | 已修 LinkMovementMethod 抢触摸 | 含链接的长回复里能否正常上下滑 |
+
+---
+
+# task-15 质量红线轮（emoji / 气泡胖 / 顶栏残缺 / （OH）标）
+
+状态：**完成 · 编译通过**（`:tauri-plugin-onethu-overlay:compileDebugKotlin` → BUILD SUCCESSFUL；tsc exit 0；`._*` 0）。
+
+## 1) emoji：全写域扫描 + 清零
+扫描范围：`plugins/onethu-overlay/**/*.kt` + `lib/overlayAndroid.ts`，按
+`[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{20E3}]` 逐码点扫。
+**命中 2 处，都在源码字符串里（面板可见文案）**，已改：
+| 位置 | 改前 | 改后 |
+|---|---|---|
+| `OverlayWindows.kt`（附件本地回显） | `"📎 $name"` | `"附件：$name"` |
+| `overlayAndroid.ts`（附件消息推给原生） | `` `📎 ${name}` `` | `` `附件：${name}` `` |
+复扫结果：**0 处**。（其余命中都是**注释里的箭头/框线/⚠**，不进 UI；`─` 之类是注释分隔线。）
+复现命令：`python3 -c "…emoji 正则扫…"`（见本轮会话脚本）。
+
+## 2) 气泡不再「胖」——参数表（含实测）
+| 项 | 值 | 实测 |
+|---|---|---|
+| 垂直内边距 | **7dp**（要求 ≤9） | — |
+| 水平内边距 | **13dp**（要求 ≤13） | — |
+| 字号 / 行高 | **15sp** / `lineSpacingMultiplier = 1.32`（Android 乘的是字体行高 1.17em → **≈1.55em**，落在 1.55–1.62 低端） | 单行 = 15×1.17×1.32 ≈ **23.2dp** |
+| 单行气泡总高 | 23.2 + 7×2 = **37.2dp**（Android 算法） | 静态桩（中文字体，更悲观）量到 **39.25dp** —— 两种算法都 **≤40dp** ✓ |
+| min-height | **不设**（任何地方都没有 minHeight） | — |
+| 段间距（气泡内） | 缩略图下 6dp；朗读行 0；列表项 3dp；分隔线上下各 3dp → **全部 ≤6dp** | — |
+| 空行 | markdown 段落逐行 `trimEnd()`，段落循环遇到空行即断 → 块内**不留空行** | — |
+| 气泡最大宽度 | `min(84% 屏宽, 小窗内容宽)` | 361dp 屏上 ≈ 303dp |
+| 消息间距 | **11dp** | — |
+> 注：垂直内边距从 8dp 收到 7dp 是被实测逼出来的——8dp 时静态桩量到 **41.25dp**，超了 40dp 上限。
+
+## 3) 顶栏：一行三胶囊（实测）
+| 项 | 值 |
+|---|---|
+| 结构 | **一行**：`回到 OneTHU` / `朗读 开·关` / `收起`（第二行已删） |
+| 胶囊高 | **32dp**（固定 LayoutParams 高度） |
+| 水平内边距 | **12dp**；彼此间距 **8dp**；与小窗边距一致 **14dp**（content 左右 padding） |
+| 单行约束 | `isSingleLine=true`、`maxLines=1`、`ellipsize=null` → **不换行、不截断** |
+| 文案收敛 | 「自动朗读：开/关」→ **「朗读 开/关」**（360dp 也放得下） |
+| 实测 | 胶囊行高 **32dp**，三个胶囊总宽 **233dp**，可用 **333dp**（333 = 屏 361dp − 14×2） → **一行完整放下，余量 100dp** ✓ |
+
+## 4) （OH）标：与官方 HarnessMark 完全一致
+来源 `components/HarnessMark.tsx` + `global.css:4090-4093`（**半角** `(` `O` `H` `)`）：
+| 范围 | spans | 与 CSS 对应 |
+|---|---|---|
+| `[0,1)` `(` | `TypefaceSpan("monospace")` + `RelativeSizeSpan(1.10f)` | `.p` mono 400；括号**补到 1.10×**（等宽括号天生偏小偏细） |
+| `[1,2)` `O` | `TypefaceSpan(serif, 500)` + `RelativeSizeSpan(1.14f)` | `.o` 1.14em |
+| `[2,3)` `H` | `TypefaceSpan(sans-serif, 700)` + `RelativeSizeSpan(1.06f)` | `.h` 1.06em / 700 |
+| `[3,4)` `)` | 同 `(` | — |
+TextView：`textSize=15sp`、`letterSpacing=0.05f`（= `gap:0.05em`）、`includeFontPadding=false`、`isSingleLine=true`、`gravity=CENTER`（球内垂直居中）、**球径 54dp 不变**。
+宽度核算：`(`9.9 + `O`12.3 + `H`11.4 + `)`9.9 + 字距 3 ≈ **46.5dp < 54dp** ✓ 不裁、不挤。
+静态桩里把 54dp 球框画成虚线叠上去看，括号与字母同高、无裁切（见 `preview/mark-ball.png`）。
+
+## 5) 静态渲染截图（**这是我的交付证据，但要说清性质**）
+- 位置：`apps/desktop/src-tauri/plugins/onethu-overlay/preview/`
+  - `mark-ball.png`（球 · 浅/深，叠 54dp 虚线框）
+  - `topbar.png`（顶栏三胶囊 · 浅/深）
+  - `bubbles.png`（气泡：单行 / 多行 markdown / 附件缩略图 · 浅/深）
+  - `measure.png`（**把实测数字印在图上**：单行 39.25dp、胶囊行 32dp/总宽 233dp、尾角 2.6× 放大对照）
+- **性质说明（必须诚实）**：这是**参数等价的静态渲染**（HTML/CSS 复刻同一套数值 + 同一套 Web 字体栈），
+  **不是 App 真机截图**——我这边不允许装机/点屏。它能证明的是**几何与材质参数**（高度、宽度、圆角、尾角、透明度、层次），
+  不能证明 Android 端字体度量（Roboto/PingFang 的 ascent/descent）与自绘路径的最终像素。真机观感仍需用户点一遍。
+- 生成方式：`preview/*.html` + Chrome headless（`--headless=new --force-device-scale-factor=2 --screenshot`），
+  与 `measure.html` 里用 `getBoundingClientRect()` 把实测值写进页面再截图。
+
+## 6) 哪条只能真机验（本轮）
+| 条目 | 静态已证 | 只能真机验 |
+|---|---|---|
+| emoji | 码点扫描 **0 命中** | —（无需真机） |
+| 气泡不胖 | 实测 39.25dp / Android 算式 37.2dp | Android 字体度量下的最终高度、连续多条的手感 |
+| 顶栏一行 | 实测总宽 233dp < 可用 333dp | 真机字体（PingFang/Roboto）下是否仍一行、胶囊是否被系统主题描边影响 |
+| （OH）标 | span 表 + 宽度核算 + 虚线球框对照 | 真机上 mono/serif/sans 三族实际字形是否如预期（Android 无 SF Mono/Georgia，落到 Droid Sans Mono/Noto Serif 的观感差异只能真机看） |
+| 玻璃材质 | 参数与层次 | 真机压在真实壁纸/应用上是否「像玻璃」（elevation 阴影在 overlay 窗口里的实际表现） |

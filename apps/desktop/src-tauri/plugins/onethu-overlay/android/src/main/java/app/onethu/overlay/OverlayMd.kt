@@ -111,7 +111,7 @@ object OverlayMd {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                     )
-                    lp.bottomMargin = OverlayViews.dp(ctx, 4)
+                    lp.bottomMargin = OverlayViews.dp(ctx, 3)
                     listView.addView(tv, lp)
                     i++
                 }
@@ -137,7 +137,7 @@ object OverlayMd {
                     break
                 }
                 if (buf.isNotEmpty()) buf.append('\n')
-                buf.append(lt)
+                buf.append(lt.trimEnd())
                 i++
             }
             out.add(paragraph(ctx, buf.toString(), dark, onLink))
@@ -274,7 +274,8 @@ object OverlayMd {
         textSize = OverlayViews.MSG_SP
         setLineSpacing(0f, OverlayViews.LINE_MULT)
         setTextColor(OverlayViews.ink(dark))
-        includeFontPadding = true
+        // 关掉字体附加内边距：否则单行气泡会被撑高（用户：「气泡比文字高很多」）
+        includeFontPadding = false
         isClickable = false
         isFocusable = false
         // 注意：LinkMovementMethod **不能**默认挂上——它会吃掉触摸事件，破坏面板滚动；
@@ -348,7 +349,8 @@ object OverlayMd {
             it.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 OverlayViews.dp(ctx, 1),
-            ).apply { topMargin = OverlayViews.dp(ctx, 6); bottomMargin = OverlayViews.dp(ctx, 6) }
+            // 段间距 ≤6dp（用户要求）：分隔线上下各 3dp
+            ).apply { topMargin = OverlayViews.dp(ctx, 3); bottomMargin = OverlayViews.dp(ctx, 3) }
         }
 
     /** 三个点的「进行中」指示（复用电平波纹的样子，匀速跳） */

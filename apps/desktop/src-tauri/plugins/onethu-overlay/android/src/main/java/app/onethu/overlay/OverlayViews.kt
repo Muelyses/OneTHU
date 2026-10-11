@@ -70,10 +70,11 @@ object OverlayViews {
         val plain = "(OH)"
         val sb = android.text.SpannableStringBuilder(plain)
         val flags = android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        // ( ) —— mono 400（scaleY(1.06) 用 RelativeSizeSpan 近似：等比略放大）
+        // ( ) —— mono 400。等宽字体的括号本身偏小偏细，补到 **1.10×** 才不会「比字母小一圈」；
+        // CSS 里的 scaleY(1.06) 也用这个等比放大近似。
         for (i in intArrayOf(0, 3)) {
             sb.setSpan(TypefaceSpan("monospace"), i, i + 1, flags)
-            sb.setSpan(RelativeSizeSpan(1.06f), i, i + 1, flags)
+            sb.setSpan(RelativeSizeSpan(1.10f), i, i + 1, flags)
         }
         // O —— serif 500 / 1.14em
         sb.setSpan(TypefaceSpan(weighted("serif", 500, Typeface.NORMAL)), 1, 2, flags)
@@ -129,7 +130,27 @@ object OverlayViews {
     const val PANEL_RADIUS_DP = 24
 
     const val MSG_SP = 15f
-    const val LINE_MULT = 1.62f
+
+    /**
+     * 行高倍率。Android 的 `lineSpacingMultiplier` 乘的是**字体自身行高**（Roboto ≈1.17em），
+     * 所以 1.32 × 1.17 ≈ **1.55em** ≈ CSS `line-height: 1.55`（用户要求 1.55–1.62 之间取低端，
+     * 这样单行气泡才压得进 40dp：15sp×1.17×1.32 ≈ 23.2dp + 8dp×2 = 39.2dp）。
+     */
+    const val LINE_MULT = 1.32f
+
+    /**
+     * 气泡内边距（用户要求：垂直 ≤9dp、水平 ≤13dp）。
+     * 取 7dp 是因为要守住「单行气泡总高 ≤40dp」：Android 单行 = 15sp×1.17×1.32 ≈ 23.2dp + 7×2 = **37.2dp**；
+     * 静态桩用中文字体量出来 ≈ 39.25dp，两种算法都在 40dp 以内（8dp 时静态桩量到 41.25dp，会超）。
+     */
+    const val BUBBLE_PAD_V_DP = 7
+    const val BUBBLE_PAD_H_DP = 13
+
+    /** 顶栏胶囊：高 32dp、水平内边距 12dp、彼此间距 8dp、与小窗边距一致 14dp */
+    const val CHIP_H_DP = 32
+    const val CHIP_PAD_H_DP = 12
+    const val CHIP_GAP_DP = 8
+    const val PANEL_EDGE_DP = 14
     /** 消息间距（用户要求 10–12dp） */
     const val GAP_DP = 11
 
@@ -323,86 +344,57 @@ object OverlayViews {
         }
         val content = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(ctx, 22), dp(ctx, 14), dp(ctx, 22), dp(ctx, 12))
+            // 左右 14dp：与小窗到屏幕的边距一致（顶栏胶囊也吃这个缩进）
+            setPadding(dp(ctx, PANEL_EDGE_DP), dp(ctx, 14), dp(ctx, PANEL_EDGE_DP), dp(ctx, 12))
             // 关键：面板加窗后由容器拿焦点，EditText **不自动**抢焦点
             // （否则系统会在没人点输入行的情况下自己弹输入法——真机实录）
             isFocusable = true
             isFocusableInTouchMode = true
         }
 
-        // 固定顶栏（在 ScrollView 之外，任何滚动位置都在）：两行四个动作，全部带可读胶囊衬底。
-        // 第一行：回到 OneTHU（用户主动点击才跳，不算破红线）+ 自动朗读开关
-        val headTop = LinearLayout(ctx).apply {
+        // 顶栏：**一行三个胶囊**（回到 OneTHU / 朗读 开·关 / 收起）——在 ScrollView 之外，任何滚动位置都在。
+        // 规格（用户拍板）：高 32dp、水平内边距 12dp、彼此间距 8dp、左右与小窗边距一致（content 的 14dp）；
+        // 单行显示、不换行、不截断；文案按 360dp 宽收敛过（「朗读 开/关」而不是「自动朗读：开」）。
+        val headRow = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        val backBtn = TextView(ctx).apply {
-            text = "回到 OneTHU"
+
+        fun chip(label: String): TextView = TextView(ctx).apply {
+            text = label
             textSize = 12f
             setTextColor(ink(dark))
             alpha = 1f
             background = capsule(ctx, dark)
-            setPadding(dp(ctx, 11), dp(ctx, 6), dp(ctx, 11), dp(ctx, 6))
+            setPadding(dp(ctx, CHIP_PAD_H_DP), 0, dp(ctx, CHIP_PAD_H_DP), 0)
+            gravity = Gravity.CENTER
+            isSingleLine = true
+            maxLines = 1
+            ellipsize = null
+            includeFontPadding = false
             shadow(this)
         }
-        headTop.addView(
+
+        val backBtn = chip("回到 OneTHU")
+        val speakBtn = chip("朗读 关")
+        val collapse = chip("收起")
+        headRow.addView(
             backBtn,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, CHIP_H_DP)),
         )
-        val speakBtn = TextView(ctx).apply {
-            text = "自动朗读：关"
-            textSize = 12f
-            setTextColor(ink(dark))
-            alpha = 1f
-            background = capsule(ctx, dark)
-            setPadding(dp(ctx, 11), dp(ctx, 6), dp(ctx, 11), dp(ctx, 6))
-            shadow(this)
-        }
-        val sbLp = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-        )
-        sbLp.marginStart = dp(ctx, 8)
-        headTop.addView(speakBtn, sbLp)
+        val sbLp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, CHIP_H_DP))
+        sbLp.marginStart = dp(ctx, CHIP_GAP_DP)
+        headRow.addView(speakBtn, sbLp)
+        val clp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, CHIP_H_DP))
+        clp.marginStart = dp(ctx, CHIP_GAP_DP)
+        headRow.addView(collapse, clp)
         content.addView(
-            headTop,
+            headRow,
             LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ),
         )
-
-        // 第二行（右对齐）：只剩「收起」（「本次关闭悬浮球」按用户要求删除）
-        val head = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL or Gravity.END
-        }
-        head.addView(View(ctx), LinearLayout.LayoutParams(0, 1, 1f))
-        val collapse = TextView(ctx).apply {
-            text = "收起"
-            textSize = 13f
-            setTextColor(ink(dark))
-            alpha = 1f
-            background = capsule(ctx, dark)
-            setPadding(dp(ctx, 12), dp(ctx, 7), dp(ctx, 12), dp(ctx, 7))
-            shadow(this)
-        }
-        head.addView(
-            collapse,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
-        )
-        val hlp = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-        )
-        hlp.topMargin = dp(ctx, 8)
-        content.addView(head, hlp)
 
         // 消息区（可滑动）。顶栏在它之外 → 任何滚动位置都常驻；只在这里放消息
         val list = LinearLayout(ctx).apply {

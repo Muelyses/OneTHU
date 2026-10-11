@@ -68,10 +68,11 @@ class GlassBubble(context: Context) : FrameLayout(context) {
     fun tailFor(isUser: Boolean) {
         val big = OverlayViews.dp(context, 20).toFloat()
         val tail = OverlayViews.dp(context, 6).toFloat()
+        // 顺序 [tl, tr, br, bl]：用户右下收角、OH 左下收角（「说话方那一侧」）
         cornerRadiiPx = if (isUser) {
             floatArrayOf(big, big, tail, big)
         } else {
-            floatArrayOf(big, tail, big, big)
+            floatArrayOf(big, big, big, tail)
         }
         invalidateOutline()
         invalidate()

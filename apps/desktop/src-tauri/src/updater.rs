@@ -16,7 +16,7 @@
 //! `fetch_file_bytes` 的 live 实锤），所以先探测、再对真链接做 `Range` 分段——
 //! 每段 ≤2MB 落盘 + 发一次进度事件，内存占用与文件大小脱钩（安卓上尤其要紧）。
 
-use serde_json::Value as JsonValue;
+use serde_json::Value;
 use serde_json::json;
 use std::io::Write;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -103,7 +103,7 @@ pub async fn updater_download(
     path: String,
     file_name: String,
     expect_size: Option<u64>,
-) -> Result<JsonValue, String> {
+) -> Result<Value, String> {
     CANCEL.store(false, Ordering::SeqCst);
     // 文件名安全化：只取 basename、去掉分隔符（远端名/清单 name 都可能在别的机器上生成）
     let safe: String = file_name
@@ -254,7 +254,7 @@ pub async fn updater_open_installer(app: AppHandle, path: String) -> Result<(), 
             .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
             .0
             .clone();
-        let _: serde_json::JsonValue = handle
+        let _: serde_json::Value = handle
             .run_mobile_plugin("installApk", json!({ "path": path }))
             .map_err(|e| format!("拉起系统安装页失败：{e}"))?;
         Ok(())

@@ -1172,10 +1172,14 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
                 MotionEvent.ACTION_MOVE -> {
                     if (!resizing) return@setOnTouchListener false
                     val lp = panelLp ?: return@setOnTouchListener true
+                    // 方向（用户当场修）：**往上拖 = 变高、往下拖 = 变矮**。
+                    // dy = 当前 rawY − 按下 rawY（往上为负）→ 高度取 **startH − dy**：
+                    //   上拖 dy<0 → h 变大；下拖 dy>0 → h 变小。底边固定（y 同步上顶）。
+                    // 用 rawY（屏幕坐标）而不是 e.y：拖动中窗口顶边在动，e.y 会跟着漂。
                     val dy = e.rawY - resizeDownY
                     val minH = (screenH() * PANEL_RATIO_MIN).toInt()
                     val maxH = (screenH() * PANEL_RATIO_MAX).toInt()
-                    val h = (resizeStartH + dy).toInt().coerceIn(minH, maxH)
+                    val h = (resizeStartH - dy).toInt().coerceIn(minH, maxH)
                     lp.height = h
                     // 底边固定：改高度的同时把 y 往上顶（像底部抽屉被拉长）
                     lp.y = (screenH() - h - OverlayViews.dp(ctx, OverlayViews.PANEL_EDGE_DP))

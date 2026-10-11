@@ -144,28 +144,8 @@ export function VoiceSettingsSection(): ReactNode {
 
   return (
     <>
-      {/* ① 静音 / 自动播放 */}
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">自动朗读 OH 的回复</div>
-          <div className="setting-desc">
-            打开后，OH 每答完一段就念出来（聊天坞与全局悬浮球里的回复都算）；关闭则完全静音。
-            <span style={{ color: "var(--text-3)" }}>　默认关闭，不会自己出声。</span>
-          </div>
-        </div>
-        <Switch
-          on={prefs.autoSpeak}
-          label="自动朗读 OH 的回复"
-          onChange={(v) => {
-            setVoicePrefs({ autoSpeak: v });
-            if (!v) {
-              void ttsStop(); // 关掉就立刻闭嘴，不用等这一句念完
-              setSpeaking(false);
-            }
-          }}
-        />
-      </div>
-
+      {/* 「自动朗读 OH 的回复」开关已按用户要求**删除**（2026-10-11）：
+          自动朗读只在对话面板/悬浮窗顶部的「朗读 开/关」按钮上管，设置里不再出现第二处开关。 */}
       {/* ② 引擎状态 */}
       <div className="setting-row">
         <div>

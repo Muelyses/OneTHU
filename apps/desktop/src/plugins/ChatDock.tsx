@@ -37,7 +37,7 @@ import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, spee
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { requestOhTier } from "../components/OhSettingsPage.js";
+import { requestOhEntry } from "../components/OhSettingsPage.js";
 
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { openExternal } from "../pages/info/openExternal.js";
@@ -78,6 +78,19 @@ function ohPromptSnapshot(): OhPromptReq | null {
 }
 /** 灵动岛：长按判定时长（毫秒）——超过即进入语音，未超过视为点击 */
 const VOICE_HOLD_MS = 450;
+/** 面板高度偏好（顶部把手拖出来的高度；没存过就用 CSS 的 62vh 默认） */
+const DOCK_H_KEY = "onethu.dock.panelHeight";
+/** 竖直拖动的区间：视口高的 30%–80%（用户：可以上下拖动拉长拉短悬浮窗） */
+const DOCK_H_MIN_RATIO = 0.3;
+const DOCK_H_MAX_RATIO = 0.8;
+function readDockHeight(): number | null {
+  try {
+    const v = Number(localStorage.getItem(DOCK_H_KEY) ?? "");
+    return Number.isFinite(v) && v > 0 ? v : null;
+  } catch {
+    return null;
+  }
+}
 /** 松手后等待识别器吐最终结果的宽限 */
 const VOICE_FINAL_GRACE_MS = 320;
 /** 上划取消的位移阈值（px）：按住后**向上拉到取消区**再松手才算取消。
@@ -490,6 +503,10 @@ export function ChatDock(): ReactNode {
   const scrollRef = useRef<HTMLDivElement>(null);
   /** ③ 底栏容器（长按判定挂这里，不再挂在入口按钮上） */
   const rowRef = useRef<HTMLDivElement>(null);
+  /** A 面板高度（null = 用 CSS 默认 62vh）；拖把手改它，松手写进 localStorage */
+  const [panelH, setPanelH] = useState<number | null>(() => readDockHeight());
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{ y0: number; h0: number } | null>(null);
 
   /** ② 滚到底（面板打开 / 水合后 / 流式增量 / 发送后 / 图片撑高都要跟进）。
    *  双帧写两次：内容高度常在下一帧才定（图片、代码块异步撑高）。 */
@@ -1310,12 +1327,11 @@ export function ChatDock(): ReactNode {
     setNotice(next ? "已开启自动朗读：OH 的回复会念出来" : "已静音：OH 的回复不再自动朗读");
   };
   const openVoiceSettings = (): void => {
-    /* 2026-10-11 设置重构：语音合成已从「通知与提醒」迁到 OH 页的普通档
-       （settings → OH → 普通配置 → 语音），深链跟着改，并顺手把档位也请求好。 */
-    requestOhTier("basic");
-    requestSettingsTab("OH");
-    if (!navGo("settings")) return;
-    if (open) toggle(); // 面板挡着设置页：顺手收起，落点就是那个分区
+    /* 2026-10-11（用户纠正）：OH 是**插件页的二级子页面**，不是设置页的二级。
+       深链 = 请求 OH 子页 + 落在「基础设置」档 + 跳到插件页。 */
+    requestOhEntry("basic");
+    if (open) toggle(); // 面板挡着插件页：顺手收起，落点就是 OH 基础设置
+    navGo("plugins");
   };
 
   /** 附件（需求 6+7）：AttachTray 取到文件 → ① 面板里记一条**用户气泡**；
@@ -1424,6 +1440,44 @@ export function ChatDock(): ReactNode {
       return;
     }
     void finishVoice(true);
+  };
+
+  /* A 顶部把手：竖直拖动改面板高度（面板贴底，所以**往上拖=变高**）。 */
+  const onHandleDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const panel = (e.currentTarget as HTMLElement).closest(".dock-panel") as HTMLElement | null;
+    dragRef.current = { y0: e.clientY, h0: panel?.getBoundingClientRect().height ?? 0 };
+    setDragging(true);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* 捕获失败也能拖（事件仍冒泡到达） */
+    }
+  };
+  const onHandleMove = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    const d = dragRef.current;
+    if (!d) return;
+    const vh = window.innerHeight;
+    const lo = vh * DOCK_H_MIN_RATIO;
+    const hi = vh * DOCK_H_MAX_RATIO;
+    const next = Math.max(lo, Math.min(hi, d.h0 - (e.clientY - d.y0)));
+    setPanelH(Math.round(next));
+  };
+  const onHandleUp = (): void => {
+    if (!dragRef.current) return;
+    dragRef.current = null;
+    setDragging(false);
+    setPanelH((h) => {
+      if (h != null) {
+        try {
+          localStorage.setItem(DOCK_H_KEY, String(h));
+        } catch {
+          /* 存不进去也能用（本次会话内生效） */
+        }
+      }
+      return h;
+    });
+    stickBottom();
   };
 
   const onHoldMove = (e: ReactPointerEvent<HTMLElement>): void => {
@@ -1570,12 +1624,24 @@ export function ChatDock(): ReactNode {
           className={"dock-panel" + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
           role="dialog"
           aria-label="OneTHU Harness 对话"
+          style={panelH != null ? { height: `${panelH}px`, minHeight: 0 } : undefined}
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
         >
           {/* 面板自己接住点按，且不再冒泡：应用里的委托监听不该把「面板内的点按」当页面点击。
               命中区域被动画缩放搞小的那段历史见 global.css 的 keyframes 注释。 */}
+          {/* A 把手：所有悬浮窗顶部都有，上下拖动拉长拉短（高度写进 localStorage，下次沿用） */}
+          <div
+            className={"dock-handle" + (dragging ? " is-drag" : "")}
+            role="separator"
+            aria-label="拖动调整面板高度"
+            onPointerDown={onHandleDown}
+            onPointerMove={onHandleMove}
+            onPointerUp={onHandleUp}
+            onPointerCancel={onHandleUp}
+            onLostPointerCapture={onHandleUp}
+          />
           <div className="dock-head">
             <span className="dock-title" title="小OH"><HarnessMark size={15} /></span>
             <div className="dock-ops">

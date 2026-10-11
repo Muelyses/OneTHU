@@ -45,6 +45,32 @@ function takeTier(): OhTier | null {
   return t;
 }
 
+/* ── 「打开 OH 设置」请求：OH 现在是**插件页的二级子页面**（2026-10-11 用户纠正），
+   插件页与对话面板的深链都先写这个旗标，再 navigate("plugins")。 ── */
+let pendingEntry = false;
+const entryListeners = new Set<() => void>();
+
+/** 请求打开插件页里的 OH 设置子页（tier 可选：直接进基础/高级档） */
+export function requestOhEntry(tier?: OhTier): void {
+  pendingEntry = true;
+  if (tier) pendingTier = tier;
+  for (const f of entryListeners) f();
+}
+
+/** 插件页订阅它：旗标落下 → 切到 OH 子页并消费掉 */
+export function subscribeOhEntry(f: () => void): () => void {
+  entryListeners.add(f);
+  return () => {
+    entryListeners.delete(f);
+  };
+}
+
+export function consumeOhEntry(): boolean {
+  const v = pendingEntry;
+  pendingEntry = false;
+  return v;
+}
+
 /** 档位切换条（分段控件，与设置页页签同形态但更轻） */
 function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: (t: "basic" | "advanced") => void }): ReactNode {
   const item = (id: "basic" | "advanced", label: string): ReactNode => (
@@ -68,7 +94,7 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
       role="tablist"
       aria-label="OH 配置档位"
     >
-      {item("basic", "普通配置")}
+      {item("basic", "基础设置")}
       {item("advanced", "高级配置")}
     </div>
   );
@@ -185,7 +211,7 @@ export function OhSettingsPage(): ReactNode {
   const { navigate } = useApp();
   const [tier, setTier] = useState<"basic" | "advanced">("basic");
 
-  // 页面外请求切档（如对话坞长按朗读图标 → 设置 → OH → 普通配置）
+  // 页面外请求切档（如对话坞长按朗读图标 → 插件页 → OH → 基础设置）
   useEffect(() => subscribeOhTier(() => {
     const want = takeTier();
     if (want) setTier(want);
@@ -217,6 +243,19 @@ export function OhSettingsPage(): ReactNode {
             </div>
             <button className="btn" onClick={() => navigate("plugins")}>
               打开插件设置
+            </button>
+          </div>
+
+          <SubHead>IM 基础（扫码绑定 / 解绑）</SubHead>
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">IM 通道</div>
+              <div className="setting-desc">
+                扫码绑定与解绑在「高级配置」里的 IM 分节（同一个通道面板，避免两处配置打架）。
+              </div>
+            </div>
+            <button className="btn" onClick={() => setTier("advanced")}>
+              去高级配置
             </button>
           </div>
 

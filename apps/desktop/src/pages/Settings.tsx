@@ -14,7 +14,6 @@ import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
 import { consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
-import { OhSettingsPage } from "../components/OhSettingsPage.js";
 import { ThemePickerModal } from "../components/ThemePickerModal.js";
 import { HelpSection } from "../components/HelpSection.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
@@ -80,7 +79,7 @@ const SETTINGS_TAB_OF: Record<string, string> = {
   通知: "通知与提醒",
   /* 2026-10-11 重构：桌面小组件独立成栏；语音合成/悬浮球迁到 OH 页；插件改成独立入口 */
   桌面小组件: "桌面小组件",
-  下载: "下载与存储", OH: "OH", 帮助: "帮助",
+  下载: "下载与存储", 帮助: "帮助",
 };
 /* 页签清单与高级页签定义已挪到 state/settingsMode.ts（命令面板与护栏共用同一份，见该文件注释） */
 
@@ -632,12 +631,8 @@ export function SettingsPage() {
       <Card>
         <WidgetSettingsSection />
       </Card>
-      {/* 2026-10-11 设置重构：语音合成 / 悬浮球 / IM 通道 全部迁进「OH」页（普通档 / 高级档）；
-          插件改成独立入口（桌面＝侧栏「设置 | 插件」框，手机＝「我的」页里的同款框）。 */}
-      <SectionHead title="OH" />
-      <Card>
-        <OhSettingsPage />
-      </Card>
+      {/* 2026-10-11（用户纠正）：OH **不是设置页的二级**，而是**插件页的二级子页面**
+          （基础设置 / 高级配置）——分节与页签都已从这里移除，见 pages/Plugins.tsx 的 OH 入口。 */}
       <SectionHead title="安全" />
       <Card>
         <div className="setting-row">

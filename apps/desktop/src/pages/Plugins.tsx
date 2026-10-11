@@ -14,7 +14,9 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { confirmOk } from "../lib/confirm.js";
-import { PageHead } from "../components/Layout.js";
+import { Card, PageHead } from "../components/Layout.js";
+import { useApp } from "../state/context.js";
+import { OhSettingsPage, consumeOhEntry, subscribeOhEntry } from "../components/OhSettingsPage.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
 import {
@@ -121,10 +123,53 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
     </div>
   );
 
+  /* ── D（2026-10-11 用户纠正）：OH 是**插件页的二级子页面**（基础设置 / 高级配置），
+        不再挂在设置页签下。这里是最小接入：旗标落下 → 同一页壳渲染 OH 子页 + 返回按钮。
+        （task-17 抽出 PluginSettingsForm 后，OH 高级档直接接在那边，本段不用再动。） ── */
+  const { navigate } = useApp();
+  const [ohOpen, setOhOpen] = useState(false);
+  const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
+  useEffect(() => {
+    if (consumeOhEntry()) setOhOpen(true); // 深链先写旗标再导航过来：挂载时补消费一次
+    return subscribeOhEntry(() => setOhOpen(true));
+  }, []);
+  /** 手机端「我的 → 插件」进来时也要有「设置 | 插件」这个 1.5 级框（桌面那份在侧栏钉底） */
+  const dualEntry = isPhone ? (
+    <div
+      style={{
+        display: "flex", alignItems: "center", gap: 4, padding: 4, marginBottom: 12,
+        border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
+        background: "var(--md-sys-color-surface-container-lowest)",
+      }}
+    >
+      <button className="nav-item" style={{ flex: 1 }} onClick={() => navigate("settings")}>设置</button>
+      <button className="nav-item is-active" style={{ flex: 1 }} aria-current="page">插件</button>
+    </div>
+  ) : null;
+  const ohEntryBtn = (
+    <button className="btn" onClick={() => setOhOpen(true)}>OH 设置</button>
+  );
+
+  if (ohOpen) {
+    return (
+      <div className="plg-page">
+        <PageHead
+          title="OH 设置"
+          meta={<span>基础设置 / 高级配置 —— 语音、IM 与 OH 自己的模型配置入口</span>}
+          actions={<button className="btn" onClick={() => setOhOpen(false)}>返回插件</button>}
+        />
+        <Card>
+          <OhSettingsPage />
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="plg-page">
+      {dualEntry}
       {embedded ? (
-        <div className="plg-embed-bar" style={{ marginBottom: 12 }}>{viewSwitch}</div>
+        <div className="plg-embed-bar" style={{ marginBottom: 12 }}>{viewSwitch}{ohEntryBtn}</div>
       ) : (
         <PageHead
           title="插件"
@@ -134,7 +179,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
               45s 超时由宿主统一承担
             </span>
           }
-          actions={viewSwitch}
+          actions={<>{viewSwitch}{ohEntryBtn}</>}
         />
       )}
 

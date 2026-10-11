@@ -17,7 +17,6 @@ export const SETTINGS_TAB_ORDER = [
   "外观与布局",
   "数据与同步",
   "下载与存储",
-  "OH",
   "帮助",
   "关于",
 ];

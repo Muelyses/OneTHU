@@ -350,9 +350,10 @@ async function mapLimited<T>(items: T[], limit: number, fn: (item: T) => Promise
  * 判定（R23 起）：有题目明细时全部题都有作答 → 已提交（部分作答 = 进行中，报
  * submittedCount/totalCount 供「已完成 x/y」）；缺明细时 `answer_count > 0` 保守算已提交。
  * 已批改（R16 21.1，保守）：已提交且不存在「已作答但未批改」的题；
- * 「已作答」（R24 多信号）= 逐题 status 3/4 / submit_time 非空 / my_count>0 /
- * `my_answer.content` 非空 / 附件非空 / 拍图作答有直链（见 hasSubmissionEvidence），
- * 整卷 `answer_count>0` 仅作批改态兜底；
+ * 「已作答」（R24 多信号 / R33 收紧）= **逐题** status 3/4 / submit_time 非空 /
+ * `my_answer.content` 非空 / 附件非空 / 拍图作答有直链（见 hasSubmissionEvidence）；
+ * 整卷 `answer_count` 只在缺明细时兜底，不参与逐题判定（R33：拿它逐题兜底会把未答题
+ * 标成已交未批，霖真机实测）；
  * 「未批改」= `user.status === 3` 或 `user.my_score` 为 -1 占位（含 "-1.00"）。
  * 分数（R20-B3，霖需求：已批改作业像考试一样在入口显示分数）：与详情同一响应里就有
  * 全部数据，零额外请求 —— score = 已批改题（status 4 且非 -1 占位，真实 0 分照算）的
@@ -396,12 +397,12 @@ async function fetchYktStatus(
     const hasContent = typeof content === "string" && content.trim().length > 0;
     // R24 fix：已作答按多信号判（无正文但有批改态 / 提交时间 / 拍图作答的题也要算作答，
     // 否则「5/5 已批改但服务端不回传正文」会被整卷误判成未提交）
-    // ⚠️ 计数只能用**逐题**信号：整卷 answer_count>0 只作批改态兜底（见 answeredThis），
-    // 拿它计数会把「部分作答」也算成全答（R23 口径回归）。
+    // ⚠️ 计数只能用**逐题**信号（R33 收紧）：`answer_count` / `my_count` 是整卷口径，
+    // 一旦拿来计数，就会把「部分作答」当成全答，或把未作答题标成已交未批。
+    // 它们现在只在「problems 为空、无法逐题核对」时兜底。
     const hasEvidence = hasSubmissionEvidence(user);
     if (hasEvidence) answered++;
-    const answeredThis = hasEvidence || answerCount > 0;
-    if (answeredThis && (user["status"] === 3 || isUnscoredPlaceholder(user["my_score"]))) {
+    if (hasEvidence && (user["status"] === 3 || isUnscoredPlaceholder(user["my_score"]))) {
       answeredUngraded = true;
     }
     // 题面分值（content.score；缺失/非数字不计入卷面满分）
@@ -506,8 +507,8 @@ async function fetchYktExamStatus(
 /* ───────────────── R20-B1：作业详情（get_exercise_list 整卷明细，只读） ───────────────── */
 
 /** 单题「我的作答」三态：docs 28.4 实测 user.status 4=已批改 / 3=已交未批；
- *  无 user、或无显式 status 且无作答痕迹（R24 多信号：status / submit_time / my_count /
- *  正文 / 附件 / 拍图作答，见 hasSubmissionEvidence）→ 未答（保守） */
+ *  无 user、或无显式 status 且**该题**无作答痕迹（R24 多信号：status / submit_time /
+ *  正文 / 附件 / 拍图作答，见 hasSubmissionEvidence；R33 起不再看整卷 answer_count）→ 未答 */
 export type YkMyStatus = "unanswered" | "submitted" | "graded";
 
 /** 老师批注（源字段名是单数 comment[]） */
@@ -599,7 +600,8 @@ export interface YkExerciseDetail {
   /** R20-C2：补交扣分（late_submission 为对象形态且 deduct_score 可解析时给；数字形态
    *  或缺失不设。单位待 P1b 真机复核：官方文案「补交扣分：{deduct_score}」） */
   lateDeductScore?: number;
-  /** 已作答题数（data.answer_count；缺失 0） */
+  /** 整卷已作答题数（data.answer_count；缺失 0）。
+   *  ⚠️ 整卷口径：不要拿它判单题状态（R33），逐题判定看 `problems[].myStatus`。 */
   answerCount: number;
   /** data.font：该次作业的加密字体文件 URL（docs 28.4 实测，下载后 @font-face 应用） */
   fontUrl?: string;
@@ -696,18 +698,22 @@ function ykAnswerImagesHtml(urls: string[]): string {
  * 无作答可看。改为任一信号命中即算已作答：
  *   ① `status` 3（已交未批）/ 4（已批改）；
  *   ② `submit_time` 非空（数字毫秒 / 日期串双形态）；
- *   ③ `my_count > 0`（提交次数）；
- *   ④ `my_answer.content` 非空（文字正文）；
- *   ⑤ `my_answer.attachment[]` 非空（附件）；
- *   ⑥ `my_answer.pics[]` 有 http(s) 直链（拍图作答）。
+ *   ③ `my_answer.content` 非空（文字正文）；
+ *   ④ `my_answer.attachment[]` 非空（附件）；
+ *   ⑤ `my_answer.pics[]` 有 http(s) 直链（拍图作答）。
+ *
+ * ⚠️ 只认**逐题**字段（R33，2026-10-11 霖真机反馈）：`my_count` / `answer_count` 是
+ * **整卷**口径——实测「第三四周作业」16 题只答了 3 题，`answer_count=3` 出现在整卷上，
+ * 而 R23 纪要也记过 `my_count` 会漏到未作答题上。拿它们当逐题判据，会让「答了一部分」
+ * 的作业里**每一道未答题**都被标成「已交未批」，详情页还会显示
+ * 「已提交（服务端未返回作答正文）」——用户实测截图即为此现象。
+ * 因此逐题判定一律不看这两个整卷字段（`my_count` 只用于剩余次数展示）。
  */
 function hasSubmissionEvidence(user: Record<string, unknown> | undefined): boolean {
   if (!user) return false;
   const status = toNum(user["status"]);
   if (status === 3 || status === 4) return true;
   if (toSubmitTimeText(user["submit_time"]) !== undefined) return true;
-  const used = toNum(user["my_count"]);
-  if (used !== undefined && used > 0) return true;
   const myRaw = user["my_answer"];
   if (myRaw === null || typeof myRaw !== "object") return false;
   const my = myRaw as Record<string, unknown>;
@@ -716,15 +722,16 @@ function hasSubmissionEvidence(user: Record<string, unknown> | undefined): boole
   return toMyAnswerImageUrls(my["pics"]).length > 0;
 }
 
-/** 单题三态（保守）：显式 status 优先（4=已批 / 3=已交未批）；否则看作答痕迹，
- *  整卷 answer_count=0 且无作答痕迹（R24 多信号，见 hasSubmissionEvidence）→ 未答
- *  （与 fetchYktStatus 的「已提交」口径一致） */
-function toMyStatus(user: Record<string, unknown> | undefined, answerCount: number): YkMyStatus {
+/** 单题三态（保守）：显式 status 优先（4=已批 / 3=已交未批）；否则看**该题的**作答痕迹
+ *  （R24 多信号，见 hasSubmissionEvidence）→ 无痕迹即未答。
+ *  ⚠️ R33：不得用整卷 `answer_count` 兜底——那会把「答了 3 题 / 共 16 题」里的 13 道
+ *  未答题一起标成「已交未批」。 */
+function toMyStatus(user: Record<string, unknown> | undefined): YkMyStatus {
   if (!user || Object.keys(user).length === 0) return "unanswered";
   const status = toNum(user["status"]);
   if (status === 4) return "graded";
   if (status === 3) return "submitted";
-  return hasSubmissionEvidence(user) || answerCount > 0 ? "submitted" : "unanswered";
+  return hasSubmissionEvidence(user) ? "submitted" : "unanswered";
 }
 
 /** user.comment[] → YkComment[]（滤空 content / 非对象项；结果为空 → undefined） */
@@ -775,11 +782,11 @@ function toProblemExternalUrl(content: Record<string, unknown>): string | undefi
 /** problems[] 单项 → YkProblem。review_detail / content_score / appeal_info 等字段
  *  实测存在但归一化暂不透出（如需再加）；R20-C2 已透出 user.{count, my_count,
  *  submit_time, submission_status}（官方命名映射，见 YkProblem 注释）；缺字段不崩。 */
-function toYkProblem(p: Record<string, unknown>, pos: number, answerCount: number): YkProblem {
+function toYkProblem(p: Record<string, unknown>, pos: number): YkProblem {
   const content = (p["content"] ?? {}) as Record<string, unknown>;
   const userRaw = p["user"];
   const user = userRaw !== null && typeof userRaw === "object" ? (userRaw as Record<string, unknown>) : undefined;
-  const myStatus = toMyStatus(user, answerCount);
+  const myStatus = toMyStatus(user);
   const problem: YkProblem = {
     problemId: p["problem_id"] === undefined || p["problem_id"] === null ? "" : String(p["problem_id"]),
     index: toNumOr(p["index"], pos + 1),
@@ -906,7 +913,7 @@ async function fetchExerciseDetail(
     ...(lateDeduct !== undefined ? { lateDeductScore: lateDeduct } : {}),
     answerCount,
     ...(typeof font === "string" && font.trim() ? { fontUrl: font } : {}),
-    problems: problemsRaw.map((p, i) => toYkProblem(p, i, answerCount)),
+    problems: problemsRaw.map((p, i) => toYkProblem(p, i)),
   };
 }
 

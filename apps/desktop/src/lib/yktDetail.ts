@@ -113,6 +113,11 @@ export function yktExerciseSummary(problems: ReadonlyArray<YkProblem>): YktExerc
     if (answered === 0) return { text: "未作答", cls: "chip-gray" };
     if (graded >= total) return { text: "已批改", cls: "chip-blue" };
     if (graded > 0) return { text: `已批 ${graded}/${total} 题`, cls: "chip-blue" };
+    // R33：只答了一部分时不能说「已交未批」——那是「整卷已交、只是还没批」的说法，
+    // 会把「16 题只答了 3 题」的进行中作业说成已完成（霖真机反馈的原话就是
+    // 「应该是未提交而不是已交未批」）。用词与作业列表的 chip 对齐（未提交），
+    // 具体进度由下方「作答进度 x/y 题」一行给。
+    if (answered < total) return { text: "未提交", cls: "chip-amber" };
     return { text: "已交未批", cls: "chip-green" };
   })();
   return { total, answered, graded, ...(scoreSum !== undefined ? { scoreSum } : {}), chip };

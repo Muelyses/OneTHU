@@ -13,7 +13,7 @@
  *      yktTypeText（typeText 缺失时按 ProblemType 兜底）/ yktIsExternalLinkProblem（题型 9 红线）/
  *      yktAttachmentsText（空 → ""；无名附件回退 url / 占位）
  *  [3] 整卷汇总 yktExerciseSummary：answered / graded / scoreSum（无一题有分 → undefined）/
- *      整卷批改徽标（未作答·已交未批·部分已批·已批改·无题目）
+ *      整卷批改徽标（未作答·已作答 x/y 进行中·已交未批·部分已批·已批改·无题目）
  *  [4] core R20-B2 新透出字段（packages/core/src/exthw/yuketang.ts）：
  *      - 列表项 leaf_type_id → leafTypeId（String 化）、classroom_id → classroomId
  *      - 详情 late_submission → lateDeadline（毫秒 → 本地 "YYYY-MM-DD HH:MM"；缺失/0 → 不设）
@@ -179,6 +179,13 @@ console.log("\n[3] 整卷汇总 yktExerciseSummary");
   s = yktExerciseSummary([P({ myStatus: "submitted" }), P({ myStatus: "submitted" })]);
   eq(s.scoreSum, undefined, "无一题透分 → scoreSum 不设（避免误导 0 分）");
   deepEq(s.chip, { text: "已交未批", cls: "chip-green" }, "已交全未批 → 绿徽标");
+
+  // R33（2026-10-11 霖真机反馈）：只答了一部分 = 进行中，不能说「已交未批」
+  // （真实数据：「第三四周作业」16 题里只答了 3 题）
+  s = yktExerciseSummary([...Array(3).fill(P({ myStatus: "submitted" })), ...Array(13).fill(P({}))]);
+  eq(s.answered, 3, "R33：部分作答 answered=3");
+  eq(s.total, 16, "R33：total=16");
+  deepEq(s.chip, { text: "未提交", cls: "chip-amber" }, "R33：进行中 → 「未提交」琥珀徽标（不是已交未批，与作业列表同词）");
 
   s = yktExerciseSummary([P({ myStatus: "unanswered" })]);
   deepEq(s.chip, { text: "未作答", cls: "chip-gray" }, "全未作答 → 灰徽标");

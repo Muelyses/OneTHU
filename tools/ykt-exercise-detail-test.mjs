@@ -27,6 +27,7 @@
  *  - 异常：errcode≠0 / 缺 data / leafTypeId 空 / HTTP 401 → 抛带上下文的错误
  */
 import { createYuketangSource } from "../packages/core/src/exthw/yuketang.ts";
+import { yktExerciseSummary, yktStatusChip } from "../apps/desktop/src/lib/yktDetail.ts";
 
 let pass = 0;
 let fail = 0;
@@ -172,6 +173,25 @@ const SNAPSHOT = {
           count: 5,
         },
       },
+      {
+        // R33（2026-10-11 霖真机快照「第三四周作业」逐字复刻）：**未作答**题的服务端 user
+        // 形状——字段齐全但全是默认值（无 status / submit_time / my_answer），整卷
+        // answer_count>0。旧口径拿整卷 answer_count 兜底 → 每题被判「已交未批」，
+        // 详情页显示「已提交（服务端未返回作答正文）」；本用例钉死新口径。
+        problem_id: 40205,
+        index: 5,
+        content: { ProblemType: 5, TypeText: "主观题", Body: "<p>（脱敏·未答）</p>", score: 10 },
+        user: {
+          count: 3,
+          my_agent_count: 0,
+          is_show_answer: false,
+          my_count: 0,
+          my_content_score: "-1",
+          my_content_count: 0,
+          my_agent_score: "-1",
+          is_show_explain: false,
+        },
+      },
     ],
   },
 };
@@ -192,7 +212,7 @@ console.log("\n[1] 快照归一化（exercise 级 + 单题字段映射）");
   eq(d.lateAllowed, true, "is_allowed_late_submission → lateAllowed");
   eq(d.answerCount, 2, "answer_count → answerCount");
   eq(d.fontUrl, "https://fe-static-yuketang.yuketang.cn/fe_font/product/exam_font_0123abcd5678.ttf", "font → fontUrl");
-  eq(d.problems.length, 4, "problems 数量");
+  eq(d.problems.length, 5, "problems 数量");
 
   const p1 = d.problems[0];
   eq(p1.problemId, "40201", "problem_id String 化");
@@ -257,6 +277,20 @@ console.log("\n[1] 快照归一化（exercise 级 + 单题字段映射）");
   ok(p4.myAnswerHtml.includes('src="https://qn1-next.xuetangonline.com/17896291161802.jpg"'), "img src 取 fileUrl（CDN 直链）");
   ok(!p4.myAnswerHtml.includes("blob:"), "pics[].url 的 blob: 临时引用不入 HTML");
   ok(p4.myAnswerHtml.includes('referrerpolicy="no-referrer"'), "img 带 referrerpolicy=no-referrer（CDN Referer 白名单口径）");
+
+  // R33（2026-10-11 霖真机反馈）：整卷 answer_count>0 ≠ 每道题都答了。
+  // 生产响应里未作答题的 user 是「字段齐全但全默认值」，逐题判定必须给未作答。
+  const p5 = d.problems[4];
+  eq(p5.myStatus, "unanswered", "整卷 answer_count>0 但本题无逐题痕迹 → unanswered（R33）");
+  eq(p5.myAnswerHtml, undefined, "R33：未答题不给 myAnswerHtml");
+  eq(p5.usedCount, 0, "R33：my_count=0 原值透传（剩余次数展示用）");
+  eq(p5.remainingRetries, 3, "R33：count=3 − my_count=0 → remainingRetries 3");
+  eq(yktStatusChip(p5).text, "未作答", "R33：单题徽标为「未作答」而不是「已交未批」");
+  eq(
+    yktExerciseSummary(d.problems).answered,
+    3,
+    "R33：整卷汇总只数逐题痕迹（已批 1 + 已交 2），不含整卷 answer_count",
+  );
 }
 
 /* ───────────────── [2] 请求形状与 uvId 回落 ───────────────── */
@@ -331,9 +365,12 @@ console.log("\n[3] 三态（保守）与得分透出");
       why: "无 status + answer_count=0 + 无内容 → unanswered（保守）",
     },
     {
+      // R33（2026-10-11 霖真机反馈）：整卷 answer_count 是**整卷口径**，不能兜底单题状态。
+      // 旧口径在此判 submitted，导致「答了 3 题 / 共 16 题」的作业里 13 道未答题
+      // 全被标成「已交未批」+「已提交（服务端未返回作答正文）」。
       body: mk([{ content: {}, user: { my_answer: {} } }], 3),
-      status: "submitted",
-      why: "无 status 但整卷 answer_count>0 → submitted",
+      status: "unanswered",
+      why: "无 status 且本题无痕迹 → unanswered（整卷 answer_count 不参与单题判定，R33）",
     },
     {
       body: mk([{ content: {} }], 5),

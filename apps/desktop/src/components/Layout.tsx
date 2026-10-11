@@ -7,6 +7,7 @@ import { useExpanded } from "../state/usePlatformLayout.js";
 import { useSidebarCollapsed } from "../state/uiPrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
 import { navGo } from "../plugins/bridges.js";
+import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
@@ -779,28 +780,62 @@ export function focusSettingsTarget(target: string): boolean {
   return true;
 }
 
+/** 窄栏判定（**容器实际宽度**驱动）：< threshold 就降级为"图标格"，避免文字挤成竖排糊字。
+ *  用 ResizeObserver 实测被包裹容器的宽度；无法测量时按"宽"处理（不误伤大屏）。 */
+export function useNarrowBox(threshold = 300): [React.RefObject<HTMLDivElement | null>, boolean] {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setNarrow(el.clientWidth > 0 && el.clientWidth < threshold));
+    ro.observe(el);
+    setNarrow(el.clientWidth > 0 && el.clientWidth < threshold);
+    return () => ro.disconnect();
+  }, [threshold]);
+  return [ref, narrow];
+}
+
 export function LevelBox(): ReactNode {
   const entry = useEntry(); // 高亮**唯一来源**
-  const cell = (id: Entry, label: string, extra?: CSSProperties): ReactNode => (
+  const [boxRef, narrow] = useNarrowBox(300);
+  /* 窄栏：只渲染图标（title/aria-label 承载全名），**禁止文字换行**；宽栏：文字完整不截断 */
+  const cells: Array<{ id: Entry; label: string; icon: ReactNode }> = [
+    { id: "settings", label: "设置", icon: <IconSettings /> },
+    { id: "plugins", label: "插件", icon: <IconPlug /> },
+    { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },
+  ];
+  const cell = (c: { id: Entry; label: string; icon: ReactNode }): ReactNode => (
     <button
-      className={"nav-item" + (entry === id ? " is-active" : "")}
-      style={{ flex: 1, height: 26, justifyContent: "center", padding: 0, ...extra }}
-      onClick={() => goEntry(id)}
+      className={"nav-item" + (entry === c.id ? " is-active" : "")}
+      title={c.label}
+      aria-label={c.label}
+      style={{
+        flex: narrow ? "1 1 0" : c.id === "oh" ? "1.5 1 0" : "1 1 0",
+        minWidth: 0,
+        height: 26,
+        justifyContent: "center",
+        padding: 0,
+        fontSize: narrow ? undefined : "var(--text-xs)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "clip",
+      }}
+      onClick={() => goEntry(c.id)}
     >
-      {label}
+      {narrow ? c.icon : c.label}
     </button>
   );
   return (
     <div
+      ref={boxRef}
       style={{
         display: "flex", alignItems: "center", gap: 2, padding: 2, marginBottom: 12,
         border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
         background: "var(--md-sys-color-surface-container-lowest)",
       }}
     >
-      {cell("settings", "设置")}
-      {cell("plugins", "插件")}
-      {cell("oh", "OneTHU Harness", { flex: "1.5 1 0", fontSize: "var(--text-xs)", whiteSpace: "nowrap" })}
+      {cells.map((c) => cell(c))}
     </div>
   );
 }

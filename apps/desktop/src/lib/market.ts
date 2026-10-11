@@ -25,6 +25,40 @@ export interface MarketEntry {
   repo: string;
   entry?: string;
   tags?: string[];
+  /* ── 市场升级（2026-10-11）：全部可选，缺字段的老条目照常显示 ── */
+  /** 作者 logo（URL 或仓库相对路径） */
+  logo?: string;
+  /** 列表缩略图（缺失回落 logo → monogram） */
+  thumbnail?: string;
+  /** 详情简介图 */
+  screenshots?: string[];
+  /** 详情正文（markdown） */
+  readme?: string;
+  /** 主页/文档 */
+  homepage?: string;
+  /** 许可证 */
+  license?: string;
+  /** 类别（theme=主题插件）：与插件页筛选共用 */
+  category?: "general" | "theme";
+}
+
+/** 把作者写的资源地址解析成可加载 URL（市场升级 2026-10-11）：
+ *  - `https?:` / `data:` / `blob:` → 原样；
+ *  - 仓库相对路径（`assets/a.png`）→ `raw.githubusercontent.com/<owner>/<repo>/<branch|main>/<subPath>/…`。
+ *  解析不出来就返回空串（调用方回落到 monogram，不裂图）。 */
+export function resolveAssetUrl(src: string | undefined, repo: string | undefined): string {
+  const v = (src ?? "").trim();
+  if (!v) return "";
+  if (/^(https?:|data:|blob:)/i.test(v)) return v;
+  if (!repo) return "";
+  try {
+    const ref = parseRepoInput(repo);
+    const branch = ref.branch ?? "main";
+    const sub = ref.subPath ? ref.subPath.replace(/^\/+|\/+$/g, "") + "/" : "";
+    return `https://raw.githubusercontent.com/${ref.owner}/${ref.repo}/${branch}/${sub}${v.replace(/^\.\//, "")}`;
+  } catch {
+    return "";
+  }
 }
 
 export interface MarketRegistry {

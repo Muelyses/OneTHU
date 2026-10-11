@@ -6,7 +6,7 @@ import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
 import { useSidebarCollapsed } from "../state/uiPrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { clearOhEntryWanted, requestOhEntry } from "./OhSettingsPage.js";
+import { requestOhEntry } from "./OhSettingsPage.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
@@ -716,7 +716,6 @@ export function LevelBox({ active }: { active: "settings" | "plugins" | "oh" }):
       onClick={() => {
         if (id === "settings") navigate("settings");
         else if (id === "plugins") {
-          clearOhEntryWanted();
           navigate("plugins");
         } else {
           requestOhEntry();

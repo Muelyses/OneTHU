@@ -1777,17 +1777,32 @@ function AppearanceSection(): ReactNode {
             <span style={{ color: "var(--text-3)" }}>　启用 / 停用主题在「插件」页里。</span>
           </div>
         </div>
-        <button
-          className="chip"
-          title="到插件市场安装主题（自动筛选「主题」类别）"
-          onClick={() => {
-            /* ③ 安装入口：跳插件市场并自动筛选「主题」类别（跨页请求，两端同一套） */
-            requestPluginsView({ view: "market", category: "theme" });
-            navigate("plugins");
-          }}
-        >
-          安装主题
-        </button>
+        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+          {/* ③ 两个按钮并列、同一套胶囊口径：安装（市场 + 主题筛选）｜管理（主题插件的启用/停用） */}
+          <button
+            className="chip"
+            style={{ height: 28, padding: "0 12px", fontSize: "var(--text-xs)", flex: "none" }}
+            title="到插件市场安装主题（自动筛选「主题」类别）"
+            onClick={() => {
+              requestPluginsView({ view: "market", category: "theme" });
+              navigate("plugins");
+            }}
+          >
+            安装主题
+          </button>
+          <button
+            className="chip"
+            style={{ height: 28, padding: "0 12px", fontSize: "var(--text-xs)", flex: "none" }}
+            title="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）"
+            onClick={() => {
+              /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */
+              requestPluginsView({ view: "mine", category: "theme" });
+              navigate("plugins");
+            }}
+          >
+            管理主题
+          </button>
+        </div>
       </div>
       {/* ③ 主题板**恢复成原来那套**（用户给的旧图样式：色卡 + 名称 + 使用中/社区胶囊 + 应用按钮），
           只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。 */}

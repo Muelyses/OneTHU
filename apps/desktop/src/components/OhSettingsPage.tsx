@@ -48,22 +48,13 @@ function takeTier(): OhTier | null {
 /* ── 「打开 OH 设置」请求：OH 现在是**插件页的二级子页面**（2026-10-11 用户纠正），
    插件页与对话面板的深链都先写这个旗标，再 navigate("plugins")。 ── */
 let pendingEntry = false;
-/** 粘性愿望位：**点过**第三格就置位，只有用户自己点「插件」格才清——避免"旗标被消费过一次就再也进不去" */
-let ohEntryWanted = false;
 const entryListeners = new Set<() => void>();
-
-export function ohEntryWantedNow(): boolean {
-  return ohEntryWanted;
-}
-
-export function clearOhEntryWanted(): void {
-  ohEntryWanted = false;
-}
+/* 2026-10-11 用户要求「彻底切割」：**不再有粘性愿望位**——
+   一次性请求（写旗标 → 消费即清），任何"从别处进插件"都不会被历史点击带偏到 OH 子页。 */
 
 /** 请求打开插件页里的 OH 设置子页（tier 可选：直接进基础/高级档） */
 export function requestOhEntry(tier?: OhTier): void {
   pendingEntry = true;
-  ohEntryWanted = true;
   if (tier) pendingTier = tier;
   for (const f of entryListeners) f();
 }
@@ -115,7 +106,8 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
  *  这里再塞一个会被当成新分节被显隐逻辑收走。 */
 function SubHead({ children }: { children: ReactNode }): ReactNode {
   return (
-    <div className="setting-title" style={{ marginTop: 4, marginBottom: 8, fontWeight: 600 }}>
+    /* ② 与 .setting-row 同一左内边距（16px）与层级——用户截图里「悬浮球」标题顶在最左边 */
+    <div className="setting-title" style={{ margin: "4px 0 8px", padding: "0 16px", fontWeight: 600 }}>
       {children}
     </div>
   );

@@ -122,6 +122,19 @@ export interface PluginManifest {
   /** 插件类别（2026-09-13 主题系统立项）：theme=主题插件（导出 theme 定义，
    *  免 default(ctx)），general=通用能力插件（默认，导出 default(ctx)） */
   category?: "general" | "theme";
+  /* ── 视觉/身份字段（2026-10-11 市场升级，**全部可选、向后兼容**：老插件不写照常显示）── */
+  /** 作者 logo：URL 或仓库相对路径（svg/png 都行）；列表与详情都用它 */
+  logo?: string;
+  /** 列表缩略图（比 logo 更"图片化"的那张）；缺失回落 logo，再缺失回落 monogram */
+  thumbnail?: string;
+  /** 详情页简介图（可多张，按数组顺序展示；点开可放大） */
+  screenshots?: string[];
+  /** 详情正文（markdown；缺失回落 description） */
+  readme?: string;
+  /** 主页/文档地址 */
+  homepage?: string;
+  /** 许可证标识（MIT / Apache-2.0 …） */
+  license?: string;
 }
 
 /** 插件注册的命令：显示在插件管理页，可带一段文本输入（agent prompt 等） */

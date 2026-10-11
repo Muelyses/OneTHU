@@ -18,7 +18,7 @@ import { Card, LevelBox, PageHead } from "../components/Layout.js";
 import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
-import { OhSettingsPage, consumeOhEntry, ohEntryWantedNow, subscribeOhEntry } from "../components/OhSettingsPage.js";
+import { OhSettingsPage, consumeOhEntry, subscribeOhEntry } from "../components/OhSettingsPage.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
 import {
@@ -160,7 +160,8 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
         不再挂在设置页签下。这里是最小接入：旗标落下 → 同一页壳渲染 OH 子页 + 返回按钮。
         （task-17 抽出 PluginSettingsForm 后，OH 高级档直接接在那边，本段不用再动。） ── */
   const { navigate } = useApp();
-  const [ohOpen, setOhOpen] = useState(() => ohEntryWantedNow());
+  /* ① 用户要求彻底切割：**进插件页永远是列表默认态**；OH 子页只在「点第三格」那一条路径打开 */
+  const [ohOpen, setOhOpen] = useState(false);
   /** OH 内联设置面板的「草稿有改动」标记（就地渲染时不再弹确认窗，标记仅为兼容其 props） */
   const ohDirtyRef = useRef(false);
 
@@ -289,7 +290,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
           切换主题在 设置 → 外观（唯一入口）——2026-02 用户反馈切换入口错位到插件页；
           2026-09-13 原定案「设置页不放」针对的是管理面，与切换入口不冲突。 */}
       {view === "market" ? (
-        <MarketView />
+        <MarketView cat={cat} setCat={setCat} />
       ) : (
         <>
       {instOpen ? <InstallPanel onClose={() => setInstOpen(false)} /> : null}
@@ -979,13 +980,19 @@ export function LogBody({ id }: { id: string }): ReactNode {
 
 /* ═══════════════ 插件市场视图：热度排序 · 搜索 · 一键安装 ═══════════════ */
 
-function MarketView(): ReactNode {
+function MarketView({
+  cat,
+  setCat,
+}: {
+  cat: "all" | "theme" | "general";
+  setCat: (c: "all" | "theme" | "general") => void;
+}): ReactNode {
   const installed = useSyncExternalStore(subscribe, installedPlugins);
   const installedMap = new Map(installed.map((p) => [p.manifest.id, p.manifest.version]));
   const [items, setItems] = useState<MarketEntry[] | null>(null);
   const [stars, setStars] = useState<Record<string, number | null>>({});
   const [query, setQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"stars" | "name">("stars");
+  const [sortBy, setSortBy] = useState<"stars" | "latest">("stars"); // ② 默认按 star；可切「最新」
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -1029,10 +1036,13 @@ function MarketView(): ReactNode {
 
   const q = query.trim().toLowerCase();
   const hits = (items ?? [])
+    /* ④ 类别筛选也作用于市场：外观与布局的「安装主题」落到 view=market&category=theme 时，
+       这里必须真的只列主题条目 */
+    .filter((x) => cat === "all" || (cat === "theme" ? (x.category ?? "general") === "theme" : (x.category ?? "general") === "general"))
     .filter((x) => !q || [x.name, x.description, x.author, ...(x.tags ?? [])].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)))
     .slice()
     .sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name);
+      if (sortBy === "latest") return 0; // 「最新」= 市场名单原序（registry 里就是按收录时间倒序维护）
       const sa = stars[a.id] ?? -1;
       const sb = stars[b.id] ?? -1;
       if (sa !== sb) return sb - sa; // star 缺失（null）沉底
@@ -1048,9 +1058,10 @@ function MarketView(): ReactNode {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <div className="seg-track">
-          {([["stars", "按热度"], ["name", "按名称"]] as const).map(([k, lbl]) => (
-            <button key={k} className={"seg-item" + (sortBy === k ? " is-active" : "")} onClick={() => setSortBy(k)}>
+        {/* ④ 排序：与全站同一套 .segmented 胶囊口径（原来是灰底方框 + 描边的 seg-track） */}
+        <div className="segmented" style={{ marginBottom: 0 }}>
+          {([["stars", "star"], ["latest", "最新"]] as const).map(([k, lbl]) => (
+            <button key={k} className={sortBy === k ? "is-active" : ""} onClick={() => setSortBy(k)}>
               {lbl}
             </button>
           ))}
@@ -1058,6 +1069,14 @@ function MarketView(): ReactNode {
         <button className="btn" disabled={busy} onClick={() => void load(true)}>
           {busy ? "刷新中…" : "刷新"}
         </button>
+      </div>
+      {/* ④ 市场自己的类别筛选：与「我的插件」同一套 .segmented 口径 */}
+      <div className="segmented" style={{ margin: "0 0 10px", flexWrap: "wrap" }}>
+        {([["all", "全部"], ["theme", "主题"], ["general", "通用"]] as const).map(([k, lbl]) => (
+          <button key={k} className={cat === k ? "is-active" : ""} onClick={() => setCat(k)}>
+            {lbl}
+          </button>
+        ))}
       </div>
 
       {msg ? <div className="plg-runmsg">{msg}</div> : null}

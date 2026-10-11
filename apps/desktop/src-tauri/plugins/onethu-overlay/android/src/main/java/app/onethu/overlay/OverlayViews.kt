@@ -159,7 +159,15 @@ object OverlayViews {
 
     /* ── liquid glass 材质（跨应用窗口拿不到真 backdrop blur，用材质模拟）── */
 
-    /** 玻璃底：浅 #FFFFFF α0.62→0.48；深 #000000 α0.42→0.30 */
+    /** 整块毛玻璃背板（用户要求：不要顶部渐隐，整块都能看到）：浅 #FFFFFF α0.78 / 深 #000000 α0.62 */
+    fun backplateFill(light: Boolean): Int =
+        if (light) withAlpha(0xFFFFFFFF.toInt(), 199) else withAlpha(0xFF000000.toInt(), 158)
+
+    /** 背板细边 */
+    fun backplateBorder(light: Boolean): Int =
+        if (light) withAlpha(0x00000000, 36) else withAlpha(0xFFFFFFFF.toInt(), 48)
+
+    /** 玻璃底（气泡用）：浅 #FFFFFF α0.62→0.48；深 #000000 α0.42→0.30 */
     fun glassFill(light: Boolean, top: Boolean): Int =
         if (light) {
             withAlpha(0xFFFFFFFF.toInt(), if (top) 158 else 122)
@@ -241,11 +249,14 @@ object OverlayViews {
 
     fun buildVoiceBar(ctx: Context, dark: Boolean): VoiceBar {
         val root = FogLayout(ctx).apply {
+            // 与面板/气泡同一套：整块毛玻璃，无渐隐
             coreColor = fogCore(dark)
-            coreAlpha = if (dark) 0.90f else 0.94f
-            // 条 + 上方转写带：整体用近乎实心的纵向渐变，底浓顶淡
-            stopPositions = floatArrayOf(0f, 0.7f, 1f)
-            stopWeights = floatArrayOf(1f, 0.97f, 0.8f)
+            coreAlpha = if (dark) 0.62f else 0.78f
+            stopPositions = floatArrayOf(0f, 1f)
+            stopWeights = floatArrayOf(1f, 1f)
+            cornerRadiusPx = dp(ctx, 18).toFloat()
+            borderColor = backplateBorder(!dark)
+            topHighlight = if (dark) 0.22f else 0.5f
         }
         val column = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -253,11 +264,14 @@ object OverlayViews {
         }
         // 上方：淡雾转写带（默认 GONE，说话时显示）
         val sub = FogLayout(ctx).apply {
+            // 转写带同材质（整块毛玻璃），只是略薄一点
             coreColor = fogCore(dark)
-            coreAlpha = if (dark) 0.62f else 0.72f
-            stopPositions = floatArrayOf(0f, 0.75f, 1f)
-            stopWeights = floatArrayOf(1f, 0.8f, 0f)
+            coreAlpha = if (dark) 0.58f else 0.74f
+            stopPositions = floatArrayOf(0f, 1f)
+            stopWeights = floatArrayOf(1f, 1f)
             cornerRadiusPx = dp(ctx, 14).toFloat()
+            borderColor = backplateBorder(!dark)
+            topHighlight = if (dark) 0.22f else 0.5f
             visibility = View.GONE
         }
         val subText = TextView(ctx).apply {
@@ -328,19 +342,18 @@ object OverlayViews {
     const val VOICE_BAR_W_DP = 300
     const val SUB_BAR_H_DP = 40
 
-    /** 半屏对话面板：雾中の裸文字 + 底部无框下划线输入行 */    /** 半屏对话面板：雾中の裸文字 + 底部无框下划线输入行 */
+    /** 悬浮对话小窗：整块毛玻璃背板 + liquid glass 气泡 + 底部无框下划线输入行 */
     fun buildPanel(ctx: Context, dark: Boolean): PanelHolder {
         val root = FogLayout(ctx).apply {
             coreColor = fogCore(dark)
-            // 真机反馈「看都看不清」：底部核心加实（浅 0.96 / 深 0.94），给底部的字足够衬底
-            coreAlpha = if (dark) 0.94f else 0.96f
-            // 内容区保底：0→80% 都是全浓度（绝对 alpha ≥0.94×1.0），90% 处 0.55×core ≈ 0.53，
-            // 只在最顶端 10% 的窄带里羽化到透明。这样「向上变淡」的观感还在，
-            // 但文字永远压在雾上（而不是直接压在壁纸/深色背景上）。
-            stopPositions = floatArrayOf(0f, 0.80f, 0.90f, 1f)
-            stopWeights = floatArrayOf(1f, 1f, 0.55f, 0f)
-            // A①：悬浮小窗（左右留空隙）→ 四周圆角
+            // 整块毛玻璃背板：**上下同浓度**，不做任何「向上淡出/mask」（用户 2026-10-11 明确要求）
+            coreAlpha = if (dark) 0.62f else 0.78f
+            stopPositions = floatArrayOf(0f, 1f)
+            stopWeights = floatArrayOf(1f, 1f)
+            // 悬浮小窗（左右留空隙）→ 四周圆角 + 1px 细边 + 上沿高光（同一套液态玻璃语言）
             cornerRadiusPx = dp(ctx, PANEL_RADIUS_DP).toFloat()
+            borderColor = backplateBorder(!dark)
+            topHighlight = if (dark) 0.22f else 0.5f
         }
         val content = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -460,44 +473,33 @@ object OverlayViews {
         )
         val underline = View(ctx).apply { setBackgroundColor(withAlpha(ink(dark), 72)) }
 
-        // 附件三入口（需求 6）：纯裸文字，走系统选择器，应用不申请存储/相机权限
+        // 附件三入口（需求 6）：**线描图标**（用户口径：手机档只留线描图标 + title 语义，一行不折，不收 emoji）。
+        // 走系统选择器，应用不申请存储/相机权限；可点区域 40×40dp，语义经 contentDescription + tooltipText 给到。
         val attachRow = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        fun entry(label: String, startPad: Int): TextView = TextView(ctx).apply {
-            text = label
-            // 功能入口：主色 + 100% alpha + 13sp + 轻阴影
-            textSize = 13f
-            setTextColor(ink(dark))
-            alpha = 1f
-            setPadding(dp(ctx, startPad), dp(ctx, 6), 0, dp(ctx, 6))
-            shadow(this)
+        val iconPx = dp(ctx, 40)
+        fun entry(kind: String, title: String): LineIcon = LineIcon(ctx, kind).apply {
+            color = ink(dark)
+            alpha = 0.95f
+            contentDescription = title
+            if (android.os.Build.VERSION.SDK_INT >= 26) tooltipText = title
+            isClickable = true
+            isFocusable = true
+            setPadding(dp(ctx, 6), dp(ctx, 6), dp(ctx, 6), dp(ctx, 6))
         }
-        val camBtn = entry("拍照", 0)
-        val galBtn = entry("相册", 16)
-        val fileBtn = entry("上传", 16)
-        attachRow.addView(
-            camBtn,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
-        )
-        attachRow.addView(
-            galBtn,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
-        )
-        attachRow.addView(
-            fileBtn,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
-        )
+        val camBtn = entry("camera", "拍照")
+        val galBtn = entry("gallery", "相册")
+        val fileBtn = entry("upload", "上传")
+        attachRow.addView(camBtn, LinearLayout.LayoutParams(iconPx, iconPx))
+        val galLp = LinearLayout.LayoutParams(iconPx, iconPx)
+        galLp.marginStart = dp(ctx, 10)
+        attachRow.addView(galBtn, galLp)
+        val fileLp = LinearLayout.LayoutParams(iconPx, iconPx)
+        fileLp.marginStart = dp(ctx, 10)
+        attachRow.addView(fileBtn, fileLp)
+
         val arlp = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -734,12 +736,23 @@ class FogLayout(context: Context) : FrameLayout(context) {
     /** 与 stopPositions 一一对应的 alpha 权重（最终 alpha = coreAlpha * 权重） */
     var stopWeights: FloatArray = floatArrayOf(1f, 1f, 0.55f, 0f)
 
-    /** 圆角（px）：>0 时把雾裁成圆角小窗；0 = 满幅（语音条用） */
+    /** 圆角（px）：>0 时把玻璃裁成圆角小窗；0 = 满幅（语音条用） */
     var cornerRadiusPx: Float = 0f
 
+    /** 1px 细边颜色（0 = 不画） */
+    var borderColor: Int = 0
+
+    /** 上沿 1px 内高光强度（0..1，0 = 不画） */
+    var topHighlight: Float = 0f
+
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 1f
+    }
     private var shader: LinearGradient? = null
     private val clipPath = android.graphics.Path()
+    private var roundPath = android.graphics.Path()
 
     init {
         setWillNotDraw(false)
@@ -782,27 +795,45 @@ class FogLayout(context: Context) : FrameLayout(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (width <= 0 || height <= 0) return
         val s = shader ?: build(width, height).also { shader = it }
         paint.shader = s
         val r = cornerRadiusPx
-        if (r > 0f && width > 0 && height > 0) {
-            // 圆角小窗：把雾裁进圆角矩形（窗口之外本来就是透明的）
-            clipPath.reset()
-            clipPath.addRoundRect(
+        roundPath.reset()
+        if (r > 0f) {
+            roundPath.addRoundRect(
                 0f, 0f, width.toFloat(), height.toFloat(), r, r, android.graphics.Path.Direction.CW,
             )
-            val save = canvas.save()
-            canvas.clipPath(clipPath)
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
-            canvas.restoreToCount(save)
+            canvas.drawPath(roundPath, paint)
         } else {
             canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+        }
+        // 1px 细边（防硬边）
+        if (borderColor != 0) {
+            strokePaint.color = borderColor
+            if (r > 0f) {
+                canvas.drawPath(roundPath, strokePaint)
+            } else {
+                canvas.drawRect(
+                    strokePaint.strokeWidth / 2f, strokePaint.strokeWidth / 2f,
+                    width - strokePaint.strokeWidth / 2f, height - strokePaint.strokeWidth / 2f, strokePaint,
+                )
+            }
+        }
+        // 上沿 1px 内高光（与气泡同一套语言）
+        if (topHighlight > 0.01f) {
+            val band = 2f
+            val hi = Paint(strokePaint).apply {
+                color = OverlayViews.withAlpha(0xFFFFFFFF.toInt(), (topHighlight.coerceIn(0f, 1f) * 255).toInt())
+            }
+            val save = canvas.save()
+            canvas.clipRect(0f, 0f, width.toFloat(), band)
+            if (r > 0f) canvas.drawPath(roundPath, hi) else canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), hi)
+            canvas.restoreToCount(save)
         }
     }
 }
 
-/** 随音量跳动的点点波纹（需求 1 的原生版）：amplitude 来自本机 SpeechRecognizer 的 rms；
- *  没有电平时退化为固定相位正弦，保证「在听」这件事在视觉上一直有反馈。 */
 class WaveDots(context: Context) : View(context) {
     var dotColor: Int = Color.BLACK
     var amplitude: Float = 0f
@@ -852,10 +883,10 @@ class PanelHolder(
     val input: EditText,
     val actionBtn: TextView,
     val underline: View,
-    /** 附件三入口：拍照 / 相册 / 上传 */
-    val camBtn: TextView,
-    val galBtn: TextView,
-    val fileBtn: TextView,
+    /** 附件三入口（线描图标）：拍照 / 相册 / 上传 */
+    val camBtn: View,
+    val galBtn: View,
+    val fileBtn: View,
     /** 输入块（输入行 + 下划线）：说话时只降透明度（不能 GONE——会取消按住它的手势流） */
     val inputBlock: LinearLayout,
     val voiceRow: LinearLayout,

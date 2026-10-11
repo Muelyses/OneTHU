@@ -424,6 +424,65 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         }
     }
 
+    /**
+     * **屏幕方向 / 尺寸变化**（横竖屏切换、分屏、显示尺寸变化）——用户反馈「手机横屏没有自然边缘吸附」，
+     * 根因就是吸附/落点按**旧 work area** 算。这里的重算时机（一条 Configuration 变化跑一次）：
+     *   ① 先记下**旧宽度**与「球当时贴哪条边」（贴边状态必须跨旋转保留）；
+     *   ② `refreshScreen()` 丢掉缓存的 work area，用 `currentWindowMetrics` 重新取（横屏宽高互换）；
+     *   ③ 按新尺寸**重新落位**：原本贴左就 x=0、贴右就 x=新屏宽-窗宽、否则重新 clamp；y 也重 clamp；
+     *      并把新坐标+新屏幕尺寸写回存档（存档带屏幕尺寸，避免被当成越界值作废）；
+     *   ④ **重挂窗口**（尺寸/位置全变，重建最稳）：面板在原模式重建、侧边条保持在同一条边上继续贴边、
+     *      球形态回到球；`suspended`（本体在前台）时只清窗不重建。
+     */
+    fun onConfigChanged() {
+        val oldW = cachedW
+        val ballPx = ballWinPx()
+        val hasLp = orbLp != null
+        val stickLeft = hasLp && ballX <= OverlayViews.dp(ctx, 8)
+        val stickRight = hasLp && oldW > 0 && ballX + ballPx >= oldW - OverlayViews.dp(ctx, 8)
+        val wasShape = orbShape
+        val wasMode = modeCur
+
+        refreshScreen()
+        val (w, h) = screenSize()
+        if (hasLp) {
+            ballX = when {
+                stickLeft -> 0
+                stickRight -> (w - ballPx).coerceAtLeast(0)
+                else -> clampX(ballX, ballPx)
+            }
+            ballY = clampY(ballY, ballPx)
+            OverlayPrefs.setBall(ctx, ballX, ballY, w, h)
+        }
+        Log.i(
+            TAG,
+            "配置变化：${oldW}x${cachedH} 之后 → ${w}x$h（shape=$wasShape mode=$wasMode " +
+                "stickL=$stickLeft stickR=$stickRight）→ 重挂窗口",
+        )
+
+        if (suspended) {
+            forceCleanupWindows()
+            orb = null
+            panel = null
+            orbLp = null
+            panelLp = null
+            return
+        }
+        forceCleanupWindows()
+        orb = null
+        panel = null
+        orbLp = null
+        panelLp = null
+        when (wasMode) {
+            "panel" -> setMode("panel")
+            "bar" -> setMode("bar")
+            else -> {
+                showBallOnly()
+                if (wasShape == "side") applyOrbShape("side", animate = false)
+            }
+        }
+    }
+
     /** 系统深浅色变化：重建视图（窗口此时多半是摘掉的，重建成本可忽略） */
     fun onUiModeChanged() {
         refreshScreen()
@@ -483,7 +542,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     /**
      * 面板内语音行显隐（单窗不变量：面板里说话不切窗）。
      *
-     * ⚠️ **不能把输入块设成 GONE**：用户长按的正是输入块里的「发送」，
+     * 注意：**不能把输入块设成 GONE**：用户长按的正是输入块里的「发送」，
      * 把它的祖先隐藏会立刻取消这条手势流（ACTION_CANCEL）→ 抬手事件丢失。
      * 所以这里只把语音行显示出来（用 alpha 给输入块一点「让步」的视觉反馈），
      * 布局与可见性都不动被按住的那个视图。

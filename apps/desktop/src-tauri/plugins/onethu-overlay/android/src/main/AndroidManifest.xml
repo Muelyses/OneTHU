@@ -6,7 +6,7 @@
   （gen/android 实际工程不入库、本机软链到 /home/lin/onethu-android），
   因此权限与 Service 声明随仓库入库，无需改本地工程。
 
-  ★ 需要 Lead 在 app 模块确认合并结果（见报告「需要 Lead 做的」）：
+  ! 需要 Lead 在 app 模块确认合并结果（见报告「需要 Lead 做的」）：
     - uses-permission: SYSTEM_ALERT_WINDOW / FOREGROUND_SERVICE /
       FOREGROUND_SERVICE_SPECIAL_USE / FOREGROUND_SERVICE_MICROPHONE /
       POST_NOTIFICATIONS / RECEIVE_BOOT_COMPLETED / VIBRATE

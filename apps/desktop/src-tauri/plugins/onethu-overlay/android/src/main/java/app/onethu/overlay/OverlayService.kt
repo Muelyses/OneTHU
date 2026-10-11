@@ -14,7 +14,7 @@
 //   ① START_STICKY：系统重建服务 → onStartCommand(null) → 恢复成球；
 //   ② 自救闹钟：onDestroy/onTaskRemoved 里排 15~20s 后一条广播（ACTION_RESTART）；
 //   ③ 开机 / 应用升级：OverlayBootReceiver 收 BOOT_COMPLETED / MY_PACKAGE_REPLACED。
-//   ⚠️ Android 15+ 移除了「持有 SYSTEM_ALERT_WINDOW 即可后台启动 FGS」的豁免，
+//   注意：Android 15+ 移除了「持有 SYSTEM_ALERT_WINDOW 即可后台启动 FGS」的豁免，
 //      ②在 Android 16 上可能被拒（已 try/catch，不循环重排）。
 //
 // 红线：本服务不启动任何 Activity、不把 OneTHU 主窗口拉到前台。通知点击只切形态。
@@ -143,6 +143,9 @@ class OverlayService : Service() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        // 横竖屏 / 尺寸变化：**必须重算 work area 并重挂窗口**（否则横屏吸附按旧尺寸算 → 贴不上边）
+        windows?.onConfigChanged()
+        // 顺带处理深浅色切换（下一步里 dark 状态若已一致会自行短路）
         windows?.onUiModeChanged()
     }
 

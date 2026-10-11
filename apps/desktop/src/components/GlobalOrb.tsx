@@ -13,7 +13,12 @@
  *
  * 红线：这里只走纯前端通道（askOh / ohRun），绝不主动把主窗口拉到前台。
  */
-import { memo, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  memo, useCallback, useEffect, useRef, useState,
+  type ComponentProps, type CSSProperties, type ReactNode,
+} from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   onOverlayEvent, overlayHide, overlayPushUi, overlaySetMode, setOverlayClosedByUser,
   type OverlayMode,
@@ -24,6 +29,7 @@ import { HarnessMark } from "./HarnessMark.js";
 import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
 import { AttachActionsSheet } from "./AttachActionsSheet.js";
 import { logLine } from "../lib/clients.js";
+import { openExternal } from "../pages/info/openExternal.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { speakReply } from "../lib/tts.js";
 
@@ -40,9 +46,20 @@ const PANEL_MAX_RATIO = 0.8;
  *  与 lib/overlayDesktop.ts 的 DRAG_PX 必须保持一致。 */
 const DRAG_PX = 12;
 
-/** 悬浮窗内的取证日志（Rust 侧 [OVERLAY] + 这里 [orb]，用户跑一轮就能定位红线条/长按问题） */
+/** 悬浮窗内的取证日志（Rust 侧 [OVERLAY] + 这里 [orb]，用户跑一轮就能定位通信/把手问题） */
 function logOrb(line: string): void {
   void logLine(`[orb] ${line}`).catch(() => undefined);
+}
+
+/** 面板高度改窗：夹取与落盘都在 Rust；**调用失败必须留痕**（命令没注册时 handle 会像「无效」） */
+async function applyPanelHeight(h: number): Promise<void> {
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("overlay_set_panel_height", { h });
+    logOrb(`handle → panel_h=${Math.round(h)}`);
+  } catch (e) {
+    logOrb(`overlay_set_panel_height 调用失败：${e instanceof Error ? e.message : String(e)}（命令未注册/非 Tauri）`);
+  }
 }
 
 /* ── 悬浮球几何（**只在这里定尺寸**：窗口尺寸由原生按同样口径给） ──
@@ -109,6 +126,31 @@ const glassBlock = (extra?: CSSProperties): CSSProperties => {
   };
 };
 
+/** markdown 里的图片：只渲染直链（data:/blob:/http(s)）。悬浮窗是独立 webview，
+ *  没有主窗口那套本地路径读取通道（ChatDock 里有 dataUrlForPath），所以本地路径图**不渲染**，
+ *  附件走的是 data:/blob:（AttachTray 给的就是 previewUrl）——这是两端渲染范围的已知差异。 */
+function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
+  if (typeof src !== "string" || !/^(data:|blob:|https?:)/i.test(src)) return null;
+  return <img {...rest} className="dock-md-img" src={src} alt={alt ?? ""} />;
+}
+
+/** markdown 里的链接：桌面 webview 里 window.open/<a target=_blank> 都无效（仓库既有结论），
+ *  统一交给 openExternal（系统浏览器）——与本体同一条通道。 */
+function MdLink({ href, children, ...rest }: ComponentProps<"a">): ReactNode {
+  return (
+    <a
+      {...rest}
+      href={href}
+      onClick={(e) => {
+        e.preventDefault();
+        if (href) void openExternal(href);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
 /** 顶栏胶囊（与安卓 OverlayViews.capsule 同值：浅 #FFFFFF α0.86 / 深 #000000 α0.45 + 1px 细边） */
 function capsuleStyle(active: boolean): CSSProperties {
   const dark = isDarkUi();
@@ -140,8 +182,8 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
   const animTimer = useRef<number | null>(null);
   const modeRef = useRef<OverlayMode>(initialMode);
-  /** 顶部把手拖动（改面板高度） */
-  const handleDrag = useRef<{ id: number; y0: number; h0: number } | null>(null);
+  /** 顶部把手拖动（改面板高度；记的是 **screenY**，见下面 onPointerMove 的注释） */
+  const handleDrag = useRef<{ id: number; screenY0: number; h0: number } | null>(null);
   const lastPanelH = useRef(0);
   const [handleDown, setHandleDown] = useState(false);
   const prefs = useVoicePrefs();
@@ -241,9 +283,19 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
     scrollToEnd();
     setTyping(true);
     try {
-      const r = await askOh(t);
-      const answer = String((r as { text?: string })?.text ?? "");
-      setMsgs((m) => [...m, { role: "oh", text: answer || "（没有拿到回复）" }]);
+      const r = (await askOh(t)) as { answer?: unknown; text?: unknown; error?: unknown } | null;
+      // ⚠️ 2026-10-11 用户实录「悬浮窗发消息永远收不到回复」根因：askOh 的返回是
+      // `OhChatResult{answer}`（im/oh.ts:96-104），这里原来读的是**不存在的 `.text`** →
+      // 永远拿到空串 → 面板只显示「（没有拿到回复）」。链路本身是通的（Promise 正常 resolve），
+      // 主窗口的 ChatDock 用的是同一个 askOh/回答字段，所以 app 内正常、浮窗不正常。
+      const answer = String(r?.answer ?? r?.text ?? "").trim();
+      if (!answer) {
+        logOrb(`askOh 返回空答案：keys=[${Object.keys(r ?? {}).join(",")}] err=${String(r?.error ?? "")}`);
+      }
+      setMsgs((m) => [...m, {
+        role: "oh",
+        text: answer || `（没有拿到回复${typeof r?.error === "string" ? `：${r.error}` : ""}；调试日志 /tmp/onethu-debug.log 有 [orb] 行）`,
+      }]);
       // 需求 4：默认静音；顶栏「自动朗读」开了才念（偏好存 state/voicePrefs）
       if (answer && readVoicePrefs().autoSpeak) void speakReply(answer);
     } catch (e) {
@@ -383,12 +435,10 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           onPointerDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleDrag.current = {
-              id: e.pointerId,
-              y0: e.clientY,
-              h0: Math.max(120, (typeof window !== "undefined" ? window.innerHeight : 0) - PANEL_PAD * 2),
-            };
-            lastPanelH.current = handleDrag.current.h0;
+            const h0 = Math.max(120, (typeof window !== "undefined" ? window.innerHeight : 0) - PANEL_PAD * 2);
+            handleDrag.current = { id: e.pointerId, screenY0: e.screenY, h0 };
+            lastPanelH.current = h0;
+            logOrb(`handle down：h0=${Math.round(h0)} screenY0=${Math.round(e.screenY)}`);
             try {
               (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
             } catch {
@@ -400,23 +450,21 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             const d = handleDrag.current;
             if (!d || d.id !== e.pointerId) return;
             const avail = typeof window !== "undefined" ? window.screen.availHeight || window.innerHeight : 800;
-            // 向上拖 = 变长（位移取负）；夹在屏高 30%~80%（与 Rust 同值，前端只为跟手）
+            // ⚠️2026-10-11 用户实测「handle 无效」的根因：原来用 clientY 算位移。
+            //   面板**底边固定**，窗一变高上边就上移 → clientY 跟着窗一起变 →
+            //   h_new = C − h_old 这种负反馈，拖起来只在两个高度之间抖，看起来就是没用。
+            //   改用 **screenY**（指针的屏幕坐标，与窗自身移动无关）。
+            const dy = e.screenY - d.screenY0;
             const next = Math.max(
               avail * PANEL_MIN_RATIO,
-              Math.min(avail * PANEL_MAX_RATIO, d.h0 - (e.clientY - d.y0)),
+              Math.min(avail * PANEL_MAX_RATIO, d.h0 - dy), // 向上拖（dy<0）= 变高
             );
             if (Math.abs(next - lastPanelH.current) < 2) return;
             lastPanelH.current = next;
-            void (async () => {
-              try {
-                const { invoke } = await import("@tauri-apps/api/core");
-                await invoke("overlay_set_panel_height", { h: next });
-              } catch {
-                /* 非 Tauri/未注册：忽略 */
-              }
-            })();
+            void applyPanelHeight(next);
           }}
           onPointerUp={() => {
+            if (handleDrag.current) logOrb(`handle up：panel_h=${Math.round(lastPanelH.current)}（Rust 已落盘）`);
             handleDrag.current = null;
             setHandleDown(false);
           }}
@@ -425,14 +473,21 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             setHandleDown(false);
           }}
           style={{
-            position: "relative", zIndex: 3, margin: "0 auto 6px", width: 36, height: 5,
-            borderRadius: 999, cursor: "ns-resize", touchAction: "none",
-            background: handleDown
-              ? "var(--dsw-alias-label-secondary, rgba(0,0,0,.45))"
-              : "color-mix(in srgb, var(--dsw-alias-label-secondary, rgba(0,0,0,.4)) 42%, transparent)",
-            transition: "background .15s ease",
+            position: "relative", zIndex: 3, margin: "0 auto 4px", padding: "5px 0", // 5px 视觉 + 上下各 5px 命中区
+            cursor: "ns-resize", touchAction: "none",
           }}
-        />
+        >
+          <div
+            aria-hidden
+            style={{
+              width: 36, height: 5, borderRadius: 999, margin: "0 auto",
+              background: handleDown
+                ? "var(--dsw-alias-label-secondary, rgba(0,0,0,.45))"
+                : "color-mix(in srgb, var(--dsw-alias-label-secondary, rgba(0,0,0,.4)) 55%, transparent)",
+              transition: "background .15s ease",
+            }}
+          />
+        </div>
         {/* 顶栏**只留三个动作**（用户口径 2026-10-11）：回到 OneTHU / 自动朗读 / 收起
             ——「本次关闭悬浮球」已删（收进本体，浮层不再自带注销开关）。 */}
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
@@ -475,7 +530,15 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
               letterSpacing: 0.2, textShadow,
             }}
           >
-            {m.text}
+            {m.role === "oh" ? (
+              <div className="dock-md">
+                <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage, a: MdLink }}>
+                  {m.text}
+                </Markdown>
+              </div>
+            ) : (
+              m.text
+            )}
           </div>
         ))}
         {typing ? (

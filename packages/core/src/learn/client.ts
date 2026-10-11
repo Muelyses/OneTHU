@@ -1122,7 +1122,11 @@ export class LearnClient {
     return { attachment: { id, name, downloadUrl, size: size || undefined } };
   }
 
-  /** 通知（全部课程或指定课程）；expired=已过期 */
+  /** 通知（全部课程或指定课程）；expired=已过期。
+   *  **返回按发布时间倒序**：跨课程聚合的天然顺序是「按课程分组」（先课1的全部、再课2的…），
+   *  课内顺序也由服务器给（实测同一门课里 09-11/10-10/09-22 这种乱序）。
+   *  下游「最近通知」卡直接取前 3 条，不在这里定序就会永远只显示第一门课的通知。
+   *  按课程分组对调用方无用（各页要的都是「最新」），故在源头定序，课内/跨课程一次解决。 */
   async getAllNotifications(courseIds: string[], expired = false): Promise<Notification[]> {
     await this.#ensureCsrfReady();
     this.#requireCsrf();
@@ -1161,7 +1165,9 @@ export class LearnClient {
         }).catch(() => [] as Notification[]),
       ),
     );
-    return groups.flat();
+    // 发布时间倒序（normalizeTime 统一为 "YYYY-MM-DD HH:mm"/"YYYY-MM-DD"，字典序即时序；
+    // 解析失败的 "" 排在最后）。等于同时抹掉「按课程分组」与「课内乱序」两层缺陷。
+    return groups.flat().sort((a, b) => b.publishTime.localeCompare(a.publishTime));
   }
 
   async getFileList(courseId: string): Promise<CourseFile[]> {

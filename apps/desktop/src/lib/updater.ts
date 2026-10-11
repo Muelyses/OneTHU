@@ -179,7 +179,39 @@ export function fileNameFor(asset: CloudAsset, version: string): string {
   return `OneTHU_${version}.${ext}`;
 }
 
-/* ═══════════ 云盘官方镜像（公开分享链接；无需登录/无需选库） ═══════════ */
+/* ═══════════ 云盘官方镜像（公开分享链接；无需登录/无需选库） ═══════════
+ * ⚠️ 必须走**裸通道**：`universalFetch` 会把一切 `*.tsinghua.edu.cn` 包进
+ * webvpn 包装域（lib/transport.ts 的域名分流）——公开分享链接没有会话票，
+ * 被包装后服务器直接回 **403**（2026-10-12 用户实测的 403 就是这么来的；
+ * 同一 URL 匿名 curl 直连是 200/302 全通）。所以这里直接调 Rust `http_native`
+ * 并**手工跟随跳转**（该命令是否自动跟随不作假设，逐跳读 location 更稳）。 */
+
+interface RawResp { status: number; text: string }
+
+async function httpNativeGet(url: string, headers: Record<string, string> = {}, hop = 0): Promise<RawResp> {
+  const out = await invoke<{
+    status: number; status_text: string; headers: Record<string, string>; body: string; body_b64?: string | null; url: string;
+  }>("http_native", {
+    input: { url, method: "GET", headers: { Accept: "*/*", ...headers }, body: null, body_b64: null },
+  });
+  const loc = Object.entries(out.headers ?? {}).find(([k]) => k.toLowerCase() === "location")?.[1];
+  if (out.status >= 300 && out.status < 400 && loc && hop < 3) {
+    const next = loc.startsWith("http") ? loc : new URL(loc, url).toString();
+    return httpNativeGet(next, headers, hop + 1);
+  }
+  const text = out.body_b64
+    ? new TextDecoder("utf-8").decode(Uint8Array.from(atob(out.body_b64), (c) => c.charCodeAt(0)))
+    : (out.body ?? "");
+  return { status: out.status, text };
+}
+
+/** 分享接口的人话错误（用户没法自查 403/404 的含义） */
+function shareErr(what: string, status: number): string {
+  if (status === 403) return `${what} 不可达（403）——官方端点若变更请检查 share-links API（本模块用的是匿名 dirents 接口）`;
+  if (status === 404) return `${what} 不存在（404）——镜像上还没有这个文件`;
+  if (status >= 500) return `${what} 服务端错误（HTTP ${status}）——云盘侧暂时不可用，稍后重试`;
+  return `${what} 失败（HTTP ${status}）`;
+}
 
 interface ShareDirent {
   file_name: string;
@@ -192,13 +224,32 @@ interface ShareDirent {
 /** 分享目录列表（公开 API，实测 `GET /api/v2.1/share-links/<token>/dirents/?path=/` 返回 dirent_list） */
 async function shareDirents(path: string): Promise<ShareDirent[]> {
   const url = `${CLOUD_SHARE_BASE}/api/v2.1/share-links/${CLOUD_SHARE_TOKEN}/dirents/?path=${encodeURIComponent(path)}`;
-  const res = await universalFetch(url, { method: "GET", headers: { Accept: "application/json" } });
-  if (!res.ok) throw new Error(`云盘分享读取失败：HTTP ${res.status}`);
-  const j = (await res.json()) as { dirent_list?: ShareDirent[] };
-  return Array.isArray(j.dirent_list) ? j.dirent_list : [];
+  let r: RawResp;
+  try {
+    r = await httpNativeGet(url, { Accept: "application/json" });
+  } catch (e) {
+    throw new Error(`镜像目录不可达：${e instanceof Error ? e.message : String(e)}（校外环境请确认网络；该接口无需登录）`);
+  }
+  if (r.status !== 200) throw new Error(shareErr(`镜像目录 ${path}`, r.status));
+  try {
+    const j = JSON.parse(r.text) as unknown;
+    // 实测两种形态都出现过：裸数组 与 {dirent_list:[…]}
+    const list = Array.isArray(j) ? (j as ShareDirent[]) : ((j as { dirent_list?: ShareDirent[] }).dirent_list ?? []);
+    return Array.isArray(list) ? list : [];
+  } catch {
+    throw new Error(`镜像目录返回的不是 JSON（${path}）——官方接口形态可能变了`);
+  }
 }
 
-/** 分享内文件 → `dl=1` 下载直链（实测：302 → seafhttp，`accept-ranges: bytes`，可分段） */
+/**
+ * 分享内文件 → 下载直链。
+ * **2026-10-12 匿名 curl 实测（本实例）**：`/d/<token>/files/?p=<path>&dl=1` → **302** →
+ * `https://cloud.tsinghua.edu.cn/seafhttp/files/<uuid>/<name>` → 支持 Range（`206` +
+ * `content-range: bytes 0-1023/9516505`）。
+ * 而 `/api/v2.1/share-links/<token>/dirents/download/`、`…/files/`、`…/download/` 三种
+ * "API 版下载端点"在这台服务器上**全部 404**（只有 `…/dirents/?path=` 是 200）——
+ * 别再把这里"修"回 API 形态。下载由 Rust `updater_download` 执行（reqwest 自动跟随 302）。
+ */
 export function shareDownloadUrl(innerPath: string): string {
   const p = innerPath.startsWith("/") ? innerPath : `/${innerPath}`;
   return `${CLOUD_SHARE_BASE}/d/${CLOUD_SHARE_TOKEN}/files/?p=${encodeURIComponent(p)}&dl=1`;
@@ -206,9 +257,9 @@ export function shareDownloadUrl(innerPath: string): string {
 
 /** 分享内文件内容（小文件：清单） */
 async function shareFileText(innerPath: string): Promise<string> {
-  const res = await universalFetch(shareDownloadUrl(innerPath), { method: "GET" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.text();
+  const r = await httpNativeGet(shareDownloadUrl(innerPath));
+  if (r.status !== 200) throw new Error(shareErr(`镜像文件 ${innerPath}`, r.status));
+  return r.text;
 }
 
 const EXT_RE: Record<PlatformKey, RegExp> = {
@@ -301,9 +352,16 @@ async function fromGitHub(key: PlatformKey): Promise<Resolved> {
 
 async function fromCloud(key: PlatformKey): Promise<Resolved> {
   const dir = CLOUD_PLATFORM_DIR[key];
+  // 两个目录列表都要：根目录放 latest.json 时也要能发现；平台目录用来解析安装包
+  const rootList = await shareDirents("/");
   const dirList = await shareDirents(`${dir}/`);
-  // ① 发布方若放了清单（根目录或平台目录），优先用它（带 sha256/说明）
-  for (const cand of ["/latest.json", `${dir}/latest.json`]) {
+  const hasManifest = (list: ShareDirent[], name: string): boolean => list.some((d) => !d.is_dir && d.file_name === name);
+  // ① 发布方若放了清单（根目录或平台目录），优先用它（带 sha256 / 更新说明）
+  const candidates = [
+    ...(hasManifest(rootList, "latest.json") ? ["/latest.json"] : []),
+    ...(hasManifest(dirList, "latest.json") ? [`${dir}/latest.json`] : []),
+  ];
+  for (const cand of candidates) {
     try {
       const text = await shareFileText(cand);
       const parsed = parseManifest(text);
@@ -313,13 +371,14 @@ async function fromCloud(key: PlatformKey): Promise<Resolved> {
       if (!asset) continue;
       return finish(m, key, asset, (rel) => (/^https?:/i.test(rel) ? rel : shareDownloadUrl(rel)));
     } catch {
-      /* 没有这个文件 / 取不到 → 试下一个候选，最后走目录解析 */
+      /* 清单读不到 → 走目录解析（镜像当前的真实形态就是只有安装包） */
     }
   }
   // ② 目录解析兜底（镜像实测形态：OneTHU_<版本>_<arch>.<ext>）
   const synth = synthFromDir(dirList, key);
   if (!synth) {
-    throw new Error(`${dir}/ 里没有可识别的安装包（期望 OneTHU_<版本>_<arch>.${key === "android" ? "apk" : key === "windows" ? "exe" : "dmg"}）`);
+    const ext = key === "android" ? "apk" : key === "windows" ? "exe" : "dmg";
+    throw new Error(`${dir}/ 里没有可识别的安装包（期望 OneTHU_<版本>_<arch>.${ext}；目录里现有 ${dirList.length} 项）`);
   }
   return finish(synth.manifest, key, synth.asset, (rel) => shareDownloadUrl(rel));
 }

@@ -14,7 +14,7 @@ import { clearRemembered, loadRemembered, session, isTauri } from "../lib/client
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
-import { LevelBox } from "../components/Layout.js";
+import { LevelBox, focusSettingsTarget } from "../components/Layout.js";
 import { ThemeSwatch } from "../components/ThemePickerModal.js";
 import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
@@ -111,6 +111,7 @@ export function SettingsPage() {
     const wantSec = consumeSettingsSectionRequest();
     if (wantSec) {
       const t = setTimeout(() => {
+        if (focusSettingsTarget(wantSec)) return; // 行级直达优先（搜索落到"哪一行"）
         jumpToSection([wantSec]);
         const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
         const hit = heads.find((el) => (el.textContent ?? "").trim().startsWith(wantSec));

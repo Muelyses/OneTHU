@@ -24,12 +24,24 @@ import { HarnessMark } from "./HarnessMark.js";
 import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
 import { AttachActionsSheet } from "./AttachActionsSheet.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop } from "../lib/speech.js";
+import { logLine } from "../lib/clients.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { speakReply } from "../lib/tts.js";
 
 const HOLD_MS = 450;
 const FINAL_GRACE_MS = 320;
-const CANCEL_PX = 56; // 上划取消阈值（与 ChatDock 同语义）
+/** 上划取消阈值：与安卓 CANCEL_DP = 110 同口径（原 56 太灵敏，鼠标轻微上移就误取消） */
+const CANCEL_PX = 110;
+/** 按下滑动多少 px 才算「拖动」（|dx|+|dy| 曼哈顿距离）——小于它一律当「按住」。
+ *  2026-10-11 实测问题：原值 6px 在手握鼠标时太容易触发（微抖就开拖），拖动一开就清掉长按
+ *  定时器 → 长按 450ms 永远进不了语音。12px 是「鼠标微抖不会误触、有意拖动一推就走」的折中；
+ *  与 lib/overlayDesktop.ts 的 DRAG_PX 必须保持一致。 */
+const DRAG_PX = 12;
+
+/** 悬浮窗内的取证日志（Rust 侧 [OVERLAY] + 这里 [orb]，用户跑一轮就能定位红线条/长按问题） */
+function logOrb(line: string): void {
+  void logLine(`[orb] ${line}`).catch(() => undefined);
+}
 
 /* ── 悬浮球几何（**只在这里定尺寸**：窗口尺寸由原生按同样口径给） ──
  *   窗口 = 球 + 两侧各 BALL_PAD；投影画在球之外的留白里，所以永远不会被窗口边界裁掉
@@ -55,49 +67,21 @@ const ORB_KEYFRAMES = `
 
 interface Bubble { role: "user" | "oh"; text: string }
 
-/** 雾：中心浓、四周化开——不用 border/圆角/矩形阴影，避免出现「一条雾」 */
-const fogLayer: CSSProperties = {
-  backgroundImage:
-    "radial-gradient(58% 78% at 50% 52%, color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 62%, transparent) 0%,"
-    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 30%, transparent) 46%, transparent 80%)",
-  backdropFilter: "blur(22px) saturate(1.3)",
-  WebkitBackdropFilter: "blur(22px) saturate(1.3)",
-  maskImage: "radial-gradient(74% 90% at 50% 52%, #000 36%, rgba(0,0,0,.6) 64%, transparent 90%)",
-  WebkitMaskImage: "radial-gradient(74% 90% at 50% 52%, #000 36%, rgba(0,0,0,.6) 64%, transparent 90%)",
-  color: "var(--dsw-alias-label-primary, #1c1f24)",
-};
-
 const textShadow = "0 1px 14px color-mix(in srgb, var(--dsw-alias-bg-base, #fff) 55%, transparent)";
 
-/** 雾只做**背景层**：绝对定位 + pointer-events:none，文字层永远不吃 mask
- *  （用户要求「渲染还是渲染完整的」——把 mask 加在含文字的容器上会把首尾行渐隐掉）。 */
-/** 面板雾（用户口径 2026-10-11）：**从底部铺满、向上渐变变淡**，不是一片径向团。
- *  纵向 linear-gradient 做填充，mask 让 backdrop 模糊也一起随高度化掉。 */
-const fogSheet = (extra?: CSSProperties): CSSProperties => ({
+/** 背板（用户口径 2026-10-11 两端统一）：**整块可见的圆角毛玻璃**，不要顶部渐隐、不要径向化开。
+ *  做法 = 半透明同色块 + backdrop-filter 模糊 + 1px 细边 + 轻投影，四角边界清晰。
+ *  注：透明悬浮窗里 backdrop-filter 只采样本窗口内容（macOS 合成器采样不到别家 App），
+ *  所以视觉上是「半透明纸」而非「磨砂玻璃」——平台限制，但整块可见、边界清晰这两条成立。 */
+const glassBlock = (extra?: CSSProperties): CSSProperties => ({
   position: "absolute",
   inset: 0,
   zIndex: 0,
   pointerEvents: "none",
-  backgroundImage:
-    "linear-gradient(to top,"
-    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 88%, transparent) 0%,"
-    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 70%, transparent) 38%,"
-    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 40%, transparent) 68%,"
-    + " color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 14%, transparent) 88%,"
-    + " transparent 100%)",
-  backdropFilter: "blur(20px) saturate(1.25)",
-  WebkitBackdropFilter: "blur(20px) saturate(1.25)",
-  maskImage: "linear-gradient(to top, #000 0%, #000 58%, rgba(0,0,0,.55) 82%, transparent 100%)",
-  WebkitMaskImage: "linear-gradient(to top, #000 0%, #000 58%, rgba(0,0,0,.55) 82%, transparent 100%)",
-  ...extra,
-});
-
-const fogBack = (extra?: CSSProperties): CSSProperties => ({
-  ...fogLayer,
-  position: "absolute",
-  inset: "-6% -3%",
-  zIndex: 0,
-  pointerEvents: "none",
+  background: "color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 78%, transparent)",
+  backdropFilter: "blur(22px) saturate(1.25)",
+  WebkitBackdropFilter: "blur(22px) saturate(1.25)",
+  border: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.14)) 70%, transparent)",
   ...extra,
 });
 
@@ -114,6 +98,8 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const [anim, setAnim] = useState<"none" | "drop" | "bloom" | "collapse" | "bounce" | "bar">("none");
   /** 球心相对本窗左上角（逻辑 px），由原生 geometry 事件回传：决定「从球的方位滴落/收拢」 */
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
+  /** 上划取消进度 0..1（越接近阈值反馈越明显；到 1 = 松手即取消） */
+  const [cancelT, setCancelT] = useState(0);
   const animTimer = useRef<number | null>(null);
   const modeRef = useRef<OverlayMode>(initialMode);
   const prefs = useVoicePrefs();
@@ -141,8 +127,15 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   useEffect(() => {
     const onMove = (e: PointerEvent): void => {
       if (voice !== "listening") return;
-      cancelRef.current = pressY.current - e.clientY > CANCEL_PX;
-      setVoiceText(cancelRef.current ? "松开取消" : "");
+      const dy = pressY.current - e.clientY; // 上划为正
+      setCancelT(Math.max(0, Math.min(1, dy / CANCEL_PX)));
+      const was = cancelRef.current;
+      cancelRef.current = dy > CANCEL_PX;
+      // 只在翻转时改文案：否则每次 pointermove 都会把实时转写抹掉（抖动感）
+      if (cancelRef.current !== was) {
+        setVoiceText(cancelRef.current ? "松开取消" : "");
+        logOrb(cancelRef.current ? `进入取消区（上划 > ${CANCEL_PX}px）` : "退回取消区外，松手仍发送");
+      }
     };
     window.addEventListener("pointermove", onMove);
     return () => window.removeEventListener("pointermove", onMove);
@@ -246,7 +239,9 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   };
 
   const startVoice = useCallback(async (): Promise<void> => {
-    if (!(await speechAvailable())) {
+    const micOk = await speechAvailable();
+    logOrb(`speechAvailable=${micOk}`);
+    if (!micOk) {
       // 荣耀/华为「仅前台麦克风」：别的应用在前台时取不到麦 → 诚实引导到键盘输入
       setVoiceText("此环境取不到麦克风（系统限制），点球打开面板用键盘输入");
       setMode("panel");
@@ -256,15 +251,20 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
       return;
     }
     cancelRef.current = false;
+    setCancelT(0);
     setVoice("listening");
     setVoiceText("在听，请讲…");
     try {
       await speechStart();
-    } catch {
+    } catch (e) {
+      // 原来这里静默 setVoiceText("")：用户看到的就是「长按没效果」。现在把原因写在条上 + 落日志。
+      const msg = e instanceof Error ? e.message : String(e);
+      logOrb(`speechStart 失败：${msg}`);
       setVoice("off");
-      setVoiceText("");
+      setVoiceText(`语音不可用：${msg}`);
       return;
     }
+    logOrb("speechStart ok：在听");
     stopTimers();
     pollTimer.current = window.setInterval(() => {
       void speechPoll().then((t) => {
@@ -280,7 +280,9 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const finishVoice = useCallback(async (): Promise<void> => {
     const cancelled = cancelRef.current;
     cancelRef.current = false;
+    setCancelT(0);
     stopTimers();
+    logOrb(cancelled ? "松手：取消态 → 丢弃识别结果" : "松手：发送识别结果");
     setVoice("sending");
     speechStop();
     await new Promise((r) => window.setTimeout(r, FINAL_GRACE_MS));
@@ -362,7 +364,11 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             draggedRef.current = false;
             holdTimer.current = window.setTimeout(() => {
               holdTimer.current = null;
-              if (draggedRef.current) return; // 已经在拖窗口：不进语音
+              if (draggedRef.current) {
+                logOrb("长按到点但已被判定为拖动 → 不进语音（拖动阈值过大时会出现这行）");
+                return; // 已经在拖窗口：不进语音
+              }
+              logOrb("长按 450ms 到点 → 进语音条");
               setAnim("bar");
               setMode("bar");
               void overlaySetMode("bar");
@@ -372,8 +378,9 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           onPointerMove={(e) => {
             const st = pressStart.current;
             if (!st) return;
-            if (Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > 6) {
+            if (Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > DRAG_PX) {
               draggedRef.current = true;
+              logOrb(`位移 > ${DRAG_PX}px → 判定拖动（长按定时器已取消）`);
               if (holdTimer.current) {
                 window.clearTimeout(holdTimer.current);
                 holdTimer.current = null;
@@ -427,13 +434,14 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
       <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 9999, pointerEvents: "none" }}>
         <div
           style={{
-            position: "relative", margin: "0 auto 10px", width: "min(96vw, 640px)", padding: "26px 40px",
-            border: "none", textAlign: "center",
+            position: "relative", margin: "0 auto 8px", width: "min(96vw, 620px)", padding: "14px 24px",
+            borderRadius: 18, textAlign: "center",
             fontSize: 14, lineHeight: 1.5, textShadow,
             opacity: voiceText ? 1 : 0, transition: "opacity .2s ease",
           }}
         >
-          <div aria-hidden style={fogBack()} />
+          {/* 转写带也走整块毛玻璃（用户口径：整块可见、四角清晰，不要渐隐） */}
+          <div aria-hidden style={glassBlock({ borderRadius: 18 })} />
           <span style={{ position: "relative", zIndex: 1 }}>{voiceText}</span>
         </div>
         <div
@@ -441,14 +449,27 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             position: "relative",
             margin: "0 auto 18px", width: "min(78vw, 460px)", height: 54, borderRadius: 26,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            border: "none", opacity: voice === "listening" ? 1 : 0.7, transition: "opacity .25s ease",
+            border: "none", transition: "opacity .25s ease, transform .12s ease",
             transformOrigin: barOrigin,
             animation: `ohOrbBarIn ${BLOOM_MS}ms cubic-bezier(.22,.9,.24,1)`,
             // 条窗是全宽的，药丸四周有足够留白 → 投影不会被窗口边界裁（球那次教训）
             boxShadow: "0 3px 10px rgba(0,0,0,.12)",
+            // 上划取消反馈：越接近 110px 阈值越明显（整体缩一点 + 变淡），到阈值文案变「松开取消」
+            transform: `scale(${1 - 0.05 * cancelT})`,
+            opacity: (voice === "listening" ? 1 : 0.7) * (1 - 0.3 * cancelT),
           }}
         >
-          <div aria-hidden style={fogBack({ inset: "-30% -6%", borderRadius: 26 })} />
+          <div aria-hidden style={glassBlock({ borderRadius: 26 })} />
+          {/* 取消区警示色（token：state-error-primary），随进度连续加深 */}
+          <div
+            aria-hidden
+            style={{
+              position: "absolute", inset: 0, zIndex: 1, borderRadius: 26, pointerEvents: "none",
+              background: "var(--dsw-alias-state-error-primary, #f25a5a)",
+              opacity: 0.18 * cancelT,
+              transition: "opacity .12s linear",
+            }}
+          />
           {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
             const phase = Math.sin((Date.now() / 220) + i * 0.7);
             const h = 6 + phase * 8 * amplitude + amplitude * 6;
@@ -457,8 +478,9 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
                 key={i}
                 style={{
                   display: "block", width: 3, height: Math.max(4, h), borderRadius: 2,
+                  position: "relative", zIndex: 2,
                   background: "var(--dsw-alias-label-secondary, rgba(0,0,0,.5))",
-                  opacity: 0.35 + 0.5 * amplitude,
+                  opacity: (0.35 + 0.5 * amplitude) * (1 - 0.55 * cancelT),
                   animation: "none",
                 }}
               />
@@ -494,7 +516,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           pointerEvents: anim === "collapse" ? "none" : "auto",
         }}
       >
-        <div aria-hidden style={fogSheet()} />
+        <div aria-hidden style={glassBlock({ border: "none" })} />
         {/* 顶栏**只留三个动作**（用户口径 2026-10-11）：回到 OneTHU / 自动朗读 / 收起
             ——「本次关闭悬浮球」已删（收进本体，浮层不再自带注销开关）。 */}
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>

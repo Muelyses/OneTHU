@@ -42,8 +42,10 @@ import { speechStop } from "./speech.js";
 const EVENT_NAME = "onethu-overlay://event";
 /** 长按阈值：与 GlobalOrb 的 HOLD_MS 对齐（这里只用来判断「松手要不要补 release」） */
 const HOLD_MS = 450;
-/** 按住后位移超过该值（逻辑 px）= 拖动，不再算「长按说话」 */
-const DRAG_PX = 6;
+/** 按住后位移超过该值（逻辑 px，|dx|+|dy| 曼哈顿）= 拖动，不再算「长按说话」。
+ *  2026-10-11 实测问题：6px 在手握鼠标时极易被微抖触发 → 一开拖就清掉长按定时器，
+ *  长按 450ms 永远进不了语音。12px 与 GlobalOrb 的 DRAG_PX 严格一致（两处必须同值）。 */
+const DRAG_PX = 12;
 
 /** 拖动会话（tag 全局，供 setMode 与手势桥共享一次按压的状态） */
 interface DragSession {
@@ -256,21 +258,24 @@ function installGestureBridge(cb: (e: OverlayEvent) => void): () => void {
 function installFocusBridge(): () => void {
   if (!isOverlayWindow() || !inTauri()) return () => undefined;
 
-  const onFocusIn = (e: Event): void => {
-    const t = e.target as HTMLElement | null;
+  const isTextField = (el: EventTarget | null): boolean => {
+    const t = el as HTMLElement | null;
     const tag = t?.tagName?.toLowerCase() ?? "";
-    if (tag === "input" || tag === "textarea" || t?.isContentEditable === true) {
-      void invoke("overlay_focus", { on: true }).catch(() => undefined);
-    }
+    return tag === "input" || tag === "textarea" || t?.isContentEditable === true;
+  };
+  /** 只有**用户真的点了输入框**才允许 activate 本体（原用 focusin，太宽：
+   *  窗口被别的原因激活时浏览器可能自动把焦点给首个可聚焦元素 → 又 activate 一次，红线反复踩）。 */
+  const onPointerDown = (e: Event): void => {
+    if (isTextField(e.target)) void invoke("overlay_focus", { on: true }).catch(() => undefined);
   };
   const onFocusOut = (): void => {
     void invoke("overlay_focus", { on: false }).catch(() => undefined);
   };
 
-  document.addEventListener("focusin", onFocusIn, true);
+  document.addEventListener("pointerdown", onPointerDown, true);
   document.addEventListener("focusout", onFocusOut, true);
   return () => {
-    document.removeEventListener("focusin", onFocusIn, true);
+    document.removeEventListener("pointerdown", onPointerDown, true);
     document.removeEventListener("focusout", onFocusOut, true);
   };
 }

@@ -405,6 +405,57 @@ fn apply_geo(win: &WebviewWindow, g: Geo) -> Result<(), String> {
     Ok(())
 }
 
+// ── macOS：让「点击悬浮窗」不激活整个 app（红线级，2026-10-11 用户实测根因） ──
+// 机理：tao 的 set_focusable(false) 只是把 TaoWindow 的 focusable ivar 置假，而它只被
+// canBecomeKeyWindow / canBecomeMainWindow 读取 —— **拦不住 AppKit 在鼠标落下时激活 app**。
+// app 一旦被激活，AppKit 需要挑一个能当 key 的窗口：悬浮窗不能，于是选中**主窗口**并置前
+// ⇒ 用户看到的就是「无论怎么点悬浮窗都会回到 onethu 窗口」。
+// 唯一有效的做法是 NSPanel 的 nonactivatingPanel 内部那招：`-[NSWindow _setPreventsActivation:]`。
+// 私有 API，但先用 respondsToSelector 探针，符号不在（未来系统）就跳过并落日志，不会崩。
+#[cfg(target_os = "macos")]
+fn macos_prevent_activation(win: &WebviewWindow) {
+    use objc2::runtime::{AnyObject, Bool};
+    let ptr = win.as_ref().ns_window();
+    if ptr.is_null() {
+        log("拿不到 NSWindow，跳过 _setPreventsActivation（点击仍可能激活本体）");
+        return;
+    }
+    unsafe {
+        let ns: &AnyObject = &*(ptr.cast::<AnyObject>());
+        let responds: Bool = objc2::msg_send![
+            ns,
+            respondsToSelector: objc2::sel!(_setPreventsActivation:)
+        ];
+        if responds.as_bool() {
+            let _: () = objc2::msg_send![ns, _setPreventsActivation: Bool::YES];
+            log("已置 _setPreventsActivation=YES：点击悬浮窗不再激活 OneTHU，主窗口不会被带前");
+        } else {
+            log("此系统无 _setPreventsActivation: —— 点击悬浮窗仍会激活本体（需换 NSPanel 方案）");
+        }
+    }
+}
+
+#[cfg(all(desktop, not(target_os = "macos")))]
+fn macos_prevent_activation(_win: &WebviewWindow) {}
+
+/// 观测主窗口何时被激活（红线条取证：点悬浮窗后若出现这行，说明激活源还在）——只装一次
+#[cfg(desktop)]
+fn watch_main_activation(app: &AppHandle) {
+    use std::sync::atomic::{AtomicBool, Ordering};
+    static WATCHED: AtomicBool = AtomicBool::new(false);
+    if WATCHED.swap(true, Ordering::SeqCst) {
+        return;
+    }
+    let Some(main) = app.get_webview_window("main") else {
+        return;
+    };
+    main.on_window_event(|ev| {
+        if let tauri::WindowEvent::Focused(true) = ev {
+            log("【取证件】主窗口成为 key —— 有东西 activate 了 OneTHU（点悬浮窗的任何非输入框操作都不该出现这行）");
+        }
+    });
+}
+
 // ── 建窗（懒创建、复用；label 固定 oh-orb，与 capabilities 对齐） ─────────────
 #[cfg(desktop)]
 fn ensure_window(app: &AppHandle) -> Result<WebviewWindow, String> {
@@ -437,6 +488,9 @@ fn ensure_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     if let Err(e) = win.set_focusable(false) {
         log(&format!("set_focusable 失败（不影响显示）：{e}"));
     }
+    // ★红线级：点击本窗不得激活 app（否则主窗口会被 AppKit 挑成 key 并置前）
+    macos_prevent_activation(&win);
+    watch_main_activation(app);
     let ev_win = win.clone();
     let ev_app = app.clone();
     win.on_window_event(move |ev| match ev {
@@ -466,6 +520,9 @@ fn ensure_window(app: &AppHandle) -> Result<WebviewWindow, String> {
             }
             let scale = ev_win.scale_factor().unwrap_or(1.0);
             save_pos(&ev_app, pos.x, pos.y, scale, false);
+        }
+        tauri::WindowEvent::Focused(true) => {
+            log("悬浮窗成为 key（只有用户点面板输入框时才该出现；其他时候出现=焦点被抢）");
         }
         tauri::WindowEvent::Destroyed => {
             let mut s = st();
@@ -517,7 +574,10 @@ pub fn overlay_show(app: AppHandle) -> Result<(), String> {
         }
         apply_geo(&win, geo)?;
         let _ = win.set_always_on_top(true);
-        win.show().map_err(|e| format!("显示悬浮窗失败：{e}"))?;
+        macos_prevent_activation(&win); // 幂等：重建/系统升级后都保证这条不丢
+        if !win.is_visible().unwrap_or(false) {
+            win.show().map_err(|e| format!("显示悬浮窗失败：{e}"))?;
+        }
         emit_geometry(&win, Mode::Ball, geo, ball);
         log(&format!(
             "show ball @({},{}) {}x{} 逻辑 scale={} reload={}",
@@ -697,6 +757,7 @@ pub fn overlay_drag_start(app: AppHandle) -> Result<(), String> {
     #[cfg(desktop)]
     {
         let win = ensure_window(&app)?;
+        log("drag_start：交给原生开始拖窗（拖不动时前端会自动退 nudge 兜底）");
         win.start_dragging()
             .map_err(|e| format!("启动窗口拖动失败：{e}"))
     }
@@ -743,7 +804,7 @@ pub fn overlay_focus(app: AppHandle, on: bool) -> Result<(), String> {
             let _ = win.set_focusable(true);
             win.set_focus()
                 .map_err(|e| format!("聚焦悬浮窗失败：{e}"))?;
-            log("focus(on)：用户点了面板输入框（这是唯一会激活本体的路径）");
+            log("focus(on)：用户点了面板输入框 —— 这是唯一会 activate 本体的路径（其余点击靠 _setPreventsActivation 拦住）");
         } else {
             let _ = win.set_focusable(false);
         }

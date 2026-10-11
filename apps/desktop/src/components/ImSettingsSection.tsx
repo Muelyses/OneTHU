@@ -49,12 +49,12 @@ export type ImTier = "basic" | "advanced" | "all";
 
 /* task-19：IM 设置行注册（基础档 + 高级档） */
 defineSearchRows([
-  { id: "im-qr", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "扫码创建应用（推荐，免手工配置）", aliases: ["扫码", "IM", "飞书"], desc: "扫码创建飞书应用并自动绑定" },
-  { id: "im-owner", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "绑定主人", aliases: ["绑定码", "解绑"], desc: "生成绑定码 / 解除绑定" },
-  { id: "im-wechat", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "微信（iLink 官方 Bot · 扫码即用）", aliases: ["微信", "iLink"], desc: "微信扫码绑定 / 重新扫码 / 解除绑定" },
-  { id: "im-status", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "连接状态", aliases: ["IM 状态"], desc: "通道连接状态" },
-  { id: "im-feishu", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "飞书 bot（P0 通道）", aliases: ["飞书通道"], desc: "长连接事件订阅" },
-  { id: "im-creds", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "应用凭据（手工）", aliases: ["App ID", "App Secret"], desc: "手工填飞书应用凭据" },
+  { id: "im-qr", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "扫码创建应用（推荐，免手工配置）", aliases: ["扫码", "IM", "飞书"], desc: "扫码创建飞书应用并自动绑定" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "扫码创建应用（推荐，免手工配置）"], displayRoot: "设置" },
+  { id: "im-owner", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "绑定主人", aliases: ["绑定码", "解绑"], desc: "生成绑定码 / 解除绑定" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "绑定主人"], displayRoot: "设置" },
+  { id: "im-wechat", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "微信（iLink 官方 Bot · 扫码即用）", aliases: ["微信", "iLink"], desc: "微信扫码绑定 / 重新扫码 / 解除绑定" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "微信（iLink 官方 Bot · 扫码即用）"], displayRoot: "设置" },
+  { id: "im-status", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "连接状态", aliases: ["IM 状态"], desc: "通道连接状态" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "连接状态"], displayRoot: "设置" },
+  { id: "im-feishu", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "飞书 bot（P0 通道）", aliases: ["飞书通道"], desc: "长连接事件订阅" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "IM 通道（进阶）", "飞书 bot（P0 通道）"], displayRoot: "设置" },
+  { id: "im-creds", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "应用凭据（手工）", aliases: ["App ID", "App Secret"], desc: "手工填飞书应用凭据" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "IM 通道（进阶）", "应用凭据（手工）"], displayRoot: "设置" },
 ]);
 
 export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): ReactNode {

@@ -36,10 +36,11 @@ const tierListeners = new Set<() => void>();
    注意：语音/悬浮球/IM 的行由**它们各自的 section 组件**注册（单一真源），这里不再重复注册
    —— 重复���册会让"搜到的是哪一条"出现歧义（护栏最初就是被这一点抓红的）。 ── */
 defineSearchRows([
-  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" },
-  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" },
-  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" },
-  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" },
+  /* go 负责第二段：OH 页需要切档（基础/高级）——基础档行 → 基础设置，其余 → 高级配置 */
+  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置" },
+  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置" },
+  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置" },
+  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置" },
 ]);
 
 export function requestOhTier(t: OhTier): void {

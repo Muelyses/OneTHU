@@ -10,12 +10,21 @@
  * **不依赖 DOM、不依赖页面是否挂载**；DOM 侧只负责"滚到并高亮"。
  */
 import { requestSettingsSection, requestSettingsTab } from "./settingsMode.js";
+import { goEntry } from "../components/Layout.js";
+import { navGo } from "../plugins/bridges.js";
 
 export interface SearchRow {
   /** 稳定 id（唯一） */
   id: string;
   /** 所属页签（设置页签，或 "OneTHU Harness" 这种二级页） */
   tab: string;
+  /** **完整亲子树面包屑**（如 ["设置","外观与布局","主题","安装主题"] / ["插件","插件市场","主题"]）。
+   *  [0] 决定**家族**（"设置" → requestSettingsTab + settings；"插件" → goEntry("plugins")）；
+   *  在 CommandPalette 与底栏检索条里都以 muted 小字显示在标题下。未显式填时按 tab/section/title 兜底成链。 */
+  breadcrumb?: string[];
+  /** **显示链的根**（面向用户）：OH 相关行写 "设置"（用户直觉：三格框第三格在"设置"概念下），
+   *  插件市场的条目写 "插件"。默认按导航家族推。显示用 displayRoot，**落点验证仍以 family 为准**。 */
+  displayRoot?: "设置" | "插件";
   /** 所属分节（用于分节高亮/面包屑） */
   section: string;
   /** 行标题（主匹配字段） */
@@ -65,12 +74,48 @@ export function matchSearchRows(q: string, limit = 8): Array<{ row: SearchRow; s
   return out.sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
-/** 点击某一行 → 直达（页签 + 分节/行高亮） */
-export function goSearchRow(row: SearchRow): void {
-  if (row.go) {
-    row.go();
-    return;
+/* ① 面包屑兜底：显式填优先；未填时按 tab/section/title 生成**同族**链（不跨家族推断） */
+export function breadcrumbOf(row: SearchRow): string[] {
+  if (row.breadcrumb && row.breadcrumb.length > 0) return row.breadcrumb;
+  const isPlugin = row.tab === "插件" || row.tab === "OneTHU Harness";
+  return isPlugin ? ["插件", row.tab, row.section, row.title] : ["设置", row.tab, row.section, row.title];
+}
+
+/** 家族：由 breadcrumb[0] 唯一决定（"设置" | "插件"） */
+/** 显示链（用 displayRoot 替换面包屑首段；仅影响展示） */
+export function displayBreadcrumb(row: SearchRow): string[] {
+  const bc = breadcrumbOf(row);
+  const root = row.displayRoot ?? (familyOf(row) === "plugins" ? "插件" : "设置");
+  return [root, ...bc.slice(1)];
+}
+
+/** 断言分组：显示根与导航家族不一致的行（如 OH：显示"设置"、实际落"插件"）——单独统计，不混入两族 */
+export function familyGroup(row: SearchRow): "settings" | "plugins" | "mixed" {
+  const fam = familyOf(row);
+  const shown = displayBreadcrumb(row)[0];
+  return (fam === "plugins" && shown === "设置") ? "mixed" : fam;
+}
+
+export function familyOf(row: SearchRow): "settings" | "plugins" {
+  const head = breadcrumbOf(row)[0];
+  return head === "插件" ? "plugins" : "settings";
+}
+
+/** ① **唯一跳转函数**：家族 → 二级（tier/view/category）→ 三级（分节/行高亮）。
+ *  家族只从面包屑推导；行自带的 go 负责二级/三级定位（tier / view / section）。 */
+export function goSearchRow(row: SearchRow): { family: "settings" | "plugins"; breadcrumb: string[] } {
+  const breadcrumb = breadcrumbOf(row);
+  const family = familyOf(row);
+  if (family === "plugins") {
+    goEntry("plugins"); // 状态机（入口态唯一来源）
+  } else {
+    requestSettingsTab(row.tab);
+    navGo("settings");
   }
-  requestSettingsSection(row.title);
-  requestSettingsTab(row.tab);
+  if (row.go) {
+    row.go(); // 二级/三级：OH 切档、插件切视图/分类、分节/行滚动高亮都在这里
+  } else {
+    requestSettingsSection(row.title);
+  }
+  return { family, breadcrumb };
 }

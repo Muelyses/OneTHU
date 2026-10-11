@@ -30,8 +30,8 @@ function plainShapeName(name: string): string {
 
 /* task-19：桌面小组件设置行注册 */
 defineSearchRows([
-  { id: "widget-main", tab: "桌面小组件", section: "桌面小组件", title: "桌面小组件", aliases: ["小组件", "widget", "桌面组件"], desc: "添加到桌面的 OneTHU 小组件与内容设置" },
-  { id: "widget-slots", tab: "桌面小组件", section: "桌面小组件", title: "小组件槽位", aliases: ["槽位", "插件小组件"], desc: "选择每个槽位显示哪块插件小组件" },
+  { id: "widget-main", tab: "桌面小组件", section: "桌面小组件", title: "桌面小组件", aliases: ["小组件", "widget", "桌面组件"], desc: "添加到桌面的 OneTHU 小组件与内容设置" , breadcrumb: ["设置", "桌面小组件", "桌面小组件", "桌面小组件"] },
+  { id: "widget-slots", tab: "桌面小组件", section: "桌面小组件", title: "小组件槽位", aliases: ["槽位", "插件小组件"], desc: "选择每个槽位显示哪块插件小组件" , breadcrumb: ["设置", "桌面小组件", "桌面小组件", "小组件槽位"] },
 ]);
 
 export function WidgetSettingsSection(): ReactNode {

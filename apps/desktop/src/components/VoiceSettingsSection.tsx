@@ -64,10 +64,10 @@ function engineCopy(st: TtsStatus | null, busy: boolean): { title: string; desc:
 
 /* task-19：语音合成设置行注册 */
 defineSearchRows([
-  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", title: "引擎状态", aliases: ["语音引擎", "重新检查", "试听"], desc: "当前平台是否支持语音合成 / 重新检查" },
-  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色", aliases: ["嗓音", "普通话"], desc: "系统引擎报出的可选嗓音" },
-  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度"], desc: "朗读快慢" },
-  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读高低" },
+  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", title: "引擎状态", aliases: ["语音引擎", "重新检查", "试听"], desc: "当前平台是否支持语音合成 / 重新检查" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "引擎状态"], displayRoot: "设置" },
+  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色", aliases: ["嗓音", "普通话"], desc: "系统引擎报出的可选嗓音" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音色"], displayRoot: "设置" },
+  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度"], desc: "朗读快慢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "语速"], displayRoot: "设置" },
+  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读高低" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音高"], displayRoot: "设置" },
 ]);
 
 export function VoiceSettingsSection(): ReactNode {

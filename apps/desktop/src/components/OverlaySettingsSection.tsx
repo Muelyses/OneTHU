@@ -12,7 +12,7 @@ import { hasOverlayPermission, requestOverlayPermission } from "../lib/overlayAn
 
 /* task-19：悬浮球设置行注册 */
 defineSearchRows([
-  { id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" },
+  { id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "悬浮球", "开启悬浮球"], displayRoot: "设置" },
 ]);
 
 export function OverlaySettingsSection(): ReactNode {

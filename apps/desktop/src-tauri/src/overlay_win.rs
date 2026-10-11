@@ -74,6 +74,11 @@ const BAR_PILL_GAP: f64 = 18.0;
 /// 悬浮小窗（对齐安卓 A①：PANEL_RATIO 0.44 + PANEL_MARGIN_DP 14；圆角 24 由前端画）
 const PANEL_MARGIN: f64 = 14.0;
 const PANEL_RATIO: f64 = 0.44;
+/// 面板窗外围留白：给「柔和外阴影」留出可绘制空间（窗口正好等于视觉块时阴影会被窗口边界切出硬线）
+const PANEL_SHADOW_PAD: f64 = 14.0;
+/// 顶部把手改高度时的夹取范围（屏高比例；与前端 clamp 同值，Rust 这边是权威）
+const PANEL_MIN_RATIO: f64 = 0.30;
+const PANEL_MAX_RATIO: f64 = 0.80;
 /// WindowEvent::Moved 的 drag 事件节流 / 落盘节流
 const DRAG_EMIT_MS: u128 = 50;
 const PERSIST_MS: u128 = 400;
@@ -155,6 +160,8 @@ struct State {
     ball: Option<(i32, i32)>,
     /// Rust 侧可见性（IPC 失败时 `is_visible()` 不可靠，故自己记账）
     visible: bool,
+    /// 面板视觉高度（逻辑 px，顶部把手拖出来的；None = 用 0.44 默认）
+    panel_h: Option<f64>,
     /// 隐藏过 → 下次 show 前把 overlay 页刷回球态
     /// （页面自己停在 React 的 hidden 分支上，不会随窗口 show 自动回来）
     reload_pending: bool,
@@ -165,6 +172,7 @@ struct State {
 static STATE: Mutex<State> = Mutex::new(State {
     mode: Mode::Hidden,
     ball: None,
+    panel_h: None,
     visible: false,
     reload_pending: false,
     last_persist: None,
@@ -190,6 +198,9 @@ struct SavedPos {
     y: i32,
     #[serde(default)]
     scale: f64,
+    /// 面板视觉高度（逻辑 px）：顶部把手拖出来的，下次打开沿用
+    #[serde(default)]
+    panel_h: Option<f64>,
 }
 
 #[cfg(desktop)]
@@ -206,6 +217,33 @@ fn load_pos(app: &AppHandle) -> Option<(i32, i32)> {
     let raw = std::fs::read_to_string(pos_path(app)?).ok()?;
     let v: SavedPos = serde_json::from_str(&raw).ok()?;
     Some((v.x, v.y))
+}
+
+/// 读回面板高度（首次用到时懒加载进 State）
+#[cfg(desktop)]
+fn load_panel_h(app: &AppHandle) -> Option<f64> {
+    let raw = std::fs::read_to_string(pos_path(app)?).ok()?;
+    let v: SavedPos = serde_json::from_str(&raw).ok()?;
+    v.panel_h.filter(|h| *h > 80.0)
+}
+
+/// 只更新面板高度（球位/缩放沿用内存里的现值）
+#[cfg(desktop)]
+fn save_panel_h(app: &AppHandle, h: f64) {
+    let (x, y) = {
+        let s = st();
+        s.ball.unwrap_or((0, 0))
+    };
+    if let Some(p) = pos_path(app) {
+        let body = serde_json::to_string(&SavedPos {
+            x,
+            y,
+            scale: 1.0,
+            panel_h: Some(h),
+        })
+        .unwrap_or_default();
+        let _ = std::fs::write(p, body);
+    }
 }
 
 #[cfg(desktop)]
@@ -225,7 +263,8 @@ fn save_pos(app: &AppHandle, x: i32, y: i32, scale: f64, force: bool) {
         }
     }
     if let Some(p) = pos_path(app) {
-        let body = serde_json::to_string(&SavedPos { x, y, scale }).unwrap_or_default();
+        let panel_h = { st().panel_h };
+        let body = serde_json::to_string(&SavedPos { x, y, scale, panel_h }).unwrap_or_default();
         if let Err(e) = std::fs::write(&p, body) {
             log(&format!("位置落盘失败：{e}"));
         }
@@ -357,15 +396,23 @@ fn geo_for(mode: Mode, mon: Mon, ball: Option<(i32, i32)>) -> Geo {
             }
         }
         Mode::Panel => {
-            // 安卓 A①：左右/底部各留 14，高 = 屏高 × 0.44，圆角 24（前端画）
+            // 安卓 A①：左右/底部各留 14，高 = 屏高 × 0.44（可用顶部把手改成 30%~80%），圆角 24 前端画。
+            // 窗口比视觉块四周各大 PANEL_SHADOW_PAD：那圈留白专门给「柔和外阴影」画，视觉块仍严格落在 14 边距上。
             let margin = (PANEL_MARGIN * s).round() as i32;
+            let pad = (PANEL_SHADOW_PAD * s).round() as i32;
             let w = (mon.ww as i32 - margin * 2).max(200);
-            let h = ((mon.wh as f64 * PANEL_RATIO).round() as i32).max(160);
+            let work_h = mon.wh as i32;
+            let min_v = ((work_h as f64 * PANEL_MIN_RATIO).round() as i32).max(120);
+            let max_v = ((work_h as f64 * PANEL_MAX_RATIO).round() as i32).max(min_v + 1);
+            let want = { st().panel_h }
+                .map(|v| (v * s).round() as i32)
+                .unwrap_or_else(|| (work_h as f64 * PANEL_RATIO).round() as i32);
+            let v = want.clamp(min_v, max_v);
             Geo {
-                x: mon.wx + margin,
-                y: mon.wy + mon.wh as i32 - margin - h,
-                lw: (w as f64) / s,
-                lh: (h as f64) / s,
+                x: mon.wx + margin - pad,
+                y: mon.wy + work_h - margin - v - pad,
+                lw: ((w + pad * 2) as f64) / s,
+                lh: ((v + pad * 2) as f64) / s,
             }
         }
     }
@@ -570,6 +617,11 @@ pub fn overlay_show(app: AppHandle) -> Result<(), String> {
             let _ = win.eval("location.reload()");
         }
         let ball = { st().ball }.or_else(|| load_pos(&app));
+        let need_panel_h = { st().panel_h.is_none() };
+        if need_panel_h {
+            let h = load_panel_h(&app);
+            st().panel_h = h;
+        }
         let mon = pick_monitor(&win, ball);
         let geo = geo_for(Mode::Ball, mon, ball);
         {
@@ -655,6 +707,11 @@ pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
         }
         let win = ensure_window(&app)?;
         let ball = { st().ball }.or_else(|| load_pos(&app));
+        let need_panel_h = { st().panel_h.is_none() };
+        if need_panel_h {
+            let h = load_panel_h(&app);
+            st().panel_h = h;
+        }
         let mon = pick_monitor(&win, ball);
         let geo = geo_for(m, mon, ball);
         {
@@ -686,6 +743,32 @@ pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
     #[cfg(not(desktop))]
     {
         let _ = (&app, &mode);
+        Err("桌面悬浮球仅桌面端支持".into())
+    }
+}
+
+/// 顶部把手拖动改面板高度（参数 = **视觉块**的逻辑 px）。
+/// Rust 侧权威夹取到屏高 30%~80%，立刻改窗 + 落盘（下次打开沿用），并回传新 geometry。
+#[tauri::command]
+pub fn overlay_set_panel_height(app: AppHandle, h: f64) -> Result<(), String> {
+    #[cfg(desktop)]
+    {
+        let win = ensure_window(&app)?;
+        let ball = { st().ball }.or_else(|| load_pos(&app));
+        let mon = pick_monitor(&win, ball);
+        let mh = mon.wh as f64 / mon.scale;
+        let want = h.max(mh * PANEL_MIN_RATIO).min(mh * PANEL_MAX_RATIO);
+        st().panel_h = Some(want);
+        let geo = geo_for(Mode::Panel, mon, ball);
+        apply_geo(&win, geo)?;
+        save_panel_h(&app, want);
+        emit_geometry(&win, Mode::Panel, geo, ball);
+        log(&format!("panel 高度 → {want:.0} 逻辑 px（窗口 {:.0}x{:.0}）", geo.lw, geo.lh));
+        Ok(())
+    }
+    #[cfg(not(desktop))]
+    {
+        let _ = (&app, h);
         Err("桌面悬浮球仅桌面端支持".into())
     }
 }

@@ -23,11 +23,11 @@
  * ## 桌面与安卓的分工差异（重要，写给后来人）
  * 桌面悬浮窗本身就是**真 webview**，GlobalOrb 的 tap/hold 手势由它自己的 DOM
  * onPointerDown/onPointerUp 处理（无需原生手势识别）；原生侧只补三件 DOM 做不到的事：
- *   ① `release`：GlobalOrb 的 bar 态容器 `pointer-events:none`、球又已卸载，松手事件没有
- *      任何元素接着 → 由本文件在悬浮窗内用 document 级 pointerup 合成 `release` 回传。
- *   ② 拖动：按住移动超过 DRAG_PX 就交给原生 `overlay_drag_start()`（拖到任意位置），
- *      原生不可用时退回 `overlay_nudge()` 逐帧移动。
- *   ③ `closed` / `drag`：Rust 侧发（窗口生命周期与位置是原生才知道的事）。
+ *   ① 拖动：按住球移动超过 DRAG_PX 就交给原生 `overlay_drag_start()`（拖到任意位置），
+ *      原生不可用时退回 `overlay_nudge()` 逐帧移动（只认 `[data-oh-ball]` 内的按压）。
+ *   ② `closed` / `drag` / `geometry`：Rust 侧发（窗口生命周期、位置与落位几何是原生才知道的事）。
+ *   桌面**不再有长按语音**（用户 2026-10-11 口径）：这里不合成 hold/release，也不碰语音插件；
+ *   桌面要说话走面板输入框 + 系统听写。
  *
  * ## 红线
  * 本文件任何路径都不 show/unminimize/聚焦主窗口；`overlay_focus` 只在**用户点面板输入框**
@@ -36,29 +36,16 @@
  */
 import type { OverlayAdapter, OverlayEvent, OverlayMode } from "./overlay.js";
 import { isAndroidNavigator } from "./androidHost.js";
-import { speechStop } from "./speech.js";
 
 /** 原生事件名（Rust `overlay_win::OVERLAY_EVENT`） */
 const EVENT_NAME = "onethu-overlay://event";
-/** 长按阈值：与 GlobalOrb 的 HOLD_MS 对齐（这里只用来判断「松手要不要补 release」） */
-const HOLD_MS = 450;
-/** 按住后位移超过该值（逻辑 px，|dx|+|dy| 曼哈顿）= 拖动，不再算「长按说话」。
+/** 按住后位移超过该值（逻辑 px，|dx|+|dy| 曼哈顿）= 拖动，不再算「点一下」。
  *  2026-10-11 实测问题：6px 在手握鼠标时极易被微抖触发 → 一开拖就清掉长按定时器，
  *  长按 450ms 永远进不了语音。12px 与 GlobalOrb 的 DRAG_PX 严格一致（两处必须同值）。 */
 const DRAG_PX = 12;
 
-/** 拖动会话（tag 全局，供 setMode 与手势桥共享一次按压的状态） */
-interface DragSession {
-  /** 本次按压已升级为拖动 */
-  active: boolean;
-  /**
-   * 拖动期间收到了 bar 形态请求 ⇒ GlobalOrb 的 450ms 长按定时器在拖动途中误开语音条。
-   * 桌面侧无权改 GlobalOrb（写域在 Lead），这里只做收尾自愈（见 recoverHoldMisfire）。
-   */
-  holdMisfire: boolean;
-}
-
-const drag: DragSession = { active: false, holdMisfire: false };
+/** 本次按压是否已升级为拖动（桌面唯一的手势状态；长按语音已按用户要求下线） */
+const drag = { active: false };
 
 /** 支持性探测缓存（平台不会变，只探一次） */
 let supportCache: boolean | null = null;
@@ -111,30 +98,27 @@ async function probeSupported(): Promise<boolean> {
 }
 
 /**
- * 手势补洞（只在悬浮球窗口里装）：
- *   - 按住移动 > DRAG_PX → 原生拖窗（失败退 JS 逐帧）
- *   - 长按（≥HOLD_MS）后松手 → 合成 `release`（GlobalOrb 的 bar 态接不到 pointerup）
- *   - 拖动途中被 450ms 定时器误开语音条 → 收尾自愈
+ * 手势补洞（只在悬浮球窗口里装，且**只认从球体内按下**的按压）：
+ *   按住球 → 位移 > DRAG_PX → 原生拖窗（不可用则退 JS 逐帧 `overlay_nudge`）。
+ * 长按语音已按用户口径（2026-10-11「把电脑悬浮球长按语音关了」）整体下线：
+ * 这里不再合成长按/release，也不再碰语音插件——桌面要说话就用面板输入框 + 系统听写。
+ * `[data-oh-ball]` 闸门同时保证：拖把手/划消息/点输入框都不会误触发拖窗。
  */
-function installGestureBridge(cb: (e: OverlayEvent) => void): () => void {
+function installGestureBridge(_cb: (e: OverlayEvent) => void): () => void {
   if (!isOverlayWindow() || !inTauri()) return () => undefined;
 
   let pointerId = -1;
   let pressed = false;
   let moved = false;
-  let holdFired = false;
-  let holdTimer = 0;
   let startX = 0;
   let startY = 0;
   let lastX = 0;
   let lastY = 0;
   let jsDrag = false;
 
-  const clearHold = (): void => {
-    if (holdTimer) {
-      window.clearTimeout(holdTimer);
-      holdTimer = 0;
-    }
+  const isBallPress = (target: EventTarget | null): boolean => {
+    const el = target as Element | null;
+    return typeof el?.closest === "function" && el.closest("[data-oh-ball]") !== null;
   };
 
   const beginDrag = (): void => {
@@ -155,50 +139,18 @@ function installGestureBridge(cb: (e: OverlayEvent) => void): () => void {
     })();
   };
 
-  /**
-   * 拖动途中被长按定时器误开语音（GlobalOrb 的 450ms 定时器不会因拖动取消）的收尾：
-   * 停识别 → 窗口变回球 → 刷回干净的球态。不做这步会卡在「全宽语音条 + 麦克风长开」。
-   * 修根要 Lead 在 GlobalOrb 里加「pointermove 超阈值即清掉 holdTimer」，见交付报告。
-   */
-  const recoverHoldMisfire = (): void => {
-    try {
-      speechStop();
-    } catch {
-      /* 无原生语音桥时忽略 */
-    }
-    void (async () => {
-      void log("拖动期间被 450ms 长按定时器误开语音条 → 已停识别并刷回球态");
-      try {
-        await invoke("overlay_set_mode", { mode: "ball" });
-      } catch {
-        /* 忽略 */
-      }
-      try {
-        window.location.reload();
-      } catch {
-        /* 忽略 */
-      }
-    })();
-  };
-
   const onDown = (e: PointerEvent): void => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    pressed = true;
+    pressed = isBallPress(e.target);
     moved = false;
-    holdFired = false;
     jsDrag = false;
     drag.active = false;
-    drag.holdMisfire = false;
+    if (!pressed) return;
     pointerId = e.pointerId;
     startX = e.clientX;
     startY = e.clientY;
     lastX = e.clientX;
     lastY = e.clientY;
-    clearHold();
-    holdTimer = window.setTimeout(() => {
-      holdTimer = 0;
-      holdFired = true;
-    }, HOLD_MS);
   };
 
   const onMove = (e: PointerEvent): void => {
@@ -217,36 +169,25 @@ function installGestureBridge(cb: (e: OverlayEvent) => void): () => void {
     }
   };
 
-  const finish = (): void => {
-    if (!pressed) return;
+  const onUp = (): void => {
     pressed = false;
-    clearHold();
-    if (holdFired && !moved) {
-      // 长按松手：GlobalOrb 只认原生 release（DOM 那条路没有可接事件的元素）
-      cb({ type: "release" });
-    }
-    if (moved && drag.holdMisfire) recoverHoldMisfire();
     moved = false;
-    holdFired = false;
     jsDrag = false;
     drag.active = false;
-    drag.holdMisfire = false;
   };
 
   document.addEventListener("pointerdown", onDown, true);
   document.addEventListener("pointermove", onMove, true);
-  document.addEventListener("pointerup", finish, true);
-  document.addEventListener("pointercancel", finish, true);
-  // 按住期间窗口被切走/隐藏（切 Space、系统弹窗）→ 视为松手，避免麦克风悬着
-  window.addEventListener("blur", finish);
+  document.addEventListener("pointerup", onUp, true);
+  document.addEventListener("pointercancel", onUp, true);
+  window.addEventListener("blur", onUp);
 
   return () => {
-    clearHold();
     document.removeEventListener("pointerdown", onDown, true);
     document.removeEventListener("pointermove", onMove, true);
-    document.removeEventListener("pointerup", finish, true);
-    document.removeEventListener("pointercancel", finish, true);
-    window.removeEventListener("blur", finish);
+    document.removeEventListener("pointerup", onUp, true);
+    document.removeEventListener("pointercancel", onUp, true);
+    window.removeEventListener("blur", onUp);
   };
 }
 
@@ -298,7 +239,6 @@ const adapter: OverlayAdapter = {
 
   async hide(): Promise<void> {
     drag.active = false;
-    drag.holdMisfire = false;
     if (!(await adapter.supported())) return;
     try {
       await invoke("overlay_hide");
@@ -308,8 +248,6 @@ const adapter: OverlayAdapter = {
   },
 
   async setMode(m: OverlayMode): Promise<void> {
-    // 拖动途中被要求变「语音条/面板」= GlobalOrb 的长按定时器误触（见 DragSession 注释）
-    if (drag.active && (m === "bar" || m === "panel")) drag.holdMisfire = true;
     if (!(await adapter.supported())) return;
     try {
       await invoke("overlay_set_mode", { mode: m });

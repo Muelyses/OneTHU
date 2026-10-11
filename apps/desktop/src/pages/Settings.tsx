@@ -3,7 +3,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
-import { UpdateCloudSection } from "../components/UpdateCloudSection.js";
+import { SoftwareUpdateSection } from "../components/SoftwareUpdateSection.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
@@ -35,10 +35,7 @@ import {
   removeSystemCalendar,
   syncSystemCalendar,
 } from "../state/systemCal.js";
-import {
-  APP_CODENAME, fetchLatestRelease, isNewer, currentVersion,
-  isDismissed, dismissTag, type ReleaseInfo,
-} from "../lib/update.js";
+import { APP_CODENAME } from "../lib/update.js";
 import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
 import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
@@ -253,7 +250,7 @@ export function SettingsPage() {
       </Card>
 
       <SectionHead title="关于" />
-      <UpdateCloudSection manifestPath="/ball-test/latest.json" />
+      <SoftwareUpdateSection />
       <Card>
         <div className="setting-row">
           <div>
@@ -264,7 +261,6 @@ export function SettingsPage() {
             GitHub 项目页
           </button>
         </div>
-        <UpdateRow />
         {/* 运行日志导出属开发者功能：正式版不显示（真机取证走 adb logcat -s onethu:V，
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
         {__ONETHU_DEV__ ? <DebugLogRow /> : null}
@@ -1666,63 +1662,6 @@ function DiagnosticsRow() {
   );
 }
 
-/* ── 版本更新检查（GitHub Releases）── */
-function UpdateRow() {
-  const [checking, setChecking] = useState(false);
-  const [rel, setRel] = useState<ReleaseInfo | null>(null);
-  const [failed, setFailed] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  const run = async (): Promise<void> => {
-    setChecking(true);
-    setFailed(false);
-    const r = await fetchLatestRelease();
-    setChecking(false);
-    if (!r) {
-      setFailed(true);
-      return;
-    }
-    setRel(r);
-    setDismissed(isDismissed(r.tag));
-  };
-
-  const hasNew = rel != null && isNewer(rel.tag, currentVersion());
-  return (
-    <div className="setting-row">
-      <div>
-        <div className="setting-title">
-          更新检查
-          {hasNew ? <span className="update-badge">有新版本</span> : null}
-        </div>
-        <div className="setting-desc">
-          {checking
-            ? "正在检查…"
-            : rel == null
-              ? failed
-                ? "检查未成功（网络不通或 GitHub 忙），请稍后重试"
-                : "当前版本会自动与 GitHub 的发布页比对"
-              : hasNew
-                ? `当前 v${currentVersion()} · 最新 ${rel.name}${dismissed ? "（已忽略此版本的启动提醒）" : ""}`
-                : `已是最新版本（v${currentVersion()}）`}
-        </div>
-      </div>
-      {hasNew ? (
-        <>
-          <button className="btn btn-primary" onClick={() => void openUrl(rel.url)}>
-            查看新版本
-          </button>
-          <button className="btn" onClick={() => { dismissTag(rel.tag); setDismissed(true); }}>
-            忽略此版本
-          </button>
-        </>
-      ) : (
-        <button className="btn" disabled={checking} onClick={() => void run()}>
-          {checking ? "检查中…" : "检查更新"}
-        </button>
-      )}
-    </div>
-  );
-}
 
 
 

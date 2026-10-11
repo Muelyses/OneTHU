@@ -488,6 +488,57 @@ export function ChatDock(): ReactNode {
   const everHydratedFor = useRef<string | null>(null);
   const seenEv = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  /** ③ 底栏容器（长按判定挂这里，不再挂在入口按钮上） */
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  /** ② 滚到底（面板打开 / 水合后 / 流式增量 / 发送后 / 图片撑高都要跟进）。
+   *  双帧写两次：内容高度常在下一帧才定（图片、代码块异步撑高）。 */
+  const stickBottom = useCallback((): void => {
+    const sc = scrollRef.current;
+    if (!sc) return;
+    sc.scrollTop = sc.scrollHeight;
+    window.requestAnimationFrame(() => {
+      const el = scrollRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
+    });
+  }, []);
+
+  /* ② 兜底：内容异步变高（图片 onLoad、markdown 回流、流式增量）时继续贴底。
+     用户手动往上翻过就暂停自动贴底（否则读历史会被拽回底部），回到底部附近自动恢复。 */
+  useEffect(() => {
+    const sc = scrollRef.current;
+    if (!sc || !open) return;
+    let stick = true;
+    const near = (): boolean => sc.scrollHeight - sc.scrollTop - sc.clientHeight < 48;
+    const onScroll = (): void => {
+      stick = near();
+    };
+    const pull = (): void => {
+      if (stick) sc.scrollTop = sc.scrollHeight;
+    };
+    sc.addEventListener("scroll", onScroll, { passive: true });
+    const mo = new MutationObserver(() => pull());
+    mo.observe(sc, { childList: true, subtree: true, characterData: true });
+    /** 图片是异步撑高的：MutationObserver 看不到它的尺寸变化，得单独挂 load */
+    const watchImgs = (): void => {
+      sc.querySelectorAll("img").forEach((im) => {
+        if (im.dataset.dockScroll === "1") return;
+        im.dataset.dockScroll = "1";
+        im.addEventListener("load", pull, { once: true });
+      });
+    };
+    watchImgs();
+    const mo2 = new MutationObserver(() => watchImgs());
+    mo2.observe(sc, { childList: true, subtree: true });
+    const ro = new ResizeObserver(() => pull()); // 面板/键盘/横竖屏引起的尺寸变化也要贴底
+    ro.observe(sc);
+    return () => {
+      sc.removeEventListener("scroll", onScroll);
+      mo.disconnect();
+      mo2.disconnect();
+      ro.disconnect();
+    };
+  }, [open]);
   /* 运行代次：打断/强停/换插件后作废迟到回包；busyRef 是 busy 的即时镜像（异步闭包防陈旧） */
   const runSeq = useRef(0);
   const busyRef = useRef(false);
@@ -534,6 +585,7 @@ export function ChatDock(): ReactNode {
       setClosing(false);
       setOpen(true);
       setUnread(0);
+      stickBottom(); // ② 打开就停在最新一条（图片/水合随后撑高由 ResizeObserver+img.onLoad 兜底）
     }
   }, [open]);
 
@@ -699,8 +751,7 @@ export function ChatDock(): ReactNode {
         }
       }
     }
-    const sc = scrollRef.current;
-    if (sc) sc.scrollTop = sc.scrollHeight;
+    stickBottom();
   }, [events, pid]);
 
   const finalize = (r: any): void => {
@@ -736,10 +787,7 @@ export function ChatDock(): ReactNode {
       setUsage((u) => ({ ...u, ...(r.sessionUsage ?? {}), ...(r.totalUsage ?? {}) }));
     }
     if (!open) setUnread((n) => n + 1);
-    requestAnimationFrame(() => {
-      const sc = scrollRef.current;
-      if (sc) sc.scrollTop = sc.scrollHeight;
-    });
+    stickBottom();
   };
 
   /** 强制收尾：清 busy + 作废迟到回包（打断超时/插件死亡/换插件时的 UI 兜底） */
@@ -772,6 +820,7 @@ export function ChatDock(): ReactNode {
     busyRef.current = true;
     setBusy(true);
     setMsgs((v) => [...v, { role: "user", text: bubble?.trim() || text }]);
+    stickBottom(); // ② 发送后立刻贴底
     setStream("");
     setThink("");
     setThinkOpen(true);
@@ -1344,7 +1393,40 @@ export function ChatDock(): ReactNode {
     setCancelling(false);
   };
   /** 按住期间的 pointermove：两个宿主共用（指针已被 setPointerCapture 捕获，事件必到按钮） */
-  const onHoldMove = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+  /** ③③ 手势是否归我们：附件三入口不接管（保留原生点按），其余（含输入框）都归长按判定。
+   *  输入框里**已经有字**时把长按让给选词/光标（空着才当「长按说话」）。 */
+  const holdMine = (target: EventTarget | null): boolean => {
+    const el = target instanceof Element ? target : null;
+    if (el?.closest(".dock-attach")) return false;
+    if (!inputMode) return true;
+    return !(el?.closest(".dock-input") && input.trim().length > 0);
+  };
+  const onRowPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (!holdMine(e.target)) return;
+    beginHold("entry", e.clientY);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* 捕获失败仍可长按 */
+    }
+  };
+  /** 未到阈值 = 单击：展开输入框（已在输入态就不动，免得和输入框抢焦点） */
+  const onRowPointerUp = (): void => endHold(() => { if (!inputMode) setInputMode(true); });
+  const onRowLostCapture = (): void => {
+    if (voicePhaseRef.current !== "idle") void finishVoice(true);
+  };
+  const onRowPointerCancel = (): void => {
+    if (pressTimer.current != null) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+      resetCancelPull();
+      return;
+    }
+    void finishVoice(true);
+  };
+
+  const onHoldMove = (e: ReactPointerEvent<HTMLElement>): void => {
     if (holdStartY.current == null) return; // 没在按住（正常移动/惯性滑动）
     applyCancelPull(e.clientY);
   };
@@ -1419,29 +1501,8 @@ export function ChatDock(): ReactNode {
     }
   };
 
-  /* 面板入口条：点 = 展开原文本输入框；长按 = 语音（与岛同一套手势，文案说得到做得到） */
-  const onEntryPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    beginHold("entry", e.clientY);
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {
-      /* 捕获失败仍可长按 */
-    }
-  };
-  const onEntryPointerUp = (): void => endHold(() => setInputMode(true));
-  const onEntryLostCapture = (): void => {
-    if (voicePhaseRef.current !== "idle") void finishVoice(true);
-  };
-  const onEntryPointerCancel = (): void => {
-    if (pressTimer.current != null) {
-      window.clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-      resetCancelPull();
-      return;
-    }
-    void finishVoice(true);
-  };
+  /* 面板底栏：手势（点 = 展开输入框、长按 = 语音）统一挂在**容器**上（见 onRowPointerDown），
+     这样进输入态之后长按照样能重新进语音。这里只留键盘可达性。 */
   const onEntryKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>): void => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -1584,7 +1645,16 @@ export function ChatDock(): ReactNode {
           ) : null}
           {/* 一体化底栏（本轮 07）：附件三入口 + 输入/语音入口 + 发送都在这条栏里；
               窄屏放不下时附件条自动折到上一行（flex-wrap），不再多占一层。 */}
-          <div className="dock-input-row">
+          <div
+            className="dock-input-row"
+            ref={rowRef}
+            /* ③③ 长按说话挂容器：入口态/输入态都能用（EditText/input 会吞长按，所以不挂它们） */
+            onPointerDown={onRowPointerDown}
+            onPointerMove={onHoldMove}
+            onPointerUp={onRowPointerUp}
+            onPointerCancel={onRowPointerCancel}
+            onLostPointerCapture={onRowLostCapture}
+          >
             <div className="dock-attach">
               <AttachTray onPicked={attachPicked} />
             </div>
@@ -1596,6 +1666,19 @@ export function ChatDock(): ReactNode {
                 placeholder={busy ? "执行中，可打断…" : "问点什么，回车发送"}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                /* ③② 失焦回入口态——**有条件**：只有「输入框为空 且 焦点确实离开了底栏」才收，
+                   否则「单击展开」那一拍会被浏览器默认的焦点转移立刻收起（上次的"点一下闪一下"）。 */
+                onBlur={() => {
+                  if (input.trim()) {
+                    setInput(""); // 有内容：保留文本，不收（别吞用户打了一半的字）
+                    return;
+                  }
+                  window.setTimeout(() => {
+                    const ae = document.activeElement;
+                    const row = rowRef.current;
+                    if (!ae || !row || !row.contains(ae)) setInputMode(false);
+                  }, 0);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                     e.preventDefault();
@@ -1612,11 +1695,8 @@ export function ChatDock(): ReactNode {
               <button
                 className={"dock-entry" + (voice !== "off" ? " is-voice" : "") + (voiceFail && voiceHost === "entry" ? " is-fail" : "")}
                 aria-label="点击输入，长按说话"
-                onPointerDown={onEntryPointerDown}
-                onPointerMove={onHoldMove}
-                onPointerUp={onEntryPointerUp}
-                onPointerCancel={onEntryPointerCancel}
-                onLostPointerCapture={onEntryLostCapture}
+                /* ③③ 手势统一挂在下面的底栏容器上（这样输入态也能长按说话；
+                   输入框自己会吃掉长按，所以不能挂在这颗按钮上）。键盘仍从这里进输入态。 */
                 onKeyDown={onEntryKeyDown}
               >
                 {voice !== "off" ? (

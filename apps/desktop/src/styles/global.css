@@ -926,6 +926,11 @@
 }
 
 .setting-row:first-child { border-top: 0; }
+/* 分区定位高亮（跨页跳转落地用：requestSettingsSection → 滚动 + 这层短暂底色，用户一眼看到） */
+.section-head.sec-focus h2, .section-head.sec-focus { color: var(--accent); }
+.sec-focus { transition: background var(--dur-2) ease, box-shadow var(--dur-2) ease; }
+.section-head.sec-focus { border-radius: var(--r-md); box-shadow: 0 0 0 2px var(--accent-border); }
+
 /* ④ 长说明的设置行（用户实录「谁家字定在最左边！」）：文字列吃满可用宽、说明不限宽，
    右侧动作按钮与**说明首行同基线**；左内边距沿用 .setting-row 的 16px（与其它行一致）。 */
 .setting-row.is-copy { align-items: baseline; gap: 12px; }

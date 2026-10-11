@@ -34,3 +34,17 @@ export function consumeSettingsTabRequest(): string | null {
   pendingTab = null;
   return t;
 }
+
+/** 分区级子请求（配合 requestSettingsTab 用）：落到页签后**再滚动 + 高亮某个分节**。
+ *  场景：插件页里主题插件的「切换主题」按钮 → 设置 → 外观与布局 → 主题（用户不用自己找）。 */
+let pendingSection: string | null = null;
+
+export function requestSettingsSection(section: string): void {
+  pendingSection = section;
+}
+
+export function consumeSettingsSectionRequest(): string | null {
+  const s = pendingSection;
+  pendingSection = null;
+  return s;
+}

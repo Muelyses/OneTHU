@@ -1,5 +1,5 @@
 declare const __APP_VERSION__: string;
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
@@ -12,8 +12,10 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { clearRemembered, loadRemembered, session, isTauri } from "../lib/clients.js";
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
-import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
-import { consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
+import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
+import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
+import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
+import { requestPluginsView } from "./Plugins.js";
 import { ThemePickerModal } from "../components/ThemePickerModal.js";
 import { HelpSection } from "../components/HelpSection.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
@@ -104,6 +106,22 @@ export function SettingsPage() {
   useEffect(() => {
     const wantTab = consumeSettingsTabRequest();
     if (wantTab) setTab(wantTab);
+    /* 分区子请求：等页签显隐 effect 跑完再滚动，并**短暂高亮**该分节（用户一眼看到） */
+    const wantSec = consumeSettingsSectionRequest();
+    if (wantSec) {
+      const t = setTimeout(() => {
+        jumpToSection([wantSec]);
+        const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+        const hit = heads.find((el) => (el.textContent ?? "").trim().startsWith(wantSec));
+        const card = hit?.nextElementSibling as HTMLElement | null;
+        for (const el of [hit, card]) {
+          if (!el) continue;
+          el.classList.add("sec-focus");
+          setTimeout(() => el.classList.remove("sec-focus"), 1800);
+        }
+      }, 160);
+      return () => clearTimeout(t);
+    }
     if (!consumeExtHwScrollRequest()) return;
     setTab(SETTINGS_TAB_OF["外部作业源"] ?? "数据与同步");
     const t = setTimeout(() => {
@@ -1743,19 +1761,55 @@ function AppearanceSection(): ReactNode {
   };
   // 别处（设置 → 外观 的主题列表）切主题会让取色退场：开关跟着回真
   useEffect(() => subscribeThemes(() => setDyn(isDynamicEnabled())), []);
-  const themes = [{ id: "", name: "默认外观" }, ...snap.themes.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
+  /* ① 主题规范（2026-10-11 用户拍板）：「外观与布局 → 主题」**只做切换**，
+     且**只列已启用的主题**——数据源＝插件系统里 category==="theme" 且 enabled 的插件；
+     未启用插件带来的主题直接不显示（不灰置、不占位）。启用/停用在「插件」页里做。 */
+  const { navigate } = useApp();
+  const allPl = useSyncExternalStore(subscribePlugins, installedPlugins);
+  const enabledThemeOwners = new Set(
+    allPl.filter((p) => (p.manifest.category ?? "") === "theme" && p.enabled).map((p) => p.manifest.id),
+  );
+  const visibleThemeDefs = snap.themes.filter(
+    (t) => !t.owner || enabledThemeOwners.has(t.owner) || enabledThemeOwners.has(t.id),
+  );
+  const themes = [{ id: "", name: "默认外观" }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
   return (
     <div className="setting-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
-      {/* 主题（§4.4）：只留一个「更改主题」入口，色卡预览与主题市场都在二级菜单里 */}
+      {/* 主题（① 2026-10-11 用户拍板）：这里**只做切换**，且**只列已启用**的主题（未启用插件的不出现）；
+          启用/停用在「插件」里，安装主题走右边那个按钮（跳市场 + 自动筛「主题」）。 */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
         <div>
           <div className="setting-title">主题</div>
           <div className="setting-desc">
             当前：{themes.find((th) => (snap.activeId ?? "") === th.id)?.name ?? "默认外观"}
             {dyn ? " · 系统取色生效中，换主题后会自动关闭" : ""}
+            <span style={{ color: "var(--text-3)" }}>　启用 / 停用主题在「插件」页里。</span>
           </div>
         </div>
-        <button className="btn" onClick={() => setPickerOpen(true)}>更改主题</button>
+        <button
+          className="btn"
+          onClick={() => {
+            /* ③ 安装入口：跳插件市场并自动筛选「主题」类别（跨页请求，两端同一套） */
+            requestPluginsView({ view: "market", category: "theme" });
+            navigate("plugins");
+          }}
+        >
+          安装主题
+        </button>
+      </div>
+      <div className="segmented" style={{ marginBottom: 0, flexWrap: "wrap" }}>
+        <button className={(snap.activeId ?? "") === "" ? "is-active" : ""} onClick={() => deactivateTheme()}>
+          默认外观
+        </button>
+        {visibleThemeDefs.map((t) => (
+          <button
+            key={t.id}
+            className={(snap.activeId ?? "") === t.id ? "is-active" : ""}
+            onClick={() => activateTheme(t.id)}
+          >
+            {t.dark ? `${t.name}（暗色）` : t.name}
+          </button>
+        ))}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
         <div>

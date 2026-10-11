@@ -16,6 +16,8 @@ import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } fro
 import { confirmOk } from "../lib/confirm.js";
 import { Card, PageHead } from "../components/Layout.js";
 import { useApp } from "../state/context.js";
+import { navGo } from "../plugins/bridges.js";
+import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
 import { OhSettingsPage, consumeOhEntry, subscribeOhEntry } from "../components/OhSettingsPage.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
@@ -63,12 +65,40 @@ function optionsFor(f: any, live: Record<string, string>): Array<{ value: string
   return statik;
 }
 
+/* ── ④ 跨页「带参数打开插件页」请求：与 requestSettingsTab / requestOhEntry 同款机制 ──
+   外部（外观与布局的「安装主题」等）写请求 → 插件页挂载或已挂载时消费：
+     requestPluginsView({ view: "market", category: "theme" })
+   ⑤ 筛选状态同时做**模块级记忆**（同一会话内），返回再进不会丢。 */
+export type PluginsViewReq = { view?: "mine" | "market"; category?: "all" | "theme" | "general" };
+
+/** 插件页 →「外观与布局 → 主题」的反向跳转（用户点名那条：主题卡片上的按钮原来是死的）。
+ *  三级请求一起下：页签 + 分区（滚动并高亮）+ 导航；手机端设置就是「我的」页，同一条路径。 */
+export function gotoAppearanceTheme(): void {
+  requestSettingsSection("主题");
+  requestSettingsTab("外观与布局");
+  navGo("settings");
+}
+let pendingPluginsView: PluginsViewReq | null = null;
+const pluginsViewListeners = new Set<() => void>();
+let lastPluginsView: "mine" | "market" = "mine";
+let lastPluginsCat: "all" | "theme" | "general" = "all";
+
+export function requestPluginsView(req: PluginsViewReq): void {
+  pendingPluginsView = { ...req };
+  for (const f of pluginsViewListeners) f();
+}
+function takePluginsView(): PluginsViewReq | null {
+  const v = pendingPluginsView;
+  pendingPluginsView = null;
+  return v;
+}
+
 export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): ReactNode {
   const allPlugins = useSyncExternalStore(subscribe, installedPlugins);
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
-  const [view, setView] = useState<"mine" | "market">("mine");
+  const [view, setView] = useState<"mine" | "market">(lastPluginsView); // ⑤ 恢复上次的筛选
   const [segRef, pillRef] = useSegPill();
-  const [cat, setCat] = useState<"all" | "theme" | "general">("all");
+  const [cat, setCat] = useState<"all" | "theme" | "general">(lastPluginsCat);
   const [instOpen, setInstOpen] = useState(false);
   const themesSnap = useThemes();
   /* ② 用户拍板：OH（onethu.harness）是**特殊插件**，不出现在普通插件页的卡片区
@@ -133,6 +163,28 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   const [ohOpen, setOhOpen] = useState(false);
   /** OH 内联设置面板的「草稿有改动」标记（就地渲染时不再弹确认窗，标记仅为兼容其 props） */
   const ohDirtyRef = useRef(false);
+
+  /* ⑤ 记住筛选状态（会话内）：离开插件页再回来不丢 */
+  useEffect(() => {
+    lastPluginsView = view;
+  }, [view]);
+  useEffect(() => {
+    lastPluginsCat = cat;
+  }, [cat]);
+  /* ④ 消费跨页请求：挂载时补一次 + 订阅（已挂载时由订阅即时生效） */
+  useEffect(() => {
+    const apply = (): void => {
+      const req = takePluginsView();
+      if (!req) return;
+      if (req.view) setView(req.view);
+      if (req.category) setCat(req.category);
+    };
+    apply();
+    pluginsViewListeners.add(apply);
+    return () => {
+      pluginsViewListeners.delete(apply);
+    };
+  }, []);
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   useEffect(() => {
     if (consumeOhEntry()) setOhOpen(true); // 深链先写旗标再导航过来：挂载时补消费一次
@@ -509,7 +561,11 @@ function PluginCard({
               <IconGithub width={16} height={16} />
             </button>
           ) : null}
-          {m.category === "theme" ? <span className="chip" title="切换主题在 设置 → 外观">切换在 设置 → 外观</span> : null}
+          {m.category === "theme" ? (
+            <button className="chip" title="到「外观与布局 → 主题」里切换（会高亮那一节）" onClick={() => gotoAppearanceTheme()}>
+              去切换主题
+            </button>
+          ) : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
           {id === "onethu.harness" ? (
             <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>
@@ -537,6 +593,12 @@ function PluginCard({
           {!repoCheck.remote && !repoRemote && marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
             <button className="btn btn-ghost plg-update-flag" title={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>
               可更新 ↑
+            </button>
+          ) : null}
+          {/* 主题类插件：卡片上直接给一条到「外观与布局 → 主题」的路（原来那个是死的） */}
+          {m.category === "theme" ? (
+            <button className="btn btn-ghost" onClick={() => gotoAppearanceTheme()}>
+              去切换主题
             </button>
           ) : null}
           <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>

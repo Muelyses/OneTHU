@@ -19,6 +19,8 @@ import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
 import { OhSettingsPage } from "../components/OhSettingsPage.js";
+import { openImageViewer } from "../components/ImageViewer.js";
+import { resolveAssetUrl } from "../lib/market.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
 import {
@@ -991,6 +993,8 @@ function MarketView({
   const installedMap = new Map(installed.map((p) => [p.manifest.id, p.manifest.version]));
   const [items, setItems] = useState<MarketEntry[] | null>(null);
   const [stars, setStars] = useState<Record<string, number | null>>({});
+  /** ③ 详情页：点卡片进入（就地渲染，不用弹层） */
+  const [detail, setDetail] = useState<MarketEntry | null>(null);
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState<"stars" | "latest">("stars"); // ② 默认按 star；可切「最新」
   const [msg, setMsg] = useState<string | null>(null);
@@ -1049,6 +1053,90 @@ function MarketView({
       return a.name.localeCompare(b.name);
     });
 
+  /* ③ 详情页（就地渲染，不用弹层）：作者上传的全部简介图 + 详情正文（markdown）+ 主题开关 */
+  if (detail) {
+    const shots = (detail.screenshots ?? []).map((x) => resolveAssetUrl(x, detail.repo)).filter(Boolean);
+    const head = resolveAssetUrl(detail.thumbnail ?? detail.logo, detail.repo);
+    const rec = installed.find((p) => p.manifest.id === detail.id);
+    const on = !!rec?.enabled;
+    return (
+      <section className="market-view">
+        <div className="market-detail-head">
+          <button className="btn btn-ghost" onClick={() => setDetail(null)}>返回</button>
+          {head ? (
+            <img className="market-detail-logo" src={head} alt="" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+          ) : (
+            <span className="market-card-logo is-mono">{monogram(detail.name, detail.id)}</span>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <b style={{ fontSize: 16 }}>{detail.name}</b>
+              {installedMap.has(detail.id) ? <span className="market-installed-badge">已安装</span> : null}
+              {typeof stars[detail.id] === "number" ? <span className="market-card-stars">★ {String(stars[detail.id])}</span> : null}
+            </div>
+            <div className="market-card-meta">
+              v{detail.version}
+              {detail.author ? ` · ${detail.author}` : ""}
+              {detail.license ? ` · ${detail.license}` : ""}
+              {detail.category === "theme" ? " · 主题" : ""}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8, flex: "none", alignItems: "center" }}>
+            {detail.homepage ? (
+              <button
+                className="btn btn-ghost"
+                onClick={() => void (async () => {
+                  try {
+                    const { openUrl } = await import("@tauri-apps/plugin-opener");
+                    await openUrl(detail.homepage!);
+                  } catch {
+                    window.open(detail.homepage!, "_blank");
+                  }
+                })()}
+              >
+                主页
+              </button>
+            ) : null}
+            {/* ④ 主题类插件：详情里直接启用/停用（沿用卡片开关语义） */}
+            {rec && detail.category === "theme" ? (
+              <button
+                className="btn btn-ghost"
+                onClick={() => void (on ? disablePlugin(detail.id) : enablePlugin(detail.id)).catch((e: unknown) => setMsg(String(e)))}
+              >
+                {on ? "停用主题" : "启用主题"}
+              </button>
+            ) : null}
+            {!installedMap.has(detail.id) ? (
+              <button className="btn btn-primary" disabled={busy} onClick={() => void install(detail)}>
+                安装
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        {shots.length > 0 ? (
+          <div className="market-shots">
+            {shots.map((src, i) => (
+              <button key={i} className="market-shot" onClick={() => openImageViewer(src, `${detail.name} 简介图 ${i + 1}`)}>
+                <img src={src} alt={`${detail.name} 简介图 ${i + 1}`} loading="lazy" />
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        {detail.readme || detail.description ? (
+          <div className="market-readme">
+            <Markdown remarkPlugins={[remarkGfm]}>{detail.readme ?? detail.description ?? ""}</Markdown>
+          </div>
+        ) : null}
+
+        <div className="plg-hint" style={{ marginTop: 10 }}>
+          仓库：{normalizeRepoUrl(detail.repo)}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="market-view">
       <div className="market-bar">
@@ -1103,10 +1191,27 @@ function MarketView({
             return (
               <div key={item.id} className="market-card">
                 <div className="market-card-head">
-                  <span className="market-card-name">
+                  {(() => {
+                    /* ② 作者 logo / 缩略图；缺失回落既有 monogram（老条目零变化） */
+                    const src = resolveAssetUrl(item.thumbnail ?? item.logo, item.repo);
+                    return src ? (
+                      <img
+                        className="market-card-logo"
+                        src={src}
+                        alt=""
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <span className="market-card-logo is-mono">{monogram(item.name, item.id)}</span>
+                    );
+                  })()}
+                  <button className="market-card-name" style={{ background: "none", border: 0, padding: 0, textAlign: "left", cursor: "pointer" }} onClick={() => setDetail(item)}>
                     {item.name}
                     {installedMap.has(item.id) ? <span className="market-installed-badge">已安装</span> : null}
-                  </span>
+                  </button>
                   <span className="market-card-stars" title="GitHub Stars">★ {typeof st === "number" ? String(st) : "—"}</span>
                 </div>
                 <div className="market-card-meta">
@@ -1122,6 +1227,7 @@ function MarketView({
                   </div>
                 ) : null}
                 <div className="market-card-foot">
+                  <button className="btn btn-ghost" style={{ flex: "none" }} onClick={() => setDetail(item)}>详情</button>
                   <button
                     className="market-repo-link"
                     title={`在浏览器打开仓库：${normalizeRepoUrl(item.repo)}`}

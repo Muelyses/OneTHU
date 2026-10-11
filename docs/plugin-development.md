@@ -795,3 +795,24 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |
 | v1.0 | 首个公开版本 |
+
+## 视觉与身份字段（2026-10-12 市场升级）
+
+以下字段**全部可选、向后兼容**：老插件不写照常显示（列表回落 monogram，详情回落 description）。
+
+| 字段 | 类型 | 说明 | 示例 |
+|---|---|---|---|
+| `logo` | string | 作者 logo：http(s) URL **或仓库相对路径**（svg/png 都行） | `"assets/logo.svg"` |
+| `thumbnail` | string | 列表缩略图（比 logo 更"图片化"那张）；缺失回落 `logo`，再缺失回落 monogram | `"assets/thumb.png"` |
+| `screenshots` | string[] | 详情页简介图，按数组顺序展示；点击可放大 | `["assets/s1.png","https://…/s2.png"]` |
+| `readme` | string | 详情正文（**markdown 文本**；支持 GFM 表格/列表/代码块/图片）；缺失回落 `description` | `"# 特性\n- …"` |
+| `description` | string | 一句话简介（列表与详情都会用） | `"把课程表接进今日页"` |
+| `author` | string | 作者名（列表 meta 行显示） | `"@someone"` |
+| `homepage` | string | 主页 / 文档地址（详情页给「主页」按钮） | `"https://example.com"` |
+| `license` | string | 许可证标识（详情页 meta 行显示） | `"MIT"` |
+
+**路径规则**：写成仓库相对路径（如 `assets/logo.svg`）时，客户端会解析成
+`https://raw.githubusercontent.com/<owner>/<repo>/<branch|main>/<subPath>/资源路径`（见 `lib/market.ts` 的 `resolveAssetUrl`）；
+写绝对 URL 则原样使用。解析失败不裂图（回落到 monogram / 不渲染那张图）。
+
+**主题类插件**：`category: "theme"` 的主题插件在市场详情里可直接「启用主题 / 停用主题」（沿用插件卡片的开关语义）。

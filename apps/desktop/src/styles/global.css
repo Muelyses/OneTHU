@@ -3787,40 +3787,77 @@ html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 12p
 .dock-chip:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-soft); }
 .dock-chip:active { transform: scale(0.97); }
 
-/* 消息入场：轻微上浮淡入（挂载时一次） */
-.dock-msg, .dock-think, .dock-confirm { animation: dock-msg-in 0.18s ease both; }
+/* 消息入场交给 .is-new 的弹入（见气泡段）；这里只保留链块/确认条的轻入场 */
+.dock-think, .dock-confirm { animation: dock-msg-in 0.18s ease both; }
 @keyframes dock-msg-in { from { opacity: 0; transform: translateY(4px); } }
 @keyframes dock-msg-out { to { opacity: 0; transform: translateY(4px); } }
 .trace-card.is-closing {
   animation: dock-msg-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both;
 }
 
-/* 气泡（⑥）：正文 14px / 1.62，圆角走 dsw 半径档；**自己那一侧的尾角收小**（4px）——
-   谁在说话一眼看得出来，不必靠颜色差异堆对比。描边保持 hairline（本仓分层靠色阶，不靠阴影）。 */
+/* ── 气泡（liquid glass，2026-10-11 用户拍板：与悬浮层同一套材质语言）──
+   材质三件套：半透明面 + backdrop 模糊 + **上沿 1px 内高光**；外阴影柔和，不要硬边、不要纯灰块。
+   圆角 18px（dsw 半径档），**说话方那一侧尾角 6px**——谁在说话一眼看得出，不靠颜色堆对比。 */
 .dock-msg {
-  max-width: 92%;
+  max-width: 84%;
   padding: 12px 16px;
-  border-radius: var(--dsw-radius-lg, var(--r-lg, 14px));
-  font-size: var(--md-sys-typescale-body);
+  border-radius: var(--dsw-radius-lg, 18px);
+  /* 正文走密度档：桌面 --text-base（14px），手机档 15px（§3.8） */
+  font-size: var(--text-base, var(--md-sys-typescale-body));
   line-height: 1.62;
   white-space: pre-wrap;
   overflow-wrap: break-word;
 }
 .dock-msg-user {
   align-self: flex-end;
-  /* 07：底色与描边都再退一步——读起来是「一段话」，不是「一张卡」 */
-  background: color-mix(in srgb, var(--accent-soft) 72%, transparent);
+  background: color-mix(in srgb, var(--accent-soft) 62%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent-border) 55%, transparent);
-  border-radius: var(--dsw-radius-lg, var(--r-lg, 14px)) var(--dsw-radius-lg, var(--r-lg, 14px)) var(--dsw-radius-xs, 4px) var(--dsw-radius-lg, var(--r-lg, 14px));
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border-radius: var(--dsw-radius-lg, 18px) var(--dsw-radius-lg, 18px) 6px var(--dsw-radius-lg, 18px);
   color: var(--text-1);
 }
 .dock-msg-assistant {
   align-self: flex-start;
-  background: color-mix(in srgb, var(--md-sys-color-surface-container) 68%, transparent);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 62%, transparent);
   border: 1px solid color-mix(in srgb, var(--border-soft) 70%, transparent);
-  border-radius: var(--dsw-radius-lg, var(--r-lg, 14px)) var(--dsw-radius-lg, var(--r-lg, 14px)) var(--dsw-radius-lg, var(--r-lg, 14px)) var(--dsw-radius-xs, 4px);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  border-radius: var(--dsw-radius-lg, 18px) var(--dsw-radius-lg, 18px) var(--dsw-radius-lg, 18px) 6px;
   color: var(--text-1);
 }
+/* 深色：高光与投影都收一档，别在暗底上晃眼 */
+:root[data-scheme="dark"] .dock-msg-user,
+:root[data-scheme="dark"] .dock-msg-assistant {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+/* 安卓 WebView 的降级分支：多个气泡同时 backdrop-filter 会贵（滚动掉帧）。
+   手机档换成**半透明渐变 + 同款上沿高光**——玻璃感靠色阶与高光保留，不砍质感。 */
+html.is-phone .dock-msg-user {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--accent-soft) 76%, transparent),
+    color-mix(in srgb, var(--accent-soft) 58%, transparent));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html.is-phone .dock-msg-assistant {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--md-sys-color-surface-container) 80%, transparent),
+    color-mix(in srgb, var(--md-sys-color-surface-container) 60%, transparent));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* 「自然弹出」：新消息 scale .94→1 + 上移 6px + Overshoot（--ease-spring）。
+   **只让最新一条播**（.is-new 由消息列表挂在最后一条上）——历史气泡不动画，翻上去看不会满屏乱动。 */
+@keyframes dock-msg-pop {
+  from { opacity: 0; transform: translateY(6px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.dock-msg.is-new,
+.dock-msg-assistant.is-new { animation: dock-msg-pop var(--dur-2) var(--ease-spring) both; }
 /* 消息里的图片（④）：缩略图直接显示；点击交给 ImageViewer 放大（长按同样看图） */
 .dock-imgs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
 .dock-img {
@@ -4108,8 +4145,9 @@ html.is-phone .home-modal.is-closing {
 .dock-think-meta { font-family: var(--font-mono); font-size: var(--text-xxs); color: var(--text-3); }
 .dock-think-body { padding: 4px 12px 12px; font-size: var(--text-xs); color: var(--text-3); line-height: 1.7; white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; border-top: 1px dashed var(--border-soft); }
 
-/* 对话 Markdown（Harness 紧凑风） */
-.dock-md { font-size: var(--text-sm); line-height: 1.62; min-width: 0; overflow-wrap: break-word; }
+/* 对话 Markdown（Harness 紧凑风）：字号跟**消息正文密度档**走（桌面 14 / 手机 15），
+   与 .dock-msg 一致——用户气泡是纯文本、OH 气泡是 markdown，两边不能一个 13 一个 14。 */
+.dock-md { font-size: var(--text-base, var(--md-sys-typescale-body)); line-height: 1.62; min-width: 0; overflow-wrap: break-word; }
 .dock-md > :first-child { margin-top: 0; }
 .dock-md > :last-child { margin-bottom: 0; }
 .dock-md p { margin: 4px 0; }

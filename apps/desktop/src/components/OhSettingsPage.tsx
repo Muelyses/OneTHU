@@ -21,6 +21,30 @@ import { forceRemint, preflightMadModel } from "../state/madmodel.js";
 
 const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 
+/* ── 页面外的「档位请求」：对话坞的朗读设置深链要停在普通档 ──
+   设置页里的 OH 分节是**常驻挂载**的（页签只靠 display 收放），所以不能用"挂载时取一次"，
+   必须做成可订阅的小 store：请求到达 → 通知已挂载的实例 → 取走并切档。 */
+export type OhTier = "basic" | "advanced";
+let pendingTier: OhTier | null = null;
+const tierListeners = new Set<() => void>();
+
+/** 请求 OH 页切到某一档（配合 settingsMode 的 requestSettingsTab("OH") 一起用） */
+export function requestOhTier(t: OhTier): void {
+  pendingTier = t;
+  for (const f of tierListeners) f();
+}
+function subscribeOhTier(f: () => void): () => void {
+  tierListeners.add(f);
+  return () => {
+    tierListeners.delete(f);
+  };
+}
+function takeTier(): OhTier | null {
+  const t = pendingTier;
+  pendingTier = null;
+  return t;
+}
+
 /** 档位切换条（分段控件，与设置页页签同形态但更轻） */
 function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: (t: "basic" | "advanced") => void }): ReactNode {
   const item = (id: "basic" | "advanced", label: string): ReactNode => (
@@ -101,6 +125,32 @@ function MadModelRow(): ReactNode {
   );
 }
 
+/**
+ * 高级档里**预留给插件设置表单**的位置（task-17 会把 `pages/Plugins.tsx` 的 settings sheet
+ * 抽成可复用组件，例如 `components/PluginSettingsForm.tsx` / `PluginSettingsSheet.tsx`）。
+ *
+ * 接法（task-17 抽出后，这里只改一处）：
+ *   `<PluginSettingsForm id="onethu.harness" />`   // 渲染 OH 的 provider/apiKey/baseUrl/model/
+ *                                                  // thinking/maxContext/stream + multimodal + 预算
+ * 在那之前保留「打开插件设置」按钮，功能不缺口。
+ */
+function OhAdvancedSlot(): ReactNode {
+  const { navigate } = useApp();
+  return (
+    <div className="setting-row">
+      <div>
+        <div className="setting-title">OH 模型配置 / 预算</div>
+        <div className="setting-desc">
+          待接插件设置表单（task-17 抽出 PluginSettingsForm 后挂到这里）；当前从插件页的 OH 卡片「设置」进入。
+        </div>
+      </div>
+      <button className="btn" onClick={() => navigate("plugins")}>
+        打开插件设置
+      </button>
+    </div>
+  );
+}
+
 /** 保活指引（华为 / 荣耀）：文案 + 跳系统应用设置（安卓才显示按钮，桌面只留说明） */
 function KeepAliveRow(): ReactNode {
   const [jumped, setJumped] = useState(false);
@@ -134,6 +184,12 @@ function KeepAliveRow(): ReactNode {
 export function OhSettingsPage(): ReactNode {
   const { navigate } = useApp();
   const [tier, setTier] = useState<"basic" | "advanced">("basic");
+
+  // 页面外请求切档（如对话坞长按朗读图标 → 设置 → OH → 普通配置）
+  useEffect(() => subscribeOhTier(() => {
+    const want = takeTier();
+    if (want) setTier(want);
+  }), []);
 
   return (
     <>
@@ -173,18 +229,7 @@ export function OhSettingsPage(): ReactNode {
           <ImSettingsSection />
 
           <SubHead>模型与预算（进阶）</SubHead>
-          <div className="setting-row">
-            <div>
-              <div className="setting-title">OH 模型配置 / 预算上限</div>
-              <div className="setting-desc">
-                provider / baseUrl / model / thinking / maxContext / stream 与预算都在插件设置面板里；
-                这里只做入口，避免与插件清单两份真相。
-              </div>
-            </div>
-            <button className="btn" onClick={() => navigate("plugins")}>
-              打开插件设置
-            </button>
-          </div>
+          <OhAdvancedSlot />
         </>
       )}
     </>

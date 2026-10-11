@@ -64,9 +64,9 @@ pub async fn plugin_spawn(
     let mut child = cmd
         .spawn()
         .map_err(|e| format!("插件进程启动失败：{e}"))?;
-    let mut stdin = child.stdin.take().ok_or("无法取得插件 stdin")?;
-    let stdout = child.stdout.take().ok_or("无法取得插件 stdout")?;
-    let stderr = child.stderr.take().ok_or("无法取得插件 stderr")?;
+    let mut stdin = child.stdin.take().ok_or("无法取得插件 stdin".to_string())?;
+    let stdout = child.stdout.take().ok_or("无法取得插件 stdout".to_string())?;
+    let stderr = child.stderr.take().ok_or("无法取得插件 stderr".to_string())?;
 
     let pending: PendingMap = Arc::new(Mutex::new(HashMap::new()));
     let proc = Arc::new(ProcIo {

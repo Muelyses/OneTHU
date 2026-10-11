@@ -45,10 +45,17 @@ const TASKS: Array<{ title: string; desc: string; ids: string[]; settingsTab?: s
     ids: ["schedule", "mail"],
   },
   {
-    title: "我要改通知、桌面小组件、外观",
+    title: "我要改通知、外观",
     desc: "这些都在设置里，下面直接带你到对应的栏目。",
     ids: [],
     settingsTab: "通知与提醒",
+  },
+  {
+    /* 2026-10-11 设置重构：桌面小组件从「通知与提醒」独立成栏，直达目标跟着换 */
+    title: "我要改桌面小组件的内容",
+    desc: "组件显示什么、刷新频率都在设置里；下面直接带你到那一栏。",
+    ids: [],
+    settingsTab: "桌面小组件",
   },
 ];
 

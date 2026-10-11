@@ -37,6 +37,7 @@ import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, spee
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
+import { requestOhTier } from "../components/OhSettingsPage.js";
 
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { openExternal } from "../pages/info/openExternal.js";
@@ -341,9 +342,11 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
           </div>
         </div>
       ) : null}
-      {p.msgs.map((m, i) =>
-        m.role === "assistant" ? (
-          <div key={i} className="dock-msg-assistant">
+      {p.msgs.map((m, i) => {
+        /* 气泡弹入只给最新一条（历史不动画）：最后一条挂 .is-new，CSS 里配 --ease-spring 的 pop */
+        const isNew = i === p.msgs.length - 1;
+        return m.role === "assistant" ? (
+          <div key={i} className={"dock-msg-assistant" + (isNew ? " is-new" : "")}>
             {m.meta?.think ? <ChainBlock label="思考过程" lines={[m.meta.think]} /> : null}
             {m.meta?.trace?.length ? <ChainBlock label="工具调用" lines={m.meta.trace} /> : null}
             <div className="dock-msg dock-md">
@@ -368,7 +371,7 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             ) : null}
           </div>
         ) : (
-          <div key={i} className="dock-msg dock-msg-user">
+          <div key={i} className={"dock-msg dock-msg-user" + (isNew ? " is-new" : "")}>
             {m.images && m.images.length > 0 ? (
               <div className="dock-imgs">
                 {m.images.map((im, j) => (
@@ -388,8 +391,8 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             ) : null}
             {m.text}
           </div>
-        ),
-      )}
+        );
+      })}
       {p.trace.length > 0 ? <ChainBlock label="工具调用" lines={p.trace} defaultOpen /> : null}
       {p.think ? (
         <div className="dock-think">
@@ -1249,7 +1252,7 @@ export function ChatDock(): ReactNode {
     window.setTimeout(() => setSlidIn(false), 700);
   };
 
-  /** 「自动朗读」开关（对话界面的入口；设置页 通知与提醒 → 语音合成 是同源开关，同一份 prefs）：
+  /** 「自动朗读」开关（对话界面的入口；**设置 → OH → 普通配置 → 语音** 是同源开关，同一份 prefs）：
    *  点击 = 切 autoSpeak（读现读值，不用渲染快照，避免连点丢状态）；长按/右键 = 跳到设置页那个分区。 */
   const toggleAutoSpeak = (): void => {
     const next = !readVoicePrefs().autoSpeak;
@@ -1257,7 +1260,10 @@ export function ChatDock(): ReactNode {
     setNotice(next ? "已开启自动朗读：OH 的回复会念出来" : "已静音：OH 的回复不再自动朗读");
   };
   const openVoiceSettings = (): void => {
-    requestSettingsTab("通知与提醒"); // 语音合成分区在这个页签（Settings.tsx 的 SETTINGS_TAB_OF）
+    /* 2026-10-11 设置重构：语音合成已从「通知与提醒」迁到 OH 页的普通档
+       （settings → OH → 普通配置 → 语音），深链跟着改，并顺手把档位也请求好。 */
+    requestOhTier("basic");
+    requestSettingsTab("OH");
     if (!navGo("settings")) return;
     if (open) toggle(); // 面板挡着设置页：顺手收起，落点就是那个分区
   };

@@ -709,7 +709,7 @@ export function OnboardingTourV1(): React.ReactNode {
               </div>
             ) : null}
             <p style={{ ...acctIntro, marginTop: 12, marginBottom: 0 }}>
-              {pinState === "requested" ? "已请求添加。" : ""}改内容：设置 → 通知与提醒 → 桌面小组件。
+              {pinState === "requested" ? "已请求添加。" : ""}改内容：设置 → 桌面小组件。
               <br />
               也可以直接在桌面长按 → 小组件 → OneTHU 添加。
               <br />

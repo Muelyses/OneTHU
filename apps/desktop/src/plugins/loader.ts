@@ -108,7 +108,47 @@ export async function installPlugin(
     if (stale.length) await logLine(`[PLUGIN] 覆盖安装回收旧主题：${stale.join("、")}`);
   }
   await logLine(`[PLUGIN] 安装并激活 ${manifest.id}@${manifest.version}（${manifest.name}）`);
+  // 公告热通道（manifest.announce；本体仓库根 NOTICE.md）：非阻塞后台检查
+  void trackAnnouncement(manifest, meta?.repo ?? manifest.repo).catch(() => undefined);
   return manifest;
+}
+
+
+/** 公告热通道（公共机制，非插件工具）：仓库根 NOTICE.md 内容 digest 与本机上次记录比对。 */
+const NOTICE_TTL_KEY = "onethu.plugin.notice.ttl";
+async function trackAnnouncement(
+  m: PluginManifest,
+  repoUrl?: string,
+): Promise<void> {
+  try {
+    const announce = (m as unknown as { announce?: boolean }).announce === true;
+    if (!announce || m.kind === "rust" || !repoUrl || m.id === "onethu.harness") return;
+    const now = Date.now();
+    let ttl: Record<string, number> = {};
+    try { ttl = JSON.parse(localStorage.getItem(NOTICE_TTL_KEY) ?? "{}") as Record<string, number>; } catch { ttl = {}; }
+    if ((ttl[m.id] ?? 0) > now) return; // 10 分钟内重复激活不重复拉
+    ttl[m.id] = now + 10 * 60 * 1000;
+    try { localStorage.setItem(NOTICE_TTL_KEY, JSON.stringify(ttl)); } catch { /* 存不下拉也无妨 */ }
+    const { fetchRepoTextFile, parseRepoInput } = await import("../lib/market.js");
+    const ref = parseRepoInput(repoUrl);
+    const text = await fetchRepoTextFile(ref, "NOTICE.md");
+    if (text == null) return;
+    // djb2-ish 摘要（短内容稳定标识；避 hash-collision 难度低，展示场景足够）
+    let digest = "h";
+    for (let i = 0; i < text.length; i++) digest = ((digest.charCodeAt(digest.length - 1) * 33 + text.charCodeAt(i) + 7) % 0x2710).toString() + digest.slice(-1, 2);
+    digest = "d" + digest.length + "-" + [...text].reduce((a: number, ch: string) => ((a * 31 + ch.charCodeAt(0)) & 0xffffff), 7).toString(16);
+    const rec = getPlugin(m.id);
+    const prev = rec?.notice;
+    if (prev && prev.digest === digest) {
+      // 内容未变：刷新时间戳即可
+      updatePlugin(m.id, { notice: { digest, at: Date.now(), text } });
+      return;
+    }
+    updatePlugin(m.id, { notice: { digest, at: Date.now(), text } });
+    await logLine(`[PLUGIN] ${m.id} 公告热通道：仓库 NOTICE.md 有新内容（v${m.version}）`);
+  } catch {
+    /* 公告拉取失败不影响插件使用 */
+  }
 }
 
 function defaultsOf(m: PluginManifest): Record<string, string> {

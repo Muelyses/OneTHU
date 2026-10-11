@@ -262,6 +262,42 @@ export async function fetchRemoteManifestFromRepoRef(
   }
 }
 
+/** 拉取仓库根（或 subPath）下任意文本文件：公告（NOTICE.md）等约定文件用。
+ *  失败返回 null（面向调用方「未脱网但文件不存在」的语义），不抛。 */
+export async function fetchRepoTextFile(ref: RepoRef, path = "NOTICE.md"): Promise<string | null> {
+  const mid = ref.subPath ? `/${ref.subPath.replace(/^\/+|\/+$/g, "")}` : "";
+  const clean = `${mid}/${path.replace(/^\/+/, "")}`.replace(/^\/+/, "");
+  const viaApi = await fetchFileViaApi(ref.owner, ref.repo, ref.branch ?? "main", clean);
+  if (viaApi) return viaApi;
+  for (const b of ref.branch ? [ref.branch] : DEFAULT_BRANCHES) {
+    const url = `https://raw.githubusercontent.com/${ref.owner}/${ref.repo}/${b}/${clean}` + `?t=${Date.now()}`;
+    const res = await externalFetch(url).catch(() => null);
+    if (res && res.ok) {
+      const text = await res.text();
+      if (text.trim()) return text;
+      break;
+    }
+  }
+  return null;
+}
+
+/** 实时版本：市场列表/安装卡片的「本仓最新 manifest.version」。
+ *  命中则返回版本号字符串；网络/清单解析失败返回 null（调用方回落名单快照）。 */
+export async function fetchLiveVersion(ref: RepoRef, entry?: string): Promise<string | null> {
+  try {
+    const remote = await fetchRemoteManifestFromRepoRef(ref, entry);
+    return remote.version;
+  } catch {
+    return null;
+  }
+}
+
+/** 仓库路径缓存键（实时版本速查表用） */
+export function repoKey(input: string, entry?: string): string {
+  const ref = parseRepoInput(input);
+  return `${ref.owner}/${ref.repo}@${ref.branch ?? "default"}${ref.subPath ? "/" + ref.subPath : ""}#${entry ?? "plugin.js"}`;
+}
+
 function marketUrl(): string {
   try {
     return localStorage.getItem(MARKET_URL_KEY) || DEFAULT_MARKET_URL;

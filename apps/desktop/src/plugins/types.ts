@@ -587,6 +587,8 @@ export interface PluginRecord {
   enabled: boolean;
   settings: Record<string, string>;
   installedAt: number;
+  /** 公告热通道（manifest.announce 启用；notice.digest 变化视为新公告；宿主负责拉取与展示） */
+  notice?: { digest: string; at: number; text: string };
 }
 
 /** 权限不足时抛出 */

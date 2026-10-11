@@ -4,7 +4,7 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
-import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRemoteManifestFromRepoRef, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchLiveVersion, fetchRemoteManifestFromRepoRef, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import { IconGithub } from "../components/Icons";
 import { createPortal } from "react-dom";
 import type { CommandResult } from "../plugins/types.js";
@@ -77,14 +77,29 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   const [marketVersions, setMarketVersions] = useState<Record<string, string>>({});
   useEffect(() => {
     let alive = true;
-    fetchRegistry()
-      .then((reg) => {
+    void (async () => {
+      let map: Record<string, string> = {};
+      try {
+        const reg = await fetchRegistry();
         if (!alive) return;
-        const map: Record<string, string> = {};
         for (const it of reg.plugins) map[it.id] = it.version;
         setMarketVersions(map);
-      })
-      .catch(() => undefined);
+      } catch { /* 名单不可用时维持快照空表 */ }
+      // 实时版本：对已安装、有仓库来源的插件逐个拉本地最新 manifest
+      // 失败的插件保留名单快照值（网站的说明同步了这一点）
+      for (const p of allPlugins) {
+        if (!alive) break;
+        if (p.manifest.kind === "rust" || p.embedded || p.builtin || p.manifest.id === "onethu.harness") continue;
+        if (!p.repo) continue;
+        try {
+          const ref = parseRepoInput(p.repo);
+          const entry = (p.manifest as unknown as { entry?: string }).entry;
+          const v = await fetchLiveVersion(ref, entry);
+          if (!alive) break;
+          if (v) setMarketVersions((prev) => ({ ...prev, [p.manifest.id]: v }));
+        } catch { /* 单点失败不阻塞下一项 */ }
+      }
+    })().catch(() => undefined);
     return () => {
       alive = false;
     };
@@ -271,6 +286,8 @@ function PluginCard({
   onUpdateNow?: (remoteVersion: string) => void;
 }): ReactNode {
   const [repoCheck, setRepoCheck] = useState<{ busy: boolean; msg: string | null; remote: string | null }>({ busy: false, msg: null, remote: null });
+  /** 公告「知道了」后的重渲染计票器（持久化状态在 localStorage，这里只重载 UI） */
+  const [noticeTick, setNoticeTick] = useState(0);
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot).filter((c) => c.pluginId === id);
@@ -439,6 +456,36 @@ function PluginCard({
       </div>
 
       {m.description ? <p className="plg-desc">{m.description}</p> : null}
+
+      {(() => {
+        if (!rec?.notice?.text) return null;
+        const seen = (() => {
+          try {
+            const acks = JSON.parse(localStorage.getItem("onethu.plugin.notice.ack") ?? "{}") as Record<string, string>;
+            return acks[m.id] === rec.notice!.digest;
+          } catch { return false; }
+        })();
+        if (seen) return null;
+        const ack = () => {
+          try {
+            const acks = JSON.parse(localStorage.getItem("onethu.plugin.notice.ack") ?? "{}") as Record<string, string>;
+            acks[m.id] = rec.notice!.digest;
+            localStorage.setItem("onethu.plugin.notice.ack", JSON.stringify(acks));
+            setNoticeTick((v) => v + 1);
+          } catch { /* noop */ }
+        };
+        return (
+          <div className="plg-notice" style={{ background: "var(--surface-2)", border: "1px solid var(--accent-border)", borderRadius: "var(--r-md)", padding: "10px 12px", margin: "8px 0 4px" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "baseline", justifyContent: "space-between" }}>
+              <b style={{ color: "var(--accent)" }}>📢 插件公告</b>
+              <button className="btn btn-ghost" onClick={ack}>知道了</button>
+            </div>
+            <div style={{ whiteSpace: "pre-wrap", marginTop: 6, maxHeight: 132, overflow: "auto", color: "var(--text-1)", fontSize: 12.5, lineHeight: 1.5 }}>
+              {rec.notice.text.slice(0, 1600)}
+            </div>
+          </div>
+        );
+      })()}
 
       {(repoCheck.msg || checkMsg) ? (
         <p className="plg-desc" style={{ color: (repoCheck.msg ?? checkMsg ?? "").startsWith("失败") || (repoCheck.msg ?? checkMsg ?? "").includes("失败") ? "var(--red)" : "var(--text-2)" }}>

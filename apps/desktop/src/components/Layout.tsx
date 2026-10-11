@@ -372,6 +372,11 @@ export function Shell({ children }: { children: ReactNode }) {
   /** 侧栏/抽屉共用导航内容 */
   // 桌面钉底三格框：高亮与点击都走**同一个状态机**（与 LevelBox 完全一致）
   const entrySide = useEntry();
+  /* task-19：路由/page 变化后给可见的设置行与分节补稳定 id（幂等），供检索直达精确落点 */
+  useEffect(() => {
+    const t = window.setTimeout(markSettingsRows, 60);
+    return () => window.clearTimeout(t);
+  }, [page]);
   const navContent = (onAfter?: () => void) => {
     const unfoldedDefaults = NAV.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
     // 分区小标题（§2.8.1）：分组取自导航注册表的 category，新 IA 的今日/待办归「总览」。
@@ -738,6 +743,42 @@ export function useEntry(): Entry {
 
 /** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— **所有页面同一个容器、同高、三格齐全**。
  *  ③ 只列已启用的主题？无关；这里只管导航。手机与桌面同款（桌面侧栏那份是同形态的纵向变体）。 */
+/** 行级直达用的稳定 id：`row-<slug>`（对设置行）/ `sec-<slug>`（对分节）。
+ *  2026-10-12 task-19：搜索能精确落到"某一行的标题/说明"，并高亮那一行。 */
+export function slugOf(text: string): string {
+  const t = text.trim().replace(/\s+/g, "-").replace(/[「」（）()·:：,，.。/]/g, "").slice(0, 24);
+  return t || "item";
+}
+
+/** 给当前 DOM 里的设置行/分节打 id（幂等；路由变化时重跑）。
+ *  设置行文字 = 标题 + 说明（搜索按这两个字段匹配，所以 id 也从标题出）。 */
+export function markSettingsRows(): void {
+  const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+  heads.forEach((h) => {
+    const t = (h.textContent ?? "").trim();
+    if (t && !h.dataset.setId) h.dataset.setId = "sec-" + slugOf(t);
+  });
+  const rows = Array.from(document.querySelectorAll<HTMLElement>(".setting-row"));
+  rows.forEach((r) => {
+    if (r.dataset.setId) return;
+    const title = (r.querySelector(".setting-title")?.textContent ?? "").trim();
+    if (title) r.dataset.setId = "row-" + slugOf(title);
+  });
+}
+
+/** 滚动并高亮某个设置行 / 分节（复用既有请求机制；`.sec-focus` 的分节版已在 Settings.tsx） */
+export function focusSettingsTarget(target: string): boolean {
+  const want = target.trim();
+  const byId = document.querySelector<HTMLElement>(`[data-set-id="row-${slugOf(want)}"],[data-set-id="sec-${slugOf(want)}"]`);
+  const byText = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head"))
+    .find((el) => (el.textContent ?? "").includes(want));
+  if (!byText) return false;
+  byText.scrollIntoView({ block: "center", behavior: "smooth" });
+  byText.classList.add("row-focus");
+  window.setTimeout(() => byText.classList.remove("row-focus"), 1800);
+  return true;
+}
+
 export function LevelBox(): ReactNode {
   const entry = useEntry(); // 高亮**唯一来源**
   const cell = (id: Entry, label: string, extra?: CSSProperties): ReactNode => (

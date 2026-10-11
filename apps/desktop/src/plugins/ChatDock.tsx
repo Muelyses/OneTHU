@@ -22,6 +22,8 @@ import {
 } from "react";
 import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
+import { IconSearch } from "../components/Icons.js";
+import { closePalette, openPalette, usePaletteOpen } from "../state/palette.js";
 import remarkGfm from "remark-gfm";
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
@@ -502,6 +504,8 @@ export function ChatDock(): ReactNode {
   const scrollRef = useRef<HTMLDivElement>(null);
   /** ③ 底栏容器（长按判定挂这里，不再挂在入口按钮上） */
   const rowRef = useRef<HTMLDivElement>(null);
+  /** task-19 对偶条：检索条的开关复用既有 palette store（Ctrl+K 与条同源） */
+  const searchOpen = usePaletteOpen();
   /** A 面板高度（null = 用 CSS 默认 62vh）；拖把手改它，松手写进 localStorage */
   const [panelH, setPanelH] = useState<number | null>(() => readDockHeight());
   const [dragging, setDragging] = useState(false);
@@ -1579,9 +1583,19 @@ export function ChatDock(): ReactNode {
         <VoiceSubtitle text={subText} out={voice === "off"} />
       ) : null}
 
-      {/* 灵动岛胶囊：底部中央（单击=面板入口，长按=语音；长按期间自然变长 + 雾 + 波纹） */}
+      {/* task-19 底栏：左侧圆形检索钮 + 灵动岛（同一行、同视觉层级；岛的手势区不受影响）。
+          对偶：检索条展开时岛缩成球（.is-ball），检索钮变成条的"把位"。 */}
+      <div className="dock-bar">
       <button
-        className={"dock-island" + (pressing ? " is-press" : "") + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "")}
+        className={"dock-search" + (searchOpen ? " is-open" : "")}
+        aria-label="搜索页面、功能、设置"
+        title="搜索页面 / 功能 / 设置（Ctrl+K 同源）"
+        onClick={() => (searchOpen ? closePalette() : openPalette())}
+      >
+        <IconSearch />
+      </button>
+      <button
+        className={"dock-island" + (pressing ? " is-press" : "") + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "") + (searchOpen ? " is-ball" : "")}
         aria-label="OneTHU 对话（点击输入，长按说话）"
         onPointerDown={onIslandPointerDown}
         onPointerMove={onHoldMove}
@@ -1611,6 +1625,7 @@ export function ChatDock(): ReactNode {
         ) : null}
         {unread > 0 && !open ? <span className="dock-badge">{unread > 9 ? "9+" : unread}</span> : null}
       </button>
+      </div>
 
       {/* 语音失败的雾状浮片：本次长按发生在岛上时（发生在面板里时落在入口条内联） */}
       {voiceFail && voiceHost === "island" ? (

@@ -499,7 +499,7 @@ export function AttachActionsSheet({
                         setDirEntries(null);
                       }}
                     >
-                      📁 {e.name}
+                      {e.name}
                     </button>
                   ))}
                 </div>
@@ -717,7 +717,7 @@ export function AttachActionsSheet({
         {/* ── 结果 ── */}
         {showResult && r ? (
           <div className={`ohaa-result ${r.ok ? "ok" : r.needUi ? "warn" : "err"}`}>
-            {r.ok ? `✅ ${r.path ? `已上传：${r.path}` : "已完成"}` : `${r.needUi ? "⚠️ 需要你继续一步" : "❌ 没做成"}\n${r.error ?? ""}`}
+            {r.ok ? (r.path ? `已上传：${r.path}` : "已完成") : `${r.needUi ? "需要你继续一步" : "没做成"}\n${r.error ?? ""}`}
             {r.needUi ? `\n${uiHint(r.ui)}` : ""}
             {r.ok && r.answer ? `\n\nOH：${r.answer}` : ""}
             {r.ok && typeof r.images === "number" ? `\n（本次随消息附带 ${r.images} 张图片）` : ""}

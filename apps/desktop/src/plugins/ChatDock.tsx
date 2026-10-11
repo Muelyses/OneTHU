@@ -712,7 +712,8 @@ export function ChatDock(): ReactNode {
       deltaTimer.current = null;
     }
     deltaBuf.current = "";
-    const answer = typeof r?.answer === "string" ? r.answer : r?.error != null ? `⚠ ${r.error}` : "(空响应)";
+    /* 文案规范：不用 emoji/符号当图标（用户 2026-10-11 质量红线）→ 纯文字前缀 */
+    const answer = typeof r?.answer === "string" ? r.answer : r?.error != null ? `回答出错：${r.error}` : "(空响应)";
     setMsgs((v) => [...v, { role: "assistant", text: answer, meta: { think: thinkRef.current, trace: traceRef.current } }]);
     /* 需求 4 自动朗读的**触发点**：就在「回复完成」这一步（紧随回答入列）。
        只念真回答（报错/空响应不念）；静音保证＝speakReply 内部**现读** voicePrefs.autoSpeak
@@ -1656,7 +1657,7 @@ export function ChatDock(): ReactNode {
                     /* 1 号主对话永久保留（用户定案）：不提供删除入口 */
                     <span className="dock-hist-meta" style={{ alignSelf: "center", padding: "0 10px" }} title="主对话不可删除">—</span>
                   ) : (
-                    <button className="btn dock-btn dock-hist-del" aria-label="删除" onClick={() => void deleteSession(s.id)}>✕</button>
+                    <button className="btn dock-btn dock-hist-del" aria-label="删除" onClick={() => void deleteSession(s.id)}><IconX /></button>
                   )}
                 </div>
               ))}

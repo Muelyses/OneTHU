@@ -21,6 +21,7 @@ const FILES = [
   "apps/desktop/src/components/ImSettingsSection.tsx",
   "apps/desktop/src/components/WidgetSettingsSection.tsx",
   "apps/desktop/src/pages/Settings.tsx",
+  "apps/desktop/src/pages/Plugins.tsx",
 ];
 
 /** 极简解析：抓 defineSearchRows([ ... ]) 里的每个 { id: "…", tab: "…", section: "…", title: "…", aliases: [...] } */

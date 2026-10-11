@@ -6461,6 +6461,23 @@ section > .svc-label { margin-top: 14px; }
 .pal-row-name { font-size: 14px; }
 .pal-row-sub { font-size: 12px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pal-row-tag { flex: none; font-size: 12px; color: var(--text-3); }
+/* 检索空态兜底：「搜不到？直接问小 (OH)」——与 .pal-empty 同级、链接色可点（不是文字诱骗） */
+.pal-ask {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--text-sm);
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--dur-1) ease, color var(--dur-1) ease;
+}
+.pal-ask:hover { background: var(--accent-soft); }
+
 .pal-empty { padding: 16px 12px; font-size: 13px; color: var(--text-3); }
 
 /* 侧栏顶部的搜索入口：不逼用户记快捷键，也顺手把当前平台的键位写在旁边 */

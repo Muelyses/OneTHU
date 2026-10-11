@@ -15,6 +15,7 @@ import { coreDefaults, type NavEntry } from "../state/navigation.js";
 import { searchAll } from "../state/searchAll.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
 import { goSearchRow, type SearchRow } from "../state/searchRows.js";
+import { ohAsk } from "../plugins/ChatDock.js";
 import { closePalette, togglePalette, usePaletteOpen } from "../state/palette.js";
 import { useApp } from "../state/context.js";
 
@@ -168,7 +169,26 @@ export function CommandPalette(): ReactNode {
         {!query ? <div className="pal-group">常用</div> : null}
         <div className="pal-list">
           {rows.length === 0 ? (
-            <div className="pal-empty">没找到。换个说法试试，比如「电费」「洗衣机」「成绩」。</div>
+            <>
+            <div className="pal-empty">没找到。换个说法试试，比如「电费」「成绩」「悬浮球」「多模态」。</div>
+            {/* 空态兜底（用户点名）：**真可用**的一条通道——与底部悬浮岛/悬浮球同源走 ohAsk()。
+                先 closePalette() 再调，避免"检索条 + 对话面板"两层浮层叠着。 */}
+            <button
+              className="pal-ask"
+              title="未登录或应用未就绪时先记下，就绪后第一条消息直接送达"
+              onClick={() => {
+                const q = query.trim();
+                closePalette();
+                ohAsk(q);
+              }}
+            >
+              {query.trim()
+                ? /^(怎么|如何|是什么)/.test(query.trim())
+                  ? `直接问小 (OH) 这个问题：「${query.trim()}」`
+                  : `搜不到「${query.trim()}」？直接问小 (OH)`
+                : "直接问小 (OH)"}
+            </button>
+            </>
           ) : (
             rows.map((row, i) => (
               <button

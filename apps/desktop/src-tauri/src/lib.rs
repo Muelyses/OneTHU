@@ -17,6 +17,7 @@ mod im_media;
 mod downloads;
 mod harness_embed;
 mod overlay_win;
+mod ws_bridge;
 mod plugins;
 use std::collections::HashMap;
 use std::error::Error as _;
@@ -4322,6 +4323,11 @@ tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             douyu_bridge::douyu_send_danmu,
             douyu_bridge::douyu_self_check,
+            ws_bridge::ws_open,
+            ws_bridge::ws_send,
+            ws_bridge::ws_recv,
+            ws_bridge::ws_close,
+            ws_bridge::ws_close_owner,
             http_native_clear_cookies,
             http_native_clear_cookies_domain,
             thos_open_portal,

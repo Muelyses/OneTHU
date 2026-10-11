@@ -77,6 +77,7 @@ return {
 | `ui` | `ui.*`（`toast`、`confirm`、`form`、`clipboard.write`、`getTabRoot`、`onTabReady`、`favorites.*`） |
 | `storage` | `storage.*`、`settings.get` |
 | `net:external` | `net.fetch` |
+| `ws:external` | `ws.open` / `ws.send` / `ws.recv` / `ws.close` / `ws.closeAll`（宿主 WebSocket 桥） |
 | `widget` | `registerWidget`（声明 Android 桌面小组件：宿主解析后由原生渲染）、`widget.instances` / `bind` / `unbind` / `getFallback` / `setFallback`（读写桌面上每一块小组件显示的内容） |
 | `notify` | `notify.send` / `notify.cancel` / `notify.status`（发送系统通知，三端） |
 
@@ -638,3 +639,39 @@ const reply = (await res.json()).choices[0].message.content;
 
 `SERVICE_CONFIDENT`（40 分）为自动打开的下限，低于该分值只返回候选，由用户确认后再打开。
 该阈值用于保证跳转正确性：误跳转至错误官方页面的代价高于一次确认。
+
+## 21. `ws`（宿主 WebSocket 桥）
+
+外部 WebSocket 长连接：**连接、收发、生命周期全部由宿主 Rust 层完成**
+（`ws_bridge.rs`），插件只做协议业务。需要权限 `ws:external`。
+
+为什么需要：macOS 26.5 上 wry 的 WebKit WebView 中，custom scheme 页面的
+页面级 WebSocket（即使 `wss://baidu.com:443`）会被上游直接拒绝（实测），而
+HTTPS 全通——弹幕、IM、实时通知类功能经此桥绕行。宿主使用 tokio-tungstenite
+（桌面 native-tls / Android rustls-texture），**无跨源限制**，可注入任意握手头。
+
+| 方法 | 说明 |
+|---|---|
+| `ws.open(url, { headers?, connectTimeoutMs? })` | 建立连接，返回 sessionId；注入 `Origin` 等任意头 |
+| `ws.send(session, data, encoding?)` | 发一帧；encoding=`"text"`（默认）或 `"b64"`（二进制帧） |
+| `ws.recv(session, timeoutMs?)` | 拉一帧 `{ kind: "text"\|"binary"\|"closed", text?, b64? }`；超时抛「recv 超时」 |
+| `ws.close(session)` / `ws.closeAll()` | 关闭会话 / 清空本插件全部会话 |
+
+管控：每插件并发上限 8 条；10 分钟空闲自动清扫；插件停用/卸载时宿主全会话回收。
+宿主命令不可用（旧宿主构建）时 facade 自动回落**页面级 WebSocket**（同一接口语义），
+行为差异只在「上游拒绝 WS 的环境里回落也不可用」。
+
+示例（斗鱼弹幕短事务雏形）：
+
+```js
+const s = await onethu.ws.open("wss://danmuproxy.douyu.com:8501/", { headers: { Origin: "https://www.douyu.com" } });
+await onethu.ws.send(s, frameB64, "b64");
+for (;;) {
+  const fr = await onethu.ws.recv(s, 900).catch(() => null);
+  if (!fr) continue;
+  if (fr.kind === "closed") break;
+  // 解析 STT / 二进制帧…
+}
+await onethu.ws.close(s);
+```
+

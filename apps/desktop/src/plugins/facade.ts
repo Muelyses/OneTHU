@@ -1044,6 +1044,43 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         });
       },
     },
+    ws: {
+      /** 宿主 WS 桥不可用（旧宿主构建）时，回落页面级 WebSocket（实现同一 open/send/recv/close 语义） */
+      open: async (url: string, opts?: { headers?: Record<string, string>; connectTimeoutMs?: number }) => {
+        gate(perms, "ws:external", `ws.open ${url.slice(0, 80)}`);
+        try {
+          const out = await callWsBridge<{ session: string }>("ws_open", { owner: pluginId, url, headers: opts?.headers ?? null, connectTimeoutMs: opts?.connectTimeoutMs ?? null });
+          return String(out.session);
+        } catch (e) {
+          return await jsWsOpen(pluginId, url);
+        }
+      },
+      send: async (session: string, data: string, encoding?: "text" | "b64") => {
+        gate(perms, "ws:external", "ws.send");
+        const enc: "text" | "b64" = encoding ?? "text";
+        try {
+          await callWsBridge("ws_send", { session, [enc]: data });
+        } catch (e) {
+          await jsWsSend(session, data, enc);
+        }
+      },
+      recv: async (session: string, timeoutMs?: number) => {
+        gate(perms, "ws:external", "ws.recv");
+        try {
+          return await callWsBridge("ws_recv", { session, timeoutMs: timeoutMs ?? null });
+        } catch {
+          return await jsWsRecv(session, timeoutMs ?? 10_000);
+        }
+      },
+      close: async (session: string) => {
+        gate(perms, "ws:external", "ws.close");
+        try { await callWsBridge("ws_close", { session }); } catch { await jsWsClose(session); }
+      },
+      closeAll: async () => {
+        gate(perms, "ws:external", "ws.closeAll");
+        try { await callWsBridge("ws_close_owner", { owner: pluginId }); } catch { await jsWsCloseOwner(pluginId); }
+      },
+    },
   };
   // 读接口上的写操作（book/cancel）需要更高权限：library:read 只读，library:book 可写
   const lib = api.library as any;
@@ -1060,6 +1097,99 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     }
   }
   return api;
+}
+
+/* ═══ WS 桥：宿主命令 + 页面级 WebSocket 回退 ═══ */
+// 宿主命令缺失（旧构建/未重编）时回落页面级 WebSocket：同一行列语义。
+// （页内 WS 在 macOS 26.5 的 custom scheme 页面会被上游 WebKit/wry 拒掉，
+// 故 SDS 优先走宿主；只回落不阻塞。）
+type WsFrameLike = { kind: "text" | "binary" | "closed"; text?: string; b64?: string };
+type JsWsSession = { ws: WebSocket; queue: WsFrameLike[]; closed: boolean; waiters: Array<(f: WsFrameLike | null) => void> };
+
+const _jsWsSessions = new Map<string, JsWsSession>();
+
+function callWsBridge<T = unknown>(cmd: string, args: Record<string, unknown>): Promise<T> {
+  const ti = (window as unknown as { __TAURI_INTERNALS__?: { invoke: <T>(cmd: string, args?: Record<string, unknown>) => Promise<T> } }).__TAURI_INTERNALS__;
+  if (!ti || typeof ti.invoke !== "function") throw new Error("NO_WS_HOST_BRIDGE");
+  return ti.invoke<T>(cmd, { args });
+}
+
+function jsWsFrameFromEvent(data: unknown): WsFrameLike {
+  if (typeof data === "string") return { kind: "text", text: data };
+  if (data instanceof ArrayBuffer) {
+    const u8 = new Uint8Array(data);
+    let bin = "";
+    for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]!);
+    return { kind: "binary", b64: btoa(bin) };
+  }
+  return { kind: "closed" };
+}
+
+async function jsWsOpen(owner: string, url: string): Promise<string> {
+  const session = `${owner}::js-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+  const ws = new WebSocket(url);
+  ws.binaryType = "arraybuffer";
+  const sessionRec: JsWsSession = { ws, queue: [], closed: false, waiters: [] };
+  _jsWsSessions.set(session, sessionRec);
+  await new Promise<void>((resolve, reject) => {
+    const to = setTimeout(() => { ws.close(); reject(new Error("页内 WS 连接超时")); }, 10_000);
+    ws.onopen = () => { clearTimeout(to); resolve(); };
+    ws.onerror = () => { clearTimeout(to); reject(new Error("页内 WS 连接失败")); };
+    ws.onclose = () => {
+      sessionRec.closed = true;
+      sessionRec.queue.push({ kind: "closed" });
+      for (const w of sessionRec.waiters.splice(0)) w(sessionRec.queue.shift() ?? { kind: "closed" });
+    };
+    ws.onmessage = (ev) => {
+      const frame = jsWsFrameFromEvent(ev.data);
+      const waiter = sessionRec.waiters.shift();
+      if (waiter) waiter(frame);
+      else sessionRec.queue.push(frame);
+    };
+  });
+  return session;
+}
+
+function jsWsSend(session: string, data: string, encoding: "text" | "b64"): Promise<void> {
+  const s = _jsWsSessions.get(session);
+  if (!s) return Promise.reject(new Error("会话不存在"));
+  if (encoding === "b64") {
+    const bin = atob(data);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    s.ws.send(u8);
+  } else {
+    s.ws.send(data);
+  }
+  return Promise.resolve();
+}
+
+async function jsWsRecv(session: string, timeoutMs: number): Promise<WsFrameLike | null> {
+  const s = _jsWsSessions.get(session);
+  if (!s) throw new Error("会话不存在");
+  if (s.queue.length) return s.queue.shift() ?? null;
+  return await new Promise<WsFrameLike | null>((resolve) => {
+    let timer = 0;
+    const waiter = (f: WsFrameLike | null) => { clearTimeout(timer); resolve(f); };
+    s.waiters.push(waiter);
+    timer = window.setTimeout(() => {
+      const i = s.waiters.indexOf(waiter);
+      if (i >= 0) { s.waiters.splice(i, 1); resolve(null); }
+    }, Math.max(50, timeoutMs));
+  });
+}
+
+function jsWsClose(session: string): Promise<void> {
+  const s = _jsWsSessions.get(session);
+  if (s) { s.closed = true; try { s.ws.close(); } catch { /* noop */ } _jsWsSessions.delete(session); }
+  return Promise.resolve();
+}
+
+function jsWsCloseOwner(owner: string): Promise<void> {
+  for (const [k] of Array.from(_jsWsSessions.entries())) {
+    if (k.startsWith(`${owner}::`)) void jsWsClose(k);
+  }
+  return Promise.resolve();
 }
 
 /* ═══ 小OH 扩展（learn/venue/xk/kongjian）辅助 ═══ */

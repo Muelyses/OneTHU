@@ -36,6 +36,7 @@ export type PluginPermission =
   | "ui" // toast 提示
   | "storage" // 插件私有键值存储
   | "net:external" // 外部网络请求（大模型 API 等）
+  | "ws:external" // 外部 WebSocket 长连接（宿主 Rust WS 桥；WebView 的 WS 在 macOS 26.5 受限环境不可用）
   | "tsinghua:sdk" // 以用户登录态访问任意清华校内服务（自定义服务接入 SDK；安装时重点确认）
   | "clipboard:read" // 读取系统剪贴板（敏感：可读密码管理器复制的口令）
   | "plugins:call" // 列出并执行其他已启用插件的命令（联动插件；OH 对话工具化需要）
@@ -74,6 +75,7 @@ export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: st
   { id: "ui", label: "显示提示", desc: "弹出 toast 消息" },
   { id: "storage", label: "本地存储", desc: "插件私有键值存储（卸载即清除）" },
   { id: "net:external", label: "外部网络请求", desc: "直接请求任意外部网络地址（HTTP(S)）（大模型 API 等）" },
+  { id: "ws:external", label: "外部 WebSocket 连接", desc: "经宿主与外部建立并收发 WebSocket 长连接（直播弹幕、实时通知等；由宿主 Rust 层出网，累计 10 分钟空闲自动清理）" },
   { id: "widget", label: "桌面小组件", desc: "向 Android 桌面小组件声明要显示的内容（渲染与取值由宿主完成，插件不写原生代码）" },
   { id: "notify", label: "发送系统通知", desc: "向系统通知中心推送通知（三端），内容与时刻由插件决定" },
   { id: "css", label: "注入全局样式", desc: "注入影响整个应用外观的 CSS（安装时重点确认）" },
@@ -496,6 +498,19 @@ export interface OnethuApi {
     /** 外部 HTTP(S) 请求（经应用传输层，无 CORS 限制；需 net:external 权限）。
      *  返回标准 Response（可用 res.json()/res.text()）。 */
     fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
+  };
+  ws: {
+    /** 打开外部 WebSocket（宿主 Rust 桥；需 ws:external 权限）。返回 sessionId。
+     *  头部可注入 Origin 等任意握手头（宿主无跨源限制）。10 分钟空闲会被宿主自动清扫；每插件并发上限 8。 */
+    open(url: string, opts?: { headers?: Record<string, string>; connectTimeoutMs?: number }): Promise<string>;
+    /** 发一帧：text=文本帧；b64=二进制帧（base64） */
+    send(session: string, data: string, encoding?: "text" | "b64"): Promise<void>;
+    /** 拉一帧（阻塞至超时）。kind: "text"|"binary"|"closed"；超时抛「recv 超时」。 */
+    recv(session: string, timeoutMs?: number): Promise<{ kind: "text" | "binary" | "closed"; text?: string; b64?: string } | null>;
+    /** 关闭一条会话 */
+    close(session: string): Promise<void>;
+    /** 清空本插件全部会话（停用/卸载自动调用；也可插件自选提前清） */
+    closeAll(): Promise<void>;
   };
   plugins: {
     /** 列出已启用 JS 插件及其命令（联动插件工具发现）。需 plugins:call 权限 */

@@ -4361,6 +4361,7 @@ pub mod notify_probe_hooks {
 }
 
 // =========================================================================
+#[cfg(not(target_os = "android"))]
 pub mod douyu_bridge {
     // niko 弹幕桥（douyu_send_danmu / douyu_self_check）—— 自包含追加块 v1
     // 背景：OneTHU 的 WKWebView（tauri:// custom scheme 页面）里 WebSocket 全灭

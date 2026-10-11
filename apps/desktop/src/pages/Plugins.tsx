@@ -535,15 +535,16 @@ function PluginCard({
               <IconGithub width={16} height={16} />
             </button>
           ) : null}
-          {m.category === "theme" ? (
-            <button className="chip" title="到「外观与布局 → 主题」里切换（会高亮那一节）" onClick={() => gotoAppearanceTheme()}>
-              去切换主题
-            </button>
-          ) : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
           {id === "onethu.harness" ? (
             <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>
               MCP
+            </button>
+          ) : null}
+          {/* 主题类插件：动作行里一处（**与检查更新/设置/删除同为纯文字**，不再用 chip 胶囊） */}
+          {m.category === "theme" ? (
+            <button className="btn btn-ghost" title="到「外观与布局 → 主题」里切换（会高亮那一节）" onClick={() => gotoAppearanceTheme()}>
+              去切换主题
             </button>
           ) : null}
           {rec.repo && m.kind !== "rust" && !rec.embedded && !rec.builtin && id !== "onethu.harness" ? (
@@ -567,12 +568,6 @@ function PluginCard({
           {!repoCheck.remote && !repoRemote && marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
             <button className="btn btn-ghost plg-update-flag" title={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>
               可更新 ↑
-            </button>
-          ) : null}
-          {/* 主题类插件：卡片上直接给一条到「外观与布局 → 主题」的路（原来那个是死的） */}
-          {m.category === "theme" ? (
-            <button className="chip" onClick={() => gotoAppearanceTheme()}>
-              去切换主题
             </button>
           ) : null}
           <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>

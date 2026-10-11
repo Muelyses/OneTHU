@@ -45,6 +45,7 @@ import android.webkit.WebView
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.Permission
@@ -76,6 +77,12 @@ class SaveImageArgs {
 @InvokeArg
 class OpenIntentArgs {
     var url: String = ""
+}
+
+/** 待安装的更新包路径（Rust 侧已校验绝对路径，这里再校验存在与后缀） */
+@InvokeArg
+class InstallApkArgs {
+    var path: String = ""
 }
 
 @InvokeArg
@@ -1835,6 +1842,61 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.resolve(ret)
         } catch (e: Exception) {
             invoke.reject(e.message ?: "读取系统取色失败")
+        }
+    }
+
+    /* ── 检查更新：把下载好的安装包交给系统安装页 ──
+     * 由主 crate 的 updater_open_installer 经 run_mobile_plugin("installApk") 调用。
+     * **只拉起安装页，绝不静默安装**：不碰 PackageInstaller 的静默接口，
+     * 确认与授权都由 ROM 自己的安装页接手。 */
+
+    /** 已下载的更新包 → content:// → ACTION_VIEW。
+     *
+     * 为什么要 FileProvider：Android 7 起把 file:// 交给别的应用会抛 FileUriExposedException，
+     * 必须换成 content:// 并显式授予读权限（本插件的 provider 用的是宿主那份
+     * `${applicationId}.fileprovider`，file_paths.xml 已含 `<cache-path path="."/>`，
+     * 覆盖下载落点 cacheDir/updates —— 同 onethu-overlay 的取件通道）。
+     *
+     * Android 8 起还有一道系统闸：来源应用要持有 REQUEST_INSTALL_PACKAGES（本插件清单已声明），
+     * 且用户要允许「安装未知应用」。没允许时系统会把 Intent 静默吞掉（点了没反应），
+     * 所以这里先查一次，直接给出可操作的原因，而不是让用户猜。 */
+    @Command
+    fun installApk(invoke: Invoke) {
+        val args = invoke.parseArgs(InstallApkArgs::class.java)
+        try {
+            val file = File(args.path)
+            if (args.path.isBlank() || !file.isAbsolute) {
+                invoke.reject("安装包路径非法（需要绝对路径）")
+                return
+            }
+            if (!file.exists() || !file.isFile) {
+                invoke.reject("安装包不存在，请重新下载")
+                return
+            }
+            if (!file.name.lowercase(Locale.US).endsWith(".apk")) {
+                invoke.reject("这个文件不是安装包（.apk），请重新下载")
+                return
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                !activity.packageManager.canRequestPackageInstalls()
+            ) {
+                invoke.reject("尚未允许「安装未知应用」，请在系统设置里允许后重试")
+                return
+            }
+            val uri =
+                FileProvider.getUriForFile(activity, "${activity.packageName}.fileprovider", file)
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            activity.startActivity(intent)
+            invoke.resolve()
+        } catch (e: ActivityNotFoundException) {
+            invoke.reject("系统里没有可用的安装器，请在文件管理器里手动打开")
+        } catch (e: IllegalArgumentException) {
+            invoke.reject("安装包不在可分享目录内，请重新下载")
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "拉起系统安装页失败，请重试")
         }
     }
 }

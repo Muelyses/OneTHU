@@ -191,7 +191,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
 
   return (
     <>
-      {/* ── 基础档（OH 设置 → 基础设置）：只做「扫码绑定 / 解绑」两件事 + 当前状态 ── */}
+      {/* ── 基础档（OH 设置 → 基础设置）：扫码绑定 / 解绑——**飞书与微信两个通道都在这里** ── */}
       {showBasic ? (
         <>
           <div className="setting-row">
@@ -248,6 +248,49 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
               </div>
             </div>
           ) : null}
+
+          {/* 微信（iLink 官方 Bot）：扫码绑定/解绑也放基础档——用户要求两个通道都能直接扫码 */}
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">微信（iLink 官方 Bot · 扫码即用）</div>
+              <div className="setting-desc">
+                微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机，
+                OH 回复原路发回。当前状态：{PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase}
+                {wechatStatus.note ? `：${wechatStatus.note}` : ""}
+                {cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : ""}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-primary" onClick={() => void startWxLogin()}>
+                {cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}
+              </button>
+              {cfg?.channels.wechat?.botToken ? (
+                <button
+                  className="btn"
+                  onClick={() => {
+                    wechatLoginCancel();
+                    setWxQr(null);
+                  }}
+                >
+                  解除绑定
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          {wxQr ? (
+            <div className="setting-row">
+              <div>
+                <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
+                  <QRCodeSVG value={wxQr} size={148} />
+                </div>
+                <div className="setting-desc" style={{ marginTop: 6 }}>
+                  {wxNote || "等待扫码…"}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）
+                </div>
+              </div>
+              <button className="btn" onClick={() => setWxQr(null)}>取消</button>
+            </div>
+          ) : null}
         </>
       ) : null}
 
@@ -262,7 +305,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
         </div>
       </div>
 
-      {/* ── 高级档（OH 设置 → 高级配置）：通道开关、手工凭据、微信灰置说明 ── */}
+      {/* ── 高级档（OH 设置 → 高级配置）：通道开关 + 手工凭据 ── */}
       {showAdvanced ? (
         <>
           <div className="setting-row">
@@ -306,43 +349,6 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
             </div>
             <button className="btn btn-primary" onClick={() => void saveCreds()}>保存并连接</button>
           </div>
-
-          <div className="setting-row">
-            <div>
-              <div className="setting-title">微信（iLink 官方 Bot · 扫码即用）</div>
-              <div className="setting-desc">
-                微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机，
-                OH 回复原路发回。当前状态：{PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase}
-                {wechatStatus.note ? `：${wechatStatus.note}` : ""}
-                {cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : ""}
-              </div>
-            </div>
-            <button className="btn btn-primary" onClick={() => void startWxLogin()}>
-              {cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}
-            </button>
-          </div>
-
-          {wxQr ? (
-            <div className="setting-row">
-              <div>
-                <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
-                  <QRCodeSVG value={wxQr} size={148} />
-                </div>
-                <div className="setting-desc" style={{ marginTop: 6 }}>
-                  {wxNote || "等待扫码…"}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）
-                </div>
-              </div>
-              <button
-                className="btn"
-                onClick={() => {
-                  wechatLoginCancel();
-                  setWxQr(null);
-                }}
-              >
-                取消
-              </button>
-            </div>
-          ) : null}
         </>
       ) : null}
 

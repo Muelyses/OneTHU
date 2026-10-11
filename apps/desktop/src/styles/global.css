@@ -926,6 +926,13 @@
 }
 
 .setting-row:first-child { border-top: 0; }
+/* ④ 长说明的设置行（用户实录「谁家字定在最左边！」）：文字列吃满可用宽、说明不限宽，
+   右侧动作按钮与**说明首行同基线**；左内边距沿用 .setting-row 的 16px（与其它行一致）。 */
+.setting-row.is-copy { align-items: baseline; gap: 12px; }
+.setting-row.is-copy > div:first-child { flex: 1 1 auto; min-width: 0; }
+.setting-row.is-copy .setting-desc { max-width: none; }
+.setting-row.is-copy > .btn, .setting-row.is-copy > button { flex: none; }
+
 .setting-title { font-size: var(--text-base); line-height: 22px; font-weight: 500; }
 .setting-desc { font-size: var(--text-sm); line-height: 20px; color: var(--text-3); margin-top: 2px; max-width: 540px; }
 

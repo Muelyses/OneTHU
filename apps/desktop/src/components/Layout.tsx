@@ -6,6 +6,7 @@ import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
 import { useSidebarCollapsed } from "../state/uiPrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
+import { requestOhEntry } from "./OhSettingsPage.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
@@ -509,44 +510,53 @@ export function Shell({ children }: { children: ReactNode }) {
             ) : null}
           </>
         ) : null}
-        {/* 钉底固定项：「设置 | 插件」同框——两者是并列的「1.5 级」入口，不进收藏夹体系、
-            不可折叠不可改序。手机端没有侧栏，那一份在「我的」页顶部（pages/Settings.tsx 里渲染）。
-            样式用行内写：global.css 不在本任务写域（要挪进样式表随时说）。 */}
+        {/* 钉底固定项（**两端对称**的 1.5 级框，2026-10-11 用户当场发现桌面进不去 OH）：
+            设置 | 插件 | OneTHU Harness —— 同容器同形态同高度（矮版 26px），第三个格进 OH 设置二级页。
+            这是**唯一**的 OH 入口（插件页头那个已按要求删除）。 */}
         <div className="nav-sep" aria-hidden />
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 4,
-            padding: 4,
+            gap: 2,
+            padding: 2,
             marginBottom: 8,
             border: "1px solid var(--border)",
             borderRadius: "var(--md-sys-shape-corner-large, 12px)",
             background: "var(--md-sys-color-surface-container-lowest)",
           }}
         >
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {navRow("settings", {
-              active: page === "settings",
-              label: "设置",
-              icon: <IconSettings />,
-              onClick: () => {
-                onAfter?.();
-                navigate("settings");
-              },
-            })}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {navRow("plugins", {
-              active: page === "plugins",
-              label: "插件",
-              icon: <IconPlug />,
-              onClick: () => {
-                onAfter?.();
-                navigate("plugins");
-              },
-            })}
-          </div>
+          <button
+            className={"nav-item" + (page === "settings" ? " is-active" : "")}
+            style={{ flex: 1, height: 26, justifyContent: "center", padding: 0 }}
+            onClick={() => {
+              onAfter?.();
+              navigate("settings");
+            }}
+          >
+            设置
+          </button>
+          <button
+            className={"nav-item" + (page === "plugins" ? " is-active" : "")}
+            style={{ flex: 1, height: 26, justifyContent: "center", padding: 0 }}
+            onClick={() => {
+              onAfter?.();
+              navigate("plugins");
+            }}
+          >
+            插件
+          </button>
+          <button
+            className="nav-item"
+            style={{ flex: "1.5 1 0", height: 26, justifyContent: "center", padding: 0, fontSize: "var(--text-xs)", whiteSpace: "nowrap" }}
+            onClick={() => {
+              onAfter?.();
+              requestOhEntry(); // 旗标 → 插件页挂载/订阅时切到 OH 子页
+              navigate("plugins");
+            }}
+          >
+            OneTHU Harness
+          </button>
         </div>
       </>
     );

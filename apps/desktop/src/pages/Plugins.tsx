@@ -71,7 +71,10 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   const [cat, setCat] = useState<"all" | "theme" | "general">("all");
   const [instOpen, setInstOpen] = useState(false);
   const themesSnap = useThemes();
-  const plugins = cat === "all" ? allPlugins : allPlugins.filter((p) => (p.manifest.category ?? "general") === cat);
+  /* ② 用户拍板：OH（onethu.harness）是**特殊插件**，不出现在普通插件页的卡片区
+     ——它的模型/MCP/日志/权限全部搬进「OneTHU Harness」子页的高级配置里就地渲染。 */
+  const listPlugins = allPlugins.filter((p) => p.manifest.id !== "onethu.harness");
+  const plugins = cat === "all" ? listPlugins : listPlugins.filter((p) => (p.manifest.category ?? "general") === cat);
   const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" | "mcp" } | null>(null);
   /* 插件设置 / MCP / 运行日志 Sheet：关闭时多挂 240ms 播完退场，而不是瞬间消失 */
   const sheetHold = useExitHold(sheet, 240);
@@ -128,41 +131,93 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
         （task-17 抽出 PluginSettingsForm 后，OH 高级档直接接在那边，本段不用再动。） ── */
   const { navigate } = useApp();
   const [ohOpen, setOhOpen] = useState(false);
+  /** OH 内联设置面板的「草稿有改动」标记（就地渲染时不再弹确认窗，标记仅为兼容其 props） */
+  const ohDirtyRef = useRef(false);
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   useEffect(() => {
     if (consumeOhEntry()) setOhOpen(true); // 深链先写旗标再导航过来：挂载时补消费一次
     return subscribeOhEntry(() => setOhOpen(true));
   }, []);
-  /** 手机端「我的 → 插件」进来时也要有「设置 | 插件」这个 1.5 级框（桌面那份在侧栏钉底）。
-   *  「OH 设置」也并进**同一个框**（与插件页同区、同形态）——单独一颗按钮会看着像第二条胶囊条。 */
-  const dualEntry = isPhone ? (
-    <div
-      style={{
-        display: "flex", alignItems: "center", gap: 4, padding: 4, marginBottom: 12,
-        border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
-        background: "var(--md-sys-color-surface-container-lowest)",
-      }}
-    >
-      <button className="nav-item" style={{ flex: 1 }} onClick={() => navigate("settings")}>设置</button>
-      <button className="nav-item is-active" style={{ flex: 1 }} aria-current="page">插件</button>
-      <button className="nav-item" style={{ flex: 1 }} onClick={() => setOhOpen(true)}>OH 设置</button>
-    </div>
-  ) : null;
-  const ohEntryBtn = (
-    <button className="btn" onClick={() => setOhOpen(true)}>OH 设置</button>
+  /* ① 用户拍板：这里就**三个并列**——设置 / 插件 / OneTHU Harness（名字钉死），框矮一档。
+     插件页头部那个「OH 设置」入口、子页里的返回按钮**全部删掉**：只保留这一处框的第三格。 */
+  const entryBox = (active: "settings" | "plugins" | "oh"): ReactNode =>
+    isPhone ? (
+      <div
+        style={{
+          display: "flex", alignItems: "center", gap: 2, padding: 2, marginBottom: 12,
+          border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
+          background: "var(--md-sys-color-surface-container-lowest)",
+        }}
+      >
+        <button
+          className={"nav-item" + (active === "settings" ? " is-active" : "")}
+          style={{ flex: 1, height: 26, justifyContent: "center" }}
+          onClick={() => navigate("settings")}
+        >
+          设置
+        </button>
+        <button
+          className={"nav-item" + (active === "plugins" ? " is-active" : "")}
+          style={{ flex: 1, height: 26, justifyContent: "center" }}
+          onClick={() => setOhOpen(false)}
+        >
+          插件
+        </button>
+        {/* 名字钉死「OneTHU Harness」：给这一格多一点宽度 + 小一号字，保证**一行放得下**（不换行、框不因此变高） */}
+        <button
+          className={"nav-item" + (active === "oh" ? " is-active" : "")}
+          style={{ flex: "1.5 1 0", height: 26, justifyContent: "center", fontSize: "var(--text-xs)", whiteSpace: "nowrap" }}
+          onClick={() => setOhOpen(true)}
+        >
+          OneTHU Harness
+        </button>
+      </div>
+    ) : null;
+  const dualEntry = entryBox("plugins");
+  /** ⑤「安装插件」按层级归位：放页头右侧，不再挤在类别筛选那一行里 */
+  const installBtn = (
+    <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
+      {instOpen ? "收起安装" : "安装插件"}
+    </button>
+  );
+  /* ② OH 的模型/MCP/日志**就地**渲染在子页高级配置里（复用同一批面板实现，不跳 sheet、不复制） */
+  const ohRec = allPlugins.find((p) => p.manifest.id === "onethu.harness");
+  const ohCmds = cmds.filter((c) => c.pluginId === "onethu.harness");
+  const ohPerms = (ohRec?.manifest.permissions ?? []) as string[];
+  const ohAdvancedPanels = (
+    <>
+      {/* ② 权限胶囊 + 命令清单：原来长在插件页的 OH 卡片上，现在**就地**放高级配置（卡片区已不许出现 OH） */}
+      <div className="setting-row is-copy">
+        <div>
+          <div className="setting-title">权限（{ohPerms.length}）</div>
+          <div className="setting-desc">
+            {ohPerms.length > 0 ? ohPerms.map((p) => PLUGIN_PERMISSIONS.find((x) => x.id === p)?.label ?? p).join(" · ") : "未声明额外权限"}
+          </div>
+        </div>
+      </div>
+      <div className="setting-row is-copy">
+        <div>
+          <div className="setting-title">命令清单（{ohCmds.length}）</div>
+          <div className="setting-desc">{ohCmds.length > 0 ? ohCmds.map((c) => c.id).join(" · ") : "暂无命令"}</div>
+        </div>
+      </div>
+      {ohRec ? <SettingsBody id="onethu.harness" rec={ohRec} onClose={() => undefined} dirtyRef={ohDirtyRef} /> : null}
+      <McpBody />
+      <LogBody id="onethu.harness" />
+    </>
   );
 
   if (ohOpen) {
     return (
       <div className="plg-page">
-        {/* 标题就是「OH」+ 一行副标题说明这是插件页的二级（用户一眼知道自己在哪） */}
+        {/* 标题「OH」+ 一行副标题；返回靠顶部那格里选「插件」（不再有第二个返回入口） */}
         <PageHead
           title="OH"
           meta={<span>基础设置 / 高级配置 —— 插件「OneTHU Harness」的二级页</span>}
-          actions={<button className="btn" onClick={() => setOhOpen(false)}>返回插件</button>}
         />
+        {entryBox("oh")}
         <Card>
-          <OhSettingsPage />
+          <OhSettingsPage advancedPanels={ohAdvancedPanels} />
         </Card>
       </div>
     );
@@ -172,7 +227,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
     <div className="plg-page">
       {dualEntry}
       {embedded ? (
-        <div className="plg-embed-bar" style={{ marginBottom: 12 }}>{viewSwitch}{ohEntryBtn}</div>
+        <div className="plg-embed-bar" style={{ marginBottom: 12 }}>{viewSwitch}{installBtn}</div>
       ) : (
         <PageHead
           title="插件"
@@ -182,7 +237,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
               45s 超时由宿主统一承担
             </span>
           }
-          actions={<>{viewSwitch}{ohEntryBtn}</>}
+          actions={<>{viewSwitch}{installBtn}</>}
         />
       )}
 
@@ -221,16 +276,13 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
 
       {/* 我的插件 · 工具行：类别页签 + 安装入口（归拢一行；主切换只留视图级） */}
       <div className="plg-toolbar">
-        <div className="seg-track">
-          {([["all", `全部 ${allPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${allPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
-            <button key={k} className={"seg-item" + (cat === k ? " is-active" : "")} onClick={() => setCat(k)}>
+        <div className="segmented" style={{ marginBottom: 0 }}>
+          {([["all", `全部 ${listPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${listPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
+            <button key={k} className={cat === k ? "is-active" : ""} onClick={() => setCat(k)}>
               {lbl}
             </button>
           ))}
         </div>
-        <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
-          {instOpen ? "收起安装" : "安装插件"}
-        </button>
       </div>
 
 
@@ -669,7 +721,7 @@ function PluginSheet({
 }
 
 /** MCP 服务器管理：逐条增删改（表单弹窗），存宿主侧结构化存储，OH 启动对话时经 settings 注入 */
-function McpBody(): ReactNode {
+export function McpBody(): ReactNode {
   const [list, setList] = useState<McpServerEntry[]>(() => loadMcpServers());
   const save = (next: McpServerEntry[]): void => {
     setList(next);
@@ -731,7 +783,7 @@ function McpBody(): ReactNode {
 
 /** 设置：本地草稿 + 显式保存 + 已保存回执（设置在插件下一轮运行时实时读取）。
  *  R23：dirtyRef 上报未保存改动（Sheet 关闭前据此确认）；onClose 供无配置项分支直接关闭。 */
-function SettingsBody({
+export function SettingsBody({
   id, rec, onClose, dirtyRef,
 }: { id: string; rec: any; onClose: () => void; dirtyRef: { current: boolean } }): ReactNode {
   const fields = rec.manifest.settings ?? [];
@@ -843,7 +895,7 @@ function SettingsBody({
 }
 
 /** 运行日志：全高终端 + 打断/清空 + 自动贴底 */
-function LogBody({ id }: { id: string }): ReactNode {
+export function LogBody({ id }: { id: string }): ReactNode {
   const events = useSyncExternalStore(subscribePluginEvents, () => pluginEvents(id));
   const bodyRef = useRef<HTMLDivElement | null>(null);
 

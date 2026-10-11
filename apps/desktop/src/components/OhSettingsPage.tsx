@@ -207,7 +207,7 @@ function KeepAliveRow(): ReactNode {
   );
 }
 
-export function OhSettingsPage(): ReactNode {
+export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode } = {}): ReactNode {
   const { navigate } = useApp();
   const [tier, setTier] = useState<"basic" | "advanced">("basic");
 
@@ -259,8 +259,8 @@ export function OhSettingsPage(): ReactNode {
           {/* 同一份实现的 advanced 档：通道开关、手工凭据、微信灰置说明 */}
           <ImSettingsSection tier="advanced" />
 
-          <SubHead>模型与预算（进阶）</SubHead>
-          <OhAdvancedSlot />
+          <SubHead>模型 / MCP / 日志（插件自己的面板，就地渲染）</SubHead>
+          {advancedPanels ?? <OhAdvancedSlot />}
         </>
       )}
     </>

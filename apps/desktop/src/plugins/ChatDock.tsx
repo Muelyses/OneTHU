@@ -17,8 +17,8 @@
  */
 import {
   memo, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore,
-  type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent, type PointerEvent as ReactPointerEvent,
-  type ReactNode,
+  type ComponentProps, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent,
+  type PointerEvent as ReactPointerEvent, type ReactNode,
 } from "react";
 import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
@@ -29,7 +29,8 @@ import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
 import { IconClock, IconDownload, IconPlus, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
 import { AttachTray } from "../components/AttachTray.js";
 import { AttachActionsSheet, type AttachActionDone } from "../components/AttachActionsSheet.js";
-import { formatSize, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
+import { bytesToDataUrl, fileToBytes, formatSize, mimeFromName, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
+import { openImageViewer } from "../components/ImageViewer.js";
 import { HarnessMark } from "../components/HarnessMark.js";
 import { useIslandText } from "../state/island.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
@@ -117,9 +118,102 @@ function VoiceSubtitle({ text, out }: { text: string; out: boolean }): ReactNode
   );
 }
 
+/** 消息里的一张图（附件图片直接显示、点开放大）。src 一律是**耐久地址**：
+ *  选中时读成 data URL（控件随后会 revoke previewUrl 那个 blob），或从会话里的本地路径读盘得来。 */
+interface ViewImage {
+  name: string;
+  src: string;
+}
+
+/** 从 OH 会话文本里解析附件块（lib/attach.ts 的 buildOhMessage 产物）→ 带本地路径的**图片**附件。
+ *  块形如：
+ *    【附件 1/1】photo.jpg
+ *    类型 image/jpeg · 大小 1.2 MB · 本地路径 /Users/x/photo.jpg
+ *  有了它，**重开面板/重启之后**会话里的图片附件也能重新渲染成缩略图，而不是只剩一行文字。 */
+function parseAttachImages(text: string): Array<{ name: string; mime: string; path: string }> {
+  const out: Array<{ name: string; mime: string; path: string }> = [];
+  const re = /【附件 \d+\/\d+】([^\n]+)\n类型 ([^·\n]+?) · 大小 [^·\n]*? · 本地路径 ([^\n]+)/g;
+  for (const m of text.matchAll(re)) {
+    const name = (m[1] ?? "").trim();
+    const mime = (m[2] ?? "").trim();
+    const path = (m[3] ?? "").trim();
+    if (name && mime.startsWith("image/") && path) out.push({ name, mime, path });
+  }
+  return out;
+}
+
+/** 本地图片路径 → data URL（同一路径只读一次盘；读不到返回 null，界面退化为文件名占位） */
+const imgCache = new Map<string, string>();
+async function dataUrlForPath(path: string): Promise<string | null> {
+  const clean = path.replace(/^file:\/\//, "");
+  const hit = imgCache.get(clean);
+  if (hit) return hit;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    const b64 = await invoke<string>("read_file_base64", { path: clean, maxBytes: 12 * 1024 * 1024 });
+    const url = `data:${mimeFromName(clean)};base64,${b64}`;
+    imgCache.set(clean, url);
+    return url;
+  } catch {
+    return null; // 文件没了 / 太大 / 不在本机：不编，界面自己退化
+  }
+}
+
+/** 刚选中的图片附件 → data URL（**不能依赖 previewUrl**：关面板时控件会 revoke 那个 blob） */
+async function dataUrlForPick(f: AttachFile): Promise<string | null> {
+  const key = f.path || `${f.name}:${f.size}`;
+  const hit = imgCache.get(key);
+  if (hit) return hit;
+  try {
+    const url = bytesToDataUrl(await fileToBytes(f, 12 * 1024 * 1024), f.mime);
+    imgCache.set(key, url);
+    return url;
+  } catch {
+    return f.previewUrl ?? null; // 读不到就先用 blob 顶着（至少当场能看）
+  }
+}
+
+/** markdown 里的图片：data: / blob: / http(s) 直接渲染；本机路径先读成 data URL。
+ *  正文图片的 src 常常是应用侧写下的本地路径，webview 直接加载会裂图。 */
+function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
+  const direct = typeof src === "string" && /^(data:|blob:|https?:)/i.test(src);
+  const [url, setUrl] = useState<string | null>(direct ? (src as string) : null);
+  useEffect(() => {
+    if (direct) {
+      setUrl(typeof src === "string" ? src : null);
+      return;
+    }
+    if (typeof src !== "string" || !src) {
+      setUrl(null);
+      return;
+    }
+    let alive = true;
+    void dataUrlForPath(src).then((u) => {
+      if (alive) setUrl(u);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [src, direct]);
+  if (!url) return <span className="dock-img-miss">{alt || "图片（没能读出来）"}</span>;
+  return (
+    <img
+      {...rest}
+      className="dock-md-img"
+      src={url}
+      alt={alt ?? ""}
+      onClick={() => {
+        openImageViewer(url, alt ?? "");
+      }}
+    />
+  );
+}
+
 interface ViewMsg {
   role: "user" | "assistant";
   text: string;
+  /** 图片附件（选中的那一拍读成 data URL；会话文本里的本地路径在重水合后补上） */
+  images?: ViewImage[];
   /** 链元数据（R7）：本条回答的思考链与工具调用链，折叠可展开回看 */
   meta?: { think?: string; trace?: string[] };
 }
@@ -253,7 +347,7 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             {m.meta?.think ? <ChainBlock label="思考过程" lines={[m.meta.think]} /> : null}
             {m.meta?.trace?.length ? <ChainBlock label="工具调用" lines={m.meta.trace} /> : null}
             <div className="dock-msg dock-md">
-              <Markdown remarkPlugins={[remarkGfm]}>{m.text}</Markdown>
+              <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{m.text}</Markdown>
             </div>
             {/* 需求 4：朗读这一条（手动＝明确意图，无视静音开关；再点一次＝停） */}
             {p.ttsOk ? (
@@ -274,7 +368,26 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             ) : null}
           </div>
         ) : (
-          <div key={i} className="dock-msg dock-msg-user">{m.text}</div>
+          <div key={i} className="dock-msg dock-msg-user">
+            {m.images && m.images.length > 0 ? (
+              <div className="dock-imgs">
+                {m.images.map((im, j) => (
+                  <button
+                    key={j}
+                    className="dock-img"
+                    title={`${im.name}（点开看大图）`}
+                    aria-label={`查看图片 ${im.name}`}
+                    onClick={() => {
+                      openImageViewer(im.src, im.name);
+                    }}
+                  >
+                    <img src={im.src} alt={im.name} />
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {m.text}
+          </div>
         ),
       )}
       {p.trace.length > 0 ? <ChainBlock label="工具调用" lines={p.trace} defaultOpen /> : null}
@@ -292,7 +405,7 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
         <div className="dock-msg dock-msg-assistant dock-streaming">
           {p.stream ? (
             <div className="dock-md">
-              <Markdown remarkPlugins={[remarkGfm]}>{p.stream}</Markdown>
+              <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{p.stream}</Markdown>
             </div>
           ) : (
             <span className="dock-thinking">{p.status ?? "思考中…"}</span>
@@ -960,6 +1073,37 @@ export function ChatDock(): ReactNode {
     document.documentElement.style.setProperty("--dock-cancel", "0");
   }, []);
 
+  /* 图片附件补渲染（需求：图片直接显示、md 那一块也要能出图）：
+     会话里的用户消息长这样——「【附件 1/1】a.jpg ⏎ 类型 image/jpeg · 大小 … · 本地路径 /x/a.jpg」。
+     重开面板 / 重启后 msgs 是从 export_session 来的**纯文本**，这里按路径把图读回来补成缩略图。
+     只在还没有 images 的消息上补；读盘结果按路径缓存（同一张只读一次），因此 setMsgs 后收敛、
+     不会反复读盘。 */
+  useEffect(() => {
+    const need: Array<{ idx: number; name: string; path: string }> = [];
+    msgs.forEach((m, idx) => {
+      if (m.images && m.images.length > 0) return;
+      for (const a of parseAttachImages(m.text)) need.push({ idx, name: a.name, path: a.path });
+    });
+    if (need.length === 0) return;
+    let alive = true;
+    void (async () => {
+      const byIdx = new Map<number, ViewImage[]>();
+      for (const n of need) {
+        const src = await dataUrlForPath(n.path);
+        if (!alive || !src) continue;
+        byIdx.set(n.idx, [...(byIdx.get(n.idx) ?? []), { name: n.name, src }]);
+      }
+      if (!alive || byIdx.size === 0) return;
+      setMsgs((cur) => cur.map((m, i) => {
+        const add = byIdx.get(i);
+        return add && !(m.images && m.images.length > 0) ? { ...m, images: add } : m;
+      }));
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [msgs]);
+
   // 文本输入模式展开即聚焦（移动端顺势弹出键盘）
   useEffect(() => {
     if (inputMode) inputRef.current?.focus();
@@ -1109,10 +1253,18 @@ export function ChatDock(): ReactNode {
   /** 附件（需求 6+7）：AttachTray 取到文件 → ① 面板里记一条**用户气泡**；
    *  ② 弹出动作面板（转存云盘 / 交作业 / 发讨论区）。与悬浮面板（GlobalOrb）同一套口径：
    *  气泡由宿主渲染，动作执行在 AttachActionsSheet 内部，结果回来再提示 / 导航。 */
-  const attachPicked = useCallback((files: AttachFile[]): void => {
+  const attachPicked = useCallback(async (files: AttachFile[]): Promise<void> => {
     if (files.length === 0) return;
     const summary = files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、");
-    setMsgs((v) => [...v, { role: "user", text: `［附件］${summary}` }]);
+    /* 图片附件：先读成 data URL 再入列——AttachTray 会在交付后回收 previewUrl（blob:），
+       气泡里的缩略图不能依赖它，否则关上动作面板图就白了。读不到就退回文件名（text 还在）。 */
+    const images: ViewImage[] = [];
+    for (const f of files) {
+      if (!f.mime.startsWith("image/")) continue;
+      const src = await dataUrlForPick(f);
+      if (src) images.push({ name: f.name, src });
+    }
+    setMsgs((v) => [...v, { role: "user", text: `［附件］${summary}`, ...(images.length > 0 ? { images } : {}) }]);
     sheetRef.current = files;
     setSheetFiles(files);
   }, []);
@@ -1409,14 +1561,15 @@ export function ChatDock(): ReactNode {
             onToggleThink={() => setThinkOpen((o) => !o)}
             onMsgsClick={onMsgsClick}
           />
-          {/* 附件入口（需求 6）：输入行之上，薄薄一条——不抢输入框的视觉重心 */}
-          <div className="dock-attach">
-            <AttachTray onPicked={attachPicked} />
-          </div>
           {sheetFiles ? (
             <AttachActionsSheet files={sheetFiles} onClose={attachClosed} onDone={attachDone} />
           ) : null}
+          {/* 一体化底栏（本轮 07）：附件三入口 + 输入/语音入口 + 发送都在这条栏里；
+              窄屏放不下时附件条自动折到上一行（flex-wrap），不再多占一层。 */}
           <div className="dock-input-row">
+            <div className="dock-attach">
+              <AttachTray onPicked={attachPicked} />
+            </div>
             {inputMode ? (
               <textarea
                 ref={inputRef}

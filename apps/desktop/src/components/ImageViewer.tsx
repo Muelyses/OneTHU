@@ -71,6 +71,15 @@ function isViewable(img: HTMLImageElement): boolean {
 
 type Shot = { src: string; alt: string };
 
+/** 外部打开看图（非手势入口：聊天坞里的缩略图点击）。
+ *  Host 挂载时登记自己的 openSrc，卸载时清空——没有 Host 时返回 false，调用方自行降级。 */
+let externalOpen: ((src: string, alt: string) => void) | null = null;
+export function openImageViewer(src: string, alt = ""): boolean {
+  if (!externalOpen || !src) return false;
+  externalOpen(src, alt);
+  return true;
+}
+
 function clamp(v: number, lo: number, hi: number): number {
   return v < lo ? lo : v > hi ? hi : v;
 }
@@ -88,9 +97,9 @@ export function ImageViewerHost(): ReactNode {
     setShot(null);
   }, []);
 
-  const open = useCallback((img: HTMLImageElement): void => {
+  const openSrc = useCallback((src: string, alt: string): void => {
     openRef.current = true;
-    setShot({ src: img.currentSrc || img.src, alt: img.getAttribute("alt") ?? "" });
+    setShot({ src, alt });
     // 同 URL 的历史条目：返回键弹回它时路由不变，只多出一个 popstate（见文件头说明）
     try {
       history.pushState(VIEWER_STATE, "", location.href);
@@ -100,6 +109,19 @@ export function ImageViewerHost(): ReactNode {
       pushedRef.current = false;
     }
   }, []);
+
+  /** 手势入口（长按）复用上面那条：从 <img> 取 src/alt */
+  const open = useCallback((img: HTMLImageElement): void => {
+    openSrc(img.currentSrc || img.src, img.getAttribute("alt") ?? "");
+  }, [openSrc]);
+
+  /** 登记模块级开门器：聊天坞缩略图点击走这条 */
+  useEffect(() => {
+    externalOpen = openSrc;
+    return () => {
+      if (externalOpen === openSrc) externalOpen = null;
+    };
+  }, [openSrc]);
 
   const close = useCallback((): void => {
     // 点按关闭：把刚压进去的那层弹掉，否则下一次返回键会被这层空条目吃掉。

@@ -9,7 +9,12 @@
 //!   overlay_supported / overlay_show / overlay_hide / overlay_set_mode / overlay_move
 //!   + overlay_drag_start（原生拖窗）/ overlay_nudge（JS 逐帧拖动兜底，逻辑 px 增量）
 //!   + overlay_focus（**唯一**允许抢焦点的入口：用户点面板输入框）
-//! 事件：`onethu-overlay://event`，负载 `{ "type": "drag" | "closed" | ..., "x"?, "y"? }`。
+//!   + overlay_back_to_main（**唯一**把主窗口带前台的入口：用户点「回到 OneTHU」）
+//! 事件：`onethu-overlay://event`，负载三种：
+//!   { "type": "drag",  "x", "y" }                球窗被移动（物理像素，50ms 节流）
+//!   { "type": "geometry", "mode", "x", "y", "w", "h" }  形态落位后一次；x/y = 球心相对本窗
+//!                                                  左上角的逻辑坐标（前端拿它当动画 origin）
+//!   { "type": "closed" }                         「本次关闭」（窗口已隐藏）
 //!
 //! ## 红线：绝不抢焦点、绝不拉起主窗口（逐条对照 tao 0.35.3 源码得出的做法）
 //! 1. 建窗即 `focused(false)` + `set_focusable(false)`：tao 的 macOS `set_visible(true)`
@@ -24,7 +29,7 @@
 //! 4. 唯一例外：`overlay_focus(on)`，仅由前端在**用户点面板输入框**时调用（失焦即退回
 //!    focusable(false)）。打了这个补丁，才可能出现「输入时 OneTHU 被激活」——见报告风险项。
 //!
-//! ## 形态（窗口 = 形态本身，球窗口像素框 64×64 / 条全宽 176 / 面板 560×560 贴底）
+//! ## 形态（窗口 = 形态本身；数字与安卓 onethu-overlay 对齐：球 58+留白 / 条全宽 176 / 面板高 44%+边距 14）
 //! 所有「逻辑 px」常量都按所在屏 scale_factor 换算成物理像素后落位（Retina 不缩水）。
 
 #![cfg_attr(not(desktop), allow(dead_code))]
@@ -49,38 +54,40 @@ pub const OVERLAY_EVENT: &str = "onethu-overlay://event";
 pub const OVERLAY_URL: &str = "index.html?window=overlay";
 
 // ── 几何常量（逻辑 px） ─────────────────────────────────────────────────────
-/// 球窗体边长。GlobalOrb 画的是 54×54 的球，窗外各留 5px 余量（雾的羽化不切边）
-const BALL_BOX: f64 = 64.0;
-/// 球视觉边长（= GlobalOrb.tsx 里球 div 的 width/height；改球尺寸要同步改这两处）
-const BALL_VISUAL: f64 = 54.0;
-/// 球在窗内的内缩（= (BALL_BOX - BALL_VISUAL) / 2，由初始化脚本用 CSS 钉住）
-const BALL_INSET: f64 = (BALL_BOX - BALL_VISUAL) / 2.0;
+/// 球视觉直径。**必须与 GlobalOrb.tsx 的 BALL_BOX/BALL_VISUAL 常量一致**（组件里球占满
+/// 窗口减两侧留白，窗口尺寸就是球尺寸的唯一来源）。
+const BALL_VISUAL: f64 = 58.0;
+/// 球窗外留白：轻投影画在球元素之外，窗口正好等于球时投影会被窗口边界裁成一条硬线
+/// （2026-10-11 用户实录「半个球 / 阴影不对」）。8px 与安卓 BALL_WIN_DP = BALL_DP + 16 同口径。
+const BALL_PAD: f64 = 8.0;
+/// 球窗体边长 = 球 + 两侧各 8 = 74
+const BALL_BOX: f64 = BALL_VISUAL + BALL_PAD * 2.0;
 /// 默认落点：所在屏 work area 右下角再让出 right 12 / bottom 128（与 GlobalOrb 设计稿同口径）
 const EDGE_RIGHT: f64 = 12.0;
 const EDGE_BOTTOM: f64 = 128.0;
-/// 语音条：全宽 × 176 —— GlobalOrb 的条内容总高 = 转写雾(73) + 10 + 条(54) + 18 = 155，
-/// 余量留给第二行转写（Lead 口头给的 96 会把转写雾切掉一半）
+/// 语音条：全宽 × 176 —— GlobalOrb 的条内容总高 = 转写雾(73) + 10 + 药丸(54) + 18 = 155，
+/// 余量留给第二行转写。窗口竖向位置让**药丸中心对齐球心**（安卓 D①：球原地横向展开，不落底）。
 const BAR_H: f64 = 176.0;
-/// 面板：560 宽（窄屏自动收）× 560 高（矮屏自动收），贴 work area 底边、水平居中
-const PANEL_W: f64 = 560.0;
-const PANEL_H: f64 = 560.0;
-/// 面板左右各留一点，避免在 4K/宽屏上糊成「一堵墙」
-const PANEL_SIDE_GAP: f64 = 12.0;
-/// 面板顶部至少给身后应用留出的可见高度
-const PANEL_TOP_KEEP: f64 = 96.0;
+/// 药丸高度 / 药丸底边距窗底（与 GlobalOrb bar 态 DOM 的 54 / 18 对齐）
+const BAR_PILL_H: f64 = 54.0;
+const BAR_PILL_GAP: f64 = 18.0;
+/// 悬浮小窗（对齐安卓 A①：PANEL_RATIO 0.44 + PANEL_MARGIN_DP 14；圆角 24 由前端画）
+const PANEL_MARGIN: f64 = 14.0;
+const PANEL_RATIO: f64 = 0.44;
 /// WindowEvent::Moved 的 drag 事件节流 / 落盘节流
 const DRAG_EMIT_MS: u128 = 50;
 const PERSIST_MS: u128 = 400;
 
-/// 初始化脚本：悬浮窗必须**真透明**（GlobalOrb 自己不带页面底色），并把球钉在窗内
-/// 左上角的 BALL_INSET 处——GlobalOrb 的球按「全屏窗口」写成 right:12/bottom:128，
-/// 而悬浮窗本身就是球的像素框，故此处用 CSS 覆盖回 (inset, inset)。
-/// 只注入给 overlay 窗口（主窗口不加载本脚本），且选择器只认球自身，视觉层零改动。
+/// 初始化脚本：**只剩透明底色**（球/条/面板的几何 100% 由 GlobalOrb 自己负责，
+/// 2026-10-11 起不再注入任何定位覆盖）。
+/// 为什么还留着它：`packages/ui/src/base.css` 给 `body` 画了不透明底色
+/// （`--md-sys-color-surface-container-low`），且 `html{overflow-y:scroll; scrollbar-gutter:stable}`
+/// 会在窗内预留滚动条槽——不清掉就不是真透明悬浮窗。只对 overlay 窗口注入，主窗口不受影响。
+/// （若要彻底去掉注入：把这三行等价 CSS 挪进 global.css 的 overlay 作用域即可。）
 const OVERLAY_INIT_JS: &str = r#"(function () {
   var css = [
     'html,body,#root{background:transparent !important;background-color:transparent !important;}',
-    'html,body{margin:0 !important;padding:0 !important;overflow:hidden !important;}',
-    "[aria-label^='OH 悬浮球']{right:auto !important;bottom:auto !important;left:5px !important;top:5px !important;}"
+    'html,body{margin:0 !important;padding:0 !important;overflow:hidden !important;scrollbar-gutter:auto !important;}'
   ].join('\n');
   function inject() {
     if (document.querySelector('style[data-onethu-overlay]')) return;
@@ -303,6 +310,14 @@ fn clamp_i(v: i32, lo: i32, hi: i32) -> i32 {
     }
 }
 
+/// 球心（物理像素）：给了落点就用落点，否则用该屏默认落点
+#[cfg(desktop)]
+fn ball_center(mon: Mon, ball: Option<(i32, i32)>) -> (i32, i32) {
+    let (x, y) = ball.unwrap_or_else(|| default_ball(mon));
+    let half = (BALL_BOX * mon.scale / 2.0).round() as i32;
+    (x + half, y + half)
+}
+
 #[cfg(desktop)]
 fn default_ball(mon: Mon) -> (i32, i32) {
     let d = (BALL_BOX * mon.scale).round() as i32;
@@ -329,31 +344,55 @@ fn geo_for(mode: Mode, mon: Mon, ball: Option<(i32, i32)>) -> Geo {
             }
         }
         Mode::Bar => {
+            // 全宽 × 176；竖向让**药丸中心落在球心**上（球原地横向展开，不跳到底部）
             let h = (BAR_H * s).round().max(1.0) as i32;
+            let pill_half = ((BAR_PILL_GAP + BAR_PILL_H / 2.0) * s).round() as i32;
+            let (_, cy) = ball_center(mon, ball);
+            let y = clamp_i(cy - (h - pill_half), mon.wy, mon.wy + mon.wh as i32 - h);
             Geo {
                 x: mon.wx,
-                y: mon.wy + mon.wh as i32 - h,
+                y,
                 lw: (mon.ww as f64) / s,
                 lh: BAR_H,
             }
         }
         Mode::Panel => {
-            let side = (PANEL_SIDE_GAP * s).round() as i32;
-            let top_keep = (PANEL_TOP_KEEP * s).round() as i32;
-            let w = ((PANEL_W * s).round() as i32)
-                .min((mon.ww as i32 - side * 2).max(160))
-                .max(1);
-            let h = ((PANEL_H * s).round() as i32)
-                .min((mon.wh as i32 - top_keep).max(120))
-                .max(1);
+            // 安卓 A①：左右/底部各留 14，高 = 屏高 × 0.44，圆角 24（前端画）
+            let margin = (PANEL_MARGIN * s).round() as i32;
+            let w = (mon.ww as i32 - margin * 2).max(200);
+            let h = ((mon.wh as f64 * PANEL_RATIO).round() as i32).max(160);
             Geo {
-                x: mon.wx + (mon.ww as i32 - w) / 2,
-                y: mon.wy + mon.wh as i32 - h,
+                x: mon.wx + margin,
+                y: mon.wy + mon.wh as i32 - margin - h,
                 lw: (w as f64) / s,
                 lh: (h as f64) / s,
             }
         }
     }
+}
+
+/// 形态落位后回传几何：`x/y` = **球心相对本窗左上角的逻辑坐标**，`w/h` = 本窗逻辑尺寸。
+/// 前端拿它当 `transform-origin`（球在哪，就从哪「滴落铺开」；球被拖到任何角落都对得上）。
+/// 注：这是与 `drag`（窗口物理坐标）不同的语义，用独立 type 以免污染球位记忆。
+#[cfg(desktop)]
+fn emit_geometry(win: &WebviewWindow, mode: Mode, geo: Geo, ball: Option<(i32, i32)>) {
+    let s = win.scale_factor().unwrap_or(1.0);
+    let half = (BALL_BOX * s / 2.0).round() as i32;
+    let (cx, cy) = match ball {
+        Some((x, y)) => (x + half, y + half),
+        None => (geo.x + half, geo.y + half),
+    };
+    let _ = win.emit(
+        OVERLAY_EVENT,
+        serde_json::json!({
+            "type": "geometry",
+            "mode": mode.as_str(),
+            "x": ((cx - geo.x) as f64 / s).round(),
+            "y": ((cy - geo.y) as f64 / s).round(),
+            "w": geo.lw.round(),
+            "h": geo.lh.round(),
+        }),
+    );
 }
 
 #[cfg(desktop)]
@@ -438,7 +477,7 @@ fn ensure_window(app: &AppHandle) -> Result<WebviewWindow, String> {
         _ => {}
     });
     log(&format!(
-        "悬浮窗已创建：label={OVERLAY_LABEL} url={OVERLAY_URL} 初始 {BALL_BOX}x{BALL_BOX} 逻辑 px，球内缩 {BALL_INSET}px"
+        "悬浮窗已创建：label={OVERLAY_LABEL} url={OVERLAY_URL} 初始 {BALL_BOX}x{BALL_BOX} 逻辑 px（球 {BALL_VISUAL} + 留白 {BALL_PAD}×2）"
     ));
     Ok(win)
 }
@@ -479,6 +518,7 @@ pub fn overlay_show(app: AppHandle) -> Result<(), String> {
         apply_geo(&win, geo)?;
         let _ = win.set_always_on_top(true);
         win.show().map_err(|e| format!("显示悬浮窗失败：{e}"))?;
+        emit_geometry(&win, Mode::Ball, geo, ball);
         log(&format!(
             "show ball @({},{}) {}x{} 逻辑 scale={} reload={}",
             geo.x, geo.y, geo.lw, geo.lh, mon.scale, reload
@@ -567,6 +607,7 @@ pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
         if !win.is_visible().unwrap_or(false) {
             win.show().map_err(|e| format!("显示悬浮窗失败：{e}"))?;
         }
+        emit_geometry(&win, m, geo, ball);
         log(&format!(
             "set_mode {} @({},{}) {}x{} 逻辑",
             m.as_str(),
@@ -658,6 +699,28 @@ pub fn overlay_drag_start(app: AppHandle) -> Result<(), String> {
         let win = ensure_window(&app)?;
         win.start_dragging()
             .map_err(|e| format!("启动窗口拖动失败：{e}"))
+    }
+    #[cfg(not(desktop))]
+    {
+        let _ = app;
+        Err("桌面悬浮球仅桌面端支持".into())
+    }
+}
+
+/// 「回到 OneTHU」：把主窗口带前台的**唯一**入口，只在用户点面板顶栏那个按钮时调用。
+/// 红线没有破：这里是**用户显式动作**，不是任何自动路径（自动路径一律不碰 main）。
+#[tauri::command]
+pub fn overlay_back_to_main(app: AppHandle) -> Result<(), String> {
+    #[cfg(desktop)]
+    {
+        let Some(win) = app.get_webview_window("main") else {
+            return Err("找不到主窗口（main）".into());
+        };
+        let _ = win.unminimize();
+        win.show().map_err(|e| format!("唤回主窗口失败：{e}"))?;
+        win.set_focus().map_err(|e| format!("聚焦主窗口失败：{e}"))?;
+        log("back_to_main：用户点了「回到 OneTHU」");
+        Ok(())
     }
     #[cfg(not(desktop))]
     {

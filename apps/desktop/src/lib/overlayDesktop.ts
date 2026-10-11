@@ -13,8 +13,12 @@
  *     overlay_drag_start()        原生拖窗（macOS performWindowDragWithEvent）
  *     overlay_focus({ on })       唯一允许抢焦点的入口：用户点面板输入框
  *   事件 `onethu-overlay://event`，payload 形状（Rust `serde_json::json!` 实发）：
- *     { "type": "drag", "x": <number>, "y": <number> }   球被拖动（窗口物理坐标，50ms 节流）
- *     { "type": "closed" }                               「本次关闭」（窗口已隐藏）
+ *     { "type": "drag", "x": <number>, "y": <number> }   球窗被移动（物理像素，50ms 节流）
+ *     { "type": "geometry", "mode", "x", "y", "w", "h" } 每次形态落位后一次；x/y = 球心相对本窗
+ *                                                       左上角的逻辑 px（GlobalOrb 拿它当动画 origin）
+ *     { "type": "closed" }                              「本次关闭」（窗口已隐藏）
+ *   注：`geometry` 不在 lib/overlay.ts 的 OverlayEvent 联合里（Lead 若要收编，加一个字符串即可）；
+ *   本适配器按「type + x/y」透传，未知 type 也照发，GlobalOrb 侧用 `(e.type as string)` 判。
  *
  * ## 桌面与安卓的分工差异（重要，写给后来人）
  * 桌面悬浮窗本身就是**真 webview**，GlobalOrb 的 tap/hold 手势由它自己的 DOM

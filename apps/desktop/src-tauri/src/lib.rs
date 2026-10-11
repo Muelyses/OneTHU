@@ -4334,7 +4334,7 @@ tauri::Builder::default()
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
             log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,
-            overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
+            overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
             seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,
             im_media::im_peek_text,
@@ -4363,6 +4363,38 @@ pub mod notify_probe_hooks {
     }
     pub fn cancel(ids: &[String]) {
         crate::notify_macos::cancel(ids)
+    }
+}
+
+// =========================================================================
+/// Android 占位：宿主直连弹幕桥只做非安卓（Android 走 WebView 的 WS 回落通道），
+/// 但这两个命令在 `invoke_handler!` 里是**无条件注册**的——所以安卓侧必须存在同名命令，
+/// 否则 `cannot find module or crate douyu_bridge`（2026-10-11 实机交叉编译实录）。
+#[cfg(target_os = "android")]
+pub mod douyu_bridge {
+    #[derive(serde::Deserialize)]
+    pub struct DanmuSendArgs {
+        #[allow(dead_code)]
+        pub cookie: String,
+        #[serde(alias = "roomId")]
+        #[allow(dead_code)]
+        pub room_id: u64,
+        #[serde(default)]
+        #[allow(dead_code)]
+        pub content: String,
+        #[serde(default)]
+        #[allow(dead_code)]
+        pub check_only: bool,
+    }
+
+    #[tauri::command]
+    pub async fn douyu_send_danmu(_args: DanmuSendArgs) -> Result<serde_json::Value, String> {
+        Err("Android 不支持宿主直连弹幕桥（走 WebView WS 回落通道）".into())
+    }
+
+    #[tauri::command]
+    pub async fn douyu_self_check(_args: DanmuSendArgs) -> Result<serde_json::Value, String> {
+        Err("Android 不支持宿主直连弹幕桥（走 WebView WS 回落通道）".into())
     }
 }
 

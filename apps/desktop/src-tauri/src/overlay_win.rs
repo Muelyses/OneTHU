@@ -415,7 +415,9 @@ fn apply_geo(win: &WebviewWindow, g: Geo) -> Result<(), String> {
 #[cfg(target_os = "macos")]
 fn macos_prevent_activation(win: &WebviewWindow) {
     use objc2::runtime::{AnyObject, Bool};
-    let ptr = win.as_ref().ns_window();
+    // ns_window() 在 tauri 里定义在 `WebviewWindow` 上（不是 `Webview`）——别写成 `as_ref().ns_window()`，
+    // 那是 Android 交叉编译查不出来的 macOS-only 分支（2026-10-11 用户跑 tauri:dev 时炸的正是这行）。
+    let ptr = win.ns_window();
     if ptr.is_null() {
         log("拿不到 NSWindow，跳过 _setPreventsActivation（点击仍可能激活本体）");
         return;

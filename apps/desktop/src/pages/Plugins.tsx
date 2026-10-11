@@ -14,11 +14,11 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { confirmOk } from "../lib/confirm.js";
-import { Card, PageHead } from "../components/Layout.js";
+import { Card, LevelBox, PageHead } from "../components/Layout.js";
 import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
-import { OhSettingsPage, consumeOhEntry, subscribeOhEntry } from "../components/OhSettingsPage.js";
+import { OhSettingsPage, consumeOhEntry, ohEntryWantedNow, subscribeOhEntry } from "../components/OhSettingsPage.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
 import {
@@ -160,7 +160,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
         不再挂在设置页签下。这里是最小接入：旗标落下 → 同一页壳渲染 OH 子页 + 返回按钮。
         （task-17 抽出 PluginSettingsForm 后，OH 高级档直接接在那边，本段不用再动。） ── */
   const { navigate } = useApp();
-  const [ohOpen, setOhOpen] = useState(false);
+  const [ohOpen, setOhOpen] = useState(() => ohEntryWantedNow());
   /** OH 内联设置面板的「草稿有改动」标记（就地渲染时不再弹确认窗，标记仅为兼容其 props） */
   const ohDirtyRef = useRef(false);
 
@@ -190,42 +190,9 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
     if (consumeOhEntry()) setOhOpen(true); // 深链先写旗标再导航过来：挂载时补消费一次
     return subscribeOhEntry(() => setOhOpen(true));
   }, []);
-  /* ① 用户拍板：这里就**三个并列**——设置 / 插件 / OneTHU Harness（名字钉死），框矮一档。
-     插件页头部那个「OH 设置」入口、子页里的返回按钮**全部删掉**：只保留这一处框的第三格。 */
-  const entryBox = (active: "settings" | "plugins" | "oh"): ReactNode =>
-    isPhone ? (
-      <div
-        style={{
-          display: "flex", alignItems: "center", gap: 2, padding: 2, marginBottom: 12,
-          border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
-          background: "var(--md-sys-color-surface-container-lowest)",
-        }}
-      >
-        <button
-          className={"nav-item" + (active === "settings" ? " is-active" : "")}
-          style={{ flex: 1, height: 26, justifyContent: "center" }}
-          onClick={() => navigate("settings")}
-        >
-          设置
-        </button>
-        <button
-          className={"nav-item" + (active === "plugins" ? " is-active" : "")}
-          style={{ flex: 1, height: 26, justifyContent: "center" }}
-          onClick={() => setOhOpen(false)}
-        >
-          插件
-        </button>
-        {/* 名字钉死「OneTHU Harness」：给这一格多一点宽度 + 小一号字，保证**一行放得下**（不换行、框不因此变高） */}
-        <button
-          className={"nav-item" + (active === "oh" ? " is-active" : "")}
-          style={{ flex: "1.5 1 0", height: 26, justifyContent: "center", fontSize: "var(--text-xs)", whiteSpace: "nowrap" }}
-          onClick={() => setOhOpen(true)}
-        >
-          OneTHU Harness
-        </button>
-      </div>
-    ) : null;
-  const dualEntry = entryBox("plugins");
+  /* ① 用户拍板：三个并列（设置 / 插件 / OneTHU Harness），**用共享组件 LevelBox**——
+     任何页面同一个容器、同高、三格齐全；每页自己的大标题照旧保留（框是框、标题是标题）。 */
+  const dualEntry = isPhone ? <LevelBox active="plugins" /> : null;
   /** ⑤「安装插件」按层级归位：放页头右侧，不再挤在类别筛选那一行里 */
   const installBtn = (
     <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
@@ -263,11 +230,12 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
     return (
       <div className="plg-page">
         {/* 标题「OH」+ 一行副标题；返回靠顶部那格里选「插件」（不再有第二个返回入口） */}
+        {/* ① 主标题必须写全名「OneTHU Harness」（用户点名不许用 OH 简称），副标题保留两档说明 */}
         <PageHead
-          title="OH"
-          meta={<span>基础设置 / 高级配置 —— 插件「OneTHU Harness」的二级页</span>}
+          title="OneTHU Harness"
+          meta={<span>基础设置 / 高级配置</span>}
         />
-        {entryBox("oh")}
+        {isPhone ? <LevelBox active="oh" /> : null}
         <Card>
           <OhSettingsPage advancedPanels={ohAdvancedPanels} />
         </Card>
@@ -597,7 +565,7 @@ function PluginCard({
           ) : null}
           {/* 主题类插件：卡片上直接给一条到「外观与布局 → 主题」的路（原来那个是死的） */}
           {m.category === "theme" ? (
-            <button className="btn btn-ghost" onClick={() => gotoAppearanceTheme()}>
+            <button className="chip" onClick={() => gotoAppearanceTheme()}>
               去切换主题
             </button>
           ) : null}

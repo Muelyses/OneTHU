@@ -6,7 +6,7 @@ import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
 import { useSidebarCollapsed } from "../state/uiPrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { requestOhEntry } from "./OhSettingsPage.js";
+import { clearOhEntryWanted, requestOhEntry } from "./OhSettingsPage.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
@@ -702,6 +702,43 @@ export function PageHead({
       </div>
       {actions ? <div className="page-head-actions">{actions}</div> : null}
     </header>
+  );
+}
+
+/** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— **所有页面同一个容器、同高、三格齐全**。
+ *  ③ 只列已启用的主题？无关；这里只管导航。手机与桌面同款（桌面侧栏那份是同形态的纵向变体）。 */
+export function LevelBox({ active }: { active: "settings" | "plugins" | "oh" }): ReactNode {
+  const { navigate } = useApp();
+  const cell = (id: "settings" | "plugins" | "oh", label: string, extra?: CSSProperties): ReactNode => (
+    <button
+      className={"nav-item" + (active === id ? " is-active" : "")}
+      style={{ flex: 1, height: 26, justifyContent: "center", padding: 0, ...extra }}
+      onClick={() => {
+        if (id === "settings") navigate("settings");
+        else if (id === "plugins") {
+          clearOhEntryWanted();
+          navigate("plugins");
+        } else {
+          requestOhEntry();
+          navigate("plugins");
+        }
+      }}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div
+      style={{
+        display: "flex", alignItems: "center", gap: 2, padding: 2, marginBottom: 12,
+        border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
+        background: "var(--md-sys-color-surface-container-lowest)",
+      }}
+    >
+      {cell("settings", "设置")}
+      {cell("plugins", "插件")}
+      {cell("oh", "OneTHU Harness", { flex: "1.5 1 0", fontSize: "var(--text-xs)", whiteSpace: "nowrap" })}
+    </div>
   );
 }
 

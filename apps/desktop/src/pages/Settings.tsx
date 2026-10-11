@@ -13,6 +13,8 @@ import { clearRemembered, loadRemembered, session, isTauri } from "../lib/client
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
+import { LevelBox } from "../components/Layout.js";
+import { ThemeSwatch } from "../components/ThemePickerModal.js";
 import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
 import { requestPluginsView } from "./Plugins.js";
@@ -224,19 +226,8 @@ export function SettingsPage() {
         }
       />
 
-      {/* 手机端：插件入口住进「我的」页——同一个框里左右两半（桌面那份在侧栏钉底） */}
-      {isPhone ? (
-        <div
-          style={{
-            display: "flex", alignItems: "center", gap: 4, padding: 4, marginBottom: 14,
-            border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
-            background: "var(--md-sys-color-surface-container-lowest)",
-          }}
-        >
-          <button className="nav-item is-active" style={{ flex: 1 }} aria-current="page">设置</button>
-          <button className="nav-item" style={{ flex: 1 }} onClick={() => navigate("plugins")}>插件</button>
-        </div>
-      ) : null}
+      {/* ① 手机端「我的」页顶部：**三格齐全**（设置 | 插件 | OneTHU Harness），与插件页/子页同一个组件 */}
+      {isPhone ? <LevelBox active="settings" /> : null}
 
       <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
         {settingsTabLayout.order
@@ -1787,7 +1778,8 @@ function AppearanceSection(): ReactNode {
           </div>
         </div>
         <button
-          className="btn"
+          className="chip"
+          title="到插件市场安装主题（自动筛选「主题」类别）"
           onClick={() => {
             /* ③ 安装入口：跳插件市场并自动筛选「主题」类别（跨页请求，两端同一套） */
             requestPluginsView({ view: "market", category: "theme" });
@@ -1797,19 +1789,56 @@ function AppearanceSection(): ReactNode {
           安装主题
         </button>
       </div>
-      <div className="segmented" style={{ marginBottom: 0, flexWrap: "wrap" }}>
-        <button className={(snap.activeId ?? "") === "" ? "is-active" : ""} onClick={() => deactivateTheme()}>
-          默认外观
-        </button>
-        {visibleThemeDefs.map((t) => (
-          <button
-            key={t.id}
-            className={(snap.activeId ?? "") === t.id ? "is-active" : ""}
-            onClick={() => activateTheme(t.id)}
-          >
-            {t.dark ? `${t.name}（暗色）` : t.name}
-          </button>
-        ))}
+      {/* ③ 主题板**恢复成原来那套**（用户给的旧图样式：色卡 + 名称 + 使用中/社区胶囊 + 应用按钮），
+          只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。 */}
+      <div style={{ display: "grid", gap: 8, gridTemplateColumns: "minmax(0, 1fr)" }}>
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 10, padding: "8px 10px",
+            border: "1px solid " + (snap.activeId ? "var(--border)" : "var(--accent)"),
+            borderRadius: "var(--r-md)", background: snap.activeId ? "var(--surface)" : "var(--accent-soft)",
+          }}
+        >
+          <ThemeSwatch vars={{}} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+              <b>默认外观</b>
+              {snap.activeId ? null : <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span>}
+            </div>
+            <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2 }}>不套用任何主题，使用应用自带配色</div>
+          </div>
+          {snap.activeId ? (
+            <button className="btn btn-primary" onClick={() => deactivateTheme()}>应用</button>
+          ) : null}
+        </div>
+        {visibleThemeDefs.map((t) => {
+          const on = snap.activeId === t.id;
+          return (
+            <div
+              key={t.id}
+              style={{
+                display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", minWidth: 0,
+                border: "1px solid " + (on ? "var(--accent)" : "var(--border)"),
+                borderRadius: "var(--r-md)", background: on ? "var(--accent-soft)" : "var(--surface)",
+              }}
+            >
+              <ThemeSwatch vars={t.vars} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <b style={{ minWidth: 0, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</b>
+                  {t.source === "plugin" ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>社区</span> : null}
+                  {on ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span> : null}
+                </div>
+                <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {t.description ?? t.id}
+                </div>
+              </div>
+              {on ? null : (
+                <button className="btn btn-primary" onClick={() => activateTheme(t.id)}>应用</button>
+              )}
+            </div>
+          );
+        })}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
         <div>

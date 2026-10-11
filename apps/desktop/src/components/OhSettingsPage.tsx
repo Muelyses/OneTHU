@@ -48,11 +48,22 @@ function takeTier(): OhTier | null {
 /* ── 「打开 OH 设置」请求：OH 现在是**插件页的二级子页面**（2026-10-11 用户纠正），
    插件页与对话面板的深链都先写这个旗标，再 navigate("plugins")。 ── */
 let pendingEntry = false;
+/** 粘性愿望位：**点过**第三格就置位，只有用户自己点「插件」格才清——避免"旗标被消费过一次就再也进不去" */
+let ohEntryWanted = false;
 const entryListeners = new Set<() => void>();
+
+export function ohEntryWantedNow(): boolean {
+  return ohEntryWanted;
+}
+
+export function clearOhEntryWanted(): void {
+  ohEntryWanted = false;
+}
 
 /** 请求打开插件页里的 OH 设置子页（tier 可选：直接进基础/高级档） */
 export function requestOhEntry(tier?: OhTier): void {
   pendingEntry = true;
+  ohEntryWanted = true;
   if (tier) pendingTier = tier;
   for (const f of entryListeners) f();
 }

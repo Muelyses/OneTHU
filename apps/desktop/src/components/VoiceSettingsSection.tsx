@@ -146,8 +146,8 @@ export function VoiceSettingsSection(): ReactNode {
     <>
       {/* 「自动朗读 OH 的回复」开关已按用户要求**删除**（2026-10-11）：
           自动朗读只在对话面板/悬浮窗顶部的「朗读 开/关」按钮上管，设置里不再出现第二处开关。 */}
-      {/* ② 引擎状态 */}
-      <div className="setting-row">
+      {/* ② 引擎状态：长说明行按「正常设置行」排版（is-copy：文字列吃满宽、按钮与首行同基线） */}
+      <div className="setting-row is-copy">
         <div>
           <div className="setting-title">{copy.title}</div>
           <div className="setting-desc">

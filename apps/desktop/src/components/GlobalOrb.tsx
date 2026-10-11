@@ -53,12 +53,20 @@ function logOrb(line: string): void {
 
 /** 面板高度改窗：夹取与落盘都在 Rust；**调用失败必须留痕**（命令没注册时 handle 会像「无效」） */
 async function applyPanelHeight(h: number): Promise<void> {
+  const { invoke } = await import("@tauri-apps/api/core");
   try {
-    const { invoke } = await import("@tauri-apps/api/core");
     await invoke("overlay_set_panel_height", { h });
     logOrb(`handle → panel_h=${Math.round(h)}`);
+    return;
   } catch (e) {
-    logOrb(`overlay_set_panel_height 调用失败：${e instanceof Error ? e.message : String(e)}（命令未注册/非 Tauri）`);
+    // 专用命令没注册（旧包实测就是这条：Command overlay_set_panel_height not found）
+    // → 退到一定注册过的 overlay_set_mode("panel:<高>")，把手在旧包上也能用。
+    try {
+      await invoke("overlay_set_mode", { mode: `panel:${Math.round(h)}` });
+      logOrb(`handle → panel_h=${Math.round(h)}（走 set_mode 兼容路径；建议补注册 overlay_set_panel_height）`);
+    } catch (e2) {
+      logOrb(`改高度两条路径都失败：${String(e)} / ${String(e2)}`);
+    }
   }
 }
 

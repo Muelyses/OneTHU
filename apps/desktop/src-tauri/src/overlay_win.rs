@@ -718,16 +718,31 @@ pub fn overlay_hide(app: AppHandle) -> Result<(), String> {
 pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
     #[cfg(desktop)]
     {
+        // 兼容写法 `panel:<逻辑高度>`：把手改高度走这条时，**即使专用命令没注册也能工作**
+        // （2026-10-11 用户实测就是 `Command overlay_set_panel_height not found`——旧包没注册）。
+        let (mode, inline_h) = match mode.split_once(':') {
+            Some(("panel", h)) => ("panel".to_string(), h.trim().parse::<f64>().ok()),
+            _ => (mode, None),
+        };
         let m = Mode::parse(&mode)?;
         if m == Mode::Hidden {
             return overlay_hide(app);
         }
         let win = ensure_window(&app)?;
         let ball = { st().ball }.or_else(|| load_pos(&app));
-        let need_panel_h = { st().panel_h.is_none() };
-        if need_panel_h {
-            let h = load_panel_h(&app);
-            st().panel_h = h;
+        if let Some(h) = inline_h {
+            let mon2 = pick_monitor(&win, ball);
+            let (min_l, max_l, _) = panel_limits(mon2.wh as f64 / mon2.scale);
+            let want = h.clamp(min_l, max_l);
+            st().panel_h = Some(want);
+            save_panel_h(&app, want);
+            log(&format!("set_mode(panel:{h:.0}) 兼容路径 → panel_h={want:.0}"));
+        } else {
+            let need_panel_h = { st().panel_h.is_none() };
+            if need_panel_h {
+                let h = load_panel_h(&app);
+                st().panel_h = h;
+            }
         }
         let mon = pick_monitor(&win, ball);
         let geo = geo_for(m, mon, ball);

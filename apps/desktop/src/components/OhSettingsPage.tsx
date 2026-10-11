@@ -247,25 +247,17 @@ export function OhSettingsPage(): ReactNode {
           </div>
 
           <SubHead>IM 基础（扫码绑定 / 解绑）</SubHead>
-          <div className="setting-row">
-            <div>
-              <div className="setting-title">IM 通道</div>
-              <div className="setting-desc">
-                扫码绑定与解绑在「高级配置」里的 IM 分节（同一个通道面板，避免两处配置打架）。
-              </div>
-            </div>
-            <button className="btn" onClick={() => setTier("advanced")}>
-              去高级配置
-            </button>
-          </div>
+          {/* 同一份 ImSettingsSection 的 basic 档：扫码创建应用 + 绑定主人（生成码/解绑）+ 连接状态 */}
+          <ImSettingsSection tier="basic" />
 
           <SubHead>保活</SubHead>
           <KeepAliveRow />
         </>
       ) : (
         <>
-          <SubHead>IM 通道</SubHead>
-          <ImSettingsSection />
+          <SubHead>IM 通道（进阶）</SubHead>
+          {/* 同一份实现的 advanced 档：通道开关、手工凭据、微信灰置说明 */}
+          <ImSettingsSection tier="advanced" />
 
           <SubHead>模型与预算（进阶）</SubHead>
           <OhAdvancedSlot />

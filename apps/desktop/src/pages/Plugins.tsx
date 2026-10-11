@@ -133,7 +133,8 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
     if (consumeOhEntry()) setOhOpen(true); // 深链先写旗标再导航过来：挂载时补消费一次
     return subscribeOhEntry(() => setOhOpen(true));
   }, []);
-  /** 手机端「我的 → 插件」进来时也要有「设置 | 插件」这个 1.5 级框（桌面那份在侧栏钉底） */
+  /** 手机端「我的 → 插件」进来时也要有「设置 | 插件」这个 1.5 级框（桌面那份在侧栏钉底）。
+   *  「OH 设置」也并进**同一个框**（与插件页同区、同形态）——单独一颗按钮会看着像第二条胶囊条。 */
   const dualEntry = isPhone ? (
     <div
       style={{
@@ -144,6 +145,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
     >
       <button className="nav-item" style={{ flex: 1 }} onClick={() => navigate("settings")}>设置</button>
       <button className="nav-item is-active" style={{ flex: 1 }} aria-current="page">插件</button>
+      <button className="nav-item" style={{ flex: 1 }} onClick={() => setOhOpen(true)}>OH 设置</button>
     </div>
   ) : null;
   const ohEntryBtn = (
@@ -153,9 +155,10 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   if (ohOpen) {
     return (
       <div className="plg-page">
+        {/* 标题就是「OH」+ 一行副标题说明这是插件页的二级（用户一眼知道自己在哪） */}
         <PageHead
-          title="OH 设置"
-          meta={<span>基础设置 / 高级配置 —— 语音、IM 与 OH 自己的模型配置入口</span>}
+          title="OH"
+          meta={<span>基础设置 / 高级配置 —— 插件「OneTHU Harness」的二级页</span>}
           actions={<button className="btn" onClick={() => setOhOpen(false)}>返回插件</button>}
         />
         <Card>

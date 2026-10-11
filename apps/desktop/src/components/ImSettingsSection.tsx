@@ -39,7 +39,15 @@ const PHASE_TEXT: Record<string, string> = {
   error: "连接失败",
 };
 
-export function ImSettingsSection(): ReactNode {
+/** 分档（2026-10-11 用户拍板）：OH 设置页的「基础设置 / 高级配置」两档共用这一份实现——
+ *  basic    = 扫码绑定 / 解绑（只这两件事 + 当前状态）
+ *  advanced = 通道开关、手工凭据、微信灰置等复杂项
+ *  all      = 两档都要（旧调用方的默认值，语义不变） */
+export type ImTier = "basic" | "advanced" | "all";
+
+export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): ReactNode {
+  const showBasic = tier !== "advanced";
+  const showAdvanced = tier !== "basic";
   const [cfg, setCfg] = useState<ImConfig | null>(null);
   const [appId, setAppId] = useState("");
   const [appSecret, setAppSecret] = useState("");
@@ -73,6 +81,16 @@ export function ImSettingsSection(): ReactNode {
     setCfg(await loadImConfig());
     await syncChannels();
     flash("飞书凭据已保存（密文落盘）");
+  };
+
+  /** 解绑：清掉主人绑定（单主人模型）——之后的消息不再进入 OH，通道本身仍可在线 */
+  const unbind = async (): Promise<void> => {
+    await patchImConfig((c) => {
+      c.bindings.feishu = "";
+    });
+    setCfg(await loadImConfig());
+    await syncChannels();
+    flash("已解除绑定：之后的消息不再进入 OH");
   };
 
   const toggleEnabled = async (v: boolean): Promise<void> => {
@@ -173,78 +191,67 @@ export function ImSettingsSection(): ReactNode {
 
   return (
     <>
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">飞书 bot（P0 通道）</div>
-          <div className="setting-desc">
-            桌面 App 常驻时 bot 在线：飞书开放平台自建应用（长连接事件订阅，免公网入口）。
-            收到的消息直达 OH，回复原路发回；附件后续经云盘归档。
-          </div>
-        </div>
-        <Switch on={Boolean(cfg?.enabled.feishu)} onChange={(v) => void toggleEnabled(v)} label="飞书通道开关" />
-      </div>
-
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">扫码创建应用（推荐，免手工配置）</div>
-          <div className="setting-desc">
-            手机飞书扫码 → 打开页确认创建 → 自动拿回 App ID/Secret 并连接（应用所有者自动绑为主人）。
-            不想扫码时用下方手工填入。
-          </div>
-        </div>
-        <button className="btn btn-primary" onClick={() => void startFsReg()}>扫码创建</button>
-      </div>
-
-      {fsReg ? (
-        <div className="setting-row">
-          <div>
-            <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
-              <QRCodeSVG value={fsReg.qrUrl} size={148} />
+      {/* ── 基础档（OH 设置 → 基础设置）：只做「扫码绑定 / 解绑」两件事 + 当前状态 ── */}
+      {showBasic ? (
+        <>
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">扫码创建应用（推荐，免手工配置）</div>
+              <div className="setting-desc">
+                手机飞书扫码 → 打开页确认创建 → 自动拿回 App ID/Secret 并连接（应用所有者自动绑为主人）。
+                不想扫码时用「高级配置」里的手工填入。
+              </div>
             </div>
-            <div className="setting-desc" style={{ marginTop: 6 }}>{fsNote || "等待扫码…"}</div>
-            <button
-              className="btn"
-              style={{ marginTop: 6 }}
-              onClick={() => void openExternal(fsReg.qrUrl).catch(() => undefined)}
-            >
-              在本机？直接打开确认页（免扫码）
-            </button>
+            <button className="btn btn-primary" onClick={() => void startFsReg()}>扫码创建</button>
           </div>
-          <button className="btn" onClick={() => setFsReg(null)}>取消</button>
-        </div>
+
+          {fsReg ? (
+            <div className="setting-row">
+              <div>
+                <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
+                  <QRCodeSVG value={fsReg.qrUrl} size={148} />
+                </div>
+                <div className="setting-desc" style={{ marginTop: 6 }}>{fsNote || "等待扫码…"}</div>
+                <button
+                  className="btn"
+                  style={{ marginTop: 6 }}
+                  onClick={() => void openExternal(fsReg.qrUrl).catch(() => undefined)}
+                >
+                  在本机？直接打开确认页（免扫码）
+                </button>
+              </div>
+              <button className="btn" onClick={() => setFsReg(null)}>取消</button>
+            </div>
+          ) : null}
+
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">绑定主人</div>
+              <div className="setting-desc">
+                {bound
+                  ? `已绑定：${bound.slice(0, 12)}…（单主人模型：仅此人消息进入 OH）`
+                  : "未绑定。生成绑定码后在飞书里给 bot 发送「/bind 绑定码」。"}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn" onClick={genBind}>生成绑定码</button>
+              {bound ? (
+                <button className="btn" onClick={() => void unbind()}>解除绑定</button>
+              ) : null}
+            </div>
+          </div>
+          {code ? (
+            <div className="setting-row">
+              <div>
+                <div className="setting-title" style={{ fontSize: 22, letterSpacing: 4 }}>{code}</div>
+                <div className="setting-desc">在飞书私聊里发送：/bind {code}</div>
+              </div>
+            </div>
+          ) : null}
+        </>
       ) : null}
 
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">应用凭据（手工）</div>
-          <div className="setting-desc">飞书开放平台 → 自建应用 → 凭证与基础信息。仅存本机（密文）。</div>
-        </div>
-      </div>
-      <div className="setting-row">
-        <div style={{ flex: 1 }}>
-          <input
-            className="input"
-            placeholder="App ID（cli_ 开头）"
-            value={appId}
-            onChange={(e) => setAppId(e.target.value)}
-            style={{ width: "100%" }}
-          />
-        </div>
-      </div>
-      <div className="setting-row">
-        <div style={{ flex: 1 }}>
-          <input
-            className="input"
-            placeholder="App Secret"
-            type="password"
-            value={appSecret}
-            onChange={(e) => setAppSecret(e.target.value)}
-            style={{ width: "100%" }}
-          />
-        </div>
-        <button className="btn btn-primary" onClick={() => void saveCreds()}>保存并连接</button>
-      </div>
-
+      {/* 连接状态：两档都看得到（一条只读状态行，不做两套实现） */}
       <div className="setting-row">
         <div>
           <div className="setting-title">连接状态</div>
@@ -255,61 +262,88 @@ export function ImSettingsSection(): ReactNode {
         </div>
       </div>
 
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">绑定主人</div>
-          <div className="setting-desc">
-            {bound
-              ? `已绑定：${bound.slice(0, 12)}…（单主人模型：仅此人消息进入 OH）`
-              : "未绑定。生成绑定码后在飞书里给 bot 发送「/bind 绑定码」。"}
-          </div>
-        </div>
-        <button className="btn" onClick={genBind}>生成绑定码</button>
-      </div>
-      {code ? (
-        <div className="setting-row">
-          <div>
-            <div className="setting-title" style={{ fontSize: 22, letterSpacing: 4 }}>{code}</div>
-            <div className="setting-desc">在飞书私聊里发送：/bind {code}</div>
-          </div>
-        </div>
-      ) : null}
-
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">微信（iLink 官方 Bot · 扫码即用）</div>
-          <div className="setting-desc">
-            微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机，
-            OH 回复原路发回。当前状态：{PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase}
-            {wechatStatus.note ? `：${wechatStatus.note}` : ""}
-            {cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : ""}
-          </div>
-        </div>
-        <button className="btn btn-primary" onClick={() => void startWxLogin()}>
-          {cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}
-        </button>
-      </div>
-
-      {wxQr ? (
-        <div className="setting-row">
-          <div>
-            <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
-              <QRCodeSVG value={wxQr} size={148} />
+      {/* ── 高级档（OH 设置 → 高级配置）：通道开关、手工凭据、微信灰置说明 ── */}
+      {showAdvanced ? (
+        <>
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">飞书 bot（P0 通道）</div>
+              <div className="setting-desc">
+                桌面 App 常驻时 bot 在线：飞书开放平台自建应用（长连接事件订阅，免公网入口）。
+                收到的消息直达 OH，回复原路发回；附件后续经云盘归档。
+              </div>
             </div>
-            <div className="setting-desc" style={{ marginTop: 6 }}>
-              {wxNote || "等待扫码…"}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）
+            <Switch on={Boolean(cfg?.enabled.feishu)} onChange={(v) => void toggleEnabled(v)} label="飞书通道开关" />
+          </div>
+
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">应用凭据（手工）</div>
+              <div className="setting-desc">飞书开放平台 → 自建应用 → 凭证与基础信息。仅存本机（密文）。</div>
             </div>
           </div>
-          <button
-            className="btn"
-            onClick={() => {
-              wechatLoginCancel();
-              setWxQr(null);
-            }}
-          >
-            取消
-          </button>
-        </div>
+          <div className="setting-row">
+            <div style={{ flex: 1 }}>
+              <input
+                className="input"
+                placeholder="App ID（cli_ 开头）"
+                value={appId}
+                onChange={(e) => setAppId(e.target.value)}
+                style={{ width: "100%" }}
+              />
+            </div>
+          </div>
+          <div className="setting-row">
+            <div style={{ flex: 1 }}>
+              <input
+                className="input"
+                placeholder="App Secret"
+                type="password"
+                value={appSecret}
+                onChange={(e) => setAppSecret(e.target.value)}
+                style={{ width: "100%" }}
+              />
+            </div>
+            <button className="btn btn-primary" onClick={() => void saveCreds()}>保存并连接</button>
+          </div>
+
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">微信（iLink 官方 Bot · 扫码即用）</div>
+              <div className="setting-desc">
+                微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机，
+                OH 回复原路发回。当前状态：{PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase}
+                {wechatStatus.note ? `：${wechatStatus.note}` : ""}
+                {cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : ""}
+              </div>
+            </div>
+            <button className="btn btn-primary" onClick={() => void startWxLogin()}>
+              {cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}
+            </button>
+          </div>
+
+          {wxQr ? (
+            <div className="setting-row">
+              <div>
+                <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
+                  <QRCodeSVG value={wxQr} size={148} />
+                </div>
+                <div className="setting-desc" style={{ marginTop: 6 }}>
+                  {wxNote || "等待扫码…"}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）
+                </div>
+              </div>
+              <button
+                className="btn"
+                onClick={() => {
+                  wechatLoginCancel();
+                  setWxQr(null);
+                }}
+              >
+                取消
+              </button>
+            </div>
+          ) : null}
+        </>
       ) : null}
 
       {msg ? <div className="setting-desc" style={{ opacity: 0.8 }}>{msg}</div> : null}

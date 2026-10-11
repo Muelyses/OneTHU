@@ -2,6 +2,7 @@
 import { buildApi } from "./facade.js";
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { installTheme, removePluginThemes, type ThemeDef } from "../state/theme.js";
+import { isThemeEntry } from "../lib/market.js";
 import { registerPluginWidget, unregisterPluginWidgets } from "./pluginWidgets.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
 import { preflightMadModel, startMadModelPump } from "../state/madmodel.js";
@@ -77,7 +78,7 @@ export async function installPlugin(
     URL.revokeObjectURL(blobUrl);
     throw new Error("插件清单非法：须导出 manifest { id, name, version, permissions[] }");
   }
-  const isTheme = mod.manifest?.category === "theme";
+  const isTheme = isThemeEntry(mod.manifest as { category?: string; themes?: unknown } | undefined);
   if (typeof mod.default !== "function" && !(isTheme && mod.theme && typeof mod.theme === "object")) {
     URL.revokeObjectURL(blobUrl);
     throw new Error(isTheme
@@ -262,11 +263,22 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
     log: (line: string) => void logLine(`[PLUGIN:${id}] ${line}`),
   };
   // 主题插件：注册主题定义（无 default 时不再调用激活函数）
-  if (rec.manifest.category === "theme" && m.theme && typeof m.theme === "object") {
-    installTheme(m.theme as ThemeDef, "plugin", id);
-    logLine(`[PLUGIN] 主题已注册 ${(m.theme as ThemeDef).id}（来自插件 ${id}）`);
+  /* 主题定义来源（同一判定的两个入口，2026-10-12 统一）：
+     ① 模块导出 `theme`（显式 category:"theme" 的老写法）
+     ② 清单里的 `themes` 数组（推荐写法：主题插件不写 category 也能被认出来） */
+  const themeDefs: ThemeDef[] = [];
+  if (m.theme && typeof m.theme === "object") themeDefs.push(m.theme as ThemeDef);
+  const declaredThemes = (rec.manifest as { themes?: unknown }).themes;
+  if (Array.isArray(declaredThemes)) {
+    for (const t of declaredThemes) if (t && typeof t === "object") themeDefs.push(t as ThemeDef);
   }
-  if (rec.manifest.category === "theme" && typeof m.default !== "function") {
+  if (isThemeEntry(rec.manifest as { category?: string; themes?: unknown })) {
+    for (const d of themeDefs) {
+      installTheme(d, "plugin", id);
+      logLine(`[PLUGIN] 主题已注册 ${d.id}（来自插件 ${id}）`);
+    }
+  }
+  if (isThemeEntry(rec.manifest as { category?: string; themes?: unknown }) && typeof m.default !== "function") {
     live.set(id, { id, kind: "js", mod: m, blobUrl: url ?? "", dispose: undefined });
     return;
   }

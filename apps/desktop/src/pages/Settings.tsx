@@ -18,6 +18,7 @@ import { ThemeSwatch } from "../components/ThemePickerModal.js";
 import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
 import { requestPluginsView } from "./Plugins.js";
+import { isThemeEntry } from "../lib/market.js";
 import { ThemePickerModal } from "../components/ThemePickerModal.js";
 import { HelpSection } from "../components/HelpSection.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
@@ -1758,7 +1759,9 @@ function AppearanceSection(): ReactNode {
   const { navigate } = useApp();
   const allPl = useSyncExternalStore(subscribePlugins, installedPlugins);
   const enabledThemeOwners = new Set(
-    allPl.filter((p) => (p.manifest.category ?? "") === "theme" && p.enabled).map((p) => p.manifest.id),
+    allPl
+      .filter((p) => isThemeEntry(p.manifest as { category?: string; themes?: unknown }) && p.enabled)
+      .map((p) => p.manifest.id),
   );
   const visibleThemeDefs = snap.themes.filter(
     (t) => !t.owner || enabledThemeOwners.has(t.owner) || enabledThemeOwners.has(t.id),

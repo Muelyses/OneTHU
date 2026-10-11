@@ -816,3 +816,6 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 写绝对 URL 则原样使用。解析失败不裂图（回落到 monogram / 不渲染那张图）。
 
 **主题类插件**：`category: "theme"` 的主题插件在市场详情里可直接「启用主题 / 停用主题」（沿用插件卡片的开关语义）。
+**主题插件的规范声明（2026-10-12 统一判定）**：`manifest.category === "theme"` **或** 直接带非空 `themes: ThemeDef[]` 数组（**推荐后者**——这样外观与布局的「主题」板会自动收录，插件的分类、计数、市场筛选也都会认它）。
+判定实现唯一一份：`apps/desktop/src/lib/market.ts` 的 `isThemeEntry()`（市场筛选、我的插件分类、计数、插件加载器注册主题、外观板可见性全部走它）。
+**不用** tags / keywords 兜底：标签是自由文本，"只有 tags 没有 themes/category"的条目**不算**主题插件。

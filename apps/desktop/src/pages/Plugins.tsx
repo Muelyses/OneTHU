@@ -20,7 +20,7 @@ import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
 import { OhSettingsPage } from "../components/OhSettingsPage.js";
 import { openImageViewer } from "../components/ImageViewer.js";
-import { resolveAssetUrl } from "../lib/market.js";
+import { isThemeEntry, resolveAssetUrl } from "../lib/market.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
 import {
@@ -108,7 +108,11 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   /* ② 用户拍板：OH（onethu.harness）是**特殊插件**，不出现在普通插件页的卡片区
      ——它的模型/MCP/日志/权限全部搬进「OneTHU Harness」子页的高级配置里就地渲染。 */
   const listPlugins = allPlugins.filter((p) => p.manifest.id !== "onethu.harness");
-  const plugins = cat === "all" ? listPlugins : listPlugins.filter((p) => (p.manifest.category ?? "general") === cat);
+  /** 分类判定**单一真源**：category==="theme" 或带非空 themes 数组（见 lib/market.ts isThemeEntry） */
+  const isTheme = (m: { category?: string; themes?: unknown }): boolean => isThemeEntry(m as { category?: string; themes?: unknown });
+  const plugins = cat === "all"
+    ? listPlugins
+    : listPlugins.filter((p) => (cat === "theme" ? isTheme(p.manifest as { category?: string; themes?: unknown }) : !isTheme(p.manifest as { category?: string; themes?: unknown })));
   const [sheet, setSheet] = useState<{ id: string; mode: "settings" | "log" | "mcp" } | null>(null);
   /* 插件设置 / MCP / 运行日志 Sheet：关闭时多挂 240ms 播完退场，而不是瞬间消失 */
   const sheetHold = useExitHold(sheet, 240);
@@ -304,7 +308,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
       {/* 我的插件 · 工具行：类别页签 + 安装入口（归拢一行；主切换只留视图级） */}
       <div className="plg-toolbar">
         <div className="segmented" style={{ marginBottom: 0 }}>
-          {([["all", `全部 ${listPlugins.length}`], ["theme", `主题 ${themesSnap.themes.length}`], ["general", `通用 ${listPlugins.filter((p) => (p.manifest.category ?? "general") === "general").length}`]] as const).map(([k, lbl]) => (
+          {([["all", `全部 ${listPlugins.length}`], ["theme", `主题 ${listPlugins.filter((p) => isTheme(p.manifest as { category?: string; themes?: unknown })).length}`], ["general", `通用 ${listPlugins.filter((p) => !isTheme(p.manifest as { category?: string; themes?: unknown })).length}`]] as const).map(([k, lbl]) => (
             <button key={k} className={cat === k ? "is-active" : ""} onClick={() => setCat(k)}>
               {lbl}
             </button>
@@ -501,7 +505,7 @@ function PluginCard({
             <b className="plg-name">{m.name}</b>
             <span className="plg-ver">v{m.version}</span>
             <span className="plg-kind">{m.kind === "rust" ? "RUST" : "JS"}</span>
-            {m.category === "theme" ? <span className="plg-core" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>主题</span> : null}
+            {isThemeEntry(m) ? <span className="plg-core" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>主题</span> : null}
             {widgetSlots.length > 0 ? (
               <span
                 className="plg-core"
@@ -544,7 +548,7 @@ function PluginCard({
             </button>
           ) : null}
           {/* 主题类插件：动作行里一处（**与检查更新/设置/删除同为纯文字**，不再用 chip 胶囊） */}
-          {m.category === "theme" ? (
+          {isThemeEntry(m) ? (
             <button className="btn btn-ghost" title="到「外观与布局 → 主题」里切换（会高亮那一节）" onClick={() => gotoAppearanceTheme()}>
               去切换主题
             </button>
@@ -1042,7 +1046,7 @@ function MarketView({
   const hits = (items ?? [])
     /* ④ 类别筛选也作用于市场：外观与布局的「安装主题」落到 view=market&category=theme 时，
        这里必须真的只列主题条目 */
-    .filter((x) => cat === "all" || (cat === "theme" ? (x.category ?? "general") === "theme" : (x.category ?? "general") === "general"))
+    .filter((x) => cat === "all" || (cat === "theme" ? isThemeEntry(x) : !isThemeEntry(x)))
     .filter((x) => !q || [x.name, x.description, x.author, ...(x.tags ?? [])].filter(Boolean).some((v) => String(v).toLowerCase().includes(q)))
     .slice()
     .sort((a, b) => {
@@ -1078,7 +1082,7 @@ function MarketView({
               v{detail.version}
               {detail.author ? ` · ${detail.author}` : ""}
               {detail.license ? ` · ${detail.license}` : ""}
-              {detail.category === "theme" ? " · 主题" : ""}
+              {isThemeEntry(detail) ? " · 主题" : ""}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, flex: "none", alignItems: "center" }}>
@@ -1098,7 +1102,7 @@ function MarketView({
               </button>
             ) : null}
             {/* ④ 主题类插件：详情里直接启用/停用（沿用卡片开关语义） */}
-            {rec && detail.category === "theme" ? (
+            {rec && isThemeEntry(detail) ? (
               <button
                 className="btn btn-ghost"
                 onClick={() => void (on ? disablePlugin(detail.id) : enablePlugin(detail.id)).catch((e: unknown) => setMsg(String(e)))}

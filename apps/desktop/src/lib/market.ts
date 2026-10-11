@@ -61,6 +61,20 @@ export function resolveAssetUrl(src: string | undefined, repo: string | undefine
   }
 }
 
+/**
+ * 主题插件判定（**单一真源**，2026-10-12 修芭比粉漏判）：
+ *   ① `manifest.category === "theme"`（显式声明，推荐）
+ *   ② `manifest.themes` 是非空数组（带主题定义的插件——外观板的「已启用」逻辑就是按它认的）
+ * 两套判定过去不一致（只认 ①），导致「带 themes 但不写 category」的主题插件在市场里被漏判。
+ * **刻意不用 tags/keywords 兜底**：标签是自由文本，用户要求"有 tags 但无 themes/category 的条目
+ * 不算主题插件"这条负例必须成立（见 tools 里的断言）。
+ */
+export function isThemeEntry(m: { category?: string; themes?: unknown } | undefined | null): boolean {
+  if (!m) return false;
+  if (m.category === "theme") return true;
+  return Array.isArray(m.themes) && m.themes.length > 0;
+}
+
 export interface MarketRegistry {
   version: number;
   updatedAt?: string;

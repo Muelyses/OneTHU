@@ -16,6 +16,7 @@
 - `allow-overlay-ack-events`
 - `allow-overlay-push-ui`
 - `allow-overlay-pick-attach`
+- `allow-overlay-open-settings`
 - `allow-overlay-status`
 
 ## Permission Table
@@ -101,6 +102,58 @@ Enables the overlay_hide command without any pre-configured scope.
 <td>
 
 Denies the overlay_hide command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-overlay:allow-overlay-open-settings`
+
+</td>
+<td>
+
+Enables the overlay_open_settings command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-overlay:deny-overlay-open-settings`
+
+</td>
+<td>
+
+Denies the overlay_open_settings command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-overlay:allow-overlay-pick-attach`
+
+</td>
+<td>
+
+Enables the overlay_pick_attach command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-overlay:deny-overlay-pick-attach`
+
+</td>
+<td>
+
+Denies the overlay_pick_attach command without any pre-configured scope.
 
 </td>
 </tr>
@@ -244,32 +297,6 @@ Denies the overlay_show command without any pre-configured scope.
 <td>
 
 Enables the overlay_status command without any pre-configured scope.
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-`onethu-overlay:allow-overlay-pick-attach`
-
-</td>
-<td>
-
-Enables the overlay_pick_attach command without any pre-configured scope.
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-`onethu-overlay:deny-overlay-pick-attach`
-
-</td>
-<td>
-
-Denies the overlay_pick_attach command without any pre-configured scope.
 
 </td>
 </tr>

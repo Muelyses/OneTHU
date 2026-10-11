@@ -18,6 +18,7 @@ import android.net.Uri
 import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.webkit.WebView
 import androidx.core.content.ContextCompat
 import androidx.activity.result.ActivityResult
@@ -67,12 +68,18 @@ class OverlayPushArgs {
 )
 class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
 
+    /** 相机结果靠看文件：最长等 90s（用户拍完即写盘，正常几秒内就稳定） */
+    private val CAMERA_WATCH_MS = 90_000L
+
     /** overlayShow 正在等麦克风授权回调（回调里要继续启动悬浮层） */
     private var pendingShow = false
 
     /** 附件选择：回调时要知道选的是哪一类、以及拍照时的出图文件 */
     private var pendingPickKind = "file"
     private var pendingPickFile: java.io.File? = null
+
+    /** 起选择器之前本体是否在前台（false = 用户在别的应用里用悬浮层） */
+    private var foregroundBeforePick = true
 
     init {
         // 越早注册越好：服务起来之前就要能判断「OneTHU 自己是不是在前台」
@@ -284,21 +291,97 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
     fun overlayPickAttach(invoke: Invoke) {
         val kind = invoke.getArgs().optString("kind", "file")
         pendingPickKind = kind
+        // 记录「起选择器之前本体在不在前台」：决定返回时要不要把本体送回后台
+        foregroundBeforePick = AppForeground.isForeground
         activity.runOnUiThread {
             try {
-                var plan = OverlayPicker.plan(activity, kind)
-                pendingPickFile = plan.outFile
+                val plan = OverlayPicker.plan(activity, kind)
+                if (kind == "camera") {
+                    // 相机：**不需要结果**——用 EXTRA_OUTPUT 让它写我们的 FileProvider 文件，
+                    // 目录里出现稳定文件就认（task-15 第 7 条）。
+                    // 关键：用 Application context + NEW_TASK 起，**不会把本应用 Task 带到前台**。
+                    plan.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    activity.applicationContext.startActivity(plan.intent)
+                    val out = plan.outFile
+                    if (out == null) {
+                        invoke.reject("相机输出文件不可用")
+                        return@runOnUiThread
+                    }
+                    watchCameraOutput(out, invoke)
+                } else {
+                    // 相册/上传：必须拿结果 → 只能用 Activity 的 startActivityForResult，
+                    // 系统会把本应用 Task 带回前台；返回后由 returnFocusIfNeeded() 送回去（见报告取舍）。
+                    startActivityForResult(invoke, plan.intent, "onPickAttach")
+                }
+            } catch (_: android.content.ActivityNotFoundException) {
+                // 相册选择器不可用（部分 ROM 精简）→ 退回文档选择器，同样零权限
                 try {
-                    startActivityForResult(invoke, plan.intent, "onPickAttach")
-                } catch (_: android.content.ActivityNotFoundException) {
-                    // 相册选择器不可用（部分 ROM 精简）→ 退回文档选择器，同样零权限
-                    plan = OverlayPicker.planFallback()
-                    pendingPickFile = null
-                    startActivityForResult(invoke, plan.intent, "onPickAttach")
+                    startActivityForResult(invoke, OverlayPicker.planFallback().intent, "onPickAttach")
+                } catch (e2: Throwable) {
+                    invoke.reject("打开选择器失败：${e2.message}")
                 }
             } catch (e: Throwable) {
                 invoke.reject("打开选择器失败：${e.message}")
             }
+        }
+    }
+
+    /**
+     * 相机结果靠**看文件**：每 400ms 看一下 EXTRA_OUTPUT 文件，连续两次长度不变即认为写完。
+     * 90s 没出现就当作取消。全程不碰 Activity 结果（所以不会把本体带到前台）。
+     */
+    private fun watchCameraOutput(file: java.io.File, invoke: Invoke) {
+        Thread {
+            var last = -1L
+            var stable = 0
+            val deadline = System.currentTimeMillis() + CAMERA_WATCH_MS
+            var ok = false
+            while (System.currentTimeMillis() < deadline) {
+                try {
+                    Thread.sleep(400L)
+                } catch (_: InterruptedException) {
+                    break
+                }
+                val len = if (file.exists()) file.length() else 0L
+                if (len > 0L && len == last) {
+                    stable++
+                    if (stable >= 2) {
+                        ok = true
+                        break
+                    }
+                } else {
+                    stable = 0
+                }
+                last = len
+            }
+            if (ok) {
+                Log.i(OverlayService.TAG, "[PICKER] 相机文件就绪：${file.name} ${file.length()}B")
+                finishAttach("camera", file, null, invoke)
+            } else {
+                activity.runOnUiThread {
+                    val ret = JSObject()
+                    ret.put("ok", false)
+                    ret.put("cancelled", true)
+                    invoke.resolve(ret)
+                }
+            }
+        }.start()
+    }
+
+    /**
+     * 选择器返回后的复位（task-15 第 7 条 bug）：选完系统把本应用 Task 带回前台 →
+     * 用户看到「加附件后莫名其妙回到 OneTHU 本体一次」。
+     * 若起选择器之前本体不在前台，这里立刻 moveTaskToBack 送回后台（悬浮层是 OVERLAY 窗口，不受影响）。
+     */
+    private fun returnFocusIfNeeded() {
+        if (foregroundBeforePick) return
+        try {
+            activity.runOnUiThread {
+                val moved = activity.moveTaskToBack(true)
+                Log.i(OverlayService.TAG, "[PICKER] 选择器返回 → 把本体送回后台 moved=$moved")
+            }
+        } catch (e: Throwable) {
+            Log.w(OverlayService.TAG, "[PICKER] 送回后台失败：${e.message}")
         }
     }
 
@@ -313,11 +396,18 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
             ret.put("ok", false)
             ret.put("cancelled", true)
             invoke.resolve(ret)
+            returnFocusIfNeeded()
             return
         }
+        finishAttach(kind, out, result.data, invoke)
+        returnFocusIfNeeded()
+    }
+
+    /** 物化 → 立刻本地回显 → 事件 attach → resolve（相机与选择器共用） */
+    private fun finishAttach(kind: String, out: java.io.File?, data: Intent?, invoke: Invoke) {
         Thread {
             try {
-                val f = OverlayPicker.materialize(activity, kind, out, result.data)
+                val f = OverlayPicker.materialize(activity, kind, out, data)
                 if (f == null) {
                     activity.runOnUiThread { invoke.reject("没有取到可用的文件") }
                     return@Thread
@@ -328,7 +418,9 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
                     put("mime", OverlayPicker.mimeOf(f))
                     put("size", f.length())
                 }
-                // {type:"attach", path, name, mime, size} 推给宿主 JS（发送链唯一入口）
+                // ① 立刻本地回显：带缩略图的附件气泡 + 「正在发送…」（不等 JS 往返，界面不空窗）
+                OverlayService.echoAttachment(f.absolutePath, f.name)
+                // ② {type:"attach", path, name, mime, size} 推给宿主 JS（发送链唯一入口）
                 OverlayEvents.emit("attach", 0, 0, null, info)
                 val ret = JSObject()
                 ret.put("ok", true)
@@ -339,6 +431,60 @@ class OnethuOverlayPlugin(private val activity: Activity) : Plugin(activity) {
                 activity.runOnUiThread { invoke.reject(msg) }
             }
         }.start()
+    }
+
+    /**
+     * 打开系统设置页（F②：给 OH 设置页的华为/荣耀调优指引用）：
+     *   battery = 电池优化列表页（Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS，无需权限）
+     *   startup = 华为/荣耀「应用启动管理」页（无公开 API，按常见组件名 try；失败回落应用详情页）
+     *   app     = 本应用详情页
+     */
+    @Command
+    fun overlayOpenSettings(invoke: Invoke) {
+        val what = invoke.getArgs().optString("what", "battery")
+        activity.runOnUiThread {
+            try {
+                val pkgUri = Uri.parse("package:${activity.packageName}")
+                val i = when (what) {
+                    "battery" -> Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                    "startup" -> startupManagerIntent()
+                        ?: Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, pkgUri)
+                    else -> Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, pkgUri)
+                }
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(i)
+                val ret = JSObject()
+                ret.put("ok", true)
+                ret.put("what", what)
+                invoke.resolve(ret)
+            } catch (e: Throwable) {
+                invoke.reject("打开系统设置失败：${e.message}")
+            }
+        }
+    }
+
+    /**
+     * 「应用启动管理」页（华为 EMUI / 荣耀 MagicOS）：没有公开 API，按常见组件名试，
+     * 取不到就返回 null（调用方回落到应用详情页）。**不需要任何权限**。
+     */
+    private fun startupManagerIntent(): Intent? {
+        val candidates = listOf(
+            // 荣耀 MagicOS
+            "com.hihonor.systemmanager" to "com.hihonor.systemmanager.startupmgr.ui.StartupNormalAppListActivity",
+            "com.hihonor.systemmanager" to "com.hihonor.systemmanager.appcontrol.activity.StartupAppControlActivity",
+            // 华为 EMUI
+            "com.huawei.systemmanager" to "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity",
+            "com.huawei.systemmanager" to "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity",
+        )
+        for ((pkg, cls) in candidates) {
+            try {
+                val i = Intent().setClassName(pkg, cls)
+                if (activity.packageManager.resolveActivity(i, 0) != null) return i
+            } catch (_: Throwable) {
+                /* 试下一个 */
+            }
+        }
+        return null
     }
 
     /** 诊断（设置页/报告用）：权限、是否在显示、形态、关闭标记 */

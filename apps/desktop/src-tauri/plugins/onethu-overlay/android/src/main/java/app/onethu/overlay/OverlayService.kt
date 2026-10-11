@@ -69,6 +69,12 @@ class OverlayService : Service() {
             override fun onVoiceEnd() {
                 dropMicType()
             }
+
+            override fun onOpenApp() {
+                // 「回到 OneTHU」= 用户主动点击按钮。红线禁止的是「自动把本体拉到前台」，
+                // 用户显式点击不属于该范畴（task-15 第 3 条明确要求）。
+                openApp()
+            }
         })
         // 本体前台态：前台时全部隐藏，离开本应用再只出球
         AppForeground.onChange = { fg ->
@@ -85,6 +91,20 @@ class OverlayService : Service() {
         val action = intent?.action ?: ACTION_START
         if (action == ACTION_CLOSE) {
             closeEverywhere()
+            return START_NOT_STICKY
+        }
+        if (action == ACTION_EXIT) {
+            // F①：通知栏「退出」= 结束这次保活会话（停服务 + 摘球/面板），
+            // 但**不动**「本次已关闭」标记语义：不写 closedByUser，也不发 closed 事件。
+            OverlayPrefs.setEnabled(this, false)
+            windows?.hide()
+            try {
+                @Suppress("DEPRECATION")
+                stopForeground(true)
+            } catch (_: Throwable) {
+                /* 已不在前台 */
+            }
+            stopSelf()
             return START_NOT_STICKY
         }
         if (!startForegroundCompat(notifTypes())) {
@@ -143,6 +163,17 @@ class OverlayService : Service() {
         super.onDestroy()
     }
 
+    /** 用户点「回到 OneTHU」：用 packageManager 的 launch intent 把本体带到前台 */
+    private fun openApp() {
+        try {
+            val launch = packageManager.getLaunchIntentForPackage(packageName) ?: return
+            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(launch)
+        } catch (e: Throwable) {
+            Log.w(TAG, "回到 OneTHU 失败：${e.message}")
+        }
+    }
+
     /** 面板上的「本次关闭悬浮球」与通知「本次关闭」都走这里（需求 5 的本次关闭语义） */
     private fun closeEverywhere() {
         OverlayPrefs.setEnabled(this, false)
@@ -169,6 +200,11 @@ class OverlayService : Service() {
 
     /** 真机取证（overlay_status 带出去）：原生算出来的屏幕尺寸/球坐标/实际窗口种类 */
     fun debugInfo(): org.json.JSONObject? = windows?.debugInfo()
+
+    /** 选完文件**立刻**本地回显（带缩略图的附件气泡 + 「正在发送…」），不等 JS 往返 */
+    fun echoAttachment(path: String, name: String) {
+        main.post { windows?.echoLocalAttachment(path, name) }
+    }
 
     private fun windowShowing(): Boolean = windows?.isShowing() == true
 
@@ -258,6 +294,8 @@ class OverlayService : Service() {
             (if (Build.VERSION.SDK_INT >= 23) PendingIntent.FLAG_IMMUTABLE else 0)
         b.setContentIntent(PendingIntent.getService(this, REQ_TOGGLE, intent(ACTION_TOGGLE), flags))
         b.addAction(0, "本次关闭", PendingIntent.getService(this, REQ_CLOSE, intent(ACTION_CLOSE), flags))
+        // F①：退出=结束保活会话（语义见 ACTION_EXIT 分支）
+        b.addAction(0, "退出", PendingIntent.getService(this, REQ_EXIT, intent(ACTION_EXIT), flags))
         return b.build()
     }
 
@@ -280,11 +318,13 @@ class OverlayService : Service() {
         const val REQ_TOGGLE = 47120
         const val REQ_CLOSE = 47121
         const val REQ_RESCUE = 47122
+        const val REQ_EXIT = 47123
 
         const val ACTION_START = "app.onethu.overlay.START"
         const val ACTION_MODE = "app.onethu.overlay.MODE"
         const val ACTION_TOGGLE = "app.onethu.overlay.TOGGLE"
         const val ACTION_CLOSE = "app.onethu.overlay.CLOSE"
+        const val ACTION_EXIT = "app.onethu.overlay.EXIT"
         const val ACTION_RESTART = "app.onethu.overlay.RESTART"
         const val EXTRA_MODE = "mode"
 
@@ -299,6 +339,14 @@ class OverlayService : Service() {
         fun currentModeOrNull(): String? = live?.currentMode()
 
         fun liveDebug(): org.json.JSONObject? = live?.debugInfo()
+
+        /** 供插件在拿到选择结果后立刻回显（服务没在跑就什么也不做） */
+        fun echoAttachment(path: String, name: String) {
+            live?.echoAttachment(path, name)
+        }
+
+        /** 应用是否正在前台（选择器用：前台起 Activity 不会把本体"带回来"） */
+        fun appForeground(): Boolean = AppForeground.isForeground
 
         /** 显示悬浮层（只出球）。应用在前台时也不会显示——由 AppForeground 开关 */
         fun start(ctx: Context, mode: String) {

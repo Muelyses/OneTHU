@@ -25,6 +25,12 @@ object AppForeground {
     private var startedCount = 0
     private var registered = false
 
+    /** 当前 Activity 的弱引用（moveTaskToBack / 权限请求 / 选择器结果都要它） */
+    private var current: java.lang.ref.WeakReference<Activity>? = null
+
+    /** 取当前 Activity（可能为 null：进程里还没有 Activity 活着） */
+    fun activity(): Activity? = current?.get()
+
     fun register(app: Application) {
         if (registered) return
         registered = true
@@ -32,6 +38,7 @@ object AppForeground {
             app.registerActivityLifecycleCallbacks(
                 object : Application.ActivityLifecycleCallbacks {
                     override fun onActivityStarted(activity: Activity) {
+                        current = java.lang.ref.WeakReference(activity)
                         startedCount++
                         if (startedCount == 1) publish(true)
                     }
@@ -43,7 +50,9 @@ object AppForeground {
 
                     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
-                    override fun onActivityResumed(activity: Activity) {}
+                    override fun onActivityResumed(activity: Activity) {
+                        current = java.lang.ref.WeakReference(activity)
+                    }
 
                     override fun onActivityPaused(activity: Activity) {}
 

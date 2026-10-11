@@ -12,6 +12,7 @@
 //!   overlay_push_ui            / overlayPushUi             前端 → 原生界面状态（消息/转写/电平/主题）
 //!   overlay_pick_attach        / overlayPickAttach         拉起系统选择器（camera|gallery|file），
 //!                                                         结果以事件 attach{path,name,mime,size} 推回 JS
+//!   overlay_open_settings      / overlayOpenSettings       打开系统设置页（battery|startup|app）
 //!   overlay_status             / overlayStatus             诊断（权限 / 是否在显示 / 形态 / 关闭标记）
 //!
 //! 桌面端一律返回「不支持」，前端 lib/overlay.ts 走 overlayDesktop.ts。
@@ -224,6 +225,29 @@ pub async fn overlay_pick_attach<R: Runtime>(
     #[cfg(not(target_os = "android"))]
     {
         let _ = (&app, &kind);
+        Ok(serde_json::json!({ "ok": false, "reason": "not-android" }))
+    }
+}
+
+/// 打开系统设置页（battery=电池优化 / startup=应用启动管理（华为荣耀）/ app=应用详情）
+#[tauri::command]
+pub async fn overlay_open_settings<R: Runtime>(
+    app: AppHandle<R>,
+    what: String,
+) -> Result<serde_json::Value, String> {
+    #[cfg(target_os = "android")]
+    {
+        let handle = app.state::<crate::OnethuOverlay<R>>().0.clone();
+        handle
+            .run_mobile_plugin::<serde_json::Value>(
+                "overlayOpenSettings",
+                serde_json::json!({ "what": what }),
+            )
+            .map_err(|e| e.to_string())
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = (&app, &what);
         Ok(serde_json::json!({ "ok": false, "reason": "not-android" }))
     }
 }

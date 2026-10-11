@@ -133,3 +133,402 @@ dumpsys window windows | grep -A3 "app.onethu.desktop.dev"                      
   `microphone` 类型是放行的关键）。
 - 跨应用实时模糊仍然不做（第三方拿不到；上次误判为「全屏雾」元凶的 `FLAG_BLUR_BEHIND` 已删，不再复活）。
 - 未做：TTS 自动朗读 OH 回复（ball-tts 能力，接入点仍在 `askNative` 一行，需 Lead 决定是否跨界）。
+
+
+---
+
+# task-11 第三轮返工（真机验收：3 过 3 修 · 2026-10-11 01:0x）
+
+Lead 已装机验收：**① 雾形状过了**（底部铺满→向上渐变变淡、半屏 1264×1400、BOTTOM 对齐）、
+**③ 球文案/材质过了**（实底白圆 +「（OH）」）、附件三入口 + 输入行 + 发送都在面板里、**单窗不变量成立**。
+另：Lead 替我修了编译阻塞（`OverlayViews.kt` 补 `import android.graphics.drawable.GradientDrawable`；删掉
+插件自带 FileProvider 与 paths xml，`OverlayPicker.authority` 改指宿主 `${packageName}.fileprovider`）——
+**这两处 Lead 的改动我原样保留，没有回退。**
+
+## 修的三条
+
+### 1) 球的位置（要求这次必须真机确认）
+- **根因**：存档里的旧坐标（`x=0,y=548`，来自早先版本/别的坐标系）被当成有效值沿用了 → 每次启动都钉在左上。
+- **修法（两处）**：
+  1. **存档带屏幕尺寸 + 格式版本**：`OverlayPrefs.setBall(x,y,screenW,screenH)` 同时写 `ball_fmt=2`、
+     `ball_screen_w/h`。`loadBallPos()` 三段判定：无存档 → 默认；**fmt 不符或屏幕尺寸变了 → 作废 + 回落默认 +
+     `setBall()` 改写存档**；越界（`x∉[0,w-ballPx]`）→ 同样回落 + 改写。三条路径都打 log。
+     ⇒ 从此**旧坐标再也不可能复活**；换机/改分辨率也自动归位。
+  2. **默认坐标的代数改正**（我自己验算抓出来的错）：球窗比球大 2×inset（投影留白 8dp×2），球在窗口内居中，
+     所以 `x = w - 球窗 - 12dp + inset`（**加** inset，不是减）。@1264×2800/560dpi 实机：
+     球窗 245px、球径 189px、inset 28px → **ballX=1005、ballY=2135**，此时「球右边缘距屏右 = 12.0dp、
+     球下边缘距屏底 = 128.0dp」，窗口右下角 (1250, 2380) 也在屏内。
+- **真机自查口径**：调 `overlay_status` → `workW=1264 / workH=2800 / ballX=1005 / ballY=2135`；
+  `dumpsys window windows` 里球窗应是 `(1005,2135)(245x245)`，且**只有 1 个** APPLICATION_OVERLAY 窗。
+  第一次启动若旧存档还在，log 会有一条「球位置存档作废…→ 回落默认并改写」。
+- 尺寸是物理 px 无疑：245px = 70dp × 3.5（density 560/160），位置也一律物理 px，**没有 dp/px 混算**。
+
+### 2) 对比度（用户原话「看都看不清」）
+| 元素 | 改前 | 改后 |
+|---|---|---|
+| 拍照 / 相册 / 上传 | 12sp / alpha 0.72 | **13sp / alpha 0.95**（主色） |
+| 收起 / 本次关闭悬浮球 | 12sp / alpha 0.55 | **13sp / alpha 0.95** |
+| 发送 | 13sp / alpha 0.85 | **14sp / alpha 1.0**（主色，不再是灰） |
+| 输入行占位「点击输入，长按说话」 | alpha ≈0.38 | **alpha 0.92** |
+| 输入行下划线 | alpha 0.15 | alpha 0.28（别让输入行看着"没容器"） |
+| 面板雾底部核心 | 浅 0.92 / 深 0.90 | **浅 0.96 / 深 0.94**，且 82% 处权重 0.55→**0.60**（底部字有足够衬底） |
+| 语音条雾 | 浅 0.92 / 深 0.88 | 浅 0.96 / 深 0.92 |
+消息正文本来就是主色 + 100%/62%（未动）。
+
+### 3) 输入行渲染两遍
+- **根因**：面板里同时存在「空态提示 TextView（文案就是『点击输入，长按说话』）」与「EditText 的 hint（同文案）」
+  —— 两处各画了一遍。列表一空就把空态显示出来，于是上下各一条。
+- **修法**：**删掉空态 TextView**，只留底部 EditText 的 hint（Lead 要求「只留底部那一个」）；
+  `PanelHolder.empty` 字段与两处 `p.empty.visibility=…` 一并删除。空对话时消息区自然为空，不影响布局。
+
+## 已拍板执行
+- 「（OH）」字号**保留 11sp**（Lead 拍）——不再改。
+- 图像滤镜（wave 2 `ImageFilterSheet`）**不接进原生面板**（Lead 拍）——本轮没接。
+
+## 自检
+- `tsc --noEmit` → **exit 0**；Kotlin 大括号平衡校验通过；`find <写域> -name '._*' -delete` 已执行（0 个）。
+- 位置代数用 1264×2800/560dpi 实参**独立验算**过（脚本输出：右 12.0dp / 下 128.0dp，窗口在屏内）。
+- 未跑构建（Lead 跑）、未 git 写操作、未装机、未点屏。
+
+## 需要 Lead 跑的验证（同上，三条）
+```bash
+cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-overlay:compileDebugKotlin
+cd apps/desktop/src-tauri/gen/android && ./gradlew :app:processArm64DebugMainManifest
+cd apps/desktop/src-tauri && cargo check --target aarch64-linux-android   # 若 Rust 侧还没过
+```
+装机后**请重点确认这两条**（本轮的核心）：
+1. `overlay_status` → `ballX=1005 / ballY=2135`（球在右下、（OneTHU）图标下方那条区域）；
+   `dumpsys window windows` 球窗 `(1005,2135)(245x245)`、只有 1 个 overlay 窗。
+2. 面板里 拍照/相册/上传/发送/收起/本次关闭 是否一眼可读；「点击输入，长按说话」**只出现一次**（底部）。
+
+## 仍然只能真机验
+① 雾的**观感**与深浅色可读性；③（OH）在 54dp 里挤不挤；④ **能否真取到麦并发出整句**、长按与输入法是否打架、
+上划取消手感；② 三个选择器能否真的拉起（拍照回调是否拿到文件）——这些本机无法判定。
+
+---
+
+# task-13 交付（真机第 6 轮：品牌字 / markdown / 固定顶栏+可读性 / 液态动效 / 附件即时气泡与进行中态）
+
+状态：**完成**（tsc exit 0；Kotlin 逐行自查 + 括号平衡；`._*` 已清 0；未跑构建/未 git 写/未装机）。
+
+## 0. 字体与对比度自查（Lead 点名要的那份）
+
+### (OH) 逐字符混排 —— 用 Spannable 复刻本体 HarnessMark + global.css:4090-4093
+
+来源已核对：`components/HarnessMark.tsx` 输出的是 **半角 `(` `O` `H` `)`**，本体悬浮岛用 `<HarnessMark size={15} />`。
+
+| 文本范围 | span 列表 | 对应 CSS |
+|---|---|---|
+| `[0,1)` `(` | `TypefaceSpan("monospace")` + `RelativeSizeSpan(1.06f)` | `.p{font:mono;400;scaleY(1.06)}`（scaleY 用等比 1.06 近似） |
+| `[1,2)` `O` | `TypefaceSpan(Typeface.create("serif", 500, false))` + `RelativeSizeSpan(1.14f)` | `.o{serif;500;1.14em}` |
+| `[2,3)` `H` | `TypefaceSpan(Typeface.create("sans-serif", 700, false))` + `RelativeSizeSpan(1.06f)` | `.h{苹方同族;700;1.06em}` |
+| `[3,4)` `)` | 同 `(` | 同上 |
+
+TextView 侧：`textSize = 15sp`、`letterSpacing = 0.05f`（= CSS `gap:0.05em`）、`includeFontPadding=false`、`isSingleLine=true`、`gravity=CENTER`；
+**球径 54dp 未动**（按更正口径）；`API<28` 时 `Typeface.create(family,weight,italic)` 不可用 → 退 `NORMAL/BOLD` 两档。
+小字号下的宽度估算：mono`(` + serif`O`(17.1sp) + sans`H`(15.9sp) + mono`)` ≈ 45dp < 54dp ✓（半角字符比全角窄得多，这也是这次能放大的原因）。
+
+### 两处 alpha
+
+| 位置 | 值 |
+|---|---|
+| 面板雾：内容区（距底 0→80%） | 权重 1.0 × coreAlpha → **浅 0.96 / 深 0.94**（绝对 alpha） |
+| 面板雾：距底 90% 处（内容区上沿） | 权重 0.55 × coreAlpha → **浅 0.53 / 深 0.52**（≥45% 保底） |
+| 面板雾：仅最顶 10% 窄带 | 0.53 → 0（真正羽化到透明） |
+| 顶栏「收起 / 本次关闭悬浮球」胶囊 | 浅 `#FFFFFF` **α0.86** / 深 `#000000` **α0.45**，+ 1px 细边（浅 `#1F000000` / 深 `#33FFFFFF`） |
+| 所有正文/按钮文字 | 主色 100% alpha + `setShadowLayer(6dp, 0, 1dp, #40000000)`（α0.25） |
+
+动效时长：开 = 滴落 150ms + 晕开 280ms = **430ms**；关 = 收拢 260ms + 弹回球 200ms = **460ms**（都在 380–460ms 内）。
+
+## 1. 逐条落地
+
+**① 品牌字 + OH 太小** → 见上表。`OverlayViews.harnessMark()` 返回 Spannable；球 `setText(harnessMark())`、15sp、球径 54dp。
+
+**② 雾/markdown/按钮/动效**
+- **markdown**：新增 `OverlayMd.kt`（356 行，零依赖）：块级 ` ```代码块``` `、`- 列表`、`1. 列表`、`> 引用`（左边线）、`---` 分隔线、`# 标题`、普通段落；行内 `**粗**`/`*斜*`/`` `code` ``/`[文本](url)`（可点，走系统浏览器，仅 http(s)）。代码块 mono 13.5sp + 极轻底色；引用左 3dp 竖线；未闭合标记一律当普通字符，绝不吞内容。
+- **字更清晰**：正文主色 100%、15sp、行高 1.62、块级文本统一轻阴影；雾在内容区保底 ≥0.52 绝对 alpha（见上）。
+- **顶栏**：`收起 / 本次关闭悬浮球` 在 ScrollView **之外**（任何滚动位置都在），并各加**半透明胶囊 + 1px 细边**衬底 —— 纯黑壁纸与纯白壁纸都一眼可读；顶栏下加一条发丝线。
+- **动效**：开＝球在点击处**形变缩成液滴并下落**（150ms，`AccelerateInterpolator`）→ 切到面板窗，**圆角半径从「一团液滴」收敛到 22dp**（`ViewOutlineProvider` + `invalidateOutline` 逐帧）+ `scaleY 0.80→1` + `translationY 24%→0`（`OvershootInterpolator(0.9)`）+ **光晕层 α0.45→0**（径向渐变 View）。关＝反向：圆角回到「一团」+ 缩到 0.72 + 下移淡出（260ms，自定义缓动），随后球窗挂回并 **Overshoot(1.7) 弹一下**（200ms）。全程**单窗**（滴落结束时才切窗，无并存）。
+
+**③ 附件即时气泡 + 进行中 + 不吞话**
+- 选完文件**立刻**（在插件拿到结果的同一线程里）调 `OverlayService.echoAttachment()` → 面板消息区立刻出现**带缩略图的附件气泡**（本地文件异步降采样解码，最长边 480px，绝不阻塞面板）+「**正在发送…**」；
+- 缩略图**点一下原地放大**（320×面板高 42%，FIT_CENTER），再点收小（不新开窗口，守住单窗不变量）；
+- 发送/等待期间有**明确进行中指示**：`attachSending` → 「正在发送…」（波纹点动画），`busy` → 「OH 正在思考…」；
+- **不吞消息**：消息列表由适配器持有（模块态），面板关掉也继续走异步发送，回复到达后 `pushUi` 把 `status` 置空并追加回复 —— 下次打开面板照样看到那条消息与回复；失败置 `status:"error"` → 原生显示「发送失败，可再试一次」。
+- 图片消息在 markdown 区域直接显示（缩略图 + 点击放大）✓。
+
+**图片/状态的数据契约**（`overlayAndroid.ts` 的 `pushUi.messages[]`）：
+```ts
+{ role: "user"|"oh", text: string, images?: string[] /* 本地路径 */, status?: "sending"|"error"|"" }
+```
+原生只认**本地路径**（data URL 不渲染，避免大字符串过桥）。
+
+## 2. 哪条只能真机验
+| 条目 | 静态可核对 | 只能真机验 |
+|---|---|---|
+| ① 品牌字/字号 | span 列表与字号可核对（见上表） | 真机上 mono/serif/sans 三族混排的实际观感、15sp 在 54dp 里是否够大 |
+| ② markdown | 解析分支与块样式可核对 | 真机上长回复的排版、代码块换行、链接点击是否真的起效 |
+| ② 顶栏/对比度 | alpha 与胶囊参数可核对 | **纯黑/纯白壁纸下是否真的可读**（用户原话的验收点） |
+| ② 动效 | 时长与曲线参数可核对 | **顺不顺、像不像液态**（Lead 会录屏） |
+| ③ 附件 | 链路与状态机可核对 | 三个选择器能否拉起、缩略图是否出图、放大/收小手感、关掉面板后重开是否还在 |
+| 共用会话 | 未另起会话（仍走 `askOh`/`sendToOh` 同一 harness 会话） | 「本体与面板同一条对话」还要等 Lead 另派的那条线把历史打通（我这边保持单写者契约不改） |
+
+## 3. 需要 Lead 跑的验证
+```bash
+cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-overlay:compileDebugKotlin
+cd apps/desktop/src-tauri/gen/android && ./gradlew :app:processArm64DebugMainManifest
+```
+装机后按 Lead 的截图链：字体/字号 → 顶栏 → markdown → 开合动效 → 附件即时气泡 → 进行中 → 回复到达。
+`overlay_status` 仍带 `workW/workH/ballX/ballY/windowKind`：球径回到 54dp，但**球窗仍是 70dp**（54+16 投影留白），
+所以默认坐标与上一轮一致 —— **期望 workW=1264 / workH=2800 / ballX=1005 / ballY=2135**（视觉上仍是球右边缘距屏右 12dp、下边缘距屏底 128dp）。
+
+## 4. 风险与未做
+- 混排是「系统最接近」而非真 Montserrat（仓库无字体文件）：mono/serif/sans 三族可用，字重 500/700 在 API<28 退化成 400/700。
+- 代码块超长行会在面板宽度处换行（已给 `maxWidth=屏宽*0.84`），不做横向滚动。
+- 放大图片是「原地变大」而非全屏查看器（守单窗不变量）；要全屏查看器就得允许临时第二个窗，需 Lead 拍板。
+- 动效曲线是参数化的近似（`ViewOutlineProvider` + Overshoot/自定义缓动），不做真液体模拟；观感以录屏为准。
+
+---
+
+# task-15 交付（悬浮层 5 改 + 附件返回本体 bug）
+
+状态：**完成**（tsc exit 0；Kotlin 括号平衡；`._*` 0；未跑构建/未 git 写；**全程没有用 adb 碰用户的屏幕**）。
+
+| # | 用户反馈 | 做法 |
+|---|---|---|
+| 1 | 顶栏与内容之间那条线很丑 | **删掉 `headLine`**（发丝线整块移除）。顶栏改成两行四个动作，全部在 ScrollView 之外（任何滚动位置都在）、全部带**可读胶囊衬底**：第一行 `回到 OneTHU` `自动朗读：关/开`；第二行右对齐 `收起` `本次关闭悬浮球` |
+| 2 | 加朗读 | 面板两个入口 + 每条消息一个：① 顶栏 `自动朗读：关/开` → 原生发事件 `toggleAutoSpeak{on/off}` → 适配器写 `voicePrefs`（单一权威）并回推状态；② 每条 **OH** 消息下方一个裸文字 `朗读` → 事件 `speak{text}` → `speakReply(text,{force:true})`（**手动点=当场意图，无视静音**）；③ 自动档在回复到达时调 `speakReply()`（内部判 `autoSpeak`，默认静音）；④ 收口走 `onTtsDone`（`onethu-tts://done`）→ 推 `speaking` 回原生；朗读前先 `ttsStop()` 打断上一条 |
+| 3 | 加「回到 OneTHU」 | 顶栏 `回到 OneTHU` 胶囊 → 原生 `OverlayService.openApp()`（`packageManager.getLaunchIntentForPackage` + `NEW_TASK|SINGLE_TOP`）。**只在用户点击时跳**，红线（自动跳回）未破 |
+| 4 | 语音后没滚到底 | `scrollToBottom()` 改为**连发两次 post**（新内容要等一次布局才有正确高度）；并在语音 `onFinal`、发送、`renderMessages`、`pushUi` 状态变化后都调用 |
+| 5 | 边缘吸附成缩略侧边条 | 新增 `side` 形态（`SIDE 22×56dp` 胶囊 + 1px 边 + 轻投影 + 中心点）：**拖到边缘吸附后 1.2s 自动缩成侧边条**（`EDGE_SHRINK_MS`）；**球空闲 10s 也自动缩回**（`IDLE_COLLAPSE_MS`，拖拽/点击/语音/面板任一活动都重置，面板或语音条打开期间不计时）；**点/按侧边条 → 丝滑展开回球**（按下即展开，长按可继续进语音；单纯点击只展开、不开面板） |
+| 6 | 液态滴落要「融化→落到屏底→铺开」 | 重写：球**形变收窄拉长成液滴**，同时**窗口真的向下移动到屏幕底部**（`FALL_MS=170`，`AccelerateInterpolator(1.5)`，每帧 `updateViewLayout`）→ 切面板并**从滴点晕开**（圆角半径 40%→22dp + 上浮放大 + 光晕淡出，`BLOOM_MS=280`）；关＝反向：面板收拢成一团（260ms）→ 球窗在**落点**出现并**升回原位**（`RISE_MS=200`，边升边回正形变）→ `Overshoot` 弹一下。开 450ms / 关 460ms |
+| 7 | 加附件后莫名回到 OneTHU 一次 | **见下节** |
+
+## 第 7 条：附件返回本体 bug（结论与取舍）
+
+**根因确认**：调用链里只有两处会拉起本应用 Task —— `startActivityForResult`（Activity 上下文）与「结果回传需要调用方 Activity 处于 resumed」。系统选择器被放进本应用 Task，导致本体被带到前台。
+
+**采用方案（可行性优先，两条路各用一半）**：
+- **拍照**：改为**不需要结果**——`ACTION_IMAGE_CAPTURE` + `EXTRA_OUTPUT`（我们的 FileProvider URI），用
+  **`activity.applicationContext.startActivity()` + `FLAG_ACTIVITY_NEW_TASK`** 起相机（不进本应用 Task），
+  然后后台线程**盯输出文件**（每 400ms 看长度，连续两次不变即认为写完；90s 超时当取消）。
+  ⇒ **全程不把 OneTHU 带到前台**，用户拍完直接回到原应用，悬浮层照常。
+- **相册 / 上传**：**必须拿结果**（SAF/Photo Picker 没有 EXTRA_OUTPUT 等价物，`ClipData` 只在拖拽场景可用），
+  而结果回传要求调用方 Activity 处于 resumed 状态 ⇒ **无法在完全不回前台的前提下拿到 URI**。
+  因此保留结果式调用，但**返回后立刻 `activity.moveTaskToBack(true)`** 把本体送回后台
+  （`returnFocusIfNeeded()`：只有「起选择器之前本体不在前台」时才做），用户的视线回到原应用 + 悬浮层。
+  ⇒ 仍有一次**短暂的前台闪现**（系统把本体提上来交付结果的那一瞬），但不再「停在 OneTHU 本体」。
+- **做不到的部分（如实写）**：相册/上传要做到**零闪现**，只能放弃结果式 API：
+  自己实现媒体选择（`MediaStore` 查询 + 自绘列表，需要 `READ_MEDIA_IMAGES` 权限），
+  或让用户走「拍照」路径（已零闪现）。这属于产品取舍，本轮不擅自扩大权限面。
+
+## 哪条只能真机验
+| # | 静态可核对 | 只能真机验 |
+|---|---|---|
+| 1 | 线已删（代码里无 `headLine`）、四个动作都在 ScrollView 之外 | 两行胶囊在真机雾面上的观感与是否换行 |
+| 2 | 事件链、`force:true` 语义、`onTtsDone` 收口 | **能不能真的出声**、手动/自动两档的实际表现、朗读时是否与语音输入抢麦 |
+| 3 | 命令与 flag | 点击后是否真的回到本体（各家 ROM 对 launch intent 的处理不同） |
+| 4 | 双 post 滚动 | 长回复下是否真的停在最新一条 |
+| 5 | 阈值与形态参数（10s / 1.2s / 22×56dp） | 吸附缩小的观感、点击展开的丝滑度、侧边条是否挡手 |
+| 6 | 时长与曲线（170+280 / 260+200） | **像不像「融化→滴落→铺开」**（Lead 会录屏） |
+| 7 | 代码路径：相机走 Application+NEW_TASK+盯文件；相册/上传走结果+moveTaskToBack | **拍照是否真的零闪现**、相册/上传的闪现有多短、FileProvider 授权是否被 ROM 拒 |
+
+## 需要 Lead 跑的验证
+```bash
+cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-overlay:compileDebugKotlin
+cd apps/desktop/src-tauri/gen/android && ./gradlew :app:processArm64DebugMainManifest
+```
+编译风险点（我没编译过）：`activity.applicationContext.startActivity(plan.intent)`（相机路径）、
+`activity.moveTaskToBack(true)` 的返回类型、`OverlayMd`/`OverlayViews` 新增的 import、
+`Typeface.create(family, weight, italic)` 的 API 28 守卫。
+
+## 风险与未做
+- 相册/上传仍有**一次前台闪现**（见第 7 条取舍）；要零闪现需放弃结果式 API（要权限或自绘选择器）。
+- 相机盯文件是「启发式」：极少数相机会在 `EXTRA_OUTPUT` 之外另存缩略图，此时我们只会拿到 EXTRA_OUTPUT 那份
+  （真机若发现相册里多一张、或我们拿到的不是原图，回来告诉我）。
+- 侧边条形态没有做「半藏进边缘」（目前是整颗贴边），要更极致的「半圆贴边」可以再改一版。
+- 朗读依赖 `onethu-tts` 插件（ball-tts 的线）；未装/不支持时 `speakReply` 返回 false，面板不报错（静默）。
+
+---
+
+# task-15 编译修复（2026-10-11 17:0x，Lead 出包被阻塞）
+
+## 编译结果：**BUILD SUCCESSFUL**（我本地实跑，两次）
+
+```bash
+cd apps/desktop/src-tauri/gen/android
+./gradlew :tauri-plugin-onethu-overlay:compileDebugKotlin --console=plain
+# → BUILD SUCCESSFUL in 3~4s
+#   22 actionable tasks: 3 executed, 19 up-to-date
+#   仅剩 1 条告警：SOFT_INPUT_ADJUST_RESIZE 已弃用（那是我们要用的 flag，故意保留）
+```
+
+## 根因与修法
+
+**根因 1（Lead 报的 `OverlayViews.kt:417/424/467/468` 一批 `inputRow / underline / scroll / list / input / action` 未解析）**：
+我在「顶栏重排」那一步用**文本切片替换**（从 `// 两个功能性裸文字入口` 到 `// 附件三入口（需求 6）`）重写顶栏，
+**误删了位于这两个标记之间的整段视图构造** —— 消息列表（`scroll` + `list`）、底部输入行（`inputRow` + `input` + `action`）与
+`underline`。于是后面的 `inputBlock.addView(inputRow/underline)` 和 `PanelHolder(...)` 全成了未解析引用。
+→ **已按原设计补回**（消息列表 + 输入行 + 下划线），并把插入点放在新的两行顶栏之后、附件入口之前，
+子视图顺序恢复为：`顶栏(两行) → 消息列表(weight=1) → 拍照/相册/上传 → 语音行(GONE) → 输入块(输入行+下划线)`；
+`root` 子视图：`content → glow`。
+
+**根因 2（Lead 报的 `OverlayWindows.kt:600 Unresolved reference: TextView`）**：
+`OverlayWindows.kt` 此前**从未**直接构造过 `TextView`（都用 `p.xxx` 字段），所以文件里**没有** `import android.widget.TextView`；
+我这轮新增「每条消息下方的朗读按钮」时直接写了 `TextView(themed)` → 未解析。
+→ **已补 `import android.widget.TextView`**。
+
+**Lead 替我改的那一处（`say` 朗读按钮显式逐行 + `OverlayViews.shadow(say)`）：原样保留。**
+Lead 的注释是对的：在 `TextView(ctx).apply { … shadow(this) }` 里，`this` 在某些嵌套位置会被外层类遮蔽，显式逐行最稳。
+
+**顺带清掉的告警**：
+- `FogLayout.build(w,h)` 的 `w` 未使用 → 加 `@Suppress("UNUSED_PARAMETER")`（纵向渐变确实只用 `h`）；
+- `onOrbTouch` 四个 `when` 分支末尾的冗余 `true`（`when` 是语句、函数末尾已 `return true`）→ 删掉，行为不变（已重新编译确认）。
+
+## 复核过的其它静态风险（这次连同编译一起过了）
+`PanelHolder` 字段顺序 ↔ 构造调用顺序、`OrbHolder.side` 新字段、`OverlayVoice.Host` 新增 `onOpenApp` 的服务实现、
+`OverlayService.openApp/echoAttachment/liveDebug`、`OverlayPicker.plan/planFallback/materialize/mimeOf`、
+`OverlayMd.render/progress/TAG_DIVIDER`、新增 import（TextView/Spannable/RelativeSizeSpan/TypefaceSpan/Typeface/ImageView/LinearGradient）。
+
+## 「哪条只能真机验」（同前，未变）
+1 顶栏胶囊观感/换行；2 **能否真出声**（手动/自动两档、朗读与语音输入抢麦）；3 点击回本体（ROM 差异）；
+4 长回复是否真停最新一条；5 吸附缩小/展开丝滑度/是否挡手；6 **像不像「融化→滴落→铺开」**（录屏）；
+7 **拍照是否真零闪现**、相册/上传闪现多短、FileProvider 是否被 ROM 拒。
+
+---
+
+# task-15 追加批次 A–F（用户 17:21 六条，全部悬浮层）
+
+状态：**完成 · 编译通过**（`./gradlew :tauri-plugin-onethu-overlay:compileDebugKotlin` → **BUILD SUCCESSFUL**；tsc exit 0；`._*` 0）。
+
+## A. 窗形态与风格
+- **A①** 面板从「全宽 50% 半屏」改成**悬浮小窗**：左右各留 **14dp**（`PANEL_MARGIN_DP`）、高度 **44%**（`PANEL_RATIO`）、
+  底部留 14dp、四周 **24dp 圆角**（`PANEL_RADIUS_DP`，落在 token `--dsw-radius-lg/xl` 之间）；
+  窗口仍是 `TRANSLUCENT` + 显式像素尺寸（不用 MATCH_PARENT），圆角由雾层 `clipPath` 裁出来。
+- **A②** 与本体 ChatDock **同一套视觉语言**：radius/颜色/字体/行高/间距全部走 `OverlayViews` 里的 token 近似值
+  （`#1C1F24`/`#ECECF1`、15sp、行高 1.62、条目间距 14dp），顶栏动作统一成**胶囊 + 1px 细边**。
+  ⚠️ **决策点**：消息呈现仍保留前几轮已验收的「雾中の裸文字」（你当时要求，用户也认可过）。
+  若这次「内外风格统一」指的是**要气泡**，说一声，我改一版（改动只在 `buildMessageColumn` 一处）。
+- **A③** 顶栏**删掉「本次关闭悬浮球」**，只剩三个动作：**回到 OneTHU / 自动朗读 / 收起**。
+  「本次关闭」语义仍在：通知栏动作 + 本体 ChatDock 的悬浮球按钮（task-9 那条线）。
+- **A④** 液态滴落动效**保留**（见 D③/E 时长口径不变）。
+
+## B. 吸附
+- **B①** 拖到边缘：吸附动画（180ms）**一结束立即**缩成侧边条 —— 删掉了原来 1.2s 的等待（`EDGE_SHRINK_MS` 常量已移除）。
+- **B①续** 侧边条**完全贴边**：胶囊按边缘方向贴住窗口外缘（右侧 `Gravity.END`、左侧 `Gravity.START`），
+  配合窗口贴屏幕边 → 视觉上 x=0 / x=屏宽-条宽，不再留 8dp 投影缝。
+- **B②** 空闲缩回阈值 **10s → 6s**（`IDLE_COLLAPSE_MS`，写进报告：用户没否，但结合「等太久」的反馈收紧）。
+
+## C. 显示不可靠（「非得设置里关一下再开一下」）
+- `showBallOnly()` 现在**先彻底摘干净（面板+球）再挂球** —— 真机那种「关一下再开一下才出来」的典型成因
+  是上一次的挂载状态不一致；
+- 挂载失败时**自愈一次**：`forceCleanupWindows()` 把两扇窗从 WindowManager 强制摘掉 + 重建视图 + 重挂；
+- `attachOrb()` 内部也加了「失败→清残留→再试一次」；
+- 三条恢复路径复核（`overlay_show` / 开机广播 / 被杀自救 / 前后台切换）**都只调 `showBallOnly()`**，都只出球。
+
+## D. 长按球的语音形态（新）
+- **D①** 长按 ≥450ms：球在**原位横向展开**成语音长条（`VOICE_BAR_W_DP=300`，不再先落底）——
+  窗口 = 宽 300dp（屏宽不足时自适应）× 高 96dp（56dp 条 + 40dp 转写带）；
+  条的**上方**浮一层**淡雾转写带**（`coreAlpha` 浅 0.72/深 0.62，只在说话/有转写时出现）显示识别到的话；
+- 横向展开方向按球在哪半边决定（右半边向左铺、左半边向右铺），竖直方向以球心为中心；
+- **D②** 上划取消（110dp、松手判定）沿用；
+- **D③** 松手 → **液体滴落到底部 → 展开成统一小窗**（`dropletThenBloom()`，液体形变作用于当前可见子视图：球/条/侧边条）。
+
+## E. 悬浮窗「一直 loading」
+- 加入**原生看门狗**：`busy` 起算 40s（`BUSY_TIMEOUT_MS`，每 5s 检查）后**停止转圈**，改显示可读状态
+  「**还没收到回复 · 切回本体可查看进度**」；期间若回复通过 `overlay_push_ui` 到达会立即恢复正常渲染。
+- 说明：回复仍必须经本体 webview 的 JS 推回来（15s 超时同源的结构限制，Lead 那条线在处理），
+  所以这里的定位是「**不让 UI 无限转圈**」+ 给可读状态，而不是绕过 webview 取回复。
+
+## F. 保活（通知退出 + 调优指引）
+- **F① 通知栏加「退出」动作**（`ACTION_EXIT`）：**结束这次保活会话** —— 停服务 + 摘掉球/面板，
+  但**不动「本次已关闭」标记语义**：不写 `closedByUser`、不发 `closed` 事件（与「本次关闭」的区别：
+  后者 = 用户主动本次关闭、重新开启需回本体点开；前者 = 单纯停掉这次的保活，下次在本体打开即可）。
+- **F② 系统设置跳转命令**（给 task-16 的 OH 设置页直接用）：
+  `plugin:onethu-overlay|overlay_open_settings { what }`，`what ∈ battery | startup | app`；
+  TS 侧已导出 `openSystemSettings(what)`（`lib/overlayAndroid.ts`）。
+  - `battery` → `Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS`（电池优化列表页，**无需权限**）；
+  - `startup` → 华为/荣耀「应用启动管理」页（无公开 API，按常见组件名 try：`com.hihonor.systemmanager.*`
+    / `com.huawei.systemmanager.*` 的 `startupmgr`、`appcontrol` 两个 Activity；取不到**回落应用详情页**）；
+  - `app` → `ACTION_APPLICATION_DETAILS_SETTINGS`。
+- **F② 文案（给 task-16 落位用，原文可直接用）**：
+  > **让 OneTHU 常驻后台（华为 / 荣耀）**
+  > OneTHU 的悬浮球靠一个前台服务保持在线。系统若把应用「自动管理」，后台活动会被限制，悬浮球可能被回收。
+  > 建议按下面两步手动放行（只需设置一次）：
+  > 1. **应用启动管理**：设置 → 应用 → 应用启动管理 → 找到 **OneTHU** → 关闭「自动管理」，
+  >    打开「允许自启动」「允许关联启动」「允许后台活动」三开关。
+  > 2. **电池优化**：设置 → 电池 → 更多电池设置 → 应用耗电管理（或「电池优化」）→ 找到 **OneTHU** →
+  >    选择「不允许电池优化」/「允许后台活动」。
+  > 另外：通知栏里那条「OneTHU 悬浮球已开启」是保活通知，**不要划掉**；不需要悬浮球时点通知里的
+  > 「本次关闭」或「退出」即可。
+  > 按钮：`[打开应用启动管理]` → `openSystemSettings("startup")`；`[打开电池优化]` → `openSystemSettings("battery")`。
+
+## 哪条只能真机验（本批）
+
+| 条目 | 静态可核对 | 只能真机验 |
+|---|---|---|
+| A① 小窗 | 尺寸/圆角/空隙常量 | 真机上小窗比例是否好看、圆角与雾边是否干净 |
+| A② 风格 | token 值一致 | 与本体并排看是否「像一套」 |
+| A③ 三动作 | 按钮已删、只剩三个 | 一行三个胶囊是否换行/挤 |
+| B 吸附 | 时间常量、贴边写法 | **吸附是否够快、侧边条是否真贴边** |
+| C 显示 | 自愈路径与日志 | 「点一次就出来」是否真的成立（含开机/被杀/前后台） |
+| D 语音形态 | 窗口几何与转写带参数 | **原地横向展开的观感**、转写带位置、松手后滴落是否顺 |
+| E 超时状态 | 40s 阈值与文案 | 别的应用里发消息，40s 后是否真的停转圈且文案可读 |
+| F① 通知退出 | ACTION_EXIT 分支与标记语义 | 通知栏两个动作是否都在、点「退出」后球是否消失且**不**标记本次关闭 |
+| F② 设置跳转 | intent 候选表 | 荣耀 MagicOS 上 `startup` 是否真的落到「应用启动管理」页（取不到会回落应用详情页） |
+
+## 需要 Lead 跑的验证
+```bash
+cd apps/desktop/src-tauri/gen/android && ./gradlew :tauri-plugin-onethu-overlay:compileDebugKotlin   # 已由我本地跑过：BUILD SUCCESSFUL
+cd apps/desktop/src-tauri/gen/android && ./gradlew :app:processArm64DebugMainManifest
+cd apps/desktop/src-tauri && cargo check --target aarch64-linux-android   # 本轮新增 Rust 命令 overlay_open_settings
+```
+
+---
+
+# task-15 追加：气泡化 + liquid glass（用户 17:5x 拍板）
+
+状态：**完成 · 编译通过**（`:tauri-plugin-onethu-overlay:compileDebugKotlin` + `:app:processArm64DebugMainManifest` → **BUILD SUCCESSFUL**；
+仅剩 1 条已知告警 `SOFT_INPUT_ADJUST_RESIZE` deprecated；tsc exit 0；`._*` 0）。
+
+## 1) 气泡形制
+- 新增 `OverlayGlass.kt` 的 **`GlassBubble`**（自定义 `FrameLayout`，自绘玻璃材质 + 自带进场动画）。
+- **圆角 20dp，说话方那侧尾角 6dp**：`tailFor(isUser)` → 用户 `[20,20,6,20]`（右下收角）、OH `[20,6,20,20]`（左下收角）；
+  路径用 `Path.quadTo` 逐角构造（`outlineProvider` 同步，阴影才跟随气泡形状）。
+- 对齐与宽度：用户右对齐 / OH 左对齐；气泡最大宽度 **≤84% 屏宽**（内层文本 `maxWidth = 84%屏宽 − 28dp 内边距`）；
+  正文 **15sp / 行高 1.62 / 主色 100% alpha**（`USER_ALPHA` 已从 0.62 改为 1.0 —— 区分只靠位置与尾角）；
+  消息间距 **11dp**（`GAP_DP` 14→11，落在用户要求的 10–12dp）。
+- 一个气泡包住整条消息：`[图片缩略图…][markdown 块…][朗读入口][状态行]`（附件气泡也因此天然同材质，缩略图圆角 14dp 不变）。
+
+## 2) liquid glass 材质（跨应用窗口拿不到真 backdrop blur → 材质模拟）
+| 层 | 实现 |
+|---|---|
+| 玻璃底 | `LinearGradient` 纵向：浅色 `#FFFFFF` α**0.62→0.48**；深色 `#000000` α**0.42→0.30**（`OverlayViews.glassFill()`） |
+| 上沿 1px 内高光 | 先画 1px 极淡描边，再**裁到顶部 2dp 窄带**用亮色描边一遍 → 只亮上沿（等价 `inset 0 1px 0 rgba(255,255,255,.5)`）；静态强度浅 **0.5** / 深 **0.22** |
+| 柔和外阴影 | `elevation` 10dp（浅）/ 12dp（深），outline 跟随圆角；并把 `list`/`row` 的 `clipChildren=false` 让阴影画得出来 |
+| 防硬边 | 1px 描边：浅 `#FFFFFF` α0.35 / 深 `#FFFFFF` α0.22；**没有纯灰块**（底是半透明渐变 + 高光 + 阴影三层） |
+> 注：之前审过「第三方拿不到跨应用模糊」，所以这里全程是**材质模拟**，没有再去碰 `FLAG_BLUR_BEHIND`（那是「全屏雾」元凶，已明确禁用）。
+
+## 3) 「自然弹出」进场
+- **只给最新一条**播：`animateNewest` 仅在「面板已打开 且 消息数变多」时置真（`pushUi` 里判断），
+  `renderMessages` 只把最后一条传 `animate=true` 并立即复位 → 打开面板/历史重建时**没有乱跳**；
+- 动画：`scale 0.94→1.0` + 上移 **6dp** + `OvershootInterpolator(1.05)`，**200ms**；
+  同时顶部高光 `α0.35→0` 扫过 **200ms**（"液"感）；
+- 本地即时回显（附件气泡、语音整句、键盘发送）也算新消息 → 同样播动画。
+
+## 4) 其余不变（已复核）
+小窗规格（左右 14dp / 高 44% / 24dp 圆角）、顶栏三动作（回到 OneTHU / 自动朗读 / 收起）、
+液态滴落（150+280ms 开、260+200ms 关）、40s 停转圈的可读状态、附件即时气泡（同材质 + 缩略图 14dp）。
+
+## 顺带修的一个真 bug
+`OverlayMd` 原来给**所有**块级文本挂了 `LinkMovementMethod` —— 它会吃掉触摸事件，**破坏面板滚动**
+（尤其气泡里点着文字往上滑会滑不动）。改成**只有真含 `](` 链接的块才挂** ✓。
+
+## 哪条只能真机验（本批）
+| 条目 | 静态可核对 | 只能真机验 |
+|---|---|---|
+| 气泡形制 | 圆角/尾角/间距/宽度上限常量 | 一面屏里气泡比例是否好看、尾角是否一眼可辨 |
+| liquid glass | 三层参数（渐变/高光/阴影）| **真机上「玻璃感」够不够**（半透明底压在壁纸/应用上是否自然）、深色模式高光是否过亮 |
+| 自然弹出 | 时长/曲线/只给最新一条的逻辑 | **弹出是否「自然」**、连续多条到达时是否跟手不打架 |
+| 附件气泡 | 同材质 + 缩略图圆角 | 缩略图在玻璃底上的观感 |
+| 滚动 | 已修 LinkMovementMethod 抢触摸 | 含链接的长回复里能否正常上下滑 |

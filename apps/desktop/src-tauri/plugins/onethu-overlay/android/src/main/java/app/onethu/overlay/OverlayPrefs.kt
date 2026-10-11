@@ -14,6 +14,12 @@ object OverlayPrefs {
     private const val K_CLOSED = "closed_by_user"
     private const val K_X = "ball_x"
     private const val K_Y = "ball_y"
+    private const val K_SW = "ball_screen_w"
+    private const val K_SH = "ball_screen_h"
+    private const val K_FMT = "ball_fmt"
+
+    /** 球位置存档格式：0/1 = 只有 x/y（坐标系可能已经变过，一律作废）；2 = 带屏幕尺寸 */
+    const val BALL_FMT = 2
     private const val K_MODE = "mode"
 
     private fun sp(ctx: android.content.Context) =
@@ -38,9 +44,25 @@ object OverlayPrefs {
 
     fun ballY(ctx: android.content.Context) = sp(ctx).getInt(K_Y, Int.MIN_VALUE)
 
-    fun setBall(ctx: android.content.Context, x: Int, y: Int) {
-        sp(ctx).edit().putInt(K_X, x).putInt(K_Y, y).apply()
+    /**
+     * 存球位置。**必须带上当时的屏幕尺寸**：坐标是物理 px，跨「换机 / 分辨率变化 / 旧格式存档」
+     * 单独存 x/y 毫无意义（真机实录：旧存档把球钉在屏幕左边缘）。
+     */
+    fun setBall(ctx: android.content.Context, x: Int, y: Int, screenW: Int, screenH: Int) {
+        sp(ctx).edit()
+            .putInt(K_X, x)
+            .putInt(K_Y, y)
+            .putInt(K_SW, screenW)
+            .putInt(K_SH, screenH)
+            .putInt(K_FMT, BALL_FMT)
+            .apply()
     }
+
+    fun ballFormat(ctx: android.content.Context) = sp(ctx).getInt(K_FMT, 0)
+
+    fun ballScreenW(ctx: android.content.Context) = sp(ctx).getInt(K_SW, 0)
+
+    fun ballScreenH(ctx: android.content.Context) = sp(ctx).getInt(K_SH, 0)
 
     fun mode(ctx: android.content.Context) = sp(ctx).getString(K_MODE, "ball") ?: "ball"
 

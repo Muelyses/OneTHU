@@ -23,13 +23,19 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.Paint
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import android.graphics.Typeface
 import android.text.InputType
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
+import android.text.style.TypefaceSpan
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -37,23 +43,112 @@ import kotlin.math.max
 import kotlin.math.sin
 
 object OverlayViews {
-    /** 球直径：54dp */
+    /** 球直径：54dp（Lead 更正口径：容器尺寸不动，只放大里面的字号） */
     const val BALL_DP = 54
 
     /** 球窗尺寸 = 球 + 两侧各 8dp 留白：elevation 的轻投影要画在视图之外，
-     *  窗口若正好等于球的大小，投影会被窗口边界裁掉。 */
+     *  窗口若正好等于球的大小，投影会被边界裁掉。 */
     const val BALL_WIN_DP = BALL_DP + 16
 
-    /** 球文案：用户点名「就得是（OH）四个字，天王老子来了也不能改」 */
-    const val BALL_TEXT = "（OH）"
+    /** 面板正文字体（sans-serif 400）；品牌标识见 harnessMark() */
+    fun brandTypeface(): Typeface = try {
+        Typeface.create("sans-serif-medium", Typeface.BOLD)
+    } catch (_: Throwable) {
+        Typeface.DEFAULT_BOLD
+    }
+
+    /**
+     * 本体品牌标识 (OH) 的**逐字符混排**（对齐 components/HarnessMark.tsx + global.css:4090-4093）：
+     *   `(` `)` = 代码字体 mono / weight 400 / 竖向量略高（CSS transform: scaleY(1.06)）
+     *   `O`     = 衬线 serif / weight 500 / 字号 1.14em
+     *   `H`     = 无衬线（苹方同族）/ weight 700 / 字号 1.06em
+     * `gap: 0.05em` → Android 用 letterSpacing=0.05；`align-items:baseline` → 同一 TextView 天然共基线。
+     *
+     * 返回 Spannable：调用方 setText 后即得混排效果（TextView 必须 isSingleLine + includeFontPadding=false）。
+     */
+    fun harnessMark(): CharSequence {
+        val plain = "(OH)"
+        val sb = android.text.SpannableStringBuilder(plain)
+        val flags = android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        // ( ) —— mono 400（scaleY(1.06) 用 RelativeSizeSpan 近似：等比略放大）
+        for (i in intArrayOf(0, 3)) {
+            sb.setSpan(TypefaceSpan("monospace"), i, i + 1, flags)
+            sb.setSpan(RelativeSizeSpan(1.06f), i, i + 1, flags)
+        }
+        // O —— serif 500 / 1.14em
+        sb.setSpan(TypefaceSpan(weighted("serif", 500, Typeface.NORMAL)), 1, 2, flags)
+        sb.setSpan(RelativeSizeSpan(1.14f), 1, 2, flags)
+        // H —— sans 700 / 1.06em
+        sb.setSpan(TypefaceSpan(weighted("sans-serif", 700, Typeface.BOLD)), 2, 3, flags)
+        sb.setSpan(RelativeSizeSpan(1.06f), 2, 3, flags)
+        return sb
+    }
+
+    /** 取指定字重的系统字族：API 28+ 支持数值字重；旧版本退到 NORMAL/BOLD 两档 */
+    private fun weighted(family: String, weight: Int, fallbackStyle: Int): Typeface {
+        // 先用两参重载拿到字族（全 API 可用），API 28+ 再用 (Typeface, weight, italic) 叠数值字重。
+        // 注意：别用 (String, Int, Boolean) 那个重载——在本模块的 compileSdk 下解析不到（曾编译失败）。
+        val base = Typeface.create(family, fallbackStyle)
+        if (android.os.Build.VERSION.SDK_INT < 28) return base
+        return try {
+            Typeface.create(base, weight, false)
+        } catch (_: Throwable) {
+            base
+        }
+    }
+
+    /** 正文/按钮统一加一点阴影：雾淡处压在壁纸上也能读（半径 6dp、α0.25） */
+    fun shadow(tv: TextView) {
+        try {
+            tv.setShadowLayer(
+                dp(tv.context, 6).toFloat(),
+                0f,
+                dp(tv.context, 1).toFloat(),
+                0x40000000,
+            )
+        } catch (_: Throwable) {
+            /* 个别 ROM 不支持：忽略 */
+        }
+    }
+
+    /** 面板顶栏动作的**可读衬底**：半透明小胶囊 + 1px 细边（浅 #FFFFFF α0.86 / 深 #000000 α0.45） */
+    fun capsule(ctx: Context, dark: Boolean): GradientDrawable = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        cornerRadius = dp(ctx, 999).toFloat()
+        setColor(if (dark) 0x73000000 else 0xDBFFFFFF.toInt())
+        setStroke(max(1, dp(ctx, 1)), if (dark) 0x33FFFFFF else 0x1F000000)
+    }
+
+    /** 球文案：与本体 HarnessMark 完全一致的四个字符（半角括号 + O + H） */
+    const val BALL_TEXT = "(OH)"
 
     /** 语音条高：56dp（PLAN §3.1） */
     const val BAR_DP = 56
 
+    /** 悬浮小窗圆角（token：--dsw-radius-xl 20 / panel 28 之间取 24） */
+    const val PANEL_RADIUS_DP = 24
+
     const val MSG_SP = 15f
     const val LINE_MULT = 1.62f
-    const val GAP_DP = 14
-    const val USER_ALPHA = 0.62f
+    /** 消息间距（用户要求 10–12dp） */
+    const val GAP_DP = 11
+
+    /** 气泡里两侧都用主色 100% alpha（区分靠气泡自身位置与尾角，不靠透明度） */
+    const val USER_ALPHA = 1f
+
+    /* ── liquid glass 材质（跨应用窗口拿不到真 backdrop blur，用材质模拟）── */
+
+    /** 玻璃底：浅 #FFFFFF α0.62→0.48；深 #000000 α0.42→0.30 */
+    fun glassFill(light: Boolean, top: Boolean): Int =
+        if (light) {
+            withAlpha(0xFFFFFFFF.toInt(), if (top) 158 else 122)
+        } else {
+            withAlpha(0xFF000000.toInt(), if (top) 107 else 77)
+        }
+
+    /** 极淡 1px 描边（防硬边/纯灰块） */
+    fun glassBorder(light: Boolean): Int =
+        if (light) withAlpha(0xFFFFFFFF.toInt(), 90) else withAlpha(0xFFFFFFFF.toInt(), 56)
 
     /** 浅色雾心 / 深色雾心（--dsw-alias 近似） */
     const val FOG_LIGHT = 0xFFFFFFFF.toInt()
@@ -93,12 +188,13 @@ object OverlayViews {
             setStroke(max(1, dp(ctx, 1)), border)
         }
         return TextView(ctx).apply {
-            text = BALL_TEXT
-            // 四个全角字符要塞进 54dp：字号取 11sp（再大就会挤/裁切）
-            textSize = 11f
+            // 逐字符混排（mono 括号 / serif O / sans H），字号 15sp（本体悬浮岛就是 <HarnessMark size={15}/>）
+            text = harnessMark()
+            textSize = 15f
             gravity = Gravity.CENTER
             setTextColor(ink(dark))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            // gap: 0.05em
+            letterSpacing = 0.05f
             includeFontPadding = false
             isSingleLine = true
             background = bg
@@ -109,55 +205,121 @@ object OverlayViews {
         }
     }
 
-    /** 语音条：56dp 全宽雾带 + 点点波纹 + 实时转写（雾里浮字） */
-    fun buildBar(ctx: Context, dark: Boolean): Triple<FogLayout, WaveDots, TextView> {
-        val bar = FogLayout(ctx).apply {
+    /**
+     * 语音长条（task-15 D）：**球原地横向展开**——56dp 高的雾带 + 点点波纹 + 一行转写；
+     * 上方再浮一层淡雾专门显示「识别到的话」（用户原话：上面一点点雾状显示识别到的话）。
+     * 返回 (根, 波纹, 条内文字, 上方转写带, 转写文字)。
+     */
+    class VoiceBar(
+        val root: FogLayout,
+        val wave: WaveDots,
+        val hint: TextView,
+        val sub: FogLayout,
+        val subText: TextView,
+    )
+
+    fun buildVoiceBar(ctx: Context, dark: Boolean): VoiceBar {
+        val root = FogLayout(ctx).apply {
             coreColor = fogCore(dark)
-            coreAlpha = if (dark) 0.88f else 0.92f
-            // 条很矮：用近乎实心的纵向渐变（底浓顶淡一点点），不再有径向团
-            stopPositions = floatArrayOf(0f, 0.6f, 1f)
-            stopWeights = floatArrayOf(1f, 0.96f, 0.66f)
+            coreAlpha = if (dark) 0.90f else 0.94f
+            // 条 + 上方转写带：整体用近乎实心的纵向渐变，底浓顶淡
+            stopPositions = floatArrayOf(0f, 0.7f, 1f)
+            stopWeights = floatArrayOf(1f, 0.97f, 0.8f)
         }
+        val column = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(ctx, 16), dp(ctx, 6), dp(ctx, 16), dp(ctx, 8))
+        }
+        // 上方：淡雾转写带（默认 GONE，说话时显示）
+        val sub = FogLayout(ctx).apply {
+            coreColor = fogCore(dark)
+            coreAlpha = if (dark) 0.62f else 0.72f
+            stopPositions = floatArrayOf(0f, 0.75f, 1f)
+            stopWeights = floatArrayOf(1f, 0.8f, 0f)
+            cornerRadiusPx = dp(ctx, 14).toFloat()
+            visibility = View.GONE
+        }
+        val subText = TextView(ctx).apply {
+            text = ""
+            textSize = MSG_SP
+            maxLines = 2
+            setTextColor(ink(dark))
+            setPadding(dp(ctx, 12), dp(ctx, 6), dp(ctx, 12), dp(ctx, 6))
+            includeFontPadding = false
+            shadow(this)
+            isClickable = false
+        }
+        sub.addView(
+            subText,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER_VERTICAL,
+            ),
+        )
+        column.addView(
+            sub,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(ctx, SUB_BAR_H_DP),
+            ),
+        )
+        // 下方：条本体（波纹 + 一行提示/转写）
         val row = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(ctx, 18), dp(ctx, 8), dp(ctx, 18), dp(ctx, 8))
-            isClickable = false
         }
         val wave = WaveDots(ctx).apply {
             dotColor = ink(dark)
             isClickable = false
         }
         row.addView(wave, LinearLayout.LayoutParams(dp(ctx, 52), dp(ctx, 24)))
-        val text = TextView(ctx).apply {
-            text = "长按说话"
+        val hint = TextView(ctx).apply {
+            text = "在听，请讲…"
             textSize = MSG_SP
-            maxLines = 2
-            ellipsize = null
+            maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
             setTextColor(ink(dark))
             isClickable = false
+            shadow(this)
         }
-        val tlp = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-        tlp.marginStart = dp(ctx, 12)
-        row.addView(text, tlp)
-        bar.addView(
+        val hlp2 = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+        hlp2.marginStart = dp(ctx, 12)
+        row.addView(hint, hlp2)
+        column.addView(
             row,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(ctx, BAR_DP),
+            ),
+        )
+        root.addView(
+            column,
             FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
             ),
         )
-        return Triple(bar, wave, text)
+        return VoiceBar(root, wave, hint, sub, subText)
     }
 
-    /** 半屏对话面板：雾中の裸文字 + 底部无框下划线输入行 */
+    /** 语音条窗口尺寸（条 + 上方转写带） */
+    const val VOICE_BAR_W_DP = 300
+    const val SUB_BAR_H_DP = 40
+
+    /** 半屏对话面板：雾中の裸文字 + 底部无框下划线输入行 */    /** 半屏对话面板：雾中の裸文字 + 底部无框下划线输入行 */
     fun buildPanel(ctx: Context, dark: Boolean): PanelHolder {
         val root = FogLayout(ctx).apply {
             coreColor = fogCore(dark)
-            coreAlpha = if (dark) 0.90f else 0.92f
-            // 纵向铺满整块面板：底部 100%、58% 处仍 100%、82% 处 55%、顶端透明
-            stopPositions = floatArrayOf(0f, 0.58f, 0.82f, 1f)
+            // 真机反馈「看都看不清」：底部核心加实（浅 0.96 / 深 0.94），给底部的字足够衬底
+            coreAlpha = if (dark) 0.94f else 0.96f
+            // 内容区保底：0→80% 都是全浓度（绝对 alpha ≥0.94×1.0），90% 处 0.55×core ≈ 0.53，
+            // 只在最顶端 10% 的窄带里羽化到透明。这样「向上变淡」的观感还在，
+            // 但文字永远压在雾上（而不是直接压在壁纸/深色背景上）。
+            stopPositions = floatArrayOf(0f, 0.80f, 0.90f, 1f)
             stopWeights = floatArrayOf(1f, 1f, 0.55f, 0f)
+            // A①：悬浮小窗（左右留空隙）→ 四周圆角
+            cornerRadiusPx = dp(ctx, PANEL_RADIUS_DP).toFloat()
         }
         val content = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
@@ -168,24 +330,65 @@ object OverlayViews {
             isFocusableInTouchMode = true
         }
 
-        // 两个功能性裸文字入口（单窗不变量下，球在面板打开时必须摘掉，
-        // 所以「再点球回球」改由这里的「收起」承担）：
-        //   · 收起 —— 回球（面板摘掉、球窗重新挂上）
-        //   · 本次关闭悬浮球 —— 需求 5：雾面表面可直接本次关闭
+        // 固定顶栏（在 ScrollView 之外，任何滚动位置都在）：两行四个动作，全部带可读胶囊衬底。
+        // 第一行：回到 OneTHU（用户主动点击才跳，不算破红线）+ 自动朗读开关
+        val headTop = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        val backBtn = TextView(ctx).apply {
+            text = "回到 OneTHU"
+            textSize = 12f
+            setTextColor(ink(dark))
+            alpha = 1f
+            background = capsule(ctx, dark)
+            setPadding(dp(ctx, 11), dp(ctx, 6), dp(ctx, 11), dp(ctx, 6))
+            shadow(this)
+        }
+        headTop.addView(
+            backBtn,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ),
+        )
+        val speakBtn = TextView(ctx).apply {
+            text = "自动朗读：关"
+            textSize = 12f
+            setTextColor(ink(dark))
+            alpha = 1f
+            background = capsule(ctx, dark)
+            setPadding(dp(ctx, 11), dp(ctx, 6), dp(ctx, 11), dp(ctx, 6))
+            shadow(this)
+        }
+        val sbLp = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
+        sbLp.marginStart = dp(ctx, 8)
+        headTop.addView(speakBtn, sbLp)
+        content.addView(
+            headTop,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            ),
+        )
+
+        // 第二行（右对齐）：只剩「收起」（「本次关闭悬浮球」按用户要求删除）
         val head = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL or Gravity.END
         }
-        head.addView(
-            View(ctx),
-            LinearLayout.LayoutParams(0, 1, 1f),
-        )
+        head.addView(View(ctx), LinearLayout.LayoutParams(0, 1, 1f))
         val collapse = TextView(ctx).apply {
             text = "收起"
-            textSize = 12f
+            textSize = 13f
             setTextColor(ink(dark))
-            alpha = 0.55f
-            setPadding(dp(ctx, 8), dp(ctx, 2), dp(ctx, 8), dp(ctx, 6))
+            alpha = 1f
+            background = capsule(ctx, dark)
+            setPadding(dp(ctx, 12), dp(ctx, 7), dp(ctx, 12), dp(ctx, 7))
+            shadow(this)
         }
         head.addView(
             collapse,
@@ -194,51 +397,34 @@ object OverlayViews {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ),
         )
-        val close = TextView(ctx).apply {
-            text = "本次关闭悬浮球"
-            textSize = 12f
-            setTextColor(ink(dark))
-            alpha = 0.55f
-            setPadding(dp(ctx, 8), dp(ctx, 2), 0, dp(ctx, 6))
-        }
-        head.addView(
-            close,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
+        val hlp = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
         )
-        content.addView(
-            head,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
-        )
+        hlp.topMargin = dp(ctx, 8)
+        content.addView(head, hlp)
 
-        val list = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL }
+        // 消息区（可滑动）。顶栏在它之外 → 任何滚动位置都常驻；只在这里放消息
+        val list = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            // 气泡的柔和阴影需要画到自身边界之外
+            clipChildren = false
+        }
         val scroll = ScrollView(ctx).apply {
             isFillViewport = true
             isVerticalScrollBarEnabled = false
             overScrollMode = View.OVER_SCROLL_NEVER
-            addView(list, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+            addView(
+                list,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                ),
+            )
         }
         val slp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
+        slp.topMargin = dp(ctx, 10)
         content.addView(scroll, slp)
-
-        val empty = TextView(ctx).apply {
-            text = "点击输入，长按说话"
-            textSize = MSG_SP
-            setTextColor(ink(dark))
-            alpha = 0.45f
-        }
-        content.addView(
-            empty,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-            ),
-        )
 
         // 底部输入行：无框下划线（EditText 无背景 + 其下一条 1dp 细线）
         val inputRow = LinearLayout(ctx).apply {
@@ -249,7 +435,8 @@ object OverlayViews {
             hint = "点击输入，长按说话"
             textSize = MSG_SP
             setTextColor(ink(dark))
-            setHintTextColor(withAlpha(ink(dark), 96))
+            // 占位也算读得清的界面文字：0.92 而不是原来的 0.38（Lead 要求 ≥0.92）
+            setHintTextColor(withAlpha(ink(dark), 235))
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             imeOptions = EditorInfo.IME_ACTION_SEND
             maxLines = 1
@@ -265,10 +452,12 @@ object OverlayViews {
         inputRow.addView(input, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
         val action = TextView(ctx).apply {
             text = "发送"
-            textSize = 13f
+            // 「发送」用主色、不用灰（真机反馈）
+            textSize = 14f
             setTextColor(ink(dark))
-            alpha = 0.85f
-            setPadding(dp(ctx, 12), dp(ctx, 4), 0, dp(ctx, 4))
+            alpha = 1f
+            setPadding(dp(ctx, 12), dp(ctx, 6), 0, dp(ctx, 6))
+            shadow(this)
         }
         inputRow.addView(
             action,
@@ -277,7 +466,7 @@ object OverlayViews {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             ),
         )
-        val underline = View(ctx).apply { setBackgroundColor(withAlpha(ink(dark), 38)) }
+        val underline = View(ctx).apply { setBackgroundColor(withAlpha(ink(dark), 72)) }
 
         // 附件三入口（需求 6）：纯裸文字，走系统选择器，应用不申请存储/相机权限
         val attachRow = LinearLayout(ctx).apply {
@@ -286,10 +475,12 @@ object OverlayViews {
         }
         fun entry(label: String, startPad: Int): TextView = TextView(ctx).apply {
             text = label
-            textSize = 12f
+            // 功能入口：主色 + 100% alpha + 13sp + 轻阴影
+            textSize = 13f
             setTextColor(ink(dark))
-            alpha = 0.72f
-            setPadding(dp(ctx, startPad), dp(ctx, 4), 0, dp(ctx, 4))
+            alpha = 1f
+            setPadding(dp(ctx, startPad), dp(ctx, 6), 0, dp(ctx, 6))
+            shadow(this)
         }
         val camBtn = entry("拍照", 0)
         val galBtn = entry("相册", 16)
@@ -379,11 +570,130 @@ object OverlayViews {
                 ViewGroup.LayoutParams.MATCH_PARENT,
             ),
         )
+
+        // 光晕：扩散动效里从滴点淡出（默认全透明，不可点）
+        val glow = View(ctx).apply {
+            alpha = 0f
+            isClickable = false
+            isFocusable = false
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                gradientType = GradientDrawable.RADIAL_GRADIENT
+                gradientRadius = dp(ctx, 320).toFloat()
+                colors = intArrayOf(
+                    withAlpha(ink(dark), 46),
+                    withAlpha(ink(dark), 16),
+                    0x00000000,
+                )
+                setGradientCenter(0.5f, 0.72f)
+            }
+        }
+        root.addView(
+            glow,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+            ),
+        )
         return PanelHolder(
-            root, content, collapse, close, scroll, list, empty,
+            root, content, backBtn, speakBtn, collapse, scroll, list, glow,
             input, action, underline, camBtn, galBtn, fileBtn,
             inputBlock, voiceRow, voiceWave, voiceText,
         )
+    }
+
+    /** 侧边缩略条尺寸（像腾讯会议那种小胶囊） */
+    const val SIDE_W_DP = 22
+    const val SIDE_H_DP = 56
+
+    /** 侧边窗尺寸（同样留 8dp 投影边） */
+    const val SIDE_WIN_W_DP = SIDE_W_DP + 16
+    const val SIDE_WIN_H_DP = SIDE_H_DP + 16
+
+    /**
+     * 侧边缩略条：实底 + 1px 细边 + 轻投影的小胶囊（贴在屏幕左/右边缘），
+     * 中间一个低透明度圆点做可点提示。点击 = 丝滑展开回悬浮球。
+     */
+    fun buildSideBar(ctx: Context, dark: Boolean): TextView {
+        val fill = if (dark) 0xFF151517.toInt() else 0xFFFFFFFF.toInt()
+        val border = if (dark) 0x24FFFFFF else 0x1A000000
+        val bg = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(ctx, SIDE_W_DP / 2 + 4).toFloat()
+            setColor(fill)
+            setStroke(max(1, dp(ctx, 1)), border)
+        }
+        return TextView(ctx).apply {
+            text = "•"
+            textSize = 10f
+            gravity = Gravity.CENTER
+            setTextColor(withAlpha(ink(dark), 110))
+            background = bg
+            elevation = dp(ctx, 5).toFloat()
+            isClickable = false
+            isFocusable = false
+        }
+    }
+
+    /**
+     * 附件图片缩略图：本地文件直接渲染（异步降采样解码），点一下放大/再点收小。
+     * 不新开窗口（单窗不变量），放大是**在消息列表里原地变大**。
+     */
+    fun buildImageThumb(
+        ctx: Context,
+        path: String,
+        dark: Boolean,
+        bigHeightPx: Int,
+        onToggle: () -> Unit,
+    ): ImageView {
+        val w = dp(ctx, 220)
+        val h = dp(ctx, 150)
+        val iv = ImageView(ctx).apply {
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            setBackgroundColor(withAlpha(ink(dark), 26))
+            clipToOutline = true
+            outlineProvider = object : android.view.ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: android.graphics.Outline) {
+                    outline.setRoundRect(0, 0, view.width, view.height, dp(ctx, 14).toFloat())
+                }
+            }
+        }
+        iv.layoutParams = LinearLayout.LayoutParams(w, h)
+        var big = false
+        iv.setOnClickListener {
+            big = !big
+            val lp = iv.layoutParams as LinearLayout.LayoutParams
+            lp.width = if (big) dp(ctx, 320) else w
+            lp.height = if (big) bigHeightPx else h
+            iv.scaleType = if (big) ImageView.ScaleType.FIT_CENTER else ImageView.ScaleType.CENTER_CROP
+            iv.layoutParams = lp
+            onToggle()
+        }
+        loadThumb(iv, path, if (big) 1024 else 480)
+        return iv
+    }
+
+    /** 降采样解码到最长边 <= maxPx，解完 post 回 UI 线程（绝不阻塞面板打开） */
+    private fun loadThumb(iv: ImageView, path: String, maxPx: Int) {
+        Thread {
+            val bmp = try {
+                val opts = android.graphics.BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                android.graphics.BitmapFactory.decodeFile(path, opts)
+                var sample = 1
+                while (opts.outWidth / sample > maxPx || opts.outHeight / sample > maxPx) sample *= 2
+                android.graphics.BitmapFactory.decodeFile(
+                    path,
+                    android.graphics.BitmapFactory.Options().apply { inSampleSize = sample },
+                )
+            } catch (_: Throwable) {
+                null
+            }
+            if (bmp != null) {
+                iv.post { runCatching { iv.setImageBitmap(bmp) } }
+            }
+        }.start()
     }
 
     /** 一条消息（裸文字，无气泡）：对方左对齐正常字重；用户右对齐 62% 不透明 */
@@ -432,8 +742,12 @@ class FogLayout(context: Context) : FrameLayout(context) {
     /** 与 stopPositions 一一对应的 alpha 权重（最终 alpha = coreAlpha * 权重） */
     var stopWeights: FloatArray = floatArrayOf(1f, 1f, 0.55f, 0f)
 
+    /** 圆角（px）：>0 时把雾裁成圆角小窗；0 = 满幅（语音条用） */
+    var cornerRadiusPx: Float = 0f
+
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var shader: LinearGradient? = null
+    private val clipPath = android.graphics.Path()
 
     init {
         setWillNotDraw(false)
@@ -452,6 +766,7 @@ class FogLayout(context: Context) : FrameLayout(context) {
         shader = build(w, h)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun build(w: Int, h: Int): LinearGradient {
         val n = minOf(stopPositions.size, stopWeights.size).coerceAtLeast(2)
         val a = (coreAlpha.coerceIn(0f, 1f) * 255f).toInt()
@@ -477,7 +792,20 @@ class FogLayout(context: Context) : FrameLayout(context) {
         super.onDraw(canvas)
         val s = shader ?: build(width, height).also { shader = it }
         paint.shader = s
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+        val r = cornerRadiusPx
+        if (r > 0f && width > 0 && height > 0) {
+            // 圆角小窗：把雾裁进圆角矩形（窗口之外本来就是透明的）
+            clipPath.reset()
+            clipPath.addRoundRect(
+                0f, 0f, width.toFloat(), height.toFloat(), r, r, android.graphics.Path.Direction.CW,
+            )
+            val save = canvas.save()
+            canvas.clipPath(clipPath)
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+            canvas.restoreToCount(save)
+        } else {
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
+        }
     }
 }
 
@@ -519,11 +847,16 @@ class WaveDots(context: Context) : View(context) {
 class PanelHolder(
     val root: FogLayout,
     val content: LinearLayout,
+    /** 回到 OneTHU（用户主动点击） */
+    val backBtn: TextView,
+    /** 自动朗读开关（文案随状态变） */
+    val autoSpeakBtn: TextView,
+    /** 顶栏第三个动作（收起）——「本次关闭悬浮球」已按用户要求删除，该语义仍在通知栏动作里 */
     val collapseBtn: TextView,
-    val closeBtn: TextView,
     val scroll: ScrollView,
     val list: LinearLayout,
-    val empty: TextView,
+    /** 扩散光晕层（动效用，默认 alpha=0） */
+    val glow: View,
     val input: EditText,
     val actionBtn: TextView,
     val underline: View,
@@ -540,9 +873,10 @@ class PanelHolder(
 
 class OrbHolder(
     val root: FrameLayout,
-    /** 球本体：实底 + 细边框 + 轻投影的 TextView（文案「（OH）」） */
+    /** 球本体：实底 + 细边框 + 轻投影的 TextView（文案「(OH)」三字体混排） */
     val ball: TextView,
-    val bar: FogLayout,
-    val wave: WaveDots,
-    val barText: TextView,
+    /** 侧边缩略条（边缘吸附形态） */
+    val side: TextView,
+    /** 语音长条（球原位横向展开；含上方一层淡雾转写带） */
+    val bar: OverlayViews.VoiceBar,
 )

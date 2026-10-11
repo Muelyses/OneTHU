@@ -17,5 +17,6 @@ permissions = [
   "allow-overlay-ack-events",
   "allow-overlay-push-ui",
   "allow-overlay-pick-attach",
+  "allow-overlay-open-settings",
   "allow-overlay-status",
 ]

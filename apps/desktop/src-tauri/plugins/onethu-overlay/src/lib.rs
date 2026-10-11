@@ -44,6 +44,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             commands::overlay_ack_events,
             commands::overlay_push_ui,
             commands::overlay_pick_attach,
+            commands::overlay_open_settings,
             commands::overlay_status,
         ])
         .setup(|app, api| {

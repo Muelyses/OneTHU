@@ -185,6 +185,8 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   /** 顶部把手拖动（改面板高度；记的是 **screenY**，见下面 onPointerMove 的注释） */
   const handleDrag = useRef<{ id: number; screenY0: number; h0: number } | null>(null);
   const lastPanelH = useRef(0);
+  /** Rust 回传的真实窗口逻辑高度（geometry.h）——h0 只认它，不再拿常量/缓存推（task-18 ③） */
+  const winHRef = useRef(0);
   const [handleDown, setHandleDown] = useState(false);
   const prefs = useVoicePrefs();
 
@@ -260,8 +262,9 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           else openPanel();
         } else if ((e.type as string) === "geometry") {
           // 原生每次落位后回传：球心相对本窗左上角的逻辑坐标，给过场当 transform-origin
-          const g = e as unknown as { x?: unknown; y?: unknown };
+          const g = e as unknown as { x?: unknown; y?: unknown; h?: unknown };
           if (typeof g.x === "number" && typeof g.y === "number") setOrigin({ x: g.x, y: g.y });
+          if (typeof g.h === "number" && g.h > 0) winHRef.current = g.h;
         } else if (e.type === "submit") {
           void send(e.text ?? "");
         } else if (e.type === "closed") {
@@ -435,10 +438,13 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           onPointerDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            const h0 = Math.max(120, (typeof window !== "undefined" ? window.innerHeight : 0) - PANEL_PAD * 2);
-            handleDrag.current = { id: e.pointerId, screenY0: e.screenY, h0 };
-            lastPanelH.current = h0;
-            logOrb(`handle down：h0=${Math.round(h0)} screenY0=${Math.round(e.screenY)}`);
+            // h0 = 真实窗口高度（优先 Rust geometry 回传的 h，其次 innerHeight）——不从缓存推
+            const realH = winHRef.current > 0
+              ? winHRef.current - PANEL_PAD * 2
+              : Math.max(120, (typeof window !== "undefined" ? window.innerHeight : 0) - PANEL_PAD * 2);
+            handleDrag.current = { id: e.pointerId, screenY0: e.screenY, h0: realH };
+            lastPanelH.current = realH;
+            logOrb(`handle down：h0=${Math.round(realH)}（来源 ${winHRef.current > 0 ? "geometry.h" : "innerHeight"}）screenY0=${Math.round(e.screenY)}`);
             try {
               (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
             } catch {
@@ -459,6 +465,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
               avail * PANEL_MIN_RATIO,
               Math.min(avail * PANEL_MAX_RATIO, d.h0 - dy), // 向上拖（dy<0）= 变高
             );
+            logOrb(`handle move：dy=${Math.round(dy)} h0=${Math.round(d.h0)} → next=${Math.round(next)}`);
             if (Math.abs(next - lastPanelH.current) < 2) return;
             lastPanelH.current = next;
             void applyPanelHeight(next);

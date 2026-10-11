@@ -271,6 +271,15 @@ fn save_pos(app: &AppHandle, x: i32, y: i32, scale: f64, force: bool) {
     }
 }
 
+/// 面板高度口径的**唯一来源**（task-18：两处 30% 合并成一处，单位固定为逻辑 px）。
+/// 返回 (最小, 最大, 默认)。
+#[cfg(desktop)]
+fn panel_limits(work_h_log: f64) -> (f64, f64, f64) {
+    let min = (work_h_log * PANEL_MIN_RATIO).max(120.0);
+    let max = (work_h_log * PANEL_MAX_RATIO).max(min + 1.0);
+    (min, max, work_h_log * PANEL_RATIO)
+}
+
 // ── 显示器与几何 ────────────────────────────────────────────────────────────
 #[cfg(desktop)]
 fn mon_of(m: &tauri::Monitor) -> Mon {
@@ -396,23 +405,21 @@ fn geo_for(mode: Mode, mon: Mon, ball: Option<(i32, i32)>) -> Geo {
             }
         }
         Mode::Panel => {
-            // 安卓 A①：左右/底部各留 14，高 = 屏高 × 0.44（可用顶部把手改成 30%~80%），圆角 24 前端画。
-            // 窗口比视觉块四周各大 PANEL_SHADOW_PAD：那圈留白专门给「柔和外阴影」画，视觉块仍严格落在 14 边距上。
-            let margin = (PANEL_MARGIN * s).round() as i32;
-            let pad = (PANEL_SHADOW_PAD * s).round() as i32;
-            let w = (mon.ww as i32 - margin * 2).max(200);
-            let work_h = mon.wh as i32;
-            let min_v = ((work_h as f64 * PANEL_MIN_RATIO).round() as i32).max(120);
-            let max_v = ((work_h as f64 * PANEL_MAX_RATIO).round() as i32).max(min_v + 1);
-            let want = { st().panel_h }
-                .map(|v| (v * s).round() as i32)
-                .unwrap_or_else(|| (work_h as f64 * PANEL_RATIO).round() as i32);
-            let v = want.clamp(min_v, max_v);
+            // 安卓 A①：左右/底部各留 14，高 = 屏高 × 0.44（顶部把手可改 30%~80%），圆角 24 前端画。
+            // task-18 统一口径：**夹取/存储一律逻辑 px，只在最后一次性换算物理落位**；
+            // 两处 30% 下限合并到 panel_limits()，杜绝「存进去又被另一处夹回最小」。
+            let work_h_log = mon.wh as f64 / s;
+            let work_w_log = mon.ww as f64 / s;
+            let (min_l, max_l, def_l) = panel_limits(work_h_log);
+            let v_log = { st().panel_h }.unwrap_or(def_l).clamp(min_l, max_l);
+            let lw = (work_w_log - PANEL_MARGIN * 2.0 + PANEL_SHADOW_PAD * 2.0).max(160.0);
+            let lh = v_log + PANEL_SHADOW_PAD * 2.0;
             Geo {
-                x: mon.wx + margin - pad,
-                y: mon.wy + work_h - margin - v - pad,
-                lw: ((w + pad * 2) as f64) / s,
-                lh: ((v + pad * 2) as f64) / s,
+                x: mon.wx + ((PANEL_MARGIN - PANEL_SHADOW_PAD) * s).round() as i32,
+                y: mon.wy + mon.wh as i32
+                    - ((PANEL_MARGIN + v_log + PANEL_SHADOW_PAD) * s).round() as i32,
+                lw,
+                lh,
             }
         }
     }
@@ -444,11 +451,21 @@ fn emit_geometry(win: &WebviewWindow, mode: Mode, geo: Geo, ball: Option<(i32, i
 
 #[cfg(desktop)]
 fn apply_geo(win: &WebviewWindow, g: Geo) -> Result<(), String> {
-    // 尺寸用逻辑像素、位置用物理像素：tauri 的 Size/Position 两套类型别混
-    win.set_size(LogicalSize::new(g.lw, g.lh))
-        .map_err(|e| format!("设置悬浮窗尺寸失败：{e}"))?;
-    win.set_position(PhysicalPosition::new(g.x, g.y))
-        .map_err(|e| format!("设置悬浮窗位置失败：{e}"))?;
+    // 尺寸用逻辑像素、位置用物理像素：tauri 的 Size/Position 两套类型别混。
+    // task-18：把**实际调用值与返回值**都留证（「拖了等于没拖」必须能一眼看出是没调还是缩回去了）。
+    log(&format!(
+        "apply_geo: set_size(逻辑 {:.0}x{:.0}) set_position(物理 {},{})",
+        g.lw, g.lh, g.x, g.y
+    ));
+    let rs = win.set_size(LogicalSize::new(g.lw, g.lh));
+    let rp = win.set_position(PhysicalPosition::new(g.x, g.y));
+    log(&format!(
+        "apply_geo 返回: set_size={} set_position={}",
+        if rs.is_ok() { "ok" } else { "err" },
+        if rp.is_ok() { "ok" } else { "err" }
+    ));
+    rs.map_err(|e| format!("设置悬浮窗尺寸失败：{e}"))?;
+    rp.map_err(|e| format!("设置悬浮窗位置失败：{e}"))?;
     Ok(())
 }
 
@@ -756,14 +773,20 @@ pub fn overlay_set_panel_height(app: AppHandle, h: f64) -> Result<(), String> {
         let win = ensure_window(&app)?;
         let ball = { st().ball }.or_else(|| load_pos(&app));
         let mon = pick_monitor(&win, ball);
-        let mh = mon.wh as f64 / mon.scale;
-        let want = h.max(mh * PANEL_MIN_RATIO).min(mh * PANEL_MAX_RATIO);
+        let work_h_log = mon.wh as f64 / mon.scale;
+        let (min_l, max_l, _) = panel_limits(work_h_log);
+        let want = h.clamp(min_l, max_l);
         st().panel_h = Some(want);
+        log(&format!(
+            "panel_set_height: 入参 h={h:.1} → want={want:.1}（min={min_l:.1} max={max_l:.1} work_h_log={work_h_log:.1} scale={:.1}）",
+            mon.scale
+        ));
         let geo = geo_for(Mode::Panel, mon, ball);
+        let (lw, lh) = (geo.lw, geo.lh);
         apply_geo(&win, geo)?;
         save_panel_h(&app, want);
         emit_geometry(&win, Mode::Panel, geo, ball);
-        log(&format!("panel 高度 → {want:.0} 逻辑 px（窗口 {:.0}x{:.0}）", geo.lw, geo.lh));
+        log(&format!("panel_set_height 生效: 窗口逻辑 {lw:.0}x{lh:.0}（视觉块 {want:.0} + 阴影留白 {:.0}）", PANEL_SHADOW_PAD * 2.0));
         Ok(())
     }
     #[cfg(not(desktop))]

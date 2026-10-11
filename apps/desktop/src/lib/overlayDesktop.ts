@@ -117,12 +117,17 @@ function installGestureBridge(_cb: (e: OverlayEvent) => void): () => void {
   let jsDrag = false;
 
   const isBallPress = (target: EventTarget | null): boolean => {
+    // ★task-18：**只有球态才允许拖窗**——面板态一律不调 overlay_drag_start。
+    // 用户实录「handle 只是像其他位置一样把窗口拖走」就是这条太宽：指针一被原生拖窗接管，
+    // 前端的 pointermove 就再也收不到（move 级日志缺失、h0 恒为 251 全是同一个因）。
+    if (typeof document === "undefined" || !document.querySelector("[data-oh-ball]")) return false;
     const el = target as Element | null;
     return typeof el?.closest === "function" && el.closest("[data-oh-ball]") !== null;
   };
 
   const beginDrag = (): void => {
     drag.active = true;
+    void log(`拖窗桥：球态按下 + 位移 > ${DRAG_PX}px → overlay_drag_start`);
     void (async () => {
       try {
         await invoke("overlay_drag_start");

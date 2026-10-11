@@ -114,18 +114,48 @@ object OverlayViews {
         }
     }
 
-    /** 顶部把手（用户 ⑤）：36×5dp 圆角条，按下提亮，用来上下拖长拖短小窗 */
-    fun buildHandle(ctx: Context, dark: Boolean): View = View(ctx).apply {
-        background = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = dp(ctx, 3).toFloat()
-            setColor(withAlpha(ink(dark), 90))
+    /**
+     * 顶部把手（用户 ⑤，21:5x 反馈「好难拖动」后加宽命中区）：
+     * **视觉条 36×5dp** 居中，但**可拖区域 = 全宽 × 36dp**（上下各 ≈15dp，≥12dp），
+     * 手指按在条附近任何位置都能拖 —— 不需要精准命中那 5dp 细条。
+     * 返回的是**容器**（触摸监听挂在它上面），视觉条是它的子 View。
+     */
+    fun buildHandle(ctx: Context, dark: Boolean): View {
+        val container = FrameLayout(ctx).apply {
+            isClickable = false
+            isFocusable = false
+            alpha = 0.75f
+            noFocusRing(this)
         }
-        alpha = 0.75f
+        val bar = View(ctx).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(ctx, 3).toFloat()
+                setColor(withAlpha(ink(dark), 100))
+            }
+            isClickable = false
+            isFocusable = false
+        }
+        container.addView(
+            bar,
+            FrameLayout.LayoutParams(
+                dp(ctx, HANDLE_W_DP),
+                dp(ctx, HANDLE_H_DP),
+                Gravity.CENTER,
+            ),
+        )
+        return container
     }
 
+    /** 视觉条尺寸 */
     const val HANDLE_W_DP = 36
     const val HANDLE_H_DP = 5
+
+    /** **可拖区域高度**（全宽 × 这个高度；上下各 ≈15dp，满足「≥12dp 内边距」） */
+    const val HANDLE_TOUCH_H_DP = 36
+
+    /** 拖动判定阈值：位移 >2dp 才进入拖动（避免微抖；进入时会 rebase，所以不会跳变） */
+    const val HANDLE_SLOP_DP = 2
 
     /** 正文/按钮统一加一点阴影：雾淡处压在壁纸上也能读（半径 6dp、α0.25） */
     fun shadow(tv: TextView) {
@@ -387,7 +417,7 @@ object OverlayViews {
         val content = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             // 左右 14dp：与小窗到屏幕的边距一致（顶栏胶囊也吃这个缩进）
-            setPadding(dp(ctx, PANEL_EDGE_DP), dp(ctx, 14), dp(ctx, PANEL_EDGE_DP), dp(ctx, 12))
+            setPadding(dp(ctx, PANEL_EDGE_DP), dp(ctx, 6), dp(ctx, PANEL_EDGE_DP), dp(ctx, 12))
             // 关键：面板加窗后由容器拿焦点，EditText **不自动**抢焦点
             // （否则系统会在没人点输入行的情况下自己弹输入法——真机实录）
             isFocusable = true
@@ -396,13 +426,13 @@ object OverlayViews {
 
         // 顶部把手（⑤）：36×5dp 圆角条，居中；**竖直拖动改小窗高度**（clamp 30%–80% 屏高）
         val handle = buildHandle(ctx, dark)
-        val hlp0 = LinearLayout.LayoutParams(
-            dp(ctx, HANDLE_W_DP),
-            dp(ctx, HANDLE_H_DP),
+        content.addView(
+            handle,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(ctx, HANDLE_TOUCH_H_DP),
+            ),
         )
-        hlp0.gravity = Gravity.CENTER_HORIZONTAL
-        hlp0.bottomMargin = dp(ctx, 8)
-        content.addView(handle, hlp0)
 
         // 顶栏：**一行三个胶囊**（回到 OneTHU / 朗读 开·关 / 收起）——在 ScrollView 之外，任何滚动位置都在。
         // 规格（用户拍板）：高 32dp、水平内边距 12dp、彼此间距 8dp、左右与小窗边距一致（content 的 14dp）；

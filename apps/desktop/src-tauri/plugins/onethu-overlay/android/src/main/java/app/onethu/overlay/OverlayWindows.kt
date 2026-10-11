@@ -1153,7 +1153,8 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         p.collapseBtn.setOnClickListener { switchTo("ball", true) }
         // 回到 OneTHU：用户主动点击（红线只禁止「自动跳回」）
         p.backBtn.setOnClickListener { host.onOpenApp() }
-        // ⑤ 顶部把手：竖直拖动改小窗高度（松手写存档，下次沿用）；与顶栏胶囊/液态动效互不干扰
+        // ⑤ 顶部把手：**按下即候选、超过 2dp 才进入拖动**（避免微抖），命中区是全宽 × 36dp 容器。
+        // 拖动只 updateViewLayout（**每帧不重挂窗口**），底边固定。
         var resizeStartH = 0
         var resizeDownY = 0f
         var resizing = false
@@ -1164,56 +1165,63 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
                     if (lp == null) return@setOnTouchListener false
                     resizeStartH = lp.height
                     resizeDownY = e.rawY
-                    resizing = true
+                    resizing = false
                     v.alpha = 1f
-                    v.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    if (!resizing) return@setOnTouchListener false
                     val lp = panelLp ?: return@setOnTouchListener true
-                    // 方向（用户当场修）：**往上拖 = 变高、往下拖 = 变矮**。
-                    // dy = 当前 rawY − 按下 rawY（往上为负）→ 高度取 **startH − dy**：
-                    //   上拖 dy<0 → h 变大；下拖 dy>0 → h 变小。底边固定（y 同步上顶）。
-                    // 用 rawY（屏幕坐标）而不是 e.y：拖动中窗口顶边在动，e.y 会跟着漂。
+                    val dyTotal = e.rawY - resizeDownY
+                    if (!resizing) {
+                        // 阈值：位移 > 2dp 才真正开始改高；**进入瞬间 rebase**，
+                        // 于是「跨过阈值」不会产生高度跳变，也过滤掉手指微抖。
+                        if (abs(dyTotal) <= OverlayViews.dp(ctx, OverlayViews.HANDLE_SLOP_DP)) {
+                            return@setOnTouchListener true
+                        }
+                        resizing = true
+                        resizeStartH = lp.height
+                        resizeDownY = e.rawY
+                        try {
+                            v.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+                        } catch (_: Throwable) {
+                            /* 无马达 */
+                        }
+                    }
+                    // 方向：往上拖 = 变高（dy<0 → startH - dy 变大）；底边固定（y 同步上顶）
                     val dy = e.rawY - resizeDownY
                     val minH = (screenH() * PANEL_RATIO_MIN).toInt()
                     val maxH = (screenH() * PANEL_RATIO_MAX).toInt()
                     val h = (resizeStartH - dy).toInt().coerceIn(minH, maxH)
                     lp.height = h
-                    // 底边固定：改高度的同时把 y 往上顶（像底部抽屉被拉长）
                     lp.y = (screenH() - h - OverlayViews.dp(ctx, OverlayViews.PANEL_EDGE_DP))
                         .coerceAtLeast(OverlayViews.dp(ctx, 24))
                     if (panelAttached) {
                         try {
                             wm.updateViewLayout(p.root, lp)
                         } catch (_: Throwable) {
-                            /* 瞬态 */
+                            /* 瞬态：忽略，不重挂 */
                         }
                     }
                     true
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    resizing = false
                     v.alpha = 0.75f
-                    val lp = panelLp
-                    if (lp != null) {
-                        val ratio = (lp.height.toFloat() / screenH()).coerceIn(PANEL_RATIO_MIN, PANEL_RATIO_MAX)
-                        OverlayPrefs.setPanelRatio(ctx, ratio)
-                        Log.i(TAG, "小窗高度改为 ${(ratio * 100).toInt()}% 屏高（已存档）")
+                    if (resizing) {
+                        resizing = false
+                        val lp = panelLp
+                        if (lp != null) {
+                            val ratio = (lp.height.toFloat() / screenH())
+                                .coerceIn(PANEL_RATIO_MIN, PANEL_RATIO_MAX)
+                            OverlayPrefs.setPanelRatio(ctx, ratio)
+                            Log.i(TAG, "小窗高度改为 ${(ratio * 100).toInt()}% 屏高（已存档）")
+                        }
                     }
                     true
                 }
                 else -> false
             }
         }
-        // 自动朗读开关：状态在 voicePrefs（JS/localStorage），原生只发意图 + 乐观改文案
-        p.autoSpeakBtn.setOnClickListener {
-            autoSpeak = !autoSpeak
-            renderAutoSpeak()
-            OverlayEvents.emit("toggleAutoSpeak", 0, 0, if (autoSpeak) "on" else "off")
-        }
-        renderAutoSpeak()
+
         // 输入行手感（真机反馈：「长按只是在输入框里面光标」）：
         //   单击 = 聚焦键盘（输入法只在用户点它时才弹，不再 onFocusChange 自动弹）
         //   长按 ≥450ms = 进语音（面板内就地出条：雾带 + 波纹 + 转写）

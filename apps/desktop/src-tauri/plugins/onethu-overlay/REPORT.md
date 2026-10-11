@@ -779,3 +779,18 @@ emoji 总命中 = 0
 - **把手只属于面板态**：`buildHandle()` 只在 `buildPanel()` 里调用一次（侧边条 / 语音条 / 球都不带把手）；把手是 5dp 独立 View + 8dp 底距，位于顶栏之上、消息区之外，**不吃滚动**（触摸只从它自身起算）。
 
 回归：`onConfigChanged()`（横屏吸附）与 `applyOrbShape("bar")`（长按原位横向展开）本轮**未触碰**（各只有 1 处定义、无改动），`compileDebugKotlin` → **BUILD SUCCESSFUL**。
+
+---
+
+# 把手「好难拖动」修正（用户 21:52）
+
+| 项 | 值 |
+|---|---|
+| **命中区尺寸** | 视觉条仍是 **36×5dp**；**可拖区域 = 全宽 × 36dp 容器**（条居中，上下各 ≈15.5dp ≥ 12dp）。触摸监听挂在**容器**上，按在条附近任何位置都能拖，不需要精准命中那 5dp 细条 |
+| **阈值** | 位移 **> 2dp**（`HANDLE_SLOP_DP`）才进入拖动；**进入瞬间 rebase**（`resizeStartH = 当前高`、`resizeDownY = 当前 rawY`）→ 跨阈值**不产生高度跳变**，同时过滤手指微抖 |
+| **是否每帧重挂** | **不重挂**。拖动中只 `lp.height/lp.y` + `wm.updateViewLayout(root, lp)`（同一扇窗、同一份 View）；任何异常只被 catch 忽略，绝不走 `forceCleanupWindows()`/重建路径 |
+
+配套：方向仍是「往上拖 = 变高」（`h = startH − dy`，`dy = 当前rawY − 按下rawY`）；底边固定（`lp.y = 屏高 − 14dp − h`）；
+进入拖动时才给一次轻触感（`CLOCK_TICK`）；松手 `panelRatio = h/屏高` 存档；把手容器只在 `buildPanel()` 里创建（侧边条/语音条/球都没有），
+且位于顶栏之上、消息 ScrollView 之外（**不吃滚动**）。
+`compileDebugKotlin` → **BUILD SUCCESSFUL**（仅 1 条已知 `SOFT_INPUT_ADJUST_RESIZE` deprecated 告警）。

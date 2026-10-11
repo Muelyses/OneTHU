@@ -3,10 +3,17 @@
  * 真源在原生侧（SharedPreferences，安卓系统悬浮层）/ 悬浮球窗口（桌面），
  * 这里只做入口：打开 = overlayShow()（同时清掉前端的「本次已关闭」标记）。
  */
+import { defineSearchRows } from "../state/searchRows.js";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Card, Switch } from "./Layout.js";
 import { isOverlayClosedByUser, overlayHide, setOverlayClosedByUser, overlayShow, overlaySupported } from "../lib/overlay.js";
 import { hasOverlayPermission, requestOverlayPermission } from "../lib/overlayAndroid.js";
+
+
+/* task-19：悬浮球设置行注册 */
+defineSearchRows([
+  { id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" },
+]);
 
 export function OverlaySettingsSection(): ReactNode {
   const [supported, setSupported] = useState<boolean | null>(null);

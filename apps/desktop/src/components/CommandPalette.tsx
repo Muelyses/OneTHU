@@ -14,6 +14,7 @@ import { pageAtomRef, resolveAtom } from "../state/atoms.js";
 import { coreDefaults, type NavEntry } from "../state/navigation.js";
 import { searchAll } from "../state/searchAll.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
+import { goSearchRow, type SearchRow } from "../state/searchRows.js";
 import { closePalette, togglePalette, usePaletteOpen } from "../state/palette.js";
 import { useApp } from "../state/context.js";
 
@@ -26,7 +27,9 @@ export function shortcutLabel(): string {
 type Row =
   | { kind: "entry"; key: string; entry: NavEntry }
   | { kind: "atom"; key: string; atomKind: string; atomKey: string; title: string; sub?: string; group: string }
-  | { kind: "tab"; key: string; tab: string };
+  | { kind: "tab"; key: string; tab: string }
+  /** 设置行级命中（声明式注册表；点击直达该行并高亮） */
+  | { kind: "row"; key: string; title: string; sub: string; row: SearchRow };
 
 export function CommandPalette(): ReactNode {
   const open = usePaletteOpen();
@@ -64,7 +67,7 @@ export function CommandPalette(): ReactNode {
       return coreDefaults().map((entry) => ({ kind: "entry" as const, key: "n:" + entry.id, entry }));
     }
     const r = searchAll(query);
-    return [
+    const base: Row[] = [
       ...r.entries.map((entry) => ({ kind: "entry" as const, key: "n:" + entry.id, entry })),
       ...r.atoms.map((a) => ({
         kind: "atom" as const,
@@ -77,6 +80,15 @@ export function CommandPalette(): ReactNode {
       })),
       ...r.tabs.map((tab) => ({ kind: "tab" as const, key: "t:" + tab, tab })),
     ];
+    /* 设置行级命中**排最前**（同源：searchAll → searchRows 声明式注册表） */
+    const rowHits: Row[] = r.rows.map((x) => ({
+      kind: "row" as const,
+      key: "row:" + x.row.id,
+      title: x.row.title,
+      sub: `${x.row.tab} · ${x.row.section}${x.row.desc ? " · " + x.row.desc : ""}`,
+      row: x.row,
+    }));
+    return [...rowHits, ...base];
   }, [query]);
 
   useEffect(() => {
@@ -89,6 +101,12 @@ export function CommandPalette(): ReactNode {
 
   const runRow = (row: Row): void => {
     closePalette();
+    /* 设置行级命中：直达该行（页签 + 分节/行高亮），复用既有请求机制 */
+    if (row.kind === "row") {
+      goSearchRow(row.row);
+      navigate(row.row.tab === "OneTHU Harness" || row.row.tab === "插件" ? "plugins" : "settings");
+      return;
+    }
     if (row.kind === "tab") {
       requestSettingsTab(row.tab);
       navigate("settings");
@@ -162,7 +180,7 @@ export function CommandPalette(): ReactNode {
               >
                 <span className="pal-row-main">
                   <span className="pal-row-name">
-                    {row.kind === "entry" ? row.entry.name : row.kind === "atom" ? row.title : "设置 · " + row.tab}
+                    {row.kind === "entry" ? row.entry.name : row.kind === "atom" ? row.title : row.kind === "row" ? row.title : "设置 · " + row.tab}
                   </span>
                   <span className="pal-row-sub">
                     {row.kind === "entry"

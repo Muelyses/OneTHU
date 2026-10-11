@@ -11,6 +11,7 @@
  *
  * 只做信息架构与入口，不改任何功能语义。
  */
+import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { useApp } from "../state/context.js";
 import { goEntry } from "./Layout.js";
@@ -30,6 +31,25 @@ let pendingTier: OhTier | null = null;
 const tierListeners = new Set<() => void>();
 
 /** 请求 OH 页切到某一档（配合 settingsMode 的 requestSettingsTab("OH") 一起用） */
+
+/* ── task-19：本页设置行的**声明式检索注册**（模块加载时执行，不依赖 DOM/是否可见）── */
+defineSearchRows([
+  { id: "oh-voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色 / 语调 / 语速", aliases: ["音色", "语调", "语速", "语音合成", "朗读", "tts"], desc: "系统语音引擎的名字与倍率" },
+  { id: "oh-voice-speed-row", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度", "快慢"], desc: "朗读语速倍率" },
+  { id: "oh-voice-pitch-row", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读音高" },
+  { id: "oh-overlay-switch", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "悬浮窗", "浮窗", "overlay"], desc: "浮在其他应用上层的 OH 球" },
+  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" },
+  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" },
+  { id: "oh-im-qr", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "扫码创建应用（推荐，免手工配置）", aliases: ["扫码", "绑定", "飞书", "IM"], desc: "手机飞书扫码创建应用并自动绑定主人" },
+  { id: "oh-im-owner", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "绑定主人", aliases: ["解绑", "绑定码", "主人"], desc: "生成绑定码 / 解除绑定" },
+  { id: "oh-im-wechat", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "微信（iLink 官方 Bot · 扫码即用）", aliases: ["微信", "iLink", "扫码登录"], desc: "微信扫码绑定 / 重新扫码 / 解除绑定" },
+  { id: "oh-im-status", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "连接状态", aliases: ["IM 状态", "在线"], desc: "IM 通道连接状态与最近入站" },
+  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" },
+  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" },
+  { id: "oh-im-feishu-adv", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "飞书 bot（P0 通道）", aliases: ["飞书通道", "通道开关"], desc: "桌面常驻时 bot 在线（长连接）" },
+  { id: "oh-im-creds", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "应用凭据（手工）", aliases: ["App ID", "App Secret", "凭据"], desc: "飞书开放平台自建应用凭据（仅存本机密文）" },
+]);
+
 export function requestOhTier(t: OhTier): void {
   pendingTier = t;
   for (const f of tierListeners) f();

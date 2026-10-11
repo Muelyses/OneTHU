@@ -1,4 +1,5 @@
 declare const __APP_VERSION__: string;
+import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
@@ -85,6 +86,26 @@ const SETTINGS_TAB_OF: Record<string, string> = {
   下载: "下载与存储", 帮助: "帮助",
 };
 /* 页签清单与高级页签定义已挪到 state/settingsMode.ts（命令面板与护栏共用同一份，见该文件注释） */
+
+
+/* ── task-19：设置页各分节的设置行注册（声明式；与页签一一对应）── */
+defineSearchRows([
+  { id: "set-theme-board", tab: "外观与布局", section: "主题", title: "主题", aliases: ["换主题", "配色", "主题板", "暗色", "夜间"], desc: "只列已启用主题，点「应用」切换" },
+  { id: "set-theme-install", tab: "外观与布局", section: "主题", title: "安装主题", aliases: ["主题市场", "装主题"], desc: "打开插件市场的主题筛选" },
+  { id: "set-theme-manage", tab: "外观与布局", section: "主题", title: "管理主题", aliases: ["启用主题", "停用主题"], desc: "主题插件的启用 / 停用" },
+  { id: "set-theme-follow", tab: "外观与布局", section: "主题", title: "跟随系统昼夜", aliases: ["昼夜", "白天主题", "黑夜主题", "自动切换"], desc: "亮色用白天主题，深色用黑夜主题" },
+  { id: "set-appearance", tab: "外观与布局", section: "外观", title: "外观", aliases: ["密度", "字号", "圆角"], desc: "密度、字号、圆角等外观项" },
+  { id: "set-home-layout", tab: "外观与布局", section: "首页布局", title: "首页布局", aliases: ["首页", "卡片顺序"], desc: "首页卡片显隐与排序" },
+  { id: "set-favs", tab: "外观与布局", section: "收藏夹", title: "收藏夹", aliases: ["收藏", "导入收藏", "导出收藏"], desc: "收藏夹管理与导入导出" },
+  { id: "set-cloud", tab: "数据与同步", section: "云同步", title: "云同步", aliases: ["同步", "云盘同步", "备份"], desc: "云盘同步与恢复" },
+  { id: "set-exthw", tab: "数据与同步", section: "外部作业源", title: "外部作业源", aliases: ["作业源", "OJ", "课件"], desc: "外部作业源登录与刷新" },
+  { id: "set-download", tab: "下载与存储", section: "下载", title: "下载", aliases: ["存储", "缓存", "清理"], desc: "下载目录与缓存清理" },
+  { id: "set-notify", tab: "通知与提醒", section: "通知", title: "通知", aliases: ["提醒", "推送"], desc: "通知与提醒设置" },
+  { id: "set-account", tab: "账号", section: "账号与绑定", title: "账号与绑定", aliases: ["登录", "学号", "绑定"], desc: "清华账号登录与绑定" },
+  { id: "set-security", tab: "账号", section: "安全", title: "安全", aliases: ["密码", "记住密码"], desc: "记住的密码与安全项" },
+  { id: "set-about", tab: "关于", section: "关于", title: "关于", aliases: ["版本", "更新", "开源"], desc: "版本、更新与开源信息" },
+  { id: "set-help", tab: "帮助", section: "帮助", title: "帮助", aliases: ["教程", "导览"], desc: "常用任务与引导" },
+]);
 
 export function SettingsPage() {
   /** 当前二级页签（默认第一个栏目） */

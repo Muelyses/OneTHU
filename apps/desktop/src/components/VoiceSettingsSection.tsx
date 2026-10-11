@@ -13,6 +13,7 @@
  * 滑杆写盘时机：拖动过程只更新本地显示，松手（pointerup/keyup/blur）才落偏好——否则一次拖动
  * 会往 localStorage 写几十次、并让订阅了偏好的聊天坞跟着重渲染。
  */
+import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { Switch } from "./Layout.js";
 import {
@@ -59,6 +60,15 @@ function engineCopy(st: TtsStatus | null, busy: boolean): { title: string; desc:
       return { title: "引擎尚未初始化", desc: "点「重新检查」触发一次初始化。" };
   }
 }
+
+
+/* task-19：语音合成设置行注册 */
+defineSearchRows([
+  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", title: "引擎状态", aliases: ["语音引擎", "重新检查", "试听"], desc: "当前平台是否支持语音合成 / 重新检查" },
+  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色", aliases: ["嗓音", "普通话"], desc: "系统引擎报出的可选嗓音" },
+  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度"], desc: "朗读快慢" },
+  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读高低" },
+]);
 
 export function VoiceSettingsSection(): ReactNode {
   const prefs = useVoicePrefs();

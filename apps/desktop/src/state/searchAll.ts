@@ -8,8 +8,11 @@
 import { searchAtoms, type AtomHit } from "./atoms.js";
 import { matchNavQuery, type NavEntry } from "./navigation.js";
 import { SETTINGS_TAB_ORDER } from "./settingsMode.js";
+import { matchSearchRows, type SearchRow } from "./searchRows.js";
 
 export interface SearchAllResult {
+  /** **设置行级命中（最高优先级）**：声明式注册表，不依赖 DOM/是否可见 */
+  rows: Array<{ row: SearchRow; score: number }>;
   /** 注册表命中（功能） */
   entries: NavEntry[];
   /** 原子命中（页面 / 实体 / 在线服务），已与注册表去重 */
@@ -20,6 +23,9 @@ export interface SearchAllResult {
 
 export function searchAll(q: string, limit = 14): SearchAllResult {
   const query = q.trim();
+  /* ③ 行级命中排在最前：搜「音色」第一跳就是那一行，而不是先蹦出 OH 大页 */
+  const rows = query ? matchSearchRows(query, 8) : [];
+  const rowKeys = new Set(rows.map((x) => x.row.title));
   const entries = matchNavQuery(query);
   // 与导航命中去重：页面/组件原子已在注册表里的不再重复出
   const navIds = new Set(entries.map((e) => e.id));
@@ -29,5 +35,5 @@ export function searchAll(q: string, limit = 14): SearchAllResult {
   // 高级模式退役后页签不再分层（2026-10-11）：全量即可
   const standard = SETTINGS_TAB_ORDER;
   const tabs = query ? standard.filter((t) => t.includes(query)) : [];
-  return { entries, atoms, tabs };
+  return { rows, entries, atoms, tabs };
 }

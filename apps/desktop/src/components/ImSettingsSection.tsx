@@ -8,6 +8,7 @@
  *     未绑定者的消息只会收到限频引导，不进入 OH；
  *   · 微信通道（官方 iLink）适配器未实现——如实灰置标注，不做假开关。
  */
+import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { Card } from "./Layout.js"; /* eslint-disable-line @typescript-eslint/no-unused-vars */
 import { Switch } from "./Layout.js";
@@ -44,6 +45,17 @@ const PHASE_TEXT: Record<string, string> = {
  *  advanced = 通道开关、手工凭据、微信灰置等复杂项
  *  all      = 两档都要（旧调用方的默认值，语义不变） */
 export type ImTier = "basic" | "advanced" | "all";
+
+
+/* task-19：IM 设置行注册（基础档 + 高级档） */
+defineSearchRows([
+  { id: "im-qr", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "扫码创建应用（推荐，免手工配置）", aliases: ["扫码", "IM", "飞书"], desc: "扫码创建飞书应用并自动绑定" },
+  { id: "im-owner", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "绑定主人", aliases: ["绑定码", "解绑"], desc: "生成绑定码 / 解除绑定" },
+  { id: "im-wechat", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "微信（iLink 官方 Bot · 扫码即用）", aliases: ["微信", "iLink"], desc: "微信扫码绑定 / 重新扫码 / 解除绑定" },
+  { id: "im-status", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "连接状态", aliases: ["IM 状态"], desc: "通道连接状态" },
+  { id: "im-feishu", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "飞书 bot（P0 通道）", aliases: ["飞书通道"], desc: "长连接事件订阅" },
+  { id: "im-creds", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "应用凭据（手工）", aliases: ["App ID", "App Secret"], desc: "手工填飞书应用凭据" },
+]);
 
 export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): ReactNode {
   const showBasic = tier !== "advanced";

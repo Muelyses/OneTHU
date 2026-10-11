@@ -6,6 +6,7 @@
  *
  * 平台口径：小组件只有 Android 有承载，桌面端明确不做——非 Android 显示一行说明，不给假开关。
  */
+import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { useFavs } from "../state/favs.js";
 import { ensureWidgetRuntime } from "../state/notifySources.js";
@@ -25,6 +26,13 @@ import { useNotifyBackend } from "./useNotifyBackend.js";
 function plainShapeName(name: string): string {
   return name.replace(/^宿主\s*/, "").replace(/^槽位\s*/, "可自选 ");
 }
+
+
+/* task-19：桌面小组件设置行注册 */
+defineSearchRows([
+  { id: "widget-main", tab: "桌面小组件", section: "桌面小组件", title: "桌面小组件", aliases: ["小组件", "widget", "桌面组件"], desc: "添加到桌面的 OneTHU 小组件与内容设置" },
+  { id: "widget-slots", tab: "桌面小组件", section: "桌面小组件", title: "小组件槽位", aliases: ["槽位", "插件小组件"], desc: "选择每个槽位显示哪块插件小组件" },
+]);
 
 export function WidgetSettingsSection(): ReactNode {
   const favs = useFavs();

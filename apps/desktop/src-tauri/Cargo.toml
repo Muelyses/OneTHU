@@ -59,6 +59,7 @@ futures-util = "0.3"
 [target.'cfg(target_os = "android")'.dependencies]
 # Android：纯 rustls（保持可交叉编译，native-tls 无安卓后端）；指纹问题仅 macOS 网络栈实测
 tokio-tungstenite = { version = "0.24", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
+futures-util = "0.3"   # ws_bridge.rs 全平台 import（Android 交叉编译需要）
 
 [target.'cfg(target_os = "macos")'.dependencies]
 block2 = "0.6"

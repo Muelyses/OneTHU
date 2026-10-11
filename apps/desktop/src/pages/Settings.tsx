@@ -3,6 +3,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
+import { UpdateCloudSection } from "../components/UpdateCloudSection.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
@@ -252,6 +253,7 @@ export function SettingsPage() {
       </Card>
 
       <SectionHead title="关于" />
+      <UpdateCloudSection manifestPath="/ball-test/latest.json" />
       <Card>
         <div className="setting-row">
           <div>

@@ -21,6 +21,7 @@ object OverlayPrefs {
     /** 球位置存档格式：0/1 = 只有 x/y（坐标系可能已经变过，一律作废）；2 = 带屏幕尺寸 */
     const val BALL_FMT = 2
     private const val K_MODE = "mode"
+    private const val K_PANEL_RATIO = "panel_ratio"
 
     private fun sp(ctx: android.content.Context) =
         ctx.applicationContext.getSharedPreferences(FILE, android.content.Context.MODE_PRIVATE)
@@ -68,6 +69,13 @@ object OverlayPrefs {
 
     fun setMode(ctx: android.content.Context, m: String) {
         sp(ctx).edit().putString(K_MODE, m).apply()
+    }
+
+    /** ⑤ 小窗高度比例（用户拖把手改过就沿用；默认 0.44，界外值由调用方 clamp） */
+    fun panelRatio(ctx: android.content.Context) = sp(ctx).getFloat(K_PANEL_RATIO, 0.44f)
+
+    fun setPanelRatio(ctx: android.content.Context, ratio: Float) {
+        sp(ctx).edit().putFloat(K_PANEL_RATIO, ratio).apply()
     }
 
     /** 是否应当自动恢复（被 ROM 杀 / 开机）：开了，且用户没点过本次关闭 */

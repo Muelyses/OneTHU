@@ -98,6 +98,35 @@ object OverlayViews {
         }
     }
 
+    /**
+     * **任何状态都不许出现蓝色矩形框**（用户实录：朗读按钮点击前后都有蓝框）。
+     * 安卓点按可点 View 会命中 default focus highlight / state_focused —— 这里统一关掉：
+     * 可点仍可点（clickable 不需要 focusable），状态表达改用 alpha 或图标填充。
+     */
+    fun noFocusRing(v: View) {
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= 26) v.defaultFocusHighlightEnabled = false
+            v.isFocusable = false
+            v.isFocusableInTouchMode = false
+            v.backgroundTintList = null
+        } catch (_: Throwable) {
+            /* 个别 ROM：忽略 */
+        }
+    }
+
+    /** 顶部把手（用户 ⑤）：36×5dp 圆角条，按下提亮，用来上下拖长拖短小窗 */
+    fun buildHandle(ctx: Context, dark: Boolean): View = View(ctx).apply {
+        background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(ctx, 3).toFloat()
+            setColor(withAlpha(ink(dark), 90))
+        }
+        alpha = 0.75f
+    }
+
+    const val HANDLE_W_DP = 36
+    const val HANDLE_H_DP = 5
+
     /** 正文/按钮统一加一点阴影：雾淡处压在壁纸上也能读（半径 6dp、α0.25） */
     fun shadow(tv: TextView) {
         try {
@@ -159,9 +188,9 @@ object OverlayViews {
 
     /* ── liquid glass 材质（跨应用窗口拿不到真 backdrop blur，用材质模拟）── */
 
-    /** 整块毛玻璃背板（用户要求：不要顶部渐隐，整块都能看到）：浅 #FFFFFF α0.78 / 深 #000000 α0.62 */
+    /** 整块毛玻璃背板（用户 20:30：「底板再厚重一点，这个有点透」）：浅 α0.90 / 深 α0.80 */
     fun backplateFill(light: Boolean): Int =
-        if (light) withAlpha(0xFFFFFFFF.toInt(), 199) else withAlpha(0xFF000000.toInt(), 158)
+        if (light) withAlpha(0xFFFFFFFF.toInt(), 230) else withAlpha(0xFF000000.toInt(), 204)
 
     /** 背板细边 */
     fun backplateBorder(light: Boolean): Int =
@@ -249,9 +278,9 @@ object OverlayViews {
 
     fun buildVoiceBar(ctx: Context, dark: Boolean): VoiceBar {
         val root = FogLayout(ctx).apply {
-            // 与面板/气泡同一套：整块毛玻璃，无渐隐
+            // 与面板/气泡同一套：整块毛玻璃，无渐隐（同面板加厚口径）
             coreColor = fogCore(dark)
-            coreAlpha = if (dark) 0.62f else 0.78f
+            coreAlpha = if (dark) 0.80f else 0.90f
             stopPositions = floatArrayOf(0f, 1f)
             stopWeights = floatArrayOf(1f, 1f)
             cornerRadiusPx = dp(ctx, 18).toFloat()
@@ -264,9 +293,9 @@ object OverlayViews {
         }
         // 上方：淡雾转写带（默认 GONE，说话时显示）
         val sub = FogLayout(ctx).apply {
-            // 转写带同材质（整块毛玻璃），只是略薄一点
+            // 转写带同材质（整块毛玻璃），比面板略薄 0.06~0.10
             coreColor = fogCore(dark)
-            coreAlpha = if (dark) 0.58f else 0.74f
+            coreAlpha = if (dark) 0.68f else 0.82f
             stopPositions = floatArrayOf(0f, 1f)
             stopWeights = floatArrayOf(1f, 1f)
             cornerRadiusPx = dp(ctx, 14).toFloat()
@@ -346,8 +375,8 @@ object OverlayViews {
     fun buildPanel(ctx: Context, dark: Boolean): PanelHolder {
         val root = FogLayout(ctx).apply {
             coreColor = fogCore(dark)
-            // 整块毛玻璃背板：**上下同浓度**，不做任何「向上淡出/mask」（用户 2026-10-11 明确要求）
-            coreAlpha = if (dark) 0.62f else 0.78f
+            // 整块毛玻璃背板：上下同浓度、无渐隐；α 按用户 20:30 反馈加厚（浅 0.90 / 深 0.80）
+            coreAlpha = if (dark) 0.80f else 0.90f
             stopPositions = floatArrayOf(0f, 1f)
             stopWeights = floatArrayOf(1f, 1f)
             // 悬浮小窗（左右留空隙）→ 四周圆角 + 1px 细边 + 上沿高光（同一套液态玻璃语言）
@@ -364,6 +393,16 @@ object OverlayViews {
             isFocusable = true
             isFocusableInTouchMode = true
         }
+
+        // 顶部把手（⑤）：36×5dp 圆角条，居中；**竖直拖动改小窗高度**（clamp 30%–80% 屏高）
+        val handle = buildHandle(ctx, dark)
+        val hlp0 = LinearLayout.LayoutParams(
+            dp(ctx, HANDLE_W_DP),
+            dp(ctx, HANDLE_H_DP),
+        )
+        hlp0.gravity = Gravity.CENTER_HORIZONTAL
+        hlp0.bottomMargin = dp(ctx, 8)
+        content.addView(handle, hlp0)
 
         // 顶栏：**一行三个胶囊**（回到 OneTHU / 朗读 开·关 / 收起）——在 ScrollView 之外，任何滚动位置都在。
         // 规格（用户拍板）：高 32dp、水平内边距 12dp、彼此间距 8dp、左右与小窗边距一致（content 的 14dp）；
@@ -386,6 +425,7 @@ object OverlayViews {
             ellipsize = null
             includeFontPadding = false
             shadow(this)
+            noFocusRing(this)
         }
 
         val backBtn = chip("回到 OneTHU")
@@ -463,6 +503,7 @@ object OverlayViews {
             alpha = 1f
             setPadding(dp(ctx, 12), dp(ctx, 6), 0, dp(ctx, 6))
             shadow(this)
+            noFocusRing(this)
         }
         inputRow.addView(
             action,
@@ -486,8 +527,8 @@ object OverlayViews {
             contentDescription = title
             if (android.os.Build.VERSION.SDK_INT >= 26) tooltipText = title
             isClickable = true
-            isFocusable = true
             setPadding(dp(ctx, 6), dp(ctx, 6), dp(ctx, 6), dp(ctx, 6))
+            noFocusRing(this)
         }
         val camBtn = entry("camera", "拍照")
         val galBtn = entry("gallery", "相册")
@@ -590,7 +631,7 @@ object OverlayViews {
             ),
         )
         return PanelHolder(
-            root, content, backBtn, speakBtn, collapse, scroll, list, glow,
+            root, content, handle, backBtn, speakBtn, collapse, scroll, list, glow,
             input, action, underline, camBtn, galBtn, fileBtn,
             inputBlock, voiceRow, voiceWave, voiceText,
         )
@@ -870,6 +911,8 @@ class WaveDots(context: Context) : View(context) {
 class PanelHolder(
     val root: FogLayout,
     val content: LinearLayout,
+    /** 顶部把手（竖直拖动改小窗高度） */
+    val handle: View,
     /** 回到 OneTHU（用户主动点击） */
     val backBtn: TextView,
     /** 自动朗读开关（文案随状态变） */

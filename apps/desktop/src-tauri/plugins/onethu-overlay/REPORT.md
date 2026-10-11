@@ -702,3 +702,61 @@ emoji 总命中 = 0
 线描图标在真机上的辨识度与 40dp 触控手感；整块毛玻璃压在真实壁纸/别应用上的观感（α0.78/0.62 是否够实、又不糊字）；
 **横屏切换时球/侧边条是否保持贴边、面板是否按新尺寸重排**（我只能保证重算逻辑与时机，真机旋转手感必须实测）；
 球长按与面板内长按两处动画是否**看起来完全一致**。
+
+---
+
+# 统一风格专项 ①–⑥（用户 2026-10-11 20:30）
+
+状态：**完成 · 编译通过**（`:tauri-plugin-onethu-overlay:compileDebugKotlin` → BUILD SUCCESSFUL，0 error / 0 warning；tsc 干净；`._*` 0）。
+新预览：`preview/unified.png`（浅深各一块：本体同款图标 + 喇叭两态 + 顶部把手 + 加厚背板 + 语音条/转写带）。
+
+## ① 附件三入口图标：直接用**本体 SVG path 原文**
+`components/Icons.tsx` 的 `IconCamera / IconImage / IconUpload` 是 24 viewBox + `strokeWidth 1.6` + round cap/join，
+本插件现在**逐字节搬同一条 path**（`OverlayIcons.kt` 的 `SPECS`），用 `androidx.core.graphics.PathParser` 解析成 Canvas 路径：
+| 图标 | 本体 path（同一串） | 说明 |
+|---|---|---|
+| 相机 | `M4 8.5A1.5 1.5 0 0 1 5.5 7h1.2…` + 镜头圆 `M12 16a3.2 3.2 0 1 0 0-6.4…z` | 机身+镜头+顶部凸起 |
+| 图片 | 圆角框 + 小太阳 + `M4.5 18l5-5 3.2 3.2 2.6-2.6 4.2 4.4` | 边框+山峰+右上太阳 |
+| 上传 | `M12 16V5` / `M7 10l5-5 5 5` / `M5 19h14` | 箭头向上+托盘 |
+| 喇叭 | `M11.4 5.2 6.9 8.6H4.3a1 1 0 0 0-1 1v4.8…z` + 两道声波 | 见 ③ |
+绘制：24 单位空间 → **视觉尺寸 20dp** 居中放进 40dp 可点区（缩放 20/24，等效描边 1.33dp ≈ 本体的 15px 图标）；
+语义仍走 `contentDescription` + API26+ `tooltipText`（**只留图标 + title**，不收 emoji，一行不折）。
+
+## ② 底板加厚
+| 元素 | 改前 | 改后 |
+|---|---|---|
+| 小窗背板 | 浅 α0.78 / 深 α0.62 | **浅 α0.90 / 深 α0.80** |
+| 语音条本体 | 同上 | **浅 α0.90 / 深 α0.80** |
+| 上方转写带 | 浅 α0.74 / 深 α0.58 | **浅 α0.82 / 深 α0.68** |
+细边（浅 `#000000` α0.14 / 深 `#FFFFFF` α0.19）与上沿 1px 高光（0.50 / 0.22）**不变**；仍是**整块可见、无顶部渐隐**。
+
+## ③ 朗读入口：喇叭图标 + 彻底消灭蓝框
+- 每条 OH 消息的朗读入口从文字「朗读」换成 **`LineIcon("speak"/"speakOff")`**（本体 `IconSpeak` 同一副喇叭）：
+  **发声态 = 喇叭本体填充**（`filled=true`），静默态 = 线描；**再点一次 = 停止**（发 `stopSpeak` → 适配器 `ttsStop()`），
+  与本体 ChatDock 的 `speakingText` 语义一致（原生也按 `speakingText` 认「哪一条在念」）。
+- **蓝框根因**：安卓可点 View 命中 `default focus highlight / state_focused`。新增 `OverlayViews.noFocusRing(v)`：
+  `defaultFocusHighlightEnabled=false`（API26+）+ `isFocusable=false` + `isFocusableInTouchMode=false` + `backgroundTintList=null`；
+  **全面板扫描已应用**：顶栏三胶囊、附件三图标、发送、每条消息的喇叭；自定义背景全是 `GradientDrawable`（无 state 列表）→
+  **任何状态都不会出现蓝色矩形框**；输入框保留聚焦（那是功能指示，与本体一致）。
+
+## ④ 闪几下 / 多个一起出现：动画按消息 id 去重 + 回显与权威列表合并
+- `PushMsg` 增 **稳定 `id`**：前端给了就用（TS 侧每条消息 `m1/m2/...`），没给就按 `role|text|images` **内容派生**；
+- 原生维护 `seenIds`：`renderMessages()` 里 `isNew = seenIds.add(id)`，**只有 id 是新的、且是最新一条**才播进场动画 →
+  **同一条消息只播一次**；本地回显（附件/语音/键盘）用与派生子同规则的 id，JS 权威列表到达时**同 id 不再二次弹跳**；
+- 回显与权威列表**合并不是新建**：本地回显先入列（status=sending），权威列表到达后按同一 id 覆盖渲染（像素一致，无闪烁）；
+  `seenIds` 超过 400 条清空一次，避免无界增长。
+
+## ⑤ 顶部把手：竖直拖动改小窗高度
+- 面板顶部（顶栏之上）加 **把手 36×5dp 圆角条**（浅深同构；按下 α0.75→1.0 + 轻触感）；
+- 竖直拖动：`h = clamp(起始高 + dy, 30% 屏高, 80% 屏高)`，**底边固定**（改高同时把 y 往上顶，像底部抽屉被拉长），
+  逐帧 `updateWindowLayout`；松手把 `h/屏高` 写进 `OverlayPrefs.panelRatio`，下次开面板沿用（`panelParams()` 读它并 clamp）；
+- 与顶栏三胶囊/液态动效不打架：把手是独立 View、手势只走它自己；扩散/收拢动画作用于 `p.root` 的 scaleY/translationY，与窗口高度正交。
+
+## ⑥ 回归复核（未退化）
+| 项 | 状态 |
+|---|---|
+| 横屏吸附 | `onConfigChanged()` 未动（记旧贴边方向 → `refreshScreen()` → 按新 work area 重落位 → 重挂窗口）✓ |
+| 长按横向展开 | `applyOrbShape("bar")` 几何未动（原位 300dp，按球所在半边铺向）✓ |
+| 40s 停转圈 | `busyWatch` 未动（`BUSY_TIMEOUT_MS=40s`，超时换「还没收到回复 · 切回本体可查看进度」）✓ |
+| 附件即时气泡 | `finishAttach()` → `echoAttachment()` 未动；本条只改了它的消息 id 与（②）材质 ✓ |
+| 消息 id 兼容 | 前端不传 id 也能工作（内容派生）✓ 老前端不会崩 |

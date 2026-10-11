@@ -164,6 +164,10 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     /** 下一次重建时是否给最新一条播进场动画（只在面板已打开且消息数变多时置真） */
     private var animateNewest = false
     private var lastMsgCount = -1
+    /** 已渲染过的消息 id（④ 动画去重） */
+    private val seenIds = HashSet<String>()
+    /** 正在朗读的那一条（按文本认，与本体 ChatDock 的 speakingText 同口径） */
+    private var speakingText: String? = null
     private var autoSpeak = false
     private var speaking = false
     private val pendingEchoes = ArrayList<PushMsg>()
@@ -595,6 +599,12 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         }
         autoSpeak = o.optBoolean("autoSpeak", autoSpeak)
         speaking = o.optBoolean("speaking", speaking)
+        // 朗读态：前端给了 speakingText 就以它为准（空串 = 没在念）；没给就不动
+        if (o.has("speakingText")) {
+            val t = o.optString("speakingText", "")
+            speakingText = if (t.isEmpty()) null else t
+        }
+        if (!speaking && speakingText != null && o.has("speaking")) speakingText = null
         renderAutoSpeak()
         jsTranscript = o.optString("transcript", jsTranscript)
         if (changed) renderMessages(rebuild = true)
@@ -603,6 +613,8 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     /** 一条消息（前端 push 的形状）：文本走 markdown 渲染，images 是本地图片路径 */
     private class PushMsg(
+        /** 稳定 id：前端给了就用，没给就按内容派生（本地回显与权威列表因此能对上，不会重复播动画） */
+        val id: String,
         val role: String,
         val text: String,
         val images: List<String>,
@@ -634,7 +646,15 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
                 }
             }
             if (text.isEmpty() && imgs.isEmpty()) continue
-            out.add(PushMsg(m.optString("role", "oh"), text, imgs, m.optString("status", "")))
+            val role = m.optString("role", "oh")
+            val given = m.optString("id", "")
+            val id = if (given.isNotEmpty()) {
+                given
+            } else {
+                // 内容派生（同一条消息在「本地回显」与「JS 权威列表」里派生出同一个 id）
+                "d:" + role + "|" + text + "|" + imgs.joinToString(",")
+            }
+            out.add(PushMsg(id, role, text, imgs, m.optString("status", "")))
         }
         return out
     }
@@ -657,9 +677,12 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         if (!rebuild) return
         p.list.removeAllViews()
         val list = parseMessages(messagesJson)
+        if (seenIds.size > 400) seenIds.clear()
         for ((idx, m) in list.withIndex()) {
-            // 只给**最新一条**播进场动画；历史消息静止（避免打开面板时一片乱跳）
-            appendMessage(m, animate = animateNewest && idx == list.size - 1)
+            // ④ 同一消息**只播一次**进场动画：按 id 去重（本地回显→权威列表是同一条，不再二次弹跳）；
+            //    并且只给最新一条播；历史消息一律静止。
+            val isNew = seenIds.add(m.id)
+            appendMessage(m, animate = animateNewest && isNew && idx == list.size - 1)
         }
         animateNewest = false
         if (busyNow) {
@@ -764,18 +787,38 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             }
         }
 
-        // 每条 OH 消息的朗读入口（手动点 = 当场意图，无视静音开关）
+        // ③ 每条 OH 消息的朗读入口：**线描喇叭**（与本体 IconSpeak 同几何）；
+        //    发声态用「喇叭本体填充」表达，不靠任何 focus/selected 背景（用户：任何状态都不许蓝框）；
+        //    再点一次 = 停止（与本体 ChatDock 的喇叭语义一致）。
         if (!user && msg.text.isNotBlank()) {
-            val say = TextView(themed)
-            say.text = "朗读"
-            say.textSize = 12f
-            say.setTextColor(OverlayViews.ink(dark))
-            say.alpha = 0.9f
-            say.setPadding(0, 0, OverlayViews.dp(ctx, 6), 0)
-            OverlayViews.shadow(say)
+            val on = speakingText != null && speakingText == msg.text
+            val spk = LineIcon(themed, if (on) "speak" else "speakOff").apply {
+                color = OverlayViews.ink(dark)
+                alpha = if (on) 1f else 0.9f
+                filled = on
+                contentDescription = if (on) "停止朗读" else "朗读这一条"
+                if (android.os.Build.VERSION.SDK_INT >= 26) {
+                    tooltipText = if (on) "停止朗读" else "朗读这一条"
+                }
+                isClickable = true
+                OverlayViews.noFocusRing(this)
+            }
             val readText = msg.text
-            say.setOnClickListener { OverlayEvents.emit("speak", 0, 0, readText) }
-            inner.addView(say)
+            spk.setOnClickListener {
+                if (on) {
+                    speakingText = null
+                    OverlayEvents.emit("stopSpeak", 0, 0, null)
+                } else {
+                    speakingText = readText
+                    OverlayEvents.emit("speak", 0, 0, readText)
+                }
+                renderMessages(rebuild = true)
+            }
+            val slp = android.widget.LinearLayout.LayoutParams(
+                OverlayViews.dp(ctx, 28), OverlayViews.dp(ctx, 28),
+            )
+            slp.topMargin = OverlayViews.dp(ctx, 2)
+            inner.addView(spk, slp)
         }
 
         if (msg.status == "sending") {
@@ -810,7 +853,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
      */
     fun echoLocalAttachment(path: String, name: String) {
         attachSending = true
-        val msg = PushMsg("user", "附件：$name", listOf(path), "sending")
+        val msg = PushMsg("d:user|附件：$name|$path", "user", "附件：$name", listOf(path), "sending")
         if (panel == null || !panelAttached) {
             // 面板没开：排队，等面板挂上时先显示（JS 权威状态随后会整体重建）
             pendingEchoes.add(msg)
@@ -1110,6 +1153,56 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         p.collapseBtn.setOnClickListener { switchTo("ball", true) }
         // 回到 OneTHU：用户主动点击（红线只禁止「自动跳回」）
         p.backBtn.setOnClickListener { host.onOpenApp() }
+        // ⑤ 顶部把手：竖直拖动改小窗高度（松手写存档，下次沿用）；与顶栏胶囊/液态动效互不干扰
+        var resizeStartH = 0
+        var resizeDownY = 0f
+        var resizing = false
+        p.handle.setOnTouchListener { v, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    val lp = panelLp
+                    if (lp == null) return@setOnTouchListener false
+                    resizeStartH = lp.height
+                    resizeDownY = e.rawY
+                    resizing = true
+                    v.alpha = 1f
+                    v.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (!resizing) return@setOnTouchListener false
+                    val lp = panelLp ?: return@setOnTouchListener true
+                    val dy = e.rawY - resizeDownY
+                    val minH = (screenH() * PANEL_RATIO_MIN).toInt()
+                    val maxH = (screenH() * PANEL_RATIO_MAX).toInt()
+                    val h = (resizeStartH + dy).toInt().coerceIn(minH, maxH)
+                    lp.height = h
+                    // 底边固定：改高度的同时把 y 往上顶（像底部抽屉被拉长）
+                    lp.y = (screenH() - h - OverlayViews.dp(ctx, OverlayViews.PANEL_EDGE_DP))
+                        .coerceAtLeast(OverlayViews.dp(ctx, 24))
+                    if (panelAttached) {
+                        try {
+                            wm.updateViewLayout(p.root, lp)
+                        } catch (_: Throwable) {
+                            /* 瞬态 */
+                        }
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    resizing = false
+                    v.alpha = 0.75f
+                    val lp = panelLp
+                    if (lp != null) {
+                        val ratio = (lp.height.toFloat() / screenH()).coerceIn(PANEL_RATIO_MIN, PANEL_RATIO_MAX)
+                        OverlayPrefs.setPanelRatio(ctx, ratio)
+                        Log.i(TAG, "小窗高度改为 ${(ratio * 100).toInt()}% 屏高（已存档）")
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
         // 自动朗读开关：状态在 voicePrefs（JS/localStorage），原生只发意图 + 乐观改文案
         p.autoSpeakBtn.setOnClickListener {
             autoSpeak = !autoSpeak
@@ -1272,7 +1365,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private fun sendUserText(text: String) {
         val t = text.trim()
         if (t.isEmpty()) return
-        val msg = PushMsg("user", t, emptyList(), "")
+        val msg = PushMsg("d:user|$t|", "user", t, emptyList(), "")
         if (panel == null || !panelAttached) pendingEchoes.add(msg) else appendMessage(msg, animate = true)
         host.onSubmitText(t)
     }
@@ -1722,7 +1815,9 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private fun panelParams(): WindowManager.LayoutParams {
         val margin = OverlayViews.dp(ctx, PANEL_MARGIN_DP)
         val w = (screenW() - 2 * margin).coerceAtLeast(OverlayViews.dp(ctx, 240))
-        val h = (screenH() * PANEL_RATIO).toInt()
+        // 高度：用户拖过就用存档比例（clamp 30%–80% 屏高），否则默认 44%
+        val ratio = OverlayPrefs.panelRatio(ctx).coerceIn(PANEL_RATIO_MIN, PANEL_RATIO_MAX)
+        val h = (screenH() * ratio).toInt()
         val lp = WindowManager.LayoutParams(
             w,
             h,
@@ -1901,8 +1996,12 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
         /** 看门狗轮询间隔 */
         const val BUSY_POLL_MS = 5_000L
 
-        /** 面板高度占比（A①：不到半屏的小窗） */
+        /** 面板高度占比默认值（A①：不到半屏的小窗） */
         const val PANEL_RATIO = 0.44f
+
+        /** ⑤ 把手拖动的高度范围：30%–80% 屏高 */
+        const val PANEL_RATIO_MIN = 0.30f
+        const val PANEL_RATIO_MAX = 0.80f
 
         /** 面板左右（与底部）留的空隙 */
         const val PANEL_MARGIN_DP = 14

@@ -58,6 +58,8 @@ interface NativeOverlayEvent {
 export interface OverlayUiState {
   /** 消息：images 是本地图片路径（原生直接渲染缩略图）；status=sending 时原生显示「正在发送…」 */
   messages?: Array<{
+    /** 稳定 id（原生按它给「新消息」只播一次进场动画；不传就按内容派生） */
+    id?: string;
     role: "user" | "oh";
     text: string;
     images?: string[];
@@ -74,6 +76,8 @@ export interface OverlayUiState {
   autoSpeak?: boolean;
   /** 正在朗读（面板可显示状态） */
   speaking?: boolean;
+  /** 正在朗读的文本（原生据此把那条消息的喇叭画成发声态；空串 = 没在念） */
+  speakingText?: string;
 }
 
 export interface AndroidOverlayStatus {
@@ -132,6 +136,14 @@ function dispatch(raw: NativeOverlayEvent): void {
   // 朗读某一条（手动 = 当场意图，无视静音）
   if (type === "speak") {
     if (typeof raw.text === "string") void speakNow(raw.text);
+    return;
+  }
+  // 再点一次 = 停止朗读（与本体 ChatDock 的喇叭语义一致）
+  if (type === "stopSpeak") {
+    speakingText = "";
+    void ttsStop().catch(() => undefined);
+    speaking = false;
+    void syncNativeUi();
     return;
   }
   // 面板里的「自动朗读」开关 → 写 voicePrefs（单一权威），随后把状态推回原生
@@ -221,6 +233,8 @@ function install(): void {
  * 并把消息列表回推给原生渲染——这样安卓侧不依赖任何前端接线就能完整对话。
  * 因此：**不要**再让 GlobalOrb 也挂 submit 处理器（会双发）。 */
 interface NativeMsg {
+  /** 稳定 id：同一条消息在多次 push 里保持一致（原生据此去重，避免重复播进场动画） */
+  id: string;
   role: "user" | "oh";
   text: string;
   /** 本地图片路径（原生渲染缩略图并可点开放大） */
@@ -231,6 +245,8 @@ interface NativeMsg {
 
 let nativeMsgs: NativeMsg[] = [];
 let nativeBusy = false;
+let msgSeq = 0;
+const nextMsgId = (): string => `m${++msgSeq}`;
 
 /* ───────────── 朗读（task-15 第 2 条） ─────────────
  * 语义与本体内 ChatDock 的喇叭一致：
@@ -238,6 +254,8 @@ let nativeBusy = false;
  *   - 自动档只读 voicePrefs.autoSpeak（speakReply 内部自带闸门，这里不重复判）；
  *   - 收口走 onethu-tts://done（onTtsDone），把 speaking 推回原生做状态显示。 */
 let speaking = false;
+/** 正在朗读的文本（原生按它把对应那条的喇叭画成发声态） */
+let speakingText = "";
 let ttsHooked = false;
 
 async function ensureTtsHook(): Promise<void> {
@@ -246,6 +264,7 @@ async function ensureTtsHook(): Promise<void> {
   try {
     await onTtsDone(() => {
       speaking = false;
+      speakingText = "";
       void syncNativeUi();
     });
   } catch {
@@ -262,6 +281,7 @@ async function speakNow(text: string): Promise<void> {
     const ok = await speakReply(t, { force: true });
     if (ok) {
       speaking = true;
+      speakingText = t;
       void syncNativeUi();
       await ensureTtsHook();
     }
@@ -307,6 +327,7 @@ async function syncNativeUi(): Promise<void> {
     theme: themeName(),
     autoSpeak,
     speaking,
+    speakingText,
   });
 }
 
@@ -314,16 +335,20 @@ async function syncNativeUi(): Promise<void> {
 async function askNative(text: string): Promise<void> {
   const t = text.trim();
   if (!t) return;
-  nativeMsgs.push({ role: "user", text: t, status: "" });
+  nativeMsgs.push({ id: nextMsgId(), role: "user", text: t, status: "" });
   nativeBusy = true;
   void syncNativeUi();
   try {
     const r = (await askOh(t)) as { answer?: string; error?: string };
     const reply = String(r?.answer ?? r?.error ?? "").trim() || "（没有回复）";
-    nativeMsgs.push({ role: "oh", text: reply });
+    nativeMsgs.push({ id: nextMsgId(), role: "oh", text: reply });
     autoSpeakReply(reply);
   } catch (e) {
-    nativeMsgs.push({ role: "oh", text: `（出错了：${e instanceof Error ? e.message : String(e)}）` });
+    nativeMsgs.push({
+      id: nextMsgId(),
+      role: "oh",
+      text: `（出错了：${e instanceof Error ? e.message : String(e)}）`,
+    });
   }
   nativeBusy = false;
   void syncNativeUi();
@@ -347,6 +372,7 @@ async function requestAttach(kind: string): Promise<void> {
     // 取消不打扰：什么也不推
   } catch (e) {
     nativeMsgs.push({
+      id: nextMsgId(),
       role: "oh",
       text: `（打开${label}失败：${e instanceof Error ? e.message : String(e)}）`,
     });
@@ -361,7 +387,13 @@ async function sendNativeAttach(raw: NativeOverlayEvent): Promise<void> {
   const name = typeof raw.name === "string" ? raw.name : undefined;
   // 立刻入列（带缩略图路径 + sending 态）：原生在此之前已经本地回显过一次，
   // 这里的 push 是权威状态 —— 面板关掉也留在列表里，下次打开照样看得到这条与它的回复。
-  const mine: NativeMsg = { role: "user", text: `附件：${name ?? "（未命名）"}`, images: [path], status: "sending" };
+  const mine: NativeMsg = {
+    id: nextMsgId(),
+    role: "user",
+    text: `附件：${name ?? "（未命名）"}`,
+    images: [path],
+    status: "sending",
+  };
   nativeMsgs.push(mine);
   nativeBusy = true;
   void syncNativeUi();
@@ -370,11 +402,12 @@ async function sendNativeAttach(raw: NativeOverlayEvent): Promise<void> {
     const r = await sendToOh([file]);
     mine.status = "";
     const reply = String(r?.answer ?? "").trim();
-    nativeMsgs.push({ role: "oh", text: reply || "（附件已交给 OH）" });
+    nativeMsgs.push({ id: nextMsgId(), role: "oh", text: reply || "（附件已交给 OH）" });
     if (reply) autoSpeakReply(reply);
   } catch (e) {
     mine.status = "error";
     nativeMsgs.push({
+      id: nextMsgId(),
       role: "oh",
       text: `（附件发送失败：${e instanceof Error ? e.message : String(e)}）`,
     });

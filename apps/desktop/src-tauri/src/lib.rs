@@ -4537,6 +4537,7 @@ pub mod douyu_bridge {
         level: Option<u64>,
         echoed: bool,
         via: String,
+        saw: Vec<String>,
     }
 
     async fn douyu_send_chain(a: &DanmuSendArgs) -> Result<Chain, String> {
@@ -4645,6 +4646,18 @@ pub mod douyu_bridge {
                 continue;
             }
 
+            // login 后暗号帧（老客户端 Strenght：h5ckreq）
+            let _ = ws
+                .send(Message::Binary(
+                    frame_pairs(&[
+                        ("type".to_string(), "h5ckreq".into()),
+                        ("rid".to_string(), real_rid.clone()),
+                        ("ti".to_string(), "220120191120".into()),
+                    ])
+                    .into(),
+                ))
+                .await;
+
             // joingroup + mrkl +（发送前发放下）
             let _ = ws
                 .send(Message::Binary(
@@ -4670,6 +4683,7 @@ pub mod douyu_bridge {
 
             // ③ 发送 + 回显检测
             let mut echoed = false;
+            let mut saw: Vec<String> = Vec::new();
             if !a.check_only {
                 let tts = chrono_now_secs().parse::<u64>().unwrap_or(0);
                 let cst = (tts * 1000) + 9000;
@@ -4703,8 +4717,18 @@ pub mod douyu_bridge {
                     if let Message::Binary(b) = &msg {
                         for stt in decode_douyu_frame(b) {
                             let m = kv_of(&stt);
+                            if let Some(t) = m.get("type") {
+                                if saw.last() != Some(t) && saw.len() < 12 {
+                                    saw.push(t.clone());
+                                }
+                            }
                             if m.get("type").map(|s| s.as_str()) == Some("memberinfores") {
                                 level = m.get("level").and_then(|p| p.parse().ok());
+                            }
+                            if m.get("type").map(|s| s.as_str()) == Some("error") {
+                                if let Some(e) = m.get("content") {
+                                    saw.push(format!("error:{e}"))
+                                }
                             }
                             if m.get("type").map(|s| s.as_str()) == Some("chatmsg") && m.get("uid").map(String::as_str) == Some(uid.as_str()) {
                                 let got = stt_unescape(&m.get("txt").cloned().unwrap_or_default());
@@ -4721,7 +4745,7 @@ pub mod douyu_bridge {
                 }
             }
             let _ = ws.close(None).await;
-            return Ok(Chain { real_rid, level, echoed, via: format!("宿主桥（{port}）· {src}") });
+            return Ok(Chain { real_rid, level, echoed, via: format!("宿主桥（{port}）· {src}"), saw });
         }
         Err(format!("弹幕服务器 8501~8503 全部连不上（{last_err}）。若 HTTP 正常而 WS 全灭，大概率是本机代理对偶发端口的分流限制，可再试或换网络"))
     }

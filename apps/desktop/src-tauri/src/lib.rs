@@ -4703,6 +4703,9 @@ pub mod douyu_bridge {
                     if let Message::Binary(b) = &msg {
                         for stt in decode_douyu_frame(b) {
                             let m = kv_of(&stt);
+                            if m.get("type").map(|s| s.as_str()) == Some("memberinfores") {
+                                level = m.get("level").and_then(|p| p.parse().ok());
+                            }
                             if m.get("type").map(|s| s.as_str()) == Some("chatmsg") && m.get("uid").map(String::as_str) == Some(uid.as_str()) {
                                 let got = stt_unescape(&m.get("txt").cloned().unwrap_or_default());
                                 if got.trim() == a.content.trim() || got.contains(a.content.trim().chars().take(8).collect::<String>().as_str()) {

@@ -50,6 +50,11 @@ tauri-plugin-geolocation = "2.3.3"
 
 # macOS 系统通知：UNUserNotificationCenter（objc2 绑定，见 src/notify_macos.rs）。
 # 与日历插件同源依赖，版本对齐避免重复编译两套 objc2。
+# ---- niko 弹幕桥（宿主 WS 桥；WebView 内 WebSocket 在 macOS 26.5 全灭，短事务移宿主） ----
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+md-5 = "0.10"
+futures-util = "0.3"
+
 [target.'cfg(target_os = "macos")'.dependencies]
 block2 = "0.6"
 objc2 = { version = "0.6", features = ["alloc", "std"] }
@@ -86,6 +91,9 @@ required-features = ["notify-probe"]
 strip = true
 lto = true
 codegen-units = 1
+
+
+
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt"] }

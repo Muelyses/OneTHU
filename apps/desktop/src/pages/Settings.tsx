@@ -6,9 +6,6 @@ import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../compo
 import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
-import { ImSettingsSection } from "../components/ImSettingsSection.js";
-import { VoiceSettingsSection } from "../components/VoiceSettingsSection.js";
-import { OverlaySettingsSection } from "../components/OverlaySettingsSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { showToast } from "../state/toast.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -16,9 +13,9 @@ import { clearRemembered, loadRemembered, session, isTauri } from "../lib/client
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
-import { consumeSettingsTabRequest, setAdvancedMode, useAdvancedMode, SETTINGS_TAB_ORDER, ADVANCED_SETTINGS_TABS } from "../state/settingsMode.js";
+import { consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
+import { OhSettingsPage } from "../components/OhSettingsPage.js";
 import { ThemePickerModal } from "../components/ThemePickerModal.js";
-import { PluginsPage } from "./Plugins.js";
 import { HelpSection } from "../components/HelpSection.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
@@ -63,20 +60,6 @@ import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 import { ErrorLine } from "../components/Details.js";
 import { resetActiveOnboarding, setOnboardingFlow, useOnboardingFlow } from "../state/onboarding.js";
 
-/** 设置分组（按"你要改什么"索引，而不是按功能罗列）——
- *  点一下即滚动到对应分节；分节标题保持原位，不重排大段 JSX（低风险）。 */
-const SETTINGS_GROUPS: Array<{ label: string; sections: string[] }> = [
-  { label: "账号", sections: ["账户", "账号与绑定", "安全"] },
-  { label: "通知与提醒", sections: ["通知", "桌面小组件"] },
-  { label: "外观与布局", sections: ["外观", "首页布局", "收藏夹"] },
-  { label: "数据与同步", sections: ["云同步", "外部作业源"] },
-  { label: "下载与存储", sections: ["下载"] },
-  { label: "IM 通道", sections: ["IM 通道"] },
-  { label: "插件", sections: ["插件"] },
-  { label: "帮助", sections: ["帮助"] },
-  { label: "关于", sections: ["关于"] },
-];
-
 /** 按分节标题滚动定位（不改各分节标记本身，避免动到千行 JSX） */
 function jumpToSection(titles: string[]): void {
   const nodes = Array.from(document.querySelectorAll(".section-head, .sec-title, h2, h3"));
@@ -94,17 +77,19 @@ const SETTINGS_TAB_OF: Record<string, string> = {
   关于: "关于", 账户: "账号", 账号与绑定: "账号", 安全: "账号",
   云同步: "数据与同步", 外部作业源: "数据与同步",
   首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
-  通知: "通知与提醒", 桌面小组件: "通知与提醒", 语音合成: "通知与提醒", 悬浮球: "通知与提醒",
-  插件: "插件", 下载: "下载与存储", 帮助: "帮助",
+  通知: "通知与提醒",
+  /* 2026-10-11 重构：桌面小组件独立成栏；语音合成/悬浮球迁到 OH 页；插件改成独立入口 */
+  桌面小组件: "桌面小组件",
+  下载: "下载与存储", OH: "OH", 帮助: "帮助",
 };
 /* 页签清单与高级页签定义已挪到 state/settingsMode.ts（命令面板与护栏共用同一份，见该文件注释） */
 
 export function SettingsPage() {
   /** 当前二级页签（默认第一个栏目） */
   const [tab, setTab] = useState<string>(SETTINGS_TAB_ORDER[0] ?? "账号");
-  const onboardingFlow = useOnboardingFlow(); // §4.2 灰度：首启流程开关（仅高级模式可见）
-  /** 标准 / 高级分层（§4.4） */
-  const advanced = useAdvancedMode();
+  const onboardingFlow = useOnboardingFlow(); // §4.2 灰度：首启流程开关（开发者构建可见）
+  /** 手机端判定：插件入口在「我的」页里也要有一份（与桌面侧栏同款框） */
+  const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
   const settingsTabHidden = settingsTabLayout.hidden;
   const [manageOpen, setManageOpen] = useState(false);
@@ -114,18 +99,12 @@ export function SettingsPage() {
     saveTabLayout("settings", l);
   };
 
-  /* 从高级模式切回标准模式时，当前页签可能已被收起：退回第一个可见页签，
-     否则那一栏的内容会因为没有匹配页签而全部露出来 */
-  useEffect(() => {
-    if (!advanced && ADVANCED_SETTINGS_TABS.includes(tab)) setTab(SETTINGS_TAB_ORDER[0] ?? "账号");
-  }, [advanced, tab]);
-
   // R23（霖实测：跳过来还得自己找分区在哪）：引导横幅「去设置」→ **先切到外部作业源
   // 所在页签再滚动**。此前只在子组件里 scrollIntoView——分区在 display:none 的页签里，
   // 滚动无效，用户落在设置页顶部还要自己找。
   useEffect(() => {
     const wantTab = consumeSettingsTabRequest();
-    if (wantTab && (advanced || !ADVANCED_SETTINGS_TABS.includes(wantTab))) setTab(wantTab);
+    if (wantTab) setTab(wantTab);
     if (!consumeExtHwScrollRequest()) return;
     setTab(SETTINGS_TAB_OF["外部作业源"] ?? "数据与同步");
     const t = setTimeout(() => {
@@ -228,9 +207,23 @@ export function SettingsPage() {
         }
       />
 
+      {/* 手机端：插件入口住进「我的」页——同一个框里左右两半（桌面那份在侧栏钉底） */}
+      {isPhone ? (
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 4, padding: 4, marginBottom: 14,
+            border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
+            background: "var(--md-sys-color-surface-container-lowest)",
+          }}
+        >
+          <button className="nav-item is-active" style={{ flex: 1 }} aria-current="page">设置</button>
+          <button className="nav-item" style={{ flex: 1 }} onClick={() => navigate("plugins")}>插件</button>
+        </div>
+      ) : null}
+
       <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
         {settingsTabLayout.order
-          .filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t) && (advanced || !ADVANCED_SETTINGS_TABS.includes(t)))
+          .filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t))
           .map((t) => (
             <button
               key={t}
@@ -265,14 +258,9 @@ export function SettingsPage() {
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
         {__ONETHU_DEV__ ? <DebugLogRow /> : null}
         <DiagnosticsRow />
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">高级模式</div>
-            <div className="setting-desc">打开后显示扩展功能、开发者工具等进阶设置，日常使用不必开。</div>
-          </div>
-          <Switch on={advanced} onChange={setAdvancedMode} label="高级模式" />
-        </div>
-        {advanced ? (
+        {/* 「高级模式」开关与分层已于 2026-10-11 整体退役（用户拍板：不再用可见性藏功能）。
+            原先靠它露出的首启流程开关改成开发者构建可见，普通构建不再出现。 */}
+        {__ONETHU_DEV__ ? (
           <div className="setting-row">
             <div>
               <div className="setting-title">新首启流程</div>
@@ -644,21 +632,12 @@ export function SettingsPage() {
       <Card>
         <WidgetSettingsSection />
       </Card>
-      <SectionHead title="语音合成" />
+      {/* 2026-10-11 设置重构：语音合成 / 悬浮球 / IM 通道 全部迁进「OH」页（普通档 / 高级档）；
+          插件改成独立入口（桌面＝侧栏「设置 | 插件」框，手机＝「我的」页里的同款框）。 */}
+      <SectionHead title="OH" />
       <Card>
-        <VoiceSettingsSection />
+        <OhSettingsPage />
       </Card>
-      <SectionHead title="悬浮球" />
-      <Card>
-        <OverlaySettingsSection />
-      </Card>
-      <SectionHead title="IM 通道" />
-      <Card>
-        <ImSettingsSection />
-      </Card>
-      <SectionHead title="插件" />
-      {/* §4.4b：插件不再是单独一页，管理界面直接嵌在这里（本分节随页签显隐整块收放） */}
-      <PluginsPage embedded />
       <SectionHead title="安全" />
       <Card>
         <div className="setting-row">

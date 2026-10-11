@@ -107,8 +107,8 @@ export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactN
   { page: "mail", label: "邮箱", icon: IconMail },
   { page: "cloud", label: "云盘", icon: IconCloud },
   { page: "thubook", label: "THUbook", icon: IconBook },
-  /* 2026-10-09：插件升回一级入口（用户拍板：插件无论逻辑还是功能都不该藏在高级设置里） */
-  { page: "plugins", label: "插件", icon: IconPlug },
+  /* 2026-10-11：插件从列表里摘掉——它不是"第 N 项"，而是与设置并列的「1.5 级」入口，
+     渲染在侧栏钉底的「设置 | 插件」框里（手机端那份在「我的」页里，同款框）。 */
   { page: "info", label: "信息", icon: IconInfo },
   { page: "life", label: "生活", icon: IconCard },
   { page: "reserve", label: "预约", icon: IconCalendar },
@@ -509,17 +509,45 @@ export function Shell({ children }: { children: ReactNode }) {
             ) : null}
           </>
         ) : null}
-        {/* 钉底固定项：设置——不进收藏夹体系，不可折叠不可改序（插件 2026-10-09 升一级菜单，见上） */}
+        {/* 钉底固定项：「设置 | 插件」同框——两者是并列的「1.5 级」入口，不进收藏夹体系、
+            不可折叠不可改序。手机端没有侧栏，那一份在「我的」页顶部（pages/Settings.tsx 里渲染）。
+            样式用行内写：global.css 不在本任务写域（要挪进样式表随时说）。 */}
         <div className="nav-sep" aria-hidden />
-        {navRow("settings", {
-          active: page === "settings",
-          label: "设置",
-          icon: <IconSettings />,
-          onClick: () => {
-            onAfter?.();
-            navigate("settings");
-          },
-        })}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            padding: 4,
+            marginBottom: 8,
+            border: "1px solid var(--border)",
+            borderRadius: "var(--md-sys-shape-corner-large, 12px)",
+            background: "var(--md-sys-color-surface-container-lowest)",
+          }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {navRow("settings", {
+              active: page === "settings",
+              label: "设置",
+              icon: <IconSettings />,
+              onClick: () => {
+                onAfter?.();
+                navigate("settings");
+              },
+            })}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {navRow("plugins", {
+              active: page === "plugins",
+              label: "插件",
+              icon: <IconPlug />,
+              onClick: () => {
+                onAfter?.();
+                navigate("plugins");
+              },
+            })}
+          </div>
+        </div>
       </>
     );
   };

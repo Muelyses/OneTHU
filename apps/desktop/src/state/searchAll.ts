@@ -7,7 +7,7 @@
  */
 import { searchAtoms, type AtomHit } from "./atoms.js";
 import { matchNavQuery, type NavEntry } from "./navigation.js";
-import { ADVANCED_SETTINGS_TABS, SETTINGS_TAB_ORDER, isAdvancedMode } from "./settingsMode.js";
+import { SETTINGS_TAB_ORDER } from "./settingsMode.js";
 
 export interface SearchAllResult {
   /** 注册表命中（功能） */
@@ -26,7 +26,8 @@ export function searchAll(q: string, limit = 14): SearchAllResult {
   const atoms = searchAtoms(query, limit).filter(
     (a) => !((a.kind === "page" || a.kind === "widget") && navIds.has(a.key)),
   );
-  const standard = SETTINGS_TAB_ORDER.filter((t) => isAdvancedMode() || !ADVANCED_SETTINGS_TABS.includes(t));
+  // 高级模式退役后页签不再分层（2026-10-11）：全量即可
+  const standard = SETTINGS_TAB_ORDER;
   const tabs = query ? standard.filter((t) => t.includes(query)) : [];
   return { entries, atoms, tabs };
 }

@@ -516,6 +516,7 @@ export function ChatDock(): ReactNode {
   const toggle = useCallback((): void => {
     if (open) {
       localStorage.setItem(OPEN_KEY, "0");
+      setInputMode(false); // 收起面板 = 回到入口态（下次打开仍是「点击输入，长按说话」）
       setClosing(true); // 先演退场动画，再卸载
       // 关面板即允许下次重开重水合：期间 IM/云盘可能写入了新轮次（2026-10-10）
       hydratedFor.current = null;
@@ -1106,7 +1107,18 @@ export function ChatDock(): ReactNode {
 
   // 文本输入模式展开即聚焦（移动端顺势弹出键盘）
   useEffect(() => {
-    if (inputMode) inputRef.current?.focus();
+    if (!inputMode) return;
+    const el = inputRef.current;
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    /* 用户实录「点一下只闪一下、非得长按」：单击展开那一拍，浏览器对这次点击的默认处理
+       可能在 focus 之后又把焦点带走 → 输入框刚展开就失焦。下一帧确认一次（仍在同一次
+       用户手势的活跃窗口内，安卓也会认这个 focus 弹键盘）。 */
+    const raf = window.requestAnimationFrame(() => {
+      const cur = inputRef.current;
+      if (cur && document.activeElement !== cur) cur.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(raf);
   }, [inputMode]);
 
   /* 本机 TTS 能力（一次探测）：桌面端插件如实回 false → 不渲染朗读按钮，也不会出现点不动的死状态 */
@@ -1431,7 +1443,6 @@ export function ChatDock(): ReactNode {
   };
 
   if (!pid) return null;
-  const budgetPct = usage.budgetUsd ? Math.min(100, ((usage.totalCostUsd ?? 0) / usage.budgetUsd) * 100) : 0;
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
   const voiceHint = cancelling && voice !== "off"
     ? "松开取消"
@@ -1578,7 +1589,6 @@ export function ChatDock(): ReactNode {
                 placeholder={busy ? "执行中，可打断…" : "问点什么，回车发送"}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onBlur={() => { if (!input.trim()) setInputMode(false); }} // 空着点走 = 收起，回到入口按钮
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                     e.preventDefault();
@@ -1623,11 +1633,6 @@ export function ChatDock(): ReactNode {
                 }}
               >↑</button>
             ) : null}
-          </div>
-          <div className="dock-foot" title="R6：token 用量与价格统计（由插件精确上报；累计跨会话保留）">
-            <span>本会话 {usage.sessionPrompt ?? 0}+{usage.sessionCompletion ?? 0} tok · {fmtUsd(usage.sessionCostUsd)}</span>
-            <span>累计 {fmtUsd(usage.totalCostUsd)} / 预算 {fmtUsd(usage.budgetUsd)}</span>
-            <div className="dock-budget"><div className="dock-budget-bar" style={{ width: `${budgetPct}%` }} /></div>
           </div>
           {history != null ? (
             <div className="dock-history" role="menu">

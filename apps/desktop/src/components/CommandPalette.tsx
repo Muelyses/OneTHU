@@ -13,7 +13,7 @@ import { IconSearch } from "./Icons.js";
 import { pageAtomRef, resolveAtom } from "../state/atoms.js";
 import { coreDefaults, type NavEntry } from "../state/navigation.js";
 import { searchAll } from "../state/searchAll.js";
-import { requestSettingsTab, useAdvancedMode } from "../state/settingsMode.js";
+import { requestSettingsTab } from "../state/settingsMode.js";
 import { closePalette, togglePalette, usePaletteOpen } from "../state/palette.js";
 import { useApp } from "../state/context.js";
 
@@ -31,7 +31,6 @@ type Row =
 export function CommandPalette(): ReactNode {
   const open = usePaletteOpen();
   const { navigate } = useApp();
-  const advanced = useAdvancedMode();
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -78,7 +77,7 @@ export function CommandPalette(): ReactNode {
       })),
       ...r.tabs.map((tab) => ({ kind: "tab" as const, key: "t:" + tab, tab })),
     ];
-  }, [query, advanced]);
+  }, [query]);
 
   useEffect(() => {
     setActive((i) => (i >= rows.length ? 0 : i));

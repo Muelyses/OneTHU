@@ -241,6 +241,27 @@ export async function fetchStarMap(items: MarketEntry[]): Promise<Record<string,
   return out;
 }
 
+/** 拉取仓库并解析其最新 manifest（不执行插件业务，只读元数据）：用于「检查更新」。
+ *  与安装管线同一取数路径（contents API 优先、raw 降级），失败向上抛出面向用户的信息。 */
+export async function fetchRemoteManifestFromRepoRef(
+  ref: RepoRef,
+  entry?: string,
+): Promise<{ id: string; version: string; name?: string }> {
+  const text = await fetchEntryFromRepo(ref, entry);
+  const blobUrl = URL.createObjectURL(new Blob([text], { type: "text/javascript" }));
+  try {
+    // 与安装管线同一信任级别的动态 import（安装时本就执行同来源的模块文本）
+    const mod = (await import(/* @vite-ignore */ blobUrl)) as { manifest?: { id?: unknown; version?: unknown; name?: unknown } };
+    const m = mod?.manifest;
+    if (!m || typeof m.id !== "string" || typeof m.version !== "string") {
+      throw new Error("仓库里的插件缺 manifest/version 字段");
+    }
+    return { id: m.id, version: String(m.version), name: typeof m.name === "string" ? m.name : undefined };
+  } finally {
+    URL.revokeObjectURL(blobUrl);
+  }
+}
+
 function marketUrl(): string {
   try {
     return localStorage.getItem(MARKET_URL_KEY) || DEFAULT_MARKET_URL;

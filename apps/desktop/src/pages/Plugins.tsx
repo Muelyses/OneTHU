@@ -4,7 +4,7 @@
  * 设置与运行日志走底部 Sheet：设置显式「保存」+ 已保存回执（不再静默落盘）；
  * 日志全高终端（时间戳 + 方法符着色 + 自动贴底 + 打断/清空）。
  */
-import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
+import { compareVersions, fetchEntryFromMarket, fetchEntryFromRepo, fetchRemoteManifestFromRepoRef, fetchRegistry, fetchStarMap, normalizeRepoUrl, parseRepoInput, type MarketEntry } from "../lib/market.js";
 import { IconGithub } from "../components/Icons";
 import { createPortal } from "react-dom";
 import type { CommandResult } from "../plugins/types.js";
@@ -249,14 +249,28 @@ function PluginCard({
   onOpenSheet,
   marketVersion,
   onGoMarket,
+  checkBusy,
+  checkMsg,
+  repoRemote,
+  onCheckUpdate,
+  onUpdateNow,
 }: {
   id: string;
   index: number;
   onOpenSheet: (s: { id: string; mode: "settings" | "log" | "mcp" }) => void;
-  /** 市场名单里该插件的版本（有新版时卡片显示「可更新」徽标） */
+  /** 市场名单里该插件的版本（有新版时卡片显示「可更新」徽标；本仓检查出更新后以本仓为准，市场徽标隐藏） */
   marketVersion?: string;
   onGoMarket?: () => void;
+  /** 「检查更新」进行中 */
+  checkBusy?: boolean;
+  /** 检查/更新结果的一行反馈（贴在按钮下方） */
+  checkMsg?: string | null;
+  /** 本体仓库检查出的最新版本（>本机 解锁「更新」按钮；存在时市场徽标让位） */
+  repoRemote?: string | null;
+  onCheckUpdate?: () => void;
+  onUpdateNow?: (remoteVersion: string) => void;
 }): ReactNode {
+  const [repoCheck, setRepoCheck] = useState<{ busy: boolean; msg: string | null; remote: string | null }>({ busy: false, msg: null, remote: null });
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const rec = plugins.find((p) => p.manifest.id === id);
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot).filter((c) => c.pluginId === id);
@@ -271,6 +285,42 @@ function PluginCard({
   const active = rec.enabled && isLive(id);
   const failed = rec.enabled && !isLive(id);
   const stateText = active ? "运行中" : failed ? "加载失败" : "已停用"; // ui-copy-lint-ok: 状态标签，同一行操作区就有「日志」按钮
+
+  /** 从插件本体仓库读最新 manifest（本体仓库优先；失败给出面向用户的一行反馈） */
+  const checkUpdate = async (): Promise<void> => {
+    if (!rec || !rec.repo || m.kind === "rust") return;
+    setRepoCheck({ busy: true, msg: "正在从插件本体仓库获取最新版本…", remote: null });
+    try {
+      const ref = parseRepoInput(rec.repo);
+      const entry = (m as unknown as { entry?: string }).entry;
+      const remote = await fetchRemoteManifestFromRepoRef(ref, entry);
+      if (remote.id !== m.id) {
+        setRepoCheck({ busy: false, msg: "失败：仓库里是另一个 id 的插件（可能仓库被复用），请检查来源", remote: null });
+        return;
+      }
+      if (compareVersions(remote.version, m.version) > 0) {
+        setRepoCheck({ busy: false, msg: `插件仓库有新版本 v${remote.version}（本机 v${m.version}）`, remote: remote.version });
+      } else {
+        setRepoCheck({ busy: false, msg: `已是最新（仓库版本 v${remote.version}）`, remote: remote.version });
+      }
+    } catch (e) {
+      setRepoCheck({ busy: false, msg: `失败：${String(e instanceof Error ? e.message : e).slice(0, 160)}`, remote: null });
+    }
+  };
+  /** 一键更新：与安装同一管线，覆盖安装并重新激活 */
+  const updateNow = async (remoteVersion: string): Promise<void> => {
+    setRepoCheck({ busy: true, msg: `正在从本体仓库更新到 v${remoteVersion}…`, remote: remoteVersion });
+    try {
+      const ref = parseRepoInput(rec!.repo!);
+      const entry = (m as unknown as { entry?: string }).entry;
+      const text = await fetchEntryFromRepo(ref, entry);
+      const { installPlugin } = await import("../plugins/loader.js");
+      const nm = await installPlugin(text, { repo: normalizeRepoUrl(rec!.repo!) });
+      setRepoCheck({ busy: false, msg: `已更新并重新激活：${nm.name} v${nm.version}`, remote: null });
+    } catch (e) {
+      setRepoCheck({ busy: true, msg: `更新失败：${String(e instanceof Error ? e.message : e).slice(0, 160)}`, remote: remoteVersion });
+    }
+  };
 
   const doRun = async (cmdId: string): Promise<void> => {
     setRunMsg("执行中…");
@@ -349,7 +399,25 @@ function PluginCard({
               MCP
             </button>
           ) : null}
-          {marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
+          {rec.repo && m.kind !== "rust" && !rec.embedded && !rec.builtin && id !== "onethu.harness" ? (
+            <button className="btn btn-ghost" title={`从 ${rec.repo} 检查最新版（本体仓库优先，市场兜底）`} disabled={checkBusy || repoCheck.busy} onClick={() => { onCheckUpdate?.(); void checkUpdate().catch(() => undefined); }}>
+              {checkBusy || repoCheck.busy ? "检查中…" : "检查更新"}
+            </button>
+          ) : null}
+          {(repoCheck.remote || repoRemote) && compareVersions(repoCheck.remote ?? "", m.version) > 0 ? (
+            <button
+              className="btn btn-primary"
+              title={`从插件本体仓库更新到 v${repoCheck.remote || repoRemote}（与安装同一管线，覆盖更新并重新激活）`}
+              disabled={repoCheck.busy || checkBusy}
+              onClick={() => {
+                const v = repoCheck.remote || repoRemote;
+                if (v) void updateNow(v).catch(() => undefined);
+              }}
+            >
+              {repoCheck.busy ? "更新中…" : `更新至仓库版 v${repoCheck.remote || repoRemote}`}
+            </button>
+          ) : null}
+          {!repoCheck.remote && !repoRemote && marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
             <button className="btn btn-ghost plg-update-flag" title={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>
               可更新 ↑
             </button>
@@ -371,6 +439,12 @@ function PluginCard({
       </div>
 
       {m.description ? <p className="plg-desc">{m.description}</p> : null}
+
+      {(repoCheck.msg || checkMsg) ? (
+        <p className="plg-desc" style={{ color: (repoCheck.msg ?? checkMsg ?? "").startsWith("失败") || (repoCheck.msg ?? checkMsg ?? "").includes("失败") ? "var(--red)" : "var(--text-2)" }}>
+          {repoCheck.msg ?? checkMsg}
+        </p>
+      ) : null}
 
       <div className="plg-perms">
         {m.permissions.map((p) => {

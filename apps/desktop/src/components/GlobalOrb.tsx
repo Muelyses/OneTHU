@@ -20,6 +20,7 @@ import {
 } from "../lib/overlay.js";
 import { askOh } from "../im/oh.js";
 import { AttachTray } from "./AttachTray.js";
+import { HarnessMark } from "./HarnessMark.js";
 import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
 import { AttachActionsSheet } from "./AttachActionsSheet.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop } from "../lib/speech.js";
@@ -301,7 +302,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           }
         }}
       >
-        （OH）
+        <HarnessMark size={17} />
       </div>
     );
   }

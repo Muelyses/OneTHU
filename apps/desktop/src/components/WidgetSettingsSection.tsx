@@ -144,6 +144,8 @@ export function WidgetSettingsSection(): ReactNode {
         </div>
       ) : null}
 
+      {/* task-22 检索直达：小组件槽位 = 每一块的「换内容」行集合；display:contents 不改布局 */}
+      <div data-set-id="row-小组件槽位" style={{ display: "contents" }}>
       {(instances ?? []).map((inst) => (
         <div className="setting-row" key={inst.id}>
           <div>
@@ -170,6 +172,7 @@ export function WidgetSettingsSection(): ReactNode {
           </div>
         </div>
       ))}
+      </div>
 
       <div className="setting-row">
         <div>

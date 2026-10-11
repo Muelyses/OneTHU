@@ -14,7 +14,8 @@
 import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { useApp } from "../state/context.js";
-import { goEntry } from "./Layout.js";
+import { goEntry, slugOf } from "./Layout.js";
+import { requestPluginsFocus } from "../state/pluginsFocus.js";
 import { VoiceSettingsSection } from "./VoiceSettingsSection.js";
 import { OverlaySettingsSection } from "./OverlaySettingsSection.js";
 import { ImSettingsSection } from "./ImSettingsSection.js";
@@ -36,12 +37,18 @@ const tierListeners = new Set<() => void>();
    注意：语音/悬浮球/IM 的行由**它们各自的 section 组件**注册（单一真源），这里不再重复注册
    —— 重复���册会让"搜到的是哪一条"出现歧义（护栏最初就是被这一点抓红的）。 ── */
 defineSearchRows([
-  /* go 负责第二段：OH 页需要切档（基础/高级）——基础档行 → 基础设置，其余 → 高级配置 */
-  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置" },
-  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置" },
-  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置" },
-  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置" },
+  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置", go: () => goOhRow("MadModel 免费档", "basic") },
+  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("OH 模型 / 多模态开关", "basic") },
+  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置", go: () => goOhRow("后台保活（华为 / 荣耀）", "basic") },
+  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "sec-模型MCP日志", fallbackTarget: "oh-tier-advanced", waitMs: 1400 }); } },
 ]);
+
+/* task-22：OH 行级直达的**本地快捷**（三段式的 ②+③）：切档 + 滚到行（找不到行时落档位根）。+
+   语音/悬浮球/IM 的行注册也走它（单一实现，避免四处手写切档请求）。 */
+export function goOhRow(title: string, tier: OhTier, note?: string): void {
+  requestOhTier(tier);
+  requestPluginsFocus({ target: "row-" + slugOf(title), fallbackTarget: `oh-tier-${tier}`, note });
+}
 
 export function requestOhTier(t: OhTier): void {
   pendingTier = t;
@@ -69,6 +76,8 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
       className={"nav-item" + (tier === id ? " is-active" : "")}
       role="tab"
       aria-selected={tier === id}
+      /* task-22：档位根锚点——检索直达「找不到行」时落这里再解释（分节根口径） */
+      data-set-id={`oh-tier-${id}`}
       style={{ flex: 1, justifyContent: "center" }}
       onClick={() => onChange(id)}
     >
@@ -93,10 +102,11 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
 
 /** 小节标题：**刻意不用 SectionHead**——设置页的页签显隐是按 `.section-head` 走的，
  *  这里再塞一个会被当成新分节被显隐逻辑收走。 */
-function SubHead({ children }: { children: ReactNode }): ReactNode {
+function SubHead({ children, id }: { children: ReactNode; id?: string }): ReactNode {
   return (
-    /* ② 与 .setting-row 同一左内边距（16px）与层级——用户截图里「悬浮球」标题顶在最左边 */
-    <div className="setting-title" style={{ margin: "4px 0 8px", padding: "0 16px", fontWeight: 600 }}>
+    /* ② 与 .setting-row 同一左内边距（16px）与层级——用户截图里「悬浮球」标题顶在最左边。
+       id（task-22 检索直达）：显式锚点 data-set-id，供 goSearchRow 的离家行 / 无行控件落地。 */
+    <div className="setting-title" data-set-id={id} style={{ margin: "4px 0 8px", padding: "0 16px", fontWeight: 600 }}>
       {children}
     </div>
   );
@@ -251,7 +261,7 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
           {/* 同一份实现的 advanced 档：通道开关、手工凭据、微信灰置说明 */}
           <ImSettingsSection tier="advanced" />
 
-          <SubHead>模型 / MCP / 日志（插件自己的面板，就地渲染）</SubHead>
+          <SubHead id="sec-模型MCP日志">模型 / MCP / 日志（插件自己的面板，就地渲染）</SubHead>
           {advancedPanels ?? <OhAdvancedSlot />}
         </>
       )}

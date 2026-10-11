@@ -4,14 +4,24 @@
  * 为什么不再靠 DOM：旧实现用 `markSettingsRows()` 扫当前可见的 `.setting-row`，
  * 结果**未挂载/未展开**的设置（OH 子页、插件态、折叠分节）根本进不了索引 →
  * 用户实测「设置里那么多子选项都搜不到」。现在改为**模块加载时显式注册**：
- *   - 各 section 组件（Settings / OhSettingsPage / Im / Voice / Overlay / Widget）在模块顶层调用 `defineSearchRow()`
+ *   - 各 section 组件（Settings / OhSettingsPage / Im / Voice / Overlay / Widget / Plugins）在模块顶层调用 `defineSearchRow()`
  *   - `state/searchAll.ts` 聚合全部行（CommandPalette 与底栏检索条**同一份**）
  *   - 点击直达复用既有请求机制（requestSettingsTab / requestSettingsSection / requestPluginsView / goEntry）
  * **不依赖 DOM、不依赖页面是否挂载**；DOM 侧只负责"滚到并高亮"。
+ *
+ * 三段式落点契约（2026-10-12 `goSearchRow`，检索条直达的红线）：
+ *   ① 家族（切页签）：breadcrumb[0]="设置" → requestSettingsTab+navGo("settings")；
+ *      = "插件" → goEntry("plugins")（OH 表现成插件页的 OH 分节，但由独立 entry 态驱动）。
+ *   ② 二级（切档 / 切视图）：行自带 `go` 负责——OH 行切 OH 基础/高级档；
+ *      插件行切 我的插件/市场/主题筛选 + 展开安装面板分流。
+ *   ③ 三级（行定位）：默认 requestSettingsSection(title)（滚到 + .row-focus）；
+ *      **条件隐藏行**（`visible` 为 false）不是错：落**分节根** + `fallbackNote` 一句解释，
+ *      由调用方（面板/门面/selfcheck）转述给用户——不许静默把分节头当命中。
  */
 import { requestSettingsSection, requestSettingsTab } from "./settingsMode.js";
 import { goEntry } from "../components/Layout.js";
 import { navGo } from "../plugins/bridges.js";
+import { requestPluginsFocus } from "./pluginsFocus.js";
 
 export interface SearchRow {
   /** 稳定 id（唯一） */
@@ -35,6 +45,17 @@ export interface SearchRow {
   aliases?: string[];
   /** 直达动作：默认走 requestSettingsTab + requestSettingsSection(title) */
   go?: () => void;
+  /** 条件隐藏行：点击时有函数则先判可见性；false → 落**分节根**（不冒充命中该行），
+   *  配 `fallbackNote` 说明 为什么看不到它。桌面/手机的落点行为完全一致。 */
+  visible?: () => boolean;
+  /** 条件隐藏行落到分节根时的一句话解释（调用方 toast / 交回 OH 复述） */
+  fallbackNote?: string;
+  /** 条件隐藏行 / landOn 行的**分节根锚点**（插件家族用：data-set-id，如 "sec-我的插件"、"oh-tier-basic"）；
+   *  设置家族默认走 row.section（不填 root 也行）。 */
+  root?: string;
+  /** 该行在当前 UI **没有独立控件**（按钮收在别的控件里/该行此时不需要）：
+   *  注册时就声明「落分节根 + 解释」，不许静默把分节头当命中。 */
+  landOn?: { section: string; note: string };
 }
 
 const rows = new Map<string, SearchRow>();
@@ -101,21 +122,92 @@ export function familyOf(row: SearchRow): "settings" | "plugins" {
   return head === "插件" ? "plugins" : "settings";
 }
 
+/* ═══ OH / 插件直达的路由表（2026-10-12：检索条能到的，OH 也必须能到）══════════ */
+
+/** 路由表行：JSON 可序列化（routes.json / nav.routeTable 同一份形状，函数一律不出现在这里）。
+ *  kind = "settings"（设置页行）| "plugins"（插件页行）| "oh"（OneTHU Harness 子页行）；
+ *  tier/view 把"二级切档"表达成数据：oh 行带 tier（basic|advanced），插件行带 view（mine|market）。 */
+export interface OhRouteEntry {
+  id: string;
+  title: string;
+  desc: string;
+  aliases: string[];
+  breadcrumb: string[];
+  kind: "settings" | "plugins" | "oh";
+  /** OH 行的档位 / 插件行的视图（其余空串） */
+  tier: "basic" | "advanced" | "";
+  view: "mine" | "market" | "";
+  /** 设置行的页签 + 分节（从 tab/section 平铺，便于 OH 端不解析面包屑也能读） */
+  tab: string;
+  section: string;
+  /** 条件隐藏行的解释（非空 = 该行有可能看不见，命中时提醒用户） */
+  note: string;
+}
+
+/** 唯一真源的**只读投影**：`tools/gen-oh-routes.mjs` 离线生成 routes.json（submodule 资产），
+ *  `plugins/facade.ts` 的 nav.routeTable 走本函数在线取——两头同源，护栏防止脱同。 */
+export function ohRouteTable(): OhRouteEntry[] {
+  return allSearchRows().map((r) => {
+    const tab = r.tab;
+    const kind: OhRouteEntry["kind"] = tab === "OneTHU Harness" ? "oh" : (tab === "插件" ? "plugins" : "settings");
+    const bc = breadcrumbOf(r);
+    const tier = kind === "oh" && bc[2] === "高级配置" ? "advanced" : (kind === "oh" ? "basic" : "");
+    const view = kind === "plugins" ? (r.section === "插件市场" ? "market" : "mine") : "";
+    return {
+      id: r.id,
+      title: r.title,
+      desc: r.desc ?? "",
+      aliases: r.aliases ?? [],
+      breadcrumb: bc,
+      kind,
+      tier,
+      view,
+      tab,
+      section: r.section,
+      note: r.fallbackNote ?? "",
+    };
+  });
+}
+
 /** ① **唯一跳转函数**：家族 → 二级（tier/view/category）→ 三级（分节/行高亮）。
- *  家族只从面包屑推导；行自带的 go 负责二级/三级定位（tier / view / section）。 */
-export function goSearchRow(row: SearchRow): { family: "settings" | "plugins"; breadcrumb: string[] } {
+ *  家族只从面包屑推导；行自带的 go 负责二级/三级定位（tier / view / section）。
+ *  返回 `landedOn`：行级命中（"row"）或**条件隐藏行**落到分节根（"section-root"，note 随行）。
+ *  note 的展示由调用方做（toast / 气泡），searchRows 保持可离线评估、不碰 UI。 */
+export function goSearchRow(row: SearchRow): { family: "settings" | "plugins"; breadcrumb: string[]; landedOn: "row" | "section-root"; note?: string } {
   const breadcrumb = breadcrumbOf(row);
   const family = familyOf(row);
+  /* 条件隐藏行：家族照常把用户带到正确的页面，但**不落行**——落分节根 + 解释 */
+  const hidden = typeof row.visible === "function" && row.visible() === false;
+  /* ① 家族/页签：OH 行一律落 OH 一级入口（插件页的 OH 分节由 entry="oh" 渲染）；
+     hidden 时也先到 OH 分节——分节根/档位根就在那里面，note 由该页 focus 通道转述 */
   if (family === "plugins") {
-    goEntry("plugins"); // 状态机（入口态唯一来源）
+    goEntry(row.tab === "OneTHU Harness" ? "oh" : "plugins");
   } else {
     requestSettingsTab(row.tab);
     navGo("settings");
   }
+  /* ②/③ 二级（切档/切视图）与三级（行定位）都在 go 里；注册表只声明不走 go 的兜底 */
+  if (hidden) {
+    if (family === "plugins") {
+      requestPluginsFocus({ fallbackTarget: row.root, note: row.fallbackNote });
+    } else {
+      requestSettingsSection(row.section);
+    }
+    return { family, breadcrumb, landedOn: "section-root", note: row.fallbackNote ?? "" };
+  }
+  if (row.landOn) {
+    /* 注册时声明「没有独立控件」的行：落分节根 + 一句解释，绝不冒充行级命中 */
+    if (family === "plugins") {
+      requestPluginsFocus({ fallbackTarget: row.root, note: row.landOn.note });
+    } else {
+      requestSettingsSection(row.landOn.section);
+    }
+    return { family, breadcrumb, landedOn: "section-root", note: row.landOn.note };
+  }
   if (row.go) {
     row.go(); // 二级/三级：OH 切档、插件切视图/分类、分节/行滚动高亮都在这里
-  } else {
-    requestSettingsSection(row.title);
+    return { family, breadcrumb, landedOn: "row" };
   }
-  return { family, breadcrumb };
+  requestSettingsSection(row.title);
+  return { family, breadcrumb, landedOn: "row" };
 }

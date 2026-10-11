@@ -8,11 +8,21 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Card, Switch } from "./Layout.js";
 import { isOverlayClosedByUser, overlayHide, setOverlayClosedByUser, overlayShow, overlaySupported } from "../lib/overlay.js";
 import { hasOverlayPermission, requestOverlayPermission } from "../lib/overlayAndroid.js";
+import { isAndroidNavigator } from "../lib/androidHost.js";
+import { goOhRow } from "./OhSettingsPage.js";
 
 
-/* task-19：悬浮球设置行注册 */
+/* task-19/22：悬浮球设置行注册。
+   双形态：开关行的标题是「在其他应用上层显示 OH 悬浮球」（JSX 已钉 data-set-id="row-开启悬浮球"），
+   平台不支持时该开关不出现 → visible 条件隐藏：落 OH 基础档根（TierSwitch 锚点）+ 一句解释。 */
 defineSearchRows([
-  { id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "悬浮球", "开启悬浮球"], displayRoot: "设置" },
+  {
+    id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "悬浮球", "开启悬浮球"], displayRoot: "设置",
+    visible: () => isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined),
+    fallbackNote: "当前平台不支持在其他应用上层显示悬浮球（仅安卓可用）；已带到 OH「悬浮球」分节。",
+    root: "oh-tier-basic",
+    go: () => goOhRow("开启悬浮球", "basic"),
+  },
 ]);
 
 export function OverlaySettingsSection(): ReactNode {
@@ -62,7 +72,8 @@ export function OverlaySettingsSection(): ReactNode {
 
   return (
     <>
-      <div className="setting-row">
+      {/* task-22 检索直达：注册表按「开启悬浮球」检索，这里显式钉 id，让这条行无论叫什么都落点唯一 */}
+      <div className="setting-row" data-set-id="row-开启悬浮球">
         <div>
           <div className="setting-title">在其他应用上层显示 OH 悬浮球</div>
           <div className="setting-desc">

@@ -22,11 +22,26 @@ export const SETTINGS_TAB_ORDER = [
 ];
 
 /** 请求切到某个设置页签（页面外的入口用：插件页、助手坞、帮助页的「去设置」）。
- *  与外部作业源那条消费请求同形：写下 → 设置页挂载时取走。 */
+ *  与外部作业源那条消费请求同形：写下 → 设置页挂载时取走；
+ *  **设置页已挂载**时由 subscribeSettingsConsume 的订阅方就地取走（task-22：检索条在
+ *  设置页内点行也要能换页签，mount-only 的 consume 在那一情形永远等不到）。 */
 let pendingTab: string | null = null;
+const requestListeners = new Set<() => void>();
+
+function notifyRequest(): void {
+  for (const f of requestListeners) f();
+}
 
 export function requestSettingsTab(tab: string): void {
   pendingTab = tab;
+  notifyRequest();
+}
+
+export function subscribeSettingsConsume(f: () => void): () => void {
+  requestListeners.add(f);
+  return () => {
+    requestListeners.delete(f);
+  };
 }
 
 export function consumeSettingsTabRequest(): string | null {
@@ -41,6 +56,7 @@ let pendingSection: string | null = null;
 
 export function requestSettingsSection(section: string): void {
   pendingSection = section;
+  notifyRequest();
 }
 
 export function consumeSettingsSectionRequest(): string | null {

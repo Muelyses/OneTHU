@@ -14,7 +14,8 @@ import { pageAtomRef, resolveAtom } from "../state/atoms.js";
 import { coreDefaults, type NavEntry } from "../state/navigation.js";
 import { searchAll } from "../state/searchAll.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { goSearchRow, type SearchRow } from "../state/searchRows.js";
+import { displayBreadcrumb, familyOf, goSearchRow, type SearchRow } from "../state/searchRows.js";
+import { showToast } from "../state/toast.js";
 import { ohAsk } from "../plugins/ChatDock.js";
 import { closePalette, togglePalette, usePaletteOpen } from "../state/palette.js";
 import { useApp } from "../state/context.js";
@@ -31,6 +32,16 @@ type Row =
   | { kind: "tab"; key: string; tab: string }
   /** 设置行级命中（声明式注册表；点击直达该行并高亮） */
   | { kind: "row"; key: string; title: string; sub: string; row: SearchRow };
+
+/** 面包屑小字（muted 全链）：桌面显示 displayRoot 口径的**全链**（OH 行显示「设置 → OneTHU Harness → …」），
+ *  手机档（is-phone）只显示**最后一段**——屏幕小，但导航仍照常落到行级（链接行为与桌面完全一致）。 */
+function breadcrumbLine(row: SearchRow): string {
+  const bc = displayBreadcrumb(row);
+  if (typeof document !== "undefined" && document.documentElement.classList.contains("is-phone")) {
+    return bc[bc.length - 1] ?? "";
+  }
+  return bc.join(" → ");
+}
 
 export function CommandPalette(): ReactNode {
   const open = usePaletteOpen();
@@ -81,12 +92,13 @@ export function CommandPalette(): ReactNode {
       })),
       ...r.tabs.map((tab) => ({ kind: "tab" as const, key: "t:" + tab, tab })),
     ];
-    /* 设置行级命中**排最前**（同源：searchAll → searchRows 声明式注册表） */
+    /* 设置行级命中**排最前**（同源：searchAll → searchRows 声明式注册表）。
+       面包屑走 displayRoot 口径（OH 行显示「设置 → OneTHU Harness → …」）；sub 只留原生说明。 */
     const rowHits: Row[] = r.rows.map((x) => ({
       kind: "row" as const,
       key: "row:" + x.row.id,
       title: x.row.title,
-      sub: `${x.row.tab} · ${x.row.section}${x.row.desc ? " · " + x.row.desc : ""}`,
+      sub: x.row.desc ?? "",
       row: x.row,
     }));
     return [...rowHits, ...base];
@@ -104,8 +116,10 @@ export function CommandPalette(): ReactNode {
     closePalette();
     /* 设置行级命中：直达该行（页签 + 分节/行高亮），复用既有请求机制 */
     if (row.kind === "row") {
-      goSearchRow(row.row);
+      const res = goSearchRow(row.row);
       navigate(row.row.tab === "OneTHU Harness" || row.row.tab === "插件" ? "plugins" : "settings");
+      /* 条件隐藏行 / 无独立控件的行：落到分节根后**明说**一句，不冒充行级命中 */
+      if (res.note) showToast(res.note);
       return;
     }
     if (row.kind === "tab") {
@@ -202,15 +216,23 @@ export function CommandPalette(): ReactNode {
                   <span className="pal-row-name">
                     {row.kind === "entry" ? row.entry.name : row.kind === "atom" ? row.title : row.kind === "row" ? row.title : "设置 · " + row.tab}
                   </span>
+                  {row.kind === "row" ? (
+                    /* task-22 面包屑：muted 小字全链（displayRoot 口径；手机档只留最后一段） */
+                    <span className="pal-row-bc">{breadcrumbLine(row.row)}</span>
+                  ) : null}
                   <span className="pal-row-sub">
                     {row.kind === "entry"
                       ? row.entry.note ?? row.entry.category
                       : row.kind === "atom"
                         ? (row.group ? row.group + " · " : "") + (row.sub ?? "相关内容")
-                        : "跳到设置的这一栏"}
+                        : row.kind === "row"
+                          ? (row.sub ? row.sub : "跳到这一行并高亮")
+                          : "跳到设置的这一栏"}
                   </span>
                 </span>
-                <span className="pal-row-tag">{row.kind === "entry" ? "功能" : row.kind === "atom" ? "页面" : "设置"}</span>
+                <span className="pal-row-tag">
+                  {row.kind === "entry" ? "功能" : row.kind === "atom" ? "页面" : row.kind === "row" ? (familyOf(row.row) === "plugins" ? "插件" : "设置") : "设置"}
+                </span>
               </button>
             ))
           )}

@@ -52,10 +52,25 @@ const isStale = (at: number | null): boolean => at !== null && Date.now() - at >
 const incomeRe = /充值|圈存|补助/;
 const isIncome = (t: CardTransaction): boolean =>
   incomeRe.test(`${t.name ?? ""} ${t.summary ?? ""} ${t.txName ?? ""}`);
+/** 金额取值：缓存/接口给到 null/字符串/NaN 时一律归 0（2026-10-12 校园卡易崩专项：
+ *  单个字段异常不该把整页带走——此前 `.toFixed` / `Math.abs(undefined)` 会把整棵
+ *  React 树交给根错误边界，用户看到的是「崩了」。 */
+const amtOf = (v: unknown): number => {
+  const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
+  return Number.isFinite(n) ? n : 0;
+};
+/** 安全金额文本（null/NaN/字符串都不抛错） */
+const money = (v: unknown, digits = 2): string => amtOf(v).toFixed(digits);
+const intText = (v: unknown, fallback = "–"): string => {
+  const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
+  return Number.isFinite(n) ? String(Math.round(n)) : fallback;
+};
 const signedAmount = (t: CardTransaction): number =>
-  isIncome(t) ? Math.abs(t.amount) : -Math.abs(t.amount);
+  isIncome(t) ? Math.abs(amtOf(t.amount)) : -Math.abs(amtOf(t.amount));
 
-function fmtTime(d: Date): string {
+function fmtTime(input: Date | string | number | null | undefined): string {
+  const d = input instanceof Date ? input : new Date((input ?? NaN) as string | number);
+  if (!Number.isFinite(d.getTime())) return "–"; // 时间戳缺失/非法（旧缓存里是字符串）不抛错
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   const hh = String(d.getHours()).padStart(2, "0");
@@ -405,7 +420,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
             </span>
             <div>
               <div className="card-hero-amount">
-                {state === "loading" && !data ? "–" : `¥${(data?.info.balance ?? 0).toFixed(2)}`}
+                {state === "loading" && !data ? "–" : `¥${money(data?.info?.balance)}`}
               </div>
               <div className="stat-label">
                 校园卡余额 · {data?.info.userName || "–"}
@@ -430,8 +445,14 @@ export function CardTab({ active = true }: { active?: boolean }) {
             {/* R21c：数据时间必须可见——此前用户被旧缓存压着 1–6 天却无从察觉 */}
             {updatedAt ? <span title={new Date(updatedAt).toLocaleString()}>更新于 {fmtAgo(updatedAt)}</span> : null}
             {data?.info.departmentName ? <span>{data.info.departmentName}</span> : null}
-            {data?.info.maxOneTimeTransactionAmount !== undefined ? (
-              <span>单笔上限 ¥{data.info.maxOneTimeTransactionAmount.toFixed(0)}</span>
+            {data?.info?.maxOneTimeTransactionAmount != null ? (
+              <span>单笔上限 ¥{intText(data.info.maxOneTimeTransactionAmount)}</span>
+            ) : null}
+            {/* 字段级透明：缺关键字段时明说，而不是让用户以为「卡就是这样」 */}
+            {data && (!data.info?.cardId || !data.info?.userName || data.info?.balance == null) ? (
+              <span title="接口/缓存未给出这些字段（可能是新卡未激活，或本地缓存偏旧——可点刷新重取）">
+                · 部分字段缺失
+              </span>
             ) : null}
           </div>
         </Card>
@@ -440,7 +461,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
             <IconCard width={17} height={17} />
           </span>
           <div>
-            <div className="stat-num">¥{spent.toFixed(2)}</div>
+            <div className="stat-num">¥{money(spent)}</div>
             <div className="stat-label">近 30 天消费</div>
           </div>
         </Card>
@@ -449,7 +470,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
             <IconCard width={17} height={17} />
           </span>
           <div>
-            <div className="stat-num">{data?.transactions.length ?? 0}</div>
+            <div className="stat-num">{(data?.transactions ?? []).length}</div>
             <div className="stat-label">流水笔数</div>
           </div>
         </Card>
@@ -497,7 +518,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
               </div>
               <div className="row-amount">
                 <b className={signedAmount(t) < 0 ? "amount-neg" : "amount-pos"}>
-                  {signedAmount(t) < 0 ? "−" : "+"}¥{Math.abs(signedAmount(t)).toFixed(2)}
+                  {signedAmount(t) < 0 ? "−" : "+"}¥{money(Math.abs(signedAmount(t)))}
                 </b>
               </div>
             </div>

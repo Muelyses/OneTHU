@@ -1,6 +1,6 @@
 declare const __APP_VERSION__: string;
 import { defineSearchRows } from "../state/searchRows.js";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
@@ -17,7 +17,7 @@ import { useFavs } from "../state/favs.js";
 import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
 import { LevelBox, focusSettingsTarget } from "../components/Layout.js";
 import { ThemeSwatch } from "../components/ThemePickerModal.js";
-import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER } from "../state/settingsMode.js";
+import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, subscribeSettingsConsume } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
 import { requestPluginsView } from "./Plugins.js";
 import { isThemeEntry } from "../lib/market.js";
@@ -106,12 +106,12 @@ defineSearchRows([
   { id: "set-about", tab: "关于", section: "关于", title: "关于", aliases: ["版本", "更新", "开源"], desc: "版本、更新与开源信息" , breadcrumb: ["设置", "关于", "关于", "关于"] },
   { id: "set-account-row", tab: "账号", section: "账户", title: "账户", aliases: ["已登录", "退出登录"], desc: "当前登录状态与退出" , breadcrumb: ["设置", "账号", "账户", "账户"] },
   { id: "set-saved-pwd", tab: "账号", section: "安全", title: "记住的密码", aliases: ["保存密码", "清除密码"], desc: "本机保存的登录密码（可清除）" , breadcrumb: ["设置", "账号", "安全", "记住的密码"] },
-  { id: "set-tab-manage", tab: "关���", section: "关于", title: "管理栏目", aliases: ["栏目显隐", "页签排序"], desc: "设置栏目的显隐与排序" , breadcrumb: ["设置", "关���", "关于", "管理栏目"] },
+  { id: "set-tab-manage", tab: "关于", section: "关于", title: "管理栏目", aliases: ["栏目显隐", "页签排序"], desc: "设置栏目的显隐与排序" , breadcrumb: ["设置", "关于", "关于", "管理栏目"] },
   { id: "set-tour", tab: "关于", section: "关于", title: "导览", aliases: ["重新运行引导", "新手引导"], desc: "重新运行首次使用引导" , breadcrumb: ["设置", "关于", "关于", "导览"] },
   { id: "set-update", tab: "关于", section: "关于", title: "检查 OneTHU 更新", aliases: ["本体更新", "版本更新"], desc: "检查应用本体更新" , breadcrumb: ["设置", "关于", "关于", "检查 OneTHU 更新"] },
-  { id: "set-cloud-reconnect", tab: "数据与同步", section: "云同步", title: "云盘重连", aliases: ["重新连接云盘", "token"], desc: "云盘连接失效时一键重连" , breadcrumb: ["设置", "数据与同步", "云同步", "云盘重连"] },
-  { id: "set-exthw-creds", tab: "数据与同步", section: "外部作业源", title: "外部作业源登录", aliases: ["作业源凭据", "OJ 登录"], desc: "外部作业源账号登录与刷新" , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源登录"] },
-  { id: "set-dl-dir", tab: "下载与存储", section: "下载", title: "下载目录 / 缓存清理", aliases: ["缓存", "存储占用", "清理"], desc: "下载目录位置与缓存清理" , breadcrumb: ["设置", "下载与存储", "下载", "下载目录 / 缓存清理"] },
+  { id: "set-cloud-reconnect", tab: "数据与同步", section: "云同步", title: "云盘重连", aliases: ["重新连接云盘", "token"], desc: "云盘连接失效时一键重连" , breadcrumb: ["设置", "数据与同步", "云同步", "云盘重连"], landOn: { section: "云同步", note: "云盘连接出问题在「日程云同步」那张卡上重试/重新授权；当前没有独立的「云盘重连」按钮（连接正常时用不上），已带到「云同步」分节。" } },
+  { id: "set-exthw-creds", tab: "数据与同步", section: "外部作业源", title: "外部作业源登录", aliases: ["作业源凭据", "OJ 登录"], desc: "外部作业源账号登录与刷新" , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源登录"], landOn: { section: "外部作业源", note: "登录入口按作业源分卡：OJ 类收在「OJ 平台登录」折叠卡里，雨课堂等各卡有自己的登录入口；已带到「外部作业源」分节。" } },
+  { id: "set-dl-dir", tab: "下载与存储", section: "下载", title: "下载目录 / 缓存清理", aliases: ["缓存", "存储占用", "清理"], desc: "下载目录位置与缓存清理" , breadcrumb: ["设置", "下载与存储", "下载", "下载目录 / 缓存清理"], landOn: { section: "下载", note: "下载目录=「下载位置」一行；缓存/诊断在「运行日志」「诊断摘要」行——已带到「下载」分节。" } },
   { id: "set-help", tab: "帮助", section: "帮助", title: "帮助", aliases: ["教程", "导览"], desc: "常用任务与引导" , breadcrumb: ["设置", "帮助", "帮助", "帮助"] },
 ]);
 
@@ -133,7 +133,10 @@ export function SettingsPage() {
   // R23（霖实测：跳过来还得自己找分区在哪）：引导横幅「去设置」→ **先切到外部作业源
   // 所在页签再滚动**。此前只在子组件里 scrollIntoView——分区在 display:none 的页签里，
   // 滚动无效，用户落在设置页顶部还要自己找。
-  useEffect(() => {
+  // task-22（检索收尾）：consume 逻辑抽成**稳定函数**，两个入口同吃——
+  //   ① 挂载（跨页进设置的那一次，R23 的原始路径）② 订阅（命令面板/底栏检索在设置页
+  // 内点行时**就地**消费——mount-only 的 consume 永远等不到那时落下的请求）。
+  const consumePendingRequests = useCallback((): (() => void) | undefined => {
     const wantTab = consumeSettingsTabRequest();
     if (wantTab) setTab(wantTab);
     /* 分区子请求：等页签显隐 effect 跑完再滚动，并**短暂高亮**该分节（用户一眼看到） */
@@ -155,11 +158,23 @@ export function SettingsPage() {
     }
     if (!consumeExtHwScrollRequest()) return;
     setTab(SETTINGS_TAB_OF["外部作业源"] ?? "数据与同步");
-    const t = setTimeout(() => {
+    const t2 = setTimeout(() => {
       document.getElementById("settings-exthw")?.scrollIntoView({ block: "center", behavior: "smooth" });
     }, 120); // 等页签显隐 effect（按 tab 切 display）先跑完
-    return () => clearTimeout(t);
+    return () => clearTimeout(t2);
   }, []);
+  useEffect(() => {
+    const off = consumePendingRequests();
+    return () => off?.();
+  }, [consumePendingRequests]);
+  /* 页内新落下的请求（检索条 / 插件页 / OH 门面）就地消费 */
+  useEffect(() => {
+    const off = subscribeSettingsConsume(() => {
+      const cleanup = consumePendingRequests();
+      if (cleanup) window.setTimeout(cleanup, 0);
+    });
+    return off;
+  }, [consumePendingRequests]);
 
   /**
    * 页签显隐。两个坑（2026-09-20 实测）：

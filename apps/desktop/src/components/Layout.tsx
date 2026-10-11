@@ -24,6 +24,8 @@ import { openPalette } from "../state/palette.js";
  *  正式版里 __ONETHU_DEV__ 折叠为 false → 这句动态 import 被 rollup 删除，
  *  dev 面板整块不进产物（守卫 tools/devtools-test.mjs，构建后再 grep dist 复核）。 */
 const DevPanel = __ONETHU_DEV__ ? lazy(() => import("./DevPanel.js")) : null;
+/* 检索落点自查（仅 dev）：?searchland=selfcheck 逐行程序化搜+点击，console 打 45 行 hit/fallback 表。 */
+const SearchLandingSelfcheck = __ONETHU_DEV__ ? lazy(() => import("./SearchLandingSelfcheck.js")) : null;
 
 /**
  * 默认一级入口（万物原子化定案）：钉死不可删隐，仅可在侧栏折叠进
@@ -373,12 +375,16 @@ export function Shell({ children }: { children: ReactNode }) {
   /** 侧栏/抽屉共用导航内容 */
   // 桌面钉底三格框：高亮与点击都走**同一个状态机**（与 LevelBox 完全一致）
   const entrySide = useEntry();
-  /* task-19：路由/page 变化后给可见的设置行与分节补稳定 id（幂等），供检索直达精确落点 */
+  /* task-19：路由/page 变化后给可见的设置行与分节补稳定 id（幂等），供检索直达精确落点。
+     2026-10-12：入口态变化（plugins→oh 等）同样会换内容挂载——一并重跑（幂等，无副作用）；
+     OH 档位切换 / 插件视图切换后的行渲染由各自的 focus 通道兜一次（见 pluginsFocus）。 */
   useEffect(() => {
     const t = window.setTimeout(markSettingsRows, 60);
     return () => window.clearTimeout(t);
-  }, [page]);
-  const navContent = (onAfter?: () => void) => {
+  }, [page, entrySide]);
+  /** host = 「这份导航内容挂在哪」：sidebar（桌面侧栏）Routing 三独立 tab；
+   *  drawer（手机抽屉 ≤860px）维持既有三格框方案（LevelBox），手机口径一字不动。 */
+  const navContent = (onAfter?: () => void, host: "sidebar" | "drawer" = "sidebar") => {
     const unfoldedDefaults = NAV.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
     // 分区小标题（§2.8.1）：分组取自导航注册表的 category，新 IA 的今日/待办归「总览」。
     // 只插小标题、不重排类内顺序；未注册的页面兜底进「行政」。
@@ -518,53 +524,40 @@ export function Shell({ children }: { children: ReactNode }) {
             ) : null}
           </>
         ) : null}
-        {/* 钉底固定项（**两端对称**的 1.5 级框，2026-10-11 用户当场发现桌面进不去 OH）：
-            设置 | 插件 | OneTHU Harness —— 同容器同形态同高度（矮版 26px），第三个格进 OH 设置二级页。
-            这是**唯一**的 OH 入口（插件页头那个已按要求删除）。 */}
+        {/* 钉底入口（2026-10-12 用户拍板「三个独立 nav tab，独立页面」）：
+            桌面侧栏 = **三个独立可点的 nav 行**——插件（IconPlug 充电头）最上 → OneTHU Harness（(OH) 字标）
+            → 设置（IconSettings 齿轮）；点击都走同一 goEntry() 状态机（Entry 唯一真源），
+            高亮用唯一 .nav-item.is-active。OneTHU Harness 是**一级入口**：页面本体仍是插件页的 OH 分节
+            （entry="oh" 时由 PluginsPage 渲染），但桌面从独立 tab 进入，不再表现为「插件页的子页」。
+            手机抽屉（host="drawer"）维持三格框方案不变（LevelBox，同一状态机）。 */}
         <div className="nav-sep" aria-hidden />
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 2,
-            padding: 2,
-            marginBottom: 8,
-            border: "1px solid var(--border)",
-            borderRadius: "var(--md-sys-shape-corner-large, 12px)",
-            background: "var(--md-sys-color-surface-container-lowest)",
-          }}
-        >
-          <button
-            className={"nav-item" + (entrySide === "settings" ? " is-active" : "")}
-            style={{ flex: 1, height: 26, justifyContent: "center", padding: 0 }}
-            onClick={() => {
-              onAfter?.();
-              goEntry("settings");
-            }}
-          >
-            设置
-          </button>
-          <button
-            className={"nav-item" + (entrySide === "plugins" ? " is-active" : "")}
-            style={{ flex: 1, height: 26, justifyContent: "center", padding: 0 }}
-            onClick={() => {
-              onAfter?.();
-              goEntry("plugins");
-            }}
-          >
-            插件
-          </button>
-          <button
-            className={"nav-item" + (entrySide === "oh" ? " is-active" : "")}
-            style={{ flex: "1.5 1 0", height: 26, justifyContent: "center", padding: 0, fontSize: "var(--text-xs)", whiteSpace: "nowrap" }}
-            onClick={() => {
-              onAfter?.();
-              goEntry("oh");
-            }}
-          >
-            OneTHU Harness
-          </button>
-        </div>
+        {host === "sidebar" ? (
+          <>
+            {(([
+              { id: "plugins", label: "插件", icon: <IconPlug /> },
+              { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },
+              { id: "settings", label: "设置", icon: <IconSettings /> },
+            ]) as Array<{ id: Entry; label: string; icon: ReactNode }>).map((t) => (
+              <div className="nav-row" key={"entry-" + t.id}>
+                <button
+                  className={"nav-item" + (entrySide === t.id ? " is-active" : "")}
+                  title={t.label}
+                  aria-label={t.label}
+                  aria-current={entrySide === t.id ? "true" : undefined}
+                  onClick={() => {
+                    onAfter?.();
+                    goEntry(t.id);
+                  }}
+                >
+                  {t.icon}
+                  <span>{t.label}</span>
+                </button>
+              </div>
+            ))}
+          </>
+        ) : (
+          <LevelBox />
+        )}
       </>
     );
   };
@@ -612,7 +605,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <div className="drawer-brand">
               <BrandLogo size={15} />
             </div>
-            <NavBody label="抽屉导航">{navContent(() => closeNav())}</NavBody>
+            <NavBody label="抽屉导航">{navContent(() => closeNav(), "drawer")}</NavBody>
             <div className="drawer-foot">
               <span className="foot-badge">
                 <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
@@ -639,6 +632,12 @@ export function Shell({ children }: { children: ReactNode }) {
       <BottomNav page={rawPage} navigate={navigate} />
       {/* 命令面板：⌘/Ctrl+K 或侧栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
       <CommandPalette />
+      {/* dev 构建「检索落点自查路由」(?searchland=selfcheck)：release 里整块被 rollup 剥离，不进导航 */}
+      {SearchLandingSelfcheck ? (
+        <Suspense fallback={null}>
+          <SearchLandingSelfcheck />
+        </Suspense>
+      ) : null}
       <HardRefreshButton />
       {DevPanel ? (
         <Suspense fallback={null}>
@@ -767,16 +766,28 @@ export function markSettingsRows(): void {
   });
 }
 
-/** 滚动并高亮某个设置行 / 分节（复用既有请求机制；`.sec-focus` 的分节版已在 Settings.tsx） */
+/** 滚动并高亮某个设置行 / 分节（复用既有请求机制；`.sec-focus` 的分节版已在 Settings.tsx）。
+ *  2026-10-12 检索收尾：解析顺序 = 行/分节的稳定 id → 行文本 → **动作按钮文本**——
+ *  「安装主题 / 管理主题 / 导览 / 管理栏目 / 检查更新」这类按钮没有自己的 .setting-row，
+ *  按钮命中时高亮按钮本体（而不是把分节头冒充命中）。 */
 export function focusSettingsTarget(target: string): boolean {
   const want = target.trim();
   const byId = document.querySelector<HTMLElement>(`[data-set-id="row-${slugOf(want)}"],[data-set-id="sec-${slugOf(want)}"]`);
-  const byText = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head"))
+  let hit = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head"))
     .find((el) => (el.textContent ?? "").includes(want));
-  if (!byText) return false;
-  byText.scrollIntoView({ block: "center", behavior: "smooth" });
-  byText.classList.add("row-focus");
-  window.setTimeout(() => byText.classList.remove("row-focus"), 1800);
+  if (!hit) {
+    const btn = Array.from(document.querySelectorAll<HTMLElement>(".content .btn, .content button"))
+      .find((el) => {
+        const t = (el.textContent ?? "").trim();
+        if (!t || !el.offsetParent || el.classList.contains("plg-danger")) return false;
+        return t === want || t.replace(/\s+/g, "") === want.replace(/\s+/g, "");
+      });
+    if (btn) hit = btn;
+  }
+  if (!hit) return false;
+  hit.scrollIntoView({ block: "center", behavior: "smooth" });
+  hit.classList.add("row-focus");
+  window.setTimeout(() => hit?.classList.remove("row-focus"), 1800);
   return true;
 }
 

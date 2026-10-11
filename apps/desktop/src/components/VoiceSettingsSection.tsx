@@ -14,6 +14,7 @@
  * 会往 localStorage 写几十次、并让订阅了偏好的聊天坞跟着重渲染。
  */
 import { defineSearchRows } from "../state/searchRows.js";
+import { goOhRow } from "./OhSettingsPage.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { Switch } from "./Layout.js";
 import {
@@ -62,12 +63,12 @@ function engineCopy(st: TtsStatus | null, busy: boolean): { title: string; desc:
 }
 
 
-/* task-19：语音合成设置行注册 */
+/* task-19/22：语音合成设置行注册。go 走 goOhRow（切基础档 + 行滚动高亮；引擎行标题是动态的 → 已在 JSX 里钉 data-set-id="row-引擎状态"） */
 defineSearchRows([
-  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", title: "引擎状态", aliases: ["语音引擎", "重新检查", "试听"], desc: "当前平台是否支持语音合成 / 重新检查" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "引擎状态"], displayRoot: "设置" },
-  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色", aliases: ["嗓音", "普通话"], desc: "系统引擎报出的可选嗓音" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音色"], displayRoot: "设置" },
-  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度"], desc: "朗读快慢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "语速"], displayRoot: "设置" },
-  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读高低" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音高"], displayRoot: "设置" },
+  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", title: "引擎状态", aliases: ["语音引擎", "重新检查", "试听"], desc: "当前平台是否支持语音合成 / 重新检查" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "引擎状态"], displayRoot: "设置", go: () => goOhRow("引擎状态", "basic") },
+  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色", aliases: ["嗓音", "普通话"], desc: "系统引擎报出的可选嗓音" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音色"], displayRoot: "设置", go: () => goOhRow("音色", "basic") },
+  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度"], desc: "朗读快慢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "语速"], displayRoot: "设置", go: () => goOhRow("语速", "basic") },
+  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读高低" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音高"], displayRoot: "设置", go: () => goOhRow("音高", "basic") },
 ]);
 
 export function VoiceSettingsSection(): ReactNode {
@@ -157,7 +158,8 @@ export function VoiceSettingsSection(): ReactNode {
       {/* 「自动朗读 OH 的回复」开关已按用户要求**删除**（2026-10-11）：
           自动朗读只在对话面板/悬浮窗顶部的「朗读 开/关」按钮上管，设置里不再出现第二处开关。 */}
       {/* ② 引擎状态：长说明行按「正常设置行」排版（is-copy：文字列吃满宽、按钮与首行同基线） */}
-      <div className="setting-row is-copy">
+      {/* task-22 检索直达：这行标题是动态的（配音面状态文案），注册表按「引擎状态」检索——显式钉 id，保证落点唯一 */}
+      <div className="setting-row is-copy" data-set-id="row-引擎状态">
         <div>
           <div className="setting-title">{copy.title}</div>
           <div className="setting-desc">

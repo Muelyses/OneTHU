@@ -15,7 +15,9 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { confirmOk } from "../lib/confirm.js";
-import { Card, LevelBox, PageHead, goEntry, useEntry } from "../components/Layout.js";
+import { Card, LevelBox, PageHead, focusSettingsTarget, goEntry, useEntry } from "../components/Layout.js";
+import { requestPluginsFocus, subscribePluginsFocus, takePluginsFocus, type PluginsFocusSpec } from "../state/pluginsFocus.js";
+import { showToast } from "../state/toast.js";
 import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
@@ -72,7 +74,7 @@ function optionsFor(f: any, live: Record<string, string>): Array<{ value: string
    外部（外观与布局的「安装主题」等）写请求 → 插件页挂载或已挂载时消费：
      requestPluginsView({ view: "market", category: "theme" })
    ⑤ 筛选状态同时做**模块级记忆**（同一会话内），返回再进不会丢。 */
-export type PluginsViewReq = { view?: "mine" | "market"; category?: "all" | "theme" | "general" };
+export type PluginsViewReq = { view?: "mine" | "market"; category?: "all" | "theme" | "general"; install?: boolean };
 
 /** 插件页 →「外观与布局 → 主题」的反向跳转（用户点名那条：主题卡片上的按钮原来是死的）。
  *  三级请求一起下：页签 + 分区（滚动并高亮）+ 导航；手机端设置就是「我的」页，同一条路径。 */
@@ -99,14 +101,62 @@ function takePluginsView(): PluginsViewReq | null {
 }
 
 
-/* task-19：插件页动作行的声明式注册（「检查更新」「去切换主题」等） */
+/* task-19/22：插件页动作行的声明式注册（「检查更新」「去切换主题」等）。
+   go 完成插件家族的二级/三级：切视图（我的插件 / 市场 / 主题筛选）→ 展开安装面板 → 落行滚动高亮；
+   条件隐藏行（当前没有可检查更新的卡）→ 落「我的插件」分节根 + 一句解释，不冒充命中。 */
 defineSearchRows([
-  { id: "plg-check-update", tab: "插件", section: "我的插件", title: "检查更新", aliases: ["更新", "检查新版本"], desc: "从插件本体仓库检查最新版" , breadcrumb: ["插件", "我的插件", "检查更新"], displayRoot: "插件" },
-  { id: "plg-switch-theme", tab: "插件", section: "我的插件", title: "去切换主题", aliases: ["切换主题", "换主题"], desc: "到「外观与布局 → 主题」切换（会高亮那一节）" , breadcrumb: ["插件", "我的插件", "去切换主题"], displayRoot: "插件" },
-  { id: "plg-detail", tab: "插件", section: "插件市场", title: "详情", aliases: ["插件详情", "简介图", "readme"], desc: "查看插件详情（简介图 + 详情正文）" , breadcrumb: ["插件", "插件市场", "详情"], displayRoot: "插件" },
-  { id: "plg-mine-market", tab: "插件", section: "我的插件", title: "我的插件 / 插件市场", aliases: ["插件列表", "插件市场"], desc: "插件页两个视图切换" , breadcrumb: ["插件", "我的插件", "我的插件 / 插件市场"], displayRoot: "插件" },
-  { id: "plg-install", tab: "插件", section: "我的插件", title: "安装插件", aliases: ["装插件", "从仓库安装"], desc: "从仓库 / 市场安装插件" , breadcrumb: ["插件", "我的插件", "安装插件"], displayRoot: "插件" },
+  {
+    id: "plg-check-update", tab: "插件", section: "我的插件", title: "检查更新", aliases: ["更新", "检查新版本"], desc: "从插件本体仓库检查最新版" , breadcrumb: ["插件", "我的插件", "检查更新"], displayRoot: "插件",
+    /* 按钮只出现在「来自仓库且非内置核心」的插件卡上；整页没有这类卡 = 隐藏行 */
+    visible: () => installedPlugins().some((p) => p.repo && p.manifest.kind !== "rust" && !p.embedded && !p.builtin && p.manifest.id !== "onethu.harness"),
+    fallbackNote: "「检查更新」按钮在每个来自仓库的插件卡上；当前列表没有这类卡，已带到「我的插件」视图。",
+    root: "sec-我的插件",
+    go: () => {
+      requestPluginsFocus({ target: "row-检查更新", fallbackTarget: "sec-我的插件", note: "「检查更新」按钮在每个来自仓库的插件卡上；当前列表没有这类卡，已带到「我的插件」视图。" });
+    },
+  },
+  { id: "plg-switch-theme", tab: "插件", section: "我的插件", title: "去切换主题", aliases: ["切换主题", "换主题"], desc: "到「外观与布局 → 主题」切换（会高亮那一节）" , breadcrumb: ["插件", "我的插件", "去切换主题"], displayRoot: "插件", go: () => gotoAppearanceTheme() },
+  {
+    id: "plg-detail", tab: "插件", section: "插件市场", title: "详情", aliases: ["插件详情", "简介图", "readme"], desc: "查看插件详情（简介图 + 详情正文）" , breadcrumb: ["插件", "插件市场", "详情"], displayRoot: "插件",
+    go: () => {
+      requestPluginsView({ view: "market" });
+      requestPluginsFocus({ target: "row-详情", fallbackTarget: "sec-插件市场" });
+    },
+  },
+  {
+    id: "plg-mine-market", tab: "插件", section: "我的插件", title: "我的插件 / 插件市场", aliases: ["插件列表", "插件市场"], desc: "插件页两个视图切换" , breadcrumb: ["插件", "我的插件", "我的插件 / 插件市场"], displayRoot: "插件",
+    go: () => {
+      requestPluginsView({ view: "mine" });
+      requestPluginsFocus({ target: "sec-视图切换", fallbackTarget: "sec-我的插件" });
+    },
+  },
+  {
+    id: "plg-install", tab: "插件", section: "我的插件", title: "安装插件", aliases: ["装插件", "从仓库安装"], desc: "从仓库 / 市场安装插件" , breadcrumb: ["插件", "我的插件", "安装插件"], displayRoot: "插件",
+    go: () => {
+      requestPluginsView({ view: "mine", install: true });
+      requestPluginsFocus({ target: "row-安装插件", fallbackTarget: "sec-我的插件" });
+    },
+  },
 ]);
+
+/** 检索直达的落点器（提外函数，不碰 Hook）：等视图 / 档位 / 安装面板这几次 re-render 落定后定位。
+ *  先追主锚点（窗口 ~2.2s），超时落分节根，再不行就 toast 一句解释——绝不静默冒充命中。 */
+function schedulePluginsFocus(spec: PluginsFocusSpec | null): void {
+  if (!spec) return;
+  const total = spec.waitMs ?? 2200;
+  const started = Date.now();
+  const main = spec.target ?? "";
+  const step = (): void => {
+    if (main && focusSettingsTarget(main)) return;
+    if (Date.now() - started < total) {
+      window.setTimeout(step, 180);
+      return;
+    }
+    if (spec.fallbackTarget && focusSettingsTarget(spec.fallbackTarget)) return;
+    if (spec.note) showToast(spec.note);
+  };
+  window.setTimeout(step, 180);
+}
 
 export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): ReactNode {
   const allPlugins = useSyncExternalStore(subscribe, installedPlugins);
@@ -165,7 +215,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
       全宽拉伸 + 抓手光标 + 11px 小字，与整体 UI 明显不符——霖实测）。
       §4.4b：嵌进设置页时保留这个切换器（它是「我的插件 / 插件市场」的唯一入口），只去掉页面级大标题。 */
   const viewSwitch = (
-    <div className="segmented" ref={segRef} style={{ marginBottom: 0 }}>
+    <div className="segmented" ref={segRef} data-set-id="sec-视图切换" style={{ marginBottom: 0 }}>
       <span className="seg-pill" ref={pillRef} aria-hidden="true" />
       {([["mine", "我的插件"], ["market", "插件市场"]] as const).map(([k, lbl]) => (
         <button key={k} className={view === k ? "is-active" : ""} onClick={() => setView(k)}>
@@ -200,14 +250,20 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
       if (req) {
         if (req.view) setView(req.view);
         if (req.category) setCat(req.category);
+        if (req.install) setInstOpen(true); // 检索直达「安装插件」：顺路把安装面板展开
       }
       /* 入口态由 requestPluginsView 自己走 goEntry（见该函数）；这里不再有旗标消费 */
     };
+    /* 检索聚焦通道：挂载时先取走一次挂起的请求（跨页直达），此后订阅即时生效 */
+    const focusApply = (): void => schedulePluginsFocus(takePluginsFocus());
+    focusApply();
+    const offFocus = subscribePluginsFocus(focusApply);
     apply();
     pluginsViewListeners.add(apply);
     /* ① 「插件」格请求：显式关子页（这就是"点完 OH 回不到插件"的根因） */
       return () => {
       pluginsViewListeners.delete(apply);
+      offFocus();
     };
   }, []);
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
@@ -216,7 +272,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
   const dualEntry = isPhone ? <LevelBox /> : null;
   /** ⑤「安装插件」按层级归位：放页头右侧，不再挤在类别筛选那一行里 */
   const installBtn = (
-    <button className="btn btn-ghost plg-install-toggle" onClick={() => setInstOpen((o) => !o)}>
+    <button className="btn btn-ghost plg-install-toggle" data-set-id="row-安装插件" onClick={() => setInstOpen((o) => !o)}>
       {instOpen ? "收起安装" : "安装插件"}
     </button>
   );
@@ -317,7 +373,7 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
       {instOpen ? <InstallPanel onClose={() => setInstOpen(false)} /> : null}
 
       {/* 我的插件 · 工具行：类别页签 + 安装入口（归拢一行；主切换只留视图级） */}
-      <div className="plg-toolbar">
+      <div className="plg-toolbar" data-set-id="sec-我的插件">
         <div className="segmented" style={{ marginBottom: 0 }}>
           {([["all", `全部 ${listPlugins.length}`], ["theme", `主题 ${listPlugins.filter((p) => isTheme(p.manifest as { category?: string; themes?: unknown })).length}`], ["general", `通用 ${listPlugins.filter((p) => !isTheme(p.manifest as { category?: string; themes?: unknown })).length}`]] as const).map(([k, lbl]) => (
             <button key={k} className={cat === k ? "is-active" : ""} onClick={() => setCat(k)}>
@@ -1154,7 +1210,7 @@ function MarketView({
 
   return (
     <section className="market-view">
-      <div className="market-bar">
+      <div className="market-bar" data-set-id="sec-插件市场">
         <input
           className="input market-search"
           placeholder="搜索插件名称 / 描述 / 标签"

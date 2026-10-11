@@ -397,6 +397,13 @@ export interface OnethuApi {
      *  在线服务等）。只查静态注册表 + 本机缓存，**绝不发起校园请求**；
      *  与 nav.openAtom 配对即「一句话直达」。需 nav 权限 */
     searchAtoms(query: string, limit?: number): Promise<Array<{ kind: string; key: string; title: string; sub?: string; group: string }>>;
+    /** 检索行级直达（2026-10-12 task-22）：routeId 或 query → searchRows 注册表唯一命中 →
+     *  与检索条点行完全同链（goSearchRow：家族 → OH 档位/插件视图 → 行滚动高亮）。
+     *  查无 → { ok:false, reason }，调用方（OH）应改口复述而不是硬猜。需 nav 权限 */
+    searchRow(ref: { routeId?: string; query?: string }): Promise<{ ok: boolean; id?: string; title?: string; breadcrumb?: string[]; landedOn?: string; note?: string; reason?: string; candidates?: Array<{ id: string; title: string }> }>;
+    /** 检索行路由表（searchRows 唯一真源的只读投影，routes.json 同形）——
+     *  给 Rust 侧 ui_navigate 做本地匹配与缓存兜底。需 nav 权限 */
+    routeTable(): Promise<Array<{ id: string; title: string; desc: string; aliases: string[]; breadcrumb: string[]; kind: string; tier: string; view: string; tab: string; section: string; note: string }>>;
     /** 打开一个原子（等价用户点收藏夹里的那一项：跳功能页 / 切聚合页页签 / 开服务页）。
      *  该原子未注册或已失效时返回 false——**不会跳空白页**，调用方据此回话。需 nav 权限 */
     openAtom(ref: { kind: string; key: string }): Promise<boolean>;

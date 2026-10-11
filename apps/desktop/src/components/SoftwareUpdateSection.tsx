@@ -127,7 +127,7 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     : "";
 
   return (
-    <div className="setting-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 8 }}>
+    <div className="setting-row" data-set-id="row-检查-OneTHU-更新" style={{ flexDirection: "column", alignItems: "stretch", gap: 8 }}>
       <div>
         <div className="setting-title">
           软件更新

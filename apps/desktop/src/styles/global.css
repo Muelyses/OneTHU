@@ -937,6 +937,16 @@
   border-radius: var(--r-md);
   transition: background var(--dur-2) ease, box-shadow var(--dur-2) ease;
 }
+/* task-22 检索直达扩展锚点（插件页卡片按钮 / 工具行 / 市场条）：同一套高亮 token，不另造配色 */
+.btn.row-focus,
+.market-bar.row-focus,
+.segmented.row-focus,
+.plg-card-top.row-focus {
+  box-shadow: inset 0 0 0 2px var(--accent-border);
+  background: var(--accent-soft);
+  border-radius: var(--r-md);
+  transition: background var(--dur-2) ease, box-shadow var(--dur-2) ease;
+}
 
 
 /* ④ 长说明的设置行（用户实录「谁家字定在最左边！」）：文字列吃满可用宽、说明不限宽，
@@ -6460,6 +6470,16 @@ section > .svc-label { margin-top: 14px; }
 .pal-row-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .pal-row-name { font-size: 14px; }
 .pal-row-sub { font-size: 12px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* task-22 检索结果行的面包屑小字（muted 全链；手机档只留最后一段，字号略放大压行） */
+.pal-row-bc { font-size: 12px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html.is-phone .pal-row-bc { font-size: 12px; }
+/* task-22 selfcheck（仅 dev 构建会挂载）：固定左下报告卡，不与右下 FAB / 底部岛冲突 */
+.selfcheck-card {
+  position: fixed; left: 12px; bottom: 76px; z-index: 2400; max-width: 420px;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--md-sys-color-surface); color: var(--text-1);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .18); font-size: 12px;
+}
 .pal-row-tag { flex: none; font-size: 12px; color: var(--text-3); }
 /* 检索空态兜底：「搜不到？直接问小 (OH)」——与 .pal-empty 同级、链接色可点（不是文字诱骗） */
 .pal-ask {

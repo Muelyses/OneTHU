@@ -54,7 +54,10 @@ fn cache_key(ns: &str, method: &str, args: &Value) -> String {
 /// 可缓存读：只有「宿主自用配置 / 会话」这类对象能缓存。
 /// 工具面（课表/成绩/邮件/座位/空教室…）是**真·实时数据**，缓存等于对模型说谎 → 照旧实时调。
 fn is_cache_read(ns: &str, method: &str) -> bool {
-    matches!((ns, method), ("settings", "get") | ("storage", "get"))
+    matches!(
+        (ns, method),
+        ("settings", "get") | ("storage", "get") | ("nav", "routeTable") // task-22：路由表随 webview 在场时入缓存，退后台后 ui_route_table 仍有兜底
+    )
 }
 
 /// 缓存的写条目：值已是最新（同键多次覆盖自动合并），但仍欠门面一次真实写入
@@ -345,6 +348,22 @@ impl Host for AgentCtx {
     fn reset_interrupt(&self) {
         self.interrupt.store(false, Ordering::SeqCst);
     }
+
+    /// 短超时调用（task-22 ui_navigate）：内嵌侧尊重传入窗口（默认 Host 实现会退化到
+    /// BRIDGE_TIMEOUT 长等）。1.8s 内收口：webview 挂起/退后台时立刻显形，不拖对话轮。
+    fn call_timeout(&mut self, ns: &str, method: &str, args: Value, timeout_ms: u64) -> Result<Value, String> {
+        let rx = self.send(ns, method, args, None)?;
+        match rx.recv_timeout(Duration::from_millis(timeout_ms)) {
+            Ok(Ok(v)) => Ok(v),
+            Ok(Err(e)) => Err(e),
+            Err(_) => {
+                let n = self.cache.note_miss();
+                Err(format!(
+                    "门面 {timeout_ms}ms 未响应（连续 {n} 次）：这一步需要本体在前台再试。"
+                ))
+            }
+        }
+    }
 }
 
 /// 内部探针调用：直接向桥发一次并等回执（不走缓存降级）——预热与回写用
@@ -372,6 +391,9 @@ fn warm_cache(cache: &Arc<DataCache>, call_tx: &mpsc::Sender<CallReq>) {
         for (ns, method, args) in [
             ("settings", "get", json!([])),
             ("storage", "get", json!(["harness.v1"])),
+            // task-22：检索行路由表入缓存（nav.routeTable）——webview 挂起后 ui_route_table 仍可应答，
+            // 与其它读同用 1.8s 短超时那套降级
+            ("nav", "routeTable", json!([])),
         ] {
             let key = cache_key(ns, method, &args);
             match bridge_call_direct(call_tx, ns, method, args, Duration::from_secs(6), Some(key.clone())) {

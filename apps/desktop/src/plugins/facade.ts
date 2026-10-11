@@ -590,6 +590,42 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const { clearUsage } = await import("../lib/usage.js");
         clearUsage();
       },
+      /** 检索行级直达（OH 的 ui_navigate 用）：与检索条点行**同一条链路**（goSearchRow）。
+       *  查无/多义 → ok:false + reason + candidates，让 OH 自己改口，不硬猜。需 nav 权限 */
+      searchRow: async (ref: { routeId?: string; query?: string }) => {
+        gate(perms, "nav", "nav.searchRow");
+        const { allSearchRows, matchSearchRows, goSearchRow, ohRouteTable } = await import("../state/searchRows.js");
+        const rows = allSearchRows();
+        const arg = ref ?? {};
+        /* routeId 精确直配；query 走与检索条同源的打分（首位=自己才算命中） */
+        if (arg.routeId) {
+          const row = rows.find((r) => r.id === arg.routeId);
+          if (!row) {
+            const near = ohRouteTable().filter((e) => e.id.includes(String(arg.routeId).toLowerCase())).slice(0, 5)
+              .map((e) => ({ id: e.id, title: e.title }));
+            return { ok: false, reason: `没有 id 为「${arg.routeId}」的检索行`, candidates: near };
+          }
+          const res = goSearchRow(row);
+          return { ok: true, id: row.id, title: row.title, breadcrumb: res.breadcrumb, landedOn: res.landedOn, note: res.note ?? "" };
+        }
+        const q = String(arg.query ?? "").trim();
+        if (!q) return { ok: false, reason: "缺 routeId 或 query：说明要跳的行（如「多模态」「管理主题」）" };
+        const hits = matchSearchRows(q, 2);
+        if (hits.length === 0) {
+          return { ok: false, reason: `没有命中任何检索行：「${q}」。可换行名关键词，或先用 ui_navigate 列候选` };
+        }
+        const first = hits[0]!;
+        const row = first.row;
+        const candidates = hits.slice(1).map((h) => ({ id: h.row.id, title: h.row.title }));
+        const res = goSearchRow(row);
+        return { ok: true, id: row.id, title: row.title, breadcrumb: res.breadcrumb, landedOn: res.landedOn, note: res.note ?? "", candidates };
+      },
+      /** 路由表投影（有缓存兜底时 Rust 侧离线可用） */
+      routeTable: async () => {
+        gate(perms, "nav", "nav.routeTable");
+        const { ohRouteTable } = await import("../state/searchRows.js");
+        return ohRouteTable();
+      },
       /** 打开原子：复用收藏夹那套 view.open(nav)，故插件点开的页面与用户自己点收藏完全一致 */
       openAtom: async (ref: { kind: string; key: string }) => {
         gate(perms, "nav", "nav.openAtom");

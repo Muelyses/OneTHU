@@ -13,6 +13,7 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { useApp } from "../state/context.js";
+import { goEntry } from "./Layout.js";
 import { VoiceSettingsSection } from "./VoiceSettingsSection.js";
 import { OverlaySettingsSection } from "./OverlaySettingsSection.js";
 import { ImSettingsSection } from "./ImSettingsSection.js";
@@ -45,33 +46,8 @@ function takeTier(): OhTier | null {
   return t;
 }
 
-/* ── 「打开 OH 设置」请求：OH 现在是**插件页的二级子页面**（2026-10-11 用户纠正），
-   插件页与对话面板的深链都先写这个旗标，再 navigate("plugins")。 ── */
-let pendingEntry = false;
-const entryListeners = new Set<() => void>();
-/* 2026-10-11 用户要求「彻底切割」：**不再有粘性愿望位**——
-   一次性请求（写旗标 → 消费即清），任何"从别处进插件"都不会被历史点击带偏到 OH 子页。 */
-
-/** 请求打开插件页里的 OH 设置子页（tier 可选：直接进基础/高级档） */
-export function requestOhEntry(tier?: OhTier): void {
-  pendingEntry = true;
-  if (tier) pendingTier = tier;
-  for (const f of entryListeners) f();
-}
-
-/** 插件页订阅它：旗标落下 → 切到 OH 子页并消费掉 */
-export function subscribeOhEntry(f: () => void): () => void {
-  entryListeners.add(f);
-  return () => {
-    entryListeners.delete(f);
-  };
-}
-
-export function consumeOhEntry(): boolean {
-  const v = pendingEntry;
-  pendingEntry = false;
-  return v;
-}
+/* 2026-10-11 用户要求「彻查，给个状态机」：OH 子页的入口态统一由
+   components/Layout.tsx 的 goEntry()/useEntry() 管理——这里**不再有任何入口旗标或订阅**。 */
 
 /** 档位切换条（分段控件，与设置页页签同形态但更轻） */
 function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: (t: "basic" | "advanced") => void }): ReactNode {
@@ -173,7 +149,7 @@ function OhAdvancedSlot(): ReactNode {
           待接插件设置表单（task-17 抽出 PluginSettingsForm 后挂到这里）；当前从插件页的 OH 卡片「设置」进入。
         </div>
       </div>
-      <button className="btn" onClick={() => navigate("plugins")}>
+      <button className="btn" onClick={() => goEntry("plugins")}>
         打开插件设置
       </button>
     </div>
@@ -244,7 +220,7 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
                 打开插件页，在 OH 卡片上点「设置」。
               </div>
             </div>
-            <button className="btn" onClick={() => navigate("plugins")}>
+            <button className="btn" onClick={() => goEntry("plugins")}>
               打开插件设置
             </button>
           </div>

@@ -14,11 +14,11 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { confirmOk } from "../lib/confirm.js";
-import { Card, LevelBox, PageHead } from "../components/Layout.js";
+import { Card, LevelBox, PageHead, goEntry, useEntry } from "../components/Layout.js";
 import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
-import { OhSettingsPage, consumeOhEntry, subscribeOhEntry } from "../components/OhSettingsPage.js";
+import { OhSettingsPage } from "../components/OhSettingsPage.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
 import { PluginLogo } from "../components/PluginLogo.js";
 import {
@@ -65,7 +65,7 @@ function optionsFor(f: any, live: Record<string, string>): Array<{ value: string
   return statik;
 }
 
-/* ── ④ 跨页「带参数打开插件页」请求：与 requestSettingsTab / requestOhEntry 同款机制 ──
+/* ── ④ 跨页「带参数打开插件页」请求（**只带筛选参数**；入口态一律走 Layout 的 goEntry）──
    外部（外观与布局的「安装主题」等）写请求 → 插件页挂载或已挂载时消费：
      requestPluginsView({ view: "market", category: "theme" })
    ⑤ 筛选状态同时做**模块级记忆**（同一会话内），返回再进不会丢。 */
@@ -76,54 +76,18 @@ export type PluginsViewReq = { view?: "mine" | "market"; category?: "all" | "the
 export function gotoAppearanceTheme(): void {
   requestSettingsSection("主题");
   requestSettingsTab("外观与布局");
-  navGo("settings");
+  goEntry("settings"); // 入口态唯一来源
 }
 let pendingPluginsView: PluginsViewReq | null = null;
 const pluginsViewListeners = new Set<() => void>();
 let lastPluginsView: "mine" | "market" = "mine";
 let lastPluginsCat: "all" | "theme" | "general" = "all";
 
-/* ── ①-OH 子页状态镜像（2026-10-11 用户实测：第三格不高亮）──
-   高亮必须按**子状态**推导：ohOpen=true → 高亮第三格；否则按路由（设置/插件）。
-   子状态在 PluginsPage 内部，所以这里放一个可订阅镜像给三格框读。 */
-let ohOpenMirror = false;
-const ohMirrorListeners = new Set<() => void>();
-
-export function ohOpenNow(): boolean {
-  return ohOpenMirror;
-}
-export function subscribeOhMirror(f: () => void): () => void {
-  ohMirrorListeners.add(f);
-  return () => {
-    ohMirrorListeners.delete(f);
-  };
-}
-function setOhOpenMirror(v: boolean): void {
-  if (ohOpenMirror === v) return;
-  ohOpenMirror = v;
-  for (const f of ohMirrorListeners) f();
-}
-
-/** ① 回插件列表（用户实测 bug 的根因修复）：只 `navigate("plugins")` 是不够的——
- *  若已经停在插件页且 ohOpen=true，页面不会变。这个一次性请求让**子页状态被显式关掉**。
- *  与其它请求同款机制：写旗标 → 通知 → 消费即清；可重复、可逆。 */
-let pendingList = false;
-const listListeners = new Set<() => void>();
-
-export function requestPluginsList(): void {
-  pendingList = true;
-  for (const f of listListeners) f();
-}
-
-function takePluginsList(): boolean {
-  const v = pendingList;
-  pendingList = false;
-  return v;
-}
-
+/* 视图/类别的"筛选参数"仍走一次性（这本来就不是入口态）；**入口态一律走状态机** */
 export function requestPluginsView(req: PluginsViewReq): void {
   pendingPluginsView = { ...req };
   for (const f of pluginsViewListeners) f();
+  goEntry("plugins");
 }
 function takePluginsView(): PluginsViewReq | null {
   const v = pendingPluginsView;
@@ -198,15 +162,12 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
         不再挂在设置页签下。这里是最小接入：旗标落下 → 同一页壳渲染 OH 子页 + 返回按钮。
         （task-17 抽出 PluginSettingsForm 后，OH 高级档直接接在那边，本段不用再动。） ── */
   const { navigate } = useApp();
-  /* ① 用户要求彻底切割：**进插件页永远是列表默认态**；OH 子页只在「点第三格」那一条路径打开 */
-  const [ohOpen, setOhOpen] = useState(false);
+  /* ① 唯一状态机：ohOpen **不再是独立 state**，而是由 entry 派生（entry === "oh"）。
+     高亮、页面、子页三者同一个来源，不存在"颜色/状态对不上"的可能。 */
+  const entry = useEntry();
+  const ohOpen = entry === "oh";
   /** OH 内联设置面板的「草稿有改动」标记（就地渲染时不再弹确认窗，标记仅为兼容其 props） */
   const ohDirtyRef = useRef(false);
-
-  /* ①-OH 子页状态 → 共享镜像（三格框据此高亮第三格） */
-  useEffect(() => {
-    setOhOpenMirror(ohOpen);
-  }, [ohOpen]);
 
   /* ⑤ 记住筛选状态（会话内）：离开插件页再回来不丢 */
   useEffect(() => {
@@ -223,28 +184,16 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
         if (req.view) setView(req.view);
         if (req.category) setCat(req.category);
       }
-      /* 顺序固定：先关子页（list）、后开子页（entry）——同一次 tick 里以"最后表达的意图"为准 */
-      if (takePluginsList()) setOhOpen(false);
-      if (consumeOhEntry()) setOhOpen(true);
+      /* 入口态由 requestPluginsView 自己走 goEntry（见该函数）；这里不再有旗标消费 */
     };
     apply();
     pluginsViewListeners.add(apply);
     /* ① 「插件」格请求：显式关子页（这就是"点完 OH 回不到插件"的根因） */
-    const applyList = (): void => {
-      if (takePluginsList()) setOhOpen(false);
-    };
-    applyList();
-    listListeners.add(applyList);
-    return () => {
+      return () => {
       pluginsViewListeners.delete(apply);
-      listListeners.delete(applyList);
     };
   }, []);
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
-  useEffect(() => {
-    if (consumeOhEntry()) setOhOpen(true); // 深链先写旗标再导航过来：挂载时补消费一次
-    return subscribeOhEntry(() => setOhOpen(true));
-  }, []);
   /* ① 用户拍板：三个并列（设置 / 插件 / OneTHU Harness），**用共享组件 LevelBox**——
      任何页面同一个容器、同高、三格齐全；每页自己的大标题照旧保留（框是框、标题是标题）。 */
   const dualEntry = isPhone ? <LevelBox /> : null;
@@ -373,7 +322,8 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
         </div>
       ) : plugins.length === 0 && cat === "theme" ? (
         <div style={{ fontSize: "var(--text-sm)", color: "var(--text-3)", padding: "6px 2px" }}>
-          暂无主题插件——换主题、装主题都在 设置 → 外观 →「更改主题」里。
+          还没有启用中的主题插件。换主题在「外观与布局 → 主题」；启用 / 停用走那里的「管理主题」；
+          安装走那里的「安装主题」（会打开插件市场的主题筛选）。
         </div>
       ) : (
         <div className="plg-rack">

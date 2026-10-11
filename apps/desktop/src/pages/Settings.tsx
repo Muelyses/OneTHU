@@ -1785,7 +1785,6 @@ function AppearanceSection(): ReactNode {
             title="到插件市场安装主题（自动筛选「主题」类别）"
             onClick={() => {
               requestPluginsView({ view: "market", category: "theme" });
-              navigate("plugins");
             }}
           >
             安装主题
@@ -1797,7 +1796,6 @@ function AppearanceSection(): ReactNode {
             onClick={() => {
               /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */
               requestPluginsView({ view: "mine", category: "theme" });
-              navigate("plugins");
             }}
           >
             管理主题

@@ -37,7 +37,6 @@ import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, spee
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { requestOhEntry } from "../components/OhSettingsPage.js";
 
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { openExternal } from "../pages/info/openExternal.js";
@@ -1327,11 +1326,10 @@ export function ChatDock(): ReactNode {
     setNotice(next ? "已开启自动朗读：OH 的回复会念出来" : "已静音：OH 的回复不再自动朗读");
   };
   const openVoiceSettings = (): void => {
-    /* 2026-10-11（用户纠正）：OH 是**插件页的二级子页面**，不是设置页的二级。
-       深链 = 请求 OH 子页 + 落在「基础设置」档 + 跳到插件页。 */
-    requestOhEntry("basic");
-    if (open) toggle(); // 面板挡着插件页：顺手收起，落点就是 OH 基础设置
-    navGo("plugins");
+    /* 2026-10-11 用户要求「彻底切割」：对话面板与 OneTHU Harness **没有任何跳转关系**，
+       这里只提示路径，不做导航（顺手收起面板以免挡视线）。 */
+    if (open) toggle();
+    setNotice("语音设置：插件 → OneTHU Harness → 基础设置");
   };
 
   /** 附件（需求 6+7）：AttachTray 取到文件 → ① 面板里记一条**用户气泡**；

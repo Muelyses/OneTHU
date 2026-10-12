@@ -7,7 +7,6 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 顶栏小件精修（explorer.css 的增量）：间距节奏与禁用态 ── */
-.tb-icon:active:not(:disabled) { transform: scale(0.94); }
 .tb-home { margin-right: 2px; }
 .explorer-topbar .ex-tabstrip { margin: 0 2px; }
 

@@ -69,7 +69,7 @@ export function SettingsOverlay(): ReactNode {
               </button>
             ))}
           </div>
-          <button className="tb-icon settings-close" onClick={requestClose} aria-label="关闭设置" title="关闭">
+          <button className="icon-btn settings-close" onClick={requestClose} aria-label="关闭设置" title="关闭">
             <IconX width={16} height={16} />
           </button>
         </div>

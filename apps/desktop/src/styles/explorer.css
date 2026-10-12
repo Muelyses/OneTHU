@@ -47,16 +47,6 @@
   flex: none;
 }
 .tb-spring { flex: 1 1 0; }
-.tb-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  color: var(--text-2);
-  flex: none;
-}
 
 /* ── 内容区：手机 = 顶栏 46px + 底栏 48px 占位；桌面媒体查询里另给 94px ── */
 .explorer-content {
@@ -120,6 +110,7 @@
   .settings-panel { width: min(680px, 54vw); border-left: 1px solid var(--border); }
 }
 .settings-head {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -127,6 +118,8 @@
   border-bottom: 1px solid var(--border);
   flex: none;
 }
+.settings-seg { position: absolute; left: 50%; transform: translateX(-50%); }
+.settings-close { margin-left: auto; position: relative; } /* 绝对居中后压轴仍贴右 */
 .settings-title { font-size: 15px; }
 .settings-seg {
   max-width: 100%;

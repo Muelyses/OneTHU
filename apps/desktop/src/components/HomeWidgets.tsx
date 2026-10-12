@@ -68,6 +68,50 @@ export const SECTION_OF: Record<number, string> = {
   11: "18:05", 12: "19:20", 13: "20:15", 14: "21:10",
 };
 
+/* ---- 「下一节课」的时间换算与挑选（白板自足渲染要用；今日页同源共用）---- */
+
+/** 节次 → 当日分钟数（SECTION_OF 是开始时间表；结束时间按一节 45 分钟估） */
+export function sectionStartMin(n: number): number | null {
+  const t = SECTION_OF[n];
+  if (!t) return null;
+  const parts = t.split(":");
+  const h = Number(parts[0]);
+  const m = Number(parts[1]);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+  return h * 60 + m;
+}
+
+/** "HH:MM" → 当日分钟数 */
+export function hhmmMin(t: string): number | null {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(t);
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
+
+/** 当日分钟数 → "HH:MM" */
+export function minText(m: number): string {
+  return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+}
+
+/** 参与挑选的最小课程字段（结构类型，避免把数据层类型拖进视图模块） */
+export interface ClassLike {
+  startTime?: string | null;
+  startSection?: number | null;
+  endSection?: number | null;
+}
+
+export interface NextClass<T> { s: T; st: number; en: number; left: number }
+
+/** 下一节课：当天还没结束的最近一节（今天没课 → null，调用方整卡不渲染） */
+export function pickNextClass<T extends ClassLike>(schedule: readonly T[], nowMin: number): NextClass<T> | null {
+  for (const s of schedule) {
+    const st = s.startTime ? hhmmMin(s.startTime) : sectionStartMin(s.startSection ?? 1);
+    if (st == null) continue;
+    const en = (sectionStartMin(s.endSection ?? s.startSection ?? 1) ?? st) + 45;
+    if (en > nowMin) return { s, st, en, left: st - nowMin };
+  }
+  return null;
+}
+
 /** 整卡可点入口（LearnPage stat-link 同款结构）；disabled 时降透明度且不可点 */
 export function EntryCard({
   icon, num, label, onClick, disabled = false, dimLabel,
@@ -385,7 +429,7 @@ export function countdownChip(beginMs: number, endMs: number, now: Date): { text
 }
 
 /** 今日概览条（未交作业 / 三日内截止 / 今日课程） */
-export function TodayOverviewWidget() {
+export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } } = {}) {
   const { navigate } = useApp();
   const { data, state } = useCampusData();
   const now = new Date();
@@ -430,8 +474,13 @@ export function TodayOverviewWidget() {
         }),
     [data, today, wd],
   );
+  /* 档位越高，多铺一层信息：4×1 只给三项计数；4×2 再给最近一条截止；4×4 再把今天前几节课铺开。
+     三层都来自同一批已算好的数据，不额外取数。 */
+  const tierH = size?.h ?? 1;
+  const nearest = unsubmitted[0] ?? null;
   return (
-    <div className="stats stats-overview">
+    <div className="overview-tiered">
+      <div className="stats stats-overview">
       <EntryCard
         num={
           !dataReady
@@ -447,12 +496,29 @@ export function TodayOverviewWidget() {
       />
       <EntryCard num={dataReady ? dueSoon : "–"} label="三日内截止" dimLabel="三日内截止" disabled={!dataReady} onClick={() => navigate("learn-assignments")} />
       <EntryCard num={dataReady ? todayEvents.length : "–"} label="今日课程" dimLabel="今日课程" disabled={!dataReady} onClick={() => navigate("schedule")} />
+      </div>
+      {tierH >= 2 && dataReady && nearest ? (
+        <div className="overview-line">
+          <span className="overview-line-title">{nearest.title || "待办作业"}</span>
+          <span className="overview-line-side">{nearest.deadline}</span>
+        </div>
+      ) : null}
+      {tierH >= 4 && todayEvents.length ? (
+        <div className="overview-lines">
+          {todayEvents.slice(0, 4).map((s, i) => (
+            <div className="overview-line" key={s.date ? s.date + i : String(i)}>
+              <span className="overview-line-title">{s.courseName}</span>
+              <span className="overview-line-side">{s.startTime ?? SECTION_OF[s.startSection ?? 1] ?? ""}{s.location ? " · " + s.location : ""}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
 
 /** 日程与提醒（校历 + 重要事项倒计时；两路都空 → null 整卡隐藏） */
-export function AgendaWidget(): ReactNode {
+export function AgendaWidget({ size }: { size?: { w: number; h: number } } = {}): ReactNode {
   const { navigate } = useApp();
   const cal = useTodayCalendar();
   const { list: deadlineList, state: dlState } = useTodayDeadlines();
@@ -495,7 +561,9 @@ export function AgendaWidget(): ReactNode {
     return [...calRows, ...dlRows].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 6);
   }, [cal.state, cal.nodes, dlState, deadlineList, stableNow, navigate]);
   if (rows.length === 0) return null;
-  return <AgendaRows rows={rows} />;
+  /* 档位决定铺几条：4×2 只给最近两条，4×4 铺满（当前上限 6 条） */
+  const limit = (size?.h ?? 4) >= 4 ? 6 : 2;
+  return <AgendaRows rows={rows.slice(0, limit)} />;
 }
 
 /** 未提交作业（自持取数版） */
@@ -561,9 +629,13 @@ export function TodayClassesWidget(): ReactNode {
   return <ClassRows events={events} navigate={navigate} />;
 }
 
-/** 订阅新闻（自持取数版；订阅读取 + storage 跨窗同步；空 → null） */
-export function SubsNewsWidget(): ReactNode {
-  const { navigate } = useApp();
+/**
+ * 订阅新闻的取数（自持：订阅读取 + storage 跨窗同步）。
+ *
+ * 抽成 hook 供两处共用：今日页那张整卡（SubsNewsWidget）与白板的组件卡
+ * （按档位给出「条数 / 最新标题 / 整列表」三种信息量）。
+ */
+export function useSubsNewsFeed() {
   const [subs, setSubs] = useState<string[]>(() => readSubs());
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
@@ -572,7 +644,13 @@ export function SubsNewsWidget(): ReactNode {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
-  const news = useTodayNewsFeed(subs);
+  return useTodayNewsFeed(subs);
+}
+
+/** 订阅新闻（自持取数版；空 → null） */
+export function SubsNewsWidget(): ReactNode {
+  const { navigate } = useApp();
+  const news = useSubsNewsFeed();
   if (news.state !== "ready" || !news.data || news.data.list.length === 0) return null;
   return <NewsRows feed={news.data} navigate={navigate} />;
 }

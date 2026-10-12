@@ -71,6 +71,43 @@ export function cacheSet<T>(key: string, data: T, persist?: boolean): void {
   }
 }
 
+/**
+ * 预览模式专用：写入一条**永不判过期**的示例数据，并返回还原函数（霖 2026-10-12）。
+ *
+ * 用途：抽屉里的组件预览不该现爬数据。各数据 hook 都是 SWR 语义——
+ * `cacheGet` 命中且 `Date.now() - at` 未超 TTL 就不会发起请求；
+ * 时间戳取远未来，于是**一次真实请求都不会发**，组件代码一行不用改。
+ *
+ * 只在内存里写（不落 localStorage），还原时把原条目放回去（原本没有则删掉），
+ * 因此不会污染真实缓存与持久化数据。
+ */
+export function cacheSeedPreview<T>(key: string, data: T): () => void {
+  const prev = mem.get(key) as CacheEntry<unknown> | undefined;
+  mem.set(key, { data, at: PREVIEW_AT } as CacheEntry<unknown>);
+  return () => {
+    if (prev) mem.set(key, prev);
+    else mem.delete(key);
+  };
+}
+
+/** 示例数据的时间戳：远未来 → 永不过期（见 cacheSeedPreview） */
+const PREVIEW_AT = Number.MAX_SAFE_INTEGER;
+
+/**
+ * 预览模式开关（霖 2026-10-12）。预览数据层挂载时置位，卸载时复位。
+ *
+ * 为什么还需要它：多数 hook 的加载判据是「缓存命中且不过期就不拉」（seed 就够），
+ * 但个别 hook（如 useLearnData）是**挂载即拉**，只能显式让它在预览期跳过。
+ * 放在这个叶子模块里，数据层与预览层都能引用，不产生循环依赖。
+ */
+let previewMode = false;
+export function setPreviewMode(on: boolean): void {
+  previewMode = on;
+}
+export function isPreviewMode(): boolean {
+  return previewMode;
+}
+
 export function cacheInvalidate(key: string): void {
   mem.delete(key);
   try {

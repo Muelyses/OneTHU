@@ -20,6 +20,8 @@ import { SearchPage } from "../../pages/learn/SearchPage.js";
 import { SemesterSelectionPage } from "../../pages/learn/SemesterSelectionPage.js";
 import { SchedulePage } from "../../pages/Schedule.js";
 import { TodayPage } from "../../pages/Today.js";
+import { BoardPage } from "../../pages/BoardPage.js";
+import { BoardListPage } from "../../pages/BoardListPage.js";
 import { MailPage } from "../../pages/MailPage.js";
 import CloudPage from "../../pages/CloudPage.js";
 import GitLabPage from "../../pages/GitLabPage.js";
@@ -94,6 +96,11 @@ export function renderPage(page: Page): ReactNode {
   switch (page) {
     case "today":
       return <TodayPage />;
+    /* 白板（PR 55 原子收藏升级）：收藏夹列表页 + 某一块白板 */
+    case "boards":
+      return <BoardListPage />;
+    case "board":
+      return <BoardPage />;
     case "learn":
       return <LearnPage />;
     case "schedule":

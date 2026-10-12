@@ -38,7 +38,17 @@ export type Page =
   | "learn-file-detail" // 文件详情（courseId+itemId）
   | `plugin:${string}` // 插件动态 tab（plugins/tabs.ts 注册表；pageKey = plugin:<pluginId>:<tabId>）
   | "learn-ykt-detail" // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
-  | "learn-ykt-course"; // R25：雨课堂课程内容页（该课全部内容；navParams.extCourseId 缺省取最近打开的课程）
+  | "learn-ykt-course" // R25：雨课堂课程内容页（该课全部内容；navParams.extCourseId 缺省取最近打开的课程）
+  /* 白板（霖的原子收藏升级）：boards = 收藏夹列表页，board = 某一块白板 */
+  | "boards"
+  | "board";
+
+/** 返回目标：页内返回键（BackButton）与顶栏返回键共用同一条数据 */
+export interface BackTarget {
+  to: Page;
+  label?: string;
+  params?: LearnNav;
+}
 
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
 export interface LearnNav {

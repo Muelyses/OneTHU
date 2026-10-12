@@ -3,7 +3,7 @@
  *  顶栏 = 首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮；底栏三入口（标签页 | OH | OneGO）
  *  在 explorer/BottomBar；设置/插件/OH 是高于任何标签页的浮层（state/explorer.ts 的
  *  overlay store 即旧 Entry 状态机，goEntry/useEntry 在此薄重导出保持全库兼容）。 */
-import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
@@ -24,7 +24,12 @@ import {
 import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab } from "./Icons.js";
+import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab } from "./Icons.js";
+import { ContextMenuLayer, useContextMenu } from "./ContextMenu.js";
+import {
+  clearPageChrome, pageChromeSnapshot, readPageChrome, subscribePageChrome, syncPageChrome,
+  type PageMenuItem,
+} from "../state/pageChrome.js";
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
@@ -75,6 +80,22 @@ export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactN
   { page: "thos", label: "在线服务", icon: IconThos },
   { page: "otherinfo", label: "其他 Info 应用", icon: IconExternal },
 ];
+
+/** 插件动态 tab（useSyncExternalStore 订阅；PageHead 的 navLabel 消歧也用它） */
+function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> {
+  const tabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
+  return tabs.map((t) => ({
+    page: t.pageKey as Page,
+    label: t.title,
+    icon: ({ width = 16, height = 16 }: { width?: number; height?: number }) => (
+      <span
+        className="plg-svg-icon"
+        style={{ width, height, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+        dangerouslySetInnerHTML={{ __html: t.iconSvg ?? '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2.5 4.2 6l-2.4 4.5L6 13.5l3-2 3 2 2.2-3-2.4-4.5L10 2.5l-4 0z"/></svg>' }}
+      />
+    ),
+  }));
+}
 
 /** (One / THU) 品牌标识：五列网格，括号代码体，One 衬线紧凑撑满与 THU 逐列对齐。
  *  主题插件可整体替换（theme.logo 提供 inline SVG 时优先渲染）。 */
@@ -214,6 +235,8 @@ function TopBar(): ReactNode {
       ) : null}
       {layout === "h" ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
+      {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
+      <ChromeMore />
       {layout === "h" ? (
         <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
           <IconSettings width={16} height={16} />
@@ -384,9 +407,13 @@ export function Shell({ children }: { children: ReactNode }) {
   }, []);
   return (
     <div className="shell explorer-shell">
+      {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
+          Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
+      <ContextMenuLayer>
       <TopBar />
       <TabRail />
       <main className="content explorer-content">{children}</main>
+      </ContextMenuLayer>
       <BottomBar />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />
@@ -453,20 +480,44 @@ export function PageHead({
   title,
   meta,
   actions,
+  menu,
 }: {
   /** 页标题；收藏夹重命名等场景可传受控输入（ReactNode） */
   title: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;
+  /** 页面级操作（白板的「添加组件 / 套用模板 / 编辑」等）：手机上收进顶栏「···」菜单。
+   *  与 actions 的分工是「页面级操作 vs 工具栏」。 */
+  menu?: PageMenuItem[];
 }) {
   const { page } = useApp();
-  // 窄屏顶栏标签条已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
-  const navLabel = NAV.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
+  /* 把菜单同步给顶栏。**本 PageHead 的稳定 token**：页切换期间可能同时存在两代 PageHead，
+     卸载时只允许清掉自己写进去的那份（见 pageChrome.clearPageChrome）。 */
+  const chromeToken = useRef<object>({});
+  const headRef = useRef<HTMLElement | null>(null);
+  /* 预览里的「页面」不算页面：添加组件抽屉用真实卡体当预览，像搜索页这类卡体自带 PageHead，
+     会把抽屉里的空菜单写进全局 chrome、收起时再清空 → 顶栏「···」消失（霖 2026-10-11 现场）。
+     这里把「自己是不是在预览里」记在 ref 上，同步与清理两处都据此跳过。 */
+  const inPreviewRef = useRef(false);
+  useEffect(() => {
+    const el = headRef.current;
+    inPreviewRef.current = !!el && !!el.closest(".add-preview-box, .widget-size-box, .add-drawer");
+    if (inPreviewRef.current) return;
+    syncPageChrome({ back: null, menu: menu ?? [] }, chromeToken.current);
+    /* 故意不带依赖数组：每次渲染都同步 live（onSelect 闭包要最新一次渲染的）。 */
+  });
+  useEffect(() => () => {
+    if (inPreviewRef.current) return;
+    clearPageChrome(chromeToken.current);
+  }, []);
+  const pluginNav = usePluginNavEntries();
+  // 窄屏顶栏已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
+  const navLabel = [...NAV, ...pluginNav].find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
   // 统一断点读取（§2.8.1）：此前各组件自写 matchMedia，改断点必漏
   const expanded = useExpanded();
   const dupOnTopbar = !expanded && typeof title === "string" && title === navLabel;
   return (
-    <header className="page-head">
+    <header className="page-head" ref={headRef}>
       <div>
         {dupOnTopbar ? null : <h1>{title}</h1>}
         {meta ? <div className="page-head-meta">{meta}</div> : null}
@@ -602,6 +653,36 @@ export function LevelBox(): ReactNode {
     >
       {cells.map((c) => cell(c))}
     </div>
+  );
+}
+
+/**
+ * 顶栏右上「···」：开当前页声明的页面级操作菜单（复用长按菜单的宿主与展开动画）。
+ *
+ * **必须渲染在 ContextMenuLayer 内部**：`useContextMenu()` 只对 Provider 的子节点生效，
+ * 放在外层会拿到 NOOP——表现就是「点了没反应」。
+ */
+function ChromeMore() {
+  const ctx = useContextMenu();
+  const chrome = useSyncExternalStore(subscribePageChrome, pageChromeSnapshot, pageChromeSnapshot);
+  const moreRef = useRef<HTMLButtonElement | null>(null);
+  if (!chrome.hasMenu) return null;
+  const openMenu = (): void => {
+    const r = moreRef.current?.getBoundingClientRect();
+    const items = readPageChrome().menu;
+    ctx.open({ x: r ? r.right - r.width / 2 : window.innerWidth - 24, y: r ? r.bottom : 48, items });
+  };
+  return (
+    <button
+      type="button"
+      className="topbar-more"
+      ref={moreRef}
+      onClick={openMenu}
+      aria-label="更多操作"
+      aria-haspopup="menu"
+    >
+      <IconMore width={18} height={18} />
+    </button>
   );
 }
 

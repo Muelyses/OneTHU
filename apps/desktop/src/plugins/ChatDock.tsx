@@ -675,6 +675,10 @@ export function ChatDock(): ReactNode {
   const cancelArmedRef = useRef(false);
   const [cancelling, setCancelling] = useState(false); // 只驱动文案与类名（颜色连续量走 --dock-cancel）
   const [msgs, setMsgs] = useState<ViewMsg[]>([]);
+  /* 本地视图镜像：水合失败/读不到会话时据此保护非空本地对话（用户实录「主对话被吃」：
+     外点关闭→重开→export_session 失败路径会把 msgs 清成 []，UI 退回欢迎页=对话被吃） */
+  const msgsRef = useRef<ViewMsg[]>([]);
+  msgsRef.current = msgs;
   const [busy, setBusy] = useState(false);
   const [stream, setStream] = useState<string | null>(null);
   const [trace, setTrace] = useState<string[]>([]);
@@ -911,11 +915,11 @@ export function ChatDock(): ReactNode {
           // 合并而非整体替换：export 快照可能比本地视图旧（在途轮次还没落库）——见 mergeHydrated
           setMsgs((cur) => mergeHydrated(view, cur));
           if (s.usage) setUsage((u) => ({ ...u, sessionPrompt: s.usage.prompt, sessionCompletion: s.usage.completion, sessionCostUsd: s.cost_usd }));
-        } else if (!busyRef.current) {
-          setMsgs([]); // 读不到会话：本地无在途运行才允许清空（有在途时宁可不刷新）
+        } else if (!busyRef.current && msgsRef.current.length === 0) {
+          setMsgs([]); // 读不到会话：本地空才允许清空——非空本地对话是用户可见的真相，宁可显示旧的
         }
       } catch {
-        if (!busyRef.current) setMsgs([]);
+        if (!busyRef.current && msgsRef.current.length === 0) setMsgs([]); // 同上：失败不清非空本地
       }
       everHydratedFor.current = pid; // 记「本 pid 已水合过」：ohAsk 直达时据此跳过重水合
       try {

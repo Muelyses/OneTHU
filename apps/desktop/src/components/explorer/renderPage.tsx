@@ -22,6 +22,7 @@ import { SchedulePage } from "../../pages/Schedule.js";
 import { TodayPage } from "../../pages/Today.js";
 import { MailPage } from "../../pages/MailPage.js";
 import CloudPage from "../../pages/CloudPage.js";
+import GitLabPage from "../../pages/GitLabPage.js";
 import ThubookPage from "../../pages/ThubookPage.js";
 import { TracePage } from "../../pages/Trace.js";
 import { SettingsPage } from "../../pages/Settings.js";
@@ -101,6 +102,8 @@ export function renderPage(page: Page): ReactNode {
       return <MailPage />;
     case "cloud":
       return <CloudPage />;
+    case "gitlab":
+      return <GitLabPage />;
     case "thubook":
       return <ThubookPage />;
     case "trace":

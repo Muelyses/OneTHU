@@ -1,5 +1,5 @@
 /**
- * 收藏夹列表页（P2，方案 §7.9）：多块白板的入口。
+ * OnePage 列表页（P2，方案 §7.9；2026-10-13 起话语从「收藏夹」切换为 OnePage）：多块白板的入口。
  *
  * 每项长按/右键菜单：作为今日页 / 上移 / 下移 / 删除（标红）；系统板不可删。
  * 点击一项 = 把它设为当前主页并进入白板页（v1 的「进入某个收藏夹」就这样表达）。
@@ -34,7 +34,7 @@ export function BoardListPage(): ReactNode {
       { key: "down", label: "下移", onSelect: () => apply(moveBoard(doc, id, "down")) },
       { key: "remove", label: "删除", danger: true, disabled: isSystem, onSelect: () => {
         const r = deleteBoard(doc, id);
-        if (r.reason) say(r.reason === "system-board" ? "系统板不能删除" : "至少保留一块收藏夹");
+        if (r.reason) say(r.reason === "system-board" ? "系统板不能删除" : "至少保留一块 OnePage");
         else { apply(r.doc); say("已删除：" + name); }
       } },
     ];
@@ -43,10 +43,10 @@ export function BoardListPage(): ReactNode {
 
   return (
     <>
-      <PageHead title="收藏夹" meta="每块收藏夹都是一张白板，可以随意摆放组件" />
+      <PageHead title="OnePage" meta="每一块都是一张可随意摆放组件的白板" />
       {rows.length === 0 ? (
         <Card>
-          <Empty text="还没有收藏夹。新建一块，把常用的组件摆上去。" />
+          <Empty text="还没有 OnePage。新建一块，把常用的组件摆上去。" />
         </Card>
       ) : (
         <div className="board-list" data-boards={String(rows.length)}>
@@ -71,7 +71,7 @@ export function BoardListPage(): ReactNode {
         <button
           className="btn"
           onClick={() => {
-            const r = createBoard(doc, "新收藏夹 " + String(rows.length));
+            const r = createBoard(doc, "新 OnePage " + String(rows.length));
             apply(r.doc);
             say("已新建：" + r.board.name);
           }}

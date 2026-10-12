@@ -148,7 +148,7 @@ ok(/disabled: isSystem/.test(listPage), "系统板的删除项没有禁用");
 ok(/moveBoard\(doc, id, "up"\)/.test(listPage) && /moveBoard\(doc, id, "down"\)/.test(listPage), "上下移没有走纯逻辑");
 ok(/createBoard\(doc,/.test(listPage), "新建收藏夹没有走纯逻辑");
 ok(/navigate\("board"\)/.test(listPage), "点击收藏夹没有进入白板页");
-ok(/所有收藏夹/.test(readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8")), "白板页没有进入收藏夹列表的入口");
+ok(/所有 OnePage/.test(readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8")), "白板页没有进入 OnePage 列表的入口");
 ok(/"boards"/.test(readFileSync("apps/desktop/src/state/app.tsx", "utf8")), "路由白名单里没有 boards（会静默回落到今日页）");
 /* ⑪ 进入即编辑的一次性意图（P2 UX） */
 const I = await import("../apps/desktop/src/state/boardIntent.ts");

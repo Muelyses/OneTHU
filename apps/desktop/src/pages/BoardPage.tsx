@@ -340,12 +340,12 @@ export function BoardPage(): ReactNode {
     <>
       <PageHead
         title="白板"
-        meta={editing ? "编辑中：长按组件出菜单，移动手指即可换位置" : "收藏夹的画布：这里的每个组件都能单独摆放，位置随文档走"}
+        meta={editing ? "编辑中：长按组件出菜单，移动手指即可换位置" : "OnePage 的画布：这里的每个组件都能单独摆放，位置随文档走"}
         menu={[
           { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
           { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
           { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
-          { key: "all-boards", label: "所有收藏夹", onSelect: () => navigate("boards") },
+          { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
           { key: "edit-board", label: editing ? "完成" : "编辑", onSelect: () => setEditing((v) => !v) },
         ]}
       />

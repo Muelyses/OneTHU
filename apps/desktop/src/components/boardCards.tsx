@@ -12,7 +12,7 @@
  *
  * 新增组件时在此登记即可，白板的 `mergeRenderers` 会优先取这里的实现。
  */
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useCountUp } from "./CountUp.js";
 import { useCard, useProfile, useReport } from "../state/data.js";
 import { useApp } from "../state/context.js";
@@ -23,6 +23,7 @@ import { cardRendererKey } from "../state/liveCards.js";
 import type { WidgetSize } from "../state/widgetMeta.js";
 import { StatTile } from "../pages/info/reportParts.js";
 import { IconCheck, IconCard, IconExternal, IconPen, IconSchedule } from "./Icons.js";
+import { refreshWeather, subscribeWeather, weatherAgeText, weatherSnapshot, weatherText } from "../state/weather.js";
 
 /** 渲染器可接收"具体条目"的定位参数（§7 行级元素）与**当前档位尺寸**（按尺寸排版）。 */
 type CardRenderer = (props?: Record<string, unknown>, size?: WidgetSize) => ReactNode;
@@ -467,6 +468,116 @@ const ENTRY_REAL: Record<string, CardRenderer> = {
   [cardRendererKey("learn-file")]: (props) => <LearnFileAtomCard props={props} />,
 };
 
+/* ══════════ 环境/时钟组件（2026-10-13，霖：首页白板要有时间、日期、天气） ══════════
+   这三张不依赖 THU 会话：时钟/日期走本地时间，天气走 open-meteo 免 key 直连（state/weather.ts）。
+   自由尺寸（内容自适应），小格只留主信息，大格逐层加上下文——与档位组件「随尺寸加信息层」同一口吻。 */
+
+/** 数字时钟：1 行高显示 HH:MM，2 行高加秒与日期 */
+function ClockCard({ size }: { size?: WidgetSize }): ReactNode {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+  const tall = (size?.h ?? 1) >= 2;
+  return (
+    <div className="env-clock" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 4 }}>
+      <div style={{ fontSize: tall ? 34 : 24, fontVariantNumeric: "tabular-nums", fontWeight: 650, letterSpacing: 1, color: "var(--text-1)", lineHeight: 1.1 }}>
+        {hh}:{mm}
+        {tall ? <span style={{ fontSize: 14, color: "var(--text-3)", marginLeft: 4 }}>{ss}</span> : null}
+      </div>
+      {tall ? <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)" }}>{weekdayCn(now.getDay())} · {now.getMonth() + 1} 月 {now.getDate()} 日</div> : null}
+    </div>
+  );
+}
+
+function weekdayCn(d: number): string {
+  const c = "日一二三四五六"[d];
+  return c ? "周" + c : "";
+}
+
+/** 日期卡：大字日期 + 星期（高格再加农历风格的月相文案就免了——保持干净） */
+function DateCard({ size }: { size?: WidgetSize }): ReactNode {
+  const now = new Date();
+  const tall = (size?.h ?? 1) >= 2;
+  const y = now.getFullYear();
+  const m = now.getMonth() + 1;
+  const d = now.getDate();
+  return (
+    <div className="env-date" style={{ display: "flex", flexDirection: tall ? "column" : "row", alignItems: tall ? "center" : "baseline", justifyContent: "center", height: "100%", gap: tall ? 4 : 8 }}>
+      <div style={{ fontSize: tall ? 30 : 22, fontVariantNumeric: "tabular-nums", fontWeight: 650, color: "var(--text-1)", lineHeight: 1.15 }}>
+        {m} 月 {d} 日
+      </div>
+      <div style={{ fontSize: tall ? "var(--text-md)" : "var(--text-sm)", color: "var(--text-3)", display: "flex", alignItems: "center", gap: 8 }}>
+        <span>{weekdayCn(now.getDay())}</span>
+        {tall ? <span>{y} 年</span> : null}
+      </div>
+    </div>
+  );
+}
+
+/** 天气卡：拉 open-meteo（免 key 免会话），失败留旧值 + 手动刷新 */
+function WeatherCard({ size }: { size?: WidgetSize }): ReactNode {
+  const snap = useSyncExternalStore(subscribeWeather, weatherSnapshot, weatherSnapshot);
+  useEffect(() => {
+    void refreshWeather();
+  }, []);
+  const w = snap.data;
+  const wide = (size?.w ?? 2) >= 4;
+  const tall = (size?.h ?? 2) >= 2;
+  const staleNote = w ? weatherAgeText() : "";
+  return (
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", gap: 4, padding: "2px 4px" }}>
+      {!w ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, height: "100%" }}>
+          <span style={{ fontSize: "var(--text-sm)", color: "var(--text-3)" }}>{snap.reason ? "天气暂不可用" : "天气加载中"}</span>
+          <button type="button" className="btn btn-ghost" style={{ height: 22, fontSize: "var(--text-xs)" }} onClick={() => void refreshWeather(true)}>
+            重试
+          </button>
+        </div>
+      ) : (
+        <>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, justifyContent: wide ? "space-between" : "flex-start" }}>
+            <span style={{ fontSize: wide ? 32 : 24, fontVariantNumeric: "tabular-nums", fontWeight: 650, color: "var(--text-1)", lineHeight: 1.1 }}>
+              {Math.round(w.now.temp)}°
+            </span>
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--text-2)" }}>{weatherText(w.now.code)}</span>
+          </div>
+          <div style={{ display: "flex", gap: 8, fontSize: "var(--text-xs)", color: "var(--text-3)", flexWrap: "wrap" }}>
+            <span>体感 {Math.round(w.now.feels)}°</span>
+            <span>湿度 {Math.round(w.now.humidity)}%</span>
+            <span style={{ marginLeft: "auto" as const }} title="点按刷新">
+              <button
+                type="button"
+                style={{ border: 0, background: "transparent", color: "var(--text-3)", fontSize: "var(--text-xs)", cursor: "pointer", padding: 0 }}
+                onClick={() => void refreshWeather(true)}
+              >
+                {staleNote}
+              </button>
+            </span>
+          </div>
+          {tall && w.days.length > 1 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 2 }}>
+              {w.days.slice(1, 4).map((day) => (
+                <div key={day.date} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "var(--text-xs)", color: "var(--text-2)" }}>
+                  <span style={{ width: 28, color: "var(--text-3)" }}>{weekdayCn(new Date(day.date + "T12:00:00").getDay())}</span>
+                  <span style={{ flex: 1 }}>{weatherText(day.code)}</span>
+                  <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                    {Math.round(day.min)}° / {Math.round(day.max)}°
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}
+
 for (const c of HOME_CARD_META) {
   const entry = c.entry;
   if (c.kind !== "entry" || !entry || !entry.page) continue;
@@ -484,6 +595,10 @@ for (const c of HOME_CARD_META) {
 export const BOARD_CARD_RENDERERS: Record<string, CardRenderer> = {
   ...ENTRY_RENDERERS,
   ...ENTRY_REAL,
+  /* 时钟/日期/天气：自足（本地时间 + open-meteo），自由尺寸随格加信息层。 */
+  [cardRendererKey("clock")]: (_props, size) => <ClockCard size={size} />,
+  [cardRendererKey("date")]: (_props, size) => <DateCard size={size} />,
+  [cardRendererKey("weather")]: (_props, size) => <WeatherCard size={size} />,
   /* 余额速览：自足实现 + 两档排版（4×1 并排 / 4×2 上下两行）。 */
   [cardRendererKey("balance-strip")]: (_props, size) => <BalanceStripCard size={size} />,
   /* 下一节课：自足实现 + 三档排版（1×1 倒计时 / 2×1 加课程名 / 4×2 加时间、地点与进度）。 */

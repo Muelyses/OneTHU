@@ -146,6 +146,34 @@ export function cardWidgetDefs(): WidgetDef[] {
  * 页面自己发布的组件（不是今日页卡片）：目前是「我的」页的三张数字卡。
  * 它们在白板上靠 state/liveCards.ts 的卡体渲染，因此必须在此登记，否则会被判为「未知组件」。
  */
+/** 环境/时钟组件（首页白板的时间、日期、天气；不依赖 THU 会话，自由尺寸随格加信息层） */
+export const ENV_WIDGETS: readonly WidgetDef[] = [
+  {
+    id: "custom:clock",
+    spec: { kind: "custom", id: "clock" },
+    title: "时钟",
+    description: "本地时间，每秒走字。大一些会连带显示日期与星期。不需要任何上下文。",
+    defaultSize: { w: 2, h: 1 },
+    sizeRange: { minW: 1, minH: 1, maxW: BOARD_UNITS, maxH: 2 },
+  },
+  {
+    id: "custom:date",
+    spec: { kind: "custom", id: "date" },
+    title: "日期",
+    description: "今天的日期与星期。大一些会带上年份。不需要任何上下文。",
+    defaultSize: { w: 2, h: 1 },
+    sizeRange: { minW: 1, minH: 1, maxW: BOARD_UNITS, maxH: 2 },
+  },
+  {
+    id: "custom:weather",
+    spec: { kind: "custom", id: "weather" },
+    title: "天气",
+    description: "清华园的实时天气与未来三天预报（开放数据，每半小时自动更新）。拉不到时保留上一次的结果。",
+    defaultSize: { w: 2, h: 2 },
+    sizeRange: { minW: 2, minH: 1, maxW: BOARD_UNITS, maxH: 3 },
+  },
+];
+
 export const PAGE_WIDGETS: readonly WidgetDef[] = [
   {
     id: "custom:mine-student",
@@ -367,6 +395,7 @@ export function freeSizeWidgetIds(): readonly string[] {
 export function appWidgetDefs(): WidgetDef[] {
   return [
     ...cardWidgetDefs(),
+    ...ENV_WIDGETS.map(withSizeControl),
     ...PAGE_WIDGETS.map(withSizeControl),
     ...REPORT_ELEMENT_WIDGETS.map(withSizeControl),
     ...ATOM_TEMPLATE_WIDGETS.map(withSizeControl),

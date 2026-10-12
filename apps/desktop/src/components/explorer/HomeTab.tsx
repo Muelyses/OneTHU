@@ -1,87 +1,27 @@
 /**
- * 首页标签页（dev-explorer 工作空间革命）：特殊标签页的渲染内容。
+ * 首页标签页（2026-10-13 定稿）：**整个首页就是一块白板**。
  *
- * 组织模式 = 今日页（TodayPage）原样移植 + 顶部两层新能力：
- *   「继续上次」工作恢复条（OneGO 工作区 chips + 最近 3 个页标签）；
- *   ③ 「功能目录」卡（侧边栏删除后的完整功能兜底入口，NAV_CATEGORIES 分组）；
- *   ④ <TodayPage /> 原样渲染（自定义卡片系统、信息流、快捷入口全在它身上）。
+ * - 固定层（HomeChrome）：居中大时间 + 时间下的一级功能区 + 「更多功能」「详细功能」。
+ *   不可移动、不可删除，可调不透明度（调低透出下面的组件）。
+ * - 自由层：BoardPage 以无头模式嵌入（chromeless）——活跃 OnePage 的画布，
+ *   时间/日期/天气/卡片/便笺/画笔全部是自由白板组件，右下「编」进编辑态拖摆。
  *
- * 视觉对齐 Today 的 .home-card 体系（.card / h2 标题 / 行尾文字钮 / 灰字 note），
- * 只在 explorer-home.css 里补少量布局样式，不造新视觉语言。
+ * 旧的「继续上次」条与 TodayPage 直渲染随本次定稿退役（工作区恢复在 OneGO/标签抽屉里）。
  */
-import { useState, useSyncExternalStore, type ReactNode } from "react";
-import {
-  allTabs,
-  explorerSnapshot,
-  focusTab,
-  openTab,
-  openWorkspace,
-  subscribeExplorer,
-} from "../../state/explorer.js";
-import { TodayPage } from "../../pages/Today.js";
-import { HomeSpheres } from "./HomeSpheres.js";
-
-/** store 快照类型（explorer.ts 未导出内部接口，用 ReturnType 推导） */
-type ExplorerStateSnapshot = ReturnType<typeof explorerSnapshot>;
-
-/** store 订阅（恢复条用）：explorerSnapshot 引用随 setState 换新，useSyncExternalStore 直读即可 */
-function useExplorerState(): ExplorerStateSnapshot {
-  return useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
-}
-
-
-
-/* ══════════ ② 继续上次（工作区 + 最近页标签） ══════════ */
-
-function HomeResume(): ReactNode {
-  const state = useExplorerState();
-  const recentTabs = allTabs()
-    .filter((t) => t.kind === "page")
-    .sort((a, b) => b.lastActiveAt - a.lastActiveAt)
-    .slice(0, 3);
-  const hasContent = state.workspaces.length > 0 || recentTabs.length > 0;
-  if (!hasContent) return null;
-  return (
-    <div className="home-resume" role="region" aria-label="继续上次">
-      <span className="home-resume-label">继续上次</span>
-      <div className="home-resume-chips">
-        {state.workspaces.slice(0, 4).map((w) => (
-          <button
-            key={w.id}
-            type="button"
-            className="home-resume-chip is-workspace"
-            title={"恢复工作区「" + w.name + "」（" + w.tabs.length + " 个标签页）"}
-            onClick={() => openWorkspace(w.id)}
-          >
-            {w.name}
-            <span className="home-resume-chip-count">{w.tabs.length}</span>
-          </button>
-        ))}
-        {recentTabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className="home-resume-chip"
-            title={"回到「" + t.title + "」标签页"}
-            onClick={() => focusTab(t.id)}
-          >
-            {t.title}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ══════════ 首页标签页整体 ══════════ */
+import type { ReactNode } from "react";
+import { BoardPage } from "../../pages/BoardPage.js";
+import { HomeChrome } from "./HomeSpheres.js";
 
 export function HomeTab(): ReactNode {
   return (
-    <div className="home-tab">
-      {/* 球型功能目录：右上角锚点 + 外置球层（详细目录收进球窗的「··· 详情」） */}
-      <HomeSpheres />
-      <HomeResume />
-      <TodayPage />
+    <div className="home-tab home-free">
+      {/* 固定层：大时间 + 功能区（浮在画布上方，透明度可调；z 序在自由组件之上，
+          但时钟区不拦截指针事件之外的部分——组件放上去即被点中） */}
+      <HomeChrome />
+      {/* 自由层：活跃 OnePage 的白板画布（无头模式，右下浮动钮进编辑） */}
+      <div className="home-free-canvas">
+        <BoardPage chromeless />
+      </div>
     </div>
   );
 }

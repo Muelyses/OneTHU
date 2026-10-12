@@ -1,86 +1,83 @@
 /**
- * 首页球型功能目录（home spheres）状态层。
+ * 首页固定层状态（2026-10-13 定稿）。
  *
- * 需求（霖 2026-10-12）：首页右上角一个圆形功能目录 logo，点开向左下展开 0.10 风格
- * 子菜单小窗——每项是「圆球形 logo + 底下名字」；点圆球打开对应一级页；最边上一个
- * 「更多功能」球，点开弹窗列出全部一级标签页；球可以像手机 UI 一样拖出到白板上，
- * 外置球可拖动摆放，拖动过程显示红色垃圾桶（拖入即删）；小窗左上角「··· 详情」
- * 可在球阵与详细功能目录（分类列表）之间切换。
+ * 首页 = 白板画布（自由组件）+ 一层**固定 chrome**：
+ *   ① 居中大时间（时钟 + 日期行）；
+ *   ② 时间下铺展的一级功能区（圆球 + 「更多功能」「详细功能」两个按钮）。
+ * 两块都不可移动、不可删除，但各自可调不透明度（透明了以后能透出下面的自由组件）。
  *
- * 数据模型刻意保持最小：
- *   - docked：小窗里的球（NAV 注册表 id，顺序即展示顺序）；
- *   - loose：拖出到白板上的球（同 id 空间），pos 为相对首页内容区的百分比坐标；
- *   - 其余 NAV 一级页 = 未停靠（只出现在「更多功能」弹窗里）。
- * 不存 icon/label——那两样是 NAV 注册表的事实，这里只存「哪些、什么顺序、在哪」。
+ * 持久化只存「哪些球停靠、什么顺序 + 两块的不透明度」；球的图标/名字永远是
+ * NAV 注册表的事实，这里不复制。旧的 loose（拖出球）随自由画布退役，字段不再写。
  */
 import { NAV } from "../components/Layout.js";
 
 /** 一级页条目（Layout 的 NAV 数组元素形状：page + label + icon，纯页面无参数） */
 export type SphereNavEntry = (typeof NAV)[number];
 
-export interface SpherePos {
-  x: number; // 0..100，相对首页内容区宽度的百分比
-  y: number; // 0..100，相对首页内容区高度
-}
-
 export interface SpheresDoc {
   v: 1;
-  docked: string[]; // NAV id，顺序即小窗展示顺序（不含「更多功能」球——那是常驻功能位）
-  loose: Array<{ id: string; pos: SpherePos }>;
+  /** 功能区停靠的球（NAV page id，顺序即展示顺序） */
+  docked: string[];
+  /** ①大时间 的不透明度 0.15..1 */
+  timeOpacity: number;
+  /** ②功能区 的不透明度 0.15..1 */
+  dockOpacity: number;
 }
 
-const KEY = "onethu.home.spheres.v1";
+const KEY = "onethu.home.spheres.v2";
 
-/** 默认停靠：一级目录的前 8 个（今日/待办/课程/日程/寻迹/邮箱/云盘/GitLab），观感即现状首页目录的头部 */
+const clampOp = (n: unknown): number =>
+  typeof n === "number" && Number.isFinite(n) ? Math.min(1, Math.max(0.15, n)) : 1;
+
 function defaultDoc(): SpheresDoc {
   return {
     v: 1,
-    docked: NAV.slice(0, 8).map((n) => sphereIdOf(n)),
-    loose: [],
+    docked: NAV.slice(0, 8).map((n) => n.page),
+    timeOpacity: 1,
+    dockOpacity: 1,
   };
 }
 
-/** NAV 行 → 球 id：NAV 一级页都是纯页面（无参数），页 id 即球 id */
-export function sphereIdOf(entry: SphereNavEntry): string {
-  return entry.page;
-}
-
-function sanitize(raw: unknown): SpheresDoc | null {
-  if (!raw || typeof raw !== "object") return null;
+function sanitize(raw: unknown): SpheresDoc {
+  const base = defaultDoc();
+  if (!raw || typeof raw !== "object") return base;
   const r = raw as Partial<SpheresDoc>;
-  if (r.v !== 1 || !Array.isArray(r.docked) || !Array.isArray(r.loose)) return null;
   const known = new Set<string>(NAV.map((n) => n.page as string));
-  const loose = r.loose
-    .filter((s) => s && typeof s.id === "string" && s.pos && Number.isFinite(s.pos.x) && Number.isFinite(s.pos.y))
-    .map((s) => ({ id: s.id, pos: { x: Math.min(96, Math.max(0, s.pos.x)), y: Math.min(96, Math.max(0, s.pos.y)) } }))
-    .filter((s) => known.has(s.id));
+  const docked = Array.isArray(r.docked)
+    ? (r.docked.filter((x): x is string => typeof x === "string" && known.has(x)))
+    : base.docked;
+  /* 旧 v1 文档里 docked 存的是 page|params 组合键；NAV 一级页无参数，取 | 前段即页 id */
+  const norm = docked.map((x) => (x.includes("|") ? x.slice(0, x.indexOf("|")) : x));
   return {
     v: 1,
-    docked: r.docked.filter((x): x is string => typeof x === "string" && known.has(x)),
-    loose,
+    docked: norm.length > 0 ? Array.from(new Set(norm)) : base.docked,
+    timeOpacity: clampOp(r.timeOpacity),
+    dockOpacity: clampOp(r.dockOpacity),
   };
 }
 
-export function loadSpheres(): SpheresDoc {
+function load(): SpheresDoc {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return defaultDoc();
-    return sanitize(JSON.parse(raw)) ?? defaultDoc();
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem("onethu.home.spheres.v1");
+    if (raw) return sanitize(JSON.parse(raw));
   } catch {
-    return defaultDoc();
+    /* 脏数据当没有 */
   }
+  return defaultDoc();
 }
 
-export function saveSpheres(doc: SpheresDoc): void {
+let doc: SpheresDoc = load();
+const listeners = new Set<() => void>();
+
+function commit(next: SpheresDoc): void {
+  doc = next;
   try {
     localStorage.setItem(KEY, JSON.stringify(doc));
   } catch {
-    /* 存储满/隐私模式：球目录是纯偏好，失败静默（下次启动回默认） */
+    /* 存储满：纯偏好，静默 */
   }
+  listeners.forEach((f) => f());
 }
-
-let doc: SpheresDoc = loadSpheres();
-const listeners = new Set<() => void>();
 
 export function spheresSnapshot(): SpheresDoc {
   return doc;
@@ -91,64 +88,31 @@ export function subscribeSpheres(f: () => void): () => void {
   return () => listeners.delete(f);
 }
 
-function commit(next: SpheresDoc): void {
-  doc = next;
-  saveSpheres(doc);
-  listeners.forEach((f) => f());
+/** 停靠 / 移除一颗球（更多功能小窗的 × / ＋） */
+export function dockSphere(pageId: string): void {
+  if (doc.docked.includes(pageId)) return;
+  commit({ ...doc, docked: [...doc.docked, pageId] });
 }
 
-/** 停靠一个球（追加到小窗末尾；已在 docked/loose 里则先挪过去） */
-export function dockSphere(id: string): void {
-  if (doc.docked.includes(id)) return;
-  commit({
-    ...doc,
-    docked: [...doc.docked, id],
-    loose: doc.loose.filter((s) => s.id !== id),
-  });
+export function undockSphere(pageId: string): void {
+  commit({ ...doc, docked: doc.docked.filter((x) => x !== pageId) });
 }
 
-/** 小窗内重排（拖拽换位）：from/to 都是 docked 下标 */
-export function reorderDocked(from: number, to: number): void {
-  if (from === to || from < 0 || to < 0 || from >= doc.docked.length || to >= doc.docked.length) return;
-  const next = doc.docked.slice();
-  const [moved] = next.splice(from, 1);
-  if (moved === undefined) return;
-  next.splice(to, 0, moved);
-  commit({ ...doc, docked: next });
+/** 两块固定区各自的不透明度 */
+export function setTimeOpacity(v: number): void {
+  commit({ ...doc, timeOpacity: clampOp(v) });
 }
 
-/** 把球拖出到白板（从 docked 或未停靠状态进入 loose） */
-export function loosenSphere(id: string, pos: SpherePos): void {
-  commit({
-    ...doc,
-    docked: doc.docked.filter((x) => x !== id),
-    loose: [...doc.loose.filter((s) => s.id !== id), { id, pos }],
-  });
+export function setDockOpacity(v: number): void {
+  commit({ ...doc, dockOpacity: clampOp(v) });
 }
 
-/** 外置球挪位 */
-export function moveLooseSphere(id: string, pos: SpherePos): void {
-  commit({
-    ...doc,
-    loose: doc.loose.map((s) => (s.id === id ? { ...s, pos } : s)),
-  });
-}
-
-/** 删除球（从 docked 与 loose 一并移除；可从「更多功能」弹窗重新加回） */
-export function removeSphere(id: string): void {
-  commit({
-    ...doc,
-    docked: doc.docked.filter((x) => x !== id),
-    loose: doc.loose.filter((s) => s.id !== id),
-  });
-}
-
-/** 按 id 找 NAV 行（找不到说明注册表变了——渲染层直接过滤掉即可） */
+/** 按 id 找 NAV 行 */
 export function sphereEntry(id: string): SphereNavEntry | null {
-  return NAV.find((n) => sphereIdOf(n) === id) ?? null;
+  return NAV.find((n) => n.page === id) ?? null;
 }
 
-/** 全部一级页（更多功能弹窗的数据源，保持 NAV 顺序） */
+/** 全部一级页（更多功能小窗的数据源，保持 NAV 顺序） */
 export function allSphereEntries(): SphereNavEntry[] {
   return NAV;
 }

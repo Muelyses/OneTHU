@@ -17,6 +17,8 @@ import { BOARD_TEMPLATES, templateItems } from "../state/boardTemplates.js";
 import { cellFromSlots, edgeScrollSpeed, movedBeyond, previewItems, stickyIndex, type SlotRect } from "../state/boardDrag.js";
 import { BOARD_COLS, colsForWidth } from "../state/boardCore.js";
 import { BoardAddDrawer } from "../components/BoardAddDrawer.js";
+import { atomRefFromKey } from "../state/favorites.js";
+import { resolveAtom } from "../state/atoms.js";
 import { BoardPenLayer, BoardPenToolbar } from "../components/BoardPenLayer.js";
 import { PEN_COLORS, penKeyOf, strokesOf, undoStroke, clearStrokes } from "../state/boardPen.js";
 import { useApp } from "../state/context.js";
@@ -50,7 +52,7 @@ function dragDebug(): boolean {
 const LONG_PRESS_MS = 500;
 const MOVE_CANCEL_PX = 8;
 
-export function BoardPage(): ReactNode {
+export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {}): ReactNode {
   const { navigate } = useApp();
   const menu = useContextMenu();
   const defs = useMemo(() => allWidgetDefs(), []);
@@ -64,6 +66,13 @@ export function BoardPage(): ReactNode {
   /* 从今日页「编辑白板布局」进来时直接进编辑态（消费一次即清）。 */
   useEffect(() => {
     if (consumeEditOnOpen()) setEditing(true);
+  }, []);
+  /* OneGO / 星标 / 收藏星在别处改了板文档（onethu.boards.changed）→ 重读。
+     没有这条时，OneGO 里新建 OnePage 再打开，板页还停在旧文档。 */
+  useEffect(() => {
+    const on = (): void => setDoc(loadBoard());
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
   }, []);
   /* 两份来源合并：今日页的注册表 + 其它页面发布的卡体（我的页数字卡等）。 */
   /* 合并顺序：**白板侧自足实现优先**（活数据、任何页面可渲染），其次是自足卡体，
@@ -186,8 +195,21 @@ export function BoardPage(): ReactNode {
   };
 
   const onOpen = (item: BoardItem): void => {
-    if (item.spec.kind !== "nav") return;
-    navigate(item.spec.page as never, item.spec.params as never);
+    if (item.spec.kind === "nav") {
+      navigate(item.spec.page as never, item.spec.params as never);
+      return;
+    }
+    /* atom-link（OnePage 收进来的原子入口）：键 → 原子视图 → 原位跳转 */
+    if (item.spec.kind === "atom-link") {
+      const ref = atomRefFromKey(item.spec.ref);
+      if (!ref) return;
+      const view = resolveAtom(ref);
+      if (!view) {
+        say("这条入口已失效，长按可移除");
+        return;
+      }
+      view.open(navigate);
+    }
   };
 
   /** 本次会话已拟合过的条目：避免反复测量-写入造成循环。 */
@@ -338,17 +360,39 @@ export function BoardPage(): ReactNode {
 
   return (
     <>
-      <PageHead
-        title="白板"
-        meta={editing ? "编辑中：长按组件出菜单，移动手指即可换位置" : "OnePage 的画布：这里的每个组件都能单独摆放，位置随文档走"}
-        menu={[
-          { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
-          { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
-          { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
-          { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
-          { key: "edit-board", label: editing ? "完成" : "编辑", onSelect: () => setEditing((v) => !v) },
-        ]}
-      />
+      {/* 无头模式（首页嵌入）：不渲染页头，编辑/添加/画笔走右下浮动钮（首页有自己的固定层，不再叠一层页头） */}
+      {chromeless ? (
+        <div className="board-fab-col" role="toolbar" aria-label="白板操作">
+          {editing ? (
+            <>
+              <button type="button" className="board-fab" title="添加组件" onClick={() => setAddOpen(true)}>＋</button>
+              <button type="button" className="board-fab" title="套用模板" onClick={() => setTplOpen(true)}>模</button>
+              <button type="button" className={"board-fab" + (penOn ? " is-on" : "")} title={penOn ? "画笔：关" : "画笔：开"} onClick={() => setPenOn((v) => !v)}>笔</button>
+            </>
+          ) : null}
+          <button
+            type="button"
+            className={"board-fab is-primary" + (editing ? " is-on" : "")}
+            title={editing ? "完成编辑" : "编辑白板"}
+            aria-pressed={editing}
+            onClick={() => { setEditing((v) => !v); setSelectedId(null); }}
+          >
+            {editing ? "完" : "编"}
+          </button>
+        </div>
+      ) : (
+        <PageHead
+          title="白板"
+          meta={editing ? "编辑中：长按组件出菜单，移动手指即可换位置" : "OnePage 的画布：这里的每个组件都能单独摆放，位置随文档走"}
+          menu={[
+            { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
+            { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
+            { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
+            { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
+            { key: "edit-board", label: editing ? "完成" : "编辑", onSelect: () => setEditing((v) => !v) },
+          ]}
+        />
+      )}
       {stored.length === 0 ? (
         <Card>
           <Empty text="这块白板还是空的。可以从模板开始，或收藏一个组件。" />

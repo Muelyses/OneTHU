@@ -12,32 +12,30 @@ import { useExitPhase } from "../lib/useExitPhase.js";
 import { Empty } from "./Layout.js";
 import { IconChevron, IconFolderPlus, IconSearch, IconStar } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
+import { atomKeyOf } from "../state/favorites.js";
+import { createOnePageForAtom, onePagesWithAtom, removeOnePage } from "../state/onePage.js";
 import { pageAtomRef, resolveAtom, searchAtoms, tabAtomKey, type AtomHit } from "../state/atoms.js";
 import { confirmOk } from "../lib/confirm.js";
 import type { AtomRef } from "../state/favorites.js";
 
-/** 星标按钮：已收录点亮；点击开弹层 */
+/** 星标按钮（2026-10-13 起 = OnePage 一星，统一走白板；旧的「收藏到…多选收藏夹」弹层随旧体系退役） */
 export function CollectStar({ atom, title }: { atom: AtomRef; title?: string }) {
-  const favs = useFavs();
-  const [open, setOpen] = useState(false);
-  const on = favs.foldersContaining(atom).length > 0;
+  const view = resolveAtom(atom);
+  const { lit, toggle } = useOnePageStar(atom, view?.title ?? title ?? "OnePage", view?.sub ?? title ?? "");
   return (
-    <>
-      <button
-        type="button"
-        className={"collect-star" + (on ? " is-on" : "")}
-        aria-label={(on ? "已收藏，点击管理" : "收藏") + (title ? "：" + title : "")}
-        title={on ? "已收藏 · 点击管理" : "收藏"}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          setOpen(true);
-        }}
-      >
-        <IconStar width={14} height={14} />
-      </button>
-      {open ? <CollectModal atom={atom} onClose={() => setOpen(false)} /> : null}
-    </>
+    <button
+      type="button"
+      className={"collect-star" + (lit ? " is-on" : "")}
+      aria-label={(lit ? "已收藏为 OnePage，点击取消" : "收藏为 OnePage") + (title ? "：" + title : "")}
+      title={lit ? "已收藏 · 点击取消" : "收藏为 OnePage"}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        void toggle();
+      }}
+    >
+      <IconStar width={14} height={14} />
+    </button>
   );
 }
 
@@ -48,22 +46,28 @@ export function CollectStar({ atom, title }: { atom: AtomRef; title?: string }) 
  * - 已收录 → 先用应用内确认弹窗（window.confirm 在 Tauri 下静默 false，不可用）再删除该 OnePage 本体。
  */
 export function useOnePageStar(ref: AtomRef | null, name: string, full: string): { lit: boolean; toggle: () => Promise<void> } {
-  const favs = useFavs();
-  const hits = ref ? favs.foldersContaining(ref) : [];
-  const folderId = hits[0] ?? null;
+  const key = ref ? atomKeyOf(ref) : null;
+  const [tick, setTick] = useState(0);
+  /* 板文档没有订阅器：听全局变更事件 + 手动 bump（星标是低频操作，够用） */
+  useEffect(() => {
+    const on = (): void => setTick((t) => t + 1);
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
+  const board = key ? onePagesWithAtom(key)[0] : undefined;
+  void tick;
   const toggle = async (): Promise<void> => {
-    if (!ref) return;
-    if (!folderId) {
-      const id = favs.create(name, null);
-      if (id) favs.addAtom(id, ref);
+    if (!ref || !key) return;
+    if (!board) {
+      createOnePageForAtom(name, key);
       return;
     }
     const ok = await confirmOk(
-      `确定删除 OnePage「${name}」（${full}）？\n其内容和在其他 OnePage 中的入口都会永久消失！`,
+      `确定删除 OnePage「${name}」（${full}）？\n这块白板和其中的内容都会永久消失！`,
     );
-    if (ok) favs.remove(folderId);
+    if (ok) removeOnePage(board.id);
   };
-  return { lit: folderId !== null, toggle };
+  return { lit: board !== undefined, toggle };
 }
 
 /** 一星按钮：点亮 = 已有独立 OnePage 收录该页 */

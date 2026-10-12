@@ -6,6 +6,8 @@
  * （昂贵档口径见方案 §4.4：本轮先复用现有外壳）。
  */
 import type { ReactNode } from "react";
+import { resolveAtom } from "../state/atoms.js";
+import { atomRefFromKey } from "../state/favorites.js";
 import type { BoardItem } from "../state/boardCore.js";
 import type { WidgetDef, WidgetSize } from "../state/widgetMeta.js";
 import { planForItem } from "../state/widgetRender.js";
@@ -49,9 +51,26 @@ export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): 
   if (plan.kind === "text-label") return <p className="wg-label">{plan.text ?? plan.title}</p>;
 
   if (plan.kind === "nav" || plan.kind === "atom-link") {
+    /* atom-link：标题与可用性按原子注册表**运行时**解析（板文档里只存引用键——
+       数据会过期，标题不能跟着过期，PR 55 方案 §10 的硬性规则）。 */
+    let title = plan.title;
+    let missing = false;
+    if (plan.kind === "atom-link") {
+      const ref = item.spec.kind === "atom-link" ? atomRefFromKey(item.spec.ref) : null;
+      const view = ref ? resolveAtom(ref) : null;
+      if (view) title = view.title;
+      else missing = true;
+    }
+    if (missing) {
+      return (
+        <div className="wg-empty" role="note">
+          <span className="wg-empty-title">这条入口已失效，请从白板移除</span>
+        </div>
+      );
+    }
     return (
       <button type="button" className="wg-entry" onClick={() => onOpen?.(item)}>
-        <span className="wg-entry-title">{plan.title}</span>
+        <span className="wg-entry-title">{title}</span>
         <span className="wg-entry-arrow" aria-hidden="true">›</span>
       </button>
     );

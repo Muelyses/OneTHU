@@ -13,6 +13,8 @@ import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useAnchorPos } from "./TabDrawer.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { useFavs } from "../../state/favs.js";
+import { allOnePages, createOnePage, openOnePage, removeOnePage } from "../../state/onePage.js";
+import type { Board } from "../../state/boardCore.js";
 import { resolveAtom } from "../../state/atoms.js";
 import type { LearnNav, Page } from "../../state/app.js";
 import { useApp } from "../../state/context.js";
@@ -60,26 +62,45 @@ export function useOneGoSheetOpen(): boolean {
 /* ══════════ 我的收藏（OnePage）分段 ══════════ */
 
 function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
-  const { navigate } = useApp();
-  const favs = useFavs();
   const [name, setName] = useState("");
-  const roots = favs.data.order;
+  const [tick, setTick] = useState(0);
+  /* OnePage = 白板（2026-10-13 定案）：列出 BoardDoc.boards；点击 = 设为当前板并打开白板页 */
+  useEffect(() => {
+    const on = (): void => setTick((t) => t + 1);
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
+  const boards = allOnePages();
+  void tick;
 
   const create = (): void => {
     const t = name.trim();
     if (!t) return;
-    const id = favs.create(t, null);
+    const id = createOnePage(t);
+    setName("");
     if (id) {
-      setName("");
-      openTab("folder", { folderId: id }, { title: t });
+      openOnePage(id);
+      openTab("board", null, { title: t });
       onDone();
     }
   };
 
+  const openBoard = (b: Board): void => {
+    openOnePage(b.id);
+    openTab("board", null, { title: b.name });
+    onDone();
+  };
+
+  const remove = (b: Board): void => {
+    void confirmOk(`确定删除 OnePage「${b.name}」？\n这块白板和其中的内容都会永久消失！`).then((ok) => {
+      if (ok) removeOnePage(b.id);
+    });
+  };
+
   return (
-    <section aria-label="我的收藏 OnePage">
+    <section aria-label="我的 OnePage">
       <div className="ex-sec-head">
-        <b>我的收藏（OnePage）</b>
+        <b>我的 OnePage</b>
       </div>
       <div className="ex-newrow">
         <input
@@ -93,93 +114,66 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         />
         <button className="btn ex-btn-sm" onClick={create} disabled={!name.trim()}>新建</button>
       </div>
-      {roots.length === 0 ? (
-        <div className="ex-empty-hint">还没有 OnePage。新建一个，把常用功能组织进去（在收藏夹页点星标或添加原子）。</div>
+      {boards.length === 0 ? (
+        <div className="ex-empty-hint">还没有 OnePage。新建一块，它就是一张可以随意摆组件的白板。</div>
       ) : (
         <div className="ex-row-list">
-          {roots.map((id) => {
-            const f = favs.data.folders[id];
-            const title = f?.title ?? "OnePage";
-            return (
-              <div key={id} className="ex-row-wrap">
-              <button
-                className="ex-row ex-row-clickable"
-                onClick={() => {
-                  /* 用户定案：OnePage 点进去=页面本体——单 page 原子的 OnePage 用 resolveAtom
-                     直接 open 到目标页（navigate)，不进收藏夹列表；多原子的才进 FolderPage */
-                  const f2 = favs.data.folders[id];
-                  const items = f2?.items ?? [];
-                  const sole = items.length === 1 && items[0] !== undefined && items[0].t === "a" ? items[0] : null;
-                  if (sole && sole.t === "a") {
-                    const view = resolveAtom(sole.atom);
-                    if (view) {
-                      view.open(navigate);
-                      onDone();
-                      return;
-                    }
-                  }
-                  openTab("folder", { folderId: id }, { title });
-                  onDone();
-                }}
-              >
-                <span className="ex-row-icon"><FolderIcon name={f?.icon ?? "fist"} /></span>
+          {boards.map((b) => (
+            <div key={b.id} className="ex-row-wrap">
+              <button className="ex-row ex-row-clickable" onClick={() => openBoard(b)}>
+                <span className="ex-row-icon"><FolderIcon name={b.icon ?? "fist"} /></span>
                 <span className="ex-row-main">
-                  <span className="ex-row-title">{title}</span>
-                  <span className="ex-row-sub">{(f?.items?.length ?? 0)} 项</span>
+                  <span className="ex-row-title">{b.name}</span>
+                  <span className="ex-row-sub">{b.kind === "system" ? "系统板（今日）" : "白板"}</span>
                 </span>
               </button>
-              <button className="btn btn-ghost ex-btn-sm" onClick={() => openFolderIconPicker(id)}>更换图标</button>
-              </div>
-            );
-          })}
+              {b.kind === "system" ? null : (
+                <button className="btn btn-ghost ex-btn-sm" onClick={() => remove(b)}>删除</button>
+              )}
+            </div>
+          ))}
         </div>
       )}
-      <div className="ex-hint-line">OnePage 即收藏夹页面；在一个 OnePage 里可以放另一个 OnePage 的入口（子收藏夹）。</div>
+      <div className="ex-hint-line">OnePage 是一张白板：长按组件换位，右下角进编辑与添加。</div>
     </section>
   );
 }
-
 
 /* ══════════ ⑦ 小窗内搜索：OnePage 按 title、工作区按 name（大小写不敏感） ══════════ */
 
 function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): ReactNode {
   const { navigate } = useApp();
-  const favs = useFavs();
-  const favHits = favs.data.order.filter((id) => (favs.data.folders[id]?.title ?? "").toLowerCase().includes(q));
+  const hits = allOnePages().filter((b) => b.name.toLowerCase().includes(q));
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   const wsHits = wsSnap.workspaces.filter((w) => w.name.toLowerCase().includes(q));
-  if (favHits.length === 0 && wsHits.length === 0) return <div className="ex-empty-hint">没有匹配的 OnePage 或工作区。</div>;
+  if (hits.length === 0 && wsHits.length === 0) return <div className="ex-empty-hint">没有匹配的 OnePage 或工作区。</div>;
   return (
     <>
-      {favHits.length > 0 ? (
+      {hits.length > 0 ? (
         <section aria-label="OnePage 搜索结果">
           <div className="ex-group-head">
             <span className="ex-group-name">OnePage</span>
-            <span className="ex-group-count">{favHits.length}</span>
+            <span className="ex-group-count">{hits.length}</span>
           </div>
           <div className="ex-row-list">
-            {favHits.map((id) => {
-              const f = favs.data.folders[id];
-              const title = f?.title ?? "OnePage";
-              return (
-                <div key={id} className="ex-row-wrap">
+            {hits.map((b) => (
+              <div key={b.id} className="ex-row-wrap">
                 <button
                   className="ex-row ex-row-clickable"
                   onClick={() => {
-                    openTab("folder", { folderId: id }, { title });
+                    openOnePage(b.id);
+                    openTab("board", null, { title: b.name });
                     onDone();
                   }}
                 >
-                  <span className="ex-row-icon"><FolderIcon name={f?.icon ?? "fist"} /></span>
+                  <span className="ex-row-icon"><FolderIcon name={b.icon ?? "fist"} /></span>
                   <span className="ex-row-main">
-                    <span className="ex-row-title">{title}</span>
-                    <span className="ex-row-sub">{f?.items?.length ?? 0} 项</span>
+                    <span className="ex-row-title">{b.name}</span>
+                    <span className="ex-row-sub">{b.kind === "system" ? "系统板（今日）" : "白板"}</span>
                   </span>
                 </button>
-                <button className="btn btn-ghost ex-btn-sm" onClick={() => openFolderIconPicker(id)}>更换图标</button>
                 </div>
-              );
-            })}
+            ))}
           </div>
         </section>
       ) : null}

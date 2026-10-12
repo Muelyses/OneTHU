@@ -29,11 +29,14 @@ import {
   subscribeExplorer,
   type ExplorerWorkspace,
   type ExplorerTab,
+  openTab,
 } from "../../state/explorer.js";
 import { resolveTabTitle, useTabTitleTick } from "../../state/tabTitles.js";
 import { enc, PAGE_ATOMS, tabAtomKey } from "../../state/atoms.js";
 import { getLearnSnapshot } from "../../state/data.js";
-import { atomKeyOf, type AtomRef, type FavFolder } from "../../state/favorites.js";
+import { atomKeyOf, type AtomRef } from "../../state/favorites.js";
+import { createOnePageForAtom, onePagesWithAtom, openOnePage, removeOnePage } from "../../state/onePage.js";
+import type { Board } from "../../state/boardCore.js";
 import { useFavs } from "../../state/favs.js";
 import type { LearnNav, Page } from "../../state/app.js";
 import { FOLDER_ICONS, IconBook, IconFlag, IconFolder, IconInfo, IconLearn, IconOrb, IconPin, IconPlus, IconStar, IconX } from "../Icons.js";
@@ -617,7 +620,7 @@ function pageGlyph(page: Page): (p: { width?: number; height?: number }) => Reac
 }
 
 /** 标签前的 logo：已收藏为 OnePage 用星，否则用页面图标 */
-function TabGlyph({ page, star }: { page: Page; star: FavFolder | undefined }): ReactNode {
+function TabGlyph({ page, star }: { page: Page; star?: { icon?: string } | undefined }): ReactNode {
   const key = star ? (star.icon ?? "fist") : "";
   const G = star ? FOLDER_ICONS[key] ?? IconStar : pageGlyph(page);
   return <span className={"ex-tab-glyph" + (key === "fist" ? " is-fist" : "")} aria-hidden="true"><G width={14} height={14} /></span>;
@@ -721,39 +724,42 @@ export function TabStrip(): ReactNode {
     else setPendingGroup(d);
   });
 
-  /** 标签所属的一星收藏夹（OnePage）；无则 undefined */
-  const starredFolder = (t: ExplorerTab): FavFolder | undefined => {
+  /** 标签所属的 OnePage（2026-10-13 起 OnePage 的本体 = 一块白板，收的内容是 atom-link 入口）；无则 undefined */
+  const starredOnePage = (t: ExplorerTab): Board | undefined => {
     const ref = atomRefOfTab(t);
     if (!ref) return undefined;
     const k = atomKeyOf(ref);
-    return Object.values(favs.data.folders).find((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === k));
+    return onePagesWithAtom(k)[0];
   };
-  const isStarred = (t: ExplorerTab): boolean => starredFolder(t) !== undefined;
-  /** 标签图标来源：文件夹页（OnePage 本体）直接用它自己的图标；否则看所属的一星收藏夹 */
-  const glyphFolderOf = (t: ExplorerTab): FavFolder | undefined => {
+  const isStarred = (t: ExplorerTab): boolean => starredOnePage(t) !== undefined;
+  /** 标签图标来源：旧文件夹页 tab（历史遗留）直接用它自己的图标；否则看所属 OnePage 板的图标 */
+  const glyphOf = (t: ExplorerTab): { icon?: string } | undefined => {
     if (t.kind === "page" && t.page === "folder") {
       const fid = (t.params as { folderId?: string } | null)?.folderId;
-      return fid ? favs.data.folders[fid] : undefined;
+      const legacy = fid ? favs.data.folders[fid] : undefined;
+      return legacy ? { icon: legacy.icon } : undefined;
     }
-    return starredFolder(t);
+    return starredOnePage(t);
   };
-  /* 一星 / 取消一星（= 删除该独立 OnePage 本体，需确认）；与标签页右键「加入/移出 OnePage」共用 */
+  /* 一星 / 取消一星（= 删除该独立 OnePage 本体，需确认）。
+     2026-10-13 起 OnePage = 白板：一星建一块含该原子入口的板，并直接打开它——
+     收完就见到白板本体（旧口径建 folder 书签列表，用户看不到任何白板操作，已废）。 */
   const toggleOnePage = (t: ExplorerTab): void => {
     const ref = atomRefOfTab(t);
     if (!ref) return;
     const key = atomKeyOf(ref);
     const name = resolveTabTitle(t.page, t.params);
-    const folder = Object.values(favs.data.folders).find((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === key));
-    if (!folder) {
-      const id = favs.create(name.label, null);
+    const existing = onePagesWithAtom(key)[0];
+    if (!existing) {
+      const id = createOnePageForAtom(name.label, key);
       if (id) {
-        favs.setIcon(id, "fist"); // OnePage 默认拳头 logo（可在 OneGO 右键改图标）
-        favs.addAtom(id, ref);
+        openOnePage(id);
+        openTab("board", null, { title: name.label });
       }
       return;
     }
-    void confirmOk(`确定删除 OnePage「${name.label}」（${name.full}）？\n其内容和在其他 OnePage 中的入口都会永久消失！`).then((ok) => {
-      if (ok) favs.remove(folder.id);
+    void confirmOk(`确定删除 OnePage「${existing.name}」（${name.full}）？\n这块白板和其中的内容都会永久消失！`).then((ok) => {
+      if (ok) removeOnePage(existing.id);
     });
   };
   const openTabMenu = (e: ReactMouseEvent, t: ExplorerTab): void => {
@@ -855,7 +861,7 @@ export function TabStrip(): ReactNode {
             onContextMenu={isHome ? undefined : (e) => openTabMenu(e, t)}
           >
             <button className="ex-tab-main" onClick={() => focusTab(t.id)}>
-              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><BrandLogo size={12} /></span> : <TabGlyph page={t.page} star={glyphFolderOf(t)} />}
+              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><BrandLogo size={12} /></span> : <TabGlyph page={t.page} star={glyphOf(t)} />}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (

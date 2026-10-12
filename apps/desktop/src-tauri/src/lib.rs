@@ -902,6 +902,37 @@ async fn save_text_file(
     Ok(Some(real.to_string_lossy().to_string()))
 }
 
+/// 主 webview 的 UA（tauri.conf.json `windows[].userAgent`）。wengine webvpn 的会话票
+/// **按 UA 指纹校验**：Rust 侧任何复用主会话的请求都必须带它，否则票被判无效、回登录页。
+const SESSION_UA: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
+
+/// 合并「原生 cookie 仓」与调用方（JS 侧）传入的 cookie：**同名以原生仓为准**。
+/// 原生仓才是 learn/info 的权威会话（数据链走的就是它）；JS 侧仓常只有半份票
+/// （真机实录：learn 域只剩 `refresh`），拿它去请求包装域会被 wengine 判「票无效」——
+/// 附件下载/预览曾因此整片报「会话已失效」（2026-10-12）。
+fn merge_session_cookies(url: &str, js_cookies: &str) -> String {
+    use reqwest::cookie::CookieStore as _;
+    let mut out: Vec<String> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let jar = reqwest::Url::parse(url)
+        .ok()
+        .and_then(|u| NATIVE_JAR_ARC.cookies(&u))
+        .and_then(|v| v.to_str().ok().map(str::to_string))
+        .unwrap_or_default();
+    for pair in jar.split(';').chain(js_cookies.split(';')) {
+        let pair = pair.trim();
+        if pair.is_empty() {
+            continue;
+        }
+        let name = pair.split('=').next().unwrap_or("").trim();
+        if name.is_empty() || !seen.insert(name.to_string()) {
+            continue;
+        }
+        out.push(pair.to_string());
+    }
+    out.join("; ")
+}
+
 /// 抓附件字节（download_file / save_file_as 共用）：
 /// 会话失效识别、真名解析、空文件校验都收敛在这里——两处走同一套判断，
 /// 免得出现「下载能识别会话失效、另存为却把登录页当文件写盘」这种不一致。
@@ -920,12 +951,14 @@ pub(crate) async fn fetch_attachment(
         // 默认读 Windows/ macOS 系统代理，全局模式梯子会把清华流量送出境触发风控）。
         // 仅救系统代理场景；TUN 网络层接管无解（参考 PR #2，user-A100）。
         .no_proxy()
-        .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
+        // UA 必须是主 webview 那个（wengine 票按 UA 指纹校验）。此处原先写死 Mac UA，
+        // 于是包装域请求被判「票无效」→ 回登录页 → 附件下载/预览整片失败（2026-10-12 真机）
+        .user_agent(SESSION_UA)
         .build()
         .map_err(|e| e.to_string())?;
     let resp = client
         .get(url)
-        .header("Cookie", cookies)
+        .header("Cookie", merge_session_cookies(url, cookies))
         .send()
         .await
         .map_err(|e| e.to_string())?;
@@ -1283,7 +1316,7 @@ fn build_native_client() -> reqwest::Client {
         // wengine webvpn 会话票绑定 UA 指纹，rust 与 webview 不一致时票被判无效
         // → THOS portal webview 打开即跳登录页（上游 thu-info-app 同构问题，
         // 它用 lib USER_AGENT 常量喂 RN WebView userAgent 解决）。
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36")
+        .user_agent(SESSION_UA)
         // 同 http_request：清华域直连，绕系统代理
         .no_proxy()
         .build()

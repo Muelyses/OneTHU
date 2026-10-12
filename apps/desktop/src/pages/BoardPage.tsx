@@ -334,15 +334,13 @@ export function BoardPage(): ReactNode {
       <PageHead
         title="白板"
         meta={editing ? "编辑中：长按组件出菜单，移动手指即可换位置" : "收藏夹的画布：这里的每个组件都能单独摆放，位置随文档走"}
+        menu={[
+          { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
+          { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
+          { key: "all-boards", label: "所有收藏夹", onSelect: () => navigate("boards") },
+          { key: "edit-board", label: editing ? "完成" : "编辑", onSelect: () => setEditing((v) => !v) },
+        ]}
       />
-      {/* 白板的主要入口（dev3 的 PageHead 没有顶栏「···」菜单槽）：改成页内工具条，
-          这样不必改动 dev3 的 Layout/顶栏实现。 */}
-      <div className="board-tools">
-        <button type="button" className="btn" aria-label="添加组件" onClick={() => setAddOpen(true)}>添加组件</button>
-        <button type="button" className="btn" onClick={() => setTplOpen(true)}>套用模板</button>
-        <button type="button" className="btn" onClick={() => navigate("boards")}>所有收藏夹</button>
-        <button type="button" className="btn" onClick={() => setEditing((v) => !v)}>{editing ? "完成" : "编辑"}</button>
-      </div>
       {stored.length === 0 ? (
         <Card>
           <Empty text="这块白板还是空的。可以从模板开始，或收藏一个组件。" />

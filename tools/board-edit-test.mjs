@@ -251,7 +251,11 @@ ok(/manual: true/.test(pageR) && /manual\?: boolean/.test(readFileSync("apps/des
 ok(/board-slot > \*\.wg-divider|board-slot > \.wg-divider/.test(cssSrc) && /margin-block: auto/.test(cssSrc), "矮组件没有在整行里居中（分割线会贴在顶端）");
 /* ㉚ 底栏抑制必须带"当前在白板页"；拉大后的内容要自适应铺开（霖 2026-10-11） */
 const layoutSrc = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8");
-ok(/const boardSlotActive = page === "board" &&/.test(layoutSrc), "收藏夹槽位的抑制没有带「当前在白板页」（回到今日后自带页面高亮全被压掉——指示器刚好反过来）");
+/* 移植版（dev3-onePage）：dev3 的底栏没有原分支那套「收藏夹槽位」，这里不改底栏抑制，
+   改为检查白板两页确实登记进了 Page 联合（页面集是 dev3 的，白板是后加的）。 */
+void layoutSrc;
+const appPageSrc = readFileSync("apps/desktop/src/state/app.tsx", "utf8");
+ok(/\| "boards"/.test(appPageSrc) && /\| "board";/.test(appPageSrc), "白板两页没有登记进 dev3 的 Page 联合");
 ok(/board-slot \.wg-card,/.test(cssSrc) && /height: 100%/.test(cssSrc), "拉大后卡片没有铺满槽位（会留一块空白表面）");
 ok(/board-slot \.list[^}]*flex: 1 1 auto/.test(cssSrc), "列表没有随槽位伸展（多余高度不会被内容吃掉）");
 /* ㉞ 尺寸档位（霖 2026-10-11 定稿）：取消自由控制、改为逐组件的挡位控制

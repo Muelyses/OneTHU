@@ -8,7 +8,12 @@ import { useSidebarCollapsed } from "../state/uiPrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
+import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
+import { ContextMenuLayer, useContextMenu } from "./ContextMenu.js";
+import {
+  clearPageChrome, pageChromeSnapshot, readPageChrome, subscribePageChrome, syncPageChrome,
+  type PageMenuItem,
+} from "../state/pageChrome.js";
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
@@ -583,8 +588,11 @@ export function Shell({ children }: { children: ReactNode }) {
           </aside>
         </>
       ) : null}
+      {/* 长按/右键菜单的 Provider + 菜单宿主。Provider 不产生 DOM，布局不变；
+          页面与顶栏都在里面，所以任何页面的长按、以及顶栏「···」都能开菜单。 */}
+      <ContextMenuLayer>
       <main className="content">
-        {/* 移动端顶栏：汉堡菜单 + 品牌标识，桌面隐藏（桌面走侧栏） */}
+        {/* 移动端顶栏：汉堡菜单 + 品牌标识 + 页面级操作「···」，桌面隐藏（桌面走侧栏） */}
         <header className={"mobile-topbar" + (topbarScrolled ? " is-scrolled" : "")}>
           <button className="topbar-menu" onClick={() => setNavOpen(true)} aria-label="打开导航菜单">
             <IconMenu width={18} height={18} />
@@ -593,9 +601,11 @@ export function Shell({ children }: { children: ReactNode }) {
             <BrandLogo size={11} />
             <span className="topbar-title">{topbarTitle}</span>
           </div>
+          <ChromeMore />
         </header>
         {children}
       </main>
+      </ContextMenuLayer>
       {/* M1 beta：移动端底部 5 Tab（CSS ≤860px 显示） */}
       <BottomNav page={rawPage} navigate={navigate} />
       {/* 命令面板：⌘/Ctrl+K 或侧栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
@@ -649,13 +659,36 @@ export function PageHead({
   title,
   meta,
   actions,
+  menu,
 }: {
   /** 页标题；收藏夹重命名等场景可传受控输入（ReactNode） */
   title: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;
+  /** 页面级操作（白板的「添加组件 / 套用模板 / 编辑」等）：手机上收进顶栏「···」菜单。
+   *  与 actions 的分工是「页面级操作 vs 工具栏」。 */
+  menu?: PageMenuItem[];
 }) {
   const { page } = useApp();
+  /* 把菜单同步给顶栏。**本 PageHead 的稳定 token**：页切换期间可能同时存在两代 PageHead，
+     卸载时只允许清掉自己写进去的那份（见 pageChrome.clearPageChrome）。 */
+  const chromeToken = useRef<object>({});
+  const headRef = useRef<HTMLElement | null>(null);
+  /* 预览里的「页面」不算页面：添加组件抽屉用真实卡体当预览，像搜索页这类卡体自带 PageHead，
+     会把抽屉里的空菜单写进全局 chrome、收起时再清空 → 顶栏「···」消失（霖 2026-10-11 现场）。
+     这里把「自己是不是在预览里」记在 ref 上，同步与清理两处都据此跳过。 */
+  const inPreviewRef = useRef(false);
+  useEffect(() => {
+    const el = headRef.current;
+    inPreviewRef.current = !!el && !!el.closest(".add-preview-box, .widget-size-box, .add-drawer");
+    if (inPreviewRef.current) return;
+    syncPageChrome({ back: null, menu: menu ?? [] }, chromeToken.current);
+    /* 故意不带依赖数组：每次渲染都同步 live（onSelect 闭包要最新一次渲染的）。 */
+  });
+  useEffect(() => () => {
+    if (inPreviewRef.current) return;
+    clearPageChrome(chromeToken.current);
+  }, []);
   const pluginNav = usePluginNavEntries();
   // 窄屏顶栏已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
   const navLabel = [...NAV, ...pluginNav].find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
@@ -663,13 +696,43 @@ export function PageHead({
   const expanded = useExpanded();
   const dupOnTopbar = !expanded && typeof title === "string" && title === navLabel;
   return (
-    <header className="page-head">
+    <header className="page-head" ref={headRef}>
       <div>
         {dupOnTopbar ? null : <h1>{title}</h1>}
         {meta ? <div className="page-head-meta">{meta}</div> : null}
       </div>
       {actions ? <div className="page-head-actions">{actions}</div> : null}
     </header>
+  );
+}
+
+/**
+ * 顶栏右上「···」：开当前页声明的页面级操作菜单（复用长按菜单的宿主与展开动画）。
+ *
+ * **必须渲染在 ContextMenuLayer 内部**：`useContextMenu()` 只对 Provider 的子节点生效，
+ * 放在外层会拿到 NOOP——表现就是「点了没反应」。
+ */
+function ChromeMore() {
+  const ctx = useContextMenu();
+  const chrome = useSyncExternalStore(subscribePageChrome, pageChromeSnapshot, pageChromeSnapshot);
+  const moreRef = useRef<HTMLButtonElement | null>(null);
+  if (!chrome.hasMenu) return null;
+  const openMenu = (): void => {
+    const r = moreRef.current?.getBoundingClientRect();
+    const items = readPageChrome().menu;
+    ctx.open({ x: r ? r.right - r.width / 2 : window.innerWidth - 24, y: r ? r.bottom : 48, items });
+  };
+  return (
+    <button
+      type="button"
+      className="topbar-more"
+      ref={moreRef}
+      onClick={openMenu}
+      aria-label="更多操作"
+      aria-haspopup="menu"
+    >
+      <IconMore width={18} height={18} />
+    </button>
   );
 }
 

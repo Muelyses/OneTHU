@@ -41,6 +41,13 @@ export type Page =
   | "boards"
   | "board";
 
+/** 返回目标：页内返回键（BackButton）与顶栏返回键共用同一条数据 */
+export interface BackTarget {
+  to: Page;
+  label?: string;
+  params?: LearnNav;
+}
+
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
 export interface LearnNav {
   courseId?: string;

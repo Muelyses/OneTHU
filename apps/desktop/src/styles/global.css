@@ -6134,3 +6134,687 @@ html.imgview-open .hard-refresh-fab {
 }
 html.is-phone .card-warn-field { flex-wrap: wrap; gap: 6px 10px; }
 html.is-phone .card-warn-label { width: auto; }
+
+/* ============================================================
+   白板（原子收藏升级）：从 next/ui-ux-overhaul 分支移植过来的样式
+   注意：这些规则全部走主题令牌，不写死颜色。
+   ============================================================ */
+/* ---------- 尺寸档位的排版（霖 2026-10-12） ----------
+ * 规则只挂在 [data-size] 上：**白板槽位与抽屉预览都带这个属性**，所以一条规则两处生效，
+ * 设计出的排版在预览里与摆到白板上完全一致。
+ *
+ * 统计卡（.stat-tiered）有五个槽位：图标 / 名称 / 主数值 / 口径 / 进度。
+ * 五者都是同级元素、由 grid-area 摆位，**三档只是换一套 grid-template-areas**（不增删元素）：
+ *   1×1 → 数值居中，名称作它下面的小字；
+ *   2×1 → 左侧图标，右侧上下两栏（数值 / 名称）；
+ *   2×2 → 左上图标 + 右侧名称，下方居中的数值与口径，最下一行进度。
+ * 信息页没有 data-size 祖先，落到基准那套（图标在左、数值在上、名称在下），既有观感不变。 */
+.stat-tiered {
+  display: grid;
+  grid-template-areas: "icon num" "icon label";
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0 12px;
+  min-width: 0;
+}
+.stat-tiered .stat-icon { grid-area: icon; }
+.stat-tiered .stat-label { grid-area: label; }
+.stat-tiered .stat-num { grid-area: num; }
+.stat-tiered .stat-cap { grid-area: cap; display: none; }
+.stat-tiered .stat-sub { grid-area: sub; display: none; }
+.stat-tiered .stat-cap,
+.stat-tiered .stat-sub {
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--text-3);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-size="1x1"] .stat-tiered {
+  grid-template-areas: "num" "label";
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+}
+[data-size="1x1"] .stat-tiered .stat-icon,
+[data-size="1x1"] .stat-tiered .stat-cap,
+[data-size="1x1"] .stat-tiered .stat-sub { display: none; }
+[data-size="1x1"] .stat-tiered .stat-num { font-size: var(--text-lg); line-height: 1.15; }
+
+[data-size="2x1"] .stat-tiered {
+  grid-template-areas: "icon num" "icon label";
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  gap: 0 8px;
+  padding: 12px;
+}
+[data-size="2x1"] .stat-tiered .stat-num { font-size: var(--text-xl); line-height: 1.1; }
+/* 少数卡片在 2×1 档也要多一行（如「今日预约」要带最近一条的时间与场馆）：
+   加 .stat-cap-2x1 修饰，把口径行放到图标右侧的第三行。 */
+[data-size="2x1"] .stat-tiered.stat-cap-2x1 { grid-template-areas: "icon num" "icon label" "icon cap"; align-content: center; }
+[data-size="2x1"] .stat-tiered.stat-cap-2x1 .stat-cap { display: block; }
+
+[data-size="2x2"] .stat-tiered {
+  grid-template-areas: "icon label" "num num" "cap cap" "sub sub";
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: start;
+  gap: 4px 8px;
+  padding: 12px;
+}
+[data-size="2x2"] .stat-tiered .stat-icon { width: 32px; height: 32px; }
+[data-size="2x2"] .stat-tiered .stat-label { align-self: center; }
+[data-size="2x2"] .stat-tiered .stat-num { justify-self: center; font-size: var(--text-xl); line-height: 1.1; }
+[data-size="2x2"] .stat-tiered .stat-cap { display: block; justify-self: center; }
+[data-size="2x2"] .stat-tiered .stat-sub { display: block; }
+
+/* ---------- 今日概览：4×1 三项计数 / 4×2 再给最近一条截止 / 4×4 再铺开今天前几节课 ---------- */
+.overview-tiered { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.overview-lines { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.overview-line { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.overview-line-title {
+  font-size: var(--text-xs); color: var(--text-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.overview-line-side { flex: 0 0 auto; font-size: var(--text-xs); color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+/* ---------- 学生卡：2×1 姓名+学号 / 4×1 再加院系（横向） / 4×2 三行分层 ---------- */
+.mine-student-tiered { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 12px; }
+.mine-student-tiered .mine-name {
+  font-size: var(--text-md); font-weight: 600; color: var(--text-1);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mine-student-meta { display: flex; flex-direction: column; min-width: 0; }
+.mine-student-tiered .mine-sid,
+.mine-student-tiered .mine-meta-value {
+  font-size: var(--text-xs); color: var(--text-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+[data-size="2x1"] .mine-student-tiered { align-items: center; justify-content: center; gap: 4px; padding: 8px; text-align: center; }
+[data-size="2x1"] .mine-student-tiered .mine-meta-value { display: none; }
+
+[data-size="4x1"] .mine-student-tiered { flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+[data-size="4x1"] .mine-student-tiered .mine-name { flex: 1 1 auto; }
+[data-size="4x1"] .mine-student-meta { flex: 0 0 auto; align-items: flex-end; }
+
+[data-size="4x2"] .mine-student-tiered { justify-content: center; gap: 8px; padding: 16px; }
+[data-size="4x2"] .mine-student-tiered .mine-name { font-size: var(--text-xl); }
+
+.balance-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--md-sys-color-surface-container-lowest);
+}
+.balance-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+.balance-label { font-size: 12px; color: var(--text-3); }
+.balance-value { font-size: 20px; font-weight: 700; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.balance-value-dim { font-size: var(--text-md); font-weight: 500; color: var(--text-2); }
+.balance-sep { width: 1px; background: var(--border-soft); }
+/* 余额速览 4×2（霖 2026-10-11 定稿）：上下两行，每行「左侧名称、右侧数值」 */
+.balance-strip.is-stacked { flex-direction: column; gap: 0; }
+.balance-row {
+  flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  border: 0; background: none; padding: 4px 0; cursor: pointer; text-align: left;
+  color: inherit; -webkit-tap-highlight-color: transparent;
+}
+.balance-hsep { height: 1px; flex: 0 0 auto; background: var(--border-soft); }
+
+.next-class { display: flex; flex-direction: column; gap: 4px; }
+.next-class-when { display: flex; align-items: baseline; gap: 8px; }
+.next-class-time {
+  font-size: var(--text-md); font-weight: 600; color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+}
+.next-class-left { font-size: var(--text-xs); color: var(--accent); }
+.next-class-name { font-size: var(--text-sm); color: var(--text-2); }
+.next-class-where { font-size: var(--text-xs); color: var(--text-3); }
+/* ---------- 白板组件（P1）：全部走主题令牌，不写死颜色 ---------- */
+.wg-title { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-1); }
+.wg-label { margin: 0; font-size: 12px; color: var(--text-2); }
+.wg-divider { border: 0; border-top: 1px solid var(--border); margin: 4px 0; }
+.wg-entry {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;
+  padding: 12px; border: 0; border-radius: var(--md-sys-shape-corner-medium, 12px);
+  background: var(--surface-2); color: var(--text-1); font-size: 14px; text-align: left;
+}
+.wg-entry:active { background: var(--surface-3); }
+/* 入口行的三个类此前没有样式（卡体用的类名与这里不一致，等于裸跑）。补齐并把说明与箭头收进右侧簇，
+   说明文字按宽度分档由 EntryCard 决定（4 宽完整 / 3 宽缩句 / 2 宽「进入」/ 1 宽不写）。 */
+.wg-entry-name { min-width: 0; font-size: 14px; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wg-entry-side { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 0 1 auto; }
+.wg-entry-hint { min-width: 0; font-size: 12px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wg-entry-chevron { flex: 0 0 auto; color: var(--text-3); }
+.wg-entry-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wg-entry-arrow { color: var(--text-3); }
+.wg-card { border-radius: var(--md-sys-shape-corner-medium, 12px); background: var(--surface-2); overflow: hidden; }
+/* 拉大组件之后：**内容自适应铺开**，而不是在多余的地方留一块空白表面（霖 2026-10-11）。
+   卡片本体铺满槽位；里面的列表（.list / 卡片内容区）跟着伸展——数据够就多显示几行，
+   不够就由卡片自己的表面色自然收尾，不再出现"被默认色填满"的那一块。 */
+.board-slot .wg-card,
+.board-slot .home-card { height: 100%; display: flex; flex-direction: column; }
+.board-slot .home-card-body,
+.board-slot .list,
+.board-slot .home-card-body > .list { flex: 1 1 auto; min-height: 0; overflow: auto; }
+/* 「第二层底色」修复（霖 2026-10-11 现场）：组件自带的卡片常常比槽位矮
+   （实测校园卡 68px vs 槽位 88px、成绩统计卡也短一截），下方就露出一条 .wg-card 的 surface 底，
+   看着像"卡片只占了上面 7/8"。让组件根节点**撑满槽位**，卡面自然铺满整格。
+   入口按钮（.wg-entry）不在此列：它是整行入口，撑满反而变形。 */
+.board-slot .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; }
+.wg-card-shell { display: flex; flex-direction: column; gap: 4px; padding: 12px; }
+.wg-card-title { font-size: 14px; font-weight: 600; color: var(--text-1); }
+.wg-card-hint { font-size: 12px; color: var(--text-3); }
+.wg-empty {
+  display: flex; flex-direction: column; gap: 4px; padding: 12px;
+  border: 1px dashed var(--border); border-radius: var(--md-sys-shape-corner-medium, 12px);
+}
+.wg-empty-title { font-size: 14px; color: var(--text-2); }
+.wg-empty-hint { font-size: 12px; color: var(--text-3); }
+
+/* ---------- 可收藏元素的包装（P1）：不改变原元素布局，只叠一层提示 ---------- */
+.collectable { display: contents; }
+.collectable-note {
+  position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%); z-index: 60;
+  padding: 8px 16px; border-radius: var(--md-sys-shape-corner-large, 16px);
+  background: var(--surface-3); color: var(--text-1); font-size: 12px;
+}
+
+/* ---------- 白板画布（P1 骨架）：4 基准单位列，单元格由文档绝对定位 ---------- */
+/* 行高固定为基准瓦片（88px，见 state/boardCore.ts 的 TILE_H）：高度单位因此有确定含义。
+   卡片内容高于其格子时**内部滚动**，不再把整板撑成内容高度。 */
+/* 注意：这里**不能**用 align-items: start——固定瓦片下它会按内容高度溢出轨道，
+   既不裁剪也不触发拟合（实测槽位变成 170/459/677 而非 88 的倍数）。
+   正确姿态是：槽位拉伸到轨道高度，超出内容由 .board-slot 的 overflow: auto 内部滚动。 */
+/* 宽屏（平板 / PC 宽窗）8 列：与 state/boardCore.colsForWidth 同一断点（840px）。
+   基准单位不变（1 单位 = 手机 1 列），所以同一份文档手机占满 4 格、平板占满 8 格。 */
+@media (min-width: 840px) {
+  .board-canvas { --board-cols: 8; }
+}
+.board-canvas { display: grid; grid-template-columns: repeat(var(--board-cols, 4), minmax(0, 1fr)); grid-auto-rows: 88px; gap: 8px; align-content: start; }
+.board-canvas .board-slot { overflow: auto; }
+/* 槽位始终不参与页面滚动：手势进行中改 touch-action 会被浏览器取消指针（实测会丢拖拽）。
+   代价是本页不能靠拖动卡片来滚动，滚动走画布空白与列间隙。 */
+/* 触摸策略（霖 2026-10-11 现场）：槽位允许纵向滚动（拖组件也能翻页），
+   只有**长按武装后的拖拽**才会用非被动 touchmove 把这次手势接管过来。
+   早前写死 none，导致"落点在组件上就滑不动"。 */
+.board-canvas .board-slot { touch-action: pan-y; }
+.board-canvas.is-dragging .board-slot { touch-action: none; }
+/* 拖拽期间：让位项走 --dur-2/--ease-spring（与侧栏排位同一套），被拖项 1:1 跟手不补间。
+   之前两者都没写，位移每次都在补间里抖，就是"抽搐"的一半来源。 */
+.board-canvas.is-dragging .board-slot { transition: transform var(--dur-2) var(--ease-spring); }
+.board-canvas.is-dragging .board-slot.is-lifted { transition: none; }
+.board-slot { min-width: 0; min-height: 56px; }
+
+/* ---------- 白板编辑态（P1）：点阵背景 + 组件略缩露出点阵 ---------- */
+/* 编辑态**不加 padding**：会给所有条目带来 16px 的宽度差，于是「正常模式复刻不了编辑模式的布局」
+   （霖 2026-10-11 实测：3 列条目 267→255、4 列 358→342）。点阵背景靠 background-position 对齐即可。 */
+.board-canvas.is-editing {
+  min-height: 100%;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 16px 16px;
+  background-position: 0 0;
+}
+/* 编辑态的视觉提示**不用 transform**：拖拽时让位是 JS 写内联 transform，
+   CSS 再给一个 scale + 140ms 过渡就会互相覆盖并对每次让位做补间 ——
+   表现就是「背景上的项来回上下动」（霖 2026-10-11）。编辑态改用点阵背景与虚线提示。 */
+/* 编辑态不再给每个槽位画虚线：满屏虚线会让落点虚影看不出来（霖 2026-10-11）。
+   编辑态的提示由点阵背景承担。 */
+.board-slot.is-pinned { outline: 1px dashed var(--border); outline-offset: 2px; }
+.board-drawer {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 16px; border-radius: var(--md-sys-shape-corner-large, 16px) var(--md-sys-shape-corner-large, 16px) 0 0;
+  background: var(--surface-3); box-shadow: 0 -8px 24px var(--md-sys-color-scrim);
+}
+.board-drawer-title { font-size: 14px; color: var(--text-1); }
+.board-drawer-input {
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--md-sys-shape-corner-medium, 12px);
+  background: var(--surface); color: var(--text-1); font-size: 14px;
+}
+.board-drawer-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.board-note {
+  position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%); z-index: 60;
+  padding: 8px 16px; border-radius: var(--md-sys-shape-corner-large, 16px);
+  background: var(--surface-3); color: var(--text-1); font-size: 12px;
+}
+
+/* ---------- 拖拽态：手拿的不变、其余只淡出 ----------
+   霖 2026-10-11：① 背景要保持**清晰**，模糊会让落点难判断；② 这里原来还有 `transform: scale(0.94)`，
+   而让位是 JS 直接写**内联** transform——两条规则互相覆盖，表现就是「背景上的项来回上下动」。
+   因此拖拽态只动 opacity，transform 一律交给 JS。 */
+/* 让位项：**位移走侧栏同款弹簧**（--dur-2/--ease-spring），外加淡出。
+   注意：这条规则会覆盖前面那条只写 transform 的过渡，所以两个属性必须写在同一条里
+   ——原来这里只写 `transition: opacity`，把弹簧过渡吃掉了，让位就变成瞬移（霖 2026-10-11）。 */
+.board-canvas.is-dragging .board-slot:not(.is-lifted) {
+  opacity: 0.72;
+  transition: transform var(--dur-2) var(--ease-spring), opacity 160ms var(--ease-out);
+}
+/* 手拿的那张：**半透明**，好让你看清它盖住的是什么（霖 2026-10-11）；
+   且不许有过渡——它要 1:1 跟手（侧栏内核的第一条坑）。 */
+.board-canvas.is-dragging .board-slot.is-lifted { z-index: 5; opacity: 0.6; filter: none; transition: none; }
+/* 编辑态下拖拽不能被浏览器当成滚动接管（方案 §6.4）：
+   不加这条时，垂直为主的拖动会触发 pointercancel，表现为「整页在滑动、组件没动」。 */
+/* 编辑态也要能翻页：拦截只发生在「长按武装后」，由 JS 的非被动 touchmove 负责
+   （霖 2026-10-11：落点在组件上就滑不动）。 */
+.board-canvas.is-editing .board-slot { touch-action: pan-y; }
+/* 四边把手（编辑态）：需求原文「上下左右四个拖拽点」 */
+/* 槽位内纵向排布：矮组件（分割线/文字）**居中**，而不是贴在整行顶端（霖 2026-10-11）；
+   卡片类仍然填满整格。 */
+.board-slot { position: relative; display: flex; flex-direction: column; }
+.board-slot > * { flex: 1 1 auto; min-height: 0; }
+.board-slot > .wg-divider,
+.board-slot > .wg-title,
+.board-slot > .wg-label { flex: 0 0 auto; margin-block: auto; }
+.board-handle { position: absolute; z-index: 6; touch-action: none; background: var(--accent); border-radius: 8px; opacity: 0.85; }
+/* 热区 44px（移动端最小可点尺寸），可见细条由 ::after 画在内侧——
+   8px 的细条真手指点不中，这是「调大小拖不动」的直接原因。 */
+.board-handle { background: transparent; opacity: 1; }
+.board-handle::after { content: ""; position: absolute; background: var(--accent); border-radius: 8px; opacity: 0.85; }
+/* 命中区**完整落在槽位内部**（原来跨在边缘上 -20px，与相邻槽位的把手完全重叠，
+   谁在 DOM 后面谁赢 → 表现为「拖左边动右边 / 拖上边动下边」，霖 2026-10-11）。
+   可见细条仍贴着边缘，所以看上去还是「四边的拖拽点」。 */
+.board-handle.h-n { left: 50%; top: 0; width: 48px; height: 24px; margin-left: -24px; }
+.board-handle.h-n::after { left: 12px; right: 12px; top: 4px; height: 8px; }
+.board-handle.h-s { left: 50%; bottom: 0; width: 48px; height: 24px; margin-left: -24px; }
+.board-handle.h-s::after { left: 12px; right: 12px; bottom: 4px; height: 8px; }
+.board-handle.h-e { right: 0; top: 50%; width: 24px; height: 48px; margin-top: -24px; }
+.board-handle.h-e::after { top: 12px; bottom: 12px; right: 4px; width: 8px; }
+.board-handle.h-w { left: 0; top: 50%; width: 24px; height: 48px; margin-top: -24px; }
+.board-handle.h-w::after { top: 12px; bottom: 12px; left: 4px; width: 8px; }
+/* 添加组件面板（P2）：底部面板，列出组件目录 */
+.board-sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 75;
+  display: flex; flex-direction: column; gap: 8px; max-height: 72vh; padding: 16px;
+  border-radius: var(--md-sys-shape-corner-large, 16px) var(--md-sys-shape-corner-large, 16px) 0 0;
+  background: var(--surface-3); box-shadow: 0 -8px 24px var(--md-sys-color-scrim);
+}
+.board-sheet-head { display: flex; align-items: center; justify-content: space-between; }
+.board-sheet-title { font-size: 16px; color: var(--text-1); }
+.board-sheet-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.board-sheet-row {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start; width: 100%;
+  padding: 12px; border: 0; border-radius: var(--md-sys-shape-corner-medium, 12px);
+  background: var(--surface-2); color: var(--text-1); text-align: left;
+}
+.board-sheet-row-title { font-size: 14px; }
+.board-sheet-row-desc { font-size: 12px; color: var(--text-3); }
+/* 收藏夹列表（P2 §7.9） */
+.board-list { display: flex; flex-direction: column; gap: 8px; }
+.board-list-row {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start; width: 100%;
+  padding: 12px; border: 0; border-radius: var(--md-sys-shape-corner-medium, 12px);
+  background: var(--surface-2); color: var(--text-1); text-align: left;
+}
+.board-list-row.is-active { outline: 1px solid var(--accent-border); }
+.board-list-name { font-size: 14px; }
+.board-list-meta { font-size: 12px; color: var(--text-3); }
+.board-list-actions { display: flex; justify-content: flex-end; padding: 8px 0; }
+/* 空板引导的模板按钮（P2.5） */
+.board-tpl-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px 0 0; }
+/* 导航栏编辑行（P2 导航集成） */
+.nav-edit-row { display: flex; align-items: center; gap: 8px; }
+.nav-edit-name { flex: 1; font-size: 14px; color: var(--text-1); }
+/* 白板上的独立数字卡（「我的」页发布卡体，P1 昂贵档） */
+.mine-stat-standalone { display: flex; flex-direction: column; gap: 4px; padding: 8px; }
+/* 白板上的学生卡（「我的」页发布卡体） */
+.mine-student-standalone { display: flex; flex-direction: column; gap: 4px; padding: 8px; }
+/* 落点虚影：拖拽时显示松手后的落位（虚线描边，不拦截指针） */
+.board-ghost {
+  grid-column: 1 / span 1; grid-row: 1 / span 1;
+  border: 2px dashed var(--accent); border-radius: var(--radius-md, 12px);
+  background: var(--accent-soft); opacity: 0.5;
+  pointer-events: none; z-index: 2; display: none;
+}
+/* ---------- 添加组件抽屉（HyperOS 观感） ---------- */
+/* 恒为页面一半高，且**避开底栏**（--bottom-nav-h 由 Layout 实测写入） */
+.add-drawer {
+  position: fixed; left: 0; right: 0; bottom: var(--bottom-nav-h, 0px); height: 50vh;
+  /* z-index 低于底栏（60）：滑动时被导航栏挡住，看起来是"从导航栏上边缘钻出来" */
+  z-index: 55;
+  display: flex; flex-direction: column; padding: 4px 16px calc(16px + var(--dock-clearance, 0px));
+  border-radius: 16px 16px 0 0; background: var(--md-sys-color-surface-container-lowest);
+  box-shadow: 0 -8px 24px var(--md-sys-color-scrim);
+  animation: add-drawer-in var(--dur-3) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+/* 展开态要放循环卡片流，比总览高一档；底部为 OH 悬浮岛让位
+   （「聊点什么吧」胶囊会压住确认按钮，重叠量由 JS 量出写进 --dock-clearance） */
+.add-drawer.is-detail { height: 60vh; }
+.add-drawer.is-out { animation: add-drawer-out var(--dur-2) var(--md-sys-motion-easing-standard-accelerate) forwards; }
+@keyframes add-drawer-in { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes add-drawer-out { from { transform: translateY(0); } to { transform: translateY(100%); } }
+/* 下拉手柄：HyperOS 标志性交互（miuix 的 OverlayBottomSheet 也支持拖拽关闭） */
+.add-drawer-grip { display: flex; justify-content: center; padding: 4px 0 8px; touch-action: none; cursor: grab; }
+.add-drawer-grip-bar { width: 40px; height: 4px; border-radius: 2px; background: var(--text-3); opacity: 0.6; }
+
+.add-overview { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; gap: 8px; }
+.add-overview-head { display: flex; align-items: center; justify-content: space-between; }
+.add-overview-title { font-size: 16px; color: var(--text-1); }
+/* 总览：两列网格卡片 */
+.add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; overflow-y: auto; padding-bottom: 8px; }
+.add-card {
+  position: relative; display: flex; flex-direction: column; align-items: stretch; height: 136px; overflow: hidden;
+  padding: 8px; border: 0; border-radius: 12px; background: var(--surface-2); color: var(--text-1); text-align: left;
+}
+.add-card:active { transform: scale(0.98); }
+/* 卡片左上角标注组件名称 */
+.add-card-name {
+  position: absolute; left: 8px; top: 8px; z-index: 1; font-size: 14px; font-weight: 600;
+  padding: 0 4px; border-radius: 6px; background: var(--surface-2);
+}
+.add-preview-box { position: relative; flex: 1 1 auto; width: 100%; min-height: 0; overflow: hidden; border-radius: 8px; background: var(--surface-3); }
+.add-preview-inner { position: absolute; left: 0; top: 0; transform-origin: top left; }
+.add-preview-sample { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
+.add-preview-sample-title { font-size: 14px; font-weight: 600; color: var(--text-2); }
+/* 占位条必须与预览盒底色**有对比**：两者原先同为 --surface-3，整条看不见（霖 2026-10-11：预览只剩名称）。 */
+.add-preview-sample-row { height: 12px; border-radius: 6px; background: var(--surface-2); }
+.add-preview-sample-row.is-short { width: 60%; }
+.add-preview-sample-num { font-size: 20px; font-weight: 600; color: var(--text-1); }
+
+/* 展开态：标题在左上角、简介在其下方、预览居中放大、底部「添加」 */
+.add-detail { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; gap: 8px; }
+.add-detail-head { display: flex; flex-direction: column; gap: 4px; }
+.add-detail-name { font-size: 20px; font-weight: 600; color: var(--text-1); }
+.add-detail-desc { font-size: 12px; color: var(--text-3); }
+.add-detail-body { flex: 1 1 auto; min-height: 0; display: flex; overflow: hidden; }
+.add-detail-body .add-preview-box { width: 100%; height: 100%; }
+/* 确认键固定画在档位区之上：即使两者盒子有 1px 级重叠，也不会被档位区/指示栏抢走这一次点按。 */
+.add-detail-add { position: relative; z-index: 2; width: 100%; }
+/* FLIP 过渡的自由阶段：清掉起点 transform 时走这条曲线 */
+.add-detail.is-flying .add-detail-head,
+.add-detail.is-flying .add-preview-box { transition: transform var(--dur-3) var(--ease-spring); }
+/* 预览：居中显示、不可点击（点卡片即可，不能让它跳转到真实页面） */
+.add-preview-box { pointer-events: none; }
+.add-preview-inner { position: absolute; left: 50%; top: 50%; transform-origin: center; }
+/* 展开态里包 FLIP ref 的那层必须自己有尺寸，否则 height:100% 的预览会塌成 0（霖 2026-10-11：展开后组件消失） */
+.add-detail-preview { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; }
+.add-detail-preview .add-preview-box { width: 100%; height: 100%; }
+/* ---------- 尺寸档位选择（霖 2026-10-11：循环卡片流，观感与动效对齐待办页的作业卡片） ----------
+ * 前台一张放大卡、左右各一张缩小卡、列表循环、底部点状指示栏。
+ * 卡片外观与 .hw-card 同一套：1px 描边 + 16px 圆角 + surface 底 + 阴影；
+ * 选中态（= 前台卡）用强调色描边、强调底色与对勾表达。位置/缩放/透明度由 JS 逐帧写内联样式。 */
+.add-detail-kicker { font-size: 12px; color: var(--text-3); }
+.add-detail-free { display: flex; flex-direction: column; gap: 8px; width: 100%; min-height: 0; flex: 1 1 auto; }
+.add-detail-free .add-detail-preview { flex: 1 1 auto; min-height: 0; }
+.add-detail-hint { font-size: 12px; color: var(--text-3); }
+/* 竖排三段：标题行 / 卡片流 / 指示栏。卡片流是唯一可伸缩的一段，
+   指示栏与标题行固定高度 —— 这样空间不足时被压的是卡片流（由它自己的 overflow 裁掉），
+   指示栏永远露在确认按钮上方（霖 2026-10-11：圆点被确认按钮挡住）。 */
+.widget-size-picker { display: flex; flex-direction: column; gap: 8px; width: 100%; height: 100%; min-height: 0; overflow: hidden; }
+.widget-size-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.widget-size-head-title { font-size: var(--text-sm); font-weight: 600; color: var(--text-2); }
+.widget-size-head-cur { font-size: 12px; color: var(--accent); font-variant-numeric: tabular-nums; }
+/* 卡片流容器：溢出裁掉，横向手势全部交给自己（纵向留给抽屉） */
+.widget-size-carousel { position: relative; flex: 1 1 auto; min-height: 0; width: 100%; overflow: hidden; touch-action: none; }
+.widget-size-item {
+  position: absolute; left: 50%; top: 50%;
+  width: min(72%, 320px); height: 156px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 12px; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--md-sys-color-surface-container-lowest); box-shadow: var(--shadow-1);
+  color: var(--text-2); text-align: center;
+  /* 只过渡颜色：transform 由 JS 逐帧写内联值，带过渡会与补间打架（滚筒注释里点名的坑） */
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+.widget-size-item.is-active {
+  border-color: var(--accent); background: var(--accent-soft); box-shadow: var(--shadow-2); color: var(--text-1);
+}
+/* 拖拽中不要颜色过渡（跟手时不该有延迟感） */
+.widget-size-carousel.is-dragging .widget-size-item { transition: none; }
+/* 每档一个固定方框：档位越大，里面的预览越高/越宽，比例即真实占格比例 */
+.widget-size-frame { display: flex; align-items: center; justify-content: center; width: 116px; height: 116px; flex: 0 0 auto; }
+.widget-size-box { position: relative; display: block; overflow: hidden; border-radius: 8px; background: var(--surface-3); }
+.widget-size-inner { position: absolute; left: 0; top: 0; transform-origin: top left; }
+.widget-size-inner .wg-card { height: 100%; display: flex; flex-direction: column; }
+/* 预览与白板同一条撑满规则：否则预览里也会出现同样的"卡片只占 7/8" */
+.widget-size-inner .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; }
+.widget-size-meta { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.widget-size-caption { font-size: var(--text-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.widget-size-check { display: none; color: var(--accent); font-weight: 700; }
+.widget-size-item.is-active .widget-size-check { display: inline; }
+/* 底部点状指示栏：当前档位用强调色并放大 */
+/* 指示栏：固定的 14px 高度（6px 点 + 上下各 4px 留白），当前点 scale(1.6) 之后也不会溢出到按钮底下；
+   抬一层 z-index，即使与确认按钮的盒子有 1px 级重叠也画在它上面（霖 2026-10-11：圆点下沿被遮住一点）。 */
+.widget-size-dots { display: flex; align-items: center; justify-content: center; gap: 8px; flex: 0 0 auto; min-height: 14px; padding: 4px 0; position: relative; z-index: 1; }
+.widget-size-dot {
+  width: 6px; height: 6px; padding: 0; border: 0; border-radius: 50%;
+  background: var(--text-3); opacity: 0.45;
+  transition: transform 0.2s, background-color 0.2s, opacity 0.2s;
+}
+.widget-size-dot.is-cur { background: var(--accent); opacity: 1; transform: scale(1.6); }
+/* 手机档有一条全局 button:not(.switch):not(.plg-switch) { min-height: 36px }，优先级 (0,2,1)：
+   只用类名压不住，圆点会被纵向拉成 6×36 的椭圆（霖 2026-10-11 现场：
+   「圆点指示全被纵向拉伸成了离心率极大的椭圆形」）。这里用属性选择器把优先级抬到 (0,3,1)。 */
+.widget-size-dots[data-size-dots] button.widget-size-dot { min-width: 0; min-height: 0; }
+/* ---------- 按档位排版的选择器钩子 ----------
+ * 槽位带 data-widget="custom:<id>" 与 data-size="<w>x<h>"，组件可按档位写专门排版，例如：
+ *   .board-slot[data-widget="custom:mine-gpa"][data-size="1x1"] .mine-stat-label { display: none; }
+ * 卡体渲染器也能拿到第二个参数（当前档位尺寸），需要换结构（而不是只改样式）时用它。 */
+/* 示例骨架的几种样子（按组件类型） */
+.add-preview-sample.is-divider { justify-content: center; }
+.add-preview-sample-divider { height: 1px; background: var(--border); }
+.add-preview-sample-h1 { font-size: 16px; font-weight: 600; color: var(--text-1); }
+.add-preview-sample-label { font-size: 14px; color: var(--text-2); }
+.add-preview-sample-entry { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.add-preview-sample-entry-name { font-size: 14px; color: var(--text-1); }
+.add-preview-sample-chevron { color: var(--text-3); }
+/* 抽屉的内层：承担拖拽位移（外层只负责入场动画） */
+.add-drawer-inner { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; gap: 8px; touch-action: pan-y; }
+/* 抽屉打开期间锁住页面滚动：否则手势穿透，整个画面跟着位移 */
+html.is-sheet-open .content { overflow: hidden; }
+/* 减弱动效：抽屉的入场/出场与 FLIP 一起关掉（skill 的硬规则：减弱动效随动画交付）。 */
+@media (prefers-reduced-motion: reduce) {
+  .add-drawer, .add-drawer.is-out { animation: none; }
+  .add-detail.is-flying .add-detail-head,
+  .add-detail.is-flying .add-preview-box { transition: none; }
+}
+/* 抽屉遮罩：点上方空白收回。z=54 在底栏（60）之下——既不压暗导航栏，也不挡它的点击。 */
+.add-drawer-mask { position: fixed; inset: 0; z-index: 54; background: var(--md-sys-color-scrim); opacity: 0.32; }
+/* 滚动锁扩到根元素：只锁 .content 时，某些外壳下滚动的其实是 html/body（霖 2026-10-11 仍能滚动）。 */
+html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
+/* 紧凑卡体（入口型/信息型组件在卡内直接显示信息，而不是跳转入口） */
+.wg-card-rows { display: flex; flex-direction: column; gap: 0; }
+.wg-card-rows > * { flex: 0 0 auto; }
+.wg-card-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-3); font-size: var(--text-sm); }
+/* 成绩明细的元素级卡体（口径 B，与信息页 ReportTab 同源） */
+.wg-card-subhead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 8px 12px 4px; font-size: 12px; font-weight: 600; color: var(--text-1); }
+.wg-card-subhead-side { font-size: 12px; font-weight: 400; color: var(--text-3); }
+.wg-card-line { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--border); }
+.wg-card-line-name { font-size: 12px; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wg-card-line-side { flex: 0 0 auto; font-size: 12px; color: var(--text-2); }
+/* 「具体项」选择器（复用抽屉的容器样式，只补搜索框与列表行） */
+.picker-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.picker-title { font-size: 16px; color: var(--text-1); }
+.picker-search { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text-1); font-size: 14px; }
+.picker-list { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; min-height: 0; flex: 1 1 auto; }
+.picker-row { display: flex; flex-direction: column; align-items: flex-start; gap: 0; width: 100%; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--surface-2); color: var(--text-1); text-align: left; }
+/* 选中态用主题色底，不用手写描边（仓库约定：焦点环统一走令牌）。 */
+.picker-row.is-current { background: var(--accent-soft); }
+.picker-row-label { font-size: 14px; }
+.picker-row-sub { font-size: 12px; color: var(--text-3); }
+
+/* ---------- 下一节课（白板卡）：档位排版 + 一节进度条 ---------- */
+.next-class-tiered { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.next-class-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.next-class-bar { display: block; height: 4px; border-radius: 2px; background: var(--border-soft); overflow: hidden; }
+.next-class-bar > i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+
+/* 1×1 只给倒计时；2×1 加课名；4×2 全给（时间、地点、进度条） */
+[data-size="1x1"] .next-class-tiered { align-items: center; justify-content: center; }
+[data-size="1x1"] .next-class-tiered .next-class-time,
+[data-size="1x1"] .next-class-tiered .next-class-name,
+[data-size="1x1"] .next-class-tiered .next-class-where,
+[data-size="1x1"] .next-class-tiered .next-class-bar { display: none; }
+[data-size="2x1"] .next-class-tiered .next-class-where,
+[data-size="2x1"] .next-class-tiered .next-class-bar { display: none; }
+
+
+/* ---------- 长按/右键浮层菜单（ContextMenu）：白板的组件菜单与顶栏「···」都用它 ---------- */
+.ctx-blur {
+  --ctx-blur-r: 4px; /* 霖 2026-10-02 #4：原先 7px + scrim 55% 太糊，收到 4px；批次 5 底色再减半到 17% */
+  position: fixed;
+  inset: 0;
+  /* 压在顶栏（30）/底栏（60）之上、菜单（2400）与命令面板（2500）之下 */
+  z-index: 2390;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--md-sys-color-scrim) 17%, transparent);
+  -webkit-backdrop-filter: blur(var(--ctx-blur-r));
+  backdrop-filter: blur(var(--ctx-blur-r));
+  /* 霖 2026-10-02 批次 5：曲线换成 MD3 standard-accelerate——慢入、快出；
+     批次 6 把时长收短：进/出都回到 200ms（之前 420/320 拉太长，慢入段在长时长里像「没动」）。
+     与 JS 的 BLUR_OUT_MS 必须对齐（护栏会比对这两个数）。 */
+  animation: ctx-blur-in 200ms var(--md-sys-motion-easing-standard-accelerate) both;
+}
+.ctx-blur.is-out { animation: ctx-blur-out 200ms var(--md-sys-motion-easing-standard-accelerate) both; }
+/* 出现/退场都带模糊半径渐变（0 → r → 0），不是「啪」一下到位 */
+@keyframes ctx-blur-in {
+  from { opacity: 0; -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px); }
+  to { opacity: 1; -webkit-backdrop-filter: blur(var(--ctx-blur-r)); backdrop-filter: blur(var(--ctx-blur-r)); }
+}
+@keyframes ctx-blur-out {
+  from { opacity: 1; -webkit-backdrop-filter: blur(var(--ctx-blur-r)); backdrop-filter: blur(var(--ctx-blur-r)); }
+  to { opacity: 0; -webkit-backdrop-filter: blur(0px); backdrop-filter: blur(0px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-ctx-press][data-ctx-press],
+  [data-ctx-press].hw-card { transition: none; }
+  .ctx-blur, .ctx-blur.is-out { animation: none; }
+}
+
+/* ── A3 长按菜单（移动端对应 PC 右键）────────────────────────────────────────
+   portal 到 body + fixed，以按点为锚四边夹紧（夹紧算在组件里，CSS 只管样子）。
+   没有遮罩：与微信一致，长按菜单是弹出层而不是模态，点外面或滚动即关。
+   z-index 取在命令面板（2500）之下、其余浮层之上。 */
+.ctx-menu {
+  position: fixed;
+  z-index: 2400;
+  min-width: 148px;
+  max-width: min(80vw, 280px);
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  /* 毛玻璃（霖 2026-09-30 #3：不必复刻 liquid glass 的着色器，背景给毛玻璃即可；
+     霖 2026-10-01 #6：面板再透一些——74% → 56%，同时把背景糊得更狠一点保住可读性） */
+  /* 兜底（无 color-mix）：不透明面板，老引擎长按菜单的文字不被底图干扰 */
+  background: var(--md-sys-color-surface-container-lowest);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 56%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6);
+  backdrop-filter: blur(22px) saturate(1.6);
+  border-color: color-mix(in srgb, var(--border) 60%, transparent);
+  box-shadow: var(--shadow-3);
+  /* 霖 2026-10-01 #3：弹出动画加快——520ms → --dur-3（300ms），曲线仍烘在关键帧里，缓动必须 linear */
+  animation: ctx-bloom var(--dur-2) var(--ease-out) both;
+  outline: none;
+}
+.ctx-title {
+  padding: 8px 12px 4px;
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+/* reduced-motion：直接显示（JS 侧加 .is-still，CSS 侧再兜一层，两边独立成立） */
+/* 霖 2026-10-02 第四批 #2：离场也有动画（180ms，与 JS 的 MENU_OUT_MS 对齐）。
+   长按菜单与「···」菜单是同一个本体，一处生效两处都有；离场期间不吃点击。 */
+.ctx-menu.is-out {
+  animation: ctx-menu-out 180ms var(--md-sys-motion-easing-standard-accelerate) both;
+  pointer-events: none;
+}
+@keyframes ctx-menu-out {
+  from { opacity: 1; scale: 1; }
+  to { opacity: 0; scale: 0.94; }
+}
+.ctx-menu.is-still,
+.ctx-menu.is-still .ctx-item { animation: none; }
+.ctx-menu.is-still.is-out { animation: ctx-menu-out 1ms linear both; }
+@media (prefers-reduced-motion: reduce) {
+  .ctx-menu,
+  .ctx-item { animation: none; }
+}
+.ctx-item .ctx-icon { display: flex; flex: none; color: var(--text-3); }
+.ctx-item.is-danger { color: var(--red); }
+.ctx-item.is-danger .ctx-icon { color: var(--red); }
+.ctx-item.is-active { background: var(--hover); }
+/* G1：条件不可用（刷新中）——置灰仍可聚焦，点了不生效（onClick 里挡） */
+.ctx-item.is-disabled { color: var(--text-3); opacity: 0.6; }
+.ctx-item.is-disabled .ctx-icon { color: var(--text-3); }
+.ctx-panel { padding: 4px; }
+/* 提醒档位面板复用 HwRemindPop（与卡片铃铛同一套预设与 store）：它原本是绝对定位的
+   浮层，嵌进菜单后改成流内布局，去掉自己的边框与投影，避免层里套层 */
+.ctx-panel .hwremind-pop {
+  position: static;
+  width: auto;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  animation: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ctx-item:hover { background: var(--hover); }
+}
+/* D9：面板从小液团长成面板（模仿 liquid_glass_widgets 的 Liquid Morph Engine，不用它的着色器）。
+   三条轨迹与它同源——位置走 back-out J 曲线（amplitude 2.5，峰值过冲 18.9% 后在 58% 处收）、
+   尺寸走 easeOut（线性起步、尾巴长）、圆角从半宽（液团是正圆）按 easeInExpo 收拢到标准圆角；
+   弹簧参数 stiffness 120 / damping 16（ζ≈0.73、ω₀≈11 rad/s）折合约 520ms 收住。
+   全程只动 transform / opacity / clip-path——不碰 width/height，不触发布局。 */
+/* 霖 2026-10-08 第 3 条：入场收敛到设计语言。旧版是「按点上的 48px 小液团长成面板」——
+   位移 + 缩放(48/w) + 圆角从半宽收拢，再沿 back-out 曲线冲过目标 4px 回弹；面板不是被甩出去的
+   东西，过冲与液团形变都属「浮夸」。现在只留：按按点为原点的小幅缩放 0.96→1 + 淡入，
+   200ms（--dur-2）ease-out。方向感仍由 transform-origin（按点那一角）承担。 */
+@keyframes ctx-bloom {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ---------- 顶栏「···」（页面级操作菜单）：与左上角汉堡键同款尺寸与底色 ---------- */
+.topbar-more {
+  height: 34px;
+  width: 34px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--surface-3);
+  color: var(--text-1);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: none;
+  margin-left: auto;
+}
+.topbar-more:active { transform: scale(0.94); }

@@ -4,11 +4,12 @@
  * 场景：home / tabs / drawer / onego / overlay / overlay-oh / search / ctxmenu
  * 与 ?searchland=selfcheck 同一惯例：不进导航、不进产物。
  */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { focusTab, openSettings, openTab } from "../../state/explorer.js";
 import { openTabDrawer } from "./TabDrawer.js";
 import { openOneGoSheet } from "./OneGoSheet.js";
 import { requestOhPanel } from "../../plugins/ohControl.js";
+import { useDockUi } from "../../plugins/ChatDock.js";
 
 const SCENARIOS: Record<string, () => void> = {
   home: () => focusTab("home"),
@@ -25,6 +26,11 @@ const SCENARIOS: Record<string, () => void> = {
   onego: () => window.setTimeout(openOneGoSheet, 250),
   overlay: () => window.setTimeout(() => openSettings("settings"), 250),
   "overlay-oh": () => window.setTimeout(() => openSettings("oh"), 250),
+  "overlay-plugins": () => window.setTimeout(() => openSettings("plugins"), 250),
+  "home-scrolled": () => {
+    SCENARIOS.tabs!();
+    window.setTimeout(() => window.scrollTo(0, 420), 700);
+  },
   search: () => window.setTimeout(() => requestOhPanel("search", "音色"), 350),
   "search-oh": () => window.setTimeout(() => {
     requestOhPanel("search", "音色");
@@ -44,13 +50,26 @@ const SCENARIOS: Record<string, () => void> = {
 
 
 export function ExplorerPreview(): null {
+  /* 面板开合整流（事件驱动）：useDockUi 观察到 open=true 就发同模式命令（无预填=收起），
+     归零后才跑场景；彻底关不掉 900ms 兜底放行。不依赖对 localStorage 的外部操作。 */
+  const ui = useDockUi();
+  const [settled, setSettled] = useState(!ui.open);
   useEffect(() => {
+    if (ui.open && !settled) {
+      requestOhPanel(ui.mode || "oh"); // 同模式无预填 = ChatDock 收窗
+      const t = window.setTimeout(() => setSettled(true), 900);
+      return () => window.clearTimeout(t);
+    }
+    if (!ui.open && !settled) setSettled(true);
+    return undefined;
+  }, [ui.open, ui.mode, settled]);
+  useEffect(() => {
+    if (!settled) return;
     const s = new URLSearchParams(window.location.search).get("explorer-preview") ?? "home";
     const t = window.setTimeout(() => SCENARIOS[s]?.(), 200);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [settled]);
   return null;
 }
 
-/* lazy() 需要 default 导出（named 导出供场景表内部引用） */
 export default ExplorerPreview;

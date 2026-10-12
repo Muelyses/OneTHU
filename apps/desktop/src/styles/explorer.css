@@ -80,7 +80,8 @@
 }
 .settings-panel.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
 @media (min-width: 841px) {
-  .settings-panel { width: min(560px, 46vw); border-left: 1px solid var(--border); }
+  /* 用户截屏「挤挤挤」：560/46vw 装全宽版心设计的页面必叠字——加宽到 680/54vw */
+  .settings-panel { width: min(680px, 54vw); border-left: 1px solid var(--border); }
 }
 .settings-head {
   display: flex;
@@ -129,8 +130,14 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
-/* 设置页/插件页在浮层内的左右留白（页面本体假定有 .content 的版心） */
-.explorer-settings-body .page-body { padding: 12px 14px 24px; }
+/* 设置页/插件页在浮层内的留白：页面本体是 fragment（PageHead/分节直接散开），
+   padding 直接给滚动容器——任何页面.root 结构都吃得到 */
+.explorer-settings-body { padding: 14px 16px 24px; }
+/* 用户截屏「挤挤挤」防御：浮层里的插件卡动作行/状态行不许逐字竖排 */
+.explorer-settings-body .plg-state { white-space: nowrap; }
+.explorer-settings-body .plg-state-sub { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.explorer-settings-body .plg-ops { white-space: nowrap; }
+.explorer-settings-body .plg-name, .explorer-settings-body .plg-ver, .explorer-settings-body .plg-kind { white-space: nowrap; }
 
 /* ══════════ 桌面/横屏（≥841px）：三入口栏顶置——「真正长得像电脑浏览器」 ══════════
    ex-bbar 进文档流排到最前（flex order -1，explorer-shell 是纵向 flex）；标签条在其下；

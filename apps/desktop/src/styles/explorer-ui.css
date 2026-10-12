@@ -577,18 +577,22 @@
   position: absolute;
   left: 2px; /* 与 .ex-tabstrip 的 margin 0 2px 对齐 */
   right: 2px;
-  bottom: -6px; /* 落在标签条底边外侧一拍（不压在标签底上），仍在顶栏 46px 之内 */
-  height: 3px;
-  pointer-events: none;
+  bottom: -8px; /* 轨道命中区 8px，落在标签底外侧、顶栏之内 */
+  height: 8px;
+  cursor: pointer;
+  touch-action: none;
 }
 .ex-tabstrip-indi i {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 0;
-  height: 3px;
+  height: 4px;
+  min-width: 24px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--text-1) 18%, transparent);
+  background: color-mix(in srgb, var(--text-1) 22%, transparent);
+  pointer-events: none;
 }
+.ex-tabstrip-indi:hover i { background: color-mix(in srgb, var(--text-1) 36%, transparent); }
 
 
 /* ── ⑨ 首页星标：home 前的特殊存在（未收藏描边灰，点亮填色） ── */

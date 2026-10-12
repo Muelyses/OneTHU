@@ -68,17 +68,6 @@ const OVERLAY_PAGES: ReadonlySet<string> = new Set(["settings", "plugins"]);
 function isSingletonPage(page: Page): boolean {
   return page.startsWith("plugin:");
 }
-/**
- * 实例身份的**排除参数**：栏目/视图/返回目标类参数不参与实例判定
- * （「信息-新闻」和「信息-成绩」是同一个信息 tab 的两次视图，不是两个实例；
- *  用户口径：tab 主题不变，栏内可切换）。
- */
-const NON_INSTANCE_PARAMS: ReadonlySet<string> = new Set([
-  "infoTab", "lifeTab", "reserveTab", "courseTab", "from", "semesterId",
-  "bbsBoard", "learnOpenHwRemind", "mailCompose", "infoNewsQuery",
-  "dormSection", "newsSubSource",
-]);
-
 /* ══════════ 模块级 store ══════════ */
 
 let state: ExplorerState = loadStore();
@@ -161,15 +150,15 @@ export function activeTabId(): string {
 /* ══════════ 实例身份（复用/复制的判定核心） ══════════ */
 
 /**
- * 同一工作实例的稳定键：page + 排序后的实体参数串（排除栏目/视图类参数）。
- * 「网络学堂某门课」「寻迹」「某作业详情」各是一个实例——已打开就复用。
+ * 实例身份 = **完整路径**（用户定案：必须与当前路径一模一样才复用）：
+ * page + 排序后的全部参数（含栏目/视图参数）。「信息·新闻」「信息·成绩」是两个 tab；
+ * 「网络学堂某门课」「寻迹」各是一个实例——同路径已打开才复用。
  */
 export function instanceKeyOf(page: Page, params: LearnNav | null): string {
   const parts: string[] = [];
   const p = params as Record<string, unknown> | null;
   if (p) {
     for (const k of Object.keys(p).sort()) {
-      if (NON_INSTANCE_PARAMS.has(k)) continue;
       const v = p[k];
       if (v !== undefined && v !== null && v !== "") parts.push(`${k}=${String(v)}`);
     }

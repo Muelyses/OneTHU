@@ -176,6 +176,51 @@ export function TabStrip(): ReactNode {
     update();
   }, [tabs.length, update]);
 
+  /* 滑动：竖向滚轮 → 横向滚动（条是横向的，鼠标滚轮默认滚不动）；
+     进度条：拖滑块 / 点轨道跳转。 */
+  const indiRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent): void => {
+      if (el.scrollWidth <= el.clientWidth) return;
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+  const dragRef = useRef<{ x0: number; s0: number; ratio: number } | null>(null);
+  const onTrackDown = (e: React.PointerEvent<HTMLDivElement>): void => {
+    const el = stripRef.current;
+    const track = indiRef.current;
+    const thumb = thumbRef.current;
+    if (!el || !track || !thumb || e.button !== 0) return;
+    const overflow = el.scrollWidth - el.clientWidth;
+    const trackW = el.clientWidth;
+    const thumbW = thumb.offsetWidth;
+    const range = Math.max(trackW - thumbW, 1);
+    const x0 = e.clientX - track.getBoundingClientRect().left;
+    const onThumb = x0 >= thumb.offsetLeft && x0 <= thumb.offsetLeft + thumbW;
+    if (!onThumb) {
+      const target = Math.min(Math.max(x0 - thumbW / 2, 0), range);
+      el.scrollLeft = (target / range) * overflow;
+    }
+    dragRef.current = { x0: e.clientX, s0: el.scrollLeft, ratio: overflow / range };
+    track.setPointerCapture(e.pointerId);
+  };
+  const onTrackMove = (e: React.PointerEvent<HTMLDivElement>): void => {
+    const d = dragRef.current;
+    const el = stripRef.current;
+    if (!d || !el) return;
+    el.scrollLeft = d.s0 + (e.clientX - d.x0) * d.ratio;
+  };
+  const onTrackUp = (e: React.PointerEvent<HTMLDivElement>): void => {
+    dragRef.current = null;
+    indiRef.current?.releasePointerCapture(e.pointerId);
+  };
+
   /* ⑧ 悬停小窗：pointerenter 计 600ms、leave/滚动清除；事件委托在顶栏上
      （复制钮/齿轮是 Layout 的 DOM，不改它的文件）；只认 pointerType === "mouse"。 */
   const favs = useFavs();
@@ -319,7 +364,15 @@ export function TabStrip(): ReactNode {
       {tip ? <TabstripTip tip={tip} /> : null}
       </div>
       {scrollable ? (
-        <div className="ex-tabstrip-indi" aria-hidden="true">
+        <div
+          className="ex-tabstrip-indi"
+          ref={indiRef}
+          aria-hidden="true"
+          onPointerDown={onTrackDown}
+          onPointerMove={onTrackMove}
+          onPointerUp={onTrackUp}
+          onPointerCancel={onTrackUp}
+        >
           <i ref={thumbRef} />
         </div>
       ) : null}

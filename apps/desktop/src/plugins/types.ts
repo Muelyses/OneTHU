@@ -345,6 +345,10 @@ export interface OnethuApi {
   };
   kongjian: {
     page(opts?: { spaceId?: string; roomId?: string; date?: string }): Promise<import("@onethu/core").KongjianPage>;
+    my(): Promise<import("@onethu/core").KongjianRecord[]>;
+    book(bookUrl: string, info_: { name: string; sid: string; tel: string; other: string }): Promise<string>;
+    cancel(target: string): Promise<void>;
+  };
   /** 清华 GitLab（git.tsinghua.edu.cn）：项目、仓库文件、Issue、合并请求与流水线。
    *  id 为项目数字 id（`projects()` / `search()` 返回元素的 id），iid 为项目内编号
    *  （Issue 与合并请求各自计数，等于网页地址里的那个号）。 */
@@ -409,10 +413,6 @@ export interface OnethuApi {
     mergeMergeRequest(id: number, iid: number): Promise<import("@onethu/info-lib").GitMergeRequest>;
     /** 关闭或重新打开（写操作；kind 取 "issue" 或 "mr"，state 取 "close" 或 "reopen"） */
     setState(kind: "issue" | "mr", id: number, iid: number, state: "close" | "reopen"): Promise<void>;
-  };
-    my(): Promise<import("@onethu/core").KongjianRecord[]>;
-    book(bookUrl: string, info_: { name: string; sid: string; tel: string; other: string }): Promise<string>;
-    cancel(target: string): Promise<void>;
   };
   coursex: {
     semesters(): Promise<import("@onethu/core").CourseXSemester[]>;

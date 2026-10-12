@@ -216,6 +216,14 @@ export const IconTabsCards = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** 垃圾桶（球目录拖拽删除区等） */
+export const IconTrash = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M4 7h16M9.5 7V4.8A1.3 1.3 0 0 1 10.8 3.5h2.4a1.3 1.3 0 0 1 1.3 1.3V7M6.5 7l.8 12.2A1.8 1.8 0 0 0 9.1 20.8h5.8a1.8 1.8 0 0 0 1.8-1.6L17.5 7" />
+    <path d="M10 11v6M14 11v6" />
+  </svg>
+);
+
 /** 复制当前标签页（explorer 顶栏「复制」钮）：双层方框 */
 export const IconCopyTab = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>

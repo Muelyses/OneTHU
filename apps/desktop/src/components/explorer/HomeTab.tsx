@@ -18,9 +18,8 @@ import {
   openWorkspace,
   subscribeExplorer,
 } from "../../state/explorer.js";
-import { byCategory, NAV_CATEGORIES, type NavEntry } from "../../state/navigation.js";
 import { TodayPage } from "../../pages/Today.js";
-import { IconChevron, IconSearch } from "../Icons.js";
+import { HomeSpheres } from "./HomeSpheres.js";
 
 /** store 快照类型（explorer.ts 未导出内部接口，用 ReturnType 推导） */
 type ExplorerStateSnapshot = ReturnType<typeof explorerSnapshot>;
@@ -74,74 +73,14 @@ function HomeResume(): ReactNode {
   );
 }
 
-/* ══════════ ③ 功能目录卡（完整功能兜底入口） ══════════ */
-
-function CatalogRow({ entry }: { entry: NavEntry }): ReactNode {
-  return (
-    <button
-      type="button"
-      className="home-catalog-row"
-      title={entry.note ? entry.name + "：" + entry.note : entry.name}
-      onClick={() => openTab(entry.page, entry.params, { title: entry.name })}
-    >
-      <span className="home-catalog-name">{entry.name}</span>
-      {entry.note ? <span className="home-catalog-note">{entry.note}</span> : null}
-      <IconChevron width={13} height={13} className="row-caret" />
-    </button>
-  );
-}
-
-function HomeCatalog(): ReactNode {
-  const [open, setOpen] = useState(true);
-  return (
-    <section className="home-card" data-card="home-catalog">
-      <div className="home-card-head">
-        <button
-          type="button"
-          className="home-card-title"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          title={open ? "收起功能目录" : "展开功能目录"}
-        >
-          <h2>功能目录</h2>
-          <span className="home-card-aside">全部功能按类分组</span>
-        </button>
-        <button type="button" className="btn btn-ghost home-catalog-toggle" onClick={() => setOpen((o) => !o)}>
-          {open ? "收起" : "展开"}
-        </button>
-      </div>
-      {open ? (
-        <div className="home-card-body">
-          <div className="home-catalog-groups">
-            {NAV_CATEGORIES.map((cat) => {
-              const entries = byCategory(cat);
-              if (entries.length === 0) return null;
-              return (
-                <div key={cat} className="home-catalog-group">
-                  <div className="home-catalog-group-name">{cat}</div>
-                  <div className="home-catalog-rows">
-                    {entries.map((e) => (
-                      <CatalogRow key={e.id} entry={e} />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="home-catalog-hint">常用功能可固定到下方今日卡片（编辑模式添加卡片），或收进 OneGO! 页面。</div>
-        </div>
-      ) : null}
-    </section>
-  );
-}
-
 /* ══════════ 首页标签页整体 ══════════ */
 
 export function HomeTab(): ReactNode {
   return (
     <div className="home-tab">
-            <HomeResume />
-      <HomeCatalog />
+      {/* 球型功能目录：右上角锚点 + 外置球层（详细目录收进球窗的「··· 详情」） */}
+      <HomeSpheres />
+      <HomeResume />
       <TodayPage />
     </div>
   );

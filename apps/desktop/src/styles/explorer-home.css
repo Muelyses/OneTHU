@@ -88,7 +88,7 @@
   flex: none;
   max-width: 200px;
   height: 28px;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
@@ -186,3 +186,273 @@
   font-size: var(--text-xs);
   color: var(--text-3);
 }
+
+/* ══════════ 球型功能目录（HomeSpheres，2026-10-12）══════════
+   视觉沿用 .home-card / token 体系：surface 面板 + border + corner-full 球体 + accent 点缀。 */
+
+.hs-root { position: relative; }
+
+/* 锚点行：sticky 挂首页滚动流顶部右侧，滚动时保持可见；高度 0 不占流 */
+.hs-anchor-row {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 0;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.hs-logo {
+  pointer-events: auto;
+  margin: 8px 4px 0 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 140ms var(--ease-out, ease), color 120ms ease, border-color 120ms ease;
+}
+.hs-logo:hover { color: var(--text-1); border-color: var(--accent-border, var(--border)); transform: scale(1.05); }
+.hs-logo.is-open { color: var(--accent); border-color: var(--accent-border, var(--border)); }
+
+/* 展开的小窗：transform-origin 右上 → 向左下展开 */
+.hs-window {
+  position: absolute;
+  top: 58px;
+  right: 6px;
+  z-index: 41;
+  width: 308px;
+  max-width: calc(100vw - 32px);
+  max-height: min(520px, calc(100vh - 120px));
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg, 16px);
+  background: var(--surface);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  transform-origin: top right;
+  animation: hs-pop 150ms var(--ease-out, ease);
+}
+@keyframes hs-pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.hs-window-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.hs-window-title { flex: 1 1 auto; min-width: 0; font-size: var(--text-sm); font-weight: 600; color: var(--text-1); }
+.hs-close {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-pill);
+  border: 0;
+  background: transparent;
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.hs-close:hover { background: var(--hover, var(--surface-3)); color: var(--text-1); }
+
+.hs-detail-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.hs-detail-btn:hover { color: var(--text-1); border-color: var(--accent-border, var(--border)); }
+.hs-detail-btn.is-on { color: var(--accent); border-color: var(--accent-border, var(--border)); background: var(--accent-soft, transparent); }
+
+/* 球阵 */
+.hs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px 4px;
+}
+.sphere {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px 4px;
+  border: 0;
+  border-radius: var(--r-md, 10px);
+  background: transparent;
+  color: var(--text-2);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+.sphere:hover { background: var(--hover, var(--surface-3)); color: var(--text-1); }
+.sphere:active { cursor: grabbing; }
+.sphere.is-dragging { opacity: 0.9; }
+.sphere-ball {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-2, var(--surface));
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 140ms var(--ease-out, ease), border-color 120ms ease, color 120ms ease;
+}
+.sphere:hover .sphere-ball { transform: translateY(-2px) scale(1.04); border-color: var(--accent-border, var(--border)); color: var(--text-1); }
+.sphere-ball.is-accent { background: var(--accent-soft, var(--surface-3)); border-color: var(--accent-border, var(--border)); color: var(--accent); }
+.sphere-ball.is-sm { width: 26px; height: 26px; }
+.sphere-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}
+.sphere-more { cursor: pointer; }
+
+/* 外置球层：绝对定位在首页内容区，指针只落在球上 */
+.hs-loose-slot { position: absolute; z-index: 30; transform: translate(-50%, -50%); pointer-events: none; }
+.hs-loose-slot > * { pointer-events: auto; }
+.hs-loose-slot .sphere-ball { width: 52px; height: 52px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1); background: var(--surface); }
+
+/* 拖动幽灵球（跟手，不拦截事件） */
+.hs-ghost {
+  position: fixed;
+  z-index: 200;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+}
+.hs-ghost .sphere-ball { width: 52px; height: 52px; background: var(--surface); border-color: var(--accent-border, var(--border)); color: var(--text-1); }
+
+/* 红色垃圾桶：拖动过程固定右下 */
+.hs-trash {
+  position: fixed;
+  right: 28px;
+  bottom: 84px;
+  z-index: 200;
+  width: 68px;
+  height: 68px;
+  border-radius: var(--r-pill);
+  border: 1.5px dashed var(--danger, #e5484d);
+  background: color-mix(in srgb, var(--danger, #e5484d) 12%, var(--surface));
+  color: var(--danger, #e5484d);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  animation: hs-pop 140ms var(--ease-out, ease);
+}
+
+/* 详情模式：小窗内变成完整功能目录（分组列表） */
+.hs-detail-body { display: flex; flex-direction: column; gap: 12px; }
+.hs-detail-group-name {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  padding: 4px;
+}
+.hs-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--r-sm, 8px);
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--text-md);
+  text-align: left;
+  cursor: pointer;
+}
+.hs-detail-row:hover { background: var(--hover, var(--surface-3)); }
+.hs-detail-caret { margin-left: auto; color: var(--text-3); flex: none; }
+
+/* 更多功能弹窗 */
+.hs-more-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hs-fade 120ms ease;
+}
+@keyframes hs-fade { from { opacity: 0; } to { opacity: 1; } }
+.hs-more {
+  width: min(420px, calc(100vw - 40px));
+  max-height: min(560px, calc(100vh - 80px));
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg, 16px);
+  background: var(--surface);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.24);
+}
+.hs-more-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 8px;
+}
+.hs-more-list { display: flex; flex-direction: column; }
+.hs-more-row { display: flex; align-items: center; gap: 8px; }
+.hs-more-go {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--r-sm, 8px);
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--text-md);
+  text-align: left;
+  cursor: pointer;
+}
+.hs-more-go:hover { background: var(--hover, var(--surface-3)); }
+.hs-more-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hs-more-add {
+  flex: none;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--accent);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.hs-more-add:hover:not(:disabled) { border-color: var(--accent-border, var(--border)); background: var(--accent-soft, transparent); }
+.hs-more-add:disabled { color: var(--text-3); cursor: default; }

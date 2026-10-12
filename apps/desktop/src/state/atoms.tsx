@@ -25,6 +25,7 @@ import { cacheGet } from "./cache.js";
 import { getPluginAtom, pluginAtomKindOf } from "../plugins/pluginAtoms.js";
 import { WASHER_PROVIDER_LABEL, washerProviderCode, washerProviderOf } from "@onethu/core";
 import { getPluginTab } from "../plugins/tabs.js";
+import { resolveTabTitle } from "./tabTitles.js";
 import { FAVS_MAX_DEPTH, loadFavs, type AtomRef } from "./favorites.js";
 import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
@@ -68,6 +69,30 @@ export function enc(...parts: Array<string | number | undefined>): string {
 
 export function dec(key: string): string[] {
   return key.split("~");
+}
+
+/* 标签页原子（kind = "tab"）：任何工作标签页都能一星收藏成独立 OnePage（用户定案：
+   一星 = 页面本体成为 OnePage；打开即本页）。key = page + "~" + 编码后的 params JSON。 */
+export function tabAtomKey(page: string, params?: object | null): string {
+  const keys = Object.keys(params ?? {}).filter((k) => (params as Record<string, unknown>)[k] !== undefined).sort();
+  const clean: Record<string, unknown> = {};
+  for (const k of keys) clean[k] = (params as Record<string, unknown>)[k];
+  const body = keys.length ? encodeURIComponent(JSON.stringify(clean)).replace(/~/g, "%7E") : "";
+  return page + "~" + body;
+}
+
+export function parseTabAtomKey(key: string): { page: string; params: Record<string, unknown> | undefined } | null {
+  const i = key.indexOf("~");
+  if (i < 0) return null;
+  const page = key.slice(0, i);
+  const body = key.slice(i + 1);
+  if (!page) return null;
+  if (!body) return { page, params: undefined };
+  try {
+    return { page, params: JSON.parse(decodeURIComponent(body)) as Record<string, unknown> };
+  } catch {
+    return null;
+  }
 }
 
 /* ══════════ 动态缓存（实体页加载成功后 note；只读用于搜索） ══════════ */
@@ -330,6 +355,17 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     return view({
       atom: ref, title: s.title, sub: s.sub, icon: s.icon, group: s.group,
       open: (nav) => nav(s.page, s.params ? { ...s.params } : undefined),
+    });
+  }
+  if (kind === "tab") {
+    const parsed = parseTabAtomKey(key);
+    if (!parsed) return null;
+    const page = parsed.page as Page;
+    const params = parsed.params as LearnNav | undefined;
+    const t = resolveTabTitle(page, params ?? null);
+    return view({
+      atom: ref, title: t.label, sub: t.full, icon: IconFile, group: "标签页",
+      open: (nav) => nav(page, params ? { ...params } as LearnNav : undefined),
     });
   }
   if (kind === "widget") {

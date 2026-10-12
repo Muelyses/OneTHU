@@ -46,7 +46,7 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
-  padding: 0 5px 0 10px;
+  padding: 0 4px 0 2px;
   height: 100%;
   border: 0;
   background: none;
@@ -575,9 +575,9 @@
 .ex-tabstrip-wrap { position: relative; display: flex; flex: 1 1 auto; min-width: 0; }
 .ex-tabstrip-indi {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 2px; /* 与 .ex-tabstrip 的 margin 0 2px 对齐 */
+  right: 2px;
+  bottom: -6px; /* 落在标签条底边外侧一拍（不压在标签底上），仍在顶栏 46px 之内 */
   height: 3px;
   pointer-events: none;
 }
@@ -607,7 +607,6 @@
   flex: none;
 }
 .ex-tab-star:hover:not(:disabled) { background: var(--hover, rgba(0, 0, 0, 0.05)); color: var(--text-1); }
-.ex-tab-star:disabled { opacity: 0.35; cursor: default; }
 .ex-tab-star.is-lit { color: var(--accent); }
 .ex-tab-star.is-lit svg path { fill: currentColor; }
 

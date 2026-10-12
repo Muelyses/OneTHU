@@ -21,7 +21,7 @@ import {
   type ExplorerTab,
 } from "../../state/explorer.js";
 import { resolveTabTitle, useTabTitleTick } from "../../state/tabTitles.js";
-import { enc, PAGE_ATOMS } from "../../state/atoms.js";
+import { enc, PAGE_ATOMS, tabAtomKey } from "../../state/atoms.js";
 import { getLearnSnapshot } from "../../state/data.js";
 import { atomKeyOf, type AtomRef } from "../../state/favorites.js";
 import { useFavs } from "../../state/favs.js";
@@ -55,9 +55,18 @@ function TabstripTip({ tip }: { tip: TipState }): ReactNode {
   /* 小标识（用户定案）：只要悬停出现的小行卡，不带动作与宽卡 */
   const strip = document.querySelector(".ex-tabstrip")?.getBoundingClientRect();
   const top = (strip?.bottom ?? tip.rect.bottom) + 4;
-  const cx = Math.min(Math.max(tip.rect.left + tip.rect.width / 2, 270), Math.max(window.innerWidth - 270, 8));
+  const anchor = tip.rect.left + tip.rect.width / 2;
+  const boxRef = useRef<HTMLDivElement>(null);
+  /* 实测宽度后钳位：居中对准被悬停的标签，贴边时只在视口内左右让位 */
+  useLayoutEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const w = el.offsetWidth;
+    const left = Math.min(Math.max(anchor - w / 2, 8), Math.max(window.innerWidth - w - 8, 8));
+    el.style.left = `${left}px`;
+  });
   return createPortal(
-    <div className="ex-tip" role="tooltip" style={{ top, left: cx, transform: "translateX(-50%)" }} onClick={(e) => e.stopPropagation()}>
+    <div ref={boxRef} className="ex-tip" role="tooltip" style={{ top }} onClick={(e) => e.stopPropagation()}>
       {text}
     </div>,
     document.body,
@@ -65,47 +74,48 @@ function TabstripTip({ tip }: { tip: TipState }): ReactNode {
 }
 
 
-/** 活动 tab → AtomRef（只产既有原子体系认识的引用，不造野原子）：
- *  实体详情页走 atoms.tsx 的 enc 编码形态；其余页按 PAGE_ATOMS 打分匹配
- *  （recordPageAtomUse 同款口径）；两者都不中的页面不支持收藏（星恒灰禁用）。 */
+/** 标签页 → AtomRef（用户定案：每个非首页标签都能一星收藏成独立 OnePage）。
+ *  优先匹配既有 PAGE_ATOMS（参数完全一致才命中，保持既有收藏引用不断）；
+ *  实体页或无对应原子的页面统一落到通用 "tab" 原子（page + params 即身份）。 */
 function atomRefOfTab(tab: ExplorerTab): AtomRef | null {
   if (tab.kind !== "page") return null;
   const params = (tab.params ?? {}) as LearnNav;
+  const generic: AtomRef = { kind: "tab", key: tabAtomKey(tab.page, tab.params ?? undefined) };
+  let entity: AtomRef | null = null;
   switch (tab.page) {
     case "learn-course": {
       const c = getLearnSnapshot()?.courses.find((x) => x.id === params.courseId);
-      return c ? { kind: "course", key: enc(c.id, c.name, c.teacherName) } : null;
+      entity = c ? { kind: "course", key: enc(c.id, c.name, c.teacherName) } : null;
+      break;
     }
     case "learn-assignment-detail": {
       const hw = getLearnSnapshot()?.homework.find((h) => h.id === params.itemId);
-      return hw ? { kind: "assignment", key: enc(hw.courseId, hw.id, hw.title) } : null;
+      entity = hw ? { kind: "assignment", key: enc(hw.courseId, hw.id, hw.title) } : null;
+      break;
     }
     case "learn-notice-detail": {
       const n = getLearnSnapshot()?.notifications.find((x) => x.id === params.itemId);
-      return n ? { kind: "notice", key: enc(n.courseId, n.id, n.title) } : null;
+      entity = n ? { kind: "notice", key: enc(n.courseId, n.id, n.title) } : null;
+      break;
     }
     case "learn-file-detail": {
       const f = getLearnSnapshot()?.files.find((x) => x.id === params.itemId);
-      return f ? { kind: "file", key: enc(f.courseId, f.id, f.title) } : null;
+      entity = f ? { kind: "file", key: enc(f.courseId, f.id, f.title) } : null;
+      break;
     }
     default: {
-      const same = PAGE_ATOMS.filter((a) => a.page === (tab.page as Page));
-      if (same.length === 0) return null;
-      const keys = Object.keys(params) as Array<keyof LearnNav>;
-      let best: (typeof same)[number] | null = null;
-      let bestScore = -1;
-      for (const a of same) {
-        const ap = (a.params ?? {}) as LearnNav;
-        let score = 0;
-        for (const k of keys) if (ap[k] !== undefined && ap[k] === params[k]) score += 2;
-        if (score > bestScore) {
-          bestScore = score;
-          best = a;
-        }
-      }
-      return best ? { kind: "page", key: best.key } : null;
+      const keys = Object.keys(tab.params ?? {}).filter((k) => (tab.params as Record<string, unknown>)[k] !== undefined);
+      const hit = PAGE_ATOMS.find((a) => {
+        if (a.page !== (tab.page as Page)) return false;
+        const ap = (a.params ?? {}) as Record<string, unknown>;
+        const apKeys = Object.keys(ap);
+        if (apKeys.length !== keys.length) return false;
+        return apKeys.every((k) => ap[k] === (tab.params as Record<string, unknown> | null)?.[k]);
+      });
+      entity = hit ? { kind: "page", key: hit.key } : null;
     }
   }
+  return entity ?? generic;
 }
 
 /** 星形图标：未收藏描边灰，收藏点亮起（fill 随 .is-lit） */
@@ -259,29 +269,27 @@ export function TabStrip(): ReactNode {
             role="tab"
             aria-selected={active}
           >
+            {isHome ? null : (() => {
+              /* 星在标题左侧（用户口径「标签页左边」）；与标题按钮并列，不嵌套 */
+              const ref = atomRefOfTab(t);
+              const lit = ref !== null && Object.values(favs.data.folders).some((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKeyOf(ref)));
+              return (
+                <button
+                  className={"ex-tab-star" + (lit ? " is-lit" : "")}
+                  title={lit ? "取消星标：删除该 OnePage" : "一星：把当前页面收藏成 OnePage"}
+                  aria-label={lit ? "取消星标" : "收藏为 OnePage"}
+                  aria-pressed={lit}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onStar(t);
+                  }}
+                >
+                  <StarGlyph />
+                </button>
+              );
+            })()}
             <button className="ex-tab-main" onClick={() => focusTab(t.id)}>
-              {isHome ? (
-                <BrandLogo size={12} />
-              ) : (() => {
-                /* 星在标题左侧（用户口径「标签页左边」）；原子系不认的页面禁用 */
-                const ref = atomRefOfTab(t);
-                const lit = ref !== null && Object.values(favs.data.folders).some((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKeyOf(ref)));
-                return (
-                  <button
-                    className={"ex-tab-star" + (lit ? " is-lit" : "")}
-                    disabled={!ref}
-                    title={!ref ? "该页面暂不支持收藏" : lit ? "从 OnePage 移除当前页面" : "把当前页面收藏成独立 OnePage"}
-                    aria-label={lit ? "从 OnePage 移除当前页面" : "把当前页面收藏成独立 OnePage"}
-                    aria-pressed={lit}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onStar(t);
-                    }}
-                  >
-                    <StarGlyph />
-                  </button>
-                );
-              })()}
+              {isHome ? <BrandLogo size={12} /> : null}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (

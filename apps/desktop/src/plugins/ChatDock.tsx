@@ -1153,8 +1153,10 @@ export function ChatDock(): ReactNode {
       if (!el) return;
       const r = el.getBoundingClientRect();
       if (r.width > 0) {
-        /* 顶置判定：胶囊在桌面顶栏里（单行合并后 TopBar 就是 OH 胶囊的家）；ex-bbar 只是手机形态 */
-        const inTopbar = !!el.closest(".explorer-topbar");
+        /* 顶置判定：胶囊所在 ex-bbar 在视口上半部 = 两行顶置桌面形态（窗朝下生长）；
+           手机底栏（bottom 形态）在同页签里 y≈vh-48，判定天然分叉 */
+        const bar = el.closest(".ex-bbar");
+        const inTopbar = !!bar && bar.getBoundingClientRect().top < window.innerHeight / 2;
         setCapsuleRect({ left: r.left, width: r.width, bottom: r.bottom, topdock: inTopbar });
       }
     };

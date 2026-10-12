@@ -143,6 +143,12 @@ console.log("\n[雨课堂]");
             // R24 fix（霖 bug 2026-09-23）：5/5 全部已批改有评语，但服务端不回传 my_answer.content
             // → 旧口径只认正文，整卷被误判未提交；新口径按 status/submit_time/my_count 多信号判已作答
             { type: 19, id: 28, title: "已批无正文作业", classroom_id: 1, content: { leaf_type_id: 111, leaf_id: 28, sku_id: 957, score_d: FUTURE } },
+            // R25 fix（2026-10-12 霖 bug 真机复现）：多题作业「全题已交/已批但服务端不回传正文」——
+            // 真机响应形态 = 每题 status 4 + my_count 1 + my_score 真分数，my_answer 空壳、无 submit_time。
+            // 旧口径只认正文 → 10/10 却判未交（列表永远落在进行中/已逾期）。
+            { type: 19, id: 31, title: "多题已批无正文作业", classroom_id: 1, content: { leaf_type_id: 112, leaf_id: 31, sku_id: 958, score_d: FUTURE } },
+            { type: 19, id: 32, title: "多题已交未批作业", classroom_id: 1, content: { leaf_type_id: 113, leaf_id: 32, sku_id: 959, score_d: FUTURE } },
+            { type: 19, id: 33, title: "部分作答多题作业", classroom_id: 1, content: { leaf_type_id: 114, leaf_id: 33, sku_id: 960, score_d: FUTURE } },
             { type: 20, id: 12, title: "已交试卷", classroom_id: 1, content: { leaf_type_id: 200, leaf_id: 7, sku_id: 900, score_d: FUTURE } },
             // R24 fix（霖 bug 2026-09-23）：11 题完成 10 题 → 未提交（进行中），不再误报已交
             { type: 20, id: 29, title: "部分完成试卷", classroom_id: 1, content: { leaf_type_id: 207, leaf_id: 29, sku_id: 907, score_d: FUTURE } },
@@ -259,6 +265,43 @@ console.log("\n[雨课堂]");
         },
       },
     },
+    // R25 fix（2026-10-12 真机形态）：多题作业「全题已批 / 已交但无正文」与「多题部分作答」
+    {
+      match: (u) => u.includes("/get_exercise_list/112/"),
+      body: {
+        data: {
+          answer_count: 10,
+          problems: Array.from({ length: 10 }, () => ({
+            content: { score: 10 },
+            user: { status: 4, my_score: "5.00", my_count: 1, my_answer: {} },
+          })),
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/113/"),
+      body: {
+        data: {
+          answer_count: 3,
+          problems: Array.from({ length: 3 }, () => ({
+            content: { score: 10 },
+            user: { status: 3, my_score: "-1.00", my_count: 1, my_answer: {} },
+          })),
+        },
+      },
+    },
+    {
+      match: (u) => u.includes("/get_exercise_list/114/"),
+      body: {
+        data: {
+          answer_count: 1,
+          problems: [
+            { content: { score: 10 }, user: { status: 4, my_score: "8.00", my_count: 1, my_answer: {} } },
+            ...Array.from({ length: 9 }, () => ({ content: { score: 10 }, user: {} })),
+          ],
+        },
+      },
+    },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=200"), body: { data: { problem_count: 20, total_score: 100, result: { status: 5, unfinished_count: 0, score: 60, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=201"), body: { data: { problem_count: 31, total_score: 100, result: { status: 6, unfinished_count: 31, score: 0, score_finish: true } } } },
     { match: (u) => u.includes("/v/exam/cover") && u.includes("exam_id=202"), body: { data: { problem_count: 10, total_score: 100, result: null } } },
@@ -271,13 +314,28 @@ console.log("\n[雨课堂]");
   ]);
   const src = createYuketangSource({ cookie: "sessionid=x", uvId: "2598" }, fetchLike, 30);
   const items = await src.fetch();
-  eq(items.length, 21, "拉到 21 条作业");
+  eq(items.length, 24, "拉到 24 条作业");
   const byTitle = new Map(items.map((i) => [i.title, i]));
   // R24 fix（bug1）：已批改有评语但服务端不回传 my_answer.content → 多信号判已作答，整卷已提交
   eq(byTitle.get("已批无正文作业")?.submitted, true, "R24：5/5 已批改（status 4 + submit_time + my_count）无正文 → 已提交");
   eq(byTitle.get("已批无正文作业")?.submittedCount, 5, "已批无正文作业 submittedCount=5");
   eq(byTitle.get("已批无正文作业")?.totalCount, 5, "已批无正文作业 totalCount=5");
   eq(byTitle.get("已批无正文作业")?.graded, true, "已批无正文作业 graded=true（全 status 4 无 -1 占位）");
+  // R25 fix（霖 bug 2026-10-12）：多题作业全部题都有作答证据（status/my_count），正文全空壳
+  // → 已交；每题都已批改 → 已批。列表分组因此落到「已交 / 已批」，不再永远停在进行中/已逾期。
+  eq(byTitle.get("多题已批无正文作业")?.submitted, true, "多题已批无正文：10/10 题 status4+my_count → 已提交");
+  eq(byTitle.get("多题已批无正文作业")?.graded, true, "多题已批无正文：每题都 status4 → 已批改（进已批分组）");
+  eq(byTitle.get("多题已批无正文作业")?.submittedCount, 10, "多题已批无正文：进度 10/10");
+  eq(byTitle.get("多题已批无正文作业")?.totalCount, 10, "多题已批无正文：题目数 10");
+  eq(byTitle.get("多题已批无正文作业")?.score, 50, "多题已批无正文：score=50（10 题各 5 分合计）");
+  eq(byTitle.get("多题已批无正文作业")?.totalScore, 100, "多题已批无正文：totalScore=100");
+  eq(byTitle.get("多题已交未批作业")?.submitted, true, "多题已交未批：3/3 题 status3 → 已提交");
+  eq(byTitle.get("多题已交未批作业")?.graded, false, "多题已交未批：无题批改 → 不判已批改（进已交分组）");
+  eq(byTitle.get("多题已交未批作业")?.submittedCount, 3, "多题已交未批：进度 3/3");
+  // R23 护栏：多题只答一题（整卷 answer_count 也只有 1）→ 仍属进行中，不因新判据被放过
+  eq(byTitle.get("部分作答多题作业")?.submitted, false, "R23 护栏：10 题只答 1 题 → 未提交（进行中）");
+  eq(byTitle.get("部分作答多题作业")?.submittedCount, 1, "R23 护栏：进度 1/10");
+  eq(byTitle.get("部分作答多题作业")?.graded, false, "R23 护栏：未提交 → 不判已批改");
   // R24 fix（bug2）：试卷部分完成（10/11）→ 未提交（进行中），报进度
   eq(byTitle.get("部分完成试卷")?.submitted, false, "R24：试卷 10/11 → 未提交（不再误报已交）");
   eq(byTitle.get("部分完成试卷")?.submittedCount, 10, "部分完成试卷 submittedCount=10");
@@ -331,7 +389,7 @@ console.log("\n[雨课堂]");
     "https://pro.yuketang.cn/v2/web/studentLog/1",
     "缺 leaf_id → 回退旧 studentLog 链接",
   );
-  eq(byTitle.get("已交试卷")?.submitted, true, "试卷 result.unfinished_count<problem_count → 已提交");
+  eq(byTitle.get("已交试卷")?.submitted, true, "试卷 result.unfinished_count===0 → 已提交（R24：全题完成才算已交）");
   eq(byTitle.get("已交试卷")?.submittedCount, 20, "已交试卷 submittedCount=20（problem_count-unfinished_count）");
   eq(byTitle.get("已交试卷")?.totalCount, 20, "已交试卷 totalCount=20");
   eq(byTitle.get("未交试卷")?.submitted, false, "试卷 unfinished_count==problem_count → 未提交");
@@ -360,7 +418,7 @@ console.log("\n[雨课堂]");
   eq(byTitle.get("未交试卷")?.graded, false, "未提交试卷 → graded=false");
   eq(byTitle.get("无 result 试卷")?.graded, false, "result 缺失 → graded=false");
   const hwCalls = fetchLike.calls.filter((c) => c.url.includes("/get_exercise_list/"));
-  eq(hwCalls.length, 13, "仅作业（type 19）走 get_exercise_list（13 份，分数与状态同一响应零额外请求）");
+  eq(hwCalls.length, 16, "仅作业（type 19）走 get_exercise_list（16 份，分数与状态同一响应零额外请求）");
   ok(
     hwCalls.every((c) => c.headers["xtbz"] === "ykt"),
     "作业状态请求均带 XTBZ: ykt",

@@ -13,6 +13,9 @@ import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useAnchorPos } from "./TabDrawer.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { useFavs } from "../../state/favs.js";
+import { resolveAtom } from "../../state/atoms.js";
+import type { LearnNav, Page } from "../../state/app.js";
+import { useApp } from "../../state/context.js";
 import { FolderIcon } from "../Icons.js";
 import { WorkspacePanel } from "./TabDrawer.js";
 
@@ -53,6 +56,7 @@ export function useOneGoSheetOpen(): boolean {
 /* ══════════ 我的收藏（OnePage）分段 ══════════ */
 
 function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
+  const { navigate } = useApp();
   const favs = useFavs();
   const [name, setName] = useState("");
   const roots = favs.data.order;
@@ -97,6 +101,19 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
                 key={id}
                 className="ex-row ex-row-clickable"
                 onClick={() => {
+                  /* 用户定案：OnePage 点进去=页面本体——单 page 原子的 OnePage 用 resolveAtom
+                     直接 open 到目标页（navigate)，不进收藏夹列表；多原子的才进 FolderPage */
+                  const f2 = favs.data.folders[id];
+                  const items = f2?.items ?? [];
+                  const sole = items.length === 1 && items[0] !== undefined && items[0].t === "a" ? items[0] : null;
+                  if (sole && sole.t === "a") {
+                    const view = resolveAtom(sole.atom);
+                    if (view) {
+                      view.open(navigate);
+                      onDone();
+                      return;
+                    }
+                  }
                   openTab("folder", { folderId: id }, { title });
                   onDone();
                 }}
@@ -120,6 +137,7 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
 /* ══════════ ⑦ 小窗内搜索：OnePage 按 title、工作区按 name（大小写不敏感） ══════════ */
 
 function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): ReactNode {
+  const { navigate } = useApp();
   const favs = useFavs();
   const favHits = favs.data.order.filter((id) => (favs.data.folders[id]?.title ?? "").toLowerCase().includes(q));
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);

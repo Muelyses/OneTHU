@@ -29,7 +29,7 @@
   display: inline-flex;
   align-items: center;
   max-width: 176px;
-  min-width: 0;
+  min-width: 96px; /* 多 tab 到挤压区间即溢出 → 滚动条逻辑成立（用户预期「一多就滚」） */
   height: 28px;
   border-radius: 8px;
   color: var(--text-2);

@@ -10,6 +10,7 @@
  *
  * 工作区段抽成 WorkspacePanel 导出——OneGoSheet 引同一份，逻辑不许复制两份。
  */
+import { setTabLayoutMode, useTabLayoutMode } from "../../state/tabLayout.js";
 import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -17,7 +18,8 @@ import {
   allTabs,
   closeOtherTabs,
   closeTab,
-  deleteWorkspace,
+  dissolveWorkspace,
+  closeLiveWorkspace,
   explorerSnapshot,
   focusTab,
   HOME_TAB_ID,
@@ -33,6 +35,8 @@ import { resolveTabTitle, useTabTitleTick } from "../../state/tabTitles.js";
 import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { IconX } from "../Icons.js";
+import { confirmOk } from "../../lib/confirm.js";
+import { openWorkspaceEditor } from "./WorkspaceEditor.js";
 
 /* ══════════ 抽屉开合 store（palette.ts 同款） ══════════ */
 
@@ -249,21 +253,37 @@ export function WorkspacePanel(): ReactNode {
         <div className="ex-ws-list">
           {snap.workspaces.map((w) => {
             const members = membersOf(snap, w.id);
-            const preview = members
-              .slice(0, 4)
-              .map((t) => (t.kind === "home" ? "首页" : resolveTabTitle(t.page, t.params).label))
-              .join("、");
+            // 活工作区：看实时成员；已解散/已保存：看快照（w.tabs），这样解散后仍能看到其中的标签
+            const names = w.live
+              ? members.map((t) => (t.kind === "home" ? "首页" : resolveTabTitle(t.page, t.params).label))
+              : w.tabs.map((t) => t.title);
+            const count = names.length;
+            const preview = names.slice(0, 4).join("、");
             return (
               <div className="ex-row" key={w.id}>
                 <div className="ex-row-main">
                   <span className="ex-row-title">{w.name}</span>
                   <span className="ex-row-sub">
-                    {members.length > 0 ? `${members.length} 个标签：${preview}${members.length > 4 ? "…" : ""}` : "暂无成员标签"}
+                    {count > 0 ? `${count} 个标签：${preview}${count > 4 ? "…" : ""}` : "暂无成员标签"}
                   </span>
                 </div>
                 <div className="ex-row-actions">
                   <button className="btn btn-ghost ex-btn-sm" onClick={() => { openWorkspace(w.id); closeTabDrawer(); }}>打开</button>
-                  <button className="btn btn-ghost ex-btn-sm ex-danger" onClick={() => deleteWorkspace(w.id)}>删除</button>
+                  <button className="btn btn-ghost ex-btn-sm" onClick={() => openWorkspaceEditor(w.id)}>编辑</button>
+                  {w.live ? (
+                    <button className="btn btn-ghost ex-btn-sm" title="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</button>
+                  ) : null}
+                  <button
+                    className="btn btn-ghost ex-btn-sm ex-danger"
+                    title="彻底删除：连同其中的标签页一起关闭"
+                    onClick={() =>
+                      void confirmOk(`彻底删除工作区「${w.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+                        if (ok) closeLiveWorkspace(w.id);
+                      })
+                    }
+                  >
+                    彻底删除
+                  </button>
                 </div>
               </div>
             );
@@ -333,6 +353,7 @@ function SearchTabResults({ query, onMove }: { query: string; onMove: (tab: Expl
 
 function TabDrawerInner(): ReactNode {
   const open = useDrawerOpen();
+  const layout = useTabLayoutMode();
   const [closing, requestClose] = useExitPhase(closeTabDrawer, open);
   const expanded = useExpanded();
   const anchor = useAnchorPos("ex-bbar-tabs-btn", open, expanded);
@@ -374,6 +395,12 @@ function TabDrawerInner(): ReactNode {
           <span className="ex-sec-head-note">{pageTabs.length} 个工作标签</span>
           <button className="btn btn-ghost ex-btn-sm" onClick={requestClose}>完成</button>
         </header>
+        <div className="ex-seg-row">
+          <div className="segmented ex-seg" role="tablist" aria-label="标签栏布局">
+            <button className={layout === "h" ? "is-active" : ""} role="tab" aria-selected={layout === "h"} onClick={() => setTabLayoutMode("h")}>横版</button>
+            <button className={layout === "v" ? "is-active" : ""} role="tab" aria-selected={layout === "v"} onClick={() => setTabLayoutMode("v")}>竖版</button>
+          </div>
+        </div>
         <div className="ex-sheet-body">
           <div className="ex-sheet-search">
             <input

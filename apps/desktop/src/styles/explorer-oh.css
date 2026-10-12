@@ -324,3 +324,9 @@
 }
 .dock-oh-missing b { display: block; margin-bottom: 6px; color: var(--text-1); font-size: 14px; }
 .dock-oh-missing p { margin: 4px 0; }
+
+/* 胶囊内常驻一星：贴右缘，搜索展开时不渲染（OhCapsule 控制） */
+.ohx-slot { flex: none; display: inline-block; width: 24px; height: 22px; } /* 与右侧星星等宽，让占位文字居中 */
+.ohx-star { position: static; margin-left: 0; margin-right: 2px; flex: none; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; color: var(--text-3, #9aa0a6); cursor: pointer; }
+.ohx-star:hover { background: var(--hover, rgba(0, 0, 0, 0.06)); color: var(--text-1); }
+.ohx-star.is-lit { color: #e8a317; }

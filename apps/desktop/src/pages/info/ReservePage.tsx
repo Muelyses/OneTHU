@@ -12,7 +12,7 @@
  * navParams 身份触发的 effect）；页内切换不回写参数。
  */
 import { useEffect, useState } from "react";
-import { PageAtomStar } from "../..//components/Collect.js";
+import { RootPageStar } from "../../components/Collect.js";
 import { SegmentedOverflow, Card, Empty, PageHead } from "../../components/Layout.js";
 import type { LearnNav } from "../../state/app.js";
 import { useApp } from "../../state/context.js";
@@ -46,7 +46,7 @@ const PARAM_TO_TAB: Record<NonNullable<LearnNav["reserveTab"]>, ReserveTab> = {
 };
 
 export function ReservePage() {
-  const { navParams } = useApp();
+  const { navParams, navigate } = useApp();
   const direct = navParams?.reserveTab ? PARAM_TO_TAB[navParams.reserveTab] : undefined;
   const [tab, setTab] = useState<ReserveTab>(() => direct ?? "library");
   // 页签切换方向（决定内容从哪一侧滑入）
@@ -67,11 +67,18 @@ export function ReservePage() {
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
   };
 
+  /* 子栏目回写到标签 params（反向映射页内 tab → 契约参数值；"more" 仅页内可达，不回写） */
+  useEffect(() => {
+    const param = (Object.keys(PARAM_TO_TAB) as Array<keyof typeof PARAM_TO_TAB>).find((k) => PARAM_TO_TAB[k] === tab);
+    if (!param || navParams?.reserveTab === param) return;
+    navigate("reserve", { reserveTab: param });
+  }, [tab, navParams?.reserveTab, navigate]);
+
   return (
     <>
      <PageHead
        title="预约"
-       actions={<PageAtomStar atomKey={({ library: "reserve-lib", libroom: "reserve-room", classroom: "reserve-classroom", sports: "reserve-sports", kongjian: "reserve-kongjian" } as Record<string, string>)[tab] ?? ""} title="预约页 · 当前栏目" />}
+       actions={<RootPageStar page="reserve" title="预约" />}
      />
       <SegmentedOverflow ariaLabel="预约功能" style={{ marginBottom: 14 }}>
         {TABS.map(({ id, label }) => (

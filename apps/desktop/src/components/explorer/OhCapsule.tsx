@@ -15,8 +15,12 @@
  *  - 按住上划 >110px → 松手发 requestOhPanel("oh")：ChatDock 视语音中的面板命令为取消；
  *  - 展开态点击输入框本体不触发手势（打字、选词不误关窗）。
  */
-import { useRef, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { useRef, useState, useSyncExternalStore, type ReactNode, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { HarnessMark } from "../HarnessMark.js";
+import { useOnePageStar } from "../Collect.js";
+import { atomRefOfTab, StarGlyph } from "./TabStrip.js";
+import { getTab, useExplorerState } from "../../state/explorer.js";
+import { resolveTabTitle } from "../../state/tabTitles.js";
 import { requestOhPanel, requestOhVoice } from "../../plugins/ohControl.js";
 import {
   VoiceBar, useDockBadge, useDockUi,
@@ -151,6 +155,7 @@ export function OhCapsule(): React.ReactNode {
       onLostPointerCapture={onLostCapture}
       onKeyDown={onKeyDown}
     >
+      {!voiceOn && !isOpen ? <span className="ohx-slot" aria-hidden="true" /> : null}
       <HarnessMark size={15} />
       {voiceOn ? (
         /* 收音中：本体就是波纹条（点位动画引擎在 ChatDock，全局 .dock-wave-dot 直写） */
@@ -172,6 +177,45 @@ export function OhCapsule(): React.ReactNode {
         <span className="ohx-capsule-ph">{idleText}</span>
       )}
       {badge > 0 && !voiceOn ? <span className="ohx-capsule-badge">{badge > 9 ? "9+" : badge}</span> : null}
+      {!voiceOn && !isOpen ? <CapsuleStar /> : null}
     </button>
+  );
+}
+
+/** 胶囊里常驻的一星（像浏览器地址栏的星）：跟随当前激活标签；搜索展开时隐藏。状态机同 OnePage 一星 */
+function CapsuleStar(): ReactNode {
+  const { activeId } = useExplorerState();
+  const tab = getTab(activeId);
+  const isPage = !!tab && tab.kind === "page";
+  const ref = isPage && tab ? atomRefOfTab(tab) : null;
+  const title = isPage && tab ? resolveTabTitle(tab.page, tab.params) : { label: "", full: "" };
+  const { lit, toggle } = useOnePageStar(ref, title.label, title.full);
+  if (!ref) return null;
+  const stop = (e: { stopPropagation: () => void; preventDefault: () => void }): void => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      className={"ohx-star" + (lit ? " is-lit" : "")}
+      aria-label={lit ? "取消星标" : "收藏为 OnePage"}
+      aria-pressed={lit}
+      title={lit ? "取消星标：删除该 OnePage" : "一星：把当前页面收藏成 OnePage"}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        stop(e);
+        void toggle();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          stop(e);
+          void toggle();
+        }
+      }}
+    >
+      <StarGlyph />
+    </span>
   );
 }

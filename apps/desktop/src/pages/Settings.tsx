@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
+import { setTabLayoutDefault, useTabLayoutDefault } from "../state/tabLayout.js";
 import { SoftwareUpdateSection } from "../components/SoftwareUpdateSection.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
@@ -1718,6 +1719,7 @@ function DiagnosticsRow() {
 /** 外观：昼夜主题调度——跟随系统暗/亮自动切日夜两档主题 */
 function AppearanceSection(): ReactNode {
   const snap = useThemes();
+  const tabLayoutDefault = useTabLayoutDefault();
   /* 动态取色（§3.4）：原生探活一次决定开关是否可用。
      桌面与 Android < 12 都返回"不可用"——此时开关置灰而不是隐藏，让用户知道原因。 */
   const [dyn, setDyn] = useState(isDynamicEnabled());
@@ -1760,6 +1762,17 @@ function AppearanceSection(): ReactNode {
   const themes = [{ id: "", name: "默认外观" }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
   return (
     <div className="setting-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
+      {/* 标签栏默认样式：横版（顶部一排）｜竖版（左侧栏）；标签栏上的切换钮可随时改，这里定的是默认值 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+        <div>
+          <div className="setting-title">标签栏样式</div>
+          <div className="setting-desc">横版：标签在顶部一排；竖版：标签在左侧栏。标签栏上的切换钮可随时改，这里设的是默认值。</div>
+        </div>
+        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+          <button className={"btn " + (tabLayoutDefault === "h" ? "btn-primary" : "btn-ghost")} style={{ flex: "none" }} aria-pressed={tabLayoutDefault === "h"} onClick={() => setTabLayoutDefault("h")}>横版</button>
+          <button className={"btn " + (tabLayoutDefault === "v" ? "btn-primary" : "btn-ghost")} style={{ flex: "none" }} aria-pressed={tabLayoutDefault === "v"} onClick={() => setTabLayoutDefault("v")}>竖版</button>
+        </div>
+      </div>
       {/* 主题（① 2026-10-11 用户拍板）：这里**只做切换**，且**只列已启用**的主题（未启用插件的不出现）；
           启用/停用在「插件」里，安装主题走右边那个按钮（跳市场 + 自动筛「主题」）。 */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>

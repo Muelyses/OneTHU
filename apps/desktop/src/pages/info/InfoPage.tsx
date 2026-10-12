@@ -18,7 +18,7 @@
  * 当前 tab 被隐藏时回落到第一个可见栏目。
  */
 import { useEffect, useState } from "react";
-import { PageAtomStar } from "../..//components/Collect.js";
+import { RootPageStar } from "../../components/Collect.js";
 import { Empty, PageHead, SegmentedOverflow } from "../../components/Layout.js";
 import { TabManageModal } from "../../components/TabManageModal.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../../lib/tabLayout.js";
@@ -49,7 +49,7 @@ const TAB_IDS = TABS.map((t) => t.id);
 const DEFAULT_LAYOUT: TabLayout = { order: TAB_IDS, hidden: [] };
 
 export function InfoPage() {
-  const { navParams } = useApp();
+  const { navParams, navigate } = useApp();
   /** 首页新闻直达的 xxid（下传 NewsTab 后由其消费置回 null）。
    *  用 navParams 对象身份作 effect 依赖：navigate 每次都新建参数对象，
    *  同一条新闻重复点击也能再次触发打开。 */
@@ -103,13 +103,19 @@ export function InfoPage() {
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
   };
 
+  /* 子栏目是本地 state：切换后回写到本标签的 params，标签名 / 悬停小字 / 一星原子才会跟着变 */
+  useEffect(() => {
+    if (!effTab || navParams?.infoTab === effTab) return;
+    navigate("info", { infoTab: effTab });
+  }, [effTab, navParams?.infoTab, navigate]);
+
   return (
     <>
       <PageHead
         title="信息"
         actions={
           <>
-            <PageAtomStar atomKey={"info-" + (effTab ?? "")} title="信息页 · 当前栏目" />
+            <RootPageStar page="info" title="信息" />
             <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
               管理栏目
             </button>

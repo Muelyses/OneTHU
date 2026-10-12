@@ -9,13 +9,13 @@
  *
  * 子栏直达（首页入口化）：navigate("life", { lifeTab }) 指定初始 tab（缺省宿舍），
  * 与 InfoPage 的 infoNewsId 同款消费模式（挂载初值 + navParams 身份触发的
- * effect）；页内切换不回写参数。
+ * effect）；页内切换回写到标签 params（标签名随栏目变化）。
  *
  * 栏目管理（tabLayout）：栏目可选择隐藏 + ↑↓ 调序，localStorage 持久化；
  * 当前 tab 被隐藏时回落到第一个可见栏目。
  */
 import { useEffect, useState } from "react";
-import { PageAtomStar } from "../..//components/Collect.js";
+import { RootPageStar } from "../../components/Collect.js";
 import { Empty, PageHead, SegmentedOverflow } from "../../components/Layout.js";
 import { TabManageModal } from "../../components/TabManageModal.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../../lib/tabLayout.js";
@@ -48,7 +48,7 @@ const TAB_IDS = TABS.map((t) => t.id);
 const DEFAULT_LAYOUT: TabLayout = { order: TAB_IDS, hidden: [] };
 
 export function LifePage() {
-  const { navParams } = useApp();
+  const { navParams, navigate } = useApp();
   const [tab, setTab] = useState<LifeTab>(() => navParams?.lifeTab ?? "dorm");
   /** 已激活过的 tab 保持挂载：切回即显（数据在 hook 里，无需重复请求） */
   const [visited, setVisited] = useState<ReadonlySet<LifeTab>>(() => new Set([navParams?.lifeTab ?? "dorm"]));
@@ -79,13 +79,19 @@ export function LifePage() {
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
   };
 
+  /* 子栏目回写到标签 params：标签名（生活·宿舍/洗衣机…）与一星原子才随栏目变化 */
+  useEffect(() => {
+    if (!effTab || navParams?.lifeTab === effTab) return;
+    navigate("life", { lifeTab: effTab });
+  }, [effTab, navParams?.lifeTab, navigate]);
+
   return (
     <>
       <PageHead
         title="生活"
         actions={
           <>
-            <PageAtomStar atomKey={"life-" + (effTab ?? "")} title="生活页 · 当前栏目" />
+            <RootPageStar page="life" title="生活" />
             <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
               管理栏目
             </button>

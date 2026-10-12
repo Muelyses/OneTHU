@@ -12,7 +12,8 @@ import { useExitPhase } from "../lib/useExitPhase.js";
 import { Empty } from "./Layout.js";
 import { IconChevron, IconFolderPlus, IconSearch, IconStar } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
-import { pageAtomRef, resolveAtom, searchAtoms, type AtomHit } from "../state/atoms.js";
+import { pageAtomRef, resolveAtom, searchAtoms, tabAtomKey, type AtomHit } from "../state/atoms.js";
+import { confirmOk } from "../lib/confirm.js";
 import type { AtomRef } from "../state/favorites.js";
 
 /** 星标按钮：已收录点亮；点击开弹层 */
@@ -41,11 +42,64 @@ export function CollectStar({ atom, title }: { atom: AtomRef; title?: string }) 
 }
 
 /** 「收藏到…」弹层：多选收藏夹 + 当场新建 */
-/** 页头页面收藏项星标：聚合页随当前 tab 换目标（key 未注册时不渲染） */
+/**
+ * 一星 OnePage（页头 / 标签共用语义，用户定案 2026-10-12）：
+ * - 未收录 → 新建以名字命名的独立 OnePage，并把该原子放进去；
+ * - 已收录 → 先用应用内确认弹窗（window.confirm 在 Tauri 下静默 false，不可用）再删除该 OnePage 本体。
+ */
+export function useOnePageStar(ref: AtomRef | null, name: string, full: string): { lit: boolean; toggle: () => Promise<void> } {
+  const favs = useFavs();
+  const hits = ref ? favs.foldersContaining(ref) : [];
+  const folderId = hits[0] ?? null;
+  const toggle = async (): Promise<void> => {
+    if (!ref) return;
+    if (!folderId) {
+      const id = favs.create(name, null);
+      if (id) favs.addAtom(id, ref);
+      return;
+    }
+    const ok = await confirmOk(
+      `确定删除 OnePage「${name}」（${full}）？\n其内容和在其他 OnePage 中的入口都会永久消失！`,
+    );
+    if (ok) favs.remove(folderId);
+  };
+  return { lit: folderId !== null, toggle };
+}
+
+/** 一星按钮：点亮 = 已有独立 OnePage 收录该页 */
+export function OnePageStar({ atom, name, full, title }: { atom: AtomRef | null; name: string; full: string; title?: string }) {
+  const { lit, toggle } = useOnePageStar(atom, name, full);
+  if (!atom) return null;
+  return (
+    <button
+      type="button"
+      className={"collect-star" + (lit ? " is-on" : "")}
+      aria-label={(lit ? "取消星标" : "收藏为 OnePage") + (title ? "：" + title : "")}
+      aria-pressed={lit}
+      title={lit ? "取消星标：删除该 OnePage" : "一星：把当前页面收藏成 OnePage"}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        void toggle();
+      }}
+    >
+      <IconStar width={14} height={14} />
+    </button>
+  );
+}
+
+/** 页头页面收藏项星标（一级页面本体）：key 命中 PAGE_ATOMS 才渲染 */
 export function PageAtomStar({ atomKey, title }: { atomKey: string; title: string }) {
   const ref = pageAtomRef(atomKey);
+  const view = ref ? resolveAtom(ref) : null;
   if (!ref) return null;
-  return <CollectStar atom={ref} title={title} />;
+  return <OnePageStar atom={ref} name={view?.title ?? title} full={view?.sub ?? title} title={title} />;
+}
+
+/** 一级页面（无具体子栏目参数）的页头星标：收藏的是页面本体，不是当前子栏目 */
+export function RootPageStar({ page, title }: { page: string; title: string }) {
+  const ref: AtomRef = { kind: "tab", key: tabAtomKey(page) };
+  return <OnePageStar atom={ref} name={title} full={title} title={title} />;
 }
 
 export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => void }) {

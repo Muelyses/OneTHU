@@ -249,6 +249,7 @@ export const IconStar = (p: SVGProps<SVGSVGElement>) => (
 
 export const FOLDER_ICONS: Record<string, (p: SVGProps<SVGSVGElement>) => ReactElement> = {
   folder: IconFolder,
+  fist: (p) => <IconFist {...p} />,
   star: IconStar,
   pin: IconPin,
   today: IconToday,

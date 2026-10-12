@@ -33,6 +33,10 @@ import { useSegPill } from "../lib/motion.js";
 import { ErrorLine } from "./Details.js";
 import { CommandPalette } from "./CommandPalette.js";
 import { TabStrip } from "./explorer/TabStrip.js";
+import { ContextMenuHost } from "./explorer/ContextMenu.js";
+import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
+import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
+import { useTabLayoutMode } from "../state/tabLayout.js";
 import { BottomBar } from "./explorer/BottomBar.js";
 import { TabDrawer } from "./explorer/TabDrawer.js";
 import { OneGoSheet } from "./explorer/OneGoSheet.js";
@@ -110,7 +114,75 @@ function CopyGlyph(): ReactNode {
   );
 }
 
+/** 竖版标签栏：左侧栏（横版时不渲染）；同时给根节点打 tabs-vertical，主内容区据此让出左栏 */
+/** 侧栏宽窄切换图标（一条竖线把方框分成左栏） */
+function SidebarGlyph(): ReactNode {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <rect x={3} y={4} width={18} height={16} rx={3} />
+      <line x1={9} y1={4} x2={9} y2={20} />
+    </svg>
+  );
+}
+
+/** 竖版侧栏底部：复制 / 设置 / 宽窄切换（完整 ↔ 窄）。窄模式下竖排 */
+function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarrow: () => void }): ReactNode {
+  const { activeId } = useExplorerState();
+  const canDup = activeId !== HOME_TAB_ID;
+  return (
+    <div className="ex-rail-actions">
+      <button className="icon-btn" onClick={() => duplicateTab(activeId)} disabled={!canDup} aria-label="复制当前标签页（独立实例）" title="复制当前标签页">
+        <CopyGlyph />
+      </button>
+      <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
+        <IconSettings width={16} height={16} />
+      </button>
+      <button
+        className="icon-btn ex-rail-width"
+        onClick={onToggleNarrow}
+        aria-pressed={narrow}
+        aria-label={narrow ? "侧栏：窄（悬停展开）→ 切换为完整" : "侧栏：完整 → 切换为窄（悬停展开）"}
+        title={narrow ? "切换为完整显示" : "切换为窄模式（缩略图，悬停展开）"}
+      >
+        <SidebarGlyph />
+      </button>
+    </div>
+  );
+}
+
+const RAIL_NARROW_KEY = "ex-rail-narrow";
+
+function TabRail(): ReactNode {
+  const mode = useTabLayoutMode();
+  const [narrow, setNarrow] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(RAIL_NARROW_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    document.documentElement.classList.toggle("tabs-vertical", mode === "v");
+  }, [mode]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("rail-narrow", mode === "v" && narrow);
+    try {
+      localStorage.setItem(RAIL_NARROW_KEY, narrow ? "1" : "0");
+    } catch {
+      /* 存不了就只在本次会话生效 */
+    }
+  }, [mode, narrow]);
+  if (mode !== "v") return null;
+  return (
+    <aside className="ex-rail" aria-label="标签页">
+      <TabStrip />
+      <RailActions narrow={narrow} onToggleNarrow={() => setNarrow((v) => !v)} />
+    </aside>
+  );
+}
+
 function TopBar(): ReactNode {
+  const layout = useTabLayoutMode();
   const [scrolled, setScrolled] = useState(false);
   const { activeId } = useExplorerState();
   const canDup = activeId !== HOME_TAB_ID;
@@ -120,23 +192,30 @@ function TopBar(): ReactNode {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+  // 竖版：顶栏退场，标签与复制/设置都在左侧栏
+  if (layout === "v") return null;
   return (
     <header className={"explorer-topbar" + (scrolled ? " is-scrolled" : "")}>
       {/* dev-explorer（用户拍板）：OneTHU 品牌标与「首页」标签并成 TabStrip 首位，左上单独的
           Logo 钮退役——复制按钮成为顶栏最左；首页仍恒在（TabStrip 首位不可关） */}
-      <button
-        className="icon-btn"
-        onClick={() => duplicateTab(activeId)}
-        disabled={!canDup}
-        aria-label="复制当前标签页（独立实例）"
-      >
-        <CopyGlyph />
-      </button>
-      <TabStrip />
+      {/* 竖版：复制 / 设置移到左侧栏底部，顶栏只保留横版标签条 */}
+      {layout === "h" ? (
+        <button
+          className="icon-btn"
+          onClick={() => duplicateTab(activeId)}
+          disabled={!canDup}
+          aria-label="复制当前标签页（独立实例）"
+        >
+          <CopyGlyph />
+        </button>
+      ) : null}
+      {layout === "h" ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
-      <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
-        <IconSettings width={16} height={16} />
-      </button>
+      {layout === "h" ? (
+        <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
+          <IconSettings width={16} height={16} />
+        </button>
+      ) : null}
     </header>
   );
 }
@@ -303,11 +382,15 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="shell explorer-shell">
       <TopBar />
+      <TabRail />
       <main className="content explorer-content">{children}</main>
       <BottomBar />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />
       <OneGoSheet />
+      <ContextMenuHost />
+      <WorkspaceEditorHost />
+      <FolderIconPickerHost />
       {/* 命令面板：⌘/Ctrl+K 或顶栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
       <CommandPalette />
       {/* 设置浮层（个人设置 / 插件 / OneTHU Harness）：不是标签页，高于任何标签页 */}

@@ -8,7 +8,7 @@
  */
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { deleteWorkspace, explorerSnapshot, focusTab, HOME_TAB_ID, openTab, openWorkspace, subscribeExplorer } from "../../state/explorer.js";
+import { closeLiveWorkspace, dissolveWorkspace, explorerSnapshot, focusTab, HOME_TAB_ID, openTab, openWorkspace, subscribeExplorer } from "../../state/explorer.js";
 import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useAnchorPos } from "./TabDrawer.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
@@ -18,6 +18,10 @@ import type { LearnNav, Page } from "../../state/app.js";
 import { useApp } from "../../state/context.js";
 import { FolderIcon } from "../Icons.js";
 import { WorkspacePanel } from "./TabDrawer.js";
+import { openContextMenu } from "./ContextMenu.js";
+import { openFolderIconPicker } from "./FolderIconPicker.js";
+import { confirmOk } from "../../lib/confirm.js";
+import { openWorkspaceEditor } from "./WorkspaceEditor.js";
 
 /* ══════════ 抽屉开合 store（palette.ts 同款） ══════════ */
 
@@ -97,8 +101,8 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
             const f = favs.data.folders[id];
             const title = f?.title ?? "OnePage";
             return (
+              <div key={id} className="ex-row-wrap">
               <button
-                key={id}
                 className="ex-row ex-row-clickable"
                 onClick={() => {
                   /* 用户定案：OnePage 点进去=页面本体——单 page 原子的 OnePage 用 resolveAtom
@@ -118,12 +122,14 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
                   onDone();
                 }}
               >
-                <span className="ex-row-icon"><FolderIcon name={f?.icon} /></span>
+                <span className="ex-row-icon"><FolderIcon name={f?.icon ?? "fist"} /></span>
                 <span className="ex-row-main">
                   <span className="ex-row-title">{title}</span>
                   <span className="ex-row-sub">{(f?.items?.length ?? 0)} 项</span>
                 </span>
               </button>
+              <button className="btn btn-ghost ex-btn-sm" onClick={() => openFolderIconPicker(id)}>更换图标</button>
+              </div>
             );
           })}
         </div>
@@ -156,20 +162,22 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
               const f = favs.data.folders[id];
               const title = f?.title ?? "OnePage";
               return (
+                <div key={id} className="ex-row-wrap">
                 <button
-                  key={id}
                   className="ex-row ex-row-clickable"
                   onClick={() => {
                     openTab("folder", { folderId: id }, { title });
                     onDone();
                   }}
                 >
-                  <span className="ex-row-icon"><FolderIcon name={f?.icon} /></span>
+                  <span className="ex-row-icon"><FolderIcon name={f?.icon ?? "fist"} /></span>
                   <span className="ex-row-main">
                     <span className="ex-row-title">{title}</span>
                     <span className="ex-row-sub">{f?.items?.length ?? 0} 项</span>
                   </span>
                 </button>
+                <button className="btn btn-ghost ex-btn-sm" onClick={() => openFolderIconPicker(id)}>更换图标</button>
+                </div>
               );
             })}
           </div>
@@ -190,7 +198,21 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
                 </div>
                 <div className="ex-row-actions">
                   <button className="btn btn-ghost ex-btn-sm" onClick={() => { openWorkspace(w.id); onDone(); }}>打开</button>
-                  <button className="btn btn-ghost ex-btn-sm ex-danger" onClick={() => deleteWorkspace(w.id)}>删除</button>
+                  <button className="btn btn-ghost ex-btn-sm" onClick={() => openWorkspaceEditor(w.id)}>编辑</button>
+                  {w.live ? (
+                    <button className="btn btn-ghost ex-btn-sm" title="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</button>
+                  ) : null}
+                  <button
+                    className="btn btn-ghost ex-btn-sm ex-danger"
+                    title="彻底删除：连同其中的标签页一起关闭"
+                    onClick={() =>
+                      void confirmOk(`彻底删除工作区「${w.name}」及其中的标签页？`).then((ok) => {
+                        if (ok) closeLiveWorkspace(w.id);
+                      })
+                    }
+                  >
+                    彻底删除
+                  </button>
                 </div>
               </div>
             ))}

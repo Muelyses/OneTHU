@@ -42,7 +42,17 @@ export interface ExplorerWorkspace {
   name: string;
   createdAt: number;
   tabs: Array<{ page: Page; params: LearnNav | null; title: string }>;
+  /** 活工作区（标签栏底板）：颜色 / logo / 折叠态；成员 = 标签的 workspaceId 归属 */
+  color?: string;
+  icon?: string;
+  collapsed?: boolean;
+  live?: boolean;
 }
+
+/** 工作区底板可选颜色（克制色板，底板用浅色 alpha 叠在标签栏上） */
+export const WORKSPACE_COLORS = ["#5b8def", "#22c55e", "#f59e0b", "#f25a5a", "#a855f7", "#14b8a6", "#64748b"] as const;
+/** 工作区 logo 候选（图标键，由 TabStrip 映射到 Icons） */
+export const WORKSPACE_ICONS = ["folder", "star", "pin", "book", "flag", "orb", "learn", "info"] as const;
 
 /** 设置浮层入口（高于任何标签页；Entry 语义与旧 Layout 一致） */
 export type OverlayEntry = "settings" | "plugins" | "oh";
@@ -166,11 +176,16 @@ export function instanceKeyOf(page: Page, params: LearnNav | null): string {
   return page + (parts.length ? `?${parts.join("&")}` : "");
 }
 
-/** 找已打开的同实例标签页（不含 home；singleton 页按 page 精确匹配） */
+/**
+ * 找已打开的同实例标签页（不含 home；singleton 页按 page 精确匹配）。
+ * 工作区里的标签（workspaceId 非空）永不被复用——既不被工作区外的入口复用，
+ * 也不跨工作区复用，避免把别人的底板里的标签拎出来「聚焦」。
+ */
 export function findInstanceTab(page: Page, params: LearnNav | null): ExplorerTab | null {
-  if (isSingletonPage(page)) return state.tabs.find((t) => t.page === page) ?? null;
+  const free = state.tabs.filter((t) => t.workspaceId == null);
+  if (isSingletonPage(page)) return free.find((t) => t.page === page) ?? null;
   const key = instanceKeyOf(page, params);
-  return state.tabs.find((t) => instanceKeyOf(t.page, t.params) === key) ?? null;
+  return free.find((t) => instanceKeyOf(t.page, t.params) === key) ?? null;
 }
 
 /* ══════════ 标题（静态兜底；完整路径在 state/tabTitles.ts 数据感知解析） ══════════ */
@@ -402,6 +417,20 @@ export function moveTab(id: string, dir: -1 | 1): void {
   setState({ ...state, tabs });
 }
 
+/** 拖动改顺序：把标签移到目标下标；首页（若存在于 0 位）钉死，任何拖动都不越过它 */
+export function reorderTab(id: string, toIndex: number): void {
+  const from = state.tabs.findIndex((t) => t.id === id);
+  if (from < 0) return;
+  const min = state.tabs[0]?.kind === "home" ? 1 : 0;
+  const to = Math.max(min, Math.min(state.tabs.length - 1, toIndex));
+  if (to === from) return;
+  if (state.tabs[from]?.kind === "home") return;
+  const tabs = [...state.tabs];
+  const [moved] = tabs.splice(from, 1);
+  tabs.splice(to, 0, moved!);
+  setState({ ...state, tabs });
+}
+
 /** 移动标签页进出工作区（TabDrawer 行内「移入/移出工作区」） */
 export function setTabWorkspace(id: string, workspaceId: string | null): void {
   const tabs = state.tabs.map((t) => (t.id === id ? { ...t, workspaceId } : t));
@@ -450,6 +479,53 @@ export function saveWorkspace(name: string, tabIds?: string[]): string {
   return ws.id;
 }
 
+/** 现场建活工作区（标签栏拖拽停留后松手）：成员标签归属到新工作区，底板颜色/名字/logo 由用户现选 */
+export function createLiveWorkspace(opts: { name: string; color: string; icon: string }, tabIds: string[]): string {
+  const ws: ExplorerWorkspace = {
+    id: `w_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
+    name: opts.name.trim() || "工作区",
+    createdAt: Date.now(),
+    tabs: [],
+    color: opts.color,
+    icon: opts.icon,
+    collapsed: false,
+    live: true,
+  };
+  const ids = new Set(tabIds);
+  const tabs = state.tabs.map((t) => (ids.has(t.id) && t.kind === "page" ? { ...t, workspaceId: ws.id } : t));
+  setState({ ...state, tabs, workspaces: [ws, ...state.workspaces].slice(0, 50) });
+  return ws.id;
+}
+
+/** 把标签并入已有工作区（拖入底板）；workspaceId=null 即拖出工作区（不影响 OneGO 中的工作区定义） */
+export function setTabsWorkspace(tabIds: string[], workspaceId: string | null): void {
+  const ids = new Set(tabIds);
+  const tabs = state.tabs.map((t) => (ids.has(t.id) && t.kind === "page" ? { ...t, workspaceId } : t));
+  setState({ ...state, tabs });
+}
+
+/** 把一组标签（可能是整个工作区）整体挪到 state.tabs 的 index 位置（index 为去掉这组标签后的下标）；组内相对顺序不变 */
+export function moveTabsBlock(ids: string[], index: number): void {
+  const set = new Set(ids);
+  const block = state.tabs.filter((t) => set.has(t.id));
+  const rest = state.tabs.filter((t) => !set.has(t.id));
+  const at = Math.max(0, Math.min(rest.length, index));
+  setState({ ...state, tabs: [...rest.slice(0, at), ...block, ...rest.slice(at)] });
+}
+
+/** 工作区底板：改名 / 颜色 / logo / 折叠 */
+export function patchLiveWorkspace(id: string, patch: Partial<Pick<ExplorerWorkspace, "name" | "color" | "icon" | "collapsed">>): void {
+  const workspaces = state.workspaces.map((w) => (w.id === id ? { ...w, ...patch } : w));
+  setState({ ...state, workspaces });
+}
+
+/** 关闭工作区：关掉其成员标签并移除工作区定义（底板上的大关闭按钮） */
+export function closeLiveWorkspace(id: string): void {
+  const members = state.tabs.filter((t) => t.workspaceId === id).map((t) => t.id);
+  for (const tid of members) closeTab(tid);
+  setState({ ...state, workspaces: state.workspaces.filter((w) => w.id !== id) });
+}
+
 /** 一键恢复：同实例聚焦（并把归属补上）、缺的补开（带归属），最后聚焦工作区最后一项 */
 export function openWorkspace(id: string): void {
   const ws = state.workspaces.find((w) => w.id === id);
@@ -472,6 +548,35 @@ export function deleteWorkspace(id: string): void {
   // 成员归属清空（标签页不删，只退组）
   const tabs = state.tabs.map((t) => (t.workspaceId === id ? { ...t, workspaceId: null } : t));
   setState({ ...state, tabs, workspaces: state.workspaces.filter((w) => w.id !== id) });
+}
+
+/** 解散：成员标签保留并退组；工作区本身留在 OneGO（转为「已保存」，成员快照下来，可一键恢复）。
+ *  对已保存（非活）工作区无成员时不做任何改动，免得把快照冲掉。 */
+export function dissolveWorkspace(id: string): void {
+  const members = state.tabs.filter((t) => t.workspaceId === id && t.kind === "page");
+  if (members.length === 0) return;
+  const snap = members.map((t) => ({ page: t.page, params: t.params, title: t.title }));
+  const tabs = state.tabs.map((t) => (t.workspaceId === id ? { ...t, workspaceId: null } : t));
+  const workspaces = state.workspaces.map((w) => (w.id === id ? { ...w, live: false, collapsed: false, tabs: snap } : w));
+  setState({ ...state, tabs, workspaces });
+}
+
+/** 已解散/已保存工作区：从快照里移除第 index 个标签（不影响实时标签） */
+export function removeSavedWorkspaceTab(id: string, index: number): void {
+  setState({ ...state, workspaces: state.workspaces.map((w) => (w.id === id ? { ...w, tabs: w.tabs.filter((_, i) => i !== index) } : w)) });
+}
+
+/** 已解散/已保存工作区：向快照加入一个标签（同实例去重） */
+export function addSavedWorkspaceTab(id: string, entry: { page: Page; params: LearnNav | null; title: string }): void {
+  setState({
+    ...state,
+    workspaces: state.workspaces.map((w) => {
+      if (w.id !== id) return w;
+      const key = JSON.stringify([entry.page, entry.params]);
+      if (w.tabs.some((e) => JSON.stringify([e.page, e.params]) === key)) return w;
+      return { ...w, tabs: [...w.tabs, entry] };
+    }),
+  });
 }
 
 export function renameWorkspace(id: string, name: string): void {

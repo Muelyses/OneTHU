@@ -21,8 +21,11 @@
 
 /* ── 顶栏：首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮（恒在） ── */
 .explorer-topbar {
-  position: sticky;
+  /* 全平台 fixed（不再用 sticky）：顶置/底部两形态都不随页滚走（用户实测 sticky 链失效） */
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 60;
   display: flex;
   align-items: center;
@@ -47,6 +50,7 @@
 
 /* ── 内容区：顶栏 sticky 不占位差，底栏固定 → 内容给底栏让位 ── */
 .explorer-content {
+  padding-top: 46px; /* 手机：TopBar fixed 占位（桌面媒体查询里另给 94） */
   padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 

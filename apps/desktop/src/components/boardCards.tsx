@@ -533,7 +533,7 @@ function WeatherCard({ size }: { size?: WidgetSize }): ReactNode {
     <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", gap: 4, padding: "2px 4px" }}>
       {!w ? (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, height: "100%" }}>
-          <span style={{ fontSize: "var(--text-sm)", color: "var(--text-3)" }}>{snap.reason ? "天气暂不可用" : "天气加载中"}</span>
+          <span style={{ fontSize: "var(--text-sm)", color: "var(--text-3)" }}>{snap.reason ? "天气拉取失败，可重试" : "天气加载中"}</span>
           <button type="button" className="btn btn-ghost" style={{ height: 22, fontSize: "var(--text-xs)" }} onClick={() => void refreshWeather(true)}>
             重试
           </button>

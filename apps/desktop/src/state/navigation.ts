@@ -116,7 +116,7 @@ export const NAV_REGISTRY: NavEntry[] = [
   { id: "cloud", name: "云盘", category: "行政", visibility: "group", page: "cloud", needBind: "cloud", keywords: ["云盘", "Seafile", "文件", "资料库"] },
   { id: "thos", name: "在线服务", category: "行政", visibility: "group", page: "thos", keywords: ["THOS", "服务大厅", "报备", "入校", "亲友"], note: "亲友入校报备前置顶（P2 时间敏感项）" },
   { id: "info-profile", name: "个人信息", category: "行政", visibility: "group", page: "info", params: { infoTab: "profile" }, keywords: ["学籍", "个人信息"] },
-  { id: "info-fitness", name: "体测", category: "行政", visibility: "group", page: "info", params: { infoTab: "fitness" }, keywords: ["体测", "体质"] },
+  { id: "info-fitness", name: "体测成绩", category: "行政", visibility: "group", page: "info", params: { infoTab: "fitness" }, keywords: ["体测", "体质"] },
   { id: "info-news", name: "新闻", category: "行政", visibility: "group", page: "info", params: { infoTab: "news" }, keywords: ["新闻", "通知", "订阅"], note: "今日取前 3 条" },
   { id: "thubook", name: "Thubook", category: "行政", visibility: "group", page: "thubook", keywords: ["手册", "清华手册"] },
   { id: "otherinfo", name: "其他 Info 应用", category: "行政", visibility: "buried", page: "otherinfo", keywords: ["门户", "应用", "目录"] },

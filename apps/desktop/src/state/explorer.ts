@@ -195,19 +195,22 @@ const PAGE_TITLES: Partial<Record<Page, string>> = {
 };
 
 /** 聚合页栏目的中文短名（tab 可深链到具体栏目：信息-新闻，但主题仍是信息） */
+/* 一级页标题 + 子栏目名：与各页面原始栏目 TABS 一致（信息页/生活页/预约页）。
+ * 不得自行缩写（此前「体测成绩→体测」「校历→日历」「图书馆座位→图书馆」等缩略已撤回）。 */
+const PAGE_HEADER: Partial<Record<Page, string>> = { info: "信息", life: "生活", reserve: "预约" };
 const TAB_SUFFIX: Record<string, Record<string, string>> = {
-  info: { report: "成绩", fitness: "体测", exams: "考试", evaluation: "教评", calendar: "日历", news: "新闻", profile: "个人信息", courseinfo: "课程信息" },
-  life: { dorm: "宿舍", washer: "洗衣机", hygiene: "卫生", card: "校园卡", invoice: "票据", payroll: "工资", gradincome: "毕业生收入", network: "网络" },
-  reserve: { lib: "图书馆", libroom: "研讨间", classroom: "空教室", sports: "体育", kongjian: "公共空间" },
+  info: { report: "成绩", fitness: "体测成绩", exams: "考试", evaluation: "教学评估", calendar: "校历", news: "新闻", profile: "个人信息", courseinfo: "课程信息" },
+  life: { dorm: "宿舍", washer: "洗衣机", hygiene: "卫生成绩", card: "校园卡", invoice: "电子发票", payroll: "银行代发", gradincome: "研究生收入", network: "校园网" },
+  reserve: { lib: "图书馆座位", libroom: "研讨间", classroom: "空教室", sports: "体育", kongjian: "公共空间" },
 };
 
 export function titleOf(page: Page, params?: LearnNav | null, fallback?: string): string {
   if (fallback) return fallback;
-  const suffixes = TAB_SUFFIX[page];
-  if (suffixes) {
+  const header = PAGE_HEADER[page];
+  if (header) {
+    const suffixes = TAB_SUFFIX[page] ?? {};
     const key = page === "info" ? params?.infoTab : page === "life" ? params?.lifeTab : params?.reserveTab;
-    const base = NAV_REGISTRY.find((e) => e.page === page)?.name ?? PAGE_TITLES[page] ?? "页面";
-    if (key && suffixes[key]) return `${base} · ${suffixes[key]}`;
+    return key && suffixes[key] ? `${header} · ${suffixes[key]}` : header;
   }
   return NAV_REGISTRY.find((e) => e.page === page)?.name ?? PAGE_TITLES[page] ?? "页面";
 }

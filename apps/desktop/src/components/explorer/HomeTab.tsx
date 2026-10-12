@@ -146,7 +146,7 @@ function HomeCatalog(): ReactNode {
               );
             })}
           </div>
-          <div className="home-catalog-hint">常用功能可固定到下方今日卡片（编辑模式添加卡片），或收进 OneGO 页面。</div>
+          <div className="home-catalog-hint">常用功能可固定到下方今日卡片（编辑模式添加卡片），或收进 OneGO! 页面。</div>
         </div>
       ) : null}
     </section>

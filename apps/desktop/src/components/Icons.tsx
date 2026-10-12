@@ -289,6 +289,20 @@ export const IconClock = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** OneGO 品牌标（dev-explorer）：向右前方冲的拳头——竖直拳体旋转 42° 朝右上、
+    左下两条速度线表冲势；stroke 风格与全库统一 */
+export const IconFist = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <g transform="rotate(42 12 12)">
+      <rect x="6.9" y="5.8" width="10.2" height="9.2" rx="3" />
+      <path d="M10.3 5.8v2.6M13.7 5.8v2.6" />
+      <path d="M17.1 10.6c1.35-.4 2.15-1.1 2.15-2.25 0-.95-.78-1.65-1.85-1.65" />
+      <path d="M9.2 15v3.2a2.1 2.1 0 0 0 2.1 2.1h1.4a2.1 2.1 0 0 0 2.1-2.1V15" />
+    </g>
+    <path d="M3.4 13.2h3.1M2.6 16.7h2.5M4.4 20h2.3" />
+  </svg>
+);
+
 export const IconX = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M7 7l10 10M17 7l-10 10" />

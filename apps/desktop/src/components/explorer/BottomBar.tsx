@@ -6,7 +6,7 @@
  * - OneGO：打开 OneGoSheet。
  */
 import type { ReactNode } from "react";
-import { IconStar } from "../Icons.js";
+import { IconFist } from "../Icons.js";
 import { OhCapsule } from "./OhCapsule.js";
 import { openOneGoSheet, useOneGoSheetOpen } from "./OneGoSheet.js";
 import { openTabDrawer, useTabDrawerOpen } from "./TabDrawer.js";
@@ -39,11 +39,11 @@ export function BottomBar(): ReactNode {
       <div className="ex-bbar-center">
         <OhCapsule />
       </div>
-      <button className={"ex-bbar-btn" + (onegoOpen ? " is-open" : "")} onClick={openOneGoSheet} aria-expanded={onegoOpen} aria-label="OneGO">
+      <button className={"ex-bbar-btn" + (onegoOpen ? " is-open" : "")} onClick={openOneGoSheet} aria-expanded={onegoOpen} aria-label="OneGO!">
         <span className="ex-bbar-icon">
-          <IconStar width={20} height={20} />
+          <IconFist width={20} height={20} />
         </span>
-        <span className="ex-bbar-label">OneGO</span>
+        <span className="ex-bbar-label">OneGO!</span>
       </button>
     </nav>
   );

@@ -136,14 +136,14 @@ function OneGoSheetInner(): ReactNode {
   return createPortal(
     <>
       <div className={"ex-sheet-mask" + (closing ? " is-closing" : "")} onClick={requestClose} />
-      <aside className={"ex-sheet ex-onego" + (closing ? " is-closing" : "")} role="dialog" aria-label="OneGO">
+      <aside className={"ex-sheet ex-onego" + (closing ? " is-closing" : "")} role="dialog" aria-label="OneGO!">
         <header className="ex-sheet-head">
-          <b>OneGO</b>
+          <b>OneGO!</b>
           <span className="ex-sec-head-note">组织你的工作</span>
           <button className="btn btn-ghost ex-btn-sm" onClick={requestClose}>完成</button>
         </header>
         <div className="ex-seg-row">
-          <div className="segmented ex-seg" role="tablist" aria-label="OneGO 分段">
+          <div className="segmented ex-seg" role="tablist" aria-label="OneGO! 分段">
             <button className={seg === "favs" ? "is-active" : ""} role="tab" aria-selected={seg === "favs"} onClick={() => setSeg("favs")}>我的收藏</button>
             <button className={seg === "ws" ? "is-active" : ""} role="tab" aria-selected={seg === "ws"} onClick={() => setSeg("ws")}>工作区</button>
           </div>

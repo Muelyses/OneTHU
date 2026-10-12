@@ -1,14 +1,15 @@
 /* ══════════ Explorer 外壳样式（dev-explorer 革命）══════════
    本文件只写外壳（顶栏/内容区/设置浮层）；组件样式分治：
    explorer-ui.css（标签条/抽屉/底栏）· explorer-home.css（首页）· explorer-oh.css（OH 链路）。
-   全部复用 global.css 既有 token，不造新色值。 */
+   全部复用 global.css 既有 token，不造新色值。
+   分辨率口径：≥841px = 桌面/横屏（两行顶置全 fixed）；<841px = 手机（顶栏 top0+底栏 bottom0）。 */
 
 :root {
-  /* 底栏高度口径：ui 侧与 oh 侧（island 抬高）都对齐这个变量 */
+  /* 底栏高度口径：ui 侧与 oh 侧（胶囊/窗/FAB/island 抬高）都对齐这个变量 */
   --explorer-bar-h: 48px;
 }
 
-/* ── 壳：旧 .shell 是给侧栏用的 grid 两列——革命后改纵向 flex（顶栏/内容/底栏） ── */
+/* ── 壳：旧 .shell 是给侧栏用的 grid 两列——革命后改纵向 flex ── */
 .explorer-shell {
   display: flex;
   flex-direction: column;
@@ -19,9 +20,8 @@
   min-width: 0;
 }
 
-/* ── 顶栏：首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮（恒在） ── */
+/* ── 顶栏：首页 Logo（恒在）+ 复制 + 标签条 + 设置齿轮（恒在）；全平台 fixed 不随页滚走 ── */
 .explorer-topbar {
-  /* 全平台 fixed（不再用 sticky）：顶置/底部两形态都不随页滚走（用户实测 sticky 链失效） */
   position: fixed;
   top: 0;
   left: 0;
@@ -40,26 +40,58 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 .tb-home {
-  white-space: nowrap; /* (One THU) 品牌标不得折行 */
-  min-width: max-content; /* grid 内的 .word 会被 flex 行挤成竖排——钉死 max-content */
+  white-space: nowrap;
+  min-width: max-content;
   display: inline-flex;
   align-items: center;
   flex: none;
 }
 .tb-spring { flex: 1 1 0; }
+.tb-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--text-2);
+  flex: none;
+}
 
-/* ── 内容区：顶栏 sticky 不占位差，底栏固定 → 内容给底栏让位 ── */
+/* ── 内容区：手机 = 顶栏 46px + 底栏 48px 占位；桌面媒体查询里另给 94px ── */
 .explorer-content {
-  padding-top: 46px; /* 手机：TopBar fixed 占位（桌面媒体查询里另给 94） */
+  padding-top: 46px;
   padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
-/* 硬刷新 FAB 给底栏让位（原 bottom 18px 会压住 OneGO 按钮） */
+/* 硬刷新 FAB 给底栏让位 */
 .hard-refresh-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px) !important;
 }
 .hard-refresh-fab.top-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px) !important;
+}
+
+/* ══════════ 桌面/横屏（≥841px）：两行顶置（底栏上移第一行 / TopBar 其下第二行），
+        两行全 fixed，滚动不消失。本文件里此口径只此一块，严禁残留第四块。 ══════════ */
+@media (min-width: 841px) {
+  .explorer-shell > .ex-bbar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 48px !important;
+    z-index: 61;
+    border-top: 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: none;
+    padding-bottom: 0;
+  }
+  .explorer-topbar { top: 48px; }
+  .explorer-content { padding-top: 94px !important; padding-bottom: 28px; }
+  .hard-refresh-fab { bottom: 18px !important; }
+  .hard-refresh-fab.top-fab { bottom: 74px !important; }
 }
 
 /* ── 设置浮层：高于任何标签页（手机全屏 / 桌面右侧推入） ── */
@@ -103,7 +135,6 @@
   align-items: center;
   gap: 4px;
   margin: 0 auto;
-  /* 无灰槽容器（用户点名的灰色按钮）：项自己成 pill，非活动=描边中性，活动=黑 primary */
 }
 .settings-seg-item {
   position: relative;
@@ -134,34 +165,9 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
-/* 设置页/插件页在浮层内的留白：页面本体是 fragment（PageHead/分节直接散开），
-   padding 直接给滚动容器——任何页面.root 结构都吃得到 */
 .explorer-settings-body { padding: 14px 16px 24px; }
 /* 用户截屏「挤挤挤」防御：浮层里的插件卡动作行/状态行不许逐字竖排 */
 .explorer-settings-body .plg-state { white-space: nowrap; }
 .explorer-settings-body .plg-state-sub { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 .explorer-settings-body .plg-ops { white-space: nowrap; }
 .explorer-settings-body .plg-name, .explorer-settings-body .plg-ver, .explorer-settings-body .plg-kind { white-space: nowrap; }
-
-/* ══════════ 桌面/横屏（≥841px）：三入口栏顶置——「真正长得像电脑浏览器」 ══════════
-   ex-bbar 进文档流排到最前（flex order -1，explorer-shell 是纵向 flex）；标签条在其下；
-   --explorer-bar-h 归零（窗/FAB/island 的底部让位公式全部失效口径归一）。 */
-@media (min-width: 841px) {
-  :root { --explorer-bar-h: 0px; }
-  .explorer-shell > .ex-bbar { /* 提特异性：explorer-ui.css 后加载，同特异性 fixed 会赢 */
-    position: static !important;
-    height: 48px !important; /* bar 自身高度与 --explorer-bar-h 解耦（那个变量桌面归零只管底部公式口径） */
-    top: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-    right: auto !important;
-    order: -1;
-    border-top: 0;
-    border-bottom: 1px solid var(--border);
-    box-shadow: none;
-    padding-bottom: 0;
-  }
-  .explorer-content { padding-bottom: 28px; }
-  .hard-refresh-fab { bottom: 18px !important; }
-  .hard-refresh-fab.top-fab { bottom: 74px !important; }
-}

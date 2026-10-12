@@ -1153,10 +1153,8 @@ export function ChatDock(): ReactNode {
       if (!el) return;
       const r = el.getBoundingClientRect();
       if (r.width > 0) {
-        /* 顶置判定：胶囊所在 ex-bbar 的计算定位——static=顶置流内（桌面/横屏），fixed=底部形态。
-           不能用 closest(.explorer-topbar)：顶置时 ex-bbar 是独立行，不在 TopBar 里。 */
-        const bar = el.closest(".ex-bbar");
-        const inTopbar = !!bar && getComputedStyle(bar).position === "static";
+        /* 顶置判定：胶囊在桌面顶栏里（单行合并后 TopBar 就是 OH 胶囊的家）；ex-bbar 只是手机形态 */
+        const inTopbar = !!el.closest(".explorer-topbar");
         setCapsuleRect({ left: r.left, width: r.width, bottom: r.bottom, topdock: inTopbar });
       }
     };

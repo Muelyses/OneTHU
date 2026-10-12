@@ -136,8 +136,6 @@ function TopBar(): ReactNode {
       </button>
       <TabStrip />
       <span className="tb-spring" aria-hidden="true" />
-      {/* dev-explorer（用户拍板）：顶栏小搜索按钮及其逻辑铲除——搜索入口归 OH 胶囊（二合一），
-          ⌘K 命令面板保留为键盘效率工具但不占顶栏位 */}
       <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
         <IconSettings width={16} height={16} />
       </button>

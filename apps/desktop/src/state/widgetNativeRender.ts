@@ -8,6 +8,8 @@
  *   · class 行：没上课 → 「地点 · 还有 X」；正在上课 → 「正在上课 · 地点」加粗；
  *               下课了 → 整行剔除；跨天后的旧课行 → 剔除（防隔天残留）。
  *   · ddl 行：  还有 X；过点即剔除。
+ *   · event 行（勾了「在桌面小组件显示」的自定义日程）：与 ddl 同一套（还有 X；过点即剔除），
+ *               只有脚注按「项日程」单独计数。
  *   · 行数：    按**卡片真实高度**铺满（尺寸由用户在桌面上拖动决定），一行一个事件；
  *               快照给足候选行（WIDGET_MAX_ROWS），放不下的不显示。
  *   · 脚注：    前半段数**卡片上真的显示出来的行**，后半段「还有 N 项」数仍有效但没显示的
@@ -38,6 +40,8 @@ export interface NativeRowOut {
 export interface NativeCounts {
   classes: number;
   ddls: number;
+  /** 勾了「在桌面小组件显示」的自定义日程条数（旧版快照没有这个字段：按 0 处理） */
+  events?: number;
   more: number;
   hadClass: boolean;
 }
@@ -88,6 +92,7 @@ function ddlDayLabel(at: number, now: number): string {
  *    下课（until ≤ now）剔除；未开始（at > now）→ 次行「地点 · 还有 X」；
  *    **跨天守卫**：at 所在日 ≠ 快照归属日（或当前日，归属日未知时）→ 剔除；
  *  - ddl：at > now 可见（次行「今天/M/d HH:MM · 还有 X」）；at ≤ now 剔除。
+ *  - event：与 ddl 同一分支（同理的过点失效型；at 由快照按「定时=开始 / 全天=当天结束」定）。
  */
 export function nativeRow(r: WidgetRow, now: number, titleAt?: number): NativeRowOut {
   const at = typeof r.at === "number" && r.at > 0 ? r.at : 0;
@@ -114,7 +119,7 @@ export function nativeRow(r: WidgetRow, now: number, titleAt?: number): NativeRo
     return { ...out, visible: true, strong: false, sub: [r.loc ?? "", leftText(at - now)].filter(Boolean).join(" · ") };
   }
 
-  // ddl（以及未来可能的其他过点失效型）
+  // ddl / event（以及未来可能的其他过点失效型）
   if (at <= now) return { ...out, visible: false };
   const sub = `${ddlDayLabel(at, now)} ${hm(at)} · ${leftText(at - now)}`;
   return { ...out, visible: true, strong: at - now <= 6 * 3600_000, sub };
@@ -136,16 +141,19 @@ export function nativeRender(input: NativeRenderInput): NativeRenderOut {
 
   let shownClasses = 0;
   let shownDdls = 0;
+  let shownEvents = 0;
   for (const x of shown) {
     if (x.row.rel === "class") shownClasses++;
     else if (x.row.rel === "ddl") shownDdls++;
+    else if (x.row.rel === "event") shownEvents++;
   }
   let visibleRel = 0;
-  for (const x of visible) if (x.row.rel === "class" || x.row.rel === "ddl") visibleRel++;
+  for (const x of visible) if (x.row.rel === "class" || x.row.rel === "ddl" || x.row.rel === "event") visibleRel++;
 
   const parts: string[] = [];
   if (shownClasses) parts.push(`${shownClasses} 节课`);
   if (shownDdls) parts.push(`${shownDdls} 个截止`);
+  if (shownEvents) parts.push(`${shownEvents} 项日程`);
   let footer: string;
   if (parts.length === 0) {
     footer = c?.hadClass && (!input.titleAt || dayKey(input.titleAt) === dayKey(now))
@@ -153,7 +161,7 @@ export function nativeRender(input: NativeRenderInput): NativeRenderOut {
       : "今天没有课与截止";
   } else {
     // 还有 N 项 = 仍有效但没显示在卡片上的（可见行 − 已显示行） + 快照都没装下的
-    const hidden = visibleRel - (shownClasses + shownDdls) + (c?.more ?? 0);
+    const hidden = visibleRel - (shownClasses + shownDdls + shownEvents) + (c?.more ?? 0);
     footer = `${parts.join(" · ")}${hidden > 0 ? ` · 还有 ${hidden} 项` : ""}`;
   }
   const title = `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`;

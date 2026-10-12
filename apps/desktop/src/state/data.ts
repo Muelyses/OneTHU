@@ -146,7 +146,7 @@ export function useCampusData() {
       const fresh = await cacheFetch(CAMPUS_KEY, loadReal);
       setData(fresh);
       setState("ready");
-      notifyCampusData();
+      notifyCampusData(fresh);
     } catch (err) {
       // 会话真死了（AuthRequiredError）：先免密重漫游一次，仍失败才送回登录页
       if (err instanceof Error && err.name === "AuthRequiredError") {
@@ -283,6 +283,27 @@ async function loadLearnBundle(semesterId: string): Promise<LearnBundle> {
  */
 /* ---------- 模块级快照（灵动岛 / 日历同步等非 React 场景；只读缓存，不触发网络） ---------- */
 
+/* ---------- 变更广播：只在**内容真变了**时才通知 ---------- */
+
+/** 内容签名（djb2 变体；只用来判「变了没有」，非安全用途） */
+function sig32(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
+/**
+ * 上次广播过的内容签名（learn / campus / calendar 各一份）。
+ *
+ * 为什么必须去重：跟随方（系统日历自动同步、云日程自动上云、通知重算）把这里的广播
+ * 当作"数据变了"的事件用，而装载其实分两种——真拉到新内容，和每 3 / 30 分钟一次的
+ * 静默重校验（内容一模一样）。不去重的话，每次重校验都要重建一遍系统日历载荷
+ * （真拉整学期课表 4~5 个请求），最后只能靠载荷指纹把写入挡住；现在广播本身就等于
+ * "内容变了"，跟随方可以只认事件。 */
+let lastLearnSig: string | null = null;
+let lastCampusSig: string | null = null;
+let lastCalSig: string | null = null;
+
 const learnListeners = new Set<() => void>();
 export function subscribeLearnData(fn: () => void): () => void {
   learnListeners.add(fn);
@@ -291,6 +312,11 @@ export function subscribeLearnData(fn: () => void): () => void {
   };
 }
 function notifyLearnData(): void {
+  const d = getLearnSnapshot();
+  if (!d) return; // 没有快照 = 没有内容可广播
+  const sig = sig32(JSON.stringify(d));
+  if (sig === lastLearnSig) return;
+  lastLearnSig = sig;
   learnListeners.forEach((fn) => fn());
 }
 
@@ -307,7 +333,10 @@ export function subscribeCampusData(fn: () => void): () => void {
     campusListeners.delete(fn);
   };
 }
-function notifyCampusData(): void {
+function notifyCampusData(d: CampusData): void {
+  const sig = sig32(JSON.stringify(d));
+  if (sig === lastCampusSig) return;
+  lastCampusSig = sig;
   campusListeners.forEach((fn) => fn());
 }
 const calendarListeners = new Set<() => void>();
@@ -318,6 +347,11 @@ export function subscribeCalendarData(fn: () => void): () => void {
   };
 }
 function notifyCalendarData(): void {
+  const d = getCachedCalendar();
+  if (!d) return;
+  const sig = sig32(JSON.stringify(d));
+  if (sig === lastCalSig) return;
+  lastCalSig = sig;
   calendarListeners.forEach((fn) => fn());
 }
 

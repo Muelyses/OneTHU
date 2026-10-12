@@ -6354,6 +6354,21 @@ section > .svc-label { margin-top: 14px; }
 }
 
 /* ============================================================
+   日程页（课表网格 / 当日列表）：窄档底部按「OH 悬浮岛带」多留一段空白。
+   岛是 fixed 且横向居中：窄档岛底距屏底 80 + 岛高 46 = 126（见上面 .dock-island
+   那条），本页最后一屏正好落在这一带，最后一行（一节晚课、一条晚间日程）会被岛
+   压住（用户实录 2026-10-12）——数值与待办页同口径：留到 142（126 + 16 间隙），
+   再叠安全区。宽档（桌面模式）不改动：那边岛落回屏底 18px，观感保持原样。
+   页面靠 .page-anim[data-page] 定位（与上方 info/life/settings 同款 :has() 手法）。
+   ============================================================ */
+@media (max-width: 839.98px) {
+  html.is-phone .content:has(> .page-anim[data-page="schedule"]),
+  .shell .content:has(> .page-anim[data-page="schedule"]) {
+    padding-bottom: calc(142px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ============================================================
    §2.8.2 今日页分端：PC/横屏右栏常驻「下一节课」；问候语已缩进顶栏。
    ============================================================ */
 .next-class { display: flex; flex-direction: column; gap: 4px; }

@@ -11,14 +11,14 @@ import { LEARN_PREFIX, LEARN_FILE_DOWNLOAD, parseLearnTime } from "@onethu/core"
 import { useApp } from "../../state/context.js";
 import { getSelectedSemester, setSelectedSemester } from "../../state/data.js";
 import { topLevelPage, type Page } from "../../state/app.js";
+import { requestSettingsTab } from "../../state/settingsMode.js";
 import { fetchImageAsDataUrl, fetchImageByUrl } from "../../lib/clients.js";
 import { isSessionExpiredError } from "../../lib/sessionErrors.js";
-import { showToast } from "../../state/toast.js";
 import { invoke } from "@tauri-apps/api/core";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { openExternal } from "../info/openExternal.js";
 import { openHomeworkRow } from "../../lib/homeworkEntry.js";
-import { CONFIRM_IGNORE_HW, confirmDanger } from "../../lib/confirm.js";
+import { CONFIRM_IGNORE_HW, CONFIRM_IMG_RELOGIN, confirmChoice, confirmDanger } from "../../lib/confirm.js";
 import { ignoreHw, unignoreHw, useHwIgnored } from "../../state/hwIgnore.js";
 import { homeworkEntryScoreText } from "../../lib/yktDetail.js";
 import { Card } from "../../components/Layout.js";
@@ -117,18 +117,33 @@ const IMG_PLACEHOLDER =
 /** 正文图片 dataURL 会话缓存：详情页反复进出不重复抓 2MB 级大图 */
 const imgDataCache = new Map<string, string>();
 
-/** 会话失效提示的去重窗口：一页往往同时挂好几张图（论坛一屏十几张），
- *  它们会一起失败——只在第一张失败时提醒一次，别把用户刷屏 */
-const SESSION_TOAST_GAP_MS = 10_000;
-let lastSessionToastAt = 0;
+/** 会话失效弹窗的去重窗口：一页往往同时挂好几张图（论坛一屏十几张），
+ *  它们会一起失败——只在第一张失败时弹一次，别把用户刷屏 */
+const SESSION_PROMPT_GAP_MS = 10_000;
+let lastSessionPromptAt = 0;
+/** 弹窗开着时不再叠加：用户还没答完，后面几张图接着失败也只算一次 */
+let sessionPromptOpen = false;
 
-/** 会话失效时给一次「看得见」的提示：这类失败不看图片、也不看日志就无从推断，
- *  放在屏幕正中并留够时间（点按即关）。 */
-function warnImagesNeedLogin(): void {
+/** 正文图片因登录状态失效没加载出来时的二选一弹窗（复用 lib/confirm 的**非危险档**：
+ *  同款玻璃卡，但没有「不可撤销」那套红色警告——这里两个选项都是正常动作）。
+ *  比一条会自己消失的中央提示更不容易被漏掉，也把「下一步做什么」直接摆到用户面前。 */
+const IMG_RELOGIN_MSG = [
+  "正文里的图片没能加载出来，登录状态可能已失效。",
+  "重新登录后图片会自动恢复；也可以先忽略，稍后下拉刷新再试。",
+].join("\n");
+
+/** 登录态没了：数据页有错误链会提示，图片这条旁路必须自己提醒——否则用户看到的
+ *  只是「几张图不显示」，推不到「该重新登录了」。true = 去重新登录，false = 忽略。 */
+async function promptImagesNeedLogin(onRelogin: () => void): Promise<void> {
   const now = Date.now();
-  if (now - lastSessionToastAt < SESSION_TOAST_GAP_MS) return;
-  lastSessionToastAt = now;
-  showToast("图片加载失败，请重新登录", 6000, { center: true });
+  if (sessionPromptOpen || now - lastSessionPromptAt < SESSION_PROMPT_GAP_MS) return;
+  sessionPromptOpen = true;
+  lastSessionPromptAt = now;
+  try {
+    if (await confirmChoice(IMG_RELOGIN_MSG, CONFIRM_IMG_RELOGIN)) onRelogin();
+  } finally {
+    sessionPromptOpen = false;
+  }
 }
 
 /**
@@ -138,6 +153,7 @@ function warnImagesNeedLogin(): void {
  */
 export function RichContent({ html, fallback = "暂无内容。" }: { html?: string; fallback?: string }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const { navigate } = useApp();
 
   useEffect(() => {
     const root = ref.current;
@@ -170,8 +186,14 @@ export function RichContent({ html, fallback = "暂无内容。" }: { html?: str
           img.setAttribute("title", `图片加载失败：${reason.slice(0, 120)}`);
           img.style.opacity = "0.45";
           // 登录态没了：数据页有错误链会提示，图片这条旁路必须自己提醒，
-          // 否则用户看到的只是「几张图不显示」，推不到「该重新登录了」
-          if (isSessionExpiredError(e)) warnImagesNeedLogin();
+          // 否则用户看到的只是「几张图不显示」，推不到「该重新登录了」。
+          // 点「重新登录」→ 设置页账号区（统一认证的退出/重登都在那儿）
+          if (isSessionExpiredError(e)) {
+            void promptImagesNeedLogin(() => {
+              requestSettingsTab("账号");
+              navigate("settings");
+            });
+          }
           void invoke("log_debug", { line: `RichContent 图片抓取失败: ${abs.slice(0, 180)} | ${reason.slice(0, 120)}` }).catch(() => undefined);
         }
       }

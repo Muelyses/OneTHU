@@ -1,7 +1,8 @@
 /**
  * 统一文件预览（全局唯一弹窗，module-level opener 通道，同 zhjwxk/Courses.tsx 的 _detailOpen 做法）：
  * openFilePreview({ name, url }) 任意处调用 → FilePreviewHost（App 级挂载一次）createPortal 渲染。
- * 抓取走 Rust fetch_binary（webview 直挂 learn 地址只会得到登录页），按扩展名分流渲染：
+ * 抓取走「webvpn 包装域 + 原生通道」（webview 直挂 learn 地址只会得到登录页；直连 learn 域
+ * 本身也没有会话——2026-10-12 真机根因，详见 lib/clients.ts 的 sessionUrl 注释），按扩展名分流渲染：
  * 图片 / PDF / 文本 / zip·jar 层级目录树（可逐层进入+文本条目内联预览）/
  * Office 真预览（docx→mammoth HTML、xlsx→SheetJS 表格、pptx→解包 slideN.xml 抽大纲）/
  * 其他（下载兜底）。
@@ -13,11 +14,10 @@ import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useExitPhase } from "../lib/motion.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
-import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
+import { downloadLearnUrl, saveLearnUrlAs, sessionUrl, isLoginWallBody, bytesToBase64 } from "../lib/clients.js";
 import { isAndroidHost } from "../lib/yktWebview.js";
 import { isAndroidNavigator, isWindowsNavigator } from "../lib/androidHost.js";
-import { normalizeWebvpnUrl } from "@onethu/core";
-import { explainNetworkError, rawErrorText } from "../lib/transport.js";
+import { explainNetworkError, nativeFetch, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
 import { DownloadOpenButtons } from "./DownloadOpenButtons.js";
 import { openLocalPath } from "../lib/localFile.js";
@@ -519,7 +519,7 @@ function errMsg(err: unknown): string {
   return raw;
 }
 
-/* ---------- 抓取（复用 fetchImageAsDataUrl 的 fetch_binary 思路，mime 单独带回） ---------- */
+/* ---------- 抓取（与正文图片同一取数形态：包装域 + 原生通道，mime 单独带回） ---------- */
 
 interface FetchedBinary {
   mime: string;
@@ -530,23 +530,20 @@ interface FetchedBinary {
 }
 
 async function fetchBinary(url: string): Promise<FetchedBinary> {
-  // 归一：页面里取到的链接可能已被网关包装（双重包装会 404，见 crypto/webvpn.normalizeWebvpnUrl）
-  const target = withLearnCsrf(normalizeWebvpnUrl(url));
-  const jarCookies = http.jar
-    .getCookies(new URL(target))
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
-  const { invoke } = await import("@tauri-apps/api/core");
-  // 预览上限与超时按文件预览调（默认 8MB/12s 是给正文图片的）：桌面放宽到 48MB，
-  // 安卓因 base64 IPC 限制收紧到 10MB（见 PREVIEW_MAX_BYTES_ANDROID 注释）。
-  const out = await invoke<{ mime: string; data: string }>("fetch_binary", {
-    url: target,
-    cookies: jarCookies,
-    maxBytes: previewCap(),
-    timeoutSecs: 60,
-  });
-  const mime = (out.mime || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";
-  return { mime, dataUrl: `data:${mime};base64,${out.data}`, b64: out.data };
+  // 取数形态与正文图片**完全一致**（2026-10-12 真机根因）：URL 先归一并按 host 分流换成
+  // webvpn 包装形态（直连 learn 域没有会话——实测回 69 字节 `location.href="/"` 跳转页），
+  // 再走原生通道取字节（原生 cookie 仓 + 主 webview UA）；旧路 fetch_binary 自带 Mac UA +
+  // 只吃 JS 侧 cookie，wengine 按 UA 指纹校验票会把包装域请求判成「票无效」。
+  // 上限与超时仍按文件预览调：桌面 48MB，安卓因 base64 IPC 限制收紧到 10MB（见上注释）。
+  const resp = await nativeFetch(sessionUrl(url), { method: "GET", timeoutMs: 60_000 });
+  const mime = (resp.headers.get("content-type") || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";
+  const buf = new Uint8Array(await resp.arrayBuffer());
+  if (isLoginWallBody(mime, buf)) throw new Error("会话已失效，需要重新登录");
+  // 大小闸门与 Rust 侧同语（errMsg 认 too-large:<实际>:<上限> 给出「下载/另存为」出路）
+  const cap = previewCap();
+  if (buf.length > cap) throw new Error(`too-large:${buf.length}:${cap}`);
+  const b64 = bytesToBase64(buf);
+  return { mime, dataUrl: `data:${mime};base64,${b64}`, b64 };
 }
 
 /* ---------- Office 本地解析（docx/xlsx/pptx） ---------- */

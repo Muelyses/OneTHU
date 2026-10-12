@@ -10,9 +10,11 @@ type Pending = {
   msg: string;
   resolve: (v: boolean) => void;
   danger?: boolean;
-  /** 危险弹窗标题与确认按钮文案：由调用方按场景给（默认通用措辞） */
+  /** 弹窗标题与按钮文案：由调用方按场景给（非危险档用 confirmChoice，可选标题） */
   title?: string;
   confirmText?: string;
+  /** 次按钮（否定项）文案：默认「取消」；二选一场景把它说成用户实际得到的结果（如「忽略」） */
+  cancelText?: string;
 };
 let pending: Pending | null = null;
 const listeners = new Set<() => void>();
@@ -50,10 +52,37 @@ export function confirmDanger(
   });
 }
 
+/**
+ * 非危险档的二选一（同款玻璃卡，无 ⚠️、主按钮用主题色）：两个选项都是**正常动作**、
+ * 只是用户要挑一个时用（如「正文图片加载失败」→ 重新登录 / 忽略）。
+ * 与 `confirmOk` 的区别：两边都要说清点下去会发生什么，所以两个文案都必填——
+ * 「取消 / 确定」在二选一里等于没说。
+ */
+export function confirmChoice(
+  msg: string,
+  opts: { title?: string; confirmText: string; cancelText: string },
+): Promise<boolean> {
+  return new Promise((resolve) => {
+    pending?.resolve(false);
+    pending = {
+      msg,
+      resolve,
+      title: opts.title,
+      confirmText: opts.confirmText,
+      cancelText: opts.cancelText,
+    };
+    listeners.forEach((l) => l());
+  });
+}
+
 /** 场景措辞预设：**措辞属于场景、不属于组件**——组件只提供通用兜底。
  *  R21c 实录：忽略作业复用了退选弹窗，整屏照抄「即将退选 / 确认退选」，用户当场发现。 */
 export const CONFIRM_DROP_COURSE = { title: "即将退选，请确认！", confirmText: "确认退选" } as const;
 export const CONFIRM_IGNORE_HW = { title: "忽略这条作业，请确认！", confirmText: "确认忽略" } as const;
+/** 正文图片因登录状态失效没加载出来：**非危险档**二选一——主按钮去重新登录，次按钮就地
+ *  关掉（2026-10-12 用户令：改用带按钮的弹窗，别再弹会自己消失的中央提示；且不该用
+ *  「不可撤销」那套红色警告档——两个选项都是正常动作）。 */
+export const CONFIRM_IMG_RELOGIN = { title: "正文图片加载失败", confirmText: "重新登录", cancelText: "忽略" } as const;
 
 export function answerConfirm(v: boolean): void {
   pending?.resolve(v);
@@ -179,10 +208,11 @@ function ConfirmBody(): React.ReactNode {
   return (
     <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.35)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div className="confirm-card" style={{ ...glass, borderRadius: 14, padding: "18px 18px 14px", maxWidth: 420, width: "100%" }}>
+        {cur.title ? <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{cur.title}</div> : null}
         <div style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{cur.msg}</div>
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
-          <button className="btn" onClick={() => answerConfirm(false)}>取消</button>
-          <button className="btn" style={{ borderColor: "var(--accent, #6d7ff0)", color: "var(--accent, #6d7ff0)" }} onClick={() => answerConfirm(true)}>确定</button>
+          <button className="btn" onClick={() => answerConfirm(false)}>{cur.cancelText ?? "取消"}</button>
+          <button className="btn" style={{ borderColor: "var(--accent, #6d7ff0)", color: "var(--accent, #6d7ff0)" }} onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确定"}</button>
         </div>
       </div>
     </div>

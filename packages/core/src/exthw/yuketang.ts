@@ -343,15 +343,46 @@ async function mapLimited<T>(items: T[], limit: number, fn: (item: T) => Promise
   await Promise.all(workers);
 }
 
+/** 单题「已作答」的多信号判据（R24 口径，docs §13.6；2026-10-12 真机复现后补回）。
+ *
+ *  为什么不能只认正文：服务端对已提交/已批改的题**经常不回传 `my_answer.content`**。
+ *  实测（霖的 6 份雨课堂作业，2026-10-12）：每题 `status=4` + `my_count=1` + `my_score`
+ *  为真实分（30/19/6…），而 `my_answer` 是空壳 —— 只认正文时 `answered=0`，整卷被误判
+ *  未交，但同一条响应里 `answer_count` 又是 10（UI 因此显示「已完成 10/10 却说未交」）。
+ *
+ *  任一命中即算已作答：
+ *    · `user.status` 为 3（已交未批）/ 4（已批改）—— 服务端自己的标记，最可靠
+ *    · `user.my_count > 0`（已用提交次数，官方提交器写）
+ *    · `user.submit_time` 非空（数字毫秒或 "YYYY-MM-DD HH:MM" 字符串，双形态）
+ *    · `user.my_answer.content` 非空字符串
+ *    · `user.my_answer.attachment[]` 有带 name/url 的项
+ */
+function hasSubmissionEvidence(user: Record<string, unknown> | undefined): boolean {
+  if (!user || Object.keys(user).length === 0) return false;
+  const status = user["status"];
+  if (status === 3 || status === 4) return true;
+  if ((toNum(user["my_count"]) ?? 0) > 0) return true;
+  const st = user["submit_time"];
+  if (typeof st === "string" && st.trim()) return true;
+  if (typeof st === "number" && Number.isFinite(st) && st > 0) return true;
+  const my = (user["my_answer"] ?? {}) as Record<string, unknown>;
+  const content = my["content"];
+  if (typeof content === "string" && content.trim()) return true;
+  return Boolean(toMyAttachments(my["attachment"]));
+}
+
 /**
  * 查单个作业的提交状态：
  * GET /mooc-api/v1/lms/exercise/get_exercise_list/{leaf_type_id}/?classroom_id=…&term=latest&uv_id=…
  * ⚠️ 必须带请求头 `XTBZ: ykt`，否则报「XTBZ IS REQUIRED」。
- * 判定（R23 起）：有题目明细时全部题都有作答 → 已提交（部分作答 = 进行中，报
- * submittedCount/totalCount 供「已完成 x/y」）；缺明细时 `answer_count > 0` 保守算已提交。
- * 已批改（R16 21.1，保守）：已提交且不存在「已作答但未批改」的题；
- * 「已作答」= `user.my_answer.content` 非空或整卷 `answer_count>0`；
- * 「未批改」= `user.status === 3` 或 `user.my_score` 为 -1 占位（含 "-1.00"）。
+ * 判定（R23 + R24）：有题目明细时**每一题都要有作答证据**才算已提交（部分作答 = 进行中，
+ * 报 submittedCount/totalCount 供「已完成 x/y」）；「作答证据」见 hasSubmissionEvidence
+ * （2026-10-12 起含 status / my_count / submit_time / 附件，不再只认正文）；明细毫无作答
+ * 痕迹而整卷 `answer_count ≥ 题目数` → 已提交（整卷计数兜底，R24）；缺明细（problems 为空）
+ * → 退回旧行为（answer_count>0 保守算已提交）。
+ * 已批改（R16 21.1 + R24）：已提交且**每一题都带证据**、且不存在「已作答但未批改」的题
+ * （status 3 或 `user.my_score` 为 -1 占位，含 "-1.00"）→ graded；有任何一题缺证据时不判
+ * 已批改（宁少不多）。
  * 分数（R20-B3，霖需求：已批改作业像考试一样在入口显示分数）：与详情同一响应里就有
  * 全部数据，零额外请求 —— score = 已批改题（status 4 且非 -1 占位，真实 0 分照算）的
  * my_score 合计，totalScore = 题面 content.score 合计；**仅整卷已批改（graded）时透出**
@@ -382,21 +413,18 @@ async function fetchYktStatus(
   const ac = data["answer_count"];
   const answerCount = typeof ac === "number" && Number.isFinite(ac) ? ac : 0;
   let answered = 0;
-  let answeredUngraded = false;
+  let answeredUngraded = 0;
   // R20-B3：分数合计 —— score = 已批改题有效分求和；totalScore = 题面分值求和
   let scoreSum = 0;
   let scoreSeen = false;
   let totalScoreSum = 0;
   for (const p of problems) {
     const user = (p["user"] ?? {}) as Record<string, unknown>;
-    const my = (user["my_answer"] ?? {}) as Record<string, unknown>;
-    const content = my["content"];
-    const hasContent = typeof content === "string" && content.trim().length > 0;
-    if (hasContent) answered++;
-    const answeredThis = hasContent || answerCount > 0;
-    if (answeredThis && (user["status"] === 3 || isUnscoredPlaceholder(user["my_score"]))) {
-      answeredUngraded = true;
-    }
+    const answeredThis = hasSubmissionEvidence(user);
+    if (answeredThis) answered++;
+    // 「已作答但未批改」= status 3（已交未批）或 my_score 为 -1 占位（含「已批改但未出分」）
+    const gradedThis = user["status"] === 4 && !isUnscoredPlaceholder(user["my_score"]);
+    if (answeredThis && !gradedThis) answeredUngraded++;
     // 题面分值（content.score；缺失/非数字不计入卷面满分）
     const pcScore = toNum((p["content"] as Record<string, unknown> | undefined)?.["score"]);
     if (pcScore !== undefined) totalScoreSum += pcScore;
@@ -410,13 +438,16 @@ async function fetchYktStatus(
     }
   }
   // R23（霖需求 2026-09-21）：部分作答 ≠ 已提交——作业只交了一道题仍属「进行中」，
-  // 入口按 未交 分组并显示「已完成 x/y」。判定：有题目明细时按「有内容题数 ≥ 题目数」；
+  // 入口按 未交 分组并显示「已完成 x/y」。判定：有题目明细时每道题都要有作答证据；
+  // 明细毫无证据而整卷 answer_count ≥ 题目数 → 整卷计数兜底算已提交（R24）；
   // 缺明细（problems 为空）无法逐题核对 → 退回旧行为（answer_count>0 保守算已提交）。
-  // ⚠️ 口径依赖 my_answer.content（与 R20-C2 详情页逐题作答同源；霖实测几乎全是主观题）。
-  const submitted = problems.length > 0 ? answered >= problems.length : answerCount > 0;
+  const submitted =
+    problems.length > 0
+      ? answered >= problems.length || (answered === 0 && answerCount >= problems.length)
+      : answerCount > 0;
   const submittedCount = answered > 0 ? answered : answerCount;
-  // 无题目明细（problems 为空）时无法判定批改状态 → 保守 false
-  const graded = submitted && problems.length > 0 && !answeredUngraded;
+  // 已批改：已提交 + 每题都有证据 + 无一题「已作答未批改」；缺明细时无法判定 → 保守 false
+  const graded = submitted && problems.length > 0 && answered >= problems.length && answeredUngraded === 0;
   return {
     submitted,
     submittedCount: submittedCount > 0 ? submittedCount : undefined,
@@ -468,7 +499,9 @@ async function fetchYktExamStatus(
     return { submitted: false, totalCount, graded: false };
   }
   const done = Math.max(0, problemCount - unfinished);
-  const submitted = unfinished < problemCount;
+  // R24（霖 bug 2026-09-23，2026-10-12 真机复现后补回）：全部完成才算已交 ——
+  // 原判据 `unfinished < problemCount`（动过一题即算已交）会把 10/11 报成已交。
+  const submitted = unfinished === 0;
   const out: YktStatusResult = {
     submitted,
     submittedCount: done > 0 ? done : undefined,
@@ -621,16 +654,15 @@ export interface YuketangSourceHooks {
   onCookieRefresh?: (cookie: string) => void;
 }
 
-/** 单题三态（保守）：显式 status 优先（4=已批 / 3=已交未批）；否则看作答痕迹，
- *  整卷 answer_count=0 且无内容 → 未答（与 fetchYktStatus 的「已提交」口径一致） */
+/** 单题三态（保守）：显式 status 优先（4=已批 / 3=已交未批）；否则看多信号作答痕迹
+ *  （status/my_count/submit_time/正文/附件，见 hasSubmissionEvidence）；都没有时，
+ *  整卷 answer_count>0 仍按已交（服务端逐题明细缺失的兜底，与既有口径一致） */
 function toMyStatus(user: Record<string, unknown> | undefined, answerCount: number): YkMyStatus {
   if (!user || Object.keys(user).length === 0) return "unanswered";
   const status = user["status"];
   if (status === 4) return "graded";
   if (status === 3) return "submitted";
-  const my = (user["my_answer"] ?? {}) as Record<string, unknown>;
-  const hasContent = typeof my["content"] === "string" && my["content"].trim().length > 0;
-  return hasContent || answerCount > 0 ? "submitted" : "unanswered";
+  return hasSubmissionEvidence(user) || answerCount > 0 ? "submitted" : "unanswered";
 }
 
 /** user.comment[] → YkComment[]（滤空 content / 非对象项；结果为空 → undefined） */

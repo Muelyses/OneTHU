@@ -191,10 +191,43 @@ Windows Chrome/79（webvpn 票绑定）→ 真机恒 false → 9-13 的 pdf.js �
 这条图片旁路——于是界面只剩几个碎图，用户推不到「该重新登录了」。修法：
 - `catch (e)` 接住原因：写进 `title`（悬停可看）与 `log_debug` 行；
 - 会话类失败（`lib/sessionErrors.ts` 的 `isSessionExpiredError`，认字符串错误与
-  `SessionExpiredError` 两种）弹一次**屏幕正中**的提示「图片加载失败，请重新登录」
-  （`showToast` 新增 `center` 档位，`toast-host is-center`），一次内容最多一次（10s 去重——
-  一页十几张图会一起失败）。
-护栏 = `tools/session-img-toast-test.mjs`（判定 9 态 + 接线与样式守卫）。
+  `SessionExpiredError` 两种）**弹一次二选一弹窗**——2026-10-12 用户令：会自己消失的中央
+  提示换成带按钮的弹窗，且**用非危险档**（`confirmChoice`：同款玻璃卡、无 ⚠️、主按钮主题色
+  ——这里两个选项都是正常动作，不该套「不可撤销」那套红色警告）：主按钮「重新登录」跳设置页
+  「账号」页签，次按钮「忽略」就地关掉；一次内容最多弹一次（10s 去重 + 弹窗未答完不叠加
+  ——一页十几张图会一起失败）。
+护栏 = `tools/session-img-prompt-test.mjs`（判定 10 态 + 弹窗接线 + 取数形态守卫）。
+（轻提示的 `center` 档位是这条修法当时加的，改弹窗后暂时没有调用方——留在基础设施里备用。）
+
+**根因收口（2026-10-12 真机，Android 16 / vivo V2324HA）**：上面那条只做到「提示」，图片依旧取不到。
+真机上用**同一个 URL 只差取数形态**做对照，结果一锤定音：
+
+| 取法 | 实测 |
+|---|---|
+| 直连 `https://learn.tsinghua.edu.cn/b/wlxt/common/downloadFiles?wjid=…` | 200 `text/html` **69 字节**：`<script>location.href="/"</script>`（该域没有会话） |
+| **webvpn 包装形态** + 原生通道 | **200 `image/jpeg` 40–71 KB**（真图） |
+
+原因是本应用的 learn 会话只活在 **webvpn 包装域**（日志里 5862 条 learn 请求全走包装域、直连成功 0 条），
+而正文 HTML 里的图片 src 是**直连** learn 域；加上旧路 `fetch_binary` 自带 Mac UA、只吃 JS 侧 cookie，
+而 wengine 会话票按 UA 指纹校验（见 `src-tauri/src/lib.rs` 原生通道那句注释），包装域也会被判「票无效」。
+修法（`apps/desktop/src/lib/clients.ts`，前端单文件）：
+- 图片 URL 先 `normalizeWebvpnUrl` 归一双重包装，再按 host 分流换成包装形态（`http.webVPNEncoder`），
+  最后补 learn 的 `_csrf`；
+- 取字节改走 **`nativeFetch`**（与 `http_native`/数据链同一只 client：原生 cookie 仓 + 主 webview UA），
+  两个对外入口 `fetchImageAsDataUrl` / `fetchImageByUrl` 委托同一实现；
+- 保留 mime/大小守卫，并把「短响应里的 `location.href` / 登录页」归类成「会话已失效，需要重新登录」，
+  以免提示链断掉（判据与 Rust `fetch_binary` 同源）。
+真机复验（原症状页「欢迎阅读『国之所需…』」通知）：正文两张二维码图正常渲染、无碎图、无弹窗，
+日志不再出现图片抓取失败。**同类同步收口**：`components/FilePreview.tsx` 的二进制预览是同一根因
+（同一个 `fetch_binary` 取数形态），已同改（`sessionUrl` + `nativeFetch`，两处共用一份规则）；
+真机前后对照——旧版点「预览」报「原生返回：会话已失效，需要重新登录」，新版正常渲染 docx。
+**下载（Rust 侧）同一根因也一并收口**：`download_file` / `save_file_as` 共用的 `fetch_attachment`
+原先 UA 写死 Mac、且只带 JS 侧 cookie——改为抽出 `SESSION_UA`（与 `build_native_client` 共用一份）
+并新增 `merge_session_cookies`（同名以**原生仓**为准，JS cookie 作补充）；JS 侧
+`downloadLearnUrl` / `saveLearnUrlAs` 改用 `sessionUrl()`（归一 + host 分流包装）。
+真机验证：点「下载」界面「已下载到：系统下载/第4周-作业模板-2026.docx」，设备
+`/sdcard/Download/` 落盘 17180 字节。
+（仍留在旧路上的：Rust `fetch_binary` 自带 Mac UA 的写法，供插件/雨课堂内联资源等仍未收口的调用方。）
 
 ## ④ Windows 用户端出现 127.0.0.1:5180
 

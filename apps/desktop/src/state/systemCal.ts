@@ -7,7 +7,16 @@
  * 模型：
  * - 专属日历「OneTHU 日程」（本地账户，不碰用户日历、不与云同步冲突）；
  * - 幂等：窗口内清旧重写（窗口 = 过去 90 天 ~ 未来 18 个月 ∪ 学期范围）；
- * - 一次开启后自动跟随：云/本日程或课表任何变更 → 防抖 5s → 指纹未变则跳过；
+ * - **只在日程内容变化时同步**：触发一律是"来源内容变了"的事件——云/本日程（云同步扫出
+ *   added/updated/removed≠0、本地增删改）、学堂作业 DDL/提交状态、课表（校历窗口）、
+ *   学期/校历、外部作业（按进日历字段去重）、提醒档位。各来源的"装载但内容没变"不发广播
+ *   （data.ts/exthw.ts/cloudCal.ts 侧按内容签名去重）。防抖 5s → 重建载荷并比对
+ *   **内容指纹**（时间不进指纹，见 fingerprintOf）；内容没变则整轮跳过，原生一次都不进。
+ *   指纹是最后一道防线：万一某个事件漏了，下次触发会自动补写，不会静默偏旧。
+ * - 另有两处**定期重建**兜底（启动一次 + 每 30 分钟一轮）：它们只重建应用内载荷，内容与
+ *   上次写入完全相同就一次原生都不进。服务端（教务课表等）的改动没有推送，只能靠拉取比对
+ *   发现——定期轮就是为此保留的。重建前有"数据齐备门槛"（学堂快照未装载则不重建，
+ *   免得算出少了作业 DDL 块的半量载荷）；
  * - 课表/考试带提前 15 分钟提醒，手动日程不带。
  *
  * 存储：syscal.cfg { enabled, lastSyncAt, lastCount, lastError, fingerprint }。
@@ -20,10 +29,10 @@ import { getCloudEvents, getLocalEvents, buildSemesterEvents, onCloudCalChange }
 import { parseLearnTime } from "@onethu/core";
 import type { ScheduleEntry } from "@onethu/core";
 import { cacheGet, cacheSet } from "./cache.js";
-import { getLearnSnapshot, getWeekSchedSnapshot, logPageError, subscribeLearnData } from "./data.js";
+import { getLearnSnapshot, getWeekSchedSnapshot, logPageError, subscribeCampusData, subscribeCalendarData, subscribeLearnData } from "./data.js";
 import { getSecondaryEntries } from "../lib/infoLib.js";
 import { http as appHttp, logLine } from "../lib/clients.js";
-import { getExtHwSnapshot, toHomework } from "./exthw.js";
+import { getExtHwSnapshot, subscribeExtHw, toHomework } from "./exthw.js";
 import { getHwRemindState, subscribeHwRemind, type HwRemindState } from "./hwRemind.js";
 import { getCachedCalendar } from "./data.js";
 
@@ -40,6 +49,10 @@ const FUTURE_WINDOW = 550 * DAY;
 const MAX_EVENTS = 4000;
 /** 课表/考试提醒（learnX 同款 -15 分钟） */
 const ALARM_MINUTES = 15;
+/** 定期重建间隔（**只重建应用内载荷**；内容与上次写入完全相同则连原生都不进）。
+ *  服务端（教务课表等）的改动没有推送，只能靠拉取比对发现；30 分钟与 learn 的后台
+ *  静默刷新同频——原来"顺手发现课表变了"靠的就是它。 */
+const RECONCILE_INTERVAL = 30 * 60 * 1000;
 
 /* ---------- 载荷类型（与插件 camelCase 对齐） ---------- */
 
@@ -317,10 +330,27 @@ export function buildHwEvents(
   return out;
 }
 
-/** 载荷指纹（内容无变化则跳过原生写入） */
+/** 载荷指纹（内容无变化则跳过原生写入）。
+ *
+ *  **只喂内容，绝不掺时间**：窗口是 Date.now() 派生的（now-90d / now+550d），一旦入指纹
+ *  则每次调用都不同，「未变则跳过」的守卫等于失效——每次启动、每次数据回调都全量重写
+ *  一遍系统日历。真机实录（2026-10-11）：三分钟内连开三次、内容同为 172 条，指纹三次
+ *  全不同、lastSyncAt 三次都被推后 = 三次全量重写。
+ *
+ *  行内先排序：同一批事件经云/本/课表/作业多路构造，并列时刻的相对次序不保证稳定，
+ *  排序后指纹只认「事件集合」，重建一次不会因为顺序抖动而误判成内容变了。
+ *
+ *  location / notes / allDay 一并入指纹（原版只看 title@起止!闹钟）：换教室、改备注同样是
+ *  内容变化，必须重写系统日历。 */
 export function fingerprintOf(p: SyncPayloadArg): string {
   let h = 5381;
-  const feed = `${p.windowStartMs}|${p.windowEndMs}|` + p.events.map((e) => `${e.title}@${e.startMs}-${e.endMs}!${e.alarmMinutes ?? 0}`).join(",");
+  const lines = p.events
+    .map(
+      (e) =>
+        `${e.title}@${e.startMs}-${e.endMs}!${e.alarmMinutes ?? 0}#${e.allDay ? 1 : 0}~${e.location ?? ""}~${e.notes ?? ""}`,
+    )
+    .sort();
+  const feed = `${p.calendarTitle}|${lines.join(",")}`;
   for (let i = 0; i < feed.length; i++) h = ((h << 5) + h + feed.charCodeAt(i)) >>> 0;
   return `${p.events.length}-${h.toString(36)}`;
 }
@@ -408,6 +438,15 @@ let autoTimer: ReturnType<typeof setTimeout> | null = null;
 async function autoPush(): Promise<void> {
   if (!cfg.enabled || syncing) return;
   if (!(await systemCalSupported())) return;
+  // 数据齐备门槛：学堂快照缺席时**不重建**。快照为 null = 学堂数据还没装载（App 启动后
+  // 90s 才 kick 一轮，见 App.tsx；或本会话学堂没建起来），此时 buildPayload 会算出
+  // 一份"少了全部作业 DDL 块"的载荷——那不是日程变化，是数据没到位。真写进去就会把
+  // 截止提醒整批抹掉，等 90s 后装载完再写回来（两次无谓写入 + 一段"提醒不见了"的窗口）。
+  // 快照到位的那次装载本身就是内容变化事件，会重新触发本轮。手动同步不受此限。
+  if (getLearnSnapshot() === null) {
+    void logLine("[SYSCAL] 学堂快照未装载，本轮静默同步跳过（等它装载的广播）").catch(() => undefined);
+    return;
+  }
   try {
     await syncSystemCalendar({ silent: true });
   } catch {
@@ -423,6 +462,21 @@ function scheduleAutoPush(): void {
   }, 5000);
 }
 
+/** 外部作业（雨课堂 / TUOJ 等）也进系统日历（DDL 块）。
+ *  它的广播带着 lastAt（每次刷新都变）与会话健康状态（心跳每轮都变），直接订阅等于
+ *  把"心跳"当"日程变了"——所以只认真正进日历的那几个字段的内容签名。 */
+let lastExtHwSig: string | null = null;
+function onExtHwChange(): void {
+  const sig = JSON.stringify(
+    getExtHwSnapshot().items
+      .map(toHomework)
+      .map((h) => [h.id, h.courseId, h.courseName ?? "", h.title, h.deadline, h.submitted]),
+  );
+  if (sig === lastExtHwSig) return;
+  lastExtHwSig = sig;
+  scheduleAutoPush();
+}
+
 let initialized = false;
 
 /** 应用启动时调用一次：订阅日程/课表变更 → 防抖自动重推 */
@@ -431,12 +485,21 @@ export function initSystemCalAutoSync(): void {
   initialized = true;
   void (async () => {
     await ensureLoaded();
-    onCloudCalChange(scheduleAutoPush);
-    // 作业数据（提交状态/新 DDL）与提醒档位变化 → 同样防抖重推
-    subscribeLearnData(scheduleAutoPush);
+    // 只认**内容变化事件**（数据源侧已按内容签名去重，装载但内容没变不发）：
+    onCloudCalChange(scheduleAutoPush);   // 云/本日程：云同步扫出 added/updated/removed≠0、本地增删改
+    subscribeLearnData(scheduleAutoPush); // 学堂：作业 DDL / 提交状态 / 课名变化
+    subscribeCampusData(scheduleAutoPush); // 课表（校历窗口）变化
+    subscribeCalendarData(scheduleAutoPush); // 学期/校历变化（决定窗口与所属学期）
+    subscribeExtHw(onExtHwChange);         // 外部作业：按进日历的字段去重（滤掉心跳噪声）
+    // 作业提醒档位变化 → 同样防抖重推
     subscribeHwRemind(scheduleAutoPush);
-    // 启动兜底：登录/云同步触发 emit 之外，20s 后补推一次（指纹未变会秒跳过）
-    setTimeout(() => void autoPush(), 20_000);
+    // 两处"定期重建"兜底（用户 2026-10-11 拍板保留）：它们只重建**应用内**载荷，
+    // 内容与上次写入完全相同就一次原生都不进（见 syncSystemCalendar 的指纹闸门），
+    // 所以既兜住了"没有事件可等的服务端改动"（教务调课），又不会白写系统日历。
+    // 关键前提是 autoPush 里的"数据齐备门槛"：学堂快照没装载时本轮直接跳过，
+    // 否则会算出一份"少了作业 DDL 块"的半量载荷——那不是内容变化，是数据没到位。
+    setTimeout(() => void autoPush(), 20_000);              // 启动一次（关着 App 期间的改动）
+    setInterval(() => void autoPush(), RECONCILE_INTERVAL); // 之后每 30 分钟一轮
   })();
 }
 

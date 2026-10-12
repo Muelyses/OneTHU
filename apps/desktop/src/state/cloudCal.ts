@@ -41,6 +41,38 @@ let syncing = false;
 let lastError: string | null = null;
 const listeners = new Set<() => void>();
 const emit = (): void => listeners.forEach((fn) => fn());
+/** 内容变更订阅（真变了才触发；见 onCloudCalChange 注释） */
+const changeListeners = new Set<() => void>();
+
+/**
+ * 批量变更闸门：批量期间只记账、不广播，结束时统一广播一次。
+ *
+ * 为什么必须成批：课表上云 / 作业上云都是「清旧 + 全量重写」的循环，逐条广播会把**中途的
+ * 半成品镜像**（旧数据已删、新数据还没写完）暴露给跟随方——系统日历照着它重建，就会算出
+ * 一份"少了全部课程事件"的载荷并真的写进去，等重写完成再写回来（两次无谓写入 + 一段
+ * 日历被清空的窗口）。原本这些循环一次都不广播，反倒是安全的；加了逐条广播就必须收口。 */
+let batchDepth = 0;
+let batchDirty = false;
+function emitChange(): void {
+  if (batchDepth > 0) {
+    batchDirty = true;
+    return;
+  }
+  changeListeners.forEach((fn) => fn());
+}
+/** 把一段会多次改动镜像的操作收成一次广播（成功与否都收口，失败时已改的部分照常广播） */
+async function withBatch<T>(fn: () => Promise<T>): Promise<T> {
+  batchDepth++;
+  try {
+    return await fn();
+  } finally {
+    batchDepth--;
+    if (batchDepth === 0 && batchDirty) {
+      batchDirty = false;
+      changeListeners.forEach((f) => f());
+    }
+  }
+}
 
 async function persistCfg(): Promise<void> {
   if (!cfg) {
@@ -89,6 +121,9 @@ async function ensureLoaded(): Promise<void> {
     /* 忽略 */
   }
   emit();
+  // 首次从盘上装载出内容 = 跟随方（系统日历等）第一次见到这批事件，广播一次；
+  // 空镜像不广播（没有任何可写的内容）
+  if (cloudEvents.length > 0 || localEvents.length > 0) emitChange();
 }
 
 /** 配置就绪（邮件 tab 复用同一凭据：email + authCode） */
@@ -97,13 +132,18 @@ export async function ensureCloudCalLoaded(): Promise<void> {
 }
 
 /**
- * 订阅云/本日程任何变更（含首次加载、同步、增删改）——系统日历自动跟随用。
- * 返回退订函数。
+ * 订阅云/本日程**内容变更**（同步后发现真变了、增删改、首次从盘上装载）——
+ * 系统日历自动跟随、通知/小组件重算用。返回退订函数。
+ *
+ * 与 emit()（React 状态：syncing / lastSyncAt，每次同步都要走一遍）**分开**：
+ * 原先两者共用 emit()，于是「云同步扫了一遍、added/updated/removed 全 0」也把跟随方
+ * 叫醒一次——白跑一轮载荷重建（拉整学期课表），叠上指纹失效就是白写一遍系统日历。
+ * 现在只有内容真变了才广播。
  */
 export function onCloudCalChange(fn: () => void): () => void {
-  listeners.add(fn);
+  changeListeners.add(fn);
   return () => {
-    listeners.delete(fn);
+    changeListeners.delete(fn);
   };
 }
 
@@ -140,6 +180,7 @@ export async function configureCloudCal(email: string, authCode: string): Promis
 
 /** 断开：清配置与云缓存（云端事件不动，本地手动日程保留） */
 export async function disconnectCloudCal(): Promise<void> {
+  const had = cloudEvents.length > 0;
   cfg = null;
   cloudEvents = [];
   lastSyncAt = 0;
@@ -147,6 +188,7 @@ export async function disconnectCloudCal(): Promise<void> {
   await persistCfg();
   await fileDelete(CACHE_FILE);
   emit();
+  if (had) emitChange(); // 清空也是内容变化（系统日历要把对应事件撤掉）
 }
 
 export interface SyncResult {
@@ -165,6 +207,9 @@ export async function syncCloudCal(): Promise<SyncResult> {
   syncing = true;
   lastError = null;
   emit();
+  /** 本轮是否真把镜像改了（added/updated/removed 任一非 0）：只有真变了才广播内容变更，
+   *  否则「扫了一遍啥也没变」也会唤醒系统日历跟随，白拉一轮整学期课表。 */
+  let changed = false;
   try {
     const client = makeClient()!;
     const metas = await client.listEvents();
@@ -184,6 +229,7 @@ export async function syncCloudCal(): Promise<SyncResult> {
       else added++;
     }
     const removed = cloudEvents.filter((e) => !metas.some((m) => m.uid === e.uid)).length;
+    changed = added + updated + removed > 0;
     cloudEvents = next;
     lastSyncAt = Date.now();
     await persistCache();
@@ -194,6 +240,8 @@ export async function syncCloudCal(): Promise<SyncResult> {
   } finally {
     syncing = false;
     emit();
+    // 内容变更广播放在状态广播之后：跟随方读到的镜像已是本轮结果
+    if (changed) emitChange();
   }
 }
 
@@ -206,6 +254,7 @@ export async function putCloudEvent(ev: caldav.IcsEvent): Promise<void> {
   lastSyncAt = Date.now();
   await persistCache();
   emit();
+  emitChange();
 }
 
 /** 删除云端事件（按 UID） */
@@ -218,6 +267,7 @@ export async function deleteCloudEvent(uid: string): Promise<void> {
   cloudEvents = cloudEvents.filter((e) => e.uid !== uid);
   await persistCache();
   emit();
+  emitChange();
 }
 
 /* -------------- 本地手动日程（不上云） -------------- */
@@ -230,12 +280,16 @@ export async function putLocalEvent(ev: caldav.IcsEvent): Promise<void> {
   localEvents = [...localEvents.filter((e) => e.uid !== ev.uid), ev];
   await persistLocal();
   emit();
+  emitChange();
 }
 
 export async function deleteLocalEvent(uid: string): Promise<void> {
-  localEvents = localEvents.filter((e) => e.uid !== uid);
+  const next = localEvents.filter((e) => e.uid !== uid);
+  if (next.length === localEvents.length) return; // 没这条：内容没变，不惊动跟随方
+  localEvents = next;
   await persistLocal();
   emit();
+  emitChange();
 }
 
 /* -------------- React 钩子 -------------- */
@@ -357,40 +411,43 @@ export async function exportSemesterToCloud(
 ): Promise<{ written: number; removed: number; skipped: number }> {
   const client = makeClient();
   if (!client) throw new Error("未配置云同步");
-  const { events, skipped } = await buildSemesterEvents(semester, fetchSchedule);
+  // 清旧（逐条 deleteCloudEvent）+ 全量重写：整段收成一次广播，中途不暴露半成品镜像
+  return await withBatch(async () => {
+    const { events, skipped } = await buildSemesterEvents(semester, fetchSchedule);
 
-  // 清理旧 course/exam（幂等重入）
-  const stale = cloudEvents.filter((e) => e.onethuSource === "course" || e.onethuSource === "exam");
-  onProgress?.(0, stale.length, "清理旧数据");
-  let removed = 0;
-  for (const s of stale) {
-    try {
-      await deleteCloudEvent(s.uid);
-      removed++;
-    } catch {
-      /* 单条失败继续 */
+    // 清理旧 course/exam（幂等重入）
+    const stale = cloudEvents.filter((e) => e.onethuSource === "course" || e.onethuSource === "exam");
+    onProgress?.(0, stale.length, "清理旧数据");
+    let removed = 0;
+    for (const s of stale) {
+      try {
+        await deleteCloudEvent(s.uid);
+        removed++;
+      } catch {
+        /* 单条失败继续 */
+      }
+      onProgress?.(removed, stale.length, "清理旧数据");
     }
-    onProgress?.(removed, stale.length, "清理旧数据");
-  }
 
-  // 全量写入
-  onProgress?.(0, events.length, "写入日程");
-  let written = 0;
-  let failed = 0;
-  for (const ev of events) {
-    try {
-      await client.putIcs(ev.uid, caldav.serializeCalendar([ev]));
-      cloudEvents = [...cloudEvents.filter((c) => c.uid !== ev.uid), ev];
-      written++;
-    } catch {
-      failed++;
+    // 全量写入
+    onProgress?.(0, events.length, "写入日程");
+    let written = 0;
+    let failed = 0;
+    for (const ev of events) {
+      try {
+        await client.putIcs(ev.uid, caldav.serializeCalendar([ev]));
+        cloudEvents = [...cloudEvents.filter((c) => c.uid !== ev.uid), ev];
+        written++;
+      } catch {
+        failed++;
+      }
+      onProgress?.(written, events.length, "写入日程");
     }
-    onProgress?.(written, events.length, "写入日程");
-  }
-  lastSyncAt = Date.now();
-  await persistCache();
-  emit();
-  return { written, removed, skipped: skipped + failed };
+    lastSyncAt = Date.now();
+    await persistCache();
+    emit();
+    return { written, removed, skipped: skipped + failed };
+  });
 }
 
 /* ══════════ 作业 DDL 上云（用户 2026-09-09 拍板：DDL 不能只进本地系统日历） ══════════
@@ -422,31 +479,34 @@ export async function syncHwToCloud(): Promise<{ written: number; removed: numbe
   const events = buildHwCloudEvents(getLearnSnapshot(), getHwRemindState());
   const sig = sig32(JSON.stringify(events.map((e) => [e.uid, e.start, e.alarmMinutes ?? 0])));
   if (sig === hwCloudSig) return { written: 0, removed: 0, skipped: true };
-  const stale = cloudEvents.filter((e) => e.onethuSource === "homework");
-  let removed = 0;
-  for (const s of stale) {
-    try {
-      await deleteCloudEvent(s.uid);
-      removed++;
-    } catch {
-      /* 单条失败继续 */
+  // 清旧 + 重写：整段收成一次广播（否则逐条删除会被跟随方看成"DDL 全没了"）
+  return await withBatch(async () => {
+    const stale = cloudEvents.filter((e) => e.onethuSource === "homework");
+    let removed = 0;
+    for (const s of stale) {
+      try {
+        await deleteCloudEvent(s.uid);
+        removed++;
+      } catch {
+        /* 单条失败继续 */
+      }
     }
-  }
-  let written = 0;
-  for (const ev of events) {
-    try {
-      await client.putIcs(ev.uid, caldav.serializeCalendar([ev]));
-      cloudEvents = [...cloudEvents.filter((c) => c.uid !== ev.uid), ev];
-      written++;
-    } catch {
-      /* 单条失败继续：下次数据变化重推 */
+    let written = 0;
+    for (const ev of events) {
+      try {
+        await client.putIcs(ev.uid, caldav.serializeCalendar([ev]));
+        cloudEvents = [...cloudEvents.filter((c) => c.uid !== ev.uid), ev];
+        written++;
+      } catch {
+        /* 单条失败继续：下次数据变化重推 */
+      }
     }
-  }
-  hwCloudSig = sig;
-  lastSyncAt = Date.now();
-  await persistCache();
-  emit();
-  return { written, removed, skipped: false };
+    hwCloudSig = sig;
+    lastSyncAt = Date.now();
+    await persistCache();
+    emit();
+    return { written, removed, skipped: false };
+  });
 }
 
 /* 自动跟随：learn 数据（含 30 分钟后台刷新）/ 提醒设置变化 → 防抖重推云端作业 */

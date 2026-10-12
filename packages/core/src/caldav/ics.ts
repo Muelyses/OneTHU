@@ -48,6 +48,10 @@ export interface IcsEvent {
   alarmMinutes?: number;
   /** OneTHU 私有来源标记（X-ONETHU-SRC：course/manual/…） */
   onethuSource?: string;
+  /** 用户在编辑器里勾了「在桌面小组件显示」（X-ONETHU-WIDGET:1）：该日程进桌面小组件的
+   *  「今天」卡片，行与 DDL 同款（见 apps/desktop/src/state/widgetSnapshot.ts）。
+   *  缺省 = 不进（保持既有行为：自定义日程原本不上小组件）。 */
+  onethuWidget?: boolean;
   lastModified?: number;
   /* ---- 服务端伴随字段（parseIcsWithMeta 注入，非 ICS 内容） ---- */
   href?: string;
@@ -282,6 +286,7 @@ export function parseIcs(text: string): IcsEvent[] {
       }
       case "CATEGORIES": cur.categories = value.split(",").map((s) => unescapeText(s.trim())).filter(Boolean); break;
       case "X-ONETHU-SRC": cur.onethuSource = value.trim(); break;
+      case "X-ONETHU-WIDGET": cur.onethuWidget = /^(1|true)$/i.test(value.trim()); break;
       case "LAST-MODIFIED": { const p = parseDateValue(value, params); if (p) cur.lastModified = p.ms; break; }
       default: break;
     }
@@ -323,6 +328,7 @@ export function serializeEvent(ev: IcsEvent, nowMs = Date.now()): string[] {
   }
   if (ev.categories?.length) lines.push(...prop("CATEGORIES", "", ev.categories.map(escapeText).join(",")));
   if (ev.onethuSource) lines.push(...prop("X-ONETHU-SRC", "", ev.onethuSource));
+  if (ev.onethuWidget) lines.push(...prop("X-ONETHU-WIDGET", "", "1"));
   if (ev.lastModified) lines.push(...prop("LAST-MODIFIED", "", fmtDateTimeUtc(ev.lastModified)));
   if (ev.alarmMinutes && ev.alarmMinutes > 0) {
     lines.push(...prop("BEGIN", "", "VALARM"));

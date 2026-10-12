@@ -718,18 +718,17 @@
 }
 
 
-/* ── 竖栏窄轨：图标与 logo 铆钉于 x=28 中线；悬停只变宽度、浮现文字 ── */
-.tabs-vertical.rail-narrow .ex-rail .ex-tab { justify-content: flex-start; gap: 0; padding-left: 0; padding-right: 0; }
-.tabs-vertical.rail-narrow .ex-rail .ex-tab .ex-tab-main { flex: 0 1 auto; width: auto; min-width: 0; padding: 0; gap: 0; justify-content: flex-start; }
+/* ── 竖栏窄轨：单一事实源铆钉——收起/展开同一套左锚 44px 槽，图标恒 x=28 ──
+   !important 压掉收起态的居中规则，两态只有文字显隐不同，布局零差异 → 无从闪动 */
+.tabs-vertical.rail-narrow .ex-rail .ex-tab { justify-content: flex-start !important; gap: 0 !important; padding-left: 0 !important; padding-right: 0 !important; min-width: 0 !important; max-width: none !important; width: 100% !important; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab .ex-tab-main { flex: 0 1 auto !important; width: auto !important; min-width: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: flex-start !important; }
 .tabs-vertical.rail-narrow .ex-rail .ex-tab .ex-tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph { flex: none; width: 44px; display: inline-flex; align-items: center; justify-content: center; }
-.tabs-vertical.rail-narrow .ex-rail .ex-ws-band { padding-left: 0; padding-right: 0; }
-.tabs-vertical.rail-narrow .ex-rail .ex-tab-add { flex: none; width: 44px; margin-left: 0; justify-content: center; align-self: flex-start; }
-/* 图标尺寸两种状态恒定 18px（拳头加粗），不因展开变化 */
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph { flex: none !important; width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.tabs-vertical.rail-narrow .ex-rail .ex-ws-band { padding-left: 0 !important; padding-right: 0 !important; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-add { flex: none !important; width: 44px !important; margin-left: 0 !important; justify-content: center !important; align-self: flex-start !important; }
 .tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph svg,
 .tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph img { width: 18px; height: 18px; }
 .tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph.is-fist svg,
 .tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph.is-fist svg * { stroke-width: 6; }
-/* 窄轨滚动条不占宽，避免出现/消失抖动 */
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical { scrollbar-width: none; }
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical::-webkit-scrollbar { display: none; }

@@ -178,8 +178,9 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
 
     // 层 3：失败——退避 + 人话（不猜、不反复撞统一认证）
     // 强制重签失败不计入退避（与插件一致：用户显式操作不该把自动路径也卡住）
+    // 不覆盖 madmodelReachable：它只表示 IP 探针结果，票据兑换失败不等于网络不可达
+    // （否则会让预检误判「直连被门禁 + webvpn 未就绪」，见 2026-10-12 事故）
     if (!force) bumpBackoff();
-    writeSettings({ madmodelReachable: "0", madmodelReachableAt: String(Date.now()) });
     throw new Error(
       "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。" +
       "请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
@@ -196,6 +197,8 @@ async function exchangeCheck(url: string, opts: { direct?: boolean }): Promise<s
     const j = (await res.json().catch(() => null)) as { success?: boolean; data?: unknown } | null;
     if (res.status === 200 && j?.success === true && typeof j.data === "string" && j.data) return j.data;
     if (j && typeof j.data === "string" && j.data) void logLine(`[MADMODEL] check 业务失败：${j.data}`).catch(() => undefined);
+    // 无 data 字符串时也要留痕（之前只有异常分支有日志，兑换被拒原因无从查）
+    else void logLine(`[MADMODEL] check 未返回 token：HTTP ${res.status} success=${String(j?.success)} msg=${String((j as { msg?: unknown } | null)?.msg ?? "").slice(0, 120)} path=${url.slice(0, url.indexOf("?") < 0 ? url.length : url.indexOf("?")).slice(-60)}`).catch(() => undefined);
     return null;
   } catch (e) {
     void logLine(`[MADMODEL] check 异常：${e instanceof Error ? e.message : e}`).catch(() => undefined);

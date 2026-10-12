@@ -25,11 +25,12 @@ import type { LearnNav, Page } from "../state/app.js";
 import { applyHomeTimeOrder, type HomeTimeInput } from "../state/homeOrder.js";
 import {
   IconBell, IconCalendar, IconCard, IconCheck, IconExternal, IconFile, IconFlag,
-  IconIn, IconInfo, IconPen, IconRefresh, IconSchedule, IconSearch, IconStar, IconToday, IconXk,
+  IconIn, IconInfo, IconPen, IconRefresh, IconSchedule, IconSearch, IconStar, IconSun, IconToday, IconXk,
 } from "../components/Icons.js";
 
 /** 首页卡片 id（注册表唯一键，localStorage 里也用它） */
 export type HomeCardId =
+  | "clock" | "date" | "weather"
   | "balance-strip"
   | "today-overview"
   | "agenda" | "homework" | "resv" | "classes" | "news" | "notices" | "cardEntry" | "next-class"
@@ -100,6 +101,11 @@ export const HOME_CARD_META: HomeCardDef[] = [
      「添加卡片」可找回；老用户已存布局不受影响（resolveLayout 只追加新卡）。 */
   /* C18（霖 2026-10-01 走查）：余额速览降优先级——默认排到「猜你喜欢」之后（后移，不删除；
      已自定义过顺序的用户仍按自己存的顺序走）。 */
+  /* —— 环境/时钟三件套（2026-10-13，霖：首页要有时间、日期、天气）——默认可见，
+     老布局按「注册表新卡追加」规则自动补进侧栏末尾；卡体复用白板的自足实现（boardCards.tsx）。 */
+  { id: "clock", title: "时钟", kind: "bespoke", icon: IconSchedule, defaultCol: "rail", defaultOrder: 3.4 },
+  { id: "date", title: "日期", kind: "bespoke", icon: IconCalendar, defaultCol: "rail", defaultOrder: 3.5 },
+  { id: "weather", title: "天气", kind: "bespoke", icon: IconSun, defaultCol: "rail", defaultOrder: 3.6 },
   { id: "balance-strip", title: "余额速览", kind: "bespoke", icon: IconCard, defaultCol: "main", defaultOrder: 5.5, shellFree: true, aside: "校园卡 · 电费" },
   { id: "classes", title: "今日课程", kind: "bespoke", icon: IconToday, defaultCol: "main", defaultOrder: 1, aside: "点击打开课表" },
   { id: "homework", title: "未提交作业", kind: "bespoke", icon: IconPen, defaultCol: "main", defaultOrder: 2 },

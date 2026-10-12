@@ -46,6 +46,7 @@ import {
   EMPTY_BOARD, KNOWN_IDS, cellsOf, cellsToLayout, layoutToCells, loadBoard, saveBoard, systemBoard,
   type BoardDoc, type BoardItem,
 } from "../state/board.js";
+import { ClockCard, DateCard, WeatherCard } from "../components/boardCards.js";
 import { readSubs } from "./info/newsSearch.js";
 import { openExternal } from "./info/openExternal.js";
 import { toHomework, useExternalHomework, useExternalNotices } from "../state/exthw.js";
@@ -694,6 +695,10 @@ export function TodayPage() {
 
   /* ---- 注册表：静态元数据 + bespoke 渲染闭包（数据 hook 全在本组件，单次取数） ---- */
   const registry: HomeCardDef[] = buildHomeRegistry({
+    /* 环境/时钟三件套：卡体直接复用白板的自足实现（本地时间 + open-meteo，不依赖会话取数） */
+    clock: { render: () => <ClockCard /> },
+    date: { render: () => <DateCard /> },
+    weather: { render: () => <WeatherCard /> },
     "balance-strip": {
       // 余额速览条（§2.2）：校园卡余额直读；电费需宿舍上下文（P2 接入），先做入口
       render: () => (

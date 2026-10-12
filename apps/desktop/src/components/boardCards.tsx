@@ -473,7 +473,7 @@ const ENTRY_REAL: Record<string, CardRenderer> = {
    自由尺寸（内容自适应），小格只留主信息，大格逐层加上下文——与档位组件「随尺寸加信息层」同一口吻。 */
 
 /** 数字时钟：1 行高显示 HH:MM，2 行高加秒与日期 */
-function ClockCard({ size }: { size?: WidgetSize }): ReactNode {
+export function ClockCard({ size }: { size?: WidgetSize }): ReactNode {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -500,7 +500,7 @@ function weekdayCn(d: number): string {
 }
 
 /** 日期卡：大字日期 + 星期（高格再加农历风格的月相文案就免了——保持干净） */
-function DateCard({ size }: { size?: WidgetSize }): ReactNode {
+export function DateCard({ size }: { size?: WidgetSize }): ReactNode {
   const now = new Date();
   const tall = (size?.h ?? 1) >= 2;
   const y = now.getFullYear();
@@ -520,7 +520,7 @@ function DateCard({ size }: { size?: WidgetSize }): ReactNode {
 }
 
 /** 天气卡：拉 open-meteo（免 key 免会话），失败留旧值 + 手动刷新 */
-function WeatherCard({ size }: { size?: WidgetSize }): ReactNode {
+export function WeatherCard({ size }: { size?: WidgetSize }): ReactNode {
   const snap = useSyncExternalStore(subscribeWeather, weatherSnapshot, weatherSnapshot);
   useEffect(() => {
     void refreshWeather();

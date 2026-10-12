@@ -73,6 +73,22 @@ const now = T(2026, 9, 21, 12, 0);   // 09-21 12:00
   assert.equal(past.visible, false);
 }
 
+// event（勾了「在桌面小组件显示」的自定义日程）：与 DDL 同一套语义（过点剔除 / 6 小时内加粗）
+{
+  const soon = nativeRow({ text: "日程 组会", rel: "event", at: T(2026, 9, 21, 14, 0) }, now);
+  assert.equal(soon.visible, true);
+  assert.equal(soon.strong, true);
+  assert.equal(soon.sub, "今天 14:00 · 还有 2 小时");
+
+  const past = nativeRow({ text: "日程 组会", rel: "event", at: T(2026, 9, 21, 11, 0) }, now);
+  assert.equal(past.visible, false);
+
+  const later = nativeRow({ text: "日程 体检", rel: "event", at: T(2026, 9, 24, 10, 0) }, now);
+  assert.equal(later.visible, true);
+  assert.equal(later.strong, false);
+  assert.equal(later.sub, "9/24 10:00 · 还有 3 天");
+}
+
 // leftText 口径与快照构建侧一致
 assert.equal(leftText(T(2026, 9, 21, 12, 40) - now), "还有 40 分钟");
 assert.equal(leftText(T(2026, 9, 21, 15, 5) - now), "还有 3 小时");
@@ -101,6 +117,35 @@ const rows = [
   const out = nativeRender({ rows: [rows[0]], counts: { classes: 1, ddls: 0, more: 0, hadClass: true }, titleAt: T(2026, 9, 21, 8, 0), now: T(2026, 9, 22, 0, 30) });
   assert.equal(out.rows.length, 0);
   assert.equal(out.footer, "今天没有课与截止");
+}
+
+{
+  const rows2 = [
+    ...rows,
+    { text: "日程 组会", rel: "event", at: T(2026, 9, 21, 14, 30) },   // 与 14:00 的课同屏
+  ];
+  const out = nativeRender({ rows: rows2, counts: { classes: 2, ddls: 1, events: 1, more: 0, hadClass: true }, titleAt: T(2026, 9, 21, 8, 0), now });
+  assert.equal(out.rows.length, 3);
+  assert.equal(out.footer, "1 节课 · 1 个截止 · 1 项日程");
+}
+{
+  // 日程行过点后既不占卡片、也不算「还有」；只剩课程与截止时脚注照旧
+  const out = nativeRender({
+    rows: [rows[1], rows[2], { text: "日程 组会", rel: "event", at: T(2026, 9, 21, 11, 0) }],
+    counts: { classes: 1, ddls: 1, events: 1, more: 0, hadClass: false },
+    titleAt: T(2026, 9, 21, 8, 0), now,
+  });
+  assert.equal(out.footer, "1 节课 · 1 个截止");
+}
+{
+  // 只有日程时脚注也必须说话（不再掉进「今天没有课与截止」）
+  const out = nativeRender({
+    rows: [{ text: "日程 组会", rel: "event", at: T(2026, 9, 21, 14, 0) }],
+    counts: { classes: 0, ddls: 0, events: 1, more: 0, hadClass: false },
+    titleAt: T(2026, 9, 21, 8, 0), now,
+  });
+  assert.equal(out.rows.length, 1);
+  assert.equal(out.footer, "1 项日程");
 }
 
 /* ---------- [2b] 行数按卡片高度铺满 + 脚注「还有 N 项」（R25） ----------
@@ -150,6 +195,10 @@ const counts4 = { classes: 2, ddls: 2, more: 0, hadClass: true };
   const snap = buildWidgetSnapshot({
     schedule: [{ date: "2026-09-21", startTime: "14:00", endTime: "15:40", courseName: "高等数学", location: "六教6A215", category: "课程" }],
     homework: [{ id: "h1", title: "习题", deadline: "2026-09-21 23:59:59", submitted: false, courseName: "数据结构" }],
+    events: [
+      { uid: "u1", summary: "组会", start: T(2026, 9, 21, 16, 0), end: T(2026, 9, 21, 17, 0), inWidget: true },
+      { uid: "u2", summary: "没勾的", start: T(2026, 9, 21, 18, 0), inWidget: false },
+    ],
     remind: { default: 120, items: {} },
     now,
   });
@@ -161,6 +210,11 @@ const counts4 = { classes: 2, ddls: 2, more: 0, hadClass: true };
   const ddl = snap.rows.find((r) => r.rel === "ddl");
   assert.ok(ddl, "ddl 行必须带 rel");
   assert.equal(ddl.at, T(2026, 9, 21, 23, 59, 59));
+  const ev = snap.rows.filter((r) => r.rel === "event");
+  assert.equal(ev.length, 1, "只有勾了「在桌面小组件显示」的日程才进快照");
+  assert.equal(ev[0].text, "日程 组会");
+  assert.equal(ev[0].at, T(2026, 9, 21, 16, 0));
+  assert.ok(snap.counts && snap.counts.events === 1, "counts.events 必须在位");
   assert.ok(snap.counts && snap.counts.hadClass === true, "counts.hadClass 必须在位");
   assert.ok(snap.titleAt === now, "titleAt 必须在位");
 }
@@ -206,12 +260,33 @@ assert.ok(kt.includes("private const val SLOT_IDS = 20"), "Kotlin 的槽位数�
 assert.ok(kt.includes("private fun fitRows(") && kt.includes("private fun lineHeightPx("), "行数必须按真实高度算（fitRows + lineHeightPx 逐行量文本）");
 assert.ok(!kt.includes("listFit"), "旧的矮/中/高估算必须彻底移除（它把行数封顶在 5 行）");
 assert.ok(
-  /val hidden = \(visibleRel - \(shownClasses \+ shownDdls\)\) \+ counts\.optInt\("more", 0\)/.test(kt),
+  /val hidden = \(visibleRel - \(shownClasses \+ shownDdls \+ shownEvents\)\) \+ counts\.optInt\("more", 0\)/.test(kt),
   "脚注的「还有 N 项」必须是「没显示的有效行 + 快照都没装下的条目」",
 );
 assert.ok(
-  kt.includes("private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, visibleRel: Int)"),
+  kt.includes("private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, shownEvents: Int, visibleRel: Int)"),
   "footerOf 必须同时拿到「已显示的行数」与「全部有效行数」，否则算不出还有几项",
 );
+/* 「在桌面小组件显示」的自定义日程（rel="event"）：两端必须同款处理——
+ * 原生走与 ddl 相同的过点失效分支、单独计数、脚注写「项日程」。 */
+assert.ok(kt.includes("\"event\" -> visEvents++") && kt.includes("\"event\" -> shownEvents++"),
+  "Kotlin 必须把 rel=event 计入可见与已显示条数（否则脚注的「还有 N 项」会漂）");
+assert.ok(kt.includes("parts.add(\"$shownEvents 项日程\")"), "Kotlin 脚注必须单独写「项日程」");
+assert.ok(kt.includes("(rel0 == \"ddl\" || rel0 == \"event\")"),
+  "Kotlin 的 6 小时内加粗必须覆盖日程行（与 JS nativeRow 的 strong 同口径）");
+assert.ok(nativeRow({ text: "日程 组会", rel: "event", at: T(2026, 9, 21, 14, 0) }, now).strong === true,
+  "JS 侧重算：6 小时内的日程行必须加粗");
 
-console.log("widget-native-render-test: 全部断言通过（nativeRow 7 态 + 脚注标题 3 态 + 铺满与剩余项数 5 态 + 快照契约 + 两端同步守卫）");
+/* 「在桌面小组件显示」这条链上的接线（缺一环勾选框就成摆设，且不会有任何报错）：
+ * ICS 私有字段 → 计划输入 → 运行时 → 快照。 */
+const icsSrc = readFileSync(new URL("../packages/core/src/caldav/ics.ts", import.meta.url), "utf8");
+const inputSrc = readFileSync(new URL("../apps/desktop/src/state/notifyInputs.ts", import.meta.url), "utf8");
+const rtSrc = readFileSync(new URL("../apps/desktop/src/state/widgetRuntime.ts", import.meta.url), "utf8");
+assert.ok(/X-ONETHU-WIDGET/.test(icsSrc) && /onethuWidget/.test(icsSrc),
+  "ICS 层必须有 X-ONETHU-WIDGET 的读写（勾选状态跟着事件走，跨设备也在）");
+assert.ok(inputSrc.includes("inWidget: src?.onethuWidget === true"),
+  "notifyInputs 必须把事件上的标记转成 inWidget（按 uid 取回，与提前量同路）");
+assert.ok(rtSrc.includes("events: inputs.events"),
+  "小组件运行时必须把 events 交给快照构建（只收课程与 DDL 的话，勾了也不会出现）");
+
+console.log("widget-native-render-test: 全部断言通过（nativeRow 8 态 + 脚注标题 3 态 + 日程脚注 3 态 + 铺满与剩余项数 5 态 + 快照契约 + 两端同步守卫）");

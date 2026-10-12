@@ -93,9 +93,14 @@ export interface PlanEventEntry {
   location?: string | null;
   /** 起点（毫秒） */
   start: number;
+  /** 本场次的结束时刻（毫秒；全天日程为末日的次日 0 点，即不含端点） */
+  end?: number;
   allDay?: boolean;
   /** 事件自带的提前量（分钟）；缺省用设置里的课程提前量 */
   alarmMinutes?: number | null;
+  /** 用户勾了「在桌面小组件显示」（ICS 的 X-ONETHU-WIDGET）：
+   *  该场次进桌面小组件的「今天」卡片，行与 DDL 同款（见 widgetSnapshot.ts）。 */
+  inWidget?: boolean;
 }
 
 export interface PlanHomework {

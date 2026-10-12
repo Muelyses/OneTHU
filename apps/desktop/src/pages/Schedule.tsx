@@ -31,6 +31,7 @@ import { usePlatformLayout } from "../state/usePlatformLayout.js";
 import { courseColor, SRC_COLOR } from "../lib/courseColor.js";
 import { confirmOk } from "../lib/confirm.js";
 import { useExitHold } from "../lib/motion.js";
+import { useNotifyBackend } from "../components/useNotifyBackend.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { openLocalPath } from "../lib/localFile.js";
 
@@ -256,6 +257,8 @@ interface Draft {
   note: string;
   toCloud: boolean;
   originalCloud: boolean; // 编辑中的是云端事件
+  /** 「在桌面小组件显示」：写进事件的私有标记（X-ONETHU-WIDGET），勾了才进桌面「今天」卡片 */
+  widget: boolean;
 }
 /** 居中弹窗（黑色遮罩）：编辑日程 / 课程详情共用骨架，风格同 TabManageModal */
 const MODAL_MASK = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 } as const;
@@ -264,6 +267,8 @@ const MODAL_PANEL = { animation: "m-spring-in var(--dur-3) var(--ease-out) both"
 const emptyDraft = (date: string, canCloud: boolean): Draft => ({
   title: "", date, start: "08:00", end: "09:35", allDay: false, location: "", note: "",
   toCloud: canCloud, originalCloud: false,
+  // 默认不勾：自定义日程一直不上小组件，勾了才上（保持既有行为，避免存量日程突然挤进卡片）
+  widget: false,
 });
 
 export function SchedulePage() {
@@ -274,6 +279,8 @@ export function SchedulePage() {
   const extHw = useExternalHomework();
   const cal = useCloudCal();
   const { status } = useApp();
+  /** 本机有没有桌面小组件（只有 Android 有承载）：决定「在桌面小组件显示」是否出现在编辑器 */
+  const widgetHere = useNotifyBackend() === "android";
 
   // 每次打开日程页自动云同步一次（失败静默——工具栏有手动入口与状态）
   useEffect(() => {
@@ -662,6 +669,8 @@ export function SchedulePage() {
       start: `${padN(w.h)}:${padN(w.mi)}`, end: `${padN(we.h)}:${padN(we.mi)}`,
       allDay: !!src.allDay, location: src.location ?? "", note: src.description ?? "",
       toCloud: kind === "cloud", originalCloud: kind === "cloud",
+      // 原样带回：非 Android 上这个勾选框不显示，保存时也不会把标记抹掉
+      widget: src.onethuWidget === true,
     });
   };
   /** 列表行点击（云/本可编辑；课程/考试无 uid 不可编辑） */
@@ -695,6 +704,8 @@ export function SchedulePage() {
         location: draft.location.trim() || undefined,
         description: draft.note.trim() || undefined,
         onethuSource: "manual",
+        // 桌面小组件「今天」卡片：勾了才带上这个私有标记（缺省不写 = 不上卡片）
+        onethuWidget: draft.widget || undefined,
       };
       // 跨集合移动（云↔本地）：先删原侧再写新侧
       if (draft.uid && draft.originalCloud && !draft.toCloud) await deleteCloudEvent(draft.uid);
@@ -1346,6 +1357,12 @@ export function SchedulePage() {
             <input type="checkbox" checked={draft.toCloud} disabled={!canCloud} onChange={(e) => setDraft({ ...draft, toCloud: e.target.checked })} />
             同步到云日历{canCloud ? "（其他设备 / 系统日历可见）" : "（未配置——设置页开启云同步）"}
           </label>
+          {widgetHere ? (
+            <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 12, color: "var(--text-2)", margin: "6px 0 2px" }}>
+              <input type="checkbox" checked={draft.widget} onChange={(e) => setDraft({ ...draft, widget: e.target.checked })} />
+              在桌面小组件显示
+            </label>
+          ) : null}
           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
             <button className="btn btn-primary" disabled={!draft.title.trim() || busy} onClick={() => void onSaveDraft()}>
               {busy ? "保存中…" : "保存"}

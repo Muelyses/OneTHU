@@ -18,8 +18,11 @@
 //
 // R21（2026-09-21「上课了还显示还有 9 小时」）：快照行带机器时间字段，原生重画时按
 // **当前时钟**重算，App 不在前台也能说真话：
-//   row.at（epoch，事件开始）/ row.until（epoch，下课时刻）/ row.rel（"class"|"ddl"）
-//   / row.loc（上课地点）；快照级 counts{classes,ddls,more,hadClass} 与 titleAt。
+//   row.at（epoch，事件开始 / DDL 截止 / 日程的失效时刻）
+//   / row.until（epoch，下课时刻）/ row.rel（"class"|"ddl"|"event"）
+//   / row.loc（上课地点）；快照级 counts{classes,ddls,events,more,hadClass} 与 titleAt。
+//   "event" = 勾了「在桌面小组件显示」的自定义日程，走与 "ddl" 相同的过点失效分支
+//   （at 由快照按「定时日程=开始 / 全天日程=当天结束」定），脚注按「项日程」单独计数。
 //   重画语义唯一参考：JS state/widgetNativeRender.ts（改语义先改那里再两端同步）。
 //   重画的触发 = 30 分钟兜底自续 tick + 最近的 at/until 翻转点精准闹钟（WidgetTicker）。
 //
@@ -455,6 +458,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             val rels = mutableListOf<String>()
             var visClasses = 0
             var visDdls = 0
+            var visEvents = 0
             if (rows != null) {
                 for (i in 0 until rows.length()) {
                     val row = rows.optJSONObject(i) ?: continue
@@ -470,6 +474,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                     when (rel) {
                         "class" -> visClasses++
                         "ddl" -> visDdls++
+                        "event" -> visEvents++
                     }
                 }
             }
@@ -479,6 +484,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             var packed = 0
             var shownClasses = 0
             var shownDdls = 0
+            var shownEvents = 0
             for (i in texts.indices) {
                 if (packed >= maxSlots) break
                 val slot = slotId(packed + 1)
@@ -498,13 +504,14 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 when (rels[i]) {
                     "class" -> shownClasses++
                     "ddl" -> shownDdls++
+                    "event" -> shownEvents++
                 }
                 packed++
             }
             for (i in packed + 1..SLOT_IDS) views.setViewVisibility(slotId(i), View.GONE)
 
             // 脚注：数卡片上显示出来的行 + 还没显示的条目数（矮条里让位给内容）
-            val footer = if (withSub) footerOf(content, now, shownClasses, shownDdls, visClasses + visDdls) else ""
+            val footer = if (withSub) footerOf(content, now, shownClasses, shownDdls, shownEvents, visClasses + visDdls + visEvents) else ""
             views.setViewVisibility(R.id.onethu_widget_footer, if (footer.isEmpty()) View.GONE else View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_footer, footer)
             views.setOnClickPendingIntent(
@@ -529,7 +536,8 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
          *  - class：下课剔除；正在上课加粗 + 次行「正在上课 · 地点」；
          *    未开始次行「地点 · 还有 X」；隔天残留剔除；无结束时刻过点当结束；
          *  - ddl：过点剔除；未到次行「今天/M/d HH:MM · 还有 X」。
-         *  加粗在 styledRow 内按「正在上课 / 6 小时内 DDL」判定，与此处语义互补。
+         *  - event：与 ddl 同一分支（同理的过点失效型）。
+         *  加粗在 styledRow 内按「正在上课 / 6 小时内的 DDL 或日程」判定，与此处语义互补。
          */
         private fun nativeRow(row: JSONObject, now: Long): Triple<Boolean, String, String> {
             val text = row.optString("text").orEmpty()
@@ -575,19 +583,20 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
          * counts.more；两者之和恒等于仍有效的条目总数。此前「还有」直接用快照里写死的
          * counts.more，与卡片实际显示几条无关——用户实录「空着大半张卡却一直写着还有 2 项」。
          */
-        private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, visibleRel: Int): String {
+        private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, shownEvents: Int, visibleRel: Int): String {
             val counts = content.optJSONObject("counts")
                 ?: return content.optString("footer").orEmpty() // 非今日内容：用自带页脚（可能为空=不显示）
             val parts = mutableListOf<String>()
             if (shownClasses > 0) parts.add("$shownClasses 节课")
             if (shownDdls > 0) parts.add("$shownDdls 个截止")
+            if (shownEvents > 0) parts.add("$shownEvents 项日程")
             if (parts.isEmpty()) {
                 val hadClass = counts.optBoolean("hadClass", false) == true
                 val titleAt = content.optLong("titleAt", 0L)
                 return if (hadClass && (titleAt <= 0L || dayKey(titleAt) == dayKey(now))) "今天的课已上完"
                 else "今天没有课与截止"
             }
-            val hidden = (visibleRel - (shownClasses + shownDdls)) + counts.optInt("more", 0)
+            val hidden = (visibleRel - (shownClasses + shownDdls + shownEvents)) + counts.optInt("more", 0)
             return parts.joinToString(" · ") + if (hidden > 0) " · 还有 $hidden 项" else ""
         }
 
@@ -607,14 +616,15 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 "sm" -> 12
                 else -> 14
             }
-            // R21：加粗判定随当前时钟——正在上课（until>now≥at）或 6 小时内的 DDL，
+            // R21：加粗判定随当前时钟——正在上课（until>now≥at）或 6 小时内的 DDL / 日程，
             // 与快照自带的 strong 取并集（正在上课就算快照写死 false 也要抢眼）。
             val now = System.currentTimeMillis()
             val at = if (row?.has("at") == true) row.optLong("at", 0L) else 0L
             val until = if (row?.has("until") == true) row.optLong("until", 0L) else 0L
             val ongoing = until > 0L && at in 1..now && now < until
-            val ddlSoon = row?.optString("rel").orEmpty() == "ddl" && at > now && at - now <= 6 * 3600_000L
-            val bold = row?.optBoolean("strong", false) == true || ongoing || ddlSoon
+            val rel0 = row?.optString("rel").orEmpty()
+            val dueSoon = (rel0 == "ddl" || rel0 == "event") && at > now && at - now <= 6 * 3600_000L
+            val bold = row?.optBoolean("strong", false) == true || ongoing || dueSoon
             sp.setSpan(android.text.style.AbsoluteSizeSpan(headSp, true), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             if (bold) {
                 sp.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

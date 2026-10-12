@@ -12,7 +12,7 @@
  * 某个功能页的 1×1 快捷方式。实例清单只能问原生（AppWidgetManager 才知道桌面上有哪几块）。
  */
 import { getHwRemindState } from "./hwRemind.js";
-import type { PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
+import type { PlanEventEntry, PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
 import type { NotifyInvoke } from "./notifyScheduler.js";
 import {
   buildDetailSnapshot, buildGridSnapshot, buildShortcutSnapshot, buildWidgetSnapshot,
@@ -43,7 +43,7 @@ export interface WidgetRuntimeDeps {
   invoke: NotifyInvoke;
   /** 本平台是否有小组件承载（当前只有 Android） */
   backendAvailable: boolean;
-  collect: (now: number) => { schedule: PlanScheduleEntry[]; homework: PlanHomework[] };
+  collect: (now: number) => { schedule: PlanScheduleEntry[]; homework: PlanHomework[]; events?: PlanEventEntry[] | null };
   subscribe: (fn: () => void) => () => void;
   onError?: (m: string) => void;
   /** 读桌面上有哪些小组件（读失败返回 null：此时不推实例内容，也绝不允许原生修剪） */
@@ -108,13 +108,14 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
   }
 
   async function apply(
-    inputs: { schedule: PlanScheduleEntry[]; homework: PlanHomework[] },
+    inputs: { schedule: PlanScheduleEntry[]; homework: PlanHomework[]; events?: PlanEventEntry[] | null },
     now: number,
   ): Promise<boolean> {
     if (!deps.backendAvailable) return false;
     const today = buildWidgetSnapshot({
       schedule: inputs.schedule,
       homework: inputs.homework,
+      events: inputs.events,
       remind: getHwRemindState(),
       now,
     });

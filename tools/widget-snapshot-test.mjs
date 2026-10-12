@@ -179,6 +179,49 @@ const hw = (extra = {}) => ({ id: "h1", title: "第三章习题", deadline: "202
   eq("还早的 DDL 用灰（不抢眼）", later.color, "#8a8f98");
 }
 
+/* 「在桌面小组件显示」的自定义日程：与 DDL 同款行（同窗口、同倒计时、同紧迫度色、同样到点失效），
+ * 只有脚注按「项日程」单独计数；没勾的一律不上卡片（保持既有行为：自定义日程原本不上小组件）。 */
+{
+  const ev = (extra = {}) => ({
+    uid: "u1", summary: "组会", inWidget: true,
+    start: T(2026, 9, 21, 14, 0), end: T(2026, 9, 21, 15, 0), ...extra,
+  });
+  const on = buildWidgetSnapshot({ schedule: [], homework: [], events: [ev()], remind: REMIND, now: NOW });
+  eq("勾了的日程进卡片", on.rows.map((r) => r.text), ["日程 组会"]);
+  eq("日程行与 DDL 同款机器字段", [on.rows[0].rel, on.rows[0].at], ["event", T(2026, 9, 21, 14, 0)]);
+  ok("日程行次行是倒计时", on.rows[0].sub.startsWith("今天 14:00 · 还有"));
+  eq("日程行单独计数", on.counts.events, 1);
+  eq("脚注写「项日程」", on.footer, "1 项日程");
+
+  const off = buildWidgetSnapshot({ schedule: [], homework: [], events: [ev({ inWidget: false })], remind: REMIND, now: NOW });
+  eq("没勾的日程不上卡片", off.rows.length, 0);
+  eq("没勾时仍是空态", off.footer, "今天没有课与截止");
+
+  const started = buildWidgetSnapshot({ schedule: [], homework: [], events: [ev({ start: T(2026, 9, 21, 8, 0), end: T(2026, 9, 21, 9, 0) })], remind: REMIND, now: NOW });
+  eq("已开始的定时日程到点即失效", started.rows.length, 0);
+
+  const far = buildWidgetSnapshot({ schedule: [], homework: [], events: [ev({ start: T(2026, 10, 20, 14, 0) })], remind: REMIND, now: NOW });
+  eq("超出 7 天窗的日程不上卡片", far.rows.length, 0);
+
+  const allDay = buildWidgetSnapshot({
+    schedule: [], homework: [], remind: REMIND, now: NOW,
+    events: [ev({ allDay: true, start: T(2026, 9, 21), end: T(2026, 9, 22) })],
+  });
+  eq("全天日程整天可见", allDay.rows.length, 1);
+  eq("全天日程到当天末才失效", allDay.rows[0].at, new Date(2026, 8, 21, 23, 59, 59, 999).getTime());
+  ok("全天日程次行是当天结束", allDay.rows[0].sub.startsWith("今天 23:59 · 还有"));
+
+  // 与课程 / DDL 合排：按「什么时候该去做」的时间轴排序，而不是分类分段
+  const mixed = buildWidgetSnapshot({
+    schedule: [cls({ startTime: "10:00", endTime: "11:35" })],
+    homework: [hw({ deadline: "2026-09-21 20:00:00" })],
+    events: [ev()],
+    remind: REMIND, now: NOW,
+  });
+  eq("日程与课程 DDL 合排", mixed.rows.map((r) => r.text), ["10:00 数据结构", "日程 组会", "DDL 第三章习题"]);
+  eq("三类各自计数", mixed.footer, "1 节课 · 1 个截止 · 1 项日程");
+}
+
 /* 详情形态：就是列表形态（标题 + 若干行 + 脚注），拉得越高行数越多 */
 {
   const s = buildDetailSnapshot({

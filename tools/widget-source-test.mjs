@@ -175,7 +175,8 @@ const deps = (extra = {}) => ({
 {
   eq("摘要：日程与 DDL", describeBinding({ kind: "today" }), "日程与 DDL");
   eq("摘要：收藏夹图标组", describeBinding({ kind: "folder", folderId: "f1" }, { folder: "常用" }), "收藏夹「常用」图标组");
-  eq("摘要：详情", describeBinding({ kind: "detail", atom: { kind: "page", key: "learn" } }, { atom: "网络学堂" }), "原子详情：网络学堂");
+  // 文案随 §4.5 词表改了（原子→收藏项），这里跟着实现走（本行此前漏改，测试一直红）
+  eq("摘要：详情", describeBinding({ kind: "detail", atom: { kind: "page", key: "learn" } }, { atom: "网络学堂" }), "收藏项详情：网络学堂");
   eq("摘要：快捷方式", describeBinding({ kind: "shortcut", atom: { kind: "page", key: "learn" } }, { atom: "网络学堂" }), "快捷方式：网络学堂");
 }
 

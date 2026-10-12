@@ -14,7 +14,7 @@ import { parseLearnTime } from "@onethu/core/src/learn/time.js";
 import { courseColor, urgencyColor } from "../lib/courseColor.js";
 import { encodeWidgetTarget } from "./widgetTarget.js";
 import { effectiveRemind, type HwRemindState } from "./hwRemind.js";
-import { scheduleStart, type PlanHomework, type PlanScheduleEntry } from "./notifyPlan.js";
+import { scheduleStart, type PlanEventEntry, type PlanHomework, type PlanScheduleEntry } from "./notifyPlan.js";
 
 /** 与 Kotlin 侧约定的快照结构 */
 export interface WidgetRow {
@@ -35,10 +35,10 @@ export interface WidgetRow {
    * 缺省（0/undefined）＝非时间性行（插件行、实时状态行），原生保持快照原文。 */
   /** 事件开始时刻（epoch ms）：课程上课 / DDL 截止 */
   at?: number;
-  /** 事件结束时刻（epoch ms）：课程下课；DDL 无此字段（过点即失效） */
+  /** 事件结束时刻（epoch ms）：课程下课；DDL 与日程无此字段（过点即失效，不留「进行中」态） */
   until?: number;
   /** 行的类型（原生据此重算次行与过期判定） */
-  rel?: "class" | "ddl";
+  rel?: "class" | "ddl" | "event";
   /** 上课地点（class 行专用；原生「正在上课」重排次行用） */
   loc?: string;
 }
@@ -68,7 +68,7 @@ export interface WidgetSnapshot {
   /** 列表形态标记：原生据此选布局（缺省即 list，兼容插件槽位内容） */
   kind?: "list";
   /** 行数的静态账（原生重画时重算可见数，消失的行不再计入） */
-  counts?: { classes: number; ddls: number; more: number; hadClass: boolean };
+  counts?: { classes: number; ddls: number; events: number; more: number; hadClass: boolean };
 }
 
 /** 图标组形态：若干原子图标并列（收藏夹 = 内嵌的文件夹）。
@@ -114,6 +114,9 @@ export const WIDGET_MAX_ROWS = 20;
 export interface WidgetSnapshotInput {
   schedule?: PlanScheduleEntry[] | null;
   homework?: PlanHomework[] | null;
+  /** 自定义日程（本地 + 云同步，按 rrule 展开后的场次）；只有勾了
+   *  「在桌面小组件显示」（`inWidget`）的场次进卡片 */
+  events?: PlanEventEntry[] | null;
   remind: HwRemindState;
   now: number;
   /** 最多带几行候选（缺省 WIDGET_MAX_ROWS）。原生再按实际高度截断，故这里只需给足。 */
@@ -145,11 +148,23 @@ function left(ms: number): string {
   return `还有 ${Math.round(m / 1440)} 天`;
 }
 
+/** DDL / 日程次行的日期段：同一天「今天」，其余「M/d」 */
+function dayLabel(at: number, today: string): string {
+  return ymd(at) === today ? "今天" : `${new Date(at).getMonth() + 1}/${new Date(at).getDate()}`;
+}
+
+/** 某时刻所在自然日的最后一毫秒（全天日程的失效点） */
+function dayEndOf(ms: number): number {
+  const d = new Date(ms);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - 1;
+}
+
 /**
  * 生成快照。
  *
- * 排序取「今天最先发生的事」：课程按上课时间，DDL 按截止时间，两者合排后取前 N 行——
- * 用户瞄一眼小组件要看到的是「接下来干什么」，而不是分类清单。
+ * 排序取「今天最先发生的事」：课程按上课时间，DDL 按截止时间，勾了提醒的自定义日程按它的
+ * 失效时刻（定时日程=开始，全天日程=当天结束），几者合排后取前 N 行——用户瞄一眼小组件要
+ * 看到的是「接下来干什么」，而不是分类清单。
  */
 export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot {
   const now = input.now;
@@ -159,7 +174,7 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
   interface Entry {
     at: number;
     row: WidgetRow;
-    kind: "class" | "ddl";
+    kind: "class" | "ddl" | "event";
   }
   const entries: Entry[] = [];
 
@@ -214,12 +229,44 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
       kind: "ddl",
       row: {
         text: `DDL ${clip(h.title ?? "作业", 14)}`,
-        sub: `${ymd(dl) === today ? "今天" : `${new Date(dl).getMonth() + 1}/${new Date(dl).getDate()}`} ${hm(dl)} · ${left(leftDdl)}`,
+        sub: `${dayLabel(dl, today)} ${hm(dl)} · ${left(leftDdl)}`,
         color: urgencyColor(leftDdl),
         strong: leftDdl <= 6 * 3600_000,   // 6 小时内：加粗，别让它淹在列表里
         // 机器字段：原生重算「还有 X」，过点即失效剔除（R21）
         at: dl,
         rel: "ddl",
+      },
+    });
+  }
+
+  /* 勾了「在桌面小组件显示」的自定义日程：与 DDL 同一套行（未到点 → 倒计时，到点即失效），
+   * 只有脚注按「项日程」单独计数。
+   *
+   * `at` 取「这件事还值得留在卡片上的那个时刻」，与 DDL 的截止同理：
+   *   · 定时日程 = 开始时刻（到点就该去做这件事了）；
+   *   · 全天日程 = 当天结束（整天都该看得见，当天过完才消失）。
+   * 于是「还有 X」对定时日程是距开始、对全天日程是距当天结束——两者都是「还剩多久」。 */
+  const eventHorizon = now + 7 * 86_400_000;
+  for (const e of input.events ?? []) {
+    if (e.inWidget !== true) continue;
+    const start = Number(e.start);
+    if (!Number.isFinite(start)) continue;
+    const end = Number(e.end);
+    const at = e.allDay === true
+      ? (Number.isFinite(end) && end > start ? end - 1 : dayEndOf(start))
+      : start;
+    if (at <= now || at > eventHorizon) continue;
+    const leftEvent = at - now;
+    entries.push({
+      at,
+      kind: "event",
+      row: {
+        text: `日程 ${clip(e.summary ?? "日程", 14)}`,
+        sub: `${dayLabel(at, today)} ${hm(at)} · ${left(leftEvent)}`,
+        color: urgencyColor(leftEvent),
+        strong: leftEvent <= 6 * 3600_000,
+        at,
+        rel: "event",
       },
     });
   }
@@ -237,12 +284,15 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
    * 的 nativeRender）：显示几行 + 还有几项，两者之和恒等于仍有效的条目总数。 */
   const shownClasses = rows.filter((r) => r.rel === "class").length;
   const shownDdls = rows.filter((r) => r.rel === "ddl").length;
+  const shownEvents = rows.filter((r) => r.rel === "event").length;
   const classCount = entries.filter((e) => e.kind === "class").length;
   const ddlCount = entries.filter((e) => e.kind === "ddl").length;
-  const more = Math.max(0, entries.length - (shownClasses + shownDdls));
+  const eventCount = entries.filter((e) => e.kind === "event").length;
+  const more = Math.max(0, entries.length - (shownClasses + shownDdls + shownEvents));
   const parts: string[] = [];
   if (shownClasses) parts.push(`${shownClasses} 节课`);
   if (shownDdls) parts.push(`${shownDdls} 个截止`);
+  if (shownEvents) parts.push(`${shownEvents} 项日程`);
   const footer = parts.length === 0
     ? (hadClass ? "今天的课已上完" : "今天没有课与截止")
     : `${parts.join(" · ")}${more > 0 ? ` · 还有 ${more} 项` : ""}`;
@@ -254,7 +304,7 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
     target: "today",
     rows,
     footer,
-    counts: { classes: classCount, ddls: ddlCount, more, hadClass },
+    counts: { classes: classCount, ddls: ddlCount, events: eventCount, more, hadClass },
   };
 }
 

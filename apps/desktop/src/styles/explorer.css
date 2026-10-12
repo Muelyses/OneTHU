@@ -164,3 +164,21 @@
 .explorer-settings-body .plg-state-sub { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 .explorer-settings-body .plg-ops { white-space: nowrap; }
 .explorer-settings-body .plg-name, .explorer-settings-body .plg-ver, .explorer-settings-body .plg-kind { white-space: nowrap; }
+
+/* 悬停小灰条（用户定稿：小的那个、快；自绘接管原生 title 防双出） */
+.ex-tip {
+  position: fixed;
+  background: var(--surface-3, var(--md-sys-color-surface-container-high, #eee));
+  color: var(--text-1);
+  border: 0;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: var(--text-xs, 12px);
+  white-space: nowrap;
+  max-width: min(60vw, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1400;
+  pointer-events: none;
+}

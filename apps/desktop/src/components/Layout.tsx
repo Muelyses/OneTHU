@@ -128,8 +128,7 @@ function TopBar(): ReactNode {
         className="icon-btn"
         onClick={() => duplicateTab(activeId)}
         disabled={!canDup}
-        title="复制当前标签页（独立实例）"
-        aria-label="复制当前标签页"
+        aria-label="复制当前标签页（独立实例）"
       >
         <CopyGlyph />
       </button>

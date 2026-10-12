@@ -43,43 +43,21 @@ export function useExplorerTabs(): { tabs: ExplorerTab[]; activeId: string } {
 
 type TipState = { kind: "copy" | "tab" | "gear"; tabId?: string; rect: DOMRect };
 
-const HOVER_TIP_MS = 600;
+const HOVER_TIP_MS = 150; /* 用户实测原生 title 出得慢——自绘接管后 150ms 即现 */
 
-function TabstripTip({ tip, onClose }: { tip: TipState; onClose: () => void }): ReactNode {
+function TabstripTip({ tip }: { tip: TipState }): ReactNode {
   useTabTitleTick();
   const { tabs } = useExplorerTabs();
   const tab = tip.tabId ? tabs.find((t) => t.id === tip.tabId) ?? null : null;
   const isHome = tab?.kind === "home";
   const full = tab ? (isHome ? "首页" : resolveTabTitle(tab.page, tab.params).full) : "";
-  const act = tip.kind === "copy" ? resolveTabTitle(activeTab().page, activeTab().params).full : full;
-  /* 位置：标签条下方 4px，水平以锚点为中心、左右夹紧不越屏 */
+  const text = tip.kind === "copy" ? ("复制当前页面 · " + resolveTabTitle(activeTab().page, activeTab().params).full) : tip.kind === "gear" ? "设置" : (isHome ? "首页 · 不可关闭" : full);
+  /* 小标识（用户定案）：只要悬停出现的小行卡，不带动作与宽卡 */
   const strip = document.querySelector(".ex-tabstrip")?.getBoundingClientRect();
   const top = (strip?.bottom ?? tip.rect.bottom) + 4;
-  const width = 264;
-  const left = Math.min(Math.max(tip.rect.left + tip.rect.width / 2 - width / 2, 8), Math.max(window.innerWidth - width - 8, 8));
   return createPortal(
-    <div className="ex-tip" role="tooltip" style={{ top, left, width }} onClick={(e) => e.stopPropagation()}>
-      {tip.kind === "copy" ? (
-        <>
-          <div className="ex-tip-title">复制当前页面</div>
-          <div className="ex-tip-full">{act}</div>
-        </>
-      ) : tip.kind === "gear" ? (
-        <div className="ex-tip-title">设置</div>
-      ) : (
-        <>
-          <div className="ex-tip-full">{isHome ? "首页 · 不可关闭" : full}</div>
-          <div className="ex-tip-actions">
-            {isHome ? null : (
-              <>
-                <button className="btn btn-ghost ex-btn-sm" onClick={() => { if (tip.tabId) duplicateTab(tip.tabId); onClose(); }}>复制</button>
-                <button className="btn btn-ghost ex-btn-sm ex-danger" onClick={() => { if (tip.tabId) closeTab(tip.tabId); onClose(); }}>关闭</button>
-              </>
-            )}
-            <button className="btn btn-ghost ex-btn-sm" onClick={() => { openSettings("settings"); onClose(); }}>设置</button>
-          </div>
-        </>
-      )}
+    <div className="ex-tip" role="tooltip" style={{ top, left: Math.min(Math.max(tip.rect.left + tip.rect.width / 2 - 90, 8), Math.max(window.innerWidth - 190, 8)) }} onClick={(e) => e.stopPropagation()}>
+      {text}
     </div>,
     document.body,
   );
@@ -192,24 +170,23 @@ export function TabStrip(): ReactNode {
      （复制钮/齿轮是 Layout 的 DOM，不改它的文件）；只认 pointerType === "mouse"。 */
   /* ⑨ 星标状态：亮 = 活动 tab 的原子已在「首页收藏」OnePage 里 */
   const favs = useFavs();
-  const activeT = tabs.find((t) => t.id === activeId) ?? null;
-  const starRef = activeT ? atomRefOfTab(activeT) : null;
-  const starKey = starRef ? atomKeyOf(starRef) : null;
   const homeFavId = favs.data.order.find((id) => favs.data.folders[id]?.title === HOME_FAV_TITLE) ?? null;
-  const starLit = homeFavId !== null && starKey !== null && (favs.data.folders[homeFavId]?.items ?? []).some((it) => it.t === "a" && atomKeyOf(it.atom) === starKey);
-  const onStar = (): void => {
-    if (!starRef || !starKey || !activeT) return;
-    if (!starLit) {
-      const fid = favs.data.order.find((id) => favs.data.folders[id]?.title === HOME_FAV_TITLE) ?? null;
-      const id = fid ?? favs.create(HOME_FAV_TITLE, null);
-      if (id) favs.addAtom(id, starRef);
+  /* 星标按行判定（用户定案：home 不该有星；每个工作标签各自可收进「首页收藏」OnePage） */
+  const onStar = (t: ExplorerTab): void => {
+    const ref = atomRefOfTab(t);
+    if (!ref) return;
+    const key = atomKeyOf(ref);
+    const lit = homeFavId !== null && (favs.data.folders[homeFavId]?.items ?? []).some((it) => it.t === "a" && atomKeyOf(it.atom) === key);
+    if (!lit) {
+      const id = homeFavId ?? favs.create(HOME_FAV_TITLE, null);
+      if (id) favs.addAtom(id, ref);
       return;
     }
     if (homeFavId === null) return;
     const items = favs.data.folders[homeFavId]?.items ?? [];
-    const idx = items.findIndex((it) => it.t === "a" && atomKeyOf(it.atom) === starKey);
+    const idx = items.findIndex((it) => it.t === "a" && atomKeyOf(it.atom) === key);
     if (idx < 0) return;
-    const name = resolveTabTitle(activeT.page, activeT.params);
+    const name = resolveTabTitle(t.page, t.params);
     /* alert 无取消，确认一律 window.confirm（用户口径） */
     if (window.confirm(`确定从 OnePage 中移除「${name.label}」（${name.full}）？\n如果这是您的定制 OnePage，其内容和在其他 OnePage 中的入口都会永久消失！`)) {
       favs.removeAt(homeFavId, idx);
@@ -285,23 +262,29 @@ export function TabStrip(): ReactNode {
             role="tab"
             aria-selected={active}
           >
-            {isHome ? (
-              <button
-                className={"ex-tab-star" + (starLit ? " is-lit" : "")}
-                disabled={!starRef}
-                title={!starRef ? "该页面暂不支持收藏" : starLit ? "从「首页收藏」OnePage 移除当前页面" : "把当前页面收进「首页收藏」OnePage"}
-                aria-label={starLit ? "从首页收藏移除当前页面" : "把当前页面收进首页收藏"}
-                aria-pressed={starLit}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStar();
-                }}
-              >
-                <StarGlyph />
-              </button>
-            ) : null}
-            <button className="ex-tab-main" title={full} onClick={() => focusTab(t.id)}>
-              {isHome ? <BrandLogo size={12} /> : null}
+            <button className="ex-tab-main" onClick={() => focusTab(t.id)}>
+              {isHome ? (
+                <BrandLogo size={12} />
+              ) : (() => {
+                /* 星在标题左侧（用户口径「标签页左边」）；原子系不认的页面禁用 */
+                const ref = atomRefOfTab(t);
+                const lit = ref !== null && homeFavId !== null && (favs.data.folders[homeFavId]?.items ?? []).some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKeyOf(ref));
+                return (
+                  <button
+                    className={"ex-tab-star" + (lit ? " is-lit" : "")}
+                    disabled={!ref}
+                    title={!ref ? "该页面暂不支持收藏" : lit ? "从「首页收藏」OnePage 移除当前页面" : "把当前页面收进「首页收藏」OnePage"}
+                    aria-label={lit ? "从首页收藏移除当前页面" : "把当前页面收进首页收藏"}
+                    aria-pressed={lit}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStar(t);
+                    }}
+                  >
+                    <StarGlyph />
+                  </button>
+                );
+              })()}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (
@@ -333,7 +316,7 @@ export function TabStrip(): ReactNode {
           <i ref={thumbRef} />
         </div>
       ) : null}
-      {tip ? <TabstripTip tip={tip} onClose={clearTip} /> : null}
+      {tip ? <TabstripTip tip={tip} /> : null}
     </div>
   );
 }

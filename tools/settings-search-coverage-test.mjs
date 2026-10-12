@@ -13,41 +13,15 @@
  * 退出码：0 通过；1 有失败（打印全部失败项）。
  */
 import { readFileSync } from "node:fs";
+import { parseSearchRows, SEARCH_ROW_FILES } from "./lib/search-rows-parse.mjs";
 
-const FILES = [
-  "apps/desktop/src/components/OhSettingsPage.tsx",
-  "apps/desktop/src/components/VoiceSettingsSection.tsx",
-  "apps/desktop/src/components/OverlaySettingsSection.tsx",
-  "apps/desktop/src/components/ImSettingsSection.tsx",
-  "apps/desktop/src/components/WidgetSettingsSection.tsx",
-  "apps/desktop/src/pages/Settings.tsx",
-  "apps/desktop/src/pages/Plugins.tsx",
-];
-
-/** 极简解析：抓 defineSearchRows([ ... ]) 里的每个 { id: "…", tab: "…", section: "…", title: "…", aliases: [...] } */
-function parseRows(src, file) {
-  const out = [];
-  for (const m of src.matchAll(/defineSearchRows\(\s*\[([\s\S]*?)\]\s*\)/g)) {
-    const body = m[1];
-    for (const r of body.matchAll(/\{([^{}]*)\}/g)) {
-      const obj = r[1];
-      const g = (k) => (obj.match(new RegExp(`${k}:\\s*"([^"]*)"`)) ?? [])[1];
-      const aliases = (obj.match(/aliases:\s*\[([^\]]*)\]/) ?? [])[1];
-      out.push({
-        file,
-        id: g("id"),
-        tab: g("tab"),
-        section: g("section"),
-        title: g("title"),
-        desc: g("desc"),
-        aliases: aliases ? aliases.split(",").map((x) => x.trim().replace(/^"|"$/g, "")).filter(Boolean) : [],
-      });
-    }
-  }
-  return out;
-}
-
-const rows = FILES.flatMap((f) => parseRows(readFileSync(f, "utf8"), f));
+/**
+ * 2026-10-12 task-22：解析器换成 tools/lib/search-rows-parse.mjs（**唯一解析器**，防口径开叉）。
+ * FILES 清单与行字面量解析都来自共享库（新增 section 文件时改 search-rows-parse.mjs 一处）。
+ * 本护栏只消费 id/tab/section/title/aliases；kind/tier/view 投影由 gen-oh-routes.mjs 生成。
+ */
+const FILES = SEARCH_ROW_FILES;
+const rows = parseSearchRows();
 const fails = [];
 
 /* ② 结构断言 */

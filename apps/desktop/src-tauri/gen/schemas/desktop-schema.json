@@ -2571,10 +2571,10 @@
           "markdownDescription": "Denies the mobile_supported command without any pre-configured scope."
         },
         {
-          "description": "允许使用全局悬浮球（Android 系统级悬浮层）：\n查询支持与授权状态、拉起悬浮层授权页、显示/本次关闭悬浮球、切换形态\n（球 / 语音条 / 半屏面板）、收取手势事件、推送界面状态。\n\n#### This default permission set includes:\n\n- `allow-overlay-supported`\n- `allow-overlay-has-permission`\n- `allow-overlay-request-permission`\n- `allow-overlay-show`\n- `allow-overlay-hide`\n- `allow-overlay-set-mode`\n- `allow-overlay-poll-event`\n- `allow-overlay-ack-events`\n- `allow-overlay-push-ui`\n- `allow-overlay-pick-attach`\n- `allow-overlay-status`",
+          "description": "允许使用全局悬浮球（Android 系统级悬浮层）：\n查询支持与授权状态、拉起悬浮层授权页、显示/本次关闭悬浮球、切换形态\n（球 / 语音条 / 半屏面板）、收取手势事件、推送界面状态。\n\n#### This default permission set includes:\n\n- `allow-overlay-supported`\n- `allow-overlay-has-permission`\n- `allow-overlay-request-permission`\n- `allow-overlay-show`\n- `allow-overlay-hide`\n- `allow-overlay-set-mode`\n- `allow-overlay-poll-event`\n- `allow-overlay-ack-events`\n- `allow-overlay-push-ui`\n- `allow-overlay-pick-attach`\n- `allow-overlay-open-settings`\n- `allow-overlay-status`",
           "type": "string",
           "const": "onethu-overlay:default",
-          "markdownDescription": "允许使用全局悬浮球（Android 系统级悬浮层）：\n查询支持与授权状态、拉起悬浮层授权页、显示/本次关闭悬浮球、切换形态\n（球 / 语音条 / 半屏面板）、收取手势事件、推送界面状态。\n\n#### This default permission set includes:\n\n- `allow-overlay-supported`\n- `allow-overlay-has-permission`\n- `allow-overlay-request-permission`\n- `allow-overlay-show`\n- `allow-overlay-hide`\n- `allow-overlay-set-mode`\n- `allow-overlay-poll-event`\n- `allow-overlay-ack-events`\n- `allow-overlay-push-ui`\n- `allow-overlay-pick-attach`\n- `allow-overlay-status`"
+          "markdownDescription": "允许使用全局悬浮球（Android 系统级悬浮层）：\n查询支持与授权状态、拉起悬浮层授权页、显示/本次关闭悬浮球、切换形态\n（球 / 语音条 / 半屏面板）、收取手势事件、推送界面状态。\n\n#### This default permission set includes:\n\n- `allow-overlay-supported`\n- `allow-overlay-has-permission`\n- `allow-overlay-request-permission`\n- `allow-overlay-show`\n- `allow-overlay-hide`\n- `allow-overlay-set-mode`\n- `allow-overlay-poll-event`\n- `allow-overlay-ack-events`\n- `allow-overlay-push-ui`\n- `allow-overlay-pick-attach`\n- `allow-overlay-open-settings`\n- `allow-overlay-status`"
         },
         {
           "description": "Enables the overlay_ack_events command without any pre-configured scope.",
@@ -2593,6 +2593,12 @@
           "type": "string",
           "const": "onethu-overlay:allow-overlay-hide",
           "markdownDescription": "Enables the overlay_hide command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the overlay_open_settings command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-overlay:allow-overlay-open-settings",
+          "markdownDescription": "Enables the overlay_open_settings command without any pre-configured scope."
         },
         {
           "description": "Enables the overlay_pick_attach command without any pre-configured scope.",
@@ -2659,6 +2665,12 @@
           "type": "string",
           "const": "onethu-overlay:deny-overlay-hide",
           "markdownDescription": "Denies the overlay_hide command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the overlay_open_settings command without any pre-configured scope.",
+          "type": "string",
+          "const": "onethu-overlay:deny-overlay-open-settings",
+          "markdownDescription": "Denies the overlay_open_settings command without any pre-configured scope."
         },
         {
           "description": "Denies the overlay_pick_attach command without any pre-configured scope.",

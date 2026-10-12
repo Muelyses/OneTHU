@@ -7,30 +7,13 @@
  *     ④ 三级定位（section/row）有承载（row.go 或 requestSettingsSection(title)）。
  *     `.row-focus[data-set-id=<id>]` 的**真机 DOM 断言**需要打包后在有 DOM 的环境里跑（见报告"仅真机可验"）。
  */
-import { readFileSync } from "node:fs";
+import { parseSearchRows, SEARCH_ROW_FILES } from "./lib/search-rows-parse.mjs";
 
-const FILES = [
-  "apps/desktop/src/components/OhSettingsPage.tsx",
-  "apps/desktop/src/components/VoiceSettingsSection.tsx",
-  "apps/desktop/src/components/OverlaySettingsSection.tsx",
-  "apps/desktop/src/components/ImSettingsSection.tsx",
-  "apps/desktop/src/components/WidgetSettingsSection.tsx",
-  "apps/desktop/src/pages/Settings.tsx",
-  "apps/desktop/src/pages/Plugins.tsx",
-];
 const PLUGIN_TABS = new Set(["插件", "OneTHU Harness"]);
-const rows = [];
-for (const f of FILES) {
-  const src = readFileSync(f, "utf8");
-  for (const m of src.matchAll(/defineSearchRows\(\s*\[([\s\S]*?)\]\s*\)/g)) {
-    for (const r of m[1].matchAll(/\{([^{}]*)\}/g)) {
-      const o = r[1];
-      const g = (k) => (o.match(new RegExp(`${k}:\\s*"([^"]*)"`)) ?? [])[1];
-      rows.push({ file: f.split("/").pop(), id: g("id"), tab: g("tab"), section: g("section"), title: g("title") });
-    }
-  }
-}
-const breadcrumb = (r) => (PLUGIN_TABS.has(r.tab) ? ["插件", r.tab, r.section, r.title] : ["设置", r.tab, r.section, r.title]);
+/* 2026-10-12 task-22：解析走 tools/lib/search-rows-parse.mjs（唯一解析器）；
+ * 显式填了 breadcrumb 的行按显式值评估（与模型级 displayRoot/familyOf 同口径）。 */
+const rows = parseSearchRows();
+const breadcrumb = (r) => (r.breadcrumb && r.breadcrumb.length ? r.breadcrumb : (PLUGIN_TABS.has(r.tab) ? ["插件", r.tab, r.section, r.title] : ["设置", r.tab, r.section, r.title]));
 const familyOf = (r) => (breadcrumb(r)[0] === "插件" ? "plugins" : "settings");
 
 const fails = [];

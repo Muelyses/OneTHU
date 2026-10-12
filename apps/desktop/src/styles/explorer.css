@@ -182,3 +182,9 @@
   z-index: 1400;
   pointer-events: none;
 }
+
+/* ── 设置浮层滚动铁则：横滚禁绝（内容超宽行一律折/省略）、竖滚做 overlay 细条── */
+.explorer-settings-body { overflow-x: hidden; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text-1) 18%, transparent) transparent; }
+.explorer-settings-body::-webkit-scrollbar { width: 6px; }
+.explorer-settings-body::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--text-1) 18%, transparent); border-radius: 3px; }
+.explorer-settings-body::-webkit-scrollbar-track { background: transparent; }

@@ -572,7 +572,7 @@
 
 
 /* ── ① 标签条滚动进度条：贴条底内侧，3px 圆角细条，scrollLeft 比例驱动 ── */
-.ex-tabstrip { position: relative; }
+.ex-tabstrip-wrap { position: relative; display: flex; flex: 1 1 auto; min-width: 0; }
 .ex-tabstrip-indi {
   position: absolute;
   left: 0;

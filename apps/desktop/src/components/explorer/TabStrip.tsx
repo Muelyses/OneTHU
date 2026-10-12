@@ -55,18 +55,15 @@ function TabstripTip({ tip }: { tip: TipState }): ReactNode {
   /* 小标识（用户定案）：只要悬停出现的小行卡，不带动作与宽卡 */
   const strip = document.querySelector(".ex-tabstrip")?.getBoundingClientRect();
   const top = (strip?.bottom ?? tip.rect.bottom) + 4;
+  const cx = Math.min(Math.max(tip.rect.left + tip.rect.width / 2, 270), Math.max(window.innerWidth - 270, 8));
   return createPortal(
-    <div className="ex-tip" role="tooltip" style={{ top, left: Math.min(Math.max(tip.rect.left + tip.rect.width / 2 - 90, 8), Math.max(window.innerWidth - 190, 8)) }} onClick={(e) => e.stopPropagation()}>
+    <div className="ex-tip" role="tooltip" style={{ top, left: cx, transform: "translateX(-50%)" }} onClick={(e) => e.stopPropagation()}>
       {text}
     </div>,
     document.body,
   );
 }
 
-
-/* ══════════ ⑨ 首页星标：把「当前活动标签页」收进「首页收藏」OnePage ══════════ */
-
-const HOME_FAV_TITLE = "首页收藏";
 
 /** 活动 tab → AtomRef（只产既有原子体系认识的引用，不造野原子）：
  *  实体详情页走 atoms.tsx 的 enc 编码形态；其余页按 PAGE_ATOMS 打分匹配
@@ -137,12 +134,15 @@ export function TabStrip(): ReactNode {
   const [scrollable, setScrollable] = useState(false);
   const update = useCallback((): void => {
     const el = stripRef.current;
-    const thumb = thumbRef.current;
-    if (!el || !thumb) return;
+    if (!el) return;
+    /* 判定与样式更新拆开：scrollable 翻转触发 Indi 挂载（thumbRef 之后才有效）；
+       初版 update 头部 `if (!thumb) return` 造成死锁——首次不溢出 Indi 不渲染，之后
+       溢出永远不更新（用户实测进度条压根不出现） */
     const overflow = el.scrollWidth - el.clientWidth;
     const can = overflow > 2 && el.clientWidth >= 60;
     setScrollable(can);
-    if (!can) return;
+    const thumb = thumbRef.current;
+    if (!can || !thumb) return;
     const frac = Math.min(Math.max(el.scrollLeft / overflow, 0), 1);
     const trackW = el.clientWidth;
     const w = (el.clientWidth / el.scrollWidth) * trackW;
@@ -161,35 +161,31 @@ export function TabStrip(): ReactNode {
       ro.disconnect();
       el.removeEventListener("scroll", update);
     };
-  }, [update]);
+  }, [update, scrollable]); /* scrollable 翻转 → Indi 挂载 → 补一拍 thumb 定位 */
   useEffect(() => {
     update();
   }, [tabs.length, update]);
 
   /* ⑧ 悬停小窗：pointerenter 计 600ms、leave/滚动清除；事件委托在顶栏上
      （复制钮/齿轮是 Layout 的 DOM，不改它的文件）；只认 pointerType === "mouse"。 */
-  /* ⑨ 星标状态：亮 = 活动 tab 的原子已在「首页收藏」OnePage 里 */
   const favs = useFavs();
-  const homeFavId = favs.data.order.find((id) => favs.data.folders[id]?.title === HOME_FAV_TITLE) ?? null;
-  /* 星标按行判定（用户定案：home 不该有星；每个工作标签各自可收进「首页收藏」OnePage） */
+  /* 星标按行判定；一个页面=一个**独立 OnePage**（用户定案 2026-10-12 晚）：
+     收藏=新建以页面名命名的 OnePage 并放入该页原子；灭星=删除该独立 OnePage 本体。 */
   const onStar = (t: ExplorerTab): void => {
     const ref = atomRefOfTab(t);
     if (!ref) return;
     const key = atomKeyOf(ref);
-    const lit = homeFavId !== null && (favs.data.folders[homeFavId]?.items ?? []).some((it) => it.t === "a" && atomKeyOf(it.atom) === key);
-    if (!lit) {
-      const id = homeFavId ?? favs.create(HOME_FAV_TITLE, null);
+    const name = resolveTabTitle(t.page, t.params);
+    const folder = Object.values(favs.data.folders).find((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === key));
+    if (!folder) {
+      const id = favs.create(name.label, null);
       if (id) favs.addAtom(id, ref);
       return;
     }
-    if (homeFavId === null) return;
-    const items = favs.data.folders[homeFavId]?.items ?? [];
-    const idx = items.findIndex((it) => it.t === "a" && atomKeyOf(it.atom) === key);
-    if (idx < 0) return;
-    const name = resolveTabTitle(t.page, t.params);
-    /* alert 无取消，确认一律 window.confirm（用户口径） */
-    if (window.confirm(`确定从 OnePage 中移除「${name.label}」（${name.full}）？\n如果这是您的定制 OnePage，其内容和在其他 OnePage 中的入口都会永久消失！`)) {
-      favs.removeAt(homeFavId, idx);
+    const full = resolveTabTitle(t.page, t.params).full;
+    /* alert 无取消，确认一律 window.confirm（用户口径；灭星=整页消失） */
+    if (window.confirm(`确定从 OnePage 中移除「${name.label}」（${full}）？\n如果这是您的定制 OnePage，其内容和在其他 OnePage 中的入口都会永久消失！`)) {
+      favs.remove(folder.id);
     }
   };
 
@@ -248,7 +244,8 @@ export function TabStrip(): ReactNode {
     };
   }, [clearTip]);
   return (
-    <div className="ex-tabstrip" role="tablist" aria-label="标签页" ref={stripRef}>
+    <div className="ex-tabstrip-wrap"> {/* 定位基准层：Indi 必须在 overflow 容器外，否则随滚动跑出视口 */}
+      <div className="ex-tabstrip" role="tablist" aria-label="标签页" ref={stripRef}>
       {tabs.map((t) => {
         const active = t.id === activeId;
         const isHome = t.kind === "home";
@@ -268,13 +265,13 @@ export function TabStrip(): ReactNode {
               ) : (() => {
                 /* 星在标题左侧（用户口径「标签页左边」）；原子系不认的页面禁用 */
                 const ref = atomRefOfTab(t);
-                const lit = ref !== null && homeFavId !== null && (favs.data.folders[homeFavId]?.items ?? []).some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKeyOf(ref));
+                const lit = ref !== null && Object.values(favs.data.folders).some((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKeyOf(ref)));
                 return (
                   <button
                     className={"ex-tab-star" + (lit ? " is-lit" : "")}
                     disabled={!ref}
-                    title={!ref ? "该页面暂不支持收藏" : lit ? "从「首页收藏」OnePage 移除当前页面" : "把当前页面收进「首页收藏」OnePage"}
-                    aria-label={lit ? "从首页收藏移除当前页面" : "把当前页面收进首页收藏"}
+                    title={!ref ? "该页面暂不支持收藏" : lit ? "从 OnePage 移除当前页面" : "把当前页面收藏成独立 OnePage"}
+                    aria-label={lit ? "从 OnePage 移除当前页面" : "把当前页面收藏成独立 OnePage"}
                     aria-pressed={lit}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -311,12 +308,13 @@ export function TabStrip(): ReactNode {
       >
         <IconPlus width={14} height={14} />
       </button>
+      {tip ? <TabstripTip tip={tip} /> : null}
+      </div>
       {scrollable ? (
         <div className="ex-tabstrip-indi" aria-hidden="true">
           <i ref={thumbRef} />
         </div>
       ) : null}
-      {tip ? <TabstripTip tip={tip} /> : null}
     </div>
   );
 }

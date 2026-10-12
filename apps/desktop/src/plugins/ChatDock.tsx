@@ -1202,7 +1202,8 @@ export function ChatDock(): ReactNode {
     if (!open || voice !== "off") return;
     const h = (e: PointerEvent): void => {
       const el = e.target as HTMLElement | null;
-      if (el?.closest(".dock-panel, .ohx-capsule, .dock-voice-toast")) return;
+      /* 排除一切 portal 弹层：它们挂在 body 上不在 .dock-panel 里，点它们同样不该收主窗 */
+      if (el?.closest(".dock-panel, .ohx-capsule, .dock-voice-toast, .imgview, .ohf-backdrop, .confirm-mask, .tab-manage-mask, .settings-mask, .ohaa-backdrop, .ex-sheet-mask")) return;
       closePanelNow();
     };
     document.addEventListener("pointerdown", h, true);

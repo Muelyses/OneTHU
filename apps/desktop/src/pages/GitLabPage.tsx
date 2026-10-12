@@ -78,7 +78,7 @@ const PIPELINE_STATUS: {[key in GitPipelineStatus]: {label: string; tone: string
   pending: { label: "排队中", tone: "run" },
   running: { label: "运行中", tone: "run" },
   success: { label: "通过", tone: "ok" },
-  failed: { label: "失败", tone: "bad" },
+  failed: { label: "失败，可点重试", tone: "bad" },
   canceled: { label: "已取消", tone: "dim" },
   canceling: { label: "取消中", tone: "dim" },
   skipped: { label: "已跳过", tone: "dim" },
@@ -207,7 +207,7 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
             void gitlabResetAuth()
               .then(() => {
                 q.reload();
-                showToast("已重置统一认证会话，正在重试");
+                showToast("登录状态已重置，正在重试");
               })
               .catch((e) => showToast(String(e).slice(0, 120)));
           }}

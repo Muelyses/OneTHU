@@ -208,6 +208,30 @@ export const IconInfo = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** 标签页图标（explorer 底栏）：前卡 + 后卡层叠 */
+export const IconTabsCards = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="7.5" y="4" width="12.5" height="10" rx="1.9" />
+    <path d="M4 9.5v6.9A2.1 2.1 0 0 0 6.1 18.5H14" />
+  </svg>
+);
+
+/** 复制当前标签页（explorer 顶栏「复制」钮）：双层方框 */
+export const IconCopyTab = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="8" y="8" width="12" height="12" rx="2" />
+    <path d="M16 5V4.5A1.5 1.5 0 0 0 14.5 3H5.5A1.5 1.5 0 0 0 4 4.5v8A1.5 1.5 0 0 0 5.5 14H6" />
+  </svg>
+);
+
+/** 竖版侧栏宽窄切换（一条竖线把方框分成左栏） */
+export const IconSidebarRail = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="3" y="4" width="18" height="16" rx="3" />
+    <path d="M9 4v16" />
+  </svg>
+);
+
 export const IconCard = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <rect x="3" y="5.5" width="18" height="13" rx="2" />

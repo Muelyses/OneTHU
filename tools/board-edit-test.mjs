@@ -211,7 +211,9 @@ ok(/\.\.\.LIST_WIDGET_IDS|LIST_WIDGET_IDS/.test(widgetsSrc) && /isListWidget/.te
 const distCss = (() => {
   try {
     const dir = "apps/desktop/dist/assets";
-    const file = readdirSync(dir).find((f) => f.endsWith(".css"));
+    /* exFAT 卷上 macOS 会给每个文件落 4KB AppleDouble（._xxx），readdir 顺序不定
+       ——不跳过它就会选中垃圾文件，出厂 CSS 断言全红（2026-10-12 合流实测）。 */
+    const file = readdirSync(dir).find((f) => f.endsWith(".css") && !f.startsWith("._"));
     return file ? readFileSync(dir + "/" + file, "utf8") : "";
   } catch { return ""; }
 })();

@@ -33,7 +33,7 @@ assert.ok(
   /SETTINGS_TAB_ORDER = \[[^\]]*"帮助"[^\]]*\]/.test(mode),
   "设置页签少了「帮助」（清单已挪到 state/settingsMode.ts，设置页与命令面板共用这一份）",
 );
-assert.ok(/\{ label: "帮助", sections: \["帮助"\] \}/.test(settings), "SETTINGS_GROUPS 少了「帮助」分组");
+assert.ok(/<SectionHead title="帮助"/.test(settings), "设置页少了「帮助」分节（explorer 版结构是 SectionHead JSX，旧 SETTINGS_GROUPS 数组已退役）");
 assert.ok(/<SectionHead title="帮助" \/>[\s\S]{0,120}<HelpSection \/>/.test(settings), "「帮助」分节没有渲染 HelpSection");
 assert.ok(/import \{ HelpSection \}/.test(settings), "设置页没导入 HelpSection");
 

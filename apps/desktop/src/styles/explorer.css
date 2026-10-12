@@ -183,8 +183,11 @@
   pointer-events: none;
 }
 
-/* ── 设置浮层滚动铁则：横滚禁绝（内容超宽行一律折/省略）、竖滚做 overlay 细条── */
-.explorer-settings-body { overflow-x: hidden; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text-1) 18%, transparent) transparent; }
+/* ── 设置浮层滚动铁则：横滚禁绝（内容超宽行一律折/省略）、竖滚做 overlay 细条──
+   scrollbar-width/scrollbar-color 两项撤掉（2026-10-12 合流修正）：Chromium ≥121 只要
+   看到它们就会整体忽略 ::-webkit-scrollbar，元素级细条与全局令牌滚动条全部失效——
+   下两行本地的 ::-webkit-scrollbar 就是想要的效果，留着声明反而把它自己杀死。 */
+.explorer-settings-body { overflow-x: hidden; }
 .explorer-settings-body::-webkit-scrollbar { width: 6px; }
 .explorer-settings-body::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--text-1) 18%, transparent); border-radius: 3px; }
 .explorer-settings-body::-webkit-scrollbar-track { background: transparent; }

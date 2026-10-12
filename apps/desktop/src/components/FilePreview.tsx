@@ -538,7 +538,7 @@ async function fetchBinary(url: string): Promise<FetchedBinary> {
   const resp = await nativeFetch(sessionUrl(url), { method: "GET", timeoutMs: 60_000 });
   const mime = (resp.headers.get("content-type") || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";
   const buf = new Uint8Array(await resp.arrayBuffer());
-  if (isLoginWallBody(mime, buf)) throw new Error("会话已失效，需要重新登录");
+  if (isLoginWallBody(mime, buf)) throw new Error("登录状态已失效，请重新登录后再预览");
   // 大小闸门与 Rust 侧同语（errMsg 认 too-large:<实际>:<上限> 给出「下载/另存为」出路）
   const cap = previewCap();
   if (buf.length > cap) throw new Error(`too-large:${buf.length}:${cap}`);

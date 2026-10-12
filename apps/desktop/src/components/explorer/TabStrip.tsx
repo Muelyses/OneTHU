@@ -132,19 +132,9 @@ export function atomRefOfTab(tab: ExplorerTab): AtomRef | null {
   return entity ?? generic;
 }
 
-/** 星形图标：未收藏描边灰，收藏点亮起（fill 随 .is-lit） */
+/** 星形图标：未收藏描边灰，收藏点亮起（fill 随 .is-lit 的 svg path 通配） */
 export function StarGlyph(): ReactNode {
-  return (
-    <svg viewBox="0 0 16 16" width={13} height={13} aria-hidden="true">
-      <path
-        d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.2L8 11.5l-3.8 2 .7-4.2-3.1-3 4.3-.6z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.2}
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  return <IconStar width={13} height={13} />;
 }
 
 /** 连续同工作区标签成组（底板）；无工作区的标签各自为组 */

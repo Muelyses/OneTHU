@@ -5,22 +5,13 @@
  * - 中央 OhCapsule：搜索 + OH 二合一（explorer-oh 实现，这里只放插槽）；
  * - OneGO：打开 OneGoSheet。
  */
+import { IconTabsCards } from "../../components/Icons.js";
 import type { ReactNode } from "react";
 import { IconFist } from "../Icons.js";
 import { OhCapsule } from "./OhCapsule.js";
 import { openOneGoSheet, useOneGoSheetOpen } from "./OneGoSheet.js";
 import { openTabDrawer, useTabDrawerOpen } from "./TabDrawer.js";
 import { useExplorerTabs } from "./TabStrip.js";
-
-/** 标签页图标：层叠卡片（内联 SVG，不引库） */
-function TabsGlyph(): ReactNode {
-  return (
-    <svg viewBox="0 0 20 20" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="6" y="3.5" width="10.5" height="8.5" rx="1.6" />
-      <path d="M3.5 8v6.9A1.6 1.6 0 0 0 5.1 16.5h7" />
-    </svg>
-  );
-}
 
 export function BottomBar(): ReactNode {
   const { tabs } = useExplorerTabs();
@@ -31,7 +22,7 @@ export function BottomBar(): ReactNode {
     <nav className="ex-bbar" aria-label="工作空间导航">
       <button id="ex-bbar-tabs-btn" className={"ex-bbar-btn" + (drawerOpen ? " is-open" : "")} onClick={openTabDrawer} aria-expanded={drawerOpen} aria-label={`标签页（${count} 个）`}>
         <span className="ex-bbar-icon">
-          <TabsGlyph />
+          <IconTabsCards width={20} height={20} />
           {count > 0 ? <i className="ex-bbar-badge" aria-hidden="true">{count > 99 ? "99+" : count}</i> : null}
         </span>
         <span className="ex-bbar-label">标签页</span>

@@ -15,10 +15,15 @@ const PICKER = readFileSync("apps/desktop/src/components/ThemePickerModal.tsx", 
 const fails = [];
 const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 
-/* 1 设置 → 外观：只有一个入口，点开是二级菜单 */
+/* 1 设置 → 外观（explorer 版设计 2026-10-11 用户拍板）：主题板就地切换（只列已启用）
+   + 「安装主题」（跳市场自动筛主题）+「管理主题」（插件页启用/停用）+ 跟随系统昼夜。
+   旧「更改主题 → 二级菜单」入口已被这套就地板取代，护栏随设计更新（2026-10-12 合流）。 */
 ok(/ThemePickerModal/.test(SETTINGS), "设置 → 外观 没有挂 ThemePickerModal");
-ok(/更改主题/.test(SETTINGS), "设置 → 外观 缺少「更改主题」入口");
 ok(/setting-title">主题</.test(SETTINGS), "设置 → 外观 缺少「主题」小节标题");
+ok(/ThemeSwatch/.test(SETTINGS) && /activateTheme\(/.test(SETTINGS), "设置 → 外观 缺少主题板就地切换（色卡 + 应用）");
+ok(/安装主题/.test(SETTINGS) && /view: "market", category: "theme"/.test(SETTINGS), "设置 → 外观 缺少「安装主题」（市场 + 主题筛选）");
+ok(/管理主题/.test(SETTINGS) && /view: "mine", category: "theme"/.test(SETTINGS), "设置 → 外观 缺少「管理主题」（插件页启用/停用）");
+ok(/跟随系统昼夜/.test(SETTINGS) && /setFollowSystem/.test(SETTINGS), "设置 → 外观 缺少「跟随系统昼夜」");
 ok(!/手动换主题在 插件页/.test(SETTINGS), "设置里还留着把用户支去插件页换主题的提示");
 
 /* 2 二级菜单：色卡预览 + 上下分区 + 安装/卸载，搜索口径与插件市场一致 */
@@ -32,7 +37,7 @@ ok(/includes\("主题"\)/.test(PICKER), "二级菜单没有按「主题」标签
 /* 3 插件页不再管主题 */
 ok(!/应用主题/.test(PLUGINS), "插件页仍有「应用主题」按钮（应只在二级菜单里）");
 ok(!/ThemeManagerSection/.test(PLUGINS), "插件页仍渲染主题区（应已收进二级菜单）");
-ok(/更改主题/.test(PLUGINS), "插件页的主题页签应指路到 设置 → 外观 →「更改主题」");
+ok(/去切换主题|gotoAppearanceTheme/.test(PLUGINS), "插件页的主题页签应指路到 设置 → 外观与布局 →「主题」");
 
 console.log(
   fails.length

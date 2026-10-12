@@ -24,7 +24,7 @@ import {
 import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab } from "./Icons.js";
+import { IconArrowUp, IconChevron, IconCopyTab, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconSidebarRail, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab } from "./Icons.js";
 import { ContextMenuLayer, useContextMenu } from "./ContextMenu.js";
 import {
   clearPageChrome, pageChromeSnapshot, readPageChrome, subscribePageChrome, syncPageChrome,
@@ -128,27 +128,7 @@ export function BrandLogo({ size = 14 }: { size?: number }) {
 
 /** 顶栏：首页 Logo（点击回首页，恒在不变）+ 标签条 + 搜索 + 设置齿轮（恒在不变）。
  *  滚过 8px 浮起阴影（沿用旧顶栏的层次手法）。 */
-/** 复制当前标签页（用户拍板：已存在实例默认复用，只有明确点「复制」才出第二实例） */
-function CopyGlyph(): ReactNode {
-  return (
-    <svg viewBox="0 0 20 20" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="7" y="7" width="9.5" height="9.5" rx="1.8" />
-      <path d="M13 4.5V4a1.5 1.5 0 0 0-1.5-1.5H5A1.5 1.5 0 0 0 3.5 4v6.5A1.5 1.5 0 0 0 5 12h.5" />
-    </svg>
-  );
-}
-
 /** 竖版标签栏：左侧栏（横版时不渲染）；同时给根节点打 tabs-vertical，主内容区据此让出左栏 */
-/** 侧栏宽窄切换图标（一条竖线把方框分成左栏） */
-function SidebarGlyph(): ReactNode {
-  return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-      <rect x={3} y={4} width={18} height={16} rx={3} />
-      <line x1={9} y1={4} x2={9} y2={20} />
-    </svg>
-  );
-}
-
 /** 竖版侧栏底部：复制 / 设置 / 宽窄切换（完整 ↔ 窄）。窄模式下竖排 */
 function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarrow: () => void }): ReactNode {
   const { activeId } = useExplorerState();
@@ -156,7 +136,7 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
   return (
     <div className="ex-rail-actions">
       <button className="icon-btn" onClick={() => duplicateTab(activeId)} disabled={!canDup} aria-label="复制当前标签页（独立实例）" title="复制当前标签页">
-        <CopyGlyph />
+        <IconCopyTab width={16} height={16} />
       </button>
       <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
         <IconSettings width={16} height={16} />
@@ -168,7 +148,7 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
         aria-label={narrow ? "侧栏：窄（悬停展开）→ 切换为完整" : "侧栏：完整 → 切换为窄（悬停展开）"}
         title={narrow ? "切换为完整显示" : "切换为窄模式（缩略图，悬停展开）"}
       >
-        <SidebarGlyph />
+        <IconSidebarRail width={16} height={16} />
       </button>
     </div>
   );
@@ -230,7 +210,7 @@ function TopBar(): ReactNode {
           disabled={!canDup}
           aria-label="复制当前标签页（独立实例）"
         >
-          <CopyGlyph />
+          <IconCopyTab width={16} height={16} />
         </button>
       ) : null}
       {layout === "h" ? <TabStrip /> : null}

@@ -191,3 +191,12 @@
 .explorer-settings-body::-webkit-scrollbar { width: 6px; }
 .explorer-settings-body::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--text-1) 18%, transparent); border-radius: 3px; }
 .explorer-settings-body::-webkit-scrollbar-track { background: transparent; }
+
+/* ══════════ 标签页壁纸（2026-10-13）══════════
+   壁画画在面板底（内容卡自带 surface 底，深浅主题都可读）；
+   has-wallpaper 时盖一层轻纱把文字对比度拉回来。 */
+.explorer-panel.has-wallpaper {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

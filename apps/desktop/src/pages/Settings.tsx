@@ -1,6 +1,13 @@
 declare const __APP_VERSION__: string;
 import { defineSearchRows } from "../state/searchRows.js";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import {
+  BUILTIN_WALLPAPERS,
+  fileToWallpaper,
+  setGlobalWallpaper,
+  subscribeWallpaper,
+  wallpaperSnapshot,
+} from "../state/wallpaper.js";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
@@ -681,6 +688,9 @@ export function SettingsPage() {
       <SectionHead title="外观" />
       <Card>
         <AppearanceSection />
+      </Card>
+      <Card>
+        <WallpaperSection />
       </Card>
       <SectionHead title="通知" />
       <Card>
@@ -1717,6 +1727,76 @@ function DiagnosticsRow() {
 
 
 /** 外观：昼夜主题调度——跟随系统暗/亮自动切日夜两档主题 */
+
+/* ══════════ 壁纸（2026-10-13，霖：外观统一设置 + 各标签页可单独覆盖）══════════ */
+function WallpaperSection(): ReactNode {
+  const wp = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const preview = wp.global
+    ? wp.global.startsWith("builtin:")
+      ? BUILTIN_WALLPAPERS.find((b) => "builtin:" + b.id === wp.global)?.css
+      : `url(${wp.global})`
+    : null;
+  return (
+    <div>
+      <div className="setting-title">壁纸</div>
+      <div className="setting-desc">
+        全部标签页的统一底图；每条标签路径还可在页面空白处右键单独覆盖。图片会压缩后存在本机。
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "8px 0", flexWrap: "wrap" }}>
+        <div
+          aria-hidden="true"
+          style={{
+            width: 96, height: 54, borderRadius: 8, border: "1px solid var(--border)",
+            background: preview ?? "var(--surface-3)", backgroundSize: "cover", backgroundPosition: "center",
+          }}
+        />
+        <button type="button" className="btn" onClick={() => fileRef.current?.click()}>
+          上传图片…
+        </button>
+        {wp.global ? (
+          <button type="button" className="btn" onClick={() => setGlobalWallpaper(null)}>
+            清除全局壁纸
+          </button>
+        ) : null}
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {BUILTIN_WALLPAPERS.map((b) => (
+          <button
+            key={b.id}
+            type="button"
+            title="设为全局壁纸"
+            onClick={() => setGlobalWallpaper("builtin:" + b.id)}
+            style={{
+              width: 64, height: 40, borderRadius: 8, border: "1px solid var(--border)",
+              background: b.css, cursor: "pointer", color: "var(--text-3)", fontSize: "var(--text-xs)",
+              textShadow: "0 1px 2px rgba(0,0,0,.5)",
+            }}
+          >
+            {b.label}
+          </button>
+        ))}
+      </div>
+      {err ? <div style={{ color: "var(--danger, #e5484d)", fontSize: "var(--text-xs)", marginTop: 6 }}>{err}</div> : null}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = "";
+          if (!f) return;
+          void fileToWallpaper(f).then((d) => {
+            if (d) { setGlobalWallpaper(d); setErr(null); } else setErr("这张图处理失败，换一张试试");
+          });
+        }}
+      />
+    </div>
+  );
+}
+
 function AppearanceSection(): ReactNode {
   const snap = useThemes();
   const tabLayoutDefault = useTabLayoutDefault();

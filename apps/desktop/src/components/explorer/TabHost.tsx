@@ -11,12 +11,13 @@
  * - **右键（桌面）/长按（手机）任意页面空白处** → 「在新标签页打开此页」（forceNew
  *   复制当前所在的一/二/三级页，新 tab 仍是一级面板形态）。
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Ctx, useApp } from "../../state/context.js";
 import type { AppState, LearnNav, Page } from "../../state/app.js";
 import {
   HOME_TAB_ID,
+  allTabs,
   closeTab,
   duplicateTab,
   navigateInTab,
@@ -27,6 +28,16 @@ import {
 import type { ExplorerTab } from "../../state/explorer.js";
 import { isSubPage, renderPage } from "./renderPage.js";
 import { HomeTab } from "./HomeTab.js";
+import {
+  BUILTIN_WALLPAPERS,
+  fileToWallpaper,
+  setTabWallpaper,
+  wallpaperFor,
+  wallpaperPathOf,
+  wallpaperSnapshot,
+  wallpaperStyleFor,
+  subscribeWallpaper,
+} from "../../state/wallpaper.js";
 
 /* ══════════ tab 局部路由上下文 ══════════ */
 
@@ -95,8 +106,19 @@ interface MenuPos { x: number; y: number; tabId: string }
 
 function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void }): ReactNode {
   const isHome = pos.tabId === HOME_TAB_ID;
+  const tab = allTabs().find((t) => t.id === pos.tabId);
+  const wallKey = tab ? (tab.kind === "home" ? "home" : wallpaperPathOf(tab.page, tab.params)) : "home";
+  /* 壁纸入口：每条标签路径都可以有自己的壁纸（文件或内置渐变），清除则回落全局 */
+  const wallInput = useRef<HTMLInputElement | null>(null);
+  const pickWallpaper = (): void => wallInput.current?.click();
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
     { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
+    { label: "更换此页壁纸…", act: pickWallpaper },
+    ...BUILTIN_WALLPAPERS.map((b) => ({
+      label: "壁纸 · " + b.label,
+      act: () => setTabWallpaper(wallKey, "builtin:" + b.id),
+    })),
+    ...(wallpaperFor(wallKey) ? [{ label: "清除此页壁纸", danger: true, act: () => setTabWallpaper(wallKey, null) }] : []),
     ...(isHome ? [] : [{ label: "关闭标签页", danger: true, act: () => closeTab(pos.tabId) }]),
   ];
   useEffect(() => {
@@ -106,6 +128,21 @@ function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void })
   }, [onClose]);
   return createPortal(
     <>
+      {/* 隐藏的文件选择器：壁纸图片选中即压缩落库 */}
+      <input
+        ref={wallInput}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = "";
+          if (!f) return;
+          void fileToWallpaper(f).then((d) => {
+            if (d) setTabWallpaper(wallKey, d);
+          });
+        }}
+      />
       <div
         style={{ position: "fixed", inset: 0, zIndex: 1200 }}
         onClick={onClose}
@@ -166,17 +203,20 @@ export function TabHost(): ReactNode {
     if (p && (Math.abs(e.clientX - p.x) > 10 || Math.abs(e.clientY - p.y) > 10)) clearPress();
   }, [clearPress]);
 
+  /* 壁纸：订阅一份全局文档，每个面板按自己的路径键解析（tab 覆盖 > 全局 > 无） */
+  useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
   return (
     <>
       {all.map((t) => {
         const active = t.id === activeId;
+        const wp = wallpaperStyleFor(t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params));
         return (
           <div
             key={t.id}
-            className="explorer-panel"
+            className={"explorer-panel" + (wp ? " has-wallpaper" : "")}
             data-tab-id={t.id}
             data-tab-page={t.page}
-            style={active ? undefined : { display: "none" }}
+            style={active ? { ...(wp ? { backgroundImage: wp.backgroundImage } : {}) } : { display: "none", ...(wp ? { backgroundImage: wp.backgroundImage } : {}) }}
             onContextMenu={(e) => {
               if (onInteractive(e.target)) return;
               e.preventDefault();

@@ -59,7 +59,9 @@ const SearchLandingSelfcheck = __ONETHU_DEV__ ? lazy(() => import("./SearchLandi
 export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
   { page: "today", label: "今日", icon: IconToday },
   { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
-  { page: "learn", label: "网络学堂", icon: IconLearn },
+  // R30：这一栏现在同时收纳网络学堂与雨课堂的课程，侧栏用中性的「课程」；
+  // 「网络学堂」保留为**来源名**（课程卡/作业行上的来源徽标、今日页等处不改）。
+  { page: "learn", label: "课程", icon: IconLearn },
   { page: "schedule", label: "日程", icon: IconSchedule },
   { page: "trace", label: "寻迹", icon: IconTrace },
   { page: "mail", label: "邮箱", icon: IconMail },

@@ -8,6 +8,7 @@ import type { Page } from "../../state/app.js";
 import { LearnPage } from "../../pages/Learn.js";
 import { AssignmentDetailPage } from "../../pages/learn/AssignmentDetailPage.js";
 import { YktAssignmentDetailPage } from "../../pages/learn/YktAssignmentDetailPage.js";
+import { YktCoursePage } from "../../pages/learn/YktCoursePage.js";
 import { AssignmentsPage } from "../../pages/learn/AssignmentsPage.js";
 import { CourseDetailPage } from "../../pages/learn/CourseDetailPage.js";
 import { FileDetailPage } from "../../pages/learn/FileDetailPage.js";
@@ -150,6 +151,8 @@ export function renderPage(page: Page): ReactNode {
       return <FileDetailPage />;
     case "learn-ykt-detail":
       return <YktAssignmentDetailPage />;
+    case "learn-ykt-course":
+      return <YktCoursePage />;
     default:
       if (page.startsWith("plugin:")) return <PluginTabHost pageKey={page} />;
       return <LearnPage />;

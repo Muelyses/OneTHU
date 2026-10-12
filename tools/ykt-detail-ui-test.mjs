@@ -13,7 +13,7 @@
  *      yktTypeText（typeText 缺失时按 ProblemType 兜底）/ yktIsExternalLinkProblem（题型 9 红线）/
  *      yktAttachmentsText（空 → ""；无名附件回退 url / 占位）
  *  [3] 整卷汇总 yktExerciseSummary：answered / graded / scoreSum（无一题有分 → undefined）/
- *      整卷批改徽标（未作答·已交未批·部分已批·已批改·无题目）
+ *      整卷批改徽标（未作答·已作答 x/y 进行中·已交未批·部分已批·已批改·无题目）
  *  [4] core R20-B2 新透出字段（packages/core/src/exthw/yuketang.ts）：
  *      - 列表项 leaf_type_id → leafTypeId（String 化）、classroom_id → classroomId
  *      - 详情 late_submission → lateDeadline（毫秒 → 本地 "YYYY-MM-DD HH:MM"；缺失/0 → 不设）
@@ -55,7 +55,7 @@ registerHooks({
   },
 });
 
-const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks, homeworkEntryScoreText, yktSubmitEligibility, parseYktLocalTime } = await import(
+const { pickYktDetailEntry, pickHomeworkRoute, yktStatusChip, yktExerciseSummary, yktTypeText, yktIsExternalLinkProblem, yktAttachmentsText, yktScoreText, dedupeYktRemarks, homeworkEntryScoreText, yktSubmitEligibility, yktAnswerPanelState, parseYktLocalTime } = await import(
   "../apps/desktop/src/lib/yktDetail.ts"
 );
 
@@ -179,6 +179,13 @@ console.log("\n[3] 整卷汇总 yktExerciseSummary");
   s = yktExerciseSummary([P({ myStatus: "submitted" }), P({ myStatus: "submitted" })]);
   eq(s.scoreSum, undefined, "无一题透分 → scoreSum 不设（避免误导 0 分）");
   deepEq(s.chip, { text: "已交未批", cls: "chip-green" }, "已交全未批 → 绿徽标");
+
+  // R33（2026-10-11 霖真机反馈）：只答了一部分 = 进行中，不能说「已交未批」
+  // （真实数据：「第三四周作业」16 题里只答了 3 题）
+  s = yktExerciseSummary([...Array(3).fill(P({ myStatus: "submitted" })), ...Array(13).fill(P({}))]);
+  eq(s.answered, 3, "R33：部分作答 answered=3");
+  eq(s.total, 16, "R33：total=16");
+  deepEq(s.chip, { text: "未提交", cls: "chip-amber" }, "R33：进行中 → 「未提交」琥珀徽标（不是已交未批，与作业列表同词）");
 
   s = yktExerciseSummary([P({ myStatus: "unanswered" })]);
   deepEq(s.chip, { text: "未作答", cls: "chip-gray" }, "全未作答 → 灰徽标");
@@ -518,6 +525,25 @@ console.log("\n[7] R20-C1 作答/提交入口资格 yktSubmitEligibility（纯�
     true,
     "无次数信息 + maxRetry=0 但未提交 → 出口（首交）",
   );
+
+  // 7d. R27 fix（用户实测 bug）：服务端 user.my_count 是**整卷**计数 —— 交完第 1 题后，
+  //     尚未作答的题也会带上 my_count=1，剩余 = count − my_count 对每题都变 0；
+  //     旧口径据此把每题面板换成「次数已用尽」，表现为「提交一道题之后剩下所有题的
+  //     提交窗口全部消失」。现口径：未作答的题永不因次数判据隐藏。
+  const afterOneSubmit = [
+    { type: 1, myStatus: "submitted", remainingRetries: 0 },
+    { type: 1, myStatus: "unanswered", remainingRetries: 0 },
+    { type: 1, myStatus: "unanswered", remainingRetries: 0 },
+  ];
+  eq(yktSubmitEligibility(hw({ problems: afterOneSubmit })).eligible, true, "交完一题后其余题未作答 → 提交入口仍在");
+  eq(
+    yktSubmitEligibility(hw({ problems: afterOneSubmit })).remainingRetries,
+    0,
+    "剩余次数只按已作答题统计（不再被未作答题的整卷计数误导）",
+  );
+  eq(yktAnswerPanelState(afterOneSubmit[0]), "exhausted", "已作答且用完次数 → 该题面板显示已用尽");
+  eq(yktAnswerPanelState(afterOneSubmit[1]), "editor", "未作答题即使剩余 0 也保留作答面板");
+  eq(yktAnswerPanelState({ myStatus: "unanswered" }), "editor", "次数未知 → 面板常在");
   eq(yktSubmitEligibility(hw({ problems: [{ type: 1, myStatus: "graded" }], maxRetry: 3 })).eligible, true, "无次数信息 + maxRetry>0 → 出口");
   eq(
     yktSubmitEligibility(hw({ problems: [{ type: 1, remainingRetries: 3 }, { type: 2, remainingRetries: 1 }] })).remainingRetries,

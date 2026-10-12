@@ -113,6 +113,11 @@ export function yktExerciseSummary(problems: ReadonlyArray<YkProblem>): YktExerc
     if (answered === 0) return { text: "未作答", cls: "chip-gray" };
     if (graded >= total) return { text: "已批改", cls: "chip-blue" };
     if (graded > 0) return { text: `已批 ${graded}/${total} 题`, cls: "chip-blue" };
+    // R33：只答了一部分时不能说「已交未批」——那是「整卷已交、只是还没批」的说法，
+    // 会把「16 题只答了 3 题」的进行中作业说成已完成（霖真机反馈的原话就是
+    // 「应该是未提交而不是已交未批」）。用词与作业列表的 chip 对齐（未提交），
+    // 具体进度由下方「作答进度 x/y 题」一行给。
+    if (answered < total) return { text: "未提交", cls: "chip-amber" };
     return { text: "已交未批", cls: "chip-green" };
   })();
   return { total, answered, graded, ...(scoreSum !== undefined ? { scoreSum } : {}), chip };
@@ -293,7 +298,13 @@ export function yktSubmitEligibility(input: YktSubmitEligibilityInput): YktSubmi
   if (problems.every((p) => p.type === 9)) return { eligible: false, reason: "external-only" };
   // 未超 max_retry：所有题都有次数信息且全部 ≤0 才算超；undefined = 不限/未知，不拦
   const allHaveRetryInfo = problems.every((p) => typeof p.remainingRetries === "number");
-  if (allHaveRetryInfo && problems.every((p) => (p.remainingRetries as number) <= 0)) {
+  // R27 fix（用户实测 bug）：**整卷所有题都已作答**才按次数封入口。
+  // 根因：服务端 user.my_count 是整卷计数——交完第 1 题后，尚未作答的题也会带上
+  // my_count=1，于是 `剩余 = count − my_count` 对每题都变成 0；旧口径据此封掉入口，
+  // 结果「提交一道题之后，剩下所有题的提交窗口全部消失」。
+  // 本题级面板同口径：未作答题永不因次数判据隐藏（见 yktAnswerPanelState）。
+  const allAnswered = problems.every((p) => p.myStatus !== "unanswered");
+  if (allHaveRetryInfo && allAnswered && problems.every((p) => (p.remainingRetries as number) <= 0)) {
     return { eligible: false, reason: "retry-exhausted" };
   }
   // 兜底：题目都没有次数信息 → 用整卷 maxRetry（0=不可重交）+ 全部题已提交
@@ -309,10 +320,32 @@ export function yktSubmitEligibility(input: YktSubmitEligibilityInput): YktSubmi
     const late = parseYktLocalTime(input.lateDeadline);
     if (late !== undefined && now >= late) return { eligible: false, reason: "deadline" };
   }
-  return {
-    eligible: true,
-    ...(allHaveRetryInfo
-      ? { remainingRetries: Math.min(...problems.map((p) => p.remainingRetries as number)) }
-      : {}),
-  };
+  // 展示用剩余次数：优先看**已作答**的题（未作答题带的是整卷计数，直接取 min 会把
+  // 「刚交完一题」显示成整卷 0 次）；已作答题都没有次数信息时才回落到全量。
+  const retryPool = (allAnswered ? problems : problems.filter((p) => p.myStatus !== "unanswered")).filter(
+    (p) => typeof p.remainingRetries === "number",
+  );
+  const remaining = retryPool.length > 0
+    ? Math.min(...retryPool.map((p) => p.remainingRetries as number))
+    : undefined;
+  return { eligible: true, ...(remaining === undefined ? {} : { remainingRetries: remaining }) };
+}
+
+/**
+ * 单题作答面板状态（R27 fix，与 yktSubmitEligibility 的次数口径同源）。
+ *
+ * 为什么不能只看 `remainingRetries <= 0`：服务端 `user.my_count` 是**整卷**计数——
+ * 交完第 1 题后，未作答的题也会带回 my_count=1，`剩余 = count − my_count` 于是对每题
+ * 都变成 0。旧实现据此把每题的作答面板整块换成「本题作答次数已用尽」，用户看到的就是
+ * 「提交一道题之后，剩下所有题的提交窗口全部消失」（实测 bug）。
+ *
+ * 现口径：**未作答的题永不因次数判据隐藏面板**（真实次数校验始终由官方接口执行）；
+ * 已作答 / 已批改的题才按剩余次数判用尽。
+ */
+export function yktAnswerPanelState(
+  p: Pick<YkProblem, "myStatus" | "remainingRetries">,
+): "editor" | "exhausted" {
+  const rem = p.remainingRetries;
+  if (typeof rem !== "number") return "editor"; // 不限 / 未知
+  return rem <= 0 && p.myStatus !== "unanswered" ? "exhausted" : "editor";
 }

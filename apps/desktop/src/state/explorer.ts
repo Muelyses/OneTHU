@@ -1,18 +1,18 @@
 /**
  * Explorer（工作空间革命 · dev-explorer）核心状态机：标签页 / 工作区 / 设置浮层。
  *
- * 交互模型（2026-10-12 提案 + 用户四点补充）：
+ * 交互模型（2026-10-12 提案 + 用户六点补充）：
  * - 首页是特殊标签页：默认进入、不可删除、不可多开（id 恒为 "home"）；
- * - 其余每个标签页 = 一个独立工作实例（同页可多开，各自保留导航参数）；
- * - navigate() 的语义升级：在页内标签中 = 当前标签页内导航；在首页 = 开新标签页；
- *   settings / plugins 永远不是标签页 —— 走「设置浮层」（高于任何标签页）；
- * - OneGO 工作区 = 一组标签页快照，可一键恢复；
+ * - 其余每个标签页 = 一个独立工作实例；**同一实例已打开时默认聚焦复用，不无限新建**；
+ *   只有「复制」（顶栏按钮 / 标签右键 / 页面右键-长按）才 forceNew 出第二个实例；
+ * - **每个标签页有自己独立的路由上下文**（TabHost 内 Ctx.Provider 覆盖 page/navParams/
+ *   navigate）——两个网络学堂 tab 各点各的课程，绝不互相串台；
+ * - navigate() 的语义升级：页内标签中 = 当前标签页内导航；在首页 = 打开目标
+ *   （已存在则复用）；settings / plugins 永远不是标签页 —— 走「设置浮层」；
+ * - OneGO 工作区：标签页可归属（workspaceId），抽屉按工作区分组；存工作区=快照+归属，
+ *   一键恢复；工作区删除时成员归属清空；
+ * - 设置浮层（settings/plugins/oh）高于任何标签页；
  * - 整个标签列表 + 活动页 + 工作区持久化（localStorage），启动恢复。
- *
- * 实现约束：
- * - 模块级 store（与 palette.ts 同一写法），不依赖 React Provider；
- * - 对 app.tsx 只暴露纯函数；hash 由本模块统一写（外部深链进来 = 开新标签页）；
- * - 本模块只在事件回调里跨模块调用（无模块初始化期跨界调用），允许与 app.tsx 互相 import。
  */
 import { useSyncExternalStore } from "react";
 import type { LearnNav, Page } from "./app.js";
@@ -28,8 +28,10 @@ export interface ExplorerTab {
   /** kind=page 时有效；home 恒为 "today"（首页内容即今日页，组织模式原样移植） */
   page: Page;
   params: LearnNav | null;
-  /** 打开时定下的静态标题（组件侧可按 favs 等数据 refine 显示名） */
+  /** 打开时定下的静态标题（完整路径由 state/tabTitles.ts 数据感知解析） */
   title: string;
+  /** 归属的 OneGO 工作区（null=未分组）；TabDrawer 按它分组 */
+  workspaceId: string | null;
   createdAt: number;
   lastActiveAt: number;
 }
@@ -59,6 +61,23 @@ const STORE_KEY = "onethu.explorer.v2";
 const MAX_TABS = 30;
 /** 设置/插件不是标签页（用户 2026-10-12 拍板：高于任何标签页） */
 const OVERLAY_PAGES: ReadonlySet<string> = new Set(["settings", "plugins"]);
+/**
+ * 插件 tab 强制单实例：插件容器按 pageKey 登记（tabs.ts setTabRoot），多开会抢同一
+ * DOM 容器互踩状态——这是插件架构约束，不是产品选择。
+ */
+function isSingletonPage(page: Page): boolean {
+  return page.startsWith("plugin:");
+}
+/**
+ * 实例身份的**排除参数**：栏目/视图/返回目标类参数不参与实例判定
+ * （「信息-新闻」和「信息-成绩」是同一个信息 tab 的两次视图，不是两个实例；
+ *  用户口径：tab 主题不变，栏内可切换）。
+ */
+const NON_INSTANCE_PARAMS: ReadonlySet<string> = new Set([
+  "infoTab", "lifeTab", "reserveTab", "courseTab", "from", "semesterId",
+  "bbsBoard", "learnOpenHwRemind", "mailCompose", "infoNewsQuery",
+  "dormSection", "newsSubSource",
+]);
 
 /* ══════════ 模块级 store ══════════ */
 
@@ -74,6 +93,7 @@ function loadStore(): ExplorerState {
     const tabs = Array.isArray(p.tabs)
       ? p.tabs
           .filter((t): t is ExplorerTab => !!t && typeof t.id === "string" && typeof t.page === "string" && t.kind === "page")
+          .map((t) => ({ ...t, workspaceId: typeof t.workspaceId === "string" ? t.workspaceId : null })) // 旧版本补字段
           .slice(0, MAX_TABS)
       : [];
     return {
@@ -118,7 +138,7 @@ export function explorerSnapshot(): ExplorerState {
 /* ══════════ 查询 ══════════ */
 
 /** 首页标签页（模块级单例：getSnapshot 必须返回稳定引用，否则 useSyncExternalStore 死循环） */
-const HOME_TAB: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "today", params: null, title: "首页", createdAt: 0, lastActiveAt: 0 };
+const HOME_TAB: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "today", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
 
 /** 全部标签页（home 恒在最前；home 是稳定单例，数组本身仅供渲染期使用） */
 export function allTabs(): ExplorerTab[] {
@@ -138,21 +158,48 @@ export function activeTabId(): string {
   return getTab(state.activeId) ? state.activeId : HOME_TAB_ID;
 }
 
-/* ══════════ 标题（静态推导；组件侧可 refine） ══════════ */
+/* ══════════ 实例身份（复用/复制的判定核心） ══════════ */
 
+/**
+ * 同一工作实例的稳定键：page + 排序后的实体参数串（排除栏目/视图类参数）。
+ * 「网络学堂某门课」「寻迹」「某作业详情」各是一个实例——已打开就复用。
+ */
+export function instanceKeyOf(page: Page, params: LearnNav | null): string {
+  const parts: string[] = [];
+  const p = params as Record<string, unknown> | null;
+  if (p) {
+    for (const k of Object.keys(p).sort()) {
+      if (NON_INSTANCE_PARAMS.has(k)) continue;
+      const v = p[k];
+      if (v !== undefined && v !== null && v !== "") parts.push(`${k}=${String(v)}`);
+    }
+  }
+  return page + (parts.length ? `?${parts.join("&")}` : "");
+}
+
+/** 找已打开的同实例标签页（不含 home；singleton 页按 page 精确匹配） */
+export function findInstanceTab(page: Page, params: LearnNav | null): ExplorerTab | null {
+  if (isSingletonPage(page)) return state.tabs.find((t) => t.page === page) ?? null;
+  const key = instanceKeyOf(page, params);
+  return state.tabs.find((t) => instanceKeyOf(t.page, t.params) === key) ?? null;
+}
+
+/* ══════════ 标题（静态兜底；完整路径在 state/tabTitles.ts 数据感知解析） ══════════ */
+
+/** 页级静态名（兜底；数据快照未就绪时 TabStrip 至少显示域清晰的标题） */
 const PAGE_TITLES: Partial<Record<Page, string>> = {
   "learn-course": "课程详情",
-  "learn-assignments": "全部作业",
-  "learn-notices": "全部通知",
-  "learn-files": "全部文件",
-  "learn-search": "全局搜索",
+  "learn-assignments": "网络学堂 · 全部作业",
+  "learn-notices": "网络学堂 · 全部通知",
+  "learn-files": "网络学堂 · 全部文件",
+  "learn-search": "网络学堂 · 搜索",
   "learn-semester": "学期切换",
   "learn-assignment-detail": "作业详情",
   "learn-notice-detail": "通知详情",
-  "learn-forum-thread": "讨论区",
+  "learn-forum-thread": "讨论区话题",
   "learn-file-detail": "文件详情",
   "learn-ykt-detail": "雨课堂作业",
-  folder: "收藏夹",
+  folder: "OnePage",
   tasks: "待办",
   services: "服务",
   favs: "收藏",
@@ -167,15 +214,13 @@ const TAB_SUFFIX: Record<string, Record<string, string>> = {
 
 export function titleOf(page: Page, params?: LearnNav | null, fallback?: string): string {
   if (fallback) return fallback;
-  const reg = NAV_REGISTRY.find((e) => e.page === page);
-  const base = reg?.name ?? PAGE_TITLES[page] ?? "页面";
   const suffixes = TAB_SUFFIX[page];
   if (suffixes) {
     const key = page === "info" ? params?.infoTab : page === "life" ? params?.lifeTab : params?.reserveTab;
-    if (key && suffixes[key]) return base + " · " + suffixes[key];
+    const base = NAV_REGISTRY.find((e) => e.page === page)?.name ?? PAGE_TITLES[page] ?? "页面";
+    if (key && suffixes[key]) return `${base} · ${suffixes[key]}`;
   }
-  if (page === "folder" && params?.folderId) return base;
-  return base;
+  return NAV_REGISTRY.find((e) => e.page === page)?.name ?? PAGE_TITLES[page] ?? "页面";
 }
 
 /* ══════════ hash（由本模块统一写；外部深链 = 开新标签页） ══════════ */
@@ -208,7 +253,7 @@ export function initExplorerHashBridge(): () => void {
       ownHashes.delete(target);
       return;
     }
-    // 外部深链（书签/插件/恢复的 hash）：开成独立标签页
+    // 外部深链（书签/插件/恢复的 hash）：开成独立标签页（复用已开实例）
     const m = /^#\/folder\/(f_[A-Za-z0-9_]+)$/.exec(target);
     if (m) {
       openTab("folder", { folderId: m[1] });
@@ -237,33 +282,37 @@ export function openTabFromBootHash(): void {
 
 /* ══════════ 标签页操作 ══════════ */
 
-/** 本机使用统计（今日页「最近使用」的数据源；旧 navigate 的行为，这里找回来了） */
-function recordUse(page: Page, params: LearnNav | null): void {
-  void import("./atoms.js")
-    .then((m) => m.recordPageAtomUse(page, params))
-    .catch(() => undefined);
-}
-
 let seq = 0;
 function newTabId(): string {
   seq += 1;
   return `t_${Date.now().toString(36)}_${seq.toString(36)}`;
 }
 
-/** 同一工作实例判定（工作区恢复/聚焦已有用）：page + 关键 params 相同 */
-function sameInstance(a: { page: Page; params: LearnNav | null }, b: { page: Page; params: LearnNav | null }): boolean {
-  if (a.page !== b.page) return false;
-  const ka = a.params?.folderId ?? a.params?.courseId ?? "";
-  const kb = b.params?.folderId ?? b.params?.courseId ?? "";
-  return ka === kb;
+/** 本机使用统计（今日页「最近使用」的数据源；动态 import 回避 app↔atoms 模块环） */
+function recordUse(page: Page, params: LearnNav | null): void {
+  void import("./atoms.js")
+    .then((m) => m.recordPageAtomUse(page, params))
+    .catch(() => undefined);
+}
+
+export interface OpenTabOptions {
+  title?: string;
+  /** **强制新建实例**（复制按钮 / 右键-长按「在新标签页打开」用）；默认复用已开实例 */
+  forceNew?: boolean;
+  /** 新标签页归属的工作区 */
+  workspaceId?: string | null;
+  /** 是否聚焦新标签页（工作区批量恢复时传 false，最后统一聚焦） */
+  activate?: boolean;
 }
 
 /**
- * 打开新标签页（入口级导航：首页目录/快捷入口/OneGO/搜索/悬浮球都用它）。
+ * 打开标签页（入口级导航：首页目录/快捷入口/OneGO/搜索/悬浮球都用它）。
  * - page="today" → 聚焦首页（首页不可多开）；
- * - 工作区恢复用 dedupe=true（同实例聚焦不重建）；目录/搜索默认恒开新实例。
+ * - settings/plugins → 设置浮层（不是标签页）；
+ * - **默认复用**：同实例已打开 → 聚焦它（用户拍板：不要无限新建一模一样的标签页）；
+ *   只有 forceNew（「复制」）才出第二个实例。
  */
-export function openTab(page: Page, params?: LearnNav | null, opts?: { title?: string; dedupe?: boolean; activate?: boolean }): string {
+export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOptions): string {
   if (page === "today") {
     focusTab(HOME_TAB_ID);
     return HOME_TAB_ID;
@@ -272,9 +321,8 @@ export function openTab(page: Page, params?: LearnNav | null, opts?: { title?: s
     openSettings(page === "settings" ? "settings" : "plugins");
     return "";
   }
-  const dedupe = opts?.dedupe === true;
-  if (dedupe) {
-    const hit = state.tabs.find((t) => sameInstance(t, { page, params: params ?? null }));
+  if (opts?.forceNew !== true) {
+    const hit = findInstanceTab(page, params ?? null);
     if (hit) {
       focusTab(hit.id);
       return hit.id;
@@ -286,6 +334,7 @@ export function openTab(page: Page, params?: LearnNav | null, opts?: { title?: s
     page,
     params: params ?? null,
     title: titleOf(page, params, opts?.title),
+    workspaceId: opts?.workspaceId ?? null,
     createdAt: Date.now(),
     lastActiveAt: Date.now(),
   };
@@ -294,6 +343,14 @@ export function openTab(page: Page, params?: LearnNav | null, opts?: { title?: s
   writeHashFor(tab);
   recordUse(page, tab.params);
   return tab.id;
+}
+
+/** 复制当前标签页（顶栏「复制」按钮 / 标签右键 / 页面右键-长按共用）：
+ *  一级二级三级页都能复制成独立实例，新实例聚焦。 */
+export function duplicateTab(id: string): string {
+  const tab = getTab(id);
+  if (!tab || tab.kind === "home") return "";
+  return openTab(tab.page, tab.params, { title: tab.title, forceNew: true });
 }
 
 export function focusTab(id: string): void {
@@ -332,7 +389,8 @@ export function closeOtherTabs(keepId: string): void {
   writeHashFor(keep);
 }
 
-/** 标签页内导航（更新 page/params，标签身份不变——工作上下文保留） */
+/** 标签页内导航（更新 page/params，标签身份不变——工作上下文保留）。
+ *  只作用于该标签页自己的路由上下文（TabHost 的 Ctx 覆盖），互不串台。 */
 export function navigateInTab(id: string, page: Page, params?: LearnNav | null, title?: string): void {
   const tab = getTab(id);
   if (!tab || tab.kind === "home") return;
@@ -342,7 +400,7 @@ export function navigateInTab(id: string, page: Page, params?: LearnNav | null, 
   if (state.activeId === id) writeHashFor(next);
 }
 
-/** 标签页重排序（TabStrip 长按/抽屉 ↑↓） */
+/** 标签页重排序（TabDrawer ↑↓） */
 export function moveTab(id: string, dir: -1 | 1): void {
   const i = state.tabs.findIndex((t) => t.id === id);
   const j = i + dir;
@@ -352,14 +410,20 @@ export function moveTab(id: string, dir: -1 | 1): void {
   setState({ ...state, tabs });
 }
 
+/** 移动标签页进出工作区（TabDrawer 行内「移入/移出工作区」） */
+export function setTabWorkspace(id: string, workspaceId: string | null): void {
+  const tabs = state.tabs.map((t) => (t.id === id ? { ...t, workspaceId } : t));
+  setState({ ...state, tabs });
+}
+
 /* ══════════ 应用级 navigate（app.tsx 的 navigate 实现转发到这里） ══════════ */
 
 /**
- * navigate(page, params) 的新语义：
+ * navigate(page, params) 的新语义（Shell 全局层使用；TabHost 面板内走 Ctx 覆盖的
+ * tab 局部 navigate，见 TabHost.tsx）：
  * - settings/plugins → 设置浮层（不是标签页）；
- * - 当前活动标签是首页（或无活动页标签）→ 开新标签页；
+ * - 当前活动标签是首页（或无活动页标签）→ 打开目标（已存在则复用）；
  * - 其余 → 当前标签页内导航（工作上下文保留）。
- * 数百个既有调用点零改动。
  */
 export function explorerNavigate(page: Page, params?: LearnNav | null): void {
   if (OVERLAY_PAGES.has(page)) {
@@ -377,32 +441,45 @@ export function explorerNavigate(page: Page, params?: LearnNav | null): void {
 
 /* ══════════ OneGO 工作区 ══════════ */
 
+/** 存为工作区：建快照 + **把所选标签页的归属改成该工作区**（抽屉立即分组） */
 export function saveWorkspace(name: string, tabIds?: string[]): string {
-  const source = (tabIds ? state.tabs.filter((t) => tabIds.includes(t.id)) : state.tabs).filter((t) => t.kind === "page");
+  const ids = tabIds ? new Set(tabIds) : null;
+  const source = state.tabs.filter((t) => (ids ? ids.has(t.id) : t.kind === "page"));
+  if (source.length === 0) return "";
   const ws: ExplorerWorkspace = {
     id: `w_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
     name: name.trim() || "工作区",
     createdAt: Date.now(),
     tabs: source.map((t) => ({ page: t.page, params: t.params, title: t.title })),
   };
-  if (ws.tabs.length === 0) return "";
-  setState({ ...state, workspaces: [ws, ...state.workspaces].slice(0, 50) });
+  const wsIds = new Set(source.map((t) => t.id));
+  const tabs = state.tabs.map((t) => (wsIds.has(t.id) ? { ...t, workspaceId: ws.id } : t));
+  setState({ ...state, tabs, workspaces: [ws, ...state.workspaces].slice(0, 50) });
   return ws.id;
 }
 
-/** 一键恢复：同实例聚焦、缺的补开，最后聚焦工作区最后一项 */
+/** 一键恢复：同实例聚焦（并把归属补上）、缺的补开（带归属），最后聚焦工作区最后一项 */
 export function openWorkspace(id: string): void {
   const ws = state.workspaces.find((w) => w.id === id);
   if (!ws) return;
   let last = "";
   for (const entry of ws.tabs) {
-    last = openTab(entry.page, entry.params, { title: entry.title, dedupe: true, activate: false }) || last;
+    const existing = findInstanceTab(entry.page, entry.params);
+    if (existing) {
+      // 已打开的同实例：归入该工作区（归属随工作区走），聚焦
+      if (existing.workspaceId !== ws.id) setTabWorkspace(existing.id, ws.id);
+      last = existing.id;
+      continue;
+    }
+    last = openTab(entry.page, entry.params, { title: entry.title, workspaceId: ws.id, activate: false }) || last;
   }
   if (last) focusTab(last);
 }
 
 export function deleteWorkspace(id: string): void {
-  setState({ ...state, workspaces: state.workspaces.filter((w) => w.id !== id) });
+  // 成员归属清空（标签页不删，只退组）
+  const tabs = state.tabs.map((t) => (t.workspaceId === id ? { ...t, workspaceId: null } : t));
+  setState({ ...state, tabs, workspaces: state.workspaces.filter((w) => w.id !== id) });
 }
 
 export function renameWorkspace(id: string, name: string): void {

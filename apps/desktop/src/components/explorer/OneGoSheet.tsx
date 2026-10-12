@@ -9,6 +9,7 @@
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { focusTab, HOME_TAB_ID, openTab } from "../../state/explorer.js";
+import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useFavs } from "../../state/favs.js";
 import { FolderIcon } from "../Icons.js";
 import { WorkspacePanel } from "./TabDrawer.js";
@@ -119,26 +120,27 @@ type SheetTab = "favs" | "ws";
 
 function OneGoSheetInner(): ReactNode {
   const open = useOneGoSheetOpen();
+  const [closing, requestClose] = useExitPhase(closeOneGoSheet, open);
   const [seg, setSeg] = useState<SheetTab>("favs");
 
   useEffect(() => {
     if (!open) return;
     const h = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") closeOneGoSheet();
+      if (e.key === "Escape") requestClose();
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [open]);
+  }, [open, requestClose]);
 
   if (!open) return null;
   return createPortal(
     <>
-      <div className="ex-sheet-mask" onClick={closeOneGoSheet} />
-      <aside className="ex-sheet ex-onego" role="dialog" aria-label="OneGO">
+      <div className={"ex-sheet-mask" + (closing ? " is-closing" : "")} onClick={requestClose} />
+      <aside className={"ex-sheet ex-onego" + (closing ? " is-closing" : "")} role="dialog" aria-label="OneGO">
         <header className="ex-sheet-head">
           <b>OneGO</b>
           <span className="ex-sec-head-note">组织你的工作</span>
-          <button className="btn btn-ghost ex-btn-sm" onClick={closeOneGoSheet}>完成</button>
+          <button className="btn btn-ghost ex-btn-sm" onClick={requestClose}>完成</button>
         </header>
         <div className="ex-seg-row">
           <div className="segmented ex-seg" role="tablist" aria-label="OneGO 分段">
@@ -150,7 +152,7 @@ function OneGoSheetInner(): ReactNode {
           {seg === "favs" ? <FavsSection onDone={closeOneGoSheet} /> : <WorkspacePanel />}
         </div>
         <footer className="ex-sheet-foot">
-          <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); closeOneGoSheet(); }}>
+          <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>
             功能目录在首页 ↓
           </button>
         </footer>

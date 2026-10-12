@@ -1766,7 +1766,9 @@ export function ChatDock(): ReactNode {
     }
   };
 
-  if (!pid) return null;
+  /* dev-explorer：面板不再只属于 OH 对话——搜索模式是宿主侧能力，无 Harness 进程也要能开。
+     OH 对话本身仍需 pid（send/runCmd 各自有 !pid 守卫）。 */
+  if (!pid && !(open && mode === "search")) return null;
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
   const voiceHint = cancelling && voice !== "off"
     ? "松开取消"

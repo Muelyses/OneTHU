@@ -180,6 +180,18 @@ export interface AppState {
 import { Ctx } from "./context.js";
 import { activeTab, explorerNavigate, subscribeExplorer, type ExplorerTab } from "./explorer.js";
 
+/** dev 视觉自检（?explorer-preview=…）：跳过登录直进 Shell，供无头截图审样式 */
+const PREVIEW_MODE = typeof window !== "undefined" && import.meta.env.DEV && new URLSearchParams(window.location.search).has("explorer-preview");
+/* 视觉自检：模块期写导览完成标记——晚于任何组件挂载就输（OnboardingTour 挂载即读） */
+if (PREVIEW_MODE) {
+  try {
+    localStorage.setItem("onethu.onboarded.v3", "1");
+    localStorage.setItem("onethu.onboarded.flow2", "1");
+    localStorage.setItem("onethu.onboarding.flow", "done");
+    localStorage.setItem("onethu.home.coach.v1", "done");
+  } catch { /* 忽略 */ }
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<SessionStatus>("booting");
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -193,6 +205,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const navParams: LearnNav | null = active.params;
 
   useEffect(() => {
+    console.log("[explorer-preview] PREVIEW_MODE=", PREVIEW_MODE, "search=", window.location.search, "DEV=", import.meta.env?.DEV);
+    if (PREVIEW_MODE) {
+      setUser({ username: "preview" });
+      setStatus("ready");
+      return;
+    }
     void import("../lib/clients.js").then(({ logLine }) => logLine("PROBE boot-effect")).catch(() => undefined);
     let cancelled = false;
     void (async () => {
@@ -329,6 +347,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   const backToLogin = useCallback(() => {
+    if (PREVIEW_MODE) return; // 视觉自检：数据 effect 的「会话过期」误登出在无后端预览里必触发，屏蔽
     setTwoFactor(null);
     setError(null);
     setStatus("logged-out");

@@ -10,11 +10,14 @@ import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
 import {
   HOME_TAB_ID,
+  activeTab,
   closeSettings,
+  duplicateTab,
   focusTab,
   openSettings,
   overlaySnapshot,
   subscribeOverlay,
+  useExplorerState,
   useOverlayEntry,
   type OverlayEntry,
 } from "../state/explorer.js";
@@ -98,8 +101,20 @@ export function BrandLogo({ size = 14 }: { size?: number }) {
 
 /** 顶栏：首页 Logo（点击回首页，恒在不变）+ 标签条 + 搜索 + 设置齿轮（恒在不变）。
  *  滚过 8px 浮起阴影（沿用旧顶栏的层次手法）。 */
+/** 复制当前标签页（用户拍板：已存在实例默认复用，只有明确点「复制」才出第二实例） */
+function CopyGlyph(): ReactNode {
+  return (
+    <svg viewBox="0 0 20 20" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="7" y="7" width="9.5" height="9.5" rx="1.8" />
+      <path d="M13 4.5V4a1.5 1.5 0 0 0-1.5-1.5H5A1.5 1.5 0 0 0 3.5 4v6.5A1.5 1.5 0 0 0 5 12h.5" />
+    </svg>
+  );
+}
+
 function TopBar(): ReactNode {
   const [scrolled, setScrolled] = useState(false);
+  const { activeId } = useExplorerState();
+  const canDup = activeId !== HOME_TAB_ID;
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -110,6 +125,15 @@ function TopBar(): ReactNode {
     <header className={"explorer-topbar" + (scrolled ? " is-scrolled" : "")}>
       <button className="tb-home" onClick={() => focusTab(HOME_TAB_ID)} title="回到首页" aria-label="回到首页">
         <BrandLogo size={12} />
+      </button>
+      <button
+        className="tb-icon"
+        onClick={() => duplicateTab(activeId)}
+        disabled={!canDup}
+        title="复制当前标签页（独立实例）"
+        aria-label="复制当前标签页"
+      >
+        <CopyGlyph />
       </button>
       <TabStrip />
       <span className="tb-spring" aria-hidden="true" />

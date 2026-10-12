@@ -8,6 +8,17 @@
   --explorer-bar-h: 48px;
 }
 
+/* ── 壳：旧 .shell 是给侧栏用的 grid 两列——革命后改纵向 flex（顶栏/内容/底栏） ── */
+.explorer-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.explorer-content {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 /* ── 顶栏：首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮（恒在） ── */
 .explorer-topbar {
   position: sticky;
@@ -26,6 +37,7 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 .tb-home {
+  white-space: nowrap; /* (One THU) 品牌标不得折行 */
   display: inline-flex;
   align-items: center;
   padding: 6px 10px;
@@ -50,6 +62,14 @@
 /* ── 内容区：顶栏 sticky 不占位差，底栏固定 → 内容给底栏让位 ── */
 .explorer-content {
   padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
+}
+
+/* 硬刷新 FAB 给底栏让位（原 bottom 18px 会压住 OneGO 按钮） */
+.hard-refresh-fab {
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px) !important;
+}
+.hard-refresh-fab.top-fab {
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px) !important;
 }
 
 /* ── 设置浮层：高于任何标签页（手机全屏 / 桌面右侧推入） ── */
@@ -86,6 +106,8 @@
 }
 .settings-title { font-size: 15px; }
 .settings-seg {
+  max-width: 100%;
+  overflow-x: auto;
   display: flex;
   align-items: center;
   gap: 2px;

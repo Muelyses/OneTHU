@@ -55,7 +55,6 @@ export function SettingsOverlay(): ReactNode {
     <div className={mask} onClick={requestClose}>
       <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="设置">
         <div className="settings-head">
-          <b className="settings-title">设置</b>
           <div className="settings-seg" role="tablist" aria-label="设置分段">
             {SEGMENTS.map((s) => (
               <button

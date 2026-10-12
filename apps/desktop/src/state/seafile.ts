@@ -70,6 +70,11 @@ export async function clearSeafileToken(): Promise<void> {
   await persistCfg();
 }
 
+/** 同步读资料库显示名（explorer 标签完整路径用；列表未拉到时返回 null） */
+export function seafileRepoName(id: string): string | null {
+  return repos.find((r) => r.id === id)?.name ?? null;
+}
+
 export function getSeafileToken(): string {
   return cfg?.token ?? "";
 }

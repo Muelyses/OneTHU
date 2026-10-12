@@ -8,8 +8,8 @@
 import type { ReactNode } from "react";
 import { IconStar } from "../Icons.js";
 import { OhCapsule } from "./OhCapsule.js";
-import { openOneGoSheet } from "./OneGoSheet.js";
-import { openTabDrawer } from "./TabDrawer.js";
+import { openOneGoSheet, useOneGoSheetOpen } from "./OneGoSheet.js";
+import { openTabDrawer, useTabDrawerOpen } from "./TabDrawer.js";
 import { useExplorerTabs } from "./TabStrip.js";
 
 /** 标签页图标：层叠卡片（内联 SVG，不引库） */
@@ -25,9 +25,11 @@ function TabsGlyph(): ReactNode {
 export function BottomBar(): ReactNode {
   const { tabs } = useExplorerTabs();
   const count = tabs.filter((t) => t.kind === "page").length;
+  const drawerOpen = useTabDrawerOpen();
+  const onegoOpen = useOneGoSheetOpen();
   return (
     <nav className="ex-bbar" aria-label="工作空间导航">
-      <button className="ex-bbar-btn" onClick={openTabDrawer} aria-label={`标签页（${count} 个）`}>
+      <button className={"ex-bbar-btn" + (drawerOpen ? " is-open" : "")} onClick={openTabDrawer} aria-expanded={drawerOpen} aria-label={`标签页（${count} 个）`}>
         <span className="ex-bbar-icon">
           <TabsGlyph />
           {count > 0 ? <i className="ex-bbar-badge" aria-hidden="true">{count > 99 ? "99+" : count}</i> : null}
@@ -37,7 +39,7 @@ export function BottomBar(): ReactNode {
       <div className="ex-bbar-center">
         <OhCapsule />
       </div>
-      <button className="ex-bbar-btn" onClick={openOneGoSheet} aria-label="OneGO">
+      <button className={"ex-bbar-btn" + (onegoOpen ? " is-open" : "")} onClick={openOneGoSheet} aria-expanded={onegoOpen} aria-label="OneGO">
         <span className="ex-bbar-icon">
           <IconStar width={20} height={20} />
         </span>

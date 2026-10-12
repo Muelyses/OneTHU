@@ -1,7 +1,7 @@
 import { Shell } from "./components/Layout.js";
 import { isAndroidNavigator } from "./lib/androidHost.js";
 import { NotifyBridge } from "./components/NotifyBridge.js";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LoginPage, TwoFactorPage } from "./pages/Login.js";
 import { OnboardingTour } from "./components/OnboardingTour.js";
@@ -18,6 +18,9 @@ import { refreshLearnDataSilently, startLearnAutoRefresh, stopLearnAutoRefresh }
 /* dev-explorer：标签页宿主 + explorer 导航语义（navigate 的实现转发到 explorer） */
 import { TabHost } from "./components/explorer/TabHost.js";
 import { explorerNavigate, initExplorerHashBridge, openTabFromBootHash } from "./state/explorer.js";
+
+/** dev 视觉自检驱动（?explorer-preview=…）；正式版整块剥离 */
+const ExplorerPreview = import.meta.env.DEV ? lazy(() => import("./components/explorer/ExplorerPreview.js")) : null;
 
 /** 插件桥回填：每帧把 navigate/status 同步给插件门面（bridges 无任何反向依赖） */
 function PluginBridge() {
@@ -121,6 +124,11 @@ function Routed() {
       {status === "ready" ? <OnboardingTour /> : null}
       <FilePreviewHost />
       <ToastHost />
+      {ExplorerPreview ? (
+        <Suspense fallback={null}>
+          <ExplorerPreview />
+        </Suspense>
+      ) : null}
     </>
   );
 }

@@ -1,0 +1,229 @@
+/* ══════════ dev-explorer · explorer-oh 专属样式 ══════════
+   胶囊条 / 原位语音胶囊 / 面板搜索模式 / 偏好分节 / 悬浮球搜索。
+   只用既有 token（--surface/--border/--text-*/--accent/--r-md/--dur-*），不自造色值。 */
+
+/* ── OH 胶囊条（OhCapsule；摆位归宿主，这里只管形状与反馈） ── */
+.ohx-capsule {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  min-width: 52px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-1);
+  cursor: pointer;
+  transition: transform var(--dur-2) var(--ease-out, ease), box-shadow var(--dur-2) ease, background var(--dur-2) ease;
+}
+.ohx-capsule.is-press { transform: scale(0.94); background: var(--accent-soft, var(--surface)); }
+.ohx-capsule.is-hold { transform: scale(1.06); box-shadow: 0 0 0 3px var(--accent-soft, transparent); }
+.ohx-capsule-badge {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── 原位语音胶囊（语音进行中出现在胶囊同一位置；点=收尾，上划=取消） ── */
+.ohx-voicepill { cursor: pointer; touch-action: none; }
+.ohx-voicepill.is-press { transform: translateX(-50%) scale(0.98); }
+
+/* ── 面板头部的 搜索|OH 模式切换 ── */
+.ohx-modeswitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  margin-left: 8px;
+}
+.ohx-modeswitch button {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ohx-modeswitch button.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── 面板搜索模式 ── */
+.ohx-searchpane {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px 8px;
+  gap: 8px;
+}
+.ohx-searchbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-3);
+  flex: none;
+}
+.ohx-searchbar input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-1);
+  font-size: 14px;
+}
+.ohx-search-status {
+  color: var(--text-3);
+  font-size: 13px;
+  padding: 14px 2px;
+}
+
+/* 最近搜索（横向 chips） */
+.ohx-history { flex: none; }
+.ohx-history-head {
+  font-size: 12px;
+  color: var(--text-3);
+  margin: 2px 2px 6px;
+}
+.ohx-history-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ohx-history-empty { font-size: 12px; color: var(--text-3); opacity: 0.75; }
+.ohx-chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1;
+  padding: 6px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ohx-chip:hover { border-color: var(--accent-border, var(--accent)); color: var(--text-1); }
+
+/* 命中列表 */
+.ohx-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 4px;
+}
+.ohx-hit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--text-1);
+  padding: 9px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.ohx-hit:hover { background: var(--accent-soft, rgba(0, 0, 0, 0.04)); }
+.ohx-hit-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ohx-hit-sub {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ohx-hit-tag {
+  flex: none;
+  font-size: 10.5px;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+/* 零命中 → 问小 (OH)（丝滑切换开关的那一下） */
+.ohx-askoh {
+  flex: none;
+  border: 1px dashed var(--accent-border, var(--accent));
+  color: var(--accent);
+  background: var(--accent-soft, transparent);
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* ── 偏好分节（ExplorerPrefsSection） ── */
+.ohx-prefseg {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  flex: none;
+}
+.ohx-prefseg-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 12.5px;
+  line-height: 1;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ohx-prefseg-btn.is-active { background: var(--accent); color: #fff; }
+.ohx-clear.is-arming { color: #fff; background: var(--danger, #c62828); border-color: transparent; }
+
+/* ── 悬浮球搜索模式（GlobalOrb 内联样式为主，这里只补滚动区） ── */
+.ohx-orb-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

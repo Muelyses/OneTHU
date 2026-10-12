@@ -1,5 +1,5 @@
 /** 应用全局状态：登录（含 2FA）→ 会话 → 轻路由 */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import * as clients from "../lib/clients.js";
 import { explainNetworkError } from "../lib/transport.js";
 import type { TwoFactorMethod } from "@onethu/core";
@@ -178,53 +178,19 @@ export interface AppState {
 }
 
 import { Ctx } from "./context.js";
-
-function pageFromHash(): Page {
-  const h = location.hash.replace(/^#\/?/, "");
-  return (TOP_PAGES as readonly string[]).includes(h) ? (h as Page) : "today";
-}
-
-/** hash → 收藏夹页参数（#/folder/<id>；无 id 或 id 形态不对返回 null） */
-function folderParamsFromHash(): LearnNav | null {
-  const h = location.hash.replace(/^#\/?/, "");
-  const m = /^folder\/(f_[A-Za-z0-9_]+)$/.exec(h);
-  return m ? { folderId: m[1] } : null;
-}
+import { activeTab, explorerNavigate, subscribeExplorer, type ExplorerTab } from "./explorer.js";
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<SessionStatus>("booting");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [page, setPage] = useState<Page>(pageFromHash);
-  const [navParams, setNavParams] = useState<LearnNav | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [twoFactor, setTwoFactor] = useState<AppState["twoFactor"]>(null);
-  /** navigate 自身写入的 hash：它触发的 hashchange 必须忽略，否则跨一级页进子页
-   *  （如 今日 → 作业详情，hash #/today → #/learn）时异步回调会把刚设置的
-   *  page/navParams 冲回顶层列表页 + 空参——详情页"闪回列表/空白"的根源。 */
-  const selfNavHashRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    const onHash = (ev: HashChangeEvent) => {
-      // 用事件自带的 newURL 对账：只忽略"确实是 navigate 写入的那个 hash"的事件；
-      // 连续两次导航时，先到的旧事件 newURL 与最新目标不符，也不会误伤最新状态
-      const target = (() => {
-        try {
-          return new URL(ev.newURL).hash;
-        } catch {
-          return location.hash;
-        }
-      })();
-      if (selfNavHashRef.current !== null && target === selfNavHashRef.current) {
-        selfNavHashRef.current = null; // 自身导航触发的 hashchange：状态已由 navigate 设定
-        return;
-      }
-      const fp = folderParamsFromHash();
-      setPage(fp ? "folder" : pageFromHash());
-      setNavParams(fp);
-    };
-    addEventListener("hashchange", onHash);
-    return () => removeEventListener("hashchange", onHash);
-  }, []);
+  /* dev-explorer：page/navParams 不再是本地状态——直接派生自 explorer 活动标签页
+     （订阅同一份 store）；navigate = explorer 语义（首页内开新标签页 / 页标签内导航 /
+     设置类走浮层）。全库 useApp() 调用点零改动。 */
+  const active: ExplorerTab | null = useSyncExternalStore(subscribeExplorer, () => activeTab(), () => activeTab());
+  const page: Page = active.page;
+  const navParams: LearnNav | null = active.params;
 
   useEffect(() => {
     void import("../lib/clients.js").then(({ logLine }) => logLine("PROBE boot-effect")).catch(() => undefined);
@@ -284,24 +250,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const navigate = useCallback((p: Page, params?: LearnNav) => {
-    // hash 只承载一级页：子页刷新后落回所属入口，避免丢参数的死链；
-    // 记录本次写入，onHash 对自身触发的 hashchange 直接忽略（见 selfNavHashRef）。
-    // hash 本就相同时没有新事件，但此前可能仍有同目标旧事件挂起——保留对账标记等它到达。
-    const h = p === "folder" && params?.folderId ? `#/folder/${params.folderId}` : `#/${topLevelPage(p)}`;
-    if (location.hash === h) {
-      if (selfNavHashRef.current !== h) selfNavHashRef.current = null;
-    } else {
-      selfNavHashRef.current = h;
-      location.hash = h;
-    }
-    setPage(p);
-    setNavParams(params ?? null);
-    // 本机使用统计（今日页「最近使用」的数据源）：动态 import 回避 app↔atoms 的模块环
-    void import("./atoms.js")
-      .then((m) => m.recordPageAtomUse(p, params ?? null))
-      .catch(() => undefined);
-  }, []);
+  /** 导航（dev-explorer 语义，详见 explorer.ts explorerNavigate） */
+  const navigate = explorerNavigate;
 
   const login = useCallback(
     async (username: string, password: string, remember = true) => {
@@ -409,7 +359,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logout,
       dismissError: () => setError(null),
     }),
-    [status, user, page, navParams, error, twoFactor, navigate, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
+    [status, user, page, navParams, error, twoFactor, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

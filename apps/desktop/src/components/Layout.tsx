@@ -1,24 +1,43 @@
-/** 侧栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关） */
-import { Children, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, useSyncExternalStore } from "react";
+/** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
+ *  dev-explorer 革命（2026-10-12）：侧边栏、移动抽屉、五格底栏整体退役——
+ *  顶栏 = 首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮；底栏三入口（标签页 | OH | OneGO）
+ *  在 explorer/BottomBar；设置/插件/OH 是高于任何标签页的浮层（state/explorer.ts 的
+ *  overlay store 即旧 Entry 状态机，goEntry/useEntry 在此薄重导出保持全库兼容）。 */
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
-import { useSidebarCollapsed } from "../state/uiPrefs.js";
-import { requestSettingsTab } from "../state/settingsMode.js";
-import { navGo } from "../plugins/bridges.js";
+import {
+  HOME_TAB_ID,
+  closeSettings,
+  focusTab,
+  openSettings,
+  overlaySnapshot,
+  subscribeOverlay,
+  useOverlayEntry,
+  type OverlayEntry,
+} from "../state/explorer.js";
 import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
+import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
 import { checkUpdateSilently } from "../lib/update.js";
-import { useBottomNavPill, useNavIndicator, useSegPill } from "../lib/motion.js";
+import { useSegPill } from "../lib/motion.js";
 import { ErrorLine } from "./Details.js";
 import { CommandPalette, shortcutLabel } from "./CommandPalette.js";
 import { openPalette } from "../state/palette.js";
+import { TabStrip } from "./explorer/TabStrip.js";
+import { BottomBar } from "./explorer/BottomBar.js";
+import { TabDrawer } from "./explorer/TabDrawer.js";
+import { OneGoSheet } from "./explorer/OneGoSheet.js";
+import { SettingsOverlay } from "./explorer/SettingsOverlay.js";
+import "../styles/explorer.css";
+import "../styles/explorer-ui.css";
+import "../styles/explorer-home.css";
 
 /** 开发者面板（仅 dev 构建）：右上角 commit 徽标 + 前端日志/诊断/导出。
  *  正式版里 __ONETHU_DEV__ 折叠为 false → 这句动态 import 被 rollup 删除，
@@ -28,82 +47,11 @@ const DevPanel = __ONETHU_DEV__ ? lazy(() => import("./DevPanel.js")) : null;
 const SearchLandingSelfcheck = __ONETHU_DEV__ ? lazy(() => import("./SearchLandingSelfcheck.js")) : null;
 
 /**
- * 默认一级入口（万物原子化定案）：钉死不可删隐，仅可在侧栏折叠进
- * 「已折叠收藏夹（N）」组；一切功能原子锚定在这些原位页面，用户收藏夹
- * 只是原子的跳转入口层。今日 = 首页恒在最上；设置 = 钉底。
+ * 一级功能目录（全库导入的数据源，保持原数组不动）：完整目录现渲染在首页
+ * 「功能目录」卡（explorer/HomeTab），侧栏已退役但这份数据仍是唯一事实来源。
  */
-/** 插件动态 tab（useSyncExternalStore 订阅；渲染在固定 NAV 之后） */
-function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> {
-  const tabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
-  return tabs.map((t) => ({
-    page: t.pageKey as Page,
-    label: t.title,
-    icon: ({ width = 16, height = 16 }: { width?: number; height?: number }) => (
-      <span
-        className="plg-svg-icon"
-        style={{ width, height, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
-        dangerouslySetInnerHTML={{ __html: t.iconSvg ?? '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2.5 4.2 6l-2.4 4.5L6 13.5l3-2 3 2 2.2-3-2.4-4.5L10 2.5l-4 0z"/></svg>' }}
-      />
-    ),
-  }));
-}
-
-/** 侧边栏分区顺序（§2.8.1）；分组名与 navigation.ts 的 category 同名，新 IA 另加「总览」 */
-const NAV_GROUP_ORDER = ["总览", "学习", "日程", "生活", "预约", "行政"] as const;
-
-/** 页面 → 侧栏分区：取自导航注册表；今日/待办是 M1 新 IA，不在注册表里 */
-function navCategoryOf(page: Page): string {
-  if (page === "today" || page === "tasks") return "总览";
-  return NAV_REGISTRY.find((e) => e.page === page)?.category ?? "行政";
-}
-
-/**
- * 底部 5 Tab（UI/UX 改造方案 §2.2，M1 beta）：移动端（≤840px，§2.8.1 统一断点）固定底栏。
- * 服务/收藏两个直达页
- * 是本批次新增（pages/ServicesPage、pages/FavsHomePage）；「待办」暂指
- * learn-assignments（全部作业），§2.3-4 升级为独立 tab 页后再换实现。
- * 长尾功能仍走抽屉/服务目录页，底栏只承担 §1.2 的 core 直达。
- */
-const BOTTOM_NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
-  { page: "today", label: "今日", icon: IconToday },
-  { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
-  { page: "services", label: "服务", icon: IconInfo },
-  { page: "favs", label: "收藏", icon: IconStar, activePages: ["favs", "folder"] },
-  { page: "settings", label: "我的", icon: IconSettings },
-];
-
-/** 移动端底部导航条（CSS 侧 ≤840px 显示；桌面恒隐藏） */
-function BottomNav({ page, navigate }: { page: Page; navigate: (p: Page, params?: LearnNav) => void }): ReactNode {
-  /* 蓝色胶囊是单个滑动元素：切换时按共享的导航运动（平滑 + 惯性回弹）水平移动，
-     不再是每一项各自的 ::before 就地淡入。当前项由钩子自己在 DOM 里找（无激活项即隐藏）。 */
-  const [navRef, pillRef] = useBottomNavPill();
-  return (
-    <nav className="bottom-nav" aria-label="底部导航" ref={navRef}>
-      <span className="bottom-nav-pill" ref={pillRef} aria-hidden="true" />
-      {BOTTOM_NAV.map((item) => {
-        const active = item.page === page || item.activePages?.includes(page) === true;
-        const Icon = item.icon;
-        return (
-          <button
-            key={item.page}
-            className={"bottom-nav-item" + (active ? " is-active" : "")}
-            onClick={() => navigate(item.page)}
-            aria-current={active ? "page" : undefined}
-          >
-            <Icon />
-            <span>{item.label}</span>
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
 export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
   { page: "today", label: "今日", icon: IconToday },
-  /* 与移动端底栏的桥：底栏那五项不整体搬进侧边栏（太臃肿），只补一个「待办」——
-     桌面端此前完全没有待办入口。其余四项侧边栏本来就各有对应（服务→信息/在线服务、
-     收藏→收藏夹分组、我的→设置），因此只差这一个。 */
   { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
   { page: "learn", label: "网络学堂", icon: IconLearn },
   { page: "schedule", label: "日程", icon: IconSchedule },
@@ -111,8 +59,6 @@ export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactN
   { page: "mail", label: "邮箱", icon: IconMail },
   { page: "cloud", label: "云盘", icon: IconCloud },
   { page: "thubook", label: "THUbook", icon: IconBook },
-  /* 2026-10-11：插件从列表里摘掉——它不是"第 N 项"，而是与设置并列的「1.5 级」入口，
-     渲染在侧栏钉底的「设置 | 插件」框里（手机端那份在「我的」页里，同款框）。 */
   { page: "info", label: "信息", icon: IconInfo },
   { page: "life", label: "生活", icon: IconCard },
   { page: "reserve", label: "预约", icon: IconCalendar },
@@ -147,6 +93,33 @@ export function BrandLogo({ size = 14 }: { size?: number }) {
       <span className="u">U</span>
       <span className="p">)</span>
     </span>
+  );
+}
+
+/** 顶栏：首页 Logo（点击回首页，恒在不变）+ 标签条 + 搜索 + 设置齿轮（恒在不变）。
+ *  滚过 8px 浮起阴影（沿用旧顶栏的层次手法）。 */
+function TopBar(): ReactNode {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <header className={"explorer-topbar" + (scrolled ? " is-scrolled" : "")}>
+      <button className="tb-home" onClick={() => focusTab(HOME_TAB_ID)} title="回到首页" aria-label="回到首页">
+        <BrandLogo size={12} />
+      </button>
+      <TabStrip />
+      <span className="tb-spring" aria-hidden="true" />
+      <button className="tb-icon" onClick={openPalette} title={"搜索功能（" + shortcutLabel() + "）"} aria-label="搜索功能">
+        <IconSearch width={16} height={16} />
+      </button>
+      <button className="tb-icon" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
+        <IconSettings width={16} height={16} />
+      </button>
+    </header>
   );
 }
 
@@ -270,7 +243,7 @@ export function SegmentedOverflow({
         onPointerMove={(e) => {
           const d = dragThumb.current;
           if (!d) return;
-          const el = rowRef.current;
+          const el = e.currentTarget;
           const indi = indiRef.current;
           const thumb = thumbRef.current;
           if (!el || !indi || !thumb) return;
@@ -302,336 +275,25 @@ export function Slogan({ size = 13 }: { size?: number }) {
   );
 }
 
-/** 侧栏 / 抽屉共用的导航容器：内含当前项指示条（.nav-indicator，拉伸平移由 useNavIndicator 驱动） */
-function NavBody({ label, children }: { label: string; children: ReactNode }) {
-  const [rowRef, barRef] = useNavIndicator();
-  return (
-    <nav className="nav" aria-label={label} ref={rowRef}>
-      <span className="nav-indicator" ref={barRef} aria-hidden="true" />
-      {children}
-    </nav>
-  );
-}
-
+/** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
-  const { page: rawPage, navigate, navParams } = useApp();
-
-  const favs = useFavs();
-  const [sbCollapsed, setSbCollapsed] = useSidebarCollapsed(); // PC 侧栏折叠（§2.8.1）
-  const pluginNav = usePluginNavEntries();
-  const navAll = [...NAV, ...pluginNav];
-  const page = topLevelPage(rawPage);
-  const [navOpen, setNavOpen] = useState(false);
-  const [navClosing, setNavClosing] = useState(false);
-  /** 顶栏滚动浮起（local/anim-delight）：滚过 8px 后加阴影，做出"页面在顶栏下滚动"的层次 */
-  const [topbarScrolled, setTopbarScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setTopbarScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  /** 「已折叠收藏夹（N）」组展开态（会话态，不持久化） */
-  const [foldedOpen, setFoldedOpen] = useState(false);
-  const closeNav = useCallback(() => {
-    setNavClosing(true);
-    window.setTimeout(() => {
-      setNavOpen(false);
-      setNavClosing(false);
-    }, 240);
-  }, []);
-
   /* 启动：GitHub Releases 静默检查新版本（一次；失败静默，不打扰） */
   useEffect(() => {
     void checkUpdateSilently(showToast);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const isFolderActive = (id: string) => page === "folder" && navParams?.folderId === id;
-
-  /** 侧栏一条导航项：主按钮 + 行尾折叠钮（hover 浮现；已折叠项的行尾钮是展开钮） */
-  const navRow = (key: string, opts: { active: boolean; label: string; icon: ReactNode; onClick: () => void; folded?: boolean; onFold?: () => void }) => (
-    <div className="nav-row" key={key}>
-      <button className={"nav-item" + (opts.active ? " is-active" : "")} onClick={opts.onClick}>
-        {opts.icon}
-        <span>{opts.label}</span>
-      </button>
-      {opts.onFold ? (
-        <button
-          className={"nav-fold" + (opts.folded ? " is-folded" : "")}
-          title={opts.folded ? "从折叠组展开" : "折叠进「已折叠收藏夹」"}
-          aria-label={(opts.folded ? "展开" : "折叠") + opts.label}
-          onClick={(e) => {
-            e.stopPropagation();
-            opts.onFold!();
-          }}
-        >
-          {opts.folded ? "»" : "«"}
-        </button>
-      ) : null}
-    </div>
-  );
-
-  /** 侧栏/抽屉共用导航内容 */
-  // 桌面钉底三格框：高亮与点击都走**同一个状态机**（与 LevelBox 完全一致）
-  const entrySide = useEntry();
-  /* task-19：路由/page 变化后给可见的设置行与分节补稳定 id（幂等），供检索直达精确落点。
-     2026-10-12：入口态变化（plugins→oh 等）同样会换内容挂载——一并重跑（幂等，无副作用）；
-     OH 档位切换 / 插件视图切换后的行渲染由各自的 focus 通道兜一次（见 pluginsFocus）。 */
-  useEffect(() => {
-    const t = window.setTimeout(markSettingsRows, 60);
-    return () => window.clearTimeout(t);
-  }, [page, entrySide]);
-  /** host = 「这份导航内容挂在哪」：sidebar（桌面侧栏）Routing 三独立 tab；
-   *  drawer（手机抽屉 ≤860px）维持既有三格框方案（LevelBox），手机口径一字不动。 */
-  const navContent = (onAfter?: () => void, host: "sidebar" | "drawer" = "sidebar") => {
-    const unfoldedDefaults = NAV.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
-    // 分区小标题（§2.8.1）：分组取自导航注册表的 category，新 IA 的今日/待办归「总览」。
-    // 只插小标题、不重排类内顺序；未注册的页面兜底进「行政」。
-    const navGrouped: Array<
-      | { kind: "label"; text: string }
-      | { kind: "item"; page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }
-    > = (() => {
-      const groups = new Map<string, Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }>>();
-      for (const it of unfoldedDefaults) {
-        const cat = navCategoryOf(it.page);
-        const list = groups.get(cat);
-        if (list) list.push(it);
-        else groups.set(cat, [it]);
-      }
-      const out: typeof navGrouped = [];
-      for (const cat of NAV_GROUP_ORDER) {
-        const list = groups.get(cat);
-        if (!list) continue;
-        out.push({ kind: "label", text: cat });
-        for (const it of list) out.push({ kind: "item", ...it });
-      }
-      return out;
-    })();
-    const foldedDefaults = NAV.filter(({ page: p }) => favs.data.foldedDefaults.includes(p));
-    const unfoldedUser = favs.data.order.filter((id) => !favs.data.foldedRoots.includes(id));
-    const foldedUser = favs.data.order.filter((id) => favs.data.foldedRoots.includes(id));
-    const foldedCount = foldedDefaults.length + foldedUser.length;
-    return (
-      <>
-        {/* 默认一级入口（内置）：今日恒在最上（不可折叠），其余可折叠 */}
-        {navGrouped.map((row) => {
-          if (row.kind === "label") return <div className="nav-label" key={"g-" + row.text}>{row.text}</div>;
-          const Icon = row.icon;
-          return navRow("d-" + row.page, {
-            active: page === row.page || row.activePages?.includes(page) === true,
-            label: row.label,
-            icon: <Icon />,
-            onClick: () => {
-              onAfter?.();
-              navigate(row.page);
-            },
-            folded: false,
-            onFold: row.page === "today" ? undefined : () => favs.foldSidebar(row.page, true),
-          });
-        })}
-        {/* 插件功能页分组：与内置入口视觉分离 */}
-        {pluginNav.length ? (
-          <>
-            <div className="nav-label">插件功能页</div>
-            {pluginNav.map(({ page: p, label, icon: Icon }) =>
-              navRow("pl-" + p, {
-                active: page === p,
-                label,
-                icon: <Icon />,
-                onClick: () => {
-                  onAfter?.();
-                  navigate(p);
-                },
-                folded: false,
-              }),
-            )}
-          </>
-        ) : null}
-        {/* 收藏夹分组 */}
-        <div className="nav-label">收藏夹</div>
-        {/* 用户收藏夹（根层）：跳转入口层；段内限高滚动——收藏夹再多也不把
-            「新建收藏夹 / 已折叠收藏夹」推到滚动边缘挤成半截 */}
-        <div className="nav-folders-scroll">
-          {unfoldedUser.map((id) =>
-            navRow("u-" + id, {
-              active: isFolderActive(id),
-              label: favs.data.folders[id]?.title ?? "收藏夹",
-              icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
-              onClick: () => {
-                onAfter?.();
-                navigate("folder", { folderId: id });
-              },
-              folded: false,
-              onFold: () => favs.foldSidebar(id, false),
-            }),
-          )}
-        </div>
-        <button
-          className="nav-item nav-new"
-          onClick={() => {
-            const id = favs.create("新建收藏夹", null);
-            if (id) {
-              onAfter?.();
-              navigate("folder", { folderId: id });
-            }
-          }}
-        >
-          <IconFolderPlus />
-          <span>新建收藏夹</span>
-        </button>
-        {/* 折叠组：默认入口与用户收藏夹都收这里，点一下展开 */}
-        {foldedCount > 0 ? (
-          <>
-            <button
-              className={"nav-item nav-folded-toggle" + (foldedOpen ? " is-open" : "")}
-              aria-expanded={foldedOpen}
-              onClick={() => setFoldedOpen((o) => !o)}
-            >
-              <IconFolder />
-              <span>已折叠收藏夹（{foldedCount}）</span>
-              <IconChevron width={13} height={13} className="row-caret" />
-            </button>
-            {foldedOpen ? (
-              <div className="nav-folded-body">
-                {foldedDefaults.map(({ page: p, label, icon: Icon }) =>
-                  navRow("fd-" + p, {
-                    active: page === p,
-                    label,
-                    icon: <Icon />,
-                    onClick: () => {
-                      onAfter?.();
-                      navigate(p);
-                    },
-                    folded: true,
-                    onFold: () => favs.foldSidebar(p, true),
-                  }),
-                )}
-                {foldedUser.map((id) =>
-                  navRow("fu-" + id, {
-                    active: isFolderActive(id),
-                    label: favs.data.folders[id]?.title ?? "收藏夹",
-                    icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
-                    onClick: () => {
-                      onAfter?.();
-                      navigate("folder", { folderId: id });
-                    },
-                    folded: true,
-                    onFold: () => favs.foldSidebar(id, false),
-                  }),
-                )}
-              </div>
-            ) : null}
-          </>
-        ) : null}
-        {/* 钉底入口（2026-10-12 用户拍板「三个独立 nav tab，独立页面」）：
-            桌面侧栏 = **三个独立可点的 nav 行**——插件（IconPlug 充电头）最上 → OneTHU Harness（(OH) 字标）
-            → 设置（IconSettings 齿轮）；点击都走同一 goEntry() 状态机（Entry 唯一真源），
-            高亮用唯一 .nav-item.is-active。OneTHU Harness 是**一级入口**：页面本体仍是插件页的 OH 分节
-            （entry="oh" 时由 PluginsPage 渲染），但桌面从独立 tab 进入，不再表现为「插件页的子页」。
-            手机抽屉（host="drawer"）维持三格框方案不变（LevelBox，同一状态机）。 */}
-        <div className="nav-sep" aria-hidden />
-        {host === "sidebar" ? (
-          <>
-            {(([
-              { id: "plugins", label: "插件", icon: <IconPlug /> },
-              { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },
-              { id: "settings", label: "设置", icon: <IconSettings /> },
-            ]) as Array<{ id: Entry; label: string; icon: ReactNode }>).map((t) => (
-              <div className="nav-row" key={"entry-" + t.id}>
-                <button
-                  className={"nav-item" + (entrySide === t.id ? " is-active" : "")}
-                  title={t.label}
-                  aria-label={t.label}
-                  aria-current={entrySide === t.id ? "true" : undefined}
-                  onClick={() => {
-                    onAfter?.();
-                    goEntry(t.id);
-                  }}
-                >
-                  {t.icon}
-                  <span>{t.label}</span>
-                </button>
-              </div>
-            ))}
-          </>
-        ) : (
-          <LevelBox />
-        )}
-      </>
-    );
-  };
-
-  /** 移动端顶栏标题：收藏夹页显示收藏夹名 */
-  const topbarTitle =
-    page === "folder" && navParams?.folderId
-      ? favs.data.folders[navParams.folderId]?.title ?? "收藏夹"
-      : navAll.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : page === "services" ? "服务" : page === "favs" ? "收藏" : "OneTHU");
-
   return (
-    <div className="shell">
-      <aside className={"sidebar" + (sbCollapsed ? " is-collapsed" : "")} aria-label="主导航">
-        <div className="brand">
-          <BrandLogo size={16} />
-        </div>
-        {/* 命令面板入口（§2.8.4）：不逼人记快捷键，旁边顺手写出当前平台的键位 */}
-        <button className="sb-search" onClick={openPalette} title={"搜索功能（" + shortcutLabel() + "）"}>
-          <IconSearch width={14} height={14} />
-          <span className="sb-search-label">搜索功能</span>
-          <kbd className="sb-kbd">{shortcutLabel()}</kbd>
-        </button>
-        <NavBody label="主导航">{navContent()}</NavBody>
-        <div className="sidebar-foot">
-          <button
-            className="sidebar-collapse"
-            onClick={() => setSbCollapsed(!sbCollapsed)}
-            title={sbCollapsed ? "展开侧边栏" : "折叠侧边栏"}
-            aria-label={sbCollapsed ? "展开侧边栏" : "折叠侧边栏"}
-            aria-expanded={!sbCollapsed}
-          >
-            <IconChevron width={16} height={16} style={{ transform: "rotate(180deg)" }} />
-          </button>
-          <span className="foot-badge">
-            <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
-            {DESENSITIZE_BUILD ? "脱敏演示版" : "就绪"}
-          </span>
-        </div>
-      </aside>
-      {/* 移动端：左滑抽屉（≤860px 由 CSS 显示；入口是页头标题胶囊） */}
-      {navOpen ? (
-        <>
-          <div className={"drawer-mask" + (navClosing ? " drawer-mask-closing" : "")} onClick={() => { if (!navClosing) closeNav(); }} />
-          <aside className={"drawer" + (navClosing ? " drawer-closing" : "")} aria-label="导航抽屉">
-            <div className="drawer-brand">
-              <BrandLogo size={15} />
-            </div>
-            <NavBody label="抽屉导航">{navContent(() => closeNav(), "drawer")}</NavBody>
-            <div className="drawer-foot">
-              <span className="foot-badge">
-                <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
-                {DESENSITIZE_BUILD ? "脱敏演示版" : "就绪"}
-              </span>
-            </div>
-          </aside>
-        </>
-      ) : null}
-      <main className="content">
-        {/* 移动端顶栏：汉堡菜单 + 品牌标识，桌面隐藏（桌面走侧栏） */}
-        <header className={"mobile-topbar" + (topbarScrolled ? " is-scrolled" : "")}>
-          <button className="topbar-menu" onClick={() => setNavOpen(true)} aria-label="打开导航菜单">
-            <IconMenu width={18} height={18} />
-          </button>
-          <div className="topbar-brand">
-            <BrandLogo size={11} />
-            <span className="topbar-title">{topbarTitle}</span>
-          </div>
-        </header>
-        {children}
-      </main>
-      {/* M1 beta：移动端底部 5 Tab（CSS ≤860px 显示） */}
-      <BottomNav page={rawPage} navigate={navigate} />
-      {/* 命令面板：⌘/Ctrl+K 或侧栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
+    <div className="shell explorer-shell">
+      <TopBar />
+      <main className="content explorer-content">{children}</main>
+      <BottomBar />
+      {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
+      <TabDrawer />
+      <OneGoSheet />
+      {/* 命令面板：⌘/Ctrl+K 或顶栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
       <CommandPalette />
+      {/* 设置浮层（个人设置 / 插件 / OneTHU Harness）：不是标签页，高于任何标签页 */}
+      <SettingsOverlay />
       {/* dev 构建「检索落点自查路由」(?searchland=selfcheck)：release 里整块被 rollup 剥离，不进导航 */}
       {SearchLandingSelfcheck ? (
         <Suspense fallback={null}>
@@ -694,9 +356,8 @@ export function PageHead({
   actions?: ReactNode;
 }) {
   const { page } = useApp();
-  const pluginNav = usePluginNavEntries();
-  // 窄屏顶栏已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
-  const navLabel = [...NAV, ...pluginNav].find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
+  // 窄屏顶栏标签条已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
+  const navLabel = NAV.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
   // 统一断点读取（§2.8.1）：此前各组件自写 matchMedia，改断点必漏
   const expanded = useExpanded();
   const dupOnTopbar = !expanded && typeof title === "string" && title === navLabel;
@@ -711,40 +372,29 @@ export function PageHead({
   );
 }
 
-/* ═══════════ 1.5 级入口的**唯一状态机**（2026-10-11 用户要求「彻查，给个状态机」）═══════════
-   只有一个来源：entry。其它地方（三格框、插件页内部、任何跳转）**一律调用 goEntry()**。
-     entry = "settings" → nav=settings
-     entry = "plugins"  → nav=plugins 且 ohOpen=false
-     entry = "oh"       → nav=plugins 且 ohOpen=true
-   高亮**只从 entry 推导**；不再有 ohOpen 镜像 / 订阅 / 一次性旗标 / active 传参。 */
-export type Entry = "settings" | "plugins" | "oh";
-let entryNow: Entry = "plugins";
-const entryListeners = new Set<() => void>();
+/* ══════════ Entry 状态机（薄重导出）：store 本体在 state/explorer.ts 的设置浮层 ══════════
+   旧语义映射：entry = "settings"|"plugins"|"oh" 即浮层的三段；goEntry = 打开/切换浮层。
+   全库既有调用方（searchRows 落点 / OhSettingsPage / Plugins.tsx）零改动。 */
+export type Entry = OverlayEntry;
 
 export function goEntry(next: Entry): void {
-  entryNow = next;
-  for (const f of entryListeners) f();
-  /* 页面侧同步：oh 与 plugins 都落在插件页；settings 落在设置页 */
-  navGo(next === "settings" ? "settings" : "plugins");
+  openSettings(next);
 }
 export function entrySnapshot(): Entry {
-  return entryNow;
+  return overlaySnapshot() ?? "plugins";
 }
 export function subscribeEntry(f: () => void): () => void {
-  entryListeners.add(f);
-  return () => {
-    entryListeners.delete(f);
-  };
+  return subscribeOverlay(f);
 }
-/** 组件里读当前入口态（高亮与 ohOpen 都从它派生） */
+/** 组件里读当前入口态（只在浮层挂载的页面里用；关闭时兜底 "plugins" 与旧默认一致） */
 export function useEntry(): Entry {
-  return useSyncExternalStore(subscribeEntry, entrySnapshot, () => "plugins" as Entry);
+  return useOverlayEntry() ?? "plugins";
 }
 
-/** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— **所有页面同一个容器、同高、三格齐全**。
- *  ③ 只列已启用的主题？无关；这里只管导航。手机与桌面同款（桌面侧栏那份是同形态的纵向变体）。 */
-/** 行级直达用的稳定 id：`row-<slug>`（对设置行）/ `sec-<slug>`（对分节）。
- *  2026-10-12 task-19：搜索能精确落到"某一行的标题/说明"，并高亮那一行。 */
+/** 设置浮层内用的关闭（✕ / Esc） */
+export { closeSettings };
+
+/** 行级直达用的稳定 id：`row-<slug>`（对设置行）/ `sec-<slug>`（对分节）。 */
 export function slugOf(text: string): string {
   const t = text.trim().replace(/\s+/g, "-").replace(/[「」（）()·:：,，.。/]/g, "").slice(0, 24);
   return t || "item";
@@ -767,16 +417,14 @@ export function markSettingsRows(): void {
 }
 
 /** 滚动并高亮某个设置行 / 分节（复用既有请求机制；`.sec-focus` 的分节版已在 Settings.tsx）。
- *  2026-10-12 检索收尾：解析顺序 = 行/分节的稳定 id → 行文本 → **动作按钮文本**——
- *  「安装主题 / 管理主题 / 导览 / 管理栏目 / 检查更新」这类按钮没有自己的 .setting-row，
- *  按钮命中时高亮按钮本体（而不是把分节头冒充命中）。 */
+ *  解析顺序 = 行/分节的稳定 id → 行文本 → **动作按钮文本**。 */
 export function focusSettingsTarget(target: string): boolean {
   const want = target.trim();
   const byId = document.querySelector<HTMLElement>(`[data-set-id="row-${slugOf(want)}"],[data-set-id="sec-${slugOf(want)}"]`);
   let hit = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head"))
     .find((el) => (el.textContent ?? "").includes(want));
   if (!hit) {
-    const btn = Array.from(document.querySelectorAll<HTMLElement>(".content .btn, .content button"))
+    const btn = Array.from(document.querySelectorAll<HTMLElement>(".explorer-settings-body .btn, .explorer-settings-body button"))
       .find((el) => {
         const t = (el.textContent ?? "").trim();
         if (!t || !el.offsetParent || el.classList.contains("plg-danger")) return false;
@@ -791,7 +439,7 @@ export function focusSettingsTarget(target: string): boolean {
   return true;
 }
 
-/** 窄栏判定（**容器实际宽度**驱动）：< threshold 就降级为"图标格"，避免文字挤成竖排糊字。
+/** 窄栏判定（**容器实际宽度**驱动）：< threshold 就降级，避免文字挤成竖排糊字。
  *  用 ResizeObserver 实测被包裹容器的宽度；无法测量时按"宽"处理（不误伤大屏）。 */
 export function useNarrowBox(threshold = 300): [React.RefObject<HTMLDivElement | null>, boolean] {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -807,6 +455,8 @@ export function useNarrowBox(threshold = 300): [React.RefObject<HTMLDivElement |
   return [ref, narrow];
 }
 
+/** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— 现挂在设置浮层内部做快速换段。
+ *  手机与桌面同款（LevelBox 原样保留，goEntry 直接换浮层段）。 */
 export function LevelBox(): ReactNode {
   const entry = useEntry(); // 高亮**唯一来源**
   const [boxRef, narrow] = useNarrowBox(300);
@@ -953,3 +603,6 @@ export function Switch({
     />
   );
 }
+
+/* 保留未用引用防 tree-shake 误报：这些图标被 NAV 数据表引用 */
+void IconFolder; void IconFolderPlus; void IconInfo; void IconLearn; void IconPen; void IconPlug; void IconSchedule; void IconStar; void IconToday; void IconXk; void IconCard; void IconCalendar; void FolderIcon; void IconExternal; void IconThos; void IconTrace; void IconMail; void IconCloud; void IconBook; void topLevelPage; void NAV_REGISTRY; void IconChevron;

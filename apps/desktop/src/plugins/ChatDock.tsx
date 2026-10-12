@@ -23,7 +23,6 @@ import {
 import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
 import { IconSearch } from "../components/Icons.js";
-import { closePalette, openPalette, usePaletteOpen } from "../state/palette.js";
 import remarkGfm from "remark-gfm";
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
@@ -34,11 +33,15 @@ import { AttachActionsSheet, type AttachActionDone } from "../components/AttachA
 import { bytesToDataUrl, fileToBytes, formatSize, mimeFromName, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
 import { openImageViewer } from "../components/ImageViewer.js";
 import { HarnessMark } from "../components/HarnessMark.js";
-import { useIslandText } from "../state/island.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
+import { onOhCommand, type OhCommand, type OhMode } from "./ohControl.js";
+import { useOhSearch, jumpEntry, jumpAtom, jumpSearchRow, jumpSettingsTab, jumpTabPayload } from "./ohSearch.js";
+import { explorerPrefsSnapshot, useSearchHistory, type SearchJump } from "../state/explorerPrefs.js";
+import { displayBreadcrumb } from "../state/searchRows.js";
+import "../styles/explorer-oh.css"; // dev-explorer：胶囊/搜索模式样式（悬浮球窗口同 bundle，一处引入两端生效）
 
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { openExternal } from "../pages/info/openExternal.js";
@@ -76,6 +79,26 @@ function subscribeOhPrompt(fn: () => void): () => void {
 }
 function ohPromptSnapshot(): OhPromptReq | null {
   return ohPrompt;
+}
+/* dev-explorer：未读徽标外送（OhCapsule 读，纯只读；面板开着不计数） */
+let dockBadge = 0;
+const badgeListeners = new Set<() => void>();
+function setDockBadge(n: number): void {
+  if (dockBadge === n) return;
+  dockBadge = n;
+  for (const f of badgeListeners) f();
+}
+export function subscribeDockBadge(f: () => void): () => void {
+  badgeListeners.add(f);
+  return () => {
+    badgeListeners.delete(f);
+  };
+}
+export function dockBadgeSnapshot(): number {
+  return dockBadge;
+}
+export function useDockBadge(): number {
+  return useSyncExternalStore(subscribeDockBadge, dockBadgeSnapshot, () => 0);
 }
 /** 灵动岛：长按判定时长（毫秒）——超过即进入语音，未超过视为点击 */
 const VOICE_HOLD_MS = 450;
@@ -443,6 +466,113 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
   );
 });
 
+/** dev-explorer：面板搜索模式的内容面（ChatDock 与悬浮球各自渲染外壳，这里只服务 dock）。
+ *  空查询 = 最近 10 条搜索跳转记录（explorerPrefs）；有查询 = searchAll 三源命中；
+ *  零命中 = 「问小 (OH)」行（onAskOh → 同帧切 OH 模式并把问题发出去）。 */
+function OhSearchPane({ query, onQuery, onClose, onAskOh, onNotice }: {
+  query: string;
+  onQuery: (q: string) => void;
+  onClose: () => void;
+  onAskOh: (q: string) => void;
+  onNotice: (n: string | null) => void;
+}): ReactNode {
+  const { result, total } = useOhSearch(query);
+  const hist = useSearchHistory();
+  const q = query.trim();
+
+  const jumpTab = (page: Parameters<typeof jumpTabPayload>[0], params: Parameters<typeof jumpTabPayload>[1], title: string): void => {
+    jumpTabPayload(page, params, title, q);
+    onClose();
+  };
+
+  return (
+    <div className="ohx-searchpane">
+      <div className="ohx-searchbar">
+        <IconSearch width={15} height={15} />
+        <input
+          /* 挂载即聚焦：搜索模式打开时键盘/光标就位 */
+          autoFocus
+          value={query}
+          onChange={(e) => onQuery(e.target.value)}
+          placeholder="搜功能、作业、文件、设置…"
+          aria-label="搜索"
+        />
+        {query ? (
+          <button className="btn dock-btn dock-ico" aria-label="清空" onClick={() => onQuery("")}>
+            <IconX />
+          </button>
+        ) : null}
+      </div>
+      {!q ? (
+        <div className="ohx-history">
+          <div className="ohx-history-head">最近搜索</div>
+          <div className="ohx-history-chips">
+            {hist.length === 0 ? (
+              <span className="ohx-history-empty">还没有搜索记录；搜一次功能或实体就会留在这里</span>
+            ) : hist.map((h: SearchJump, i: number) => (
+              <button
+                key={`${h.at}-${i}`}
+                className="ohx-chip"
+                title={`${h.title}（${h.query}）`}
+                onClick={() => jumpTab(h.page, h.params, h.title)}
+              >
+                {h.title || h.query}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : !result ? (
+        <div className="ohx-search-status">搜索中…</div>
+      ) : total === 0 ? (
+        <>
+          <div className="ohx-search-status">没找到「{q}」。换个说法试试，或直接问小 (OH)：</div>
+          <button className="ohx-askoh" onClick={() => onAskOh(q)}>
+            没搜到？直接问小 (OH)：「{q.length > 18 ? q.slice(0, 18) + "…" : q}」
+          </button>
+        </>
+      ) : (
+        <div className="ohx-results">
+          {result.rows.map((x) => (
+            <button
+              key={"row:" + x.row.id}
+              className="ohx-hit"
+              onClick={() => {
+                jumpSearchRow(x.row, q);
+                onClose(); // 设置浮层接棒，小窗收掉
+              }}
+            >
+              <span className="ohx-hit-name">{x.row.title}</span>
+              <span className="ohx-hit-sub">{displayBreadcrumb(x.row).join(" → ")}</span>
+              <span className="ohx-hit-tag">设置</span>
+            </button>
+          ))}
+          {result.entries.map((en) => (
+            <button key={"n:" + en.id} className="ohx-hit" onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, q); onClose(); }}>
+              <span className="ohx-hit-name">{en.name}</span>
+              <span className="ohx-hit-sub">{en.note ?? en.category}</span>
+              <span className="ohx-hit-tag">功能</span>
+            </button>
+          ))}
+          {result.atoms.map((a) => (
+            <button key={"a:" + a.kind + "|" + a.key} className="ohx-hit" onClick={() => { jumpAtom(a.kind, a.key, a.title, q); onClose(); }}>
+              <span className="ohx-hit-name">{a.title}</span>
+              <span className="ohx-hit-sub">{(a.group ? a.group + " · " : "") + (a.sub ?? "相关内容")}</span>
+              <span className="ohx-hit-tag">页面</span>
+            </button>
+          ))}
+          {result.tabs.map((t) => (
+            <button key={"t:" + t} className="ohx-hit" onClick={() => { jumpSettingsTab(t); onClose(); }}>
+              <span className="ohx-hit-name">设置 · {t}</span>
+              <span className="ohx-hit-sub">跳到设置的这一栏</span>
+              <span className="ohx-hit-tag">设置</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ChatDock(): ReactNode {
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
   const dockCmd = cmds.find((c) => c.dock && c.id === "chat");
@@ -474,7 +604,6 @@ export function ChatDock(): ReactNode {
   const [sheetFiles, setSheetFiles] = useState<AttachFile[] | null>(null);
   const sheetRef = useRef<AttachFile[] | null>(null); // 同一批附件的即时镜像（关面板回收预览用）
   const [slidIn, setSlidIn] = useState(false); // 语音开面板用滑动进场（区别于点击 morph）
-  const islandText = useIslandText();
   const pressTimer = useRef<number | null>(null); // 长按计时（null=未按/已触发语音）
   /* 上划取消：按下点 + 连续进度 + 是否越过阈值——**判定一律读 ref**，
      渲染快照（state）会滞后一帧，松手瞬间按快照判会误发/误取消。 */
@@ -504,8 +633,6 @@ export function ChatDock(): ReactNode {
   const scrollRef = useRef<HTMLDivElement>(null);
   /** ③ 底栏容器（长按判定挂这里，不再挂在入口按钮上） */
   const rowRef = useRef<HTMLDivElement>(null);
-  /** task-19 对偶条：检索条的开关复用既有 palette store（Ctrl+K 与条同源） */
-  const searchOpen = usePaletteOpen();
   /** A 面板高度（null = 用 CSS 默认 62vh）；拖把手改它，松手写进 localStorage */
   const [panelH, setPanelH] = useState<number | null>(() => readDockHeight());
   const [dragging, setDragging] = useState(false);
@@ -608,6 +735,43 @@ export function ChatDock(): ReactNode {
       stickBottom(); // ② 打开就停在最新一条（图片/水合随后撑高由 ResizeObserver+img.onLoad 兜底）
     }
   }, [open]);
+
+  /* ══ dev-explorer：搜索二合一 ══
+     mode = 面板当前形态（search=搜索 / oh=对话）；searchQuery 只在 search 态有意义。
+     开/收辅助与 toggle 同一套持久化与时序（水合标记、退场定时器），供命令总线复用。 */
+  const [mode, setMode] = useState<OhMode>("oh");
+  const [searchQuery, setSearchQuery] = useState("");
+  const openPanelAs = useCallback((m: OhMode, presetQuery?: string): void => {
+    localStorage.setItem(OPEN_KEY, "1");
+    setClosing(false);
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    /* 与 ohAsk 直达同款竞态修复：关着的面板被打开时先补水合标记（见 ohReq effect 注释） */
+    if (pid && everHydratedFor.current === pid) hydratedFor.current = pid;
+    setOpen(true);
+    setUnread(0);
+    setMode(m);
+    if (m === "search") {
+      setSearchQuery(presetQuery ?? "");
+      setInputMode(false); // 搜索态不显示对话输入条
+    } else {
+      stickBottom();
+    }
+  }, [pid, stickBottom]);
+  const closePanelNow = useCallback((): void => {
+    localStorage.setItem(OPEN_KEY, "0");
+    setInputMode(false);
+    setClosing(true);
+    hydratedFor.current = null;
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => {
+      closeTimer.current = null;
+      setClosing(false);
+      setOpen(false);
+    }, 200);
+  }, []);
 
   /** 只清本会话计数，累计用量（跨会话持久）保留并刷新 */
   const keepTotals = (): void => {
@@ -908,6 +1072,42 @@ export function ChatDock(): ReactNode {
     setUnread(0);
     void send(ohReq.text);
   }, [ohReq, send]);
+
+  /* dev-explorer：OH 命令总线订阅（胶囊条/悬浮球/首页搜索框都从这里进来）。
+     handler 每渲染刷新进 ref，订阅只在挂载时建立一次——回调永远拿到最新状态。 */
+  const cmdHandler = useRef<(cmd: OhCommand) => void>(() => undefined);
+  cmdHandler.current = (cmd: OhCommand): void => {
+    if (cmd.type === "panel") {
+      // 语音进行中：任何面板命令＝取消（胶囊「上划取消」的契约通道）
+      if (voicePhaseRef.current !== "idle") {
+        void finishVoice(true);
+        return;
+      }
+      // 已开着且就在目标模式（无预填词）＝再点一下收起
+      if (open && mode === cmd.mode && !cmd.presetQuery) {
+        closePanelNow();
+        return;
+      }
+      openPanelAs(cmd.mode, cmd.presetQuery);
+      return;
+    }
+    // voice：第一条＝开始收音（胶囊按住跨过 450ms 时发）；收音中再收＝松手直发
+    if (voicePhaseRef.current === "idle") {
+      setVoiceHost("island");
+      setVoiceFail(null);
+      document.body.classList.add("dock-voice-lock");
+      voicePhaseRef.current = "starting";
+      void enterVoice();
+      return;
+    }
+    void finishVoice(cancelArmedRef.current);
+  };
+  useEffect(() => onOhCommand((c) => cmdHandler.current(c)), []);
+
+  /* 未读徽标外送（OhCapsule 的红点） */
+  useEffect(() => {
+    setDockBadge(unread);
+  }, [unread]);
 
   const runCmd = async (command: string, input = ""): Promise<any> => {
     if (!pid) return null;
@@ -1317,6 +1517,12 @@ export function ChatDock(): ReactNode {
       showVoiceFail("小OH 正在回答，稍后再长按说");
       return;
     }
+    /* dev-explorer：发送目标可设（explorerPrefs.voiceTarget，现读现判不吃渲染快照）——
+       oh = 直发对话（原行为）；search = 开面板搜索模式把文本当 query 预填（不自动跳转，让用户挑）。 */
+    if (explorerPrefsSnapshot().voiceTarget === "search") {
+      openPanelAs("search", final);
+      return;
+    }
     setSlidIn(true); // 面板滑动进场（区别于点击的 morph）
     ohAsk(final); // ← 唯一出口：完整一条消息直接发给 OH
     window.setTimeout(() => setSlidIn(false), 700);
@@ -1524,37 +1730,31 @@ export function ChatDock(): ReactNode {
     void finishVoice(cancel);
   };
 
-  const onIslandPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+  /* ── dev-explorer：原位语音胶囊的手势 ──
+     空闲态的胶囊已外移为 OhCapsule（components/explorer/OhCapsule.tsx，纯触发器）；
+     这里只保留**语音进行中**的原位胶囊：点按＝收尾直发，上划过阈值＝取消（与旧岛同口径）。 */
+  const onPillPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    beginHold("island", e.clientY);
+    holdStartY.current = e.clientY;
+    cancelPctRef.current = 0;
+    cancelArmedRef.current = false;
+    document.documentElement.style.setProperty("--dock-cancel", "0");
+    document.body.classList.add("dock-voice-lock");
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
     } catch {
-      /* 捕获失败仍可长按 */
+      /* 捕获失败仍可收尾 */
     }
   };
-  const onIslandPointerUp = (): void => endHold(toggle); // 未到阈值 = 点击：开/收面板
-  // 兜底：pointer capture 被 WebView 丢弃（系统手势等）时，指针事件不再到达按钮，
-  // 语音会悬死。捕获丢失且语音仍在进行 → 立即收尾（正常路径 up 先释放捕获，此处 idle 无副作用）。
-  const onIslandLostCapture = (): void => {
-    setPressing(false);
-    if (voicePhaseRef.current !== "idle") void finishVoice(true); // 捕获丢失：宁可丢一句，也不误发
+  const onPillPointerUp = (): void => {
+    document.body.classList.remove("dock-voice-lock");
+    holdStartY.current = null;
+    void finishVoice(cancelArmedRef.current);
   };
-  const onIslandPointerCancel = (): void => {
-    setPressing(false);
-    if (pressTimer.current != null) {
-      window.clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-      resetCancelPull();
-      return;
-    }
+  const onPillPointerCancel = (): void => {
+    document.body.classList.remove("dock-voice-lock");
+    holdStartY.current = null;
     void finishVoice(true); // 系统手势抢占：按取消处理
-  };
-  const onIslandKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>): void => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggle();
-    }
   };
 
   /* 面板底栏：手势（点 = 展开输入框、长按 = 语音）统一挂在**容器**上（见 onRowPointerDown），
@@ -1570,7 +1770,11 @@ export function ChatDock(): ReactNode {
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
   const voiceHint = cancelling && voice !== "off"
     ? "松开取消"
-    : voice === "arming" ? "首次需弹窗允许" : voice === "sending" ? "正在发送…" : "松手直发 OH";
+    : voice === "arming"
+      ? "首次需弹窗允许"
+      : voice === "sending"
+        ? "正在发送…"
+        : explorerPrefsSnapshot().voiceTarget === "search" ? "松手去搜索" : "松手直发 OH";
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
   const subText = cancelling && voice !== "off"
     ? "松开取消"
@@ -1583,49 +1787,25 @@ export function ChatDock(): ReactNode {
         <VoiceSubtitle text={subText} out={voice === "off"} />
       ) : null}
 
-      {/* task-19 底栏：左侧圆形检索钮 + 灵动岛（同一行、同视觉层级；岛的手势区不受影响）。
-          对偶：检索条展开时岛缩成球（.is-ball），检索钮变成条的"把位"。 */}
-      <div className="dock-bar">
-      <button
-        className={"dock-search" + (searchOpen ? " is-open" : "")}
-        aria-label="搜索页面、功能、设置"
-        title="搜索页面 / 功能 / 设置（Ctrl+K 同源）"
-        onClick={() => (searchOpen ? closePalette() : openPalette())}
-      >
-        <IconSearch />
-      </button>
-      <button
-        className={"dock-island" + (pressing ? " is-press" : "") + (voice !== "off" ? " is-voice" : "") + (open ? " is-open" : "") + (searchOpen ? " is-ball" : "")}
-        aria-label="OneTHU 对话（点击输入，长按说话）"
-        onPointerDown={onIslandPointerDown}
-        onPointerMove={onHoldMove}
-        onPointerUp={onIslandPointerUp}
-        onPointerCancel={onIslandPointerCancel}
-        onLostPointerCapture={onIslandLostCapture}
-        onKeyDown={onIslandKeyDown}
-      >
-        {/* 常态内容：标识 + 智能文本（语音态淡出，位置让给波纹条；仍在流里，不给宽度过渡添乱） */}
-        <span className="dock-island-idle">
-          <span className="dock-island-logo"><HarnessMark size={15} /></span>
-          <span className="dock-island-text" key={islandText}>
-            {[...islandText].map((ch, i) => (
-              <i key={i} style={{ animationDelay: `${i * 26}ms` }}>{ch === " " ? "\u00A0" : ch}</i>
-            ))}
+      {/* dev-explorer：空闲胶囊外移为 OhCapsule（底栏中央/桌面顶栏，纯触发器）。
+          这里只渲染**语音进行中**的原位胶囊（同一位置现出波纹/雾），点=收尾、上划=取消；
+          捕获丢失（onLostPointerCapture）按取消兜底，语音绝不悬死。 */}
+      {voice !== "off" ? (
+        <button
+          className={"dock-island ohx-voicepill is-voice" + (cancelling ? " is-cancel-hint" : "")}
+          aria-label={cancelling ? "松开取消" : "松开直发，上划取消"}
+          onPointerDown={onPillPointerDown}
+          onPointerMove={onHoldMove}
+          onPointerUp={onPillPointerUp}
+          onPointerCancel={onPillPointerCancel}
+          onLostPointerCapture={onPillPointerCancel}
+        >
+          <span className="dock-island-fog" aria-hidden="true" />
+          <span className="dock-island-voice">
+            <VoiceBar hint={voiceHint} />
           </span>
-        </span>
-        {voice !== "off" ? (
-          <>
-            {/* 雾：backdrop-filter 模糊 + 顶部柔和高光（深浅色都成立） */}
-            <span className="dock-island-fog" aria-hidden="true" />
-            {/* 条内：随音量跳动的点点波纹 + 一行提示（识别出的字在条上方的雾状字幕带里） */}
-            <span className="dock-island-voice">
-              <VoiceBar hint={voiceHint} />
-            </span>
-          </>
-        ) : null}
-        {unread > 0 && !open ? <span className="dock-badge">{unread > 9 ? "9+" : unread}</span> : null}
-      </button>
-      </div>
+        </button>
+      ) : null}
 
       {/* 语音失败的雾状浮片：本次长按发生在岛上时（发生在面板里时落在入口条内联） */}
       {voiceFail && voiceHost === "island" ? (
@@ -1657,6 +1837,11 @@ export function ChatDock(): ReactNode {
           />
           <div className="dock-head">
             <span className="dock-title" title="小OH"><HarnessMark size={15} /></span>
+            {/* dev-explorer：搜索 | OH 二合一开关（同一扇窗两种形态；小窗可拖、气泡不动的口径不变） */}
+            <div className="ohx-modeswitch" role="tablist" aria-label="搜索或对话">
+              <button role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</button>
+              <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => setMode("oh")}>OH</button>
+            </div>
             <div className="dock-ops">
               <button className="btn dock-btn dock-ico" title="新会话" aria-label="新会话" onClick={() => void newSession()}>
                 <IconPlus />
@@ -1700,6 +1885,20 @@ export function ChatDock(): ReactNode {
           {notice ? (
             <div className="dock-notice" onClick={() => setNotice(null)}>{notice}</div>
           ) : null}
+          {/* dev-explorer：search 态整块换成搜索面（同窗切换；oh 态气泡区原样保留） */}
+          {mode === "search" ? (
+            <OhSearchPane
+              query={searchQuery}
+              onQuery={setSearchQuery}
+              onClose={toggle}
+              onAskOh={(q) => {
+                setMode("oh");
+                setSearchQuery("");
+                if (q) ohAsk(q); // 丝滑切换：小窗内一键到 OH 对话页并把问题发出去
+              }}
+              onNotice={setNotice}
+            />
+          ) : (
           <DockMsgList
             msgs={msgs}
             stream={stream}
@@ -1719,11 +1918,14 @@ export function ChatDock(): ReactNode {
             onToggleThink={() => setThinkOpen((o) => !o)}
             onMsgsClick={onMsgsClick}
           />
+          )}
           {sheetFiles ? (
             <AttachActionsSheet files={sheetFiles} onClose={attachClosed} onDone={attachDone} />
           ) : null}
           {/* 一体化底栏（本轮 07）：附件三入口 + 输入/语音入口 + 发送都在这条栏里；
-              窄屏放不下时附件条自动折到上一行（flex-wrap），不再多占一层。 */}
+              窄屏放不下时附件条自动折到上一行（flex-wrap），不再多占一层。
+              dev-explorer：search 态收起对话输入条（搜索框已在上方）。 */}
+          {mode === "oh" ? (
           <div
             className="dock-input-row"
             ref={rowRef}
@@ -1800,6 +2002,7 @@ export function ChatDock(): ReactNode {
               >↑</button>
             ) : null}
           </div>
+          ) : null}
           {history != null ? (
             <div className="dock-history" role="menu">
               <div className="dock-history-head">

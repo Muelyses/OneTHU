@@ -1,0 +1,326 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Explorer 工作空间 UI（dev-explorer）：TabStrip / BottomBar / TabDrawer / OneGoSheet
+   手机=底部抽屉，桌面=右下浮层（同一 DOM，媒体查询分流）；底栏三入口全平台恒显示。
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 顶栏标签条 TabStrip ── */
+.ex-tabstrip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 2px;
+  scrollbar-width: none;
+}
+.ex-tabstrip::-webkit-scrollbar { display: none; }
+
+.ex-tab {
+  display: inline-flex;
+  align-items: center;
+  max-width: 180px;
+  min-width: 0;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--text-2);
+  flex: 0 0 auto;
+}
+.ex-tab:hover { background: var(--hover); }
+.ex-tab.is-active {
+  background: var(--md-sys-color-secondary-container, var(--accent-soft));
+  color: var(--text-1);
+}
+.ex-tab-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 6px 0 10px;
+  height: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.ex-tab.is-home .ex-tab-main { padding-left: 8px; }
+.ex-tab-title {
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-tab.is-home .ex-tab-title { font-weight: 600; }
+.ex-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  margin-right: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.ex-tab-close:hover { background: color-mix(in srgb, var(--text-1) 10%, transparent); color: var(--text-1); }
+.ex-tab-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.ex-tab-add:hover { background: var(--hover); color: var(--text-1); }
+
+/* ── 底栏三入口 BottomBar（全平台） ── */
+.ex-bbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 5px 14px calc(5px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest, var(--surface, #fff)) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  box-shadow: none;
+}
+.ex-bbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--md-sys-color-on-surface-variant, var(--text-3));
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ex-bbar-btn:hover { background: var(--hover); color: var(--text-1); }
+.ex-bbar-btn:active { transform: scale(0.96); }
+.ex-bbar-btn:first-child { justify-self: start; }
+.ex-bbar-btn:last-child { justify-self: end; }
+.ex-bbar-icon { position: relative; display: inline-flex; }
+.ex-bbar-label { line-height: 1; }
+.ex-bbar-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--md-sys-color-on-primary, var(--on-primary, #fff));
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 15px;
+  text-align: center;
+}
+.ex-bbar-center {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* ── 抽屉/浮层共用骨架（手机底部抽屉，桌面右下浮层） ── */
+.ex-sheet-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1290;
+  background: rgba(0, 0, 0, 0.18);
+  animation: m-fade var(--dur-2, 200ms) var(--ease-out, ease-out) both;
+}
+.ex-sheet {
+  position: fixed;
+  right: 20px;
+  bottom: 78px;
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  width: min(460px, 46vw);
+  max-height: min(72vh, 660px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
+  color: var(--text-1);
+  box-shadow: var(--md-sys-elevation-2, 0 18px 50px rgba(0, 0, 0, 0.28));
+  animation: m-spring-in var(--dur-3, 300ms) var(--ease-out, ease-out) both;
+  overflow: hidden;
+}
+.ex-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.ex-sheet-head b { font-size: 14px; }
+.ex-sheet-head .btn { margin-left: auto; }
+.ex-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 16px 12px;
+}
+.ex-sheet-foot {
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+}
+.ex-seg-row { padding: 10px 16px 0; }
+.ex-seg { width: 100%; }
+.ex-seg button { flex: 1; }
+
+/* ── 区块头 / 行 / 小件 ── */
+.ex-sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 10px 0 6px;
+}
+.ex-sec-head b { font-size: 13px; }
+.ex-sec-head-note {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-row-list { display: flex; flex-direction: column; }
+.ex-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 10px;
+}
+.ex-row:hover { background: var(--hover); }
+.ex-row.is-active { background: var(--accent-soft); }
+.ex-row-clickable {
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ex-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ex-row-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-row-sub {
+  font-size: 11.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-row-icon { display: inline-flex; color: var(--text-3); }
+.ex-row-actions { display: flex; gap: 2px; flex: none; }
+.ex-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-3);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ex-mini:hover { background: var(--hover); color: var(--text-1); }
+.ex-btn-sm { padding: 2px 10px; font-size: 12px; }
+.ex-danger { color: var(--md-sys-color-error, #d64545); }
+.ex-input {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
+  color: var(--text-1);
+  font-size: 12.5px;
+}
+.ex-input:focus { outline: none; border-color: var(--accent); }
+.ex-newrow { display: flex; gap: 8px; margin: 4px 0 8px; }
+.ex-empty-hint {
+  padding: 10px 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+.ex-hint-line {
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+.ex-ws-naming { display: flex; align-items: center; gap: 6px; }
+.ex-ws-naming .ex-input { width: 140px; flex: 0 1 auto; }
+
+/* ── 手机（≤839.98px）：底栏三等分 + 底部抽屉 ── */
+@media (max-width: 839.98px) {
+  .ex-bbar {
+    grid-template-columns: 1fr auto 1fr;
+    padding: 6px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .ex-bbar-btn {
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 14px;
+    font-size: 11px;
+  }
+  .ex-sheet-mask { background: rgba(0, 0, 0, 0.42); }
+  .ex-sheet {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 78vh;
+    border: 0;
+    border-radius: 18px 18px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}

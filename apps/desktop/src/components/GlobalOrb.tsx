@@ -32,6 +32,11 @@ import { logLine } from "../lib/clients.js";
 import { openExternal } from "../pages/info/openExternal.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { speakReply } from "../lib/tts.js";
+/* dev-explorer：搜索二合一（explorer-oh）。悬浮球是独立 webview：
+   跳转一律走 jump* 系列（内部经 Tauri 事件递给主窗口执行），绝不本地 openTab。 */
+import { useOhSearch, jumpEntry, jumpAtom, jumpSearchRow, jumpSettingsTab, jumpTabPayload } from "../plugins/ohSearch.js";
+import { explorerPrefsSnapshot, useSearchHistory, type SearchJump } from "../state/explorerPrefs.js";
+import { displayBreadcrumb } from "../state/searchRows.js";
 
 /** 面板窗比视觉块四周多出的留白（与 overlay_win.rs 的 PANEL_SHADOW_PAD 同值）：
  *  那圈留白专门给面板的柔和外阴影，视觉块仍严格落在 14px 边距上。 */
@@ -180,6 +185,10 @@ function capsuleStyle(active: boolean): CSSProperties {
 
 export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { initialMode?: OverlayMode }): ReactNode {
   const [mode, setMode] = useState<OverlayMode>(initialMode);
+  /* dev-explorer：面板形态内的 搜索|OH 二合一。初值跟随「点击胶囊默认打开」偏好
+     （同一份 explorerPrefs，悬浮球窗口各读一份快照）；面板每次铺开都按偏好重置。 */
+  const [omode, setOmode] = useState<"search" | "oh">(() => explorerPrefsSnapshot().capsuleTap);
+  const [oquery, setOquery] = useState("");
   const [msgs, setMsgs] = useState<Bubble[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
@@ -223,9 +232,11 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
     }, ms);
   }, []);
 
-  /** 开：球先「滴落」150ms，再让原生把窗切到面板，随即「铺开」280ms */
+  /** 开：球先「滴落」150ms，再让原生把窗切到面板，随即「铺开」280ms。
+   *  dev-explorer：铺开时按「点击胶囊默认打开」偏好落搜索或 OH 形态。 */
   const openPanel = useCallback((): void => {
     if (modeRef.current === "panel") return;
+    setOmode(explorerPrefsSnapshot().capsuleTap);
     setAnim("drop");
     later(DROP_MS, () => {
       setMode("panel");
@@ -332,6 +343,10 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
 
   // 新消息滚到底（内容完整渲染，可滑动回看）
   useEffect(scrollToEnd, [msgs.length, typing]);
+
+  /* dev-explorer：搜索模式数据源（hooks 必须无条件调用——搜索面只是条件渲染） */
+  const { result: oresult, total: ototal } = useOhSearch(oquery);
+  const ohist = useSearchHistory();
 
   if (mode === "hidden") return null;
 
@@ -506,9 +521,28 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         {/* 顶栏**只留三个动作**（用户口径 2026-10-11）：回到 OneTHU / 自动朗读 / 收起
             ——「本次关闭悬浮球」已删（收进本体，浮层不再自带注销开关）。 */}
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
-          <span style={{ display: "flex", alignItems: "center", opacity: 0.5 }}>
-            <HarnessMark size={12} />
-          </span>
+          {/* dev-explorer：搜索 | OH 二合一开关（替代原先裸标识位；默认动作在铺开时已按偏好落位） */}
+          <div style={{ display: "flex", alignItems: "center", gap: 4, border: `1px solid ${isDarkUi() ? "rgba(255,255,255,.20)" : "rgba(0,0,0,.12)"}`, borderRadius: 999, padding: 2 }}>
+            {([
+              { v: "search" as const, label: "搜索" },
+              { v: "oh" as const, label: "OH" },
+            ]).map((o) => (
+              <button
+                key={o.v}
+                onClick={() => setOmode(o.v)}
+                aria-pressed={omode === o.v}
+                style={{
+                  ...capsuleStyle(omode === o.v),
+                  fontSize: 11,
+                  lineHeight: "16px",
+                  padding: "3px 10px",
+                  border: "none",
+                }}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {[
               { key: "back", label: "回到 OneTHU", active: true, onClick: backToApp },
@@ -531,6 +565,104 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           </div>
         </div>
 
+      {omode === "search" ? (
+        /* ── dev-explorer：搜索形态（同窗切换；跳转经 Tauri 事件递主窗口 openTab 后回到 OneTHU） ── */
+        <div style={{ position: "relative", zIndex: 1, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <input
+              autoFocus
+              value={oquery}
+              onChange={(e) => setOquery(e.target.value)}
+              placeholder="搜功能、作业、文件、设置…"
+              aria-label="搜索"
+              style={{
+                flex: 1, border: "none", outline: "none", background: "transparent",
+                color: "inherit", fontSize: 15, padding: "6px 2px", textShadow,
+                borderBottom: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.18)) 70%, transparent)",
+              }}
+            />
+            {oquery ? (
+              <button onClick={() => setOquery("")} style={{ ...capsuleStyle(false), flex: "none" }}>清空</button>
+            ) : null}
+          </div>
+          {!oquery.trim() ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, overflowY: "auto" }}>
+              {ohist.length === 0 ? (
+                <span style={{ fontSize: 13, opacity: 0.55, textShadow }}>还没有搜索记录；搜一次功能或实体就会留在这里</span>
+              ) : ohist.map((h: SearchJump, i: number) => (
+                <button
+                  key={`${h.at}-${i}`}
+                  title={`${h.title}（${h.query}）`}
+                  onClick={() => { jumpTabPayload(h.page, h.params, h.title, h.query); backToApp(); }}
+                  style={{ ...capsuleStyle(false), maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }}
+                >
+                  {h.title || h.query}
+                </button>
+              ))}
+            </div>
+          ) : !oresult ? (
+            <div style={{ fontSize: 13, opacity: 0.6, textShadow }}>搜索中…</div>
+          ) : ototal === 0 ? (
+            <button
+              style={{ ...capsuleStyle(true), textAlign: "center" }}
+              onClick={() => {
+                const q = oquery.trim();
+                setOmode("oh"); // 丝滑切换开关：留在同一扇窗里到 OH 对话页
+                setOquery("");
+                if (q) void send(q);
+              }}
+            >
+              没搜到「{oquery.trim()}」？直接问小 (OH)
+            </button>
+          ) : (
+            <div className="ohx-orb-results">
+              {oresult.rows.map((x) => (
+                <button
+                  key={"row:" + x.row.id}
+                  onClick={() => { jumpSearchRow(x.row, oquery.trim()); backToApp(); }}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
+                >
+                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>{x.row.title}</span>
+                  <span style={{ fontSize: 12, opacity: 0.6, textShadow }}>{displayBreadcrumb(x.row).join(" → ")}</span>
+                </button>
+              ))}
+              {oresult.entries.map((en) => (
+                <button
+                  key={"n:" + en.id}
+                  onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, oquery.trim()); backToApp(); }}
+                  style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
+                >
+                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>{en.name}</span>
+                  <span style={{ fontSize: 12, opacity: 0.6, textShadow, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{en.note ?? en.category}</span>
+                  <span style={{ fontSize: 11, opacity: 0.55 }}>功能</span>
+                </button>
+              ))}
+              {oresult.atoms.map((a) => (
+                <button
+                  key={"a:" + a.kind + "|" + a.key}
+                  onClick={() => { jumpAtom(a.kind, a.key, a.title, oquery.trim()); backToApp(); }}
+                  style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
+                >
+                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>{a.title}</span>
+                  <span style={{ fontSize: 12, opacity: 0.6, textShadow, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(a.group ? a.group + " · " : "") + (a.sub ?? "")}</span>
+                  <span style={{ fontSize: 11, opacity: 0.55 }}>页面</span>
+                </button>
+              ))}
+              {oresult.tabs.map((t) => (
+                <button
+                  key={"t:" + t}
+                  onClick={() => { jumpSettingsTab(t); backToApp(); }}
+                  style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
+                >
+                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>设置 · {t}</span>
+                  <span style={{ fontSize: 11, opacity: 0.55 }}>设置</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+      <>
       <div ref={scroller} style={{ position: "relative", zIndex: 1, flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 14, paddingRight: 2 }}>
         {msgs.map((m, i) => (
           <div
@@ -594,6 +726,8 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           }}
         />
       </form>
+      </>
+      )}
       {sheetFiles ? (
         <AttachActionsSheet
           files={sheetFiles}

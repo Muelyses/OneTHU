@@ -16,6 +16,7 @@ import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
 import { LevelBox, focusSettingsTarget } from "../components/Layout.js";
+import { ExplorerPrefsSection } from "../components/ExplorerPrefsSection.js";
 import { ThemeSwatch } from "../components/ThemePickerModal.js";
 import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, subscribeSettingsConsume } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
@@ -592,6 +593,9 @@ export function SettingsPage() {
           </button>
         </div>
       </Card>
+
+      <SectionHead title="工作空间" />
+      <ExplorerPrefsSection />
 
       <SectionHead title="收藏夹" />
       <Card>

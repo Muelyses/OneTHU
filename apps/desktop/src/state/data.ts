@@ -42,7 +42,7 @@ import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, 
 import type { XkPlanItem } from "@onethu/core";
 import { useApp } from "./context.js";
 import { cacheGet, cacheSet, cacheFetch, cacheKeys,
-  purgeXkCaches } from "./cache.js";
+  purgeXkCaches, cacheSeedPreview, isPreviewMode } from "./cache.js";
 import { observeCardBalance } from "./cardWarn.js";
 
 /** info/zhjwxk 页内错误落盘（/tmp/onethu-debug.log），解析不匹配时可一轮定位 */
@@ -460,7 +460,8 @@ export function useLearnData() {
   }, [status, backToLogin]);
 
   useEffect(() => {
-    if (status === "ready") void load();
+    /* 预览模式（抽屉里的组件预览）跳过：这条 hook 是「挂载即拉」，不跳过就会现爬数据 */
+    if (status === "ready" && !isPreviewMode()) void load();
   }, [status, load]);
 
   // 后台静默刷新（learnX 式）换缓存时，挂载中的页面实时跟进
@@ -2014,6 +2015,160 @@ export interface CardBundle {
 const REPORT_KEY = "report";
 const REPORT_TTL = 10 * 60 * 1000;
 
+/**
+ * 预览模式的示例数据（霖 2026-10-12）。
+ *
+ * 抽屉里的组件预览渲染的是**真组件**，它们各自 useCard / useReport / useCampusData… 取数——
+ * 挑一个组件会连带把整套数据爬一遍，还会把真实数字当成示例展示。
+ *
+ * 做法：把示例**写进数据层的缓存**（cacheSeedPreview：时间戳取远未来 → 各 hook 的 SWR 判定
+ * 永不触发刷新，因此一次真实请求都不会发），返回还原函数；组件与各 hook 一行不用改。
+ * 少数「挂载即拉」或「键带参数」的 hook（useLearnData / useNews / useTodayNewsFeed）
+ * 另用 isPreviewMode() 在预览期跳过加载并直接返回示例。
+ *
+ * 示例数据要**足够完整**：预览里渲染的是真组件，字段缺了会当场抛错。
+ * 因此按「该键的所有消费方在预览里会读到的字段」逐个补齐。
+ */
+export function seedPreviewData(): () => void {
+  const undo: Array<() => void> = [];
+
+  /* 成绩单：成绩统计四张 + 成绩明细都读它 */
+  const report: ReportRow[] = [
+    { name: "高等数学A(1)", credit: 5, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
+    { name: "大学物理B(1)", credit: 4, grade: "A-", point: 3.7, semester: "2025-2026秋", raw: [] },
+    { name: "程序设计基础", credit: 3, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
+    { name: "线性代数", credit: 3, grade: "B+", point: 3.3, semester: "2024-2025春", raw: [] },
+    { name: "英语读写译(1)", credit: 2, grade: "A", point: 4.0, semester: "2024-2025春", raw: [] },
+  ];
+  undo.push(cacheSeedPreview(REPORT_KEY, report));
+
+  /* 校园卡：数字卡只读 info.balance；生活页校园卡栏目还要读流水 */
+  const cardBundle: CardBundle = {
+    info: {
+      userId: "2023000000",
+      userName: "示例同学",
+      departmentName: "示例院系",
+      /* 示例值刻意取得一眼能认出来（不是真实余额），预览时便于区分「这是示例」 */
+      balance: 123.45,
+      cardId: "0000000001",
+      cardStatus: "正常",
+      lastTransactionTimestamp: new Date(),
+      maxDailyTransactionAmount: 100,
+      maxOneTimeTransactionAmount: 50,
+    },
+    transactions: [
+      { id: "t1", summary: "示例食堂", timestamp: new Date(), amount: -12.5, balance: 123.45 },
+      { id: "t2", summary: "圈存充值", timestamp: new Date(Date.now() - 86400000), amount: 100, balance: 135.95 },
+    ],
+  };
+  undo.push(cacheSeedPreview("card:1", cardBundle));
+  undo.push(cacheSeedPreview("card:30", cardBundle));
+
+  /* 校内数据（campus）：今日概览、下一节课、今日课程、作业/通知/文件入口都读它。
+     课表按「今天」生成（dayOfWeek 用真实星期几），否则下一节课/今日课程会空。 */
+  const d0 = new Date();
+  const wd = d0.getDay() === 0 ? 7 : d0.getDay();
+  const ymdOf = (offsetDays: number): string => {
+    const d = new Date(d0.getTime() + offsetDays * 86400000);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  };
+  const hm = (h: number, m: number): string => String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+  const course = (id: string, name: string, teacher: string, room: string): CourseInfo => ({
+    id, name, englishName: name, courseNumber: id, courseIndex: 1, teacherName: teacher, timeAndLocation: [room], url: "",
+  });
+  const campus: CampusData = {
+    courses: [course("c1", "高等数学A(1)", "示例老师", "六教 6A101"), course("c2", "大学物理B(1)", "示例老师", "三教 3200")],
+    homework: [
+      { id: "h1", courseId: "c1", title: "第一次小作业", content: "", publishTime: ymdOf(-3), deadline: ymdOf(2) + " 23:59", submitted: false, graded: false, url: "" },
+      { id: "h2", courseId: "c2", title: "实验报告一", content: "", publishTime: ymdOf(-5), deadline: ymdOf(4) + " 23:59", submitted: false, graded: false, url: "" },
+      { id: "h3", courseId: "c1", title: "习题册第 2 章", content: "", publishTime: ymdOf(-8), deadline: ymdOf(-1) + " 23:59", submitted: true, graded: false, url: "" },
+    ],
+    notifications: [
+      { id: "n1", courseId: "c1", title: "关于期中考试安排的通知", publisher: "示例老师", publishTime: ymdOf(-1), url: "" },
+      { id: "n2", courseId: "c2", title: "实验课调课通知", publisher: "示例老师", publishTime: ymdOf(-3), url: "" },
+    ],
+    files: [
+      { id: "f1", courseId: "c1", title: "第一讲 课件.pdf", uploadTime: ymdOf(-2) + " 10:00", downloadUrl: "", size: "2.3MB" },
+      { id: "f2", courseId: "c2", title: "实验指导书.pdf", uploadTime: ymdOf(-4) + " 09:00", downloadUrl: "", size: "1.1MB" },
+      { id: "f3", courseId: "c1", title: "习题参考答案.pdf", uploadTime: ymdOf(-6) + " 15:00", downloadUrl: "", size: "860KB" },
+    ],
+    schedule: [
+      { courseName: "高等数学A(1)", dayOfWeek: wd, startSection: 1, endSection: 2, location: "六教 6A101", startTime: hm(8, 0), endTime: hm(9, 35), raw: {} },
+      { courseName: "大学物理B(1)", dayOfWeek: wd, startSection: 3, endSection: 4, location: "三教 3200", startTime: hm(9, 55), endTime: hm(11, 30), raw: {} },
+      { courseName: "程序设计基础", dayOfWeek: wd, startSection: 6, endSection: 6, location: "四教 4101", startTime: hm(13, 30), endTime: hm(14, 15), raw: {} },
+    ],
+    user: { name: "示例同学", studentId: "2023000000", department: "示例院系", email: "demo@mails.tsinghua.edu.cn" },
+  };
+  undo.push(cacheSeedPreview(CAMPUS_KEY, campus));
+
+  /* 倒计时提醒（deadlines）：日程与提醒卡读它；起止时间要落进「开始前 14 天 ~ 结束前」的窗口里 */
+  const deadlines: DeadlineItem[] = [
+    { title: "退课(第一阶段)", begin: ymdOf(-2) + " 08:00", end: ymdOf(7) + " 16:00", url: "" },
+    { title: "本科生选择课程以P/F记载", begin: ymdOf(-1) + " 08:00", end: ymdOf(9) + " 16:00", url: "" },
+  ];
+  undo.push(cacheSeedPreview(DEADLINES_KEY, deadlines));
+
+  /* 网络学堂（learn）：它的缓存不是一个通用键，而是模块级变量 cache（且 hook 挂载即拉），
+     所以这里既要写这个变量，也要靠 isPreviewMode() 让 useLearnData 的效果跳过加载。 */
+  const learnSample: LearnBundle = {
+    semester: { id: "2025-2026-1" },
+    courses: [course("c1", "高等数学A(1)", "示例老师", "六教 6A101"), course("c2", "大学物理B(1)", "示例老师", "三教 3200")],
+    homework: campus.homework,
+    notifications: campus.notifications,
+    files: campus.files,
+  };
+  const prevLearn = cache;
+  cache = { key: "current", ts: Number.MAX_SAFE_INTEGER, promise: Promise.resolve(learnSample), data: learnSample };
+  undo.push(() => { cache = prevLearn; });
+
+  /* 今日预约：座位 + 研讨间各一条（ResvRows 会读 kind/venue/place/start/end） */
+  const resv: TodayReservation[] = [
+    { key: "seat-demo-1", kind: "seat", venue: "图书馆 北馆", place: "A-12", start: new Date(d0.getTime() + 3600000), end: null, note: "已签到" },
+    { key: "room-demo-1", kind: "room", venue: "研讨间 4-201", place: "", start: new Date(d0.getTime() + 7200000), end: new Date(d0.getTime() + 10800000), note: "" },
+  ];
+  undo.push(cacheSeedPreview(TODAYRESV_KEY, resv));
+
+  /* 日程与提醒（今日校历节点）：AgendaWidget 读 name/date/daysUntil */
+  const calNodes: TodayCalendarNode[] = [
+    { key: "cal-demo-1", name: "退课(第一阶段) 结束", date: new Date(d0.getTime() + 7 * 86400000), daysUntil: 7 },
+    { key: "cal-demo-2", name: "本科生选择课程以P/F记载 结束", date: new Date(d0.getTime() + 9 * 86400000), daysUntil: 9 },
+  ];
+  undo.push(cacheSeedPreview(TODAYCAL_KEY, calNodes));
+
+  /* 个人信息（profile）：信息页「个人信息栏目」与学生卡都读它，字段就是 BasicUserInfo */
+  const profileSample: BasicUserInfo = {
+    name: "示例同学",
+    studentId: "2023000000",
+    gender: "男",
+    department: "示例院系",
+    major: "示例专业",
+    email: "demo@mails.tsinghua.edu.cn",
+  };
+  undo.push(cacheSeedPreview(PROFILE_KEY, profileSample));
+
+  /* 考试安排（exams）：ExamsTab 按日期分组渲染，给两场不同日期的考试 */
+  const exams: ExamEntry[] = [
+    { courseName: "高等数学A(1)", date: ymdOf(12), startTime: "14:00", endTime: "16:00", location: "六教 6A101", category: "考试", raw: {} },
+    { courseName: "大学物理B(1)", date: ymdOf(15), startTime: "09:00", endTime: "11:00", location: "三教 3200", category: "考试", raw: {} },
+  ];
+  undo.push(cacheSeedPreview(EXAMS_KEY, exams));
+
+  /* 信息页校历（calendar）：CalendarData；firstDay 取「八周前的周一」，于是当前落在第 9 教学周 */
+  const mondayOffset = -(wd - 1);
+  const calendar: CalendarData = {
+    firstDay: ymdOf(mondayOffset - 56),
+    semesterId: "2025-2026-1",
+    semesterName: "2025-2026 秋季学期",
+    weekCount: 16,
+    nextSemesterList: [
+      { firstDay: ymdOf(mondayOffset + 70), semesterId: "2025-2026-2", semesterName: "2025-2026 春季学期", weekCount: 16 },
+    ],
+  };
+  undo.push(cacheSeedPreview(CAL_KEY, calendar));
+
+  return () => { for (const f of undo.reverse()) f(); };
+}
+
 export function useReport() {
   const { status } = useApp();
   const [data, setData] = useState<ReportRow[] | null>(() => cacheGet<ReportRow[]>(REPORT_KEY)?.data ?? null);
@@ -2585,6 +2740,8 @@ const NEWS_TTL = 5 * 60 * 1000;
 
 export function useNews(page: number, length = 20) {
   const { status } = useApp();
+  /* 预览模式：直接给示例，且跳过加载（这条 hook 的键带分页参数，种子盖不全） */
+  const preview = isPreviewMode();
   const newsKey = `news:${page}:${length}`;
   const [data, setData] = useState<NewsItem[] | null>(() => cacheGet<NewsItem[]>(newsKey)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<NewsItem[]>(newsKey) ? "ready" : "loading"));
@@ -2609,13 +2766,23 @@ export function useNews(page: number, length = 20) {
   }, [status, page, length, data, newsKey]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<NewsItem[]>(newsKey);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > NEWS_TTL) void load(true);
-  }, [status, load, newsKey]);
+  }, [status, load, newsKey, preview]);
 
+  if (preview) return { data: previewNewsItems(), state: "ready" as const, error: null, reload: load };
   return { data, state, error, reload: load };
+}
+
+/** 预览用的新闻示例（today 与 info 两处共用，字段按消费方需要补齐：name/xxid/date/source/topped/channel）。 */
+function previewNewsItems(): NewsItem[] {
+  return [
+    { xxid: "demo-1", name: "关于本学期选课安排的通知", date: "2026-10-10", source: "教务处", topped: true, channel: "LM_JWGG", url: "" },
+    { xxid: "demo-2", name: "图书馆假期开放时间调整", date: "2026-10-08", source: "图书馆", channel: "LM_JWGG", url: "" },
+    { xxid: "demo-3", name: "关于开展本学期教学评估的通知", date: "2026-10-06", source: "教学质量评估中心", channel: "LM_JWGG", url: "" },
+  ];
 }
 
 /* ============ 首页「倒计时提醒」（学校重要事项：选课/退课/推研等，失败静默隐藏） ============ */
@@ -2698,6 +2865,8 @@ const TODAYNEWS_TTL = 5 * 60 * 1000;
 
 export function useTodayNewsFeed(subs: string[]) {
   const { status } = useApp();
+  /* 预览模式：直接给示例并跳过加载（键里带订阅集合，种子盖不全） */
+  const preview = isPreviewMode();
   const [data, setData] = useState<TodayNewsFeed | null>(null);
   const [state, setState] = useState<DataState>("loading");
 
@@ -2751,7 +2920,7 @@ export function useTodayNewsFeed(subs: string[]) {
   }, [status, subsKey, feedKey, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<TodayNewsFeed>(feedKey);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > TODAYNEWS_TTL) {
@@ -2762,8 +2931,15 @@ export function useTodayNewsFeed(subs: string[]) {
       setData(cached.data);
       setState("ready");
     }
-  }, [status, load, feedKey]);
+  }, [status, load, feedKey, preview]);
 
+  if (preview) {
+    return {
+      data: { list: previewNewsItems(), from: "subs", subCount: 3 } as unknown as TodayNewsFeed,
+      state: "ready" as const,
+      reload: load,
+    };
+  }
   return { data, state, reload: load };
 }
 

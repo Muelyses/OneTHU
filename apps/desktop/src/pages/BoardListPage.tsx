@@ -9,7 +9,6 @@ import { Card, Empty, PageHead } from "../components/Layout.js";
 import { useContextMenu, type CtxItem } from "../components/ContextMenu.js";
 import { loadBoard, saveBoard, type BoardDoc } from "../state/board.js";
 import { boardSummary, createBoard, deleteBoard, moveBoard, setActiveBoard } from "../state/boardOps.js";
-import { addBoardSlot, loadNavPrefs, moveSlot, resolveSlots, saveNavPrefs, setSlotHidden, MINE_SLOT_ID, type NavPrefs } from "../state/navPrefs.js";
 import { useApp } from "../state/context.js";
 
 export function BoardListPage(): ReactNode {
@@ -17,9 +16,6 @@ export function BoardListPage(): ReactNode {
   const menu = useContextMenu();
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   const [note, setNote] = useState<string | null>(null);
-  const [navOpen, setNavOpen] = useState(false);
-  const [prefs, setPrefs] = useState<NavPrefs>(() => loadNavPrefs());
-  const applyPrefs = useCallback((next: NavPrefs): void => { setPrefs(next); saveNavPrefs(next); }, []);
   const rows = useMemo(() => boardSummary(doc), [doc]);
 
   const say = (text: string): void => {
@@ -82,51 +78,8 @@ export function BoardListPage(): ReactNode {
         >
           新建收藏夹
         </button>
-        <button className="btn" onClick={() => setNavOpen(true)}>编辑导航栏</button>
       </div>
 
-      {navOpen ? (
-        <div className="board-sheet" role="dialog" aria-label="编辑导航栏">
-          <div className="board-sheet-head">
-            <span className="board-sheet-title">编辑导航栏</span>
-            <button className="btn" onClick={() => setNavOpen(false)}>关闭</button>
-          </div>
-          <div className="board-sheet-list">
-            {resolveSlots(prefs).map((slot, i) => (
-              <div key={slot.id} className="nav-edit-row" data-nav-slot={slot.id}>
-                <span className="nav-edit-name">{slot.label}{slot.id === MINE_SLOT_ID ? "（固定）" : ""}</span>
-                <button type="button" className="btn" disabled={i === 0} onClick={() => applyPrefs(moveSlot(prefs, slot.id, "left"))}>←</button>
-                <button type="button" className="btn" disabled={i === resolveSlots(prefs).length - 1} onClick={() => applyPrefs(moveSlot(prefs, slot.id, "right"))}>→</button>
-                <button
-                  type="button"
-                  className="btn"
-                  disabled={slot.id === MINE_SLOT_ID}
-                  onClick={() => applyPrefs(setSlotHidden(prefs, slot.id, !slot.hidden))}
-                >
-                  {slot.hidden ? "显示" : "隐藏"}
-                </button>
-              </div>
-            ))}
-          </div>
-          {rows.filter((b) => b.kind === "user" && !resolveSlots(prefs).some((s) => s.boardId === b.id)).length ? (
-            <div className="board-sheet-list">
-              <div className="board-sheet-title">把收藏夹放进导航栏</div>
-              {rows.filter((b) => b.kind === "user" && !resolveSlots(prefs).some((s) => s.boardId === b.id)).map((b) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  className="board-sheet-row"
-                  data-nav-add={b.id}
-                  onClick={() => { applyPrefs(addBoardSlot(prefs, b.id, b.name, b.icon)); say("已放进导航栏：" + b.name); }}
-                >
-                  <span className="board-sheet-row-title">{b.name}</span>
-                  <span className="board-sheet-row-desc">作为底栏入口，点击直达这块板</span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
       {note ? <div className="board-note" role="status">{note}</div> : null}
     </>
   );

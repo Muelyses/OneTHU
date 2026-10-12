@@ -37,6 +37,8 @@ import { FolderPage } from "./pages/FolderPage.js";
 import { ServicesPage } from "./pages/ServicesPage.js";
 import { TasksPage } from "./pages/TasksPage.js";
 import { FavsHomePage } from "./pages/FavsHomePage.js";
+import { BoardPage } from "./pages/BoardPage.js";
+import { BoardListPage } from "./pages/BoardListPage.js";
 import { AppProvider } from "./state/app.js";
 import { FavsProvider } from "./state/favs.js";
 import { useApp } from "./state/context.js";
@@ -130,6 +132,9 @@ function Routed() {
           {page === "tasks" && <TasksPage />}
           {page === "services" && <ServicesPage />}
           {page === "favs" && <FavsHomePage />}
+          {/* 白板：收藏夹列表页 + 某一块白板（霖的原子收藏升级；接在 dev3 的页面集上） */}
+          {page === "boards" && <BoardListPage />}
+          {page === "board" && <BoardPage />}
           {page === "settings" && <SettingsPage />}
           {page === "plugins" && <PluginsPage />}
           {page === "learn-course" && <CourseDetailPage />}

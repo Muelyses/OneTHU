@@ -18,6 +18,7 @@ import {
 } from "../../state/explorer.js";
 import { resolveTabTitle, useTabTitleTick } from "../../state/tabTitles.js";
 import { IconPlus, IconX } from "../Icons.js";
+import { BrandLogo } from "../Layout.js";
 
 /** 订阅 explorer store 的共享小钩子（TabDrawer/BottomBar 复用，别各自再写一遍） */
 export function useExplorerTabs(): { tabs: ExplorerTab[]; activeId: string } {
@@ -26,14 +27,7 @@ export function useExplorerTabs(): { tabs: ExplorerTab[]; activeId: string } {
 }
 
 /** 首页图标：小房子（内联 SVG，不引库） */
-function HomeGlyph(): ReactNode {
-  return (
-    <svg viewBox="0 0 16 16" width={13} height={13} fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2.5 7.5 8 2.8l5.5 4.7" />
-      <path d="M4 6.8V13h8V6.8" />
-    </svg>
-  );
-}
+
 
 export function TabStrip(): ReactNode {
   useTabTitleTick(); // 15s 节拍：数据快照晚于开 tab 时，实体名自动升级
@@ -53,7 +47,7 @@ export function TabStrip(): ReactNode {
             aria-selected={active}
           >
             <button className="ex-tab-main" title={full} onClick={() => focusTab(t.id)}>
-              {isHome ? <HomeGlyph /> : null}
+              {isHome ? <BrandLogo size={12} /> : null}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (

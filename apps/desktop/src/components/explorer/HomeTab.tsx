@@ -2,8 +2,7 @@
  * 首页标签页（dev-explorer 工作空间革命）：特殊标签页的渲染内容。
  *
  * 组织模式 = 今日页（TodayPage）原样移植 + 顶部两层新能力：
- *   ① 全局搜索条（假输入框 → OH 二合一搜索小窗，requestOhPanel("search")）；
- *   ② 「继续上次」工作恢复条（OneGO 工作区 chips + 最近 3 个页标签）；
+ *   「继续上次」工作恢复条（OneGO 工作区 chips + 最近 3 个页标签）；
  *   ③ 「功能目录」卡（侧边栏删除后的完整功能兜底入口，NAV_CATEGORIES 分组）；
  *   ④ <TodayPage /> 原样渲染（自定义卡片系统、信息流、快捷入口全在它身上）。
  *
@@ -20,7 +19,6 @@ import {
   subscribeExplorer,
 } from "../../state/explorer.js";
 import { byCategory, NAV_CATEGORIES, type NavEntry } from "../../state/navigation.js";
-import { requestOhPanel } from "../../plugins/ohControl.js";
 import { TodayPage } from "../../pages/Today.js";
 import { IconChevron, IconSearch } from "../Icons.js";
 
@@ -32,23 +30,7 @@ function useExplorerState(): ExplorerStateSnapshot {
   return useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
 }
 
-/* ══════════ ① 搜索条 ══════════ */
 
-function HomeSearchBar(): ReactNode {
-  return (
-    <button
-      type="button"
-      className="home-searchbar"
-      onClick={() => requestOhPanel("search")}
-      aria-label="搜索校园服务、文件、新闻"
-      title="搜索（胶囊条同款：搜不到可直接问 OH）"
-    >
-      <IconSearch width={16} height={16} />
-      <span className="home-searchbar-placeholder">搜索校园服务、文件、新闻…</span>
-      <kbd className="home-searchbar-kbd">搜索 / OH</kbd>
-    </button>
-  );
-}
 
 /* ══════════ ② 继续上次（工作区 + 最近页标签） ══════════ */
 
@@ -158,8 +140,7 @@ function HomeCatalog(): ReactNode {
 export function HomeTab(): ReactNode {
   return (
     <div className="home-tab">
-      <HomeSearchBar />
-      <HomeResume />
+            <HomeResume />
       <HomeCatalog />
       <TodayPage />
     </div>

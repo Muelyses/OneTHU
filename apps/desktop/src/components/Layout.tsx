@@ -122,9 +122,8 @@ function TopBar(): ReactNode {
   }, []);
   return (
     <header className={"explorer-topbar" + (scrolled ? " is-scrolled" : "")}>
-      <button className="tb-home" onClick={() => focusTab(HOME_TAB_ID)} title="回到首页" aria-label="回到首页">
-        <BrandLogo size={12} />
-      </button>
+      {/* dev-explorer（用户拍板）：OneTHU 品牌标与「首页」标签并成 TabStrip 首位，左上单独的
+          Logo 钮退役——复制按钮成为顶栏最左；首页仍恒在（TabStrip 首位不可关） */}
       <button
         className="icon-btn"
         onClick={() => duplicateTab(activeId)}

@@ -17,6 +17,8 @@ import { BOARD_TEMPLATES, templateItems } from "../state/boardTemplates.js";
 import { cellFromSlots, edgeScrollSpeed, movedBeyond, previewItems, stickyIndex, type SlotRect } from "../state/boardDrag.js";
 import { BOARD_COLS, colsForWidth } from "../state/boardCore.js";
 import { BoardAddDrawer } from "../components/BoardAddDrawer.js";
+import { BoardPenLayer, BoardPenToolbar } from "../components/BoardPenLayer.js";
+import { PEN_COLORS, penKeyOf, strokesOf, undoStroke, clearStrokes } from "../state/boardPen.js";
 import { useApp } from "../state/context.js";
 import { defForSpec, isTierControlled, normalizeSize, widgetById, type WidgetDef } from "../state/widgetMeta.js";
 import { allWidgetDefs, isListWidget } from "../state/widgets.js";
@@ -54,6 +56,9 @@ export function BoardPage(): ReactNode {
   const defs = useMemo(() => allWidgetDefs(), []);
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   const [editing, setEditing] = useState(false);
+  /* 画笔（勾勒划线）：开 = 画布上的 SVG 层接管指针；颜色/撤销/清空在画布右上小浮条 */
+  const [penOn, setPenOn] = useState(false);
+  const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
   /* 编辑态选中的组件：只有它显示缩放把手（霖 2026-10-10 定）。 */
   const [selectedId, setSelectedId] = useState<string | null>(null);
   /* 从今日页「编辑白板布局」进来时直接进编辑态（消费一次即清）。 */
@@ -143,6 +148,8 @@ export function BoardPage(): ReactNode {
   /* 渲染**当前板**（activeBoardId），不是写死系统板——收藏夹列表里选中的就是它。 */
   const board = activeBoard(doc);
   const boardId = board ? board.id : "";
+  const penKey = penKeyOf(boardId, orientation);
+  const penStrokes = strokesOf(penKey);
   const stored = board ? cellsOf(board, orientation) : [];
 
   /* 拖拽期渲染的是**预览**而不是文档：中途不落盘，松手才写。 */
@@ -337,6 +344,7 @@ export function BoardPage(): ReactNode {
         menu={[
           { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
           { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
+          { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
           { key: "all-boards", label: "所有收藏夹", onSelect: () => navigate("boards") },
           { key: "edit-board", label: editing ? "完成" : "编辑", onSelect: () => setEditing((v) => !v) },
         ]}
@@ -377,6 +385,17 @@ export function BoardPage(): ReactNode {
               位置由 paintDrag 直接写 gridColumn/gridRow——拖拽期间不做 React 渲染。 */}
           {/* 落点虚影：**常驻**节点（拖拽第一帧就要能拿到 ref），显隐与位置由 paintDrag 直接写。 */}
           <div ref={ghostRef} className="board-ghost" aria-hidden="true" />
+          {/* 画笔层：penOn 时接管指针画线，平时只渲染已有笔迹（不碰组件交互） */}
+          <BoardPenLayer boardId={boardId} orientation={orientation} penOn={penOn} color={penColor} />
+          {penOn ? (
+            <BoardPenToolbar
+              color={penColor}
+              onColor={setPenColor}
+              canUndo={penStrokes.length > 0}
+              onUndo={() => undoStroke(penKey)}
+              onClear={() => clearStrokes(penKey)}
+            />
+          ) : null}
           {items.map((item) => {
             const plan = planForItem(item, defs);
             const lifted = !!drag && drag.started && drag.id === item.id;

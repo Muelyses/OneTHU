@@ -42,6 +42,8 @@ const ALLOW = {
   "components/Layout.tsx": 1,
   "state/atoms.tsx": 1,
   "components/exthw/YktSubjectiveEditor.tsx": 1,
+  /* 画笔层：整块 SVG 是绘图画布本身（polyline 笔迹容器），不是图标（2026-10-13 画笔功能） */
+  "components/BoardPenLayer.tsx": 1,
 };
 for (const file of walk(SRC)) {
   const rel = file.slice(SRC.length + 1);
@@ -51,7 +53,9 @@ for (const file of walk(SRC)) {
   if (n === 0) continue;
   const allowed = ALLOW[rel];
   ok(allowed === n, rel + " 有 " + n + " 处手写 SVG" + (allowed ? "（白名单只允许 " + allowed + " 处字符串形式的）" : "——请加进 Icons.tsx，别在页面里手写"));
-  if (allowed === n) {
+  if (allowed === n && rel !== "components/BoardPenLayer.tsx") {
+    /* BoardPenLayer 的 SVG 是绘图画布（polyline 笔迹），strokeWidth={s.w} 是动态线宽功能本身，
+       不属于"图标手写"范畴——其余白名单文件仍按字符串回退图标的口径钉死。 */
     ok(!/strokeWidth="|strokeWidth=\{/.test(src), rel + " 白名单内的 SVG 出现了 JSX 形式的属性（应只是字符串回退图标）");
   }
 }

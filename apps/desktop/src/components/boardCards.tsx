@@ -468,6 +468,43 @@ const ENTRY_REAL: Record<string, CardRenderer> = {
   [cardRendererKey("learn-file")]: (props) => <LearnFileAtomCard props={props} />,
 };
 
+/* ══════════ 便笺（2026-10-13，霖：白板要能随手写字、能收起来）══════════
+   props：text（内容）、tone（纸色）、folded（收起=只留标题条）。收起/展开就地切换，
+   文字走白板既有的「属性」抽屉编辑（editableProps 已声明）。 */
+
+const NOTE_TONES: Record<string, string> = {
+  yellow: "rgba(232, 196, 106, 0.24)",
+  pink: "rgba(226, 154, 166, 0.22)",
+  blue: "rgba(122, 168, 220, 0.22)",
+  green: "rgba(140, 196, 156, 0.22)",
+};
+
+function NoteCard(props?: Record<string, unknown>): ReactNode {
+  const text = typeof props?.text === "string" && props.text.trim() ? props.text : "长按这张便笺，选「属性」写字";
+  const tone = typeof props?.tone === "string" && NOTE_TONES[props.tone] ? props.tone : "yellow";
+  const folded = props?.folded === true;
+  const [localFolded, setLocalFolded] = useState<boolean | null>(null);
+  const isFolded = localFolded ?? folded;
+  return (
+    <div
+      className={"board-note" + (isFolded ? " is-folded" : "")}
+      data-tone={tone}
+      style={{ background: NOTE_TONES[tone] }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setLocalFolded(!isFolded);
+      }}
+      title={isFolded ? "点开便笺" : "点一下收起"}
+    >
+      <div className="board-note-strip">
+        <span className="board-note-dot" aria-hidden="true" />
+        <span className="board-note-hint">{isFolded ? "便笺（已收起）" : "便笺"}</span>
+      </div>
+      {!isFolded ? <div className="board-note-text">{text}</div> : null}
+    </div>
+  );
+}
+
 /* ══════════ 环境/时钟组件（2026-10-13，霖：首页白板要有时间、日期、天气） ══════════
    这三张不依赖 THU 会话：时钟/日期走本地时间，天气走 open-meteo 免 key 直连（state/weather.ts）。
    自由尺寸（内容自适应），小格只留主信息，大格逐层加上下文——与档位组件「随尺寸加信息层」同一口吻。 */
@@ -596,6 +633,7 @@ export const BOARD_CARD_RENDERERS: Record<string, CardRenderer> = {
   ...ENTRY_RENDERERS,
   ...ENTRY_REAL,
   /* 时钟/日期/天气：自足（本地时间 + open-meteo），自由尺寸随格加信息层。 */
+  [cardRendererKey("note")]: (props) => <NoteCard {...(props ?? {})} />,
   [cardRendererKey("clock")]: (_props, size) => <ClockCard size={size} />,
   [cardRendererKey("date")]: (_props, size) => <DateCard size={size} />,
   [cardRendererKey("weather")]: (_props, size) => <WeatherCard size={size} />,

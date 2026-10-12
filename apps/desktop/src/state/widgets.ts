@@ -129,6 +129,23 @@ function isFreeSizeCard(def: HomeCardDef): boolean {
   return def.kind === "entry" || LIST_WIDGET_IDS.includes("custom:" + String(def.id));
 }
 
+/** 便笺（白板随手写字；可收起）。放应用侧而非 PRESET：widgetMeta 的 preset 列表
+ *  必须保持「无 custom 条目」，否则 defForSpec 的按-kind 兜底会把未知 custom 全部
+ *  误解析成它（widget-render 护栏钉的就是这条）。 */
+export const NOTE_WIDGET: WidgetDef = {
+  id: "custom:note",
+  spec: { kind: "custom", id: "note" },
+  title: "便笺",
+  description: "一张随手写的小纸条，可以折起来只留标题条。长按组件选「属性」改字与颜色。",
+  defaultSize: { w: 2, h: 2 },
+  sizeRange: { minW: 1, minH: 1, maxW: BOARD_UNITS, maxH: 4 },
+  sizeControl: "free",
+  editableProps: [
+    { key: "text", label: "内容", kind: "text", maxLength: 200, placeholder: "写点什么…" },
+    { key: "tone", label: "纸色", kind: "select", options: [{ value: "yellow", label: "黄" }, { value: "pink", label: "粉" }, { value: "blue", label: "蓝" }, { value: "green", label: "绿" }] },
+  ],
+};
+
 /** 卡片的组件目录条目：spec 用 custom + 卡片 id（与今日页白板文档同构）。 */
 export function cardWidgetDefs(): WidgetDef[] {
   return HOME_CARD_META.map((def) => {
@@ -374,6 +391,7 @@ export function freeSizeWidgetIds(): readonly string[] {
 export function appWidgetDefs(): WidgetDef[] {
   return [
     ...cardWidgetDefs(),
+    NOTE_WIDGET,
     ...PAGE_WIDGETS.map(withSizeControl),
     ...REPORT_ELEMENT_WIDGETS.map(withSizeControl),
     ...ATOM_TEMPLATE_WIDGETS.map(withSizeControl),

@@ -24,15 +24,14 @@ import {
 import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
+import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
 import { checkUpdateSilently } from "../lib/update.js";
 import { useSegPill } from "../lib/motion.js";
 import { ErrorLine } from "./Details.js";
-import { CommandPalette, shortcutLabel } from "./CommandPalette.js";
-import { openPalette } from "../state/palette.js";
+import { CommandPalette } from "./CommandPalette.js";
 import { TabStrip } from "./explorer/TabStrip.js";
 import { BottomBar } from "./explorer/BottomBar.js";
 import { TabDrawer } from "./explorer/TabDrawer.js";
@@ -137,9 +136,8 @@ function TopBar(): ReactNode {
       </button>
       <TabStrip />
       <span className="tb-spring" aria-hidden="true" />
-      <button className="icon-btn" onClick={openPalette} title={"搜索功能（" + shortcutLabel() + "）"} aria-label="搜索功能">
-        <IconSearch width={16} height={16} />
-      </button>
+      {/* dev-explorer（用户拍板）：顶栏小搜索按钮及其逻辑铲除——搜索入口归 OH 胶囊（二合一），
+          ⌘K 命令面板保留为键盘效率工具但不占顶栏位 */}
       <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
         <IconSettings width={16} height={16} />
       </button>

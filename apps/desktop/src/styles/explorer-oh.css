@@ -290,3 +290,37 @@
   left: 50%;
   transform: translateX(-50%);
 }
+
+/* ══════════ 顶置底栏形态（桌面/横屏）：窗从胶囊底边向下生长 ══════════ */
+.ohx-panel-grow.is-topdock {
+  transform-origin: 50% 0%;
+  animation: ohx-grow-top var(--dur-3, 0.3s) var(--ease-out, ease) both;
+}
+.ohx-panel-grow.is-topdock.is-closing {
+  animation: ohx-shrink-top var(--dur-2, 0.2s) ease both;
+}
+@keyframes ohx-grow-top {
+  from { opacity: 0; transform: scaleY(0.5) translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes ohx-shrink-top {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scaleY(0.5) translateY(-8px); }
+}
+/* 顶置形态：把手挪到面板底部（拖拽公式 startH − dy 语义不变：上拖=变高=面板向下伸展） */
+.dock-panel.is-topdock .dock-handle { order: 10; margin: 2px 0 0; }
+
+/* ── pid 未就绪（浏览器预览/Harness 未加载）的 OH 模式说明卡 ── */
+.dock-oh-missing {
+  margin: auto 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--md-sys-color-surface-container-lowest, var(--surface));
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: left;
+}
+.dock-oh-missing b { display: block; margin-bottom: 6px; color: var(--text-1); font-size: 14px; }
+.dock-oh-missing p { margin: 4px 0; }

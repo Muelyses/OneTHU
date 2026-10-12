@@ -1141,7 +1141,7 @@ export function ChatDock(): ReactNode {
 
   /* dev-explorer 二轮：面板从胶囊顶边「长出来」——量可见胶囊的 rect（left/width），
      bottom 由 explorer-ui.css 契约变量给出；resize/转窗/布局落定后重量。 */
-  const [capsuleRect, setCapsuleRect] = useState<{ left: number; width: number } | null>(null);
+  const [capsuleRect, setCapsuleRect] = useState<{ left: number; width: number; bottom: number; topdock: boolean } | null>(null);
   useEffect(() => {
     if (!open && !closing) {
       setCapsuleRect(null);
@@ -1152,7 +1152,13 @@ export function ChatDock(): ReactNode {
       const el = all.find((n) => n.offsetParent !== null) ?? all[0];
       if (!el) return;
       const r = el.getBoundingClientRect();
-      if (r.width > 0) setCapsuleRect({ left: r.left, width: r.width });
+      if (r.width > 0) {
+        /* 顶置判定：胶囊所在 ex-bbar 的计算定位——static=顶置流内（桌面/横屏），fixed=底部形态。
+           不能用 closest(.explorer-topbar)：顶置时 ex-bbar 是独立行，不在 TopBar 里。 */
+        const bar = el.closest(".ex-bbar");
+        const inTopbar = !!bar && getComputedStyle(bar).position === "static";
+        setCapsuleRect({ left: r.left, width: r.width, bottom: r.bottom, topdock: inTopbar });
+      }
     };
     measure();
     const t1 = window.setTimeout(measure, 60); // 底栏/顶栏布局动画落定后补量
@@ -1904,14 +1910,17 @@ export function ChatDock(): ReactNode {
 
       {open || closing ? (
         <div
-          className={"dock-panel" + (capsuleRect ? " ohx-panel-grow" : "") + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
+          className={"dock-panel" + (capsuleRect ? " ohx-panel-grow" : "") + (capsuleRect?.topdock ? " is-topdock" : "") + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
           role="dialog"
           aria-label="OneTHU Harness 对话"
           style={{
             /* 从胶囊顶边长出来：left/width 量可见胶囊的 rect；bottom 走 explorer-ui 契约变量。
                量不到胶囊（极端：底栏未渲染）时不挂 ohx-panel-grow，退回旧居中形态，绝不错位。 */
             ...(capsuleRect
-              ? { left: capsuleRect.left, width: capsuleRect.width, bottom: "calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 4px)" }
+              ? capsuleRect.topdock
+                ? /* 顶置底栏（桌面/横屏）：窗从胶囊**底边向下**生长，朝上会出屏 */
+                  { left: capsuleRect.left, width: capsuleRect.width, bottom: "auto", top: capsuleRect.bottom + 4 }
+                : { left: capsuleRect.left, width: capsuleRect.width, bottom: "calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 4px)" }
               : null),
             ...(panelH != null ? { height: `${panelH}px`, minHeight: 0 } : null),
           }}
@@ -1983,7 +1992,15 @@ export function ChatDock(): ReactNode {
             <div className="dock-notice" onClick={() => setNotice(null)}>{notice}</div>
           ) : null}
           {/* dev-explorer：search 态整块换成搜索面（同窗切换；oh 态气泡区原样保留） */}
-          {mode === "search" ? (
+          {/* dev-explorer：pid 未就绪（浏览器预览/Harness 未加载）时 OH 对话不可能在此渲染——
+              欢迎页会伪装成「对话被吃」，直接给明确说明卡，搜索模式照常可用 */}
+          {mode === "oh" && !pid ? (
+            <div className="dock-oh-missing">
+              <b>主对话需要完整桌面环境</b>
+              <p>当前窗口没有 Harness 进程（浏览器预览或插件未加载），对话历史在这里不可用，发送也不会生效。</p>
+              <p>搜索模式不受影响，可正常使用。到桌面端（tauri 桌面版）打开同一入口即可看到主对话。</p>
+            </div>
+          ) : mode === "search" ? (
             <OhSearchPane
               query={searchQuery}
               onClose={toggle}

@@ -131,3 +131,26 @@
 }
 /* 设置页/插件页在浮层内的左右留白（页面本体假定有 .content 的版心） */
 .explorer-settings-body .page-body { padding: 12px 14px 24px; }
+
+/* ══════════ 桌面/横屏（≥841px）：三入口栏顶置——「真正长得像电脑浏览器」 ══════════
+   ex-bbar 进文档流排到最前（flex order -1，explorer-shell 是纵向 flex）；标签条在其下；
+   --explorer-bar-h 归零（窗/FAB/island 的底部让位公式全部失效口径归一）。 */
+@media (min-width: 841px) {
+  :root { --explorer-bar-h: 0px; }
+  .explorer-shell > .ex-bbar { /* 提特异性：explorer-ui.css 后加载，同特异性 fixed 会赢 */
+    position: static !important;
+    height: 48px !important; /* bar 自身高度与 --explorer-bar-h 解耦（那个变量桌面归零只管底部公式口径） */
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    order: -1;
+    border-top: 0;
+    border-bottom: 1px solid var(--border);
+    box-shadow: none;
+    padding-bottom: 0;
+  }
+  .explorer-content { padding-bottom: 28px; }
+  .hard-refresh-fab { bottom: 18px !important; }
+  .hard-refresh-fab.top-fab { bottom: 74px !important; }
+}

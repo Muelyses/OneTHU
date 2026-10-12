@@ -7,39 +7,69 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  height: 34px;
-  min-width: 52px;
+  justify-content: flex-start;
+  gap: 8px;
+  height: 36px;
+  width: 100%;
+  min-width: 0;
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-1);
   cursor: pointer;
-  transition: transform var(--dur-2) var(--ease-out, ease), box-shadow var(--dur-2) ease, background var(--dur-2) ease;
+  overflow: hidden;
+  transition: margin var(--dur-3, 0.3s) var(--md-sys-motion-easing-spring, cubic-bezier(0.34, 1.4, 0.64, 1)), border-color var(--dur-2) ease, background var(--dur-2) ease;
 }
-.ohx-capsule.is-press { transform: scale(0.94); background: var(--accent-soft, var(--surface)); }
-.ohx-capsule.is-hold { transform: scale(1.06); box-shadow: 0 0 0 3px var(--accent-soft, transparent); }
+/* 白长条最终形态：按压/长按不再缩放、不再有任何阴影——只有左右弹性伸长（is-hold/is-open 的
+   margin 伸长由 explorer-ui.css 契约规则承载；这里给任意宿主一个同语言的轻量按压反馈） */
+.ohx-capsule.is-press { margin: 0 -4px; }
+.ohx-capsule.is-hold { border-color: var(--accent); }
+.ohx-capsule.is-open { cursor: text; border-color: var(--accent); }
 .ohx-capsule-badge {
-  position: absolute;
-  top: -4px;
-  right: -2px;
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
   border-radius: 999px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary, #fff);
   font-size: 10px;
   line-height: 16px;
   font-weight: 600;
   text-align: center;
+  flex: none;
 }
-
-/* ── 原位语音胶囊（语音进行中出现在胶囊同一位置；点=收尾，上划=取消） ── */
-.ohx-voicepill { cursor: pointer; touch-action: none; }
-.ohx-voicepill.is-press { transform: translateX(-50%) scale(0.98); }
+/* 占位文字（常态：看起来像输入框的按钮，不是输入框） */
+.ohx-capsule-ph {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-3);
+}
+/* 胶囊内嵌输入框（展开态真输入框；explorer-ui.css 已有 .ex-bbar-center 版，这里兜底任意宿主） */
+.ohx-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+  padding: 0;
+}
+/* 收音中：波纹条吃满胶囊（VoiceBar 复用 dock-voicebar，点位动画引擎在 ChatDock 不变） */
+.ohx-capsule-voice { display: flex; align-items: center; flex: 1; min-width: 0; }
+.ohx-capsule.is-voice { cursor: grabbing; }
 
 /* ── 面板头部的 搜索|OH 模式切换 ── */
 .ohx-modeswitch {
@@ -226,4 +256,29 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+/* ── dev-explorer 二轮：面板从胶囊顶边「长出来」 ──
+   定位三件套（left/width/bottom）由 ChatDock 量 .ohx-capsule rect 后内联写入；
+   这里只管形态：底部中心为变换原点，入场 scaleY(0.5)+上浮 8px → 展平，160ms；
+   关闭反向缩回胶囊（is-closing 通道）；语音滑入（is-slide）同样走 grow，不叠加旧动画。 */
+@keyframes ohx-grow {
+  from { opacity: 0; transform: scaleY(0.5) translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes ohx-shrink {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: scaleY(0.5) translateY(8px); }
+}
+.dock-panel.ohx-panel-grow {
+  transform: none;
+  transform-origin: bottom center;
+  animation: ohx-grow 160ms ease-out both;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+.dock-panel.ohx-panel-grow.is-slide { animation: ohx-grow 160ms ease-out both; }
+.dock-panel.ohx-panel-grow.is-closing {
+  animation: ohx-shrink 140ms ease-in both;
+  pointer-events: none;
 }

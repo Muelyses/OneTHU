@@ -22,7 +22,6 @@ import {
 } from "react";
 import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
-import { IconSearch } from "../components/Icons.js";
 import remarkGfm from "remark-gfm";
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
@@ -100,6 +99,84 @@ export function dockBadgeSnapshot(): number {
 export function useDockBadge(): number {
   return useSyncExternalStore(subscribeDockBadge, dockBadgeSnapshot, () => 0);
 }
+/* ══════════ dev-explorer 二轮：胶囊 ⇄ 面板的共享 UI 通道 ══════════
+   OhCapsule（底栏胶囊）与面板是一个连续交互体：胶囊常态像输入框、展开后**就是**输入框、
+   收音时是波纹条。这些状态活在 ChatDock，经只读快照外送（useDockUi）；草稿文本双向
+   （胶囊输入框 ⇄ 发送按钮）经 dockInput 通道；提交动作经 dockSubmitInput() 注册表。 */
+
+export type DockVoice = "off" | "arming" | "listening" | "sending";
+
+interface DockUiState {
+  /** 面板可见（含退场动画期）——胶囊据此切 is-open（真输入框） */
+  open: boolean;
+  /** 面板形态：search=搜索（胶囊输入=检索词）/ oh=对话（胶囊输入=消息草稿） */
+  mode: OhMode;
+  voice: DockVoice;
+  /** 波纹条提示文案（与面板内同源：取消/授权/松手直发…） */
+  hint: string;
+}
+
+let dockUi: DockUiState = { open: false, mode: "oh", voice: "off" as DockVoice, hint: "" };
+const dockUiListeners = new Set<() => void>();
+function setDockUi(patch: Partial<DockUiState>): void {
+  let changed = false;
+  for (const k of Object.keys(patch) as Array<keyof DockUiState>) {
+    if (dockUi[k] !== patch[k]) {
+      changed = true;
+      break;
+    }
+  }
+  if (!changed) return;
+  dockUi = { ...dockUi, ...patch };
+  for (const f of dockUiListeners) f();
+}
+export function subscribeDockUi(f: () => void): () => void {
+  dockUiListeners.add(f);
+  return () => {
+    dockUiListeners.delete(f);
+  };
+}
+export function dockUiSnapshot(): DockUiState {
+  return dockUi;
+}
+/** 组件里读胶囊 ⇄ 面板共享 UI 态（OhCapsule 的形态切换真源） */
+export function useDockUi(): DockUiState {
+  return useSyncExternalStore(subscribeDockUi, dockUiSnapshot, dockUiSnapshot);
+}
+
+/** 语音提示文案（纯函数：渲染与 dockUi 同步共用一份，永不打架） */
+function voiceHintOf(voice: DockVoice, cancelling: boolean): string {
+  if (cancelling && voice !== "off") return "松开取消";
+  if (voice === "arming") return "首次需弹窗允许";
+  if (voice === "sending") return "正在发送…";
+  return explorerPrefsSnapshot().voiceTarget === "search" ? "松手去搜索" : "松手直发 OH";
+}
+
+/* 草稿通道：胶囊输入框是唯一编辑入口（面板内不再有第二个文本框），发送按钮读同一份 */
+let dockInputValue = "";
+const dockInputListeners = new Set<() => void>();
+export function setDockInputValue(v: string): void {
+  if (dockInputValue === v) return;
+  dockInputValue = v;
+  for (const f of dockInputListeners) f();
+}
+export function dockInputSnapshot(): string {
+  return dockInputValue;
+}
+export function subscribeDockInput(f: () => void): () => void {
+  dockInputListeners.add(f);
+  return () => {
+    dockInputListeners.delete(f);
+  };
+}
+/** 组件内注册的提交动作（mode=oh：草稿作为消息直发） */
+let dockSubmitFn: ((text: string) => void) | null = null;
+export function dockSubmitInput(): void {
+  const t = dockInputValue.trim();
+  if (!t) return;
+  dockSubmitFn?.(t);
+}
+
 /** 灵动岛：长按判定时长（毫秒）——超过即进入语音，未超过视为点击 */
 const VOICE_HOLD_MS = 450;
 /** 面板高度偏好（顶部把手拖出来的高度；没存过就用 CSS 的 62vh 默认） */
@@ -131,8 +208,9 @@ const SUB_LINGER_MS = 240;
 
 /** 语音态条内内容（灵动岛与面板入口条共用）：只剩**随音量跳动的波纹点** + 一行提示。
  *  识别出的字一律放条**上方**那层雾状字幕带（VoiceSubtitle）——两处不重复显示（Lead 2026-10-10 口径）。
- *  点的高度/透明度由 ChatDock 的电平循环直接写 DOM 样式（不进 React 状态，60fps 不重渲染）。 */
-function VoiceBar({ hint }: { hint: string }): ReactNode {
+ *  点的高度/透明度由 ChatDock 的电平循环直接写 DOM 样式（不进 React 状态，60fps 不重渲染）。
+ *  dev-explorer 二轮：导出给 OhCapsule——收音中的胶囊本体就是这条波纹。 */
+export function VoiceBar({ hint }: { hint: string }): ReactNode {
   return (
     <span className="dock-voicebar">
       <span className="dock-wave" aria-hidden="true">
@@ -469,9 +547,8 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
 /** dev-explorer：面板搜索模式的内容面（ChatDock 与悬浮球各自渲染外壳，这里只服务 dock）。
  *  空查询 = 最近 10 条搜索跳转记录（explorerPrefs）；有查询 = searchAll 三源命中；
  *  零命中 = 「问小 (OH)」行（onAskOh → 同帧切 OH 模式并把问题发出去）。 */
-function OhSearchPane({ query, onQuery, onClose, onAskOh, onNotice }: {
+function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
   query: string;
-  onQuery: (q: string) => void;
   onClose: () => void;
   onAskOh: (q: string) => void;
   onNotice: (n: string | null) => void;
@@ -485,24 +562,9 @@ function OhSearchPane({ query, onQuery, onClose, onAskOh, onNotice }: {
     onClose();
   };
 
+  /* dev-explorer 二轮：搜索框已上移进胶囊（ohx-input 是唯一输入口），这里只渲染结果与记录 */
   return (
     <div className="ohx-searchpane">
-      <div className="ohx-searchbar">
-        <IconSearch width={15} height={15} />
-        <input
-          /* 挂载即聚焦：搜索模式打开时键盘/光标就位 */
-          autoFocus
-          value={query}
-          onChange={(e) => onQuery(e.target.value)}
-          placeholder="搜功能、作业、文件、设置…"
-          aria-label="搜索"
-        />
-        {query ? (
-          <button className="btn dock-btn dock-ico" aria-label="清空" onClick={() => onQuery("")}>
-            <IconX />
-          </button>
-        ) : null}
-      </div>
       {!q ? (
         <div className="ohx-history">
           <div className="ohx-history-head">最近搜索</div>
@@ -589,8 +651,9 @@ export function ChatDock(): ReactNode {
   const [voiceFail, setVoiceFail] = useState<string | null>(null); // 失败原因：在本次长按的宿主上亮 2.6s 再散
   const [voiceHost, setVoiceHost] = useState<"island" | "entry">("island"); // 失败文案落在哪（岛 / 面板入口条）
   const [pressing, setPressing] = useState(false); // 按住未到长按阈值：给一点「准备」反馈
-  const [inputMode, setInputMode] = useState(false); // 文本输入框是否展开（默认收起，只留入口按钮）
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  /* dev-explorer 二轮：文本输入唯一入口 = 底栏胶囊（OhCapsule 的 ohx-input）。
+     面板内不再有第二个文本框；草稿走 dockInput 通道（胶囊 ⇄ 发送按钮同源）。 */
+  const draft = useSyncExternalStore(subscribeDockInput, dockInputSnapshot, dockInputSnapshot);
   /* 需求 4（TTS）：朗读状态。autoSpeak 默认 false＝静音，所有自动朗读路径都靠 lib/tts 现读偏好兜底；
      组件这份 prefs 只负责界面一致（按钮文案/状态与设置页同一份快照）。 */
   const prefs = useVoicePrefs();
@@ -612,7 +675,6 @@ export function ChatDock(): ReactNode {
   const cancelArmedRef = useRef(false);
   const [cancelling, setCancelling] = useState(false); // 只驱动文案与类名（颜色连续量走 --dock-cancel）
   const [msgs, setMsgs] = useState<ViewMsg[]>([]);
-  const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [stream, setStream] = useState<string | null>(null);
   const [trace, setTrace] = useState<string[]>([]);
@@ -717,8 +779,7 @@ export function ChatDock(): ReactNode {
   const toggle = useCallback((): void => {
     if (open) {
       localStorage.setItem(OPEN_KEY, "0");
-      setInputMode(false); // 收起面板 = 回到入口态（下次打开仍是「点击输入，长按说话」）
-      setClosing(true); // 先演退场动画，再卸载
+      setClosing(true); // 先演退场动画，再卸载（缩回胶囊）
       // 关面板即允许下次重开重水合：期间 IM/云盘可能写入了新轮次（2026-10-10）
       hydratedFor.current = null;
       if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -755,14 +816,13 @@ export function ChatDock(): ReactNode {
     setMode(m);
     if (m === "search") {
       setSearchQuery(presetQuery ?? "");
-      setInputMode(false); // 搜索态不显示对话输入条
+      setDockInputValue(presetQuery ?? ""); // 胶囊输入框是唯一编辑入口：预填词进胶囊
     } else {
       stickBottom();
     }
   }, [pid, stickBottom]);
   const closePanelNow = useCallback((): void => {
     localStorage.setItem(OPEN_KEY, "0");
-    setInputMode(false);
     setClosing(true);
     hydratedFor.current = null;
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -1073,6 +1133,32 @@ export function ChatDock(): ReactNode {
     void send(ohReq.text);
   }, [ohReq, send]);
 
+  /* dev-explorer 二轮：面板从胶囊顶边「长出来」——量可见胶囊的 rect（left/width），
+     bottom 由 explorer-ui.css 契约变量给出；resize/转窗/布局落定后重量。 */
+  const [capsuleRect, setCapsuleRect] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    if (!open && !closing) {
+      setCapsuleRect(null);
+      return;
+    }
+    const measure = (): void => {
+      const all = Array.from(document.querySelectorAll<HTMLElement>(".ohx-capsule"));
+      const el = all.find((n) => n.offsetParent !== null) ?? all[0];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.width > 0) setCapsuleRect({ left: r.left, width: r.width });
+    };
+    measure();
+    const t1 = window.setTimeout(measure, 60); // 底栏/顶栏布局动画落定后补量
+    const t2 = window.setTimeout(measure, 260);
+    window.addEventListener("resize", measure);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.removeEventListener("resize", measure);
+    };
+  }, [open, closing, mode]);
+
   /* dev-explorer：OH 命令总线订阅（胶囊条/悬浮球/首页搜索框都从这里进来）。
      handler 每渲染刷新进 ref，订阅只在挂载时建立一次——回调永远拿到最新状态。 */
   const cmdHandler = useRef<(cmd: OhCommand) => void>(() => undefined);
@@ -1091,12 +1177,14 @@ export function ChatDock(): ReactNode {
       openPanelAs(cmd.mode, cmd.presetQuery);
       return;
     }
-    // voice：第一条＝开始收音（胶囊按住跨过 450ms 时发）；收音中再收＝松手直发
+    // voice：第一条＝开始收音（胶囊按住跨过 450ms 时发），**窗同时弹出**（用户口径：
+    // 波纹在胶囊里、对话区在头顶窗里）；收音中再收＝松手直发
     if (voicePhaseRef.current === "idle") {
       setVoiceHost("island");
       setVoiceFail(null);
       document.body.classList.add("dock-voice-lock");
       voicePhaseRef.current = "starting";
+      openPanelAs("oh");
       void enterVoice();
       return;
     }
@@ -1108,6 +1196,27 @@ export function ChatDock(): ReactNode {
   useEffect(() => {
     setDockBadge(unread);
   }, [unread]);
+  /* 胶囊 ⇄ 面板共享 UI 外送：开合/形态随渲染态；语音/提示随语音态（voiceHintOf 单一真源） */
+  useEffect(() => {
+    setDockUi({ open: open || closing, mode });
+  }, [open, closing, mode]);
+  useEffect(() => {
+    setDockUi({ voice, hint: voiceHintOf(voice, cancelling) });
+  }, [voice, cancelling]);
+  /* 草稿提交（胶囊输入框 Enter / 面板发送按钮 都走 dockSubmitInput → 这里） */
+  useEffect(() => {
+    dockSubmitFn = (t: string) => {
+      setDockInputValue("");
+      void send(t);
+    };
+    return () => {
+      dockSubmitFn = null;
+    };
+  }, [send]);
+  /* 搜索态：胶囊输入即检索词（单向镜像 dockInput → searchQuery；不等值才写，防打环） */
+  useEffect(() => {
+    if (mode === "search" && searchQuery !== draft) setSearchQuery(draft);
+  }, [draft, mode, searchQuery]);
 
   const runCmd = async (command: string, input = ""): Promise<any> => {
     if (!pid) return null;
@@ -1378,22 +1487,6 @@ export function ChatDock(): ReactNode {
     };
   }, [msgs]);
 
-  // 文本输入模式展开即聚焦（移动端顺势弹出键盘）
-  useEffect(() => {
-    if (!inputMode) return;
-    const el = inputRef.current;
-    if (!el) return;
-    el.focus({ preventScroll: true });
-    /* 用户实录「点一下只闪一下、非得长按」：单击展开那一拍，浏览器对这次点击的默认处理
-       可能在 focus 之后又把焦点带走 → 输入框刚展开就失焦。下一帧确认一次（仍在同一次
-       用户手势的活跃窗口内，安卓也会认这个 focus 弹键盘）。 */
-    const raf = window.requestAnimationFrame(() => {
-      const cur = inputRef.current;
-      if (cur && document.activeElement !== cur) cur.focus({ preventScroll: true });
-    });
-    return () => window.cancelAnimationFrame(raf);
-  }, [inputMode]);
-
   /* 本机 TTS 能力（一次探测）：桌面端插件如实回 false → 不渲染朗读按钮，也不会出现点不动的死状态 */
   useEffect(() => {
     void ttsSupported().then(setTtsOk);
@@ -1621,9 +1714,7 @@ export function ChatDock(): ReactNode {
    *  输入框里**已经有字**时把长按让给选词/光标（空着才当「长按说话」）。 */
   const holdMine = (target: EventTarget | null): boolean => {
     const el = target instanceof Element ? target : null;
-    if (el?.closest(".dock-attach")) return false;
-    if (!inputMode) return true;
-    return !(el?.closest(".dock-input") && input.trim().length > 0);
+    return !el?.closest(".dock-attach"); // 输入框已上移进胶囊：只有附件三入口不接管长按
   };
   const onRowPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -1635,8 +1726,8 @@ export function ChatDock(): ReactNode {
       /* 捕获失败仍可长按 */
     }
   };
-  /** 未到阈值 = 单击：展开输入框（已在输入态就不动，免得和输入框抢焦点） */
-  const onRowPointerUp = (): void => endHold(() => { if (!inputMode) setInputMode(true); });
+  /** 未到阈值 = 单击：输入口在胶囊里，这里不做事（长按语音照旧） */
+  const onRowPointerUp = (): void => endHold(() => undefined);
   const onRowLostCapture = (): void => {
     if (voicePhaseRef.current !== "idle") void finishVoice(true);
   };
@@ -1759,24 +1850,11 @@ export function ChatDock(): ReactNode {
 
   /* 面板底栏：手势（点 = 展开输入框、长按 = 语音）统一挂在**容器**上（见 onRowPointerDown），
      这样进输入态之后长按照样能重新进语音。这里只留键盘可达性。 */
-  const onEntryKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>): void => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      setInputMode(true);
-    }
-  };
-
   /* dev-explorer：面板不再只属于 OH 对话——搜索模式是宿主侧能力，无 Harness 进程也要能开。
      OH 对话本身仍需 pid（send/runCmd 各自有 !pid 守卫）。 */
-  if (!pid && !(open && mode === "search")) return null;
+  if (!pid && !open) return null;
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
-  const voiceHint = cancelling && voice !== "off"
-    ? "松开取消"
-    : voice === "arming"
-      ? "首次需弹窗允许"
-      : voice === "sending"
-        ? "正在发送…"
-        : explorerPrefsSnapshot().voiceTarget === "search" ? "松手去搜索" : "松手直发 OH";
+  const voiceHint = voiceHintOf(voice, cancelling);
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
   const subText = cancelling && voice !== "off"
     ? "松开取消"
@@ -1816,10 +1894,17 @@ export function ChatDock(): ReactNode {
 
       {open || closing ? (
         <div
-          className={"dock-panel" + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
+          className={"dock-panel" + (capsuleRect ? " ohx-panel-grow" : "") + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
           role="dialog"
           aria-label="OneTHU Harness 对话"
-          style={panelH != null ? { height: `${panelH}px`, minHeight: 0 } : undefined}
+          style={{
+            /* 从胶囊顶边长出来：left/width 量可见胶囊的 rect；bottom 走 explorer-ui 契约变量。
+               量不到胶囊（极端：底栏未渲染）时不挂 ohx-panel-grow，退回旧居中形态，绝不错位。 */
+            ...(capsuleRect
+              ? { left: capsuleRect.left, width: capsuleRect.width, bottom: "calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 4px)" }
+              : null),
+            ...(panelH != null ? { height: `${panelH}px`, minHeight: 0 } : null),
+          }}
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
@@ -1842,7 +1927,7 @@ export function ChatDock(): ReactNode {
             {/* dev-explorer：搜索 | OH 二合一开关（同一扇窗两种形态；小窗可拖、气泡不动的口径不变） */}
             <div className="ohx-modeswitch" role="tablist" aria-label="搜索或对话">
               <button role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</button>
-              <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => setMode("oh")}>OH</button>
+              <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</button>
             </div>
             <div className="dock-ops">
               <button className="btn dock-btn dock-ico" title="新会话" aria-label="新会话" onClick={() => void newSession()}>
@@ -1891,7 +1976,6 @@ export function ChatDock(): ReactNode {
           {mode === "search" ? (
             <OhSearchPane
               query={searchQuery}
-              onQuery={setSearchQuery}
               onClose={toggle}
               onAskOh={(q) => {
                 setMode("oh");
@@ -1916,7 +2000,7 @@ export function ChatDock(): ReactNode {
             onSpeak={speakOne}
             scrollRef={scrollRef}
             onSend={(t) => void send(t)}
-            onPick={(t) => { setInput(t); setInputMode(true); }}
+            onPick={(t) => setDockInputValue(t)}
             onToggleThink={() => setThinkOpen((o) => !o)}
             onMsgsClick={onMsgsClick}
           />
@@ -1924,14 +2008,14 @@ export function ChatDock(): ReactNode {
           {sheetFiles ? (
             <AttachActionsSheet files={sheetFiles} onClose={attachClosed} onDone={attachDone} />
           ) : null}
-          {/* 一体化底栏（本轮 07）：附件三入口 + 输入/语音入口 + 发送都在这条栏里；
-              窄屏放不下时附件条自动折到上一行（flex-wrap），不再多占一层。
-              dev-explorer：search 态收起对话输入条（搜索框已在上方）。 */}
+          {/* 一体化底栏（本轮 07 → dev-explorer 二轮）：文本输入已上移进底栏胶囊（ohx-input
+              是唯一输入口），这行只剩附件三入口 + 发送/打断；长按语音照旧（胶囊与这里都行）。
+              search 态整行收起（无可发之物）。 */}
           {mode === "oh" ? (
           <div
             className="dock-input-row"
             ref={rowRef}
-            /* ③③ 长按说话挂容器：入口态/输入态都能用（EditText/input 会吞长按，所以不挂它们） */
+            /* ③③ 长按说话挂容器：EditText/input 会吞长按，所以挂容器不挂子件 */
             onPointerDown={onRowPointerDown}
             onPointerMove={onHoldMove}
             onPointerUp={onRowPointerUp}
@@ -1941,68 +2025,21 @@ export function ChatDock(): ReactNode {
             <div className="dock-attach">
               <AttachTray onPicked={attachPicked} />
             </div>
-            {inputMode ? (
-              <textarea
-                ref={inputRef}
-                className="dock-input"
-                rows={1}
-                placeholder={busy ? "执行中，可打断…" : "问点什么，回车发送"}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                /* ③② 失焦回入口态——**有条件**：只有「输入框为空 且 焦点确实离开了底栏」才收，
-                   否则「单击展开」那一拍会被浏览器默认的焦点转移立刻收起（上次的"点一下闪一下"）。 */
-                onBlur={() => {
-                  if (input.trim()) {
-                    setInput(""); // 有内容：保留文本，不收（别吞用户打了一半的字）
-                    return;
-                  }
-                  window.setTimeout(() => {
-                    const ae = document.activeElement;
-                    const row = rowRef.current;
-                    if (!ae || !row || !row.contains(ae)) setInputMode(false);
-                  }, 0);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                    e.preventDefault();
-                    const t = input;
-                    setInput("");
-                    void send(t);
-                  } else if (e.key === "Escape") {
-                    setInputMode(false);
-                  }
-                }}
-              />
+            {voice !== "off" && voiceHost === "entry" ? (
+              <span className="dock-entry is-voice" aria-hidden="true"><VoiceBar hint={voiceHint} /></span>
             ) : (
-              /* 默认形态：一行入口按钮（点=输入框，长按=语音）——不再是常驻的「问点什么」输入框 */
-              <button
-                className={"dock-entry" + (voice !== "off" ? " is-voice" : "") + (voiceFail && voiceHost === "entry" ? " is-fail" : "")}
-                aria-label="点击输入，长按说话"
-                /* ③③ 手势统一挂在下面的底栏容器上（这样输入态也能长按说话；
-                   输入框自己会吃掉长按，所以不能挂在这颗按钮上）。键盘仍从这里进输入态。 */
-                onKeyDown={onEntryKeyDown}
-              >
-                {voice !== "off" ? (
-                  <VoiceBar hint={voiceHint} />
-                ) : voiceFail && voiceHost === "entry" ? (
-                  <span className="dock-entry-fail">{voiceFail}</span>
-                ) : (
-                  <span className="dock-entry-label">点击输入，长按说话</span>
-                )}
-              </button>
+              <span className="dock-entry-label" style={{ opacity: 0.55, fontSize: 12 }}>
+                {voiceFail && voiceHost === "entry" ? voiceFail : "输入在下方胶囊里 · 长按这里也能说话"}
+              </span>
             )}
             {busy ? (
               <button className="btn dock-send" aria-label="打断" onClick={stop}>■</button>
-            ) : inputMode ? (
+            ) : (
               <button
-                className="btn btn-primary dock-send" aria-label="发送" disabled={!input.trim()}
-                onClick={() => {
-                  const t = input;
-                  setInput("");
-                  void send(t);
-                }}
+                className="btn btn-primary dock-send" aria-label="发送" disabled={!draft.trim()}
+                onClick={() => dockSubmitInput()}
               >↑</button>
-            ) : null}
+            )}
           </div>
           ) : null}
           {history != null ? (

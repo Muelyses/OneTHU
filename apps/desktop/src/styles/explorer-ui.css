@@ -7,10 +7,6 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── 顶栏小件精修（explorer.css 的增量）：间距节奏与禁用态 ── */
-.tb-icon:disabled {
-  opacity: 0.35;
-  pointer-events: none;
-}
 .tb-icon:active:not(:disabled) { transform: scale(0.94); }
 .tb-home { margin-right: 2px; }
 .explorer-topbar .ex-tabstrip { margin: 0 2px; }
@@ -18,6 +14,7 @@
 /* ── 顶栏标签条 TabStrip ── */
 .ex-tabstrip {
   display: flex;
+  flex-wrap: nowrap; /* global.css 的讨论区 .tabstrip{flex-wrap:wrap} 会撞车——显式钉死单行滚动 */
   align-items: center;
   gap: 3px;
   min-width: 0;
@@ -113,7 +110,7 @@
   bottom: 0;
   z-index: 80;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   height: var(--explorer-bar-h, 48px);
   padding: 0 10px;
@@ -168,7 +165,8 @@
   box-shadow: 0 0 0 2px var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
 }
 .ex-bbar-center {
-  justify-self: center;
+  justify-self: stretch; /* 占满中槽整列：胶囊=长条（收缩会导致只有内容宽，用户拍板的长条形态） */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -450,31 +448,86 @@
   }
 }
 
-/* ══════════ OH 胶囊签名样式（覆盖 explorer-oh.css 的素白底；higher specificity） ══════════
-   OneTHU 设计语言 = 黑 primary pill；底栏中央这颗是整个革命的招牌，必须立得住。 */
+/* ══════════ OH 胶囊：白色长条输入位（用户定案）══════════
+   占满左右按钮之间的整段；白底细边框无阴影；常态=占位文字「搜索或问小OH」；
+   按住/展开时左右弹性伸长（margin 负值扩张，快贴上两侧按钮）。 */
 .ex-bbar-center .ohx-capsule {
-  height: 32px;
-  min-width: 56px;
+  width: 100%;
+  height: 36px;
+  min-width: 0;
   padding: 0 14px;
   border-radius: 999px;
-  background: var(--primary);
-  color: var(--on-primary);
-  border: none;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--primary) 26%, transparent);
+  background: var(--surface);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  box-shadow: none;
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 0 36px; /* 常态比满短一点点（两侧各留 36px）；点击/长按弹满 */
+  transition: margin var(--dur-3, 0.3s) var(--md-sys-motion-easing-spring, cubic-bezier(0.34, 1.4, 0.64, 1)), border-color var(--dur-2) ease, background var(--dur-2) ease;
 }
-.ex-bbar-center .ohx-capsule:hover { background: var(--primary); }
-.ex-bbar-center .ohx-capsule.is-press {
-  background: color-mix(in srgb, var(--primary) 86%, var(--accent));
-  box-shadow: 0 1px 6px color-mix(in srgb, var(--primary) 30%, transparent);
-}
+.ex-bbar-center .ohx-capsule:hover { border-color: var(--md-sys-color-outline-variant, var(--text-3)); }
+.ex-bbar-center .ohx-capsule.is-press { transform: none; background: var(--surface); }
 .ex-bbar-center .ohx-capsule.is-hold {
-  background: color-mix(in srgb, var(--primary) 92%, var(--accent));
-  box-shadow: 0 0 0 3px var(--accent-soft), 0 2px 12px color-mix(in srgb, var(--primary) 26%, transparent);
+  transform: none;
+  margin: 0; /* 弹满：快贴上标签页与 OneGO */
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.ex-bbar-center .ohx-capsule.is-open {
+  margin: 0;
+  border-color: var(--accent);
+  color: var(--text-1);
+  cursor: text;
+  box-shadow: none;
 }
 .ex-bbar-center .ohx-capsule-badge {
+  position: static;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
   background: var(--accent);
-  color: var(--on-primary);
-  box-shadow: 0 0 0 2px var(--primary);
+  color: var(--on-primary, #fff);
+  box-shadow: none;
+  flex: none;
+}
+/* 胶囊内嵌输入框（展开态）：自然占满整条胶囊——无边框/无 focus 圈/无短框底 */
+.ex-bbar-center .ohx-capsule .ohx-input {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+  caret-color: var(--accent);
+}
+.ex-bbar-center .ohx-capsule .ohx-input:focus,
+.ex-bbar-center .ohx-capsule .ohx-input:focus-visible {
+  outline: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ex-bbar-center .ohx-capsule .ohx-capsule-ph {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font-size: 13px;
+}
+/* 底栏安全区：全面屏手势条不压内容 */
+.ex-bbar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* 底栏安全区：全面屏手势条不压内容 */

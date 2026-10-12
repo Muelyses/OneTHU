@@ -38,26 +38,12 @@
 }
 .tb-home {
   white-space: nowrap; /* (One THU) 品牌标不得折行 */
+  min-width: max-content; /* grid 内的 .word 会被 flex 行挤成竖排——钉死 max-content */
   display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
-  border-radius: 8px;
-  color: var(--text-1);
   flex: none;
 }
-.tb-home:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); }
 .tb-spring { flex: 1 1 0; }
-.tb-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  color: var(--text-2);
-  flex: none;
-}
-.tb-icon:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); color: var(--text-1); }
 
 /* ── 内容区：顶栏 sticky 不占位差，底栏固定 → 内容给底栏让位 ── */
 .explorer-content {
@@ -110,30 +96,34 @@
   overflow-x: auto;
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  gap: 4px;
   margin: 0 auto;
-  background: var(--md-sys-color-surface-container-lowest, var(--surface));
+  /* 无灰槽容器（用户点名的灰色按钮）：项自己成 pill，非活动=描边中性，活动=黑 primary */
 }
 .settings-seg-item {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 8px;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: var(--r-pill, 999px);
+  border: 1px solid var(--md-sys-color-outline-variant, var(--border));
+  background: transparent;
   font-size: var(--text-xs, 12px);
   color: var(--text-2);
   white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--dur-2) ease, color var(--dur-2) ease, background var(--dur-2) ease;
 }
+.settings-seg-item:hover { color: var(--text-1); border-color: var(--text-3); }
 .settings-seg-item.is-active {
-  background: var(--primary);
-  color: var(--on-primary);
+  background: var(--md-sys-color-primary, var(--primary));
+  border-color: var(--md-sys-color-primary, var(--primary));
+  color: var(--md-sys-color-on-primary, var(--on-primary));
 }
 .settings-close { margin-left: auto; }
-.settings-seg-item.is-active:hover { background: var(--primary); }
+.settings-seg-item.is-active:hover { background: var(--md-sys-color-primary, var(--primary)); }
 .explorer-settings-body {
   flex: 1;
   overflow-y: auto;

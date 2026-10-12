@@ -127,7 +127,7 @@ function TopBar(): ReactNode {
         <BrandLogo size={12} />
       </button>
       <button
-        className="tb-icon"
+        className="icon-btn"
         onClick={() => duplicateTab(activeId)}
         disabled={!canDup}
         title="复制当前标签页（独立实例）"
@@ -137,10 +137,10 @@ function TopBar(): ReactNode {
       </button>
       <TabStrip />
       <span className="tb-spring" aria-hidden="true" />
-      <button className="tb-icon" onClick={openPalette} title={"搜索功能（" + shortcutLabel() + "）"} aria-label="搜索功能">
+      <button className="icon-btn" onClick={openPalette} title={"搜索功能（" + shortcutLabel() + "）"} aria-label="搜索功能">
         <IconSearch width={16} height={16} />
       </button>
-      <button className="tb-icon" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
+      <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
         <IconSettings width={16} height={16} />
       </button>
     </header>

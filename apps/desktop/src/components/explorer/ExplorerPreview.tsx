@@ -26,6 +26,13 @@ const SCENARIOS: Record<string, () => void> = {
   overlay: () => window.setTimeout(() => openSettings("settings"), 250),
   "overlay-oh": () => window.setTimeout(() => openSettings("oh"), 250),
   search: () => window.setTimeout(() => requestOhPanel("search", "音色"), 350),
+  "search-oh": () => window.setTimeout(() => {
+    requestOhPanel("search", "音色");
+    window.setTimeout(() => {
+      const tabs = document.querySelectorAll(".dock-panel [role='tab']");
+      tabs[1]?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+    }, 700);
+  }, 350),
   ctxmenu: () => {
     SCENARIOS.tabs!();
     window.setTimeout(() => {

@@ -1,7 +1,6 @@
 /**
  * 「搜索与胶囊」设置分节（dev-explorer，explorer-oh 专属；Lead 负责挂进设置页）：
  *  - 点击胶囊默认打开：搜索 / OH（explorerPrefs.capsuleTap）
- *  - 长按语音松手后：直发 OH / 开搜索预填（explorerPrefs.voiceTarget）
  *  - 最近搜索记录：条数展示 + 两次点击确认清空
  * 行式骨架与 .setting-row 一族对齐（不改 Settings.tsx，样式全在 explorer-oh.css）。
  */
@@ -65,13 +64,7 @@ export function ExplorerPrefsSection(): ReactNode {
         </div>
         <PrefSeg value={prefs.capsuleTap} onChange={(v) => setExplorerPrefs({ capsuleTap: v })} />
       </div>
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">长按语音松手后</div>
-          <div className="setting-desc">直发 OH＝识别文本作为消息发出；开搜索＝把文本填进搜索框让你挑</div>
-        </div>
-        <PrefSeg value={prefs.voiceTarget} onChange={(v) => setExplorerPrefs({ voiceTarget: v })} />
-      </div>
+      {/* voiceTarget 已废弃（用户定案）：胶囊/语音只产生文字，送谁由小窗内的搜索|OH 切换决定 */}
       <div className="setting-row">
         <div>
           <div className="setting-title">最近搜索记录</div>

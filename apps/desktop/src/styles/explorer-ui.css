@@ -452,6 +452,8 @@
    占满左右按钮之间的整段；白底细边框无阴影；常态=占位文字「搜索或问小OH」；
    按住/展开时左右弹性伸长（margin 负值扩张，快贴上两侧按钮）。 */
 .ex-bbar-center .ohx-capsule {
+  display: flex; /* 必须显式 flex：button 计算成 block 时 input(width:100%) 会掉到下一行 */
+  flex-wrap: nowrap;
   width: 100%;
   height: 36px;
   min-width: 0;

@@ -145,11 +145,11 @@ export function useDockUi(): DockUiState {
 }
 
 /** 语音提示文案（纯函数：渲染与 dockUi 同步共用一份，永不打架） */
-function voiceHintOf(voice: DockVoice, cancelling: boolean): string {
+function voiceHintOf(voice: DockVoice, cancelling: boolean, mode: OhMode): string {
   if (cancelling && voice !== "off") return "松开取消";
   if (voice === "arming") return "首次需弹窗允许";
   if (voice === "sending") return "正在发送…";
-  return explorerPrefsSnapshot().voiceTarget === "search" ? "松手去搜索" : "松手直发 OH";
+  return mode === "search" ? "松手搜索" : "松手直发 OH";
 }
 
 /* 草稿通道：胶囊输入框是唯一编辑入口（面板内不再有第二个文本框），发送按钮读同一份 */
@@ -801,6 +801,8 @@ export function ChatDock(): ReactNode {
      mode = 面板当前形态（search=搜索 / oh=对话）；searchQuery 只在 search 态有意义。
      开/收辅助与 toggle 同一套持久化与时序（水合标记、退场定时器），供命令总线复用。 */
   const [mode, setMode] = useState<OhMode>("oh");
+  const modeRef = useRef<OhMode>("search");
+  modeRef.current = mode;
   const [searchQuery, setSearchQuery] = useState("");
   const openPanelAs = useCallback((m: OhMode, presetQuery?: string): void => {
     localStorage.setItem(OPEN_KEY, "1");
@@ -1201,18 +1203,20 @@ export function ChatDock(): ReactNode {
     setDockUi({ open: open || closing, mode });
   }, [open, closing, mode]);
   useEffect(() => {
-    setDockUi({ voice, hint: voiceHintOf(voice, cancelling) });
+    setDockUi({ voice, hint: voiceHintOf(voice, cancelling, mode) });
   }, [voice, cancelling]);
   /* 草稿提交（胶囊输入框 Enter / 面板发送按钮 都走 dockSubmitInput → 这里） */
   useEffect(() => {
     dockSubmitFn = (t: string) => {
+      /* 用户定案：胶囊是独立输入组件，文字送给谁由上方切换按钮（mode）决定 */
+      if (mode === "search") return; /* 检索词经 live 镜像已实时生效，Enter 无事可做 */
       setDockInputValue("");
       void send(t);
     };
     return () => {
       dockSubmitFn = null;
     };
-  }, [send]);
+  }, [send, mode]);
   /* 搜索态：胶囊输入即检索词（单向镜像 dockInput → searchQuery；不等值才写，防打环） */
   useEffect(() => {
     if (mode === "search" && searchQuery !== draft) setSearchQuery(draft);
@@ -1610,9 +1614,9 @@ export function ChatDock(): ReactNode {
       showVoiceFail("小OH 正在回答，稍后再长按说");
       return;
     }
-    /* dev-explorer：发送目标可设（explorerPrefs.voiceTarget，现读现判不吃渲染快照）——
-       oh = 直发对话（原行为）；search = 开面板搜索模式把文本当 query 预填（不自动跳转，让用户挑）。 */
-    if (explorerPrefsSnapshot().voiceTarget === "search") {
+    /* dev-explorer（用户定案）：胶囊/语音只负责产生文字，送给谁由上方切换按钮（mode）决定——
+       search = 文本预填进胶囊（live 镜像即时更新窗内检索结果）；oh = 直发对话。 */
+    if (modeRef.current === "search") {
       openPanelAs("search", final);
       return;
     }
@@ -1854,7 +1858,7 @@ export function ChatDock(): ReactNode {
      OH 对话本身仍需 pid（send/runCmd 各自有 !pid 守卫）。 */
   if (!pid && !open) return null;
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
-  const voiceHint = voiceHintOf(voice, cancelling);
+  const voiceHint = voiceHintOf(voice, cancelling, mode);
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
   const subText = cancelling && voice !== "off"
     ? "松开取消"
@@ -2012,26 +2016,12 @@ export function ChatDock(): ReactNode {
               是唯一输入口），这行只剩附件三入口 + 发送/打断；长按语音照旧（胶囊与这里都行）。
               search 态整行收起（无可发之物）。 */}
           {mode === "oh" ? (
-          <div
-            className="dock-input-row"
-            ref={rowRef}
-            /* ③③ 长按说话挂容器：EditText/input 会吞长按，所以挂容器不挂子件 */
-            onPointerDown={onRowPointerDown}
-            onPointerMove={onHoldMove}
-            onPointerUp={onRowPointerUp}
-            onPointerCancel={onRowPointerCancel}
-            onLostPointerCapture={onRowLostCapture}
-          >
+          <div className="dock-input-row" ref={rowRef}>
+            {/* dev-explorer：语音/输入全在下方胶囊（唯一输入组件），这里只剩附件三入口+发送/打断；
+                旧「长按这里也能说话」空白是冗余，用户拍板删除 */}
             <div className="dock-attach">
               <AttachTray onPicked={attachPicked} />
             </div>
-            {voice !== "off" && voiceHost === "entry" ? (
-              <span className="dock-entry is-voice" aria-hidden="true"><VoiceBar hint={voiceHint} /></span>
-            ) : (
-              <span className="dock-entry-label" style={{ opacity: 0.55, fontSize: 12 }}>
-                {voiceFail && voiceHost === "entry" ? voiceFail : "输入在下方胶囊里 · 长按这里也能说话"}
-              </span>
-            )}
             {busy ? (
               <button className="btn dock-send" aria-label="打断" onClick={stop}>■</button>
             ) : (

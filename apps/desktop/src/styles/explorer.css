@@ -89,7 +89,7 @@
     padding-bottom: 0;
   }
   .explorer-topbar { top: 48px; }
-  .explorer-content { padding-top: 94px !important; padding-bottom: 28px; }
+  .explorer-content { padding-top: 104px !important; padding-bottom: 28px; } /* 94+10：内容与标签栏留一拍呼吸空隙（用户实测「有点挤」） */
   .hard-refresh-fab { bottom: 18px !important; }
   .hard-refresh-fab.top-fab { bottom: 74px !important; }
 }

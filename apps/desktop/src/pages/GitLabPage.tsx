@@ -579,7 +579,7 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
           title={`:${name}: ${c.mine !== null ? "（点击取消我的回应）" : "（点击回应）"}`}
           onClick={() => void toggle(name, c.mine)}
         >
-          <span>{REACTION_EMOJI[name] ?? "🔖"}</span>
+          <span>{REACTION_EMOJI[name] ?? ""}</span>
           {REACTION_EMOJI[name] ? null : <em className="gitlab-reaction-name">{name}</em>}
           <b>{c.n}</b>
         </button>

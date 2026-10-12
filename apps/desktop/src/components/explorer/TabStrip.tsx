@@ -6,8 +6,8 @@
  * resolveTabTitle —— tab 上显示实体级短标签（label），完整路径（full）挂 title
  * 属性 hover 可见；数据快照就绪后由 useTabTitleTick 的 15s 节拍升级为实体名。
  */
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-import { createPortal } from "react-dom";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createPortal, flushSync } from "react-dom";
 import {
   activeTab,
   allTabs,
@@ -17,17 +17,31 @@ import {
   focusTab,
   HOME_TAB_ID,
   openSettings,
+  closeLiveWorkspace,
+  createLiveWorkspace,
+  patchLiveWorkspace,
+  moveTabsBlock,
+  setTabsWorkspace,
+  setTabWorkspace,
+  dissolveWorkspace,
+  WORKSPACE_COLORS,
+  WORKSPACE_ICONS,
   subscribeExplorer,
+  type ExplorerWorkspace,
   type ExplorerTab,
 } from "../../state/explorer.js";
 import { resolveTabTitle, useTabTitleTick } from "../../state/tabTitles.js";
 import { enc, PAGE_ATOMS, tabAtomKey } from "../../state/atoms.js";
 import { getLearnSnapshot } from "../../state/data.js";
-import { atomKeyOf, type AtomRef } from "../../state/favorites.js";
+import { atomKeyOf, type AtomRef, type FavFolder } from "../../state/favorites.js";
 import { useFavs } from "../../state/favs.js";
 import type { LearnNav, Page } from "../../state/app.js";
-import { IconPlus, IconX } from "../Icons.js";
+import { FOLDER_ICONS, IconBook, IconFlag, IconFolder, IconInfo, IconLearn, IconOrb, IconPin, IconPlus, IconStar, IconX } from "../Icons.js";
 import { BrandLogo } from "../Layout.js";
+import { confirmOk } from "../../lib/confirm.js";
+import { useTabLayoutMode } from "../../state/tabLayout.js";
+import { openContextMenu, type MenuItem } from "./ContextMenu.js";
+import { openWorkspaceEditor } from "./WorkspaceEditor.js";
 
 /** 订阅 explorer store 的共享小钩子（TabDrawer/BottomBar 复用，别各自再写一遍） */
 export function useExplorerTabs(): { tabs: ExplorerTab[]; activeId: string } {
@@ -77,7 +91,7 @@ function TabstripTip({ tip }: { tip: TipState }): ReactNode {
 /** 标签页 → AtomRef（用户定案：每个非首页标签都能一星收藏成独立 OnePage）。
  *  优先匹配既有 PAGE_ATOMS（参数完全一致才命中，保持既有收藏引用不断）；
  *  实体页或无对应原子的页面统一落到通用 "tab" 原子（page + params 即身份）。 */
-function atomRefOfTab(tab: ExplorerTab): AtomRef | null {
+export function atomRefOfTab(tab: ExplorerTab): AtomRef | null {
   if (tab.kind !== "page") return null;
   const params = (tab.params ?? {}) as LearnNav;
   const generic: AtomRef = { kind: "tab", key: tabAtomKey(tab.page, tab.params ?? undefined) };
@@ -119,7 +133,7 @@ function atomRefOfTab(tab: ExplorerTab): AtomRef | null {
 }
 
 /** 星形图标：未收藏描边灰，收藏点亮起（fill 随 .is-lit） */
-function StarGlyph(): ReactNode {
+export function StarGlyph(): ReactNode {
   return (
     <svg viewBox="0 0 16 16" width={13} height={13} aria-hidden="true">
       <path
@@ -131,6 +145,492 @@ function StarGlyph(): ReactNode {
       />
     </svg>
   );
+}
+
+/** 连续同工作区标签成组（底板）；无工作区的标签各自为组 */
+interface TabGroup {
+  key: string;
+  ws: ExplorerWorkspace | null;
+  tabs: ExplorerTab[];
+}
+function groupTabs(tabs: ExplorerTab[]): TabGroup[] {
+  const wsMap = new Map(explorerSnapshot().workspaces.map((w) => [w.id, w] as const));
+  const out: TabGroup[] = [];
+  for (const t of tabs) {
+    const ws = t.workspaceId ? wsMap.get(t.workspaceId) ?? null : null;
+    const last = out[out.length - 1];
+    if (ws && last && last.ws?.id === ws.id) {
+      last.tabs.push(t);
+    } else {
+      out.push({ key: ws ? "ws-" + ws.id + "-" + t.id : t.id, ws, tabs: [t] });
+    }
+  }
+  return out;
+}
+
+/** 工作区底板头：logo + 名字 + 折叠 + 大关闭按钮（关闭=关掉成员标签并移除工作区） */
+function WsHeader({ ws, count }: { ws: ExplorerWorkspace; count: number }): ReactNode {
+  const Glyph = WS_ICON_GLYPH[ws.icon ?? "folder"] ?? IconFolder;
+  return (
+    <div
+      className="ex-ws-head"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        const items: MenuItem[] = [
+          { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(ws.id) },
+          { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), sepBefore: true },
+          {
+            label: "彻底删除工作区（连同标签页）",
+            danger: true,
+            sepBefore: true,
+            onSelect: () =>
+              void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+                if (ok) closeLiveWorkspace(ws.id);
+              }),
+          },
+        ];
+        openContextMenu(e.clientX, e.clientY, items);
+      }}
+    >
+      <button
+        type="button"
+        className="ex-ws-fold"
+        aria-expanded={!ws.collapsed}
+        title={ws.collapsed ? "展开工作区" : "折叠工作区"}
+        onClick={() => patchLiveWorkspace(ws.id, { collapsed: !ws.collapsed })}
+      >
+        <Glyph width={12} height={12} />
+        <span className="ex-ws-name">{ws.name}</span>
+        <span className="ex-ws-count">{count}</span>
+      </button>
+      <button
+        type="button"
+        className="ex-ws-close"
+        aria-label={"关闭工作区 " + ws.name}
+        title="关闭工作区（同时关闭其中的标签页）"
+        onClick={() =>
+          void confirmOk(`关闭工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+            if (ok) closeLiveWorkspace(ws.id);
+          })
+        }
+      >
+        <IconX width={11} height={11} />
+      </button>
+    </div>
+  );
+}
+
+export const WS_ICON_GLYPH: Record<string, (p: { width?: number; height?: number }) => ReactNode> = {
+  folder: IconFolder,
+  star: IconStar,
+  pin: IconPin,
+  book: IconBook,
+  flag: IconFlag,
+  orb: IconOrb,
+  learn: IconLearn,
+  info: IconInfo,
+};
+
+/**
+ * 标签拖动改顺序（鼠标，浏览器式）：
+ * - 按下位移 >6px 进入拖拽；被拖标签直接跟随指针（只改 transform，不动 store，无重渲染）；
+ * - 其余标签按目标位置整体平移让出空位（CSS transition，160ms）；
+ * - 松手：被拖标签滑到目标槽位，随后 flushSync 提交真正的顺序并清掉临时 transform，无跳变；
+ * - 首页钉死（不可拖、不参与位移，reorderTab 再夹一次下标）；拖拽后吞掉随后的 click。
+ */
+const DRAG_THRESHOLD = 6;
+const SHIFT_MS = 160;
+const EASE = "cubic-bezier(.2,.7,.3,1)";
+/** 停留多久出现灰框（组合意图） */
+const DWELL_MS = 600;
+/** 目标标签两端各 25% 为让位区，中间 50% 为停留区 */
+const EDGE = 0.25;
+/** 工作区内标签垂直（竖版为水平）拖出超过该距离 = 脱离工作区 */
+const OUT_PX = 40;
+
+/** 停留框内松手的组合意图 */
+export interface GroupDrop {
+  dragId: string;
+  targetId: string;
+  targetWsId: string | null;
+}
+
+/** 拖拽单元：独立标签（ids=[id]）、工作区（ids=整组成员）、首页（ids=[]，不可移动） */
+interface Lane {
+  el: HTMLElement;
+  ids: string[];
+}
+
+/** 标签条的一层单元：工作区底板整体算一个单元，独立标签各自一个单元 */
+function stripLanes(strip: HTMLElement): Lane[] {
+  const out: Lane[] = [];
+  for (const child of Array.from(strip.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+    if (child.classList.contains("ex-ws-band")) {
+      const wsId = child.getAttribute("data-ws-id");
+      const ids = allTabs().filter((t) => t.workspaceId === wsId).map((t) => t.id);
+      out.push({ el: child, ids });
+    } else if (child.classList.contains("ex-tab")) {
+      const id = child.getAttribute("data-tab-id") ?? "";
+      out.push({ el: child, ids: child.classList.contains("is-home") ? [] : [id] });
+    }
+  }
+  return out;
+}
+
+/** 工作区内部的标签单元（只在组内换序） */
+function bandLanes(band: HTMLElement): Lane[] {
+  return Array.from(band.querySelectorAll<HTMLElement>(".ex-tab")).map((el) => ({
+    el,
+    ids: [el.getAttribute("data-tab-id") ?? ""],
+  }));
+}
+
+function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: boolean, onGroupDrop: (d: GroupDrop) => void) {
+  const [dragId, setDragId] = useState<string | null>(null);
+  const suppressClick = useRef(false);
+  const dropRef = useRef(onGroupDrop);
+  dropRef.current = onGroupDrop;
+
+  /** 通用拖拽：mode = tab（独立标签，可组合）｜band（整个工作区）｜member（工作区内标签） */
+  const startDrag = (
+    strip: HTMLDivElement,
+    mode: "tab" | "band" | "member",
+    dragEl: HTMLElement,
+    lane: Lane[],
+    dragIds: string[],
+    ev0: ReactPointerEvent<HTMLDivElement>,
+  ): void => {
+    const along = (ev: PointerEvent | ReactPointerEvent<HTMLDivElement>): number => (vertical ? ev.clientY : ev.clientX);
+    const cross = (ev: PointerEvent | ReactPointerEvent<HTMLDivElement>): number => (vertical ? ev.clientX : ev.clientY);
+    const aStart = (r: DOMRect): number => (vertical ? r.top : r.left);
+    const aEnd = (r: DOMRect): number => (vertical ? r.bottom : r.right);
+    const aSize = (r: DOMRect): number => (vertical ? r.height : r.width);
+    const tAlong = (n: number): string => (vertical ? `translateY(${n}px)` : `translateX(${n}px)`);
+    const tCross = (n: number): string => (vertical ? `translateX(${n}px)` : `translateY(${n}px)`);
+
+    const els = lane.map((l) => l.el);
+    const from = els.indexOf(dragEl);
+    const dragSet = new Set(dragIds);
+    const order = allTabs().filter((t) => t.kind !== "home").map((t) => t.id);
+    const restIds = order.filter((x) => !dragSet.has(x));
+    const dragWsId = mode === "tab" ? allTabs().find((t) => t.id === dragIds[0])?.workspaceId ?? null : null;
+    const a0 = along(ev0);
+    const c0 = cross(ev0);
+    let active = false;
+    let rects: DOMRect[] = [];
+    let dest = from;
+    let lastDA = 0;
+    let lastOut = false;
+    let dragSize = 0;
+    let dwellEl: HTMLElement | null = null;
+    let frameEl: HTMLElement | null = null;
+    let dwellTimer: number | null = null;
+
+    const clearDwell = (): void => {
+      if (dwellTimer !== null) window.clearTimeout(dwellTimer);
+      dwellTimer = null;
+      frameEl?.removeAttribute("data-ws-frame");
+      frameEl = null;
+      dwellEl = null;
+    };
+
+    const begin = (): void => {
+      rects = els.map((x) => x.getBoundingClientRect());
+      dragSize = aSize(rects[from]!);
+      dest = from;
+      els.forEach((x, i) => {
+        if (i !== from) x.style.transition = `transform ${SHIFT_MS}ms ${EASE}`;
+      });
+      if (mode === "band") dragEl.setAttribute("data-ws-dragging", "1");
+      else setDragId(dragIds[0] ?? null);
+    };
+
+    const move = (ev: PointerEvent): void => {
+      if (!active) {
+        if (Math.hypot(ev.clientX - ev0.clientX, ev.clientY - ev0.clientY) < DRAG_THRESHOLD) return;
+        active = true;
+        begin();
+      }
+      const fr = rects[from];
+      if (!fr) return;
+      let dA = along(ev) - a0;
+      if (mode === "member") {
+        // 工作区内只能在组内换序：沿轴钳在组的两端之间
+        const minD = aStart(rects[0]!) - aStart(fr);
+        const maxD = aEnd(rects[rects.length - 1]!) - aEnd(fr);
+        dA = Math.max(minD, Math.min(maxD, dA));
+      }
+      const dC = cross(ev) - c0;
+      const out = mode === "member" && Math.abs(dC) > OUT_PX;
+
+      // 停留检测（独立标签之间的组合意图；工作区整体与组内拖拽不触发）
+      let hoverEl: HTMLElement | null = null;
+      if (mode === "tab" && !out) {
+        strip.querySelectorAll<HTMLElement>(".ex-tab").forEach((x) => {
+          if (x === dragEl || x.classList.contains("is-home")) return;
+          const wsOther = allTabs().find((t) => t.id === x.getAttribute("data-tab-id"))?.workspaceId ?? null;
+          if (wsOther !== null && wsOther === dragWsId) return;
+          const r = x.getBoundingClientRect();
+          const p = along(ev);
+          if (p > aStart(r) + aSize(r) * EDGE && p < aEnd(r) - aSize(r) * EDGE) hoverEl = x;
+        });
+      }
+      if (hoverEl !== dwellEl) {
+        clearDwell();
+        const he = hoverEl as HTMLElement | null;
+        if (he) {
+          dwellEl = he;
+          dwellTimer = window.setTimeout(() => {
+            dwellTimer = null;
+            frameEl = he;
+            he.setAttribute("data-ws-frame", "1");
+          }, DWELL_MS);
+        }
+      }
+
+      if (!hoverEl) {
+        // 让位：中心点落在被拖单元中心之前的其余单元个数即为最终下标
+        const center = aStart(fr) + dragSize / 2 + dA;
+        let count = 0;
+        els.forEach((x, i) => {
+          if (i === from) return;
+          const r = rects[i]!;
+          if (aStart(r) + aSize(r) / 2 < center) count++;
+        });
+        dest = Math.max(0, Math.min(els.length - 1, count));
+        els.forEach((x, i) => {
+          if (i === from) return;
+          let shift = 0;
+          if (from < dest && i > from && i <= dest) shift = -dragSize;
+          else if (dest < from && i >= dest && i < from) shift = dragSize;
+          x.style.transform = shift ? tAlong(shift) : "";
+        });
+      }
+      lastDA = dA;
+      lastOut = out;
+      const dragEl2 = els[from]!;
+      dragEl2.style.transition = "none";
+      dragEl2.style.transform = out ? `${tAlong(dA)} ${tCross(dC)}` : tAlong(dA);
+      dragEl2.style.zIndex = "6";
+      dragEl2.style.position = "relative";
+    };
+
+    const cleanupVisual = (): void => {
+      els.forEach((x) => {
+        x.style.transition = "";
+        x.style.transform = "";
+        x.style.zIndex = "";
+        x.style.position = "";
+      });
+      dragEl.removeAttribute("data-ws-dragging");
+    };
+
+    /** 其余单元按 lane 顺序展开为标签 id，供换算成 state.tabs 的下标 */
+    const othersFlat = (): string[] => {
+      const out: string[] = [];
+      for (let j = 0; j < els.length; j++) {
+        if (j === from) continue;
+        out.push(...lane[j]!.ids);
+      }
+      return out;
+    };
+
+    const up = (): void => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      if (!active) return;
+      suppressClick.current = true;
+      window.setTimeout(() => {
+        suppressClick.current = false;
+      }, 0);
+      const fr = rects[from];
+      if (!fr) {
+        clearDwell();
+        setDragId(null);
+        return;
+      }
+      const flat = othersFlat();
+      // 其余单元里位于 dest 之前的标签数 k（单元整体计数，不会切开工作区）
+      let k = 0;
+      for (let j = 0; j < dest; j++) {
+        const idx = j < from ? j : j + 1;
+        k += lane[idx]?.ids.length ?? 0;
+      }
+      const fallback = order.indexOf(dragIds[0] ?? "");
+
+      // 组合意图：停留框内松手 → 挨到目标之后，再归并
+      if (frameEl && !lastOut && mode === "tab") {
+        const tgt = frameEl as HTMLElement;
+        const targetId = tgt.getAttribute("data-tab-id");
+        const targetWsId = allTabs().find((t) => t.id === targetId)?.workspaceId ?? null;
+        clearDwell();
+        if (targetId) {
+          const at = restIds.indexOf(targetId) + 1;
+          flushSync(() => {
+            moveTabsBlock(dragIds, at);
+            setDragId(null);
+          });
+          cleanupVisual();
+          dropRef.current({ dragId: dragIds[0] ?? "", targetId, targetWsId });
+          return;
+        }
+      }
+      clearDwell();
+
+      if (lastOut) {
+        // 脱离工作区：放到工作区的前或后，不切开工作区
+        let at: number;
+        if (flat.length === 0) at = fallback;
+        else if (k * 2 <= flat.length) at = restIds.indexOf(flat[0]!);
+        else at = restIds.indexOf(flat[flat.length - 1]!) + 1;
+        flushSync(() => {
+          setTabsWorkspace(dragIds, null);
+          moveTabsBlock(dragIds, at);
+          setDragId(null);
+        });
+        cleanupVisual();
+        return;
+      }
+
+      // 普通让位：滑入落点后同步提交顺序（组外与组内共用）
+      let at: number;
+      if (flat.length === 0) at = fallback;
+      else if (k < flat.length) at = restIds.indexOf(flat[k]!);
+      else at = restIds.indexOf(flat[flat.length - 1]!) + 1;
+
+      const slot = dest > from ? aEnd(rects[dest]!) - dragSize : dest < from ? aStart(rects[dest]!) : aStart(fr);
+      const dragEl2 = els[from]!;
+      dragEl2.style.transition = `transform ${SHIFT_MS}ms ${EASE}`;
+      dragEl2.style.transform = tAlong(slot - aStart(fr));
+      window.setTimeout(() => {
+        flushSync(() => {
+          moveTabsBlock(dragIds, at);
+          setDragId(null);
+        });
+        cleanupVisual();
+      }, SHIFT_MS);
+      void lastDA;
+    };
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  };
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (e.button !== 0 || e.pointerType !== "mouse") return;
+    const target = e.target instanceof Element ? e.target : null;
+    if (target?.closest(".ex-tab-close, .ex-ws-close")) return;
+    const strip = stripRef.current;
+    if (!strip) return;
+    const band = target?.closest(".ex-ws-band") as HTMLElement | null;
+    // ① 按住工作区名字 → 整组拖动
+    if (band && target?.closest(".ex-ws-fold")) {
+      const wsId = band.getAttribute("data-ws-id");
+      const ids = allTabs().filter((t) => t.workspaceId === wsId).map((t) => t.id);
+      if (!wsId || ids.length === 0) return;
+      startDrag(strip, "band", band, stripLanes(strip), ids, e);
+      return;
+    }
+    const tab = target?.closest(".ex-tab") as HTMLElement | null;
+    if (!tab || tab.classList.contains("is-home")) return;
+    const id = tab.getAttribute("data-tab-id");
+    if (!id) return;
+    // ② 工作区内的标签：只在组内换序，拖出超过阈值才脱离
+    if (band) {
+      startDrag(strip, "member", tab, bandLanes(band), [id], e);
+      return;
+    }
+    // ③ 独立标签：可拖到别的位置，或停留合并
+    startDrag(strip, "tab", tab, stripLanes(strip), [id], e);
+  };
+  const onClickCapture = (e: ReactMouseEvent<HTMLDivElement>): void => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  };
+  return { dragId, onPointerDown, onClickCapture };
+}
+
+/** 现场建工作区：颜色 / 名字 / logo（松手即建，成员 = 被拖标签 + 停留标签） */
+function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: string; color: string; icon: string }) => void; onCancel: () => void }): ReactNode {
+  const [name, setName] = useState("工作区");
+  const [color, setColor] = useState<string>(WORKSPACE_COLORS[0]);
+  const [icon, setIcon] = useState<string>(WORKSPACE_ICONS[0]);
+  return (
+    <div
+      className="ws-create-mask"
+      style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.25)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      onPointerDown={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-label="新建工作区"
+        style={{ background: "var(--dsw-alias-bg-base, #fff)", color: "var(--dsw-alias-label-primary, inherit)", borderRadius: 14, padding: 18, width: 320, boxShadow: "0 12px 32px rgba(0,0,0,.2)" }}
+      >
+        <div style={{ fontWeight: 600, marginBottom: 12 }}>新建工作区</div>
+        <input className="input" autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="工作区名字" style={{ width: "100%", marginBottom: 12 }} />
+        <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>底板颜色</div>
+        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          {WORKSPACE_COLORS.map((c) => (
+            <button
+              key={c}
+              type="button"
+              aria-label={"颜色 " + c}
+              aria-pressed={color === c}
+              onClick={() => setColor(c)}
+              style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--dsw-alias-label-primary, #000)" : "1px solid transparent", background: c, cursor: "pointer" }}
+            />
+          ))}
+        </div>
+        <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>logo</div>
+        <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+          {WORKSPACE_ICONS.map((k) => {
+            const G = WS_ICON_GLYPH[k] ?? IconFolder;
+            return (
+              <button
+                key={k}
+                type="button"
+                aria-label={"logo " + k}
+                aria-pressed={icon === k}
+                onClick={() => setIcon(k)}
+                style={{ width: 30, height: 30, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, border: icon === k ? `2px solid ${color}` : "1px solid var(--dsw-alias-border-l2, #ddd)", background: "transparent", cursor: "pointer", color: "inherit" }}
+              >
+                <G width={14} height={14} />
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <button type="button" className="btn" onClick={onCancel}>取消</button>
+          <button type="button" className="btn" style={{ borderColor: color, color }} onClick={() => onCreate({ name, color, icon })}>创建</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** 页面类型 → 标签前的页面图标（按前缀分组，够用即可） */
+function pageGlyph(page: Page): (p: { width?: number; height?: number }) => ReactNode {
+  if (page.startsWith("learn")) return IconLearn;
+  if (page === "thubook") return IconBook;
+  if (page === "info" || page === "otherinfo" || page === "thos" || page === "life") return IconInfo;
+  if (page === "mail" || page === "cloud") return IconFlag;
+  if (page === "favs" || page === "folder") return IconPin;
+  return IconFolder;
+}
+
+/** 标签前的 logo：已收藏为 OnePage 用星，否则用页面图标 */
+function TabGlyph({ page, star }: { page: Page; star: FavFolder | undefined }): ReactNode {
+  const key = star ? (star.icon ?? "fist") : "";
+  const G = star ? FOLDER_ICONS[key] ?? IconStar : pageGlyph(page);
+  return <span className={"ex-tab-glyph" + (key === "fist" ? " is-fist" : "")} aria-hidden="true"><G width={14} height={14} /></span>;
 }
 
 export function TabStrip(): ReactNode {
@@ -224,9 +724,31 @@ export function TabStrip(): ReactNode {
   /* ⑧ 悬停小窗：pointerenter 计 600ms、leave/滚动清除；事件委托在顶栏上
      （复制钮/齿轮是 Layout 的 DOM，不改它的文件）；只认 pointerType === "mouse"。 */
   const favs = useFavs();
-  /* 星标按行判定；一个页面=一个**独立 OnePage**（用户定案 2026-10-12 晚）：
-     收藏=新建以页面名命名的 OnePage 并放入该页原子；灭星=删除该独立 OnePage 本体。 */
-  const onStar = (t: ExplorerTab): void => {
+  const vertical = useTabLayoutMode() === "v";
+  const [pendingGroup, setPendingGroup] = useState<GroupDrop | null>(null);
+  const drag = useTabReorder(stripRef, vertical, (d) => {
+    if (d.targetWsId) setTabsWorkspace([d.dragId], d.targetWsId);
+    else setPendingGroup(d);
+  });
+
+  /** 标签所属的一星收藏夹（OnePage）；无则 undefined */
+  const starredFolder = (t: ExplorerTab): FavFolder | undefined => {
+    const ref = atomRefOfTab(t);
+    if (!ref) return undefined;
+    const k = atomKeyOf(ref);
+    return Object.values(favs.data.folders).find((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === k));
+  };
+  const isStarred = (t: ExplorerTab): boolean => starredFolder(t) !== undefined;
+  /** 标签图标来源：文件夹页（OnePage 本体）直接用它自己的图标；否则看所属的一星收藏夹 */
+  const glyphFolderOf = (t: ExplorerTab): FavFolder | undefined => {
+    if (t.kind === "page" && t.page === "folder") {
+      const fid = (t.params as { folderId?: string } | null)?.folderId;
+      return fid ? favs.data.folders[fid] : undefined;
+    }
+    return starredFolder(t);
+  };
+  /* 一星 / 取消一星（= 删除该独立 OnePage 本体，需确认）；与标签页右键「加入/移出 OnePage」共用 */
+  const toggleOnePage = (t: ExplorerTab): void => {
     const ref = atomRefOfTab(t);
     if (!ref) return;
     const key = atomKeyOf(ref);
@@ -234,14 +756,25 @@ export function TabStrip(): ReactNode {
     const folder = Object.values(favs.data.folders).find((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === key));
     if (!folder) {
       const id = favs.create(name.label, null);
-      if (id) favs.addAtom(id, ref);
+      if (id) {
+        favs.setIcon(id, "fist"); // OnePage 默认拳头 logo（可在 OneGO 右键改图标）
+        favs.addAtom(id, ref);
+      }
       return;
     }
-    const full = resolveTabTitle(t.page, t.params).full;
-    /* alert 无取消，确认一律 window.confirm（用户口径；灭星=整页消失） */
-    if (window.confirm(`确定从 OnePage 中移除「${name.label}」（${full}）？\n如果这是您的定制 OnePage，其内容和在其他 OnePage 中的入口都会永久消失！`)) {
-      favs.remove(folder.id);
-    }
+    void confirmOk(`确定删除 OnePage「${name.label}」（${name.full}）？\n其内容和在其他 OnePage 中的入口都会永久消失！`).then((ok) => {
+      if (ok) favs.remove(folder.id);
+    });
+  };
+  const openTabMenu = (e: ReactMouseEvent, t: ExplorerTab): void => {
+    e.preventDefault();
+    const items: MenuItem[] = [
+      { label: "复制本标签页", onSelect: () => duplicateTab(t.id) },
+      { label: "关闭本标签页", onSelect: () => closeTab(t.id) },
+      { label: isStarred(t) ? "移出 OnePage（取消一星）" : "加入 OnePage（一星）", onSelect: () => toggleOnePage(t), sepBefore: true },
+    ];
+    if (t.workspaceId) items.push({ label: "移出工作区", onSelect: () => setTabWorkspace(t.id, null), sepBefore: true });
+    openContextMenu(e.clientX, e.clientY, items);
   };
 
   const [tip, setTip] = useState<TipState | null>(null);
@@ -298,10 +831,26 @@ export function TabStrip(): ReactNode {
       if (tipTimer.current !== null) window.clearTimeout(tipTimer.current);
     };
   }, [clearTip]);
+  /* 激活标签（新开 / 复用聚焦都会改 activeId）自动滚入视野 */
+  useLayoutEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+    const el = Array.from(strip.querySelectorAll<HTMLElement>(".ex-tab")).find((x) => x.getAttribute("data-tab-id") === activeId);
+    el?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+  }, [activeId]);
+
   return (
     <div className="ex-tabstrip-wrap"> {/* 定位基准层：Indi 必须在 overflow 容器外，否则随滚动跑出视口 */}
-      <div className="ex-tabstrip" role="tablist" aria-label="标签页" ref={stripRef}>
-      {tabs.map((t) => {
+      <div
+        className={"ex-tabstrip" + (vertical ? " is-vertical" : "")}
+        role="tablist"
+        aria-label="标签页"
+        ref={stripRef}
+        onPointerDown={drag.onPointerDown}
+        onClickCapture={drag.onClickCapture}
+      >
+      {groupTabs(tabs).map((g) => {
+        const inner = (g.ws?.collapsed ? [] : g.tabs).map((t) => {
         const active = t.id === activeId;
         const isHome = t.kind === "home";
         const label = isHome ? "首页" : resolveTabTitle(t.page, t.params).label;
@@ -310,31 +859,13 @@ export function TabStrip(): ReactNode {
           <div
             key={t.id}
             data-tab-id={t.id}
-            className={"ex-tab" + (active ? " is-active" : "") + (isHome ? " is-home" : "")}
+            className={"ex-tab" + (active ? " is-active" : "") + (isHome ? " is-home" : "") + (drag.dragId === t.id ? " is-dragging" : "")}
             role="tab"
             aria-selected={active}
+            onContextMenu={isHome ? undefined : (e) => openTabMenu(e, t)}
           >
-            {isHome ? null : (() => {
-              /* 星在标题左侧（用户口径「标签页左边」）；与标题按钮并列，不嵌套 */
-              const ref = atomRefOfTab(t);
-              const lit = ref !== null && Object.values(favs.data.folders).some((f) => f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKeyOf(ref)));
-              return (
-                <button
-                  className={"ex-tab-star" + (lit ? " is-lit" : "")}
-                  title={lit ? "取消星标：删除该 OnePage" : "一星：把当前页面收藏成 OnePage"}
-                  aria-label={lit ? "取消星标" : "收藏为 OnePage"}
-                  aria-pressed={lit}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onStar(t);
-                  }}
-                >
-                  <StarGlyph />
-                </button>
-              );
-            })()}
             <button className="ex-tab-main" onClick={() => focusTab(t.id)}>
-              {isHome ? <BrandLogo size={12} /> : null}
+              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><BrandLogo size={12} /></span> : <TabGlyph page={t.page} star={glyphFolderOf(t)} />}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (
@@ -352,6 +883,14 @@ export function TabStrip(): ReactNode {
             )}
           </div>
         );
+        });
+        if (!g.ws) return <Fragment key={g.key}>{inner}</Fragment>;
+        return (
+          <div key={g.key} className="ex-ws-band" style={{ "--ws-color": g.ws.color } as CSSProperties} data-ws-id={g.ws.id}>
+            <WsHeader ws={g.ws} count={g.tabs.length} />
+            {inner}
+          </div>
+        );
       })}
       <button
         className="ex-tab-add"
@@ -361,7 +900,17 @@ export function TabStrip(): ReactNode {
       >
         <IconPlus width={14} height={14} />
       </button>
+
       {tip ? <TabstripTip tip={tip} /> : null}
+      {pendingGroup ? (
+        <WorkspaceCreateDialog
+          onCancel={() => setPendingGroup(null)}
+          onCreate={(o) => {
+            createLiveWorkspace(o, [pendingGroup.dragId, pendingGroup.targetId]);
+            setPendingGroup(null);
+          }}
+        />
+      ) : null}
       </div>
       {scrollable ? (
         <div

@@ -34,7 +34,11 @@ const MODELS_TTL_MS = 6 * 3600_000;
 /** 失败退避阶梯（分钟）：防反复撞统一认证锁账号（DSH 插件经验） */
 const BACKOFF_MIN = [1, 5, 15, 30];
 
-let pumping = false;
+/** 单飞：并发的续签（巡检 / 对话前预检 / 设置页 / 强制重签）共享同一次进行中的 Promise，
+ *  与 DSH 插件 TokenEngine.refresh 的 this.refreshing 同款，避免同时撞统一认证。 */
+let inflight: Promise<string> | null = null;
+/** 服务端校验节流：复用 token 前最多每 REACH_TTL 问一次站点 */
+const VERIFY_TTL_MS = 10 * 60_000;
 
 /** 是否处于 madmodel 免费档语义（显式 custom 或「未显式但已填 key」则免打扰） */
 function madmodelActive(): boolean {
@@ -92,11 +96,30 @@ function writeSettings(patch: Record<string, string>): void {
   updatePlugin(HARNESS_ID, { settings: { ...prev, ...patch } });
 }
 
-/** 校内直连签发一枚新 token。失败（校外/网络不通）→ reachable=0 交给 config 回退。 */
-export async function ensureMadModelToken(force = false): Promise<string> {
-  if (pumping && !force) throw new Error("续期进行中");
-  pumping = true;
+/** 续签入口（单飞）。进行中则直接复用其 Promise；force=true 绕过退避但不计入退避。 */
+export function ensureMadModelToken(force = false): Promise<string> {
+  if (inflight) return inflight;
+  inflight = acquireMadModelToken(force).finally(() => {
+    inflight = null;
+  });
+  return inflight;
+}
+
+/** 服务端是否仍认这张 token（插件 validateToken 同语义：鉴权接口挂站点根，成功 = success:true） */
+async function serverAccepts(token: string, base: string): Promise<boolean> {
   try {
+    const root = (base || SITE).replace(/\/v1\/?$/, "");
+    const url = base ? webvpnWrap(`${root}/model-api/auth-login`) : `${root}/model-api/auth-login`;
+    const res = await http.request(url, { redirect: "manual", direct: !base, headers: { authorization: `Bearer ${token}` } });
+    const j = (await res.json().catch(() => null)) as { success?: boolean } | null;
+    return j?.success === true;
+  } catch {
+    return false;
+  }
+}
+
+async function acquireMadModelToken(force: boolean): Promise<string> {
+  {
     const st = getPlugin(HARNESS_ID)?.settings ?? {};
     const nextAt = Number(st.madmodelNextAttemptAt ?? 0);
     if (!force && nextAt && Date.now() < nextAt) {
@@ -154,14 +177,13 @@ export async function ensureMadModelToken(force = false): Promise<string> {
     }
 
     // 层 3：失败——退避 + 人话（不猜、不反复撞统一认证）
-    bumpBackoff();
+    // 强制重签失败不计入退避（与插件一致：用户显式操作不该把自动路径也卡住）
+    if (!force) bumpBackoff();
     writeSettings({ madmodelReachable: "0", madmodelReachableAt: String(Date.now()) });
     throw new Error(
       "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。" +
       "请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
     );
-  } finally {
-    pumping = false;
   }
 }
 
@@ -239,6 +261,11 @@ async function confirmCheckSingle(): Promise<string | null> {
 
 /** 成功路径统一写 settings 并清退避 */
 function markFreeTierOk(p: { token: string; base: string; cookie: string }): void {
+  const prev = String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "");
+  if (prev && prev === p.token && (jwtExpiresAt(p.token) ?? 0) <= Date.now() + RENEW_BEFORE_EXP_MS) {
+    // 站点会话没变时会原样返回同一张 token——不算真正续期，留痕便于排查
+    void logLine("[MADMODEL] 服务端返回了同一张 token（未真正续期）").catch(() => undefined);
+  }
   writeSettings({
     madmodelToken: p.token,
     madmodelAt: String(Date.now()),
@@ -365,26 +392,45 @@ function mirrorModelsToSettings(ids: string[]): void {
 export async function preflightMadModel(): Promise<string | null> {
   if (!madmodelActive()) return null;
   void ensureModels().catch(() => undefined); // 名单保鲜（6h TTL，失败静默沿用）
-  if (madmodelDue()) {
-    try {
-      await ensureMadModelToken();
-      return null;
-    } catch (e) {
-      const why = e instanceof Error ? e.message : String(e);
-      void logLine(`[MADMODEL] 续期失败：${why}`).catch(() => undefined);
-      return freeTierHint(why);
+  const st = getPlugin(HARNESS_ID)?.settings ?? {};
+  const nextAt = Number(st.madmodelNextAttemptAt ?? 0);
+  const tok = String(st.madmodelToken ?? "");
+  // 退避窗口内静默跳过（插件 tick 同款）：不每分钟重撞统一认证、不刷日志
+  if (!madmodelDue() && tok) {
+    // 复用 token 前按节流向服务端校验一次：本地没过期但站点已作废（换号/会话被踢）→ 立即转续签
+    if (Date.now() - Number(st.madmodelVerifiedAt ?? 0) > VERIFY_TTL_MS) {
+      const ok = await serverAccepts(tok, String(st.madmodelBase ?? ""));
+      writeSettings({ madmodelVerifiedAt: String(Date.now()) });
+      if (!ok) {
+        void logLine("[MADMODEL] 服务端已不认当前 token，转入续签").catch(() => undefined);
+        if (nextAt && Date.now() < nextAt) return freeTierHint("续签退避中，稍后自动重试");
+        try {
+          await ensureMadModelToken();
+          return null;
+        } catch (e) {
+          const why = e instanceof Error ? e.message : String(e);
+          void logLine(`[MADMODEL] 续期失败：${why}`).catch(() => undefined);
+          return freeTierHint(why);
+        }
+      }
     }
+    const at = Number(st.madmodelReachableAt ?? 0);
+    if (!at || Date.now() - at > REACH_TTL_MS) {
+      const ok = await probeReachable();
+      writeSettings({ madmodelReachable: ok ? "1" : "0", madmodelReachableAt: String(Date.now()) });
+    }
+    return null;
   }
-  const s = getPlugin(HARNESS_ID)?.settings ?? {};
-  const tok = String(s.madmodelToken ?? "");
-  const at = Number(s.madmodelReachableAt ?? 0);
-  if (!at || Date.now() - at > REACH_TTL_MS) {
-    const ok = await probeReachable();
-    writeSettings({ madmodelReachable: ok ? "1" : "0", madmodelReachableAt: String(Date.now()) });
+  // 到期或没有 token：走续签（退避窗口内只给提示，不再撞统一认证）
+  if (nextAt && Date.now() < nextAt) return freeTierHint("续签退避中，稍后自动重试");
+  try {
+    await ensureMadModelToken();
+    return null;
+  } catch (e) {
+    const why = e instanceof Error ? e.message : String(e);
+    void logLine(`[MADMODEL] 续期失败：${why}`).catch(() => undefined);
+    return freeTierHint(why);
   }
-  // token 为空但「未到期」只可能是设置被外部写坏（如手改设置页覆盖）——此时明确报出来
-  if (!tok) return freeTierHint("设置里没有 madmodelToken");
-  return null;
 }
 
 /** 免费档不可用时的用户可读说明：把真实原因说清楚，而不是让人以为「没填 API Key」。 */

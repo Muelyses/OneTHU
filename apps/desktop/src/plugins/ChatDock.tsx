@@ -807,6 +807,7 @@ export function ChatDock(): ReactNode {
   const [mode, setMode] = useState<OhMode>("oh");
   const modeRef = useRef<OhMode>("search");
   modeRef.current = mode;
+
   const [searchQuery, setSearchQuery] = useState("");
   const openPanelAs = useCallback((m: OhMode, presetQuery?: string): void => {
     localStorage.setItem(OPEN_KEY, "1");
@@ -1142,6 +1143,9 @@ export function ChatDock(): ReactNode {
   /* dev-explorer 二轮：面板从胶囊顶边「长出来」——量可见胶囊的 rect（left/width），
      bottom 由 explorer-ui.css 契约变量给出；resize/转窗/布局落定后重量。 */
   const [capsuleRect, setCapsuleRect] = useState<{ left: number; width: number; bottom: number; topdock: boolean } | null>(null);
+  /* 锚端判定 ref：面板 top 锚（顶置桌面形态、把手在底部）时拖拽方向反向（拖拽回调读） */
+  const topdockRef = useRef(false);
+  topdockRef.current = !!capsuleRect?.topdock;
   useEffect(() => {
     if (!open && !closing) {
       setCapsuleRect(null);
@@ -1789,7 +1793,11 @@ export function ChatDock(): ReactNode {
     const vh = window.innerHeight;
     const lo = vh * DOCK_H_MIN_RATIO;
     const hi = vh * DOCK_H_MAX_RATIO;
-    const next = Math.max(lo, Math.min(hi, d.h0 - (e.clientY - d.y0)));
+    /* 顶置形态（top 锚、把手在底部）：向下拽=变长（h=h0+dy）；底部形态（bottom 锚、把手在顶部）：
+       向上拽=变长（h=h0−dy，原语义）。 */
+    const topdock = topdockRef.current;
+    const raw = topdock ? d.h0 + (e.clientY - d.y0) : d.h0 - (e.clientY - d.y0);
+    const next = Math.max(lo, Math.min(hi, raw));
     setPanelH(Math.round(next));
   };
   const onHandleUp = (): void => {

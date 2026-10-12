@@ -1193,6 +1193,17 @@ export function ChatDock(): ReactNode {
     void finishVoice(cancelArmedRef.current);
   };
   useEffect(() => onOhCommand((c) => cmdHandler.current(c)), []);
+  /* 点外部自然关闭：胶囊与小窗之外的任何按-down 都收窗（语音中除外） */
+  useEffect(() => {
+    if (!open || voice !== "off") return;
+    const h = (e: PointerEvent): void => {
+      const el = e.target as HTMLElement | null;
+      if (el?.closest(".dock-panel, .ohx-capsule, .dock-voice-toast")) return;
+      closePanelNow();
+    };
+    document.addEventListener("pointerdown", h, true);
+    return () => document.removeEventListener("pointerdown", h, true);
+  }, [open, voice]);
 
   /* 未读徽标外送（OhCapsule 的红点） */
   useEffect(() => {
@@ -1210,13 +1221,17 @@ export function ChatDock(): ReactNode {
     dockSubmitFn = (t: string) => {
       /* 用户定案：胶囊是独立输入组件，文字送给谁由上方切换按钮（mode）决定 */
       if (mode === "search") return; /* 检索词经 live 镜像已实时生效，Enter 无事可做 */
+      if (!pid) {
+        setNotice("小OH 还没就绪（Harness 插件未加载）——对话需要完整桌面环境");
+        return;
+      }
       setDockInputValue("");
       void send(t);
     };
     return () => {
       dockSubmitFn = null;
     };
-  }, [send, mode]);
+  }, [send, mode, pid]);
   /* 搜索态：胶囊输入即检索词（单向镜像 dockInput → searchQuery；不等值才写，防打环） */
   useEffect(() => {
     if (mode === "search" && searchQuery !== draft) setSearchQuery(draft);
@@ -1874,22 +1889,8 @@ export function ChatDock(): ReactNode {
       {/* dev-explorer：空闲胶囊外移为 OhCapsule（底栏中央/桌面顶栏，纯触发器）。
           这里只渲染**语音进行中**的原位胶囊（同一位置现出波纹/雾），点=收尾、上划=取消；
           捕获丢失（onLostPointerCapture）按取消兜底，语音绝不悬死。 */}
-      {voice !== "off" ? (
-        <button
-          className={"dock-island ohx-voicepill is-voice" + (cancelling ? " is-cancel-hint" : "")}
-          aria-label={cancelling ? "松开取消" : "松开直发，上划取消"}
-          onPointerDown={onPillPointerDown}
-          onPointerMove={onHoldMove}
-          onPointerUp={onPillPointerUp}
-          onPointerCancel={onPillPointerCancel}
-          onLostPointerCapture={onPillPointerCancel}
-        >
-          <span className="dock-island-fog" aria-hidden="true" />
-          <span className="dock-island-voice">
-            <VoiceBar hint={voiceHint} />
-          </span>
-        </button>
-      ) : null}
+      {/* dev-explorer（用户拍板）：语音波纹只渲染在底栏胶囊本体（OhCapsule is-hold），
+          这里不再有第二颗波纹条；雾状识别字幕仍在本行上方（VoiceSubtitle）。 */}
 
       {/* 语音失败的雾状浮片：本次长按发生在岛上时（发生在面板里时落在入口条内联） */}
       {voiceFail && voiceHost === "island" ? (
@@ -2022,14 +2023,7 @@ export function ChatDock(): ReactNode {
             <div className="dock-attach">
               <AttachTray onPicked={attachPicked} />
             </div>
-            {busy ? (
-              <button className="btn dock-send" aria-label="打断" onClick={stop}>■</button>
-            ) : (
-              <button
-                className="btn btn-primary dock-send" aria-label="发送" disabled={!draft.trim()}
-                onClick={() => dockSubmitInput()}
-              >↑</button>
-            )}
+            {/* 发送/打断按钮已删（用户拍板）：胶囊 Enter=发送，胶囊是唯一输入口 */}
           </div>
           ) : null}
           {history != null ? (

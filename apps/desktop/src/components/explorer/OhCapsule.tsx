@@ -23,6 +23,7 @@ import {
   subscribeDockInput, dockInputSnapshot, setDockInputValue, dockSubmitInput,
 } from "../../plugins/ChatDock.js";
 import { useExplorerPrefs } from "../../state/explorerPrefs.js";
+import { useIslandText, ISLAND_DEFAULT_TEXT } from "../../state/island.js";
 
 /** 长按阈值（与 ChatDock 的 VOICE_HOLD_MS 同值；跨过即开始收音） */
 const HOLD_MS = 450;
@@ -37,6 +38,11 @@ export function OhCapsule(): React.ReactNode {
   const draft = useSyncExternalStore(subscribeDockInput, dockInputSnapshot, dockInputSnapshot);
   const voiceOn = ui.voice !== "off";
   const isOpen = ui.open && !voiceOn;
+  /* 捞回很早的设定：胶囊显示当前紧急任务（临近课程/提醒窗口内 DDL）。
+     无任务时回落静态占位。黑色显眼（--text-1），是内容不是灰暗示。 */
+  const islandText = useIslandText();
+  const smartText = islandText && islandText !== ISLAND_DEFAULT_TEXT ? islandText : null;
+  const idleText = smartText ?? PLACEHOLDER;
   const [pressing, setPressing] = useState(false);
   const [held, setHeld] = useState(false); // 已跨过阈值（收音中，手还按着）
   const holdTimer = useRef<number | null>(null);
@@ -163,7 +169,7 @@ export function OhCapsule(): React.ReactNode {
           aria-label="搜索或问小OH"
         />
       ) : (
-        <span className="ohx-capsule-ph">{PLACEHOLDER}</span>
+        <span className="ohx-capsule-ph">{idleText}</span>
       )}
       {badge > 0 && !voiceOn ? <span className="ohx-capsule-badge">{badge > 9 ? "9+" : badge}</span> : null}
     </button>

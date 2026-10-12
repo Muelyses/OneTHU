@@ -282,3 +282,11 @@
   animation: ohx-shrink 140ms ease-in both;
   pointer-events: none;
 }
+
+/* ── 面板头：分段开关绝对居中（flex 流里会被左标题挤偏，用户拍板居中） ── */
+.dock-head { position: relative; }
+.dock-head .ohx-modeswitch {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

@@ -10,7 +10,7 @@
  *
  * 工作区段抽成 WorkspacePanel 导出——OneGoSheet 引同一份，逻辑不许复制两份。
  */
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
   activeTabId,
@@ -31,6 +31,7 @@ import {
 } from "../../state/explorer.js";
 import { resolveTabTitle, useTabTitleTick } from "../../state/tabTitles.js";
 import { useExitPhase } from "../../lib/useExitPhase.js";
+import { useExpanded } from "../../state/usePlatformLayout.js";
 import { IconX } from "../Icons.js";
 
 /* ══════════ 抽屉开合 store（palette.ts 同款） ══════════ */
@@ -84,6 +85,33 @@ function relTime(ts: number): string {
   if (d < 3_600_000) return `${Math.floor(d / 60_000)}分钟前`;
   if (d < 86_400_000) return `${Math.floor(d / 3_600_000)}小时前`;
   return `${Math.floor(d / 86_400_000)}天前`;
+}
+
+
+/* ══════════ ⑥ 桌面顶置定位：量底栏触发柱，小窗从其下方 6px 弹下（手机保持底部抽屉） ══════════ */
+
+/** 触发钮锚定：open 且桌面态时返回 {top,left}（右缘翻转防越屏），否则 null */
+export function useAnchorPos(anchorId: string, open: boolean, expanded: boolean): { top: number; left: number } | null {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!open || !expanded) {
+      setPos(null);
+      return;
+    }
+    const measure = (): void => {
+      const el = document.getElementById(anchorId);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const width = Math.min(470, window.innerWidth * 0.46); // 与 .ex-sheet 宽度口径一致
+      let left = r.left;
+      if (left + width > window.innerWidth - 8) left = window.innerWidth - 8 - width;
+      setPos({ top: r.bottom + 6, left: Math.max(left, 8) });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [open, expanded, anchorId]);
+  return pos;
 }
 
 /* ══════════ 「移入工作区」浮层（复用 .explorer-ctxmenu 视觉） ══════════ */
@@ -282,15 +310,37 @@ function TabRow({
   );
 }
 
+
+/* ══════════ ⑦ 小窗内搜索：已打开标签页按 label/full 过滤（大小写不敏感） ══════════ */
+
+function SearchTabResults({ query, onMove }: { query: string; onMove: (tab: ExplorerTab, x: number, y: number) => void }): ReactNode {
+  const q = query.trim().toLowerCase();
+  const hits = allTabs().filter((t) => {
+    const { label, full } = t.kind === "home" ? { label: "首页", full: "首页" } : resolveTabTitle(t.page, t.params);
+    return label.toLowerCase().includes(q) || full.toLowerCase().includes(q);
+  });
+  if (hits.length === 0) return <div className="ex-empty-hint">没有匹配的标签页。</div>;
+  return (
+    <div className="ex-row-list">
+      {hits.map((t) => (
+        <TabRow key={t.id} tab={t} onMove={onMove} />
+      ))}
+    </div>
+  );
+}
+
 /* ══════════ 抽屉本体 ══════════ */
 
 function TabDrawerInner(): ReactNode {
   const open = useDrawerOpen();
   const [closing, requestClose] = useExitPhase(closeTabDrawer, open);
+  const expanded = useExpanded();
+  const anchor = useAnchorPos("ex-bbar-tabs-btn", open, expanded);
   const snap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   const tabs = allTabs();
   const pageTabs = snap.tabs;
   const [menuFor, setMenuFor] = useState<{ tab: ExplorerTab; x: number; y: number } | null>(null);
+  const [query, setQuery] = useState("");
   useTabTitleTick();
 
   useEffect(() => {
@@ -313,13 +363,31 @@ function TabDrawerInner(): ReactNode {
   return createPortal(
     <>
       <div className={"ex-sheet-mask" + (closing ? " is-closing" : "")} onClick={requestClose} />
-      <aside className={"ex-sheet ex-tabdrawer" + (closing ? " is-closing" : "")} role="dialog" aria-label="标签页">
+      <aside
+        className={"ex-sheet ex-tabdrawer" + (expanded ? " ex-pop" : "") + (closing ? " is-closing" : "")}
+        role="dialog"
+        aria-label="标签页"
+        style={expanded ? { top: anchor?.top, left: anchor?.left, bottom: "auto", right: "auto", visibility: anchor ? undefined : "hidden" } : undefined}
+      >
         <header className="ex-sheet-head">
           <b>标签页</b>
           <span className="ex-sec-head-note">{pageTabs.length} 个工作标签</span>
           <button className="btn btn-ghost ex-btn-sm" onClick={requestClose}>完成</button>
         </header>
         <div className="ex-sheet-body">
+          <div className="ex-sheet-search">
+            <input
+              className="ex-input"
+              placeholder="搜索已打开的标签页…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          {query.trim() ? (
+            <section aria-label="搜索结果">
+              <SearchTabResults query={query} onMove={(tab, x, y) => setMenuFor({ tab, x, y })} />
+            </section>
+          ) : (
           <section aria-label="当前标签页">
             <div className="ex-sec-head">
               <b>当前标签页</b>
@@ -354,7 +422,8 @@ function TabDrawerInner(): ReactNode {
               ))}
             </div>
           </section>
-          <WorkspacePanel />
+          )}
+          {query.trim() ? null : <WorkspacePanel />}
         </div>
         <footer className="ex-sheet-foot">
           <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); closeTabDrawer(); }}>

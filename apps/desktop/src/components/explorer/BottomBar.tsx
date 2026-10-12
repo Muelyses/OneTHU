@@ -29,7 +29,7 @@ export function BottomBar(): ReactNode {
   const onegoOpen = useOneGoSheetOpen();
   return (
     <nav className="ex-bbar" aria-label="工作空间导航">
-      <button className={"ex-bbar-btn" + (drawerOpen ? " is-open" : "")} onClick={openTabDrawer} aria-expanded={drawerOpen} aria-label={`标签页（${count} 个）`}>
+      <button id="ex-bbar-tabs-btn" className={"ex-bbar-btn" + (drawerOpen ? " is-open" : "")} onClick={openTabDrawer} aria-expanded={drawerOpen} aria-label={`标签页（${count} 个）`}>
         <span className="ex-bbar-icon">
           <TabsGlyph />
           {count > 0 ? <i className="ex-bbar-badge" aria-hidden="true">{count > 99 ? "99+" : count}</i> : null}
@@ -39,7 +39,7 @@ export function BottomBar(): ReactNode {
       <div className="ex-bbar-center">
         <OhCapsule />
       </div>
-      <button className={"ex-bbar-btn" + (onegoOpen ? " is-open" : "")} onClick={openOneGoSheet} aria-expanded={onegoOpen} aria-label="OneGO!">
+      <button id="ex-bbar-onego-btn" className={"ex-bbar-btn" + (onegoOpen ? " is-open" : "")} onClick={openOneGoSheet} aria-expanded={onegoOpen} aria-label="OneGO!">
         <span className="ex-bbar-icon">
           <IconFist width={20} height={20} />
         </span>

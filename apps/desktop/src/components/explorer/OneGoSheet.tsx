@@ -8,8 +8,10 @@
  */
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { focusTab, HOME_TAB_ID, openTab } from "../../state/explorer.js";
+import { deleteWorkspace, explorerSnapshot, focusTab, HOME_TAB_ID, openTab, openWorkspace, subscribeExplorer } from "../../state/explorer.js";
 import { useExitPhase } from "../../lib/useExitPhase.js";
+import { useAnchorPos } from "./TabDrawer.js";
+import { useExpanded } from "../../state/usePlatformLayout.js";
 import { useFavs } from "../../state/favs.js";
 import { FolderIcon } from "../Icons.js";
 import { WorkspacePanel } from "./TabDrawer.js";
@@ -114,6 +116,73 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
   );
 }
 
+
+/* ══════════ ⑦ 小窗内搜索：OnePage 按 title、工作区按 name（大小写不敏感） ══════════ */
+
+function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): ReactNode {
+  const favs = useFavs();
+  const favHits = favs.data.order.filter((id) => (favs.data.folders[id]?.title ?? "").toLowerCase().includes(q));
+  const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
+  const wsHits = wsSnap.workspaces.filter((w) => w.name.toLowerCase().includes(q));
+  if (favHits.length === 0 && wsHits.length === 0) return <div className="ex-empty-hint">没有匹配的 OnePage 或工作区。</div>;
+  return (
+    <>
+      {favHits.length > 0 ? (
+        <section aria-label="OnePage 搜索结果">
+          <div className="ex-group-head">
+            <span className="ex-group-name">OnePage</span>
+            <span className="ex-group-count">{favHits.length}</span>
+          </div>
+          <div className="ex-row-list">
+            {favHits.map((id) => {
+              const f = favs.data.folders[id];
+              const title = f?.title ?? "OnePage";
+              return (
+                <button
+                  key={id}
+                  className="ex-row ex-row-clickable"
+                  onClick={() => {
+                    openTab("folder", { folderId: id }, { title });
+                    onDone();
+                  }}
+                >
+                  <span className="ex-row-icon"><FolderIcon name={f?.icon} /></span>
+                  <span className="ex-row-main">
+                    <span className="ex-row-title">{title}</span>
+                    <span className="ex-row-sub">{f?.items?.length ?? 0} 项</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
+      {wsHits.length > 0 ? (
+        <section aria-label="工作区搜索结果">
+          <div className="ex-group-head">
+            <span className="ex-group-name">工作区</span>
+            <span className="ex-group-count">{wsHits.length}</span>
+          </div>
+          <div className="ex-row-list">
+            {wsHits.map((w) => (
+              <div className="ex-row" key={w.id}>
+                <div className="ex-row-main">
+                  <span className="ex-row-title">{w.name}</span>
+                  <span className="ex-row-sub">{w.tabs.length} 个标签页</span>
+                </div>
+                <div className="ex-row-actions">
+                  <button className="btn btn-ghost ex-btn-sm" onClick={() => { openWorkspace(w.id); onDone(); }}>打开</button>
+                  <button className="btn btn-ghost ex-btn-sm ex-danger" onClick={() => deleteWorkspace(w.id)}>删除</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </>
+  );
+}
+
 /* ══════════ 抽屉本体 ══════════ */
 
 type SheetTab = "favs" | "ws";
@@ -121,7 +190,11 @@ type SheetTab = "favs" | "ws";
 function OneGoSheetInner(): ReactNode {
   const open = useOneGoSheetOpen();
   const [closing, requestClose] = useExitPhase(closeOneGoSheet, open);
+  const expanded = useExpanded();
+  const anchor = useAnchorPos("ex-bbar-onego-btn", open, expanded);
   const [seg, setSeg] = useState<SheetTab>("favs");
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
 
   useEffect(() => {
     if (!open) return;
@@ -136,7 +209,12 @@ function OneGoSheetInner(): ReactNode {
   return createPortal(
     <>
       <div className={"ex-sheet-mask" + (closing ? " is-closing" : "")} onClick={requestClose} />
-      <aside className={"ex-sheet ex-onego" + (closing ? " is-closing" : "")} role="dialog" aria-label="OneGO!">
+      <aside
+        className={"ex-sheet ex-onego" + (expanded ? " ex-pop" : "") + (closing ? " is-closing" : "")}
+        role="dialog"
+        aria-label="OneGO!"
+        style={expanded ? { top: anchor?.top, left: anchor?.left, bottom: "auto", right: "auto", visibility: anchor ? undefined : "hidden" } : undefined}
+      >
         <header className="ex-sheet-head">
           <b>OneGO!</b>
           <span className="ex-sec-head-note">组织你的工作</span>
@@ -149,7 +227,15 @@ function OneGoSheetInner(): ReactNode {
           </div>
         </div>
         <div className="ex-sheet-body">
-          {seg === "favs" ? <FavsSection onDone={closeOneGoSheet} /> : <WorkspacePanel />}
+          <div className="ex-sheet-search">
+            <input
+              className="ex-input"
+              placeholder="搜索 OnePage / 工作区…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          {q ? <OneGoSearchResults q={q} onDone={requestClose} /> : seg === "favs" ? <FavsSection onDone={closeOneGoSheet} /> : <WorkspacePanel />}
         </div>
         <footer className="ex-sheet-foot">
           <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>

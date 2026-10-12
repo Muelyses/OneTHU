@@ -64,20 +64,28 @@
 }
 .ex-tab.is-home .ex-tab-title { font-weight: 600; }
 .ex-tab-close {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 17px;
-  height: 17px;
-  margin-right: 5px;
+  width: 22px;
+  height: 22px;
+  margin-right: 3px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 7px;
   background: none;
   color: var(--text-3);
   cursor: pointer;
   flex: 0 0 auto;
   opacity: 0;
-  transition: opacity var(--dur-1, 0.12s) ease;
+  transition: opacity var(--dur-1, 0.12s) ease, background var(--dur-1, 0.12s) ease;
+}
+/* 命中区外扩 3px：视觉仍是 22px，可点范围 ≥28px（用户实测 16px 太小） */
+.ex-tab-close::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9px;
 }
 .ex-tab:hover .ex-tab-close,
 .ex-tab.is-active .ex-tab-close { opacity: 1; }
@@ -562,3 +570,82 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+
+/* ── ① 标签条滚动进度条：贴条底内侧，3px 圆角细条，scrollLeft 比例驱动 ── */
+.ex-tabstrip { position: relative; }
+.ex-tabstrip-indi {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  pointer-events: none;
+}
+.ex-tabstrip-indi i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-1) 18%, transparent);
+}
+
+/* ── ⑧ 悬停小窗：标签条下方的小卡（full 路径 + 文字动作） ── */
+.ex-tip {
+  position: fixed;
+  z-index: 1400;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
+  color: var(--text-1);
+  box-shadow: var(--md-sys-elevation-2, 0 10px 34px rgba(0, 0, 0, 0.18));
+  animation: m-fade var(--dur-1, 0.12s) var(--ease-out, ease) both;
+  pointer-events: auto;
+}
+.ex-tip-title { font-size: 12.5px; font-weight: 600; }
+.ex-tip-full {
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-3);
+  word-break: break-all;
+}
+.ex-tip-actions { display: flex; gap: 4px; margin-top: 6px; }
+
+/* ── ⑨ 首页星标：home 前的特殊存在（未收藏描边灰，点亮填色） ── */
+.ex-tab-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  flex: none;
+}
+.ex-tab-star:hover:not(:disabled) { background: var(--hover, rgba(0, 0, 0, 0.05)); color: var(--text-1); }
+.ex-tab-star:disabled { opacity: 0.35; cursor: default; }
+.ex-tab-star.is-lit { color: var(--accent); }
+.ex-tab-star.is-lit svg path { fill: currentColor; }
+
+/* ── ⑥ 桌面顶置形态（≥841px expanded）：从底栏触发柱下方弹下，手机仍是底部抽屉 ── */
+@keyframes ex-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+.ex-sheet.ex-pop {
+  bottom: auto;
+  right: auto;
+  max-height: min(70vh, 620px);
+  border-radius: 12px;
+  transform-origin: top left;
+  animation: ex-slide-down var(--dur-2, 0.2s) var(--ease-out, ease) both;
+}
+.ex-sheet.ex-pop.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
+
+/* ── ⑦ 小窗内搜索框：贴 body 顶，与抽屉同语言 ── */
+.ex-sheet-search { padding: 8px 0 2px; flex: none; }

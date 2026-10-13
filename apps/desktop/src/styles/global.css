@@ -8156,6 +8156,18 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --lg-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 color-mix(in srgb, var(--md-sys-color-on-surface) 14%, transparent);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.34), 0 4px 10px -2px rgba(0, 0, 0, 0.18);
+  /* 卡面玻璃 tint（Compat 层 --surface/--surface-2/--surface-3 指向这里） */
+  --glass-card-fill: rgba(255, 255, 255, 0.46);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.62);
+  --glass-card-fill-3: rgba(240, 243, 247, 0.72);
+}
+
+:root[data-scheme="dark"] {
+  --glass-card-fill: rgba(255, 255, 255, 0.07);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.12);
+  --glass-card-fill-3: rgba(255, 255, 255, 0.18);
+  --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
 }
 
 :root[data-scheme="dark"] {
@@ -8288,4 +8300,22 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   background: var(--glass-tint);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   border-radius: var(--r-md, 10px);
+}
+
+/* ═══ 液态玻璃 everywhere 第二层：卡片/面板统一 rim + 轻 blur ═══
+   凡背景走到玻璃化表面令牌的容器（.card/.home-card/.panel 等）自动进材质；
+   文字底（.free-note、代码块）除外。blur 全局预算：这些卡片是常驻面（非浮层），
+   用 panel-blur(6px) 档，不用 menu-blur(22px)。 */
+.card,
+.home-card,
+.setting-group,
+.ex-sheet-body .row-group {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  backdrop-filter: var(--glass-panel-blur);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  border-color: var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
 }

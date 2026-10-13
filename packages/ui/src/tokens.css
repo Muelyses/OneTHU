@@ -120,6 +120,12 @@
   --dsw-alias-state-error-primary: var(--danger, #e5484d);
 
   --bg: var(--md-sys-color-surface);
+  /* —— 液态玻璃 everywhere（2026-10-13 设计语言换代）：表面旧名=按深浅分档的玻璃 tint，
+     定义在 global.css :root 的 --glass-card-fill*（深浅各一档）。层次关系保持：
+     页面底 0% / 卡片面 46% / 三级面 60% 透明白。 —— */
+  --surface: var(--glass-card-fill);
+  --surface-2: var(--glass-card-fill-2);
+  --surface-3: var(--glass-card-fill-3);
   --bg-soft: var(--md-sys-color-surface-container-low);
   --surface: var(--md-sys-color-surface-container-lowest);
   --surface-2: var(--md-sys-color-surface-container);

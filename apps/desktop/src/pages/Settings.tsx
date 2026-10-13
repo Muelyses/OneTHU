@@ -4,7 +4,6 @@ import {
   subscribeWallpaper,
   videoSoundSnapshot,
   setVideoSound,
-  wallpaperPathOf,
 } from "../state/wallpaper.js";
 import { useExplorerState, allTabs } from "../state/explorer.js";
 import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
@@ -1717,20 +1716,17 @@ function DiagnosticsRow() {
 
 /** 外观：昼夜主题调度——跟随系统暗/亮自动切日夜两档主题 */
 
-/* ══════════ 壁纸（2026-10-13，壁纸二期：两级范围 + 壁纸库）══════════
+/* ══════════ 壁纸（2026-10-14 定案：单一全屏档 + 壁纸库）══════════
    卡体 = 库面板（WallpaperLibrary panel）+ 动态壁纸声音开关：
-   库网格（内置渐变 + 自收录）、点图=设为当前页、角标=设为全屏、上传入库、删除、
-   云盘同步/恢复（wallpsync）两按钮；「本页」的操作目标 = 设置浮层背后的活动标签页。 */
+   库网格（内置渐变 + 自收录）、点图=设为全屏、上传入库、删除、云盘同步/恢复
+   （wallpsync）；「本页」档已随功能删除，壁纸只画在壳层、全窗共用。 */
 function WallpaperSection(): ReactNode {
-  const st = useExplorerState();
-  const at = allTabs().find((t) => t.id === st.activeId) ?? null;
-  const tabKey = at && at.kind !== "home" ? wallpaperPathOf(at.page, at.params) : "global"; /* 首页=全屏档（画布化定案） */
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   return (
     <div className="wall-section">
       <div className="setting-title">壁纸</div>
-      <div className="setting-desc">全屏档是整个软件的底色；内容页档只画在对应页面上，逐页覆盖。</div>
-      <WallpaperLibrary variant="panel" tabKey={tabKey} />
+      <div className="setting-desc">全窗共用一张：画在壳层底，面板与栏体透出它。</div>
+      <WallpaperLibrary variant="panel" />
       <div className="wall-sound-row">
         <div>
           <div className="setting-title">动态壁纸声音</div>

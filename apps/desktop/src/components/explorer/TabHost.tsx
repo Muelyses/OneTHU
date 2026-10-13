@@ -11,7 +11,7 @@
  * - **右键（桌面）/长按（手机）任意页面空白处** → 「在新标签页打开此页」（forceNew
  *   复制当前所在的一/二/三级页，新 tab 仍是一级面板形态）。
  */
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Ctx, useApp } from "../../state/context.js";
 import type { AppState, LearnNav, Page } from "../../state/app.js";
@@ -30,21 +30,10 @@ import { isSubPage, renderPage } from "./renderPage.js";
 import { HomeTab } from "./HomeTab.js";
 import {
   BUILTIN_WALLPAPERS,
-  ensureWallpaperLum,
-  isVideoRef,
   setGlobalWallpaper,
-  setTabWallpaper,
-  subscribeWallpaper,
-  videoSoundSnapshot,
-  wallpaperFor,
-  wallpaperLum,
-  wallpaperPathOf,
   wallpaperSnapshot,
-  wallpaperStyleFor,
-  type WallpaperLum,
 } from "../../state/wallpaper.js";
-import { WallpaperVideoBox } from "./WallpaperVideo.js";
-import { WallpaperLibrary, type WallScope } from "./WallpaperLibrary.js";
+import { WallpaperLibrary } from "./WallpaperLibrary.js";
 
 /* ══════════ tab 局部路由上下文 ══════════ */
 
@@ -118,19 +107,16 @@ function TabContextMenu({
 }: {
   pos: MenuPos;
   onClose: () => void;
-  /** 打开壁纸库选择器（菜单关、选择器接着开，同一坐标）：global=全屏 / tab=本页 */
-  onPick: (scope: WallScope) => void;
+  /** 打开壁纸库选择器（菜单关、选择器接着开，同一坐标）：壁纸只有全屏一档 */
+  onPick: () => void;
 }): ReactNode {
   const isHome = pos.tabId === HOME_TAB_ID;
-  const tab = allTabs().find((t) => t.id === pos.tabId);
-  /* 「画布化定案」：首页没有独立的 tab 档——它的壁纸就是全屏档（整块画布，不是 frame 内贴图）。
-   内容页仍可 per-tab。 */
-  /* 壁纸入口：换壁纸两条走壁纸库选择器（上传/内置渐变/删除都在库里，库内有上传入口，
-     因此不再保留单独的隐藏 file input——2026-10-13 接线）；清除则回落全局 */
+  /* 壁纸入口：换壁纸走壁纸库选择器（上传/内置渐变/删除都在库里）；清除则回落无壁纸。
+     「画布化定案」：壁纸只有全屏一档——右键菜单的「本页」三件套已删（2026-10-14）。 */
   const hasGlobal = !!wallpaperSnapshot().global;
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
     { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
-    { label: "换壁纸 · 从库选…", act: () => onPick("global") },
+    { label: "换壁纸 · 从库选…", act: () => onPick() },
     ...BUILTIN_WALLPAPERS.slice(0, 4).map((b) => ({
       label: "全屏壁纸 · " + b.label,
       act: () => setGlobalWallpaper("builtin:" + b.id),
@@ -170,16 +156,12 @@ function TabContextMenu({
 /* ══════════ 壁纸库选择卡（2026-10-13 接线）：菜单项「换壁纸 · 从库选」打开 ══════════
    浮动卡片 = menu tier 玻璃壳（样式见 explorer.css 的 .wall-lib-picker-card），
    位置取菜单坐标并夹取在视口内；Escape / 点卡片外（遮罩）关闭；
-   内部是 WallpaperLibrary picker：点图=应用到菜单指定的范围（scope），上传也在库里。 */
+   内部是 WallpaperLibrary picker：点图=设为全屏，上传也在库里。 */
 function WallPickerCard({
-  scope,
-  wallKey,
   left,
   top,
   onClose,
 }: {
-  scope: WallScope;
-  wallKey: string;
   left: number;
   top: number;
   onClose: () => void;
@@ -197,7 +179,7 @@ function WallPickerCard({
         onContextMenu={(e) => { e.preventDefault(); onClose(); }}
       />
       <div className="wall-lib-picker-card" style={{ left, top }}>
-        <WallpaperLibrary variant="picker" scope={scope} tabKey={wallKey} onClose={onClose} />
+        <WallpaperLibrary variant="picker" onClose={onClose} />
       </div>
     </>,
     document.body,
@@ -211,14 +193,11 @@ export function TabHost(): ReactNode {
   const activeId = st.activeId;
   const mounted = useMountedTabs(activeId, st.tabs);
   const [menu, setMenu] = useState<MenuPos | null>(null);
-  /* 壁纸库选择卡（右键菜单「换壁纸 · 从库选」）：菜单关、选择卡接着开——
-     坐标沿用发起菜单的 pos，wallKey 取发起标签页的路径键（「本页」= 它） */
-  const [picker, setPicker] = useState<{ scope: WallScope; x: number; y: number; wallKey: string } | null>(null);
-  const openPicker = useCallback((p: MenuPos, scope: WallScope) => {
-    const t = allTabs().find((x) => x.id === p.tabId) ?? null;
-    const wallKey = !t || t.kind === "home" ? "global" : wallpaperPathOf(t.page, t.params);
+  /* 壁纸库选择卡（右键菜单「换壁纸 · 从库选」）：菜单关、选择卡接着开——坐标沿用发起菜单的 pos */
+  const [picker, setPicker] = useState<{ x: number; y: number } | null>(null);
+  const openPicker = useCallback((p: MenuPos) => {
     setMenu(null); // pick 的动作语义：先关菜单，选择卡随后弹出（同一坐标）
-    setPicker({ scope, x: p.x, y: p.y, wallKey });
+    setPicker({ x: p.x, y: p.y });
   }, []);
   /* 长按计时（触屏）：550ms 原地按住 → 菜单；鼠标用右键 */
   const press = useRef<{ x: number; y: number; id: string; timer: number } | null>(null);
@@ -255,55 +234,25 @@ export function TabHost(): ReactNode {
     if (p && (Math.abs(e.clientX - p.x) > 10 || Math.abs(e.clientY - p.y) > 10)) clearPress();
   }, [clearPress]);
 
-  /* 壁纸：订阅一份全局文档 + 视频声音开关，每个面板按自己的路径键解析。
-     图片壁纸顺手确保亮度采样在跑（算完发变更，面板亮度档与栏体文字分支自动收敛） */
-  useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
-  const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
-  useEffect(() => {
-    for (const t of all) {
-      const ref = wallpaperFor(t.kind === "home" ? "global" : wallpaperPathOf(t.page, t.params));
-      if (ref && ref.startsWith("data:image/")) ensureWallpaperLum(ref);
-    }
-  }, [all]);
+  /* 「画布化定案」：面板与内容层永远透明，全屏壁纸由壳层（ShellWallpaperLayer）绘制并
+     透过玻璃栏体显形——这里不再有任何 per-tab 壁纸分支与亮度档挂点（2026-10-14 删）。 */
   return (
     <>
       {all.map((t) => {
         const active = t.id === activeId;
-        const wallKey = t.kind === "home" ? "global" : wallpaperPathOf(t.page, t.params);
-        const rawRef = wallpaperFor(wallKey);
-        const wp = wallpaperStyleFor(wallKey);
-        /* 内容页档视频壁纸：wallpaperStyleFor 对 data:video/ 返回 null，这里单独渲染 <video> 层 */
-        const videoRef = rawRef && isVideoRef(rawRef) ? rawRef : null;
-        let lum: WallpaperLum | null = null;
-        if (rawRef) lum = isVideoRef(rawRef) || rawRef.startsWith("builtin:") ? "dark" : wallpaperLum(rawRef);
         return (
           <div
             key={t.id}
-            className={"explorer-panel" + (t.kind === "home" ? " is-home-canvas" : "") + (rawRef ? " has-wallpaper" : "")}
+            className={"explorer-panel" + (t.kind === "home" ? " is-home-canvas" : "")}
             data-tab-id={t.id}
             data-tab-page={t.page}
-            data-wallpaper-lum={lum ?? undefined}
-            data-wallpaper-kind={videoRef ? "video" : rawRef ? "image" : undefined}
-            style={
-              active
-                ? {
-                    ...(wp
-                      ? { backgroundImage: wp.backgroundImage, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
-                      : {}),
-                  }
-                : {
-                    display: "none",
-                    ...(wp
-                      ? { backgroundImage: wp.backgroundImage, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
-                      : {}),
-                  }
-            }
+            style={active ? undefined : { display: "none" }}
             onContextMenu={(e) => {
               if (onInteractive(e.target)) return;
               /* 首页右键统一（用户点名：不要一右键弹两个菜单）——首页自由白板区域
                  的右键/长按是白板自己的「添加组件/便笺」就地菜单（FreeBoard 在
                  空白画布与组件上都自己处理并 preventDefault），宿主面板菜单退出；
-                 壁纸入口仍在 设置→壁纸（库面板两档齐全）。 */
+                 壁纸入口仍在 设置→壁纸（全窗共用一档）。 */
               if (e.target instanceof Element && t.kind === "home" && e.target.closest(".home-free")) return;
               e.preventDefault();
               clearPress();
@@ -314,7 +263,6 @@ export function TabHost(): ReactNode {
             onPointerUp={clearPress}
             onPointerCancel={clearPress}
           >
-            {videoRef ? <WallpaperVideoBox src={videoRef} sound={sound} active={active} /> : null}
             {/* 页内导航时重挂这一层（保留 .page-anim 转场）；切标签页不动这一层 */}
             <div className="page-anim" key={t.page} data-page={t.page} data-level={isSubPage(t.page) ? "sub" : undefined}>
               <TabScope tab={t}>
@@ -330,11 +278,9 @@ export function TabHost(): ReactNode {
           </div>
         );
       })}
-      {menu ? <TabContextMenu pos={menu} onClose={() => setMenu(null)} onPick={(scope) => openPicker(menu, scope)} /> : null}
+      {menu ? <TabContextMenu pos={menu} onClose={() => setMenu(null)} onPick={() => openPicker(menu)} /> : null}
       {picker
         ? <WallPickerCard
-            scope={picker.scope}
-            wallKey={picker.wallKey}
             /* 夹取视口内：卡片宽约 360（窄屏用 vw 收窄），高按 320 起步；Math.max 防极小窗口 */
             left={Math.max(8, Math.min(picker.x, window.innerWidth - 380))}
             top={Math.max(8, Math.min(picker.y, window.innerHeight - 340))}

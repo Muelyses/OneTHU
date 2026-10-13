@@ -1,16 +1,16 @@
 /**
- * 壁纸系统（2026-10-13 二期：两级范围 + 亮度自适应 + 壁纸库 + 视频动态壁纸）。
+ * 壁纸系统（2026-10-14 定案：单一全屏档 + 亮度自适应 + 壁纸库 + 视频动态壁纸）。
  *
  * 数据模型 v2（localStorage: onethu.wallpaper.v1）：
  *   {
  *     v: 2,
- *     global: string | null,           // 「全屏档」：壳层壁纸——整个软件的底色，栏体（顶栏/底栏）透出它
- *     tabs: Record<path, string>,      // 「仅内容页档」：只画在该路径标签页的内容区（原一期语义）
+ *     global: string | null,           // 壳层壁纸——整个软件的底色，面板/栏体透出它
  *     library: WallpaperLibItem[],     // 壁纸库（用户自收录；内置渐变不入库，读取时并列展示）
  *   }
- * 范围定案：全屏档只有全局一份——右键菜单的「全屏更换」与壁纸库的「设为全屏」改的都是它；
- * 内容页档按 path 各存一份（home 是常驻键 "home"）。两档可同时存在：内容页壁纸画在面板上，
- * 盖在壳层壁纸之上。
+ * 范围定案：壁纸只有全局一份——右键菜单、壁纸库、插件改的都是它；画法统一在壳层
+ * （ShellWallpaperLayer fixed 铺满），面板与内容层永远透明透出它（消灭 per-tab「本页」档：
+ * 各自为政的纱/文字分支全部移除，详见 TabHost/explorer.css）。旧档里的 tabs 键在读入时
+ * 直接丢弃（「本页壁纸」功能已删，保留成死数据只会重新污染）。
  *
  * ref 形态（三选一）："builtin:<id>"（内置渐变）| "data:image/…"（压缩后的图片）| "data:video/…"（视频）。
  * 应用壁纸时存**具体 ref**而不是 "lib:<id>" 间接层：库里删掉某张后，已应用的壁纸不失效；
@@ -39,7 +39,6 @@ export interface WallpaperLibItem {
 export interface WallpaperDoc {
   v: 2;
   global: string | null;
-  tabs: Record<string, string>;
   library: WallpaperLibItem[];
 }
 
@@ -80,15 +79,15 @@ export function displayRef(ref: string): string {
 }
 
 function sanitize(raw: unknown): WallpaperDoc {
-  const base: WallpaperDoc = { v: 2, global: null, tabs: {}, library: [] };
+  const base: WallpaperDoc = { v: 2, global: null, library: [] };
   if (!raw || typeof raw !== "object") return base;
   const r = raw as Partial<WallpaperDoc>;
-  /* v1 旧档（无 library）原样升级；library 只留合法 ref，超上限截断（防手改存储撑爆） */
+  /* v1 旧档（无 library）原样升级；library 只留合法 ref，超上限截断（防手改存储撑爆）。
+     旧档的 tabs（本页档）在此一并丢弃——功能已删，不再读也不再写。 */
   const lib = Array.isArray(r.library) ? r.library : [];
   return {
     v: 2,
     global: isWallpaperRef(r.global) ? r.global : null,
-    tabs: Object.fromEntries(Object.entries(r.tabs ?? {}).filter(([, v]) => isWallpaperRef(v))),
     library: lib
       .filter((it): it is WallpaperLibItem =>
         !!it && typeof it === "object" && typeof it.id === "string" && isWallpaperRef(it.ref))
@@ -103,7 +102,7 @@ function load(): WallpaperDoc {
   } catch {
     /* 脏数据当没有 */
   }
-  return { v: 2, global: null, tabs: {}, library: [] };
+  return { v: 2, global: null, library: [] };
 }
 
 let doc: WallpaperDoc = load();
@@ -135,27 +134,8 @@ export function wallpaperSnapshot(): WallpaperDoc {
   return doc;
 }
 
-/** 页面路径键：page + 参数 JSON（与 explorer 实例键同语义；无参数就是 page 本身） */
-export function wallpaperPathOf(page: string, params?: unknown): string {
-  return params && typeof params === "object" && Object.keys(params as object).length > 0
-    ? page + "|" + JSON.stringify(params)
-    : page;
-}
-
-/** 「仅内容页」档：某路径生效的内容区壁纸（不再回落全局——全局走壳层，见 shellWallpaperSnapshot） */
-export function wallpaperFor(path: string): string | null {
-  return doc.tabs[path] ?? null;
-}
-
 export function setGlobalWallpaper(ref: string | null): void {
   commit({ ...doc, global: ref });
-}
-
-export function setTabWallpaper(path: string, ref: string | null): void {
-  const tabs = { ...doc.tabs };
-  if (ref) tabs[path] = ref;
-  else delete tabs[path];
-  commit({ ...doc, tabs });
 }
 
 /** 整档替换（云盘恢复用）：内容过 sanitize，不是对象返回 false（调用方提示重试） */
@@ -251,23 +231,6 @@ export function veilOpacityFor(ref: string): number {
 }
 
 /* ── 渲染取值 ── */
-
-/** 「仅内容页」档的画法：图片（含自适应纱）或内置渐变；视频返回 null（调用方渲染 <video> 层） */
-export function wallpaperStyleFor(path: string): { backgroundImage: string; backgroundSize: string; backgroundPosition: string; backgroundRepeat: string } | null {
-  const ref = wallpaperFor(path);
-  if (!ref) return null;
-  const base = { backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" as const };
-  const css = builtinCss(ref);
-  if (css) return { backgroundImage: css, ...base };
-  if (ref.startsWith("data:image/") || /^local:.+\.(jpe?g|png|webp)$/i.test(ref)) {
-    const veil = veilOpacityFor(ref);
-    return {
-      backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${displayRef(ref)})`,
-      ...base,
-    };
-  }
-  return null; // 视频 → 交给 <video> 层
-}
 
 export interface ShellWallpaper {
   ref: string;

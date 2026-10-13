@@ -192,24 +192,17 @@
 .explorer-settings-body::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--text-1) 18%, transparent); border-radius: 3px; }
 .explorer-settings-body::-webkit-scrollbar-track { background: transparent; }
 
-/* ══════════ 标签页壁纸（2026-10-13）══════════
-   壁画画在面板底（内容卡自带 surface 底，深浅主题都可读）；
-   has-wallpaper 时盖一层轻纱把文字对比度拉回来。
-   「画布化定案」（2026-10-13 用户拍板）：首页/内容页=整块画布，不是一块 frame——
-   ① 面板与内容层一律显式透明，灰底只允许 body 出现（而 will 层盖住它）；
-   ② 首页不再有「仅首页」的 tab 档：home 的壁纸一律走全屏档，杜绝「壁纸只填
-   home 框架、四周留白框」的观感；内容页保留 per-tab 档（那是用户有意的局部壁纸）。 */
+/* ══════════ 标签页壁纸（2026-10-14 单档化定案）══════════
+   壁画只画在壳层（.shell-wallpaper，fixed 铺满 z 0），面板与内容层永远透明透出它——
+   白板/标签栏/内容栏观感统一，不再有 per-tab 的「本页」档。「本页壁纸」功能已删：
+   面板 has-wallpaper、面板级亮度档、面板内视频层（.explorer-panel > .wall-video-layer）
+   的分支全部移除，文字适应只看壳层 data-wallpaper-lum 一处。 */
 .explorer-panel, .explorer-content, .explorer-panel > .page-anim {
   background: transparent;
 }
 .explorer-shell.has-shell-wallpaper {
   /* 全屏档在场时 body 的灰环境底归零（壁纸层盖满，灰底不能从边缘渗出） */
   background: transparent;
-}
-.explorer-panel.has-wallpaper {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 /* ══════════ 液态玻璃 v4：环境光斑 + 玻璃栏体 + 安静标签 ═══════════
@@ -400,37 +393,13 @@
   --glass-rim-hairline: rgba(28, 31, 40, 0.08);
 }
 
-/* ── 仅内容页档：视频壁纸画在面板内（active 才播放）；面板也挂亮度档 ── */
+/* ── 面板基础形态（per-tab 壁纸的亮度档/视频层/has-wallpaper 分支已随功能删除）── */
 .explorer-panel { position: relative; overflow: hidden; }
-.explorer-panel.has-wallpaper {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.explorer-panel > .wall-video-layer { z-index: 0; }
-.explorer-panel[data-wallpaper-lum="dark"]::before,
-.explorer-panel[data-wallpaper-lum="light"]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-/* 主题文字落在壁纸上要能读：亮色主题下暗壁纸提白、暗色主题下亮壁纸压黑
-   （卡面上的文字不动——纱在卡层之下，卡片自带 surface 可读） */
-:root:not([data-scheme="dark"]) .explorer-panel[data-wallpaper-lum="dark"]::before {
-  background: rgba(255, 255, 255, 0.3);
-}
-:root[data-scheme="dark"] .explorer-panel[data-wallpaper-lum="light"]::before {
-  background: rgba(0, 0, 0, 0.32);
-}
-.explorer-panel > .page-anim { position: relative; z-index: 2; }
 .explorer-content > .page-anim { position: relative; z-index: 2; }
 
-/* 全屏档（壳层）壁纸透进内容区后的字读兜底：页级内容下的反差纱。
-   面板有自己的分歧纱（上面 has-wallpaper 分支），这里给「面板没贴自家壁纸、
-   由壳层壁纸透进来」的内容区画纱——亮主题下暗壁纸提白、暗主题下亮壁纸压黑，
-   覆盖四组合；文档正文卡自带 surface，字读不动它。 */
+/* 全屏档（壳层）壁纸透进内容区后的字读兜底：页级内容下的反差纱——唯一纱源。
+   亮主题下暗壁纸提白、暗主题下亮壁纸压黑，覆盖四组合；
+   文档正文卡自带 surface，字读不动它。 */
 .explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before,
 .explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
   content: "";

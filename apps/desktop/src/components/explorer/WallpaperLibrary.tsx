@@ -1,9 +1,10 @@
 /**
- * 壁纸库网格（设置→外观 与 页面右键选择器共用，2026-10-13）。
+ * 壁纸库网格（设置→外观 与 页面右键选择器共用，2026-10-13；2026-10-14 单档化）。
  *
- * - variant="panel"：设置里的完整库面板——上传入库、删除、应用（点图=本页，角标=全屏）、
- *   云盘同步/恢复（wallpsync）；
- * - variant="picker"：右键「更换壁纸」弹出的小选择器——点缩略图即应用到菜单指定的范围。
+ * - variant="panel"：设置里的完整库面板——上传入库、删除、应用、云盘同步/恢复（wallpsync）；
+ * - variant="picker"：右键「更换壁纸」弹出的小选择器——点缩略图即应用。
+ * 「画布化定案」：壁纸只有全屏一档（壳层绘制，面板/栏体透出它）；点图与角标等效，
+ * 本页（per-tab）档已随功能删除。
  * 内置渐变常驻库首且不可删；用户条目上限 12 张（LIBRARY_MAX），满员时上传直接应用不入库。
  */
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
@@ -18,7 +19,6 @@ import {
   libraryItems,
   removeFromLibrary,
   setGlobalWallpaper,
-  setTabWallpaper,
   subscribeWallpaper,
   wallpaperSnapshot,
   type LibraryEntry,
@@ -30,8 +30,6 @@ import {
 } from "../../state/wallpsync.js";
 import { showToast } from "../../state/toast.js";
 
-export type WallScope = "global" | "tab";
-
 /** 单格缩略图（图片直接预览；视频出首帧；内置渐变画色块） */
 function WallThumb({ entry }: { entry: LibraryEntry }): ReactNode {
   const css = entry.builtin ? builtinCss(entry.ref) : null;
@@ -40,40 +38,20 @@ function WallThumb({ entry }: { entry: LibraryEntry }): ReactNode {
   return <img src={displayRef(entry.ref)} alt="" loading="lazy" />;
 }
 
-function WallCell({
-  entry,
-  variant,
-  tabKey,
-  scope,
-}: {
-  entry: LibraryEntry;
-  variant: "panel" | "picker";
-  tabKey: string;
-  /** picker：菜单指定的应用范围（点缩略图用它；缺失回落全局） */
-  scope?: WallScope;
-}): ReactNode {
+function WallCell({ entry, variant }: { entry: LibraryEntry; variant: "panel" | "picker" }): ReactNode {
   const doc = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
   /* 图片入库/应用后确保亮度采样在跑（纱与栏体文字分支依赖它） */
   useEffect(() => {
     if (!entry.builtin && !isVideoRef(entry.ref)) ensureWallpaperLum(entry.ref);
   }, [entry.builtin, entry.ref]);
-  const pageActiveRaw = doc.tabs[tabKey] === entry.ref;
   const fullActive = doc.global === entry.ref;
-  /* 「画布化定案」：首页=全屏层（tabKey 为 "global"），本页档即全屏档 */
-  const pageActive = tabKey === "global" ? fullActive : pageActiveRaw;
-  const apply = (scope: WallScope): void => {
-    if (scope === "global" || tabKey === "global") setGlobalWallpaper(entry.ref);
-    else setTabWallpaper(tabKey, entry.ref);
-  };
-  /* picker 点图应用到**菜单指定的范围**（scope），panel 点图固定本页——与头注释语义一致：
-     此前写死 apply("global") 会让「本页」菜单选到的图被刷成全屏档（2026-10-13 接线时修正） */
-  const pickApply = (): void => apply(variant === "picker" ? scope ?? "global" : "tab");
+  const apply = (): void => setGlobalWallpaper(entry.ref);
   return (
     <div className="wall-cell">
       <button
         type="button"
-        className={"wall-thumb" + (pageActive ? " is-page-active" : "")}
-        onClick={pickApply}
+        className={"wall-thumb" + (fullActive ? " is-page-active" : "")}
+        onClick={apply}
         title={entry.name}
       >
         <WallThumb entry={entry} />
@@ -82,7 +60,7 @@ function WallCell({
         <button
           type="button"
           className={"wall-chip wall-chip-full" + (fullActive ? " is-on" : "")}
-          onClick={() => apply("global")}
+          onClick={apply}
           aria-label={"设为全屏：" + entry.name}
           title="设为全屏"
         >
@@ -108,15 +86,9 @@ function WallCell({
 
 export function WallpaperLibrary({
   variant,
-  scope,
-  tabKey,
   onClose,
 }: {
   variant: "panel" | "picker";
-  /** picker 必给：本次菜单的应用范围；panel 的点图固定应用到本页 */
-  scope?: WallScope;
-  /** 当前标签页路径键（「本页」= 设置背后的活动标签页 / 发起菜单的标签页） */
-  tabKey: string;
   onClose?: () => void;
 }): ReactNode {
   const doc = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
@@ -124,7 +96,7 @@ export function WallpaperLibrary({
   const [busy, setBusy] = useState(false);
   const pickUpload = (): void => fileRef.current?.click();
 
-  /* 入库（满员只提示不阻断）+ 应用：picker 应用到菜单范围并关闭，panel 入库即可 */
+  /* 入库（满员只提示不阻断）+ 应用：picker 应用并关闭，panel 入库即可 */
   const onFile = async (f: File): Promise<void> => {
     const r = await importWallpaperFile(f);
     if (!r.ref) {
@@ -134,8 +106,7 @@ export function WallpaperLibrary({
     const name = f.name.replace(/\.[a-z0-9]+$/i, "");
     const full = addToLibrary(r.ref, name);
     if (variant === "picker") {
-      if (scope === "global" || tabKey === "global") setGlobalWallpaper(r.ref);
-      else setTabWallpaper(tabKey, r.ref);
+      setGlobalWallpaper(r.ref);
       onClose?.();
     }
     if (full) showToast(full + (variant === "picker" ? "；已直接应用" : "；已应用不入库"));
@@ -187,16 +158,11 @@ export function WallpaperLibrary({
               清除全屏
             </button>
           ) : null}
-          {doc.tabs[tabKey] ? (
-            <button type="button" className="btn btn-ghost" onClick={() => setTabWallpaper(tabKey, null)}>
-              清除本页
-            </button>
-          ) : null}
         </div>
       )}
       <div className="wall-lib-grid">
         {libraryItems().map((entry) => (
-          <WallCell key={entry.id} entry={entry} variant={variant} tabKey={tabKey} scope={scope} />
+          <WallCell key={entry.id} entry={entry} variant={variant} />
         ))}
       </div>
       {variant === "panel" ? (

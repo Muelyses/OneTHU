@@ -380,7 +380,7 @@ export interface OnethuApi {
     tabDuplicate(id: string): { id: string };
     tabFocus(id: string): void;
     wallpaperSet(scope: string, ref: string | null): void;
-    wallpaperGet(): { global: string | null; tab: string | null };
+    wallpaperGet(): { global: string | null };
     voiceSet(patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };
     voiceGet(): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };
     prefSet(patch: unknown): void;

@@ -51,7 +51,7 @@ import {
   duplicateTab, explorerSnapshot, focusTab, openTab, openWorkspace, saveWorkspace,
 } from "../state/explorer.js";
 import {
-  setGlobalWallpaper, setTabWallpaper, wallpaperFor, wallpaperPathOf, wallpaperSnapshot, BUILTIN_WALLPAPERS,
+  setGlobalWallpaper, wallpaperSnapshot, BUILTIN_WALLPAPERS,
 } from "../state/wallpaper.js";
 import { readVoicePrefs, setVoicePrefs } from "../state/voicePrefs.js";
 import { explorerPrefsSnapshot, setExplorerPrefs } from "../state/explorerPrefs.js";
@@ -1106,25 +1106,20 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         focusTab(String(id));
       },
       /* ── 低风险设置 ── */
+      /* 壁纸只剩全屏一档（2026-10-14 定案）：scope 只认 "global"，其它值报错说清 */
       wallpaperSet: (scope: string, ref: string | null): void => {
         gate(perms, "ui", "ext.wallpaperSet");
+        if (scope !== "global") throw new Error("壁纸只有全屏一档（scope=\"global\"）；原来的「本页」档已删除");
         const val = String(ref ?? "");
         if (val) {
           if (!val.startsWith("builtin:")) throw new Error("目前只接受内置壁纸（builtin:aurora/dusk/matcha/ink），本地图请从设置→壁纸上传");
           if (!BUILTIN_WALLPAPERS.some((b) => "builtin:" + b.id === val)) throw new Error("没有这块内置壁纸，可选：" + BUILTIN_WALLPAPERS.map((b) => "builtin:" + b.id).join("、"));
         }
-        if (scope === "global") setGlobalWallpaper(val || null);
-        else {
-          const t = explorerSnapshot().tabs.find((x) => x.id === explorerSnapshot().activeId);
-          const key = !t || t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
-          setTabWallpaper(key, val || null);
-        }
+        setGlobalWallpaper(val || null);
       },
-      wallpaperGet: (): { global: string | null; tab: string | null } => {
+      wallpaperGet: (): { global: string | null } => {
         gate(perms, "ui", "ext.wallpaperGet");
-        const t = explorerSnapshot().tabs.find((x) => x.id === explorerSnapshot().activeId);
-        const key = !t || t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
-        return { global: wallpaperSnapshot().global ?? null, tab: wallpaperFor(key) ?? null };
+        return { global: wallpaperSnapshot().global ?? null };
       },
       voiceSet: (patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string } => {
         gate(perms, "ui", "ext.voiceSet");

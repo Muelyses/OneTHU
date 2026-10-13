@@ -57,6 +57,7 @@ import { readVoicePrefs, setVoicePrefs } from "../state/voicePrefs.js";
 import { explorerPrefsSnapshot, setExplorerPrefs } from "../state/explorerPrefs.js";
 import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.js";
 import { setHwDefault, setHwReminder } from "../state/hwRemind.js";
+import * as geek from "../lib/geekBrowser.js";
 
 /** ext.tabOpen 允许打开的一级页（子页是 tab 内导航，不走新标签） */
 const TOP_PAGES = new Set([
@@ -1404,6 +1405,39 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         return runCommand(String(pluginId ?? ""), String(cmdId ?? ""), String(input ?? ""));
       },
     },
+    /* 极客模式：浏览器探索（桌面 Only；能力最小面：launch/navigate/eval/snapshot/close；全走 ui 门） */
+    browser: {
+      probe: async (): Promise<unknown> => {
+        gate(perms, "ui", "browser.probe");
+        const m = geek as never;
+        return (m as { probeGeek: () => unknown }).probeGeek();
+      },
+      launch: async (mode: string): Promise<unknown> => {
+        gate(perms, "ui", "browser.launch");
+        if (typeof navigator !== "undefined" && /android/i.test(navigator.userAgent)) {
+          throw new Error("手机端不开放浏览器探索（桌面端专属）。");
+        }
+        return geek.launchGeek(String(mode ?? "system"));
+      },
+      navigate: async (url: string): Promise<void> => {
+        gate(perms, "ui", "browser.navigate");
+        const u = String(url ?? "");
+        if (!/^https?:\/\//.test(u)) throw new Error("url 要以 http(s):// 开头");
+        await geek.geekNavigate(u);
+      },
+      eval: async (js: string): Promise<unknown> => {
+        gate(perms, "ui", "browser.eval");
+        return geek.geekEval(String(js ?? ""));
+      },
+      snapshot: async (): Promise<unknown> => {
+        gate(perms, "ui", "browser.snapshot");
+        return geek.geekSnapshot();
+      },
+      close: async (): Promise<unknown> => {
+        gate(perms, "ui", "browser.close");
+        return geek.closeGeek();
+      },
+    },
     ts: {
       /** 会话探活：learn 可达即视为主会话可用（wengine SSO 透明建立）。 */
       status: async (): Promise<"ready" | "expired" | "logged-out"> => {
@@ -1579,6 +1613,10 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           } catch {
             /* 存储不可用时留空 */
           }
+          // 创造模式（2026-10-13）：userext 的开关随 settings 泵进 OH 引擎——
+          // Rust Config::from_settings 每轮 run 实时读 creativeMode，切按钮 = 下轮对话生效。
+          // 存字符串贴合 settings map 的 Record<string,string> 口径（Rust 侧 as_str 读取）。
+          out["creativeMode"] = userExtSnapshot().creative ? "true" : "false";
         }
         return out;
       },

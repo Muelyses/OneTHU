@@ -84,10 +84,13 @@ export interface UserExtDoc {
   activeThemeId: string | null;
   /** 手机桌面小组件自定义内容（OH 推送；null = 未占用，原生回落插件槽） */
   phone: PhoneWidgetContent | null;
+  /** 创造模式（2026-10-13）：开启后 OH 更主动地创造插件/主题/OnePage/自我扩展。
+   *  经门面 settings.get 以 creativeMode 注进引擎（Rust Config 每轮实时读），存档不换键。 */
+  creative: boolean;
 }
 
 function empty(): UserExtDoc {
-  return { v: 1, tools: [], flows: [], widgets: [], themes: [], activeThemeId: null, phone: null };
+  return { v: 1, tools: [], flows: [], widgets: [], themes: [], activeThemeId: null, phone: null, creative: false };
 }
 
 function load(): UserExtDoc {
@@ -115,6 +118,7 @@ function load(): UserExtDoc {
           themes: Array.isArray(p.themes) ? p.themes : [],
           activeThemeId: typeof p.activeThemeId === "string" ? p.activeThemeId : null,
           phone,
+          creative: p.creative === true, // 旧存档没有此键 = 默认关（v1 追加字段的兜底口径）
         };
       }
     }
@@ -226,6 +230,13 @@ export function setPhoneWidget(title: string, rows: Array<{ text?: unknown; sub?
 
 export function phoneWidgetSnapshot(): PhoneWidgetContent | null {
   return doc.phone;
+}
+
+/** 创造模式开关（OH 小窗按钮切换；commit 后 facade.settings.get 下一轮就把新值泵进引擎） */
+export function setCreative(on: boolean): void {
+  if (doc.creative === on) return;
+  doc.creative = on;
+  commit();
 }
 
 export function touchFlow(id: string, ok: boolean): void {

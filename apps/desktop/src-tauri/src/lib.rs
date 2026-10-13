@@ -134,6 +134,194 @@ fn wallpaper_save(app: tauri::AppHandle, name: String, data_base64: String) -> R
     Ok(path.to_string_lossy().to_string())
 }
 
+/* ══════════ 极客模式（浏览器探索；2026-10-13 用户点名）══════════
+ * 能力：探测本机 Chrome/Chromium/Edge 与 playwright 下载件 → 用**独立 profile**
+ * （app_data_dir/geek-profile，登录态自持且与主程序隔离）启动，远程调试口给 TS 侧 CDP。
+ * 硬边界：①手机端（Android）一律拒绝；②写入动作全走应用内两段式确认（facade/OH 工具层再 gate）；
+ * ③用户风险自负的说明由设置层承载（此处不拦也不代持免责）。 */
+
+#[cfg(desktop)]
+fn geek_probe_browsers() -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    #[cfg(target_os = "macos")]
+    for p in [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    ] {
+        if std::path::Path::new(p).exists() {
+            out.push(p.to_string());
+        }
+    }
+    #[cfg(target_os = "windows")]
+    for p in [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        "C:\\Program Files\\Chromium\\chromium.exe",
+    ] {
+        if std::path::Path::new(p).exists() {
+            out.push(p.to_string());
+        }
+    }
+    #[cfg(all(unix, not(target_os = "macos")))]
+    for p in ["/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable"] {
+        if std::path::Path::new(p).exists() {
+            out.push(p.to_string());
+        }
+    }
+    out
+}
+
+/// 浏览器探索探测（只读）：本机可选浏览器 + playwright chromium 是否已下载 + 独立 profile 是否已存在。
+#[tauri::command]
+fn geek_browser_probe(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放浏览器探索（桌面端专属）。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        let _ = app;
+        return Err("手机端不开放浏览器探索。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let data = app.path().app_data_dir().map_err(|e| e.to_string())?;
+        let profile = data.join("geek-profile");
+        let pw_dir = std::env::var_os("HOME").map(|h| std::path::PathBuf::from(h).join("Library/Caches/ms-playwright")).or_else(|| std::env::var_os("USERPROFILE").map(|h| std::path::PathBuf::from(h).join("AppData/Local/ms-playwright")));
+        let pw_ready = pw_dir
+            .map(|d| std::fs::read_dir(&d).map(|rd| rd.flatten().any(|e| e.file_name().to_string_lossy().starts_with("chromium-"))).unwrap_or(false))
+            .unwrap_or(false);
+        Ok(serde_json::json!({
+            "browsers": geek_probe_browsers(),
+            "profileReady": profile.exists(),
+            "playwrightReady": pw_ready,
+            "profileDir": profile.to_string_lossy(),
+        }))
+    }
+}
+
+static GEEK_CHILD: std::sync::OnceLock<std::sync::Mutex<Option<(u32, std::process::Child)>>> = std::sync::OnceLock::new();
+static GEEK_PORT: std::sync::OnceLock<std::sync::Mutex<Option<u16>>> = std::sync::OnceLock::new();
+
+fn geek_child_slot() -> &'static std::sync::Mutex<Option<(u32, std::process::Child)>> {
+    GEEK_CHILD.get_or_init(|| std::sync::Mutex::new(None))
+}
+
+/// 启动探索浏览器（mode = "system" | "playwright"）：独立 profile + remote-debugging-port。
+#[tauri::command]
+fn geek_browser_launch(app: tauri::AppHandle, mode: String) -> Result<serde_json::Value, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放浏览器探索（桌面端专属）。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        let _ = (app, mode);
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        use base64::Engine as _;
+        let _ = base64::engine::general_purpose::STANDARD;
+        let data = app.path().app_data_dir().map_err(|e| e.to_string())?;
+        let profile = data.join("geek-profile");
+        std::fs::create_dir_all(&profile).map_err(|e| format!("建 profile 失败：{e}"))?;
+        let running = geek_child_slot().lock().map(|g| g.is_some()).unwrap_or(false);
+        if running {
+            let port = GEEK_PORT.get_or_init(|| std::sync::Mutex::new(None)).lock().map(|g| g.unwrap_or(0)).unwrap_or(0);
+            return Ok(serde_json::json!({ "alreadyRunning": true, "port": port }));
+        }
+        let path = if mode == "playwright" {
+            let dir = std::env::var_os("HOME").map(|h| std::path::PathBuf::from(h).join("Library/Caches/ms-playwright")).or_else(|| std::env::var_os("USERPROFILE").map(|h| std::path::PathBuf::from(h).join("AppData/Local/ms-playwright"))).ok_or("找不到用户目录")?;
+            let mut found: Option<std::path::PathBuf> = None;
+            if let Ok(rd) = std::fs::read_dir(&dir) {
+                for e in rd.flatten() {
+                    let name = e.file_name().to_string_lossy().to_string();
+                    if name.starts_with("chromium-") {
+                        let cand = e.path().join("chrome-mac").join("Chromium.app").join("Contents").join("MacOS").join("Chromium");
+                        if cand.exists() {
+                            found = Some(cand);
+                            break;
+                        }
+                        let cand2 = e.path().join("chrome-linux").join("chrome");
+                        if cand2.exists() {
+                            found = Some(cand2);
+                            break;
+                        }
+                    }
+                }
+            }
+            found.ok_or("playwright chromium 还没下载（设置里先一键下载）")?.to_string_lossy().to_string()
+        } else {
+            geek_probe_browsers()
+                .into_iter()
+                .next()
+                .ok_or("本机没装 Chrome/Chromium/Edge；或改用 playwright 下载档")?
+        };
+        let port: u16 = 9333;
+        let child = std::process::Command::new(&path)
+            .arg(format!("--remote-debugging-port={port}"))
+            .arg(format!("--user-data-dir={}", profile.to_string_lossy()))
+            .arg("--no-first-run")
+            .arg("--no-default-browser-check")
+            .spawn()
+            .map_err(|e| format!("启动失败：{e}"))?;
+        let pid = child.id();
+        *geek_child_slot().lock().map_err(|e| e.to_string())? = Some((pid, child));
+        *GEEK_PORT.get_or_init(|| std::sync::Mutex::new(None)).lock().map_err(|e| e.to_string())? = Some(port);
+        Ok(serde_json::json!({ "pid": pid, "port": port, "profileDir": profile.to_string_lossy() }))
+    }
+}
+
+/// 关闭探索浏览器（kill 子进程；session 粒度不优雅退出——登录态在磁盘 profile 里不丢）。
+#[tauri::command]
+fn geek_browser_close() -> Result<bool, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let mut slot = geek_child_slot().lock().map_err(|e| e.to_string())?;
+        if let Some((pid, mut child)) = slot.take() {
+            let _ = child.kill();
+            let _ = pid;
+            *GEEK_PORT.get_or_init(|| std::sync::Mutex::new(None)).lock().map_err(|e| e.to_string())? = None;
+            return Ok(true);
+        }
+        Ok(false)
+    }
+}
+
+/// 一键下载 playwright chromium（桌面 Only；子进程跑 npx -y playwright install chromium，返回日志尾）。
+#[tauri::command]
+fn geek_playwright_install() -> Result<String, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let out = std::process::Command::new("npx")
+            .args(["-y", "playwright@1.49.1", "install", "chromium"])
+            .output()
+            .map_err(|e| format!("npx 启动失败（机器上要有 Node.js）：{e}"))?;
+        let tail = String::from_utf8_lossy(&out.stderr).trim().to_string();
+        let head = String::from_utf8_lossy(&out.stdout).trim().to_string();
+        let msg = if !tail.is_empty() { tail } else { head };
+        if out.status.success() {
+            Ok(if msg.is_empty() { "下载完成".into() } else { msg.lines().rev().take(3).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join("；") })
+        } else {
+            Err(format!("下载失败：{msg}"))
+        }
+    }
+}
+
 /// 删除壁纸存档：路径必须落在 wallpapers 目录内（防目录穿越被滥用成任意删文件）。
 #[tauri::command]
 fn wallpaper_delete(app: tauri::AppHandle, path: String) -> Result<(), String> {
@@ -4411,7 +4599,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_delete,
+            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_delete,geek_browser_probe,geek_browser_launch,geek_browser_close,geek_playwright_install,
             overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,updater::updater_download,updater::updater_cancel_download,updater::updater_open_installer,overlay_win::overlay_set_panel_height,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
             seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,

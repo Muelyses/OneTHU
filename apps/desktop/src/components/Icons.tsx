@@ -356,6 +356,14 @@ export const IconX = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** 创造模式（OH 小窗工具条）：四芒星 + 一颗小伴星——「凭空变出东西」的图形语义 */
+export const IconSpark = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M11 3.5l1.8 5.7 5.7 1.8-5.7 1.8L11 18.5l-1.8-5.7-5.7-1.8 5.7-1.8z" />
+    <path d="M18.6 15.6l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" />
+  </svg>
+);
+
 /** GitHub 标（品牌填充形，故单独覆盖 fill/stroke；16 号画布按 1.5 倍放到 24 网格） */
 export const IconGithub = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base({ fill: "currentColor", stroke: "none", ...p })}>

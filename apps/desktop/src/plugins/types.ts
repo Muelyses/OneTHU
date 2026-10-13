@@ -664,6 +664,15 @@ export interface OnethuApi {
     /** 执行已启用插件的命令（高危：命令可能含写操作，由插件内部两段确认兜底）。需 plugins:call 权限 */
     call(pluginId: string, cmdId: string, input?: string): Promise<unknown>;
   };
+  /** 极客模式：浏览器探索（桌面 Only；能力最小面） */
+  browser: {
+    probe(): Promise<unknown>;
+    launch(mode: string): Promise<unknown>;
+    navigate(url: string): Promise<void>;
+    eval(js: string): Promise<unknown>;
+    snapshot(): Promise<unknown>;
+    close(): Promise<unknown>;
+  };
   ts: {
     /** 会话探活：返回主会话当前可用性。需 tsinghua:sdk 权限。 */
     status(): Promise<"ready" | "expired" | "logged-out">;

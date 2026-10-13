@@ -702,6 +702,7 @@ export function SettingsPage() {
       <Card>
         <WidgetSettingsSection />
       </Card>
+      <GeekSection />
       {/* 2026-10-11（用户纠正）：OH **不是设置页的二级**，而是**插件页的二级子页面**
           （基础设置 / 高级配置）——分节与页签都已从这里移除，见 pages/Plugins.tsx 的 OH 入口。 */}
       <SectionHead title="安全" />
@@ -2000,6 +2001,128 @@ function AppearanceSection(): ReactNode {
         </div>
       ) : null}
       <ThemePickerModal open={pickerOpen} onClose={() => setPickerOpen(false)} />
+    </div>
+  );
+}
+
+
+/* ══ 极客模式：浏览器探索（2026-10-13 用户点名；桌面 Only；风险自负明示）══
+   能力：探测/一键下载 playwright 浏览器、独立登录态 profile 启停；CDP 读写（探索&自做插件）
+   由 OH 的 geek_* 工具承载，本节只管「模式开关 + 环境就绪 + 风险提示」。 */
+
+function GeekSection(): ReactNode {
+  const st = useExplorerState();
+  const at = allTabs().find((t) => t.id === st.activeId) ?? null;
+  void at;
+  const [probe, setProbe] = useState<{ browsers: string[]; playwrightReady: boolean; profileReady: boolean } | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [on, setOn] = useState(() => {
+    try {
+      return localStorage.getItem("onethu.geek.on") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
+  const refresh = useCallback(() => {
+    void import("@tauri-apps/api/core")
+      .then(({ invoke }) => invoke("geek_browser_probe"))
+      .then((r: unknown) => setProbe(r as { browsers: string[]; playwrightReady: boolean; profileReady: boolean }))
+      .catch(() => setProbe(null));
+  }, []);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+  if (isPhone) return null;
+  const toggle = (): void => {
+    const next = !on;
+    try {
+      localStorage.setItem("onethu.geek.on", next ? "1" : "0");
+    } catch {
+      /* 存不进就本次有效 */
+    }
+    setOn(next);
+    if (next) showToast("极客模式已开启：设置里可下载探索浏览器（桌面端专属）");
+  };
+  const download = async (): Promise<void> => {
+    setBusy("dl");
+    setMsg(null);
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const r = await invoke<string>("geek_playwright_install");
+      setMsg(r || "下载完成");
+    } catch (e) {
+      setMsg(String(e));
+    } finally {
+      setBusy(null);
+      refresh();
+    }
+  };
+  const [mode, setMode] = useState<"system" | "playwright">("system");
+  const launch = async (): Promise<void> => {
+    setBusy("launch");
+    setMsg(null);
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const r = await invoke<{ port?: number }>("geek_browser_launch", { mode });
+      setMsg(r.port ? `探索浏览器已就绪（调试口 ${r.port}）；登录态在独立 profile` : "已启动");
+    } catch (e) {
+      setMsg(String(e));
+    } finally {
+      setBusy(null);
+      refresh();
+    }
+  };
+  return (
+    <div className="setting-group-wrap">
+      <div className="setting-row">
+        <div>
+          <div className="setting-title">极客模式（浏览器探索）</div>
+          <div className="setting-desc">
+            高级选项，默认关闭；把不在 OneTHU 里的站点功能用登录态爬回来自己做插件。用独立登录态，和自己浏览器互不干扰。
+          </div>
+          <div className="setting-desc" style={{ color: "var(--md-sys-color-error)" }}>
+            风险自负：探索动作可能被站点风控计入本人账号；不喜欢冒险可通过 OH 建议官方收录。
+          </div>
+        </div>
+        <Switch on={on} onChange={toggle} label="极客模式" />
+      </div>
+      {on ? (
+        <div className="setting-row">
+          <div>
+            <div className="setting-title">探索浏览器</div>
+            <div className="setting-desc">
+              {probe
+                ? probe.browsers.length > 0
+                  ? `本机可用浏览器 ${probe.browsers.length} 个；playwright 版${probe.playwrightReady ? "已下载" : "未下载"}`
+                  : "本机没有可直接用的浏览器，可一键下载专用版"
+                : "探测中…"}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8, flex: "none" }}>
+            <button className="btn btn-ghost" disabled={busy !== null} onClick={() => void download()}>
+              {busy === "dl" ? "下载中…" : "下载专用版"}
+            </button>
+            <button className="btn" disabled={busy !== null || !probe} onClick={() => void launch()}>
+              {busy === "launch" ? "启动中…" : "启动探索"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+      {on ? (
+        <div className="setting-row">
+          <div>
+            <div className="setting-title">启动方式</div>
+            <div className="setting-desc">系统浏览器（复用本机 Chrome/Edge）或探索专用浏览器。</div>
+          </div>
+          <label style={{ display: "flex", alignItems: "center", gap: 6, flex: "none" }}>
+            <input type="radio" checked={mode === "system"} onChange={() => setMode("system")} /> 系统浏览器
+            <input type="radio" checked={mode === "playwright"} onChange={() => setMode("playwright")} /> 专用版
+          </label>
+        </div>
+      ) : null}
+      {msg ? <div className="exthw-note">{msg}</div> : null}
     </div>
   );
 }

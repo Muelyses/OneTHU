@@ -26,7 +26,7 @@ import remarkGfm from "remark-gfm";
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
 import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
-import { IconClock, IconDownload, IconPlus, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
+import { IconClock, IconDownload, IconPlus, IconSpark, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
 import { AttachTray } from "../components/AttachTray.js";
 import { AttachActionsSheet, type AttachActionDone } from "../components/AttachActionsSheet.js";
 import { bytesToDataUrl, fileToBytes, formatSize, mimeFromName, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
@@ -40,6 +40,7 @@ import { onOhCommand, type OhCommand, type OhMode } from "./ohControl.js";
 import { useOhSearch, jumpEntry, jumpAtom, jumpSearchRow, jumpSettingsTab, jumpTabPayload } from "./ohSearch.js";
 import { explorerPrefsSnapshot, useSearchHistory, type SearchJump } from "../state/explorerPrefs.js";
 import { displayBreadcrumb } from "../state/searchRows.js";
+import { setCreative, subscribeUserExt, userExtSnapshot } from "../state/userext.js";
 import "../styles/explorer-oh.css"; // dev-explorer：胶囊/搜索模式样式（悬浮球窗口同 bundle，一处引入两端生效）
 
 import { isAndroidNavigator } from "../lib/androidHost.js";
@@ -98,6 +99,12 @@ export function dockBadgeSnapshot(): number {
 }
 export function useDockBadge(): number {
   return useSyncExternalStore(subscribeDockBadge, dockBadgeSnapshot, () => 0);
+}
+/* ══════════ 创造模式（2026-10-13）：userext 开关的小窗呈现 ══════════
+   状态真源 = state/userext.ts（随 onethu.userext.v1 持久）；这里只切开关 + 渲染激活态。
+   新值经 facade.settings.get 的 creativeMode 泵进引擎，Rust 每轮 run 实时读 → 下轮对话生效。 */
+function creativeSnapshot(): boolean {
+  return userExtSnapshot().creative;
 }
 /* ══════════ dev-explorer 二轮：胶囊 ⇄ 面板的共享 UI 通道 ══════════
    OhCapsule（底栏胶囊）与面板是一个连续交互体：胶囊常态像输入框、展开后**就是**输入框、

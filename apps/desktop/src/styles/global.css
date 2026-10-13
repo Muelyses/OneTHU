@@ -8148,6 +8148,8 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-shadow: 0 10px 30px rgba(30, 33, 45, 0.1);
   --glass-menu-fill: rgba(246, 247, 249, 0.55);
   --glass-menu-blur: blur(22px) saturate(140%);
+  --glass-fill: rgba(255, 255, 255, 0.52);
+  --glass-fill-regular: rgba(255, 255, 255, 0.66);
   --glass-chip-blur: blur(6px) saturate(125%);
   --glass-panel-blur: blur(6px) saturate(130%);
   --lg-ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -8162,6 +8164,8 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   --glass-menu-fill: rgba(22, 22, 27, 0.55);
+  --glass-fill: rgba(255, 255, 255, 0.07);
+  --glass-fill-regular: rgba(30, 30, 36, 0.55);
 }
 
 /* rim 三件套（一条 box-shadow 表达，全部玻璃面共用） */
@@ -8193,13 +8197,19 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   box-shadow: var(--glass-shadow), inset 0 2px 8px rgba(0, 0, 0, 0.14), inset 0 1px 0 var(--glass-rim-top);
 }
 .btn-primary {
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--md-sys-color-primary) 26%, transparent),
-    color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent));
-  border-color: color-mix(in srgb, var(--md-sys-color-primary) 42%, transparent);
+  /* 主 CTA = 主色实底（文字对比优先）+ 玻璃 rim/高光；不透明防「黑按钮发灰字模糊」 */
+  background: var(--md-sys-color-primary);
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 70%, transparent);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 4px 14px -4px color-mix(in srgb, var(--md-sys-color-primary) 55%, transparent);
 }
 .btn-primary:hover {
-  box-shadow: var(--lg-rim-hover), var(--lg-lift-hover);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.38),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 8px 22px -6px color-mix(in srgb, var(--md-sys-color-primary) 62%, transparent);
 }
 
 /* ---- 图标按钮 / chip = chip tier ---- */

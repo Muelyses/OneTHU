@@ -8511,3 +8511,13 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
+
+/* ---- 首页画布无框（2026-10-13 用户点名：雷霆大框必删）----
+   .freeboard 是首页自由白板的整页画布，不许有任何描边/rim/外投影；
+   玻璃材质只上到「件」（.free-item / .free-note 等）。这里显式归零，
+   防任何后置规则（本文件或 explorer*.css 追加段）再把画布框起来。 */
+.freeboard {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}

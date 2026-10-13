@@ -549,3 +549,30 @@ html.is-phone .hard-refresh-fab {
 html.is-phone .hard-refresh-fab.top-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 124px) !important;
 }
+
+/* ══════════ 内容条统一液态玻璃（2026-10-14 用户点名扩面）══════════
+   内容页数据卡（.card 一族：card-hero/stat-card/余流表卡等）从 surface-container
+   平涂升级为面板级玻璃三件套，与首页 .home-card/.free-item、栏体同一材质语言。
+   本文件在 global.css 之后加载，同权重覆盖其 background。
+   注意嵌套：home 组件卡内部的次级 .card 降为透明（玻璃只算一层，blur 不叠加）。 */
+.explorer-panel .card,
+.explorer-panel .stat-card,
+.explorer-panel .home-card:not(.is-editing) {
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
+  backdrop-filter: var(--glass-panel-blur);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  border-color: transparent;
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
+}
+.explorer-panel .home-card-body .card:not(.is-editing) {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

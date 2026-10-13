@@ -982,8 +982,8 @@ html.is-phone .onepage-sheet-body {
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
     var(--glass-fill-regular);
-  backdrop-filter: var(--glass-card-blur);
-  -webkit-backdrop-filter: var(--glass-card-blur);
+  backdrop-filter: var(--glass-panel-blur);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
   border-color: var(--glass-border);
   box-shadow:
     var(--glass-shadow),

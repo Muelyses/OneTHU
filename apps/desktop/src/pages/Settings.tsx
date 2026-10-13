@@ -2,7 +2,7 @@ declare const __APP_VERSION__: string;
 import { defineSearchRows } from "../state/searchRows.js";
 import {
   BUILTIN_WALLPAPERS,
-  fileToWallpaper,
+  importWallpaperFile,
   setGlobalWallpaper,
   subscribeWallpaper,
   wallpaperSnapshot,
@@ -1788,8 +1788,8 @@ function WallpaperSection(): ReactNode {
           const f = e.target.files?.[0];
           e.target.value = "";
           if (!f) return;
-          void fileToWallpaper(f).then((d) => {
-            if (d) { setGlobalWallpaper(d); setErr(null); } else setErr("这张图处理失败，换一张试试");
+          void importWallpaperFile(f).then((r) => {
+            if (r.ref) { setGlobalWallpaper(r.ref); setErr(null); } else setErr(r.error ?? "这张处理失败，换一个试试");
           });
         }}
       />

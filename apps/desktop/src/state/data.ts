@@ -397,6 +397,9 @@ export function refreshLearnDataSilently(): Promise<LearnBundle | null> {
     const key = selectedSemester ?? "current";
     try {
       adoptLearnBundle(key, await fetchLearnBundleFresh());
+      /* OneFlow 事件源：作业/成绩数据每次成功刷新都广播（OH 的事件触发 OneFlow 听这个） */
+      window.dispatchEvent(new Event("onethu.grades.update"));
+      window.dispatchEvent(new Event("onethu.hw.deadline"));
       return cache?.data ?? null;
     } catch (err) {
       if (err instanceof Error && err.name === "AuthRequiredError") {

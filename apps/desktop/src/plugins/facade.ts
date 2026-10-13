@@ -23,6 +23,24 @@ import { getPluginAtom, pluginAtomKindOf, pluginAtomKinds, registerStaticAtomIte
 import * as pluginWidgets from "./pluginWidgets.js";
 import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
 import {
+  activateUserTheme,
+  deleteFlow,
+  deleteTheme,
+  deleteTool,
+  runFlow as runFlowSteps,
+  runTool as runToolSteps,
+  sanitizeUserHtml,
+  startScheduler,
+  upsertFlow,
+  upsertTool,
+  upsertTheme,
+  upsertWidget,
+  userExtSnapshot,
+  startUserThemeWatch,
+  type ExtStep,
+} from "../state/userext.js";
+import { addItem } from "../state/freeBoard.js";
+import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
 } from "../state/cloudCal.js";
@@ -803,6 +821,64 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         return onTabReady(key, cb);
       },
     },
+    /** 用户扩展层（OH 自我进化元工具，2026-10-13）：用户工具/OneFlow/用户生成组件。
+     *  权限口径：本命名空间要求 ui 权限；步骤内部调用的其他 ns 不再逐 gate——
+     *  OH 是受信执行体，用户在对话里对它下达的指令视同用户操作。 */
+    ext: {
+      toolCreate: (name: string, description: string, steps: unknown): void => {
+        gate(perms, "ui", "ext.toolCreate");
+        upsertTool({
+          id: "ut." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+          name: String(name),
+          description: String(description),
+          steps: Array.isArray(steps) ? (steps as ExtStep[]) : [],
+        });
+      },
+      toolList: (): Array<{ id: string; name: string; description: string }> =>
+        userExtSnapshot().tools.map((t) => ({ id: t.id, name: t.name, description: t.description })),
+      toolRun: (id: string): Promise<{ ok: boolean; error?: string }> => runToolSteps(id, execTool),
+      toolDelete: (id: string): void => deleteTool(id),
+      flowCreate: (name: string, trigger: unknown, steps: unknown): void => {
+        gate(perms, "ui", "ext.flowCreate");
+        upsertFlow({
+          id: "fl." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+          name: String(name),
+          trigger: trigger as import("../state/userext.js").FlowTrigger,
+          steps: Array.isArray(steps) ? (steps as ExtStep[]) : [],
+        });
+        startScheduler(execTool, {
+          onDeadline: () => window.dispatchEvent(new Event("onethu.hw.deadline")),
+          onGrades: () => window.dispatchEvent(new Event("onethu.grades.update")),
+          onStart: () => undefined,
+        });
+      },
+      flowList: (): Array<{ id: string; name: string; trigger: unknown; lastRun?: number; lastOk?: boolean }> =>
+        userExtSnapshot().flows.map((f) => ({ id: f.id, name: f.name, trigger: f.trigger, lastRun: f.lastRun, lastOk: f.lastOk })),
+      flowRun: (id: string): Promise<{ ok: boolean; error?: string }> => runFlowSteps(id, execTool),
+      flowDelete: (id: string): void => deleteFlow(id),
+      widgetCreate: (name: string, html: string, x?: number, y?: number): { id: string } => {
+        gate(perms, "ui", "ext.widgetCreate");
+        const uid = "uw." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        upsertWidget({ id: uid, name: String(name), html: sanitizeUserHtml(String(html)) });
+        addItem({ kind: "custom", id: "usergen:" + uid }, x ?? 60, y ?? 360, 240, 160);
+        return { id: uid };
+      },
+      themeApply: (name: string, vars: unknown): { id: string } => {
+        gate(perms, "ui", "ext.themeApply");
+        const clean: Record<string, string> = {};
+        for (const [k, v] of Object.entries((vars ?? {}) as Record<string, unknown>)) {
+          if (k.startsWith("--") && typeof v === "string" && v.length < 128) clean[k] = v;
+        }
+        const id = "uth." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        upsertTheme({ id, name: String(name), vars: clean });
+        activateUserTheme(id);
+        return { id };
+      },
+      themeList: (): Array<{ id: string; name: string; active: boolean }> =>
+        userExtSnapshot().themes.map((t) => ({ id: t.id, name: t.name, active: userExtSnapshot().activeThemeId === t.id })),
+      themeActivate: (id: string | null): void => activateUserTheme(id),
+      themeDelete: (id: string): void => deleteTheme(id),
+    },
     favorites: {
       /** 收藏本插件原子（key = "<tabId>~<原子key>"；展示元数据走 registerAtom.resolve） */
       add: (key: string, folderId?: string): void => {
@@ -1199,6 +1275,22 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       }
     }
   }
+  /* 用户主题监听挂一次（模块级幂等在函数内用 started 守卫） */
+  startUserThemeWatch();
+  /** 用户扩展执行器：步骤里 "ns.method" 调用插件门面自身（单对象参数） */
+  const execTool = (tool: string, args: Record<string, unknown>): Promise<unknown> => {
+    const dot = tool.indexOf(".");
+    if (dot <= 0) return Promise.reject(new Error("工具名需要 ns.method 形式"));
+    const nsObj = (api as unknown as Record<string, Record<string, ((a: unknown) => unknown) | undefined>>)[tool.slice(0, dot)];
+    const fn = nsObj?.[tool.slice(dot + 1)];
+    if (typeof fn !== "function") return Promise.reject(new Error("没有这个方法：" + tool));
+    return Promise.resolve(fn(args));
+  };
+  startScheduler(execTool, {
+    onDeadline: () => window.dispatchEvent(new Event("onethu.hw.deadline")),
+    onGrades: () => window.dispatchEvent(new Event("onethu.grades.update")),
+    onStart: () => undefined,
+  });
   return api;
 }
 

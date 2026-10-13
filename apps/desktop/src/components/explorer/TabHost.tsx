@@ -30,7 +30,8 @@ import { isSubPage, renderPage } from "./renderPage.js";
 import { HomeTab } from "./HomeTab.js";
 import {
   BUILTIN_WALLPAPERS,
-  fileToWallpaper,
+  importWallpaperFile,
+  setGlobalWallpaper,
   setTabWallpaper,
   wallpaperFor,
   wallpaperPathOf,
@@ -110,15 +111,24 @@ function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void })
   const wallKey = tab ? (tab.kind === "home" ? "home" : wallpaperPathOf(tab.page, tab.params)) : "home";
   /* 壁纸入口：每条标签路径都可以有自己的壁纸（文件或内置渐变），清除则回落全局 */
   const wallInput = useRef<HTMLInputElement | null>(null);
+  const wallInputGlobal = useRef<HTMLInputElement | null>(null);
   const pickWallpaper = (): void => wallInput.current?.click();
+  const pickWallpaperGlobal = (): void => wallInputGlobal.current?.click();
+  const hasGlobal = !!wallpaperSnapshot().global;
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
     { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
-    { label: "更换此页壁纸…", act: pickWallpaper },
+    { label: "更换此页壁纸…（仅内容页）", act: pickWallpaper },
     ...BUILTIN_WALLPAPERS.map((b) => ({
-      label: "壁纸 · " + b.label,
+      label: "壁纸 · " + b.label + "（仅内容页）",
       act: () => setTabWallpaper(wallKey, "builtin:" + b.id),
     })),
     ...(wallpaperFor(wallKey) ? [{ label: "清除此页壁纸", danger: true, act: () => setTabWallpaper(wallKey, null) }] : []),
+    { label: "更换全屏壁纸…（整个软件底色）", act: pickWallpaperGlobal },
+    ...BUILTIN_WALLPAPERS.slice(0, 4).map((b) => ({
+      label: "全屏壁纸 · " + b.label,
+      act: () => setGlobalWallpaper("builtin:" + b.id),
+    })),
+    ...(hasGlobal ? [{ label: "清除全屏壁纸", danger: true, act: () => setGlobalWallpaper(null) }] : []),
     ...(isHome ? [] : [{ label: "关闭标签页", danger: true, act: () => closeTab(pos.tabId) }]),
   ];
   useEffect(() => {
@@ -132,14 +142,28 @@ function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void })
       <input
         ref={wallInput}
         type="file"
-        accept="image/*"
+        accept="image/*,video/mp4,video/webm"
         style={{ display: "none" }}
         onChange={(e) => {
           const f = e.target.files?.[0];
           e.target.value = "";
           if (!f) return;
-          void fileToWallpaper(f).then((d) => {
-            if (d) setTabWallpaper(wallKey, d);
+          void importWallpaperFile(f).then((r) => {
+            if (r.ref) setTabWallpaper(wallKey, r.ref);
+          });
+        }}
+      />
+      <input
+        ref={wallInputGlobal}
+        type="file"
+        accept="image/*,video/mp4,video/webm"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          e.target.value = "";
+          if (!f) return;
+          void importWallpaperFile(f).then((r) => {
+            if (r.ref) setGlobalWallpaper(r.ref);
           });
         }}
       />

@@ -43,6 +43,7 @@ import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/exp
 import { FolderIcon, IconChevron } from "./Icons.js";
 import { NAV } from "./Layout.js";
 import { PEN_COLORS, addStroke, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes, penKeyOf } from "../state/boardPen.js";
+import { sanitizeUserHtml, widgetById as userWidgetById } from "../state/userext.js";
 import { BoardPenLayer } from "./BoardPenLayer.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
 
@@ -185,6 +186,25 @@ function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: {
           </button>
         </div>
       </div>
+    );
+  }
+  /* 用户生成组件（OH 元工具创建）：无色 tint 底 + 净化后的 HTML 片段 */
+  if (spec.kind === "custom" && spec.id.startsWith("usergen:")) {
+    const uid = spec.id.slice("usergen:".length);
+    const w = userWidgetById(uid);
+    if (!w) {
+      return (
+        <div className="wg-empty" role="note">
+          <span className="wg-empty-title">这个生成组件已被删除</span>
+        </div>
+      );
+    }
+    return (
+      <div
+        className="free-usergen"
+        // 净化器已剥 script/事件属性/javascript: 链接（state/userext.ts sanitizeUserHtml）
+        dangerouslySetInnerHTML={{ __html: sanitizeUserHtml(w.html) }}
+      />
     );
   }
   if (spec.kind === "custom") {

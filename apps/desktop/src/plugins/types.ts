@@ -343,6 +343,22 @@ export interface OnethuApi {
     /** 软删除 → .trash/ */
     delete(permalink: string, reason?: string): Promise<{ trashedTo: string }>;
   };
+  /** 用户扩展层（OH 元工具）：用户工具 / OneFlow / 用户生成组件 */
+  ext: {
+    toolCreate(name: string, description: string, steps: unknown): void;
+    toolList(): Array<{ id: string; name: string; description: string }>;
+    toolRun(id: string): Promise<{ ok: boolean; error?: string }>;
+    toolDelete(id: string): void;
+    flowCreate(name: string, trigger: unknown, steps: unknown): void;
+    flowList(): Array<{ id: string; name: string; trigger: unknown; lastRun?: number; lastOk?: boolean }>;
+    flowRun(id: string): Promise<{ ok: boolean; error?: string }>;
+    flowDelete(id: string): void;
+    widgetCreate(name: string, html: string, x?: number, y?: number): { id: string };
+    themeApply(name: string, vars: unknown): { id: string };
+    themeList(): Array<{ id: string; name: string; active: boolean }>;
+    themeActivate(id: string | null): void;
+    themeDelete(id: string): void;
+  };
   kongjian: {
     page(opts?: { spaceId?: string; roomId?: string; date?: string }): Promise<import("@onethu/core").KongjianPage>;
     my(): Promise<import("@onethu/core").KongjianRecord[]>;

@@ -22,6 +22,14 @@ import { FolderIcon } from "../Icons.js";
 import { WorkspacePanel } from "./TabDrawer.js";
 import { openContextMenu } from "./ContextMenu.js";
 import { openFolderIconPicker } from "./FolderIconPicker.js";
+import { showToast } from "../../state/toast.js";
+import {
+  activateUserTheme,
+  deleteFlow,
+  deleteTheme,
+  subscribeUserExt,
+  userExtSnapshot,
+} from "../../state/userext.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { openWorkspaceEditor } from "./WorkspaceEditor.js";
 
@@ -135,6 +143,76 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         </div>
       )}
       <div className="ex-hint-line">OnePage 是一张白板：长按组件换位，右下角进编辑与添加。</div>
+    </section>
+  );
+}
+
+/* ══════════ OneFlow（工作区+自动化+技能结合体）══════════ */
+
+function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const off = subscribeUserExt(() => setTick((t) => t + 1));
+    return off;
+  }, []);
+  const flows = userExtSnapshot().flows;
+  const themes = userExtSnapshot().themes;
+  const activeTheme = userExtSnapshot().activeThemeId;
+  const run = (id: string): void => {
+    /* 运行走 OH：OneFlow 的步骤经插件门面执行；此处只负责手动点火入口的可见性 */
+    void id;
+    showToast("在 OH 对话里说「运行 XX」即可执行（步骤走门面权限）");
+  };
+  return (
+    <section aria-label="OneFlow">
+      <div className="ex-sec-head">
+        <b>OneFlow</b>
+      </div>
+      {flows.length === 0 ? (
+        <div className="ex-empty-hint">还没有 OneFlow，去 OH 对话说「创建一个流程」即可。</div>
+      ) : (
+        <div className="ex-row-list">
+          {flows.map((f) => (
+            <div key={f.id} className="ex-row-wrap">
+              <button className="ex-row ex-row-clickable" onClick={() => run(f.id)}>
+                <span className="ex-row-icon"><FolderIcon name="fist" /></span>
+                <span className="ex-row-main">
+                  <span className="ex-row-title">{f.name}</span>
+                  <span className="ex-row-sub">
+                    {f.trigger.kind === "manual" ? "手动" : f.trigger.kind === "cron" ? "每 " + f.trigger.everyMinutes + " 分钟" : "事件"} ·{" "}
+                    {f.lastRun ? (f.lastOk ? "上次正常" : "上次失败 · 在 OH 对话里重试并查看原因") : "未运行过"}
+                  </span>
+                </span>
+              </button>
+              <button className="btn btn-ghost ex-btn-sm" onClick={() => { deleteFlow(f.id); }}>删除</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {themes.length > 0 ? (
+        <>
+          <div className="ex-sec-head" style={{ marginTop: 10 }}>
+            <b>用户主题</b>
+          </div>
+          <div className="ex-row-list">
+            {themes.map((t) => (
+              <div key={t.id} className="ex-row-wrap">
+                <button
+                  className="ex-row ex-row-clickable"
+                  onClick={() => activateUserTheme(activeTheme === t.id ? null : t.id)}
+                >
+                  <span className="ex-row-icon"><FolderIcon name="star" /></span>
+                  <span className="ex-row-main">
+                    <span className="ex-row-title">{t.name}</span>
+                    <span className="ex-row-sub">{activeTheme === t.id ? "生效中（再点恢复默认）" : "点击应用"}</span>
+                  </span>
+                </button>
+                <button className="btn btn-ghost ex-btn-sm" onClick={() => deleteTheme(t.id)}>删除</button>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
     </section>
   );
 }
@@ -269,7 +347,16 @@ function OneGoSheetInner(): ReactNode {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          {q ? <OneGoSearchResults q={q} onDone={requestClose} /> : seg === "favs" ? <FavsSection onDone={closeOneGoSheet} /> : <WorkspacePanel />}
+          {q ? (
+            <OneGoSearchResults q={q} onDone={requestClose} />
+          ) : seg === "favs" ? (
+            <>
+              <FavsSection onDone={closeOneGoSheet} />
+              <FlowSection onDone={requestClose} />
+            </>
+          ) : (
+            <WorkspacePanel />
+          )}
         </div>
         <footer className="ex-sheet-foot">
           <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>

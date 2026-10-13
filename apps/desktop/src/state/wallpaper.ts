@@ -1,35 +1,75 @@
 /**
- * 标签页壁纸（2026-10-13，霖：所有标签页都能换壁纸，外观里可设统一壁纸，各处可单独覆盖）。
+ * 壁纸系统（2026-10-13 二期：两级范围 + 亮度自适应 + 壁纸库 + 视频动态壁纸）。
  *
- * 数据模型：
- *   { v:1, global: string|null, tabs: Record<path, string> }
- *   - 值都是图片的 dataURL（写入前经 canvas 压到 ≤1600px 宽、JPEG 0.82，常规壁纸 100–300KB，
- *     远低于 localStorage 上限；压缩失败的原图不落库——宁可设不上也不要把存储撑爆）；
- *   - path = 页面路径键（page + "|" + params JSON），与 explorer 的实例语义一致：
- *     「每个不同路径的标签页都可以有自己的壁纸」；home 是常驻键 "home"；
- *   - 解析顺序 = tabs[path] ?? global ?? 无（纯色主题底）。
- * 不做主题联动（壁纸在内容卡下面，卡面自带 surface 底，深浅模式都不影响可读性）。
+ * 数据模型 v2（localStorage: onethu.wallpaper.v1）：
+ *   {
+ *     v: 2,
+ *     global: string | null,           // 「全屏档」：壳层壁纸——整个软件的底色，栏体（顶栏/底栏）透出它
+ *     tabs: Record<path, string>,      // 「仅内容页档」：只画在该路径标签页的内容区（原一期语义）
+ *     library: WallpaperLibItem[],     // 壁纸库（用户自收录；内置渐变不入库，读取时并列展示）
+ *   }
+ * 范围定案：全屏档只有全局一份——右键菜单的「全屏更换」与壁纸库的「设为全屏」改的都是它；
+ * 内容页档按 path 各存一份（home 是常驻键 "home"）。两档可同时存在：内容页壁纸画在面板上，
+ * 盖在壳层壁纸之上。
+ *
+ * ref 形态（三选一）："builtin:<id>"（内置渐变）| "data:image/…"（压缩后的图片）| "data:video/…"（视频）。
+ * 应用壁纸时存**具体 ref**而不是 "lib:<id>" 间接层：库里删掉某张后，已应用的壁纸不失效；
+ * 代价是同图在「库」与「应用处」各存一份 dataURL（压缩后百 KB 级，库上限 12 张内可控）。
+ * 图片写入前经 canvas 压到 ≤1600px 宽、JPEG 0.82；视频读为 dataURL，上限 12MB（见 VIDEO_MAX_BYTES）。
+ *
+ * 亮度自适应：图片壁纸首次被用到时 canvas 采样平均亮度（只算一次，按 ref 缓存），
+ * 纱的深浅随亮度走（亮壁纸→深纱、暗壁纸→几乎无纱），并经 shellWallpaperSnapshot 把
+ * "dark|light" 交给壳层打 data-wallpaper-lum，栏体文字色据此分支（见 explorer.css）。
+ * 内置渐变与视频直接按暗处理（视频固定叠 20% 暗纱保证可读）。
+ *
+ * 存储容量：全部数据在 localStorage，库上限 12 张 + 图片压缩；写不进（配额满）时保留内存态
+ * 并提示用户删几张——壁纸是装饰，绝不因它崩数据。
  */
+import { showToast } from "./toast.js";
+
+export interface WallpaperLibItem {
+  id: string;
+  ref: string;
+  name: string;
+  /** 入库时间戳（库里按新在前展示） */
+  at: number;
+}
 
 export interface WallpaperDoc {
-  v: 1;
+  v: 2;
   global: string | null;
   tabs: Record<string, string>;
+  library: WallpaperLibItem[];
 }
 
 const KEY = "onethu.wallpaper.v1";
+/** 动态壁纸声音开关（默认关；浏览器自动播放策略要求先静音起播，用户手势里再放开） */
+const SOUND_KEY = "onethu.wallpaper.videosound";
+/** 壁纸库容量（张）：满了提示并拒绝入库 */
+export const LIBRARY_MAX = 12;
+/** 视频壁纸单文件上限（字节）：超限拒绝入库/应用 */
+export const VIDEO_MAX_BYTES = 12 * 1024 * 1024;
 
 const isWallpaperRef = (v: unknown): v is string =>
-  typeof v === "string" && (v.startsWith("data:image/") || v.startsWith("builtin:"));
+  typeof v === "string" &&
+  (v.startsWith("data:image/") || v.startsWith("data:video/") || v.startsWith("builtin:"));
+
+export const isVideoRef = (ref: string): boolean => ref.startsWith("data:video/");
 
 function sanitize(raw: unknown): WallpaperDoc {
-  const base: WallpaperDoc = { v: 1, global: null, tabs: {} };
+  const base: WallpaperDoc = { v: 2, global: null, tabs: {}, library: [] };
   if (!raw || typeof raw !== "object") return base;
   const r = raw as Partial<WallpaperDoc>;
+  /* v1 旧档（无 library）原样升级；library 只留合法 ref，超上限截断（防手改存储撑爆） */
+  const lib = Array.isArray(r.library) ? r.library : [];
   return {
-    v: 1,
+    v: 2,
     global: isWallpaperRef(r.global) ? r.global : null,
     tabs: Object.fromEntries(Object.entries(r.tabs ?? {}).filter(([, v]) => isWallpaperRef(v))),
+    library: lib
+      .filter((it): it is WallpaperLibItem =>
+        !!it && typeof it === "object" && typeof it.id === "string" && isWallpaperRef(it.ref))
+      .slice(0, LIBRARY_MAX),
   };
 }
 
@@ -40,25 +80,32 @@ function load(): WallpaperDoc {
   } catch {
     /* 脏数据当没有 */
   }
-  return { v: 1, global: null, tabs: {} };
+  return { v: 2, global: null, tabs: {}, library: [] };
 }
 
 let doc: WallpaperDoc = load();
+let docVersion = 0;
 const listeners = new Set<() => void>();
 
 function commit(next: WallpaperDoc): void {
   doc = next;
+  docVersion++;
+  let saved = true;
   try {
     localStorage.setItem(KEY, JSON.stringify(doc));
   } catch {
-    /* 存储满：壁纸是纯装饰，静默放弃（保留内存态到刷新） */
+    saved = false; // 存储满：内存态保留到刷新，但必须让用户知道（尤其刚入库的图）
   }
+  if (!saved) showToast("本机存不下这份壁纸，请删几张库里旧的再试");
+  shellCacheKey = ""; // 壳层快照失效（见下方 memo）
   listeners.forEach((f) => f());
 }
 
 export function subscribeWallpaper(f: () => void): () => void {
   listeners.add(f);
-  return () => listeners.delete(f);
+  return () => {
+    listeners.delete(f);
+  };
 }
 
 export function wallpaperSnapshot(): WallpaperDoc {
@@ -72,24 +119,31 @@ export function wallpaperPathOf(page: string, params?: unknown): string {
     : page;
 }
 
-/** 某个路径最终生效的壁纸（tab 覆盖 > 全局 > null） */
+/** 「仅内容页」档：某路径生效的内容区壁纸（不再回落全局——全局走壳层，见 shellWallpaperSnapshot） */
 export function wallpaperFor(path: string): string | null {
-  return doc.tabs[path] ?? doc.global;
+  return doc.tabs[path] ?? null;
 }
 
-export function setGlobalWallpaper(dataUrl: string | null): void {
-  commit({ ...doc, global: dataUrl });
+export function setGlobalWallpaper(ref: string | null): void {
+  commit({ ...doc, global: ref });
 }
 
-export function setTabWallpaper(path: string, dataUrl: string | null): void {
+export function setTabWallpaper(path: string, ref: string | null): void {
   const tabs = { ...doc.tabs };
-  if (dataUrl) tabs[path] = dataUrl;
+  if (ref) tabs[path] = ref;
   else delete tabs[path];
-  commit({ ...doc, global: doc.global, tabs });
+  commit({ ...doc, tabs });
 }
 
-/** 内置渐变壁纸（免图片的轻量选项；值是 CSS background 简写，存进 dataURL 字段会破坏
- *  sanitize 的 data: 前缀校验——所以渐变单独走一份内置表，按 "builtin:<id>" 引用）。 */
+/** 整档替换（云盘恢复用）：内容过 sanitize，不是对象返回 false（调用方提示重试） */
+export function replaceWallpaperDoc(raw: unknown): boolean {
+  if (!raw || typeof raw !== "object") return false;
+  commit(sanitize(raw));
+  return true;
+}
+
+/* ── 内置渐变壁纸（轻量免图选项；值是 CSS background 简写，按 "builtin:<id>" 引用） ── */
+
 export const BUILTIN_WALLPAPERS: Array<{ id: string; label: string; css: string }> = [
   { id: "aurora", label: "极光", css: "linear-gradient(135deg, #1a2340 0%, #233a5c 45%, #1c4a4a 100%)" },
   { id: "dusk", label: "暮色", css: "linear-gradient(160deg, #2b2140 0%, #4a2c4d 55%, #6b3a3f 100%)" },
@@ -97,27 +151,207 @@ export const BUILTIN_WALLPAPERS: Array<{ id: string; label: string; css: string 
   { id: "ink", label: "墨", css: "linear-gradient(180deg, #17181c 0%, #23252b 100%)" },
 ];
 
-function builtinCss(ref: string): string | null {
+export function builtinCss(ref: string): string | null {
   if (!ref.startsWith("builtin:")) return null;
   return BUILTIN_WALLPAPERS.find((b) => "builtin:" + b.id === ref)?.css ?? null;
 }
 
-/** 渲染层取值：图片（dataURL，自动叠 14% 暗纱保证内容可读）或内置渐变（自带深色，不另加纱） */
+/* ── 亮度自适应（canvas 采样，按 ref 缓存，只算一次） ── */
+
+export type WallpaperLum = "dark" | "light";
+const lumCache = new Map<string, WallpaperLum>();
+const lumPending = new Set<string>();
+let lumVersion = 0;
+
+/** 暗档判定：内置渐变/视频按暗处理；图片看采样结果（没算完时先按暗，算完发一次变更） */
+export function wallpaperLum(ref: string): WallpaperLum {
+  if (ref.startsWith("data:image/")) return lumCache.get(ref) ?? "dark";
+  return "dark";
+}
+
+/** 亮度 → 「light」的阈值：平均亮度高于它算亮壁纸（栏体文字转深色分支） */
+const LUM_LIGHT_AT = 0.6;
+
+/** 图片 → 平均亮度（0..1，Rec.709 加权）；解码失败按 0（暗档） */
+function sampleLuma(ref: string): Promise<number> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const S = 24;
+        const canvas = document.createElement("canvas");
+        canvas.width = S;
+        canvas.height = S;
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return resolve(0);
+        ctx.drawImage(img, 0, 0, S, S);
+        const d = ctx.getImageData(0, 0, S, S).data;
+        let sum = 0;
+        for (let i = 0; i + 2 < d.length; i += 4) {
+          const r0 = d[i] ?? 0;
+          const g0 = d[i + 1] ?? 0;
+          const b0 = d[i + 2] ?? 0;
+          sum += (0.2126 * r0 + 0.7152 * g0 + 0.0722 * b0) / 255;
+        }
+        resolve(sum / (d.length / 4));
+      } catch {
+        resolve(0); // 跨域/画布污染等：按暗档兜底
+      }
+    };
+    img.onerror = () => resolve(0);
+    img.src = ref;
+  });
+}
+
+/** 确保某 ref 的亮度已入缓存（幂等；算完发一次变更让订阅方重画纱与属性） */
+export function ensureWallpaperLum(ref: string): void {
+  if (!ref.startsWith("data:image/") || lumCache.has(ref) || lumPending.has(ref)) return;
+  lumPending.add(ref);
+  void sampleLuma(ref).then((v) => {
+    lumPending.delete(ref);
+    lumCache.set(ref, v > LUM_LIGHT_AT ? "light" : "dark");
+    lumVersion++;
+    shellCacheKey = "";
+    listeners.forEach((f) => f());
+  });
+}
+
+/** 纱的透明度：视频固定 20%（保证动态画面上的可读性）；亮图片壁纸叠 0.3 深纱、
+ *  暗图片壁纸 0.08 轻纱（暗壁纸不需要再压亮度）；内置渐变自带深色不叠纱。
+ *  还没采完样时用 0.14（一期默认），采样完成发变更后重画自然收敛。 */
+export function veilOpacityFor(ref: string): number {
+  if (isVideoRef(ref)) return 0.2;
+  if (builtinCss(ref)) return 0;
+  const l = lumCache.get(ref);
+  if (l == null) return 0.14;
+  return l === "light" ? 0.3 : 0.08;
+}
+
+/* ── 渲染取值 ── */
+
+/** 「仅内容页」档的画法：图片（含自适应纱）或内置渐变；视频返回 null（调用方渲染 <video> 层） */
 export function wallpaperStyleFor(path: string): { backgroundImage: string } | null {
   const ref = wallpaperFor(path);
   if (!ref) return null;
   const css = builtinCss(ref);
   if (css) return { backgroundImage: css };
-  if (ref.startsWith("data:")) {
-    return { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.14)), url(${ref})` };
+  if (ref.startsWith("data:image/")) {
+    const veil = veilOpacityFor(ref);
+    return {
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${ref})`,
+    };
   }
+  return null; // data:video/ → 交给 <video> 层
+}
+
+export interface ShellWallpaper {
+  ref: string;
+  kind: "builtin" | "image" | "video";
+  /** builtin/image：可直接挂 style.backgroundImage（已含纱）；video 为 null（渲染 <video> 层） */
+  backgroundImage: string | null;
+  lum: WallpaperLum;
+}
+
+/** 「全屏档」快照（壳层壁纸层 + data-wallpaper-lum 的唯一取值口）。
+ *  useSyncExternalStore 要求快照引用稳定：按 (docVersion, lumVersion) memo。 */
+let shellCacheKey = "";
+let shellCache: ShellWallpaper | null = null;
+export function shellWallpaperSnapshot(): ShellWallpaper | null {
+  const key = docVersion + ":" + lumVersion;
+  if (shellCacheKey === key) return shellCache;
+  const ref = doc.global;
+  if (!ref) {
+    shellCacheKey = key;
+    shellCache = null;
+    return null;
+  }
+  const veil = veilOpacityFor(ref);
+  const css = builtinCss(ref);
+  const next: ShellWallpaper = isVideoRef(ref)
+    ? { ref, kind: "video", backgroundImage: null, lum: "dark" }
+    : css
+      ? { ref, kind: "builtin", backgroundImage: css, lum: "dark" }
+      : {
+          ref,
+          kind: "image",
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${ref})`,
+          lum: wallpaperLum(ref),
+        };
+  shellCacheKey = key;
+  shellCache = next;
+  return next;
+}
+
+/* ── 壁纸库（内置渐变虚拟入列，用户条目存 doc.library，上限 LIBRARY_MAX） ── */
+
+export interface LibraryEntry {
+  id: string;
+  ref: string;
+  name: string;
+  /** 内置渐变：不可删除 */
+  builtin: boolean;
+}
+
+/** 库全量（内置在前，用户条目新在前）——缩略图网格的数据源 */
+export function libraryItems(): LibraryEntry[] {
+  const builtins: LibraryEntry[] = BUILTIN_WALLPAPERS.map((b) => ({
+    id: "builtin:" + b.id,
+    ref: "builtin:" + b.id,
+    name: b.label,
+    builtin: true,
+  }));
+  const mine = [...doc.library].sort((a, b) => b.at - a.at).map((it) => ({ id: it.id, ref: it.ref, name: it.name, builtin: false }));
+  return [...builtins, ...mine];
+}
+
+/** 入库：满员/重复给文案（调用方 toast），成功返回 null */
+export function addToLibrary(ref: string, name: string): string | null {
+  if (!isWallpaperRef(ref) || ref.startsWith("builtin:")) return null; // 内置渐变常驻，不入库
+  if (doc.library.length >= LIBRARY_MAX) return `壁纸库满员（${LIBRARY_MAX} 张），删一张再入库`;
+  if (doc.library.some((it) => it.ref === ref)) return null; // 已在库里，静默当成功
+  const item: WallpaperLibItem = {
+    id: "lib-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
+    ref,
+    name: name.trim() || "自选壁纸",
+    at: Date.now(),
+  };
+  commit({ ...doc, library: [...doc.library, item] });
   return null;
 }
 
-/** 文件 → 压缩 dataURL（最长边 1600、JPEG 0.82）；失败返回 null（不落库） */
-export function fileToWallpaper(file: File): Promise<string | null> {
+export function removeFromLibrary(id: string): void {
+  commit({ ...doc, library: doc.library.filter((it) => it.id !== id) });
+}
+
+/* ── 文件导入（图片压缩 / 视频验限） ── */
+
+export interface ImportResult {
+  ref: string | null;
+  /** 不为 null 时 ref 必为 null，文案给调用方 toast */
+  error: string | null;
+}
+
+/** 文件 → 壁纸 ref：图片压到 ≤1600px 宽、JPEG 0.82；mp4/webm 读为 dataURL（≤12MB，超限拒绝）。
+ *  压缩/解码失败不落库——宁可设不上也不要把存储撑爆。 */
+export function importWallpaperFile(file: File): Promise<ImportResult> {
+  if (file.type.startsWith("video/")) {
+    const okType = file.type === "video/mp4" || file.type === "video/webm";
+    if (!okType) return Promise.resolve({ ref: null, error: "动态壁纸只认 mp4 / webm" });
+    if (file.size > VIDEO_MAX_BYTES) return Promise.resolve({ ref: null, error: "视频超过 12MB，请先剪短再试" });
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const r = typeof reader.result === "string" && reader.result.startsWith("data:video/")
+          ? reader.result
+          : null;
+        resolve(r ? { ref: r, error: null } : { ref: null, error: "这个视频读不出来，换一个试试" });
+      };
+      reader.onerror = () => resolve({ ref: null, error: "这个视频读不出来，换一个试试" });
+      reader.readAsDataURL(file);
+    });
+  }
+  if (!file.type.startsWith("image/")) return Promise.resolve({ ref: null, error: "壁纸只认图片或视频" });
   return new Promise((resolve) => {
-    if (!file.type.startsWith("image/")) return resolve(null);
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
@@ -128,19 +362,44 @@ export function fileToWallpaper(file: File): Promise<string | null> {
         canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
         canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
         const ctx = canvas.getContext("2d");
-        if (!ctx) return resolve(null);
+        if (!ctx) return resolve({ ref: null, error: "这张图处理失败，换一张试试" });
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.82));
+        resolve({ ref: canvas.toDataURL("image/jpeg", 0.82), error: null });
       } catch {
-        resolve(null);
+        resolve({ ref: null, error: "这张图处理失败，换一张试试" });
       } finally {
         URL.revokeObjectURL(url);
       }
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      resolve(null);
+      resolve({ ref: null, error: "这张图处理失败，换一张试试" });
     };
     img.src = url;
   });
+}
+
+/* ── 动态壁纸声音（独立小开关，默认关；与壁纸文档同频发布变更） ── */
+
+export function getVideoSound(): boolean {
+  try {
+    return localStorage.getItem(SOUND_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function setVideoSound(on: boolean): void {
+  try {
+    localStorage.setItem(SOUND_KEY, on ? "1" : "0");
+  } catch {
+    /* 存不进就本次有效 */
+  }
+  shellCacheKey = "";
+  listeners.forEach((f) => f());
+}
+
+/** 声音开关快照（返回原始值 boolean，引用天然稳定，供 useSyncExternalStore 用） */
+export function videoSoundSnapshot(): boolean {
+  return getVideoSound();
 }

@@ -38,6 +38,7 @@ import { useSegPill } from "../lib/motion.js";
 import { ErrorLine } from "./Details.js";
 import { CommandPalette } from "./CommandPalette.js";
 import { TabStrip } from "./explorer/TabStrip.js";
+import { ShellWallpaperLayer } from "./explorer/WallpaperVideo.js";
 import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
@@ -387,6 +388,8 @@ export function Shell({ children }: { children: ReactNode }) {
   }, []);
   return (
     <div className="shell explorer-shell">
+      {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
+      <ShellWallpaperLayer />
       {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
           Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
       <ContextMenuLayer>

@@ -8150,6 +8150,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-menu-blur: blur(22px) saturate(140%);
   --glass-fill: rgba(255, 255, 255, 0.52);
   --glass-fill-regular: rgba(255, 255, 255, 0.66);
+  --glass-tint: rgba(255, 255, 255, 0.4);
   --glass-chip-blur: blur(6px) saturate(125%);
   --glass-panel-blur: blur(6px) saturate(130%);
   --lg-ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -8166,6 +8167,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-menu-fill: rgba(22, 22, 27, 0.55);
   --glass-fill: rgba(255, 255, 255, 0.07);
   --glass-fill-regular: rgba(30, 30, 36, 0.55);
+  --glass-tint: rgba(255, 255, 255, 0.06);
 }
 
 /* rim 三件套（一条 box-shadow 表达，全部玻璃面共用） */
@@ -8271,3 +8273,19 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   background: transparent;
 }
 .seg-track button:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }
+
+/* ═══ 每个能点击的地方（everywhere）：行级中性光晕 ═══
+   云盘/作业/成绩/洗衣机/设置/OnePage……所有走共享行组件的可点行：
+   hover 时亮中性玻璃 + 顶部镜面线；无框无投影（用户定稿：边框是累赘）。 */
+.row.row-click,
+.svc-row,
+.setting-row {
+  transition: background 140ms var(--lg-ease, ease), box-shadow 140ms var(--lg-ease, ease);
+}
+.row.row-click:hover,
+.svc-row:hover,
+.setting-row:hover {
+  background: var(--glass-tint);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  border-radius: var(--r-md, 10px);
+}

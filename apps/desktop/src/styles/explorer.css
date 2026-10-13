@@ -205,14 +205,8 @@
    「玻璃的质感来自透出什么东西」——壳层铺环境光斑网格（紫/粉/青，随深浅色调档），
    玻璃栏体/组件才有东西可折射；平色背景上玻璃只能是灰盒子（此前不像的真正原因）。 */
 
-/* 环境光 = 主题色单色超低透明度（默认主题即黑白灰调；彩主题自动得其色）。
-   不再使用彩色三晕——那是参考库示例素材，不是产品底色（2026-10-13 用户反馈） */
-.explorer-shell {
-  background:
-    radial-gradient(44rem 34rem at 40% 30%, color-mix(in srgb, var(--md-sys-color-primary) 5%, transparent), transparent 62%),
-    radial-gradient(40rem 30rem at 64% 68%, color-mix(in srgb, var(--md-sys-color-primary) 3%, transparent), transparent 64%),
-    var(--bg);
-}
+/* 环境光已上移到 body（base.css，全局 everywhere）：壳层不再重复铺 */
+
 
 /* 顶栏/侧栏 = 面板级玻璃（tint 渐变 + 轻 blur + rim 三件套） */
 .explorer-topbar {

@@ -237,12 +237,7 @@
   background: var(--glass-fill);
   backdrop-filter: var(--glass-menu-blur);
   -webkit-backdrop-filter: var(--glass-menu-blur);
-  border: 1px solid var(--glass-border);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
+  /* 用户定稿：不要边框不要投影——磨砂透背景本身就是材质 */
 }
 .hs-dock-sphere { padding: 4px; cursor: pointer; }
 /* 球体玻璃化：不再用不透明 surface 底（生硬圆片） */
@@ -738,7 +733,6 @@
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
-  border-color: var(--glass-border);
   box-shadow:
     var(--glass-shadow),
     inset 0 1px 0 var(--glass-rim-top),

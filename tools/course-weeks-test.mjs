@@ -34,6 +34,10 @@ import {
   weekDate,
   weekdayOf,
 } from "../packages/core/src/caldav/courseWeeks.ts";
+import {
+  courseOccurrenceToScheduleEntry,
+  isCourseOccurrence,
+} from "../apps/desktop/src/state/notifyEventSplit.ts";
 
 let pass = 0, fail = 0;
 const eq = (name, a, b) => {
@@ -125,6 +129,17 @@ const event = {
   const occ = expandEventSet([event], TERM_LO, TERM_HI);
   eq("隔周课展开 3 场", occ.length, 3);
   eq("落在第 1/3/5 周周三", occ.map((o) => wall(o.start)), ["2026-09-16 09:50", "2026-09-30 09:50", "2026-10-14 09:50"]);
+  // 展开器必须把来源标记透传到实例上：notifyInputs 靠它把这门课分流进「课行」通道
+  eq("展开出的场次带 onethuSource（分流课行 / 提醒靠它）", occ.every((o) => o.onethuSource === MANUAL_COURSE_SOURCE), true);
+
+  /* ⑤b 分流：课程实例 → 课程通道（课行 / 上课提醒），其余仍旧走日程通道 */
+  eq("课程实例被判为课行通道", occ.map(isCourseOccurrence), [true, true, true]);
+  eq("转成课程条目（日期 + 起止时刻 + 课名 + 地点）", courseOccurrenceToScheduleEntry(occ[0]), {
+    date: "2026-09-16", startTime: "09:50", endTime: "11:25",
+    courseName: "化学工程与高分子科学导论", location: "六教 6A315", category: null,
+  });
+  eq("普通日程不算课程", isCourseOccurrence({ ...occ[0], onethuSource: "manual" }), false);
+  eq("全天形态不算课程（课一定有节次时刻）", isCourseOccurrence({ ...occ[0], allDay: true }), false);
 
   const single = buildCourseSeries({ term: TERM, weekday: 5, weeks: [7], startTime: "13:30", endTime: "14:15" });
   const singleOcc = expandEventSet([{ ...event, uid: "s@o", start: single.start, end: single.end, rrule: single.rrule, exdates: single.exdates }], TERM_LO, TERM_HI);

@@ -123,7 +123,9 @@ function TabContextMenu({
 }): ReactNode {
   const isHome = pos.tabId === HOME_TAB_ID;
   const tab = allTabs().find((t) => t.id === pos.tabId);
-  const wallKey = tab ? (tab.kind === "home" ? "home" : wallpaperPathOf(tab.page, tab.params)) : "home";
+  /* 「画布化定案」：首页没有独立的 tab 档——它的壁纸就是全屏档（整块画布，不是 frame 内贴图）。
+   内容页仍可 per-tab。 */
+const wallKey = tab && tab.kind !== "home" ? wallpaperPathOf(tab.page, tab.params) : "global";
   /* 壁纸入口：换壁纸两条走壁纸库选择器（上传/内置渐变/删除都在库里，库内有上传入口，
      因此不再保留单独的隐藏 file input——2026-10-13 接线）；清除则回落全局 */
   const hasGlobal = !!wallpaperSnapshot().global;
@@ -274,7 +276,7 @@ export function TabHost(): ReactNode {
     <>
       {all.map((t) => {
         const active = t.id === activeId;
-        const wallKey = t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
+        const wallKey = t.kind === "home" ? "global" : wallpaperPathOf(t.page, t.params);
         const rawRef = wallpaperFor(wallKey);
         const wp = wallpaperStyleFor(wallKey);
         /* 内容页档视频壁纸：wallpaperStyleFor 对 data:video/ 返回 null，这里单独渲染 <video> 层 */

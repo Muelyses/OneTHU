@@ -57,10 +57,12 @@ function WallCell({
   useEffect(() => {
     if (!entry.builtin && !isVideoRef(entry.ref)) ensureWallpaperLum(entry.ref);
   }, [entry.builtin, entry.ref]);
-  const pageActive = doc.tabs[tabKey] === entry.ref;
+  const pageActiveRaw = doc.tabs[tabKey] === entry.ref;
   const fullActive = doc.global === entry.ref;
+  /* 「画布化定案」：首页=全屏层（tabKey 为 "global"），本页档即全屏档 */
+  const pageActive = tabKey === "global" ? fullActive : pageActiveRaw;
   const apply = (scope: WallScope): void => {
-    if (scope === "global") setGlobalWallpaper(entry.ref);
+    if (scope === "global" || tabKey === "global") setGlobalWallpaper(entry.ref);
     else setTabWallpaper(tabKey, entry.ref);
   };
   /* picker 点图应用到**菜单指定的范围**（scope），panel 点图固定本页——与头注释语义一致：

@@ -1737,7 +1737,7 @@ function DiagnosticsRow() {
 function WallpaperSection(): ReactNode {
   const st = useExplorerState();
   const at = allTabs().find((t) => t.id === st.activeId) ?? null;
-  const tabKey = !at || at.kind === "home" ? "home" : wallpaperPathOf(at.page, at.params);
+  const tabKey = at && at.kind !== "home" ? wallpaperPathOf(at.page, at.params) : "global"; /* 首页=全屏档（画布化定案） */
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   return (
     <div className="wall-section">

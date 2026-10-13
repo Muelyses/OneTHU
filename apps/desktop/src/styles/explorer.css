@@ -194,7 +194,18 @@
 
 /* ══════════ 标签页壁纸（2026-10-13）══════════
    壁画画在面板底（内容卡自带 surface 底，深浅主题都可读）；
-   has-wallpaper 时盖一层轻纱把文字对比度拉回来。 */
+   has-wallpaper 时盖一层轻纱把文字对比度拉回来。
+   「画布化定案」（2026-10-13 用户拍板）：首页/内容页=整块画布，不是一块 frame——
+   ① 面板与内容层一律显式透明，灰底只允许 body 出现（而 will 层盖住它）；
+   ② 首页不再有「仅首页」的 tab 档：home 的壁纸一律走全屏档，杜绝「壁纸只填
+   home 框架、四周留白框」的观感；内容页保留 per-tab 档（那是用户有意的局部壁纸）。 */
+.explorer-panel, .explorer-content, .explorer-panel > .page-anim {
+  background: transparent;
+}
+.explorer-shell.has-shell-wallpaper {
+  /* 全屏档在场时 body 的灰环境底归零（壁纸层盖满，灰底不能从边缘渗出） */
+  background: transparent;
+}
 .explorer-panel.has-wallpaper {
   background-size: cover;
   background-position: center;

@@ -38,7 +38,7 @@ import { atomRefFromKey } from "../state/favorites.js";
 import { useApp } from "../state/context.js";
 import { PEN_COLORS, addStroke, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes, penKeyOf } from "../state/boardPen.js";
 import { BoardPenLayer } from "./BoardPenLayer.js";
-import { IconPlus, IconTrash, IconX } from "./Icons.js";
+import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
 
 const DRAG_THRESHOLD = 4;
 const PEN_KEY = penKeyOf("free:home", "default");
@@ -370,7 +370,7 @@ export function FreeBoard(): ReactNode {
           aria-pressed={penOn}
           onClick={() => setPenOn((v) => !v)}
         >
-          笔
+          <IconPen width={18} height={18} />
         </button>
         {penOn ? (
           <div className="free-pen-panel">

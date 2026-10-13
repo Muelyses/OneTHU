@@ -559,7 +559,9 @@
   position: fixed;
   right: 72px;
   bottom: 96px;
-  z-index: 40;
+  /* 必须高于画笔层（.freeboard .board-pen z 90）：笔开着时浮钮/色板才点得到，
+     否则整个按钮区被画笔层吃掉、只能画画关不掉（2026-10-13 用户实测） */
+  z-index: 95;
   display: flex;
   flex-direction: column;
   align-items: center;

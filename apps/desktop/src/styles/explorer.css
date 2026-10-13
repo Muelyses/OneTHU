@@ -550,17 +550,21 @@ html.is-phone .hard-refresh-fab.top-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 124px) !important;
 }
 
-/* ══════════ 内容条统一液态玻璃（2026-10-14 用户点名扩面）══════════
+/* ══════════ 组件与内容卡统一液态玻璃（2026-10-14 用户点名扩面）══════════
    内容页数据卡（.card 一族：card-hero/stat-card/余流表卡等）从 surface-container
    平涂升级为面板级玻璃三件套，与首页 .home-card/.free-item、栏体同一材质语言。
+   卡体玻璃用**专用更透的一档**（--card-glass-fill，浅 0.44/深 0.44）：fill-regular 0.72
+   在画布上叠两层自由组件时越叠越白（0.72×2≈0.92 纸感），专用档叠两层仍能看穿。
    本文件在 global.css 之后加载，同权重覆盖其 background。
    注意嵌套：home 组件卡内部的次级 .card 降为透明（玻璃只算一层，blur 不叠加）。 */
+:root:not([data-scheme="dark"]) { --card-glass-fill: rgba(255, 255, 255, 0.44); }
+:root[data-scheme="dark"] { --card-glass-fill: rgba(26, 28, 36, 0.44); }
 .explorer-panel .card,
 .explorer-panel .stat-card,
 .explorer-panel .home-card:not(.is-editing) {
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-regular);
+    var(--card-glass-fill);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
   border-color: transparent;

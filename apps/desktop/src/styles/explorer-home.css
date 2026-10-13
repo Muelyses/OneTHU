@@ -784,11 +784,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 }
 .hs-more-mask { background: rgba(0, 0, 0, 0.22); backdrop-filter: var(--glass-scrim-blur); }
 
-/* 自由组件 = panel-lite（环境光斑透过：轻 blur + rim 三件套） */
+/* 自由组件 = panel-lite（环境光斑透过：轻 blur + rim 三件套；专用更透一档 --card-glass-fill，
+   定义见 explorer.css「组件与内容卡」节——叠两层自由组件也不糊白） */
 .free-item {
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-regular);
+    var(--card-glass-fill, var(--glass-fill-regular));
   border-color: var(--glass-border);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);

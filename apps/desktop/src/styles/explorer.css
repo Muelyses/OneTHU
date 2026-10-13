@@ -364,6 +364,11 @@
 
 /* ══════════ 壁纸库网格（设置面板 / 右键 picker 共用，壁纸二期）══════════ */
 .wall-lib { display: flex; flex-direction: column; gap: 12px; }
+/* 设置卡的壁纸区不是 .setting-row 结构（那些行自带 16px 内边距），这里同样给足，
+   否则整块内容紧贴卡片左缘（2026-10-13 用户点名）；picker 浮卡已有自己的 12px
+   壳内边距，:not 排除避免双重。底部多留 56px 给右下角硬刷新 FAB（z 9999，
+   用户实测它压住了「动态壁纸声音」开关行）。 */
+.wall-lib:not(.wall-lib-picker) { padding: 16px 16px 56px; }
 .wall-lib-picker { width: min(300px, 88vw); }
 .wall-picker-head {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;

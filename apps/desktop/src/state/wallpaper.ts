@@ -9,8 +9,8 @@
  *   }
  * 范围定案：壁纸只有全局一份——右键菜单、壁纸库、插件改的都是它；画法统一在壳层
  * （ShellWallpaperLayer fixed 铺满），面板与内容层永远透明透出它（消灭 per-tab「本页」档：
- * 各自为政的纱/文字分支全部移除，详见 TabHost/explorer.css）。旧档里的 tabs 键在读入时
- * 直接丢弃（「本页壁纸」功能已删，保留成死数据只会重新污染）。
+ * 各自为政的纱/文字分支全部移除，详见 TabHost/explorer.css）。旧档里的 tabs 键不再保有
+ * 渲染出口：global 为空时把一张（优先 home）提升为全屏档，绝不丢用户壁纸。
  *
  * ref 形态（三选一）："builtin:<id>"（内置渐变）| "data:image/…"（压缩后的图片）| "data:video/…"（视频）。
  * 应用壁纸时存**具体 ref**而不是 "lib:<id>" 间接层：库里删掉某张后，已应用的壁纸不失效；
@@ -81,13 +81,21 @@ export function displayRef(ref: string): string {
 function sanitize(raw: unknown): WallpaperDoc {
   const base: WallpaperDoc = { v: 2, global: null, library: [] };
   if (!raw || typeof raw !== "object") return base;
-  const r = raw as Partial<WallpaperDoc>;
-  /* v1 旧档（无 library）原样升级；library 只留合法 ref，超上限截断（防手改存储撑爆）。
-     旧档的 tabs（本页档）在此一并丢弃——功能已删，不再读也不再写。 */
+  const r = raw as (Partial<WallpaperDoc> & { tabs?: Record<string, unknown> });
+  /* 单档化迁移（2026-10-14）：「本页」档已无渲染出口，但**不能把用户壁纸丢了**——
+     global 为空而旧 tabs 非空时，把一张提升为全屏档（优先常驻 home 键，否则取第一张），
+     其余本页档丢弃。此后全局唯一壁纸，旧档每次读入都收敛到同一结果。 */
+  let migrated = isWallpaperRef(r.global) ? r.global : null;
+  if (!migrated && r.tabs && typeof r.tabs === "object") {
+    const entries = Object.entries(r.tabs as Record<string, string>).filter(([, v]) => isWallpaperRef(v));
+    const pick = entries.find(([k]) => k === "home") ?? entries[0];
+    if (pick) migrated = pick[1];
+  }
+  /* library 只留合法 ref，超上限截断（防手改存储撑爆） */
   const lib = Array.isArray(r.library) ? r.library : [];
   return {
     v: 2,
-    global: isWallpaperRef(r.global) ? r.global : null,
+    global: migrated,
     library: lib
       .filter((it): it is WallpaperLibItem =>
         !!it && typeof it === "object" && typeof it.id === "string" && isWallpaperRef(it.ref))

@@ -309,27 +309,19 @@ function NextClassCard({ size }: { size?: WidgetSize }): ReactNode {
     const d = new Date();
     const wd = d.getDay() === 0 ? 7 : d.getDay();
     const key = ymd(d);
-    return schedule.filter((s) => (s.date ? s.date === key : s.dayOfWeek === wd));
+    /* 按 开始时间升序：pickNextClass 取数组顺序第一条未来课，不排会先返回下午晚节 */
+    return schedule
+      .filter((s) => (s.date ? s.date === key : s.dayOfWeek === wd))
+      .sort((a, b) => {
+        const ta = a.startTime ?? SECTION_OF[a.startSection ?? 1] ?? "99:99";
+        const tb = b.startTime ?? SECTION_OF[b.startSection ?? 1] ?? "99:99";
+        return ta.localeCompare(tb);
+      });
   }, [schedule, nowMin]);
   const next = useMemo(() => pickNextClass(today, nowMin), [today, nowMin]);
   /* 数据没到 ≠ 没课：加载中给加载态；今天有课但都已结束 ≠ 今天没课（语义分开，别误导） */
   if (campus.state === "loading" && !campus.data) return <div className="wg-card-empty">课表加载中…</div>;
-  if (!next) {
-    /* 还有课却没挑出「下一节」= 时间格式解析失败：把首条的原始时间字段亮在卡面上，
-       用户截图即得真格式（不再盲猜）；正常「都结束了」时这行也只是无害的小灰字。 */
-    const first = today[0];
-    return (
-      <div className="wg-card-empty">
-        {today.length > 0 ? "今天的课都结束了" : "今天没有课"}
-        {first ? (
-          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 4 }}>
-            记录 {today.length} 条 · 首条时间
-            {" startTime=" + String(first.startTime ?? "∅") + " startSection=" + String(first.startSection ?? "∅")}
-          </div>
-        ) : null}
-      </div>
-    );
-  }
+  if (!next) return <div className="wg-card-empty">{today.length > 0 ? "今天的课都结束了" : "今天没有课"}</div>;
   const leftText = next.left > 0 ? next.left + " 分钟后" : "进行中";
   const span = Math.max(1, next.en - next.st);
   const pct = Math.max(0, Math.min(100, Math.round(((nowMin - next.st) / span) * 100)));

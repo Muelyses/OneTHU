@@ -111,6 +111,7 @@ export function minText(m: number): string {
 /** 参与挑选的最小课程字段（结构类型，避免把数据层类型拖进视图模块） */
 export interface ClassLike {
   startTime?: string | null;
+  endTime?: string | null;
   startSection?: number | null;
   endSection?: number | null;
 }
@@ -122,7 +123,11 @@ export function pickNextClass<T extends ClassLike>(schedule: readonly T[], nowMi
   for (const s of schedule) {
     const st = s.startTime ? hhmmMin(s.startTime) : sectionStartMin(s.startSection ?? 1);
     if (st == null) continue;
-    const en = (sectionStartMin(s.endSection ?? s.startSection ?? 1) ?? st) + 45;
+    /* 结束时间优先用现成的 endTime（校历组装的 ScheduleEntry 只有 start/endTime、
+       没有节次——此前回落「第 1 节 + 45min」把每节课都算成 8:45 结束，
+       8:45 之后「下一节课」永远报「都结束了」，下午的课全被吞，2026-10-13 实锤） */
+    const en = (s.endTime ? hhmmMin(s.endTime) : null)
+      ?? ((sectionStartMin(s.endSection ?? s.startSection ?? 1) ?? st) + 45);
     if (en > nowMin) return { s, st, en, left: st - nowMin };
   }
   return null;

@@ -580,12 +580,11 @@ html.is-phone .hard-refresh-fab.top-fab {
 /* ── 玻璃只算一层（2026-10-14 实测定案）──
    玻璃卡（free-item/home-card/card）内部的次级卡不得再自带玻璃/白底：
    0.72 叠 0.66 ≈ 0.94，肉眼即全白卡（freeBoard 组件卡全是这个病）。
-   次级一律透明，材质由最外层玻璃板提供。 */
-.explorer-panel .free-item .card:not(.is-editing),
-.explorer-panel .free-item .home-card:not(.is-editing),
-.explorer-panel .free-item .wg-card,
-.explorer-panel :is(.card, .stat-card, .home-card) :is(.card, .stat-card, .home-card):not(.is-editing),
-.explorer-panel .home-card-body .card:not(.is-editing) {
+   次级一律透明，材质由最外层玻璃板提供。直达 widget 卡（.hw-card 等非 .card 家族）
+   与 chrome 固定层同治——dock 底下透出的白板都是它们。 */
+.explorer-shell .free-item :is(.card, .hw-card, .wg-card, .home-card, .stat-card, .next-class, .lab-runs, .balance-card),
+.explorer-shell :is(.card, .stat-card, .home-card) :is(.card, .stat-card, .home-card, .hw-card):not(.is-editing),
+.explorer-shell .home-chrome-layer :is(.card, .hw-card, .wg-card, .stat-card, .balance-card) {
   background: transparent;
   box-shadow: none;
   border-color: transparent;

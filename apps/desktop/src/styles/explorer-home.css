@@ -680,38 +680,57 @@
   color: var(--text-2);
 }
 
-/* ══════════ 清玻璃 v3：固定层与浮钮（悬浮于画布=真 blur）══════════ */
+/* ══════════ 液态玻璃 v4：固定层与浮钮 = chip tier ═══════════ */
 .hs-logo,
 .hs-dock-btn,
 .hs-detail-btn,
 .hs-close,
 .free-fab,
 .free-pen-panel {
-  background: var(--lg-fill);
-  backdrop-filter: var(--lg-blur-clear);
-  -webkit-backdrop-filter: var(--lg-blur-clear);
-  box-shadow: var(--lg-rim);
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .hs-logo:hover,
 .hs-dock-btn:hover,
-.hs-detail-btn:hover { background: var(--lg-fill-hover); box-shadow: var(--lg-rim-hover); }
+.hs-detail-btn:hover {
+  background: linear-gradient(180deg, var(--glass-tint-top-hover), var(--glass-tint-bottom-hover));
+}
 
-/* regular 玻璃面板（菜单/弹层） */
+/* 菜单/弹层 = menu tier（浮于任意内容，必须可读） */
 .hs-more,
 .hs-menu,
 .hs-op {
-  background: var(--lg-fill-regular);
-  backdrop-filter: var(--lg-blur-regular);
-  -webkit-backdrop-filter: var(--lg-blur-regular);
-  box-shadow: var(--lg-rim), var(--lg-lift);
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
 }
 .hs-more-mask { background: rgba(0, 0, 0, 0.22); backdrop-filter: blur(2px); }
 
-/* 自由组件 = 染色玻璃（画布底纯平，blur 无增益）；便笺自管底色 */
+/* 自由组件 = panel-lite（环境光斑透过：轻 blur + rim 三件套） */
 .free-item {
-  background: var(--lg-tint);
-  backdrop-filter: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 6px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  backdrop-filter: var(--glass-panel-blur);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  border-color: var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
 }
-.free-item.is-selected { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 10px 32px rgba(0, 0, 0, 0.16); }
+.free-item.is-selected {
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 42%, transparent);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
+}
 .free-item > .free-note { background: transparent; }

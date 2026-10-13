@@ -447,14 +447,9 @@
      个别要伸缩的按钮用内联 flex 覆盖（CardTab 等） */
   white-space: nowrap;
   flex: 0 0 auto;
-  /* 液态玻璃（2026-10-13 主题焕新）：半透明主题色底 + 背景模糊增饱和 +
-     内缘高光描边——所有主题在玻璃材质上施加各自配色，深浅色通用 */
-  border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 24%, transparent);
+  border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--md-sys-color-primary) 10%, var(--md-sys-color-surface-container-lowest));
-  backdrop-filter: blur(14px) saturate(1.5);
-  -webkit-backdrop-filter: blur(14px) saturate(1.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--md-sys-color-surface-container-lowest);
   color: var(--md-sys-color-on-surface);
   font-size: var(--text-base);
   cursor: pointer;
@@ -8136,107 +8131,124 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 .board-handle.h-n, .board-handle.h-s { cursor: ns-resize; }
 .board-handle.h-e, .board-handle.h-w { cursor: ew-resize; }
 
-/* ══════════ 液态玻璃材质体系 v3（2026-10-13，规格对齐 + Chromium 96 兼容）══════════
-   兼容策略：每个玻璃令牌「rgba 回退在前 + color-mix 增强在后」双声明——
-   WebView 96（color-mix 111+）解析失败自动落到回退值，现代引擎拿主题自适应。
-   预算：全 blur 大面同屏 ≤3（顶栏/侧栏/底栏三栏），小 blur ≤8（FAB/胶囊/弹层），
-   标签与行内控件一律 tint-only。动画只准 transform/opacity。 */
+/* ══════════ 液态玻璃 v4（2026-10-13，参考 LiquidGlassSkill 实测配方）══════════
+   关键认知：玻璃的质感来自「透出什么东西」——平色背景上玻璃只能是灰盒子。
+   环境光斑网格（.explorer-shell 的 radial 光斑）是玻璃的素材，不是装饰。
+   tint 无色化（白→灰 6%，色相永远来自透出的背景）；rim 三件套（顶镜面/发丝环/底反弹）。 */
 
 :root {
-  --lg-ease: cubic-bezier(0.32, 0.72, 0, 1);
-  --lg-ease-press: cubic-bezier(0.3, 0, 0, 1.3);
-  /* 清玻璃（悬浮控件）：blur(12) saturate(160%)；96 回退 = 浅灰玻璃 */
-  --lg-blur-clear: blur(12px) saturate(160%);
-  /* 文本面板（菜单/弹层）：blur(16) saturate(172%)，更实一级 */
-  --lg-blur-regular: blur(16px) saturate(172%);
-  --lg-fill: rgba(248, 249, 252, 0.55);
-  --lg-fill: color-mix(in srgb, var(--md-sys-color-surface-container) 55%, transparent);
-  --lg-fill-hover: rgba(242, 244, 248, 0.72);
-  --lg-fill-hover: color-mix(in srgb, var(--md-sys-color-surface-container-high) 74%, transparent);
-  /* 文本面板（菜单/弹层）：blur(16) saturate(172%)，更实一级 */
-  --lg-fill-regular: rgba(248, 249, 252, 0.68);
-  --lg-fill-regular: color-mix(in srgb, var(--md-sys-color-surface-container) 76%, transparent);
-  --lg-tint: rgba(255, 255, 255, 0.4);
-  --lg-tint: color-mix(in srgb, var(--md-sys-color-surface-container-high) 46%, transparent);
-  --lg-border: rgba(0, 0, 0, 0.1);
-  --lg-border: color-mix(in srgb, var(--md-sys-color-on-surface) 13%, transparent);
-  /* 顶部镜面线 = 玻璃感最大单因素；底缘反弹按 on-surface 取向（亮底暗 hairline/暗底白） */
-  --lg-rim: inset 0 1.5px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 color-mix(in srgb, var(--md-sys-color-on-surface) 9%, transparent);
+  --glass-tint-top: rgba(255, 255, 255, 0.06);
+  --glass-tint-bottom: rgba(179, 179, 179, 0.06);
+  --glass-tint-top-hover: rgba(255, 255, 255, 0.11);
+  --glass-tint-bottom-hover: rgba(179, 179, 179, 0.11);
+  --glass-rim-top: rgba(255, 255, 255, 0.55);
+  --glass-rim-hairline: rgba(255, 255, 255, 0.12);
+  --glass-rim-bottom: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(30, 33, 45, 0.12);
+  --glass-shadow: 0 10px 30px rgba(30, 33, 45, 0.1);
+  --glass-menu-fill: rgba(246, 247, 249, 0.55);
+  --glass-menu-blur: blur(22px) saturate(140%);
+  --glass-chip-blur: blur(6px) saturate(125%);
+  --glass-panel-blur: blur(6px) saturate(130%);
+  --lg-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 color-mix(in srgb, var(--md-sys-color-on-surface) 14%, transparent);
-  --lg-lift: 0 8px 24px -8px rgba(0, 0, 0, 0.28), 0 2px 6px -2px rgba(0, 0, 0, 0.14);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.34), 0 4px 10px -2px rgba(0, 0, 0, 0.18);
 }
 
-/* ---- 主/危险按钮：主题色渐变玻璃 blur(8) + rim；按压=inset 加强+scale 交涟漪体系外禁用 ---- */
+:root[data-scheme="dark"] {
+  --glass-rim-top: rgba(255, 255, 255, 0.5);
+  --glass-rim-hairline: rgba(255, 255, 255, 0.1);
+  --glass-rim-bottom: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  --glass-menu-fill: rgba(22, 22, 27, 0.55);
+}
+
+/* rim 三件套（一条 box-shadow 表达，全部玻璃面共用） */
+.freeboard,
+.free-item {
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
+}
+
+/* ---- 主/危险按钮 = chip tier + 主题色 tint 渐变 ---- */
 .btn {
-  background: rgba(255, 255, 255, 0.5);
-  background: linear-gradient(155deg,
-    color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent),
-    color-mix(in srgb, var(--md-sys-color-primary) 5%, rgba(255, 255, 255, 0.42)));
-  backdrop-filter: blur(8px) saturate(180%);
-  -webkit-backdrop-filter: blur(8px) saturate(180%);
-  border-color: var(--lg-border);
-  box-shadow: var(--lg-rim), var(--lg-lift);
-  transition: box-shadow 0.12s var(--lg-ease), border-color 0.12s var(--lg-ease);
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  border-color: var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+  transition: box-shadow var(--glass-duration, 180ms) var(--lg-ease), background var(--glass-duration, 180ms) var(--lg-ease);
 }
 .btn:hover {
   box-shadow: var(--lg-rim-hover), var(--lg-lift-hover);
 }
 .btn:active {
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 2px 8px -4px rgba(0, 0, 0, 0.28);
+  box-shadow: var(--glass-shadow), inset 0 2px 8px rgba(0, 0, 0, 0.14), inset 0 1px 0 var(--glass-rim-top);
 }
 .btn-primary {
-  background: rgba(255, 255, 255, 0.4);
-  background: linear-gradient(155deg,
-    color-mix(in srgb, var(--md-sys-color-primary) 66%, transparent),
-    color-mix(in srgb, var(--md-sys-color-primary) 46%, transparent));
-  backdrop-filter: blur(8px) saturate(180%);
-  -webkit-backdrop-filter: blur(8px) saturate(180%);
-  box-shadow: var(--lg-rim), 0 6px 18px -6px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--md-sys-color-primary) 26%, transparent),
+    color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent));
+  border-color: color-mix(in srgb, var(--md-sys-color-primary) 42%, transparent);
 }
-.btn-primary:hover { box-shadow: var(--lg-rim-hover), var(--lg-lift-hover); }
+.btn-primary:hover {
+  box-shadow: var(--lg-rim-hover), var(--lg-lift-hover);
+}
 
-/* ---- 图标按钮 = 玻璃 chip（tint + rim，无 blur——多而小，预算外）---- */
+/* ---- 图标按钮 / chip = chip tier ---- */
 .icon-btn {
-  background: var(--lg-tint);
-  border: 1px solid var(--lg-border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
-.icon-btn:hover { background: var(--lg-fill-hover); }
+.icon-btn:hover { background: linear-gradient(180deg, var(--glass-tint-top-hover), var(--glass-tint-bottom-hover)); }
+.chip-btn {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top);
+}
+.chip-btn:hover { background: linear-gradient(180deg, var(--glass-tint-top-hover), var(--glass-tint-bottom-hover)); }
 
 /* ---- 输入类 = 玻璃场（tint + hairline；聚焦 rim 转主题色）---- */
 .field input,
 .field select,
 .field textarea {
-  background: color-mix(in srgb, var(--md-sys-color-surface-container) 34%, transparent);
-  border-color: var(--lg-border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-rim-bottom);
 }
 .field input:focus,
 .field textarea:focus {
-  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 62%, transparent);
   border-color: var(--accent);
-  box-shadow: var(--md-sys-focus-ring), inset 0 1.5px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: var(--md-sys-focus-ring), inset 0 1px 0 var(--glass-rim-top);
 }
 
-/* ---- 开关拇指 = 玻璃小球；chip = tint 玻璃 ---- */
+/* ---- 开关拇指 = 玻璃小球 ---- */
 .switch::after,
 .plg-switch::after {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
-.chip-btn {
-  background: var(--lg-tint);
-  border: 1px solid var(--lg-border);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-.chip-btn:hover { background: var(--lg-fill-hover); }
 
-/* ---- regular 玻璃面板（命令面板/右键菜单）：更实更糊一级 ---- */
+/* ---- 菜单/弹层 = menu tier（menu-surface 55% + blur(22)——浮在任意内容上必须可读）---- */
 .pal,
 .explorer-ctxmenu,
 .ctx-menu {
-  background: var(--lg-fill-regular);
-  backdrop-filter: var(--lg-blur-regular);
-  -webkit-backdrop-filter: var(--lg-blur-regular);
-  box-shadow: var(--lg-rim), var(--lg-lift-hover);
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
 }

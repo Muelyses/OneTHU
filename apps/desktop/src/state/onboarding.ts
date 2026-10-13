@@ -1,9 +1,13 @@
 /**
- * 首启导览（2026-09-20 群反馈定案）：功能多是卖点，但**同时呈现**对非技术同学是负担。
- * 导览不删功能，只做两件事：① 按场景把用不到的首页卡片收起来（复用既有 homeCards 布局）；
- * ② 教会"收藏夹"这一次性动作（原子收藏是立身之本，但没人主动用）。
+ * 导览偏好状态（v3，2026-10-13 桌面导览改版）。
  *
- * 只写既有存储（onethu.home.layout.* / onethu.home.defaults），不新增机制、不动数据模型。
+ * 播放端：components/OnboardingTourV3.tsx（七步玻璃卡，桌面端现状基线）。
+ * 本文件管两块既有职责：
+ *  ① 首启流程与完成标记（flow 字段 "v3" / flow3，见文末「首启流程键」块）；
+ *  ② 导览期间/之后对首页卡片的取舍（写既有存储 onethu.home.layout.*，不新增机制）。
+ *
+ * 旧体系（v1 逐项问界面 + v2 三问灰度）的流程文件已删除；
+ * 卡片/场景判定保留原样（lib/onboardingCards.ts 有护栏钉住）。
  */
 import {
   HOME_CARD_META,
@@ -18,39 +22,7 @@ import {
 } from "../lib/homeCards.js";
 
 export { SCENARIOS, cardsForScenarios, cardsOfScenario, type Scenario } from "../lib/onboardingCards.js";
-import { useSyncExternalStore } from "react";
 import { cardsForScenarios, planTodayCards, SCENARIOS } from "../lib/onboardingCards.js";
-
-// v2（2026-09-21）：导览新增账号接入步骤（雨课堂 / OJ / 邮箱 / 云盘）。
-// v3（2026-09-21）：导览再新增「桌面小组件」步骤——沿用同一口径：导览有新增内容时
-// 新旧用户都要看一轮，所以继续换版本号；已配置的项只标识、不重复索要。
-const KEY = "onethu.onboarded.v3";
-
-export function hasOnboarded(): boolean {
-  try {
-    return globalThis.localStorage?.getItem(KEY) === "1";
-  } catch {
-    return true; // 存不下时别反复弹
-  }
-}
-
-export function markOnboarded(): void {
-  try {
-    globalThis.localStorage?.setItem(KEY, "1");
-  } catch {
-    /* ignore */
-  }
-}
-
-/** 设置页「重新导览」：清标志即可下次自动弹（导览本身幂等、可重复走） */
-export function resetOnboarding(): void {
-  try {
-    globalThis.localStorage?.removeItem(KEY);
-  } catch {
-    /* ignore */
-  }
-}
-
 
 export function applyScenarios(scenarioIds: string[], orientation: HomeOrientation): void {
   const keep = new Set<HomeCardId>(cardsForScenarios(scenarioIds));
@@ -212,92 +184,37 @@ export function applyPreset(
 export const TAB_IDS_BY_KEY: Record<string, string[]> = ALL_TABS;
 
 
-/* ══════════ 首启 v2（§4.2，2026-09-28）══════════
- * 只问 3 件事：通知权限 / 统一认证登录 / 宿舍楼；全部可跳过，完成后直接进「今日」。
- * 界面定制交给「我的 → 外观」即时预览，小组件教学删除（默认配置兜底）。
- * 旧的 v3 流程保留一个版本做灰度：feature flag 默认仍走旧流程，确认没问题后再删。
+/* ══════════ 首启流程键（v3 起，2026-10-13 桌面导览改版）══════════
+ * 播放统一走 components/OnboardingTourV3.tsx；v1（逐项问界面 + 账号接入）与
+ * v2（三问灰度）的流程文件已随本次改版删除。沿用两个既有偏好键：
+ *  - 流程字段 onethu.onboarding.flow：新存档默认写 "v3"；老存档里残留的 v1/v2 值
+ *    沿同一字段保留（不清除、不迁移），由于其流程已退役，实际一律按 v3 播放；
+ *  - 完成标记 onethu.onboarded.flow3：接 v2 flow2 的家族命名——
+ *    看完最后一步 / 勾「不再显示」都落这里（设置页「导览」按钮负责清掉重来）。
  */
-const KEY_V2 = "onethu.onboarded.flow2";
 const FLOW_KEY = "onethu.onboarding.flow";
 const DORM_KEY = "onethu.dorm.building";
-
-export type OnboardingFlow = "v1" | "v2";
-
-const flowListeners = new Set<() => void>();
-let flowCache: OnboardingFlow | null = null;
-
-/** 当前生效的首启流程（默认 v1 = 灰度期不改变老用户体验） */
-export function getOnboardingFlow(): OnboardingFlow {
-  if (flowCache !== null) return flowCache;
-  let v: OnboardingFlow = "v1";
-  try {
-    v = globalThis.localStorage?.getItem(FLOW_KEY) === "v2" ? "v2" : "v1";
-  } catch {
-    /* 读不到就走旧流程，别因为存储问题改变首启表现 */
-  }
-  flowCache = v;
-  return v;
-}
-
-export function setOnboardingFlow(flow: OnboardingFlow): void {
-  flowCache = flow;
-  try {
-    globalThis.localStorage?.setItem(FLOW_KEY, flow);
-  } catch {
-    /* ignore */
-  }
-  flowListeners.forEach((fn) => fn());
-}
-
-function subscribeOnboardingFlow(fn: () => void): () => void {
-  flowListeners.add(fn);
-  return () => {
-    flowListeners.delete(fn);
-  };
-}
-
-/** 组件用：订阅当前流程（设置页切换后立即生效，不必重启） */
-export function useOnboardingFlow(): OnboardingFlow {
-  return useSyncExternalStore(subscribeOnboardingFlow, getOnboardingFlow, (): OnboardingFlow => "v1");
-}
-
-/** v2 自己的完成标记：与 v1 互不影响，灰度期两套流程各自独立 */
-export function hasOnboardedV2(): boolean {
-  try {
-    return globalThis.localStorage?.getItem(KEY_V2) === "1";
-  } catch {
-    return true; // 存不下时别反复弹
-  }
-}
-
-export function markOnboardedV2(): void {
-  try {
-    globalThis.localStorage?.setItem(KEY_V2, "1");
-  } catch {
-    /* ignore */
-  }
-}
-
-export function resetOnboardingV2(): void {
-  try {
-    globalThis.localStorage?.removeItem(KEY_V2);
-  } catch {
-    /* ignore */
-  }
-}
-
-/** 设置页「重新导览」：清当前生效流程的标志 */
-export function resetActiveOnboarding(): void {
-  if (getOnboardingFlow() === "v2") resetOnboardingV2();
-  else resetOnboarding();
-}
-
-/* ══════════ 桌面导览 v3（2026-10-13 改版，与 components/OnboardingTourV3.tsx 配套）══════════
- * 偏好键沿用既有家族命名：完成标记接 onethu.onboarding.flow2 之后的 flow3；
- * 流程字段沿用 onethu.onboarding.flow——新流程默认值 "v3"，老存档兼容策略见后续改造。 */
 const KEY_V3 = "onethu.onboarded.flow3";
 
-/** v3 是否已经看过/跳过过一轮（看过、跳过、「不再显示」都算） */
+/** 首启流程（v3 起只有一种播放）。默认值 "v3"；老存档的 v1/v2 值被收编、不作数。 */
+export type OnboardingFlow = "v3";
+export const ONBOARDING_FLOW_DEFAULT: OnboardingFlow = "v3";
+
+/** 当前流程：恒为 v3。读取 flow 字段只为把 "v3" 写回 standards（老值不清除，见块注释） */
+export function getOnboardingFlow(): OnboardingFlow {
+  try {
+    const raw = globalThis.localStorage?.getItem(FLOW_KEY);
+    if (raw !== "v3") {
+      /* 老存档（v1/v2/done 等）原样保留，只读取不覆写；语义一律按 v3 */
+      return ONBOARDING_FLOW_DEFAULT;
+    }
+  } catch {
+    /* 读不到就按默认走 v3，别因存储问题改变首启表现 */
+  }
+  return ONBOARDING_FLOW_DEFAULT;
+}
+
+/** 是否已经看过/跳过过一轮 v3（看完最后一步、勾「不再显示」都算） */
 export function hasOnboardedV3(): boolean {
   try {
     return globalThis.localStorage?.getItem(KEY_V3) === "1";
@@ -306,7 +223,7 @@ export function hasOnboardedV3(): boolean {
   }
 }
 
-/** v3 落盘：看完最后一步、勾「不再显示」都会走这里 */
+/** v3 落盘 */
 export function markOnboardedV3(): void {
   try {
     globalThis.localStorage?.setItem(KEY_V3, "1");
@@ -315,12 +232,17 @@ export function markOnboardedV3(): void {
   }
 }
 
-export function resetOnboardingV3(): void {
+function resetOnboardingV3(): void {
   try {
     globalThis.localStorage?.removeItem(KEY_V3);
   } catch {
     /* ignore */
   }
+}
+
+/** 设置页「导览」按钮：清 v3 完成标记，下次启动（或刷新）重新走一遍 */
+export function resetActiveOnboarding(): void {
+  resetOnboardingV3();
 }
 
 /** 宿舍楼/园区（§4.2 问题 3）：P0 只问不消费，P2 供今日卡与洗衣机、电费的上下文用 */

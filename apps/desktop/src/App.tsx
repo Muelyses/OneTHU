@@ -4,7 +4,7 @@ import { NotifyBridge } from "./components/NotifyBridge.js";
 import { lazy, Suspense, useEffect } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LoginPage, TwoFactorPage } from "./pages/Login.js";
-import { OnboardingTour } from "./components/OnboardingTour.js";
+import { OnboardingTourV3 } from "./components/OnboardingTourV3.js";
 import { useToastHost, hideToast } from "./state/toast.js";
 import type { ReactNode } from "react";
 import { BrandLogo } from "./components/Layout.js";
@@ -121,7 +121,7 @@ function Routed() {
       <PluginBridge />
       <NotifyBridge />
       {(status === "ready") && <ChatDock />}
-      {status === "ready" ? <OnboardingTour /> : null}
+      {status === "ready" ? <OnboardingTourV3 /> : null}
       <FilePreviewHost />
       <ToastHost />
       {ExplorerPreview ? (

@@ -165,7 +165,7 @@ console.log("[11] 弹层风格统一：遮罩淡入 + 面板弹簧（内联样�
   const files = [
     "components/ExtHwLoginModal.tsx", "components/TabManageModal.tsx", "pages/info/CardTab.tsx",
     "pages/zhjwxk/Courses.tsx", "pages/Schedule.tsx", "pages/info/NewsTab.tsx",
-    "components/OnboardingTour.tsx", "pages/learn/Forum.tsx",
+    "components/OnboardingTourV3.tsx", "pages/learn/Forum.tsx",
   ];
   for (const f of files) {
     const t = src(f);

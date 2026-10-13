@@ -208,12 +208,11 @@ import { activeTab, explorerNavigate, subscribeExplorer, type ExplorerTab } from
 
 /** dev 视觉自检（?explorer-preview=…）：跳过登录直进 Shell，供无头截图审样式 */
 const PREVIEW_MODE = typeof window !== "undefined" && import.meta.env.DEV && new URLSearchParams(window.location.search).has("explorer-preview");
-/* 视觉自检：模块期写导览完成标记——晚于任何组件挂载就输（OnboardingTour 挂载即读） */
+/* 视觉自检：模块期写导览完成标记——晚于任何组件挂载就输（OnboardingTourV3 挂载即读） */
 if (PREVIEW_MODE) {
   try {
-    localStorage.setItem("onethu.onboarded.v3", "1");
-    localStorage.setItem("onethu.onboarded.flow2", "1");
-    localStorage.setItem("onethu.onboarding.flow", "done");
+    localStorage.setItem("onethu.onboarded.flow3", "1");
+    localStorage.setItem("onethu.onboarding.flow", "v3");
     localStorage.setItem("onethu.home.coach.v1", "done");
   } catch { /* 忽略 */ }
 }

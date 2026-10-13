@@ -504,8 +504,8 @@
   background: color-mix(in srgb, var(--md-sys-color-primary) 82%, transparent);
   border-color: color-mix(in srgb, var(--md-sys-color-primary) 90%, transparent);
   color: var(--md-sys-color-on-primary);
-  backdrop-filter: blur(14px) saturate(1.5);
-  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 3px 12px color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
 }
 
@@ -2235,8 +2235,8 @@ select.input:focus {
     margin: 0 -14px 10px;
     padding: 10px 14px 8px;
     background: color-mix(in srgb, var(--bg, #f6f6f4) 86%, transparent);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: var(--glass-panel-blur);
+    backdrop-filter: var(--glass-panel-blur);
   }
   .topbar-menu {
     height: 38px;
@@ -3389,8 +3389,8 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
   border-radius: var(--r-pill);
   color: var(--text-2);
   background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 86%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
-  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.12);
   cursor: pointer;
   touch-action: manipulation;
@@ -3441,8 +3441,8 @@ html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-co
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  -webkit-backdrop-filter: blur(16px) saturate(1.35);
-  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  backdrop-filter: var(--glass-card-blur);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.02) 62%, transparent);
   opacity: 0;
   transition: opacity 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -3554,8 +3554,8 @@ html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-co
       color-mix(in srgb, var(--fog-core) 42%, transparent) 0%,
       color-mix(in srgb, var(--fog-core) 22%, transparent) 46%,
       transparent 78%);
-  -webkit-backdrop-filter: blur(20px) saturate(1.25);
-  backdrop-filter: blur(20px) saturate(1.25);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   /* 双轴径向 mask：让**模糊本身**也化开。半径取 54%/48%（而不是 72%/88%）是因为
      「透明点」在 88% 半径处，必须落在盒子**内部**，否则元素边界会把羽化一刀切掉：
        横向 0.88×0.54×720 = 342px < 半宽 360px ✓（余量 18px）
@@ -3652,8 +3652,8 @@ body.dock-voice-lock {
   border: 1px solid var(--dsw-alias-border-l2, var(--border));
   border-radius: var(--dsw-radius-md, var(--md-sys-shape-corner-large));
   background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-2, var(--surface-2)) 84%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
-  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   box-shadow: 0 10px 32px rgba(0, 0, 0, 0.16);
   color: var(--dsw-alias-label-primary, var(--text-1));
   font-size: var(--text-xs);
@@ -3703,8 +3703,8 @@ body.dock-voice-lock {
   /* ④ 整块毛玻璃底板（用户实录「最上部都不要渐变起雾，整个背板调成磨砂玻璃、整块能看得到」）：
      半透明面 + backdrop 模糊 + 内描边 + 上沿高光；**没有**任何渐变/遮罩把顶部淡出。 */
   background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 86%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
-  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   border: 0;
   border-radius: 24px;
   box-shadow:
@@ -3928,8 +3928,8 @@ html.is-phone .dock-msg { padding: 8px 12px; }
   background: color-mix(in srgb, var(--accent-soft) 62%, transparent);
   /* 描边走 inset（外描边会占 2px 高，手机档就把单行气泡顶到 40.5px > 红线 40px） */
   border: 0;
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--accent-border) 55%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
@@ -3941,8 +3941,8 @@ html.is-phone .dock-msg { padding: 8px 12px; }
   align-self: flex-start;
   background: color-mix(in srgb, var(--md-sys-color-surface-container) 62%, transparent);
   border: 0; /* 同上：描边走 inset */
-  -webkit-backdrop-filter: blur(18px) saturate(1.6);
-  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 70%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
@@ -4470,7 +4470,7 @@ html.is-phone .trace-map-wrap { height: calc(100dvh - 178px); min-height: 320px;
   padding: 5px 10px;
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(6px);
+  backdrop-filter: var(--glass-chip-blur);
   border: 1px solid var(--border-soft);
   font-size: 10.5px;
   color: var(--text-2);
@@ -6186,7 +6186,7 @@ html.is-phone .cloud-search input {
 /* ── 插件表单弹窗 ── */
 .plg-form-overlay {
   position: fixed; inset: 0; z-index: 9999;
-  background: rgba(0, 0, 0, .35); backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, .35); backdrop-filter: var(--glass-scrim-blur);
   display: flex; align-items: center; justify-content: center; padding: 20px;
 }
 .plg-form-modal {
@@ -7954,8 +7954,8 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   /* 兜底（无 color-mix）：不透明面板，老引擎长按菜单的文字不被底图干扰 */
   background: var(--md-sys-color-surface-container-lowest);
   background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 56%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(1.6);
-  backdrop-filter: blur(22px) saturate(1.6);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
   border-color: color-mix(in srgb, var(--border) 60%, transparent);
   box-shadow: var(--shadow-3);
   /* 霖 2026-10-01 #3：弹出动画加快——520ms → --dur-3（300ms），曲线仍烘在关键帧里，缓动必须 linear */
@@ -8157,6 +8157,9 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-tint: rgba(255, 255, 255, 0.4);
   --glass-chip-blur: blur(6px) saturate(125%);
   --glass-panel-blur: blur(6px) saturate(130%);
+  /* 背景模糊档（唯一来源；字面 blur(Npx) 只允许出现在这里） */
+  --glass-scrim-blur: blur(3px);
+  --glass-card-blur: blur(14px) saturate(140%);
   --lg-blur-clear: blur(12px) saturate(160%);
   --lg-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 color-mix(in srgb, var(--md-sys-color-on-surface) 14%, transparent);

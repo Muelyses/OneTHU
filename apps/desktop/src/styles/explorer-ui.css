@@ -805,3 +805,18 @@
   background: var(--glass-fill-hover, var(--glass-fill));
   box-shadow: 6px 0 24px rgba(0, 0, 0, 0.14), inset 0 1px 0 var(--glass-rim-top), inset 0 0 0 1px var(--glass-rim-hairline);
 }
+
+/* ═══ 液态玻璃 v4.3 收尾（explorer-ui 域）：「选中框」统一 ═══
+   底栏开关态 / 行选中态：accent-soft 平涂 → 主题 tint 渐变玻璃 + chip blur + rim 顶光，
+   与顶部 .ex-tab.is-active 同一材质语言；悬停行维持平 tint（预算外成群件不加 blur）。 */
+.ex-row.is-active,
+.ex-bbar-btn.is-open {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent),
+    color-mix(in srgb, var(--md-sys-color-primary) 7%, transparent));
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top);
+  color: var(--text-1);
+}
+.ex-row.is-active { color: var(--text-1); }

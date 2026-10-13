@@ -382,3 +382,32 @@
     inset 0 1px 0 var(--glass-rim-top),
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
+
+/* ═══ 液态玻璃 v4.3 收尾（explorer-oh 域）：OH 胶囊家族进玻璃 ═══ */
+/* 白胶囊 = 玻璃 hero：tint + fill-regular 叠层 + chip blur；双层描边定稿保留，色换玻璃系 */
+.ohx-capsule,
+.ex-bbar-center .ohx-capsule {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  border-color: color-mix(in srgb, var(--text-1) 22%, var(--glass-border));
+}
+/* 面板底 / 搜索栏 / 预设 segment / 历史 chip */
+.ohx-searchpane,
+.ohx-searchbar {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
+  backdrop-filter: var(--glass-panel-blur);
+  -webkit-backdrop-filter: var(--glass-panel-blur);
+  border-color: var(--glass-border);
+}
+.ohx-chip {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  border-color: var(--glass-border);
+}
+.ohx-prefseg {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top);
+}

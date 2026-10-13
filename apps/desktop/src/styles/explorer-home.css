@@ -821,3 +821,45 @@
     inset 0 0 0 1px var(--glass-rim-hairline),
     inset 0 -1px 0 var(--glass-rim-bottom);
 }
+
+/* ═══ 液态玻璃 v4.3 收尾（explorer-home 域）：首页浮件全进玻璃 ═══ */
+
+/* 假搜索胶囊 / 续听 chip / 浮钮 = chip tier */
+.home-searchbar,
+.home-resume-chip,
+.board-fab,
+.free-fab {
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
+  border-color: var(--glass-border);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top);
+}
+.board-fab.is-on,
+.free-fab.is-on {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent),
+    color-mix(in srgb, var(--md-sys-color-primary) 6%, transparent)),
+    var(--glass-fill-regular);
+}
+
+/* 更多功能 / 添加组件小窗 = menu tier（浮在任意内容上必须可读） */
+.hs-more {
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  border-color: var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+}
+
+/* 选中浮条（删除/置顶/展开）= menu tier 微浮层 */
+.free-toolbar {
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top);
+}

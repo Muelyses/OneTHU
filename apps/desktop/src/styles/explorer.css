@@ -395,6 +395,48 @@
   background: rgba(0, 0, 0, 0.36);
 }
 
+/* ── 字读自适应 v3（2026-10-13 用户「深底黑字/白底白字」点名）：壁纸之上的文字翻色 ──
+   面：①内容页页级直落文字（page-head/setting 行/h 标）与 panel 落阶（has-wallpaper 分支）；
+   ②卡面无辜——卡自带 surface 色面，翻色会被卡底色对撞，这里只翻「直接落阶」的那层。
+   深色 lum=深壁纸 → 浅字；light lum=亮壁纸 → 深字。 */
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content .page-head h1,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content .page-head .page-head-sub,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content .page-head .page-head-meta,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content .setting-title,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content .setting-desc,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content h2,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content h3 {
+  color: #f2f4f8;
+}
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content .page-head h1,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content .page-head .page-head-sub,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content .page-head .page-head-meta,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content .setting-title,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content .setting-desc,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content h2,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content h3 {
+  color: #17181c;
+}
+/* tab 档（面板自带壁纸）：面板直落文字同法 */
+.explorer-panel[data-wallpaper-lum="dark"] .page-head h1,
+.explorer-panel[data-wallpaper-lum="dark"] .page-head .page-head-sub,
+.explorer-panel[data-wallpaper-lum="dark"] .page-head .page-head-meta,
+.explorer-panel[data-wallpaper-lum="dark"] .setting-title,
+.explorer-panel[data-wallpaper-lum="dark"] .setting-desc,
+.explorer-panel[data-wallpaper-lum="dark"] h2,
+.explorer-panel[data-wallpaper-lum="dark"] h3 {
+  color: #f2f4f8;
+}
+.explorer-panel[data-wallpaper-lum="light"] .page-head h1,
+.explorer-panel[data-wallpaper-lum="light"] .page-head .page-head-sub,
+.explorer-panel[data-wallpaper-lum="light"] .page-head .page-head-meta,
+.explorer-panel[data-wallpaper-lum="light"] .setting-title,
+.explorer-panel[data-wallpaper-lum="light"] .setting-desc,
+.explorer-panel[data-wallpaper-lum="light"] h2,
+.explorer-panel[data-wallpaper-lum="light"] h3 {
+  color: #17181c;
+}
+
 /* ══════════ 壁纸库网格（设置面板 / 右键 picker 共用，壁纸二期）══════════ */
 .wall-lib { display: flex; flex-direction: column; gap: 12px; }
 /* 设置卡的壁纸区缩进统一收口在 .wall-section（title/desc 行与库块一起缩进——

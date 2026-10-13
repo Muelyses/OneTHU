@@ -192,7 +192,7 @@
    大时间 + 一级功能区是不可移动/不可删除的两块，可调不透明度；
    其余全部是自由白板组件（BoardPage 无头画布），z 序在固定层之下。 */
 
-.home-free { position: relative; }
+.home-free, .home-tab { position: relative; height: 100%; }
 
 /* 固定层容器：绝对定位浮在画布上，不拦截空白区指针 */
 .chrome-block {
@@ -272,7 +272,7 @@
 
 /* 自由画布：给固定层让出顶部空间（默认组件从功能区下方开始摆） */
 .home-free-canvas { position: relative; z-index: 1; }
-.home-free .board-canvas { padding-top: var(--home-chrome-h, 260px); }
+/* 画布满幅（2026-10-13）：不再画布顶部预留 chrome 高——chrome 浮在画布上（z 更高）。 */
 
 /* 白板无头模式的浮动操作钮（右下） */
 .board-fab-col {
@@ -474,9 +474,12 @@
    常态直接拖动/缩放/点选，组件可互相重叠（数组序=图层序），无编辑模式。 */
 
 .freeboard {
-  position: relative;
-  width: 100%;
-  min-height: calc(100vh - 140px);
+  /* 「画布定案」：自由板=首页面板的满幅画布（不是一块固定高度的盒子）——
+     相对 .home-tab 绝对铺满；组件可拖到首页任意位置（含时钟/坞上层之外），
+     HomeChrome 固定层继续 z 序在上、pointer 只占块本身。 */
+  position: absolute;
+  inset: 0;
+  min-height: 0;
   z-index: 1;
 }
 

@@ -8182,9 +8182,6 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.03);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
-}
-
-:root[data-scheme="dark"] {
   --glass-rim-top: rgba(255, 255, 255, 0.5);
   --glass-rim-hairline: rgba(255, 255, 255, 0.1);
   --glass-rim-bottom: rgba(255, 255, 255, 0.06);

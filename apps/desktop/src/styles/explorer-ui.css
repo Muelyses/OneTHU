@@ -556,7 +556,9 @@
 .ex-ws-band[data-ws-dragging="1"] { z-index: 6; box-shadow: 0 6px 16px rgba(0,0,0,.18); background: linear-gradient(color-mix(in srgb, var(--ws-color, #888) 14%, transparent), color-mix(in srgb, var(--ws-color, #888) 14%, transparent)), var(--dsw-alias-bg-layer-1, #fff); }
 
 /* ══ 竖版标签栏：左侧栏，标签竖排，工作区底板竖向包住组内标签 ══ */
-.ex-rail { position: fixed; top: var(--explorer-bar-h, 48px); left: 0; bottom: 0; width: 232px; overflow: hidden; padding: 8px 6px; background: var(--dsw-alias-bg-layer-1, #fff); border-right: 1px solid var(--dsw-alias-border-l1, #eee); z-index: 55; display: flex; flex-direction: column; }
+/* 背景一律走液态玻璃档（explorer-ui.css v4 ex-rail 块，L794 起）——这里只留布局，
+   不再给不透明白兜底（有壁纸灯-暗两档玻璃在管；无壁纸时也保持同一玻璃语言不翻白） */
+.ex-rail { position: fixed; top: var(--explorer-bar-h, 48px); left: 0; bottom: 0; width: 232px; overflow: hidden; padding: 8px 6px; z-index: 55; display: flex; flex-direction: column; }
 .ex-rail .ex-tabstrip-wrap, .ex-rail .explorer-tabstrip-wrap { height: 100%; }
 .ex-tabstrip.is-vertical { flex-direction: column; align-items: stretch; overflow-x: hidden; overflow-y: auto; height: 100%; width: 100%; }
 .ex-tabstrip.is-vertical .ex-tab { width: 100%; box-sizing: border-box; }
@@ -803,8 +805,9 @@
     inset 0 0 0 1px var(--glass-rim-hairline),
     inset 0 -1px 0 var(--glass-rim-bottom);
 }
+/* hover 展开只抬阴影不换底（2026-10-14）：此前换成 --glass-fill(浅色=0.52 白)，
+   亮度档玻璃(特异性 0,3,0)输给本规则(0,4,0)，有壁纸时展开那片翻白。 */
 .tabs-vertical.rail-narrow .ex-rail:hover {
-  background: var(--glass-fill-hover, var(--glass-fill));
   box-shadow: 6px 0 24px rgba(0, 0, 0, 0.14), inset 0 1px 0 var(--glass-rim-top), inset 0 0 0 1px var(--glass-rim-hairline);
 }
 

@@ -973,3 +973,23 @@ html.is-phone .onepage-sheet-body {
   overscroll-behavior: contain;
   padding: 0 12px 24px;
 }
+
+/* ══════════ 组件液态玻璃（2026-10-14 用户点名）══════════
+   首页/OnePage 卡片从 surface 平涂升级为面板级玻璃三件套（tint 渐变 + fill-regular
+   + card blur + rim），与栏体同一材质语言；编辑虚线态不动。深浅主题令牌自动换肤。
+   覆盖 global.css 的 .home-card 平涂（本文件在其之后加载，同权重后到地胜出）。 */
+.home-card:not(.is-editing) {
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
+  backdrop-filter: var(--glass-card-blur);
+  -webkit-backdrop-filter: var(--glass-card-blur);
+  border-color: var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
+}
+/* 玻璃卡内的页头/头部行若自带平涂底会打断折射面——去掉，让玻璃透底 */
+.home-card:not(.is-editing) .home-card-head { background: transparent; }

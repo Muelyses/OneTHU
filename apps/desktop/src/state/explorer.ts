@@ -92,6 +92,9 @@ function loadStore(): ExplorerState {
     const tabs = Array.isArray(p.tabs)
       ? p.tabs
           .filter((t): t is ExplorerTab => !!t && typeof t.id === "string" && typeof t.page === "string" && t.kind === "page")
+          /* 旧今日页退役（2026-10-13 用户「古老旧今日页阴魂不散」）：page=today 的 page 标签
+             是老版本时代持久化的残迹——首页已被 kind=home 的白板接管，恢复时丢弃，不再复活。 */
+          .filter((t) => t.page !== "today")
           .map((t) => ({ ...t, workspaceId: typeof t.workspaceId === "string" ? t.workspaceId : null })) // 旧版本补字段
           .slice(0, MAX_TABS)
       : [];
@@ -399,6 +402,12 @@ export function closeOtherTabs(keepId: string): void {
 /** 标签页内导航（更新 page/params，标签身份不变——工作上下文保留）。
  *  只作用于该标签页自己的路由上下文（TabHost 的 Ctx 覆盖），互不串台。 */
 export function navigateInTab(id: string, page: Page, params?: LearnNav | null, title?: string): void {
+  if (page === "today") {
+    /* 「回今日」= 回首页：首页革命后 today 不再是可导航的 page——跳 HOME，不是把本标签
+       改写成旧 TodayPage（用户实测重登后被历史还原成一个「古老旧今日页」）。 */
+    focusTab(HOME_TAB_ID);
+    return;
+  }
   const tab = getTab(id);
   if (!tab || tab.kind === "home") return;
   const tabs = state.tabs.map((t) => (t.id === id ? { ...t, page, params: params ?? null, title: titleOf(page, params, title), lastActiveAt: Date.now() } : t));

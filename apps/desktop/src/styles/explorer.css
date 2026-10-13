@@ -273,7 +273,9 @@
 
 /* ══════════ 全屏档壁纸层 + 亮度自适应（壁纸二期，v4.3 修订）══════════ */
 
-.shell-wallpaper { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+/* 壳层壁纸：不再用 fixed（会被任何带 transform/filter 的祖先建立成局部 containing block，
+   实测被困成一小块）——.explorer-shell 自身 relative，absolute inset 0 铺满整壳 = 整窗口。 */
+.shell-wallpaper { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .shell-wallpaper-img { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; }
 .wall-video-layer { position: absolute; inset: 0; overflow: hidden; }
 .wall-video-layer video { width: 100%; height: 100%; object-fit: cover; }
@@ -361,14 +363,35 @@
   background: rgba(0, 0, 0, 0.32);
 }
 .explorer-panel > .page-anim { position: relative; z-index: 2; }
+.explorer-content > .page-anim { position: relative; z-index: 2; }
+
+/* 全屏档（壳层）壁纸透进内容区后的字读兜底：页级内容下的反差纱。
+   面板有自己的分歧纱（上面 has-wallpaper 分支），这里给「面板没贴自家壁纸、
+   由壳层壁纸透进来」的内容区画纱——亮主题下暗壁纸提白、暗主题下亮壁纸压黑，
+   覆盖四组合；文档正文卡自带 surface，字读不动它。 */
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before {
+  background: rgba(255, 255, 255, 0.34);
+}
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
+  background: rgba(0, 0, 0, 0.36);
+}
 
 /* ══════════ 壁纸库网格（设置面板 / 右键 picker 共用，壁纸二期）══════════ */
 .wall-lib { display: flex; flex-direction: column; gap: 12px; }
-/* 设置卡的壁纸区不是 .setting-row 结构（那些行自带 16px 内边距），这里同样给足，
-   否则整块内容紧贴卡片左缘（2026-10-13 用户点名）；picker 浮卡已有自己的 12px
-   壳内边距，:not 排除避免双重。底部多留 56px 给右下角硬刷新 FAB（z 9999，
-   用户实测它压住了「动态壁纸声音」开关行）。 */
-.wall-lib:not(.wall-lib-picker) { padding: 16px 16px 56px; }
+/* 设置卡的壁纸区缩进统一收口在 .wall-section（title/desc 行与库块一起缩进——
+   上一版只给 .wall-lib 加 padding，title 行仍在卡外缘，用户实测「字还是贴着左边」）。
+   picker 浮卡已有自己的 12px 壳内边距，:not 排除避免双重。底部多留 56px 给右下角
+   硬刷新 FAB（z 9999，用户实测它压住了「动态壁纸声音」开关行）。 */
+.wall-lib:not(.wall-lib-picker) { padding: 0 0 56px; }
+.wall-section { padding: 8px 16px 0; }
 .wall-lib-picker { width: min(300px, 88vw); }
 .wall-picker-head {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;

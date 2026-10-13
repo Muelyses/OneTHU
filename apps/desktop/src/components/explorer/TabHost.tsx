@@ -291,8 +291,17 @@ export function TabHost(): ReactNode {
             data-wallpaper-kind={videoRef ? "video" : rawRef ? "image" : undefined}
             style={
               active
-                ? { ...(wp ? { backgroundImage: wp.backgroundImage } : {}) }
-                : { display: "none", ...(wp ? { backgroundImage: wp.backgroundImage } : {}) }
+                ? {
+                    ...(wp
+                      ? { backgroundImage: wp.backgroundImage, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
+                      : {}),
+                  }
+                : {
+                    display: "none",
+                    ...(wp
+                      ? { backgroundImage: wp.backgroundImage, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }
+                      : {}),
+                  }
             }
             onContextMenu={(e) => {
               if (onInteractive(e.target)) return;

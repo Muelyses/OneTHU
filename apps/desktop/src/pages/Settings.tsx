@@ -1740,7 +1740,7 @@ function WallpaperSection(): ReactNode {
   const tabKey = !at || at.kind === "home" ? "home" : wallpaperPathOf(at.page, at.params);
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   return (
-    <div>
+    <div className="wall-section">
       <div className="setting-title">壁纸</div>
       <div className="setting-desc">全屏档是整个软件的底色；内容页档只画在对应页面上，逐页覆盖。</div>
       <WallpaperLibrary variant="panel" tabKey={tabKey} />

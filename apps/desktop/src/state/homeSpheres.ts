@@ -66,8 +66,14 @@ function load(): SpheresDoc {
   return defaultDoc();
 }
 
-let doc: SpheresDoc = load();
+/* Layout imports HomeChrome, while HomeChrome consumes this store and Layout.NAV.
+   Initialize lazily so the shared NAV binding is first read after the module cycle settles. */
+let doc: SpheresDoc | null = null;
 const listeners = new Set<() => void>();
+
+function currentDoc(): SpheresDoc {
+  return (doc ??= load());
+}
 
 function commit(next: SpheresDoc): void {
   doc = next;
@@ -80,7 +86,7 @@ function commit(next: SpheresDoc): void {
 }
 
 export function spheresSnapshot(): SpheresDoc {
-  return doc;
+  return currentDoc();
 }
 
 export function subscribeSpheres(f: () => void): () => void {
@@ -90,21 +96,23 @@ export function subscribeSpheres(f: () => void): () => void {
 
 /** 停靠 / 移除一颗球（更多功能小窗的 × / ＋） */
 export function dockSphere(pageId: string): void {
-  if (doc.docked.includes(pageId)) return;
-  commit({ ...doc, docked: [...doc.docked, pageId] });
+  const state = currentDoc();
+  if (state.docked.includes(pageId)) return;
+  commit({ ...state, docked: [...state.docked, pageId] });
 }
 
 export function undockSphere(pageId: string): void {
-  commit({ ...doc, docked: doc.docked.filter((x) => x !== pageId) });
+  const state = currentDoc();
+  commit({ ...state, docked: state.docked.filter((x) => x !== pageId) });
 }
 
 /** 两块固定区各自的不透明度 */
 export function setTimeOpacity(v: number): void {
-  commit({ ...doc, timeOpacity: clampOp(v) });
+  commit({ ...currentDoc(), timeOpacity: clampOp(v) });
 }
 
 export function setDockOpacity(v: number): void {
-  commit({ ...doc, dockOpacity: clampOp(v) });
+  commit({ ...currentDoc(), dockOpacity: clampOp(v) });
 }
 
 /** 按 id 找 NAV 行 */

@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════
    Explorer 工作空间 UI v2（dev-explorer）：TabStrip / BottomBar / TabDrawer / OneGoSheet
    + TabHost 右键菜单（.explorer-ctxmenu，Lead 在 TabHost 引用、此处供样式）。
-   配色红线：只用 OneTHU 既有 token（--surface/--text-*/--accent/--accent-soft/
-   --border/--hover/--red/--red-soft 与 --md-sys-*），不引入 mockup 配色。
+   配色红线：只用 OneTHU 既有 token（surface、text 系、accent、accent-soft、
+   border、hover、red、red-soft 与 md-sys 系），不引入 mockup 配色。
    本文件在 explorer.css 之后加载，tb-* 的精修增量也在这里。
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -762,7 +762,9 @@
 
 /* ══════════ 液态玻璃 v4：底栏 = 面板级玻璃 ═══════════ */
 .ex-bbar {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   box-shadow:

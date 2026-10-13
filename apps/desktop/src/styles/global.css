@@ -7195,7 +7195,6 @@ html.is-phone .pal-row-bc { font-size: 12px; }
 .sb-kbd { flex: none; font-size: 12px; border: 1px solid var(--border-soft); border-radius: var(--r-sm); padding: 4px 8px; }
 .sidebar.is-collapsed .sb-search-label, .sidebar.is-collapsed .sb-kbd { display: none; }
 
-=======
 /* ===== 手机端双击看全文（TextPeek）=====
    被 text-overflow: ellipsis / -webkit-line-clamp 截断的文本，双击后在文本旁整段
    换行显示。落点与尺寸由组件内联给出（要按实际高度翻上翻下），这里只管观感。 */
@@ -8437,7 +8436,9 @@ html[data-glass="deep"][data-scheme="dark"] {
 .home-card,
 .setting-group,
 .ex-sheet-body .row-group {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
   border-color: var(--glass-border);
@@ -8614,7 +8615,9 @@ html[data-glass="deep"][data-scheme="dark"] {
 .balance-strip,
 .notice-strip,
 .fp-info {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
   border-color: var(--glass-border);
@@ -8626,7 +8629,9 @@ html[data-glass="deep"][data-scheme="dark"] {
 /* 不动描边的两位：plg-card 是「透明描边 + 3px 彩色左边」的机架语言；fav-toolbar 是虚线强调框 */
 .plg-card,
 .fav-toolbar {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
   box-shadow:

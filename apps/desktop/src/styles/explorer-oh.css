@@ -1,6 +1,6 @@
 /* ══════════ dev-explorer · explorer-oh 专属样式 ══════════
    胶囊条 / 原位语音胶囊 / 面板搜索模式 / 偏好分节 / 悬浮球搜索。
-   只用既有 token（--surface/--border/--text-*/--accent/--r-md/--dur-*），不自造色值。 */
+   只用既有 token（surface / border / text 系 / accent / radius / duration），不自造色值。 */
 
 /* ── OH 胶囊条（OhCapsule；摆位归宿主，这里只管形状与反馈） ── */
 .ohx-capsule {

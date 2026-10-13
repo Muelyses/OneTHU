@@ -131,12 +131,14 @@ const wallKey = tab && tab.kind !== "home" ? wallpaperPathOf(tab.page, tab.param
   const hasGlobal = !!wallpaperSnapshot().global;
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
     { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
-    { label: "换壁纸（本页）· 从库选…", act: () => onPick("tab") },
-    ...BUILTIN_WALLPAPERS.map((b) => ({
-      label: "壁纸 · " + b.label + "（仅内容页）",
-      act: () => setTabWallpaper(wallKey, "builtin:" + b.id),
-    })),
-    ...(wallpaperFor(wallKey) ? [{ label: "清除此页壁纸", danger: true, act: () => setTabWallpaper(wallKey, null) }] : []),
+    ...(!isHome ? [
+      { label: "换壁纸（本页）· 从库选…", act: () => onPick("tab" as const) },
+      ...BUILTIN_WALLPAPERS.map((b) => ({
+        label: "壁纸 · " + b.label + "（仅内容页）",
+        act: () => setTabWallpaper(wallKey, "builtin:" + b.id),
+      })),
+      ...(wallpaperFor(wallKey) ? [{ label: "清除此页壁纸", danger: true, act: () => setTabWallpaper(wallKey, null) }] : []),
+    ] : []),
     { label: "换壁纸（全屏）· 从库选…", act: () => onPick("global") },
     ...BUILTIN_WALLPAPERS.slice(0, 4).map((b) => ({
       label: "全屏壁纸 · " + b.label,
@@ -223,7 +225,7 @@ export function TabHost(): ReactNode {
   const [picker, setPicker] = useState<{ scope: WallScope; x: number; y: number; wallKey: string } | null>(null);
   const openPicker = useCallback((p: MenuPos, scope: WallScope) => {
     const t = allTabs().find((x) => x.id === p.tabId) ?? null;
-    const wallKey = !t || t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
+    const wallKey = !t || t.kind === "home" ? "global" : wallpaperPathOf(t.page, t.params);
     setMenu(null); // pick 的动作语义：先关菜单，选择卡随后弹出（同一坐标）
     setPicker({ scope, x: p.x, y: p.y, wallKey });
   }, []);
@@ -268,7 +270,7 @@ export function TabHost(): ReactNode {
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   useEffect(() => {
     for (const t of all) {
-      const ref = wallpaperFor(t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params));
+      const ref = wallpaperFor(t.kind === "home" ? "global" : wallpaperPathOf(t.page, t.params));
       if (ref && ref.startsWith("data:image/")) ensureWallpaperLum(ref);
     }
   }, [all]);
@@ -286,7 +288,7 @@ export function TabHost(): ReactNode {
         return (
           <div
             key={t.id}
-            className={"explorer-panel" + (rawRef ? " has-wallpaper" : "")}
+            className={"explorer-panel" + (t.kind === "home" ? " is-home-canvas" : "") + (rawRef ? " has-wallpaper" : "")}
             data-tab-id={t.id}
             data-tab-page={t.page}
             data-wallpaper-lum={lum ?? undefined}

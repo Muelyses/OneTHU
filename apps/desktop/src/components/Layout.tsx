@@ -39,6 +39,7 @@ import { ErrorLine } from "./Details.js";
 import { CommandPalette } from "./CommandPalette.js";
 import { TabStrip } from "./explorer/TabStrip.js";
 import { ShellWallpaperLayer } from "./explorer/WallpaperVideo.js";
+import { HomeChrome } from "./explorer/HomeSpheres.js";
 import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
@@ -402,6 +403,13 @@ function MobileTabStrip(): ReactNode {
 
 /** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
+  const explorer = useExplorerState();
+  const activePageTab = explorer.tabs.find((t) => t.id === explorer.activeId);
+  const contentCanvasClass = explorer.activeId === HOME_TAB_ID
+    ? " is-home-canvas"
+    : activePageTab?.page === "board"
+      ? " is-onepage-canvas"
+      : "";
   /* 启动：GitHub Releases 静默检查新版本（一次；失败静默，不打扰） */
   useEffect(() => {
     void checkUpdateSilently(showToast);
@@ -411,12 +419,14 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="shell explorer-shell">
       {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
       <ShellWallpaperLayer />
+      {/* 首页固定钟与功能坞必须在页面转场/滚动容器之外，否则 position:fixed 会被 transform 祖先限制。 */}
+      {explorer.activeId === HOME_TAB_ID ? <HomeChrome /> : null}
       {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
           Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
       <ContextMenuLayer>
       <TopBar />
       <TabRail />
-      <main className="content explorer-content">{children}</main>
+      <main className={"content explorer-content" + contentCanvasClass}>{children}</main>
       </ContextMenuLayer>
       {/* 手机档（A3）：底部标签条——44px 触目标的玻璃横条，is-phone 才有 */}
       <MobileTabStrip />

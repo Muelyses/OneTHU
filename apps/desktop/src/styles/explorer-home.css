@@ -192,13 +192,57 @@
    大时间 + 一级功能区是不可移动/不可删除的两块，可调不透明度；
    其余全部是自由白板组件（BoardPage 无头画布），z 序在固定层之下。 */
 
-/* 高度兜底：父级 height 不确定时 100% 会退化为 auto，自由画布（absolute inset:0）就塌成 0 高 →
-   首页「白板不显示」。min-height 保证画布永远有完整可视区（视口减顶栏 46px、底栏）。 */
+/* 首页与 OnePage 用独立的画布宽度，不继承通用 .content 的 1160px 阅读栏限制。
+   首页从固定双顶栏下沿铺到视口底；手机扣除顶栏、底部标签条、底栏与安全区。 */
+.explorer-shell > .explorer-content.is-home-canvas {
+  --home-canvas-top: 104px;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  padding: 104px 0 0 !important;
+}
+.explorer-shell > .explorer-content.is-onepage-canvas {
+  width: 100%;
+  max-width: none;
+}
 .home-free, .home-tab {
   position: relative;
   height: 100%;
-  min-height: calc(100vh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px));
+  min-height: calc(100vh - 104px);
+  min-height: calc(100dvh - 104px);
 }
+.explorer-panel.is-home-canvas { overflow: visible; }
+
+/* 顶部钟与功能坞挂在 shell，不被 page-in 的 transform 或可滚动画布截成局部 fixed。 */
+.home-chrome-layer {
+  --home-canvas-top: 104px;
+  --home-clock-size: 72px;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.home-chrome-layer .chrome-block { position: absolute; left: 0; right: 0; }
+.home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top) + 24px); }
+.home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 148px); }
+html.is-phone .home-chrome-layer { --home-canvas-top: 46px; }
+html.is-phone .home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top) + 16px); }
+html.is-phone .home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 88px); }
+
+html.is-phone .explorer-shell > .explorer-content.is-home-canvas {
+  --home-canvas-top: 46px;
+  padding: 46px 0 calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 52px + 12px) !important;
+}
+html.is-phone .home-free, html.is-phone .home-tab {
+  min-height: calc(100vh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - 52px - 12px);
+  min-height: calc(100dvh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - 52px - 12px);
+}
+html.is-phone .explorer-panel.is-home-canvas {
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none; }
 
 /* 固定层容器：绝对定位浮在画布上，不拦截空白区指针 */
 .chrome-block {
@@ -217,7 +261,7 @@
 
 /* 大时间 */
 .chrome-clock { pointer-events: auto; text-align: center; }
-.home-free { --home-clock-size: 72px; } /* 展示级数字：非五档正文字阶，作局部令牌供扫描器放行 */
+/* 展示级时间字号由 shell 级 .home-chrome-layer 提供，不走正文五档字阶。 */
 .chrome-clock-time {
   font-size: var(--home-clock-size);
   line-height: 1.05;
@@ -742,7 +786,10 @@
 
 /* 自由组件 = panel-lite（环境光斑透过：轻 blur + rim 三件套） */
 .free-item {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
+  border-color: var(--glass-border);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
   box-shadow:
@@ -879,10 +926,9 @@
 /* ═══ 手机档（html.is-phone）：首页固定层整体缩小一档（用户拍板）═══
    只改手机：时间字号/坞球/按钮/间距显著缩小；桌面值（--home-clock-size: 72px 等）不动。
    坞顶点 = 上 16px + 时间 44 × 1.05 + 日期一档 + 间距 ≈ 88px。 */
-html.is-phone .home-free { --home-clock-size: 44px; --home-chrome-h: 188px; }
-html.is-phone .chrome-time { top: 16px; }
+html.is-phone .home-chrome-layer { --home-clock-size: 44px; --home-chrome-h: 188px; }
 html.is-phone .chrome-clock-date { font-size: var(--text-sm); margin-top: 4px; }
-html.is-phone .chrome-dock { top: 88px; gap: 8px; }
+html.is-phone .home-chrome-layer .chrome-dock { gap: 8px; }
 html.is-phone .hs-dock-row { padding: 8px; gap: 4px 8px; }
 html.is-phone .hs-dock-sphere { padding: 4px; gap: 4px; }
 html.is-phone .hs-dock-sphere .sphere-ball,

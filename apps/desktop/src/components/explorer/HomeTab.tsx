@@ -9,7 +9,6 @@
  */
 import { useEffect, type ReactNode } from "react";
 import { FreeBoard } from "../FreeBoard.js";
-import { HomeChrome } from "./HomeSpheres.js";
 import { activeBoard, cellsOf, loadBoard } from "../../state/board.js";
 import { seedFromLegacyOnce } from "../../state/freeBoard.js";
 
@@ -28,7 +27,6 @@ export function HomeTab(): ReactNode {
   useSeedFromLegacy();
   return (
     <div className="home-tab home-free">
-      <HomeChrome />
       <FreeBoard />
     </div>
   );

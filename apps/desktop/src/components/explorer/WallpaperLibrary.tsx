@@ -134,7 +134,7 @@ export function WallpaperLibrary({
     const name = f.name.replace(/\.[a-z0-9]+$/i, "");
     const full = addToLibrary(r.ref, name);
     if (variant === "picker") {
-      if (scope === "global") setGlobalWallpaper(r.ref);
+      if (scope === "global" || tabKey === "global") setGlobalWallpaper(r.ref);
       else setTabWallpaper(tabKey, r.ref);
       onClose?.();
     }

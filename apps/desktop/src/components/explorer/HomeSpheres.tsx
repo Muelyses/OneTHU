@@ -114,41 +114,43 @@ export function HomeChrome(): ReactNode {
 
   return (
     <>
-      {/* 固定层 ①：居中大时间（可调透明度；不可移动/删除） */}
-      <div
-        className="chrome-block chrome-time"
-        style={{ opacity: doc.timeOpacity }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setOpacityMenu("time");
-        }}
-      >
-        <ChromeClock />
-      </div>
-
-      {/* 固定层 ②：一级功能区 + 更多功能 + 详细功能（可调透明度；不可移动/删除） */}
-      <div
-        className="chrome-block chrome-dock"
-        style={{ opacity: doc.dockOpacity }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          setOpacityMenu("dock");
-        }}
-      >
-        <div className="hs-dock-row">
-          {docked.map((entry) => (
-            <DockSphere key={entry.page} entry={entry} onNavigate={() => go(entry)} />
-          ))}
+      <div className="home-chrome-layer">
+        {/* 固定层 ①：居中大时间（可调透明度；不可移动/删除） */}
+        <div
+          className="chrome-block chrome-time"
+          style={{ opacity: doc.timeOpacity }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            setOpacityMenu("time");
+          }}
+        >
+          <ChromeClock />
         </div>
-        <div className="hs-dock-actions">
-          <button type="button" className="hs-dock-btn" aria-expanded={moreOpen} onClick={() => { setMoreOpen((v) => !v); setDetailOpen(false); }}>
-            <IconMore width={14} height={14} />
-            <span>更多功能</span>
-          </button>
-          <button type="button" className="hs-dock-btn" aria-expanded={detailOpen} onClick={() => { setDetailOpen((v) => !v); setMoreOpen(false); }}>
-            <span>详细功能</span>
-            <IconChevron width={14} height={14} />
-          </button>
+
+        {/* 固定层 ②：一级功能区 + 更多功能 + 详细功能（可调透明度；不可移动/删除） */}
+        <div
+          className="chrome-block chrome-dock"
+          style={{ opacity: doc.dockOpacity }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            setOpacityMenu("dock");
+          }}
+        >
+          <div className="hs-dock-row">
+            {docked.map((entry) => (
+              <DockSphere key={entry.page} entry={entry} onNavigate={() => go(entry)} />
+            ))}
+          </div>
+          <div className="hs-dock-actions">
+            <button type="button" className="hs-dock-btn" aria-expanded={moreOpen} onClick={() => { setMoreOpen((v) => !v); setDetailOpen(false); }}>
+              <IconMore width={14} height={14} />
+              <span>更多功能</span>
+            </button>
+            <button type="button" className="hs-dock-btn" aria-expanded={detailOpen} onClick={() => { setDetailOpen((v) => !v); setMoreOpen(false); }}>
+              <span>详细功能</span>
+              <IconChevron width={14} height={14} />
+            </button>
+          </div>
         </div>
       </div>
 

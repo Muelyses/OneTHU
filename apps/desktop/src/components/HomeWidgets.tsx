@@ -83,12 +83,24 @@ export function sectionStartMin(n: number): number | null {
   return h * 60 + m;
 }
 
-/** "HH:MM" → 当日分钟数。容忍首尾空白、全角冒号、带秒（"13:30:00"）——
- *  此前严格 ^\d{1,2}:\d{2}$ 解析不了变体时间格式，整条课被静默跳过，
- *  「下一节课」就成了「今天没有课」而「今日课程」（字符串排序）却正常（2026-10-13 实测分叉）。 */
+/** "HH:MM" → 当日分钟数。全角数字/冒号归一 + 首尾空白 + 可选秒 + **任意文本中的第一对时分**
+ *  （"第3节 08:00-09:35"、"8:00-9:35" 都取 8:00）+ "0800" 式 4 位数字。
+ *  此前严格 ^\d{1,2}:\d{2}$ 对变体格式整条静默跳过，「下一节课」就成「今天没有课」
+ *  而「今日课程」（字符串排序）照常显示——2026-10-13 用户实测分叉即此。 */
 export function hhmmMin(t: string): number | null {
-  const m = /^\s*(\d{1,2})[：:](\d{2})(?::\d{2})?\s*$/.exec(t);
-  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+  if (!t) return null;
+  const norm = String(t)
+    .replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .replace(/：/g, ":")
+    .trim();
+  const m = /(\d{1,2}):(\d{2})/.exec(norm);
+  if (m) return Number(m[1]) * 60 + Number(m[2]);
+  const d4 = /^(\d{3,4})$/.exec(norm);
+  if (d4) {
+    const v = Number(d4[1]);
+    return Math.floor(v / 100) * 60 + (v % 100);
+  }
+  return null;
 }
 
 /** 当日分钟数 → "HH:MM" */

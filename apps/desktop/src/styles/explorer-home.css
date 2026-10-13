@@ -454,3 +454,176 @@
 }
 .hs-detail-row:hover { background: var(--hover, var(--surface-3)); }
 .hs-detail-caret { margin-left: auto; color: var(--text-3); flex: none; }
+
+/* ══════════ 自由图层白板（FreeBoard，2026-10-13 二次定稿）══════════
+   常态直接拖动/缩放/点选，组件可互相重叠（数组序=图层序），无编辑模式。 */
+
+.freeboard {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 140px);
+  z-index: 1;
+}
+
+.free-item {
+  position: absolute;
+  border-radius: var(--r-md, 12px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  touch-action: none;
+  user-select: none;
+}
+.free-item.is-selected { border-color: var(--accent-border, var(--border)); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18); }
+.free-item > :first-child { flex: 1 1 auto; min-height: 0; overflow: auto; border-radius: inherit; pointer-events: auto; }
+.free-item.is-penlocked { pointer-events: none; }
+.free-item img { -webkit-user-drag: none; }
+
+/* 把手：四角 + 右/下（视觉 8px、命中 16px） */
+.free-handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  z-index: 3;
+}
+.free-handle::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.fh-nw { left: -5px; top: -5px; cursor: nwse-resize; }
+.fh-nw::after { left: 3px; top: 3px; }
+.fh-ne { right: -5px; top: -5px; cursor: nesw-resize; }
+.fh-ne::after { right: 3px; top: 3px; }
+.fh-sw { left: -5px; bottom: -5px; cursor: nesw-resize; }
+.fh-sw::after { left: 3px; bottom: 3px; }
+.fh-se { right: -5px; bottom: -5px; cursor: nwse-resize; }
+.fh-se::after { right: 3px; bottom: 3px; }
+.fh-e { right: -5px; top: 50%; margin-top: -8px; width: 12px; height: 28px; cursor: ew-resize; }
+.fh-e::after { right: 2px; top: 10px; width: 4px; height: 10px; }
+.fh-s { bottom: -5px; left: 50%; margin-left: -8px; width: 28px; height: 12px; cursor: ns-resize; }
+.fh-s::after { bottom: 2px; left: 10px; width: 10px; height: 4px; }
+
+/* 选中浮条 */
+.free-toolbar {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  z-index: 4;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+.free-toolbar button {
+  width: 24px;
+  height: 22px;
+  border: 0;
+  border-radius: var(--r-sm, 6px);
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+.free-toolbar button:hover { background: var(--hover, var(--surface-3)); color: var(--text-1); }
+.free-toolbar button.is-danger:hover { color: var(--danger, #e5484d); }
+
+/* 便笺就地编辑 */
+.free-note-editor {
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 0;
+  resize: none;
+  background: transparent;
+  color: var(--text-1);
+  font-size: var(--text-md);
+  padding: 8px 10px;
+  outline: none;
+}
+
+/* 浮动按钮列：添加 / 画笔 */
+.free-fab-col {
+  position: fixed;
+  right: 72px;
+  bottom: 96px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.free-fab {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--text-md);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 140ms ease, color 120ms ease;
+}
+.free-fab:hover { transform: scale(1.06); color: var(--text-1); }
+.free-fab.is-on { color: var(--accent); border-color: var(--accent-border, var(--border)); background: var(--accent-soft, var(--surface)); }
+.free-pen-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md, 12px);
+  background: var(--surface);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+.free-pen-panel input[type="color"] {
+  width: 100%;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm, 6px);
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+.free-pen-panel button {
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  padding: 0;
+}
+.free-pen-panel button:hover:not(:disabled) { color: var(--text-1); }
+.free-pen-panel button:disabled { color: var(--text-3); cursor: default; }
+
+/* 画笔层：自由白板里恒在最高层（组件与固定层都盖不住它） */
+.freeboard .board-pen { z-index: 90; }
+
+/* 添加菜单列表 */
+.free-add-list { max-height: 46vh; overflow: auto; }
+
+/* 折叠态便笺：细条 */
+.free-folded {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: var(--text-xs);
+  color: var(--text-3);
+}

@@ -323,7 +323,7 @@
   --border-strong: rgba(255, 255, 255, 0.26);
   --dsw-alias-border-l1: rgba(255, 255, 255, 0.14);
   --glass-menu-fill: rgba(255, 255, 255, 0.1);
-  --dsw-alias-bg-base: rgba(23, 25, 33, 0.92);
+  --dsw-alias-bg-base: rgba(21, 23, 31, 0.55); /* 与栏体 background 同值：不再把玻璃压成不透明底 */
   --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.12);
 }
 .explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
@@ -345,7 +345,7 @@
   --border-strong: rgba(28, 31, 40, 0.26);
   --dsw-alias-border-l1: rgba(28, 31, 40, 0.14);
   --glass-menu-fill: rgba(255, 255, 255, 0.68);
-  --dsw-alias-bg-base: rgba(255, 255, 255, 0.92);
+  --dsw-alias-bg-base: rgba(252, 253, 255, 0.72); /* 与栏体 background 同值 */
   --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.08);
 }
 

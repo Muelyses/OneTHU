@@ -192,7 +192,13 @@
    大时间 + 一级功能区是不可移动/不可删除的两块，可调不透明度；
    其余全部是自由白板组件（BoardPage 无头画布），z 序在固定层之下。 */
 
-.home-free, .home-tab { position: relative; height: 100%; }
+/* 高度兜底：父级 height 不确定时 100% 会退化为 auto，自由画布（absolute inset:0）就塌成 0 高 →
+   首页「白板不显示」。min-height 保证画布永远有完整可视区（视口减顶栏 46px、底栏）。 */
+.home-free, .home-tab {
+  position: relative;
+  height: 100%;
+  min-height: calc(100vh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px));
+}
 
 /* 固定层容器：绝对定位浮在画布上，不拦截空白区指针 */
 .chrome-block {

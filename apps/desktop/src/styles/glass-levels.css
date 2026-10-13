@@ -10,9 +10,9 @@ html[data-glass="clear"] {
   --glass-fill-regular: rgba(255, 255, 255, 0.43);
   --glass-tint: rgba(255, 255, 255, 0.26);
   --glass-menu-fill: rgba(246, 247, 249, 0.36);
-  --glass-menu-blur: blur(30px) saturate(155%);
-  --glass-chip-blur: blur(10px) saturate(135%);
-  --glass-panel-blur: blur(10px) saturate(140%);
+  --glass-menu-blur: var(--glass-refract) blur(30px) saturate(155%);
+  --glass-chip-blur: var(--glass-refract) blur(10px) saturate(135%);
+  --glass-panel-blur: var(--glass-refract) blur(10px) saturate(140%);
   --lg-blur-clear: blur(18px) saturate(170%);
   --glass-card-fill: rgba(255, 255, 255, 0.3);
   --glass-card-fill-2: rgba(255, 255, 255, 0.4);

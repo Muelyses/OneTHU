@@ -885,8 +885,8 @@ html.is-phone .hs-dock-sphere .sphere-ball svg { width: 16px; height: 16px; }
 html.is-phone .hs-dock-sphere .sphere-name { max-width: 64px; }
 html.is-phone .hs-dock-actions { gap: 8px; }
 html.is-phone .hs-dock-btn { height: 28px; padding: 0 8px; gap: 4px; }
-/* 手机的白板 FAB 收进标签条上方一拍 */
-html.is-phone .board-fab-col { bottom: 152px; }
+/* 手机的白板 FAB 收进标签条上方一拍；并抬到 OnePage 底部抽屉（z 40）之上，否则被抽屉盖住 */
+html.is-phone .board-fab-col { bottom: 152px; z-index: 45; }
 html.is-phone .board-fab-col .board-fab { width: 40px; height: 40px; }
 
 /* ═══ 手机档：OnePage（BoardPage）= 底部抽屉（A6，从半屏起可拉满，同抽屉手柄） ═══ */

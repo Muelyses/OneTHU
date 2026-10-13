@@ -31,7 +31,8 @@ echo "· vite :5180 ✓"
 # （其他机器/CI 不受影响；target 放 APFS 是硬要求——exFAT 产物带 ._ 会让 tauri build.rs panic）。
 ONETHU_BUILD_VOL="${ONETHU_BUILD_VOL:-/Volumes/OneTHUBuild}"
 ONETHU_BUILD_IMG="${ONETHU_BUILD_IMG:-/Volumes/PortableSSD/oh-build.sparsebundle}"
-if [ ! -d "$ONETHU_BUILD_VOL" ] && [ -f "$ONETHU_BUILD_IMG" ]; then
+# spb 是 bundle 目录不是文件，探测必须用 -e（此前 -f 恒假 → 卷没挂 cargo 找不到只能靠卷恰好已挂载活着）
+if [ ! -d "$ONETHU_BUILD_VOL" ] && [ -e "$ONETHU_BUILD_IMG" ]; then
   echo "· 挂载 SSD 编译盘（oh-build.sparsebundle）…"
   hdiutil attach "$ONETHU_BUILD_IMG" -mountpoint "$ONETHU_BUILD_VOL" -nobrowse
 fi

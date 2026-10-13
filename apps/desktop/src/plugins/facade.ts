@@ -42,7 +42,28 @@ import {
   type ExtStep,
 } from "../state/userext.js";
 import { addItem, freeBoardSnapshot, removeItem } from "../state/freeBoard.js";
-import { allOnePages, createOnePage, mutateBoards, notifyBoardsChanged } from "../state/onePage.js";
+import {
+  allOnePages, createOnePage, mutateBoards, notifyBoardsChanged,
+  openOnePage, removeOnePage, renameOnePage,
+} from "../state/onePage.js";
+import {
+  closeLiveWorkspace, closeTab, createLiveWorkspace, deleteWorkspace, dissolveWorkspace,
+  duplicateTab, explorerSnapshot, focusTab, openTab, openWorkspace, saveWorkspace,
+} from "../state/explorer.js";
+import {
+  setGlobalWallpaper, setTabWallpaper, wallpaperFor, wallpaperPathOf, wallpaperSnapshot, BUILTIN_WALLPAPERS,
+} from "../state/wallpaper.js";
+import { readVoicePrefs, setVoicePrefs } from "../state/voicePrefs.js";
+import { explorerPrefsSnapshot, setExplorerPrefs } from "../state/explorerPrefs.js";
+import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.js";
+import { setHwDefault, setHwReminder } from "../state/hwRemind.js";
+
+/** ext.tabOpen 允许打开的一级页（子页是 tab 内导航，不走新标签） */
+const TOP_PAGES = new Set([
+  "today", "learn", "schedule", "trace", "otherinfo", "info", "life", "reserve", "zhjwxk", "thos",
+  "mail", "cloud", "gitlab", "thubook", "tasks", "services", "favs", "boards", "board",
+  "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
+]);
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
@@ -970,6 +991,262 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const list = Array.isArray(rows) ? (rows as Array<{ text?: unknown; sub?: unknown }>) : [];
         setPhoneWidget(String(title ?? ""), list);
         return { ok: true, rows: userExtSnapshot().phone?.rows.length ?? 0 };
+      },
+      /* ── OnePage 白板管理（v2 覆盖面） ── */
+      onePageDelete: (id: string): { ok: boolean; reason?: string } => {
+        gate(perms, "ui", "ext.onePageDelete");
+        const reason = removeOnePage(String(id));
+        return reason ? { ok: false, reason } : { ok: true };
+      },
+      onePageRename: (id: string, name: string): void => {
+        gate(perms, "ui", "ext.onePageRename");
+        if (!String(name ?? "").trim()) throw new Error("需要一个新名字");
+        renameOnePage(String(id), String(name));
+      },
+      onePageOpen: (id: string): void => {
+        gate(perms, "ui", "ext.onePageOpen");
+        openOnePage(String(id));
+        openTab("board", null, { title: allOnePages().find((b) => b.id === String(id))?.name ?? "白板" });
+      },
+      onePageMoveItem: (boardId: string, itemId: string, x: number, y: number): void => {
+        gate(perms, "ui", "ext.onePageMoveItem");
+        const nx = Math.max(0, Math.trunc(Number(x) || 0));
+        const ny = Math.max(0, Math.trunc(Number(y) || 0));
+        const moved = mutateBoards((doc) => {
+          const boards = doc.boards.map((b) => {
+            if (b.id !== String(boardId)) return b;
+            const portrait = (b.cells.portrait ?? []).map((it) => (it.id === String(itemId) ? { ...it, cell: { ...it.cell, x: nx, y: ny } } : it));
+            if (portrait === (b.cells.portrait ?? [])) return b;
+            return { ...b, cells: { ...b.cells, portrait } };
+          });
+          return boards === doc.boards ? null : { ...doc, boards };
+        });
+        if (!moved) throw new Error("没找到这块板或这个组件（id 对照 ext_onepage_list 的板与组件 id）");
+      },
+      onePageRemoveItem: (boardId: string, itemId: string): void => {
+        gate(perms, "ui", "ext.onePageRemoveItem");
+        const gone = mutateBoards((doc) => {
+          const boards = doc.boards.map((b) => {
+            if (b.id !== String(boardId)) return b;
+            const prev = b.cells.portrait ?? [];
+            const portrait = prev.filter((it) => it.id !== String(itemId));
+            if (portrait.length === prev.length) return b;
+            return { ...b, cells: { ...b.cells, portrait } };
+          });
+          return boards === doc.boards ? null : { ...doc, boards };
+        });
+        if (!gone) throw new Error("没找到这块板或这个组件");
+      },
+      /** 某块 OnePage 的组件清单（OH 调位/删除前按图索骥） */
+      onePageItems: (boardId: string): Array<{ id: string; kind: string; text?: string; x: number; y: number; w: number; h: number }> => {
+        gate(perms, "ui", "ext.onePageItems");
+        const b = allOnePages().find((x) => x.id === String(boardId));
+        if (!b) throw new Error("没找到这块 OnePage");
+        return (b.cells.portrait ?? []).map((it) => ({
+          id: it.id,
+          kind: it.spec.kind,
+          text: it.spec.kind === "text" ? it.spec.text : undefined,
+          x: it.cell.x,
+          y: it.cell.y,
+          w: it.cell.w,
+          h: it.cell.h,
+        }));
+      },
+      /* ── 工作区 ── */
+      workspaceList: (): Array<{ id: string; name: string; live: boolean; tabs: number }> =>
+        explorerSnapshot().workspaces.map((w) => ({ id: w.id, name: w.name, live: w.live === true, tabs: w.tabs.length })),
+      workspaceCreate: (name: string, tabIds: unknown): { id: string } => {
+        gate(perms, "ui", "ext.workspaceCreate");
+        const ids = Array.isArray(tabIds) ? (tabIds as unknown[]).map(String).filter(Boolean) : null;
+        /* 给了成员标签 → 现场建活工作区并归属；没给 → 把当前页签存成工作区；两者都空 → 建一块空活底板 */
+        let id = ids && ids.length > 0
+          ? createLiveWorkspace({ name: String(name ?? ""), color: "#5b8def", icon: "fist" }, ids)
+          : saveWorkspace(String(name ?? ""));
+        if (!id) id = createLiveWorkspace({ name: String(name ?? ""), color: "#5b8def", icon: "fist" }, []);
+        return { id };
+      },
+      workspaceOpen: (id: string): void => {
+        gate(perms, "ui", "ext.workspaceOpen");
+        openWorkspace(String(id));
+      },
+      workspaceClose: (id: string): void => {
+        gate(perms, "ui", "ext.workspaceClose");
+        closeLiveWorkspace(String(id));
+      },
+      workspaceDissolve: (id: string): void => {
+        gate(perms, "ui", "ext.workspaceDissolve");
+        dissolveWorkspace(String(id));
+      },
+      workspaceDelete: (id: string): void => {
+        gate(perms, "ui", "ext.workspaceDelete");
+        deleteWorkspace(String(id));
+      },
+      /* ── 标签页 ── */
+      tabList: (): Array<{ id: string; title: string; page: string }> => [
+        { id: "home", title: "首页", page: "today" },
+        ...explorerSnapshot().tabs.map((t) => ({ id: t.id, title: t.title, page: String(t.page) })),
+      ],
+      tabOpen: (page: string): { id: string } => {
+        gate(perms, "ui", "ext.tabOpen");
+        const top = String(page ?? "").trim();
+        if (!TOP_PAGES.has(top)) throw new Error("不认识的页面，可用：" + [...TOP_PAGES].join(" / "));
+        return { id: openTab(top as import("../state/app.js").Page) };
+      },
+      tabClose: (id: string): void => {
+        gate(perms, "ui", "ext.tabClose");
+        closeTab(String(id));
+      },
+      tabDuplicate: (id: string): { id: string } => {
+        gate(perms, "ui", "ext.tabDuplicate");
+        return { id: duplicateTab(String(id)) };
+      },
+      tabFocus: (id: string): void => {
+        gate(perms, "ui", "ext.tabFocus");
+        focusTab(String(id));
+      },
+      /* ── 低风险设置 ── */
+      wallpaperSet: (scope: string, ref: string | null): void => {
+        gate(perms, "ui", "ext.wallpaperSet");
+        const val = String(ref ?? "");
+        if (val) {
+          if (!val.startsWith("builtin:")) throw new Error("目前只接受内置壁纸（builtin:aurora/dusk/matcha/ink），本地图请从设置→壁纸上传");
+          if (!BUILTIN_WALLPAPERS.some((b) => "builtin:" + b.id === val)) throw new Error("没有这块内置壁纸，可选：" + BUILTIN_WALLPAPERS.map((b) => "builtin:" + b.id).join("、"));
+        }
+        if (scope === "global") setGlobalWallpaper(val || null);
+        else {
+          const t = explorerSnapshot().tabs.find((x) => x.id === explorerSnapshot().activeId);
+          const key = !t || t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
+          setTabWallpaper(key, val || null);
+        }
+      },
+      wallpaperGet: (): { global: string | null; tab: string | null } => {
+        gate(perms, "ui", "ext.wallpaperGet");
+        const t = explorerSnapshot().tabs.find((x) => x.id === explorerSnapshot().activeId);
+        const key = !t || t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
+        return { global: wallpaperSnapshot().global ?? null, tab: wallpaperFor(key) ?? null };
+      },
+      voiceSet: (patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string } => {
+        gate(perms, "ui", "ext.voiceSet");
+        const p = setVoicePrefs((patch ?? {}) as Record<string, never>);
+        return { autoSpeak: p.autoSpeak, voiceName: p.voiceName, pitch: p.pitch, rate: p.rate, backend: p.backend };
+      },
+      voiceGet: (): ReturnType<OnethuApi["ext"]["voiceSet"]> => {
+        gate(perms, "ui", "ext.voiceGet");
+        const p = readVoicePrefs();
+        return { autoSpeak: p.autoSpeak, voiceName: p.voiceName, pitch: p.pitch, rate: p.rate, backend: p.backend };
+      },
+      prefSet: (patch: unknown): void => {
+        gate(perms, "ui", "ext.prefSet");
+        setExplorerPrefs((patch ?? {}) as Record<string, never>);
+      },
+      prefGet: (): { capsuleTap: string; voiceTarget: string } => {
+        gate(perms, "ui", "ext.prefGet");
+        return { capsuleTap: explorerPrefsSnapshot().capsuleTap, voiceTarget: explorerPrefsSnapshot().voiceTarget };
+      },
+      themeScheduleSet: (opts: unknown): { followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null } => {
+        gate(perms, "ui", "ext.themeScheduleSet");
+        const o = (opts ?? {}) as { followSystem?: unknown; dayThemeId?: unknown; nightThemeId?: unknown };
+        if (typeof o.followSystem === "boolean") setFollowSystem(o.followSystem);
+        if (o.dayThemeId !== undefined || o.nightThemeId !== undefined) setDayNightTheme(o.dayThemeId ? String(o.dayThemeId) : null, o.nightThemeId ? String(o.nightThemeId) : null);
+        return themeSchedule();
+      },
+      notifySet: (patch: unknown): unknown => {
+        gate(perms, "ui", "ext.notifySet");
+        const p = (patch ?? {}) as Record<string, unknown>;
+        const clean: Record<string, unknown> = {};
+        if (typeof p.enabled === "boolean") clean.enabled = p.enabled;
+        if (typeof p.ddl === "boolean") clean.ddl = p.ddl;
+        if (typeof p.classLead === "number") clean.classLead = p.classLead;
+        if (typeof p.briefingAt === "string") clean.briefingAt = p.briefingAt;
+        if (typeof p.quietFrom === "string") clean.quietFrom = p.quietFrom;
+        if (typeof p.quietTo === "string") clean.quietTo = p.quietTo;
+        if (typeof p.horizonDays === "number") clean.horizonDays = p.horizonDays;
+        if (typeof p.maxItems === "number") clean.maxItems = p.maxItems;
+        return saveNotifySettings(clean);
+      },
+      notifyGet: (): unknown => {
+        gate(perms, "ui", "ext.notifyGet");
+        return loadNotifySettings();
+      },
+      hwTimelineSet: (minutes: number): { minutes: number } => {
+        gate(perms, "ui", "ext.hwTimelineSet");
+        const m = Math.max(0, Math.min(20160, Math.trunc(Number(minutes) || 0)));
+        setHwDefault(m);
+        return { minutes: m };
+      },
+      hwReminderSet: (id: string, minutes: number | null): void => {
+        gate(perms, "ui", "ext.hwReminderSet");
+        setHwReminder(String(id ?? ""), minutes === null ? null : Math.max(0, Math.min(20160, Math.trunc(Number(minutes) || 0))));
+      },
+      eventAdd: async (ev: unknown): Promise<{ uid: string }> => {
+        gate(perms, "ui", "ext.eventAdd");
+        const e = (ev ?? {}) as { summary?: unknown; start?: unknown; end?: unknown; location?: unknown; allDay?: unknown; alarmMinutes?: unknown; onethuWidget?: unknown };
+        const summary = String(e.summary ?? "").trim();
+        if (!summary) throw new Error("日程需要标题 summary");
+        const toMs = (v: unknown): number => {
+          if (typeof v === "number" && Number.isFinite(v)) return v;
+          const s = String(v ?? "").trim().replace(" ", "T");
+          const t = new Date(s).getTime();
+          if (!Number.isFinite(t)) throw new Error("时间得是「2026-10-14 09:00」格式或毫秒数");
+          return t;
+        };
+        const start = toMs(e.start);
+        const end = toMs(e.end ?? e.start);
+        if (end < start) throw new Error("结束时间早于开始时间");
+        const uid = "evt." + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        await putLocalEvent({
+          uid,
+          summary,
+          start,
+          end,
+          location: e.location ? String(e.location) : undefined,
+          allDay: e.allDay === true || undefined,
+          alarmMinutes: typeof e.alarmMinutes === "number" ? e.alarmMinutes : undefined,
+          onethuWidget: e.onethuWidget === true || undefined,
+          onethuSource: "manual",
+        } as never);
+        return { uid };
+      },
+      eventDelete: async (uid: string): Promise<void> => {
+        gate(perms, "ui", "ext.eventDelete");
+        await deleteLocalEvent(String(uid ?? ""));
+      },
+      /** 本地日程（未来 7 天内）：OH 增删日程前按图索骥 uid */
+      eventList: (): Array<{ uid: string; summary: string; start: number; end: number; allDay?: boolean }> => {
+        gate(perms, "ui", "ext.eventList");
+        const now = Date.now();
+        const horizon = now + 7 * 86_400_000;
+        return getLocalEvents()
+          .filter((e) => e.start <= horizon && e.end >= now - 86_400_000)
+          .sort((a, b) => a.start - b.start)
+          .map((e) => ({ uid: e.uid, summary: e.summary, start: e.start, end: e.end, allDay: e.allDay === true || undefined }));
+      },
+      /* ── 插件生命周期（安装/启停/删除；代码本体走市场管线） ── */
+      pluginInstalledList: async (): Promise<Array<{ id: string; name: string; enabled: boolean }>> => {
+        gate(perms, "plugins:call", "ext.pluginInstalledList");
+        const { installedPlugins } = await import("./loader.js");
+        return installedPlugins().map((p) => ({ id: p.manifest.id, name: p.manifest.name, enabled: p.enabled }));
+      },
+      pluginInstallFromRepo: async (repo: string, entry?: string): Promise<{ id: string; name: string }> => {
+        gate(perms, "plugins:call", "ext.pluginInstallFromRepo");
+        const m = await import("../lib/market.js");
+        const ref = m.parseRepoInput(String(repo ?? ""));
+        if (!ref.owner) throw new Error("仓库地址不认识（支持 user/repo、user/repo@dev、完整 URL）");
+        const code = await m.fetchEntryFromRepo(ref, entry ? String(entry) : undefined);
+        const { installPlugin } = await import("./loader.js");
+        const man = await installPlugin(code, { repo: m.normalizeRepoUrl(String(repo ?? "")) });
+        return { id: man.id, name: man.name };
+      },
+      pluginEnableToggle: async (id: string, on: boolean): Promise<void> => {
+        gate(perms, "plugins:call", "ext.pluginEnableToggle");
+        const { enablePlugin, disablePlugin } = await import("./loader.js");
+        if (on) await enablePlugin(String(id));
+        else await disablePlugin(String(id));
+      },
+      pluginUninstall: async (id: string): Promise<void> => {
+        gate(perms, "plugins:call", "ext.pluginUninstall");
+        const { uninstallPlugin } = await import("./loader.js");
+        await uninstallPlugin(String(id));
       },
     },
     favorites: {

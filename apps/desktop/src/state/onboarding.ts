@@ -235,6 +235,8 @@ export function markOnboardedV3(): void {
 function resetOnboardingV3(): void {
   try {
     globalThis.localStorage?.removeItem(KEY_V3);
+    /* 手机导览简版的自持偏好一并清：设置里「导览」重走对两端都生效 */
+    globalThis.localStorage?.removeItem("onethu.onboarded.phone");
   } catch {
     /* ignore */
   }

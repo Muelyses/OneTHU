@@ -106,6 +106,19 @@
      ============================================================ */
 
   /* 面 */
+  /* —— DSH 面板令牌别名（2026-10-13）：explorer 系样式里混入了 --dsw-alias-*
+     （参考 DSH 设计 token 时带进来的），应用内从未定义 → 深夜模式标签栏/侧栏
+     恒回退 #fff 发白。此处统一映射到应用主题令牌，深浅色自动跟随。 —— */
+  --dsw-alias-bg-base: var(--bg);
+  --dsw-alias-bg-layer-1: var(--surface);
+  --dsw-alias-bg-layer-2: var(--md-sys-color-surface-container);
+  --dsw-alias-border-l1: var(--border);
+  --dsw-alias-border-l2: var(--border);
+  --dsw-alias-label-primary: var(--text-1);
+  --dsw-alias-label-secondary: var(--text-3);
+  --dsw-alias-brand-primary: var(--text-1);
+  --dsw-alias-state-error-primary: var(--danger, #e5484d);
+
   --bg: var(--md-sys-color-surface);
   --bg-soft: var(--md-sys-color-surface-container-low);
   --surface: var(--md-sys-color-surface-container-lowest);

@@ -37,6 +37,11 @@ import { cardRendererKey } from "../state/liveCards.js";
 import { resolveAtom } from "../state/atoms.js";
 import { atomRefFromKey } from "../state/favorites.js";
 import { useApp } from "../state/context.js";
+import { loadBoard } from "../state/board.js";
+import { openOnePage } from "../state/onePage.js";
+import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
+import { FolderIcon, IconChevron } from "./Icons.js";
+import { NAV } from "./Layout.js";
 import { PEN_COLORS, addStroke, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes, penKeyOf } from "../state/boardPen.js";
 import { BoardPenLayer } from "./BoardPenLayer.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
@@ -59,7 +64,7 @@ function useFreeBoard(): FreeItem[] {
 }
 
 /** 单个组件体：spec → JSX（复用旧注册表 + 原子入口运行时解析） */
-function ItemBody({ item, sizeHint }: { item: FreeItem; sizeHint: { w: number; h: number } }): ReactNode {
+function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: { w: number; h: number }; onFolderAdd?: () => void }): ReactNode {
   const { navigate } = useApp();
   const spec = item.spec;
   if (spec.kind === "text") {
@@ -84,6 +89,102 @@ function ItemBody({ item, sizeHint }: { item: FreeItem; sizeHint: { w: number; h
         <span className="wg-entry-title">{spec.label ?? spec.page}</span>
         <span className="wg-entry-arrow" aria-hidden="true">›</span>
       </button>
+    );
+  }
+  /* OnePage 入口（组合组件之一）：把另一块 OnePage 钉在画布上，点击即打开 */
+  if (spec.kind === "custom" && spec.id === "onepage") {
+    const boardId = typeof spec.props?.boardId === "string" ? spec.props.boardId : "";
+    const b = loadBoard().boards.find((x) => x.id === boardId);
+    if (!b) {
+      return (
+        <div className="wg-empty" role="note">
+          <span className="wg-empty-title">这个 OnePage 已删除</span>
+        </div>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className="wg-entry"
+        onClick={() => {
+          openOnePage(b.id);
+          navigate("board");
+        }}
+      >
+        <span className="wg-entry-title">{b.name}</span>
+        <span className="wg-entry-arrow" aria-hidden="true">›</span>
+      </button>
+    );
+  }
+  /* 文件夹组合组件：圆形 logo 网格，组织一级入口 / OnePage / 工作区 */
+  if (spec.kind === "custom" && spec.id === "folder") {
+    const entries = Array.isArray(spec.props?.entries)
+      ? (spec.props.entries as Array<{ kind: string; page?: string; label?: string; params?: unknown; boardId?: string; wsId?: string }>)
+      : [];
+    const openEntry = (en: { kind: string; page?: string; boardId?: string; wsId?: string }): void => {
+      if (en.kind === "page" && en.page) navigate(en.page as never);
+      else if (en.kind === "onepage" && en.boardId) {
+        openOnePage(en.boardId);
+        navigate("board");
+      } else if (en.kind === "ws" && en.wsId) openWorkspace(en.wsId);
+    };
+    const iconFor = (en: { kind: string; page?: string; boardId?: string }): ReactNode => {
+      if (en.kind === "onepage" && en.boardId) {
+        const b = loadBoard().boards.find((x) => x.id === en.boardId);
+        return <FolderIcon name={b?.icon ?? "star"} width={18} height={18} />;
+      }
+      if (en.kind === "ws") return <FolderIcon name="folder" width={18} height={18} />;
+      if (en.kind === "page") {
+        const n = NAV.find((x) => x.page === (en.page as never));
+        if (n) {
+          const I = n.icon as (p: { width?: number; height?: number }) => ReactNode;
+          return <I width={18} height={18} />;
+        }
+      }
+      return <FolderIcon name="fist" width={18} height={18} />;
+    };
+    const labelFor = (en: { kind: string; page?: string; label?: string; boardId?: string; wsId?: string }): string => {
+      if (en.label) return en.label;
+      if (en.kind === "onepage" && en.boardId) return loadBoard().boards.find((x) => x.id === en.boardId)?.name ?? "OnePage";
+      if (en.kind === "ws" && en.wsId) return explorerSnapshot().workspaces.find((w) => w.id === en.wsId)?.name ?? "工作区";
+      if (en.kind === "page") return NAV.find((x) => x.page === (en.page as never))?.label ?? String(en.page);
+      return "?";
+    };
+    return (
+      <div className="free-folder">
+        <div className="free-folder-grid">
+          {entries.map((en, i) => (
+            <button
+              key={String(i) + (en.page ?? en.boardId ?? en.wsId ?? "")}
+              type="button"
+              className="free-folder-cell"
+              title={labelFor(en)}
+              onClick={() => openEntry(en)}
+              onContextMenu={(ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                const next = entries.filter((_, j) => j !== i);
+                if (item.id) updateItemProps(item.id, { ...spec.props, entries: next });
+              }}
+            >
+              <span className="free-folder-ball">{iconFor(en)}</span>
+              <span className="free-folder-label">{labelFor(en)}</span>
+            </button>
+          ))}
+          <button
+            type="button"
+            className="free-folder-cell is-add"
+            title="添加入口"
+            onClick={(ev) => {
+              ev.stopPropagation();
+              onFolderAdd?.();
+            }}
+          >
+            <span className="free-folder-ball is-add">＋</span>
+            <span className="free-folder-label">添加</span>
+          </button>
+        </div>
+      </div>
     );
   }
   if (spec.kind === "custom") {
@@ -122,6 +223,8 @@ export function FreeBoard(): ReactNode {
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
   const [noteEdit, setNoteEdit] = useState<string | null>(null);
+  const [folderPicker, setFolderPicker] = useState<{ itemId: string } | null>(null);
+  const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   const penSnap = useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const penStrokes = strokesOf(PEN_KEY);
 
@@ -323,7 +426,7 @@ export function FreeBoard(): ReactNode {
                 }}
               />
             ) : (
-              <ItemBody item={it} sizeHint={sizeHint(r)} />
+              <ItemBody item={it} sizeHint={sizeHint(r)} onFolderAdd={() => setFolderPicker({ itemId: it.id })} />
             )}
             </>
             )}
@@ -408,6 +511,37 @@ export function FreeBoard(): ReactNode {
                         <span>{d.title}</span>
                       </button>
                     ))}
+                  <div className="hs-detail-group-name">组合</div>
+                  <button
+                    type="button"
+                    className="hs-detail-row"
+                    title="圆形 logo 网格（手机文件夹式）：可收纳一级入口、OnePage 与工作区"
+                    onClick={() => {
+                      const at = addAt ?? { x: 60, y: 300 };
+                      addItem({ kind: "custom", id: "folder", props: { title: "文件夹", entries: [] } }, at.x, at.y, 180, 180);
+                      setAddAt(null);
+                    }}
+                  >
+                    <span>文件夹</span>
+                  </button>
+                  <div className="hs-detail-group-name">OnePage</div>
+                  {loadBoard()
+                    .boards.filter((b) => b.kind === "user")
+                    .map((b) => (
+                      <button
+                        key={b.id}
+                        type="button"
+                        className="hs-detail-row"
+                        title="把这块 OnePage 钉到画布上（点击即打开）"
+                        onClick={() => {
+                          const at = addAt ?? { x: 60, y: 300 };
+                          addItem({ kind: "custom", id: "onepage", props: { boardId: b.id } }, at.x, at.y, 150, 84);
+                          setAddAt(null);
+                        }}
+                      >
+                        <span>{b.name}</span>
+                      </button>
+                    ))}
                   <div className="hs-detail-group-name">卡片与入口</div>
                   {defs
                     .filter((d) => !["custom:note", "text-title", "text-label", "divider"].includes(d.id))
@@ -418,6 +552,66 @@ export function FreeBoard(): ReactNode {
                     ))}
                 </div>
                 <div className="hs-op-hint">会放在空白处右键/＋号的位置；拖动与缩放随时可调</div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+
+      {/* 文件夹入口选择器：一级功能 / OnePage / 工作区 */}
+      {folderPicker
+        ? createPortal(
+            <div className="hs-more-mask" onClick={() => setFolderPicker(null)}>
+              <div className="hs-more" role="dialog" aria-label="添加入口" onClick={(e) => e.stopPropagation()}>
+                <div className="hs-more-head">
+                  <span>添加入口到文件夹</span>
+                  <button type="button" className="hs-close" aria-label="关闭" onClick={() => setFolderPicker(null)}>
+                    <IconX width={14} height={14} />
+                  </button>
+                </div>
+                {(() => {
+                  const target = freeBoardSnapshot().items.find((x) => x.id === folderPicker.itemId);
+                  if (!target || target.spec.kind !== "custom") return null;
+                  const entries = target.spec.kind === "custom" && Array.isArray(target.spec.props?.entries)
+                    ? (target.spec.props?.entries as Array<{ kind: string; page?: string; label?: string; boardId?: string; wsId?: string }>)
+                    : [];
+                  const append = (en: { kind: string; page?: string; label?: string; boardId?: string; wsId?: string }): void => {
+                    if (target.spec.kind === "custom") updateItemProps(folderPicker.itemId, { ...target.spec.props, entries: [...entries, en] });
+                  };
+                  return (
+                    <div className="free-add-list">
+                      <div className="hs-detail-group-name">一级功能</div>
+                      {NAV.map((n) => (
+                        <button
+                          key={n.page}
+                          type="button"
+                          className="hs-detail-row"
+                          onClick={() => append({ kind: "page", page: n.page, label: n.label })}
+                        >
+                          <span>{n.label}</span>
+                        </button>
+                      ))}
+                      <div className="hs-detail-group-name">OnePage</div>
+                      {loadBoard()
+                        .boards.filter((b) => b.kind === "user")
+                        .map((b) => (
+                          <button key={b.id} type="button" className="hs-detail-row" onClick={() => append({ kind: "onepage", boardId: b.id, label: b.name })}>
+                            <span>{b.name}</span>
+                          </button>
+                        ))}
+                      <div className="hs-detail-group-name">工作区</div>
+                      {wsSnap.workspaces.length === 0 ? (
+                        <div className="hs-op-hint">还没有工作区（标签右键可把标签编入工作区）</div>
+                      ) : (
+                        wsSnap.workspaces.map((w) => (
+                          <button key={w.id} type="button" className="hs-detail-row" onClick={() => append({ kind: "ws", wsId: w.id, label: w.name })}>
+                            <span>{w.name}</span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>,
             document.body,

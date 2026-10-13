@@ -467,18 +467,20 @@
 
 .free-item {
   position: absolute;
-  border-radius: var(--r-md, 12px);
+  border-radius: var(--r-lg, 16px);
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   overflow: visible;
   display: flex;
   flex-direction: column;
   touch-action: none;
   user-select: none;
 }
-.free-item.is-selected { border-color: var(--accent-border, var(--border)); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18); }
-.free-item > :first-child { flex: 1 1 auto; min-height: 0; overflow: auto; border-radius: inherit; pointer-events: auto; }
+.free-item.is-selected { border-color: var(--accent-border, var(--border)); box-shadow: 0 10px 32px rgba(0, 0, 0, 0.18); }
+/* 卡体统一内边距（用户反馈「紧贴左边缘/生硬矩形」）；便笺自管底色不重复缩进 */
+.free-item > :first-child { flex: 1 1 auto; min-height: 0; overflow: auto; border-radius: inherit; pointer-events: auto; padding: 12px; }
+.free-item > .free-note { padding: 0; }
 .free-item.is-penlocked { pointer-events: none; }
 .free-item img { -webkit-user-drag: none; }
 
@@ -628,4 +630,52 @@
   padding: 8px 12px;
   font-size: var(--text-xs);
   color: var(--text-3);
+}
+
+/* 文件夹组合组件（手机文件夹式） */
+.free-folder { height: 100%; display: flex; align-items: center; justify-content: center; }
+.free-folder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 4px;
+  width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  align-content: center;
+}
+.free-folder-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: var(--r-sm, 8px);
+  background: transparent;
+  cursor: pointer;
+  min-width: 0;
+}
+.free-folder-cell:hover { background: var(--hover, var(--surface-3)); }
+.free-folder-ball {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-2, var(--md-sys-color-surface-container));
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 140ms ease, border-color 120ms ease;
+}
+.free-folder-cell:hover .free-folder-ball { transform: scale(1.06); border-color: var(--accent-border, var(--border)); }
+.free-folder-ball.is-add { color: var(--accent); border-style: dashed; background: transparent; }
+.free-folder-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  color: var(--text-2);
 }

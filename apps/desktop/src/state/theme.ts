@@ -298,6 +298,7 @@ export const COMPAT_TO_SYSTEM: Record<string, string> = {
   "--shadow-3": "--md-sys-elevation-3",
   "--ring": "--md-sys-focus-ring",
   // 形状也一并镜像：主题想改圆角时，System 层的组件同样跟随（当前 7 个主题都没用到）
+  "--dsw-alias-bg-layer-2": "--md-sys-color-surface-container",
   "--r-sm": "--md-sys-shape-corner-small",
   "--r-md": "--md-sys-shape-corner-medium",
   "--r-lg": "--md-sys-shape-corner-large",

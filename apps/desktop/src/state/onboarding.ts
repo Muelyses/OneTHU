@@ -292,6 +292,37 @@ export function resetActiveOnboarding(): void {
   else resetOnboarding();
 }
 
+/* ══════════ 桌面导览 v3（2026-10-13 改版，与 components/OnboardingTourV3.tsx 配套）══════════
+ * 偏好键沿用既有家族命名：完成标记接 onethu.onboarding.flow2 之后的 flow3；
+ * 流程字段沿用 onethu.onboarding.flow——新流程默认值 "v3"，老存档兼容策略见后续改造。 */
+const KEY_V3 = "onethu.onboarded.flow3";
+
+/** v3 是否已经看过/跳过过一轮（看过、跳过、「不再显示」都算） */
+export function hasOnboardedV3(): boolean {
+  try {
+    return globalThis.localStorage?.getItem(KEY_V3) === "1";
+  } catch {
+    return true; // 存不下时别反复弹
+  }
+}
+
+/** v3 落盘：看完最后一步、勾「不再显示」都会走这里 */
+export function markOnboardedV3(): void {
+  try {
+    globalThis.localStorage?.setItem(KEY_V3, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function resetOnboardingV3(): void {
+  try {
+    globalThis.localStorage?.removeItem(KEY_V3);
+  } catch {
+    /* ignore */
+  }
+}
+
 /** 宿舍楼/园区（§4.2 问题 3）：P0 只问不消费，P2 供今日卡与洗衣机、电费的上下文用 */
 export function getDormBuilding(): string {
   try {

@@ -4,7 +4,7 @@ import { NotifyBridge } from "./components/NotifyBridge.js";
 import { lazy, Suspense, useEffect } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LoginPage, TwoFactorPage } from "./pages/Login.js";
-import { OnboardingTourV3 } from "./components/OnboardingTourV3.js";
+import { OnboardingTourGate } from "./components/OnboardingTourMobile.js";
 import { useToastHost, hideToast } from "./state/toast.js";
 import type { ReactNode } from "react";
 import { BrandLogo } from "./components/Layout.js";
@@ -121,7 +121,8 @@ function Routed() {
       <PluginBridge />
       <NotifyBridge />
       {(status === "ready") && <ChatDock />}
-      {status === "ready" ? <OnboardingTourV3 /> : null}
+      {/* 挂载分流（A8）：手机=简版五步 OnboardingTourMobile，桌面=V3 七步（组件内部判） */}
+      {status === "ready" ? <OnboardingTourGate /> : null}
       <FilePreviewHost />
       <ToastHost />
       {ExplorerPreview ? (

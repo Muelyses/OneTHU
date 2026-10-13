@@ -646,6 +646,8 @@ export function ChatDock(): ReactNode {
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
   const dockCmd = cmds.find((c) => c.dock && c.id === "chat");
   const pid = dockCmd?.pluginId ?? null;
+  /* 创造模式开关（真源 userext；按钮在 dock-head 工具条右上，手机同位可见） */
+  const creative = useSyncExternalStore(subscribeUserExt, creativeSnapshot, creativeSnapshot);
 
   const [open, setOpen] = useState(readOpen);
   const [closing, setClosing] = useState(false); // 关闭动画期：面板仍挂载
@@ -1964,6 +1966,18 @@ export function ChatDock(): ReactNode {
               <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</button>
             </div>
             <div className="dock-ops">
+              {/* 创造模式（2026-10-13）：图标+文字开关钮（用户拍板：不能只是一颗星，旁边要写字）。
+                  开=主题 tint 描边点亮；引擎下轮对话收到 creativeMode=true，系统提示词追加「主动创造」段 */}
+              <button
+                className={"btn dock-btn dock-creative" + (creative ? " is-on" : "")}
+                title={creative ? "创造模式已开：小OH会更主动动手创建插件、主题、OnePage 与脚本工具" : "创造模式：开启后小OH更主动动手创建插件、主题、OnePage 与脚本工具"}
+                aria-label="创造模式"
+                aria-pressed={creative}
+                onClick={() => setCreative(!creative)}
+              >
+                <IconSpark />
+                <span className="dock-creative-t">创造模式</span>
+              </button>
               <button className="btn dock-btn dock-ico" title="新会话" aria-label="新会话" onClick={() => void newSession()}>
                 <IconPlus />
               </button>

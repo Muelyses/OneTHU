@@ -103,6 +103,9 @@ export interface PluginSettingField {
   type?: "text" | "password" | "textarea" | "select";
   /** select 类型的选项集 */
   options?: Array<{ value: string; label: string }>;
+  /** select 选项**运行时**从实时 settings 取 JSON 数组（如 MadModel 站点清单实况），
+   *  与静态 options 合并；该项缺失或解析失败就退回静态 options */
+  optionsFrom?: string;
   placeholder?: string;
   default?: string;
 }

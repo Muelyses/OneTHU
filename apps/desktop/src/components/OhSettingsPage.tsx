@@ -39,6 +39,7 @@ const tierListeners = new Set<() => void>();
 defineSearchRows([
   { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置", go: () => goOhRow("MadModel 免费档", "basic") },
   { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("OH 模型 / 多模态开关", "basic") },
+  { id: "oh-contextmode", tab: "OneTHU Harness", section: "模型与多模态", title: "上下文记忆模式", aliases: ["上下文", "记忆", "压缩", "历史", "要点", "压缩内容制"], desc: "历史超长自动收成要点清单，重要内容不再丢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "上下文记忆模式"], displayRoot: "设置", go: () => goOhRow("上下文记忆模式", "basic") },
   { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置", go: () => goOhRow("后台保活（华为 / 荣耀）", "basic") },
   { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "sec-模型MCP日志", fallbackTarget: "oh-tier-advanced", waitMs: 1400 }); } },
 ]);
@@ -154,22 +155,19 @@ function MadModelRow(): ReactNode {
 }
 
 /**
- * 高级档里**预留给插件设置表单**的位置（task-17 会把 `pages/Plugins.tsx` 的 settings sheet
- * 抽成可复用组件，例如 `components/PluginSettingsForm.tsx` / `PluginSettingsSheet.tsx`）。
+ * 高级档里**预留给插件设置表单**的位置（task-17 抽出 `pages/Plugins.tsx` 的 settings sheet）。
  *
- * 接法（task-17 抽出后，这里只改一处）：
- *   `<PluginSettingsForm id="onethu.harness" />`   // 渲染 OH 的 provider/apiKey/baseUrl/model/
- *                                                  // thinking/maxContext/stream + multimodal + 预算
- * 在那之前保留「打开插件设置」按钮，功能不缺口。
+ * 现在 task-17 已落地：`pages/Plugins.tsx` 组装 advancedPanels 传入（SettingsBody + MCP + 日志），
+ * 这个回落分支只在没传时兜底——文案对齐 2026-10-11 的信息架构（插件子页就地配置）。
  */
 function OhAdvancedSlot(): ReactNode {
   const { navigate } = useApp();
   return (
     <div className="setting-row">
       <div>
-        <div className="setting-title">OH 模型配置 / 预算</div>
+        <div className="setting-title">OH 模型配置 / 花费上限</div>
         <div className="setting-desc">
-          待接插件设置表单（task-17 抽出 PluginSettingsForm 后挂到这里）；当前从插件页的 OH 卡片「设置」进入。
+          模型 / 花费上限 / MCP / 日志在插件子页就地配置——插件页 → OneTHU Harness → 高级配置。
         </div>
       </div>
       <button className="btn" onClick={() => goEntry("plugins")}>
@@ -239,13 +237,24 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
             <div>
               <div className="setting-title">OH 模型 / 多模态开关</div>
               <div className="setting-desc">
-                模型来源、Key、模型名与「多模态（图片输入）」都在插件自己的设置面板里——
-                打开插件页，在 OH 卡片上点「设置」。
+                模型来源、自费 Key、模型名与「多模态（图片输入）」在插件的
+                设置面板里就地配置——插件页 → OneTHU Harness → 高级配置。
               </div>
             </div>
             <button className="btn" onClick={() => goEntry("plugins")}>
               打开插件设置
             </button>
+          </div>
+
+          {/* 2026-10-13 压缩内容制（fa54a9c）：给一行机制说明——历史超长不再裸丢。
+              这行只是说明，没有可切换项（机制永远开启；预算大小在插件设置里调）。 */}
+          <div className="setting-row">
+            <div>
+              <div className="setting-title">上下文记忆模式</div>
+              <div className="setting-desc">
+                历史超长自动收成要点清单，重要内容不再丢
+              </div>
+            </div>
           </div>
 
           <SubHead>IM 基础（扫码绑定 / 解绑）</SubHead>

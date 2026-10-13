@@ -411,3 +411,35 @@
   border-color: var(--glass-border);
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
+
+/* ═══ 创造模式开关（2026-10-13）：OH 小窗工具条上的带字开关 ═══
+   图标 + 「创造模式」文字（用户拍板：不能只是一颗星，旁边要写字）。
+   开 = 主题 tint 描边 + 微染填充；关 = 常规灰。不用 .dock-ico（那是 32px 定宽图标钮）。 */
+.dock-btn.dock-creative {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px;
+  font-size: 11.5px;
+  line-height: 1;
+  color: var(--text-2);
+}
+.dock-btn.dock-creative svg { width: 15px; height: 15px; flex: none; }
+.dock-btn.dock-creative.is-on {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.dock-btn.dock-creative.is-on:hover {
+  border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+/* 手机档（S3 管手机布局，这里只做不溢出的紧凑自洽）：更紧的内距/字号；同位可见，无 pc-only 分支 */
+html.is-phone .dock-head .dock-btn.dock-creative {
+  height: 28px;
+  padding: 0 6px;
+  gap: 3px;
+  font-size: 10.5px;
+}
+html.is-phone .dock-head .dock-btn.dock-creative svg { width: 13px; height: 13px; }

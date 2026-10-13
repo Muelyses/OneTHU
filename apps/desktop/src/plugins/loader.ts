@@ -394,7 +394,7 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
   name: "OneTHU Harness",
   version: "0.1.1",
   author: "smartThise",
-  description: "大模型驱动的清华校园助手（Rust 骨干·内嵌核心）：对话式查课表/日程/成绩/新闻/空教室/校园卡/电费/校园网，日程云同步（查/建/改/删），图书馆座位与研讨间查询预约（两段式确认），左下角常驻对话面板，实时进度与打断，多会话历史与上下文导出，token 用量与预算控制。",
+  description: "大模型驱动的清华校园助手（Rust 骨干·内嵌核心）：对话式查课表/日程/成绩/新闻/空教室/校园卡/电费/校园网，日程云同步（查/建/改/删），图书馆座位与研讨间查询预约（两段式确认），左下角常驻对话面板，实时进度与打断，多会话历史与对话导出，用量与花费控制。",
   permissions: [
     "user:read", "info:read", "card:read", "dorm:read",
     "library:read", "library:book", "network:read",
@@ -402,31 +402,43 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
     "cal:read", "cal:write", "mail:read", "mail:write", "cloud:read", "cloud:write",
     "gitlab:read", "gitlab:write",
     "nav", "ui", "storage", "net:external", "llm", "plugins:call"],
+  // 文案口径 = plugins/OneTHU-Harness/manifest.json 的桌面版清单（2026-10-13 设置审计）：
+  // 标签 ≤42 字、R1 禁词清零（token→通行证/花费上限，上下文→对话历史）、thinking/stream 升 select。
+  // 标签改动会触发 seedBuiltinHarness 的清单自愈（一次性重注册，用户 settings 保留），属预期。
   settings: [
     { key: "provider", label: "模型源", type: "select", default: "", options: [
-      { value: "madmodel", label: "清华 MadModel 免费（DeepSeek-V4-Flash · 校园网/VPN · 自动续期）" },
-      { value: "custom", label: "自费 API（下方 Key/Endpoint/Model 生效）" },
+      { value: "madmodel", label: "清华 MadModel 免费（校园网/VPN · 自动续期）" },
+      { value: "custom", label: "自费 API（填好下方 Key 与服务地址后生效）" },
       { value: "", label: "默认（自动：填了 Key 走自费，没填走 MadModel）" },
     ] },
     { key: "apiKey", label: "API Key（自费模式用）", type: "password", placeholder: "sk-…" },
-    { key: "baseUrl", label: "API Endpoint（OpenAI 兼容，/v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
-    { key: "model", label: "模型（自费模式用；免费档固定 DeepSeek-V4-Flash）", type: "text", default: "deepseek-chat" },
-    { key: "thinking", label: "思考模式（DeepSeek 自动切 reasoner）", type: "text", default: "off" },
+    { key: "baseUrl", label: "服务地址（OpenAI 兼容，以 /v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
+    { key: "madmodelModel", label: "免费档模型（自动同步站点清单；留空用默认）", type: "select", optionsFrom: "madmodelModels", options: [
+      { value: "", label: "默认（DeepSeek-V4.1-Flash）" },
+    ] },
+    { key: "model", label: "模型（自费模式用；免费档默认 DeepSeek-V4.1-Flash）", type: "text", default: "deepseek-chat" },
+    { key: "thinking", label: "思考模式（开＝想得深、更慢更花）", type: "select", options: [
+      { value: "off", label: "关闭（更快更省）" },
+      { value: "on", label: "开启（深想推理；更慢更花）" },
+    ], default: "off" },
     // 多模态开关（2026-10-11）：**必须与 plugins/OneTHU-Harness/manifest.json 里的同名字段
     // 逐字段同序**——seedBuiltinHarness 的清单自愈走 JSON.stringify 字符串比对，
     // 两处不一致会让「内置 OH 已刷新」每次开机都触发一遍。
-    { key: "multimodal", label: "多模态（图片输入；madmodel V4.1-Flash / deepseek-v4-vision 等支持）", type: "select", options: [
+    { key: "multimodal", label: "多模态（图片输入；仅部分模型支持）", type: "select", options: [
       { value: "off", label: "关闭（图片只传路径与文字预览）" },
       { value: "on", label: "开启（图片按图像模态直接喂给模型）" },
     ], default: "off" },
-    { key: "maxContext", label: "上下文预算（tokens，超出裁剪）", type: "text", default: "24000" },
-    { key: "stream", label: "流式输出（off 回退非流式）", type: "text", default: "on" },
-    { key: "priceIn", label: "输入价格 $/1M tokens（自费模式）", type: "text", default: "0.27" },
-    { key: "priceOut", label: "输出价格 $/1M tokens（自费模式）", type: "text", default: "1.10" },
-    { key: "budget", label: "Token 预算（USD，到量停；自费模式）", type: "text", default: "2" },
-    { key: "maxSteps", label: "单次任务最大步数", type: "text", default: "16" },
-    { key: "madmodelToken", label: "MadModel Token（自动维护）", type: "text", default: "", auto: true },
-    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护）", type: "text", default: "", auto: true },
+    { key: "maxContext", label: "对话历史预算（默认 24000≈2.4 万字；超出自动收成要点）", type: "text", default: "24000" },
+    { key: "stream", label: "逐字显示回答（关＝等整段生成完一次给出）", type: "select", options: [
+      { value: "on", label: "开启（打字机式逐字显示）" },
+      { value: "off", label: "关闭（整段生成完一次给出）" },
+    ], default: "on" },
+    { key: "priceIn", label: "输入单价（美元，每百万 tokens；自费模式）", type: "text", default: "0.27" },
+    { key: "priceOut", label: "输出单价（美元，每百万 tokens；自费模式）", type: "text", default: "1.10" },
+    { key: "budget", label: "自费花费上限（美元；到量自动停止）", type: "text", default: "2" },
+    { key: "maxSteps", label: "单次任务最多工具调用步数（默认 16）", type: "text", default: "16" },
+    { key: "madmodelToken", label: "MadModel 免费档通行证（自动维护，勿手改）", type: "text", default: "", auto: true },
+    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护，勿手改）", type: "text", default: "", auto: true },
   ],
 };
 

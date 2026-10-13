@@ -36,9 +36,16 @@
   flex: 0 0 auto;
   transition: background var(--dur-1, 0.12s) var(--ease-out, ease), color var(--dur-1, 0.12s) var(--ease-out, ease);
 }
-.ex-tab:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); }
+.ex-tab:hover { background: var(--glass-tint, var(--hover, rgba(0, 0, 0, 0.05))); }
+/* 选中标签 = 液态玻璃选中框（v4.3，2026-10-13 用户点名「选中框不要固定亮色」）：
+   主题色 tint 渐变 + chip blur + rim 顶光，随主题/壁纸变色——不再是 secondary-container 死粉饼 */
 .ex-tab.is-active {
-  background: var(--md-sys-color-secondary-container, var(--accent-soft));
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--md-sys-color-primary) 15%, transparent),
+    color-mix(in srgb, var(--md-sys-color-primary) 7%, transparent));
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top), inset 0 0 0 1px var(--glass-rim-hairline);
   color: var(--text-1);
 }
 .ex-tab-main {
@@ -517,7 +524,21 @@
 .ex-tab.is-dragging .ex-tab-main { cursor: grabbing; }
 
 /* 首页钉死在标签栏最左：横向滚动时不随滑动条移动 */
-.ex-tabstrip .ex-tab.is-home { position: sticky; left: 0; z-index: 2; background: var(--dsw-alias-bg-base, #fff); }
+/* 首页标签（OneTHU Logo 壳）＝ menu tier 玻璃选中框（v4.3 用户点名）：
+   sticky 遮罩语义保留（盖住滚过的标签），但材质换液态玻璃——
+   menu-fill 55% + blur 22 让 Logo 片随主题/壁纸变，不再是永远白的 dsw-alias 底 */
+.ex-tabstrip .ex-tab.is-home {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+}
 
 /* 工作区底板：标签在底色板上，板前写名字；颜色由 --ws-color 注入 */
 .ex-ws-band { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px 2px 2px; border-radius: 10px; background: color-mix(in srgb, var(--ws-color, #888) 14%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ws-color, #888) 35%, transparent); flex: 0 0 auto; }
@@ -573,13 +594,19 @@
 .tabs-vertical .ex-tab .ex-tab-close { margin-left: auto; flex: none; }
 
 /* ══════════ 标签页 / 工作区右键就地菜单 ══════════ */
+/* 标签页 / 工作区右键就地菜单 ＝ menu tier 玻璃（v4.3：原 dsw-alias 白底实色改玻璃） */
 .ex-ctxmenu {
   min-width: 200px;
   padding: 6px;
   border-radius: 12px;
-  background: var(--dsw-alias-bg-layer-1, var(--dsw-alias-bg-base, #fff));
-  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, 0.12));
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
 }
 .ex-ctxmenu-item {
   display: block;
@@ -760,13 +787,19 @@
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
-/* ══════════ 液态玻璃 v4.1：竖栏 = 面板级玻璃（ui.css 后导入，压掉上面第 538 行的不透明底）═══════════ */
+/* ══════════ 液态玻璃 v4.1→v4.3：竖栏 = 液态玻璃（用户点名：竖直标签页栏要液态玻璃材质） ═══════════
+   fill-regular 实感玻璃填充 + tint 渐变 + clear blur + rim 三件套；窄模式 hover 展开加深一档 ” */
 .ex-rail {
-  background: var(--glass-fill);
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
   backdrop-filter: var(--lg-blur-clear);
   -webkit-backdrop-filter: var(--lg-blur-clear);
   border-right: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top), inset 0 0 0 1px var(--glass-rim-hairline);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
 }
 .tabs-vertical.rail-narrow .ex-rail:hover {
   background: var(--glass-fill-hover, var(--glass-fill));

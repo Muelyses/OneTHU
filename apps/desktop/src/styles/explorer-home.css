@@ -807,3 +807,17 @@
   -webkit-backdrop-filter: var(--glass-chip-blur);
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
+
+/* ═══ 液态玻璃 v4.3：首页一级服务坞 = 真·液态玻璃（用户点名：不是奇怪的白底磨砂） ═══
+   fill-regular 实感填充 + tint 渐变叠层 + menu blur + rim 三件套；「不要边框」的定稿
+   升级为「要玻璃 rim」——rim 不是边框，是玻璃的顶光/发丝线。 */
+.hs-dock-row {
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-regular);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
+}

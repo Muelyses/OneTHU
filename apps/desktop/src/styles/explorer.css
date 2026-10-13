@@ -271,51 +271,175 @@
   box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top);
 }
 
-/* ══════════ 全屏档壁纸层 + 亮度自适应（壁纸二期）══════════ */
+/* ══════════ 全屏档壁纸层 + 亮度自适应（壁纸二期，v4.3 修订）══════════ */
+
 .shell-wallpaper { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .shell-wallpaper-img { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; }
 .wall-video-layer { position: absolute; inset: 0; overflow: hidden; }
 .wall-video-layer video { width: 100%; height: 100%; object-fit: cover; }
 .wall-video-veil { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2); }
 
-/* 内容与栏体必须浮在壁纸之上 */
+/* 内容浮在壁纸之上。注意：这里**只抬流内内容（.explorer-content）**——
+   此前写的 `> *:not(.shell-wallpaper) { position: relative }` 以更高特异度把
+   顶栏/竖栏/底栏的 position: fixed 压回了文档流，标签栏就跟着页面滚动跑了
+   （2026-10-13 用户点名「标签页栏跟着鼠标滑动跑」的根因）。fixed 栏自己的
+   z-index（55/60/80）本来就压在壁纸(z 0)之上，不需要也不再劫持。 */
 .explorer-shell { position: relative; }
-.explorer-shell > *:not(.shell-wallpaper) { position: relative; z-index: 1; }
+.explorer-shell > .explorer-content { position: relative; z-index: 1; }
 
-/* 壁纸亮度档：暗壁纸 → 栏体用亮玻璃提升可读；亮壁纸 → 栏体加深 */
+/* ── 壁纸亮度档：栏体玻璃与**全部文字令牌**跟壁纸明暗走（用户点名补齐的文字适应）──
+   要点：不只改容器 color——栏内的按钮/标签/工作区名都引用 var(--text-*)/
+   var(--md-sys-color-on-surface*)，在这里把这两组令牌连同描边/悬停一起重映射，
+   子树整体翻色，两类主题 × 两类壁纸四种组合都可读。 */
 .explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
-.explorer-shell[data-wallpaper-lum="dark"] .ex-bbar {
-  background: rgba(20, 22, 30, 0.5);
-}
-.explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
-.explorer-shell[data-wallpaper-lum="dark"] .ex-bbar {
+.explorer-shell[data-wallpaper-lum="dark"] .ex-bbar,
+.explorer-shell[data-wallpaper-lum="dark"] .ex-rail {
+  background: rgba(21, 23, 31, 0.55);
   color: #f2f4f8;
+  --text-1: #f2f4f8;
+  --text-2: rgba(242, 244, 248, 0.8);
+  --text-3: rgba(242, 244, 248, 0.56);
+  --md-sys-color-on-surface: #f2f4f8;
+  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
+  --md-sys-color-outline: rgba(242, 244, 248, 0.45);
+  --md-sys-color-outline-variant: rgba(242, 244, 248, 0.16);
+  --md-sys-color-primary: #f2f4f8;
+  --hover: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.16);
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.26);
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.14);
+  --glass-menu-fill: rgba(255, 255, 255, 0.1);
+  --dsw-alias-bg-base: rgba(23, 25, 33, 0.92);
+  --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.12);
 }
 .explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
-.explorer-shell[data-wallpaper-lum="light"] .ex-bbar {
-  background: rgba(255, 255, 255, 0.66);
+.explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
+.explorer-shell[data-wallpaper-lum="light"] .ex-rail {
+  background: rgba(252, 253, 255, 0.72);
   color: #1c1f28;
+  --text-1: #1c1f28;
+  --text-2: rgba(28, 31, 40, 0.78);
+  --text-3: rgba(28, 31, 40, 0.55);
+  --md-sys-color-on-surface: #1c1f28;
+  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
+  --md-sys-color-outline: rgba(28, 31, 40, 0.4);
+  --md-sys-color-outline-variant: rgba(28, 31, 40, 0.16);
+  --md-sys-color-primary: #1c1f28;
+  --hover: rgba(28, 31, 40, 0.07);
+  --border: rgba(28, 31, 40, 0.16);
+  --border-soft: rgba(28, 31, 40, 0.1);
+  --border-strong: rgba(28, 31, 40, 0.26);
+  --dsw-alias-border-l1: rgba(28, 31, 40, 0.14);
+  --glass-menu-fill: rgba(255, 255, 255, 0.68);
+  --dsw-alias-bg-base: rgba(255, 255, 255, 0.92);
+  --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.08);
 }
 
-/* ══════════ 全屏档壁纸层 + 亮度自适应（壁纸二期）══════════ */
-.shell-wallpaper { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-.shell-wallpaper-img { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; }
-.wall-video-layer { position: absolute; inset: 0; overflow: hidden; }
-.wall-video-layer video { width: 100%; height: 100%; object-fit: cover; }
-.wall-video-veil { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2); }
-
-/* 内容与栏体必须浮在壁纸之上 */
-.explorer-shell { position: relative; }
-.explorer-shell > *:not(.shell-wallpaper) { position: relative; z-index: 1; }
-
-/* 壁纸亮度档：暗壁纸 → 栏体暗玻璃+亮字；亮壁纸 → 栏体提亮+暗字 */
-.explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
-.explorer-shell[data-wallpaper-lum="dark"] .ex-bbar {
-  background: rgba(20, 22, 30, 0.5);
-  color: #f2f4f8;
+/* ── 仅内容页档：视频壁纸画在面板内（active 才播放）；面板也挂亮度档 ── */
+.explorer-panel { position: relative; overflow: hidden; }
+.explorer-panel.has-wallpaper {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-.explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
-.explorer-shell[data-wallpaper-lum="light"] .ex-bbar {
-  background: rgba(255, 255, 255, 0.66);
-  color: #1c1f28;
+.explorer-panel > .wall-video-layer { z-index: 0; }
+.explorer-panel[data-wallpaper-lum="dark"]::before,
+.explorer-panel[data-wallpaper-lum="light"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+/* 主题文字落在壁纸上要能读：亮色主题下暗壁纸提白、暗色主题下亮壁纸压黑
+   （卡面上的文字不动——纱在卡层之下，卡片自带 surface 可读） */
+:root:not([data-scheme="dark"]) .explorer-panel[data-wallpaper-lum="dark"]::before {
+  background: rgba(255, 255, 255, 0.3);
+}
+:root[data-scheme="dark"] .explorer-panel[data-wallpaper-lum="light"]::before {
+  background: rgba(0, 0, 0, 0.32);
+}
+.explorer-panel > .page-anim { position: relative; z-index: 2; }
+
+/* ══════════ 壁纸库网格（设置面板 / 右键 picker 共用，壁纸二期）══════════ */
+.wall-lib { display: flex; flex-direction: column; gap: 12px; }
+.wall-lib-picker { width: min(300px, 88vw); }
+.wall-picker-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.wall-picker-head b { font-size: var(--text-sm); }
+.wall-lib-ops { display: flex; flex-wrap: wrap; gap: 8px; }
+.wall-lib-ops .btn { height: 30px; padding: 0 12px; min-height: 0; }
+.wall-lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.wall-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.wall-thumb-box { position: relative; border-radius: 10px; overflow: hidden; }
+.wall-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  border: 1px solid var(--glass-border, var(--border));
+  border-radius: 10px;
+  background: var(--surface-3, var(--bg-soft));
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow var(--dur-1, 0.12s) ease, border-color var(--dur-1, 0.12s) ease;
+}
+.wall-thumb:hover { box-shadow: var(--lg-lift-hover); border-color: var(--accent-border, var(--accent)); }
+.wall-thumb img,
+.wall-thumb video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.wall-thumb-fill { display: block; width: 100%; height: 100%; }
+.wall-thumb.is-page-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent), var(--glass-shadow);
+}
+.wall-chip {
+  position: absolute;
+  height: 20px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--r-pill);
+  font-size: var(--text-xs);
+  line-height: 20px;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(15, 17, 21, 0.62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.wall-chip-full { right: 4px; bottom: 4px; }
+.wall-chip.is-on { background: var(--accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+.wall-chip-del { right: 4px; top: 4px; width: 20px; padding: 0; }
+.wall-chip-del:hover { background: var(--red); }
+.wall-dot {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65);
+}
+.wall-name {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wall-lib-hint { font-size: var(--text-xs); color: var(--text-3); }
+.wall-lib-upload { width: 100%; }
+.wall-sound-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-soft, var(--border));
 }

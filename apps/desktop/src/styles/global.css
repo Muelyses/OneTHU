@@ -2645,14 +2645,12 @@ select.input:focus {
   .seg-indi { height: 3px; }
 }
 
-/* 下线按钮：浅红软底，不再是灰黑胶囊 */
+/* 下线按钮：红语义 chip（材质在文件尾 v4.2/v4.3 收尾段统一上液态玻璃——这里不再写死底色） */
 .chip-offline {
-  background: var(--red-soft, rgba(239, 68, 68, 0.1));
   color: var(--red, #dc2626);
   cursor: pointer;
   flex: none;
 }
-.chip-offline:hover { background: rgba(239, 68, 68, 0.18); }
 
 /* ===== 选课（zhjwxk）竖屏三页签 + 弹窗适配 ===== */
 .xk-mobile-tabs { display: none; }
@@ -8338,9 +8336,13 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
    · panel-lite（常驻卡面）＝ tint 渐变 + panel-blur(6) + rim 三件套
    成群小件（课表课程格等）沿用「预算外」定稿：只上 tint + rim，不加 blur。 */
 
-/* ---- 点名 1：其他 Info 应用入口卡 = panel-lite（hover 反馈仍走共享状态层，不换底色） ---- */
+/* ---- 点名 1：其他 Info 应用入口卡 = panel-lite（hover 反馈仍走共享状态层，不换底色） ----
+   v4.3 用户点名「别再是灰色阴影丑按钮的特化版」：单靠 6% tint 在浅页上读不出材质，
+   补一层 fill-2 玻璃填充（暗色档自动 12% 白），卡面有质感、不再是灰影。 */
 .app-card {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-card-fill-2);
   backdrop-filter: var(--glass-panel-blur);
   -webkit-backdrop-filter: var(--glass-panel-blur);
   box-shadow:
@@ -8348,21 +8350,31 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
     inset 0 1px 0 var(--glass-rim-top),
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
+/* 选中态同材质：主题色 tint 叠打在 fill-2 上（不用 accent 实底死色） */
+.app-card.is-active {
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent),
+      color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent)),
+    var(--glass-card-fill-2);
+}
 
-/* ---- 点名 2：校园网「下线」＝ 危险语义玻璃 chip（红 tint 用 --red 组合，不写死字面量） ---- */
+/* ---- 点名 2：校园网「下线」＝ 危险语义液态玻璃 chip（红 tint 用 --red 组合，不写死字面量） ----
+   v4.3 加深红 tint 档（14/6% 在浅页上读不出），hover 走渐变加深，不吃任何灰投影 */
 .chip-offline {
   background: linear-gradient(180deg,
-    color-mix(in srgb, var(--red) 14%, transparent),
-    color-mix(in srgb, var(--red) 6%, transparent));
-  border-color: color-mix(in srgb, var(--red) 24%, var(--glass-border));
+    color-mix(in srgb, var(--red) 20%, transparent),
+    color-mix(in srgb, var(--red) 9%, transparent));
+  border-color: color-mix(in srgb, var(--red) 28%, var(--glass-border));
   backdrop-filter: var(--glass-chip-blur);
   -webkit-backdrop-filter: var(--glass-chip-blur);
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
 .chip-offline:hover {
   background: linear-gradient(180deg,
-    color-mix(in srgb, var(--red) 22%, transparent),
-    color-mix(in srgb, var(--red) 10%, transparent));
+    color-mix(in srgb, var(--red) 30%, transparent),
+    color-mix(in srgb, var(--red) 14%, transparent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 /* 分类筛选中性 chip = chip tier（chip-blue/red 等语义色档保持原样） */
 .chip-gray {

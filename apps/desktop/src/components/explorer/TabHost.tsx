@@ -30,15 +30,21 @@ import { isSubPage, renderPage } from "./renderPage.js";
 import { HomeTab } from "./HomeTab.js";
 import {
   BUILTIN_WALLPAPERS,
+  ensureWallpaperLum,
   importWallpaperFile,
+  isVideoRef,
   setGlobalWallpaper,
   setTabWallpaper,
+  subscribeWallpaper,
+  videoSoundSnapshot,
   wallpaperFor,
+  wallpaperLum,
   wallpaperPathOf,
   wallpaperSnapshot,
   wallpaperStyleFor,
-  subscribeWallpaper,
+  type WallpaperLum,
 } from "../../state/wallpaper.js";
+import { WallpaperVideoBox } from "./WallpaperVideo.js";
 
 /* ══════════ tab 局部路由上下文 ══════════ */
 
@@ -211,9 +217,13 @@ export function TabHost(): ReactNode {
     return [home, ...st.tabs];
   }, [st.tabs]);
 
+  const onHomeFree = (target: EventTarget | null): boolean =>
+    !!(target instanceof Element && target.closest(".home-free"));
+
+  /* 长按（触屏）统一口径与右键一致：首页白板区域的菜单归白板自己，长按不再弹宿主菜单 */
   const panelPointerDown = useCallback((e: React.PointerEvent, tabId: string) => {
     if (e.pointerType === "mouse") return; // 鼠标走 contextmenu
-    if (onInteractive(e.target)) return;
+    if (onInteractive(e.target) || (tabId === HOME_TAB_ID && onHomeFree(e.target))) return;
     clearPress();
     const { clientX, clientY } = e;
     const timer = window.setTimeout(() => {
@@ -227,22 +237,47 @@ export function TabHost(): ReactNode {
     if (p && (Math.abs(e.clientX - p.x) > 10 || Math.abs(e.clientY - p.y) > 10)) clearPress();
   }, [clearPress]);
 
-  /* 壁纸：订阅一份全局文档，每个面板按自己的路径键解析（tab 覆盖 > 全局 > 无） */
+  /* 壁纸：订阅一份全局文档 + 视频声音开关，每个面板按自己的路径键解析。
+     图片壁纸顺手确保亮度采样在跑（算完发变更，面板亮度档与栏体文字分支自动收敛） */
   useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
+  const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
+  useEffect(() => {
+    for (const t of all) {
+      const ref = wallpaperFor(t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params));
+      if (ref && ref.startsWith("data:image/")) ensureWallpaperLum(ref);
+    }
+  }, [all]);
   return (
     <>
       {all.map((t) => {
         const active = t.id === activeId;
-        const wp = wallpaperStyleFor(t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params));
+        const wallKey = t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
+        const rawRef = wallpaperFor(wallKey);
+        const wp = wallpaperStyleFor(wallKey);
+        /* 内容页档视频壁纸：wallpaperStyleFor 对 data:video/ 返回 null，这里单独渲染 <video> 层 */
+        const videoRef = rawRef && isVideoRef(rawRef) ? rawRef : null;
+        let lum: WallpaperLum | null = null;
+        if (rawRef) lum = isVideoRef(rawRef) || rawRef.startsWith("builtin:") ? "dark" : wallpaperLum(rawRef);
         return (
           <div
             key={t.id}
-            className={"explorer-panel" + (wp ? " has-wallpaper" : "")}
+            className={"explorer-panel" + (rawRef ? " has-wallpaper" : "")}
             data-tab-id={t.id}
             data-tab-page={t.page}
-            style={active ? { ...(wp ? { backgroundImage: wp.backgroundImage } : {}) } : { display: "none", ...(wp ? { backgroundImage: wp.backgroundImage } : {}) }}
+            data-wallpaper-lum={lum ?? undefined}
+            data-wallpaper-kind={videoRef ? "video" : rawRef ? "image" : undefined}
+            style={
+              active
+                ? { ...(wp ? { backgroundImage: wp.backgroundImage } : {}) }
+                : { display: "none", ...(wp ? { backgroundImage: wp.backgroundImage } : {}) }
+            }
             onContextMenu={(e) => {
               if (onInteractive(e.target)) return;
+              /* 首页右键统一（用户点名：不要一右键弹两个菜单）——首页自由白板区域
+                 的右键/长按是白板自己的「添加组件/便笺」就地菜单（FreeBoard 在
+                 空白画布与组件上都自己处理并 preventDefault），宿主面板菜单退出；
+                 壁纸入口仍在 设置→壁纸（库面板两档齐全）。 */
+              if (e.target instanceof Element && t.kind === "home" && e.target.closest(".home-free")) return;
               e.preventDefault();
               clearPress();
               setMenu({ x: e.clientX, y: e.clientY, tabId: t.id });
@@ -252,6 +287,7 @@ export function TabHost(): ReactNode {
             onPointerUp={clearPress}
             onPointerCancel={clearPress}
           >
+            {videoRef ? <WallpaperVideoBox src={videoRef} sound={sound} active={active} /> : null}
             {/* 页内导航时重挂这一层（保留 .page-anim 转场）；切标签页不动这一层 */}
             <div className="page-anim" key={t.page} data-page={t.page} data-level={isSubPage(t.page) ? "sub" : undefined}>
               <TabScope tab={t}>

@@ -1,12 +1,13 @@
 declare const __APP_VERSION__: string;
 import { defineSearchRows } from "../state/searchRows.js";
 import {
-  BUILTIN_WALLPAPERS,
-  importWallpaperFile,
-  setGlobalWallpaper,
   subscribeWallpaper,
-  wallpaperSnapshot,
+  videoSoundSnapshot,
+  setVideoSound,
+  wallpaperPathOf,
 } from "../state/wallpaper.js";
+import { useExplorerState, allTabs } from "../state/explorer.js";
+import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
@@ -1728,71 +1729,27 @@ function DiagnosticsRow() {
 
 /** 外观：昼夜主题调度——跟随系统暗/亮自动切日夜两档主题 */
 
-/* ══════════ 壁纸（2026-10-13，霖：外观统一设置 + 各标签页可单独覆盖）══════════ */
+/* ══════════ 壁纸（2026-10-13，壁纸二期：两级范围 + 壁纸库）══════════
+   卡体 = 库面板（WallpaperLibrary panel）+ 动态壁纸声音开关：
+   库网格（内置渐变 + 自收录）、点图=设为当前页、角标=设为全屏、上传入库、删除、
+   云盘同步/恢复（wallpsync）两按钮；「本页」的操作目标 = 设置浮层背后的活动标签页。 */
 function WallpaperSection(): ReactNode {
-  const wp = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
-  const fileRef = useRef<HTMLInputElement | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-  const preview = wp.global
-    ? wp.global.startsWith("builtin:")
-      ? BUILTIN_WALLPAPERS.find((b) => "builtin:" + b.id === wp.global)?.css
-      : `url(${wp.global})`
-    : null;
+  const st = useExplorerState();
+  const at = allTabs().find((t) => t.id === st.activeId) ?? null;
+  const tabKey = !at || at.kind === "home" ? "home" : wallpaperPathOf(at.page, at.params);
+  const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   return (
     <div>
       <div className="setting-title">壁纸</div>
-      <div className="setting-desc">
-        全部标签页的统一底图；每条标签路径还可在页面空白处右键单独覆盖。图片会压缩后存在本机。
+      <div className="setting-desc">全屏档是整个软件的底色；内容页档只画在对应页面上，逐页覆盖。</div>
+      <WallpaperLibrary variant="panel" tabKey={tabKey} />
+      <div className="wall-sound-row">
+        <div>
+          <div className="setting-title">动态壁纸声音</div>
+          <div className="setting-desc">视频壁纸带着声音放；默认静音，想开随时开。</div>
+        </div>
+        <Switch on={sound} onChange={(v) => setVideoSound(v)} label="动态壁纸声音" />
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "8px 0", flexWrap: "wrap" }}>
-        <div
-          aria-hidden="true"
-          style={{
-            width: 96, height: 54, borderRadius: 8, border: "1px solid var(--border)",
-            background: preview ?? "var(--surface-3)", backgroundSize: "cover", backgroundPosition: "center",
-          }}
-        />
-        <button type="button" className="btn" onClick={() => fileRef.current?.click()}>
-          上传图片…
-        </button>
-        {wp.global ? (
-          <button type="button" className="btn" onClick={() => setGlobalWallpaper(null)}>
-            清除全局壁纸
-          </button>
-        ) : null}
-      </div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {BUILTIN_WALLPAPERS.map((b) => (
-          <button
-            key={b.id}
-            type="button"
-            title="设为全局壁纸"
-            onClick={() => setGlobalWallpaper("builtin:" + b.id)}
-            style={{
-              width: 64, height: 40, borderRadius: 8, border: "1px solid var(--border)",
-              background: b.css, cursor: "pointer", color: "var(--text-3)", fontSize: "var(--text-xs)",
-              textShadow: "0 1px 2px rgba(0,0,0,.5)",
-            }}
-          >
-            {b.label}
-          </button>
-        ))}
-      </div>
-      {err ? <div style={{ color: "var(--danger, #e5484d)", fontSize: "var(--text-xs)", marginTop: 6 }}>{err}</div> : null}
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          e.target.value = "";
-          if (!f) return;
-          void importWallpaperFile(f).then((r) => {
-            if (r.ref) { setGlobalWallpaper(r.ref); setErr(null); } else setErr(r.error ?? "这张处理失败，换一个试试");
-          });
-        }}
-      />
     </div>
   );
 }

@@ -8119,3 +8119,11 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* 白板桌面光标语义（2026-10-13 鼠标修复）：编辑态可抓取，普通态可点开菜单 */
+.board-canvas.is-editing .board-slot { cursor: grab; }
+.board-canvas.is-editing .board-slot:active { cursor: grabbing; }
+.board-canvas:not(.is-editing) .board-slot { cursor: pointer; }
+.board-handle { cursor: nwse-resize; }
+.board-handle.h-n, .board-handle.h-s { cursor: ns-resize; }
+.board-handle.h-e, .board-handle.h-w { cursor: ew-resize; }

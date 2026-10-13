@@ -189,6 +189,40 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
     saveBoard(out);
   };
 
+  /* 桌面键盘标配（2026-10-13 鼠标修复同批）：编辑态方向键整格微调、Delete 删除、Esc 取消选中 */
+  useEffect(() => {
+    if (!editing) return;
+    const onKey = (e: KeyboardEvent): void => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement | null)?.isContentEditable) return;
+      if (e.key === "Escape") {
+        setSelectedId(null);
+        return;
+      }
+      if (!selectedId) return;
+      const it = storedRef.current.find((x) => x.id === selectedId);
+      if (!it) return;
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        apply(removeItem(doc, boardId, orientation, selectedId));
+        setSelectedId(null);
+        return;
+      }
+      const delta: Record<string, [number, number]> = {
+        ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1],
+      };
+      const d = delta[e.key];
+      if (!d) return;
+      e.preventDefault();
+      const nx = Math.min(Math.max(0, it.cell.x + d[0]), Math.max(0, cols - it.cell.w));
+      const ny = Math.max(0, it.cell.y + d[1]);
+      if (nx === it.cell.x && ny === it.cell.y) return;
+      apply(moveItem(doc, boardId, orientation, selectedId, { x: nx, y: ny }, cols));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [editing, selectedId, doc, boardId, orientation, cols, apply]);
+
   const say = (text: string): void => {
     setNote(text);
     window.setTimeout(() => setNote(null), 1800);
@@ -487,8 +521,35 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
                   /* 诊断：槽位被按下（若坐标本应命中把手却打到这里，就是命中问题）。 */
                   trace("slot-down id=" + item.id + " x=" + Math.round(e.clientX) + " y=" + Math.round(e.clientY) + " 目标=" + String((e.target as HTMLElement | null)?.className ?? "?"));
                   /* 正常模式的长按也要出快捷编辑菜单（需求原文：正常模式下长按一个组件可触发快捷编辑）；
-                     固定只挡正常模式，编辑模式里仍可长按（需求原文）。鼠标走右键菜单，不参与长按。 */
-                  if (e.pointerType === "mouse") return;
+                     固定只挡正常模式，编辑模式里仍可长按（需求原文）。 */
+                  /* 鼠标（2026-10-13 桌面修复）：编辑态**按下即武装**（不等长按、不弹菜单），
+                     位移超阈值直接升级拖拽；原地抬起 = 打开组件菜单（与点击语义一致）。
+                     此前鼠标被整体排除（PR 55 纯触屏思路），桌面端没有任何移动手段。 */
+                  if (e.pointerType === "mouse") {
+                    if (!editing) return;
+                    cancelPress();
+                    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* 窗口级监听兜底 */ }
+                    pressRef.current = { id: item.id, x: e.clientX, y: e.clientY, timer: null, armed: true };
+                    const boxM = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                    grabRef.current = { dx: e.clientX - boxM.left, dy: e.clientY - boxM.top };
+                    const onMUp = (): void => {
+                      window.removeEventListener("pointerup", onMUp, true);
+                      window.removeEventListener("pointercancel", onMCancel, true);
+                      const pr = pressRef.current;
+                      const dd = dragRef.current;
+                      /* 原地抬起（未升级成拖拽）= 打开组件菜单；升级过则 onWinUp 已走 finishDrag */
+                      if (pr && pr.armed && !(dd && dd.started)) openItemMenu(item, pr.x, pr.y);
+                      pressRef.current = null;
+                    };
+                    const onMCancel = (): void => {
+                      window.removeEventListener("pointerup", onMUp, true);
+                      window.removeEventListener("pointercancel", onMCancel, true);
+                    };
+                    window.addEventListener("pointerup", onMUp, true);
+                    window.addEventListener("pointercancel", onMCancel, true);
+                    trace("down(mouse,armed) id=" + item.id);
+                    return;
+                  }
                   if (item.pinned && !editing) return;
                   cancelPress();
                   /* 指针捕获：菜单浮层会出现，不捕获的话后续 move 事件被浮层吃掉，
@@ -757,7 +818,7 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
                           ev.stopPropagation();
                           /* 诊断：抓到的是哪一侧的把手（现场「拖左边动右边」时用它确认命中）。 */
                           trace("handle-down h=" + h + " x=" + Math.round(ev.clientX) + " y=" + Math.round(ev.clientY));
-                          if (ev.pointerType === "mouse") return;
+                          /* 鼠标与触屏同管线（2026-10-13）：把手本就是「按下即调」，无长按语义 */
                           const el = gridRef.current;
                           if (!el) return;
                           const gr = el.getBoundingClientRect();

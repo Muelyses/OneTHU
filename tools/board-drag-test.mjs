@@ -98,7 +98,10 @@ ok(/const EDGE_ZONE = 96/.test(page) && /const EDGE_MAX = 14/.test(page), "边�
 ok(/cancelAnimationFrame/.test(page2), "拖拽结束没有停掉 rAF（会一直滚下去）");
 ok(/scrollParent/.test(page2), "边缘滚动没有找到真正的滚动容器（滚错元素等于不滚）");
 /* ⑪ 霖 2026-10-10 的四条现场 bug 的防回归 */
-ok(/\(e\.pointerType === "mouse"\) return;/.test(page) && !/\(!editing \|\| e\.pointerType/.test(page), "正常模式下长按被整体禁用（需求原文要求正常模式长按可触发快捷编辑）");
+/* 鼠标路径（2026-10-13 桌面修复）：编辑态按下即武装，正常模式仍然不参与布局 */
+ok(/if \(e\.pointerType === "mouse"\) \{\s*\n\s*if \(!editing\) return;/.test(page), "鼠标编辑态没有按下即武装（桌面拖不动的主因）");
+ok(/armed: true \};/.test(page), "鼠标按压没有立即武装（armed: true）");
+ok(!/\(e\.pointerType === "mouse"\) return;/.test(page), "鼠标被整体排除的旧口径还在（桌面无拖拽）");
 ok(/press\.armed/.test(page), "升级为拖拽没有要求「已由长按武装」（编辑态会一按就拖）");
 ok(page.indexOf("if (!editing || !press.armed) { cancelPress(); return; }") >= 0, "升级没有限定「编辑态 + 长按武装」双条件（正常模式会改布局）");
 ok(/transform: lifted && drag\.raw \? "translate\("/.test(page), "被拖项没有按手指位移平移（会只在跨格时跳一下）");

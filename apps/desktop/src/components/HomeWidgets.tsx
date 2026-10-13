@@ -70,9 +70,11 @@ export const SECTION_OF: Record<number, string> = {
 
 /* ---- 「下一节课」的时间换算与挑选（白板自足渲染要用；今日页同源共用）---- */
 
-/** 节次 → 当日分钟数（SECTION_OF 是开始时间表；结束时间按一节 45 分钟估） */
+/** 节次 → 当日分钟数（SECTION_OF 是开始时间表；结束时间按一节 45 分钟估）。
+ *  n 容忍字符串数字（2026-10-13：某些源给 "6" 不是 6，严格取 SECTION_OF["6"]=undefined
+ *  会整条跳过，表现为「明明有课却说没有」）。 */
 export function sectionStartMin(n: number): number | null {
-  const t = SECTION_OF[n];
+  const t = SECTION_OF[Number(n)];
   if (!t) return null;
   const parts = t.split(":");
   const h = Number(parts[0]);
@@ -81,9 +83,11 @@ export function sectionStartMin(n: number): number | null {
   return h * 60 + m;
 }
 
-/** "HH:MM" → 当日分钟数 */
+/** "HH:MM" → 当日分钟数。容忍首尾空白、全角冒号、带秒（"13:30:00"）——
+ *  此前严格 ^\d{1,2}:\d{2}$ 解析不了变体时间格式，整条课被静默跳过，
+ *  「下一节课」就成了「今天没有课」而「今日课程」（字符串排序）却正常（2026-10-13 实测分叉）。 */
 export function hhmmMin(t: string): number | null {
-  const m = /^(\d{1,2}):(\d{2})$/.exec(t);
+  const m = /^\s*(\d{1,2})[：:](\d{2})(?::\d{2})?\s*$/.exec(t);
   return m ? Number(m[1]) * 60 + Number(m[2]) : null;
 }
 

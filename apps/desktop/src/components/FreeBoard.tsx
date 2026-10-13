@@ -306,7 +306,7 @@ export function FreeBoard(): ReactNode {
             {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
             {it.folded ? (
               <div className="free-folded" title="已折叠（浮条里可展开）">
-                <span className="board-note-dot" aria-hidden="true" />
+                <span className="free-note-dot" aria-hidden="true" />
                 <span>便笺</span>
               </div>
             ) : (

@@ -291,7 +291,8 @@ function CardEntryCard(): ReactNode {
  *   4×2 → 倒计时 + 时间 + 课程名 + 地点 + 一节进度条。
  */
 function NextClassCard({ size }: { size?: WidgetSize }): ReactNode {
-  const schedule = useCampusData().data?.schedule ?? [];
+  const campus = useCampusData();
+  const schedule = campus.data?.schedule ?? [];
   const [nowMin, setNowMin] = useState<number>(() => {
     const d = new Date();
     return d.getHours() * 60 + d.getMinutes();
@@ -311,7 +312,9 @@ function NextClassCard({ size }: { size?: WidgetSize }): ReactNode {
     return schedule.filter((s) => (s.date ? s.date === key : s.dayOfWeek === wd));
   }, [schedule, nowMin]);
   const next = useMemo(() => pickNextClass(today, nowMin), [today, nowMin]);
-  if (!next) return <div className="wg-card-empty">今天没有课</div>;
+  /* 数据没到 ≠ 没课：加载中给加载态；今天有课但都已结束 ≠ 今天没课（语义分开，别误导） */
+  if (campus.state === "loading" && !campus.data) return <div className="wg-card-empty">课表加载中…</div>;
+  if (!next) return <div className="wg-card-empty">{today.length > 0 ? "今天的课都结束了" : "今天没有课"}</div>;
   const leftText = next.left > 0 ? next.left + " 分钟后" : "进行中";
   const span = Math.max(1, next.en - next.st);
   const pct = Math.max(0, Math.min(100, Math.round(((nowMin - next.st) / span) * 100)));
@@ -482,27 +485,18 @@ const NOTE_TONES: Record<string, string> = {
 };
 
 function NoteCard(props?: Record<string, unknown>): ReactNode {
-  const text = typeof props?.text === "string" && props.text.trim() ? props.text : "长按这张便笺，选「属性」写字";
+  /* 纯展示（2026-10-13）：折叠归自由白板的浮条管，本体不再自己吞 click——
+     此前残留的「点一下折叠」会在拖动/点选时乱触发，便笺看起来像被割成两块。
+     类名用 free-note-*：global.css 里旧白板的 .board-note 是个 fixed toast，同名会互相污染。 */
+  const text = typeof props?.text === "string" && props.text.trim() ? props.text : "双击便笺写内容";
   const tone = typeof props?.tone === "string" && NOTE_TONES[props.tone] ? props.tone : "yellow";
-  const folded = props?.folded === true;
-  const [localFolded, setLocalFolded] = useState<boolean | null>(null);
-  const isFolded = localFolded ?? folded;
   return (
-    <div
-      className={"board-note" + (isFolded ? " is-folded" : "")}
-      data-tone={tone}
-      style={{ background: NOTE_TONES[tone] }}
-      onClick={(e) => {
-        e.stopPropagation();
-        setLocalFolded(!isFolded);
-      }}
-      title={isFolded ? "点开便笺" : "点一下收起"}
-    >
-      <div className="board-note-strip">
-        <span className="board-note-dot" aria-hidden="true" />
-        <span className="board-note-hint">{isFolded ? "便笺（已收起）" : "便笺"}</span>
+    <div className="free-note" data-tone={tone} style={{ background: NOTE_TONES[tone] }}>
+      <div className="free-note-strip">
+        <span className="free-note-dot" aria-hidden="true" />
+        <span className="free-note-hint">便笺</span>
       </div>
-      {!isFolded ? <div className="board-note-text">{text}</div> : null}
+      <div className="free-note-text">{text}</div>
     </div>
   );
 }

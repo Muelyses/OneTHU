@@ -8091,25 +8091,23 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 .board-pen-act:hover:not(:disabled) { color: var(--text-1); }
 .board-pen-act:disabled { color: var(--text-3); cursor: default; }
 
-.board-note {
+.free-note {
   height: 100%;
   display: flex;
   flex-direction: column;
   border-radius: var(--r-md, 10px);
   border: 1px solid var(--border);
   overflow: hidden;
-  cursor: pointer;
 }
-.board-note-strip {
+.free-note-strip {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 8px;
+  padding: 8px;
 }
-.board-note-dot { width: 8px; height: 8px; border-radius: var(--r-pill); background: var(--text-3); flex: none; }
-.board-note.is-folded .board-note-dot { background: var(--accent); }
-.board-note-hint { font-size: var(--text-xs); color: var(--text-3); }
-.board-note-text {
+.free-note-dot { width: 8px; height: 8px; border-radius: var(--r-pill); background: var(--text-3); flex: none; }
+.free-note-hint { font-size: var(--text-xs); color: var(--text-3); }
+.free-note-text {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;

@@ -214,8 +214,10 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
       const d = delta[e.key];
       if (!d) return;
       e.preventDefault();
-      const nx = Math.min(Math.max(0, it.cell.x + d[0]), Math.max(0, cols - it.cell.w));
-      const ny = Math.max(0, it.cell.y + d[1]);
+      /* Shift = 大步 5 格（tldraw GRID_INCREMENT×5 同款）；普通 = 1 格 */
+      const step = e.shiftKey ? 5 : 1;
+      const nx = Math.min(Math.max(0, it.cell.x + d[0] * step), Math.max(0, cols - it.cell.w));
+      const ny = Math.max(0, it.cell.y + d[1] * step);
       if (nx === it.cell.x && ny === it.cell.y) return;
       apply(moveItem(doc, boardId, orientation, selectedId, { x: nx, y: ny }, cols));
     };

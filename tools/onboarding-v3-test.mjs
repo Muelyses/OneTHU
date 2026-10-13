@@ -22,13 +22,22 @@ assert.ok(!exists("apps/desktop/src/components/OnboardingTourV2.tsx"), "旧 Onbo
 assert.ok(!exists("tools/onboarding-v2-test.mjs"), "旧 v2 灰度护栏应已删除");
 assert.ok(!exists("tools/onboarding-account-steps-test.mjs"), "旧 v1 账号步骤护栏应已删除（其步骤随 v1 退役）");
 const app = read("apps/desktop/src/App.tsx");
-assert.ok(app.includes("<OnboardingTourV3 />"), "App 挂载点必须换成 OnboardingTourV3");
+/* 手机简版路由（dev-explorer 二轮 A8 共建口径）：App 挂 OnboardingTourGate——
+   组件内分流：is-phone → OnboardingTourMobile 五步简版；否则 → 本文件 V3 七步。
+   旧播放端只允许经这条链出现，v1/v2 的直接挂载依旧不存在。 */
+assert.ok(app.includes("<OnboardingTourGate />"), "App 挂载点必须走 OnboardingTourGate（手机分流 + 桌面 V3）");
+const mobileTour = exists("apps/desktop/src/components/OnboardingTourMobile.tsx")
+  ? read("apps/desktop/src/components/OnboardingTourMobile.tsx")
+  : "";
+assert.ok(mobileTour.includes("<OnboardingTourV3 />"), "手机门（桌面分支）必须仍挂 OnboardingTourV3");
+assert.ok(mobileTour.includes("useIsPhone") && mobileTour.includes("onethu.onboarded.phone"), "手机简版要有 phone 判定与独立偏好键");
 assert.ok(!app.includes("./components/OnboardingTour.js"), "App 不得再引旧 OnboardingTour");
 assert.ok(!app.includes("OnboardingTourV2"), "App 不得再引旧 OnboardingTourV2");
 
 /* HomeCoachMarks 由 Today 页自用（help-coach 护栏另钉），导览不再引用它 */
-assert.ok(app.includes("OnboardingTourV3") && read("apps/desktop/src/pages/Today.tsx").includes("<HomeCoachMarks />"),
-  "Today 页的 HomeCoachMarks 保留，导览与它解耦");
+assert.ok((app.includes("OnboardingTourGate") || app.includes("OnboardingTourV3")) && mobileTour.includes("OnboardingTourV3")
+  && read("apps/desktop/src/pages/Today.tsx").includes("<HomeCoachMarks />"),
+  "App→Gate→V3 链路与 Today 页的 HomeCoachMarks 保留，导览与它解耦");
 const v3 = read("apps/desktop/src/components/OnboardingTourV3.tsx");
 assert.ok(!v3.includes("HomeCoachMarks"), "V3 导览不挂 HomeCoachMarks（它属首页，不属导览）");
 

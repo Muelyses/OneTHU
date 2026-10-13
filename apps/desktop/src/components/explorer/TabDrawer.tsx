@@ -502,10 +502,10 @@ export function useDrawerRowsReorder(opts: DrawerRowsOpts): DrawerRowsApi {
   };
 
   const onContextMenu = (e: { preventDefault(): void; clientX: number; clientY: number; target: EventTarget | null }): void => {
-    e.preventDefault();
     const t = e.target instanceof Element ? e.target : null;
     const row = t?.closest<HTMLElement>(".ex-row[data-tab-id], .ex-row[data-ws-id], .ex-group-head[data-ws-id], .ex-row-wrap[data-ws-id]") ?? null;
-    if (!row) return;
+    if (!row) return; // 只有命中行才接管右键；输入框等仍用原生菜单
+    e.preventDefault();
     if (row.getAttribute("data-tab-id") === HOME_TAB_ID) return;
     const wsIdRaw = row.getAttribute("data-ws-id");
     const tid = row.getAttribute("data-tab-id");

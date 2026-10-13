@@ -747,3 +747,15 @@
 .ex-row:hover,
 .hs-detail-row:hover,
 .picker-row:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }
+
+/* ══════════ 液态玻璃 v4.1：标签抽屉 / OneGO = menu tier ═══════════ */
+.ex-sheet {
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  border-color: var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+}

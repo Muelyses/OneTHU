@@ -8262,3 +8262,12 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
     inset 0 1px 0 var(--glass-rim-top),
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
+
+/* 暗色下带文字的按钮提高到 10% 白（7% 在花背景上文字略虚） */
+:root[data-scheme="dark"] .btn { background: rgba(255, 255, 255, 0.1); }
+
+/* 分段控件按钮 = 染色玻璃 tint（激活由既有指示器承担，不加 blur——成群小件预算外） */
+.seg-track button {
+  background: transparent;
+}
+.seg-track button:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }

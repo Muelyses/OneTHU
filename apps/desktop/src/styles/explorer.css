@@ -243,7 +243,8 @@
 
 /* 标签 = 安静态（用户定稿：标签栏不用玻璃 chip）——激活=淡主题色填充 */
 .ex-tab { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.ex-tab:hover { background: var(--lg-tint, rgba(255, 255, 255, 0.4)); }
+/* 悬停走随明暗主题的 --glass-tint（旧写法 fallback 写死白 0.4，深色模式下成刺眼白块） */
+.ex-tab:hover { background: var(--glass-tint); }
 .ex-tab.is-active,
 .ex-tab.is-home {
   background: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);

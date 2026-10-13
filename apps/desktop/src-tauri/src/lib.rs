@@ -110,6 +110,50 @@ fn write_temp_file(name: String, data_base64: String) -> Result<String, String> 
     Ok(path.to_string_lossy().to_string())
 }
 
+/// 壁纸专用存档（2026-10-13 用户实测大图/视频走 dataURL：a) localStorage 1.2MB blob 上限必爆，
+/// b) 渲染端对超大 dataURL 的解码也常拒绝 → 用户看到「灰色一大片没铺开」）。
+/// 落 app_data_dir/wallpapers/（**不是 temp**：temp 会被系统清理，壁纸要长期）；只取文件名防目录穿越。
+#[tauri::command]
+fn wallpaper_save(app: tauri::AppHandle, name: String, data_base64: String) -> Result<String, String> {
+    use base64::Engine as _;
+    let safe = std::path::Path::new(&name)
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "wallpaper.bin".to_string());
+    let dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| format!("定位存档目录失败：{e}"))?
+        .join("wallpapers");
+    std::fs::create_dir_all(&dir).map_err(|e| format!("建目录失败：{e}"))?;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64.as_bytes())
+        .map_err(|e| format!("base64 解码失败：{e}"))?;
+    let path = dir.join(&safe);
+    std::fs::write(&path, bytes).map_err(|e| format!("写入失败：{e}"))?;
+    Ok(path.to_string_lossy().to_string())
+}
+
+/// 删除壁纸存档：路径必须落在 wallpapers 目录内（防目录穿越被滥用成任意删文件）。
+#[tauri::command]
+fn wallpaper_delete(app: tauri::AppHandle, path: String) -> Result<(), String> {
+    let root = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| e.to_string())?
+        .join("wallpapers");
+    let p = std::path::PathBuf::from(&path);
+    let pr = p.canonicalize().unwrap_or(p.clone());
+    let rr = root.canonicalize().unwrap_or(root.clone());
+    if !pr.starts_with(&rr) {
+        return Err("这个路径不在壁纸存档目录里，拒绝删除".into());
+    }
+    if pr.exists() {
+        std::fs::remove_file(&pr).map_err(|e| format!("删除失败：{e}"))?;
+    }
+    Ok(())
+}
+
 /// 读本地文件为 base64（附件通路：本地路径 → JS 侧 File/bytes）。
 /// 默认上限 64MB；超限直接报错而不是截断（避免悄悄传坏文件）。base64 膨胀 ~33%，调用方自担内存。
 #[tauri::command]
@@ -4367,7 +4411,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,
+            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_delete,
             overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,updater::updater_download,updater::updater_cancel_download,updater::updater_open_installer,overlay_win::overlay_set_panel_height,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
             seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,

@@ -9,6 +9,7 @@
  */
 import { useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import {
+  displayRef,
   ensureWallpaperLum,
   shellWallpaperSnapshot,
   subscribeWallpaper,
@@ -33,7 +34,7 @@ export function WallpaperVideoBox({
   }, [active, src]);
   return (
     <div className="wall-video-layer" aria-hidden="true">
-      <video ref={ref} src={src} autoPlay muted={!sound} loop playsInline />
+      <video ref={ref} src={displayRef(src)} autoPlay muted={!sound} loop playsInline />
       <div className="wall-video-veil" />
     </div>
   );

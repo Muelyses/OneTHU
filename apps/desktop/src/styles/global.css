@@ -2010,11 +2010,13 @@ select.input:focus {
 }
 
 /* 硬刷新悬浮按钮：固定右下角，全页面（含登录页）可见，触屏友好 */
+/* z 90：压内容(z1)/压栏体(55-80)，但**任何弹层(1200+)之下**——
+   不再压住设置浮层里的开关行（2026-10-13 用户反复点名「声音开关被硬刷新遮住」） */
 .hard-refresh-fab {
   position: fixed;
   right: 18px;
   bottom: 18px;
-  z-index: 9999;
+  z-index: 90;
   width: 44px;
   height: 44px;
   border-radius: 50%;

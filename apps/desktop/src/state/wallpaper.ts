@@ -26,6 +26,7 @@
  * 并提示用户删几张——壁纸是装饰，绝不因它崩数据。
  */
 import { showToast } from "./toast.js";
+import { convertFileSrc } from "@tauri-apps/api/core";
 
 export interface WallpaperLibItem {
   id: string;
@@ -50,11 +51,33 @@ export const LIBRARY_MAX = 12;
 /** 视频壁纸单文件上限（字节）：超限拒绝入库/应用 */
 export const VIDEO_MAX_BYTES = 12 * 1024 * 1024;
 
+/** Uint8Array → base64（分块防 call stack 爆；FileReader 的替代，避免多读一遍） */
+function toB64(u8: Uint8Array): string {
+  let out = "";
+  for (let i = 0; i < u8.length; i += 0x8000) {
+    out += String.fromCharCode(...Array.from(u8.subarray(i, i + 0x8000)));
+  }
+  return btoa(out);
+}
+
 const isWallpaperRef = (v: unknown): v is string =>
   typeof v === "string" &&
-  (v.startsWith("data:image/") || v.startsWith("data:video/") || v.startsWith("builtin:"));
+  (v.startsWith("data:image/") || v.startsWith("data:video/") || v.startsWith("builtin:") || v.startsWith("local:"));
 
-export const isVideoRef = (ref: string): boolean => ref.startsWith("data:video/");
+/** 磁盘存档 ref（"local:<绝对路径>"；2026-10-13 根治 dataURL 爆 localStorage 与渲染端大串解码） */
+const isLocalVideo = (ref: string): boolean => {
+  if (!ref.startsWith("local:")) return false;
+  const low = ref.toLowerCase();
+  return low.endsWith(".mp4") || low.endsWith(".webm");
+};
+
+export const isVideoRef = (ref: string): boolean => ref.startsWith("data:video/") || isLocalVideo(ref);
+
+/** ref → 能直接喂给 <img>/<video>/CSS url() 的地址：local: 转 tauri asset 通道，其余原样 */
+export function displayRef(ref: string): string {
+  const path = ref.startsWith("local:") ? ref.slice("local:".length) : null;
+  return path ? convertFileSrc(path) : ref;
+}
 
 function sanitize(raw: unknown): WallpaperDoc {
   const base: WallpaperDoc = { v: 2, global: null, tabs: {}, library: [] };
@@ -165,7 +188,7 @@ let lumVersion = 0;
 
 /** 暗档判定：内置渐变/视频按暗处理；图片看采样结果（没算完时先按暗，算完发一次变更） */
 export function wallpaperLum(ref: string): WallpaperLum {
-  if (ref.startsWith("data:image/")) return lumCache.get(ref) ?? "dark";
+  if (ref.startsWith("data:image/") || ref.startsWith("local:")) return lumCache.get(ref) ?? "dark";
   return "dark";
 }
 
@@ -199,13 +222,13 @@ function sampleLuma(ref: string): Promise<number> {
       }
     };
     img.onerror = () => resolve(0);
-    img.src = ref;
+    img.src = displayRef(ref);
   });
 }
 
 /** 确保某 ref 的亮度已入缓存（幂等；算完发一次变更让订阅方重画纱与属性） */
 export function ensureWallpaperLum(ref: string): void {
-  if (!ref.startsWith("data:image/") || lumCache.has(ref) || lumPending.has(ref)) return;
+  if ((!ref.startsWith("data:image/") && !/^local:.+\.(jpe?g|png|webp)$/i.test(ref)) || lumCache.has(ref) || lumPending.has(ref)) return;
   lumPending.add(ref);
   void sampleLuma(ref).then((v) => {
     lumPending.delete(ref);
@@ -230,18 +253,20 @@ export function veilOpacityFor(ref: string): number {
 /* ── 渲染取值 ── */
 
 /** 「仅内容页」档的画法：图片（含自适应纱）或内置渐变；视频返回 null（调用方渲染 <video> 层） */
-export function wallpaperStyleFor(path: string): { backgroundImage: string } | null {
+export function wallpaperStyleFor(path: string): { backgroundImage: string; backgroundSize: string; backgroundPosition: string; backgroundRepeat: string } | null {
   const ref = wallpaperFor(path);
   if (!ref) return null;
+  const base = { backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" as const };
   const css = builtinCss(ref);
-  if (css) return { backgroundImage: css };
-  if (ref.startsWith("data:image/")) {
+  if (css) return { backgroundImage: css, ...base };
+  if (ref.startsWith("data:image/") || /^local:.+\.(jpe?g|png|webp)$/i.test(ref)) {
     const veil = veilOpacityFor(ref);
     return {
-      backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${ref})`,
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${displayRef(ref)})`,
+      ...base,
     };
   }
-  return null; // data:video/ → 交给 <video> 层
+  return null; // 视频 → 交给 <video> 层
 }
 
 export interface ShellWallpaper {
@@ -274,7 +299,7 @@ export function shellWallpaperSnapshot(): ShellWallpaper | null {
       : {
           ref,
           kind: "image",
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${ref})`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, ${veil}), rgba(0, 0, 0, ${veil})), url(${displayRef(ref)})`,
           lum: wallpaperLum(ref),
         };
   shellCacheKey = key;
@@ -319,7 +344,19 @@ export function addToLibrary(ref: string, name: string): string | null {
   return null;
 }
 
+async function removeFileForRef(ref: string): Promise<void> {
+  if (!ref.startsWith("local:")) return;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke("wallpaper_delete", { path: ref.slice("local:".length) });
+  } catch {
+    /* 磁盘清理失败不阻塞：壁纸文件体量小，漏一个不至于伤数据 */
+  }
+}
+
 export function removeFromLibrary(id: string): void {
+  const gone = doc.library.find((it) => it.id === id);
+  if (gone?.ref.startsWith("local:")) void removeFileForRef(gone.ref);
   commit({ ...doc, library: doc.library.filter((it) => it.id !== id) });
 }
 
@@ -333,28 +370,38 @@ export interface ImportResult {
 
 /** 文件 → 壁纸 ref：图片压到 ≤1600px 宽、JPEG 0.82；mp4/webm 读为 dataURL（≤12MB，超限拒绝）。
  *  压缩/解码失败不落库——宁可设不上也不要把存储撑爆。 */
-export function importWallpaperFile(file: File): Promise<ImportResult> {
+export async function importWallpaperFile(file: File): Promise<ImportResult> {
   if (file.type.startsWith("video/")) {
     const okType = file.type === "video/mp4" || file.type === "video/webm";
     if (!okType) return Promise.resolve({ ref: null, error: "动态壁纸只认 mp4 / webm" });
     if (file.size > VIDEO_MAX_BYTES) return Promise.resolve({ ref: null, error: "视频超过 12MB，请先剪短再试" });
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const r = typeof reader.result === "string" && reader.result.startsWith("data:video/")
-          ? reader.result
-          : null;
-        resolve(r ? { ref: r, error: null } : { ref: null, error: "这个视频读不出来，换一个试试" });
-      };
-      reader.onerror = () => resolve({ ref: null, error: "这个视频读不出来，换一个试试" });
-      reader.readAsDataURL(file);
-    });
+    /* 存档落盘（local:<绝对路径>）：整串 base64 塞 localStorage 必爆 blob 上限，
+       渲染端对超大 dataURL 也常拒 —— 用户实测「动态壁纸坏 / 灰一大片」的根因。 */
+    const buf = await file.arrayBuffer();
+    const b64 = toB64(new Uint8Array(buf));
+    const ext = file.type === "video/mp4" ? "mp4" : "webm";
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const path = await invoke<string>("wallpaper_save", { name: `wp-${Date.now()}.${ext}`, data_base64: b64 });
+      return { ref: `local:${path}`, error: null };
+    } catch {
+      /* 非 Tauri/写盘失败：回落 dataURL（小视频可用，大视频仍会失败——但至少不比旧路差） */
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const r = typeof reader.result === "string" && reader.result.startsWith("data:video/") ? reader.result : null;
+          resolve(r ? { ref: r, error: null } : { ref: null, error: "这个视频读不出来，换一个试试" });
+        };
+        reader.onerror = () => resolve({ ref: null, error: "这个视频读不出来，换一个试试" });
+        reader.readAsDataURL(file);
+      });
+    }
   }
   if (!file.type.startsWith("image/")) return Promise.resolve({ ref: null, error: "壁纸只认图片或视频" });
   return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
-    img.onload = () => {
+    img.onload = async () => {
       try {
         const MAX = 1600;
         const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
@@ -364,6 +411,19 @@ export function importWallpaperFile(file: File): Promise<ImportResult> {
         const ctx = canvas.getContext("2d");
         if (!ctx) return resolve({ ref: null, error: "这张图处理失败，换一张试试" });
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        /* 图片同样落盘存档（local:）：与视频同根因；写盘失败回落 dataURL */
+        const blob = await new Promise<Blob | null>((rb) => canvas.toBlob((b) => rb(b), "image/jpeg", 0.82));
+        if (blob) {
+          try {
+            const { invoke } = await import("@tauri-apps/api/core");
+            const b64 = toB64(new Uint8Array(await blob.arrayBuffer()));
+            const path = await invoke<string>("wallpaper_save", { name: `wp-${Date.now()}.jpg`, data_base64: b64 });
+            resolve({ ref: `local:${path}`, error: null });
+            return;
+          } catch {
+            /* 回落 dataURL */
+          }
+        }
         resolve({ ref: canvas.toDataURL("image/jpeg", 0.82), error: null });
       } catch {
         resolve({ ref: null, error: "这张图处理失败，换一张试试" });

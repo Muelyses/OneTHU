@@ -20,6 +20,8 @@ export interface FreeItem {
   h: number;
   /** 便笺等自折叠组件的收起态 */
   folded?: boolean;
+  /** 组件透明度（0.25~1；2026-10-13 用户点名「透明度调节调不到组件上」——选中工具条四档） */
+  opacity?: number;
 }
 
 export interface FreeBoardDoc {
@@ -46,6 +48,7 @@ function sanitizeItem(raw: unknown): FreeItem | null {
     w: Math.max(MIN_W, num(r.w, 240)),
     h: Math.max(MIN_H, num(r.h, 120)),
     folded: r.folded === true ? true : undefined,
+    opacity: typeof r.opacity === "number" && Number.isFinite(r.opacity) ? Math.min(1, Math.max(0.25, r.opacity)) : undefined,
   };
 }
 
@@ -144,6 +147,12 @@ export function sizeItem(id: string, w: number, h: number, x?: number, y?: numbe
         : it,
     ),
   });
+}
+
+/** 组件透明度四档（与首页 chrome 的透明度口径一致：1/0.75/0.5/0.3） */
+export function setItemOpacity(id: string, opacity: number): void {
+  const v = Math.min(1, Math.max(0.25, opacity));
+  commit({ ...doc, items: doc.items.map((it) => (it.id === id ? { ...it, opacity: v } : it)) });
 }
 
 export function setItemFolded(id: string, folded: boolean): void {

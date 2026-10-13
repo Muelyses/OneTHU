@@ -25,6 +25,7 @@ import {
   raiseAboveOverlapping,
   removeItem,
   setItemFolded,
+  setItemOpacity,
   sizeItem,
   subscribeFreeBoard,
   updateItemProps,
@@ -404,7 +405,7 @@ export function FreeBoard(): ReactNode {
           <div
             key={it.id}
             className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "")}
-            style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
+            style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
             onPointerDown={(e) => {
               if (penOn) return;
               if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
@@ -465,6 +466,17 @@ export function FreeBoard(): ReactNode {
                     {it.folded ? " 展开" : "折叠"}
                   </button>
                 ) : null}
+                {[1, 0.75, 0.5, 0.3].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    title={`透明 ${Math.round(v * 100)}%`}
+                    className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
+                    onClick={() => setItemOpacity(it.id, v)}
+                  >
+                    {Math.round(v * 100)}%
+                  </button>
+                ))}
                 <button type="button" title="删除" className="is-danger" onClick={() => { removeItem(it.id); setSelected(null); }}>
                   <IconTrash width={13} height={13} />
                 </button>

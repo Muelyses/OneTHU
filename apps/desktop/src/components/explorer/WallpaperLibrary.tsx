@@ -10,6 +10,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } fro
 import {
   addToLibrary,
   builtinCss,
+  displayRef,
   ensureWallpaperLum,
   importWallpaperFile,
   isVideoRef,
@@ -35,8 +36,8 @@ export type WallScope = "global" | "tab";
 function WallThumb({ entry }: { entry: LibraryEntry }): ReactNode {
   const css = entry.builtin ? builtinCss(entry.ref) : null;
   if (css) return <span className="wall-thumb-fill" style={{ background: css }} />;
-  if (isVideoRef(entry.ref)) return <video src={entry.ref} muted preload="metadata" />;
-  return <img src={entry.ref} alt="" loading="lazy" />;
+  if (isVideoRef(entry.ref)) return <video src={displayRef(entry.ref)} muted preload="metadata" />;
+  return <img src={displayRef(entry.ref)} alt="" loading="lazy" />;
 }
 
 function WallCell({

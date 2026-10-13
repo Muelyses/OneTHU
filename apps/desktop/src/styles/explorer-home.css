@@ -556,6 +556,9 @@
   padding: 0 4px;
 }
 .free-toolbar button:hover { background: var(--hover, var(--surface-3)); color: var(--text-1); }
+/* 透明度四档（free-op）：选中态用主题 tint 描边——word % 變宽自适应（min-width） */
+.free-toolbar button.free-op { min-width: 34px; width: auto; font-size: var(--text-xs); padding: 0 var(--space-1, 4px); }
+.free-toolbar button.free-op.is-on { color: var(--md-sys-color-primary); box-shadow: inset 0 0 0 1px var(--md-sys-color-outline-variant); }
 .free-toolbar button.is-danger:hover { color: var(--danger, #e5484d); }
 
 /* 便笺就地编辑 */

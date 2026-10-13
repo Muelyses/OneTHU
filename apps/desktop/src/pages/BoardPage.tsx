@@ -33,6 +33,8 @@ import { useLearnData } from "../state/data.js";
 import { ATOM_TEMPLATE_IDS } from "../state/widgets.js";
 import { consumeEditOnOpen } from "../state/boardIntent.js";
 import { useContextMenu, type CtxItem } from "../components/ContextMenu.js";
+import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
+import { PhoneSheetGrip, useSheetDrag } from "../components/explorer/PhoneSheet.js";
 
 /** 拖拽埋点：logcat 里按 BOARD-DRAG 过滤（松手竞态排查用，稳定后可降级为调试开关）。 */
 const trace = (line: string): void => {
@@ -55,6 +57,12 @@ const MOVE_CANCEL_PX = 8;
 export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {}): ReactNode {
   const { navigate } = useApp();
   const menu = useContextMenu();
+  /* A6（手机档）：OnePage = seeking 底部抽屉——半屏起、可拉满（同抽屉手柄）。
+     hooks 全部无条件声明（hook-order 门禁），首屏无头嵌嵌（chromeless）不走抽屉分流。 */
+  const phoneUi = useIsPhone();
+  const mobSnap = useSheetSnap("onepage");
+  const onepageRef = useRef<HTMLDivElement | null>(null);
+  const onepageSheet = useSheetDrag(onepageRef, { id: "onepage" });
   const defs = useMemo(() => allWidgetDefs(), []);
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   const [editing, setEditing] = useState(false);
@@ -394,7 +402,7 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
     return { defId: d.id, size: planForItem(sizeItem, defs).size };
   })();
 
-  return (
+  const body: ReactNode = (
     <>
       {/* 无头模式（首页嵌入）：不渲染页头，编辑/添加/画笔走右下浮动钮（首页有自己的固定层，不再叠一层页头） */}
       {chromeless ? (
@@ -958,5 +966,22 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
 
       {note ? <div className="board-note" role="status">{note}</div> : null}
     </>
+  );
+
+  /* A6（手机档）：OnePage 呈现为底部抽屉——从半屏起、可拉满（同抽屉手柄 0.6vh ⟷ 0.94vh）。
+     首页的无头嵌入（chromeless）仍是整窗画布，不走这段分流。 */
+  if (!phoneUi || chromeless) return body;
+  return (
+    <div
+      ref={onepageRef}
+      className={
+        "onepage-sheet" +
+        (onepageSheet.dragging ? " is-mob-drag" : mobSnap === "full" ? " is-mob-full" : " is-mob-half")
+      }
+      style={onepageSheet.dragH != null ? { height: `${onepageSheet.dragH}px` } : undefined}
+    >
+      <PhoneSheetGrip label="OnePage 面板：拖住改高度（半屏或全屏）" gripProps={onepageSheet.gripProps} />
+      <div className="onepage-sheet-body">{body}</div>
+    </div>
   );
 }

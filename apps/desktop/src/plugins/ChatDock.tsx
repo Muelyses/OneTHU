@@ -44,6 +44,7 @@ import { setCreative, subscribeUserExt, userExtSnapshot } from "../state/userext
 import "../styles/explorer-oh.css"; // dev-explorer：胶囊/搜索模式样式（悬浮球窗口同 bundle，一处引入两端生效）
 
 import { isAndroidNavigator } from "../lib/androidHost.js";
+import { isPhoneNow } from "../state/phoneSheets.js";
 import { openExternal } from "../pages/info/openExternal.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1166,6 +1167,13 @@ export function ChatDock(): ReactNode {
       if (!el) return;
       const r = el.getBoundingClientRect();
       if (r.width > 0) {
+        /* 手机（A5）：不再与胶囊等宽——满水平轴半屏抽屉，左右各留 6px 缝（「弹一下」的语义照旧）；
+           底栏在底（topdock=false），把手仍在顶部，高度可拉满。 */
+        if (isPhoneNow()) {
+          const gap = 6;
+          setCapsuleRect({ left: gap, width: Math.max(window.innerWidth - gap * 2, 0), bottom: r.bottom, topdock: false });
+          return;
+        }
         /* 顶置判定：胶囊所在 ex-bbar 在视口上半部 = 两行顶置桌面形态（窗朝下生长）；
            手机底栏（bottom 形态）在同页签里 y≈vh-48，判定天然分叉 */
         const bar = el.closest(".ex-bbar");
@@ -1800,8 +1808,10 @@ export function ChatDock(): ReactNode {
     const d = dragRef.current;
     if (!d) return;
     const vh = window.innerHeight;
-    const lo = vh * DOCK_H_MIN_RATIO;
-    const hi = vh * DOCK_H_MAX_RATIO;
+    /* 手机（A5）：可拉满高——区间放宽到 0.35 ⟷ 0.94（桌面维持 0.3 ⟷ 0.8） */
+    const phoneH = isPhoneNow();
+    const lo = vh * (phoneH ? 0.35 : DOCK_H_MIN_RATIO);
+    const hi = vh * (phoneH ? 0.94 : DOCK_H_MAX_RATIO);
     /* 顶置形态（top 锚、把手在底部）：向下拽=变长（h=h0+dy）；底部形态（bottom 锚、把手在顶部）：
        向上拽=变长（h=h0−dy，原语义）。 */
     const topdock = topdockRef.current;
@@ -1939,7 +1949,11 @@ export function ChatDock(): ReactNode {
                   { left: capsuleRect.left, width: capsuleRect.width, bottom: "auto", top: capsuleRect.bottom + 4 }
                 : { left: capsuleRect.left, width: capsuleRect.width, bottom: "calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 4px)" }
               : null),
-            ...(panelH != null ? { height: `${panelH}px`, minHeight: 0 } : null),
+            ...(panelH != null
+            ? { height: `${panelH}px`, minHeight: 0 }
+            : isPhoneNow()
+              ? { height: "60vh", minHeight: 0 } /* 手机默认半屏（A5），把手上拉可到 0.94 */
+              : null),
           }}
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}

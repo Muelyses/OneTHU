@@ -463,3 +463,16 @@ html.is-phone .ex-bbar-center .ohx-capsule.is-open { margin: 0 4px; }
 /* 小窗内搜索/收音的字略小一档的手机密度（占位与输入都是 13px 的桌面值照旧） */
 html.is-phone .ex-bbar-center .ohx-capsule .ohx-capsule-ph { font-size: var(--text-sm); }
 html.is-phone .ex-bbar-center .ohx-capsule .ohx-input { font-size: var(--text-sm); }
+
+/* 手机兜底：胶囊量不到（极端情形）时，OH/搜索窗也别回到居中 86vw——直接满水平轴半屏起，
+   可拉满高（把手区间放宽在 ChatDock 手机分支）。量得到时内联样式优先，这里只是退路。 */
+html.is-phone .dock-panel {
+  left: 6px;
+  right: 6px;
+  transform: none;
+  width: auto;
+  height: 60vh;
+  min-height: 0;
+  max-height: 94vh;
+  border-radius: 16px 16px 0 0;
+}

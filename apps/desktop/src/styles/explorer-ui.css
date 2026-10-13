@@ -923,3 +923,19 @@ html.is-phone .ex-sheet.is-mob-full { height: 94vh; }
 html.is-phone .ex-sheet.is-mob-drag { animation: none; transition: none; }
 html.is-phone .ex-sheet.is-mob-half,
 html.is-phone .ex-sheet.is-mob-full { box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.24); }
+
+/* ══════════ 行级拖拽（抽屉内，电脑端与手机共用）：浮起行 + 停留合并灰框 ══════════ */
+.ex-row.is-lift-row,
+.ex-group-head.is-lift-row {
+  position: relative;
+  z-index: 6;
+  background: var(--dsw-alias-bg-layer-1, #fff);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  border-radius: 10px;
+}
+/* 停留框：拖到另一行/区块上停 0.6s，灰框罩住目标（与标签条 data-ws-frame 同语义） */
+.ex-row[data-ws-frame="1"],
+.ex-group-head[data-ws-frame="1"] {
+  box-shadow: inset 0 0 0 2px var(--dsw-alias-border-l2, #9ca3af);
+  border-radius: 10px;
+}

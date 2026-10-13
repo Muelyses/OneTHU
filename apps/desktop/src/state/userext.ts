@@ -132,6 +132,11 @@ export function widgetById(id: string): WidgetDef | null {
   return doc.widgets.find((x) => x.id === id) ?? null;
 }
 
+export function deleteWidget(id: string): void {
+  doc.widgets = doc.widgets.filter((x) => x.id !== id);
+  commit();
+}
+
 let doc: UserExtDoc = load();
 const listeners = new Set<() => void>();
 

@@ -354,6 +354,11 @@ export interface OnethuApi {
     flowRun(id: string): Promise<{ ok: boolean; error?: string }>;
     flowDelete(id: string): void;
     widgetCreate(name: string, html: string, x?: number, y?: number): { id: string };
+    widgetList(): Array<{ id: string; name: string; createdAt: number }>;
+    widgetDelete(id: string): void;
+    onePageCreate(name: string, icon?: string): { id: string };
+    onePageList(): Array<{ id: string; name: string; kind: string }>;
+    onePageAddItem(boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }>;
     themeApply(name: string, vars: unknown): { id: string };
     themeList(): Array<{ id: string; name: string; active: boolean }>;
     themeActivate(id: string | null): void;

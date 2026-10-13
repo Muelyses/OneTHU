@@ -21,7 +21,7 @@ import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
 import { getTabRoot, onTabReady } from "./tabs.js";
 import { getPluginAtom, pluginAtomKindOf, pluginAtomKinds, registerStaticAtomItem, staticAtomKinds } from "./pluginAtoms.js";
 import * as pluginWidgets from "./pluginWidgets.js";
-import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
+import { atomKeyOf, atomRefFromKey, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
 import {
   activateUserTheme,
   deleteFlow,
@@ -33,13 +33,15 @@ import {
   startScheduler,
   upsertFlow,
   upsertTool,
+  deleteWidget,
   upsertTheme,
   upsertWidget,
   userExtSnapshot,
   startUserThemeWatch,
   type ExtStep,
 } from "../state/userext.js";
-import { addItem } from "../state/freeBoard.js";
+import { addItem, freeBoardSnapshot, removeItem } from "../state/freeBoard.js";
+import { allOnePages, createOnePage, mutateBoards, notifyBoardsChanged } from "../state/onePage.js";
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
   putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
@@ -100,6 +102,32 @@ async function normalizeBinding(raw: unknown): Promise<WidgetBinding | null> {
 async function fallbackBinding(): Promise<WidgetBinding> {
   const { loadWidgetInstances } = await import("../state/widgetInstances.js");
   return loadWidgetInstances().fallback;
+}
+
+/** ext_onepage_add 的 kind+payload → WidgetSpec（白板组件三形态）。
+ *  atom 校验走动态 import（facade↔atoms 模块环，与同文件其余入口同法）。 */
+async function buildSpec(kind: string, payload: unknown): Promise<import("../state/boardCore.js").WidgetSpec | null> {
+  const p = (payload ?? {}) as Record<string, unknown>;
+  if (kind === "text") {
+    const text = String(p.text ?? "");
+    if (!text) return null;
+    return { kind: "text", text, variant: p.variant === "title" ? "title" : "label" };
+  }
+  if (kind === "atom-link") {
+    /* ref 格式 = "kind|key"（favorites.atomRefFromKey 的存储格式），解析后必须能在注册表查到 */
+    const ref = String(p.ref ?? "");
+    const a = atomRefFromKey(ref);
+    if (!a) return null;
+    const { resolveAtom } = await import("../state/atoms.js");
+    if (!resolveAtom(a)) return null;
+    return { kind: "atom-link", ref };
+  }
+  if (kind === "custom") {
+    const id = String(p.id ?? "");
+    if (!id) return null;
+    return { kind: "custom", id };
+  }
+  return null;
 }
 
 export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
@@ -862,6 +890,63 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         upsertWidget({ id: uid, name: String(name), html: sanitizeUserHtml(String(html)) });
         addItem({ kind: "custom", id: "usergen:" + uid }, x ?? 60, y ?? 360, 240, 160);
         return { id: uid };
+      },
+      widgetList: (): Array<{ id: string; name: string; createdAt: number }> =>
+        userExtSnapshot().widgets.map((w) => ({ id: w.id, name: w.name, createdAt: w.createdAt })),
+      widgetDelete: (id: string): void => {
+        gate(perms, "ui", "ext.widgetDelete");
+        deleteWidget(String(id));
+        const ref = "usergen:" + String(id);
+        /* 自由白板上的实例一并清掉 */
+        for (const it of freeBoardSnapshot().items) {
+          if (it.spec.kind === "custom" && it.spec.id === ref) removeItem(it.id);
+        }
+        /* 各 OnePage 白板上的实例一并清掉 */
+        mutateBoards((doc) => {
+          let touched = false;
+          const boards = doc.boards.map((b) => {
+            const prev = b.cells.portrait ?? [];
+            const portrait = prev.filter((it) => !(it.spec.kind === "custom" && it.spec.id === ref));
+            if (portrait.length !== prev.length) {
+              touched = true;
+              return { ...b, cells: { ...b.cells, portrait } };
+            }
+            return b;
+          });
+          return touched ? { ...doc, boards } : null;
+        });
+        notifyBoardsChanged();
+      },
+      onePageCreate: (name: string, icon?: string): { id: string } => {
+        gate(perms, "ui", "ext.onePageCreate");
+        const id = createOnePage(String(name), icon ? String(icon) : "star");
+        return { id };
+      },
+      onePageList: (): Array<{ id: string; name: string; kind: string }> =>
+        allOnePages().map((b) => ({ id: b.id, name: b.name, kind: b.kind })),
+      onePageAddItem: async (boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }> => {
+        gate(perms, "ui", "ext.onePageAdd");
+        const spec = await buildSpec(kind, payload);
+        if (!spec) throw new Error("不认识的组件类型或引用无效，可用：text / atom-link / custom");
+        const iid = "it." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        let placed = false;
+        mutateBoards((doc) => {
+          const boards = doc.boards.map((b) => {
+            if (b.id !== String(boardId)) return b;
+            placed = true;
+            const items = b.cells.portrait ?? [];
+            return {
+              ...b,
+              cells: {
+                ...b.cells,
+                portrait: [...items, { id: iid, spec, cell: { x: Math.max(0, x | 0), y: Math.max(0, y | 0), w: w ?? 2, h: h ?? 1 } }],
+              },
+            };
+          });
+          return placed ? { ...doc, boards } : null;
+        });
+        if (!placed) throw new Error("找不到这块 OnePage（id 不对或已删除）");
+        return { id: iid };
       },
       themeApply: (name: string, vars: unknown): { id: string } => {
         gate(perms, "ui", "ext.themeApply");

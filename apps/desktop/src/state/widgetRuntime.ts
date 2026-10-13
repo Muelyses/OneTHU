@@ -20,6 +20,7 @@ import {
   type WidgetInstanceContent, type WidgetSnapshot,
 } from "./widgetSnapshot.js";
 import { collectWidgetSlots } from "../plugins/pluginWidgets.js";
+import { phoneWidgetSnapshot } from "./userext.js";
 import { atomIconPng } from "./widgetIcon.js";
 import {
   bindingOf, loadWidgetInstances, pruneWidgetInstances, type WidgetBinding,
@@ -162,6 +163,20 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
         footer: String(s.footer ?? ""),
         target: String(s.target ?? ""),
       };
+    }
+    // OH 用户生成行（手机小组件自进化）：占插件之后最靠后的空槽；原生只有三个槽位提供者，
+    // 编号是建立时绑死的，所以这里不用任意键——用紧接插件后的那个 ≤3 的原生槽号。
+    const pw = phoneWidgetSnapshot();
+    if (pw) {
+      const used = Object.keys(slots).length;
+      if (used < 3) {
+        slots[String(used + 1)] = {
+          title: String(pw.title || "自定义"),
+          rows: pw.rows.map((r) => ({ text: String(r.text), sub: r.sub ? String(r.sub) : undefined })),
+          footer: "自定义",
+          target: "today",
+        };
+      }
     }
 
     try {

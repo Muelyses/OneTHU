@@ -363,6 +363,7 @@ export interface OnethuApi {
     themeList(): Array<{ id: string; name: string; active: boolean }>;
     themeActivate(id: string | null): void;
     themeDelete(id: string): void;
+    phoneWidgetSet(title: string, rows: unknown): { ok: boolean; rows: number };
   };
   kongjian: {
     page(opts?: { spaceId?: string; roomId?: string; date?: string }): Promise<import("@onethu/core").KongjianPage>;

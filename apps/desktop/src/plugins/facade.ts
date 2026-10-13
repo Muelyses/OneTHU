@@ -30,6 +30,7 @@ import {
   runFlow as runFlowSteps,
   runTool as runToolSteps,
   sanitizeUserHtml,
+  setPhoneWidget,
   startScheduler,
   upsertFlow,
   upsertTool,
@@ -963,6 +964,13 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         userExtSnapshot().themes.map((t) => ({ id: t.id, name: t.name, active: userExtSnapshot().activeThemeId === t.id })),
       themeActivate: (id: string | null): void => activateUserTheme(id),
       themeDelete: (id: string): void => deleteTheme(id),
+      /** 手机桌面小组件自定义内容：rows 为空数组即清除；持久化在 userext，App 前台算好随快照推送 */
+      phoneWidgetSet: (title: string, rows: unknown): { ok: boolean; rows: number } => {
+        gate(perms, "ui", "ext.phoneWidgetSet");
+        const list = Array.isArray(rows) ? (rows as Array<{ text?: unknown; sub?: unknown }>) : [];
+        setPhoneWidget(String(title ?? ""), list);
+        return { ok: true, rows: userExtSnapshot().phone?.rows.length ?? 0 };
+      },
     },
     favorites: {
       /** 收藏本插件原子（key = "<tabId>~<原子key>"；展示元数据走 registerAtom.resolve） */

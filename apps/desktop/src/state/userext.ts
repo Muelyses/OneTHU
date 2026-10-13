@@ -60,6 +60,18 @@ export interface UserFlow {
   lastOk?: boolean;
 }
 
+/** 手机桌面小组件的自定义内容（OH 自进化：把任意行文放到手机桌面） */
+export interface PhoneRow {
+  text: string;
+  sub?: string;
+}
+
+export interface PhoneWidgetContent {
+  title: string;
+  rows: PhoneRow[];
+  updatedAt: number;
+}
+
 const KEY = "onethu.userext.v1";
 
 export interface UserExtDoc {
@@ -70,10 +82,12 @@ export interface UserExtDoc {
   themes: UserTheme[];
   /** 当前生效的用户生成主题 id（null = 跟随系统主题） */
   activeThemeId: string | null;
+  /** 手机桌面小组件自定义内容（OH 推送；null = 未占用，原生回落插件槽） */
+  phone: PhoneWidgetContent | null;
 }
 
 function empty(): UserExtDoc {
-  return { v: 1, tools: [], flows: [], widgets: [], themes: [], activeThemeId: null };
+  return { v: 1, tools: [], flows: [], widgets: [], themes: [], activeThemeId: null, phone: null };
 }
 
 function load(): UserExtDoc {
@@ -82,6 +96,17 @@ function load(): UserExtDoc {
     if (raw) {
       const p = JSON.parse(raw) as Partial<UserExtDoc>;
       if (p.v === 1 && Array.isArray(p.tools) && Array.isArray(p.flows)) {
+        const phone = ((): PhoneWidgetContent | null => {
+          if (!p.phone || typeof p.phone !== "object") return null;
+          const q = p.phone as Partial<PhoneWidgetContent>;
+          const rows = Array.isArray(q.rows)
+            ? q.rows
+                .filter((r): r is PhoneRow => !!r && typeof r === "object" && typeof (r as PhoneRow).text === "string")
+                .map((r) => ({ text: r.text.slice(0, 40), sub: r.sub ? String(r.sub).slice(0, 60) : undefined }))
+                .slice(0, 8)
+            : [];
+          return rows.length > 0 ? { title: String(q.title ?? "").slice(0, 20) || "自定义", rows, updatedAt: Date.now() } : null;
+        })();
         return {
           v: 1,
           tools: p.tools,
@@ -89,6 +114,7 @@ function load(): UserExtDoc {
           widgets: Array.isArray(p.widgets) ? p.widgets : [],
           themes: Array.isArray(p.themes) ? p.themes : [],
           activeThemeId: typeof p.activeThemeId === "string" ? p.activeThemeId : null,
+          phone,
         };
       }
     }
@@ -185,6 +211,21 @@ export function upsertFlow(f: Omit<UserFlow, "createdAt"> & { createdAt?: number
 export function deleteFlow(id: string): void {
   doc.flows = doc.flows.filter((x) => x.id !== id);
   commit();
+}
+
+/** 手机小组件自定义内容：rows 为空 = 清除（原生回落插件内容） */
+export function setPhoneWidget(title: string, rows: Array<{ text?: unknown; sub?: unknown }>): void {
+  const clean: PhoneRow[] = rows
+    .map((r) => ({ text: String(r?.text ?? "").trim(), sub: String(r?.sub ?? "").trim() || undefined }))
+    .filter((r) => r.text)
+    .slice(0, 8)
+    .map((r) => ({ text: r.text.slice(0, 40), sub: r.sub ? r.sub.slice(0, 60) : undefined }));
+  doc.phone = clean.length > 0 ? { title: String(title ?? "").slice(0, 20) || "自定义", rows: clean, updatedAt: Date.now() } : null;
+  commit();
+}
+
+export function phoneWidgetSnapshot(): PhoneWidgetContent | null {
+  return doc.phone;
 }
 
 export function touchFlow(id: string, ok: boolean): void {

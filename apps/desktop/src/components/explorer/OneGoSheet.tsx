@@ -6,10 +6,14 @@
  * - 工作区段与 TabDrawer 共用 WorkspacePanel（一份逻辑，两处引用）。
  * 开合是模块级 store（palette.ts 同款写法）。
  */
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { closeLiveWorkspace, dissolveWorkspace, explorerSnapshot, focusTab, HOME_TAB_ID, openTab, openWorkspace, subscribeExplorer } from "../../state/explorer.js";
 import { useExitPhase } from "../../lib/useExitPhase.js";
+import { useIsPhone, useSheetSnap } from "../../state/phoneSheets.js";
+import { PhoneSheetGrip, useSheetDrag } from "./PhoneSheet.js";
+import { openContextMenu, type MenuItem } from "./ContextMenu.js";
+import { useDrawerRowsReorder } from "./TabDrawer.js";
 import { useAnchorPos } from "./TabDrawer.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { useFavs } from "../../state/favs.js";
@@ -20,7 +24,6 @@ import type { LearnNav, Page } from "../../state/app.js";
 import { useApp } from "../../state/context.js";
 import { FolderIcon } from "../Icons.js";
 import { WorkspacePanel } from "./TabDrawer.js";
-import { openContextMenu } from "./ContextMenu.js";
 import { openFolderIconPicker } from "./FolderIconPicker.js";
 import { showToast } from "../../state/toast.js";
 import {
@@ -301,9 +304,43 @@ type SheetTab = "favs" | "ws";
 
 function OneGoSheetInner(): ReactNode {
   const open = useOneGoSheetOpen();
+  /* 手机端（A4 同手柄）：seeking 抽屉（0.6vh ⟷ 0.94vh 两档） */
+  const phoneUi = useIsPhone();
+  const snapState = useSheetSnap("onego");
+  const sheetRef = useRef<HTMLElement | null>(null);
+  const sheet = useSheetDrag(sheetRef, { id: "onego" });
   const [closing, requestClose] = useExitPhase(closeOneGoSheet, open);
   const expanded = useExpanded();
   const anchor = useAnchorPos("ex-bbar-onego-btn", open, expanded);
+
+  /** 工作区行菜单（与 TabDrawer 同一份语义：打开 / 编辑 / 解散 / 彻底删除；B 的右键口径） */
+  const openWsMenuAt = useCallback((x: number, y: number, wsId: string): void => {
+    const ws = explorerSnapshot().workspaces.find((w) => w.id === wsId);
+    if (!ws) return;
+    const count = explorerSnapshot().tabs.filter((t) => t.workspaceId === wsId).length;
+    const items: MenuItem[] = [
+      { label: "打开工作区", onSelect: () => openWorkspace(wsId) },
+      { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(wsId) },
+      { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(wsId), danger: true, sepBefore: true },
+      {
+        label: "彻底删除（连同标签页）",
+        onSelect: () =>
+          void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+            if (ok) closeLiveWorkspace(wsId);
+          }),
+        danger: true,
+        sepBefore: true,
+      },
+    ];
+    openContextMenu(x, y, items);
+  }, []);
+
+  /** 工作区块与行的长按/右键（触屏行列出工作区行；拖拽在该抽屉不启） */
+  const sheetCtl = useDrawerRowsReorder({
+    onTabMenu: () => undefined,
+    onWsMenu: openWsMenuAt,
+    onGroupDrop: () => undefined,
+  });
   const [seg, setSeg] = useState<SheetTab>("favs");
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
@@ -322,11 +359,18 @@ function OneGoSheetInner(): ReactNode {
     <>
       <div className={"ex-sheet-mask" + (closing ? " is-closing" : "")} onClick={requestClose} />
       <aside
-        className={"ex-sheet ex-onego" + (expanded ? " ex-pop" : "") + (closing ? " is-closing" : "")}
+        ref={phoneUi ? sheetRef : undefined}
+        className={"ex-sheet ex-onego" + (expanded ? " ex-pop" : "") + (closing ? " is-closing" : "") + (phoneUi ? (sheet.dragging ? " is-mob-drag" : snapState === "full" ? " is-mob-full" : " is-mob-half") : "")}
         role="dialog"
         aria-label="OneGO!"
-        style={expanded ? { top: anchor?.top, left: anchor?.left, bottom: "auto", right: "auto", visibility: anchor ? undefined : "hidden" } : undefined}
+        style={phoneUi
+          ? { height: sheet.dragH != null ? `${sheet.dragH}px` : undefined }
+          : expanded ? { top: anchor?.top, left: anchor?.left, bottom: "auto", right: "auto", visibility: anchor ? undefined : "hidden" } : undefined}
+        onPointerDown={sheetCtl.onPointerDown}
+        onContextMenu={sheetCtl.onContextMenu}
+        onClickCapture={sheetCtl.onClickCapture}
       >
+        {phoneUi ? <PhoneSheetGrip label="拖住改高度（半屏或全屏）" gripProps={sheet.gripProps} /> : null}
         <header className="ex-sheet-head">
           <b>OneGO!</b>
           <span className="ex-sec-head-note">组织你的工作</span>

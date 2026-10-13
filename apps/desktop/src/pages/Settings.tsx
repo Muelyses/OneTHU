@@ -8,6 +8,7 @@ import {
 } from "../state/wallpaper.js";
 import { useExplorerState, allTabs } from "../state/explorer.js";
 import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
+import { getGlassLevel, glassLevels, setGlassLevel, subscribeGlassLevel } from "../lib/glassLevel.js";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
@@ -1746,10 +1747,31 @@ function WallpaperSection(): ReactNode {
       <div className="wall-sound-row">
         <div>
           <div className="setting-title">动态壁纸声音</div>
-          <div className="setting-desc">视频壁纸带着声音放；默认静音，想开随时开。</div>
+          <div className="setting-desc">默认静音；视频壁纸有声时才需手势放开（浏览器自动播放策略）。</div>
         </div>
         <Switch on={sound} onChange={(v) => setVideoSound(v)} label="动态壁纸声音" />
       </div>
+    </div>
+  );
+}
+
+/** 玻璃程度四段选择（外观分节）：值与 <html data-glass> 都由 lib/glassLevel.ts 管
+ *  （默认档均衡不落属性 = 走基座玻璃令牌；改档即时生效，存档键是该模块内部约定）。 */
+function GlassLevelSegmented(): ReactNode {
+  const level = useSyncExternalStore(subscribeGlassLevel, getGlassLevel, getGlassLevel);
+  return (
+    <div style={{ display: "flex", gap: 8, flex: "none" }}>
+      {glassLevels().map((g) => (
+        <button
+          key={g.id}
+          className={"btn " + (level === g.id ? "btn-primary" : "btn-ghost")}
+          style={{ flex: "none" }}
+          aria-pressed={level === g.id}
+          onClick={() => setGlassLevel(g.id)}
+        >
+          {g.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -1809,6 +1831,14 @@ function AppearanceSection(): ReactNode {
           <button className={"btn " + (tabLayoutDefault === "h" ? "btn-primary" : "btn-ghost")} style={{ flex: "none" }} aria-pressed={tabLayoutDefault === "h"} onClick={() => setTabLayoutDefault("h")}>横版</button>
           <button className={"btn " + (tabLayoutDefault === "v" ? "btn-primary" : "btn-ghost")} style={{ flex: "none" }} aria-pressed={tabLayoutDefault === "v"} onClick={() => setTabLayoutDefault("v")}>竖版</button>
         </div>
+      </div>
+      {/* 玻璃程度：全站玻璃面材浓度四档（clear/balanced/rich/deep → data-glass 覆盖块） */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+        <div>
+          <div className="setting-title">玻璃程度</div>
+          <div className="setting-desc">清透更亮透，浓郁更深实；影响全站玻璃面材。</div>
+        </div>
+        <GlassLevelSegmented />
       </div>
       {/* 主题（① 2026-10-11 用户拍板）：这里**只做切换**，且**只列已启用**的主题（未启用插件的不出现）；
           启用/停用在「插件」里，安装主题走右边那个按钮（跳市场 + 自动筛「主题」）。 */}

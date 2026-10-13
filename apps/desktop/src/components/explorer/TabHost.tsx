@@ -31,7 +31,6 @@ import { HomeTab } from "./HomeTab.js";
 import {
   BUILTIN_WALLPAPERS,
   ensureWallpaperLum,
-  importWallpaperFile,
   isVideoRef,
   setGlobalWallpaper,
   setTabWallpaper,
@@ -45,6 +44,7 @@ import {
   type WallpaperLum,
 } from "../../state/wallpaper.js";
 import { WallpaperVideoBox } from "./WallpaperVideo.js";
+import { WallpaperLibrary, type WallScope } from "./WallpaperLibrary.js";
 
 /* ══════════ tab 局部路由上下文 ══════════ */
 
@@ -111,25 +111,31 @@ function onInteractive(el: EventTarget | null): boolean {
 
 interface MenuPos { x: number; y: number; tabId: string }
 
-function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void }): ReactNode {
+function TabContextMenu({
+  pos,
+  onClose,
+  onPick,
+}: {
+  pos: MenuPos;
+  onClose: () => void;
+  /** 打开壁纸库选择器（菜单关、选择器接着开，同一坐标）：global=全屏 / tab=本页 */
+  onPick: (scope: WallScope) => void;
+}): ReactNode {
   const isHome = pos.tabId === HOME_TAB_ID;
   const tab = allTabs().find((t) => t.id === pos.tabId);
   const wallKey = tab ? (tab.kind === "home" ? "home" : wallpaperPathOf(tab.page, tab.params)) : "home";
-  /* 壁纸入口：每条标签路径都可以有自己的壁纸（文件或内置渐变），清除则回落全局 */
-  const wallInput = useRef<HTMLInputElement | null>(null);
-  const wallInputGlobal = useRef<HTMLInputElement | null>(null);
-  const pickWallpaper = (): void => wallInput.current?.click();
-  const pickWallpaperGlobal = (): void => wallInputGlobal.current?.click();
+  /* 壁纸入口：换壁纸两条走壁纸库选择器（上传/内置渐变/删除都在库里，库内有上传入口，
+     因此不再保留单独的隐藏 file input——2026-10-13 接线）；清除则回落全局 */
   const hasGlobal = !!wallpaperSnapshot().global;
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
     { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
-    { label: "更换此页壁纸…（仅内容页）", act: pickWallpaper },
+    { label: "换壁纸（本页）· 从库选…", act: () => onPick("tab") },
     ...BUILTIN_WALLPAPERS.map((b) => ({
       label: "壁纸 · " + b.label + "（仅内容页）",
       act: () => setTabWallpaper(wallKey, "builtin:" + b.id),
     })),
     ...(wallpaperFor(wallKey) ? [{ label: "清除此页壁纸", danger: true, act: () => setTabWallpaper(wallKey, null) }] : []),
-    { label: "更换全屏壁纸…（整个软件底色）", act: pickWallpaperGlobal },
+    { label: "换壁纸（全屏）· 从库选…", act: () => onPick("global") },
     ...BUILTIN_WALLPAPERS.slice(0, 4).map((b) => ({
       label: "全屏壁纸 · " + b.label,
       act: () => setGlobalWallpaper("builtin:" + b.id),
@@ -144,35 +150,6 @@ function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void })
   }, [onClose]);
   return createPortal(
     <>
-      {/* 隐藏的文件选择器：壁纸图片选中即压缩落库 */}
-      <input
-        ref={wallInput}
-        type="file"
-        accept="image/*,video/mp4,video/webm"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          e.target.value = "";
-          if (!f) return;
-          void importWallpaperFile(f).then((r) => {
-            if (r.ref) setTabWallpaper(wallKey, r.ref);
-          });
-        }}
-      />
-      <input
-        ref={wallInputGlobal}
-        type="file"
-        accept="image/*,video/mp4,video/webm"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          e.target.value = "";
-          if (!f) return;
-          void importWallpaperFile(f).then((r) => {
-            if (r.ref) setGlobalWallpaper(r.ref);
-          });
-        }}
-      />
       <div
         style={{ position: "fixed", inset: 0, zIndex: 1200 }}
         onClick={onClose}
@@ -195,6 +172,43 @@ function TabContextMenu({ pos, onClose }: { pos: MenuPos; onClose: () => void })
   );
 }
 
+/* ══════════ 壁纸库选择卡（2026-10-13 接线）：菜单项「换壁纸 · 从库选」打开 ══════════
+   浮动卡片 = menu tier 玻璃壳（样式见 explorer.css 的 .wall-lib-picker-card），
+   位置取菜单坐标并夹取在视口内；Escape / 点卡片外（遮罩）关闭；
+   内部是 WallpaperLibrary picker：点图=应用到菜单指定的范围（scope），上传也在库里。 */
+function WallPickerCard({
+  scope,
+  wallKey,
+  left,
+  top,
+  onClose,
+}: {
+  scope: WallScope;
+  wallKey: string;
+  left: number;
+  top: number;
+  onClose: () => void;
+}): ReactNode {
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [onClose]);
+  return createPortal(
+    <>
+      <div
+        style={{ position: "fixed", inset: 0, zIndex: 1200 }}
+        onClick={onClose}
+        onContextMenu={(e) => { e.preventDefault(); onClose(); }}
+      />
+      <div className="wall-lib-picker-card" style={{ left, top }}>
+        <WallpaperLibrary variant="picker" scope={scope} tabKey={wallKey} onClose={onClose} />
+      </div>
+    </>,
+    document.body,
+  );
+}
+
 /* ══════════ 宿主 ══════════ */
 
 export function TabHost(): ReactNode {
@@ -202,6 +216,15 @@ export function TabHost(): ReactNode {
   const activeId = st.activeId;
   const mounted = useMountedTabs(activeId, st.tabs);
   const [menu, setMenu] = useState<MenuPos | null>(null);
+  /* 壁纸库选择卡（右键菜单「换壁纸 · 从库选」）：菜单关、选择卡接着开——
+     坐标沿用发起菜单的 pos，wallKey 取发起标签页的路径键（「本页」= 它） */
+  const [picker, setPicker] = useState<{ scope: WallScope; x: number; y: number; wallKey: string } | null>(null);
+  const openPicker = useCallback((p: MenuPos, scope: WallScope) => {
+    const t = allTabs().find((x) => x.id === p.tabId) ?? null;
+    const wallKey = !t || t.kind === "home" ? "home" : wallpaperPathOf(t.page, t.params);
+    setMenu(null); // pick 的动作语义：先关菜单，选择卡随后弹出（同一坐标）
+    setPicker({ scope, x: p.x, y: p.y, wallKey });
+  }, []);
   /* 长按计时（触屏）：550ms 原地按住 → 菜单；鼠标用右键 */
   const press = useRef<{ x: number; y: number; id: string; timer: number } | null>(null);
   const clearPress = useCallback(() => {
@@ -303,7 +326,17 @@ export function TabHost(): ReactNode {
           </div>
         );
       })}
-      {menu ? <TabContextMenu pos={menu} onClose={() => setMenu(null)} /> : null}
+      {menu ? <TabContextMenu pos={menu} onClose={() => setMenu(null)} onPick={(scope) => openPicker(menu, scope)} /> : null}
+      {picker
+        ? <WallPickerCard
+            scope={picker.scope}
+            wallKey={picker.wallKey}
+            /* 夹取视口内：卡片宽约 360（窄屏用 vw 收窄），高按 320 起步；Math.max 防极小窗口 */
+            left={Math.max(8, Math.min(picker.x, window.innerWidth - 380))}
+            top={Math.max(8, Math.min(picker.y, window.innerHeight - 340))}
+            onClose={() => setPicker(null)}
+          />
+        : null}
     </>
   );
 }

@@ -8195,6 +8195,93 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-tint: rgba(255, 255, 255, 0.06);
 }
 
+/* ── 玻璃程度档（设置→外观四档，<html data-glass>；lib/glassLevel.ts）──
+   按 alpha 静态乘出三档死值（0.65×/1.3×/1.6×，封顶 0.97），Chromium 96 兼容不运算。
+   清透档把 blur 上移一档补偿可读性（更透就得更糊）；浓郁/极致档 blur 不动、
+   极致档把 shadow 加深一档。默认档不写属性，走上面的基座值。 */
+:root[data-glass="clear"] {
+  --glass-fill: rgba(255, 255, 255, 0.34);
+  --glass-fill-regular: rgba(255, 255, 255, 0.43);
+  --glass-tint: rgba(255, 255, 255, 0.26);
+  --glass-menu-fill: rgba(246, 247, 249, 0.36);
+  --glass-menu-blur: blur(30px) saturate(155%);
+  --glass-chip-blur: blur(10px) saturate(135%);
+  --glass-panel-blur: blur(10px) saturate(140%);
+  --lg-blur-clear: blur(18px) saturate(170%);
+  --glass-card-fill: rgba(255, 255, 255, 0.3);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.4);
+  --glass-card-fill-3: rgba(240, 243, 247, 0.47);
+  --glass-shadow: 0 10px 30px rgba(30, 33, 45, 0.07);
+}
+:root[data-glass="rich"] {
+  --glass-fill: rgba(255, 255, 255, 0.68);
+  --glass-fill-regular: rgba(255, 255, 255, 0.86);
+  --glass-tint: rgba(255, 255, 255, 0.52);
+  --glass-menu-fill: rgba(246, 247, 249, 0.72);
+  --glass-card-fill: rgba(255, 255, 255, 0.6);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.81);
+  --glass-card-fill-3: rgba(240, 243, 247, 0.94);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.6);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.81);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.94);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.39);
+}
+:root[data-glass="deep"] {
+  --glass-fill: rgba(255, 255, 255, 0.83);
+  --glass-fill-regular: rgba(255, 255, 255, 0.97);
+  --glass-tint: rgba(255, 255, 255, 0.64);
+  --glass-menu-fill: rgba(246, 247, 249, 0.88);
+  --glass-card-fill: rgba(255, 255, 255, 0.74);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.97);
+  --glass-card-fill-3: rgba(240, 243, 247, 0.99);
+  --glass-shadow: 0 12px 34px rgba(30, 33, 45, 0.16);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.74);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.97);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.99);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.48);
+}
+:root[data-glass="clear"][data-scheme="dark"] {
+  --glass-fill: rgba(255, 255, 255, 0.05);
+  --glass-fill-regular: rgba(30, 30, 36, 0.36);
+  --glass-tint: rgba(255, 255, 255, 0.04);
+  --glass-menu-fill: rgba(22, 22, 27, 0.36);
+  --glass-card-fill: rgba(255, 255, 255, 0.05);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.08);
+  --glass-card-fill-3: rgba(255, 255, 255, 0.12);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.05);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.08);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.12);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.02);
+  --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+}
+:root[data-glass="rich"][data-scheme="dark"] {
+  --glass-fill: rgba(255, 255, 255, 0.09);
+  --glass-fill-regular: rgba(30, 30, 36, 0.72);
+  --glass-tint: rgba(255, 255, 255, 0.08);
+  --glass-menu-fill: rgba(22, 22, 27, 0.72);
+  --glass-card-fill: rgba(255, 255, 255, 0.09);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.16);
+  --glass-card-fill-3: rgba(255, 255, 255, 0.23);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.09);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.16);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.23);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.04);
+}
+:root[data-glass="deep"][data-scheme="dark"] {
+  --glass-fill: rgba(255, 255, 255, 0.12);
+  --glass-fill-regular: rgba(30, 30, 36, 0.88);
+  --glass-tint: rgba(255, 255, 255, 0.1);
+  --glass-menu-fill: rgba(22, 22, 27, 0.88);
+  --glass-card-fill: rgba(255, 255, 255, 0.12);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.2);
+  --glass-card-fill-3: rgba(255, 255, 255, 0.29);
+  --glass-shadow: 0 22px 46px rgba(0, 0, 0, 0.5);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.12);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.2);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.29);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.05);
+}
+
 /* rim 三件套（一条 box-shadow 表达，全部玻璃面共用）。
    注意：只上「件」（.free-item 等），不上「板」——.freeboard 是首页整页画布，
    给它上 rim 会变成围住整个首页的雷霆大框（2026-10-13 用户点名删除），画布必须无框。 */

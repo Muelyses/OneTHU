@@ -42,6 +42,9 @@ installKeepalive();   // 10 分钟会话保活探针：死会话在用户点击�
 // 系统日历自动跟随：订阅云/本日程与课表变更（未开启时零开销）
 import { initSystemCalAutoSync } from "./state/systemCal.js";
 initSystemCalAutoSync();
+// 玻璃程度档位：读档落到 <html data-glass>（默认档不落属性）
+import { initGlassLevel } from "./lib/glassLevel.js";
+initGlassLevel();
 import "@onethu/ui/base.css";
 import "./styles/global.css";
 // 动效层（local/anim-delight）：令牌 + keyframes + 全局微交互。必须在 global.css 之后，

@@ -374,19 +374,19 @@
 .wall-lib-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: 8px;
+  gap: 12px;
   width: 100%;
 }
 .wall-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.wall-thumb-box { position: relative; border-radius: 10px; overflow: hidden; }
+.wall-thumb-box { position: relative; border-radius: var(--r-md, 10px); overflow: hidden; }
 .wall-thumb {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 3;
   padding: 0;
   border: 1px solid var(--glass-border, var(--border));
-  border-radius: 10px;
-  background: var(--surface-3, var(--bg-soft));
+  border-radius: var(--r-md, 10px);
+  background: var(--glass-card-fill, var(--surface-3, var(--bg-soft)));
   cursor: pointer;
   overflow: hidden;
   transition: box-shadow var(--dur-1, 0.12s) ease, border-color var(--dur-1, 0.12s) ease;
@@ -395,29 +395,34 @@
 .wall-thumb img,
 .wall-thumb video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .wall-thumb-fill { display: block; width: 100%; height: 100%; }
+/* 当前页在用：2px 高亮描边，颜色跟主题 primary（描边套外圈不啃圆角） */
 .wall-thumb.is-page-active {
-  border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent), var(--glass-shadow);
+  border-color: var(--md-sys-color-primary, var(--accent));
+  box-shadow:
+    0 0 0 2px var(--md-sys-color-primary, var(--accent)),
+    var(--glass-shadow);
 }
+/* 小玻璃 chip：底走玻璃 chip 材质（暗底保证角标上的白字可读，两种 scheme 都成立）；
+   blur 用统一 chip 档（随玻璃程度四档走）；删除角标 hover 泛红（md-sys-error）。 */
 .wall-chip {
   position: absolute;
   height: 20px;
   padding: 0 4px;
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-pill, 999px);
   font-size: var(--text-xs);
   line-height: 20px;
   cursor: pointer;
   color: #fff;
   background: rgba(15, 17, 21, 0.62);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: var(--glass-chip-blur, blur(8px));
+  backdrop-filter: var(--glass-chip-blur, blur(8px));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .wall-chip-full { right: 4px; bottom: 4px; }
 .wall-chip.is-on { background: var(--accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
 .wall-chip-del { right: 4px; top: 4px; width: 20px; padding: 0; }
-.wall-chip-del:hover { background: var(--red); }
+.wall-chip-del:hover { background: var(--md-sys-color-error, var(--red)); }
 .wall-dot {
   position: absolute;
   left: 4px;
@@ -443,3 +448,30 @@
   padding-top: 8px;
   border-top: 1px solid var(--border-soft, var(--border));
 }
+
+/* ═══ 壁纸库选择卡（TabHost 右键「换壁纸 · 从库选」的浮动壳，2026-10-13 接线） ═══
+   menu tier 玻璃（与 .explorer-ctxmenu 同层：z 1311 压住其 1200 的遮罩）；
+   宽约 360（窄屏用 vw 收窄），高限 78vh——库网格在卡内滚动，超出不撑破视口。 */
+.wall-lib-picker-card {
+  position: fixed;
+  z-index: 1311;
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 16px));
+  max-height: min(78vh, 560px);
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--glass-menu-fill);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
+  border: 1px solid var(--glass-border, var(--border));
+}
+.wall-lib-picker-card .wall-lib { min-height: 0; }
+.wall-lib-picker-card .wall-lib-picker { width: 100%; }
+.wall-lib-picker-card .wall-lib-grid {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  scrollbar-width: none;
+}
+.wall-lib-picker-card .wall-lib-grid::-webkit-scrollbar { display: none; }

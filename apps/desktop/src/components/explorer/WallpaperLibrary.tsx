@@ -43,10 +43,13 @@ function WallCell({
   entry,
   variant,
   tabKey,
+  scope,
 }: {
   entry: LibraryEntry;
   variant: "panel" | "picker";
   tabKey: string;
+  /** picker：菜单指定的应用范围（点缩略图用它；缺失回落全局） */
+  scope?: WallScope;
 }): ReactNode {
   const doc = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
   /* 图片入库/应用后确保亮度采样在跑（纱与栏体文字分支依赖它） */
@@ -59,12 +62,15 @@ function WallCell({
     if (scope === "global") setGlobalWallpaper(entry.ref);
     else setTabWallpaper(tabKey, entry.ref);
   };
+  /* picker 点图应用到**菜单指定的范围**（scope），panel 点图固定本页——与头注释语义一致：
+     此前写死 apply("global") 会让「本页」菜单选到的图被刷成全屏档（2026-10-13 接线时修正） */
+  const pickApply = (): void => apply(variant === "picker" ? scope ?? "global" : "tab");
   return (
     <div className="wall-cell">
       <button
         type="button"
         className={"wall-thumb" + (pageActive ? " is-page-active" : "")}
-        onClick={() => (variant === "picker" ? apply("global") : apply("tab"))}
+        onClick={pickApply}
         title={entry.name}
       >
         <WallThumb entry={entry} />
@@ -187,7 +193,7 @@ export function WallpaperLibrary({
       )}
       <div className="wall-lib-grid">
         {libraryItems().map((entry) => (
-          <WallCell key={entry.id} entry={entry} variant={variant} tabKey={tabKey} />
+          <WallCell key={entry.id} entry={entry} variant={variant} tabKey={tabKey} scope={scope} />
         ))}
       </div>
       {variant === "panel" ? (

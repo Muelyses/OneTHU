@@ -535,11 +535,9 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
                     const onMUp = (): void => {
                       window.removeEventListener("pointerup", onMUp, true);
                       window.removeEventListener("pointercancel", onMCancel, true);
-                      const pr = pressRef.current;
-                      const dd = dragRef.current;
-                      /* 原地抬起（未升级成拖拽）= 打开组件菜单；升级过则 onWinUp 已走 finishDrag */
-                      if (pr && pr.armed && !(dd && dd.started)) openItemMenu(item, pr.x, pr.y);
                       pressRef.current = null;
+                      /* 菜单不在这里开：捕获释放后 click 事件仍落在槽位上，
+                         槽位 onClick（编辑态且未拖拽）本来就开菜单——开两次会闪一下 */
                     };
                     const onMCancel = (): void => {
                       window.removeEventListener("pointerup", onMUp, true);

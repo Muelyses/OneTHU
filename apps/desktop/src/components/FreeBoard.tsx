@@ -383,7 +383,7 @@ export function FreeBoard(): ReactNode {
         return (
           <div
             key={it.id}
-            className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "")}
+            className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "")}
             style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
             onPointerDown={(e) => {
               if (penOn) return;

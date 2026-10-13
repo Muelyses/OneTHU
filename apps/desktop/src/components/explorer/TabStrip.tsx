@@ -554,7 +554,10 @@ function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: s
   const [name, setName] = useState("工作区");
   const [color, setColor] = useState<string>(WORKSPACE_COLORS[0]);
   const [icon, setIcon] = useState<string>(WORKSPACE_ICONS[0]);
-  return (
+  /* portal 到 body：拖拽系统会给 tabstrip 祖先/标签残留内联 transform——
+     fixed 在有 transform 的祖先里被劫持成相对该祖先定位，命名窗就被挤进标签栏
+     （2026-10-13 用户实测）。portal 到 body 后任何祖先都劫持不了。 */
+  return createPortal(
     <div
       className="ws-create-mask"
       style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.25)", display: "flex", alignItems: "center", justifyContent: "center" }}
@@ -597,7 +600,7 @@ function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: s
               >
                 <G width={14} height={14} />
               </button>
-            );
+          );
           })}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
@@ -605,7 +608,8 @@ function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: s
           <button type="button" className="btn" style={{ borderColor: color, color }} onClick={() => onCreate({ name, color, icon })}>创建</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

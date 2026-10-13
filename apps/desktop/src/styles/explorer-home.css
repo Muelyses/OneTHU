@@ -764,3 +764,8 @@
 
 /* FAB 按压回弹（非 .btn 体系，允许 transform） */
 .free-fab:active { transform: scale(0.94); }
+
+/* 把手时机（用户定稿 2026-10-13）：点选不出蓝点（不敏感），拖/缩进行中才浮现；
+   命中区常在（hover 有光标提示），选中浮条照旧 */
+.free-handle { opacity: 0; transition: opacity 120ms ease; }
+.free-item.is-live .free-handle { opacity: 1; }

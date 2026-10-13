@@ -125,21 +125,12 @@ function TabContextMenu({
   const tab = allTabs().find((t) => t.id === pos.tabId);
   /* 「画布化定案」：首页没有独立的 tab 档——它的壁纸就是全屏档（整块画布，不是 frame 内贴图）。
    内容页仍可 per-tab。 */
-const wallKey = tab && tab.kind !== "home" ? wallpaperPathOf(tab.page, tab.params) : "global";
   /* 壁纸入口：换壁纸两条走壁纸库选择器（上传/内置渐变/删除都在库里，库内有上传入口，
      因此不再保留单独的隐藏 file input——2026-10-13 接线）；清除则回落全局 */
   const hasGlobal = !!wallpaperSnapshot().global;
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
     { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
-    ...(!isHome ? [
-      { label: "换壁纸（本页）· 从库选…", act: () => onPick("tab" as const) },
-      ...BUILTIN_WALLPAPERS.map((b) => ({
-        label: "壁纸 · " + b.label + "（仅内容页）",
-        act: () => setTabWallpaper(wallKey, "builtin:" + b.id),
-      })),
-      ...(wallpaperFor(wallKey) ? [{ label: "清除此页壁纸", danger: true, act: () => setTabWallpaper(wallKey, null) }] : []),
-    ] : []),
-    { label: "换壁纸（全屏）· 从库选…", act: () => onPick("global") },
+    { label: "换壁纸 · 从库选…", act: () => onPick("global") },
     ...BUILTIN_WALLPAPERS.slice(0, 4).map((b) => ({
       label: "全屏壁纸 · " + b.label,
       act: () => setGlobalWallpaper("builtin:" + b.id),

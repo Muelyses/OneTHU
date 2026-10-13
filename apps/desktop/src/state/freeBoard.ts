@@ -97,6 +97,34 @@ export function bringToFront(id: string): void {
   commit({ ...doc, items });
 }
 
+/** 矩形相交（任意重叠即真） */
+function intersects(a: FreeItem, b: FreeItem): boolean {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+}
+
+/**
+ * 聪明图层调整（霖 2026-10-13 定案）：不无条件置顶——只升到**与自己重叠的那一簇**
+ * 的最高层之上；与它无关的组件排序完全不动。没有重叠时什么都不发生。
+ */
+export function raiseAboveOverlapping(id: string): void {
+  const i = doc.items.findIndex((x) => x.id === id);
+  if (i < 0) return;
+  const me = doc.items[i];
+  if (!me) return;
+  let target = i;
+  for (let j = i + 1; j < doc.items.length; j++) {
+    const other = doc.items[j];
+    if (other && intersects(me, other)) target = j;
+  }
+  if (target === i) return;
+  const items = doc.items.slice();
+  const it = items.splice(i, 1)[0];
+  if (!it) return;
+  /* 移除 i 后，原 target 处的元素前移一位；插到 target 位 = 紧贴它上方 */
+  items.splice(target, 0, it);
+  commit({ ...doc, items });
+}
+
 export function addItem(spec: FreeItem["spec"], x: number, y: number, w = 260, h = 140): string {
   const id = "f." + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   commit({ ...doc, items: [...doc.items, { id, spec, x, y, w, h }] });

@@ -22,6 +22,7 @@ import {
   MIN_H,
   MIN_W,
   moveItem,
+  raiseAboveOverlapping,
   removeItem,
   setItemFolded,
   sizeItem,
@@ -87,8 +88,13 @@ function ItemBody({ item, sizeHint }: { item: FreeItem; sizeHint: { w: number; h
   }
   if (spec.kind === "custom") {
     const r = BOARD_CARD_RENDERERS[cardRendererKey(spec.id)];
+    /* 便笺空内容：自由白板上没有「属性」菜单，提示改为双击编辑 */
+    const props =
+      spec.id === "note"
+        ? { ...spec.props, text: typeof spec.props?.text === "string" && spec.props.text ? spec.props.text : "双击便笺写内容" }
+        : spec.props;
     if (r) {
-      const out = r(spec.kind === "custom" ? spec.props : undefined, sizeHint);
+      const out = r(props, sizeHint);
       if (out) return out;
     }
     return (
@@ -177,7 +183,8 @@ export function FreeBoard(): ReactNode {
     /* 不用 setPointerCapture：捕获会把 click 重定向到容器，组件内的入口按钮/链接全被吞。
        拖拽与点击的区分交给「4px 阈值 + 窗口级 click 抑制」（武装后吞一次 click）。 */
     setSelected(id);
-    bringToFront(id);
+    /* 拖动即浮到与自己重叠的那簇之上（不惊动无关组件的图层序） */
+    raiseAboveOverlapping(id);
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
     const sx = e.clientX;
     const sy = e.clientY;
@@ -324,7 +331,7 @@ export function FreeBoard(): ReactNode {
             {/* 选中浮条：置顶 / 折叠（便笺）/ 删除 */}
             {isSel && !penOn ? (
               <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
-                <button type="button" title="置顶" onClick={() => bringToFront(it.id)}>⤒</button>
+                <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => raiseAboveOverlapping(it.id)}>⤒</button>
                 {isNote ? (
                   <button
                     type="button"
@@ -393,17 +400,22 @@ export function FreeBoard(): ReactNode {
                   </button>
                 </div>
                 <div className="free-add-list">
-                  {defs.map((d) => (
-                    <button
-                      key={d.id}
-                      type="button"
-                      className="hs-detail-row"
-                      title={d.description}
-                      onClick={() => placeDef(d)}
-                    >
-                      <span>{d.title}</span>
-                    </button>
-                  ))}
+                  <div className="hs-detail-group-name">常用</div>
+                  {defs
+                    .filter((d) => ["custom:note", "text-title", "text-label", "divider"].includes(d.id))
+                    .map((d) => (
+                      <button key={d.id} type="button" className="hs-detail-row" title={d.description} onClick={() => placeDef(d)}>
+                        <span>{d.title}</span>
+                      </button>
+                    ))}
+                  <div className="hs-detail-group-name">卡片与入口</div>
+                  {defs
+                    .filter((d) => !["custom:note", "text-title", "text-label", "divider"].includes(d.id))
+                    .map((d) => (
+                      <button key={d.id} type="button" className="hs-detail-row" title={d.description} onClick={() => placeDef(d)}>
+                        <span>{d.title}</span>
+                      </button>
+                    ))}
                 </div>
                 <div className="hs-op-hint">会放在空白处右键/＋号的位置；拖动与缩放随时可调</div>
               </div>
@@ -417,7 +429,7 @@ export function FreeBoard(): ReactNode {
         ? createPortal(
             <div className="hs-more-mask" onClick={() => setItemMenu(null)} onContextMenu={(e) => { e.preventDefault(); setItemMenu(null); }}>
               <div className="hs-more hs-menu" role="menu" style={{ position: "fixed", left: itemMenu.x, top: itemMenu.y }} onClick={(e) => e.stopPropagation()}>
-                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { bringToFront(itemMenu.id); setItemMenu(null); }}>置顶</button>
+                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { raiseAboveOverlapping(itemMenu.id); setItemMenu(null); }}>置顶（压过重叠组件）</button>
                 <button type="button" className="hs-op-item" role="menuitem" onClick={() => { const it = freeBoardSnapshot().items.find((x) => x.id === itemMenu.id); if (it) setNoteEdit(it.id); setItemMenu(null); }}>编辑内容</button>
                 <button type="button" className="hs-op-item is-danger" role="menuitem" onClick={() => { removeItem(itemMenu.id); setSelected(null); setItemMenu(null); }}>删除</button>
               </div>

@@ -23,6 +23,8 @@ import { cardRendererKey } from "../state/liveCards.js";
 import type { WidgetSize } from "../state/widgetMeta.js";
 import { StatTile } from "../pages/info/reportParts.js";
 import { IconCheck, IconCard, IconExternal, IconPen, IconSchedule } from "./Icons.js";
+import { toHomework, useExternalHomework, useExternalNotices } from "../state/exthw.js";
+import { useIgnoredHw } from "../state/hwIgnore.js";
 import { refreshWeather, subscribeWeather, weatherAgeText, weatherSnapshot, weatherText } from "../state/weather.js";
 
 /** 渲染器可接收"具体条目"的定位参数（§7 行级元素）与**当前档位尺寸**（按尺寸排版）。 */
@@ -49,7 +51,7 @@ import { SemesterSelectionPage } from "../pages/learn/SemesterSelectionPage.js";
 import { SearchPage } from "../pages/learn/SearchPage.js";
 import { ZhjwxkCoursesPage } from "../pages/zhjwxk/Courses.js";
 import { useCampusData, useLearnData, useTodayReservations } from "../state/data.js";
-import { AgendaWidget, NewsRows, ResvRows, TodayOverviewWidget, hm, useSubsNewsFeed } from "./HomeWidgets.js";
+import { AgendaWidget, ClassRows, HomeworkRows, NewsRows, NoticeRows, ResvRows, SECTION_OF, TodayOverviewWidget, hm, useSubsNewsFeed } from "./HomeWidgets.js";
 import { minText, pickNextClass, ymd } from "./HomeWidgets.js";
 import { FileRow, HomeworkRow, NoticeRow } from "../pages/learn/shared.js";
 import {
@@ -505,6 +507,62 @@ function NoteCard(props?: Record<string, unknown>): ReactNode {
   );
 }
 
+/* ══════════ 今日四件套自足卡（2026-10-13）══════════
+   未提交作业 / 今日课程 / 最近通知此前靠 TodayPage 发布活渲染器（liveCards），
+   首页不再挂 TodayPage 后整组变空壳。照 NextClassCard 模式改成自足取数：
+   同一份 useCampusData + 外部作业/雨课堂通知，SWR 缓存共享，不重复请求。 */
+
+function HomeworkCard(): ReactNode {
+  const { navigate } = useApp();
+  const { data, state } = useCampusData();
+  const ext = useExternalHomework();
+  const ignored = useIgnoredHw();
+  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const rows = useMemo(
+    () =>
+      [...(data?.homework ?? []), ...extHw]
+        .filter((h) => !h.submitted && !ignored.has(h.id))
+        .sort((a, b) => a.deadline.localeCompare(b.deadline)),
+    [data, extHw, ignored],
+  );
+  const dataReady = !(state === "loading" && !data);
+  const courseName = (courseId: string): string => data?.courses.find((c) => c.id === courseId)?.name ?? "课程";
+  return <HomeworkRows loading={!dataReady} rows={rows} courseName={courseName} navigate={navigate} />;
+}
+
+function ClassesCard(): ReactNode {
+  const { navigate } = useApp();
+  const { data } = useCampusData();
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(new Date()), 60000);
+    return () => window.clearInterval(t);
+  }, []);
+  const todayEvents = useMemo(() => {
+    const wd = now.getDay() === 0 ? 7 : now.getDay();
+    const today = ymd(now);
+    return (data?.schedule ?? [])
+      .filter((s2) => (s2.date ? s2.date === today : s2.dayOfWeek === wd))
+      .sort((a, b) => {
+        const ta = a.startTime ?? SECTION_OF[a.startSection ?? 1] ?? "99:99";
+        const tb = b.startTime ?? SECTION_OF[b.startSection ?? 1] ?? "99:99";
+        return ta.localeCompare(tb);
+      });
+  }, [data, now]);
+  return <ClassRows events={todayEvents} navigate={navigate} />;
+}
+
+function NoticesCard(): ReactNode {
+  const { navigate } = useApp();
+  const { data } = useCampusData();
+  const extNotices = useExternalNotices();
+  const merged = useMemo(
+    () => [...(data?.notifications ?? []), ...extNotices].sort((a, b) => b.publishTime.localeCompare(a.publishTime)),
+    [data, extNotices],
+  );
+  return <NoticeRows items={merged} navigate={navigate} />;
+}
+
 /* ══════════ 环境/时钟组件（2026-10-13，霖：首页白板要有时间、日期、天气） ══════════
    这三张不依赖 THU 会话：时钟/日期走本地时间，天气走 open-meteo 免 key 直连（state/weather.ts）。
    自由尺寸（内容自适应），小格只留主信息，大格逐层加上下文——与档位组件「随尺寸加信息层」同一口吻。 */
@@ -634,6 +692,10 @@ export const BOARD_CARD_RENDERERS: Record<string, CardRenderer> = {
   ...ENTRY_REAL,
   /* 时钟/日期/天气：自足（本地时间 + open-meteo），自由尺寸随格加信息层。 */
   [cardRendererKey("note")]: (props) => <NoteCard {...(props ?? {})} />,
+  /* 今日四件套：自足取数（不再依赖 TodayPage 挂载发布的活渲染器） */
+  [cardRendererKey("homework")]: () => <HomeworkCard />,
+  [cardRendererKey("classes")]: () => <ClassesCard />,
+  [cardRendererKey("notices")]: () => <NoticesCard />,
   [cardRendererKey("clock")]: (_props, size) => <ClockCard size={size} />,
   [cardRendererKey("date")]: (_props, size) => <DateCard size={size} />,
   [cardRendererKey("weather")]: (_props, size) => <WeatherCard size={size} />,

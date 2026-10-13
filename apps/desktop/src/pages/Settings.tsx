@@ -72,7 +72,7 @@ import {
 import { buildYktCookieExportJson, parseYktCookieExportJson, SOURCE_CATEGORY_NAMES, SOURCE_NAMES } from "@onethu/core";
 import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 import { ErrorLine } from "../components/Details.js";
-import { resetActiveOnboarding, setOnboardingFlow, useOnboardingFlow } from "../state/onboarding.js";
+import { resetActiveOnboarding } from "../state/onboarding.js";
 
 /** 按分节标题滚动定位（不改各分节标记本身，避免动到千行 JSX） */
 function jumpToSection(titles: string[]): void {
@@ -130,7 +130,6 @@ defineSearchRows([
 export function SettingsPage() {
   /** 当前二级页签（默认第一个栏目） */
   const [tab, setTab] = useState<string>(SETTINGS_TAB_ORDER[0] ?? "账号");
-  const onboardingFlow = useOnboardingFlow(); // §4.2 灰度：首启流程开关（开发者构建可见）
   /** 手机端判定：插件入口在「我的」页里也要有一份（与桌面侧栏同款框） */
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
@@ -322,21 +321,8 @@ export function SettingsPage() {
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
         {__ONETHU_DEV__ ? <DebugLogRow /> : null}
         <DiagnosticsRow />
-        {/* 「高级模式」开关与分层已于 2026-10-11 整体退役（用户拍板：不再用可见性藏功能）。
-            原先靠它露出的首启流程开关改成开发者构建可见，普通构建不再出现。 */}
-        {__ONETHU_DEV__ ? (
-          <div className="setting-row">
-            <div>
-              <div className="setting-title">新首启流程</div>
-              <div className="setting-desc">下一版首启只问三件事，可全部跳过；确认没问题后再默认开启。</div>
-            </div>
-            <Switch
-              on={onboardingFlow === "v2"}
-              onChange={(v) => setOnboardingFlow(v ? "v2" : "v1")}
-              label="新首启流程"
-            />
-          </div>
-        ) : null}
+        {/* 首启流程灰度开关已随导览 v3 改版退役：播放统一走 OnboardingTourV3，
+            「导览」按钮（页头）负责清 flow3 完成标记重新走一轮。 */}
       </Card>
 
       <SectionHead title="账户" />
@@ -2024,6 +2010,8 @@ function GeekSection(): ReactNode {
       return false;
     }
   });
+  /* hooks 全部声明在前：早返回（isPhone）之前不得再挂 hook（hook-order 门禁） */
+  const [mode, setMode] = useState<"system" | "playwright">("system");
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   const refresh = useCallback(() => {
     void import("@tauri-apps/api/core")
@@ -2059,7 +2047,6 @@ function GeekSection(): ReactNode {
       refresh();
     }
   };
-  const [mode, setMode] = useState<"system" | "playwright">("system");
   const launch = async (): Promise<void> => {
     setBusy("launch");
     setMsg(null);

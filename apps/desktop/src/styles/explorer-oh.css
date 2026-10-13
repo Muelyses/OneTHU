@@ -334,3 +334,11 @@
 .ohx-star { position: static; margin-left: 0; margin-right: 2px; flex: none; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; color: var(--text-3, #9aa0a6); cursor: pointer; }
 .ohx-star:hover { background: var(--hover, rgba(0, 0, 0, 0.06)); color: var(--text-1); }
 .ohx-star.is-lit { color: #e8a317; }
+
+/* ══════════ 液态玻璃：OH 胶囊（悬浮于内容之上，真 blur + 明确轮廓）══════════ */
+.ohx-capsule {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 64%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 4px 18px rgba(0, 0, 0, 0.16);
+}

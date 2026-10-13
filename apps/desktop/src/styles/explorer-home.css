@@ -679,3 +679,32 @@
   font-size: var(--text-xs);
   color: var(--text-2);
 }
+
+/* ══════════ 液态玻璃：固定层与浮钮（悬浮于画布，真 blur）══════════ */
+.hs-logo,
+.hs-dock-btn,
+.hs-detail-btn,
+.hs-close,
+.free-fab,
+.free-pen-panel,
+.hs-more,
+.hs-menu,
+.hs-op {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 66%, transparent);
+  box-shadow: var(--glass-rim), var(--glass-lift);
+}
+.hs-more-mask { background: rgba(0, 0, 0, 0.22); backdrop-filter: blur(2px); }
+.hs-logo:hover,
+.hs-dock-btn:hover,
+.hs-detail-btn:hover { background: color-mix(in srgb, var(--md-sys-color-surface-container-high) 80%, transparent); }
+
+/* 自由组件 = 染色玻璃（画布底是纯平背景，blur 无增益，省 GPU） */
+.free-item {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 46%, transparent);
+  backdrop-filter: none;
+  box-shadow: var(--glass-rim), 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+.free-item.is-selected { box-shadow: var(--glass-rim), 0 10px 32px rgba(0, 0, 0, 0.16); }
+.free-item > .free-note { background: transparent; }

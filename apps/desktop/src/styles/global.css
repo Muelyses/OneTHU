@@ -8135,3 +8135,86 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 .board-handle { cursor: nwse-resize; }
 .board-handle.h-n, .board-handle.h-s { cursor: ns-resize; }
 .board-handle.h-e, .board-handle.h-w { cursor: ew-resize; }
+
+/* ══════════ 液态玻璃材质体系（2026-10-13 全局升级）══════════
+   三层材质：
+   A. 玻璃栏/面板（容器，背后有内容滚过）= backdrop blur + 半透明填充 + 上缘镜面
+   B. 玻璃控件（悬浮于内容之上）= 同 A 的完整配方
+   C. 染色玻璃（已处于玻璃面板内的行内控件）= 半透明填充 + 描边高光，不加 blur
+      （面板自身已模糊过一次，控件再 blur 纯耗 GPU 且视觉无增益）
+   深浅色自适应：填充/描边全部走 color-mix(surface/on-surface, α)，跟随主题令牌。 */
+
+:root {
+  --glass-blur: blur(18px) saturate(1.7);
+  --glass-fill: color-mix(in srgb, var(--md-sys-color-surface-container) 58%, transparent);
+  --glass-fill-hover: color-mix(in srgb, var(--md-sys-color-surface-container-high) 74%, transparent);
+  --glass-border: color-mix(in srgb, var(--md-sys-color-outline) 26%, transparent);
+  --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --glass-lift: 0 8px 28px rgba(0, 0, 0, 0.14);
+  --glass-tint: color-mix(in srgb, var(--md-sys-color-surface-container-high) 45%, transparent);
+}
+
+/* ---- A+B：主按钮（主题色浓玻璃）---- */
+.btn {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 14%, transparent);
+  box-shadow: var(--glass-rim), 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+.btn:hover { transform: translateY(-1px); box-shadow: var(--glass-rim), 0 4px 14px rgba(0, 0, 0, 0.12); }
+.btn:active { box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.14), var(--glass-rim); } /* 位移反馈由状态层+涟漪统一承担 */
+.btn-primary:hover { transform: translateY(-1px); }
+
+/* ---- B：图标按钮（顶栏复制/齿轮等悬浮于内容上）---- */
+.icon-btn {
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  background: var(--glass-tint);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-rim);
+}
+.icon-btn:hover { background: var(--glass-fill-hover); }
+
+/* ---- C：输入类 = 染色玻璃场 + 聚焦主题色光环（描边语言保留）---- */
+.field input,
+.field select,
+.field textarea {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 40%, transparent);
+  border-color: var(--glass-border);
+}
+.field input:focus,
+.field textarea:focus {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 70%, transparent);
+  box-shadow: var(--md-sys-focus-ring), var(--glass-rim);
+}
+
+/* ---- B：开关拇指 = 玻璃小球（轨道几何/令牌不动，护栏钉着）---- */
+.switch::after,
+.plg-switch::after {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* ---- B：chip 玻璃化（几何不变）---- */
+.chip-btn {
+  background: var(--glass-tint);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-rim);
+}
+.chip-btn:hover { background: var(--glass-fill-hover); }
+
+/* ---- 命令面板 = 玻璃面板 ---- */
+.pal {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 72%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-rim), var(--glass-lift);
+}
+
+/* ---- 右键菜单/弹层（explorer ContextMenu host）---- */
+.explorer-ctxmenu,
+.ctx-menu {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 72%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-rim), var(--glass-lift);
+}

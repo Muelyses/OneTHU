@@ -732,3 +732,20 @@
 .tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph.is-fist svg * { stroke-width: 6; }
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical { scrollbar-width: none; }
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical::-webkit-scrollbar { display: none; }
+
+/* ══════════ 液态玻璃：底栏与标签 chip（2026-10-13 全局升级）══════════ */
+.ex-bbar {
+  background: color-mix(in srgb, var(--md-sys-color-surface-container) 58%, transparent);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-rim), 0 -2px 14px rgba(0, 0, 0, 0.06);
+}
+.ex-bbar-btn,
+.ex-row,
+.hs-detail-row,
+.picker-row {
+  background: transparent;
+}
+.ex-row:hover,
+.hs-detail-row:hover,
+.picker-row:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }

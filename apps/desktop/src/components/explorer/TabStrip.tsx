@@ -306,6 +306,7 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
 
     const els = lane.map((l) => l.el);
     const from = els.indexOf(dragEl);
+    if (from < 0) return; // 触屏武装延迟期间若发生重渲染，被押元素可能已不在条上：静默放弃
     const dragSet = new Set(dragIds);
     const order = allTabs().filter((t) => t.kind !== "home").map((t) => t.id);
     const restIds = order.filter((x) => !dragSet.has(x));

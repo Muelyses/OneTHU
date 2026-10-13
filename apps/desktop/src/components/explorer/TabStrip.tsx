@@ -43,6 +43,8 @@ import { FOLDER_ICONS, IconBook, IconFlag, IconFolder, IconInfo, IconLearn, Icon
 import { BrandLogo } from "../Layout.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { useTabLayoutMode } from "../../state/tabLayout.js";
+import { useIsPhone } from "../../state/phoneSheets.js";
+import { haptic } from "../../lib/haptics.js";
 import { openContextMenu, type MenuItem } from "./ContextMenu.js";
 import { openWorkspaceEditor } from "./WorkspaceEditor.js";
 
@@ -292,10 +294,10 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
     dragEl: HTMLElement,
     lane: Lane[],
     dragIds: string[],
-    ev0: ReactPointerEvent<HTMLDivElement>,
+    ev0: { clientX: number; clientY: number },
   ): void => {
-    const along = (ev: PointerEvent | ReactPointerEvent<HTMLDivElement>): number => (vertical ? ev.clientY : ev.clientX);
-    const cross = (ev: PointerEvent | ReactPointerEvent<HTMLDivElement>): number => (vertical ? ev.clientX : ev.clientY);
+    const along = (ev: { clientX: number; clientY: number }): number => (vertical ? ev.clientY : ev.clientX);
+    const cross = (ev: { clientX: number; clientY: number }): number => (vertical ? ev.clientX : ev.clientY);
     const aStart = (r: DOMRect): number => (vertical ? r.top : r.left);
     const aEnd = (r: DOMRect): number => (vertical ? r.bottom : r.right);
     const aSize = (r: DOMRect): number => (vertical ? r.height : r.width);
@@ -512,32 +514,42 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
     window.addEventListener("pointercancel", up);
   };
 
-  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
-    if (e.button !== 0 || e.pointerType !== "mouse") return;
-    const target = e.target instanceof Element ? e.target : null;
-    if (target?.closest(".ex-tab-close, .ex-ws-close")) return;
-    const strip = stripRef.current;
-    if (!strip) return;
-    const band = target?.closest(".ex-ws-band") as HTMLElement | null;
+  /** 按下的目标解析成拖拽单元（鼠标与触屏共用一份，语义与栏一致）：
+      band = 按住工作区名字整组拖；member = 组内标签（组内换序）；tab = 独立标签 */
+  const resolveUnit = (
+    strip: HTMLDivElement,
+    target: Element | null,
+  ): { mode: "tab" | "band" | "member"; el: HTMLElement; ids: string[] } | null => {
+    if (!target) return null;
+    if (target.closest(".ex-tab-close, .ex-ws-close")) return null;
+    const band = target.closest(".ex-ws-band") as HTMLElement | null;
     // ① 按住工作区名字 → 整组拖动
-    if (band && target?.closest(".ex-ws-fold")) {
+    if (band && target.closest(".ex-ws-fold")) {
       const wsId = band.getAttribute("data-ws-id");
       const ids = allTabs().filter((t) => t.workspaceId === wsId).map((t) => t.id);
-      if (!wsId || ids.length === 0) return;
-      startDrag(strip, "band", band, stripLanes(strip), ids, e);
-      return;
+      if (!wsId || ids.length === 0) return null;
+      return { mode: "band", el: band, ids };
     }
-    const tab = target?.closest(".ex-tab") as HTMLElement | null;
-    if (!tab || tab.classList.contains("is-home")) return;
+    const tab = target.closest(".ex-tab") as HTMLElement | null;
+    if (!tab || tab.classList.contains("is-home")) return null;
     const id = tab.getAttribute("data-tab-id");
-    if (!id) return;
+    if (!id) return null;
     // ② 工作区内的标签：只在组内换序，拖出超过阈值才脱离
-    if (band) {
-      startDrag(strip, "member", tab, bandLanes(band), [id], e);
-      return;
-    }
+    if (band) return { mode: "member", el: tab, ids: [id] };
     // ③ 独立标签：可拖到别的位置，或停留合并
-    startDrag(strip, "tab", tab, stripLanes(strip), [id], e);
+    return { mode: "tab", el: tab, ids: [id] };
+  };
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (e.button !== 0 || e.pointerType !== "mouse") return;
+    const strip = stripRef.current;
+    if (!strip) return;
+    const unit = resolveUnit(strip, e.target instanceof Element ? e.target : null);
+    if (!unit) return;
+    const lanes = unit.mode === "member"
+      ? bandLanes(unit.el.closest(".ex-ws-band") as HTMLElement)
+      : stripLanes(strip);
+    startDrag(strip, unit.mode, unit.el, lanes, unit.ids, e);
   };
   const onClickCapture = (e: ReactMouseEvent<HTMLDivElement>): void => {
     if (suppressClick.current) {
@@ -546,11 +558,11 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
       e.preventDefault();
     }
   };
-  return { dragId, onPointerDown, onClickCapture };
+  return { dragId, onPointerDown, onClickCapture, begin: startDrag, resolveUnit };
 }
 
-/** 现场建工作区：颜色 / 名字 / logo（松手即建，成员 = 被拖标签 + 停留标签） */
-function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: string; color: string; icon: string }) => void; onCancel: () => void }): ReactNode {
+/** 现场建工作区：颜色 / 名字 / logo（松手即建，成员 = 被拖标签 + 停留标签）。导出给 TabDrawer 手机端复用 */
+export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: string; color: string; icon: string }) => void; onCancel: () => void }): ReactNode {
   const [name, setName] = useState("工作区");
   const [color, setColor] = useState<string>(WORKSPACE_COLORS[0]);
   const [icon, setIcon] = useState<string>(WORKSPACE_ICONS[0]);
@@ -723,10 +735,137 @@ export function TabStrip(): ReactNode {
   const favs = useFavs();
   const vertical = useTabLayoutMode() === "v";
   const [pendingGroup, setPendingGroup] = useState<GroupDrop | null>(null);
+  const phoneUi = useIsPhone();
   const drag = useTabReorder(stripRef, vertical, (d) => {
     if (d.targetWsId) setTabsWorkspace([d.dragId], d.targetWsId);
     else setPendingGroup(d);
   });
+
+  /* ═══ 触屏手势层（手机 only；touch-action: none 由 CSS 给 .ex-tabstrip）═══
+     短触 = 原生点击（聚焦）；横移 = 手动横滚（条不能滚会没法翻标签）；
+     按住 300ms = 武装拖拽（与栏同语义：独立标签 / 工作区整组 / 组内成员）；
+     按住 500ms 不动 = 右键菜单（A4：聚焦 / 复制 / 关闭 / 解散工作区）。 */
+  const ARM_MS = 300;
+  const MENU_MS = 500;
+  const PAN_PX = 8;
+  type TouchCtl = {
+    x0: number; y0: number; sl0: number; moved: boolean; armed: boolean;
+    unit: ReturnType<typeof drag.resolveUnit>; hold: number | null; menu: number | null;
+  };
+  const touchCtl = useRef<TouchCtl | null>(null);
+  /** 长按/横滚之后的 click 吞掉：那次手势不该再聚焦/切换标签 */
+  const swallowClickRef = useRef(false);
+
+  const clearTouchTimers = (t: TouchCtl): void => {
+    if (t.hold !== null) window.clearTimeout(t.hold);
+    if (t.menu !== null) window.clearTimeout(t.menu);
+    t.hold = null;
+    t.menu = null;
+  };
+
+  const onStripPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    if (e.pointerType === "mouse" || e.button !== 0) return;
+    const strip = stripRef.current;
+    if (!strip) return;
+    const unit = drag.resolveUnit(strip, e.target instanceof Element ? e.target : null);
+    const t: TouchCtl = { x0: e.clientX, y0: e.clientY, sl0: strip.scrollLeft, moved: false, armed: false, unit, hold: null, menu: null };
+    touchCtl.current = t;
+    if (!unit) return; // 首页/关闭钮/加号：交给原生点击
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    t.hold = window.setTimeout(() => {
+      const cur = touchCtl.current;
+      if (!cur || cur.moved) return;
+      cur.armed = true;
+      cur.hold = null;
+      if (cur.menu !== null) {
+        window.clearTimeout(cur.menu);
+        cur.menu = null;
+      }
+      haptic("tick");
+      const strip2 = stripRef.current;
+      const u = cur.unit;
+      if (!strip2 || !u) return;
+      const lanes = u.mode === "member" ? bandLanes(u.el.closest(".ex-ws-band") as HTMLElement) : stripLanes(strip2);
+      drag.begin(strip2, u.mode, u.el, lanes, u.ids, { clientX: x0, clientY: y0 });
+    }, ARM_MS);
+    t.menu = window.setTimeout(() => {
+      const cur = touchCtl.current;
+      clearTouchTimers(cur ?? t);
+      touchCtl.current = null;
+      if (!cur || cur.moved || cur.armed) return;
+      swipeArmMenu(cur, x0, y0);
+    }, MENU_MS);
+  };
+
+  /** 长按菜单：tab 走标签操作；band 走工作区操作（与工作区头右键同一份） */
+  const swipeArmMenu = (t: TouchCtl, x0: number, y0: number): void => {
+    if (!t.unit) return;
+    haptic("longPress");
+    swallowClickRef.current = true;
+    if (t.unit.mode === "band") {
+      const band = t.unit.el;
+      const wsId = band.getAttribute("data-ws-id") ?? "";
+      const wss = explorerSnapshot().workspaces;
+      const ws = wss.find((w) => w.id === wsId);
+      if (!ws) return;
+      const count = allTabs().filter((x) => x.workspaceId === wsId).length;
+      const items: MenuItem[] = [
+        { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(ws.id) },
+        { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), sepBefore: true, danger: true },
+        {
+          label: "彻底删除（连同标签页）",
+          onSelect: () =>
+            void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+              if (ok) closeLiveWorkspace(ws.id);
+            }),
+          sepBefore: true,
+          danger: true,
+        },
+      ];
+      openContextMenu(x0, y0, items);
+      return;
+    }
+    if (t.unit.mode === "member" || t.unit.mode === "tab") {
+      const id = t.unit.ids[0] ?? "";
+      const tab = allTabs().find((x) => x.id === id);
+      if (tab) openTabMenuAt(x0, y0, tab);
+    }
+  };
+
+  const onStripPointerMove = (e: ReactPointerEvent<HTMLDivElement>): void => {
+    const t = touchCtl.current;
+    if (!t) return;
+    const dx = e.clientX - t.x0;
+    const dy = e.clientY - t.y0;
+    if (!t.moved && !t.armed && Math.hypot(dx, dy) > PAN_PX) {
+      t.moved = true;
+      clearTouchTimers(t);
+    }
+    /* 横滚：只在未武装时生效（武装后由拖拽引擎接管，滚条逻辑无关） */
+    if (!t.armed && t.moved) {
+      const strip = stripRef.current;
+      if (strip) strip.scrollLeft = t.sl0 - dx;
+    }
+  };
+
+  const onStripPointerUp = (): void => {
+    const t = touchCtl.current;
+    touchCtl.current = null;
+    if (!t) return;
+    clearTouchTimers(t);
+    if (t.moved) swallowClickRef.current = true;
+  };
+
+  const onStripClickCapture = (e: ReactMouseEvent<HTMLDivElement>): void => {
+    if (swallowClickRef.current) {
+      swallowClickRef.current = false;
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
+    drag.onClickCapture(e);
+  };
 
   /** 标签所属的 OnePage（2026-10-13 起 OnePage 的本体 = 一块白板，收的内容是 atom-link 入口）；无则 undefined */
   const starredOnePage = (t: ExplorerTab): Board | undefined => {
@@ -766,15 +905,24 @@ export function TabStrip(): ReactNode {
       if (ok) removeOnePage(existing.id);
     });
   };
+  /** 标签操作菜单（鼠标右键与触屏长按共用一份坐标形态） */
+  const openTabMenuAt = (x: number, y: number, t: ExplorerTab): void => {
+    const items: MenuItem[] = [
+      { label: "聚焦此标签页", onSelect: () => focusTab(t.id) },
+      { label: "复制本标签页", onSelect: () => duplicateTab(t.id) },
+      { label: "关闭本标签页", onSelect: () => closeTab(t.id), sepBefore: true },
+      { label: isStarred(t) ? "移出 OnePage（取消一星）" : "加入 OnePage（一星）", onSelect: () => toggleOnePage(t) },
+    ];
+    if (t.workspaceId) {
+      items.push({ label: "移出工作区", onSelect: () => setTabWorkspace(t.id, null), sepBefore: true });
+      const ws = explorerSnapshot().workspaces.find((w) => w.id === t.workspaceId);
+      if (ws) items.push({ label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), danger: true });
+    }
+    openContextMenu(x, y, items);
+  };
   const openTabMenu = (e: ReactMouseEvent, t: ExplorerTab): void => {
     e.preventDefault();
-    const items: MenuItem[] = [
-      { label: "复制本标签页", onSelect: () => duplicateTab(t.id) },
-      { label: "关闭本标签页", onSelect: () => closeTab(t.id) },
-      { label: isStarred(t) ? "移出 OnePage（取消一星）" : "加入 OnePage（一星）", onSelect: () => toggleOnePage(t), sepBefore: true },
-    ];
-    if (t.workspaceId) items.push({ label: "移出工作区", onSelect: () => setTabWorkspace(t.id, null), sepBefore: true });
-    openContextMenu(e.clientX, e.clientY, items);
+    openTabMenuAt(e.clientX, e.clientY, t);
   };
 
   const [tip, setTip] = useState<TipState | null>(null);
@@ -846,8 +994,11 @@ export function TabStrip(): ReactNode {
         role="tablist"
         aria-label="标签页"
         ref={stripRef}
-        onPointerDown={drag.onPointerDown}
-        onClickCapture={drag.onClickCapture}
+        onPointerDown={phoneUi ? onStripPointerDown : drag.onPointerDown}
+        onPointerMove={phoneUi ? onStripPointerMove : undefined}
+        onPointerUp={phoneUi ? onStripPointerUp : undefined}
+        onPointerCancel={phoneUi ? onStripPointerUp : undefined}
+        onClickCapture={onStripClickCapture}
       >
       {groupTabs(tabs).map((g) => {
         const inner = (g.ws?.collapsed ? [] : g.tabs).map((t) => {

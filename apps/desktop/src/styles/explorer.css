@@ -556,3 +556,14 @@
   scrollbar-width: none;
 }
 .wall-lib-picker-card .wall-lib-grid::-webkit-scrollbar { display: none; }
+
+/* ═══ 手机档（html.is-phone）：底部标签条让位（条 44px 档 + 顶底呼吸）═══ */
+html.is-phone .explorer-content {
+  padding-bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 52px + 12px);
+}
+html.is-phone .hard-refresh-fab {
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 68px) !important;
+}
+html.is-phone .hard-refresh-fab.top-fab {
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 124px) !important;
+}

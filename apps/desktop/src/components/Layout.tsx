@@ -43,6 +43,7 @@ import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
 import { useTabLayoutMode } from "../state/tabLayout.js";
+import { useIsPhone } from "../state/phoneSheets.js";
 import { BottomBar } from "./explorer/BottomBar.js";
 import { TabDrawer } from "./explorer/TabDrawer.js";
 import { OneGoSheet } from "./explorer/OneGoSheet.js";
@@ -158,6 +159,9 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
 const RAIL_NARROW_KEY = "ex-rail-narrow";
 
 function TabRail(): ReactNode {
+  /* 手机（dev-explorer 二轮拍板）：竖栏永不出现——html.is-phone 下只允许横标签页；
+     即便存过「竖版」默认值，这里也把 tabs-vertical 类一起收回，内容区不让位。 */
+  const phone = useIsPhone();
   const mode = useTabLayoutMode();
   const [narrow, setNarrow] = useState<boolean>(() => {
     try {
@@ -167,17 +171,17 @@ function TabRail(): ReactNode {
     }
   });
   useEffect(() => {
-    document.documentElement.classList.toggle("tabs-vertical", mode === "v");
-  }, [mode]);
+    document.documentElement.classList.toggle("tabs-vertical", mode === "v" && !phone);
+  }, [mode, phone]);
   useEffect(() => {
-    document.documentElement.classList.toggle("rail-narrow", mode === "v" && narrow);
+    document.documentElement.classList.toggle("rail-narrow", mode === "v" && !phone && narrow);
     try {
       localStorage.setItem(RAIL_NARROW_KEY, narrow ? "1" : "0");
     } catch {
       /* 存不了就只在本次会话生效 */
     }
-  }, [mode, narrow]);
-  if (mode !== "v") return null;
+  }, [mode, narrow, phone]);
+  if (mode !== "v" || phone) return null;
   return (
     <aside className="ex-rail" aria-label="标签页">
       <TabStrip />
@@ -188,6 +192,9 @@ function TabRail(): ReactNode {
 
 function TopBar(): ReactNode {
   const layout = useTabLayoutMode();
+  /* 手机（A2）：顶栏只留 OneTHU logo monogram（白底例外档），「首页」两个字不出现；
+     标签条整体移到底部（MobileTabStrip），复制钮也不需要（长按菜单里有同动作）。 */
+  const phone = useIsPhone();
   const [scrolled, setScrolled] = useState(false);
   const { activeId } = useExplorerState();
   const canDup = activeId !== HOME_TAB_ID;
@@ -197,14 +204,18 @@ function TopBar(): ReactNode {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  // 竖版：顶栏退场，标签与复制/设置都在左侧栏
-  if (layout === "v") return null;
+  // 竖版：顶栏退场，标签与复制/设置都在左侧栏（手机不适用：顶栏恒 minimal）
+  if (layout === "v" && !phone) return null;
   return (
     <header className={"explorer-topbar" + (scrolled ? " is-scrolled" : "")}>
       {/* dev-explorer（用户拍板）：OneTHU 品牌标与「首页」标签并成 TabStrip 首位，左上单独的
           Logo 钮退役——复制按钮成为顶栏最左；首页仍恒在（TabStrip 首位不可关） */}
       {/* 竖版：复制 / 设置移到左侧栏底部，顶栏只保留横版标签条 */}
-      {layout === "h" ? (
+      {phone ? (
+        <button className="ex-tb-home-mark" onClick={() => focusTab(HOME_TAB_ID)} aria-label="首页">
+          <BrandLogo size={13} />
+        </button>
+      ) : layout === "h" ? (
         <button
           className="icon-btn"
           onClick={() => duplicateTab(activeId)}
@@ -214,15 +225,13 @@ function TopBar(): ReactNode {
           <IconCopyTab width={16} height={16} />
         </button>
       ) : null}
-      {layout === "h" ? <TabStrip /> : null}
+      {layout === "h" && !phone ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
       <ChromeMore />
-      {layout === "h" ? (
-        <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
-          <IconSettings width={16} height={16} />
-        </button>
-      ) : null}
+      <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
+        <IconSettings width={16} height={16} />
+      </button>
     </header>
   );
 }
@@ -379,6 +388,18 @@ export function Slogan({ size = 13 }: { size?: number }) {
   );
 }
 
+/** 手机底部标签条（A3）：TabStrip 复用（顶栏不再渲染它），is-phone 才出现；
+     竖栏（TabRail）在手机永不出现（见 TabRail 分流）。 */
+function MobileTabStrip(): ReactNode {
+  const phone = useIsPhone();
+  if (!phone) return null;
+  return (
+    <div className="ex-mobile-strip" aria-label="底部标签条">
+      <TabStrip />
+    </div>
+  );
+}
+
 /** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
   /* 启动：GitHub Releases 静默检查新版本（一次；失败静默，不打扰） */
@@ -397,6 +418,8 @@ export function Shell({ children }: { children: ReactNode }) {
       <TabRail />
       <main className="content explorer-content">{children}</main>
       </ContextMenuLayer>
+      {/* 手机档（A3）：底部标签条——44px 触目标的玻璃横条，is-phone 才有 */}
+      <MobileTabStrip />
       <BottomBar />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />

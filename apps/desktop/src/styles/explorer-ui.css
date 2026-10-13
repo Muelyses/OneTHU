@@ -820,3 +820,106 @@
   color: var(--text-1);
 }
 .ex-row.is-active { color: var(--text-1); }
+
+/* ══════════ 手机端（html.is-phone）：底部可拖标签条 + seeking 抽屉 ══════════
+   口径（2026-10-13 手机端拍板）：is-phone = 触屏 + 非宽窗（与 html.is-phone 同源，
+   窄窗口的鼠标桌面不在此列）。竖栏在手机永不出现（TabRail 分流），标签条固定在
+   底栏上方；宽 839.98px 媒查老段（无触屏）保持原样不动。 */
+
+/* ── 底部标签条：一条独立的玻璃横条（44px 触目标、拖拽排序与停留合并都可用） ── */
+html.is-phone .ex-mobile-strip {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px));
+  z-index: 79;
+  padding: 4px 8px 0;
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-menu-fill);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+}
+/* 手势自己接管（TabStrip 的触屏分支：短触横滚 / 按住拖拽 / 长按菜单），原生平移关掉 */
+html.is-phone .ex-mobile-strip .ex-tabstrip { touch-action: none; }
+html.is-phone .ex-mobile-strip .ex-tabstrip::-webkit-scrollbar { display: none; }
+html.is-phone .ex-mobile-strip .ex-tab { height: 44px; min-width: 60px; max-width: 168px; border-radius: 12px; }
+html.is-phone .ex-mobile-strip .ex-tab-main { padding: 0 12px 0 8px; gap: 8px; }
+html.is-phone .ex-mobile-strip .ex-tab-title { font-size: 14px; }
+html.is-phone .ex-mobile-strip .ex-tab-close { width: 28px; height: 28px; margin-right: 4px; opacity: 1; }
+/* 命中区外扩：28px 视觉 + 外扩一圈 ≈ 44px 触目标 */
+html.is-phone .ex-mobile-strip .ex-tab-close::after { inset: -6px; }
+html.is-phone .ex-mobile-strip .ex-tab-add { width: 40px; height: 40px; border-radius: 12px; }
+html.is-phone .ex-mobile-strip .ex-ws-band { padding: 4px; border-radius: 12px; gap: 4px; }
+html.is-phone .ex-mobile-strip .ex-ws-head { padding: 4px 4px 4px 8px; gap: 4px; }
+html.is-phone .ex-mobile-strip .ex-ws-fold { padding: 4px 8px; }
+html.is-phone .ex-mobile-strip .ex-ws-close { width: 26px; height: 26px; }
+html.is-phone .ex-mobile-strip .ex-tab-glyph,
+html.is-phone .ex-mobile-strip .ex-tab-glyph svg { width: 16px; height: 16px; }
+
+/* 首页标签：只留 logo monogram（白底例外档：menu-fill 玻璃片），「首页」两字隐藏 */
+html.is-phone .ex-tab.is-home .ex-tab-title { display: none; }
+html.is-phone .ex-tab.is-home .ex-tab-main { padding-left: 12px; padding-right: 12px; }
+/* 顶栏的独立 logo 钮（手机顶栏不再有标签条，这里是首页恒在的入口） */
+.ex-tb-home-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--glass-menu-fill);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+  color: var(--text-1);
+  cursor: pointer;
+  flex: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ex-tb-home-mark:active { transform: scale(0.97); }
+
+/* ── seeking 抽屉：把手（44px 触目标）+ 半屏/全屏两档 ── */
+html.is-phone .ex-sheet-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  flex: none;
+  touch-action: none;
+  cursor: grab;
+}
+html.is-phone .ex-sheet-grip.is-drag { cursor: grabbing; }
+html.is-phone .ex-sheet-grip-pill {
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-1) 24%, transparent);
+}
+/* 两档：默认档 = 半屏抽屉（0.6vh）；拉满 = 0.94vh。宽度与贴底把手机老段（媒查 839.98）统一 */
+html.is-phone .ex-sheet.is-mob-half,
+html.is-phone .ex-sheet.is-mob-full {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  max-height: none;
+  border: 0;
+  border-radius: 16px 16px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html.is-phone .ex-sheet.is-mob-half { height: 60vh; }
+html.is-phone .ex-sheet.is-mob-full { height: 94vh; }
+/* 拖动中的高度由内联样式接管；这里只保证动画不跟拖打架 */
+html.is-phone .ex-sheet.is-mob-drag { animation: none; transition: none; }
+html.is-phone .ex-sheet.is-mob-half,
+html.is-phone .ex-sheet.is-mob-full { box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.24); }

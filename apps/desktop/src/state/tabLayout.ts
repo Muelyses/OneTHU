@@ -4,6 +4,7 @@
  * - 默认布局：设置 → 外观与布局 里定，落在 localStorage，启动时作为当前布局。
  */
 import { useSyncExternalStore } from "react";
+import { isPhoneNow } from "./phoneSheets.js";
 
 export type TabLayoutMode = "h" | "v";
 const DEFAULT_KEY = "explorer.tabLayout.default";
@@ -25,6 +26,9 @@ let defaultMode: TabLayoutMode = readDefault();
 let mode: TabLayoutMode = defaultMode;
 
 export function getTabLayoutMode(): TabLayoutMode {
+  /* 手机端拍板（dev-explorer 二轮）：手机只能是横标签页——存过的「竖版」默认值在手机上
+     一律读作横版（TabRail 不渲染、TabStrip 横排），桌面读取不变。 */
+  if (isPhoneNow()) return "h";
   return mode;
 }
 export function getTabLayoutDefault(): TabLayoutMode {

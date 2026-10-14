@@ -270,7 +270,7 @@ export function initExplorerHashBridge(): () => void {
       return;
     }
     const h = target.replace(/^#\/?/, "");
-    const known = (["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "folder", "tasks", "services", "favs"] as const).includes(h as never);
+    const known = (["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs"] as const).includes(h as never);
     if (h && known) openTab(h as Page);
   };
   addEventListener("hashchange", onHash);
@@ -286,7 +286,7 @@ export function openTabFromBootHash(): void {
   }
   const h = location.hash.replace(/^#\/?/, "");
   if (!h || h === "today") return;
-  const known = (["learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "folder", "tasks", "services", "favs"] as const).includes(h as never);
+  const known = (["learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs"] as const).includes(h as never);
   if (known) openTab(h as Page);
 }
 

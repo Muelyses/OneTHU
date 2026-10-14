@@ -8081,7 +8081,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   border: 1px solid var(--border);
   border-radius: var(--r-pill);
   background: var(--surface);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--ctl-shadow);   /* 画笔浮条：与强制刷新钮同款投影 */
 }
 .board-pen-swatch {
   width: 20px;

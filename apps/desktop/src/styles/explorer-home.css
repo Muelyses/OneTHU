@@ -296,14 +296,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   /* 用户定稿：不要边框不要投影——磨砂透背景本身就是材质 */
 }
 .hs-dock-sphere { padding: 4px; cursor: pointer; }
-/* 球体玻璃化：不再用不透明 surface 底（生硬圆片） */
+/* 球体改走控件基准（2026-10-14 用户点名「模仿强制刷新按钮」，此前的「球体玻璃化」被撤）：
+   本块特异度 (0,2,0) 高于 .sphere-ball (0,1,0)，会把基准的实底/描边/投影全部盖掉成
+   tint 渐变 + chip blur + rim —— 这正是「还是没模仿到」的原因。现在只补基准缺的投影。 */
 .hs-dock-sphere .sphere-ball,
 .hs-more-cell .sphere-ball {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  border-color: var(--glass-border);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top);
+  box-shadow: var(--ctl-shadow);
 }
 .hs-dock-actions {
   pointer-events: auto;
@@ -353,7 +351,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   color: var(--ctl-fg);
   font-size: var(--text-md);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--ctl-shadow);   /* 与强制刷新钮同投影（此前是自写的一层 rgba） */
   transition: transform 140ms ease, color 120ms ease;
 }
 .board-fab:hover { transform: scale(1.06); color: var(--text-1); }
@@ -604,7 +602,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   border-radius: var(--r-pill);
   border: 1px solid var(--border);
   background: var(--surface);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--ctl-shadow);   /* 统一到强制刷新钮同款投影（此前各自写死一层 rgba） */
 }
 .free-toolbar button {
   width: 24px;
@@ -661,7 +659,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   color: var(--ctl-fg);
   font-size: var(--text-md);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--ctl-shadow);   /* 统一到强制刷新钮同款投影（此前各自写死一层 rgba） */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -677,7 +675,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   border: 1px solid var(--border);
   border-radius: var(--r-md, 12px);
   background: var(--surface);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--ctl-shadow);   /* 统一到强制刷新钮同款投影（此前各自写死一层 rgba） */
 }
 .free-pen-panel input[type="color"] {
   width: 100%;

@@ -145,8 +145,8 @@ function PromptHost(): React.ReactNode {
     if (t) answerPrompt(t);
   };
   return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.35)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="confirm-card" style={{ background: "var(--bg, #fff)", color: "var(--text-1, inherit)", borderRadius: 14, padding: "18px 18px 14px", maxWidth: 380, width: "100%" }}>
+    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div className="confirm-card" style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-lg)", padding: "18px 18px 14px", maxWidth: 380, width: "100%" }}>
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{cur.title}</div>
         <Input autoFocus placeholder={cur.placeholder} value={val} onChange={(value) => setVal(value)} onKeyDown={(e) => {
             if (e.key === "Enter") submit();
@@ -179,18 +179,18 @@ function ConfirmBody(): React.ReactNode {
   const cur = useSyncExternalStore(subscribe, () => pending);
   if (!cur) return null;
   const glass: React.CSSProperties = {
-    background: "rgba(255,255,255,.62)",
+    background: "var(--og-accent-soft)",
     backdropFilter: "blur(28px) saturate(180%)",
     WebkitBackdropFilter: "blur(28px) saturate(180%)",
-    boxShadow: "inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 0 1px rgba(28,39,64,.08), 0 24px 80px rgba(28,39,64,.28)",
+    boxShadow: "var(--og-elev-3)",
   };
   if (cur.danger) {
     return (
-      <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div className="confirm-card" style={{ ...glass, borderRadius: 20, padding: "26px 26px 20px", maxWidth: 440, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 46, lineHeight: 1, marginBottom: 14 }}>⚠️</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "rgba(28,39,64,.75)" }}>{cur.msg}</div>
+          <div style={{ fontSize: 17, fontWeight: 700, color: "var(--og-error)", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
+          <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "var(--og-content-2)" }}>{cur.msg}</div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
             <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
             <Btn variant="outline" onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确认执行"}</Btn>
@@ -200,8 +200,8 @@ function ConfirmBody(): React.ReactNode {
     );
   }
   return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.35)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="confirm-card" style={{ ...glass, borderRadius: 14, padding: "18px 18px 14px", maxWidth: 420, width: "100%" }}>
+    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div className="confirm-card" style={{ ...glass, borderRadius: "var(--og-radius-lg)", padding: "18px 18px 14px", maxWidth: 420, width: "100%" }}>
         {cur.title ? <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{cur.title}</div> : null}
         <div style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{cur.msg}</div>
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>

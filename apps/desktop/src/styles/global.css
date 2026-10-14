@@ -740,13 +740,10 @@
   border-bottom-color: var(--accent);
 }
 
-/* ---------- 课表 ---------- */
-
-.tt {
-  display: grid;
-  grid-template-columns: 44px repeat(5, 1fr);
-  gap: 4px;
-}
+/* ---------- 课表 ----------
+ * 本节只保留 .tt-head/.is-today 共享表头类（Schedule 页时间轴与选课预览同用）；
+ * 旧 .tt / .tt-cell / .tt-course 家族随课表页 OneGUI 收编删除（该页课块/网格全走组件+令牌）。
+ */
 
 .tt-head {
   padding: 6px 0;
@@ -759,24 +756,6 @@
 }
 
 .tt-head.is-today { background: var(--accent-soft); color: var(--accent); }
-
-.tt-cell.is-today { background: var(--accent-soft); border-color: var(--accent-border); }
-
-.tt-course b {
-  display: block;
-  font-size: var(--text-xs);
-  line-height: 16px;
-  font-weight: 500;
-  color: var(--text-1);
-}
-
-.tt-course span {
-  display: block;
-  font-size: var(--text-xxs);
-  line-height: 14px;
-  color: var(--text-3);
-  margin-top: 2px;
-}
 
 /* ---------- 骨架屏 ---------- */
 
@@ -2242,8 +2221,7 @@ select.input:focus {
   body { font-size: var(--text-base); }
 
   .tt-head { font-size: 10px; }
-  /* 课表：44px 时间轴 + 5 列全部可收缩（1fr 默认 min-content 不为零，长课名会撑爆） */
-  .tt { grid-template-columns: 34px repeat(5, minmax(0, 1fr)) !important; gap: 3px; }
+
 
   /* 登录/恢复屏满宽 */
   .login-wrap { padding: 20px 18px; }
@@ -8269,8 +8247,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
-/* ---- 扫描补课 D：成群小件（课表课程格）＝ tint + rim，不加 blur（预算外定稿） ---- */
-.tt-course,
+/* ---- 扫描补课 D：成群小件＝ tint + rim，不加 blur（预算外定稿；.tt-course 已随课表页收编删除） ---- */
 .week-course {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   box-shadow: inset 0 1px 0 var(--glass-rim-top);

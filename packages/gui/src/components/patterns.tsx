@@ -215,9 +215,7 @@ function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeE
     const x = rect.left - hostRect.left + host.scrollLeft;
     const scale = rect.width / hostRect.width;
     ind.style.transformOrigin = "left center";
-    // 竖直方向：line 变体贴底（不需要位移），pill/soft 由 CSS 的 translateY(-50%) 负责
-    const vertical = ind.dataset.ogVertical === "1" ? " translateY(-50%)" : "";
-    ind.style.transform = `translateX(${x}px)${vertical} scaleX(${scale})`;
+    ind.style.transform = `translateX(${x}px) scaleX(${scale})`;
   }, [activeEl, indicatorRef]);
   useLayoutEffect(apply, [apply, ...deps]);
   useEffect(() => {
@@ -235,6 +233,14 @@ function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeE
     ro.observe(host);
     return () => ro.disconnect();
   }, [apply]);
+  /* 换选值时若条目溢出（窄容器内部滚动，滚动条隐藏），把激活项滚进可视区——
+     否则选中态被裁在右边缘外，用户看到的是「状态标签超出右边缘」。 */
+  useEffect(() => {
+    const host = activeEl?.parentElement;
+    if (!host || host.scrollWidth <= host.clientWidth + 1) return;
+    activeEl.scrollIntoView({ block: "nearest", inline: "nearest" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeEl, ...(Array.isArray(deps) ? deps : [])]);
   /* 第二观测：激活项自身的宽度抖动（「进行中 0」→「进行中 12」数字宽度变化、
      label 文案切换）——项目条自身变宽不触发宿主缩放（full=1fr 固定总宽），也必须重测。 */
   useEffect(() => {
@@ -288,7 +294,7 @@ export function Tabs({ items, value, onChange, variant = "line", sticky, scope, 
           {item.badge !== undefined ? <span className="og-tab-badge">{item.badge}</span> : null}
         </button>
       ))}
-      <span ref={indicatorRef} data-og-vertical={variant === "line" ? "0" : "1"} data-og-dynamic="indicator" className="og-tabs-indicator" aria-hidden="true" />
+      <span ref={indicatorRef} data-og-dynamic="indicator" className="og-tabs-indicator" aria-hidden="true" />
     </div>
   );
 }
@@ -367,7 +373,7 @@ export function Segment({ options, value, onChange, size = "md", block, scope, c
           <span>{opt.label}</span>
         </button>
       ))}
-      <span ref={indicatorRef} data-og-vertical="1" data-og-dynamic="indicator" className="og-segment-indicator" aria-hidden="true" />
+      <span ref={indicatorRef} data-og-dynamic="indicator" className="og-segment-indicator" aria-hidden="true" />
     </div>
   );
 }

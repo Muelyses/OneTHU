@@ -260,7 +260,9 @@
 
 .og-tabs--pill .og-tabs-indicator,
 .og-tabs--soft .og-tabs-indicator {
-  top: 50%;
+  /* 自身居中（top 50% 减半高），不靠 JS 追加 translateY —— 指示条 transform
+     由 JS 全量接管（translateX+scaleX），CSS 里任何 translateY 都会被覆盖丢失 */
+  top: calc(50% - var(--og-ctl-h-md) / 2);
   bottom: auto;
   height: var(--og-ctl-h-md);
   border-radius: var(--og-radius-md);
@@ -308,7 +310,11 @@
   border-radius: var(--og-radius-full);
   background: var(--og-surface-3);
   min-width: 0;
+  /* 硬性不越右边缘：条目 nowrap 不收缩，容器再窄也只在自己内部滚动（隐藏滚动条），
+     决不允许把整条轨道顶出父容器（GitLab 状态筛选实测） */
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: none;
 }
 

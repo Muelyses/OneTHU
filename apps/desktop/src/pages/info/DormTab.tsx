@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 /**
  * 宿舍页 —— 电费余额/缴费记录 + 订水。
  * - 电费：thu-info-lib dorm.ts 移植（家园网 myhome 会话，ELE_REMAINDER / ELE_PAY_RECORD）；
@@ -231,13 +232,11 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
         </div>
         <div className="field">
           <label htmlFor="water-brand">水种</label>
-          <select id="water-brand" className="input" value={brand} onChange={(e) => setBrand(e.target.value)}>
-            {Object.entries(WATER_BRANDS).map(([id, name]) => (
+          <Select id="water-brand" value={brand} onChange={(value) => setBrand(value)}>{Object.entries(WATER_BRANDS).map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
               </option>
-            ))}
-          </select>
+            ))}</Select>
         </div>
         <div className="field">
           <label htmlFor="water-addr">送达地址（楼栋 + 房间号）</label>

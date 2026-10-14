@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 图书馆页 —— 座位图（网格）+ 座位分布图 + 我的预约。
@@ -732,15 +733,7 @@ export function LibraryTab({
           </div>
           <div className="field" style={{ margin: 0 }}>
             <label htmlFor="lib-date">日期</label>
-            <select
-              id="lib-date"
-              className="input"
-              value={dateChoice}
-              onChange={(e) => setDateChoice(e.target.value === "1" ? 1 : 0)}
-            >
-              <option value={0}>今天</option>
-              <option value={1}>明天</option>
-            </select>
+            <Select id="lib-date" value={dateChoice} onChange={(value) => setDateChoice(value === "1" ? 1 : 0)}><option value={0}>今天</option><option value={1}>明天</option></Select>
           </div>
         </div>
       ) : null}

@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 /**
  * 研讨间预约（cab.lib.tsinghua.edu.cn ic-web，thu-info-app libRoomSelect/libRoomBook/
  * libRoomPerformBook 桌面化移植）：
@@ -714,18 +715,11 @@ export function LibRoomTab({
             </div>
             <div className="field" style={{ margin: 0 }}>
               <label htmlFor="libroom-date">日期</label>
-              <select
-                id="libroom-date"
-                className="input"
-                value={day.offset}
-                onChange={(e) => setDay(days[Number(e.target.value)] ?? days[0]!)}
-              >
-                {days.map((d) => (
+              <Select id="libroom-date" value={day.offset} onChange={(value) => setDay(days[Number(value)] ?? days[0]!)}>{days.map((d) => (
                   <option key={d.offset} value={d.offset}>
                     {d.label}
                   </option>
-                ))}
-              </select>
+                ))}</Select>
             </div>
             <div className="field" style={{ margin: 0 }}>
               <label htmlFor="libroom-filter-beg">空闲时段</label>

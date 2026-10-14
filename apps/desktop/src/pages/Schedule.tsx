@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 日程页 —— 时间轴（周网格，课表+云/本日程，24h）与列表（月历+所选日清单）。
@@ -812,23 +813,9 @@ export function SchedulePage() {
                   显示时段（只影响画布，不改数据；默认全天）
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 8 }}>
-                  <select
-                    className="input"
-                    aria-label="起始时间"
-                    value={win.from}
-                    onChange={(e) => setWin({ ...win, from: Number(e.target.value) })}
-                  >
-                    {WIN_FROM_OPTS.map((m) => (<option key={m} value={m}>{hhmmWin(m)}</option>))}
-                  </select>
+                  <Select aria-label="起始时间" value={win.from} onChange={(value) => setWin({ ...win, from: Number(value) })}>{WIN_FROM_OPTS.map((m) => (<option key={m} value={m}>{hhmmWin(m)}</option>))}</Select>
                   <span style={{ color: "var(--text-3, #999)" }}>–</span>
-                  <select
-                    className="input"
-                    aria-label="结束时间"
-                    value={win.to}
-                    onChange={(e) => setWin({ ...win, to: Number(e.target.value) })}
-                  >
-                    {WIN_TO_OPTS.map((m) => (<option key={m} value={m}>{hhmmWin(m)}</option>))}
-                  </select>
+                  <Select aria-label="结束时间" value={win.to} onChange={(value) => setWin({ ...win, to: Number(value) })}>{WIN_TO_OPTS.map((m) => (<option key={m} value={m}>{hhmmWin(m)}</option>))}</Select>
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {WINDOW_PRESETS.map((p) => (
@@ -885,29 +872,20 @@ export function SchedulePage() {
         {semesters.length > 0 ? (
           <>
             <span style={{ width: 1, alignSelf: "stretch", background: "var(--border, #e8e8e8)" }} />
-            <select
-              className="input"
-              value={Math.min(jumpSemIdx, semesters.length - 1)}
-              onChange={(e) => {
-                const i = Number(e.target.value);
+            <Select value={Math.min(jumpSemIdx, semesters.length - 1)} onChange={(value) => {
+                const i = Number(value);
                 setJumpSemIdx(i);
                 setJumpWeek((w) => Math.min(w, semesters[i]?.weekCount ?? w));
-              }}
-              style={{ maxWidth: 200 }}
-            >
-              {semesters.map((sm, i) => (
+              }}>{semesters.map((sm, i) => (
                 <option key={sm.semesterId || i} value={i}>
                   {sm.semesterName || sm.semesterId || `学期 ${i + 1}`}
                 </option>
-              ))}
-            </select>
-            <select className="input" value={jumpWeek} onChange={(e) => setJumpWeek(Number(e.target.value))} style={{ width: 84 }}>
-              {Array.from({ length: jumpSem?.weekCount ?? 20 }, (_, i) => i + 1).map((w) => (
+              ))}</Select>
+            <Select value={jumpWeek} onChange={(value) => setJumpWeek(Number(value))}>{Array.from({ length: jumpSem?.weekCount ?? 20 }, (_, i) => i + 1).map((w) => (
                 <option key={w} value={w}>
                   第 {w} 周
                 </option>
-              ))}
-            </select>
+              ))}</Select>
             <Btn variant="outline" onClick={goSemWeek}>
               前往
             </Btn>

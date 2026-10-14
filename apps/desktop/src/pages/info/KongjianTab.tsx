@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 /**
  * 学生宿舍公共空间预约（myhome 共享家园网 kongjian WebForms 链路）。
  *
@@ -284,17 +285,11 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
             {page.dates.length > 0 ? (
               <div>
                 <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>日期</div>
-                <select
-                  className="input filter-select"
-                  value={date}
-                  onChange={(e) => pickDate(e.target.value)}
-                >
-                  {page.dates.map((d) => (
+                <Select value={date} onChange={(value) => pickDate(value)}>{page.dates.map((d) => (
                     <option key={d} value={d}>
                       {d}
                     </option>
-                  ))}
-                </select>
+                  ))}</Select>
               </div>
             ) : null}
             {page.info ? (

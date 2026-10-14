@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -948,15 +949,9 @@ export function SettingsBody({
                 /* 自动维护：只读展示实时值（不受草稿影响），避免手改与误覆盖 */
                 <Input readOnly value={liveSettings[f.key] ?? ""} placeholder="（尚未签发）" />
               ) : f.type === "select" ? (
-                <select
-                  className="input"
-                  value={draft[f.key] ?? ""}
-                  onChange={(e) => editDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-                >
-                  {optionsFor(f, liveSettings).map((o: { value: string; label: string }) => (
+                <Select value={draft[f.key] ?? ""} onChange={(value) => editDraft((d) => ({ ...d, [f.key]: value }))}>{optionsFor(f, liveSettings).map((o: { value: string; label: string }) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
+                  ))}</Select>
               ) : f.type === "textarea" ? (
                 <textarea
                   className="input"

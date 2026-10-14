@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 清华 GitLab 页（git.tsinghua.edu.cn，REST API v4 直连）。
@@ -356,12 +357,9 @@ function CodeTab({ projectId, defaultBranch, webUrl }: {
   return (
     <div className="gitlab-code">
       <div className="gitlab-code-bar">
-        <select className="input gitlab-ref" value={ref} onChange={(e) => setRef(e.target.value)}>
-          {(branches.data ?? []).map((b) => (
+        <Select value={ref} onChange={(value) => setRef(value)}>{(branches.data ?? []).map((b) => (
             <option key={b.name} value={b.name}>{b.name}{b.default ? "（默认）" : ""}</option>
-          ))}
-          {(branches.data ?? []).some((b) => b.name === ref) ? null : <option value={ref}>{ref}</option>}
-        </select>
+          ))}{(branches.data ?? []).some((b) => b.name === ref) ? null : <option value={ref}>{ref}</option>}</Select>
         <div className="gitlab-crumb">
           <b onClick={() => { setPath(""); setPages(1); }}>{ref || "根目录"}</b>
           {crumbs.map((c, i) => (

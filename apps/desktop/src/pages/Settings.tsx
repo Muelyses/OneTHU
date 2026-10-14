@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 declare const __APP_VERSION__: string;
 import { defineSearchRows } from "../state/searchRows.js";
@@ -1936,27 +1937,11 @@ function AppearanceSection(): ReactNode {
         <>
           <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
             <div className="setting-title" style={{ flex: "none" }}>白天主题</div>
-            <select
-              className="input"
-              value={snap.dayThemeId ?? ""}
-              onChange={(e) => setDayNightTheme(e.target.value || null, snap.nightThemeId)}
-              disabled={dyn}
-              style={{ maxWidth: 240 }}
-            >
-              {themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-            </select>
+            <Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
             <div className="setting-title" style={{ flex: "none" }}>黑夜主题</div>
-            <select
-              className="input"
-              value={snap.nightThemeId ?? ""}
-              onChange={(e) => setDayNightTheme(snap.dayThemeId, e.target.value || null)}
-              disabled={dyn}
-              style={{ maxWidth: 240 }}
-            >
-              {themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-            </select>
+            <Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>
           </div>
         </>
       ) : (

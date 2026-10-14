@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 插件通用表单弹窗（Promise 化）——插件经 onethu.ui.form(fields) 弹出结构化
@@ -67,11 +68,9 @@ export function FormModalHost(): ReactNode {
                 onChange={(e) => (draft[f.key] = e.target.value)}
               />
             ) : f.kind === "select" ? (
-              <select className="input" defaultValue={draft[f.key]} onChange={(e) => (draft[f.key] = e.target.value)}>
-                {f.options.map((o) => (
+              <Select defaultValue={draft[f.key]} onChange={(value) => (draft[f.key] = value)}>{f.options.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+                ))}</Select>
             ) : (
               <input
                 className="input"

@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 附件动作面板（需求 7）：拿到附件后选「转存云盘 / 交作业（网络学堂 + 雨课堂）/ 发讨论区」。
@@ -473,12 +474,9 @@ export function AttachActionsSheet({
             ) : null}
             <div className="ohaa-field">
               <span className="ohaa-label">资料库（不替你猜库）</span>
-              <select className="input" style={inputStyle} value={repoId} onChange={(e) => setRepoId(e.target.value)}>
-                <option value="">— 请选择 —</option>
-                {sf.repos.map((rp) => (
+              <Select value={repoId} onChange={(value) => setRepoId(value)}><option value="">— 请选择 —</option>{sf.repos.map((rp) => (
                   <option key={rp.id} value={rp.id}>{rp.name}</option>
-                ))}
-              </select>
+                ))}</Select>
             </div>
             <div className="ohaa-field">
               <span className="ohaa-label">目标目录（不存在会自动创建）</span>
@@ -548,21 +546,13 @@ export function AttachActionsSheet({
               <>
                 <div className="ohaa-field">
                   <span className="ohaa-label">课程</span>
-                  <select className="input" style={inputStyle} value={courseId}
-                    onChange={(e) => { setCourseId(e.target.value); setHwId(""); }}>
-                    <option value="">— 请选择 —</option>
-                    {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                  <Select value={courseId} onChange={(value) => { setCourseId(value); setHwId(""); }}><option value="">— 请选择 —</option>{courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select>
                 </div>
                 <div className="ohaa-field">
                   <span className="ohaa-label">作业（网络学堂在线提交的）</span>
-                  <select className="input" style={inputStyle} value={hwId}
-                    onChange={(e) => setHwId(e.target.value)} disabled={!courseId}>
-                    <option value="">— 请选择 —</option>
-                    {courseHw.map((h) => (
+                  <Select value={hwId} onChange={(value) => setHwId(value)} disabled={!courseId}><option value="">— 请选择 —</option>{courseHw.map((h) => (
                       <option key={h.id} value={h.id}>{h.title}{h.submitted ? "（已交）" : ""}</option>
-                    ))}
-                  </select>
+                    ))}</Select>
                 </div>
                 <div className="ohaa-field">
                   <span className="ohaa-label">正文（可选；留空会清空该作业此前的正文）</span>
@@ -597,21 +587,13 @@ export function AttachActionsSheet({
                 ) : null}
                 <div className="ohaa-field">
                   <span className="ohaa-label">雨课堂课程</span>
-                  <select className="input" style={inputStyle} value={yktCourse}
-                    onChange={(e) => { setYktCourse(e.target.value); setYktLeaf(""); }}>
-                    <option value="">— 请选择 —</option>
-                    {yktCourses.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <Select value={yktCourse} onChange={(value) => { setYktCourse(value); setYktLeaf(""); }}><option value="">— 请选择 —</option>{yktCourses.map((c) => <option key={c} value={c}>{c}</option>)}</Select>
                 </div>
                 <div className="ohaa-field">
                   <span className="ohaa-label">雨课堂作业</span>
-                  <select className="input" style={inputStyle} value={yktLeaf}
-                    onChange={(e) => setYktLeaf(e.target.value)} disabled={!yktCourse}>
-                    <option value="">— 请选择 —</option>
-                    {yktRows.map((i) => (
+                  <Select value={yktLeaf} onChange={(value) => setYktLeaf(value)} disabled={!yktCourse}><option value="">— 请选择 —</option>{yktRows.map((i) => (
                       <option key={i.id} value={i.id}>{i.title}{i.submitted ? "（已交）" : ""}</option>
-                    ))}
-                  </select>
+                    ))}</Select>
                 </div>
                 <div className="ohaa-foot">
                   <Btn variant="outline" onClick={close}>取消</Btn>
@@ -636,11 +618,7 @@ export function AttachActionsSheet({
             </div>
             <div className="ohaa-field">
               <span className="ohaa-label">课程</span>
-              <select className="input" style={inputStyle} value={courseId}
-                onChange={(e) => { setCourseId(e.target.value); setBoardId(""); setHwId(""); }}>
-                <option value="">— 请选择 —</option>
-                {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+              <Select value={courseId} onChange={(value) => { setCourseId(value); setBoardId(""); setHwId(""); }}><option value="">— 请选择 —</option>{courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select>
               {courses.length === 0 ? (
                 <span className="ohaa-note">
                   本机还没有课程缓存。
@@ -655,11 +633,7 @@ export function AttachActionsSheet({
               <>
                 <div className="ohaa-field">
                   <span className="ohaa-label">板块</span>
-                  <select className="input" style={inputStyle} value={boardId}
-                    onChange={(e) => setBoardId(e.target.value)} disabled={!courseId}>
-                    <option value="">— 请选择 —</option>
-                    {boards.map((b) => <option key={b.bqid} value={b.bqid}>{b.name}</option>)}
-                  </select>
+                  <Select value={boardId} onChange={(value) => setBoardId(value)} disabled={!courseId}><option value="">— 请选择 —</option>{boards.map((b) => <option key={b.bqid} value={b.bqid}>{b.name}</option>)}</Select>
                   {boardsMsg ? <span className="ohaa-note">{boardsMsg}</span> : null}
                 </div>
                 <div className="ohaa-field">

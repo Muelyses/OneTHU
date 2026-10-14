@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 /**
  * 设置页「语音合成」区块（需求 4）——用户要的两件事在这里落地：
  *   ① 静音 / 自动播放二选一：开关「自动朗读 OH 的回复」，**默认关（静音）**；
@@ -184,21 +185,11 @@ export function VoiceSettingsSection(): ReactNode {
               : "不同 ROM 自带的嗓音不同（如小艺、小爱、Google 的普通话嗓音）。"}
           </div>
         </div>
-        <select
-          className="input"
-          aria-label="音色"
-          style={{ maxWidth: 220, flex: "none" }}
-          disabled={voices.length === 0 || !usable}
-          value={prefs.voiceName}
-          onChange={(e) => setVoicePrefs({ voiceName: e.target.value })}
-        >
-          <option value="">引擎默认音色</option>
-          {voices.map((v) => (
+        <Select aria-label="音色" disabled={voices.length === 0 || !usable} value={prefs.voiceName} onChange={(value) => setVoicePrefs({ voiceName: value })}><option value="">引擎默认音色</option>{voices.map((v) => (
             <option key={v} value={v}>
               {prettyVoiceName(v)}
             </option>
-          ))}
-        </select>
+          ))}</Select>
       </div>
 
       {/* ④ 语速 */}

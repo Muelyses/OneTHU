@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 选课工作台 —— nextthuxk v1.4.9 布局复刻（单屏两栏）：
@@ -423,9 +424,7 @@ export function ZhjwxkCoursesPage() {
         actions={
           <>
             <PageAtomStar atomKey="zhjwxk" title="选课" />
-            <select className="input" style={{ height: 28, fontSize: 12 }} value={wb.semester ?? ""} onChange={(e) => void wb.setSemesterOverride(e.target.value)}>
-              {(wb.semesterOptions ?? []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
+            <Select value={wb.semester ?? ""} onChange={(value) => void wb.setSemesterOverride(value)}>{(wb.semesterOptions ?? []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select>
             {wb.phase ? <button className="btn" onClick={() => void wb.refreshQueue()} disabled={wb.queueState === "loading"}>刷新队列</button> : null}
             <button className="btn" onClick={() => void wb.refresh()} disabled={wb.coreState === "loading"}>
               <IconRefresh width={14} height={14} />
@@ -1111,12 +1110,8 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
         ) : (
           <div className="row-sub" style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4, flexWrap: "wrap" }}>
             {state === "full" ? <span style={{ color: "var(--red)", fontSize: 12 }}>已满</span> : null}
-            <select className="input" style={{ height: 26, fontSize: 12, maxWidth: 76 }} value={pick.flag} disabled={wb.busy !== null} onChange={(e) => setPicks((m) => ({ ...m, [key]: { ...pick, flag: e.target.value as XkFlag } }))}>
-              {allowedFlags(pick.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}
-            </select>
-            {!wb.phase ? <select className="input" style={{ height: 26, fontSize: 12, maxWidth: 76 }} value={String(pick.zy)} disabled={wb.busy !== null} onChange={(e) => setPicks((m) => ({ ...m, [key]: { ...pick, zy: Number(e.target.value) } }))}>
-              {[3, 2, 1].map((z) => <option key={z} value={z}>{z}志愿</option>)}
-            </select> : null}
+            <Select value={pick.flag} disabled={wb.busy !== null} onChange={(value) => setPicks((m) => ({ ...m, [key]: { ...pick, flag: value as XkFlag } }))}>{allowedFlags(pick.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}</Select>
+            {!wb.phase ? <Select value={String(pick.zy)} disabled={wb.busy !== null} onChange={(value) => setPicks((m) => ({ ...m, [key]: { ...pick, zy: Number(value) } }))}>{[3, 2, 1].map((z) => <option key={z} value={z}>{z}志愿</option>)}</Select> : null}
             {!wb.phase ? (
               <span style={{ fontSize: 12, color: prob.color, minWidth: 96 }}>{prob.prob}</span>
             ) : null}
@@ -1434,16 +1429,16 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
           </label>
           <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)" }}>
             星期
-            <select className="input" style={{ height: 30 }} value={mDay} onChange={(e) => setMDay(e.target.value)}>{[1,2,3,4,5,6,7].map((d) => <option key={d} value={d}>{["周一","周二","周三","周四","周五","周六","周日"][d-1]}</option>)}</select>
+            <Select value={mDay} onChange={(value) => setMDay(value)}>{[1,2,3,4,5,6,7].map((d) => <option key={d} value={d}>{["周一","周二","周三","周四","周五","周六","周日"][d-1]}</option>)}</Select>
           </label>
           <div style={{ display: "flex", gap: 8 }}>
             <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)", flex: 1 }}>
               开始
-              <select className="input" style={{ height: 30 }} value={mBegin} onChange={(e) => setMBegin(e.target.value)}>{PV_HALF_HOURS.slice(0, -1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</select>
+              <Select value={mBegin} onChange={(value) => setMBegin(value)}>{PV_HALF_HOURS.slice(0, -1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</Select>
             </label>
             <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)", flex: 1 }}>
               结束
-              <select className="input" style={{ height: 30 }} value={mEnd} onChange={(e) => setMEnd(e.target.value)}>{PV_HALF_HOURS.slice(1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</select>
+              <Select value={mEnd} onChange={(value) => setMEnd(value)}>{PV_HALF_HOURS.slice(1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</Select>
             </label>
           </div>
           <div style={{ fontSize: 11, color: "var(--text-3)" }}>占用保存在本地，画在时间轴上（支持任意钟点段），便于与课程重叠对照。</div>
@@ -1515,12 +1510,8 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
                   <button className="btn" style={{ padding: "0 6px", fontSize: 10 }} title="从暂存区移除" onClick={() => wb.removeFromStage(s.code, s.seq)}>✕</button>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <select className="input" style={{ height: 22, fontSize: 10, maxWidth: 60 }} value={s.flag} onChange={(e) => wb.updateStageItem(s.code, s.seq, { flag: e.target.value as XkFlag })}>
-                    {allowedFlags(s.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}
-                  </select>
-                  <select className="input" style={{ height: 22, fontSize: 10, maxWidth: 52 }} value={s.zy} onChange={(e) => wb.updateStageItem(s.code, s.seq, { zy: Number(e.target.value) })}>
-                    {[3, 2, 1].map((z) => <option key={z} value={z}>{z}志愿</option>)}
-                  </select>
+                  <Select value={s.flag} onChange={(value) => wb.updateStageItem(s.code, s.seq, { flag: value as XkFlag })}>{allowedFlags(s.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}</Select>
+                  <Select value={s.zy} onChange={(value) => wb.updateStageItem(s.code, s.seq, { zy: Number(value) })}>{[3, 2, 1].map((z) => <option key={z} value={z}>{z}志愿</option>)}</Select>
                   <span style={{ fontSize: 10, color: wb.phase ? "var(--text-3)" : p.color, whiteSpace: "nowrap", marginLeft: "auto" }}>
                     {wb.phase ? (vol ?? "—") : p.prob}
                   </span>

@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 体育场馆预约（体育系统 sports.tsinghua.edu.cn 全套移植 · 除支付）。
@@ -618,22 +619,16 @@ export function VenueSportsTab({
           <div style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 12 }}>
             统一身份要求二次认证。选择验证方式并输入验证码，完成后本设备将被信任，之后无需再输。
           </div>
-          <select
-            className="input filter-select"
-            value={twoFAType ?? ""}
-            onChange={(e) => {
-              setTwoFAType(e.target.value);
+          <Select value={twoFAType ?? ""} onChange={(value) => {
+              setTwoFAType(value);
               setTwoFASent(false);
               setTwoFAErr(null);
-            }}
-          >
-            {twoFA.methods.map((m) => (
+            }}>{twoFA.methods.map((m) => (
               <option key={m.type} value={m.type}>
                 {m.name}
                 {m.detail ? `（${m.detail}）` : ""}
               </option>
-            ))}
-          </select>
+            ))}</Select>
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
             <input
               className="input"
@@ -791,16 +786,7 @@ export function VenueSportsTab({
       ) : sitesState === "ready" ? (
         <>
           {rows.length > 0 ? (
-            <select
-              className="input filter-select"
-              value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value as "all" | "am" | "pm" | "eve")}
-            >
-              <option value="all">全部时段（{rows.length} 场）</option>
-              <option value="am">上午（{countIn((h) => h < 12)} 场）</option>
-              <option value="pm">下午（{countIn((h) => h >= 12 && h < 17)} 场）</option>
-              <option value="eve">晚上（{countIn((h) => h >= 17)} 场）</option>
-            </select>
+            <Select value={timeFilter} onChange={(value) => setTimeFilter(value as "all" | "am" | "pm" | "eve")}><option value="all">全部时段（{rows.length} 场）</option><option value="am">上午（{countIn((h) => h < 12)} 场）</option><option value="pm">下午（{countIn((h) => h >= 12 && h < 17)} 场）</option><option value="eve">晚上（{countIn((h) => h >= 17)} 场）</option></Select>
           ) : null}
           {rows.length > 0 && siteBlocks.length === 0 ? (
             <Card style={{ marginBottom: 16 }}>

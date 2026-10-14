@@ -261,8 +261,9 @@ export function NumberField({ value, defaultValue, onChange, min, max, step = 1,
 export interface SelectOption { value: string; label: string; disabled?: boolean }
 
 export interface SelectProps extends OneBase {
-  value?: string;
-  defaultValue?: string;
+  /** 原生 select 接受 number，这里也接受（内部转字符串；onChange 一律回 string） */
+  value?: string | number;
+  defaultValue?: string | number;
   onChange?: (value: string) => void;
   options?: SelectOption[];
   children?: ReactNode;
@@ -279,8 +280,8 @@ export function Select({ value, defaultValue, onChange, options, children, place
       <Shell size={size} invalid={invalid} disabled={disabled} focused={false}>
         <select
           className="og-input-el og-select-el"
-          value={value}
-          defaultValue={defaultValue}
+          value={value === undefined ? undefined : String(value)}
+          defaultValue={defaultValue === undefined ? undefined : String(defaultValue)}
           disabled={disabled}
           aria-invalid={invalid || undefined}
           aria-label={aria["aria-label"]}

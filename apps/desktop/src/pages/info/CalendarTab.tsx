@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 /**
  * 校历 —— info.getCalendarImageUrl（thu-info-app schoolCalendar.tsx 移植，图片版）。
  * 学年/学期/语言选择 + 图片缩放 +「在浏览器打开原图」（openExternal）。
@@ -63,21 +64,13 @@ export function CalendarTab() {
       ) : null}
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 10 }}>
-        <select className="input" style={{ width: "auto" }} value={year} onChange={(e) => setYear(Number(e.target.value))} aria-label="学年">
-          {years.map((y) => (
+        <Select value={year} onChange={(value) => setYear(Number(value))} aria-label="学年">{years.map((y) => (
             <option key={y} value={y}>
               {y}-{y + 1} 学年
             </option>
-          ))}
-        </select>
-        <select className="input" style={{ width: "auto" }} value={sem} onChange={(e) => setSem(e.target.value as Sem)} aria-label="学期">
-          <option value="autumn">秋季学期</option>
-          <option value="spring">春季学期</option>
-        </select>
-        <select className="input" style={{ width: "auto" }} value={lang} onChange={(e) => setLang(e.target.value as Lang)} aria-label="语言">
-          <option value="zh">中文</option>
-          <option value="en">English</option>
-        </select>
+          ))}</Select>
+        <Select value={sem} onChange={(value) => setSem(value as Sem)} aria-label="学期"><option value="autumn">秋季学期</option><option value="spring">春季学期</option></Select>
+        <Select value={lang} onChange={(value) => setLang(value as Lang)} aria-label="语言"><option value="zh">中文</option><option value="en">English</option></Select>
         {src ? (
           <button className="btn btn-ghost" onClick={() => void openExternal(src)}>
             在浏览器打开原图

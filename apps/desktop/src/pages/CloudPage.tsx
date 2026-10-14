@@ -1,3 +1,4 @@
+import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 云盘页 —— 清华云盘（Seafile 定制版，Web API 直连）。
@@ -147,14 +148,7 @@ function MoveModal({
           <span style={{ flex: 1 }} />
           <Btn variant="outline" onClick={onClose} aria-label="关闭">✕</Btn>
         </div>
-        <select
-          className="input"
-          style={{ width: "100%", marginBottom: 8 }}
-          value={repoId}
-          onChange={(e) => { setRepoId(e.target.value); setPath("/"); }}
-        >
-          {repos.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-        </select>
+        <Select value={repoId} onChange={(value) => { setRepoId(value); setPath("/"); }}>{repos.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</Select>
         <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
           <b className="cloud-crumb-item" onClick={() => setPath("/")}>根目录</b>
           {crumbs.map((c, i) => (
@@ -166,24 +160,16 @@ function MoveModal({
         {/* WKWebView 合成层怪病（v4 实录：DOM 正确、字面样式仍全白）——目标文件夹
             改用原生 select（系统绘制）：选中即进入该层，面包屑点返回上级。 */}
         {error && <p className="cloud-error" style={{ margin: "0 0 8px" }}>{error}</p>}
-        <select
-          className="input"
-          style={{ width: "100%", marginBottom: 8 }}
-          value=""
-          onChange={(e) => {
-            const v = e.target.value;
+        <Select value="" onChange={(value) => {
+            const v = value;
             if (v) setPath(`${path === "/" ? "" : path}/${v}`);
-          }}
-        >
-          <option value="">
+          }}><option value="">
             {loading
               ? "正在读取文件夹…"
               : dirs.length
                 ? `进入子文件夹（当前层 ${dirs.length} 个）▸`
                 : "当前层没有子文件夹——可直接点「移动到这里」"}
-          </option>
-          {dirs.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
-        </select>
+          </option>{dirs.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}</Select>
         {selfNest && <p className="cloud-error" style={{ margin: "8px 0 0" }}>不能移动到自身内部的文件夹</p>}
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
           <Btn variant="outline" onClick={onClose}>取消</Btn>

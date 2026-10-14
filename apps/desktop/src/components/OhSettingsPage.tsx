@@ -36,13 +36,23 @@ const tierListeners = new Set<() => void>();
 
 /* ── task-19：本页**独有**的设置行注册（模块加载时执行，不依赖 DOM/是否可见）。
    注意：语音/悬浮球/IM 的行由**它们各自的 section 组件**注册（单一真源），这里不再重复注册
-   —— 重复���册会让"搜到的是哪一条"出现歧义（护栏最初就是被这一点抓红的）。 ── */
+   —— 重复注册会让"搜到的是哪一条"出现歧义（护栏最初就是被这一点抓红的）。 ── */
+/* 行锚点口径（2026-10-15 oh-wire 复核，与 focusSettingsTarget 的实现对齐）：
+   focusSettingsTarget **自己会补 row-/sec- 前缀**（Layout.tsx:598），所以 target 要传"光名字"——
+   SubHead 的 `data-set-id="sec-模型MCP日志"` ← 传「模型MCP日志」；自动打 id 的设置行 ← 传行标题。
+   旧值 "sec-模型MCP日志" / "oh-tier-advanced" 会被拼成 `sec-sec-…` / `row-oh-tier-advanced`，
+   两处都命中不了 → 落地点名存实亡（用户侧表现=搜到点了没反应）。档位根改用按钮文本
+   「高级配置」（focusSettingsTarget 的第三条：动作按钮文本，在 .explorer-settings-body 内）。 */
 defineSearchRows([
   { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置", go: () => goOhRow("MadModel 免费档", "basic") },
   { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("OH 模型 / 多模态开关", "basic") },
   { id: "oh-contextmode", tab: "OneTHU Harness", section: "模型与多模态", title: "上下文记忆模式", aliases: ["上下文", "记忆", "压缩", "历史", "要点", "压缩内容制"], desc: "历史超长自动收成要点清单，重要内容不再丢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "上下文记忆模式"], displayRoot: "设置", go: () => goOhRow("上下文记忆模式", "basic") },
   { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置", go: () => goOhRow("后台保活（华为 / 荣耀）", "basic") },
-  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "sec-模型MCP日志", fallbackTarget: "oh-tier-advanced", waitMs: 1400 }); } },
+  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "模型MCP日志", fallbackTarget: "高级配置", waitMs: 1400 }); } },
+  /* 本轮新接线（2026-10-15）：OH MCP **服务器**总闸（把 OneTHU 自己暴露成本机 MCP）。
+     控件本体在 pages/Plugins.tsx 的 McpSwitchRow（这是「OH 是插件页子页」的既有事实），
+     行注册放这里 = OH 家族唯一注册点；target 传行标题，markSettingsRows 会把它打成 row-<slug>。 */
+  { id: "oh-mcp-server", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "OH MCP 服务器", aliases: ["MCP 服务器", "本机 MCP", "8787", "外部客户端"], desc: "让本机其它助手连上 OneTHU（默认关闭）" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "OH MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "OH MCP 服务器", fallbackTarget: "模型MCP日志", waitMs: 2000 }); } },
 ]);
 
 /* task-22：OH 行级直达的**本地快捷**（三段式的 ②+③）：切档 + 滚到行（找不到行时落档位根）。+

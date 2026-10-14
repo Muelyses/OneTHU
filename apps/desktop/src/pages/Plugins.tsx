@@ -1177,7 +1177,11 @@ function MarketView({
                     flush
                     leading={<Avatar name={item.name} src={resolveAssetUrl(item.thumbnail ?? item.logo, item.repo) || undefined} tone="neutral" />}
                     title={item.name}
-                    meta={<>{`v${item.version}`}{item.author ? ` · ${item.author}` : ""}</>}
+                    /* 版本/作者走 Row 的第二行（sub），不再与 title 挤同一条 flex 行：
+                       实测窄卡片下 title 只分到 49px 而它需要 94px（截成「Hello …」）、
+                       连 meta 也被截（「v2.1.1 · …」）——头行三样（title/meta/trailing）
+                       争一条行宽，用户点名「有点挤」。sub 是这套 Row 本来就有的第二行。 */
+                    sub={<>{`v${item.version}`}{item.author ? ` · ${item.author}` : ""}</>}
                     trailing={
                       <Inline gap={1} vAlign="center">
                         <IconStar size="sm" />
@@ -1194,12 +1198,21 @@ function MarketView({
                       ))}
                     </Inline>
                   ) : null}
-                  <Inline gap={2} wrap>
+                  {/* 操作行：用 Inline 的 justify="between" 把主操作推到行尾，**不用 Spacer**
+                      ——.og-spacer 是 flex:1 的真 flex item，行一折行它就独占一整行空白
+                      （实测窄卡片下操作区折成 4 行、其中第 3 行是空行 = 用户说的「挤」）。
+                      space-between 零额外 item：折行时只会 2 行，不会出现幽灵空行。 */}
+                  <Inline gap={2} wrap justify="between">
                     <Btn variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setDetail(item); }}>详情</Btn>
+                    {/* 仓库 = 图标钮（repo 全串走 tooltip / aria-label / 详情页）。
+                        原来把 `smartThise/OneTHU-plugin-hello` 当按钮文字：实测这个按钮
+                        宽 233~243px，**比整张卡的内容区（176~240px）还宽** → 操作行必然折成
+                        3 行（旁边那行还只有「详情」两个字），是"挤"的最大来源。 */}
                     <Btn
                       variant="ghost"
                       size="sm"
                       icon={<IconGithub size="sm" />}
+                      aria-label={`打开仓库 ${item.repo}`}
                       titleAttr={`在浏览器打开仓库：${normalizeRepoUrl(item.repo)}`}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1213,10 +1226,7 @@ function MarketView({
                           }
                         })();
                       }}
-                    >
-                      {item.repo}
-                    </Btn>
-                    <Spacer />
+                    />
                     {(() => {
                       const local = installedMap.get(item.id);
                       if (local && compareVersions(item.version, local) <= 0) {

@@ -1,6 +1,6 @@
 # 插件开发指南
 
-> 最后更新：2026-10-12 23:40
+> 最后更新：2026-10-15 01:33
 
 本文档说明 OneTHU 插件的开发流程：插件模型、清单规范、权限声明、通信协议与调试
 方法。`ctx.onethu.*` 接口的逐方法说明见 [api-reference.md](./api-reference.md)。
@@ -339,12 +339,20 @@ ctx.registerCommand({ id: "book", title: "预订研讨间" }, async () => {
 
 ### 6.3 自建功能页（tab）与自由渲染
 
-插件可以在应用侧栏注册**自己的功能页**，并在页面容器内**全权渲染 DOM**——任意
-HTML 结构、交互逻辑，配合 `registerCss` 天马行空的样式：
+插件可以注册**自己的功能页**，并在页面容器内**全权渲染 DOM**——任意 HTML 结构、交互逻辑，
+配合 `registerCss` 天马行空的样式。页面 id（pageKey）约定为 `plugin:<插件id>:<tabId>`，
+它就是一个**正常的应用页**：标签栏可开、可分享深链、能进首页程序坞。
+
+注册后插件页在宿主侧有三个入口（**侧栏不列插件页**——侧栏只列应用自己的一级页）：
+
+1. **服务页**「插件功能页」分组（抽屉退役后的移动端入口，与首页程序坞同一份数据源）；
+2. **首页程序坞**：用户在首页「更多功能」里把插件页停靠成一颗球（见 §6.3.1）；
+3. **插件自己打开**：`ctx.onethu.nav.go("plugin:onethu.habit:main")`，或 `ctx.onethu.ext.tabOpen`
+   （白名单含 `board` / `boards` 等一级页）。
 
 ```js
 export default function activate(ctx) {
-  // ① 侧栏注册 tab（pageKey = plugin:<插件id>:<tabId>）
+  // ① 注册 tab（pageKey = plugin:<插件id>:<tabId>）
   ctx.registerTab({
     id: "main",
     title: "打卡",
@@ -369,6 +377,27 @@ export default function activate(ctx) {
 - tab 图标为 16×16 视口的 inline SVG；
 - 容器就绪回调可能多次触发（页面重建），渲染函数应写成幂等（先清空再挂）。
 
+### 6.3.1 首页程序坞（把功能页停靠到首页）
+
+首页时间下面那排球＝**程序坞**，它的成员 = 应用一级页 ∪ 插件功能页（两者同权）。插件可以
+自己请求停靠/取消停靠，也可以只读现状（需 `ui` 权限）：
+
+```js
+// 只读：坞上有哪些球 + 还能停哪些（都带名字，便于做「要不要停靠」的判断）
+const snap = ctx.onethu.ext.homeDock.set();
+// { docked: ["tasks", "learn", …], dockable: [...], entries: [{ page, label, plugin }] }
+
+// 停靠 / 取消停靠（pageId 是应用一级页，或本插件自己的 plugin:<id>:<tabId>）
+ctx.onethu.ext.homeDock.set("plugin:onethu.habit:main", true);
+ctx.onethu.ext.homeDock.set("plugin:onethu.habit:main", false);
+```
+
+- `pageId` 必须是「应用一级页」或「**已注册**的插件功能页」（即 NAV ∪ 插件 tab 那两份
+  注册表）；认不出会抛错并列出可停靠项，**不会**静默加一颗看不见的球；
+- `homeDock` 本身可调用（`ctx.onethu.ext.homeDock(pageId, on)`），与 `.set` 同一实现；
+- 停靠状态是**用户偏好**：随首页布局持久化，与「插件是否启用」独立——插件被停用/卸载后，
+  那颗球会在下次读取布局时自动被过滤掉，不需要插件自己做清理。
+
 ### 6.4 原子化收藏（对齐宿主收藏夹体系）
 
 宿主收藏夹基于统一的原子引用体系：课程、作业、通知、场馆等均注册为原子，收藏夹只保存
@@ -389,6 +418,21 @@ ctx.onethu.favorites.add("main~streak:3");
 const saved = ctx.onethu.favorites.list();
 // [{ folderId: "f_x", folderTitle: "我的收藏", key: "main~streak:3" }]
 ```
+
+**落点（2026-10-15 起）**：收藏一颗「元素」不再只有一种去处——收藏面板会先让用户选落点
+（首页 / 已有 OnePage / 最后才是新建）。插件侧同一份能力经 `ext.onePageAddAtom` 拿得到，
+它只调数据层的高阶函数（自带查重与落位），插件**不要**自己写格子坐标：
+
+```js
+// 落首页（首页画的就是那块系统板；不给 boardId 即首页）
+ctx.onethu.ext.onePageAddAtom({ to: "home" }, "course:12345");
+// 落某块已有 OnePage（boardId 来自 ext.onePageList / OH 的 ext_onepage_list）
+ctx.onethu.ext.onePageAddAtom({ boardId: "board.user.m3k9" }, "course:12345");
+// → { ok: true, boardId, added: "it.xxx" }
+// → { ok: false, reason: "duplicate" }  板上已经有它，没有重复放
+// → { ok: false, reason: "no-board" }   目标板不存在
+```
+
 
 ### 6.5 声明式桌面小组件（Android）
 
@@ -660,6 +704,12 @@ OH 对话内可直接把信息收进用户收藏夹，与插件收藏共用同�
 自动补全，落点为「对话收藏」分组；同一 key 重复收藏不重复添加。该分组的卡片当前
 点击提示来源（OH 尚无自建功能页），OH 提供功能页后可改为深链。
 
+**另一条落点通道**（2026-10-15 起）：应用里「收藏一颗元素」已经有了**先选落点**的语义
+（首页 / 已有 OnePage / 最后才是新建），OH 侧对应工具是 `onePage_collect`（不给 `boardId`
+即落首页，给了就落那块 OnePage；同板同原子返回 duplicate）。两者不是一件事：
+`add_favorite` 进的是「收藏夹」分组（`fav:` 引用），`onePage_collect` 放的是白板上的
+atom-link 组件（条目坐标由数据层的查重+落位负责，OH 不自己写坐标）。
+
 **一句话直达**：OH 的 `open_page` 工具经宿主 `nav.searchAtoms` 与 `nav.openAtom` 工作
 （见 api-reference §18），因此「打开亲友来访」这类说法无需预先约定路由，检索到的对象即可
 打开。检索范围为静态注册表（功能页面 / 今日组件 / 操作原子）与本机缓存（课程、作业、通知、
@@ -715,6 +765,24 @@ OH 可作为 MCP（Model Context Protocol）客户端调用外部工具。服务
 （initialize → tools/list 或 tools/call → kill），无长驻进程，服务崩溃不影响宿主。
 MCP 工具与校园工具、联动插件工具同轮混用。当前为最小实现：不支持
 resources/prompts 与 OAuth 授权，需要这些能力的 server 暂不适用。
+
+### 9.6 OH 反过来当 MCP 服务器（把 OneTHU 暴露出去）
+
+上面那节是**出方向**（OH 去连别人）；反方向也通了：OH 自己可以在本机当 MCP 服务器，
+让本机其它 MCP 客户端（另一个 agent、脚本、编辑器插件）直接调用 OneTHU 的工具。
+
+| 项 | 说明 |
+|---|---|
+| 开关 | 设置 → 插件 → OneTHU Harness → 高级配置 →「OH MCP 服务器」（**默认关**，本机暴露必须由用户显式打开） |
+| 端点 | `http://127.0.0.1:8787/mcp`（Streamable-HTTP，POST JSON-RPC：`initialize` / `tools/list` / `tools/call`）；端口可用环境变量 `OH_MCP_PORT` 改，`0` = 连监听都不起 |
+| 暴露范围 | 只暴露**无需交互确认**的工具（`confirm: true` 的写操作不上墙）；仅本机回环，不跨机 |
+| 关着时 | 任何连接一律 **403** 并明确回「未开启 + 去哪开」（不是超时、也不是空工具表） |
+| 生效时机 | 拨完开关后发一条消息或重开 OH（每轮对话同步一次闸门） |
+
+OH 侧有只读工具 **`mcp_status`** 报这一整套状态（开关、监听是否就位、端点、暴露/扣下的
+工具数、开关位置、反向的 `mcpServers` 是另一件事），所以用户问「怎么让别的客户端连上你」
+时 OH 答得出实事。注意闸门与监听是两件事：listener 常驻绑定，真正决定接不接受请求的是
+设置里那个开关。
 
 ## 10. 对话面板协议
 

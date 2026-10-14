@@ -507,17 +507,11 @@ export function SettingsPage() {
 
       <SectionHead title="首页布局" />
       <Card>
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">恢复默认首页布局</div>
-            <div className="setting-desc">
-              清除「今日」页卡片的排列、折叠与隐藏记录，下次打开首页回到默认版式（主栏：
-              日程与提醒 / 未提交作业 / 最近通知；侧栏：校园卡余额 / 今日预约 /
-              今日课程 / 订阅新闻；入口卡全部隐藏）。
-            </div>
-          </div>
-          <Btn variant="outline" onClick={() => { clearHomeLayout(); setHomeResetAt(Date.now()); }}>{homeResetAt ? "已恢复默认" : "恢复默认布局"}</Btn>
-        </div>
+        <SettingsRow
+          title="恢复默认首页布局"
+          sub="清除「今日」页卡片的排列、折叠与隐藏记录，下次打开首页回到默认版式（主栏：日程与提醒 / 未提交作业 / 最近通知；侧栏：校园卡余额 / 今日预约 / 今日课程 / 订阅新闻；入口卡全部隐藏）。"
+          control={<Btn variant="outline" size="sm" onClick={() => { clearHomeLayout(); setHomeResetAt(Date.now()); }}>{homeResetAt ? "已恢复默认" : "恢复默认布局"}</Btn>}
+        />
       </Card>
 
       <SectionHead title="工作空间" />

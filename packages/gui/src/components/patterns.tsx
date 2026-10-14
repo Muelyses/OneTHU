@@ -132,6 +132,8 @@ export function SettingsList({ title, sub, headAside, children, scope, className
 }
 
 export interface SettingsRowProps {
+  /** DOM id（应用侧用它做检索直达锚点，例：id="row-开启悬浮球"） */
+  id?: string;
   icon?: ReactNode;
   title: ReactNode;
   sub?: ReactNode;
@@ -147,9 +149,10 @@ export interface SettingsRowProps {
   className?: string;
 }
 
-export function SettingsRow({ icon, title, sub, value, control, caret, onClick, disabled, danger, scope, className }: SettingsRowProps): ReactNode {
+export function SettingsRow({ id, icon, title, sub, value, control, caret, onClick, disabled, danger, scope, className }: SettingsRowProps): ReactNode {
   return (
     <div
+      id={id}
       {...scopeProps(scope)}
       className={cx(one("settings-row").state("danger", danger).state("disabled", disabled).toString(), onClick ? "og-settings-row--interactive" : "", className)}
       onClick={disabled ? undefined : onClick}

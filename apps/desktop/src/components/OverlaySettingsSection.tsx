@@ -2,10 +2,14 @@
  * 全局悬浮球设置（需求 5）：开关 + 授权状态 + 「本次关闭」说明。
  * 真源在原生侧（SharedPreferences，安卓系统悬浮层）/ 悬浮球窗口（桌面），
  * 这里只做入口：打开 = overlayShow()（同时清掉前端的「本次已关闭」标记）。
+ *
+ * 2026-10-14 换血：骨架换成 OneGUI（SettingsList / SettingsRow / Switch / Btn）。
+ * 检索直达锚点从自定义的 data-set-id 改用标准 id（`row-开启悬浮球`），
+ * focusSettingsTarget() 两族都认 —— 行为不变。
  */
 import { defineSearchRows } from "../state/searchRows.js";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { Card, Switch } from "./Layout.js";
+import { Btn, SettingsList, SettingsRow, Switch } from "@onethu/gui";
 import { isOverlayClosedByUser, overlayHide, setOverlayClosedByUser, overlayShow, overlaySupported } from "../lib/overlay.js";
 import { hasOverlayPermission, requestOverlayPermission } from "../lib/overlayAndroid.js";
 import { isAndroidNavigator } from "../lib/androidHost.js";
@@ -13,7 +17,7 @@ import { goOhRow } from "./OhSettingsPage.js";
 
 
 /* task-19/22：悬浮球设置行注册。
-   双形态：开关行的标题是「在其他应用上层显示 OH 悬浮球」（JSX 已钉 data-set-id="row-开启悬浮球"），
+   双形态：开关行的标题是「在其他应用上层显示 OH 悬浮球」（JSX 已钉 id="row-开启悬浮球"），
    平台不支持时该开关不出现 → visible 条件隐藏：落 OH 基础档根（TierSwitch 锚点）+ 一句解释。 */
 defineSearchRows([
   {
@@ -30,7 +34,7 @@ export function OverlaySettingsSection(): ReactNode {
   const [open, setOpen] = useState<boolean>(!isOverlayClosedByUser());
   const [perm, setPerm] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
-  void busy; // 开关本身不做禁用态（Switch 无 disabled 属性），并发点击由 toggle 内的 await 自然串行
+  void busy; // 开关本身不做禁用态（并发点击由 toggle 内的 await 自然串行）
 
   useEffect(() => {
     void (async () => {
@@ -61,37 +65,31 @@ export function OverlaySettingsSection(): ReactNode {
 
   if (supported === false) {
     return (
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">全局悬浮球</div>
-          <div className="setting-desc">当前平台不支持在其他应用上层显示（仅安卓与桌面端可用）</div>
-        </div>
-      </div>
+      <SettingsList>
+        <SettingsRow
+          title="全局悬浮球"
+          sub="当前平台不支持在其他应用上层显示（仅安卓与桌面端可用）"
+        />
+      </SettingsList>
     );
   }
 
   return (
-    <>
-      {/* task-22 检索直达：注册表按「开启悬浮球」检索，这里显式钉 id，让这条行无论叫什么都落点唯一 */}
-      <div className="setting-row" data-set-id="row-开启悬浮球">
-        <div>
-          <div className="setting-title">在其他应用上层显示 OH 悬浮球</div>
-          <div className="setting-desc">
-            单击展开对话，长按说话；在别的应用里也能用，不会把你拉回 OneTHU。
-            {perm === false ? "（需要先授予「显示在其他应用上层」权限）" : ""}
-          </div>
-        </div>
-        <Switch on={open} label="在其他应用上层显示 OH 悬浮球" onChange={(v) => void toggle(v)} />
-      </div>
+    <SettingsList>
+      {/* task-22 检索直达：注册表按「开启悬浮球」检索，这里钉标准 id，让这条行无论叫什么都落点唯一 */}
+      <SettingsRow
+        id="row-开启悬浮球"
+        title="在其他应用上层显示 OH 悬浮球"
+        sub={`单击展开对话，长按说话；在别的应用里也能用，不会把你拉回 OneTHU。${perm === false ? "（需要先授予「显示在其他应用上层」权限）" : ""}`}
+        control={<Switch checked={open} aria-label="在其他应用上层显示 OH 悬浮球" onChange={(v) => void toggle(v)} />}
+      />
       {open ? (
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">本次关闭悬浮球</div>
-            <div className="setting-desc">关闭后不再自动出现，回到这里（或 OH 对话界面）可重新打开</div>
-          </div>
-          <button className="btn btn-ghost" onClick={() => void toggle(false)}>关闭悬浮球</button>
-        </div>
+        <SettingsRow
+          title="本次关闭悬浮球"
+          sub="关闭后不再自动出现，回到这里（或 OH 对话界面）可重新打开"
+          control={<Btn variant="ghost" size="sm" onClick={() => void toggle(false)}>关闭悬浮球</Btn>}
+        />
       ) : null}
-    </>
+    </SettingsList>
   );
 }

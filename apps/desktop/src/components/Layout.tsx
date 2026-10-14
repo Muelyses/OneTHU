@@ -603,7 +603,10 @@ export function markSettingsRows(): void {
  *  解析顺序 = 行/分节的稳定 id → 行文本 → **动作按钮文本**。 */
 export function focusSettingsTarget(target: string): boolean {
   const want = target.trim();
-  const byId = document.querySelector<HTMLElement>(`[data-set-id="row-${slugOf(want)}"],[data-set-id="sec-${slugOf(want)}"]`);
+  const slug = slugOf(want);
+  const byId = document.querySelector<HTMLElement>(
+    `[data-set-id="row-${slug}"],[data-set-id="sec-${slug}"],[id="row-${slug}"],[id="sec-${slug}"]`,
+  );
   let hit = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head,.og-settings-row,.og-section"))
     .find((el) => (el.textContent ?? "").includes(want));
   if (!hit) {

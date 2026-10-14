@@ -1,5 +1,4 @@
-import { IconBtn } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import { Btn, Chip, IconBtn, Inline, Modal, Progress, Spacer, Stack, Surface, Text } from "@onethu/gui";
 /**
  * 桌面端首启导览 v3（2026-10-13）：以桌面现状（dev-explorer 外壳）为基线的全新导览。
  *
@@ -11,16 +10,21 @@ import { Btn } from "@onethu/gui";
  * 七步：欢迎 → 标签页与工作区 → 首页白板 → 横竖栏与抽屉 → OnePage → 插件市场与搜索
  * → OH 自我进化（压轴：粒子舞台，见 OnboardingTourParticles.tsx）。
  * 文案纪律：禁词不碰、每条说明 ≤42 字；克制、准确，不口语不说明书腔。
- * 视觉纪律：液态玻璃 menu tier（--glass-menu-fill / menu-blur / rim 三件套），全令牌、无新色。
+ * 视觉纪律：讲解框收编 OneGUI（2026-10-14）——卡片 = OG Modal 面板（浮层面阶、
+ * head/body/foot 解剖与退场相位全归库),文案件走 Text 字阶、步点走 Progress、
+ * 词云走 Chip；专属档位统一在 OnboardingTourScope.ts 以 defineScope 登记。
  *
  * 第二步的「真实拖拽演练」：卡片让位成一枚胶囊锚在底栏上方，交互全透传，
  * 用户自己把一张标签拖到另一张上（约 0.6s 出灰框、松手合并），点胶囊回来继续。
  */
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { hasOnboardedV3, markOnboardedV3 } from "../state/onboarding.js";
 import { askNotifyPermissionOnce } from "../state/notifyPermissionAsk.js";
 import { IconX } from "./Icons.js";
 import { TourParticles } from "./OnboardingTourParticles.js";
+import { TOUR_CARD_SCOPE, defineOnboardingScopes } from "./OnboardingTourScope.js";
+
+defineOnboardingScopes();
 
 const STEPS = 7;
 /** 每步一屏的结构化文案（bullets 全部 ≤42 字，直指真实可点的 UI） */
@@ -31,60 +35,24 @@ interface Doc {
   foot?: string;
 }
 
-/* ─── 玻璃层公共材质：液态玻璃 v4 的 menu tier（浮在任意内容上必须可读）─── */
-const GLASS: CSSProperties = {
-  background: "var(--glass-menu-fill)",
-  backdropFilter: "var(--glass-menu-blur)",
-  WebkitBackdropFilter: "var(--glass-menu-blur)",
-  border: "1px solid var(--glass-border)",
-  boxShadow:
-    "var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top)," +
-    " inset 0 0 0 1px var(--glass-rim-hairline), inset 0 -1px 0 var(--glass-rim-bottom)",
-};
-
-const MASK: CSSProperties = {
-  position: "fixed", inset: 0, zIndex: 2000,
-  display: "flex", alignItems: "center", justifyContent: "center",
-  background: "rgba(0, 0, 0, .45)", padding: 16,
-  animation: "m-fade var(--dur-2) var(--ease-out) both",
-};
-
-const CARD: CSSProperties = {
-  ...GLASS,
-  zIndex: 2010,
-  width: "min(600px, 100%)",
-  maxHeight: "min(88vh, 720px)",
-  overflowY: "auto",
-  boxSizing: "border-box",
-  borderRadius: "var(--r-lg)",
-  color: "var(--text-1)",
-  padding: "16px 20px 14px",
-  animation: "m-spring-in var(--dur-3) var(--ease-out) both",
-};
-
-const H: CSSProperties = { margin: "4px 0 6px", fontSize: 20, lineHeight: 1.3, fontWeight: 600 };
-const LEAD: CSSProperties = { margin: "0 0 8px", fontSize: 14, color: "var(--text-1)" };
-const FOOT: CSSProperties = { margin: "10px 0 0", fontSize: 12, color: "var(--text-3)" };
-
-const BULLET: CSSProperties = {
-  display: "flex", gap: 8, alignItems: "baseline",
-  margin: "6px 0", fontSize: 14, lineHeight: 1.6, color: "var(--text-2)",
-};
-const DOT: CSSProperties = {
-  flex: "none", width: 4, height: 4, marginTop: 0,
-  borderRadius: "var(--r-pill)", background: "var(--text-3)",
-  transform: "translateY(-2px)",
-};
-
-const CHIPS_STYLE: CSSProperties = { display: "flex", flexWrap: "wrap", gap: 8, margin: "2px 0 8px", padding: 0 };
-const CHIP: CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: 6,
-  padding: "3px 12px", borderRadius: "var(--r-pill)",
-  fontSize: 14, color: "var(--text-1)",
-  background: "linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom))",
-  border: "1px solid var(--glass-border)",
-  boxShadow: "inset 0 1px 0 var(--glass-rim-top)",
-};
+/** bullet 行：圆点几何走唯一允许的纯几何内联，颜色引用 OG 语义令牌（tour scope 已锁档） */
+export function TourBullet({ children }: { children: ReactNode }): ReactNode {
+  return (
+    <Inline gap={2} vAlign="baseline">
+      <span
+        aria-hidden="true"
+        style={{
+          flex: "none",
+          width: 4,
+          height: 4,
+          borderRadius: "var(--og-radius-full)",
+          background: "var(--og-content-3)",
+        }}
+      />
+      <Text as="span">{children}</Text>
+    </Inline>
+  );
+}
 
 const DOCS_BASE: Doc[] = [
   {
@@ -161,25 +129,16 @@ function OhEvolutionStep(): ReactNode {
   return (
     <>
       <TourParticles />
-      <div style={CHIPS_STYLE}>
+      <Inline gap={2} wrap>
         {CHIPS.map((c) => (
-          <span key={c} style={CHIP}>{c}</span>
+          <Chip key={c}>{c}</Chip>
         ))}
-      </div>
-      <ul style={{ margin: "0", padding: 0, listStyle: "none" }}>
-        <li style={BULLET}>
-          <span aria-hidden style={DOT} />
-          <span>一句话让 OH 建工具、跑流程、画组件、换主题、加手机小组件。</span>
-        </li>
-        <li style={BULLET}>
-          <span aria-hidden style={DOT} />
-          <span>插件也有两下：给个仓库地址可当场安装。</span>
-        </li>
-        <li style={BULLET}>
-          <span aria-hidden style={DOT} />
-          <span>本地插件能发布上 GitHub，并向市场提交收录。</span>
-        </li>
-      </ul>
+      </Inline>
+      <Stack gap={1}>
+        <TourBullet>一句话让 OH 建工具、跑流程、画组件、换主题、加手机小组件。</TourBullet>
+        <TourBullet>插件也有两下：给个仓库地址可当场安装。</TourBullet>
+        <TourBullet>本地插件能发布上 GitHub，并向市场提交收录。</TourBullet>
+      </Stack>
     </>
   );
 }
@@ -214,7 +173,8 @@ export function OnboardingTourV3(): ReactNode {
     return () => window.clearTimeout(t);
   }, [open]);
 
-  /* Esc：演练中回到导览；否则关闭本次（不写偏好，下次启动还会出现） */
+  /* Esc：演练中回到导览；否则关闭本次（不写偏好，下次启动还会出现）
+     —— OG Modal 自带浮层栈的 Esc 出口，与这里专职监听并存（栈顶优先语义一致） */
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent): void => {
@@ -226,31 +186,34 @@ export function OnboardingTourV3(): ReactNode {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, practice]);
 
-  if (!open) return null;
-
   const closeForever = (): void => {
     markOnboardedV3();
     setOpen(false);
   };
 
   if (practice) {
+    /* 演练 HUD：胶囊 = OG 浮层 Surface（pos 定位交给外层纯几何壳——底栏高是应用侧变量，
+       fixed 参数与居中属于 C2 几何，不属于外观）；胶囊材质完全由 overlay 面阶提供 */
     return (
       <div
         role="dialog"
         aria-label="拖拽演练"
         style={{
-          position: "fixed", left: "50%", bottom: "calc(var(--explorer-bar-h, 48px) + 16px)",
-          transform: "translateX(-50%)", zIndex: 2110,
-          display: "flex", gap: 12, alignItems: "center",
-          padding: "8px 8px 8px 16px", borderRadius: "var(--r-pill)", ...GLASS,
-          animation: "m-spring-in var(--dur-3) var(--ease-out) both",
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: "calc(var(--explorer-bar-h, 48px) + var(--og-space-4))",
+          width: "max-content",
+          marginInline: "auto",
         }}
       >
-        <span style={{ fontSize: 14, color: "var(--text-1)" }}>
-          演练中：把一张标签拖到另一张上，灰框出现就松手
-        </span>
-        <Btn variant="solid" tone="brand" onClick={() => setPractice(false)}>回到导览
-        </Btn>
+        <Surface overlay radius="2xl" scope={TOUR_CARD_SCOPE} pad="sm">
+          <Inline gap={3} vAlign="center">
+            <Text as="span">演练中：把一张标签拖到另一张上，灰框出现就松手</Text>
+            <Btn variant="solid" tone="brand" onClick={() => setPractice(false)}>回到导览
+            </Btn>
+          </Inline>
+        </Surface>
       </div>
     );
   }
@@ -260,56 +223,19 @@ export function OnboardingTourV3(): ReactNode {
   const doc = DOCS[step] ?? DOCS[0]!;
 
   return (
-    <div style={MASK}>
-      <div style={CARD} role="dialog" aria-modal="true" aria-label="OneTHU 桌面导览">
-        {/* 头：步点 + 关闭本次（不写偏好） */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <div style={{ display: "flex", gap: 5, alignItems: "center" }} aria-label={"第 " + (step + 1) + " 步，共 " + STEPS + " 步"}>
-            {Array.from({ length: STEPS }, (_, i) => (
-              <span
-                key={i}
-                aria-hidden
-                style={{
-                  width: i === step ? 16 : 6,
-                  height: 6,
-                  borderRadius: "var(--r-pill)",
-                  background: i === step ? "var(--accent)" : i < step ? "var(--accent-soft)" : "var(--glass-border)",
-                }}
-              />
-            ))}
-          </div>
-          <span style={{ flex: 1 }} />
-          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
-        </div>
-
-        <h3 style={H}>{doc.title}</h3>
-        <p style={LEAD}>{doc.lead}</p>
-        <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-          {doc.bullets.map((b) => (
-            <li key={b} style={BULLET}>
-              <span aria-hidden style={DOT} />
-              <span>{b}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* ⑦ 压轴：粒子舞台 + 能力清单 */}
-        {isLast ? <OhEvolutionStep /> : null}
-        {/* ② 真实拖拽演练：进演练模式，卡片让位，交互透传 */}
-        {step === 1 ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
-            <Btn variant="solid" tone="brand" onClick={() => setPractice(true)}>自己拖一次</Btn>
-            <span style={{ fontSize: 12, color: "var(--text-3)" }}>卡片让开，你动手；点胶囊回来继续</span>
-          </div>
-        ) : null}
-
-        {doc.foot ? <p style={FOOT}>{doc.foot}</p> : null}
-
-        {/* 脚：上一步 / 不再显示 / 下一步 */}
-        <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 14, flexWrap: "wrap" }}>
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      maskClose={false}
+      closeButton={false}
+      size="md"
+      aria-label="OneTHU 桌面导览"
+      scope={TOUR_CARD_SCOPE}
+      foot={
+        <Inline gap={2} vAlign="center" wrap>
           <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>上一步
           </Btn>
-          <span style={{ flex: 1 }} />
+          <Spacer />
           <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
             不再显示
           </Btn>
@@ -319,8 +245,39 @@ export function OnboardingTourV3(): ReactNode {
             <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>下一步
             </Btn>
           )}
-        </div>
-      </div>
-    </div>
+        </Inline>
+      }
+    >
+      <Stack gap={2}>
+        {/* 头：步进度 + 关闭本次（不写偏好）——浮动卡骨架的 body 顶部与旧版同位 */}
+        <Inline gap={2} vAlign="center">
+          <div aria-label={"第 " + (step + 1) + " 步，共 " + STEPS + " 步"}>
+            <Progress value={(step + 1) / STEPS} size="sm" />
+          </div>
+          <Spacer />
+          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
+        </Inline>
+
+        <Text slot="title" as="h3">{doc.title}</Text>
+        <Text as="p">{doc.lead}</Text>
+        <Stack gap={1}>
+          {doc.bullets.map((b) => (
+            <TourBullet key={b}>{b}</TourBullet>
+          ))}
+        </Stack>
+
+        {/* ⑦ 压轴：粒子舞台 + 能力清单 */}
+        {isLast ? <OhEvolutionStep /> : null}
+        {/* ② 真实拖拽演练：进演练模式，卡片让位，交互透传 */}
+        {step === 1 ? (
+          <Inline gap={3} vAlign="center" wrap>
+            <Btn variant="solid" tone="brand" onClick={() => setPractice(true)}>自己拖一次</Btn>
+            <Text slot="label" tone="faint">卡片让开，你动手；点胶囊回来继续</Text>
+          </Inline>
+        ) : null}
+
+        {doc.foot ? <Text slot="label" tone="faint" as="p">{doc.foot}</Text> : null}
+      </Stack>
+    </Modal>
   );
 }

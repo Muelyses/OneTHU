@@ -1,5 +1,4 @@
-import { IconBtn } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import { Btn, IconBtn, Inline, Progress, Sheet, Spacer, Stack, Text } from "@onethu/gui";
 /**
  * 首启导览 · 手机简版（dev-explorer 二轮 A8，2026-10-13）：
  * 桌面 v3 七步在手机太大——手机只讲五件「当下就要会」的事：
@@ -8,17 +7,23 @@ import { Btn } from "@onethu/gui";
  *   ③ OnePage 与 OneGO!（一本白板 + 工作区面板的常驻入口）
  *   ④ 搜索胶囊（底部长出半屏抽屉、可拉满；也搜得到插件）
  *   ⑤ OH 自我进化一句话（压轴：复用桌面 V3 的粒子舞台）
- * 样式复用桌面 V3 的同源令牌（menu tier 玻璃 / 步点 / bullet）；粒子组件直接引 v3 的。
+ *
+ * 样式收编 OneGUI（2026-10-14）：卡片 = OG Sheet（手机贴底 + 抓手 + 安全区，
+ * 桌面退化居中），骨架同桌面 V3；bullet 行复用 V3 导出的 TourBullet，
+ * 专属档位统一在 OnboardingTourScope.ts 以 defineScope 登记。
  *
  * 偏好自持：与桌面 v3（flow3）分键——手机档落 `onethu.onboarded.phone`（同一偏好家族，
  * 模块内读写，不新增状态机）；「不再显示」与看完压轴都落盘并入设置页「导览」重走口径。
  */
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { askNotifyPermissionOnce } from "../state/notifyPermissionAsk.js";
 import { isPhoneNow, useIsPhone } from "../state/phoneSheets.js";
 import { IconX } from "./Icons.js";
 import { TourParticles } from "./OnboardingTourParticles.js";
-import { OnboardingTourV3 } from "./OnboardingTourV3.js";
+import { TOUR_CARD_SCOPE, defineOnboardingScopes } from "./OnboardingTourScope.js";
+import { OnboardingTourV3, TourBullet } from "./OnboardingTourV3.js";
+
+defineOnboardingScopes();
 
 const KEY_PHONE = "onethu.onboarded.phone";
 
@@ -46,7 +51,7 @@ export function resetOnboardingPhone(): void {
   }
 }
 
-/* ─── 与桌面 V3 同源的材质/文案样式（menu tier 玻璃；步点、 Drugs 与 bullet 同尺寸） ─── */
+/* ─── 骨架与桌面 V3 同构：步点走 Progress、文案走 Text 字阶（见其 TourBullet 导出） ─── */
 const STEPS = 5;
 
 interface Doc {
@@ -55,51 +60,6 @@ interface Doc {
   bullets: string[];
   foot?: string;
 }
-
-const GLASS: CSSProperties = {
-  background: "var(--glass-menu-fill)",
-  backdropFilter: "var(--glass-menu-blur)",
-  WebkitBackdropFilter: "var(--glass-menu-blur)",
-  border: "1px solid var(--glass-border)",
-  boxShadow:
-    "var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top)," +
-    " inset 0 0 0 1px var(--glass-rim-hairline), inset 0 -1px 0 var(--glass-rim-bottom)",
-};
-
-const MASK: CSSProperties = {
-  position: "fixed", inset: 0, zIndex: 2000,
-  display: "flex", alignItems: "flex-end", justifyContent: "center",
-  background: "rgba(0, 0, 0, .45)",
-  padding: 12,
-  animation: "m-fade var(--dur-2) var(--ease-out) both",
-};
-
-const CARD: CSSProperties = {
-  ...GLASS,
-  zIndex: 2010,
-  width: "100%",
-  maxHeight: "min(72vh, 560px)",
-  overflowY: "auto",
-  boxSizing: "border-box",
-  borderRadius: "var(--r-lg, 16px)",
-  color: "var(--text-1)",
-  padding: "14px 16px 12px",
-  animation: "m-spring-in var(--dur-3) var(--ease-out) both",
-};
-
-const H: CSSProperties = { margin: "4px 0 6px", fontSize: 16, lineHeight: 1.3, fontWeight: 600 };
-const LEAD: CSSProperties = { margin: "0 0 6px", fontSize: 14, color: "var(--text-1)" };
-const FOOT: CSSProperties = { margin: "8px 0 0", fontSize: 12, color: "var(--text-3)" };
-
-const BULLET: CSSProperties = {
-  display: "flex", gap: 8, alignItems: "baseline",
-  margin: "4px 0", fontSize: 14, lineHeight: 1.6, color: "var(--text-2)",
-};
-const DOT: CSSProperties = {
-  flex: "none", width: 4, height: 4, marginTop: 0,
-  borderRadius: "var(--r-pill)", background: "var(--text-3)",
-  transform: "translateY(-2px)",
-};
 
 const DOCS: Doc[] = [
   {
@@ -179,46 +139,18 @@ export function OnboardingTourMobile(): ReactNode {
   };
 
   return (
-    <div style={MASK}>
-      <div style={CARD} role="dialog" aria-modal="true" aria-label="OneTHU 手机导览">
-        {/* 头：步点 + 关闭本次（不写偏好） */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-          <div style={{ display: "flex", gap: 5, alignItems: "center" }} aria-label={"第 " + (step + 1) + " 步，共 " + STEPS + " 步"}>
-            {Array.from({ length: STEPS }, (_, i) => (
-              <span
-                key={i}
-                aria-hidden
-                style={{
-                  width: i === step ? 16 : 6,
-                  height: 6,
-                  borderRadius: "var(--r-pill)",
-                  background: i === step ? "var(--accent)" : i < step ? "var(--accent-soft)" : "var(--glass-border)",
-                }}
-              />
-            ))}
-          </div>
-          <span style={{ flex: 1 }} />
-          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
-        </div>
-
-        {isLast ? <TourParticles /> : null}
-        <h3 style={H}>{doc.title}</h3>
-        <p style={LEAD}>{doc.lead}</p>
-        <ul style={{ margin: "0", padding: 0, listStyle: "none" }}>
-          {doc.bullets.map((b) => (
-            <li key={b} style={BULLET}>
-              <span aria-hidden style={DOT} />
-              <span>{b}</span>
-            </li>
-          ))}
-        </ul>
-        {doc.foot ? <p style={FOOT}>{doc.foot}</p> : null}
-
-        {/* 脚：上一步 / 不再显示 / 下一步 */}
-        <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12, flexWrap: "wrap" }}>
+    <Sheet
+      open={open}
+      onClose={() => setOpen(false)}
+      maskClose={false}
+      closeButton={false}
+      aria-label="OneTHU 手机导览"
+      scope={TOUR_CARD_SCOPE}
+      foot={
+        <Inline gap={2} vAlign="center" wrap>
           <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>上一步
           </Btn>
-          <span style={{ flex: 1 }} />
+          <Spacer />
           <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
             不再显示
           </Btn>
@@ -228,9 +160,30 @@ export function OnboardingTourMobile(): ReactNode {
             <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>下一步
             </Btn>
           )}
-        </div>
-      </div>
-    </div>
+        </Inline>
+      }
+    >
+      <Stack gap={2}>
+        {/* 头：步进度 + 关闭本次（不写偏好） */}
+        <Inline gap={2} vAlign="center">
+          <div aria-label={"第 " + (step + 1) + " 步，共 " + STEPS + " 步"}>
+            <Progress value={(step + 1) / STEPS} size="sm" />
+          </div>
+          <Spacer />
+          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
+        </Inline>
+
+        {isLast ? <TourParticles /> : null}
+        <Text slot="subtitle" as="h3">{doc.title}</Text>
+        <Text as="p">{doc.lead}</Text>
+        <Stack gap={1}>
+          {doc.bullets.map((b) => (
+            <TourBullet key={b}>{b}</TourBullet>
+          ))}
+        </Stack>
+        {doc.foot ? <Text slot="label" tone="faint" as="p">{doc.foot}</Text> : null}
+      </Stack>
+    </Sheet>
   );
 }
 

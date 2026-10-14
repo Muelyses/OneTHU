@@ -10,6 +10,7 @@
 import { useEffect, type ReactNode } from "react";
 import { FreeBoard } from "../FreeBoard.js";
 import { activeBoard, cellsOf, loadBoard } from "../../state/board.js";
+import { HomeChrome } from "./HomeSpheres.js";
 import { seedFromLegacyOnce } from "../../state/freeBoard.js";
 
 /** 首次进入自由白板：把旧网格系统板的内容搬进来一次（之后各管各的，互不同步） */
@@ -27,6 +28,8 @@ export function HomeTab(): ReactNode {
   useSeedFromLegacy();
   return (
     <div className="home-tab home-free">
+      {/* 时钟与一级坞 = 画布的一部分（2026-10-14 拍板）：挂进滚动容器随内容滚动；z 30 压住卡片 */}
+      <HomeChrome />
       <FreeBoard />
     </div>
   );

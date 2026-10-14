@@ -1,0 +1,175 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 结构层 Structure（--og-space / radius / text / ctl / icon / elev / dur / z）
+ *
+ * 与颜色无关的一切刻度：间距、圆角、字阶、控件尺寸、阴影、动效、层级。
+ * 这些是**枚举**，不是自由变量：组件只能引用，不能发明新的刻度。
+ * 密度轴（data-og-density）在这里改值 —— 组件自身不写任何断点。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 间距：严格 4pt 网格，十档 ── */
+  --og-space-0: 0px;
+  --og-space-1: 4px;
+  --og-space-2: 8px;
+  --og-space-3: 12px;
+  --og-space-4: 16px;
+  --og-space-5: 20px;
+  --og-space-6: 24px;
+  --og-space-7: 32px;
+  --og-space-8: 40px;
+  --og-space-9: 48px;
+  --og-space-10: 64px;
+
+  /* ── 圆角：七档 ── */
+  --og-radius-xs: 4px;
+  --og-radius-sm: 6px;
+  --og-radius-md: 8px;
+  --og-radius-lg: 12px;
+  --og-radius-xl: 16px;
+  --og-radius-2xl: 20px;
+  --og-radius-full: 999px;
+
+  /* ── 字体：系统栈（中文优先）+ 等宽 + 品牌字 ── */
+  --og-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+  --og-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --og-font-brand: Montserrat, var(--og-font-ui);
+  --og-weight-regular: 400;
+  --og-weight-medium: 500;
+  --og-weight-semibold: 600;
+  --og-weight-bold: 700;
+
+  /* ── 字阶：六档，一档一语义（显示/标题/小标题/正文/标签/微标） ── */
+  --og-text-display: 26px;
+  --og-text-display-lh: 32px;
+  --og-text-title: 20px;
+  --og-text-title-lh: 26px;
+  --og-text-subtitle: 16px;
+  --og-text-subtitle-lh: 22px;
+  --og-text-body: 14px;
+  --og-text-body-lh: 20px;
+  --og-text-label: 12px;
+  --og-text-label-lh: 16px;
+  --og-text-micro: 11px;
+  --og-text-micro-lh: 14px;
+
+  /* ── 控件：三档高度 + 内边距（按钮/输入/下拉/分段器共用同一把尺） ── */
+  --og-ctl-h-sm: 28px;
+  --og-ctl-h-md: 34px;
+  --og-ctl-h-lg: 42px;
+  --og-ctl-pad-x-sm: 10px;
+  --og-ctl-pad-x-md: 14px;
+  --og-ctl-pad-x-lg: 18px;
+
+  /* ── 行与容器 ── */
+  --og-row-h: 44px;
+  --og-row-pad-x: var(--og-space-3);
+  --og-card-pad: var(--og-space-4);
+  --og-section-gap: var(--og-space-5);
+  --og-page-max: 1160px;
+  --og-page-pad-x: var(--og-space-5);
+
+  /* ── 图标：四档尺寸 + 两档描边 ── */
+  --og-icon-sm: 16px;
+  --og-icon-md: 18px;
+  --og-icon-lg: 20px;
+  --og-icon-xl: 24px;
+  --og-icon-stroke: 1.6;
+  --og-icon-stroke-sm: 1.4;
+
+  /* ── 海拔：三级 + 菜单级；暗色下靠面阶而不是阴影拉开层次 ── */
+  --og-elev-0: none;
+  --og-elev-1: 0 1px 2px rgba(16, 20, 28, 0.06), 0 1px 3px rgba(16, 20, 28, 0.04);
+  --og-elev-2: 0 2px 6px rgba(16, 20, 28, 0.07), 0 6px 16px rgba(16, 20, 28, 0.05);
+  --og-elev-3: 0 8px 28px rgba(16, 20, 28, 0.12), 0 2px 6px rgba(16, 20, 28, 0.06);
+  --og-elev-menu: 0 6px 24px rgba(16, 20, 28, 0.14), 0 1px 3px rgba(16, 20, 28, 0.08);
+
+  /* ── 焦点环：键盘可达性标识，跨皮肤恒定 ── */
+  --og-ring-width: 3px;
+
+  /* ── 动效：三档时长 + 四条曲线（进场 decelerate / 离场 accelerate / 常规 / 弹性） ── */
+  --og-dur-1: 120ms;
+  --og-dur-2: 180ms;
+  --og-dur-3: 260ms;
+  --og-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --og-ease-decelerate: cubic-bezier(0, 0, 0, 1);
+  --og-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --og-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* ── 层级：一处定义，不许 locally 拍数字 ── */
+  --og-z-base: 0;
+  --og-z-sticky: 10;
+  --og-z-header: 20;
+  --og-z-rail: 30;
+  --og-z-drawer: 40;
+  --og-z-overlay: 60;
+  --og-z-modal: 70;
+  --og-z-menu: 80;
+  --og-z-toast: 90;
+  --og-z-tooltip: 95;
+
+  /* ── 安全区：手机端由平台轴接管（桌面恒 0） ── */
+  --og-safe-top: 0px;
+  --og-safe-bottom: 0px;
+  --og-safe-left: 0px;
+  --og-safe-right: 0px;
+}
+
+/* ── 密度轴：同一套刻度，三档取值。组件不写断点，只读这几个令牌 ── */
+[data-og-density="comfortable"] {
+  --og-ctl-h-sm: 28px;
+  --og-ctl-h-md: 34px;
+  --og-ctl-h-lg: 42px;
+  --og-row-h: 44px;
+  --og-card-pad: var(--og-space-4);
+}
+
+[data-og-density="compact"] {
+  --og-ctl-h-sm: 24px;
+  --og-ctl-h-md: 30px;
+  --og-ctl-h-lg: 36px;
+  --og-ctl-pad-x-md: 12px;
+  --og-row-h: 38px;
+  --og-row-pad-x: var(--og-space-2);
+  --og-card-pad: var(--og-space-3);
+  --og-section-gap: var(--og-space-4);
+}
+
+[data-og-density="touch"] {
+  --og-ctl-h-sm: 34px;
+  --og-ctl-h-md: 42px;
+  --og-ctl-h-lg: 50px;
+  --og-ctl-pad-x-md: 16px;
+  --og-row-h: 54px;
+  --og-row-pad-x: var(--og-space-4);
+  --og-card-pad: var(--og-space-4);
+  --og-text-body: 15px;
+  --og-text-body-lh: 22px;
+  --og-page-pad-x: var(--og-space-4);
+}
+
+/* ── 动效轴：减弱动态效果 = 时长归零（不是删掉过渡，否则状态会跳变） ── */
+[data-og-motion="reduced"] {
+  --og-dur-1: 1ms;
+  --og-dur-2: 1ms;
+  --og-dur-3: 1ms;
+  --og-ease-spring: linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --og-dur-1: 1ms;
+    --og-dur-2: 1ms;
+    --og-dur-3: 1ms;
+    --og-ease-spring: linear;
+  }
+}
+
+/* ── 平台轴：手机吃安全区 + 触屏密度 ── */
+[data-og-platform="mobile"] {
+  --og-safe-top: env(safe-area-inset-top, 0px);
+  --og-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --og-safe-left: env(safe-area-inset-left, 0px);
+  --og-safe-right: env(safe-area-inset-right, 0px);
+  --og-page-max: 100%;
+}

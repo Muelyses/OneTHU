@@ -1,0 +1,60 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 参考层 Reference（--og-ref-*）
+ *
+ * 唯一用途：给语义层（tokens/semantic.css）提供色料。
+ * **组件、页面、应用代码引用这一层 = 违规**（换皮肤/换主题会失效）。
+ * 改一个色，必须改这里 + 语义层，别去别处调。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 中性阶（偏蓝灰 neutral-bluish）：面、字、线全从这一条轴上取 ── */
+  --og-ref-neutral-0: #ffffff;
+  --og-ref-neutral-25: #fbfcfd;
+  --og-ref-neutral-50: #f6f8fa;
+  --og-ref-neutral-100: #eef1f5;
+  --og-ref-neutral-200: #e3e8ee;
+  --og-ref-neutral-300: #d3dae3;
+  --og-ref-neutral-400: #b6bfcc;
+  --og-ref-neutral-500: #8f99a8;
+  --og-ref-neutral-600: #6b7585;
+  --og-ref-neutral-700: #4c5563;
+  --og-ref-neutral-800: #333b47;
+  --og-ref-neutral-900: #1e242e;
+  --og-ref-neutral-950: #141922;
+  --og-ref-neutral-1000: #0b0e14;
+
+  /* ── 品牌阶（清华紫）：默认强调色家族。主题/动态取色会在运行时整体替换 ── */
+  --og-ref-brand-20: #2a0d33;
+  --og-ref-brand-40: #90399c;
+  --og-ref-brand-50: #a44bb0;
+  --og-ref-brand-60: #b96ac4;
+  --og-ref-brand-70: #cf93d8;
+  --og-ref-brand-80: #dfb0e7;
+  --og-ref-brand-90: #eed4f2;
+  --og-ref-brand-95: #f6ebf9;
+
+  /* ── 功能色：状态语义必须稳定，任何主题都不许改这几个语义 ── */
+  --og-ref-red-40: #d93a3f;
+  --og-ref-red-60: #e8706f;
+  --og-ref-red-80: #f4b3b1;
+  --og-ref-red-95: #fdeceb;
+
+  --og-ref-amber-40: #c47a11;
+  --og-ref-amber-60: #dfa143;
+  --og-ref-amber-80: #f2cf95;
+  --og-ref-amber-95: #fdf4e4;
+
+  --og-ref-green-40: #1f9d55;
+  --og-ref-green-60: #4fbd7f;
+  --og-ref-green-80: #a7e0c0;
+  --og-ref-green-95: #e8f7ef;
+
+  --og-ref-blue-40: #2f6fd0;
+  --og-ref-blue-60: #6b9ae6;
+  --og-ref-blue-80: #b4ccf3;
+  --og-ref-blue-95: #eaf1fd;
+
+  /* ── 纯黑白：只服务遮罩、阴影、最高对比字 ── */
+  --og-ref-ink-1000: #000000;
+  --og-ref-ink-0: #ffffff;
+}

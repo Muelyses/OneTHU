@@ -1,0 +1,263 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 按钮族（Btn / IconBtn）—— 全站唯一的可点矩形
+ *
+ * 模型：tone 提供"色料三件套"（强填充 / 柔填充 / 墨色），variant 决定用哪一件。
+ * 于是新增色相只需加一个 tone 块，新增形态只需加一个 variant 块，两者正交、互不复制。
+ * 状态层、焦点环、禁用、加载全部共用基座 —— 没有第二个按钮模型。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.og-btn {
+  /* 私有令牌：默认取中性色料，tone 块会整体改写 */
+  --og-c-btn-h: var(--og-ctl-h-md);
+  --og-c-btn-pad-x: var(--og-ctl-pad-x-md);
+  --og-c-btn-radius: var(--og-radius-md);
+  --og-c-btn-ink: var(--og-content-1);
+  --og-c-btn-strong: var(--og-surface-4);
+  --og-c-btn-on-strong: var(--og-content-1);
+  --og-c-btn-soft: var(--og-surface-3);
+  --og-c-btn-soft-line: var(--og-line-1);
+  --og-c-btn-line: var(--og-line-2);
+  --og-c-btn-quiet: var(--og-content-2);
+  --og-c-btn-hover: var(--og-hover);
+  --og-c-btn-press: var(--og-press);
+  --og-c-btn-gap: var(--og-space-2);
+  --og-c-btn-weight: var(--og-weight-medium);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-c-btn-gap);
+  height: var(--og-c-btn-h);
+  padding: 0 var(--og-c-btn-pad-x);
+  border: 1px solid transparent;
+  border-radius: var(--og-c-btn-radius);
+  background: transparent;
+  color: var(--og-c-btn-ink);
+  font-family: inherit;
+  font-size: var(--og-text-body);
+  font-weight: var(--og-c-btn-weight);
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--og-dur-1) var(--og-ease-standard),
+    border-color var(--og-dur-1) var(--og-ease-standard),
+    color var(--og-dur-1) var(--og-ease-standard),
+    box-shadow var(--og-dur-2) var(--og-ease-standard);
+}
+
+/* 状态层：所有按钮/可点控件的统一叠加层（不占布局、不挡命中） */
+.og-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: transparent;
+  transition: background-color var(--og-dur-1) var(--og-ease-standard);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .og-btn:hover::after { background: var(--og-c-btn-hover); }
+}
+
+.og-btn:active::after { background: var(--og-c-btn-press); }
+
+/* ── 尺寸：只有三档，md 是基准（不落类） ── */
+.og-btn--sm {
+  --og-c-btn-h: var(--og-ctl-h-sm);
+  --og-c-btn-pad-x: var(--og-ctl-pad-x-sm);
+  --og-c-btn-radius: var(--og-radius-sm);
+  --og-c-btn-gap: var(--og-space-1);
+  font-size: var(--og-text-label);
+}
+
+.og-btn--lg {
+  --og-c-btn-h: var(--og-ctl-h-lg);
+  --og-c-btn-pad-x: var(--og-ctl-pad-x-lg);
+  --og-c-btn-radius: var(--og-radius-lg);
+  font-size: var(--og-text-subtitle);
+}
+
+/* ── 形态：用哪一件色料 ── */
+.og-btn--solid {
+  background: var(--og-c-btn-strong);
+  color: var(--og-c-btn-on-strong);
+  --og-c-btn-hover: color-mix(in srgb, var(--og-c-btn-on-strong) 14%, transparent);
+  --og-c-btn-press: color-mix(in srgb, var(--og-c-btn-on-strong) 22%, transparent);
+}
+
+.og-btn--tonal {
+  background: var(--og-c-btn-soft);
+  color: var(--og-c-btn-quiet);
+  border-color: var(--og-c-btn-soft-line);
+}
+
+.og-btn--outline {
+  background: var(--og-surface-1);
+  border-color: var(--og-c-btn-line);
+}
+
+.og-btn--ghost {
+  background: transparent;
+  color: var(--og-c-btn-quiet);
+}
+
+/* 无框无底的纯文字按钮（列表内的行内操作） */
+.og-btn--plain {
+  height: auto;
+  padding: 0 var(--og-space-1);
+  background: transparent;
+  color: var(--og-c-btn-quiet);
+  font-size: var(--og-text-label);
+}
+
+/* ── 色调：只改色料三件套（与形态正交） ── */
+.og-btn--t-brand {
+  --og-c-btn-strong: var(--og-accent);
+  --og-c-btn-on-strong: var(--og-accent-on);
+  --og-c-btn-soft: var(--og-accent-soft);
+  --og-c-btn-soft-line: var(--og-accent-soft-line);
+  --og-c-btn-line: var(--og-accent-soft-line);
+  --og-c-btn-quiet: var(--og-accent-quiet);
+}
+
+.og-btn--t-quiet {
+  --og-c-btn-ink: var(--og-content-2);
+  --og-c-btn-quiet: var(--og-content-2);
+  --og-c-btn-strong: var(--og-surface-4);
+  --og-c-btn-on-strong: var(--og-content-1);
+}
+
+.og-btn--t-error {
+  --og-c-btn-strong: var(--og-error);
+  --og-c-btn-on-strong: var(--og-error-on);
+  --og-c-btn-soft: var(--og-error-soft);
+  --og-c-btn-soft-line: var(--og-error-line);
+  --og-c-btn-line: var(--og-error-line);
+  --og-c-btn-quiet: var(--og-error);
+}
+
+.og-btn--t-warning {
+  --og-c-btn-strong: var(--og-warning);
+  --og-c-btn-on-strong: var(--og-warning-on);
+  --og-c-btn-soft: var(--og-warning-soft);
+  --og-c-btn-soft-line: var(--og-warning-line);
+  --og-c-btn-line: var(--og-warning-line);
+  --og-c-btn-quiet: var(--og-warning);
+}
+
+.og-btn--t-success {
+  --og-c-btn-strong: var(--og-success);
+  --og-c-btn-on-strong: var(--og-success-on);
+  --og-c-btn-soft: var(--og-success-soft);
+  --og-c-btn-soft-line: var(--og-success-line);
+  --og-c-btn-line: var(--og-success-line);
+  --og-c-btn-quiet: var(--og-success);
+}
+
+.og-btn--t-info {
+  --og-c-btn-strong: var(--og-info);
+  --og-c-btn-on-strong: var(--og-info-on);
+  --og-c-btn-soft: var(--og-info-soft);
+  --og-c-btn-soft-line: var(--og-info-line);
+  --og-c-btn-line: var(--og-info-line);
+  --og-c-btn-quiet: var(--og-info);
+}
+
+/* solid + 语义色调：hover 用"墨色混入"而不是固定灰，暗色下也自然 */
+.og-btn--t-error.og-btn--solid,
+.og-btn--t-warning.og-btn--solid,
+.og-btn--t-success.og-btn--solid,
+.og-btn--t-info.og-btn--solid,
+.og-btn--t-brand.og-btn--solid {
+  --og-c-btn-hover: color-mix(in srgb, var(--og-c-btn-on-strong) 16%, transparent);
+  --og-c-btn-press: color-mix(in srgb, var(--og-c-btn-on-strong) 24%, transparent);
+}
+
+/* ── 布局开关 ── */
+.og-btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.og-btn--stretched {
+  flex: 1 1 auto;
+}
+
+/* ── 状态 ── */
+.og-btn[disabled],
+.og-btn.is-disabled {
+  opacity: var(--og-disabled-opacity);
+  pointer-events: none;
+}
+
+.og-btn.is-loading {
+  pointer-events: none;
+  color: transparent;
+}
+
+.og-btn.is-loading > * {
+  visibility: hidden;
+}
+
+.og-btn.is-loading .og-btn-spinner {
+  visibility: visible;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--og-c-btn-on-strong, var(--og-c-btn-ink));
+}
+
+.og-btn.is-selected {
+  background: var(--og-selected);
+  border-color: var(--og-accent-soft-line);
+}
+
+/* ── 部件 ── */
+.og-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.og-btn-label {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── IconBtn：正方形、无文字、圆形或圆角两档（复用同一套色料与状态层） ── */
+.og-iconbtn {
+  --og-c-btn-pad-x: 0;
+  width: var(--og-c-btn-h);
+  padding: 0;
+  border-radius: var(--og-radius-md);
+}
+
+.og-iconbtn--round {
+  border-radius: var(--og-radius-full);
+}
+
+.og-iconbtn--sm {
+  width: var(--og-ctl-h-sm);
+}
+
+.og-iconbtn--lg {
+  width: var(--og-ctl-h-lg);
+}
+
+/* 浮动动作钮（FAB）：同一模型的尺寸档，不另开一套 */
+.og-btn--fab {
+  --og-c-btn-h: calc(var(--og-ctl-h-lg) + var(--og-space-3));
+  --og-c-btn-pad-x: var(--og-space-4);
+  --og-c-btn-radius: var(--og-radius-full);
+  box-shadow: var(--og-elev-2);
+}

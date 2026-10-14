@@ -1,0 +1,153 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 语义层 Semantic（--og-*）—— 全应用唯一可用的颜色名
+ *
+ * 组件、页面只认这一层；换皮肤、换主题、切明暗、动态取色，改的都是这一层的取值。
+ * 所以：加新颜色的正确做法 = 在参考层加色料 + 在这里给它一个语义名，而不是去组件里写。
+ *
+ * 明暗由 data-og-scheme 决定（管线落盘），不依赖媒体查询 —— 用户可以手动选亮/暗。
+ * 皮肤（data-og-skin）在 skins/*.css 里对**同一组语义名**给另一套取值。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 面：五级海拔 + 两个特殊面 ── */
+  --og-surface-0: var(--og-ref-neutral-50);   /* 应用画布（页面底） */
+  --og-surface-1: var(--og-ref-neutral-0);    /* 卡片 / 面板（默认抬升面） */
+  --og-surface-2: var(--og-ref-neutral-25);   /* 卡片内的分区、列表条纹 */
+  --og-surface-3: var(--og-ref-neutral-100);  /* 井/轨道/次级填充（输入框、进度槽） */
+  --og-surface-4: var(--og-ref-neutral-200);  /* 更强填充（禁用、按下、选中底） */
+  --og-surface-overlay: var(--og-ref-neutral-0);   /* 浮层（菜单/弹窗） */
+  --og-surface-inverse: var(--og-ref-neutral-900); /* 反色面（tooltip/toast） */
+
+  /* 皮肤钩子：中性基准下"没有材质"，玻璃皮肤把它们换成渐变 + 模糊 + 描边光 */
+  --og-surface-tint: none;
+  --og-surface-blur: none;
+  --og-overlay-tint: none;
+  --og-overlay-blur: none;
+  --og-chip-tint: none;
+  --og-chip-blur: none;
+
+  /* ── 内容（文字/图标）：只有三档，加一档禁用 ── */
+  --og-content-1: var(--og-ref-neutral-950);  /* 主文：标题、正文 */
+  --og-content-2: var(--og-ref-neutral-700);  /* 次文：说明、副标题 */
+  --og-content-3: var(--og-ref-neutral-500);  /* 弱文：时间戳、占位、单位 */
+  --og-content-disabled: var(--og-ref-neutral-400);
+  --og-content-inverse: var(--og-ref-neutral-0);
+  --og-content-inverse-2: rgba(255, 255, 255, 0.72);
+  --og-content-on-accent: var(--og-ref-ink-0);
+  --og-content-on-soft: var(--og-content-1);  /* 彩色柔底（-soft）上的字 */
+
+  /* ── 线：三档描边 + 焦点环 + 遮罩 ── */
+  --og-line-1: rgba(16, 20, 28, 0.08);   /* 分隔线、卡片描边（hairline） */
+  --og-line-2: rgba(16, 20, 28, 0.14);   /* 输入框、需要看清的边界 */
+  --og-line-3: rgba(16, 20, 28, 0.28);   /* 强边界（表头、拖拽指示） */
+  --og-ring: 0 0 0 var(--og-ring-width) rgba(144, 57, 156, 0.28);
+  --og-scrim: rgba(10, 12, 16, 0.42);
+
+  /* ── 强调色：主题与动态取色的落点（管线在运行时整体重写这一族） ── */
+  --og-accent: var(--og-ref-brand-40);
+  --og-accent-strong: var(--og-ref-brand-20);
+  --og-accent-soft: var(--og-ref-brand-95);
+  --og-accent-soft-line: var(--og-ref-brand-90);
+  --og-accent-on: var(--og-ref-ink-0);
+  --og-accent-quiet: var(--og-ref-brand-40);   /* 强调色当文字用（可读性由管线保证） */
+
+  /* ── 状态色：四档语义 × 四个角色 ── */
+  --og-error: var(--og-ref-red-40);
+  --og-error-soft: var(--og-ref-red-95);
+  --og-error-line: var(--og-ref-red-80);
+  --og-error-on: var(--og-ref-ink-0);
+
+  --og-warning: var(--og-ref-amber-40);
+  --og-warning-soft: var(--og-ref-amber-95);
+  --og-warning-line: var(--og-ref-amber-80);
+  --og-warning-on: var(--og-ref-ink-0);
+
+  --og-success: var(--og-ref-green-40);
+  --og-success-soft: var(--og-ref-green-95);
+  --og-success-line: var(--og-ref-green-80);
+  --og-success-on: var(--og-ref-ink-0);
+
+  --og-info: var(--og-ref-blue-40);
+  --og-info-soft: var(--og-ref-blue-95);
+  --og-info-line: var(--og-ref-blue-80);
+  --og-info-on: var(--og-ref-ink-0);
+
+  /* ── 交互状态层：所有可点元素共用这一层叠色，不各写一套 hover ── */
+  --og-hover: rgba(16, 20, 28, 0.05);
+  --og-press: rgba(16, 20, 28, 0.09);
+  --og-selected: rgba(144, 57, 156, 0.12);
+  --og-disabled-opacity: 0.42;
+
+  /* ── 骨架屏 ── */
+  --og-skeleton: rgba(16, 20, 28, 0.06);
+  --og-skeleton-shine: rgba(255, 255, 255, 0.65);
+
+  color-scheme: light;
+}
+
+/* ── 暗色：同一组名字，另一套取值。层次靠面阶而不是阴影 ── */
+[data-og-scheme="dark"] {
+  --og-surface-0: var(--og-ref-neutral-1000);
+  --og-surface-1: var(--og-ref-neutral-950);
+  --og-surface-2: var(--og-ref-neutral-900);
+  --og-surface-3: #232936;
+  --og-surface-4: #2c3341;
+  --og-surface-overlay: #1b2029;
+  --og-surface-inverse: var(--og-ref-neutral-50);
+
+  --og-content-1: #eef1f5;
+  --og-content-2: #a9b1bd;
+  --og-content-3: #7c8592;
+  --og-content-disabled: #5a6270;
+  --og-content-inverse: var(--og-ref-neutral-1000);
+  --og-content-inverse-2: rgba(11, 14, 20, 0.7);
+  --og-content-on-accent: var(--og-ref-brand-20);
+  --og-content-on-soft: var(--og-content-1);
+
+  --og-line-1: rgba(255, 255, 255, 0.09);
+  --og-line-2: rgba(255, 255, 255, 0.16);
+  --og-line-3: rgba(255, 255, 255, 0.3);
+  --og-ring: 0 0 0 var(--og-ring-width) rgba(223, 176, 231, 0.38);
+  --og-scrim: rgba(0, 0, 0, 0.58);
+
+  --og-accent: var(--og-ref-brand-80);
+  --og-accent-strong: var(--og-ref-brand-90);
+  --og-accent-soft: rgba(223, 176, 231, 0.15);
+  --og-accent-soft-line: rgba(223, 176, 231, 0.32);
+  --og-accent-on: var(--og-ref-brand-20);
+  --og-accent-quiet: var(--og-ref-brand-80);
+
+  --og-error: #ff8b87;
+  --og-error-soft: rgba(255, 139, 135, 0.14);
+  --og-error-line: rgba(255, 139, 135, 0.32);
+  --og-error-on: #3a0b0c;
+
+  --og-warning: #f0b95e;
+  --og-warning-soft: rgba(240, 185, 94, 0.14);
+  --og-warning-line: rgba(240, 185, 94, 0.32);
+  --og-warning-on: #38260a;
+
+  --og-success: #5fce93;
+  --og-success-soft: rgba(95, 206, 147, 0.14);
+  --og-success-line: rgba(95, 206, 147, 0.32);
+  --og-success-on: #062b17;
+
+  --og-info: #7fa9f0;
+  --og-info-soft: rgba(127, 169, 240, 0.14);
+  --og-info-line: rgba(127, 169, 240, 0.32);
+  --og-info-on: #0a1c38;
+
+  --og-hover: rgba(255, 255, 255, 0.06);
+  --og-press: rgba(255, 255, 255, 0.1);
+  --og-selected: rgba(223, 176, 231, 0.18);
+
+  --og-skeleton: rgba(255, 255, 255, 0.07);
+  --og-skeleton-shine: rgba(255, 255, 255, 0.14);
+
+  --og-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --og-elev-2: 0 2px 8px rgba(0, 0, 0, 0.42), 0 6px 18px rgba(0, 0, 0, 0.32);
+  --og-elev-3: 0 10px 30px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --og-elev-menu: 0 8px 26px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}

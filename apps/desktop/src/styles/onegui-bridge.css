@@ -41,6 +41,11 @@ html:root {
   --border-soft: var(--og-line-1);
   --border-strong: var(--og-line-3);
   --outline: var(--og-line-2);
+  /* 玻璃 v4 场的「控制描边」旧令牌：亮档 rgba(30,33,45,.12)、暗档 rgba(255,255,255,.08)
+     在 surface-container 填充上≈隐形（用户实测「下拉框没有轮廓，放上去才见框」——
+     .field select 的 border-color 被玻璃块整体改写，绕开了上面 --border 的重指）。
+     控件轮廓必须走 OG 线档（可感知、明暗自适应）；rim 镜面三件套不动（那是玻璃质感）。 */
+  --glass-border: var(--og-line-2);
 
   /* ── 强调与状态 ── */
   --primary: var(--og-accent);

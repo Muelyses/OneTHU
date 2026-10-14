@@ -177,7 +177,7 @@
     "apps/desktop/src/components/ImageFilterSheet.tsx": 5,
     "apps/desktop/src/components/ImageViewer.tsx": 1,
     "apps/desktop/src/components/Layout.tsx": 10,
-    "apps/desktop/src/components/NotifySettingsSection.tsx": 9,
+    "apps/desktop/src/components/NotifySettingsSection.tsx": 8,
     "apps/desktop/src/components/OhSettingsPage.tsx": 5,
     "apps/desktop/src/components/OnboardingTourMobile.tsx": 5,
     "apps/desktop/src/components/OnboardingTourParticles.tsx": 1,
@@ -272,7 +272,7 @@
   "legacyClasses": {
     "apps/desktop/src/components/HelpSection.tsx": 2,
     "apps/desktop/src/components/ImSettingsSection.tsx": 18,
-    "apps/desktop/src/components/NotifySettingsSection.tsx": 12,
+    "apps/desktop/src/components/NotifySettingsSection.tsx": 8,
     "apps/desktop/src/components/OhSettingsPage.tsx": 11,
     "apps/desktop/src/components/SoftwareUpdateSection.tsx": 2,
     "apps/desktop/src/components/VoiceSettingsSection.tsx": 10,

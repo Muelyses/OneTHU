@@ -161,33 +161,24 @@ export function NotifySettingsSection(): ReactNode {
         }
       />
 
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">作业 DDL 提醒</div>
-          <div className="setting-desc">
-            提前量沿用网络学堂首页的「DDL 提醒」设置（全局默认 + 单作业覆盖）。
-            与课程不同：静默时段内顺手延会错过截止时，改在静默开始前发出。
-          </div>
-        </div>
-        <Switch on={s.ddl} onChange={(v) => patch({ ddl: v })} label="作业 DDL 提醒" />
-      </div>
+      <SettingsRow
+        title="作业 DDL 提醒"
+        sub="提前量沿用网络学堂首页的「DDL 提醒」设置（全局默认 + 单作业覆盖）。与课程不同：静默时段内顺手延会错过截止时，改在静默开始前发出。"
+        control={<OGSwitch checked={s.ddl} onChange={(v) => patch({ ddl: v })} aria-label="作业 DDL 提醒" />}
+      />
 
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">每日早报</div>
-          <div className="setting-desc">当天有课、有日程或有截止时才发。</div>
-        </div>
-        <select
-          className="input"
-          style={{ width: 140 }}
-          value={s.briefingAt ?? ""}
-          onChange={(e) => patch({ briefingAt: e.target.value === "" ? null : e.target.value })}
-        >
-          {BRIEFING_OPTIONS.map(([v, label]) => (
-            <option key={label} value={v ?? ""}>{label}</option>
-          ))}
-        </select>
-      </div>
+      <SettingsRow
+        title="每日早报"
+        sub="当天有课、有日程或有截止时才发。"
+        control={
+          <OGSelect
+            size="sm"
+            value={s.briefingAt ?? ""}
+            onChange={(v) => patch({ briefingAt: v === "" ? null : v })}
+            options={BRIEFING_OPTIONS.map(([v, label]) => ({ value: v ?? "", label }))}
+          />
+        }
+      />
 
       <div className="setting-row">
         <div>

@@ -1,6 +1,3 @@
-import { Input } from "@onethu/gui";
-import { Select } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
 /**
  * 清华 GitLab 页（git.tsinghua.edu.cn，REST API v4 直连）。
  *
@@ -8,20 +5,38 @@ import { Btn } from "@onethu/gui";
  * 布局：项目列表（我参与的 / 星标 / 搜索）→ 项目内四个页签——
  * 代码（分支 + 目录树 + 文件内容 + 根目录 README 渲染）、Issue、合并请求、流水线
  * （流水线展开作业，作业可看日志）。Issue 与合并请求支持评论与关闭/重开。
+ *
+ * 2026-10-14 OneGUI 换血（同云盘页 7a1805de 判例）：
+ * · 项目卡 = Card flush interactive + Row（IconGitLab accent 头件）；文件树 / Issue 行 / 合并请求行 /
+ *   作业行 / 流水线行 = Card flush + List divided + Row（trailing 动作组同云盘判例）；
+ * · 分栏切换 = OG Segment（省下 .segmented/.seg），搜索行 = Input type=search + Grow + Btn，
+ *   错误/提示走 Banner（可带「重置统一认证」动作），首屏骨架 LoadingBlock，空态 EmptyState；
+ * · 项目头 / 详情头 / 文件头 / 流水线作业头 = OG PageHead（onBack + 标题 Text mono），
+ *   目录面包屑 = Breadcrumb，Code ▾ 克隆菜单与表情选择器 = Popover（库管浮层落位与点外收起）；
+ * · 流水线/CI 状态徽标 = Tag tone（成功 success / 失败 error / 运行中 info / 手动 warning / 其余 neutral），
+ *   commit SHA / 分支名 = Text mono；diff 块的 +/- 行按"代码数据"经 OG tone 工具类上语义色
+ *   （-og-success / -og-error 令牌，同数据色判例）；README/评论正文 react-markdown 任意 HTML 视口
+ *   沿用 .gitlab-md 排印豁免块（globals 里仅存的一组 GitLab 类，同 MailPage/.dock-md 判例）。
+ * 行为/数据零改动：仓库切换（分片 noteAtomCache / 深链）、文件树导航、Issue/MR 读写、评论、
+ * 流水线触发/重试、API 错误流（重置统一认证）全部原样保留。
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useApp } from "../state/context.js";
 import { PageHead } from "../components/Layout.js";
 import { CollectStar } from "../components/Collect.js";
 import { enc, noteAtomCache } from "../state/atoms.js";
-import { IconChevron, IconDownload, IconExternal, IconPen, IconRefresh, IconSearch } from "../components/Icons.js";
 import { confirmDanger, confirmOk } from "../lib/confirm.js";
 import { openFormModal } from "../lib/formModal.js";
 import { openExternal } from "./info/openExternal.js";
 import { showToast } from "../state/toast.js";
+import {
+  Accordion, AccordionItem, Avatar as OGAvatar, Banner, Breadcrumb, Btn, Card, Chip, CodeBlock, Divider,
+  EmptyState, Grow, Icon, IconChevron, IconDownload, IconExternal, IconFile, IconFolder, IconGitLab, IconPen,
+  IconPlus, IconRefresh, IconSearch, IconTrace, Inline, Input, IconBtn, List, LoadingBlock, PageHead as OGPageHead, Popover, Row,
+  Section, Segment, Select, Spacer, Spinner, Stack, Tag, TextArea, Text,
+} from "@onethu/gui";
 import {
   awardsKey, discussionsKey, gitlabAddAward, gitlabAddNote, gitlabAssign, gitlabAwards, gitlabBranches,
   gitlabCreateIssue, gitlabCreateMergeRequest, gitlabCurrentUser, gitlabDeleteNote, gitlabDownloadArchive,
@@ -73,24 +88,42 @@ const REACTION_NAMES: Array<[string, string]> = [
 
 const REACTION_EMOJI: {[key: string]: string} = Object.fromEntries(REACTION_NAMES);
 
-/** 流水线与作业状态 → 文案与色标 */
-const PIPELINE_STATUS: {[key in GitPipelineStatus]: {label: string; tone: string}} = {
-  created: { label: "已创建", tone: "dim" },
-  waiting_for_resource: { label: "等待资源", tone: "dim" },
-  preparing: { label: "准备中", tone: "run" },
-  pending: { label: "排队中", tone: "run" },
-  running: { label: "运行中", tone: "run" },
-  success: { label: "通过", tone: "ok" },
-  failed: { label: "失败，可点重试", tone: "bad" },
-  canceled: { label: "已取消", tone: "dim" },
-  canceling: { label: "取消中", tone: "dim" },
-  skipped: { label: "已跳过", tone: "dim" },
-  manual: { label: "手动", tone: "warn" },
-  scheduled: { label: "已排期", tone: "dim" },
+/** OneGUI 卡片/徽标的语义色档（旧 .gitlab-chip 五色映射到这里） */
+type StateTone = "neutral" | "success" | "error" | "warning" | "info";
+
+/** 流水线与作业状态 → 文案与色标（徽标一律 Tag tone；dim → neutral、run → info） */
+const PIPELINE_STATUS: {[key in GitPipelineStatus]: {label: string; tone: StateTone}} = {
+  created: { label: "已创建", tone: "neutral" },
+  waiting_for_resource: { label: "等待资源", tone: "neutral" },
+  preparing: { label: "准备中", tone: "info" },
+  pending: { label: "排队中", tone: "info" },
+  running: { label: "运行中", tone: "info" },
+  success: { label: "通过", tone: "success" },
+  failed: { label: "失败，可点重试", tone: "error" },
+  canceled: { label: "已取消", tone: "neutral" },
+  canceling: { label: "取消中", tone: "neutral" },
+  skipped: { label: "已跳过", tone: "neutral" },
+  manual: { label: "手动", tone: "warning" },
+  scheduled: { label: "已排期", tone: "neutral" },
 };
 
-function statusOf(status: string): { label: string; tone: string } {
-  return PIPELINE_STATUS[status as GitPipelineStatus] ?? { label: status, tone: "dim" };
+function statusOf(status: string): { label: string; tone: StateTone } {
+  return PIPELINE_STATUS[status as GitPipelineStatus] ?? { label: status, tone: "neutral" };
+}
+
+/** 状态徽标：一处把「状态差值态文案 / 类型徽标」统一成 Tag */
+function StatusTag({ status }: { status: string }): ReactNode {
+  const s = statusOf(status);
+  return <Tag tone={s.tone}>{s.label}</Tag>;
+}
+
+/** Issue / 合并请求状态徽标（opened→success 旧 .ok、merged→info 旧 .run、closed→neutral 旧 .dim） */
+function ReqStateTag({ state }: { state: string }): ReactNode {
+  return (
+    <Tag tone={state === "opened" ? "success" : state === "merged" ? "info" : "neutral"}>
+      {state === "merged" ? "已合入" : state === "opened" ? "进行中" : "已关闭"}
+    </Tag>
+  );
 }
 
 /** GitLab 时间戳 → 本地可读（今天显示时分，今年显示月日） */
@@ -131,6 +164,13 @@ function readmeEntry(entries: GitFile[]): GitFile | null {
   return entries.find((e) => e.type === "blob" && /^readme(\.|$)/i.test(e.name)) ?? null;
 }
 
+/** 行首类型图标：目录 accent、文件 content 色（靠库里的字色工具类） */
+function kindIcon(type: GitFile["type"]): ReactNode {
+  return type === "tree"
+    ? <IconFolder size="sm" className="og-text--t-brand" title="目录" />
+    : <IconFile size="sm" title="文件" />;
+}
+
 /* ══════════ 项目列表 ══════════ */
 
 type ListMode = "member" | "starred";
@@ -158,89 +198,110 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
   }, [q.data]);
 
   return (
-    <>
+    <Stack gap={2}>
       <PageHead
         title="清华 GitLab"
         meta={<>git.tsinghua.edu.cn · 代码托管与协作</>}
         actions={
-          <Btn variant="ghost" onClick={() => q.reload()} disabled={q.loading}><IconRefresh />{q.loading ? "读取中…" : "刷新"}</Btn>
+          <Btn variant="ghost" onClick={() => q.reload()} disabled={q.loading} icon={<IconRefresh size="sm" />}>{q.loading ? "读取中…" : "刷新"}</Btn>
         }
       />
-      <div className="gitlab-toolbar">
-        <div className="segmented">
-          <button
-            className={"seg" + (mode === "member" && !query ? " is-active" : "")}
-            onClick={() => { setMode("member"); setQuery(""); setText(""); setPages(1); }}
-          >
-            我参与的
-          </button>
-          <button
-            className={"seg" + (mode === "starred" && !query ? " is-active" : "")}
-            onClick={() => { setMode("starred"); setQuery(""); setText(""); setPages(1); }}
-          >
-            星标
-          </button>
-        </div>
-        <div className="gitlab-search">
-          <IconSearch width={14} height={14} />
-          <Input placeholder="搜索项目（回车）" value={text} onChange={(value) => setText(value)} onKeyDown={(e) => {
-              if (e.key !== "Enter") return;
-              setQuery(text.trim());
-              setPages(1);
-            }} />
-          {query ? (
-            <Btn variant="outline" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</Btn>
-          ) : null}
-        </div>
-      </div>
-      {q.loading ? <p className="dim gitlab-hint">读取项目…</p> : null}
-      {q.error ? <p className="gitlab-error">{q.error}</p> : null}
-      {q.error ? (
-        <Btn variant="outline" onClick={() => {
-            void gitlabResetAuth()
-              .then(() => {
-                q.reload();
-                showToast("登录状态已重置，正在重试");
-              })
-              .catch((e) => showToast(String(e).slice(0, 120)));
-          }}>重置统一认证并重试
-        </Btn>
-      ) : null}
-      <div className="gitlab-cards">
-        {(list?.items ?? []).map((p) => (
-          <div key={p.id} className="gitlab-card" role="button" tabIndex={0}
-            onClick={() => onOpen(p.id)}
-            onKeyDown={(e) => { if (e.key === "Enter") onOpen(p.id); }}
-          >
-            <div className="gitlab-card-main">
-              <b>{p.name_with_namespace}</b>
-              {p.description ? <span className="dim gitlab-desc">{p.description}</span> : null}
-              <span className="dim gitlab-meta">最近活动 {fmtTime(p.last_activity_at)}{p.default_branch ? ` · 默认分支 ${p.default_branch}` : ""}</span>
-            </div>
-            <CollectStar
-              atom={{ kind: "gitlab-proj", key: enc(p.id, p.name_with_namespace) }}
-              title={p.name_with_namespace}
-            />
-          </div>
-        ))}
-        {!q.loading && !q.error && (list?.items.length ?? 0) === 0 ? (
-          <p className="dim gitlab-hint">
-            {query ? `没有匹配「${query}」的项目` : mode === "starred" ? "还没有星标项目" : "没有参与的项目"}
-          </p>
+      <Inline gap={2} wrap>
+        <Segment
+          value={query ? "" : mode}
+          onChange={(value) => {
+            setMode(value === "starred" ? "starred" : "member");
+            setQuery("");
+            setText("");
+            setPages(1);
+          }}
+          options={[
+            { value: "member", label: "我参与的" },
+            { value: "starred", label: "星标" },
+          ]}
+        />
+        <Grow>
+          <Input
+            type="search"
+            size="md"
+            icon={<IconSearch size="sm" />}
+            placeholder="搜索项目（回车）"
+            aria-label="搜索项目"
+            value={text}
+            onChange={(value) => setText(value)}
+            onEnter={(value) => { setQuery(value.trim()); setPages(1); }}
+          />
+        </Grow>
+        {query ? (
+          <Btn variant="outline" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</Btn>
         ) : null}
-      </div>
-      {list?.hasMore ? (
-        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多
-        </Btn>
+      </Inline>
+      {q.loading && !list ? (
+        <Card flush><LoadingBlock rows={3} /></Card>
+      ) : q.loading ? (
+        <Inline gap={1}><Spinner size="sm" /><Text slot="label" tone="faint">读取项目…</Text></Inline>
       ) : null}
-    </>
+      {q.error ? (
+        <Banner tone="error" action={
+          <Btn variant="outline" size="sm" onClick={() => {
+              void gitlabResetAuth()
+                .then(() => {
+                  q.reload();
+                  showToast("登录状态已重置，正在重试");
+                })
+                .catch((e) => showToast(String(e).slice(0, 120)));
+            }}>重置统一认证并重试
+          </Btn>
+        }>{q.error}</Banner>
+      ) : null}
+      {(list?.items ?? []).map((p) => (
+        <Card
+          key={p.id}
+          flush
+          interactive
+          role="button"
+          tabIndex={0}
+          onClick={() => onOpen(p.id)}
+          onKeyDown={(e) => { if (e.key === "Enter") onOpen(p.id); }}
+        >
+          <Row
+            flush
+            leading={<IconGitLab size="lg" title="项目" />}
+            title={p.name_with_namespace}
+            sub={p.description || undefined}
+            meta={
+              <>
+                最近活动 {fmtTime(p.last_activity_at)}
+                {p.default_branch ? <> · 默认分支 <Text slot="label" mono>{p.default_branch}</Text></> : null}
+              </>
+            }
+            trailing={
+              <CollectStar
+                atom={{ kind: "gitlab-proj", key: enc(p.id, p.name_with_namespace) }}
+                title={p.name_with_namespace}
+              />
+            }
+          />
+        </Card>
+      ))}
+      {!q.loading && !q.error && (list?.items.length ?? 0) === 0 ? (
+        <EmptyState
+          icon={<IconGitLab size="xl" />}
+          title={query ? `没有匹配「${query}」的项目` : mode === "starred" ? "还没有星标项目" : "没有参与的项目"}
+        />
+      ) : null}
+      {list?.hasMore ? (
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</Btn>
+      ) : null}
+    </Stack>
   );
 }
 
 /* ══════════ 代码页签 ══════════ */
 
 /** Markdown 正文（README / 描述 / 评论）。链接一律交给系统浏览器：
- *  直接在 WebView 里导航会把整个应用带走，且相对链接按项目地址解析才成立。 */
+ *  直接在 WebView 里导航会把整个应用带走，且相对链接按项目地址解析才成立。
+ *  容器走 .gitlab-md 排印豁免块（react-markdown 任意 HTML 视口，同 MailPage/.dock-md 判例）。 */
 function MarkdownBody({ text, baseUrl }: { text: string; baseUrl?: string }): ReactNode {
   return (
     <div className="gitlab-md">
@@ -289,26 +350,30 @@ function FileView({ projectId, file, refName, baseUrl, onBack }: {
   const q = useGitlabQuery(binary ? null : `blob:${file.id}`, () => gitlabFile(projectId, file.id));
   const webUrl = `${baseUrl}/-/blob/${encodeURIComponent(refName)}/${file.path.split("/").map(encodeURIComponent).join("/")}`;
   return (
-    <div className="gitlab-file">
-      <div className="gitlab-file-head">
-        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回目录
-        </Btn>
-        <span className="gitlab-file-path">{file.path}</span>
-        <Btn variant="outline" onClick={() => openExternal(webUrl)}><IconExternal />浏览器打开
-        </Btn>
-      </div>
+    <Stack gap={2}>
+      <OGPageHead
+        onBack={onBack}
+        title={<Text slot="body" mono truncate>{file.path}</Text>}
+        actions={
+          <Btn variant="outline" onClick={() => openExternal(webUrl)} icon={<IconExternal size="sm" />}>浏览器打开</Btn>
+        }
+      />
       {binary ? (
-        <p className="dim gitlab-hint">二进制文件不在应用内预览，请用浏览器打开。</p>
+        <Text as="p" tone="faint">二进制文件不在应用内预览，请用浏览器打开。</Text>
       ) : q.loading ? (
-        <p className="dim gitlab-hint">读取文件…</p>
+        <Card flush><LoadingBlock rows={3} /></Card>
       ) : q.error ? (
-        <p className="gitlab-error">{q.error}</p>
+        <Banner tone="error">{q.error}</Banner>
       ) : isMarkdownPath(file.path) ? (
-        <MarkdownBody text={q.data ?? ""} baseUrl={baseUrl} />
+        <Stack pad={2}>
+          <MarkdownBody text={q.data ?? ""} baseUrl={baseUrl} />
+        </Stack>
       ) : (
-        <pre className="gitlab-pre">{q.data ?? ""}</pre>
+        <div style={{ maxHeight: "62vh", overflowY: "auto" }}>
+          <CodeBlock code={q.data ?? ""} />
+        </div>
       )}
-    </div>
+    </Stack>
   );
 }
 
@@ -341,61 +406,85 @@ function CodeTab({ projectId, defaultBranch, webUrl }: {
 
   const crumbs = path === "" ? [] : path.split("/");
   return (
-    <div className="gitlab-code">
-      <div className="gitlab-code-bar">
-        <Select value={ref} onChange={(value) => setRef(value)}>{(branches.data ?? []).map((b) => (
+    <Stack gap={2}>
+      <Inline gap={2} wrap>
+        <Select value={ref} onChange={(value) => setRef(value)} aria-label="分支">
+          {(branches.data ?? []).map((b) => (
             <option key={b.name} value={b.name}>{b.name}{b.default ? "（默认）" : ""}</option>
-          ))}{(branches.data ?? []).some((b) => b.name === ref) ? null : <option value={ref}>{ref}</option>}</Select>
-        <div className="gitlab-crumb">
-          <b onClick={() => { setPath(""); setPages(1); }}>{ref || "根目录"}</b>
-          {crumbs.map((c, i) => (
-            <span key={c + i} className="gitlab-crumb-item" onClick={() => { setPath(crumbs.slice(0, i + 1).join("/")); setPages(1); }}>
-              <IconChevron style={{ width: 12, height: 12 }} />
-              {c}
-            </span>
           ))}
-        </div>
-        <Btn variant="ghost" onClick={() => tree.reload()} disabled={tree.loading}><IconRefresh />刷新
-        </Btn>
-      </div>
-      {branches.error ? <p className="gitlab-error">{branches.error}</p> : null}
-      {tree.error ? <p className="gitlab-error">{tree.error}</p> : null}
-      {tree.loading ? <p className="dim gitlab-hint">读取目录…</p> : null}
-      <div className="cloud-list" role="listbox" aria-label="仓库文件">
-        {!tree.loading && entries.length === 0 && !tree.error ? <p className="dim gitlab-hint">空目录</p> : null}
-        {entries.map((e) => (
-          <div key={e.id} className="cloud-row" role="button" tabIndex={0}
-            onClick={() => {
-              if (e.type === "tree") { setPath(e.path); setPages(1); }
-              else setOpenFile(e);
-            }}
-            onKeyDown={(ev) => {
-              if (ev.key !== "Enter") return;
-              if (e.type === "tree") { setPath(e.path); setPages(1); }
-              else setOpenFile(e);
-            }}
-          >
-            <span className={`cloud-kind ${e.type === "tree" ? "dir" : "file"}`} />
-            <span className="cloud-name">{e.name}</span>
-            <span className="cloud-meta">{e.type === "tree" ? "目录" : ""}</span>
-          </div>
-        ))}
-      </div>
+          {(branches.data ?? []).some((b) => b.name === ref) ? null : <option value={ref}>{ref}</option>}
+        </Select>
+        <Grow>
+          <Breadcrumb
+            items={[
+              { label: ref || "根目录", onClick: () => { setPath(""); setPages(1); } },
+              ...crumbs.map((c, i) => ({ label: c, onClick: () => { setPath(crumbs.slice(0, i + 1).join("/")); setPages(1); } })),
+            ]}
+            separator={<IconChevron size="sm" />}
+          />
+        </Grow>
+        <Btn variant="ghost" onClick={() => tree.reload()} disabled={tree.loading} icon={<IconRefresh size="sm" />}>刷新</Btn>
+      </Inline>
+      {branches.error ? <Banner tone="error">{branches.error}</Banner> : null}
+      {tree.error ? <Banner tone="error">{tree.error}</Banner> : null}
+      {tree.loading ? (
+        <Inline gap={1}><Spinner size="sm" /><Text slot="label" tone="faint">读取目录…</Text></Inline>
+      ) : null}
+      {tree.loading && !entries.length ? (
+        <Card flush><LoadingBlock rows={4} /></Card>
+      ) : (
+        <Card flush role="listbox" aria-label="仓库文件">
+          <List divided>
+            {entries.map((e) => (
+              <Row
+                key={e.id}
+                flush
+                role="button"
+                onClick={() => {
+                  if (e.type === "tree") { setPath(e.path); setPages(1); }
+                  else setOpenFile(e);
+                }}
+                onKeyDown={(ev) => {
+                  if (ev.key !== "Enter") return;
+                  if (e.type === "tree") { setPath(e.path); setPages(1); }
+                  else setOpenFile(e);
+                }}
+                leading={kindIcon(e.type)}
+                title={e.name}
+                trailing={<>{e.type === "tree" ? "目录" : ""}</>}
+              />
+            ))}
+          </List>
+          {!tree.loading && !tree.error && entries.length === 0 ? (
+            <EmptyState title="空目录" />
+          ) : null}
+        </Card>
+      )}
       {tree.data?.hasMore ? (
         <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={tree.loading}>加载更多</Btn>
       ) : null}
       {readme ? (
-        <div className="gitlab-readme">
-          <div className="gitlab-readme-head">
-            <span>{readme.name}</span>
-            <Btn variant="outline" onClick={() => openExternal(`${webUrl}/-/blob/${encodeURIComponent(ref)}/${readme.path}`)}>浏览器打开</Btn>
-          </div>
-          {readmeQuery.loading ? <p className="dim gitlab-hint">读取 README…</p> : null}
-          {readmeQuery.error ? <p className="gitlab-error">{readmeQuery.error}</p> : null}
-          {readmeQuery.data ? <MarkdownBody text={readmeQuery.data} baseUrl={webUrl} /> : null}
-        </div>
+        <Card flush>
+          <Inline gap={2} pad={3} vAlign="center">
+            <Text slot="label" tone="quiet">{readme.name}</Text>
+            <Spacer />
+            <Btn variant="outline" size="sm" icon={<IconExternal size="sm" />}
+              onClick={() => openExternal(`${webUrl}/-/blob/${encodeURIComponent(ref)}/${readme.path}`)}
+            >浏览器打开</Btn>
+          </Inline>
+          <Divider />
+          {readmeQuery.loading ? (
+            <Stack pad={3}><LoadingBlock rows={3} /></Stack>
+          ) : readmeQuery.error ? (
+            <Stack pad={3}><Banner tone="error">{readmeQuery.error}</Banner></Stack>
+          ) : readmeQuery.data ? (
+            <Stack pad={3}>
+              <MarkdownBody text={readmeQuery.data} baseUrl={webUrl} />
+            </Stack>
+          ) : null}
+        </Card>
       ) : null}
-    </div>
+    </Stack>
   );
 }
 
@@ -411,38 +500,25 @@ function StateChips({ value, onChange, counts }: {
 }): ReactNode {
   const options: Array<[GitlabIssueState, string]> = [["opened", "进行中"], ["closed", "已关闭"], ["all", "全部"]];
   return (
-    <div className="segmented">
-      {options.map(([v, label]) => (
-        <button key={v} className={"seg" + (value === v ? " is-active" : "")} onClick={() => onChange(v)}>
-          {label}
-          {counts ? <span className="seg-count">{counts[v]}</span> : null}
-        </button>
-      ))}
-    </div>
+    <Segment
+      value={value}
+      onChange={(v) => onChange(v as GitlabIssueState)}
+      options={options.map(([v, label]) => ({ value: v, label: counts ? `${label} ${counts[v]}` : label }))}
+    />
   );
 }
 
-/** 作者头像（没有头像地址时退回首字母方块） */
-function Avatar({ user, size = 20 }: { user?: GitUser | null; size?: number }): ReactNode {
+/** 作者头像（没有头像地址时退回首字母方块）：OG Avatar + onError 兜底 */
+function AuthorAvatar({ user }: { user?: GitUser | null }): ReactNode {
   const [failed, setFailed] = useState(false);
-  const name = user?.name ?? "";
-  if (!user?.avatar_url || failed) {
+  if (user?.avatar_url && !failed) {
     return (
-      <span className="gitlab-avatar gitlab-avatar-fallback" style={{ width: size, height: size, fontSize: size * 0.5 }}>
-        {[...name][0]?.toUpperCase() ?? "?"}
+      <span className="og-avatar og-avatar--sm">
+        <img src={user.avatar_url} alt="" loading="lazy" onError={() => setFailed(true)} />
       </span>
     );
   }
-  return (
-    <img
-      className="gitlab-avatar"
-      style={{ width: size, height: size }}
-      src={user.avatar_url}
-      alt=""
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
-  );
+  return <OGAvatar name={user?.name || "?"} size="sm" />;
 }
 
 /** 表情回应（reaction）：已有回应按组显示，点一下切换自己的那枚 */
@@ -465,8 +541,6 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
   const [added, setAdded] = useState<GitAward[]>([]);
   const [removed, setRemoved] = useState<number[]>([]);
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const popupRef = useRef<HTMLDivElement | null>(null);
-  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
 
   const list = (() => {
     const seen = new Set<number>();
@@ -486,43 +560,6 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
     if (me && a.user?.username === me) cur.mine = a.id;
     counts.set(a.name, cur);
   }
-
-  /** 选择器挂在 body 上（线程容器有 overflow: hidden，就地弹会被裁成半截） */
-  const openPicker = (): void => {
-    const rect = wrapRef.current?.getBoundingClientRect();
-    if (rect) {
-      const width = 300;
-      const height = 268;
-      const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8));
-      const above = rect.top - height - 6;
-      setPos({ left, top: above >= 8 ? above : Math.min(rect.bottom + 6, window.innerHeight - height - 8) });
-    }
-    setPicking((p) => !p);
-  };
-
-  // 点外面 / Esc 收起；滚动或改窗口大小也收起（避免浮层与按钮错位）
-  useEffect(() => {
-    if (!picking) return;
-    const onDown = (ev: MouseEvent): void => {
-      const t = ev.target as Node;
-      if (wrapRef.current?.contains(t) || popupRef.current?.contains(t)) return;
-      setPicking(false);
-    };
-    const onKey = (ev: KeyboardEvent): void => {
-      if (ev.key === "Escape") setPicking(false);
-    };
-    const onMove = (): void => setPicking(false);
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
-    window.addEventListener("resize", onMove);
-    window.addEventListener("scroll", onMove, true);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
-      window.removeEventListener("resize", onMove);
-      window.removeEventListener("scroll", onMove, true);
-    };
-  }, [picking]);
 
   const toggle = async (name: string, mine: number | null): Promise<void> => {
     if (busy || !name) return;
@@ -553,67 +590,77 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
     : REACTION_NAMES;
 
   return (
-    <div className="gitlab-reactions">
-      {[...counts.entries()].map(([name, c]) => (
-        <button
-          key={name}
-          type="button"
-          className={"gitlab-reaction" + (c.mine !== null ? " is-mine" : "")}
-          disabled={busy}
-          title={`:${name}: ${c.mine !== null ? "（点击取消我的回应）" : "（点击回应）"}`}
-          onClick={() => void toggle(name, c.mine)}
-        >
-          <span>{REACTION_EMOJI[name] ?? ""}</span>
-          {REACTION_EMOJI[name] ? null : <em className="gitlab-reaction-name">{name}</em>}
-          <b>{c.n}</b>
-        </button>
-      ))}
-      <div className="gitlab-emoji" ref={wrapRef}>
-        <button
-          type="button"
-          className="gitlab-reaction"
+    <div ref={wrapRef}>
+      <Inline gap={1} wrap>
+        {[...counts.entries()].map(([name, c]) => (
+          <Chip
+            key={name}
+            size="sm"
+            selected={c.mine !== null}
+            disabled={busy}
+            aria-label={`:${name}:（${c.mine !== null ? "点击取消我的回应" : "点击回应"}）`}
+            onClick={() => void toggle(name, c.mine)}
+          >
+            {REACTION_EMOJI[name] ?? name} {c.n}
+          </Chip>
+        ))}
+        <IconBtn
+          label="添加回应"
+          variant="outline"
+          size="sm"
+          icon={<IconPlus size="sm" />}
           aria-expanded={picking}
           disabled={busy}
-          title="添加回应"
-          onClick={openPicker}
-        >
-          ＋
-        </button>
-      </div>
-      {picking && pos
-        ? createPortal(
-            <div
-              className="gitlab-emoji-popup"
-              ref={popupRef}
-              role="dialog"
-              aria-label="选择回应"
-              style={{ left: pos.left, top: pos.top }}
-            >
-              <Input autoFocus placeholder="按名字筛选，或直接输入 GitLab 表情名" value={filter} onChange={(value) => setFilter(value)} onKeyDown={(e) => {
-                  if (e.key === "Enter") typeInName();
-                }} />
-              <div className="gitlab-emoji-grid">
-                {shown.map(([name, emoji]) => (
-                  <button
-                    key={name}
-                    type="button"
-                    className="gitlab-emoji-item"
-                    title={`:${name}:`}
-                    onClick={() => { setPicking(false); setFilter(""); void toggle(name, counts.get(name)?.mine ?? null); }}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-                {shown.length === 0 ? <p className="dim gitlab-hint">没有匹配的表情名</p> : null}
-              </div>
-              <div className="gitlab-emoji-typed">
-                <Input placeholder="任意表情名，如 dart" value={typed} onChange={(value) => setTyped(value)} onKeyDown={(e) => { if (e.key === "Enter") typeInName(); }} />
-                <Btn variant="outline" onClick={() => typeInName()}>按名字贴</Btn>
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+          onClick={() => setPicking((p) => !p)}
+        />
+      </Inline>
+      {/* 表情选择器：挂 body 上的库浮层（线程容器有 overflow: hidden，就地弹会被裁成半截） */}
+      <Popover
+        open={picking}
+        onClose={() => setPicking(false)}
+        anchor={wrapRef.current ?? undefined}
+        side="top"
+        label="选择回应"
+      >
+        <div style={{ width: "320px", maxWidth: "88vw" }}>
+          <Stack gap={2}>
+          <Input
+            autoFocus
+            placeholder="按名字筛选，或直接输入 GitLab 表情名"
+            value={filter}
+            onChange={(value) => setFilter(value)}
+            onEnter={() => typeInName()}
+          />
+          <div style={{ maxHeight: "168px", overflowY: "auto" }}>
+            <Inline gap={1} wrap>
+              {shown.map(([name, emoji]) => (
+                <Btn
+                  key={name}
+                  variant="ghost"
+                  size="sm"
+                  titleAttr={`:${name}:`}
+                  onClick={() => { setPicking(false); setFilter(""); void toggle(name, counts.get(name)?.mine ?? null); }}
+                >
+                  {emoji}
+                </Btn>
+              ))}
+              {shown.length === 0 ? <Text slot="micro" tone="faint">没有匹配的表情名</Text> : null}
+            </Inline>
+          </div>
+          <Inline gap={2}>
+            <Grow>
+              <Input
+                placeholder="任意表情名，如 dart"
+                value={typed}
+                onChange={(value) => setTyped(value)}
+                onEnter={() => typeInName()}
+              />
+            </Grow>
+            <Btn variant="outline" onClick={() => typeInName()}>按名字贴</Btn>
+          </Inline>
+          </Stack>
+        </div>
+      </Popover>
     </div>
   );
 
@@ -633,43 +680,53 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
 function ChangesView({ projectId, iid }: { projectId: number; iid: number }): ReactNode {
   const q = useGitlabQuery<GitMergeRequestChanges>(`mr-changes:${projectId}:${iid}`, () =>
     gitlabMergeRequestChanges(projectId, iid));
-  if (q.loading) return <p className="dim gitlab-hint">读取变更…</p>;
-  if (q.error) return <p className="gitlab-error">{q.error}</p>;
+  if (q.loading) return <LoadingBlock rows={3} />;
+  if (q.error) return <Banner tone="error">{q.error}</Banner>;
   const changes = q.data?.changes ?? [];
-  if (changes.length === 0) return <p className="dim gitlab-hint">没有文件变更</p>;
+  if (changes.length === 0) return <EmptyState title="没有文件变更" />;
   return (
-    <div className="gitlab-changes">
-      <div className="dim gitlab-meta">
-        {changes.length} 个文件变更 · 原文见「浏览器打开」
-      </div>
-      {changes.map((c, i) => (
-        <details key={c.new_path + i} className="gitlab-change" open={i === 0}>
-          <summary>
-            <span className={"gitlab-change-kind" + (c.new_file ? " add" : c.deleted_file ? " del" : "")}>
-              {c.new_file ? "新增" : c.deleted_file ? "删除" : c.renamed_file ? "改名" : "修改"}
-            </span>
-            <code>{c.renamed_file ? `${c.old_path} → ${c.new_path}` : c.new_path}</code>
-          </summary>
-          {c.too_large ? (
-            <p className="dim gitlab-hint">差异过大，不在应用内展开。</p>
-          ) : (
-            <pre className="gitlab-diff">{c.diff.split("\n").map((line, k) => (
-              <span
-                key={k}
-                className={
-                  line.startsWith("+") && !line.startsWith("+++") ? "add"
-                    : line.startsWith("-") && !line.startsWith("---") ? "del"
-                      : line.startsWith("@@") ? "hunk" : undefined
-                }
-              >
-                {line}
-                {"\n"}
-              </span>
-            ))}</pre>
-          )}
-        </details>
-      ))}
-    </div>
+    <Stack gap={2}>
+      <Text slot="micro" tone="faint">{changes.length} 个文件变更 · 原文见「浏览器打开」</Text>
+      <Accordion defaultOpenKeys={changes.length ? ["c0"] : []}>
+        {changes.map((c, i) => (
+          <AccordionItem
+            key={c.new_path + i}
+            id={`c${i}`}
+            title={<Text slot="label" mono>{c.renamed_file ? `${c.old_path} → ${c.new_path}` : c.new_path}</Text>}
+            trailing={
+              <Tag tone={c.new_file ? "success" : c.deleted_file ? "error" : "neutral"}>
+                {c.new_file ? "新增" : c.deleted_file ? "删除" : c.renamed_file ? "改名" : "修改"}
+              </Tag>
+            }
+          >
+            {c.too_large ? (
+              <Text as="p" tone="faint">差异过大，不在应用内展开。</Text>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <Stack gap={0}>
+                  {c.diff.split("\n").map((line, k) => (
+                    <Text
+                      key={k}
+                      as="span"
+                      slot="label"
+                      mono
+                      nowrap
+                      tone={
+                        line.startsWith("+") && !line.startsWith("+++") ? "success"
+                          : line.startsWith("-") && !line.startsWith("---") ? "error"
+                            : line.startsWith("@@") ? "brand" : undefined
+                      }
+                    >
+                      {line}
+                    </Text>
+                  ))}
+                </Stack>
+              </div>
+            )}
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </Stack>
   );
 }
 
@@ -682,61 +739,19 @@ function NoteEditor({ initial, busy, onSave, onCancel }: {
 }): ReactNode {
   const [text, setText] = useState(initial);
   return (
-    <div className="gitlab-notebox">
-      <textarea
-        className="input"
+    <Stack gap={2}>
+      <TextArea
         rows={4}
         placeholder="写评论（支持 Markdown）"
         value={text}
         autoFocus
-        onChange={(e) => setText(e.target.value)}
+        onChange={(value) => setText(value)}
       />
-      <div className="gitlab-notebox-actions">
-        <Btn variant="solid" tone="brand" disabled={busy || text.trim() === ""} onClick={() => onSave(text.trim())}>{busy ? "保存中…" : "保存"}</Btn>
-        <Btn variant="ghost" disabled={busy} onClick={onCancel}>取消</Btn>
-      </div>
-    </div>
-  );
-}
-
-/** 一条评论（讨论里的 note）：正文 / 编辑 / 删除 / 表情回应 / 指派给作者 */
-
-function NoteBox({ kind, projectId, iid, onDone }: {
-  kind: RequestKind;
-  projectId: number;
-  iid: number;
-  onDone: () => void;
-}): ReactNode {
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const submit = async (): Promise<void> => {
-    const body = text.trim();
-    if (!body || busy) return;
-    setBusy(true);
-    try {
-      await gitlabAddNote(kind, projectId, iid, body);
-      setText("");
-      onDone();
-      showToast("评论已发表");
-    } catch (e) {
-      showToast(String(e instanceof Error ? e.message : e).slice(0, 120));
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <div className="gitlab-notebox">
-      <textarea
-        className="input"
-        rows={4}
-        placeholder="写评论（支持 Markdown）"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-      />
-      <div className="gitlab-notebox-actions">
-        <Btn variant="solid" tone="brand" disabled={busy || text.trim() === ""} onClick={() => void submit()}>{busy ? "发送中…" : "发表评论"}</Btn>
-      </div>
-    </div>
+      <Inline gap={2}>
+        <Btn variant="solid" tone="brand" size="sm" disabled={busy || text.trim() === ""} onClick={() => onSave(text.trim())}>{busy ? "保存中…" : "保存"}</Btn>
+        <Btn variant="ghost" size="sm" disabled={busy} onClick={onCancel}>取消</Btn>
+      </Inline>
+    </Stack>
   );
 }
 
@@ -805,33 +820,51 @@ function NoteRow({ note, kind, projectId, iid, discussionId, me, baseUrl, depth,
     }
   };
 
-  return (
-    <div className={"gitlab-note" + (depth > 0 ? " gitlab-reply" : "")}>
-      <div className="gitlab-note-head">
-        <Avatar user={note.author} size={22} />
-        <b>{note.author?.name ?? "未知作者"}</b>
-        <span className="dim">
+  const body = (
+    <>
+      <Inline gap={2} wrap vAlign="center">
+        <AuthorAvatar user={note.author} />
+        <Text slot="label" weight="semibold">{note.author?.name ?? "未知作者"}</Text>
+        <Text slot="label" tone="faint">
           {fmtTime(note.created_at)}
           {note.updated_at && note.updated_at !== note.created_at ? "（已编辑）" : ""}
-        </span>
-        <span className="gitlab-note-actions">
+        </Text>
+        <Spacer />
+        <Inline gap={1}>
           {!mine && authorId ? (
-            <Btn variant="outline" disabled={busy} onClick={() => void assign()}>指派给 TA</Btn>
+            <Btn variant="outline" size="sm" disabled={busy} onClick={() => void assign()}>指派给 TA</Btn>
           ) : null}
           {mine ? (
             <>
-              <Btn variant="outline" disabled={busy} onClick={() => setEditing((e) => !e)}>{editing ? "取消" : "编辑"}</Btn>
-              <Btn variant="outline" disabled={busy} onClick={() => void remove()}>删除</Btn>
+              <Btn variant="outline" size="sm" disabled={busy} onClick={() => setEditing((e) => !e)}>{editing ? "取消" : "编辑"}</Btn>
+              <Btn variant="outline" size="sm" disabled={busy} onClick={() => void remove()}>删除</Btn>
             </>
           ) : null}
-        </span>
-      </div>
+        </Inline>
+      </Inline>
       {editing ? (
-        <NoteEditor initial={note.body} busy={busy} onSave={(body) => void save(body)} onCancel={() => setEditing(false)} />
+        <NoteEditor initial={note.body} busy={busy} onSave={(b) => void save(b)} onCancel={() => setEditing(false)} />
       ) : (
         <MarkdownBody text={note.body} baseUrl={baseUrl} />
       )}
       <ReactionBar kind={kind} projectId={projectId} iid={iid} noteId={note.id} me={me} />
+    </>
+  );
+
+  if (depth > 0) {
+    /* 回复缩进：左侧竖分隔线做铁轨（与旧 22px 缩进同语义，几何走 OG 间距档） */
+    return (
+      <div role="listitem">
+        <Inline gap={2} pad={3} vAlign="stretch">
+          <Divider vertical />
+          <Grow><Stack gap={2}>{body}</Stack></Grow>
+        </Inline>
+      </div>
+    );
+  }
+  return (
+    <div role="listitem">
+      <Stack gap={2} pad={3}>{body}</Stack>
     </div>
   );
 }
@@ -883,22 +916,30 @@ function DiscussionThread({ discussion, kind, projectId, iid, me, baseUrl, onCha
   };
 
   return (
-    <div className={"gitlab-thread" + (resolved ? " is-resolved" : "")}>
-      <NoteRow note={head} kind={kind} projectId={projectId} iid={iid} discussionId={discussion.id} me={me} baseUrl={baseUrl} depth={0} onChanged={onChanged} />
-      {replies.map((n) => (
-        <NoteRow key={n.id} note={n} kind={kind} projectId={projectId} iid={iid} discussionId={discussion.id} me={me} baseUrl={baseUrl} depth={1} onChanged={onChanged} />
-      ))}
-      <div className="gitlab-thread-actions">
-        <Btn variant="outline" disabled={busy} onClick={() => setReplying((r) => !r)}>{replying ? "取消回复" : "回复"}</Btn>
+    <Card flush>
+      <List divided>
+        <NoteRow note={head} kind={kind} projectId={projectId} iid={iid} discussionId={discussion.id} me={me} baseUrl={baseUrl} depth={0} onChanged={onChanged} />
+        {replies.map((n) => (
+          <NoteRow key={n.id} note={n} kind={kind} projectId={projectId} iid={iid} discussionId={discussion.id} me={me} baseUrl={baseUrl} depth={1} onChanged={onChanged} />
+        ))}
+      </List>
+      <Divider />
+      <Inline gap={2} wrap pad={3}>
+        <Btn variant="outline" size="sm" disabled={busy} onClick={() => setReplying((r) => !r)}>{replying ? "取消回复" : "回复"}</Btn>
         {resolvable ? (
-          <Btn variant="outline" disabled={busy} onClick={() => void resolve(!resolved)}>{resolved ? "重新打开讨论" : "解决讨论"}</Btn>
+          <Btn variant="outline" size="sm" disabled={busy} onClick={() => void resolve(!resolved)}>{resolved ? "重新打开讨论" : "解决讨论"}</Btn>
         ) : null}
-        {resolved ? <span className="gitlab-chip ok">已解决</span> : null}
-      </div>
+        {resolved ? <Tag tone="success">已解决</Tag> : null}
+      </Inline>
       {replying ? (
-        <NoteEditor initial="" busy={busy} onSave={(body) => void reply(body)} onCancel={() => setReplying(false)} />
+        <>
+          <Divider />
+          <Stack pad={3}>
+            <NoteEditor initial="" busy={busy} onSave={(b) => void reply(b)} onCancel={() => setReplying(false)} />
+          </Stack>
+        </>
       ) : null}
-    </div>
+    </Card>
   );
 }
 
@@ -916,10 +957,11 @@ function DiscussionList({ kind, projectId, iid, me, baseUrl, onChanged }: {
   const threads = (q.data?.items ?? []).filter((d) => d.notes.some((n) => !n.system));
 
   return (
-    <>
-      {q.loading ? <p className="dim gitlab-hint">读取讨论…</p> : null}
-      {q.error ? <p className="gitlab-error">{q.error}</p> : null}
-      {!q.loading && !q.error && threads.length === 0 ? <p className="dim gitlab-hint">还没有评论</p> : null}
+    <Stack gap={2}>
+      {q.loading && !q.data ? <Card flush><LoadingBlock rows={3} /></Card> : q.loading ? (
+        <Inline gap={1}><Spinner size="sm" /><Text slot="label" tone="faint">读取讨论…</Text></Inline>
+      ) : null}
+      {q.error ? <Banner tone="error">{q.error}</Banner> : null}
       {threads.map((d) => (
         <DiscussionThread
           key={d.id}
@@ -932,11 +974,11 @@ function DiscussionList({ kind, projectId, iid, me, baseUrl, onChanged }: {
           onChanged={onChanged}
         />
       ))}
+      {!q.loading && !q.error && threads.length === 0 ? <EmptyState title="还没有评论" /> : null}
       {q.data?.hasMore ? (
-        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多讨论
-        </Btn>
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多讨论</Btn>
       ) : null}
-    </>
+    </Stack>
   );
 }
 
@@ -1002,70 +1044,129 @@ function RequestDetail({ kind, projectId, iid, onBack, onChanged }: {
   const assignees = (item as { assignees?: GitUser[] } | null)?.assignees ?? [];
 
   return (
-    <div className="gitlab-detail">
-      <div className="gitlab-file-head">
-        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回列表
-        </Btn>
-        <span className="dim">!{iid}</span>
-        <span style={{ flex: 1 }} />
-        {mr && mr.state === "opened" && (mr.user?.can_merge ?? true) ? (
-          <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void merge()}>合入</Btn>
-        ) : null}
-        {item && item.state !== "merged" ? (
-          <Btn variant="outline" disabled={busy} onClick={() => void toggleState()}>{closed ? "重新打开" : "关闭"}</Btn>
-        ) : null}
-        {item ? (
-          <Btn variant="outline" onClick={() => openExternal(item.web_url)}><IconExternal />浏览器打开
-          </Btn>
-        ) : null}
-      </div>
-      {detail.loading ? <p className="dim gitlab-hint">读取中…</p> : null}
-      {detail.error ? <p className="gitlab-error">{detail.error}</p> : null}
+    <Stack gap={2}>
+      <OGPageHead
+        onBack={onBack}
+        title={item
+          ? (
+            <Inline gap={2} wrap>
+              <Text slot="title">{item.title}</Text>
+              <ReqStateTag state={item.state} />
+              {mr?.draft ? <Tag tone="neutral">草稿</Tag> : null}
+              {mr?.has_conflicts ? <Tag tone="error">有冲突</Tag> : null}
+            </Inline>
+          )
+          : <Text slot="title">{`!${iid}`}</Text>}
+        sub={
+          item ? (
+            <Inline gap={2} wrap>
+              <AuthorAvatar user={item.author} />
+              <Text slot="label" tone="quiet">
+                {item.author?.name ?? "未知作者"} 创建于 {fmtTime(item.created_at)}
+              </Text>
+              {mr ? (
+                <Text slot="label" tone="faint" mono>{mr.source_branch} → {mr.target_branch}</Text>
+              ) : null}
+              {item.labels?.length ? <Tag tone="brand">{item.labels.join("、")}</Tag> : null}
+            </Inline>
+          )
+          : null}
+        actions={
+          <Inline gap={2} wrap>
+            {mr && mr.state === "opened" && (mr.user?.can_merge ?? true) ? (
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void merge()}>合入</Btn>
+            ) : null}
+            {item && item.state !== "merged" ? (
+              <Btn variant="outline" disabled={busy} onClick={() => void toggleState()}>{closed ? "重新打开" : "关闭"}</Btn>
+            ) : null}
+            {item ? (
+              <Btn variant="outline" onClick={() => openExternal(item.web_url)} icon={<IconExternal size="sm" />}>浏览器打开</Btn>
+            ) : null}
+          </Inline>
+        }
+      />
+      {detail.loading ? <Card flush><LoadingBlock rows={4} /></Card> : null}
+      {detail.error ? <Banner tone="error">{detail.error}</Banner> : null}
       {item ? (
         <>
-          <h2 className="gitlab-detail-title">
-            {item.title}
-            <span className={`gitlab-chip ${item.state === "opened" ? "ok" : "dim"}`}>
-              {item.state === "merged" ? "已合入" : item.state === "opened" ? "进行中" : "已关闭"}
-            </span>
-            {mr?.draft ? <span className="gitlab-chip dim">草稿</span> : null}
-            {mr?.has_conflicts ? <span className="gitlab-chip bad">有冲突</span> : null}
-          </h2>
-          <div className="dim gitlab-meta gitlab-meta-author">
-            <Avatar user={item.author} size={22} />
-            {item.author?.name ?? "未知作者"} 创建于 {fmtTime(item.created_at)}
-            {mr?.state === "merged" ? ` · 合入于 ${fmtTime(mr.merged_at)}` : ""}
-            {item.state === "closed" ? ` · 关闭于 ${fmtTime(item.closed_at)}` : ""}
-            {mr ? ` · ${mr.source_branch} → ${mr.target_branch}` : ""}
-            {mr?.detailed_merge_status ? ` · ${mr.detailed_merge_status}` : ""}
-            {` · 指派：${assignees.length ? assignees.map((a) => a.name).join("、") : "无"}`}
-            {item.labels?.length ? ` · 标签 ${item.labels.join("、")}` : ""}
-          </div>
+          <Stack pad={2}>
+            <Text slot="label" tone="faint">
+              {mr?.state === "merged" ? `合入于 ${fmtTime(mr.merged_at)} · ` : ""}
+              {item.state === "closed" ? `关闭于 ${fmtTime(item.closed_at)} · ` : ""}
+              {mr?.detailed_merge_status ? `${mr.detailed_merge_status} · ` : ""}
+              {`指派：${assignees.length ? assignees.map((a) => a.name).join("、") : "无"}`}
+            </Text>
+          </Stack>
           {mr?.head_pipeline ? (
-            <div className="dim gitlab-meta">流水线 #{mr.head_pipeline.id} · {statusOf(mr.head_pipeline.status).label}</div>
+            <Inline gap={2}>
+              <Text slot="label" tone="faint">流水线 #{mr.head_pipeline.id}</Text>
+              <StatusTag status={mr.head_pipeline.status} />
+            </Inline>
           ) : null}
-          {item.description?.trim() ? <MarkdownBody text={item.description} baseUrl={baseUrl} /> : <p className="dim gitlab-hint">（没有描述）</p>}
+          {item.description?.trim() ? (
+            <Stack pad={2}><MarkdownBody text={item.description} baseUrl={baseUrl} /></Stack>
+          ) : <Text as="p" tone="faint">（没有描述）</Text>}
           <ReactionBar kind={kind} projectId={projectId} iid={iid} me={me.data?.username ?? ""} />
           {mr ? (
-            <>
-              <div className="gitlab-section-head">文件变更</div>
+            <Section title="文件变更">
               <ChangesView projectId={projectId} iid={iid} />
-            </>
+            </Section>
           ) : null}
-          <div className="gitlab-section-head">评论（{item.user_notes_count ?? 0}）</div>
-          <DiscussionList
-            kind={kind}
-            projectId={projectId}
-            iid={iid}
-            me={me.data?.username ?? ""}
-            baseUrl={baseUrl}
-            onChanged={refresh}
-          />
-          <div className="gitlab-section-head">写评论</div>
-          <NoteBox kind={kind} projectId={projectId} iid={iid} onDone={refresh} />
+          <Section title={`评论（${item.user_notes_count ?? 0}）`}>
+            <DiscussionList
+              kind={kind}
+              projectId={projectId}
+              iid={iid}
+              me={me.data?.username ?? ""}
+              baseUrl={baseUrl}
+              onChanged={refresh}
+            />
+          </Section>
+          <Section title="写评论">
+            <NoteBox kind={kind} projectId={projectId} iid={iid} onDone={refresh} />
+          </Section>
         </>
       ) : null}
-    </div>
+    </Stack>
+  );
+}
+
+/** 一条评论（讨论里的 note）：正文 / 编辑 / 删除 / 表情回应 / 指派给作者 */
+function NoteBox({ kind, projectId, iid, onDone }: {
+  kind: RequestKind;
+  projectId: number;
+  iid: number;
+  onDone: () => void;
+}): ReactNode {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (): Promise<void> => {
+    const body = text.trim();
+    if (!body || busy) return;
+    setBusy(true);
+    try {
+      await gitlabAddNote(kind, projectId, iid, body);
+      setText("");
+      onDone();
+      showToast("评论已发表");
+    } catch (e) {
+      showToast(String(e instanceof Error ? e.message : e).slice(0, 120));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Stack gap={2}>
+      <TextArea
+        rows={4}
+        placeholder="写评论（支持 Markdown）"
+        value={text}
+        onChange={(value) => setText(value)}
+      />
+      <Inline gap={2}>
+        <Btn variant="solid" tone="brand" disabled={busy || text.trim() === ""} onClick={() => void submit()}>{busy ? "发送中…" : "发表评论"}</Btn>
+      </Inline>
+    </Stack>
   );
 }
 
@@ -1175,51 +1276,67 @@ function RequestList({ kind, projectId, initialIid = null }: {
   }
 
   return (
-    <div className="gitlab-requests">
-      <div className="gitlab-toolbar">
+    <Stack gap={2}>
+      <Inline gap={2} wrap>
         <StateChips value={state} onChange={(v) => { setState(v); setPages(1); }} counts={counts.data ?? undefined} />
-        <div className="gitlab-search">
-          <IconSearch width={14} height={14} />
-          <Input placeholder={kind === "issue" ? "搜索 Issue（回车）" : "搜索合并请求（回车）"} value={text} onChange={(value) => setText(value)} onKeyDown={(e) => { if (e.key === "Enter") { setQuery(text.trim()); setPages(1); } }} />
-          {query ? <Btn variant="outline" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</Btn> : null}
-        </div>
-        <Btn variant="outline" onClick={() => void (kind === "issue" ? createIssue() : createMr())}><IconPen />新建
-        </Btn>
-      </div>
-      {q.loading ? <p className="dim gitlab-hint">读取列表…</p> : null}
-      {q.error ? <p className="gitlab-error">{q.error}</p> : null}
-      <div className="cloud-list" role="listbox" aria-label={kind === "issue" ? "Issue 列表" : "合并请求列表"}>
-        {(list?.items ?? []).map((item) => (
-          <div key={item.id} className="cloud-row gitlab-req-row" role="button" tabIndex={0}
-            onClick={() => setOpenIid(item.iid)}
-            onKeyDown={(e) => { if (e.key === "Enter") setOpenIid(item.iid); }}
-          >
-            <span className={`gitlab-chip ${item.state === "opened" ? "ok" : item.state === "merged" ? "run" : "dim"}`}>
-              {item.state === "merged" ? "已合入" : item.state === "opened" ? "进行中" : "已关闭"}
-            </span>
-            <Avatar user={item.author} />
-            <span className="cloud-name">
-              {item.title}
-              <span className="dim gitlab-req-sub">
-                {" "}!{item.iid} · {item.author?.name ?? "未知作者"} · {fmtTime(item.updated_at)}
-                {isMergeRequest(item) ? ` · ${item.source_branch} → ${item.target_branch}` : ""}
-              </span>
-            </span>
-            <span className="cloud-meta">{item.user_notes_count ? `${item.user_notes_count} 条评论` : ""}</span>
-            <CollectStar
-              atom={{ kind: kind === "issue" ? "gitlab-issue" : "gitlab-mr", key: enc(projectId, item.iid, item.title) }}
+        <Grow>
+          <Input
+            type="search"
+            size="md"
+            icon={<IconSearch size="sm" />}
+            placeholder={kind === "issue" ? "搜索 Issue（回车）" : "搜索合并请求（回车）"}
+            aria-label={kind === "issue" ? "搜索 Issue" : "搜索合并请求"}
+            value={text}
+            onChange={(value) => setText(value)}
+            onEnter={(value) => { setQuery(value.trim()); setPages(1); }}
+          />
+        </Grow>
+        {query ? <Btn variant="outline" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</Btn> : null}
+        <Btn variant="outline" onClick={() => void (kind === "issue" ? createIssue() : createMr())} icon={<IconPen size="sm" />}>新建</Btn>
+      </Inline>
+      {q.loading && !list ? <Card flush><LoadingBlock rows={4} /></Card> : q.loading ? (
+        <Inline gap={1}><Spinner size="sm" /><Text slot="label" tone="faint">读取列表…</Text></Inline>
+      ) : null}
+      {q.error ? <Banner tone="error">{q.error}</Banner> : null}
+      <Card flush role="listbox" aria-label={kind === "issue" ? "Issue 列表" : "合并请求列表"}>
+        <List divided>
+          {(list?.items ?? []).map((item) => (
+            <Row
+              key={item.id}
+              flush
+              role="button"
+              onClick={() => setOpenIid(item.iid)}
+              onKeyDown={(e) => { if (e.key === "Enter") setOpenIid(item.iid); }}
+              leading={<AuthorAvatar user={item.author} />}
               title={item.title}
+              sub={
+                <>
+                  {`!${item.iid} · ${item.author?.name ?? "未知作者"} · ${fmtTime(item.updated_at)}`}
+                  {isMergeRequest(item) ? (
+                    <> · <Text slot="label" mono>{item.source_branch} → {item.target_branch}</Text></>
+                  ) : null}
+                </>
+              }
+              trailing={
+                <>
+                  <ReqStateTag state={item.state} />
+                  <CollectStar
+                    atom={{ kind: kind === "issue" ? "gitlab-issue" : "gitlab-mr", key: enc(projectId, item.iid, item.title) }}
+                    title={item.title}
+                  />
+                </>
+              }
             />
-          </div>
-        ))}
+          ))}
+        </List>
         {!q.loading && !q.error && (list?.items.length ?? 0) === 0 ? (
-          <p className="dim gitlab-hint">{kind === "issue" ? "没有匹配的 Issue" : "没有匹配的合并请求"}</p>
+          <EmptyState icon={<IconGitLab size="xl" />} title={kind === "issue" ? "没有匹配的 Issue" : "没有匹配的合并请求"} />
         ) : null}
-      </div>
+      </Card>
       {list?.hasMore ? (
         <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</Btn>
       ) : null}
-    </div>
+    </Stack>
   );
 }
 
@@ -1237,46 +1354,63 @@ function PipelineJobs({ projectId, pipeline, onBack }: {
 
   if (openJob) {
     return (
-      <div className="gitlab-jobs">
-        <div className="gitlab-file-head">
-          <Btn variant="ghost" onClick={() => setOpenJob(null)}><IconChevron style={{ transform: "rotate(180deg)" }} />返回作业列表
-          </Btn>
-          <span className="gitlab-file-path">{openJob.stage} / {openJob.name}</span>
-          <Btn variant="outline" onClick={() => openExternal(openJob.web_url)}><IconExternal />浏览器打开
-          </Btn>
-        </div>
-        {trace.loading ? <p className="dim gitlab-hint">读取日志…</p> : null}
-        {trace.error ? <p className="gitlab-error">{trace.error}</p> : null}
-        {trace.data !== null && !trace.loading ? <pre className="gitlab-pre gitlab-trace">{trace.data}</pre> : null}
-      </div>
+      <Stack gap={2}>
+        <OGPageHead
+          onBack={() => setOpenJob(null)}
+          title={<Text slot="body" mono truncate>{openJob.stage} / {openJob.name}</Text>}
+          actions={<Btn variant="outline" onClick={() => openExternal(openJob.web_url)} icon={<IconExternal size="sm" />}>浏览器打开</Btn>}
+        />
+        {trace.loading ? <Card flush><LoadingBlock rows={3} /></Card> : null}
+        {trace.error ? <Banner tone="error">{trace.error}</Banner> : null}
+        {trace.data !== null && !trace.loading ? (
+          <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            <CodeBlock code={trace.data} />
+          </div>
+        ) : null}
+      </Stack>
     );
   }
 
   return (
-    <div className="gitlab-jobs">
-      <div className="gitlab-file-head">
-        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回流水线列表
-        </Btn>
-        <span className="dim">流水线 #{pipeline.id} · {statusOf(pipeline.status).label} · {pipeline.ref}</span>
-        <Btn variant="ghost" onClick={() => jobs.reload()} disabled={jobs.loading}><IconRefresh />刷新
-        </Btn>
-      </div>
-      {jobs.loading ? <p className="dim gitlab-hint">读取作业…</p> : null}
-      {jobs.error ? <p className="gitlab-error">{jobs.error}</p> : null}
-      <div className="cloud-list" role="listbox" aria-label="作业列表">
-        {(jobs.data ?? []).map((j) => (
-          <div key={j.id} className="cloud-row" role="button" tabIndex={0}
-            onClick={() => setOpenJob(j)}
-            onKeyDown={(e) => { if (e.key === "Enter") setOpenJob(j); }}
-          >
-            <span className={`gitlab-chip ${statusOf(j.status).tone}`}>{statusOf(j.status).label}</span>
-            <span className="cloud-name">{j.name}</span>
-            <span className="cloud-meta">{j.stage}{j.duration ? ` · ${fmtDuration(j.duration)}` : ""}</span>
-          </div>
-        ))}
-        {!jobs.loading && !jobs.error && (jobs.data ?? []).length === 0 ? <p className="dim gitlab-hint">这次流水线没有作业</p> : null}
-      </div>
-    </div>
+    <Stack gap={2}>
+      <OGPageHead
+        onBack={onBack}
+        title={<Text slot="title">{`流水线 #${pipeline.id}`}</Text>}
+        sub={
+          <Inline gap={2} wrap>
+            <StatusTag status={pipeline.status} />
+            <Text slot="label" tone="faint" mono>{pipeline.ref}</Text>
+          </Inline>
+        }
+        actions={
+          <Btn variant="ghost" onClick={() => jobs.reload()} disabled={jobs.loading} icon={<IconRefresh size="sm" />}>刷新</Btn>
+        }
+      />
+      {jobs.loading && !jobs.data ? <Card flush><LoadingBlock rows={3} /></Card> : jobs.loading ? (
+        <Inline gap={1}><Spinner size="sm" /><Text slot="label" tone="faint">读取作业…</Text></Inline>
+      ) : null}
+      {jobs.error ? <Banner tone="error">{jobs.error}</Banner> : null}
+      <Card flush role="listbox" aria-label="作业列表">
+        <List divided>
+          {(jobs.data ?? []).map((j) => (
+            <Row
+              key={j.id}
+              flush
+              role="button"
+              onClick={() => setOpenJob(j)}
+              onKeyDown={(e) => { if (e.key === "Enter") setOpenJob(j); }}
+              leading={<IconTrace size="lg" title="作业" />}
+              title={j.name}
+              meta={<StatusTag status={j.status} />}
+              trailing={<>{j.stage}{j.duration ? ` · ${fmtDuration(j.duration)}` : ""}</>}
+            />
+          ))}
+        </List>
+        {!jobs.loading && !jobs.error && (jobs.data ?? []).length === 0 ? (
+          <EmptyState title="这次流水线没有作业" />
+        ) : null}
+      </Card>
+    </Stack>
   );
 }
 
@@ -1300,39 +1434,54 @@ function PipelineTab({ projectId, defaultBranch }: { projectId: number; defaultB
     return <PipelineJobs projectId={projectId} pipeline={openPipeline} onBack={() => setOpenPipeline(null)} />;
   }
   return (
-    <div className="gitlab-pipelines">
-      <div className="gitlab-toolbar">
-        <input
-          className="input gitlab-ref"
+    <Stack gap={2}>
+      <Inline gap={2} wrap>
+        <Input
+          aria-label="分支 / 标签筛选"
           placeholder="分支 / 标签（留空为全部，回车查询）"
           value={refText}
-          onChange={(e) => setRefText(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") commit(); }}
-          onBlur={commit}
+          onChange={(value) => setRefText(value)}
+          onEnter={(value) => { setRefText(value); const next = value.trim(); if (next !== ref) { setRef(next); setPages(1); } }}
+          onFocusChange={(focused) => { if (!focused) commit(); }}
         />
-        <span style={{ flex: 1 }} />
-        <Btn variant="ghost" onClick={() => q.reload()} disabled={q.loading}><IconRefresh />刷新
-        </Btn>
-      </div>
-      {q.loading ? <p className="dim gitlab-hint">读取流水线…</p> : null}
-      {q.error ? <p className="gitlab-error">{q.error}</p> : null}
-      <div className="cloud-list" role="listbox" aria-label="流水线列表">
-        {(q.data?.items ?? []).map((p) => (
-          <div key={p.id} className="cloud-row" role="button" tabIndex={0}
-            onClick={() => setOpenPipeline(p)}
-            onKeyDown={(e) => { if (e.key === "Enter") setOpenPipeline(p); }}
-          >
-            <span className={`gitlab-chip ${statusOf(p.status).tone}`}>{statusOf(p.status).label}</span>
-            <span className="cloud-name">#{p.id}<span className="dim gitlab-req-sub"> {p.ref} · {p.sha?.slice(0, 8)} · {p.source}</span></span>
-            <span className="cloud-meta">{fmtTime(p.created_at)}{p.duration ? ` · ${fmtDuration(p.duration)}` : ""}</span>
-          </div>
-        ))}
-        {!q.loading && !q.error && (q.data?.items.length ?? 0) === 0 ? <p className="dim gitlab-hint">没有流水线记录（该项目可能未启用 CI/CD）</p> : null}
-      </div>
+        <Spacer />
+        <Btn variant="ghost" onClick={() => q.reload()} disabled={q.loading} icon={<IconRefresh size="sm" />}>刷新</Btn>
+      </Inline>
+      {q.loading && !q.data ? <Card flush><LoadingBlock rows={4} /></Card> : q.loading ? (
+        <Inline gap={1}><Spinner size="sm" /><Text slot="label" tone="faint">读取流水线…</Text></Inline>
+      ) : null}
+      {q.error ? <Banner tone="error">{q.error}</Banner> : null}
+      <Card flush role="listbox" aria-label="流水线列表">
+        <List divided>
+          {(q.data?.items ?? []).map((p) => (
+            <Row
+              key={p.id}
+              flush
+              role="button"
+              onClick={() => setOpenPipeline(p)}
+              onKeyDown={(e) => { if (e.key === "Enter") setOpenPipeline(p); }}
+              leading={<IconTrace size="lg" title="流水线" />}
+              title={`#${p.id}`}
+              meta={<StatusTag status={p.status} />}
+              sub={
+                <>
+                  <Text slot="label" mono>{p.ref}</Text>
+                  {p.sha ? <> · <Text slot="label" mono>{p.sha.slice(0, 8)}</Text></> : null}
+                  {p.source ? <> · {p.source}</> : null}
+                </>
+              }
+              trailing={<>{fmtTime(p.created_at)}{p.duration ? ` · ${fmtDuration(p.duration)}` : ""}</>}
+            />
+          ))}
+        </List>
+        {!q.loading && !q.error && (q.data?.items.length ?? 0) === 0 ? (
+          <EmptyState title="没有流水线记录（该项目可能未启用 CI/CD）" />
+        ) : null}
+      </Card>
       {q.data?.hasMore ? (
         <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</Btn>
       ) : null}
-    </div>
+    </Stack>
   );
 }
 
@@ -1345,23 +1494,6 @@ function CodeButton({ project }: { project: GitProjectDetail }): ReactNode {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (ev: MouseEvent): void => {
-      if (wrapRef.current?.contains(ev.target as Node)) return;
-      setOpen(false);
-    };
-    const onKey = (ev: KeyboardEvent): void => {
-      if (ev.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
 
   const copy = (text: string): void => {
     navigator.clipboard
@@ -1380,29 +1512,33 @@ function CodeButton({ project }: { project: GitProjectDetail }): ReactNode {
       .finally(() => setBusy(false));
   };
 
+  const cloneRow = (label: string, url: string): ReactNode => (
+    <Inline gap={2} key={label}>
+      <Text slot="label" tone="faint">{label}</Text>
+      <Grow><Text slot="label" mono truncate>{url}</Text></Grow>
+      <Btn variant="outline" size="sm" onClick={() => copy(url)}>复制</Btn>
+    </Inline>
+  );
+
   return (
-    <div className="gitlab-code-btn" ref={wrapRef}>
+    <div ref={wrapRef}>
       <Btn variant="solid" tone="brand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>Code ▾
       </Btn>
-      {open ? (
-        <div className="gitlab-code-menu" role="dialog" aria-label="克隆与下载">
-          {project.http_url_to_repo ? (
-            <div className="gitlab-code-row">
-              <span className="gitlab-code-label">克隆（HTTPS）</span>
-              <code>{project.http_url_to_repo}</code>
-              <Btn variant="outline" onClick={() => copy(project.http_url_to_repo)}>复制</Btn>
-            </div>
-          ) : null}
-          {project.ssh_url_to_repo ? (
-            <div className="gitlab-code-row">
-              <span className="gitlab-code-label">克隆（SSH）</span>
-              <code>{project.ssh_url_to_repo}</code>
-              <Btn variant="outline" onClick={() => copy(project.ssh_url_to_repo)}>复制</Btn>
-            </div>
-          ) : null}
-          <Btn variant="outline" disabled={busy} onClick={download}><IconDownload />{busy ? "下载中…" : `下载 ZIP（${project.default_branch || "默认分支"}）`}</Btn>
-        </div>
-      ) : null}
+      <Popover
+        open={open}
+        onClose={() => setOpen(false)}
+        anchor={wrapRef.current ?? undefined}
+        align="center"
+        label="克隆与下载"
+      >
+        <Stack gap={2}>
+          {project.http_url_to_repo ? cloneRow("克隆（HTTPS）", project.http_url_to_repo) : null}
+          {project.ssh_url_to_repo ? cloneRow("克隆（SSH）", project.ssh_url_to_repo) : null}
+          <Btn variant="outline" block disabled={busy} icon={<IconDownload size="sm" />} onClick={download}>
+            {busy ? "下载中…" : `下载 ZIP（${project.default_branch || "默认分支"}）`}
+          </Btn>
+        </Stack>
+      </Popover>
     </div>
   );
 }
@@ -1417,60 +1553,64 @@ function ProjectView({ projectId, initialTab, initialIid = null, onBack }: {
   const detail = useGitlabQuery(`project:${projectId}`, () => gitlabProject(projectId));
   const project = detail.data;
 
+  const tabs: Array<[ProjectTab, string, string]> = [
+    ["code", "代码", ""],
+    ["issues", "Issue", `${project?.open_issues_count ?? 0}`],
+    ["mrs", "合并请求", ""],
+    ["pipelines", "流水线", ""],
+  ];
+
   if (detail.loading) {
-    return <p className="dim gitlab-hint">读取项目…</p>;
+    return (
+      <Stack gap={2}>
+        <Card flush><LoadingBlock rows={3} /></Card>
+      </Stack>
+    );
   }
   if (detail.error || !project) {
     return (
-      <>
-        <p className="gitlab-error">{detail.error ?? "项目不存在或无权访问"}</p>
-        <Btn variant="outline" onClick={onBack}>返回项目列表</Btn>
-      </>
+      <Stack gap={2}>
+        <Banner tone="error" action={<Btn variant="outline" size="sm" onClick={onBack}>返回项目列表</Btn>}>
+          {detail.error ?? "项目不存在或无权访问"}
+        </Banner>
+      </Stack>
     );
   }
 
-  const tabs: Array<[ProjectTab, string]> = [
-    ["code", "代码"],
-    ["issues", `Issue（${project.open_issues_count ?? 0}）`],
-    ["mrs", "合并请求"],
-    ["pipelines", "流水线"],
-  ];
-
   return (
-    <>
-      {/* 返回入口放左上角（与进入项目后的浏览动线一致），标题与操作分列其后 */}
-      <div className="page-head gitlab-project-head">
-        <div className="gitlab-project-title">
-          <Btn variant="ghost" onClick={onBack}>← 项目列表</Btn>
-          <div>
-            <h1>{project.name}</h1>
-            <div className="page-head-meta">
-              {project.path_with_namespace} · {project.visibility === "private" ? "私有" : project.visibility === "internal" ? "内部" : "公开"}
-              {project.archived ? " · 已归档" : ""}
-            </div>
-          </div>
-        </div>
-        <div className="page-head-actions">
-          <Btn variant="ghost" onClick={() => detail.reload()} disabled={detail.loading}><IconRefresh />刷新
-          </Btn>
-          <CodeButton project={project} />
-          <Btn variant="outline" onClick={() => openExternal(project.web_url)}><IconExternal />浏览器打开
-          </Btn>
-        </div>
-      </div>
-      {project.description ? <p className="dim gitlab-desc">{project.description}</p> : null}
-      <div className="segmented gitlab-tabs">
-        {tabs.map(([v, label]) => (
-          <button key={v} className={"seg" + (tab === v ? " is-active" : "")} onClick={() => setTab(v)}>{label}</button>
-        ))}
-        <span style={{ flex: 1 }} />
-        <CollectStar
-          atom={{ kind: "gitlab-proj", key: enc(project.id, project.name_with_namespace) }}
-          title={project.name_with_namespace}
+    <Stack gap={2}>
+      {/* 返回入口在页头（与进入项目后的浏览动线一致），标题与操作分列其后 */}
+      <OGPageHead
+        onBack={onBack}
+        title={project.name}
+        sub={
+          <>
+            {project.path_with_namespace} · {project.visibility === "private" ? "私有" : project.visibility === "internal" ? "内部" : "公开"}
+            {project.archived ? " · 已归档" : ""}
+          </>
+        }
+        actions={
+          <Inline gap={2} wrap>
+            <Btn variant="ghost" onClick={() => detail.reload()} disabled={detail.loading} icon={<IconRefresh size="sm" />}>刷新</Btn>
+            <CodeButton project={project} />
+            <Btn variant="outline" onClick={() => openExternal(project.web_url)} icon={<IconExternal size="sm" />}>浏览器打开</Btn>
+            <CollectStar
+              atom={{ kind: "gitlab-proj", key: enc(project.id, project.name_with_namespace) }}
+              title={project.name_with_namespace}
+            />
+          </Inline>
+        }
+      />
+      {project.description ? <Stack pad={2}><Text slot="label" tone="quiet" clamp={2}>{project.description}</Text></Stack> : null}
+      <Inline gap={2} wrap>
+        <Segment
+          value={tab}
+          onChange={(value) => setTab(value as ProjectTab)}
+          options={tabs.map(([v, label, count]) => ({ value: v, label: count ? `${label}（${count}）` : label }))}
         />
-      </div>
+      </Inline>
       {project.empty_repo ? (
-        <p className="dim gitlab-hint">这是一个空仓库（还没有任何提交）。</p>
+        <Text as="p" tone="faint">这是一个空仓库（还没有任何提交）。</Text>
       ) : (
         <>
           {tab === "code" ? <CodeTab projectId={project.id} defaultBranch={project.default_branch} webUrl={project.web_url} /> : null}
@@ -1479,7 +1619,7 @@ function ProjectView({ projectId, initialTab, initialIid = null, onBack }: {
           {tab === "pipelines" ? <PipelineTab projectId={project.id} defaultBranch={project.default_branch} /> : null}
         </>
       )}
-    </>
+    </Stack>
   );
 }
 

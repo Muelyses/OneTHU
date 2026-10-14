@@ -1,5 +1,3 @@
-import { Select } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
 /**
  * 云盘页 —— 清华云盘（Seafile 定制版，Web API 直连）。
  *
@@ -10,6 +8,15 @@ import { Btn } from "@onethu/gui";
  * 2026-10-10 补充：常见格式预览（复用 FilePreview，云盘字节源）、批量下载/删除
  * （批量选择模式）、新建资料库/文件夹、移动文件（跨库目录树选择器）。
  * 删除一律 confirmDanger（alert 级）；新建/移动走普通输入弹层（promptText）。
+ *
+ * 2026-10-14 OneGUI 换血：资料库格（Grid+Card flush interactive+Row）、文件/批量/搜索行
+ * （Card flush + List divided + Row：目录=IconFolder accent、文件=IconFile content-2 内容语义）、
+ * 移动弹层（OG Modal，原生 select 保留——WKWebView 系统绘制实录）、库内搜索（OG Input type=search
+ * + Spinner/Tag 状态）、配额条（Progress）、空态（EmptyState）全部来自 @onethu/gui。
+ * 同步删除 .cloud-onboard/.cloud-toolbar/.cloud-crumb 系列 / .cloud-quota 系列 / .cloud-grid / .cloud-repo 系列 /
+ * .cloud-search 系列 /.cloud-error/.cloud-spinner(+@keyframes cloud-spin)/.cloud-actions/
+ * .cloud-search-result-head/.cloud-row.skeleton-row 私有 CSS；
+ * .cloud-list/.cloud-row/.cloud-kind/.cloud-name/.cloud-meta 仍被 GitLabPage 共用，待其迁移再烧。
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
@@ -22,10 +29,14 @@ import {
   type SeafileEntry, type SeafileRepo,
 } from "../state/seafile.js";
 import { ConnectGate } from "../components/ConnectGate.js";
-import { IconRefresh, IconUpload, IconSearch, IconChevron, IconExternal, IconFolderPlus } from "../components/Icons.js";
 import { openFilePreview } from "../components/FilePreview.js";
 import { showToast } from "../state/toast.js";
 import { confirmDanger, promptText } from "../lib/confirm.js";
+import {
+  Breadcrumb, Btn, Card, Checkbox, EmptyState, Grid, Grow, IconChevron, IconExternal, IconFile,
+  IconFolder, IconFolderPlus, IconRefresh, IconSearch, IconUpload, Inline, Input, List, LoadingBlock,
+  Modal, Progress, Row, Select, Spacer, Spinner, Stack, Surface, Tag, Text,
+} from "@onethu/gui";
 
 /** 字节数 → 人类可读 */
 function fmtSize(b: number): string {
@@ -88,6 +99,13 @@ async function deleteEntry(repo: SeafileRepo, path: string, e: SeafileEntry): Pr
   return true;
 }
 
+/** 行首类型图标：内容语义走 OG 语义令牌（目录=accent、文件=content-2，靠库里的字色工具类） */
+function kindIcon(kind: SeafileEntry["kind"]): ReactNode {
+  return kind === "dir"
+    ? <IconFolder size="sm" className="og-text--t-brand" title="文件夹" />
+    : <IconFile size="sm" title="文件" />;
+}
+
 /* ── 移动弹层：库下拉 + 目录树逐层展开 ─────────────────────────── */
 
 function MoveModal({
@@ -135,48 +153,49 @@ function MoveModal({
   const isSamePlace = repoId === srcRepoId && path === srcDir;
 
   return (
-    <div
-      style={{ position: "fixed", inset: 0, zIndex: 1100, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
-      onClick={onClose}
+    <Modal
+      open
+      onClose={onClose}
+      title={`移动「${entry.name}」到…`}
+      foot={
+        <>
+          <Btn variant="outline" onClick={onClose}>取消</Btn>
+          <Btn variant="outline" disabled={selfNest || isSamePlace} onClick={() => onDone(repoId, path)}>
+            移动到这里{isSamePlace ? "（已在原位）" : ""}
+          </Btn>
+        </>
+      }
     >
-      <div
-        style={{ background: "#fff", color: "#1e1432", borderRadius: 16, padding: 18, width: "min(460px, 94vw)", maxHeight: "80dvh", overflowY: "auto" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-          <b style={{ fontSize: 15 }}>移动「{entry.name}」到…</b>
-          <span style={{ flex: 1 }} />
-          <Btn variant="outline" onClick={onClose} aria-label="关闭">✕</Btn>
-        </div>
-        <Select value={repoId} onChange={(value) => { setRepoId(value); setPath("/"); }}>{repos.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</Select>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
-          <b className="cloud-crumb-item" onClick={() => setPath("/")}>根目录</b>
-          {crumbs.map((c, i) => (
-            <span key={i} className="cloud-crumb-item" onClick={() => setPath("/" + crumbs.slice(0, i + 1).join("/"))}>
-              <IconChevron style={{ width: 12, height: 12 }} />{c}
-            </span>
-          ))}
-        </div>
+      <Stack gap={3}>
+        <Select value={repoId} aria-label="目标资料库" onChange={(value) => { setRepoId(value); setPath("/"); }}>
+          {repos.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+        </Select>
+        <Breadcrumb
+          items={[
+            { label: "根目录", onClick: () => setPath("/") },
+            ...crumbs.map((c, i) => ({ label: c, onClick: () => setPath("/" + crumbs.slice(0, i + 1).join("/")) })),
+          ]}
+          separator={<IconChevron size="sm" />}
+        />
+        {error && <Text as="p" slot="micro" tone="error">{error}</Text>}
         {/* WKWebView 合成层怪病（v4 实录：DOM 正确、字面样式仍全白）——目标文件夹
             改用原生 select（系统绘制）：选中即进入该层，面包屑点返回上级。 */}
-        {error && <p className="cloud-error" style={{ margin: "0 0 8px" }}>{error}</p>}
-        <Select value="" onChange={(value) => {
+        <Select value="" aria-label="目标层文件夹" onChange={(value) => {
             const v = value;
             if (v) setPath(`${path === "/" ? "" : path}/${v}`);
-          }}><option value="">
+          }}>
+          <option value="">
             {loading
               ? "正在读取文件夹…"
               : dirs.length
                 ? `进入子文件夹（当前层 ${dirs.length} 个）▸`
                 : "当前层没有子文件夹——可直接点「移动到这里」"}
-          </option>{dirs.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}</Select>
-        {selfNest && <p className="cloud-error" style={{ margin: "8px 0 0" }}>不能移动到自身内部的文件夹</p>}
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-          <Btn variant="outline" onClick={onClose}>取消</Btn>
-          <Btn variant="outline" disabled={selfNest || isSamePlace} onClick={() => onDone(repoId, path)}>移动到这里{isSamePlace ? "（已在原位）" : ""}</Btn>
-        </div>
-      </div>
-    </div>
+          </option>
+          {dirs.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
+        </Select>
+        {selfNest && <Text as="p" slot="micro" tone="error">不能移动到自身内部的文件夹</Text>}
+      </Stack>
+    </Modal>
   );
 }
 
@@ -335,22 +354,23 @@ export default function CloudPage(): ReactNode {
   /* ── 未配置：引导页 ── */
   if (!configured) {
     return (
-      <div className="page">
-        <h2>清华云盘</h2>
-        <div className="cloud-onboard">
-          <p>连接后可浏览与下载清华云盘文件。</p>
-          <p>首次连接会在应用内打开云盘页面。</p>
-          <p>登录后读取现有访问口令，不会自动生成或重置。</p>
-          <div className="row" style={{ gap: 8, marginTop: 8 }}>
-            <Btn variant="outline" onClick={() => setBindOpen(true)}>连接云盘
-            </Btn>
-          </div>
-          <ConnectGate need="cloud" open={bindOpen} onClose={() => setBindOpen(false)} />
-          <p className="dim" style={{ fontSize: "var(--text-xs)" }}>
-            访问口令仅保存在本机，用于连接清华云盘。
-          </p>
+      <Stack gap={3}>
+        <Text slot="title" as="h2">清华云盘</Text>
+        <div style={{ maxWidth: "520px" }}>
+          <Card>
+            <Stack gap={2}>
+              <Text as="p">连接后可浏览与下载清华云盘文件。</Text>
+              <Text as="p">首次连接会在应用内打开云盘页面。</Text>
+              <Text as="p">登录后读取现有访问口令，不会自动生成或重置。</Text>
+              <Inline gap={2}>
+                <Btn variant="outline" onClick={() => setBindOpen(true)}>连接云盘</Btn>
+              </Inline>
+              <ConnectGate need="cloud" open={bindOpen} onClose={() => setBindOpen(false)} />
+              <Text as="p" slot="micro" tone="faint">访问口令仅保存在本机，用于连接清华云盘。</Text>
+            </Stack>
+          </Card>
         </div>
-      </div>
+      </Stack>
     );
   }
 
@@ -360,19 +380,19 @@ export default function CloudPage(): ReactNode {
     const crumbs = path === "/" ? [] : path.slice(1).split("/");
     const allSelected = entries.length > 0 && entries.every((e) => selSet.has(e.name));
     return (
-      <div className="page">
-        <div className="cloud-toolbar">
+      <Stack gap={2}>
+        <Inline gap={2} wrap>
           <Btn variant="outline" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>← 资料库</Btn>
-          <div className="cloud-crumb">
-            <b onClick={() => { setPath("/"); setSearchHits(null); setSearchText(""); }}>{repo.name}</b>
-            {crumbs.map((c, i) => (
-              <span key={i} className="cloud-crumb-item" onClick={() => { setPath("/" + crumbs.slice(0, i + 1).join("/")); setSearchHits(null); setSearchText(""); }}>
-                <IconChevron style={{ width: 12, height: 12 }} />
-                {c}
-              </span>
-            ))}
-          </div>
-          <Btn variant="outline" disabled={batchBusy} titleAttr="新建文件夹" onClick={async () => {
+          <Grow>
+            <Breadcrumb
+              items={[
+                { label: repo.name, onClick: () => { setPath("/"); setSearchHits(null); setSearchText(""); } },
+                ...crumbs.map((c, i) => ({ label: c, onClick: () => { setPath("/" + crumbs.slice(0, i + 1).join("/")); setSearchHits(null); setSearchText(""); } })),
+              ]}
+              separator={<IconChevron size="sm" />}
+            />
+          </Grow>
+          <Btn variant="outline" disabled={batchBusy} icon={<IconFolderPlus size="sm" />} titleAttr="新建文件夹" onClick={async () => {
               const name = await promptText("新建文件夹", { placeholder: "文件夹名称" });
               if (!name) return;
               try {
@@ -382,7 +402,7 @@ export default function CloudPage(): ReactNode {
               } catch (e) {
                 showToast(`创建失败：${String(e).slice(0, 80)}`);
               }
-            }}><IconFolderPlus style={{ width: 14, height: 14 }} />新建文件夹
+            }}>新建文件夹
           </Btn>
           <Btn variant="outline" disabled={busy || batchBusy} onClick={() => {
               if (selMode) { exitSel(); return; }
@@ -390,7 +410,7 @@ export default function CloudPage(): ReactNode {
               setSearchText("");
               setSelMode(true);
             }}>{selMode ? "退出批量" : "批量"}</Btn>
-          <Btn variant="outline" disabled={busy || selMode} onClick={async () => {
+          <Btn variant="outline" disabled={busy || selMode} icon={<IconUpload size="sm" />} onClick={async () => {
               const r = await invoke<string[]>("seafile_pick_upload", {
                 token: getSeafileToken(), repoId: repo.id, parentDir: path,
               }).catch((e) => { showToast(`上传失败：${String(e).slice(0, 80)}`); return null; });
@@ -399,150 +419,154 @@ export default function CloudPage(): ReactNode {
                 refreshRepos().catch(() => undefined);
                 refreshDir(repo.id, path).catch(() => undefined); // 立刻刷当前目录（缓存失效）
               }
-            }}><IconUpload style={{ width: 14, height: 14 }} />上传
+            }}>上传
           </Btn>
-        </div>
+        </Inline>
 
         {!selMode && (
-          <div className={`cloud-search${searching ? " searching" : ""}`}>
-            <span className="cloud-search-icon">
-              {searching ? <span className="cloud-spinner" aria-label="搜索中" /> : <IconSearch style={{ width: 14, height: 14 }} />}
-            </span>
-            <input
-              placeholder={`在「${repo.name}」内搜文件名（回车搜索）`}
-              value={searchText}
-              disabled={searching}
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") void runSearch(); }}
-            />
+          <Inline gap={2} wrap>
+            <div style={{ flex: "1 1 auto", minWidth: 0, maxWidth: "min(520px, 100%)" }}>
+              <Input
+                type="search"
+                size="md"
+                icon={searching ? <Spinner size="sm" /> : <IconSearch size="sm" />}
+                placeholder={`在「${repo.name}」内搜文件名（回车搜索）`}
+                aria-label={`在「${repo.name}」内搜文件名`}
+                value={searchText}
+                disabled={searching}
+                onChange={setSearchText}
+                onKeyDown={(e) => { if (e.key === "Enter") void runSearch(); }}
+              />
+            </div>
             {!searching && (searchHits || searchMeta) && (
               <Btn variant="outline" onClick={() => { searchSeqRef.current++; setSearchHits(null); setSearchMeta(null); setSearchText(""); }}>退出搜索</Btn>
             )}
-            {searching && <span className="cloud-search-status">搜索中…</span>}
-          </div>
+            {searching && <Tag tone="brand">搜索中…</Tag>}
+          </Inline>
         )}
 
-        {dir.loading && <p className="dim" style={{ padding: "16px 12px" }}>读取中…</p>}
-        {dir.error && <p className="cloud-error">{dir.error}</p>}
+        {dir.loading && <Text as="p" tone="faint">读取中…</Text>}
+        {dir.error && <Text as="p" slot="micro" tone="error">{dir.error}</Text>}
 
         {selMode ? (
-          <div className="cloud-list" role="listbox" aria-label="批量选择">
-            {entries.map((e) => {
-              const toggle = (): void => setSelSet((s) => { const n = new Set(s); if (n.has(e.name)) n.delete(e.name); else n.add(e.name); return n; });
-              return (
-                <div
-                  key={e.name}
-                  className="cloud-row"
-                  role="button"
-                  tabIndex={0}
-                  onClick={toggle}
-                  onKeyDown={(ev) => { if (ev.key === "Enter") toggle(); }}
-                >
-                  <input
-                    type="checkbox"
-                    style={{ width: 16, height: 16, flex: "none" }}
-                    checked={selSet.has(e.name)}
-                    onChange={() => undefined}
-                    onClick={(ev) => ev.stopPropagation()}
+          <Card flush role="listbox" aria-label="批量选择">
+            <List divided>
+              {entries.map((e) => {
+                const toggle = (): void => setSelSet((s) => { const n = new Set(s); if (n.has(e.name)) n.delete(e.name); else n.add(e.name); return n; });
+                return (
+                  <Row
+                    key={e.name}
+                    flush
+                    selected={selSet.has(e.name)}
+                    role="button"
+                    onClick={toggle}
+                    onKeyDown={(ev) => { if (ev.key === "Enter") toggle(); }}
+                    leading={<Checkbox checked={selSet.has(e.name)} onChange={() => undefined} />}
+                    title={e.name}
+                    trailing={<>{e.kind === "file" ? fmtSize(e.size) : "文件夹"}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}</>}
                   />
-                  <span className={`cloud-kind ${e.kind}`} />
-                  <span className="cloud-name">{e.name}</span>
-                  <span className="cloud-meta">{e.kind === "file" ? fmtSize(e.size) : "文件夹"}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}</span>
-                </div>
-              );
-            })}
-            {entries.length === 0 && !dir.loading && <p className="dim" style={{ padding: 16 }}>空目录</p>}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 0", position: "sticky", bottom: 0, background: "var(--bg, #fff)", borderTop: "1px solid var(--border-soft, rgba(127,127,127,.2))" }}>
-              <Btn variant="outline" onClick={() => setSelSet(allSelected ? new Set() : new Set(entries.map((x) => x.name)))}>{allSelected ? "取消全选" : "全选"}</Btn>
-              <span className="dim" style={{ alignSelf: "center", fontSize: 13 }}>已选 {selSet.size} 项</span>
-              <span style={{ flex: 1 }} />
-              <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDownload()}>{batchBusy ? "处理中…" : `下载（${selSet.size}）`}</Btn>
-              <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDelete()}>删除（{selSet.size}）
-              </Btn>
+                );
+              })}
+            </List>
+            {entries.length === 0 && !dir.loading && <EmptyState title="空目录" />}
+            <div style={{ position: "sticky", bottom: 0 }}>
+              <Surface radius="none">
+                <Inline gap={2} wrap>
+                  <Btn variant="outline" onClick={() => setSelSet(allSelected ? new Set() : new Set(entries.map((x) => x.name)))}>{allSelected ? "取消全选" : "全选"}</Btn>
+                  <Text slot="label" tone="faint">已选 {selSet.size} 项</Text>
+                  <Spacer />
+                  <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDownload()}>{batchBusy ? "处理中…" : `下载（${selSet.size}）`}</Btn>
+                  <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDelete()}>删除（{selSet.size}）</Btn>
+                </Inline>
+              </Surface>
             </div>
-          </div>
+          </Card>
         ) : searching ? (
-          <div className="cloud-list" aria-busy="true">
-            <div className="cloud-row skeleton-row"><span className="cloud-kind file" /><span className="cloud-name"><span className="skeleton" style={{ width: "38%" }} /></span></div>
-            <div className="cloud-row skeleton-row"><span className="cloud-kind file" /><span className="cloud-name"><span className="skeleton" style={{ width: "52%" }} /></span></div>
-            <div className="cloud-row skeleton-row"><span className="cloud-kind file" /><span className="cloud-name"><span className="skeleton" style={{ width: "31%" }} /></span></div>
-            <div className="cloud-row skeleton-row"><span className="cloud-kind file" /><span className="cloud-name"><span className="skeleton" style={{ width: "44%" }} /></span></div>
-          </div>
+          <Card flush>
+            <LoadingBlock rows={4} />
+          </Card>
         ) : searchHits !== null ? (
-          <div>
+          <Stack gap={2}>
             {searchMeta && (
-              <div className="cloud-search-result-head">
-                <b>“{searchMeta.q}”</b>
-                <span>{searchHits.length} 个结果 · {(searchMeta.ms / 1000).toFixed(1)}s</span>
-              </div>
+              <Inline vAlign="baseline" gap={2} wrap>
+                <Text slot="subtitle">“{searchMeta.q}”</Text>
+                <Text slot="micro" tone="faint">{searchHits.length} 个结果 · {(searchMeta.ms / 1000).toFixed(1)}s</Text>
+              </Inline>
             )}
-            <div className="cloud-list">
-              {searchHits.length === 0 && searchMeta && <p className="dim" style={{ padding: 16 }}>没有匹配「{searchMeta.q}」的文件</p>}
-              {searchHits.map((f, i) => (
-                <div className="cloud-row" key={i}>
-                  <span className={`cloud-kind ${f.kind}`} />
-                  <span className="cloud-name">{f.name}</span>
-                  <span className="cloud-meta">{fmtSize(f.size)}{f.mtime ? ` · ${fmtMtime(f.mtime)}` : ""}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+            {searchHits.length === 0 && searchMeta ? (
+              <EmptyState title={`没有匹配「${searchMeta.q}」的文件`} />
+            ) : (
+              <Card flush>
+                <List divided>
+                  {searchHits.map((f, i) => (
+                    <Row
+                      key={i}
+                      flush
+                      leading={kindIcon(f.kind)}
+                      title={f.name}
+                      trailing={<>{fmtSize(f.size)}{f.mtime ? ` · ${fmtMtime(f.mtime)}` : ""}</>}
+                    />
+                  ))}
+                </List>
+              </Card>
+            )}
+          </Stack>
         ) : (
-          <div className="cloud-list" role="listbox" aria-label="云盘文件">
-            {entries.length === 0 && !dir.loading && <p className="dim" style={{ padding: 16 }}>空目录</p>}
-            {entries.map((e) => (
-              <div
-                key={e.name}
-                className="cloud-row"
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  if (e.kind === "dir") setPath(`${path === "/" ? "" : path}/${e.name}`);
-                  else previewCloudFile(repo.id, `${path === "/" ? "" : path}/${e.name}`, e.name);
-                }}
-                onKeyDown={(ev) => {
-                  if (ev.key !== "Enter") return;
-                  if (e.kind === "dir") setPath(`${path === "/" ? "" : path}/${e.name}`);
-                  else previewCloudFile(repo.id, `${path === "/" ? "" : path}/${e.name}`, e.name);
-                }}
-              >
-                <span className={`cloud-kind ${e.kind}`} />
-                <span className="cloud-name">{e.name}</span>
-                <span className="cloud-meta">{e.kind === "file" ? fmtSize(e.size) : ""}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}</span>
-                <span className="cloud-actions">
-                  <Btn variant="outline" titleAttr="移动到其他位置" onClick={(ev) => { ev.stopPropagation(); setMoving(e); }}>移动
-                  </Btn>
-                  <Btn variant="outline" titleAttr={e.kind === "dir" ? "删除文件夹（含全部内容）" : "删除文件"} onClick={(ev) => {
-                      ev.stopPropagation();
-                      void deleteEntry(repo, `${path === "/" ? "" : path}/${e.name}`, e).then((ok) => {
-                        if (!ok) return;
-                        refreshDir(repo.id, path).catch(() => undefined);
-                        refreshRepos().catch(() => undefined);
-                      }).catch((err) => showToast(`删除失败：${String(err).slice(0, 80)}`));
-                    }}>删除
-                  </Btn>
-                  {e.kind === "file" && (
+          <Card flush role="listbox" aria-label="云盘文件">
+            <List divided>
+              {entries.map((e) => (
+                <Row
+                  key={e.name}
+                  flush
+                  role="button"
+                  onClick={() => {
+                    if (e.kind === "dir") setPath(`${path === "/" ? "" : path}/${e.name}`);
+                    else previewCloudFile(repo.id, `${path === "/" ? "" : path}/${e.name}`, e.name);
+                  }}
+                  onKeyDown={(ev) => {
+                    if (ev.key !== "Enter") return;
+                    if (e.kind === "dir") setPath(`${path === "/" ? "" : path}/${e.name}`);
+                    else previewCloudFile(repo.id, `${path === "/" ? "" : path}/${e.name}`, e.name);
+                  }}
+                  leading={kindIcon(e.kind)}
+                  title={e.name}
+                  trailing={
                     <>
-                      <Btn variant="outline" titleAttr="下载到 Downloads" onClick={(ev) => { ev.stopPropagation(); seafileDownload(repo.id, `${path === "/" ? "" : path}/${e.name}`).catch((err) => showToast(String(err).slice(0, 90))); }}>下载
-                      </Btn>
-                      <Btn variant="outline" titleAttr="生成分享链接" disabled={sharing === e.name} onClick={(ev) => {
+                      {e.kind === "file" ? fmtSize(e.size) : ""}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}
+                      <Btn size="sm" variant="outline" titleAttr="移动到其他位置" onClick={(ev) => { ev.stopPropagation(); setMoving(e); }}>移动</Btn>
+                      <Btn size="sm" variant="outline" titleAttr={e.kind === "dir" ? "删除文件夹（含全部内容）" : "删除文件"} onClick={(ev) => {
                           ev.stopPropagation();
-                          setSharing(e.name);
-                          seafileShare(repo.id, `${path === "/" ? "" : path}/${e.name}`, 0)
-                            .then(async (link) => {
-                              await navigator.clipboard.writeText(link).catch(() => undefined);
-                              showToast(`分享链接已复制（7 天内有效设置请用网页端）`);
-                              openExternal(link).catch(() => undefined);
-                            })
-                            .catch((err) => showToast(String(err).slice(0, 90)))
-                            .finally(() => setSharing(null));
-                        }}>{sharing === e.name ? "…" : "分享"}</Btn>
+                          void deleteEntry(repo, `${path === "/" ? "" : path}/${e.name}`, e).then((ok) => {
+                            if (!ok) return;
+                            refreshDir(repo.id, path).catch(() => undefined);
+                            refreshRepos().catch(() => undefined);
+                          }).catch((err) => showToast(`删除失败：${String(err).slice(0, 80)}`));
+                        }}>删除
+                      </Btn>
+                      {e.kind === "file" && (
+                        <>
+                          <Btn size="sm" variant="outline" titleAttr="下载到 Downloads" onClick={(ev) => { ev.stopPropagation(); seafileDownload(repo.id, `${path === "/" ? "" : path}/${e.name}`).catch((err) => showToast(String(err).slice(0, 90))); }}>下载</Btn>
+                          <Btn size="sm" variant="outline" titleAttr="生成分享链接" disabled={sharing === e.name} onClick={(ev) => {
+                              ev.stopPropagation();
+                              setSharing(e.name);
+                              seafileShare(repo.id, `${path === "/" ? "" : path}/${e.name}`, 0)
+                                .then(async (link) => {
+                                  await navigator.clipboard.writeText(link).catch(() => undefined);
+                                  showToast(`分享链接已复制（7 天内有效设置请用网页端）`);
+                                  openExternal(link).catch(() => undefined);
+                                })
+                                .catch((err) => showToast(String(err).slice(0, 90)))
+                                .finally(() => setSharing(null));
+                            }}>{sharing === e.name ? "…" : "分享"}</Btn>
+                        </>
+                      )}
                     </>
-                  )}
-                </span>
-              </div>
-            ))}
-          </div>
+                  }
+                />
+              ))}
+            </List>
+            {entries.length === 0 && !dir.loading && <EmptyState title="空目录" />}
+          </Card>
         )}
         {moving && (
           <MoveModal
@@ -555,68 +579,79 @@ export default function CloudPage(): ReactNode {
             onDone={(dst, dstDir) => void doMove(dst, dstDir)}
           />
         )}
-      </div>
+      </Stack>
     );
   }
 
   /* ── 资料库网格 ── */
   return (
-    <div className="page">
-      <div className="cloud-toolbar">
-        <h2 style={{ margin: 0 }}>清华云盘</h2>
-        <span className="dim" style={{ fontSize: "var(--text-xs)" }}>
-          {account ? `${account.name || account.email} · ${fmtSize(account.usage)} / ${fmtSize(account.total)}` : busy ? "连接中…" : ""}
-        </span>
-        <span style={{ flex: 1 }} />
-        <Btn variant="outline" disabled={busy} titleAttr="新建资料库" onClick={async () => {
-            const name = await promptText("新建资料库", { placeholder: "资料库名称" });
-            if (!name) return;
-            try {
-              await invoke("seafile_create_repo", { token: getSeafileToken(), name });
-              showToast(`已创建资料库「${name}」`);
-              refreshRepos().catch(() => undefined);
-            } catch (e) {
-              showToast(`创建失败：${String(e).slice(0, 80)}`);
-            }
-          }}><IconFolderPlus style={{ width: 14, height: 14 }} />新建资料库
-        </Btn>
-        <Btn variant="outline" disabled={busy} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}><IconRefresh style={{ width: 14, height: 14 }} />刷新
-        </Btn>
-        <Btn variant="outline" onClick={async () => {
-            const ok = await confirmDanger(
-              "断开清华云盘？\n\n⚠️ 几乎所有高级与智能功能都依赖云盘，断开后将失去：\n· 跨设备记忆与主对话同步（AI 记忆只留本机）\n· IM 附件转存云盘（微信/飞书收文件仅可查看）\n· 云盘页浏览/下载与文件归档\n· 记忆库与对话历史的多端漫游\n\n确定要断开吗？（随时可在云盘页一键重连）",
-              { title: "断开云盘", confirmText: "确认断开" },
-            );
-            if (!ok) return;
-            await clearSeafileToken();
-            showToast("已断开云盘（记忆/附件转为本地模式，随时可重连）");
-          }}><IconExternal style={{ width: 14, height: 14 }} />断开
-        </Btn>
-      </div>
+    <Stack gap={3}>
+      <Inline gap={2} wrap>
+        <Text slot="title" as="h2">清华云盘</Text>
+        {account ? (
+          <Text slot="micro" tone="faint">
+            {account.name || account.email} · {fmtSize(account.usage)} / {fmtSize(account.total)}
+          </Text>
+        ) : busy ? (
+          <Text slot="micro" tone="faint">连接中…</Text>
+        ) : null}
+        <Spacer />
+        <Inline gap={2}>
+          <Btn variant="outline" disabled={busy} icon={<IconFolderPlus size="sm" />} titleAttr="新建资料库" onClick={async () => {
+              const name = await promptText("新建资料库", { placeholder: "资料库名称" });
+              if (!name) return;
+              try {
+                await invoke("seafile_create_repo", { token: getSeafileToken(), name });
+                showToast(`已创建资料库「${name}」`);
+                refreshRepos().catch(() => undefined);
+              } catch (e) {
+                showToast(`创建失败：${String(e).slice(0, 80)}`);
+              }
+            }}>新建资料库
+          </Btn>
+          <Btn variant="outline" disabled={busy} icon={<IconRefresh size="sm" />} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}>刷新
+          </Btn>
+          <Btn variant="outline" icon={<IconExternal size="sm" />} onClick={async () => {
+              const ok = await confirmDanger(
+                "断开清华云盘？\n\n⚠️ 几乎所有高级与智能功能都依赖云盘，断开后将失去：\n· 跨设备记忆与主对话同步（AI 记忆只留本机）\n· IM 附件转存云盘（微信/飞书收文件仅可查看）\n· 云盘页浏览/下载与文件归档\n· 记忆库与对话历史的多端漫游\n\n确定要断开吗？（随时可在云盘页一键重连）",
+                { title: "断开云盘", confirmText: "确认断开" },
+              );
+              if (!ok) return;
+              await clearSeafileToken();
+              showToast("已断开云盘（记忆/附件转为本地模式，随时可重连）");
+            }}>断开
+          </Btn>
+        </Inline>
+      </Inline>
       {account && (
-        <div className="cloud-quota">
-          <div className="cloud-quota-bar">
-            <div style={{ width: `${Math.min(100, (account.usage / Math.max(account.total, 1)) * 100)}%` }} />
-          </div>
-        </div>
+        <Progress value={account.usage / Math.max(account.total, 1)} size="sm" />
       )}
-      {lastError && <p className="cloud-error">{lastError}</p>}
-      {busy && <p className="dim" style={{ padding: "12px 12px 0" }}>加载资料库…</p>}
-      <div className="cloud-grid">
-        {repos.map((r) => (
-          <div key={r.id} className="cloud-repo" role="button" tabIndex={0}
-            onClick={() => { setRepo(r); setPath("/"); setSearchHits(null); exitSel(); }}
-            onKeyDown={(ev) => { if (ev.key === "Enter") { setRepo(r); setPath("/"); } }}
-          >
-            <div className="cloud-repo-icon">▤</div>
-            <div className="cloud-repo-body">
-              <b>{r.name}</b>
-              <span className="dim">{fmtSize(r.size)}{r.mtime ? ` · ${fmtMtime(r.mtime)}` : ""}</span>
-            </div>
-          </div>
-        ))}
-        {repos.length === 0 && !busy && <p className="dim" style={{ padding: 16 }}>没有可见的资料库</p>}
-      </div>
-    </div>
+      {lastError && <Text as="p" slot="micro" tone="error">{lastError}</Text>}
+      {busy && <Text as="p" tone="faint">加载资料库…</Text>}
+      {repos.length === 0 && !busy ? (
+        <EmptyState title="没有可见的资料库" />
+      ) : (
+        <Grid min="md">
+          {repos.map((r) => (
+            <Card
+              key={r.id}
+              flush
+              interactive
+              role="button"
+              tabIndex={0}
+              onClick={() => { setRepo(r); setPath("/"); setSearchHits(null); exitSel(); }}
+              onKeyDown={(ev) => { if (ev.key === "Enter") { setRepo(r); setPath("/"); } }}
+            >
+              <Row
+                flush
+                leading={<IconFolder size="lg" className="og-text--t-brand" title="资料库" />}
+                title={r.name}
+                sub={`${fmtSize(r.size)}${r.mtime ? ` · ${fmtMtime(r.mtime)}` : ""}`}
+              />
+            </Card>
+          ))}
+        </Grid>
+      )}
+    </Stack>
   );
 }

@@ -7,20 +7,20 @@
 
 | # | 独立样式源 | 当前 | 目标 |
 |---|---|---:|---:|
-| A | 旧样式表规则（apps/desktop/src/styles） | 2712 | 0 |
+| A | 旧样式表规则（apps/desktop/src/styles） | 2667 | 0 |
 | B | 组件内嵌 CSS（`<style>` 块 / `*_CSS` 模板字符串） | 4 | 0 |
-| C1 | 内联样式（含外观属性 `style={{…}}`） | 651 | 0 |
-| C2 | 内联几何（纯定位/尺寸，迁移后由组件 prop 承担） | 275 | 0 |
-| D | TSX 字面色值（`#rgb`/`rgba()`/`hsl()`） | 442 | 0 |
-| E | 裸控件（`<button|input|select|textarea>`） | 345 | 0 |
+| C1 | 内联样式（含外观属性 `style={{…}}`） | 572 | 0 |
+| C2 | 内联几何（纯定位/尺寸，迁移后由组件 prop 承担） | 271 | 0 |
+| D | TSX 字面色值（`#rgb`/`rgba()`/`hsl()`） | 376 | 0 |
+| E | 裸控件（`<button|input|select|textarea>`） | 336 | 0 |
 | F | 运行时注入（createElement(style)/innerHTML/insertRule） | 4 | 0 |
-| | **合计** | **4158** | **0** |
+| | **合计** | **3959** | **0** |
 
-## A. 旧样式表（8 个文件 / 12371 行 / 1509 个类名 / 2712 条规则）
+## A. 旧样式表（8 个文件 / 12130 行 / 1487 个类名 / 2667 条规则）
 
 | 文件 | 行 | 规则 | 类名 | 零引用类名 | 过渡桥 |
 |---|---|---|---|---|---|
-| `apps/desktop/src/styles/global.css` | 8288 | 1993 | 1115 | 107 |  |
+| `apps/desktop/src/styles/global.css` | 8047 | 1948 | 1093 | 105 |  |
 | `apps/desktop/src/styles/explorer-ui.css` | 928 | 201 | 98 | 3 |  |
 | `apps/desktop/src/styles/motion.css` | 887 | 179 | 74 | 4 |  |
 | `apps/desktop/src/styles/explorer-home.css` | 850 | 149 | 86 | 8 |  |
@@ -29,7 +29,7 @@
 | `apps/desktop/src/styles/onegui-bridge.css` | 344 | 13 | 30 | 8 | 是（TEMP） |
 | `apps/desktop/src/styles/glass-levels.css` | 113 | 6 | 0 | 0 |  |
 
-**零引用类名 135 个**（可先删；注意动态拼接类名要人工确认）——前 20：
+**零引用类名 133 个**（可先删；注意动态拼接类名要人工确认）——前 20：
 - apps/desktop/src/styles/explorer-home.css: .home-searchbar
 - apps/desktop/src/styles/explorer-home.css: .home-resume
 - apps/desktop/src/styles/explorer-home.css: .home-resume-chip
@@ -60,18 +60,17 @@
 | `apps/desktop/src/lib/yktBody.ts` | <style> 块 | 10859 |
 | `apps/desktop/src/pages/MailPage.tsx` | <style> 块 | 1116 |
 
-## C1. 内联外观样式 Top 25（共 651 处 / 91 个文件）
+## C1. 内联外观样式 Top 25（共 572 处 / 91 个文件）
 
 | 文件 | 处数 |
 |---|---|
-| `apps/desktop/src/pages/Schedule.tsx` | 67 |
 | `apps/desktop/src/pages/info/LibraryTab.tsx` | 33 |
-| `apps/desktop/src/pages/CloudPage.tsx` | 29 |
-| `apps/desktop/src/pages/info/NetworkTab.tsx` | 24 |
+| `apps/desktop/src/pages/Schedule.tsx` | 21 |
 | `apps/desktop/src/components/ThemePickerModal.tsx` | 20 |
 | `apps/desktop/src/components/boardCards.tsx` | 20 |
 | `apps/desktop/src/pages/info/KongjianTab.tsx` | 19 |
 | `apps/desktop/src/pages/info/LibRoomTab.tsx` | 19 |
+| `apps/desktop/src/pages/info/NetworkTab.tsx` | 19 |
 | `apps/desktop/src/pages/info/NewsTab.tsx` | 19 |
 | `apps/desktop/src/pages/ScheduleAgenda.tsx` | 17 |
 | `apps/desktop/src/pages/info/VenueSportsTab.tsx` | 17 |
@@ -89,19 +88,20 @@
 | `apps/desktop/src/components/GlobalOrb.tsx` | 10 |
 | `apps/desktop/src/components/VoiceSettingsSection.tsx` | 10 |
 | `apps/desktop/src/components/explorer/TabStrip.tsx` | 10 |
+| `apps/desktop/src/components/NotifySettingsSection.tsx` | 9 |
 
-## C2. 内联几何 Top 15（共 275 处）
+## C2. 内联几何 Top 15（共 271 处）
 
 | 文件 | 处数 |
 |---|---|
 | `apps/desktop/src/components/FilePreview.tsx` | 22 |
 | `apps/desktop/src/pages/learn/Forum.tsx` | 16 |
 | `apps/desktop/src/pages/zhjwxk/Courses.tsx` | 14 |
-| `apps/desktop/src/pages/Schedule.tsx` | 12 |
 | `apps/desktop/src/components/ExtHwSettingsSection.tsx` | 10 |
 | `apps/desktop/src/pages/info/NewsTab.tsx` | 10 |
 | `apps/desktop/src/components/HomeWidgets.tsx` | 9 |
 | `apps/desktop/src/pages/Plugins.tsx` | 9 |
+| `apps/desktop/src/pages/Schedule.tsx` | 9 |
 | `apps/desktop/src/components/GlobalOrb.tsx` | 8 |
 | `apps/desktop/src/components/ThemePickerModal.tsx` | 8 |
 | `apps/desktop/src/pages/info/KongjianTab.tsx` | 7 |
@@ -110,12 +110,11 @@
 | `apps/desktop/src/components/SoftwareUpdateSection.tsx` | 6 |
 | `apps/desktop/src/pages/info/LibRoomTab.tsx` | 6 |
 
-## D. 字面色值 Top 25（共 442 处 / 52 个文件）
+## D. 字面色值 Top 25（共 376 处 / 49 个文件）
 
 | 文件 | 处数 |
 |---|---|
 | `apps/desktop/src/state/theme.ts` | 111 |
-| `apps/desktop/src/pages/Schedule.tsx` | 48 |
 | `apps/desktop/src/components/DevPanel.tsx` | 23 |
 | `apps/desktop/src/lib/courseColor.ts` | 18 |
 | `apps/desktop/src/pages/ThubookPage.tsx` | 15 |
@@ -126,8 +125,6 @@
 | `apps/desktop/src/components/OnboardingTourParticles.tsx` | 10 |
 | `apps/desktop/src/lib/textContrast.ts` | 9 |
 | `apps/desktop/src/pages/MailPage.tsx` | 9 |
-| `apps/desktop/src/pages/info/CardTab.tsx` | 9 |
-| `apps/desktop/src/pages/info/NetworkTab.tsx` | 9 |
 | `apps/desktop/src/lib/xklogic.ts` | 8 |
 | `apps/desktop/src/components/ExtHwLoginModal.tsx` | 7 |
 | `apps/desktop/src/state/explorer.ts` | 7 |
@@ -136,11 +133,14 @@
 | `apps/desktop/src/pages/learn/Forum.tsx` | 6 |
 | `apps/desktop/src/components/explorer/TabStrip.tsx` | 5 |
 | `apps/desktop/src/components/explorer/WorkspaceEditor.tsx` | 5 |
-| `apps/desktop/src/pages/CloudPage.tsx` | 5 |
 | `apps/desktop/src/pages/Trace.tsx` | 5 |
+| `apps/desktop/src/pages/info/CardTab.tsx` | 5 |
 | `apps/desktop/src/pages/learn/AssignmentDetailPage.tsx` | 5 |
+| `apps/desktop/src/components/RootErrorBoundary.tsx` | 4 |
+| `apps/desktop/src/components/boardCards.tsx` | 4 |
+| `apps/desktop/src/components/explorer/FolderIconPicker.tsx` | 4 |
 
-## E. 裸控件 Top 25（共 345 处 / 85 个文件）
+## E. 裸控件 Top 25（共 336 处 / 84 个文件）
 
 | 文件 | 处数 |
 |---|---|
@@ -153,7 +153,6 @@
 | `apps/desktop/src/components/explorer/HomeSpheres.tsx` | 10 |
 | `apps/desktop/src/components/explorer/TabDrawer.tsx` | 10 |
 | `apps/desktop/src/pages/GitLabPage.tsx` | 10 |
-| `apps/desktop/src/pages/Schedule.tsx` | 10 |
 | `apps/desktop/src/components/DevPanel.tsx` | 7 |
 | `apps/desktop/src/components/boardCards.tsx` | 7 |
 | `apps/desktop/src/components/explorer/TabStrip.tsx` | 7 |
@@ -169,6 +168,7 @@
 | `apps/desktop/src/pages/MailPage.tsx` | 5 |
 | `apps/desktop/src/pages/info/NetworkTab.tsx` | 5 |
 | `apps/desktop/src/pages/info/ThosPage.tsx` | 5 |
+| `apps/desktop/src/components/explorer/WallpaperLibrary.tsx` | 4 |
 
 ## F. 运行时样式注入（4 个文件）
 

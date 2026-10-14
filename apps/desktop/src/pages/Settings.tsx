@@ -335,7 +335,7 @@ export function SettingsPage() {
               <b>删除已保存的登录信息或修改密码，可能导致 OneTHU 退出登录</b>，需重新登录一次。
             </div>
             {eidMsg ? (
-              <ErrorLine text={eidMsg} style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }} />
+              <ErrorLine text={eidMsg} tone="quiet" />
             ) : null}
           </div>
           <Btn variant="outline" onClick={() => {
@@ -367,7 +367,7 @@ export function SettingsPage() {
               <div className="setting-title">日程云同步 · 已连接</div>
               <div className="setting-desc">
                 {cloud.email} · 通过清华邮箱日历（CalDAV）多设备同步日程；在「日程」页查看与编辑。
-                {calMsg ? <ErrorLine text={calMsg} style={{ marginTop: 6, color: "var(--text-2)" }} /> : null}
+                {calMsg ? <ErrorLine text={calMsg} tone="quiet" /> : null}
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -415,7 +415,7 @@ export function SettingsPage() {
                       .finally(() => setCalBusy(false));
                   }}>{calBusy ? "连接中…" : "保存并验证"}</Btn>
               </div>
-              {calMsg ? <ErrorLine text={calMsg} style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }} /> : null}
+              {calMsg ? <ErrorLine text={calMsg} tone="quiet" /> : null}
             </div>
           </div>
         )}
@@ -439,7 +439,7 @@ export function SettingsPage() {
                 {syscal.lastError ? (
                   <div style={{ marginTop: 6, color: "var(--red, #c04848)" }}>最近一次同步失败：{syscal.lastError}</div>
                 ) : null}
-                {sysMsg ? <ErrorLine text={sysMsg} style={{ marginTop: 6, color: "var(--text-2)" }} /> : null}
+                {sysMsg ? <ErrorLine text={sysMsg} tone="quiet" /> : null}
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -480,7 +480,7 @@ export function SettingsPage() {
               <div className="setting-title">系统日历同步</div>
               <div className="setting-desc">
                 把课表与日程写入系统日历里的专属日历「OneTHU 日程」（不影响你已有的日历）。开启后自动保持最新：添加、修改、删除日程或刷新课表都会同步更新，课程与考试带提前 15 分钟提醒。无需配置任何账户，一键开启。
-                {sysMsg ? <ErrorLine text={sysMsg} style={{ marginTop: 6, color: "var(--text-2)" }} /> : null}
+                {sysMsg ? <ErrorLine text={sysMsg} tone="quiet" /> : null}
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
                 <Btn variant="solid" tone="brand" disabled={sysBusy || sysSupported === null} onClick={() => {

@@ -31,25 +31,32 @@ const TECH =
 export function ErrorLine({
   text,
   label = "详情",
+  tone,
   style,
 }: {
   text: string;
   label?: string;
+  /** 语义色调（优先于 style 里的 color）：quiet = 次要说明，error = 报错 */
+  tone?: "quiet" | "error";
   style?: CSSProperties;
 }): ReactNode {
   const i = text.search(/[：:]/);
   const head = i > 0 ? text.slice(0, i) : text;
   const tail = i > 0 ? text.slice(i + 1).trim() : "";
+  // tone 走令牌（不再是各调用点自己写 var(--text-2) / var(--red)）
+  const toneStyle: CSSProperties | undefined = tone
+    ? { color: tone === "error" ? "var(--og-error)" : "var(--og-content-2)", ...style }
+    : style;
   if (tail !== "" && TECH.test(tail)) {
     return (
-      <div className="error-line" style={style}>
+      <div className="error-line" style={toneStyle}>
         <span>{head}</span>
         <Details label={label}>{tail}</Details>
       </div>
     );
   }
   return (
-    <div className="error-line" style={style}>
+    <div className="error-line" style={toneStyle}>
       <span>{text}</span>
     </div>
   );

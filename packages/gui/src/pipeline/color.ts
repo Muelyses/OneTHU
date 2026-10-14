@@ -86,14 +86,31 @@ export function contrast(a: Rgb, b: Rgb): number {
 const WHITE: Rgb = { r: 255, g: 255, b: 255 };
 const BLACK: Rgb = { r: 0, g: 0, b: 0 };
 
+/** 白字在强调面上的准入门槛（UI 组件档，WCAG 1.4.11）：白字对比率 = 1.05/(L+0.05) */
+const MIN_ON_ACCENT_RATIO = 3;
+
 /**
- * 在一个底色上选「白字 or 黑字」：两个候选都算对比率，取高者。
- * （历史教训：用 bg<0.5 当分界是错的，黑白交叉点在相对亮度 ≈ 0.179。）
+ * 强调面上的墨色（白 or 黑）：**白字只要过 3:1 就用白**。
+ *
+ * 分界 = 底色相对亮度 L ≤ 0.30。这个分界不引入歧义：L > 0.30 时黑字对比率
+ * (L+0.05)/0.05 ≥ 7:1，永远高于白字 —— 即"白字过不了门槛时黑字必然更好"。
+ *
+ * 为什么不用「两个候选取高者」（旧规则，分界 L ≈ 0.179，注释里那条历史教训只解决了
+ * "别拿 0.5 当中点"，没解决"谁赢"这个判断本身）：那会把品牌蓝判给黑字 —— 实测
+ * #4176e6（tokens.css 业务蓝 / DEFAULT_AXES 默认强调色）白 4.24、黑 4.96 → 旧规则取黑
+ * ⇒ **蓝底按钮黑字**（用户 2026-10-14 点名「蓝底按钮还是白字好一点吧，你现在怎么都是
+ * 蓝底按钮上是黑的」）。而且库的语义层本来就把亮色档的 --og-accent-on 定成
+ * --og-ref-ink-0 = #ffffff（白），是这条运行时规则把它翻成黑的。
+ * 强调面墨色是**品牌语义**，不是纯数学：深蓝/紫/青/红这类品牌色一律白字；
+ * 暗色档那种浅强调（brand-80 之类）白字过不了 3:1 → 仍黑字。
+ * 想逐色override 仍走主题轴 `theme.accentOn`（director 的 #applyAccent 优先读它）。
  */
 export function bestOn(bg: Rgb, white: Rgb = WHITE, black: Rgb = BLACK): { color: Rgba; ratio: number; light: boolean } {
   const cw = contrast(white, bg);
   const cb = contrast(black, bg);
-  return cw >= cb ? { color: { ...white, a: 1 }, ratio: cw, light: true } : { color: { ...black, a: 1 }, ratio: cb, light: false };
+  return cw >= MIN_ON_ACCENT_RATIO
+    ? { color: { ...white, a: 1 }, ratio: cw, light: true }
+    : { color: { ...black, a: 1 }, ratio: cb, light: false };
 }
 
 /** 把色往底色方向混到至少达到 minRatio 对比率（用于"强调色当文字用"的可读性保底） */

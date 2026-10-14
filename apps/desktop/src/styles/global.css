@@ -6293,8 +6293,8 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
-/* 暗色下带文字的按钮提高到 10% 白（7% 在花背景上文字略虚） */
-:root[data-scheme="dark"] .btn { background: rgba(255, 255, 255, 0.1); }
+/* 暗色下带文字的按钮提高到 10% 白（7% 在花背景上文字略虚）。排除 .btn-primary：主 CTA 是**不透明品牌实底**（见上方 .btn-primary「不透明防黑按钮发灰字模糊」），被这条幽灵底盖掉后暗色下只剩「10% 白底 + 白字」的鬼影按钮（实测 bg=rgba(255,255,255,.1)、白字）。 */
+:root[data-scheme="dark"] .btn:not(.btn-primary) { background: rgba(255, 255, 255, 0.1); }
 
 /* 分段控件按钮 = 染色玻璃 tint（激活由既有指示器承担，不加 blur——成群小件预算外） */
 .seg-track button {

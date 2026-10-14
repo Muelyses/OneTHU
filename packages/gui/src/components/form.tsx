@@ -130,9 +130,11 @@ export interface TextAreaProps extends Omit<InputProps, "type" | "icon" | "input
   rows?: number;
   autoGrow?: boolean;
   maxRows?: number;
+  /** 等宽字体（粘贴 Cookie / JSON / 日志这类"机器文本"用；2026-10-14 加） */
+  mono?: boolean;
 }
 
-export function TextArea({ value, defaultValue, onChange, onFocusChange, placeholder, size = "md", disabled, readOnly, invalid, rows = 4, autoGrow, maxRows, scope, className, autoFocus, spellCheck, onKeyDown }: TextAreaProps): ReactNode {
+export function TextArea({ value, defaultValue, onChange, onFocusChange, placeholder, size = "md", disabled, readOnly, invalid, rows = 4, autoGrow, maxRows, mono, scope, className, autoFocus, spellCheck, onKeyDown }: TextAreaProps): ReactNode {
   const [focused, setFocused] = useState(false);
   const ref = useRef<HTMLTextAreaElement | null>(null);
   useEffect(() => {
@@ -144,7 +146,7 @@ export function TextArea({ value, defaultValue, onChange, onFocusChange, placeho
     el.style.height = `${Math.min(el.scrollHeight, max)}px`;
   }, [autoGrow, maxRows, value, defaultValue]);
   return (
-    <Shell size={size} invalid={invalid} disabled={disabled} focused={focused} className={cx("og-input--area", className)}>
+    <Shell size={size} invalid={invalid} disabled={disabled} focused={focused} className={cx("og-input--area", mono && "og-input--mono", className)}>
       <textarea
         ref={ref}
         {...scopeProps(scope)}

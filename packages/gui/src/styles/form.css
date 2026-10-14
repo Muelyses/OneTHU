@@ -70,6 +70,13 @@
   align-items: flex-start;
 }
 
+/* 等宽文本域（粘贴 Cookie/JSON/日志这类机器文本）：字号走 label 档，字族走 mono 令牌 */
+.og-input--mono .og-input-el {
+  font-family: var(--og-font-mono);
+  font-size: var(--og-text-label);
+  line-height: 1.7;
+}
+
 .og-input.is-focused {
   --og-c-input-line: var(--og-line-3);
   box-shadow: var(--og-ring);

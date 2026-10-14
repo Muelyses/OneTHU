@@ -283,7 +283,7 @@
 /* 壳层壁纸：不再用 fixed（会被任何带 transform/filter 的祖先建立成局部 containing block，
    实测被困成一小块）——.explorer-shell 自身 relative，absolute inset 0 铺满整壳 = 整窗口。 */
 .shell-wallpaper { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-.shell-wallpaper-img { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat; }
+.shell-wallpaper-img { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat;  background-attachment: fixed; }
 .wall-video-layer { position: absolute; inset: 0; overflow: hidden; }
 .wall-video-layer video { width: 100%; height: 100%; object-fit: cover; }
 .wall-video-veil { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2); }
@@ -550,58 +550,46 @@ html.is-phone .hard-refresh-fab.top-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 124px) !important;
 }
 
-/* ══════════ 组件与内容卡统一液态玻璃（2026-10-14 用户点名扩面）══════════
-   内容页数据卡（.card 一族：card-hero/stat-card/余流表卡等）从 surface-container
-   平涂升级为面板级玻璃三件套，与首页 .home-card/.free-item、栏体同一材质语言。
-   卡体玻璃用**专用更透的一档**（--card-glass-fill，浅 0.44/深 0.44）：fill-regular 0.72
-   在画布上叠两层自由组件时越叠越白（0.72×2≈0.92 纸感），专用档叠两层仍能看穿。
-   本文件在 global.css 之后加载，同权重覆盖其 background。
-   注意嵌套：home 组件卡内部的次级 .card 降为透明（玻璃只算一层，blur 不叠加）。 */
-:root:not([data-scheme="dark"]) { --card-glass-fill: rgba(255, 255, 255, 0.44); }
-:root[data-scheme="dark"] { --card-glass-fill: rgba(26, 28, 36, 0.44); }
-.explorer-panel .card,
-.explorer-panel .stat-card,
-.explorer-panel .home-card:not(.is-editing) {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--card-glass-fill);
-  backdrop-filter: var(--glass-panel-blur);
-  -webkit-backdrop-filter: var(--glass-panel-blur);
-  border-color: transparent;
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-}
-.explorer-panel .home-card-body .card:not(.is-editing) {
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
 
-/* ── 玻璃只算一层（2026-10-14 实测定案）──
-   玻璃卡（free-item/home-card/card）内部的次级卡不得再自带玻璃/白底：
-   0.72 叠 0.66 ≈ 0.94，肉眼即全白卡（freeBoard 组件卡全是这个病）。
-   次级一律透明，材质由最外层玻璃板提供。直达 widget 卡（.hw-card 等非 .card 家族）
-   与 chrome 固定层同治——dock 底下透出的白板都是它们。 */
-.explorer-shell .free-item :is(.card, .hw-card, .wg-card, .home-card, .stat-card, .next-class, .lab-runs, .balance-card, .balance-strip, .balance-cell),
-.explorer-shell :is(.card, .stat-card, .home-card) :is(.card, .stat-card, .home-card, .hw-card):not(.is-editing),
-.explorer-shell .home-chrome-layer :is(.card, .hw-card, .wg-card, .stat-card, .balance-card) {
-  background: transparent;
-  box-shadow: none;
-  border-color: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+/* ══════════ 画布裸文本随壁纸明暗自适应（2026-10-14 用户点名，统一收口）══════════
+   挂在 .home-tab（整个首页画布）：亮壁纸→深字、暗壁纸→白字，与 chrome 层同一套符文；
+   玻璃卡（.free-item/.home-card）内部**回归主题字色**——卡体有自己的玻璃填充，
+   字色跟着卡底走而不跟壁纸走（浅主题的卡上永远是深字、深主题是浅字），
+   避免「canvas 档翻白字进了卡、卡底又是浅玻璃」的倒挂。 */
+.explorer-shell[data-wallpaper-lum="dark"] .home-tab {
+  color: #f2f4f8;
+  --text-1: #f2f4f8;
+  --text-2: rgba(242, 244, 248, 0.8);
+  --text-3: rgba(242, 244, 248, 0.62);
+  --md-sys-color-on-surface: #f2f4f8;
+  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
 }
-/* 兜底刷（2026-10-14）：free-item 内一切类名带 card/sheet/panel/plate 的盒子和内联白底
-   一律透明——玻璃材质由 free-item 本体一层提供；徽章/强调色（.badge/pill 等）不在名单，
-   不受波及。 */
-.explorer-shell .free-item :is([class*="card"], [class*="sheet"], [class*="panel"], [class*="plate"], [style*="background"]) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+.explorer-shell[data-wallpaper-lum="light"] .home-tab {
+  color: #1c1f28;
+  --text-1: #1c1f28;
+  --text-2: rgba(28, 31, 40, 0.78);
+  --text-3: rgba(28, 31, 40, 0.55);
+  --md-sys-color-on-surface: #1c1f28;
+  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
+}
+/* 卡内回归主题：按 color-scheme 两套写死基础档值（与 chrome 层分支同一组色） */
+:root:not([data-scheme="dark"]) .home-tab .free-item,
+:root:not([data-scheme="dark"]) .home-tab .home-card,
+:root:not([data-scheme="dark"]) .home-tab .card {
+  color: #1c1f28;
+  --text-1: #1c1f28;
+  --text-2: rgba(28, 31, 40, 0.78);
+  --text-3: rgba(28, 31, 40, 0.55);
+  --md-sys-color-on-surface: #1c1f28;
+  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
+}
+:root[data-scheme="dark"] .home-tab .free-item,
+:root[data-scheme="dark"] .home-tab .home-card,
+:root[data-scheme="dark"] .home-tab .card {
+  color: #f2f4f8;
+  --text-1: #f2f4f8;
+  --text-2: rgba(242, 244, 248, 0.8);
+  --text-3: rgba(242, 244, 248, 0.62);
+  --md-sys-color-on-surface: #f2f4f8;
+  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
 }

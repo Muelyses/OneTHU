@@ -261,6 +261,16 @@ const STYLE_ID = "onethu-theme-style";
  * 这张表是 tokens.css Compat 层的逆映射，必须逐条一致：由
  * tools/theme-system-test.mjs 从 tokens.css 反解并核对（任何漂移直接红）。
  */
+/**
+ * 表面填充家族（bg/surface 五级）= 玻璃档（glass-levels.css 的 md-sys 同名令牌）**独占监管**：
+ * 主题不得再注入这几条（2026-10-14 大一统定案）——主题注入的是实色，后置注入层里稳压
+ * 玻璃令牌，正是「巨量 UI 还是白的」、且玻璃档位（clear/rich/deep）调不动卡面的总根因。
+ * 主题仍然保留色调/文字/边框/主色/强调色的表达权（那是主题的个性所在）。
+ */
+const SURFACE_FAMILY = new Set([
+  "--bg", "--bg-soft", "--surface", "--surface-2", "--surface-3",
+]);
+
 export const COMPAT_TO_SYSTEM: Record<string, string> = {
   "--bg": "--md-sys-color-surface",
   "--bg-soft": "--md-sys-color-surface-container-low",
@@ -450,6 +460,7 @@ function applyTheme(def: ThemeDef | null): void {
   const varLines: string[] = [];
   for (const [k, v] of Object.entries(def.vars)) {
     if (!/^--[\w-]+$/.test(k)) continue;
+    if (SURFACE_FAMILY.has(k)) continue; // 表面填充家族 = 玻璃档独占，主题不再覆盖
     varLines.push(`${k}: ${v};`);
     const sys = COMPAT_TO_SYSTEM[k];
     // 镜像到 System 角色：迁移到 System 层的组件（按钮/chip/FAB…）才能跟着主题变色

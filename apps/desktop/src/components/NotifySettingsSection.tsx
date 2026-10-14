@@ -231,59 +231,62 @@ export function NotifySettingsSection(): ReactNode {
       />
 
       {pluginNotifs.length > 0 ? (
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">插件通知</div>
-          <div className="setting-desc">
+      <SettingsRow
+        title="插件通知"
+        sub={
+          <>
             {pluginNotifs.map((g) => `${g.pluginId}（${g.ids.length} 条）`).join("；")}
-            <span style={{ color: "var(--text-3)" }}>　以上通知由插件自行管理，不受总开关影响。</span>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 8, flex: "none" }}>
-          <button className="btn btn-ghost" onClick={() => void refreshPluginNotifs()}>
-            刷新
-          </button>
-          <button
-            className="btn btn-ghost plg-danger"
-            onClick={() => {
-              const all = pluginNotifs.flatMap((g) => g.ids);
-              void cancelNotifications(all).then(() => {
-                setMsg(`已撤销 ${all.length} 条插件通知`);
-                return refreshPluginNotifs();
-              });
-            }}
-          >
-            全部撤销
-          </button>
-        </div>
-      </div>
+            <Text slot="label" tone="faint">　以上通知由插件自行管理，不受总开关影响。</Text>
+          </>
+        }
+        control={
+          <>
+            <Btn variant="ghost" size="sm" onClick={() => void refreshPluginNotifs()}>刷新</Btn>
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                const all = pluginNotifs.flatMap((g) => g.ids);
+                void cancelNotifications(all).then(() => {
+                  setMsg(`已撤销 ${all.length} 条插件通知`);
+                  return refreshPluginNotifs();
+                });
+              }}
+            >
+              全部撤销
+            </Btn>
+          </>
+        }
+      />
       ) : null}
 
       {s.enabled ? (
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">近期提醒</div>
-          <div className="setting-desc">
-            {plan.length === 0
-              ? "近期没有需要提醒的事项。"
-              : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join("；") +
-                (plan.length > 3 ? ` …共 ${plan.length} 条` : "")}
-          </div>
-        </div>
-        <button
-          className="btn btn-ghost"
-          onClick={() => {
-            void (async () => {
-              const rt = await ensureNotifyRuntime();
-              const r = await rt.syncNow();
-              setPlan(rt.plan());
-              setMsg(r.error ? `重排失败：${r.error}` : `已重排（排程 ${r.scheduled} 条 / 撤销 ${r.cancelled} 条）`);
-            })();
-          }}
-        >
-          立即应用
-        </button>
-      </div>
+      <SettingsRow
+        title="近期提醒"
+        sub={
+          plan.length === 0
+            ? "近期没有需要提醒的事项。"
+            : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join("；") +
+              (plan.length > 3 ? ` …共 ${plan.length} 条` : "")
+        }
+        control={
+          <Btn
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              void (async () => {
+                const rt = await ensureNotifyRuntime();
+                const r = await rt.syncNow();
+                setPlan(rt.plan());
+                setMsg(r.error ? `重排失败：${r.error}` : `已重排（排程 ${r.scheduled} 条 / 撤销 ${r.cancelled} 条）`);
+              })();
+            }}
+          >
+            立即应用
+          </Btn>
+        }
+      />
       ) : null}
 
       {report ? (

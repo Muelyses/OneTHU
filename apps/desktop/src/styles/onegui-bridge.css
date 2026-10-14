@@ -1,0 +1,184 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI 过渡桥（TEMP，换血完成后整份删除）
+ *
+ * 为什么需要它：旧样式表（12.2k 行）里有 1400+ 个类名写着第二种、第三种、第 N 种外观。
+ * 逐页迁移期间，未迁的页面仍然读旧令牌名 —— 于是"程序坞还是旧材质、小按钮还是自己一套"，
+ * 预览里一眼就看出不是 OneGUI 的样子。
+ *
+ * 这份桥做一件事：**把旧令牌名整体指到 OneGUI 的语义令牌上**。
+ *   --bg / --surface / --text-1 / --border / --primary / --r-md / --gap-3 / --text-base …
+ *   --dsw-alias-*（DSH 命名空间，本来是未定义的漏网引用）
+ * 于是所有旧类名的**颜色、圆角、字阶、间距、阴影、动效时长**立刻换成 OneGUI 的口径，
+ * 换皮肤/切明暗也跟着走 —— 观感一次性统一，而迁移工作继续按页推进（迁完一页删一页）。
+ *
+ * 选择器用 html:root（0,1,1）压过 tokens.css 的 :root（0,1,0）与 glass-levels 的
+ * html[data-glass]（0,1,1，靠文档序在后胜出）。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+html:root {
+  /* ── 面 ── */
+  --bg: var(--og-surface-0);
+  --bg-soft: var(--og-surface-2);
+  --surface: var(--og-surface-1);
+  --surface-2: var(--og-surface-2);
+  --surface-3: var(--og-surface-3);
+  --surface-4: var(--og-surface-4);
+  --card: var(--og-surface-1);
+  --panel: var(--og-surface-1);
+  --skeleton: var(--og-skeleton);
+  --skeleton-shine: var(--og-skeleton-shine);
+
+  /* ── 字 ── */
+  --text-1: var(--og-content-1);
+  --text-2: var(--og-content-2);
+  --text-3: var(--og-content-3);
+  --text-dim: var(--og-content-disabled);
+  --font-ui: var(--og-font-ui);
+  --font-mono: var(--og-font-mono);
+
+  /* ── 线 ── */
+  --border: var(--og-line-1);
+  --border-soft: var(--og-line-1);
+  --border-strong: var(--og-line-2);
+  --outline: var(--og-line-2);
+
+  /* ── 强调与状态 ── */
+  --primary: var(--og-accent);
+  --primary-hover: var(--og-accent-strong);
+  --on-primary: var(--og-accent-on);
+  --accent: var(--og-accent);
+  --accent-strong: var(--og-accent-strong);
+  --accent-soft: var(--og-accent-soft);
+  --accent-border: var(--og-accent-soft-line);
+  --accent-quiet: var(--og-accent-quiet);
+  --red: var(--og-error);
+  --red-soft: var(--og-error-soft);
+  --amber: var(--og-warning);
+  --amber-soft: var(--og-warning-soft);
+  --green: var(--og-success);
+  --green-soft: var(--og-success-soft);
+  --blue: var(--og-info);
+  --blue-soft: var(--og-info-soft);
+
+  /* ── 交互状态层 ── */
+  --hover: var(--og-hover);
+  --active: var(--og-press);
+  --selected: var(--og-selected);
+
+  /* ── 形状与海拔 ── */
+  --r-xs: var(--og-radius-xs);
+  --r-sm: var(--og-radius-sm);
+  --r-md: var(--og-radius-md);
+  --r-lg: var(--og-radius-lg);
+  --r-xl: var(--og-radius-xl);
+  --r-pill: var(--og-radius-full);
+  --elev-1: var(--og-elev-1);
+  --elev-2: var(--og-elev-2);
+  --elev-3: var(--og-elev-3);
+  --shadow-1: var(--og-elev-1);
+  --shadow-2: var(--og-elev-2);
+  --shadow-3: var(--og-elev-3);
+  --ring: var(--og-ring);
+
+  /* ── 间距（4pt 网格） ── */
+  --gap-1: var(--og-space-1);
+  --gap-2: var(--og-space-2);
+  --gap-3: var(--og-space-3);
+  --gap-4: var(--og-space-4);
+  --gap-5: var(--og-space-5);
+  --gap-6: var(--og-space-6);
+
+  /* ── 字阶（只留六档，旧的 10/11/13/15/18/22 一并收编） ── */
+  --text-xxs: var(--og-text-micro);
+  --text-xs: var(--og-text-label);
+  --text-sm: var(--og-text-label);
+  --text-base: var(--og-text-body);
+  --text-md: var(--og-text-subtitle);
+  --text-lg: var(--og-text-title);
+  --text-xl: var(--og-text-title);
+  --text-2xl: var(--og-text-display);
+
+  /* ── 动效：时长与曲线统一到 OneGUI 刻度 ── */
+  --dur-1: var(--og-dur-1);
+  --dur-2: var(--og-dur-2);
+  --dur-3: var(--og-dur-3);
+  --ease: var(--og-ease-standard);
+  --ease-in: var(--og-ease-accelerate);
+  --ease-out: var(--og-ease-decelerate);
+  --ease-spring: var(--og-ease-spring);
+
+  /* ── 控件尺寸 ── */
+  --ctl-h: var(--og-ctl-h-md);
+  --ctl-h-sm: var(--og-ctl-h-sm);
+  --ctl-h-lg: var(--og-ctl-h-lg);
+  --row-h: var(--og-row-h);
+  --sidebar-w: var(--og-ctl-rail-w);
+  --icon-size: var(--og-icon-md);
+
+  /* ── DSH 命名空间的漏网引用（这些变量在本项目里从未定义）→ 指到 OneGUI ── */
+  --dsw-alias-bg-base: var(--og-surface-0);
+  --dsw-alias-bg-layer-1: var(--og-surface-1);
+  --dsw-alias-bg-layer-2: var(--og-surface-2);
+  --dsw-alias-bg-overlay: var(--og-surface-overlay);
+  --dsw-alias-bg-layer-1-solid: var(--og-surface-1);
+  --dsw-alias-border-l1: var(--og-line-1);
+  --dsw-alias-border-l2: var(--og-line-2);
+  --dsw-alias-brand-primary: var(--og-accent);
+  --dsw-alias-label-primary: var(--og-content-1);
+  --dsw-alias-label-secondary: var(--og-content-2);
+  --dsw-alias-label-tertiary: var(--og-content-3);
+  --dsw-radius-xs: var(--og-radius-xs);
+  --dsw-radius-sm: var(--og-radius-sm);
+  --dsw-radius-md: var(--og-radius-md);
+  --dsw-radius-lg: var(--og-radius-lg);
+  --dsw-radius-xl: var(--og-radius-xl);
+
+  /* ── 旧 System 层（--md-sys-*）里的面/字/线也一起收口 ── */
+  --md-sys-color-surface: var(--og-surface-0);
+  --md-sys-color-surface-container-lowest: var(--og-surface-1);
+  --md-sys-color-surface-container-low: var(--og-surface-2);
+  --md-sys-color-surface-container: var(--og-surface-3);
+  --md-sys-color-surface-container-high: var(--og-surface-4);
+  --md-sys-color-on-surface: var(--og-content-1);
+  --md-sys-color-on-surface-variant: var(--og-content-2);
+  --md-sys-color-outline: var(--og-content-3);
+  --md-sys-color-outline-variant: var(--og-line-1);
+  --md-sys-color-outline-soft: var(--og-line-1);
+  --md-sys-color-outline-strong: var(--og-line-2);
+  --md-sys-color-on-surface-disabled: var(--og-content-disabled);
+  --md-sys-color-primary: var(--og-accent);
+  --md-sys-color-on-primary: var(--og-accent-on);
+  --md-sys-color-secondary: var(--og-accent-quiet);
+  --md-sys-color-secondary-container: var(--og-accent-soft);
+  --md-sys-color-secondary-container-border: var(--og-accent-soft-line);
+  --md-sys-color-error: var(--og-error);
+  --md-sys-color-error-container: var(--og-error-soft);
+  --md-sys-color-warning: var(--og-warning);
+  --md-sys-color-warning-container: var(--og-warning-soft);
+  --md-sys-color-success: var(--og-success);
+  --md-sys-color-success-container: var(--og-success-soft);
+  --md-sys-color-scrim: var(--og-scrim);
+  --md-sys-color-state-hover: var(--og-hover);
+  --md-sys-color-state-pressed: var(--og-press);
+  --md-sys-focus-ring: var(--og-ring);
+  --md-sys-shape-corner-small: var(--og-radius-sm);
+  --md-sys-shape-corner-medium: var(--og-radius-md);
+  --md-sys-shape-corner-large: var(--og-radius-lg);
+  --md-sys-shape-corner-extra-large: var(--og-radius-xl);
+  --md-sys-shape-corner-full: var(--og-radius-full);
+  --md-sys-elevation-1: var(--og-elev-1);
+  --md-sys-elevation-2: var(--og-elev-2);
+  --md-sys-elevation-3: var(--og-elev-3);
+
+  /* ── 字阶的 -size 变体（旧代码写过 --md-sys-typescale-headline-medium-size 这类名字） ── */
+  --md-sys-typescale-display: var(--og-text-display);
+  --md-sys-typescale-display-size: var(--og-text-display);
+  --md-sys-typescale-headline: var(--og-text-title);
+  --md-sys-typescale-headline-medium-size: var(--og-text-title);
+  --md-sys-typescale-title: var(--og-text-subtitle);
+  --md-sys-typescale-title-medium-size: var(--og-text-subtitle);
+  --md-sys-typescale-body: var(--og-text-body);
+  --md-sys-typescale-body-medium-size: var(--og-text-body);
+  --md-sys-typescale-label: var(--og-text-label);
+  --md-sys-typescale-label-medium-size: var(--og-text-label);
+}

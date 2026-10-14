@@ -44,6 +44,8 @@ import { installAuthWatchdog, installKeepalive } from "./lib/reload.js";
 installOneGUI({
   platform: () => (platformOf(window.innerWidth) === "expanded" ? "desktop" : "mobile"),
 });
+// 旧通道（主题明暗 / 玻璃档位）→ OneGUI 轴；用户现有选择立刻在 OneGUI 上生效
+installOneGUIBridge();
 installAuthWatchdog();
 installKeepalive();   // 10 分钟会话保活探针：死会话在用户点击前就透明重建
 // 系统日历自动跟随：订阅云/本日程与课表变更（未开启时零开销）
@@ -62,6 +64,10 @@ import "./styles/motion.css";
 // 旧样式表在换血期间仍在，逐页迁移完成后整批删除（见 docs/onegui/00-plan.md §5）。
 import "@onethu/gui/gui.css";
 import { installOneGUI } from "@onethu/gui";
+// 过渡桥（TEMP）：旧令牌名 → OneGUI 语义令牌 + 旧明暗/玻璃通道 → OneGUI 轴。
+// 目的：未迁页面也立刻长成 OneGUI 的样子；迁完一页删一页，最后连这份桥一起删。
+import "./styles/onegui-bridge.css";
+import { installOneGUIBridge } from "./lib/oneguiBridge.js";
 import { installScrollReveal } from "./lib/motion.js";
 import { installTextContrast } from "./lib/textContrast.js";
 import { installRipple } from "./components/Ripple.js";

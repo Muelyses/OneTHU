@@ -143,6 +143,8 @@ function legacyCssLines() {
   let total = 0;
   const per = {};
   for (const f of walk(dir, [".css"])) {
+    // 过渡桥不算旧样式：它是 TEMP 桥（把旧令牌名指到 OneGUI 令牌），换血收尾时与旧 CSS 一起删
+    if (f.endsWith("onegui-bridge.css")) continue;
     const n = readFileSync(f, "utf8").split("\n").length;
     per[rel(f)] = n;
     total += n;

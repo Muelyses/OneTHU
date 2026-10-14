@@ -26,6 +26,16 @@ export type { OneBase, OGSize, OGTone, OGEmphasis, OGLevel } from "./components/
 
 /* ── 组件 ── */
 export {
+  Page, PageHead, Toolbar, SettingsList, SettingsRow, Tabs, VerticalTabs, Segment, Banner, SectionCard,
+  LoadingBlock, DataList, DataRow,
+} from "./components/patterns.js";
+export type {
+  PageProps, PageHeadProps, PageWidth, ToolbarProps, SettingsListProps, SettingsRowProps,
+  TabsProps, TabItem, VerticalTabsProps, SegmentProps, SegmentOption, BannerProps, SectionCardProps,
+  LoadingBlockProps, DataListProps,
+} from "./components/patterns.js";
+
+export {
   Modal, Drawer, Menu, ContextMenu, ActionSheet, Tooltip, Popover,
 } from "./components/overlay.js";
 export type {

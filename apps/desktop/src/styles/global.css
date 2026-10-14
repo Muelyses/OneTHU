@@ -8590,3 +8590,82 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   border: 0;
   box-shadow: none;
 }
+
+/* ══════════════ 玻璃质感终裁（2026-10-14 用户拍板，全站唯一） ══════════════
+   用户点名：「更多功能/详细功能/强制刷新钮的质感和其他人不同，但我更喜欢这三个的质感；
+   按它们的令牌改」→「所有人改成这样，而不只是按钮」。
+
+   基准令牌（源自 .hs-dock-btn / .hard-refresh-fab 的原始声明）：
+     background: var(--surface);       ← 实色档位填充（clear .30 / 均衡 .44 / rich .60 / deep .74）
+     border: 1px solid var(--border);  ← 一根细描边，不再用白色 rim 三件套
+     无 backdrop-filter、无 inset 白 rim
+
+   为什么用 !important：本块放文件末尾，但 explorer*.css 在 global.css 之后加载（Layout.tsx 静态
+   import），同特异度后到者胜 → 曾导致 .ex-rail 用近黑 --glass-fill-regular 脱队（深色模式竖栏比顶栏暗）。
+   收口必须压过它们，否则"单一来源"只是口号。卡/菜单/浮层的区别只保留圆角与描边色，不再各写一份材质。
+
+   注意：唯一有意更快活的是 `.explorer-shell .free-item :is(...)` 那条「玻璃只算一层」kill 规则 ——
+   它会把嵌套卡置为背景透明（!important），语义仍是"材质只在最外层玻璃板出现一次"。 */
+.explorer-topbar,
+.ex-rail,
+.ex-bbar,
+.ex-mobile-strip,
+.hs-dock-row,
+.free-item,
+.free-note,
+.card,
+.home-card,
+.setting-group,
+.app-card,
+.hs-menu,
+.hs-op,
+.menu,
+.dropdown,
+.dropdown-menu,
+.ctx-menu,
+.context-menu,
+.modal,
+.modal-panel,
+.dialog,
+.dialog-panel,
+.sheet,
+.drawer,
+.plg-card,
+.plg-stat,
+.plg-install,
+.market-card,
+.gitlab-card,
+.mail-list,
+.mail-detail,
+.mail-compose,
+.balance-strip,
+.notice-strip,
+.fp-info,
+.hw-card,
+.stat-card,
+.home-modal,
+.plg-sheet,
+.plg-form-modal,
+.filter-dd-panel,
+.hwremind-pop,
+.trace-card,
+.toast-host,
+.text-peek,
+.board-sheet,
+.board-drawer,
+.board-note,
+.board-fab,
+.free-fab,
+.home-searchbar,
+.home-resume-chip,
+.icon-btn,
+.chip-btn,
+.hs-dock-btn,
+.hs-detail-btn,
+.hard-refresh-fab {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}

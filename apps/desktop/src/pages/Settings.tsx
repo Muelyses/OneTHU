@@ -1,3 +1,4 @@
+import { SettingsRow } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 import { TextArea } from "@onethu/gui";
 import { Select } from "@onethu/gui";
@@ -305,14 +306,11 @@ export function SettingsPage() {
       <SectionHead title="关于" />
       <SoftwareUpdateSection />
       <Card>
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">OneTHU {__APP_VERSION__} “{APP_CODENAME}”</div>
-            <div className="setting-desc">清华园随身工具箱 · 开源于 GitHub</div>
-          </div>
-          <Btn variant="outline" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>GitHub 项目页
-          </Btn>
-        </div>
+        <SettingsRow
+          title={<>OneTHU {__APP_VERSION__} “{APP_CODENAME}”</>}
+          sub="清华园随身工具箱 · 开源于 GitHub"
+          control={<Btn variant="outline" size="sm" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>GitHub 项目页</Btn>}
+        />
         {/* 运行日志导出属开发者功能：正式版不显示（真机取证走 adb logcat -s onethu:V，
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
         {__ONETHU_DEV__ ? <DebugLogRow /> : null}
@@ -323,14 +321,11 @@ export function SettingsPage() {
 
       <SectionHead title="账户" />
       <Card>
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">统一认证</div>
-            <div className="setting-desc">{user?.displayName || displayStudentId(user?.username) || "未登录"}</div>
-          </div>
-          <Btn variant="outline" onClick={() => void logout()}>退出登录
-          </Btn>
-        </div>
+        <SettingsRow
+          title="统一认证"
+          sub={user?.displayName || displayStudentId(user?.username) || "未登录"}
+          control={<Btn variant="outline" size="sm" onClick={() => void logout()}>退出登录</Btn>}
+        />
       </Card>
 
 

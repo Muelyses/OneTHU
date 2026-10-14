@@ -260,7 +260,7 @@
     "apps/desktop/src/pages/Login.tsx": 1,
     "apps/desktop/src/pages/MailPage.tsx": 2,
     "apps/desktop/src/pages/Plugins.tsx": 4,
-    "apps/desktop/src/pages/Settings.tsx": 50,
+    "apps/desktop/src/pages/Settings.tsx": 46,
     "apps/desktop/src/pages/info/CardTab.tsx": 1,
     "apps/desktop/src/pages/info/GradIncomeTab.tsx": 1,
     "apps/desktop/src/pages/info/KongjianTab.tsx": 2,

@@ -373,9 +373,24 @@ export interface OnethuApi {
      *  （duplicate = 板上已经有它；no-board = 板不存在）。不碰坐标。 */
     onePageAddAtom(target: { to?: string; boardId?: string } | null, atomKey: string): { ok: boolean; boardId: string; added?: string; reason?: string };
     /** 首页程序坞（2026-10-15）：一级页 ∪ 插件功能页（pageId 形如 plugin:<插件>:<页>）
-     *  停靠/取消停靠一颗球；不传 pageId = 只读快照。认不出的 pageId 抛错并列出可停靠项。 */
-    homeDock: {
-      set(pageId?: string, on?: boolean): { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[] };
+     *  停靠/取消停靠一颗球；不传 pageId = 只读快照（含可停靠清单与名字）。
+     *  认不出的 pageId 抛错并列出可停靠项。可调用形态与 .set 同一实现（rpc 分发是平铺两段式）。 */
+    homeDock: ((pageId?: string, on?: boolean) => {
+      ok: boolean;
+      pageId: string;
+      label: string;
+      docked: string[];
+      dockable: string[];
+      entries: Array<{ page: string; label: string; plugin: boolean }>;
+    }) & {
+      set(pageId?: string, on?: boolean): {
+        ok: boolean;
+        pageId: string;
+        label: string;
+        docked: string[];
+        dockable: string[];
+        entries: Array<{ page: string; label: string; plugin: boolean }>;
+      };
     };
     workspaceList(): Array<{ id: string; name: string; live: boolean; tabs: number }>;
     workspaceCreate(name: string, tabIds?: unknown): { id: string };

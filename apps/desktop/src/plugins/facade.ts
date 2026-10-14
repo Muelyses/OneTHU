@@ -1094,14 +1094,26 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       },
       /* ── 首页程序坞（2026-10-15 接线）：NAV 一级页 ∪ 插件功能页同权，可停靠/取消停靠 ──
          实现只有一处：state/homeSpheres.ts 的 dockSphere/undockSphere（首页「更多功能」
-         小窗的 ＋/× 走的就是它）。不传 pageId = 只读快照（坞上有哪些球 + 还能停哪些）。 */
-      homeDock: {
-        set: (pageId?: string, on?: boolean): { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[] } => {
+         小窗的 ＋/× 走的就是它）。不传 pageId = 只读快照（坞上有哪些球 + 还能停哪些，
+         带名字，OH 才能把「打卡页」对到 page id 上）。
+         **可调用形态**：门面的 rpc 分发是平铺两段式（plugins/rust.ts 的 api[ns][method]），
+         嵌套命名空间到不了 —— 所以 homeDock 本身可调用（与 .set 同一实现），
+         插件作者写 `ext.homeDock.set(…)`、OH 侧走 `onethu.call("ext","homeDock",[…])` 两种都通。 */
+      homeDock: (() => {
+        type DockEntry = { page: string; label: string; plugin: boolean };
+        type DockOut = { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[]; entries: DockEntry[] };
+        const impl = (pageId?: string, on?: boolean): DockOut => {
           gate(perms, "ui", "ext.homeDock");
-          const dockable = allSphereEntries().map((e) => String(e.page));
+          const all = allSphereEntries();
+          const entries: DockEntry[] = all.map((e) => ({
+            page: String(e.page),
+            label: String(e.label ?? ""),
+            plugin: String(e.page).startsWith("plugin:"),
+          }));
+          const dockable = entries.map((e) => e.page);
           const id = String(pageId ?? "").trim();
           if (!id) {
-            return { ok: true, pageId: "", label: "", docked: [...spheresSnapshot().docked], dockable };
+            return { ok: true, pageId: "", label: "", docked: [...spheresSnapshot().docked], dockable, entries };
           }
           const entry = sphereEntry(id);
           if (!entry) {
@@ -1109,9 +1121,12 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           }
           if (on === true) dockSphere(id);
           else undockSphere(id);
-          return { ok: true, pageId: id, label: String(entry.label ?? ""), docked: [...spheresSnapshot().docked], dockable };
-        },
-      },
+          return { ok: true, pageId: id, label: String(entry.label ?? ""), docked: [...spheresSnapshot().docked], dockable, entries };
+        };
+        return Object.assign((pageId?: string, on?: boolean): DockOut => impl(pageId, on), {
+          set: (pageId?: string, on?: boolean): DockOut => impl(pageId, on),
+        });
+      })(),
       /* ── 工作区 ── */
       workspaceList: (): Array<{ id: string; name: string; live: boolean; tabs: number }> =>
         explorerSnapshot().workspaces.map((w) => ({ id: w.id, name: w.name, live: w.live === true, tabs: w.tabs.length })),

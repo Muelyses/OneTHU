@@ -1,4 +1,4 @@
-import { Input } from "@onethu/gui";
+import { Input, Text } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 工作区编辑弹窗：名字 / 颜色 / logo / 内容（成员增删）。
@@ -67,7 +67,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
   return createPortal(
     <div
       className="ws-create-mask"
-      style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.25)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-modal)" as unknown as number, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center" }}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) closeWorkspaceEditor();
       }}
@@ -75,9 +75,9 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
       <div
         role="dialog"
         aria-label="编辑工作区"
-        style={{ background: "var(--dsw-alias-bg-base, #fff)", color: "var(--dsw-alias-label-primary, inherit)", borderRadius: 14, padding: 18, width: 340, maxHeight: "80vh", overflow: "auto", boxShadow: "0 12px 40px rgba(0,0,0,.25)" }}
+        style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", padding: 18, width: 340, maxHeight: "80vh", overflow: "auto", boxShadow: "var(--og-elev-menu)" }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 12 }}>编辑工作区</div>
+        <div style={{ marginBottom: 12 }}><Text as="div" weight="semibold">编辑工作区</Text></div>
         <Input autoFocus value={name} onChange={(value) => setName(value)} placeholder="工作区名字" />
         <div style={small}>底板颜色</div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -88,7 +88,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
               aria-label={"颜色 " + c}
               aria-pressed={color === c}
               onClick={() => setColor(c)}
-              style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--dsw-alias-label-primary, #000)" : "1px solid transparent", background: c, cursor: "pointer" }}
+              style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--og-content-1)" : "1px solid transparent", background: c, cursor: "pointer" }}
             />
           ))}
         </div>
@@ -103,7 +103,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
                 aria-label={"logo " + k}
                 aria-pressed={icon === k}
                 onClick={() => setIcon(k)}
-                style={{ width: 30, height: 30, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, border: icon === k ? "2px solid var(--dsw-alias-label-primary, #000)" : "1px solid transparent", background: "transparent", cursor: "pointer" }}
+                style={{ width: 30, height: 30, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, border: icon === k ? "2px solid var(--og-content-1)" : "1px solid var(--og-line-2)", background: "transparent", cursor: "pointer" }}
               >
                 <G width={14} height={14} />
               </button>
@@ -112,7 +112,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
         </div>
 
         <div style={small}>成员（{memberCount}）</div>
-        {memberCount === 0 ? <div style={{ fontSize: 12, opacity: 0.6 }}>暂无标签页</div> : null}
+        {memberCount === 0 ? <Text slot="label" tone="faint">暂无标签页</Text> : null}
         {live
           ? liveMembers.map((t) => (
               <div key={t.id} style={row}>

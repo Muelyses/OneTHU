@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 设置页「IM 通道」区块：飞书 bot 配置、连接状态、绑定码与微信通道预告。
  *
@@ -215,7 +216,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                 不想扫码时用「高级配置」里的手工填入。
               </div>
             </div>
-            <button className="btn btn-primary" onClick={() => void startFsReg()}>扫码创建</button>
+            <Btn variant="solid" tone="brand" onClick={() => void startFsReg()}>扫码创建</Btn>
           </div>
 
           {fsReg ? (
@@ -233,7 +234,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                   在本机？直接打开确认页（免扫码）
                 </button>
               </div>
-              <button className="btn" onClick={() => setFsReg(null)}>取消</button>
+              <Btn variant="outline" onClick={() => setFsReg(null)}>取消</Btn>
             </div>
           ) : null}
 
@@ -247,9 +248,9 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
               </div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn" onClick={genBind}>生成绑定码</button>
+              <Btn variant="outline" onClick={genBind}>生成绑定码</Btn>
               {bound ? (
-                <button className="btn" onClick={() => void unbind()}>解除绑定</button>
+                <Btn variant="outline" onClick={() => void unbind()}>解除绑定</Btn>
               ) : null}
             </div>
           </div>
@@ -301,7 +302,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                   {wxNote || "等待扫码…"}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）
                 </div>
               </div>
-              <button className="btn" onClick={() => setWxQr(null)}>取消</button>
+              <Btn variant="outline" onClick={() => setWxQr(null)}>取消</Btn>
             </div>
           ) : null}
         </>
@@ -360,7 +361,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                 style={{ width: "100%" }}
               />
             </div>
-            <button className="btn btn-primary" onClick={() => void saveCreds()}>保存并连接</button>
+            <Btn variant="solid" tone="brand" onClick={() => void saveCreds()}>保存并连接</Btn>
           </div>
         </>
       ) : null}

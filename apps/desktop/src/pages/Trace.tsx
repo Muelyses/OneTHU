@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 寻迹：今日日程的地图投送。
  * - 数据：今日课程/考试（教务）+ 云日历 + 本地日程（同一合并口径，与日程页一致）
@@ -477,7 +478,7 @@ export function TracePage(): React.ReactNode {
       {geoDenied ? (
         <div className="trace-note">
           系统未授予定位权限（可能已被拒绝两次，Android 不会再弹窗）。已改用清华园中心计算 ETA。
-          <button className="btn trace-retry" onClick={() => void locate()}>再次请求</button>
+          <Btn variant="outline" onClick={() => void locate()}>再次请求</Btn>
           <button className="btn trace-retry" onClick={() => void import("@tauri-apps/api/core").then((m) => m.invoke("open_app_settings").catch(() => undefined))}>
             去系统设置
           </button>
@@ -485,11 +486,11 @@ export function TracePage(): React.ReactNode {
       ) : null}
       {origin?.source === "default" ? (
         <div className="trace-note">未获取到定位（已回退清华园中心），ETA 以此计算。
-          <button className="btn trace-retry" onClick={() => void locate()}>重试定位</button>
+          <Btn variant="outline" onClick={() => void locate()}>重试定位</Btn>
         </div>
       ) : null}
       {origin?.source === "saved" ? (
-        <div className="trace-note">使用最近一次定位的位置计算 ETA。<button className="btn trace-retry" onClick={() => void locate()}>重新定位</button></div>
+        <div className="trace-note">使用最近一次定位的位置计算 ETA。<Btn variant="outline" onClick={() => void locate()}>重新定位</Btn></div>
       ) : null}
       {unresolved.length > 0 ? (
         <div className="trace-note" title={unresolved.join("、")}>未在海淀区找到地点：{unresolved.join("、")}</div>

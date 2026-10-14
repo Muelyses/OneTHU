@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 附件动作面板（需求 7）：拿到附件后选「转存云盘 / 交作业（网络学堂 + 雨课堂）/ 发讨论区」。
  *
@@ -483,7 +484,7 @@ export function AttachActionsSheet({
               <span className="ohaa-label">目标目录（不存在会自动创建）</span>
               <div className="ohaa-row">
                 <input className="input" style={inputStyle} value={dir} onChange={(e) => { setDir(e.target.value); setDirEntries(null); }} />
-                <button className="btn" type="button" disabled={!repoId} onClick={() => void browseDir()}>看子目录</button>
+                <Btn variant="outline" disabled={!repoId} onClick={() => void browseDir()}>看子目录</Btn>
               </div>
               {dirMsg ? <span className="ohaa-note">{dirMsg}</span> : null}
               {dirEntries && dirEntries.length > 0 ? (
@@ -509,7 +510,7 @@ export function AttachActionsSheet({
               远端名 = 文件名；同名会被覆盖。{many ? `共 ${files.length} 个文件，按顺序逐个上传。` : ""}
             </div>
             <div className="ohaa-foot">
-              <button className="btn" type="button" onClick={close}>取消</button>
+              <Btn variant="outline" onClick={close}>取消</Btn>
               <button className="btn btn-primary" type="button" disabled={busy || !repoId || !sf.configured} onClick={() => void runCloud()}>
                 {busy ? "上传中…" : "上传到云盘"}
               </button>
@@ -572,7 +573,7 @@ export function AttachActionsSheet({
                   提交前会再确认一次；提交是**整体覆盖**（正文与附件以本次为准）。
                 </div>
                 <div className="ohaa-foot">
-                  <button className="btn" type="button" onClick={close}>取消</button>
+                  <Btn variant="outline" onClick={close}>取消</Btn>
                   <button className="btn btn-primary" type="button" disabled={busy || !selectedLearnHw}
                     onClick={() => void runHomework()}>
                     {busy ? "提交中…" : "提交作业"}
@@ -613,7 +614,7 @@ export function AttachActionsSheet({
                   </select>
                 </div>
                 <div className="ohaa-foot">
-                  <button className="btn" type="button" onClick={close}>取消</button>
+                  <Btn variant="outline" onClick={close}>取消</Btn>
                   <button className="btn btn-primary" type="button" disabled={busy || !selectedYkt}
                     onClick={() => void runHomework()}>
                     {busy ? "处理中…" : "去官方页提交"}
@@ -682,7 +683,7 @@ export function AttachActionsSheet({
               附件：{first.name}（{formatSize(first.size)}）· 发布前会再确认一次，发出去全班可见。
             </div>
             <div className="ohaa-foot">
-              <button className="btn" type="button" onClick={close}>取消</button>
+              <Btn variant="outline" onClick={close}>取消</Btn>
               <button className="btn btn-primary" type="button" disabled={busy || !courseId}
                 onClick={() => void runDiscussion()}>
                 {busy ? "发布中…" : "发布"}
@@ -706,7 +707,7 @@ export function AttachActionsSheet({
               图片单条最多 4 张、单张 ≤6MB，超出的会在正文里写明原因（不会静默丢件）。
             </div>
             <div className="ohaa-foot">
-              <button className="btn" type="button" onClick={close}>取消</button>
+              <Btn variant="outline" onClick={close}>取消</Btn>
               <button className="btn btn-primary" type="button" disabled={busy} onClick={() => void runOh()}>
                 {busy ? "发送中…" : "发给 OH"}
               </button>
@@ -731,7 +732,7 @@ export function AttachActionsSheet({
             ) : null}
             {r.ok ? (
               <div style={{ marginTop: 8 }}>
-                <button className="btn" type="button" onClick={close}>完成</button>
+                <Btn variant="outline" onClick={close}>完成</Btn>
               </div>
             ) : null}
           </div>
@@ -742,8 +743,8 @@ export function AttachActionsSheet({
           <div className="ohaa-confirm">
             <div className="ohaa-confirm-msg">{confirmMsg}</div>
             <div className="ohaa-foot">
-              <button className="btn" type="button" onClick={() => answerConfirm(false)}>取消</button>
-              <button className="btn btn-danger" type="button" onClick={() => answerConfirm(true)}>确认执行</button>
+              <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
+              <Btn variant="solid" tone="error" onClick={() => answerConfirm(true)}>确认执行</Btn>
             </div>
           </div>
         ) : null}

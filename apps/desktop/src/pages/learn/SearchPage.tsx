@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 全局搜索（learnX Search）：课程/作业/通知/文件相关性搜索，分节展示。
  * 打分模型：查询串按空白切词 + 中文 2-gram；字段权重 标题 10/词、正文 2/词、
@@ -370,7 +371,7 @@ export function SearchPage() {
         </div>
         <div className="page-head-actions">
           <PageAtomStar atomKey="learn-search" title="网络学堂搜索" />
-          <button className="btn btn-ghost" onClick={() => navigate("learn")}>← 返回</button>
+          <Btn variant="ghost" onClick={() => navigate("learn")}>← 返回</Btn>
         </div>
       </div>
 
@@ -384,7 +385,7 @@ export function SearchPage() {
           aria-label="搜索关键词"
         />
         {q ? (
-          <button className="btn btn-ghost" onClick={() => setQ("")}>清除</button>
+          <Btn variant="ghost" onClick={() => setQ("")}>清除</Btn>
         ) : null}
       </div>
 

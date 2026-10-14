@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 declare const __APP_VERSION__: string;
 import { defineSearchRows } from "../state/searchRows.js";
 import {
@@ -666,7 +667,7 @@ export function SettingsPage() {
               >
                 导入并覆盖
               </button>
-              <button className="btn btn-ghost" onClick={() => setImportOpen(false)}>取消</button>
+              <Btn variant="ghost" onClick={() => setImportOpen(false)}>取消</Btn>
             </div>
           </div>
         ) : null}
@@ -1526,7 +1527,7 @@ function ExtHwSection() {
               </div>
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <button className="btn btn-primary" onClick={onSave}>保存</button>
+                <Btn variant="solid" tone="brand" onClick={onSave}>保存</Btn>
                 <button className="btn" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>
                   {busy === "refresh" || ext.state === "loading" ? "刷新中…" : "立即刷新"}
                 </button>
@@ -1883,7 +1884,7 @@ function AppearanceSection(): ReactNode {
             <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2 }}>不套用任何主题，使用应用自带配色</div>
           </div>
           {snap.activeId ? (
-            <button className="btn btn-primary" onClick={() => deactivateTheme()}>应用</button>
+            <Btn variant="solid" tone="brand" onClick={() => deactivateTheme()}>应用</Btn>
           ) : null}
         </div>
         {visibleThemeDefs.map((t) => {
@@ -1909,7 +1910,7 @@ function AppearanceSection(): ReactNode {
                 </div>
               </div>
               {on ? null : (
-                <button className="btn btn-primary" onClick={() => activateTheme(t.id)}>应用</button>
+                <Btn variant="solid" tone="brand" onClick={() => activateTheme(t.id)}>应用</Btn>
               )}
             </div>
           );

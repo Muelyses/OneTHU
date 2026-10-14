@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 顶栏标签条（dev-explorer 工作空间革命）：首页恒在第一（不可关闭、不可多开），
  * 其后是打开的工作标签页（同页同实例复用，「复制」才多开），行尾「+」= 回首页。
@@ -617,7 +618,7 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
           })}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <button type="button" className="btn" onClick={onCancel}>取消</button>
+          <Btn variant="outline" onClick={onCancel}>取消</Btn>
           <button type="button" className="btn" style={{ borderColor: color, color }} onClick={() => onCreate({ name, color, icon })}>创建</button>
         </div>
       </div>

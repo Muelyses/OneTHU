@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 云盘页 —— 清华云盘（Seafile 定制版，Web API 直连）。
  *
@@ -144,7 +145,7 @@ function MoveModal({
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
           <b style={{ fontSize: 15 }}>移动「{entry.name}」到…</b>
           <span style={{ flex: 1 }} />
-          <button className="btn mini" onClick={onClose} aria-label="关闭">✕</button>
+          <Btn variant="outline" onClick={onClose} aria-label="关闭">✕</Btn>
         </div>
         <select
           className="input"
@@ -185,7 +186,7 @@ function MoveModal({
         </select>
         {selfNest && <p className="cloud-error" style={{ margin: "8px 0 0" }}>不能移动到自身内部的文件夹</p>}
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-          <button className="btn" onClick={onClose}>取消</button>
+          <Btn variant="outline" onClick={onClose}>取消</Btn>
           <button
             className="btn primary"
             disabled={selfNest || isSamePlace}

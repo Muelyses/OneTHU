@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 清华 GitLab 页（git.tsinghua.edu.cn，REST API v4 直连）。
  *
@@ -637,7 +638,7 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
                   onChange={(e) => setTyped(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") typeInName(); }}
                 />
-                <button className="btn mini" type="button" onClick={() => typeInName()}>按名字贴</button>
+                <Btn variant="outline" onClick={() => typeInName()}>按名字贴</Btn>
               </div>
             </div>,
             document.body,
@@ -724,7 +725,7 @@ function NoteEditor({ initial, busy, onSave, onCancel }: {
         <button className="btn btn-primary" disabled={busy || text.trim() === ""} onClick={() => onSave(text.trim())}>
           {busy ? "保存中…" : "保存"}
         </button>
-        <button className="btn btn-ghost" disabled={busy} onClick={onCancel}>取消</button>
+        <Btn variant="ghost" disabled={busy} onClick={onCancel}>取消</Btn>
       </div>
     </div>
   );
@@ -849,14 +850,14 @@ function NoteRow({ note, kind, projectId, iid, discussionId, me, baseUrl, depth,
         </span>
         <span className="gitlab-note-actions">
           {!mine && authorId ? (
-            <button className="btn mini" disabled={busy} onClick={() => void assign()}>指派给 TA</button>
+            <Btn variant="outline" disabled={busy} onClick={() => void assign()}>指派给 TA</Btn>
           ) : null}
           {mine ? (
             <>
               <button className="btn mini" disabled={busy} onClick={() => setEditing((e) => !e)}>
                 {editing ? "取消" : "编辑"}
               </button>
-              <button className="btn mini" disabled={busy} onClick={() => void remove()}>删除</button>
+              <Btn variant="outline" disabled={busy} onClick={() => void remove()}>删除</Btn>
             </>
           ) : null}
         </span>
@@ -1050,7 +1051,7 @@ function RequestDetail({ kind, projectId, iid, onBack, onChanged }: {
         <span className="dim">!{iid}</span>
         <span style={{ flex: 1 }} />
         {mr && mr.state === "opened" && (mr.user?.can_merge ?? true) ? (
-          <button className="btn btn-primary" disabled={busy} onClick={() => void merge()}>合入</button>
+          <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void merge()}>合入</Btn>
         ) : null}
         {item && item.state !== "merged" ? (
           <button className="btn" disabled={busy} onClick={() => void toggleState()}>
@@ -1447,14 +1448,14 @@ function CodeButton({ project }: { project: GitProjectDetail }): ReactNode {
             <div className="gitlab-code-row">
               <span className="gitlab-code-label">克隆（HTTPS）</span>
               <code>{project.http_url_to_repo}</code>
-              <button className="btn mini" onClick={() => copy(project.http_url_to_repo)}>复制</button>
+              <Btn variant="outline" onClick={() => copy(project.http_url_to_repo)}>复制</Btn>
             </div>
           ) : null}
           {project.ssh_url_to_repo ? (
             <div className="gitlab-code-row">
               <span className="gitlab-code-label">克隆（SSH）</span>
               <code>{project.ssh_url_to_repo}</code>
-              <button className="btn mini" onClick={() => copy(project.ssh_url_to_repo)}>复制</button>
+              <Btn variant="outline" onClick={() => copy(project.ssh_url_to_repo)}>复制</Btn>
             </div>
           ) : null}
           <button className="btn gitlab-code-zip" disabled={busy} onClick={download}>
@@ -1483,7 +1484,7 @@ function ProjectView({ projectId, initialTab, initialIid = null, onBack }: {
     return (
       <>
         <p className="gitlab-error">{detail.error ?? "项目不存在或无权访问"}</p>
-        <button className="btn" onClick={onBack}>返回项目列表</button>
+        <Btn variant="outline" onClick={onBack}>返回项目列表</Btn>
       </>
     );
   }
@@ -1500,7 +1501,7 @@ function ProjectView({ projectId, initialTab, initialIid = null, onBack }: {
       {/* 返回入口放左上角（与进入项目后的浏览动线一致），标题与操作分列其后 */}
       <div className="page-head gitlab-project-head">
         <div className="gitlab-project-title">
-          <button className="btn btn-ghost gitlab-back" onClick={onBack}>← 项目列表</button>
+          <Btn variant="ghost" onClick={onBack}>← 项目列表</Btn>
           <div>
             <h1>{project.name}</h1>
             <div className="page-head-meta">

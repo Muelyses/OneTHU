@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 桌面端首启导览 v3（2026-10-13）：以桌面现状（dev-explorer 外壳）为基线的全新导览。
  *
@@ -299,7 +300,7 @@ export function OnboardingTourV3(): ReactNode {
         {/* ② 真实拖拽演练：进演练模式，卡片让位，交互透传 */}
         {step === 1 ? (
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
-            <button className="btn btn-primary" onClick={() => setPractice(true)}>自己拖一次</button>
+            <Btn variant="solid" tone="brand" onClick={() => setPractice(true)}>自己拖一次</Btn>
             <span style={{ fontSize: 12, color: "var(--text-3)" }}>卡片让开，你动手；点胶囊回来继续</span>
           </div>
         ) : null}
@@ -312,11 +313,11 @@ export function OnboardingTourV3(): ReactNode {
             上一步
           </button>
           <span style={{ flex: 1 }} />
-          <button className="btn btn-ghost" title="完成标记：此后不再自动出现" onClick={closeForever}>
+          <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
             不再显示
-          </button>
+          </Btn>
           {isLast ? (
-            <button className="btn btn-primary" onClick={closeForever}>开始使用</button>
+            <Btn variant="solid" tone="brand" onClick={closeForever}>开始使用</Btn>
           ) : (
             <button className="btn btn-primary" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>
               下一步

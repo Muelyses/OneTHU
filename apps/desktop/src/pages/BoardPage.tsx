@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 白板页（P1）：只读渲染 + 编辑模式（含长按拖拽与实时预览）。
  *
@@ -886,7 +887,7 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
         <div className="board-sheet" role="dialog" aria-label="套用模板">
           <div className="board-sheet-head">
             <span className="board-sheet-title">套用模板</span>
-            <button className="btn" onClick={() => setTplOpen(false)}>关闭</button>
+            <Btn variant="outline" onClick={() => setTplOpen(false)}>关闭</Btn>
           </div>
           <div className="board-sheet-list">
             {BOARD_TEMPLATES.map((tpl) => (
@@ -958,8 +959,8 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
           <div className="board-drawer-title">{planForItem(drawer, defs).title}</div>
           <input className="board-drawer-input" value={draft} maxLength={32} placeholder="输入文字" onChange={(e) => setDraft(e.target.value)} />
           <div className="board-drawer-actions">
-            <button className="btn" onClick={() => setDrawer(null)}>取消</button>
-            <button className="btn btn-primary" onClick={saveDrawer}>保存</button>
+            <Btn variant="outline" onClick={() => setDrawer(null)}>取消</Btn>
+            <Btn variant="solid" tone="brand" onClick={saveDrawer}>保存</Btn>
           </div>
         </div>
       ) : null}

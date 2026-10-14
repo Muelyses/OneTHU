@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 今日（首页）—— 全量卡片化：
  * - 卡片注册表（lib/homeCards.ts）：bespoke 特殊展示卡 + entry 一键入口大卡；
@@ -343,7 +344,7 @@ function AddCardsModal({
       <div className="home-modal" role="dialog" aria-modal="true" aria-label="添加首页卡片" onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>添加卡片</h3>
-          <button className="btn btn-ghost" onClick={onClose}>关闭</button>
+          <Btn variant="ghost" onClick={onClose}>关闭</Btn>
         </div>
         <div className="home-modal-body">
           <div className="home-modal-hint">
@@ -362,11 +363,11 @@ function AddCardsModal({
                     {def.hint ? <div className="home-entry-hint">{def.hint}</div> : null}
                   </div>
                   {portrait ? (
-                    <button className="btn" onClick={() => onAdd(def.id, "main")}>添加</button>
+                    <Btn variant="outline" onClick={() => onAdd(def.id, "main")}>添加</Btn>
                   ) : (
                     <>
-                      <button className="btn" onClick={() => onAdd(def.id, "main")}>主栏</button>
-                      <button className="btn" onClick={() => onAdd(def.id, "rail")}>侧栏</button>
+                      <Btn variant="outline" onClick={() => onAdd(def.id, "main")}>主栏</Btn>
+                      <Btn variant="outline" onClick={() => onAdd(def.id, "rail")}>侧栏</Btn>
                     </>
                   )}
                 </div>

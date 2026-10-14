@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 首启导览 · 手机简版（dev-explorer 二轮 A8，2026-10-13）：
  * 桌面 v3 七步在手机太大——手机只讲五件「当下就要会」的事：
@@ -220,11 +221,11 @@ export function OnboardingTourMobile(): ReactNode {
             上一步
           </button>
           <span style={{ flex: 1 }} />
-          <button className="btn btn-ghost" title="完成标记：此后不再自动出现" onClick={closeForever}>
+          <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
             不再显示
-          </button>
+          </Btn>
           {isLast ? (
-            <button className="btn btn-primary" onClick={closeForever}>开始使用</button>
+            <Btn variant="solid" tone="brand" onClick={closeForever}>开始使用</Btn>
           ) : (
             <button className="btn btn-primary" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>
               下一步

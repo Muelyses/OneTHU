@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 校内新闻页 —— getNews 列表 + getNewsDetail 站内预览（thu-info-lib news.ts 同源）。
  * 点击条目先在应用内看正文（NEWS_DETAIL?xxid=…&_csrf= → object.xxDto），
@@ -827,7 +828,7 @@ export function NewsTab({
                         在浏览器打开
                       </button>
                     ) : null}
-                    <button className="btn btn-ghost" onClick={() => setDetail(null)}>关闭</button>
+                    <Btn variant="ghost" onClick={() => setDetail(null)}>关闭</Btn>
                   </div>
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text-3)", marginBottom: 12 }}>
@@ -902,7 +903,7 @@ export function NewsTab({
               <div style={subPanelStyle} onClick={(e) => e.stopPropagation()}>
                 <div style={subPanelHead}>
                   <h3 style={{ margin: 0, fontSize: 16 }}>订阅管理</h3>
-                  <button className="btn btn-ghost" onClick={() => setSubsOpen(false)}>关闭</button>
+                  <Btn variant="ghost" onClick={() => setSubsOpen(false)}>关闭</Btn>
                 </div>
                 <div style={subPanelBody}>
                   <div style={{ fontSize: 12, color: "var(--text-3)", marginBottom: 12 }}>

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 设置页「桌面小组件」区块：桌面上每一块显示什么，在这里一眼看全并逐个改。
  *
@@ -118,8 +119,8 @@ export function WidgetSettingsSection(): ReactNode {
           >
             放到桌面
           </button>
-          <button className="btn btn-ghost" onClick={() => void pushNow()}>立即刷新</button>
-          <button className="btn btn-ghost" onClick={() => void refresh()}>重新载入</button>
+          <Btn variant="ghost" onClick={() => void pushNow()}>立即刷新</Btn>
+          <Btn variant="ghost" onClick={() => void refresh()}>重新载入</Btn>
         </div>
       </div>
 

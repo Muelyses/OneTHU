@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { BrandLogo, HardRefreshButton, Slogan } from "../components/Layout.js";
 import { useEffect, useState, type FormEvent } from "react";
 import type { TwoFactorMethod } from "@onethu/core";
@@ -177,9 +178,9 @@ export function TwoFactorPage() {
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            <button type="button" className="btn-ghost btn" onClick={backToLogin}>
+            <Btn variant="ghost" onClick={backToLogin}>
               返回登录
-            </button>
+            </Btn>
             <button
               type="button"
               className="btn btn-primary"
@@ -253,9 +254,9 @@ export function TwoFactorPage() {
           <button className="btn-ghost btn" onClick={() => { setStage("select"); setCode(""); setSent(false); }}>
             ← 更改验证方式
           </button>
-          <button className="btn-ghost btn" onClick={backToLogin}>
+          <Btn variant="ghost" onClick={backToLogin}>
             返回登录
-          </button>
+          </Btn>
         </div>
       </div>
     </div>

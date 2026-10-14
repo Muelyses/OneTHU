@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 收藏夹（OnePage）图标选择弹窗。入口：OneGO 收藏夹行右键「改图标…」。
  * 默认图标是拳头 logo（fist）；选中即写入收藏夹的 icon 字段。
@@ -69,7 +70,7 @@ export function FolderIconPickerHost(): ReactNode {
           })}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 14 }}>
-          <button type="button" className="btn" onClick={closeFolderIconPicker}>关闭</button>
+          <Btn variant="outline" onClick={closeFolderIconPicker}>关闭</Btn>
         </div>
       </div>
     </div>,

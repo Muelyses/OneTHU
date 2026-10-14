@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 文件详情（learnX FileDetail）：类型/大小/说明 + 下载占位按钮 */
 import { useMemo, useState } from "react";
 import { Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
@@ -57,7 +58,7 @@ export function FileDetailPage() {
         ) : (
           <Card><Empty
             text="未找到该文件，可能数据已刷新，请返回列表重试。"
-            action={<button className="btn btn-ghost" onClick={() => navigate("learn")}>回网络学堂</button>}
+            action={<Btn variant="ghost" onClick={() => navigate("learn")}>回网络学堂</Btn>}
           /></Card>
         )}
       </>

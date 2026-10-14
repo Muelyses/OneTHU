@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 图书馆页 —— 座位图（网格）+ 座位分布图 + 我的预约。
  * thu-info-lib library.ts 移植（seat.lib.tsinghua.edu.cn，roam("id") ef84f6d6…）：
@@ -86,9 +87,9 @@ function MapFigure({ img, caption, onRetry }: { img: MapImage; caption: string; 
           {caption}加载失败：{img.msg}
         </span>
         {onRetry ? (
-          <button className="btn" onClick={onRetry}>
+          <Btn variant="outline" onClick={onRetry}>
             重试
-          </button>
+          </Btn>
         ) : null}
       </div>
     );

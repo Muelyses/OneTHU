@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 用户收藏夹页（万物收藏项化 · 跳转入口层）。
  * - 子收藏夹 = 功能原始页同款 segmented 导航栏：直属收藏项落最左「默认」栏，
@@ -96,10 +97,10 @@ export function FolderPage() {
           editing ? (
             <>
               <button className="btn" onClick={() => { setRenameVal(folder.title); setRenaming(true); }}>重命名</button>
-              <button className="btn" disabled={orderIdx <= 0} title="左侧栏顺序上移" onClick={() => favs.moveRoot(rootId, -1)}>上移</button>
+              <Btn variant="outline" disabled={orderIdx <= 0} titleAttr="左侧栏顺序上移" onClick={() => favs.moveRoot(rootId, -1)}>上移</Btn>
               <button className="btn" disabled={orderIdx >= favs.data.order.length - 1} title="左侧栏顺序下移" onClick={() => favs.moveRoot(rootId, 1)}>下移</button>
-              <button className="btn btn-danger" onClick={() => void removeRoot()}>删除收藏夹</button>
-              <button className="btn btn-primary" onClick={() => setEditing(false)}>完成</button>
+              <Btn variant="solid" tone="error" onClick={() => void removeRoot()}>删除收藏夹</Btn>
+              <Btn variant="solid" tone="brand" onClick={() => setEditing(false)}>完成</Btn>
             </>
           ) : (
             <button className="btn" onClick={() => setEditing(true)}>
@@ -258,8 +259,8 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
 
           {editing ? (
             <div className="fav-toolbar">
-              <button className="btn" onClick={() => setPickerOpen(true)}>添加收藏项</button>
-              <button className="btn" title="从图标库选择收藏夹图标" onClick={() => setIconOpen(true)}>图标</button>
+              <Btn variant="outline" onClick={() => setPickerOpen(true)}>添加收藏项</Btn>
+              <Btn variant="outline" titleAttr="从图标库选择收藏夹图标" onClick={() => setIconOpen(true)}>图标</Btn>
               <button
                 className="btn"
                 disabled={!canNestUnder(favs.data, folderId)}
@@ -276,7 +277,7 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
                 <button className="btn" onClick={() => { setRenameVal(f.title); setRenaming(true); }}>重命名</button>
               ) : null}
               {!isRoot ? (
-                <button className="btn btn-danger" onClick={() => void removeSelf()}>删除子收藏夹</button>
+                <Btn variant="solid" tone="error" onClick={() => void removeSelf()}>删除子收藏夹</Btn>
               ) : null}
               {renaming ? (
                 <input
@@ -316,8 +317,8 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
                   if (e.key === "Escape") setNewSub(false);
                 }}
               />
-              <button className="btn btn-primary" disabled={!canNestUnder(favs.data, folderId)} onClick={createSub}>创建</button>
-              <button className="btn btn-ghost" onClick={() => setNewSub(false)}>取消</button>
+              <Btn variant="solid" tone="brand" disabled={!canNestUnder(favs.data, folderId)} onClick={createSub}>创建</Btn>
+              <Btn variant="ghost" onClick={() => setNewSub(false)}>取消</Btn>
             </div>
           ) : null}
 
@@ -581,7 +582,7 @@ function IconPickerModal({ current, onPick, onClose }: { current?: string; onPic
       <div className="home-modal" role="dialog" aria-modal="true" aria-label="选择收藏夹图标" onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>收藏夹图标</h3>
-          <button className="btn btn-ghost" onClick={onClose}>关闭</button>
+          <Btn variant="ghost" onClick={onClose}>关闭</Btn>
         </div>
         <div className="home-modal-body">
           <div className="home-modal-hint">图标应用于左侧栏与收藏夹页头；根收藏夹与子收藏夹都可各选各的。</div>

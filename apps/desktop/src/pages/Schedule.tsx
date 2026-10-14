@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 日程页 —— 时间轴（周网格，课表+云/本日程，24h）与列表（月历+所选日清单）。
  * 日期模型：单一 anchor 任意日期，不受学期边界限制（1970 起）；
@@ -907,9 +908,9 @@ export function SchedulePage() {
                 </option>
               ))}
             </select>
-            <button className="btn" onClick={goSemWeek}>
+            <Btn variant="outline" onClick={goSemWeek}>
               前往
-            </button>
+            </Btn>
           </>
         ) : null}
       </div>
@@ -918,13 +919,13 @@ export function SchedulePage() {
       {calOpen ? (
         <Card style={{ padding: 12, marginBottom: 10 }}>
           <div style={{ display: "flex", gap: 6, alignItems: "center", marginBottom: 8, flexWrap: "wrap" }}>
-            <button className="btn" title="上一年" onClick={() => calShift(-12)}>«</button>
-            <button className="btn" title="上一月" onClick={() => calShift(-1)}>‹</button>
+            <Btn variant="outline" titleAttr="上一年" onClick={() => calShift(-12)}>«</Btn>
+            <Btn variant="outline" titleAttr="上一月" onClick={() => calShift(-1)}>‹</Btn>
             <span style={{ fontWeight: 600, fontSize: 13.5, minWidth: 120, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>
               {calView.getFullYear()} 年 {calView.getMonth() + 1} 月
             </span>
-            <button className="btn" title="下一月" onClick={() => calShift(1)}>›</button>
-            <button className="btn" title="下一年" onClick={() => calShift(12)}>»</button>
+            <Btn variant="outline" titleAttr="下一月" onClick={() => calShift(1)}>›</Btn>
+            <Btn variant="outline" titleAttr="下一年" onClick={() => calShift(12)}>»</Btn>
             <span style={{ flex: 1 }} />
             <button className="btn" onClick={() => setCalView(new Date(new Date().getFullYear(), new Date().getMonth(), 1))}>本月</button>
           </div>
@@ -1367,7 +1368,7 @@ export function SchedulePage() {
             <button className="btn btn-primary" disabled={!draft.title.trim() || busy} onClick={() => void onSaveDraft()}>
               {busy ? "保存中…" : "保存"}
             </button>
-            <button className="btn" onClick={() => setDraft(null)}>取消</button>
+            <Btn variant="outline" onClick={() => setDraft(null)}>取消</Btn>
             <span style={{ flex: 1 }} />
             {draft.uid ? (
               <button className="btn" style={{ color: "#e5484d" }} disabled={busy} onClick={() => void onDeleteDraft()}>

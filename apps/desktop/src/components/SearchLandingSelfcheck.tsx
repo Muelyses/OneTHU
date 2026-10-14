@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 检索落点自查路由（**仅 dev 构建**；release 里整块被 rollup 剥离，不进导航）。
  *
@@ -164,7 +165,7 @@ function SearchLandingSelfcheck(): ReactNode {
         <b>检索落点自查</b>
         <span style={{ color: "var(--text-3)" }}>hit {report.rows.filter((x) => x.hit === "hit").length}/45 · 分节根 {report.rows.filter((x) => x.landedOn === "section-root").length}</span>
         <span style={{ flex: 1 }} />
-        <button className="btn btn-primary" onClick={() => void copyReport()}>复制报告</button>
+        <Btn variant="solid" tone="brand" onClick={() => void copyReport()}>复制报告</Btn>
         <button className="btn btn-ghost" aria-label="关闭" onClick={() => setReport(null)}><IconX width={14} height={14} /></button>
       </div>
       {miss.length ? (

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 待办聚合页 v2.1（UI/UX 改造 §2.2，按用户《待办页施工方案》+ 实机反馈迭代）。
  *
@@ -194,7 +195,7 @@ function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onPick, on
       <div className="hw-carousel-empty">
         <Empty text="作业都交完了，痛快去玩吧。" />
         <div className="svc-actions">
-          <button className="btn" onClick={() => navigate("learn-assignments")}>查看全部作业</button>
+          <Btn variant="outline" onClick={() => navigate("learn-assignments")}>查看全部作业</Btn>
         </div>
       </div>
     );

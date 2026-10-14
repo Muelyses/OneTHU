@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 首页一次性引导（§4.6）：改版后首次进新首页，最多 3 处、可跳过、看过不再打扰。
  *
@@ -171,9 +172,9 @@ export function HomeCoachMarks(): ReactNode {
           第 {idx + 1} 条，共 {avail.length} 条
         </span>
         <span style={{ flex: 1 }} />
-        <button className="btn btn-ghost" onClick={finish}>
+        <Btn variant="ghost" onClick={finish}>
           不再提示
-        </button>
+        </Btn>
         <button className="btn btn-primary" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>
           {last ? "知道了" : "下一条"}
         </button>

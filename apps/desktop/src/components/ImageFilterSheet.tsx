@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 图片滤镜编辑（需求 8）：预设缩略图横排 + 旋转 + 应用/取消。
  *
@@ -247,9 +248,9 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
         </div>
 
         <div className="ohf-foot">
-          <button className="btn" type="button" onClick={onCancel} disabled={busy}>
+          <Btn variant="outline" onClick={onCancel} disabled={busy}>
             取消
-          </button>
+          </Btn>
           <button className="btn-primary" type="button" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>
             {busy ? "处理中…" : "应用"}
           </button>

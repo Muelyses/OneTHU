@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 应用内确认弹窗（Promise 化）——Tauri WKWebView 的原生 window.confirm
  * 静默返回 false（无对话框 UI），所有 confirm 门控的破坏性操作因此
@@ -159,7 +160,7 @@ function PromptHost(): React.ReactNode {
           }}
         />
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
-          <button className="btn" onClick={() => answerPrompt(null)}>取消</button>
+          <Btn variant="outline" onClick={() => answerPrompt(null)}>取消</Btn>
           <button className="btn" style={{ borderColor: "var(--accent, #6d7ff0)", color: "var(--accent, #6d7ff0)" }} disabled={!val.trim()} onClick={submit}>确定</button>
         </div>
       </div>

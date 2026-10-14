@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 常驻对话面板（宿主胶水，R2/R4/R5 的 dock 面）：
  *  发现 activate 返回 dock:true 命令的已启用 rust 插件 → 显示常驻气泡；
  *  对话/会话/导出/用量全部走该插件的 JSON-RPC run 命令（结构化契约见
@@ -543,8 +544,8 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
         <div className="dock-confirm">
           <div className="dock-confirm-text">{p.confirmCard}</div>
           <div className="dock-confirm-ops">
-            <button className="btn btn-primary dock-btn" disabled={p.busy} onClick={() => p.onSend("确认")}>确认执行</button>
-            <button className="btn dock-btn" disabled={p.busy} onClick={() => p.onSend("取消")}>取消</button>
+            <Btn variant="solid" tone="brand" disabled={p.busy} onClick={() => p.onSend("确认")}>确认执行</Btn>
+            <Btn variant="outline" disabled={p.busy} onClick={() => p.onSend("取消")}>取消</Btn>
           </div>
         </div>
       ) : null}
@@ -2095,7 +2096,7 @@ export function ChatDock(): ReactNode {
             <div className="dock-history" role="menu">
               <div className="dock-history-head">
                 <b>历史会话</b>
-                <button className="btn dock-btn" onClick={() => setHistory(null)}>关闭</button>
+                <Btn variant="outline" onClick={() => setHistory(null)}>关闭</Btn>
               </div>
               {history.length === 0 ? <div className="dock-empty">（无会话）</div> : history.map((s, idx) => (
                 <div key={s.id} className="dock-hist-row">

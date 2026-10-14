@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 通知只读详情（learnX NoticeDetail）：标题/发布者/正文富文本 + 附件下载。
  *
@@ -237,7 +238,7 @@ export function NoticeDetailPage() {
             <div className="kv kv-wide">
               <span>附件</span>
               <span className="t-red">{attErr}</span>
-              <button className="btn btn-ghost" onClick={retryAtt}>重试</button>
+              <Btn variant="ghost" onClick={retryAtt}>重试</Btn>
             </div>
           ) : null}
           {attState === "ok" ? (

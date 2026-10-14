@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 「选一个收藏项」的选择层：**先给收藏夹里的收藏项，再给搜索**。
  *
@@ -85,7 +86,7 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
       <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>{title}</h3>
-          <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+          <Btn variant="ghost" onClick={requestClose}>关闭</Btn>
         </div>
         <div className="home-modal-body">
           <div className="collect-search">

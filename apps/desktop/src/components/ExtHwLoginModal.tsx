@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 外部作业源「登录雨课堂」通道弹窗（R11 16.3）。
  *
@@ -206,9 +207,9 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         <button className="btn" onClick={() => setNonce((n) => n + 1)}>
           刷新二维码
         </button>
-        <button className="btn btn-ghost" onClick={handleCancel}>
+        <Btn variant="ghost" onClick={handleCancel}>
           取消
-        </button>
+        </Btn>
       </div>
     </div>
   );
@@ -310,9 +311,9 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
         <button className="btn btn-primary" disabled={phase === "reading"} onClick={read}>
           {phase === "reading" ? "读取中…" : "我已登录，读取登录信息"}
         </button>
-        <button className="btn btn-ghost" onClick={onCancel}>
+        <Btn variant="ghost" onClick={onCancel}>
           取消
-        </button>
+        </Btn>
       </div>
     </div>
   );
@@ -329,7 +330,7 @@ export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () 
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
           <b>登录雨课堂</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={requestClose}>✕</button>
+          <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>

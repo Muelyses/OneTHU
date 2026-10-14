@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 网络学堂子页共享件 —— learnX 移植（行组件 / 学期文案 / 状态徽标 / 富文本渲染）。
  * 数据统一来自 useLearnData（state/data.ts），行点击经 app 轻路由进只读详情页。
@@ -344,9 +345,9 @@ export function HwRemindPop({
           设定
         </button>
         {allowClear && value != null ? (
-          <button className="btn btn-ghost" title="清除（恢复跟随全局默认）" onClick={() => apply(null)}>
+          <Btn variant="ghost" titleAttr="清除（恢复跟随全局默认）" onClick={() => apply(null)}>
             清除
-          </button>
+          </Btn>
         ) : null}
       </div>
       {foot ? <div className="hwremind-pop-foot">{foot}</div> : null}

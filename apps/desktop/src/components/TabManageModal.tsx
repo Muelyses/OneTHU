@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 聚合页栏目管理弹窗：勾选显隐 + ↑↓ 调序 + 恢复默认。
  * zhjwxk 弹窗同款骨架（portal + mask/panel 自带表面色）。
@@ -84,7 +85,7 @@ export function TabManageModal({
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: "1px solid var(--border, #eee)" }}>
           <b>{title}</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={requestClose}>✕</button>
+          <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
         <div style={{ padding: "8px 16px 14px", overflowY: "auto", fontSize: 13, lineHeight: 1.7 }}>
           <div style={{ fontSize: 12, color: "var(--text-3, #9aa1ac)", margin: "6px 0" }}>
@@ -104,8 +105,8 @@ export function TabManageModal({
             );
           })}
           <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
-            <button className="btn" onClick={onReset}>恢复默认</button>
-            <button className="btn btn-primary" onClick={requestClose}>完成</button>
+            <Btn variant="outline" onClick={onReset}>恢复默认</Btn>
+            <Btn variant="solid" tone="brand" onClick={requestClose}>完成</Btn>
           </div>
         </div>
       </div>

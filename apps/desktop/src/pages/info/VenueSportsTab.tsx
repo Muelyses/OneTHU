@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 体育场馆预约（体育系统 sports.tsinghua.edu.cn 全套移植 · 除支付）。
  *
@@ -879,9 +880,9 @@ export function VenueSportsTab({
             >
               根据清华大学体育部场馆中心 2025 年 12 月 3 日发布的公告 七、12、如有用户通过脚本软件或插件等非正常途径预定场地，一经发现并核实，对该用户封禁预订权限 6 个月，并函告相关院系或单位。OneTHU 仅提供场馆情况查询，请点击按钮前往官网预约；如果不当使用源码进行预约，违反本项目开源准则，后果自负。
             </div>
-            <button className="btn btn-primary" onClick={goOfficialBooking}>
+            <Btn variant="solid" tone="brand" onClick={goOfficialBooking}>
               在应用内打开官方预约页
-            </button>
+            </Btn>
             <button
               className="btn btn-ghost"
               style={{ marginLeft: 8 }}

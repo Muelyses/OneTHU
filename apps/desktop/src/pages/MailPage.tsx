@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 邮箱页 —— 复用云日历凭据（IMAP 收 / SMTP 发，Rust 直连）。
  *
@@ -92,7 +93,7 @@ function Compose({ closing, onClose, onSent }: { closing: boolean; onClose: () =
       <div className={"mail-compose" + (closing ? " is-closing" : "")}>
         <div className="mail-compose-head">
           <h2>写信</h2>
-          <button className="btn btn-ghost" onClick={onClose} disabled={sending}>取消</button>
+          <Btn variant="ghost" onClick={onClose} disabled={sending}>取消</Btn>
         </div>
         <div className="mail-compose-fields">
           <label>
@@ -241,8 +242,8 @@ export function MailPage(): React.ReactNode {
         <h2>邮箱待配置</h2>
         <p>邮箱与云日历共用同一个清华邮箱，绑一次两处都能用。</p>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button className="btn btn-primary" onClick={() => setBindOpen(true)}>绑定邮箱</button>
-          <button className="btn" onClick={() => navigate("settings")}>去设置</button>
+          <Btn variant="solid" tone="brand" onClick={() => setBindOpen(true)}>绑定邮箱</Btn>
+          <Btn variant="outline" onClick={() => navigate("settings")}>去设置</Btn>
         </div>
         <ConnectGate need="mail" open={bindOpen} onClose={() => setBindOpen(false)} />
       </div>
@@ -288,7 +289,7 @@ export function MailPage(): React.ReactNode {
             placeholder="搜索邮件（回车全箱搜）"
           />
           {results !== null ? (
-            <button className="btn btn-ghost" title="退出搜索" onClick={() => { setResults(null); setQ(""); }}>×</button>
+            <Btn variant="ghost" titleAttr="退出搜索" onClick={() => { setResults(null); setQ(""); }}>×</Btn>
           ) : (
             <button className="btn btn-ghost" title="全箱搜索" onClick={() => void doSearch()} disabled={!q.trim() || searching}>{searching ? "…" : "搜"}</button>
           )}
@@ -309,7 +310,7 @@ export function MailPage(): React.ReactNode {
                 {mail.loading ? "加载中…" : `已显示最新 ${mail.heads.length} / 共 ${mail.total} 封`}
               </span>
               {mail.canMore && !mail.loading && (
-                <button className="btn btn-ghost" onClick={() => void mail.loadMore()}>加载更早</button>
+                <Btn variant="ghost" onClick={() => void mail.loadMore()}>加载更早</Btn>
               )}
             </div>
           ) : (

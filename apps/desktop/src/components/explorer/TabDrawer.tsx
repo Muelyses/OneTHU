@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 标签页抽屉（dev-explorer）：当前标签页（按工作区分组）+ 工作区管理。
  * 手机 = 底部抽屉，桌面 = 右下浮层面板（同一 DOM，CSS 媒体查询分流）。
@@ -691,7 +692,7 @@ function MoveMenu({
                 if (e.key === "Enter") createAndMove();
               }}
             />
-            <button className="btn btn-primary ex-btn-sm" onClick={createAndMove}>存</button>
+            <Btn variant="solid" tone="brand" onClick={createAndMove}>存</Btn>
           </div>
         ) : (
           <>
@@ -755,8 +756,8 @@ export function WorkspacePanel(): ReactNode {
                   if (e.key === "Escape") setNaming(false);
                 }}
               />
-              <button className="btn btn-primary ex-btn-sm" onClick={save}>保存</button>
-              <button className="btn btn-ghost ex-btn-sm" onClick={() => setNaming(false)}>取消</button>
+              <Btn variant="solid" tone="brand" onClick={save}>保存</Btn>
+              <Btn variant="ghost" onClick={() => setNaming(false)}>取消</Btn>
             </span>
           ) : (
             <button className="btn btn-ghost ex-btn-sm" onClick={() => setNaming(true)}>
@@ -788,9 +789,9 @@ export function WorkspacePanel(): ReactNode {
                 </div>
                 <div className="ex-row-actions">
                   <button className="btn btn-ghost ex-btn-sm" onClick={() => { openWorkspace(w.id); closeTabDrawer(); }}>打开</button>
-                  <button className="btn btn-ghost ex-btn-sm" onClick={() => openWorkspaceEditor(w.id)}>编辑</button>
+                  <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>编辑</Btn>
                   {w.live ? (
-                    <button className="btn btn-ghost ex-btn-sm" title="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</button>
+                    <Btn variant="ghost" titleAttr="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</Btn>
                   ) : null}
                   <button
                     className="btn btn-ghost ex-btn-sm ex-danger"
@@ -982,7 +983,7 @@ function TabDrawerInner(): ReactNode {
         <header className="ex-sheet-head">
           <b>标签页</b>
           <span className="ex-sec-head-note">{pageTabs.length} 个工作标签</span>
-          <button className="btn btn-ghost ex-btn-sm" onClick={requestClose}>完成</button>
+          <Btn variant="ghost" onClick={requestClose}>完成</Btn>
         </header>
         {/* A1：手机只有横标签页——横/竖版切换分段在手机不渲染（设置里的默认值行同样收掉） */}
         {phoneUi ? null : (
@@ -1011,7 +1012,7 @@ function TabDrawerInner(): ReactNode {
             <div className="ex-sec-head">
               <b>当前标签页</b>
               {pageTabs.length > 1 ? (
-                <button className="btn btn-ghost ex-btn-sm" onClick={() => closeOtherTabs(activeTabId())}>关闭其他</button>
+                <Btn variant="ghost" onClick={() => closeOtherTabs(activeTabId())}>关闭其他</Btn>
               ) : null}
             </div>
             <div className="ex-row-list">

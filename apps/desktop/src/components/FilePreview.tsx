@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 统一文件预览（全局唯一弹窗，module-level opener 通道，同 zhjwxk/Courses.tsx 的 _detailOpen 做法）：
  * openFilePreview({ name, url }) 任意处调用 → FilePreviewHost（App 级挂载一次）createPortal 渲染。
@@ -377,7 +378,7 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 24 }}>
         <div style={{ fontSize: 12.5, color: "var(--red, #e5484d)", textAlign: "center" }}>{err}</div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-          <button className="btn" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
+          <Btn variant="outline" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</Btn>
         </div>
       </div>
     );
@@ -399,14 +400,14 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string
         <div style={{ height: 8 }} />
       </div>
       <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
-        <button className="btn" disabled={cur <= 1} title="上一页" onClick={() => jump(cur - 1)}>‹</button>
+        <Btn variant="outline" disabled={cur <= 1} titleAttr="上一页" onClick={() => jump(cur - 1)}>‹</Btn>
         <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 64, textAlign: "center" }}>{cur} / {doc.numPages}</span>
         <button className="btn" disabled={cur >= doc.numPages} title="下一页" onClick={() => jump(cur + 1)}>›</button>
         <span style={{ width: 8 }} />
         <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
         <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
         <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
-        <button className="btn btn-ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</button>
+        <Btn variant="ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</Btn>
         <button className="btn btn-ghost" disabled={pdfBusy} title="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>
           {pdfBusy ? "调起中…" : "系统应用打开"}
         </button>
@@ -821,7 +822,7 @@ function ZipTreeView({ zip, notice }: { zip: ZipPayload; notice?: string }) {
         /* 单条文本条目的内联预览面板（替代列表展示） */
         <div style={{ border: "1px solid var(--border, #e5e5e5)", borderRadius: 10, padding: 10, display: "flex", flexDirection: "column", gap: 8, flex: 1, minHeight: 0 }}>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
-            <button className="btn" onClick={() => setPreview(null)}>← 返回列表</button>
+            <Btn variant="outline" onClick={() => setPreview(null)}>← 返回列表</Btn>
             <span style={{ ...zipNameStyle, fontSize: 12 }} title={preview.path}>📄 {preview.path}</span>
             <span style={zipMetaStyle}>{fmtBytes(preview.size)}</span>
           </div>
@@ -1192,7 +1193,7 @@ function PptxSlidesView({ model }: { model: PptxModel }): React.ReactNode {
         <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
         <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
         <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
-        <button className="btn btn-ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</button>
+        <Btn variant="ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</Btn>
         {model.unsupported > 0 ? (
           <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>{model.unsupported} 个图表/对象未渲染</span>
         ) : null}
@@ -1449,7 +1450,7 @@ export function FilePreviewHost() {
             <button className="btn btn-ghost" disabled={dlBusy} title="这次保存到哪里由你选" onClick={() => void doSaveAs()}>
               另存为
             </button>
-            <button className="btn" onClick={close} aria-label="关闭预览">✕</button>
+            <Btn variant="outline" onClick={close} aria-label="关闭预览">✕</Btn>
           </span>
         </div>
 
@@ -1465,7 +1466,7 @@ export function FilePreviewHost() {
                 </div>
               ) : null}
               <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={retry}>重试</button>
+                <Btn variant="outline" onClick={retry}>重试</Btn>
                 <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
                   {dlBusy ? "下载中…" : "下载查看"}
                 </button>

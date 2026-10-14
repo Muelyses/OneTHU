@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 内嵌 HLS/MP4 播放器（R27）：雨课堂视频是 HLS（m3u8），Chromium 内核不原生支持，
  * 因此按需动态加载 hls.js（仅视频内容才加载，不影响首屏体积）；mp4 直接交给 <video>。
@@ -68,9 +69,9 @@ export function YktVideoPlayer({ src, title }: { src: string; title?: string }) 
       {err ? (
         <div className="ykt-ans-empty">
           {err}
-          <button className="btn btn-ghost" onClick={copy}>
+          <Btn variant="ghost" onClick={copy}>
             复制直链
-          </button>
+          </Btn>
         </div>
       ) : null}
       {/* 失败时保留控件条以便用户重试；成功路径由 hls.js 或浏览器直接驱动 */}

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 选课工作台 —— nextthuxk v1.4.9 布局复刻（单屏两栏）：
  * 左栏 = 搜索/筛选chips/筛选selects/课程列表；右栏 = 学分统计·课表预览·暂存草稿·候补·AI。
@@ -189,7 +190,7 @@ function DetailModal({ wb, code, tid, onClose }: { wb: ReturnType<typeof useXkWo
   return createPortal(
     <div style={closing ? { ...maskStyle, ...maskOut } : maskStyle} className="xk-mask" onClick={requestClose}>
       <div style={closing ? { ...panelStyle, ...panelOut } : panelStyle} className="xk-panel" onClick={(e) => e.stopPropagation()}>
-        <div style={panelHead}><b>课程简介</b><span style={{ flex: 1 }} /><button className="btn" onClick={requestClose}>✕</button></div>
+        <div style={panelHead}><b>课程简介</b><span style={{ flex: 1 }} /><Btn variant="outline" onClick={requestClose}>✕</Btn></div>
         <div style={panelBody}>
           {/* 【教评#31冻结】教评三态块（整块注释保留，教务修好解开）
            {rrows === undefined ? (
@@ -299,7 +300,7 @@ function ReviewsModal({ code, seq, name, teacher, onClose }: { code: string | nu
   return createPortal(
     <div style={closing ? { ...maskStyle, ...maskOut } : maskStyle} className="xk-mask" onClick={requestClose}>
       <div style={closing ? { ...panelStyle, ...panelOut } : panelStyle} className="xk-panel" onClick={(e) => e.stopPropagation()}>
-        <div style={panelHead}><b>{name} · 社区点评</b><span style={{ flex: 1 }} /><button className="btn" onClick={requestClose}>✕</button></div>
+        <div style={panelHead}><b>{name} · 社区点评</b><span style={{ flex: 1 }} /><Btn variant="outline" onClick={requestClose}>✕</Btn></div>
         <div style={panelBody}>
           {headBits}
           {entry ? (
@@ -755,7 +756,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
       <Card style={{ padding: 10, marginBottom: 10 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <input className="input" style={{ flex: 1 }} placeholder="搜索课程名称、教师、课程号…" value={query} onChange={(e) => setQuery(e.target.value)} />
-          {query ? <button className="btn" onClick={() => setQuery("")}>×</button> : null}
+          {query ? <Btn variant="outline" onClick={() => setQuery("")}>×</Btn> : null}
         </div>
         <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
           {([["all", "全部"], ["available", "可选"], ["selected", "已选"], ["required", "必修"], ["elective", "限选"], ["sports", "体育"], ["queue", "我的队列"], ["plan", "培养方案"]] as const).map(([k, label]) => (
@@ -826,7 +827,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
             <span style={{ fontSize: 12, color: "var(--text-3)" }}>跳至</span>
             <input className="input" style={{ width: 52, height: 24, fontSize: 12 }} value={goPage}
               onChange={(e) => setGoPage(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && goJump()} />
-            <button className="btn" disabled={busy || !goPage} onClick={goJump}>GO</button>
+            <Btn variant="outline" disabled={busy || !goPage} onClick={goJump}>GO</Btn>
           </div>
         </>
       )}
@@ -850,7 +851,7 @@ function PlanView({ wb, query, onSearchCode }: { wb: ReturnType<typeof useXkWork
       <Card>
         <Empty text="暂无培养方案数据（该学期可能未配置，或登录已过期）" />
         <div style={{ textAlign: "center", paddingBottom: 10 }}>
-          <button className="btn" onClick={() => void wb.refresh()}>重试</button>
+          <Btn variant="outline" onClick={() => void wb.refresh()}>重试</Btn>
         </div>
       </Card>
     );
@@ -1423,7 +1424,7 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       ) : null}
       <div style={{ marginTop: 6, fontSize: 11, color: "var(--green)" }}>{courses.length}门课 · {cr}学分{wb.manualEvents.length ? ` · 自定义占用${wb.manualEvents.length}项` : ""}</div>
       <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 8, flexWrap: "wrap", fontSize: 12 }}>
-        <button className="btn" onClick={() => setMOpen((v) => !v)}>＋ 添加占用</button>
+        <Btn variant="outline" onClick={() => setMOpen((v) => !v)}>＋ 添加占用</Btn>
       </div>
       {mOpen ? (
         <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
@@ -1534,16 +1535,16 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
         <input className="input" style={{ flex: 1, height: 26, fontSize: 12, minWidth: 110 }} placeholder="草稿名称（如：方案A）" value={draftName} onChange={(e) => setDraftName(e.target.value)} />
         <button className="btn" onClick={() => { if (draftName.trim()) { wb.saveDraft(draftName.trim()); setDraftName(""); } }}>保存草稿</button>
         <button className="btn" onClick={() => { const n = globalThis.prompt?.("草稿名称", "我的课表"); if (n) wb.saveCurrentAsDraft(n); }}>存当前选课</button>
-        <button className="btn" onClick={() => wb.setPreview("stage")}>预览暂存</button>
+        <Btn variant="outline" onClick={() => wb.setPreview("stage")}>预览暂存</Btn>
         <button className="btn" style={{ color: "var(--red)" }} disabled={!wb.stageCart.length && !wb.manualEvents.length}
           onClick={() => { void (async () => { if (await confirmOk(`清空暂存车 ${wb.stageCart.length} 门 + 自定义占用 ${wb.manualEvents.length} 项？`)) { for (const s of [...wb.stageCart]) wb.removeFromStage(s.code, s.seq); wb.clearManualEvents(); } })()}}>清空</button>
-        <button className="btn" onClick={() => setImportOpen((v) => !v)}>导入</button>
+        <Btn variant="outline" onClick={() => setImportOpen((v) => !v)}>导入</Btn>
       </div>
       {importOpen ? (
         <div style={{ marginTop: 6 }}>
           <textarea className="input" style={{ width: "100%", height: 60, fontSize: 11 }} placeholder="粘贴导出的课表数据…" value={importText} onChange={(e) => setImportText(e.target.value)} />
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-            <button className="btn" onClick={putImport}>确认导入到暂存区</button>
+            <Btn variant="outline" onClick={putImport}>确认导入到暂存区</Btn>
             <button className="btn" style={{ color: "var(--red)" }} onClick={() => setImportOpen(false)}>取消</button>
           </div>
         </div>
@@ -1558,14 +1559,14 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
               {confirmIdx === idx ? (
                 <>
                   <button className="btn" onClick={() => { setConfirmIdx(-1); void wb.submitDraft(idx); }}>确认提交</button>
-                  <button className="btn" onClick={() => setConfirmIdx(-1)}>取消</button>
+                  <Btn variant="outline" onClick={() => setConfirmIdx(-1)}>取消</Btn>
                 </>
               ) : (
-                <button className="btn" onClick={() => setConfirmIdx(idx)}>提交</button>
+                <Btn variant="outline" onClick={() => setConfirmIdx(idx)}>提交</Btn>
               )}
-              <button className="btn" onClick={() => wb.setPreview("draft", idx)}>预览</button>
-              <button className="btn" onClick={() => void wb.exportDraft(idx)}>导出</button>
-              <button className="btn" onClick={() => wb.deleteDraft(idx)}>删除</button>
+              <Btn variant="outline" onClick={() => wb.setPreview("draft", idx)}>预览</Btn>
+              <Btn variant="outline" onClick={() => void wb.exportDraft(idx)}>导出</Btn>
+              <Btn variant="outline" onClick={() => wb.deleteDraft(idx)}>删除</Btn>
             </div>
           </div>
         ))}

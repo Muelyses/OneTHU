@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 今日组件库（万物原子化）：今日页 bespoke 卡的「纯展示体」+「自持组件」双形态。
  * - 纯展示体（AgendaRows/HomeworkRows/…）：数据由调用方传入，TodayPage 照旧
@@ -243,7 +244,7 @@ export function HomeworkRows({
       <Card>
         <Empty
           text="没有未提交的作业，享受今天吧。"
-          action={<button className="btn btn-ghost" onClick={() => navigate("tasks")}>去待办看看</button>}
+          action={<Btn variant="ghost" onClick={() => navigate("tasks")}>去待办看看</Btn>}
         />
       </Card>
     );
@@ -310,7 +311,7 @@ export function NoticeRows({
       {items.length === 0 ? (
         <Empty
           text="暂时没有新通知。"
-          action={<button className="btn btn-ghost" onClick={() => navigate("learn")}>去网络学堂</button>}
+          action={<Btn variant="ghost" onClick={() => navigate("learn")}>去网络学堂</Btn>}
         />
       ) : (
         items.slice(0, 3).map((n, i) => (
@@ -367,7 +368,7 @@ export function ClassRows({ events, navigate }: { events: ScheduleEntry[]; navig
       {events.length === 0 ? (
         <Empty
           text="今天没有课。"
-          action={<button className="btn btn-ghost" onClick={() => navigate("schedule")}>看本周课表</button>}
+          action={<Btn variant="ghost" onClick={() => navigate("schedule")}>看本周课表</Btn>}
         />
       ) : (
         events.map((s, i) => (

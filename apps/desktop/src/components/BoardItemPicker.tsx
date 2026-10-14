@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 「具体项」选择器（霖 2026-10-11 定）。
  *
@@ -74,7 +75,7 @@ export function BoardItemPicker({
         <div className="add-drawer-inner">
           <div className="picker-head">
             <span className="picker-title">{title}</span>
-            <button type="button" className="btn" onClick={onClose}>关闭</button>
+            <Btn variant="outline" onClick={onClose}>关闭</Btn>
           </div>
           <input
             className="picker-search"

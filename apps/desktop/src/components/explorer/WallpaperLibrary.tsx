@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 壁纸库网格（设置→外观 与 页面右键选择器共用，2026-10-13；2026-10-14 单档化）。
  *
@@ -138,15 +139,15 @@ export function WallpaperLibrary({
       {variant === "picker" ? (
         <div className="wall-picker-head">
           <b>更换壁纸</b>
-          <button type="button" className="btn btn-ghost" onClick={onClose} aria-label="关闭">
+          <Btn variant="ghost" onClick={onClose} aria-label="关闭">
             关闭
-          </button>
+          </Btn>
         </div>
       ) : (
         <div className="wall-lib-ops">
-          <button type="button" className="btn" onClick={pickUpload}>
+          <Btn variant="outline" onClick={pickUpload}>
             上传入库…
-          </button>
+          </Btn>
           <button type="button" className="btn" disabled={busy} onClick={() => void runSync(syncWallpaperToCloud)}>
             同步到云盘
           </button>
@@ -171,9 +172,9 @@ export function WallpaperLibrary({
         </div>
       ) : null}
       {variant === "picker" ? (
-        <button type="button" className="btn wall-lib-upload" onClick={pickUpload}>
+        <Btn variant="outline" onClick={pickUpload}>
           上传图片或视频…
-        </button>
+        </Btn>
       ) : null}
     </div>
   );

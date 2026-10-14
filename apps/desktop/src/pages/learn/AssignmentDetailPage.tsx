@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 作业只读详情（learnX AssignmentDetail）：提交/批改情况 + 说明富文本 + 四类附件；提交/撤回已移植（tjzy）*/
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
@@ -146,7 +147,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
         ) : (
           <Card><Empty
             text="未找到该作业，可能数据已刷新，请返回列表重试。"
-            action={<button className="btn btn-ghost" onClick={() => navigate("learn")}>回网络学堂</button>}
+            action={<Btn variant="ghost" onClick={() => navigate("learn")}>回网络学堂</Btn>}
           /></Card>
         )}
       </>
@@ -348,7 +349,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
             <div className="kv kv-wide">
               <span>附件</span>
               <span className="t-red">{pageError}</span>
-              <button className="btn btn-ghost" onClick={retryPage}>重试</button>
+              <Btn variant="ghost" onClick={retryPage}>重试</Btn>
             </div>
           ) : null}
           {(() => {
@@ -411,7 +412,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
           <div className="kv kv-wide">
             <span>说明</span>
             <span className="t-red">{descError}</span>
-            <button className="btn btn-ghost" onClick={retryDesc}>重试</button>
+            <Btn variant="ghost" onClick={retryDesc}>重试</Btn>
           </div>
         ) : (
           <RichContent html={h.content || desc || undefined} fallback="暂无作业说明。" />

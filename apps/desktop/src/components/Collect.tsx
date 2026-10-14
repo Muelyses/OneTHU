@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 收藏星标 + 收藏弹层 + 收藏项搜索添加弹层（万物收藏项化 UI 件）。
  * - CollectStar：行尾/卡头星标按钮，点亮态 = 已收进任意用户收藏夹；
@@ -214,7 +215,7 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
       <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="收藏到收藏夹" onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>收藏到…</h3>
-          <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+          <Btn variant="ghost" onClick={requestClose}>关闭</Btn>
         </div>
         <div className="home-modal-body">
           <div className="home-modal-hint">
@@ -238,8 +239,8 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
                   if (e.key === "Escape") setCreating(false);
                 }}
               />
-              <button className="btn btn-primary" disabled={!name.trim()} onClick={createAndAdd}>建并收藏</button>
-              <button className="btn btn-ghost" onClick={() => setCreating(false)}>取消</button>
+              <Btn variant="solid" tone="brand" disabled={!name.trim()} onClick={createAndAdd}>建并收藏</Btn>
+              <Btn variant="ghost" onClick={() => setCreating(false)}>取消</Btn>
             </div>
           ) : (
             <button className="btn collect-new-btn" onClick={() => setCreating(true)}>
@@ -282,7 +283,7 @@ export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹",
       <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="搜索并添加收藏项" onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>{title}</h3>
-          <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+          <Btn variant="ghost" onClick={requestClose}>关闭</Btn>
         </div>
         <div className="home-modal-body">
           <div className="collect-search">
@@ -303,7 +304,7 @@ export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹",
           ) : results.length === 0 ? (
             <Empty
               text="没有匹配的收藏项——试试更短的关键词，或先去对应页面打开一次。"
-              action={<button className="btn btn-ghost" onClick={() => setQ("")}>清空关键词</button>}
+              action={<Btn variant="ghost" onClick={() => setQ("")}>清空关键词</Btn>}
             />
           ) : (
             results.map((h) => {

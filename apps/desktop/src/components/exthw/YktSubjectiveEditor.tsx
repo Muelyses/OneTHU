@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * R20-C2 P3：雨课堂主观题原生作答编辑器（docs §31.2 / §31.5 / §32）。
  *
@@ -393,9 +394,9 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
               <button type="button" className="btn btn-sm" onClick={() => setFormulaOpen(false)}>
                 取消
               </button>
-              <button type="button" className="btn btn-sm btn-primary" disabled={!formulaTex.trim()} onClick={insertFormula}>
+              <Btn variant="solid" tone="brand" disabled={!formulaTex.trim()} onClick={insertFormula}>
                 插入公式
-              </button>
+              </Btn>
             </div>
           </div>
         </div>

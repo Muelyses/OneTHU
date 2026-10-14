@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * R20-B2：雨课堂作业原生只读详情页（learn-ykt-detail，docs 28.7 B2）。
  *
@@ -517,9 +518,9 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
               </button>
             ) : null}
             {ykt.externalUrl ? (
-              <button className="btn" onClick={openInWeb} title="在系统浏览器或应用内打开官方页">
+              <Btn variant="outline" onClick={openInWeb} titleAttr="在系统浏览器或应用内打开官方页">
                 浏览器打开
-              </button>
+              </Btn>
             ) : null}
           </>
         }

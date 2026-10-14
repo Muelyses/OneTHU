@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 信息中心 —— info 门户核心功能聚合页（thu-info-app 功能移植到桌面端）。
  * 子页：成绩（getReport）/ 体测成绩（成绩后）/ 考试安排（课表分类「考试」）/
@@ -140,7 +141,7 @@ export function InfoPage() {
         <Empty
           text="所有栏目都被藏起来了。"
           hint="点下面的按钮可以把它们叫回来。"
-          action={<button className="btn btn-primary" onClick={() => setManageOpen(true)}>管理栏目</button>}
+          action={<Btn variant="solid" tone="brand" onClick={() => setManageOpen(true)}>管理栏目</Btn>}
         />
       ) : (
         <>

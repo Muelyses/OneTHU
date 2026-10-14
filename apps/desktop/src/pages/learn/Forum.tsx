@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 讨论区（learnX bbs_tltb）：课程详情「讨论区」tab 列表 + 话题阅读/回复页。
  *  2026-09 逆向自 讨论区示例/learn.tsinghua.edu.cn.har（viewTlById 页 + pageViewTlById 分页 JSON
  *  + saveEdit 回帖表单）。列表页站点为服务端渲染，解析宽容（标题必有，作者/回复数尽力）。
@@ -550,9 +551,9 @@ function NewThreadDialog({
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
           <strong style={{ fontSize: 16 }}>发新话题</strong>
           <span style={{ flex: "1 1 auto" }} />
-          <button className="btn" onClick={onClose}>
+          <Btn variant="outline" onClick={onClose}>
             关闭
-          </button>
+          </Btn>
         </div>
         <input
           className="input"

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 插件页（侧栏一级入口「插件」）：
  * 三区信息架构——电表概览条 / 模块卡（开关·设置·日志·删除 + 命令）/ 安装面板。
@@ -682,7 +683,7 @@ function PluginCard({
           <div className="plg-notice" style={{ background: "var(--surface-2)", border: "1px solid var(--accent-border)", borderRadius: "var(--r-md)", padding: "10px 12px", margin: "8px 0 4px" }}>
             <div style={{ display: "flex", gap: 8, alignItems: "baseline", justifyContent: "space-between" }}>
               <b style={{ color: "var(--accent)" }}>📢 插件公告</b>
-              <button className="btn btn-ghost" onClick={ack}>知道了</button>
+              <Btn variant="ghost" onClick={ack}>知道了</Btn>
             </div>
             <div style={{ whiteSpace: "pre-wrap", marginTop: 6, maxHeight: 132, overflow: "auto", color: "var(--text-1)", fontSize: 12.5, lineHeight: 1.5 }}>
               {rec.notice.text.slice(0, 1600)}
@@ -806,9 +807,9 @@ function PluginSheet({
       >
         <div className="plg-sheet-head">
           <b>{title} · {rec.manifest.name}</b>
-          <button className="btn btn-ghost" onClick={requestClose}>
+          <Btn variant="ghost" onClick={requestClose}>
             关闭
-          </button>
+          </Btn>
         </div>
         {mode === "settings" ? (
           <SettingsBody id={id} rec={rec} onClose={onClose} dirtyRef={dirtyRef} />
@@ -873,8 +874,8 @@ export function McpBody(): ReactNode {
             <code className="plg-code">{sv.command} {sv.args.join(" ")}</code>
           </div>
           <div style={{ display: "flex", gap: 4, flex: "none" }}>
-            <button className="btn btn-ghost" onClick={() => void edit(i)}>编辑</button>
-            <button className="btn btn-ghost plg-danger" onClick={() => void del(i)}>删除</button>
+            <Btn variant="ghost" onClick={() => void edit(i)}>编辑</Btn>
+            <Btn variant="solid" tone="error" onClick={() => void del(i)}>删除</Btn>
           </div>
         </div>
       ))}
@@ -927,9 +928,9 @@ export function SettingsBody({
         </div>
         <div className="plg-sheet-foot">
           <span className="plg-hint">—</span>
-          <button className="btn btn-ghost" onClick={onClose}>
+          <Btn variant="ghost" onClick={onClose}>
             关闭
-          </button>
+          </Btn>
         </div>
       </>
     );
@@ -989,9 +990,9 @@ export function SettingsBody({
           <button className="btn btn-ghost" onClick={() => setDraft({ ...rec.settings })}>
             撤销修改
           </button>
-          <button className="btn btn-primary" disabled={saving} onClick={save}>
+          <Btn variant="solid" tone="brand" disabled={saving} onClick={save}>
             保存
-          </button>
+          </Btn>
         </span>
       </div>
     </>
@@ -1133,7 +1134,7 @@ function MarketView({
     return (
       <section className="market-view">
         <div className="market-detail-head">
-          <button className="btn btn-ghost" onClick={() => setDetail(null)}>返回</button>
+          <Btn variant="ghost" onClick={() => setDetail(null)}>返回</Btn>
           {head ? (
             <img className="market-detail-logo" src={head} alt="" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
           ) : (
@@ -1544,9 +1545,9 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
 
       <div className="plg-install-foot plg-install-msg">
         {msg ? <span className="plg-msg">{msg}</span> : <span className="plg-hint">安装即代表信任该代码并授予其声明的权限。</span>}
-        <button className="btn btn-ghost" onClick={onClose}>
+        <Btn variant="ghost" onClick={onClose}>
           完成
-        </button>
+        </Btn>
       </div>
     </section>
   );

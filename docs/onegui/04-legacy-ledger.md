@@ -12,24 +12,24 @@
 | C1 | 内联样式（含外观属性 `style={{…}}`） | 1022 | 0 |
 | C2 | 内联几何（纯定位/尺寸，迁移后由组件 prop 承担） | 328 | 0 |
 | D | TSX 字面色值（`#rgb`/`rgba()`/`hsl()`） | 676 | 0 |
-| E | 裸控件（`<button|input|select|textarea>`） | 1123 | 0 |
+| E | 裸控件（`<button|input|select|textarea>`） | 951 | 0 |
 | F | 运行时注入（createElement(style)/innerHTML/insertRule） | 4 | 0 |
-| | **合计** | **5574** | **0** |
+| | **合计** | **5402** | **0** |
 
 ## A. 旧样式表（8 个文件 / 12480 行 / 1524 个类名 / 2742 条规则）
 
 | 文件 | 行 | 规则 | 类名 | 零引用类名 | 过渡桥 |
 |---|---|---|---|---|---|
-| `apps/desktop/src/styles/global.css` | 8356 | 2009 | 1126 | 81 |  |
+| `apps/desktop/src/styles/global.css` | 8356 | 2009 | 1126 | 83 |  |
 | `apps/desktop/src/styles/explorer-ui.css` | 939 | 206 | 100 | 2 |  |
 | `apps/desktop/src/styles/motion.css` | 887 | 179 | 74 | 4 |  |
 | `apps/desktop/src/styles/explorer-home.css` | 850 | 149 | 86 | 8 |  |
-| `apps/desktop/src/styles/explorer.css` | 594 | 105 | 66 | 2 |  |
+| `apps/desktop/src/styles/explorer.css` | 594 | 105 | 66 | 3 |  |
 | `apps/desktop/src/styles/explorer-oh.css` | 437 | 76 | 42 | 1 |  |
 | `apps/desktop/src/styles/onegui-bridge.css` | 304 | 12 | 30 | 3 | 是（TEMP） |
 | `apps/desktop/src/styles/glass-levels.css` | 113 | 6 | 0 | 0 |  |
 
-**零引用类名 101 个**（可先删；注意动态拼接类名要人工确认）——前 20：
+**零引用类名 104 个**（可先删；注意动态拼接类名要人工确认）——前 20：
 - apps/desktop/src/styles/explorer-home.css: .home-searchbar
 - apps/desktop/src/styles/explorer-home.css: .home-resume
 - apps/desktop/src/styles/explorer-home.css: .home-resume-chip
@@ -43,13 +43,13 @@
 - apps/desktop/src/styles/explorer-ui.css: .explorer-tabstrip-wrap
 - apps/desktop/src/styles/explorer.css: .settings-title
 - apps/desktop/src/styles/explorer.css: .wall-thumb-box
+- apps/desktop/src/styles/explorer.css: .wall-lib-upload
 - apps/desktop/src/styles/global.css: .brand-mark
 - apps/desktop/src/styles/global.css: .brand-name
+- apps/desktop/src/styles/global.css: .btn-danger
 - apps/desktop/src/styles/global.css: .tt-cell
 - apps/desktop/src/styles/global.css: .tt-course
 - apps/desktop/src/styles/global.css: .empty-icon
-- apps/desktop/src/styles/global.css: .empty-action
-- apps/desktop/src/styles/global.css: .week-grid
 
 ## B. 组件内嵌 CSS（7 处）
 
@@ -143,35 +143,35 @@
 | `apps/desktop/src/pages/CloudPage.tsx` | 8 |
 | `apps/desktop/src/state/explorer.ts` | 7 |
 
-## E. 裸控件 Top 25（共 1123 处 / 113 个文件）
+## E. 裸控件 Top 25（共 951 处 / 112 个文件）
 
 | 文件 | 处数 |
 |---|---|
-| `apps/desktop/src/pages/Settings.tsx` | 86 |
-| `apps/desktop/src/pages/zhjwxk/Courses.tsx` | 75 |
-| `apps/desktop/src/pages/GitLabPage.tsx` | 55 |
-| `apps/desktop/src/pages/Plugins.tsx` | 54 |
-| `apps/desktop/src/pages/Schedule.tsx` | 39 |
-| `apps/desktop/src/components/AttachActionsSheet.tsx` | 37 |
-| `apps/desktop/src/pages/FolderPage.tsx` | 36 |
-| `apps/desktop/src/pages/Today.tsx` | 28 |
+| `apps/desktop/src/pages/Settings.tsx` | 82 |
+| `apps/desktop/src/pages/zhjwxk/Courses.tsx` | 61 |
+| `apps/desktop/src/pages/GitLabPage.tsx` | 46 |
+| `apps/desktop/src/pages/Plugins.tsx` | 46 |
+| `apps/desktop/src/pages/Schedule.tsx` | 33 |
+| `apps/desktop/src/components/AttachActionsSheet.tsx` | 28 |
 | `apps/desktop/src/components/FreeBoard.tsx` | 27 |
-| `apps/desktop/src/plugins/ChatDock.tsx` | 26 |
-| `apps/desktop/src/components/FilePreview.tsx` | 25 |
-| `apps/desktop/src/components/explorer/TabDrawer.tsx` | 24 |
-| `apps/desktop/src/pages/CloudPage.tsx` | 23 |
-| `apps/desktop/src/pages/info/NewsTab.tsx` | 20 |
-| `apps/desktop/src/pages/learn/Forum.tsx` | 19 |
-| `apps/desktop/src/components/explorer/OneGoSheet.tsx` | 18 |
-| `apps/desktop/src/pages/TasksPage.tsx` | 17 |
-| `apps/desktop/src/pages/MailPage.tsx` | 16 |
-| `apps/desktop/src/pages/info/CardTab.tsx` | 16 |
-| `apps/desktop/src/pages/info/VenueSportsTab.tsx` | 15 |
+| `apps/desktop/src/pages/FolderPage.tsx` | 27 |
+| `apps/desktop/src/pages/Today.tsx` | 24 |
+| `apps/desktop/src/plugins/ChatDock.tsx` | 23 |
+| `apps/desktop/src/pages/CloudPage.tsx` | 21 |
+| `apps/desktop/src/components/FilePreview.tsx` | 18 |
+| `apps/desktop/src/pages/info/NewsTab.tsx` | 18 |
+| `apps/desktop/src/pages/learn/Forum.tsx` | 18 |
+| `apps/desktop/src/components/explorer/TabDrawer.tsx` | 17 |
+| `apps/desktop/src/pages/TasksPage.tsx` | 16 |
+| `apps/desktop/src/pages/info/CardTab.tsx` | 15 |
 | `apps/desktop/src/pages/info/LibRoomTab.tsx` | 14 |
-| `apps/desktop/src/components/Collect.tsx` | 13 |
-| `apps/desktop/src/pages/Login.tsx` | 13 |
-| `apps/desktop/src/pages/learn/AssignmentDetailPage.tsx` | 13 |
+| `apps/desktop/src/pages/info/VenueSportsTab.tsx` | 14 |
 | `apps/desktop/src/components/GlobalOrb.tsx` | 11 |
+| `apps/desktop/src/pages/Login.tsx` | 11 |
+| `apps/desktop/src/pages/MailPage.tsx` | 11 |
+| `apps/desktop/src/components/Layout.tsx` | 10 |
+| `apps/desktop/src/components/explorer/HomeSpheres.tsx` | 10 |
+| `apps/desktop/src/components/explorer/OneGoSheet.tsx` | 10 |
 
 ## F. 运行时样式注入（4 个文件）
 

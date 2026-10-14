@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 添加组件抽屉（霖 2026-10-11 重做；尺寸档位版）。
  *
@@ -380,7 +381,7 @@ export function BoardAddDrawer({
         <div className="add-overview">
           <div className="add-overview-head">
             <span className="add-overview-title">添加组件</span>
-            <button type="button" className="btn" onClick={onClose}>关闭</button>
+            <Btn variant="outline" onClick={onClose}>关闭</Btn>
           </div>
           <div className="add-grid">
             {defs.map((d) => (

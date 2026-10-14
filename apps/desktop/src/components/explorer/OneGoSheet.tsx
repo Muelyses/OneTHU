@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * OneGO 抽屉（dev-explorer）：从收藏夹升级来的「工作组织工具」。
  * 两个分段：我的收藏（OnePage）| 工作区。
@@ -123,7 +124,7 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
             if (e.key === "Enter") create();
           }}
         />
-        <button className="btn ex-btn-sm" onClick={create} disabled={!name.trim()}>新建</button>
+        <Btn variant="outline" onClick={create} disabled={!name.trim()}>新建</Btn>
       </div>
       {boards.length === 0 ? (
         <div className="ex-empty-hint">还没有 OnePage。新建一块，它就是一张可以随意摆组件的白板。</div>
@@ -139,7 +140,7 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
                 </span>
               </button>
               {b.kind === "system" ? null : (
-                <button className="btn btn-ghost ex-btn-sm" onClick={() => remove(b)}>删除</button>
+                <Btn variant="ghost" onClick={() => remove(b)}>删除</Btn>
               )}
             </div>
           ))}
@@ -187,7 +188,7 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
                   </span>
                 </span>
               </button>
-              <button className="btn btn-ghost ex-btn-sm" onClick={() => { deleteFlow(f.id); }}>删除</button>
+              <Btn variant="ghost" onClick={() => { deleteFlow(f.id); }}>删除</Btn>
             </div>
           ))}
         </div>
@@ -210,7 +211,7 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
                     <span className="ex-row-sub">{activeTheme === t.id ? "生效中（再点恢复默认）" : "点击应用"}</span>
                   </span>
                 </button>
-                <button className="btn btn-ghost ex-btn-sm" onClick={() => deleteTheme(t.id)}>删除</button>
+                <Btn variant="ghost" onClick={() => deleteTheme(t.id)}>删除</Btn>
               </div>
             ))}
           </div>
@@ -272,10 +273,10 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
                   <span className="ex-row-sub">{w.tabs.length} 个标签页</span>
                 </div>
                 <div className="ex-row-actions">
-                  <button className="btn btn-ghost ex-btn-sm" onClick={() => { openWorkspace(w.id); onDone(); }}>打开</button>
-                  <button className="btn btn-ghost ex-btn-sm" onClick={() => openWorkspaceEditor(w.id)}>编辑</button>
+                  <Btn variant="ghost" onClick={() => { openWorkspace(w.id); onDone(); }}>打开</Btn>
+                  <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>编辑</Btn>
                   {w.live ? (
-                    <button className="btn btn-ghost ex-btn-sm" title="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</button>
+                    <Btn variant="ghost" titleAttr="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</Btn>
                   ) : null}
                   <button
                     className="btn btn-ghost ex-btn-sm ex-danger"
@@ -374,7 +375,7 @@ function OneGoSheetInner(): ReactNode {
         <header className="ex-sheet-head">
           <b>OneGO!</b>
           <span className="ex-sec-head-note">组织你的工作</span>
-          <button className="btn btn-ghost ex-btn-sm" onClick={requestClose}>完成</button>
+          <Btn variant="ghost" onClick={requestClose}>完成</Btn>
         </header>
         <div className="ex-seg-row">
           <div className="segmented ex-seg" role="tablist" aria-label="OneGO! 分段">

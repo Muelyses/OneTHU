@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 插件通用表单弹窗（Promise 化）——插件经 onethu.ui.form(fields) 弹出结构化
  * 表单收集用户输入，resolve 为键值对象。DOM 覆盖层实现（Tauri WKWebView 的
@@ -83,7 +84,7 @@ export function FormModalHost(): ReactNode {
           </label>
         ))}
         <div className="plg-form-ops">
-          <button className="btn btn-ghost" onClick={() => close(null)}>取消</button>
+          <Btn variant="ghost" onClick={() => close(null)}>取消</Btn>
           <button
             className="btn btn-primary"
             onClick={() => {

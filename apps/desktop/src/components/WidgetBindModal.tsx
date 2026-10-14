@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 小组件绑定层：把「这块小组件显示什么」这件事一次问清。
  *
@@ -135,7 +136,7 @@ export function WidgetBindModal(): ReactNode {
         <div className={"home-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="放到哪一块小组件" onClick={(e) => e.stopPropagation()}>
           <div className="home-modal-head">
             <h3>放到哪一块小组件？</h3>
-            <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+            <Btn variant="ghost" onClick={requestClose}>关闭</Btn>
           </div>
           <div className="home-modal-body">
             <div className="wb-current">
@@ -181,7 +182,7 @@ export function WidgetBindModal(): ReactNode {
       <div className={"home-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="这块小组件显示什么" onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>这块小组件显示什么？</h3>
-          <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+          <Btn variant="ghost" onClick={requestClose}>关闭</Btn>
         </div>
         <div className="home-modal-body">
           <div className="wb-current">
@@ -235,7 +236,7 @@ export function WidgetBindModal(): ReactNode {
           <div className={"home-modal" + (pickClosing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="选一个收藏夹" onClick={(e) => e.stopPropagation()}>
             <div className="home-modal-head">
               <h3>选一个收藏夹</h3>
-              <button className="btn btn-ghost" onClick={requestPickClose}>返回</button>
+              <Btn variant="ghost" onClick={requestPickClose}>返回</Btn>
             </div>
             <div className="home-modal-body">
               <div className="home-modal-hint">夹里的收藏项会以图标并列显示在这块小组件上（放不下的自动略过）。</div>

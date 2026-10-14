@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 工作区编辑弹窗：名字 / 颜色 / logo / 内容（成员增删）。
  * 入口：标签栏工作区底板右键「编辑工作区」、OneGO 工作区列表的「编辑」。
@@ -115,13 +116,13 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
           ? liveMembers.map((t) => (
               <div key={t.id} style={row}>
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveTabTitle(t.page, t.params).label}</span>
-                <button type="button" className="btn" onClick={() => setTabWorkspace(t.id, null)}>移出</button>
+                <Btn variant="outline" onClick={() => setTabWorkspace(t.id, null)}>移出</Btn>
               </div>
             ))
           : snapshot.map((e, i) => (
               <div key={i} style={row}>
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e.title || resolveTabTitle(e.page, e.params).label}</span>
-                <button type="button" className="btn" onClick={() => removeSavedWorkspaceTab(ws.id, i)}>移出</button>
+                <Btn variant="outline" onClick={() => removeSavedWorkspaceTab(ws.id, i)}>移出</Btn>
               </div>
             ))}
 
@@ -148,7 +149,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
         ) : null}
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
-          <button type="button" className="btn" onClick={closeWorkspaceEditor}>取消</button>
+          <Btn variant="outline" onClick={closeWorkspaceEditor}>取消</Btn>
           <button type="button" className="btn" style={{ borderColor: color, color }} onClick={save}>保存</button>
         </div>
       </div>

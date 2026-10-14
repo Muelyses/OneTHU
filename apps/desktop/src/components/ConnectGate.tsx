@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * ConnectGate（§4.3）：业务入口放业务场景——要绑定的功能，就在原地绑。
  *
@@ -293,9 +294,9 @@ export function ConnectGate({
         <div style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
           <b style={{ fontSize: "var(--text-lg)" }}>连接{LABEL[need]}</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={onClose} aria-label="关闭">
+          <Btn variant="outline" onClick={onClose} aria-label="关闭">
             ✕
-          </button>
+          </Btn>
         </div>
         <div className="setting-desc" style={{ margin: "0 0 12px" }}>
           {WHY[need]}

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 「更改主题」二级菜单（设置 → 外观）。
  *
@@ -153,7 +154,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: "1px solid var(--border, #eee)", flex: "none" }}>
           <b>更改主题</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={requestClose}>✕</button>
+          <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
 
         <div style={{ padding: "10px 16px 16px", overflowY: "auto", overflowX: "hidden", flex: 1, minHeight: 0, minWidth: 0 }}>
@@ -219,7 +220,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                   </div>
                   <div style={{ display: "flex", gap: 4, flex: "none" }}>
                     {on ? null : <button className="btn btn-primary" onClick={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }}>应用</button>}
-                    {ownerOf(t) ? <button className="btn btn-ghost" title="删除主题并卸载来源插件" onClick={() => void delTheme(t)}>卸载</button> : null}
+                    {ownerOf(t) ? <Btn variant="ghost" titleAttr="删除主题并卸载来源插件" onClick={() => void delTheme(t)}>卸载</Btn> : null}
                   </div>
                 </div>
               );
@@ -228,7 +229,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
 
           {secHead(
             "主题市场",
-            <button className="btn btn-ghost" disabled={busy} onClick={() => void load(true)}>{busy ? "刷新中…" : "刷新"}</button>,
+            <Btn variant="ghost" disabled={busy} onClick={() => void load(true)}>{busy ? "刷新中…" : "刷新"}</Btn>,
           )}
           {!items && busy ? <div className="plg-hint">正在拉取主题市场…</div> : null}
           {items && !marketHits.length ? <div className="plg-hint">没有匹配的主题。</div> : null}

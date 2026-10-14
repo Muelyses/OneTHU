@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 校园卡页 —— getCardInfo + getCardTransactions（thu-info-lib card.ts 移植）。
  * 余额与卡状态置顶；最近 30 天消费流水；充值（cardRechargeFromBank /
@@ -165,7 +166,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
           <b>校园卡充值</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={requestClose}>✕</button>
+          <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
 
         {step === "form" ? (

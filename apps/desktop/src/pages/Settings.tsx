@@ -1,10 +1,5 @@
-import { Text as OGText } from "@onethu/gui";
-import { SettingsRow } from "@onethu/gui";
-import { Input } from "@onethu/gui";
-import { TextArea } from "@onethu/gui";
-import { Select } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
 declare const __APP_VERSION__: string;
+import { Btn, Input, Select, SettingsRow, Text as OGText, TextArea } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import {
   subscribeWallpaper,

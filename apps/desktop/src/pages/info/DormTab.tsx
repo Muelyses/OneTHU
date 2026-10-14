@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
  * 宿舍页 —— 电费余额/缴费记录 + 订水。
@@ -219,7 +220,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0 14px" }}>
           <div className="field">
             <label htmlFor="water-contact">联系人</label>
-            <input id="water-contact" className="input" value={contact} onChange={(e) => setContact(e.target.value)} />
+            <Input value={contact} onChange={(value) => setContact(value)} />
           </div>
           <div className="field">
             <label htmlFor="water-num">订水量（桶）</label>
@@ -240,13 +241,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
         </div>
         <div className="field">
           <label htmlFor="water-addr">送达地址（楼栋 + 房间号）</label>
-          <input
-            id="water-addr"
-            className="input"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="如：紫荆 1 号楼 301A"
-          />
+          <Input value={address} onChange={(value) => setAddress(value)} placeholder="如：紫荆 1 号楼 301A" />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button className="btn btn-primary" onClick={() => void submitWater()} disabled={waterState === "busy"}>

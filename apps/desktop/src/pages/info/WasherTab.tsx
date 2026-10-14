@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 /**
  * 洗衣机页 —— 楼栋分组 → 楼层设备状态。
  * thu-info-app 移植：捷利（api.cleverschool.cn）+ 海乐生活（yshz-user.haier-ioc.com）
@@ -198,12 +199,7 @@ export function WasherTab({
                 <>
                   <div className="seg-menu-backdrop" onClick={() => setDdOpen(false)} />
                   <div className="filter-dd-panel">
-                    <input
-                      className="input washer-dd-search"
-                      placeholder="搜索楼栋…"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                    />
+                    <Input placeholder="搜索楼栋…" value={query} onChange={(value) => setQuery(value)} />
                     <div className="washer-dd-list">
                       {matched.length === 0 ? (
                         <div className="washer-dd-empty">无匹配楼栋</div>

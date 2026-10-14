@@ -79,7 +79,8 @@ export interface InputProps extends OneBase {
   autoFocus?: boolean;
   maxLength?: number;
   spellCheck?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
+  /** 键盘处理：用方法语法声明 —— 参数按双变检查，既接受按具体元素注解的处理器，也能上下文推断 */
+  onKeyDown?(e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void;
   "aria-label"?: string;
 }
 

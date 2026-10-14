@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 标签页抽屉（dev-explorer）：当前标签页（按工作区分组）+ 工作区管理。
@@ -682,16 +683,9 @@ function MoveMenu({
       <div className="explorer-ctxmenu" style={{ left, top, zIndex: 1351 }} role="menu">
         {naming ? (
           <div className="explorer-ctxmenu-naming">
-            <input
-              className="ex-input"
-              placeholder="工作区名称"
-              value={name}
-              autoFocus
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => {
+            <Input placeholder="工作区名称" value={name} autoFocus onChange={(value) => setName(value)} onKeyDown={(e) => {
                 if (e.key === "Enter") createAndMove();
-              }}
-            />
+              }} />
             <Btn variant="solid" tone="brand" onClick={createAndMove}>存</Btn>
           </div>
         ) : (
@@ -745,17 +739,10 @@ export function WorkspacePanel(): ReactNode {
         {snap.tabs.length > 0 ? (
           naming ? (
             <span className="ex-ws-naming">
-              <input
-                className="ex-input"
-                placeholder="工作区名称"
-                value={name}
-                autoFocus
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => {
+              <Input placeholder="工作区名称" value={name} autoFocus onChange={(value) => setName(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") save();
                   if (e.key === "Escape") setNaming(false);
-                }}
-              />
+                }} />
               <Btn variant="solid" tone="brand" onClick={save}>保存</Btn>
               <Btn variant="ghost" onClick={() => setNaming(false)}>取消</Btn>
             </span>
@@ -996,12 +983,7 @@ function TabDrawerInner(): ReactNode {
         )}
         <div className="ex-sheet-body">
           <div className="ex-sheet-search">
-            <input
-              className="ex-input"
-              placeholder="搜索已打开的标签页…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <Input placeholder="搜索已打开的标签页…" value={query} onChange={(value) => setQuery(value)} />
           </div>
           {query.trim() ? (
             <section aria-label="搜索结果">

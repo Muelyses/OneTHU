@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -108,12 +109,7 @@ export function SearchSelect({
           }}
         >
           {searchable ? (
-            <input
-              className="input search-dd-search"
-              placeholder="搜索…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <Input placeholder="搜索…" value={query} onChange={(value) => setQuery(value)} />
           ) : null}
           <div className="search-dd-list" style={{ overflowY: "auto", flex: 1, minHeight: 0 }}>
             {shown.length === 0 ? (

@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -72,13 +73,7 @@ export function FormModalHost(): ReactNode {
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}</Select>
             ) : (
-              <input
-                className="input"
-                type={f.kind === "password" ? "password" : "text"}
-                placeholder={f.placeholder}
-                defaultValue={draft[f.key]}
-                onChange={(e) => (draft[f.key] = e.target.value)}
-              />
+              <Input type={f.kind === "password" ? "password" : "text"} placeholder={f.placeholder} defaultValue={draft[f.key]} onChange={(value) => (draft[f.key] = value)} />
             )}
           </label>
         ))}

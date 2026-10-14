@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 /**
  * OH 胶囊条（dev-explorer 二轮定稿）：**白色长条**，横在底栏中央、两端快贴住标签页与 OneGO。
  *
@@ -164,15 +165,7 @@ export function OhCapsule(): React.ReactNode {
         </span>
       ) : isOpen ? (
         /* 展开态：真输入框——搜索态=检索词、对话态=消息草稿，与上方窗一个连续交互体 */
-        <input
-          className="ohx-input"
-          autoFocus
-          value={draft}
-          onChange={(e) => setDockInputValue(e.target.value)}
-          onKeyDown={onInputKeyDown}
-          placeholder={PLACEHOLDER}
-          aria-label="搜索或问小OH"
-        />
+        <Input autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={PLACEHOLDER} aria-label="搜索或问小OH" />
       ) : (
         <span className="ohx-capsule-ph">{idleText}</span>
       )}

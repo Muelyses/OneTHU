@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -184,17 +185,11 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
         </div>
         <div className="gitlab-search">
           <IconSearch width={14} height={14} />
-          <input
-            className="input"
-            placeholder="搜索项目（回车）"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
+          <Input placeholder="搜索项目（回车）" value={text} onChange={(value) => setText(value)} onKeyDown={(e) => {
               if (e.key !== "Enter") return;
               setQuery(text.trim());
               setPages(1);
-            }}
-          />
+            }} />
           {query ? (
             <button className="btn mini" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</button>
           ) : null}
@@ -604,16 +599,9 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
               aria-label="选择回应"
               style={{ left: pos.left, top: pos.top }}
             >
-              <input
-                className="input"
-                autoFocus
-                placeholder="按名字筛选，或直接输入 GitLab 表情名"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                onKeyDown={(e) => {
+              <Input autoFocus placeholder="按名字筛选，或直接输入 GitLab 表情名" value={filter} onChange={(value) => setFilter(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") typeInName();
-                }}
-              />
+                }} />
               <div className="gitlab-emoji-grid">
                 {shown.map(([name, emoji]) => (
                   <button
@@ -629,13 +617,7 @@ function ReactionBar({ kind, projectId, iid, noteId, me }: {
                 {shown.length === 0 ? <p className="dim gitlab-hint">没有匹配的表情名</p> : null}
               </div>
               <div className="gitlab-emoji-typed">
-                <input
-                  className="input"
-                  placeholder="任意表情名，如 dart"
-                  value={typed}
-                  onChange={(e) => setTyped(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") typeInName(); }}
-                />
+                <Input placeholder="任意表情名，如 dart" value={typed} onChange={(value) => setTyped(value)} onKeyDown={(e) => { if (e.key === "Enter") typeInName(); }} />
                 <Btn variant="outline" onClick={() => typeInName()}>按名字贴</Btn>
               </div>
             </div>,
@@ -1223,13 +1205,7 @@ function RequestList({ kind, projectId, initialIid = null }: {
         <StateChips value={state} onChange={(v) => { setState(v); setPages(1); }} counts={counts.data ?? undefined} />
         <div className="gitlab-search">
           <IconSearch width={14} height={14} />
-          <input
-            className="input"
-            placeholder={kind === "issue" ? "搜索 Issue（回车）" : "搜索合并请求（回车）"}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { setQuery(text.trim()); setPages(1); } }}
-          />
+          <Input placeholder={kind === "issue" ? "搜索 Issue（回车）" : "搜索合并请求（回车）"} value={text} onChange={(value) => setText(value)} onKeyDown={(e) => { if (e.key === "Enter") { setQuery(text.trim()); setPages(1); } }} />
           {query ? <button className="btn mini" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</button> : null}
         </div>
         <button className="btn" onClick={() => void (kind === "issue" ? createIssue() : createMr())}>

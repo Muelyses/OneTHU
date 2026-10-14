@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /** 作业只读详情（learnX AssignmentDetail）：提交/批改情况 + 说明富文本 + 四类附件；提交/撤回已移植（tjzy）*/
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -503,14 +504,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               <div className="exthw-note is-warn">本作业要求必须带附件：请选择文件或拍照上传后再提交。</div>
             ) : null}
             {subFile ? (
-              <input
-                className="input"
-                style={{ height: 30, fontSize: 12 }}
-                placeholder={`自定义附件名（保留扩展名 ${subFile.name.includes(".") ? subFile.name.slice(subFile.name.lastIndexOf(".")) : ""}，可留空）`}
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value.replaceAll(".", ""))}
-                disabled={subBusy}
-              />
+              <Input placeholder={`自定义附件名（保留扩展名 ${subFile.name.includes(".") ? subFile.name.slice(subFile.name.lastIndexOf(".")) : ""}，可留空）`} value={customName} onChange={(value) => setCustomName(value.replaceAll(".", ""))} disabled={subBusy} />
             ) : null}
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ flex: 1 }} />

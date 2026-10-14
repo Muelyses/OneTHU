@@ -1,3 +1,4 @@
+import { TextArea, Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -481,7 +482,7 @@ export function AttachActionsSheet({
             <div className="ohaa-field">
               <span className="ohaa-label">目标目录（不存在会自动创建）</span>
               <div className="ohaa-row">
-                <input className="input" style={inputStyle} value={dir} onChange={(e) => { setDir(e.target.value); setDirEntries(null); }} />
+                <Input value={dir} onChange={(value) => { setDir(value); setDirEntries(null); }} />
                 <Btn variant="outline" disabled={!repoId} onClick={() => void browseDir()}>看子目录</Btn>
               </div>
               {dirMsg ? <span className="ohaa-note">{dirMsg}</span> : null}
@@ -556,8 +557,7 @@ export function AttachActionsSheet({
                 </div>
                 <div className="ohaa-field">
                   <span className="ohaa-label">正文（可选；留空会清空该作业此前的正文）</span>
-                  <textarea className="input" style={{ ...inputStyle, minHeight: 56 }} value={content}
-                    onChange={(e) => setContent(e.target.value)} placeholder="一般不填；附件就是全部内容" />
+                  <TextArea value={content} onChange={(value) => setContent(value)} placeholder="一般不填；附件就是全部内容" />
                 </div>
                 <div className="ohaa-note">
                   提交前会再确认一次；提交是**整体覆盖**（正文与附件以本次为准）。
@@ -638,20 +638,18 @@ export function AttachActionsSheet({
                 </div>
                 <div className="ohaa-field">
                   <span className="ohaa-label">标题</span>
-                  <input className="input" style={inputStyle} value={title} onChange={(e) => setTitle(e.target.value)} />
+                  <Input value={title} onChange={(value) => setTitle(value)} />
                 </div>
               </>
             ) : (
               <div className="ohaa-field">
                 <span className="ohaa-label">话题 id（tltid）</span>
-                <input className="input" style={inputStyle} value={threadId} onChange={(e) => setThreadId(e.target.value)}
-                  placeholder="从讨论区页面复制；也可以直接粘贴话题链接" />
+                <Input value={threadId} onChange={(value) => setThreadId(value)} placeholder="从讨论区页面复制；也可以直接粘贴话题链接" />
               </div>
             )}
             <div className="ohaa-field">
               <span className="ohaa-label">正文（纯文本，发出去会自动排版）</span>
-              <textarea className="input" style={{ ...inputStyle, minHeight: 72 }} value={body}
-                onChange={(e) => setBody(e.target.value)} placeholder="可以只发附件，正文留空" />
+              <TextArea value={body} onChange={(value) => setBody(value)} placeholder="可以只发附件，正文留空" />
             </div>
             <div className="ohaa-note">
               附件：{first.name}（{formatSize(first.size)}）· 发布前会再确认一次，发出去全班可见。

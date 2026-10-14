@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 白板页（P1）：只读渲染 + 编辑模式（含长按拖拽与实时预览）。
@@ -957,7 +958,7 @@ export function BoardPage({ chromeless = false }: { chromeless?: boolean } = {})
       {drawer ? (
         <div className="board-drawer" role="dialog" aria-label="组件设置">
           <div className="board-drawer-title">{planForItem(drawer, defs).title}</div>
-          <input className="board-drawer-input" value={draft} maxLength={32} placeholder="输入文字" onChange={(e) => setDraft(e.target.value)} />
+          <Input value={draft} maxLength={32} placeholder="输入文字" onChange={(value) => setDraft(value)} />
           <div className="board-drawer-actions">
             <Btn variant="outline" onClick={() => setDrawer(null)}>取消</Btn>
             <Btn variant="solid" tone="brand" onClick={saveDrawer}>保存</Btn>

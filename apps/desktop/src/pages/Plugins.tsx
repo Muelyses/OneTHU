@@ -961,13 +961,7 @@ export function SettingsBody({
                   onChange={(e) => editDraft((d) => ({ ...d, [f.key]: e.target.value }))}
                 />
               ) : (
-                <input
-                  className="input"
-                  type={f.type === "password" ? "password" : "text"}
-                  placeholder={f.placeholder ?? ""}
-                  value={draft[f.key] ?? ""}
-                  onChange={(e) => editDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-                />
+                <Input type={f.type === "password" ? "password" : "text"} placeholder={f.placeholder ?? ""} value={draft[f.key] ?? ""} onChange={(value) => editDraft((d) => ({ ...d, [f.key]: value }))} />
               )}
             </label>
           ))}
@@ -1208,12 +1202,7 @@ function MarketView({
   return (
     <section className="market-view">
       <div className="market-bar" data-set-id="sec-插件市场">
-        <input
-          className="input market-search"
-          placeholder="搜索插件名称 / 描述 / 标签"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <Input placeholder="搜索插件名称 / 描述 / 标签" value={query} onChange={(value) => setQuery(value)} />
         {/* ④ 排序：与全站同一套 .segmented 胶囊口径（原来是灰底方框 + 描边的 seg-track） */}
         <div className="segmented" style={{ marginBottom: 0 }}>
           {([["stars", "star"], ["latest", "最新"]] as const).map(([k, lbl]) => (
@@ -1520,15 +1509,9 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
 
       {tab === "github" ? (
         <div className="plg-install-body">
-          <input
-            className="input"
-            placeholder="user/repo 或 https://github.com/user/repo（可 @branch 或 /tree/branch）"
-            value={repoInput}
-            onChange={(e) => setRepoInput(e.target.value)}
-            onKeyDown={(e) => {
+          <Input placeholder="user/repo 或 https://github.com/user/repo（可 @branch 或 /tree/branch）" value={repoInput} onChange={(value) => setRepoInput(value)} onKeyDown={(e) => {
               if (e.key === "Enter" && !busy && repoInput.trim()) void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`));
-            }}
-          />
+            }} />
           <div className="plg-install-foot">
             <span className="plg-hint">从仓库根目录拉取 plugin.js（或 index.js / main.js），与粘贴安装同一校验管线。</span>
             <button className="btn btn-primary" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`))}>

@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * OneGO 抽屉（dev-explorer）：从收藏夹升级来的「工作组织工具」。
@@ -115,15 +116,9 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         <b>我的 OnePage</b>
       </div>
       <div className="ex-newrow">
-        <input
-          className="ex-input"
-          placeholder="新 OnePage 名称"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
+        <Input placeholder="新 OnePage 名称" value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
             if (e.key === "Enter") create();
-          }}
-        />
+          }} />
         <Btn variant="outline" onClick={create} disabled={!name.trim()}>新建</Btn>
       </div>
       {boards.length === 0 ? (
@@ -385,12 +380,7 @@ function OneGoSheetInner(): ReactNode {
         </div>
         <div className="ex-sheet-body">
           <div className="ex-sheet-search">
-            <input
-              className="ex-input"
-              placeholder="搜索 OnePage / 工作区…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <Input placeholder="搜索 OnePage / 工作区…" value={query} onChange={(value) => setQuery(value)} />
           </div>
           {q ? (
             <OneGoSearchResults q={q} onDone={requestClose} />

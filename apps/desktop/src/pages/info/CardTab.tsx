@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 校园卡页 —— getCardInfo + getCardTransactions（thu-info-lib card.ts 移植）。
@@ -176,14 +177,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
                 <button key={v} className={`btn${amount === String(v) ? " btn-primary" : ""}`} style={{ flex: 1 }} onClick={() => setAmount(String(v))}>¥{v}</button>
               ))}
             </div>
-            <input
-              className="input"
-              inputMode="decimal"
-              placeholder="自定义金额（10 ~ 1000 元）"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              style={{ marginBottom: 10 }}
-            />
+            <Input inputMode="decimal" placeholder="自定义金额（10 ~ 1000 元）" value={amount} onChange={(value) => setAmount(value)} />
             {!valid ? (
               <div style={{ fontSize: 12, color: "var(--red, #c04848)", marginBottom: 8 }}>
                 充值金额需在 10 ~ 1000 元之间（全渠道下限统一 10 元，官方收银台同样起步 10 元）

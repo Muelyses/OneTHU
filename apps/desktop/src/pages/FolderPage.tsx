@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 用户收藏夹页（万物收藏项化 · 跳转入口层）。
@@ -306,17 +307,10 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
 
           {newSub ? (
             <div className="fav-newsub">
-              <input
-                className="input"
-                autoFocus
-                placeholder="子收藏夹名称…"
-                value={newSubName}
-                onChange={(e) => setNewSubName(e.target.value)}
-                onKeyDown={(e) => {
+              <Input autoFocus placeholder="子收藏夹名称…" value={newSubName} onChange={(value) => setNewSubName(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") createSub();
                   if (e.key === "Escape") setNewSub(false);
-                }}
-              />
+                }} />
               <Btn variant="solid" tone="brand" disabled={!canNestUnder(favs.data, folderId)} onClick={createSub}>创建</Btn>
               <Btn variant="ghost" onClick={() => setNewSub(false)}>取消</Btn>
             </div>

@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 邮箱页 —— 复用云日历凭据（IMAP 收 / SMTP 发，Rust 直连）。
@@ -281,13 +282,7 @@ export function MailPage(): React.ReactNode {
           ))}
         </div>
         <span className="mail-toolbar-search">
-          <input
-            className="input"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && q.trim()) void doSearch(); }}
-            placeholder="搜索邮件（回车全箱搜）"
-          />
+          <Input value={q} onChange={(value) => setQ(value)} onKeyDown={(e) => { if (e.key === "Enter" && q.trim()) void doSearch(); }} placeholder="搜索邮件（回车全箱搜）" />
           {results !== null ? (
             <Btn variant="ghost" titleAttr="退出搜索" onClick={() => { setResults(null); setQ(""); }}>×</Btn>
           ) : (

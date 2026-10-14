@@ -1,3 +1,4 @@
+import { TextArea } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 declare const __APP_VERSION__: string;
@@ -1541,11 +1542,11 @@ function ExtHwSection() {
                 </button>
                 {advanced ? (
                   <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
-                    <textarea className="input" style={taStyle} placeholder="雨课堂登录状态" value={yktCookie} onChange={(e) => setYktCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="TUOJ（AI 版）登录状态" value={tuojCookie} onChange={(e) => setTuojCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(e) => setClassicCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(e) => setTycheCookie(e.target.value)} />
-                    <textarea className="input" style={taStyle} placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(e) => setDsaCookie(e.target.value)} />
+                    <TextArea placeholder="雨课堂登录状态" value={yktCookie} onChange={(value) => setYktCookie(value)} />
+                    <TextArea placeholder="TUOJ（AI 版）登录状态" value={tuojCookie} onChange={(value) => setTuojCookie(value)} />
+                    <TextArea placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(value) => setClassicCookie(value)} />
+                    <TextArea placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(value) => setTycheCookie(value)} />
+                    <TextArea placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(value) => setDsaCookie(value)} />
                     <div className="setting-desc" style={{ marginTop: 0 }}>粘贴后点击上方「保存」生效。</div>
                   </div>
                 ) : null}

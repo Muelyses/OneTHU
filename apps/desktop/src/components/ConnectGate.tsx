@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * ConnectGate（§4.3）：业务入口放业务场景——要绑定的功能，就在原地绑。
@@ -264,19 +265,8 @@ export function ConnectGate({
         <div className="setting-desc" style={{ margin: 0 }}>
           密码不是邮箱登录密码，是「客户端专用密码」：网页版邮箱 → 设置 → 客户端专用密码。
         </div>
-        <input
-          className="input"
-          placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）"
-          value={mailAddr}
-          onChange={(e) => setMailAddr(e.target.value.trim())}
-        />
-        <input
-          className="input"
-          type="password"
-          placeholder="客户端专用密码"
-          value={mailCode}
-          onChange={(e) => setMailCode(e.target.value)}
-        />
+        <Input placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）" value={mailAddr} onChange={(value) => setMailAddr(value.trim())} />
+        <Input type="password" placeholder="客户端专用密码" value={mailCode} onChange={(value) => setMailCode(value)} />
         <button
           className="btn primary"
           disabled={!/.+@.+/.test(mailAddr) || !mailCode || busy}

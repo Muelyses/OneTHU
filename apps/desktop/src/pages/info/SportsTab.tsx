@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 /**
  * 体育场馆预约 —— SportsTab（thu-info-app sports 系列（sportsDetail/sportsRecord）移植）。
  * 两段式只读 + 预约：
@@ -347,14 +348,7 @@ export function SportsTab() {
             <div className="field">
               <label htmlFor="sports-phone">手机号（用于接收预约通知）</label>
               <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  id="sports-phone"
-                  className="input"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="11 位手机号"
-                  inputMode="numeric"
-                />
+                <Input value={phone} onChange={(value) => setPhone(value)} placeholder="11 位手机号" inputMode="numeric" />
                 <button className="btn btn-ghost" onClick={() => void savePhone()} disabled={phoneBusy || !phoneOk} title="保存到体育系统，接收短信通知">
                   {phoneBusy ? "保存中…" : "保存"}
                 </button>

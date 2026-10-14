@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -1425,7 +1426,7 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
         <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
           <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)" }}>
             活动名称
-            <input className="input" style={{ height: 30 }} placeholder="例如：社团例会" value={mName} onChange={(e) => setMName(e.target.value)} />
+            <Input placeholder="例如：社团例会" value={mName} onChange={(value) => setMName(value)} />
           </label>
           <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)" }}>
             星期

@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 收藏星标 + 收藏弹层 + 收藏项搜索添加弹层（万物收藏项化 UI 件）。
@@ -228,17 +229,10 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
           )}
           {creating ? (
             <div className="collect-new">
-              <input
-                className="input"
-                autoFocus
-                placeholder="收藏夹名称…"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => {
+              <Input autoFocus placeholder="收藏夹名称…" value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") createAndAdd();
                   if (e.key === "Escape") setCreating(false);
-                }}
-              />
+                }} />
               <Btn variant="solid" tone="brand" disabled={!name.trim()} onClick={createAndAdd}>建并收藏</Btn>
               <Btn variant="ghost" onClick={() => setCreating(false)}>取消</Btn>
             </div>

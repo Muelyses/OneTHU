@@ -1,5 +1,5 @@
 declare const __APP_VERSION__: string;
-import { Btn, Input, Select, SettingsRow, Text as OGText, TextArea } from "@onethu/gui";
+import { Btn, Inline, Input, List, Row, Segment, Select, SettingsList, SettingsRow, Stack, Tag, Text as OGText, TextArea } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import {
   subscribeWallpaper,
@@ -8,7 +8,7 @@ import {
 } from "../state/wallpaper.js";
 import { useExplorerState, allTabs } from "../state/explorer.js";
 import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
-import { getGlassLevel, glassLevels, setGlassLevel, subscribeGlassLevel } from "../lib/glassLevel.js";
+import { getGlassLevel, glassLevels, setGlassLevel, subscribeGlassLevel, type GlassLevel } from "../lib/glassLevel.js";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
@@ -204,16 +204,16 @@ export function SettingsPage() {
       const group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
       if (!group) continue;
       const show = group === tab;
+      /* show/hide 两支都必须走兄弟收拢：只收拢 hide 支时，先前隐藏轮留下的
+         display:none 永远洗不掉（2026-10-14 实测：切成页签后外观/壁纸两卡消失）。 */
       const apply = (el: HTMLElement): void => {
         el.style.display = show ? "" : "none";
       };
       apply(head);
-      if (show === false) {
-        let sib = head.nextElementSibling as HTMLElement | null;
-        while (sib && !sib.classList.contains("section-head") && !sib.classList.contains("og-section")) {
-          apply(sib);
-          sib = sib.nextElementSibling as HTMLElement | null;
-        }
+      let sib = head.nextElementSibling as HTMLElement | null;
+      while (sib && !sib.classList.contains("section-head") && !sib.classList.contains("og-section")) {
+        apply(sib);
+        sib = sib.nextElementSibling as HTMLElement | null;
       }
     }
   }, [tab, tabLayout.hidden.join(",")]);
@@ -579,9 +579,9 @@ export function SettingsPage() {
       </Card>
 
       <SectionHead title="外观" />
-      <Card>
+      <SettingsList>
         <AppearanceSection />
-      </Card>
+      </SettingsList>
       <Card>
         <WallpaperSection />
       </Card>
@@ -1552,29 +1552,9 @@ function WallpaperSection(): ReactNode {
   );
 }
 
-/** 玻璃程度四段选择（外观分节）：值与 <html data-glass> 都由 lib/glassLevel.ts 管
- *  （默认档均衡不落属性 = 走基座玻璃令牌；改档即时生效，存档键是该模块内部约定）。 */
-function GlassLevelSegmented(): ReactNode {
-  const level = useSyncExternalStore(subscribeGlassLevel, getGlassLevel, getGlassLevel);
-  return (
-    <div style={{ display: "flex", gap: 8, flex: "none" }}>
-      {glassLevels().map((g) => (
-        <button
-          key={g.id}
-          className={"btn " + (level === g.id ? "btn-primary" : "btn-ghost")}
-          style={{ flex: "none" }}
-          aria-pressed={level === g.id}
-          onClick={() => setGlassLevel(g.id)}
-        >
-          {g.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function AppearanceSection(): ReactNode {
   const snap = useThemes();
+  const glass = useSyncExternalStore(subscribeGlassLevel, getGlassLevel, getGlassLevel);
   /* 手机端（dev-explorer 二轮 A1）：手机只有横标签页——横/竖栏选项不渲染（TabDrawer 分段同款） */
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   const tabLayoutDefault = useTabLayoutDefault();
@@ -1619,162 +1599,128 @@ function AppearanceSection(): ReactNode {
   );
   const themes = [{ id: "", name: "默认外观" }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
   return (
-    <div className="setting-row" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
+    <Stack gap={4}>
       {/* 标签栏默认样式：横版（顶部一排）｜竖版（左侧栏）；标签栏上的切换钮可随时改，这里定的是默认值。
           手机（A1）：手机只能横标签页（竖栏永不出现），这一行整块不渲染。 */}
       {isPhone ? null : (
-        <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-          <div>
-            <div className="setting-title">标签栏样式</div>
-            <div className="setting-desc">横版：标签在顶部一排；竖版：标签在左侧栏。标签栏上的切换钮可随时改，这里设的是默认值。</div>
-          </div>
-          <div style={{ display: "flex", gap: 8, flex: "none" }}>
-            <Btn variant="solid" tone="brand" aria-pressed={tabLayoutDefault === "h"} onClick={() => setTabLayoutDefault("h")}>横版</Btn>
-            <Btn variant="solid" tone="brand" aria-pressed={tabLayoutDefault === "v"} onClick={() => setTabLayoutDefault("v")}>竖版</Btn>
-          </div>
-        </div>
+        <SettingsRow
+          title="标签栏样式"
+          sub="横版：标签在顶部一排；竖版：标签在左侧栏。标签栏上的切换钮可随时改，这里设的是默认值。"
+          control={
+            <Segment
+              size="sm"
+              value={tabLayoutDefault}
+              onChange={(v) => setTabLayoutDefault(v as "h" | "v")}
+              options={[
+                { value: "h", label: "横版" },
+                { value: "v", label: "竖版" },
+              ]}
+            />
+          }
+        />
       )}
       {/* 玻璃程度：全站玻璃面材浓度四档（clear/balanced/rich/deep → data-glass 覆盖块） */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-        <div>
-          <div className="setting-title">玻璃程度</div>
-          <div className="setting-desc">清透更亮透，浓郁更深实；影响全站玻璃面材。</div>
-        </div>
-        <GlassLevelSegmented />
-      </div>
+      <SettingsRow
+        title="玻璃程度"
+        sub="清透更亮透，浓郁更深实；影响全站玻璃面材。"
+        control={
+          <Segment
+            size="sm"
+            value={glass}
+            onChange={(v) => setGlassLevel(v as GlassLevel)}
+            options={glassLevels().map((g) => ({ value: g.id, label: g.label }))}
+          />
+        }
+      />
       {/* 主题（① 2026-10-11 用户拍板）：这里**只做切换**，且**只列已启用**的主题（未启用插件的不出现）；
           启用/停用在「插件」里，安装主题走右边那个按钮（跳市场 + 自动筛「主题」）。 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-        <div>
-          <div className="setting-title">主题</div>
-          <div className="setting-desc">
+      <SettingsRow
+        title="主题"
+        sub={
+          <>
             当前：{themes.find((th) => (snap.activeId ?? "") === th.id)?.name ?? "默认外观"}
             {dyn ? " · 系统取色生效中，换主题后会自动关闭" : ""}
-            <span style={{ color: "var(--text-3)" }}>　启用 / 停用主题在「插件」页里。</span>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 8, flex: "none" }}>
-          {/* ③ 两个按钮并列、同一套胶囊口径：安装（市场 + 主题筛选）｜管理（主题插件的启用/停用） */}
-          <Btn variant="solid" tone="brand" titleAttr="到插件市场安装主题（自动筛选「主题」类别）" onClick={() => {
-              requestPluginsView({ view: "market", category: "theme" });
-            }}>安装主题
-          </Btn>
-          <Btn variant="solid" tone="brand" titleAttr="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）" onClick={() => {
-              /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */
-              requestPluginsView({ view: "mine", category: "theme" });
-            }}>管理主题
-          </Btn>
-        </div>
-      </div>
+            {"　启用 / 停用主题在「插件」页里。"}
+          </>
+        }
+        control={
+          <Inline gap={2}>
+            {/* ③ 两个按钮并列、同一套胶囊口径：安装（市场 + 主题筛选）｜管理（主题插件的启用/停用） */}
+            <Btn variant="solid" tone="brand" titleAttr="到插件市场安装主题（自动筛选「主题」类别）" onClick={() => {
+                requestPluginsView({ view: "market", category: "theme" });
+              }}>安装主题
+            </Btn>
+            <Btn variant="solid" tone="brand" titleAttr="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）" onClick={() => {
+                /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */
+                requestPluginsView({ view: "mine", category: "theme" });
+              }}>管理主题
+            </Btn>
+          </Inline>
+        }
+      />
       {/* ③ 主题板**恢复成原来那套**（用户给的旧图样式：色卡 + 名称 + 使用中/社区胶囊 + 应用按钮），
-          只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。 */}
-      <div style={{ display: "grid", gap: 8, gridTemplateColumns: "minmax(0, 1fr)" }}>
-        <div
-          style={{
-            display: "flex", alignItems: "center", gap: 10, padding: "8px 10px",
-            border: "1px solid " + (snap.activeId ? "var(--border)" : "var(--accent)"),
-            borderRadius: "var(--r-md)", background: snap.activeId ? "var(--surface)" : "var(--accent-soft)",
-          }}
-        >
-          <ThemeSwatch vars={{}} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <b>默认外观</b>
-              {snap.activeId ? null : <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span>}
-            </div>
-            <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2 }}>不套用任何主题，使用应用自带配色</div>
-          </div>
-          {snap.activeId ? (
-            <Btn variant="solid" tone="brand" onClick={() => deactivateTheme()}>应用</Btn>
-          ) : null}
-        </div>
-        {visibleThemeDefs.map((t) => {
-          const on = snap.activeId === t.id;
-          return (
-            <div
-              key={t.id}
-              style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", minWidth: 0,
-                border: "1px solid " + (on ? "var(--accent)" : "var(--border)"),
-                borderRadius: "var(--r-md)", background: on ? "var(--accent-soft)" : "var(--surface)",
-              }}
-            >
-              <ThemeSwatch vars={t.vars} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                  <b style={{ minWidth: 0, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</b>
-                  {t.source === "plugin" ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>社区</span> : null}
-                  {on ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span> : null}
-                </div>
-                <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {t.description ?? t.id}
-                </div>
-              </div>
-              {on ? null : (
-                <Btn variant="solid" tone="brand" onClick={() => activateTheme(t.id)}>应用</Btn>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-        <div>
-          <div className="setting-title">跟随系统昼夜</div>
-          <div className="setting-desc">
+          只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。
+          2026-10-14：手写选中框（内联边框+底色）→ List/Row 的 selected 状态层 + Tag 胶囊。 */}
+      <Card className="list">
+        <List divided>
+          <Row
+            selected={!snap.activeId}
+            leading={<ThemeSwatch vars={{}} />}
+            title="默认外观"
+            sub="不套用任何主题，使用应用自带配色"
+            meta={snap.activeId ? null : <Tag tone="brand">使用中</Tag>}
+            trailing={
+              snap.activeId ? (
+                <Btn variant="solid" tone="brand" size="sm" onClick={() => deactivateTheme()}>应用</Btn>
+              ) : null
+            }
+          />
+          {visibleThemeDefs.map((t) => {
+            const on = snap.activeId === t.id;
+            return (
+              <Row
+                key={t.id}
+                selected={on}
+                leading={<ThemeSwatch vars={t.vars} />}
+                title={t.name}
+                sub={t.description ?? t.id}
+                meta={<>{t.source === "plugin" ? <Tag>社区</Tag> : null}{on ? <Tag tone="brand">使用中</Tag> : null}</>}
+                trailing={on ? null : <Btn variant="solid" tone="brand" size="sm" onClick={() => activateTheme(t.id)}>应用</Btn>}
+              />
+            );
+          })}
+        </List>
+      </Card>
+      <SettingsRow
+        title="跟随系统昼夜"
+        sub={
+          <>
             开启后按系统的深色模式自动切换：亮色用「白天主题」，深色用「黑夜主题」。
-            {snap.followSystem ? `（当前系统：${snap.systemDark ? "深色" : "浅色"}）` : ""}
-          </div>
-        </div>
-        <button
-          className={"switch" + (snap.followSystem ? " on" : "")}
-          role="switch"
-          aria-checked={snap.followSystem}
-          aria-label="跟随系统昼夜"
-          onClick={() => setFollowSystem(!snap.followSystem)}
-        />
-      </div>
+            {snap.followSystem ? <>（当前系统：{snap.systemDark ? "深色" : "浅色"}）</> : null}
+          </>
+        }
+        control={<Switch on={snap.followSystem} onChange={() => setFollowSystem(!snap.followSystem)} label="跟随系统昼夜" />}
+      />
       {snap.followSystem ? (
         <>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-            <div className="setting-title" style={{ flex: "none" }}>白天主题</div>
-            <Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-            <div className="setting-title" style={{ flex: "none" }}>黑夜主题</div>
-            <Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>
-          </div>
+          <SettingsRow title="白天主题" control={<Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
+          <SettingsRow title="黑夜主题" control={<Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
         </>
       ) : (
-        <div className="setting-desc" style={{ color: "var(--text-3)" }}>
-          想昼夜自动切换就打开上面的开关；单独换主题点上面的「主题」。
-        </div>
+        <OGText slot="label" tone="faint">想昼夜自动切换就打开上面的开关；单独换主题点上面的「主题」。</OGText>
       )}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
-        <div>
-          <div className="setting-title">跟随系统取色</div>
-          {dynOk === false ? (
-            <div className="setting-desc">
-              {dyn ? "系统取色暂不可用，已自动改用「清华紫」主题，稍后可在外观里手动更换。" : "当前系统不支持，开启后改用「清华紫」主题。"}
-            </div>
-          ) : (
-            <div className="setting-desc">用壁纸的颜色重新计算全站配色，品牌色与背景色一起变。</div>
-          )}
-        </div>
-        <button
-          className={"switch" + (dyn ? " on" : "")}
-          role="switch"
-          aria-checked={dyn}
-          aria-label="跟随系统取色"
-          onClick={() => void toggleDyn()}
-        />
-      </div>
-      {dyn ? (
-        <div className="setting-desc" style={{ color: "var(--text-3)" }}>
-          生效中：关掉开关即恢复所选主题。
-        </div>
-      ) : null}
+      <SettingsRow
+        title="跟随系统取色"
+        sub={
+          dynOk === false ? (
+            dyn ? "系统取色暂不可用，已自动改用「清华紫」主题，稍后可在外观里手动更换。" : "当前系统不支持，开启后改用「清华紫」主题。"
+          ) : "用壁纸的颜色重新计算全站配色，品牌色与背景色一起变。"
+        }
+        control={<Switch on={dyn} onChange={() => void toggleDyn()} label="跟随系统取色" />}
+      />
+      {dyn ? <OGText slot="label" tone="faint">生效中：关掉开关即恢复所选主题。</OGText> : null}
       <ThemePickerModal open={pickerOpen} onClose={() => setPickerOpen(false)} />
-    </div>
+    </Stack>
   );
 }
 

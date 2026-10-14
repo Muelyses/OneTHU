@@ -21,6 +21,7 @@ import {
   cancelUpdateDownload, checkForUpdate, downloadUpdate, installDownloaded, platformKey,
   PLATFORM_LABEL, SOURCE_LABEL, type UpdateCheckResult, type UpdateProgress,
 } from "../lib/updater.js";
+import { Btn, Progress, Stack } from "@onethu/gui";
 
 type Phase = "idle" | "checking" | "latest" | "available" | "downloading" | "downloaded" | "error";
 
@@ -127,7 +128,8 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     : "";
 
   return (
-    <div className="setting-row" data-set-id="row-检查-OneTHU-更新" style={{ flexDirection: "column", alignItems: "stretch", gap: 8 }}>
+    <div id="row-检查-OneTHU-更新">
+      <Stack gap={2}>
       <div>
         <div className="setting-title">
           软件更新
@@ -139,43 +141,26 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
       </div>
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-        <button className="btn btn-primary" type="button" disabled={busy} onClick={() => void check()}>
+        <Btn variant="solid" tone="brand" loading={phase === "checking"} disabled={busy} onClick={() => void check()}>
           {phase === "checking" ? "检查中…" : "检查更新"}
-        </button>
+        </Btn>
         {phase === "available" || (phase === "error" && res?.ok && res.hasUpdate) ? (
-          <button className="btn" type="button" disabled={busy} onClick={() => void downloadAndInstall()}>
+          <Btn variant="outline" disabled={busy} onClick={() => void downloadAndInstall()}>
             {phase === "error" ? "重试：下载并安装" : "下载并安装"}
-          </button>
+          </Btn>
         ) : null}
-        {showBar ? <button className="btn" type="button" onClick={() => void cancelUpdateDownload()}>取消</button> : null}
+        {showBar ? <Btn variant="ghost" onClick={() => void cancelUpdateDownload()}>取消</Btn> : null}
         {phase === "downloaded" && localPath ? (
-          <button className="btn" type="button" onClick={() => void installDownloaded(localPath)}>再打开一次安装页</button>
+          <Btn variant="outline" onClick={() => void installDownloaded(localPath)}>再打开一次安装页</Btn>
         ) : null}
         {res?.ok && res.hasUpdate && !dismissed ? (
-          <button className="btn" type="button" onClick={onDismiss}>忽略此版本</button>
+          <Btn variant="ghost" onClick={onDismiss}>忽略此版本</Btn>
         ) : null}
       </div>
 
       {showBar ? (
         <div>
-          <div
-            role="progressbar"
-            aria-valuenow={Math.round(pct)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            style={{
-              height: 6, borderRadius: 3, overflow: "hidden",
-              background: "var(--dsw-alias-bg-layer-2, #f4f4f6)",
-              border: "1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.08))",
-            }}
-          >
-            <div
-              style={{
-                width: `${Math.max(0, Math.min(100, pct))}%`, height: "100%",
-                background: "var(--dsw-alias-brand-primary, #1c1f24)", transition: "width .18s linear",
-              }}
-            />
-          </div>
+          <Progress value={Math.max(0, Math.min(100, pct)) / 100} aria-label="下载进度" />
           <div className="setting-desc">
             {progress?.total
               ? `${Math.round(pct)}%（${formatSize(progress.received)} / ${formatSize(progress.total)}）`
@@ -233,6 +218,7 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
           默认不填即官方双源（{SOURCE_LABEL.github} → {SOURCE_LABEL.cloud}）。
         </div>
       </details>
+    </Stack>    
     </div>
   );
 }

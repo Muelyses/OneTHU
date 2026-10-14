@@ -84,6 +84,9 @@ export interface DirectorDeps {
   platform?: () => OGPlatform;
   /** 明暗偏好注入（跟随系统时用） */
   prefersDark?: () => boolean;
+  /** 密度跟随平台轴：桌面/手机各一档（2026-10-14 用户点名「卡片/按钮太大」——
+   *  宿主按平台声明档位；用户显式 og.set 过一次密度后自动失效） */
+  densityByPlatform?: { desktop?: OGDensity; mobile?: OGDensity };
   storage?: StorageLike | null;
 }
 
@@ -110,6 +113,8 @@ export class StyleDirector {
   #root: HTMLElement | null = null;
   #applied = false;
   #snapshot: Readonly<OGAxes> | null = null;
+  /** 用户显式选过密度（settings 通道 og.set）→ 密度随平台自动推导停用 */
+  #densityUserSet = false;
 
   /* ── 查询 ─────────────────────────────────────────────────────────── */
 
@@ -144,12 +149,14 @@ export class StyleDirector {
 
   /* ── 变更 ─────────────────────────────────────────────────────────── */
 
-  set(patch: Partial<OGAxes>, opts?: { persist?: boolean }): void {
+  set(patch: Partial<OGAxes>, opts?: { persist?: boolean; fromEnv?: boolean }): void {
     let dirty = false;
     for (const key of Object.keys(patch) as (keyof OGAxes)[]) {
       const next = patch[key];
       if (next === undefined) continue;
       if (this.#axes[key] !== next) {
+        // 密度是用户偏好：环境推导（syncEnv/fromEnv）不算显式，页面/设置的一次显式 set 才算
+        if (key === "density" && !opts?.fromEnv) this.#densityUserSet = true;
         (this.#axes as unknown as Record<string, unknown>)[key] = next;
         dirty = true;
       }
@@ -166,7 +173,12 @@ export class StyleDirector {
     const platform = this.#deps.platform?.() ?? this.#axes.platform;
     const next: Partial<OGAxes> = {};
     if (platform !== this.#axes.platform) next.platform = platform;
-    this.set(next, { persist: false });
+    // 密度随平台轴推导（宿主声明桌/机各一档）；用户显式选过即不再接管
+    if (this.#deps.densityByPlatform && !this.#densityUserSet) {
+      const want = platform === "mobile" ? this.#deps.densityByPlatform.mobile : this.#deps.densityByPlatform.desktop;
+      if (want && want !== this.#axes.density) next.density = want;
+    }
+    this.set(next, { persist: false, fromEnv: true });
     if (this.#axes.scheme === "auto") this.apply();
   }
 
@@ -213,10 +225,11 @@ export class StyleDirector {
       const raw = deps.storage.getItem(PERSIST_KEY);
       if (raw) {
         try {
-          const saved = JSON.parse(raw) as Partial<OGAxes>;
+          const saved = JSON.parse(raw) as Partial<OGAxes> & { __densityUser?: boolean };
           // 平台是环境事实，不从存档恢复；主题是对象，单独走主题通道
-          const { platform: _p, theme: _t, ...rest } = saved;
+          const { platform: _p, theme: _t, __densityUser, ...rest } = saved;
           Object.assign(this.#axes, rest);
+          this.#densityUserSet = __densityUser === true;
           this.#snapshot = null;
         } catch { /* 存档坏了就当没有 */ }
       }
@@ -311,7 +324,7 @@ export class StyleDirector {
     if (!storage) return;
     try {
       const { theme: _t, ...rest } = this.#axes;
-      storage.setItem(PERSIST_KEY, JSON.stringify(rest));
+      storage.setItem(PERSIST_KEY, JSON.stringify({ ...rest, __densityUser: this.#densityUserSet }));
     } catch { /* 配额满了不致命 */ }
   }
 }

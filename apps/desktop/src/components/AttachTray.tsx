@@ -18,6 +18,7 @@ import {
 import { ImageFilterSheet, type FilterResult } from "./ImageFilterSheet.js";
 import { IconCamera, IconImage, IconUpload } from "./Icons.js";
 import { logLine } from "../lib/clients.js";
+import { Chip } from "@onethu/gui";
 
 export interface AttachTrayProps {
   /** 宿主接管：拿到附件后自己发送/渲染（不传则走 sendToOh 默认通道） */
@@ -46,20 +47,6 @@ function msgOf(e: unknown): string {
   return e instanceof Error && e.message ? e.message : "没取到文件，请重试或换一个入口。";
 }
 
-const TRAY_CSS = `
-.oh-attach { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-.oh-attach-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 10px 5px 8px; font-size: 12.5px; line-height: 1.2;
-  border: 1px solid var(--dsw-alias-border-l2, rgba(0,0,0,.12));
-  border-radius: 999px; background: transparent; color: inherit;
-  cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.oh-attach-btn:hover { background: color-mix(in srgb, var(--dsw-alias-bg-layer-2, #f2f2f4) 55%, transparent); }
-.oh-attach-btn[disabled] { opacity: .55; cursor: default; }
-.oh-attach-btn svg { width: 15px; height: 15px; opacity: .82; }
-.oh-attach-note { font-size: 12px; color: var(--dsw-alias-label-secondary, #5c6370); }
-`;
 
 export function AttachTray({ onPicked, allowEdit = true, className, style }: AttachTrayProps): ReactNode {
   const [busy, setBusy] = useState<Source | null>(null);
@@ -149,21 +136,16 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
 
   return (
     <div className={`oh-attach${className ? ` ${className}` : ""}`} style={style} role="group" aria-label="添加附件">
-      <style>{TRAY_CSS}</style>
-      {SOURCES.map((s) => (
-        <button
-          key={s.id}
+      {SOURCES.map((src) => (
+        <Chip
+          key={src.id}
           className="oh-attach-btn"
-          type="button"
-          title={s.title}
+          icon={<src.icon width={15} height={15} />}
+          onClick={busy !== null ? undefined : () => void pick(src.id)}
           disabled={busy !== null}
-          onClick={() => void pick(s.id)}
         >
-          {busy === s.id ? <span>打开中…</span> : (<>
-            <s.icon />
-            <span>{s.label}</span>
-          </>)}
-        </button>
+          {busy === src.id ? "打开中…" : src.label}
+        </Chip>
       ))}
       {note ? <span className="oh-attach-note" aria-live="polite">{note}</span> : null}
       {editing ? (

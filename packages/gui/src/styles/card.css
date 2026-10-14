@@ -56,6 +56,7 @@
 .og-surface--e2 { --og-c-surface-elev: var(--og-elev-2); }
 .og-surface--e3 { --og-c-surface-elev: var(--og-elev-3); }
 
+.og-surface--r-none { --og-c-surface-radius: 0px; }
 .og-surface--r-sm { --og-c-surface-radius: var(--og-radius-sm); }
 .og-surface--r-md { --og-c-surface-radius: var(--og-radius-md); }
 .og-surface--r-lg { --og-c-surface-radius: var(--og-radius-lg); }

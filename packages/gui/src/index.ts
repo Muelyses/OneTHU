@@ -25,6 +25,13 @@ export { OneStyle, one, cx, scopeProps } from "./components/kit.js";
 export type { OneBase, OGSize, OGTone, OGEmphasis, OGLevel } from "./components/kit.js";
 
 /* ── 组件 ── */
+export {
+  Modal, Drawer, Menu, ContextMenu, ActionSheet, Tooltip, Popover,
+} from "./components/overlay.js";
+export type {
+  ModalProps, DrawerProps, MenuProps, MenuItem, ContextMenuProps, ActionSheetProps, TooltipProps, PopoverProps,
+} from "./components/overlay.js";
+
 export { Stack, Inline, Spacer, Grow } from "./components/layout.js";
 export type { StackProps, InlineProps, Gap, Align, Justify } from "./components/layout.js";
 

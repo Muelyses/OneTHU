@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { cx, one, scopeProps, type OneBase } from "./kit.js";
 
 export type SurfacePad = "none" | "sm" | "md" | "lg" | "xl";
-export type SurfaceRadius = "sm" | "md" | "lg" | "xl" | "2xl";
+export type SurfaceRadius = "none" | "sm" | "md" | "lg" | "xl" | "2xl";
 export type SurfaceTag = "div" | "section" | "article" | "aside" | "li" | "nav" | "header" | "footer" | "main";
 
 export interface SurfaceProps extends OneBase {
@@ -21,6 +21,8 @@ export interface SurfaceProps extends OneBase {
   radius?: SurfaceRadius;
   /** 吸顶（页面工具条、筛选条）—— 层高走 --og-z-sticky */
   sticky?: boolean;
+  /** 浮层定位（只有浮层用；坐标是几何不是外观，固定位置一律走这里，不许页面自己写 style） */
+  pos?: { top: number; left: number } | null;
   interactive?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -49,10 +51,19 @@ export function surfaceClass(p: SurfaceProps): string {
     .toString();
 }
 
-export function Surface({ as: Tag = "div", scope, className, children, ...rest }: SurfaceProps): ReactNode {
+export function Surface({ as: Tag = "div", scope, className, pos, children, ...rest }: SurfaceProps): ReactNode {
   const cls = surfaceClass({ ...rest, className });
+  const geometry = pos
+    ? ({ top: pos.top, left: pos.left, dataOgDynamic: "overlay" } as const)
+    : null;
   return (
-    <Tag {...scopeProps(scope)} className={cx(cls, className)} {...pickDom(rest)}>
+    <Tag
+      {...scopeProps(scope)}
+      className={cx(cls, className)}
+      style={pos ? { top: `${geometry!.top}px`, left: `${geometry!.left}px` } : undefined}
+      data-og-dynamic={pos ? "overlay" : undefined}
+      {...pickDom(rest)}
+    >
       {children}
     </Tag>
   );

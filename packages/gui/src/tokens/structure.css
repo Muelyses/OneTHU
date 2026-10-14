@@ -83,6 +83,16 @@
   --og-ctl-textarea-min-h: 84px;
   --og-ctl-textarea-rows: 4;
 
+  /* ── 浮层固有尺寸（弹窗/抽屉/菜单/底部抽屉；组件只引用） ── */
+  --og-ctl-modal-sm: 400px;
+  --og-ctl-modal-md: 560px;
+  --og-ctl-modal-lg: 760px;
+  --og-ctl-drawer-w: 320px;
+  --og-ctl-menu-min-w: 176px;
+  --og-ctl-menu-max-h: 60vh;
+  --og-ctl-sheet-max: 92dvh;
+  --og-ctl-tooltip-max-w: 260px;
+
   /* ── 图标：四档尺寸 + 两档描边 ── */
   --og-icon-sm: 16px;
   --og-icon-md: 18px;

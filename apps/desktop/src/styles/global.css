@@ -8170,9 +8170,6 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   /* 卡面玻璃 tint（Compat 层 --surface/--surface-2/--surface-3 指向这里） */
   --glass-card-fill: rgba(255, 255, 255, 0.44);
   --glass-card-fill-2: rgba(255, 255, 255, 0.44);
-  /* 字色反差档专用（lum 分支栏体用，随档位） */
-  --glass-fill-ink: rgba(21, 23, 31, 0.44);
-  --glass-fill-paper: rgba(252, 253, 255, 0.44);
   --glass-card-fill-3: rgba(255, 255, 255, 0.44);
   /* System 名同步玻璃化：直接引用 System 令牌的 90 处与 Compat 同材质 */
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.44);

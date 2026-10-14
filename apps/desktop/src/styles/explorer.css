@@ -303,14 +303,15 @@
    要点：不只改容器 color——栏内的按钮/标签/工作区名都引用 var(--text-*)/
    var(--md-sys-color-on-surface*)，在这里把这两组令牌连同描边/悬停一起重映射，
    子树整体翻色，两类主题 × 两类壁纸四种组合都可读。 */
-.explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
+/.explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-mobile-strip {
-  /* 反色档背景随玻璃档位（--glass-fill-ink），不再写死 0.55（那是逃出档位的异源） */
+  /* 栏体背景随玻璃档位（card-fill-2），不再写死 rgba（那是逃出档位的异源） */
+  /* 栏体 = 卡片同款玻璃（单一水平单一色相）；字色由内容字色令牌+对比度引擎兜 */
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-ink);
+    var(--glass-card-fill-2);
   color: #f2f4f8;
   --text-1: #f2f4f8;
   --text-2: rgba(242, 244, 248, 0.8);
@@ -333,13 +334,14 @@
   --dsw-alias-bg-base: rgba(21, 23, 31, 0.55); /* 与栏体 background 同值：不再把玻璃压成不透明底 */
   --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.12);
 }
-.explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
+/.explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="light"] .ex-mobile-strip {
+  /* 栏体 = 卡片同款玻璃（单一水平单一色相） */
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-paper);
+    var(--glass-card-fill-2);
   color: #1c1f28;
   --text-1: #1c1f28;
   --text-2: rgba(28, 31, 40, 0.78);

@@ -8154,23 +8154,23 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   /* 液态玻璃 = 折射（url(#dsh-liquid-refract)，仅 Chromium 生效）+ 模糊（全引擎回退）。
      WebKit/Gecko 忽略 url() 项，只剩模糊，玻璃质感仍在。 */
   --glass-refract: url(#dsh-liquid-refract);
-  --glass-menu-blur: var(--glass-refract) blur(22px) saturate(140%);
+  --glass-menu-blur: var(--glass-refract) blur(22px) saturate(160%);
   --glass-fill: rgba(255, 255, 255, 0.44);
   --glass-fill-regular: rgba(255, 255, 255, 0.44);
   --glass-tint: rgba(255, 255, 255, 0.4);
-  --glass-chip-blur: var(--glass-refract) blur(6px) saturate(125%);
-  --glass-panel-blur: var(--glass-refract) blur(6px) saturate(130%);
+  --glass-chip-blur: var(--glass-refract) blur(20px) saturate(155%);
+  --glass-panel-blur: var(--glass-refract) blur(20px) saturate(155%);
   /* 背景模糊档（唯一来源；字面 blur(Npx) 只允许出现在这里） */
   --glass-scrim-blur: blur(3px);
-  --glass-card-blur: var(--glass-refract) blur(14px) saturate(140%);
-  --lg-blur-clear: blur(12px) saturate(160%);
+  --glass-card-blur: var(--glass-refract) blur(20px) saturate(155%);
+  --lg-blur-clear: blur(22px) saturate(160%);
   --lg-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 color-mix(in srgb, var(--md-sys-color-on-surface) 14%, transparent);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.34), 0 4px 10px -2px rgba(0, 0, 0, 0.18);
   /* 卡面玻璃 tint（Compat 层 --surface/--surface-2/--surface-3 指向这里） */
   --glass-card-fill: rgba(255, 255, 255, 0.44);
   --glass-card-fill-2: rgba(255, 255, 255, 0.44);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.44);
+  --glass-card-fill-3: rgba(240, 240, 242, 0.44);
   /* System 名同步玻璃化：直接引用 System 令牌的 90 处与 Compat 同材质 */
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.44);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.44);
@@ -8181,7 +8181,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 :root[data-scheme="dark"] {
   --glass-card-fill: rgba(255, 255, 255, 0.12);
   --glass-card-fill-2: rgba(255, 255, 255, 0.12);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.12);
+  --glass-card-fill-3: rgba(26, 26, 32, 0.12);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
   --glass-rim-top: rgba(255, 255, 255, 0.5);

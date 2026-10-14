@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 根级渲染错误边界（R24）。
  *
@@ -64,18 +65,12 @@ export class RootErrorBoundary extends Component<Props, State> {
           {this.state.err.slice(0, 300)}
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button className="btn btn-primary" onClick={() => this.setState({ err: null, stack: "" })}>
-            重试
-          </button>
-          <button className="btn" onClick={() => window.location.reload()}>
-            重新加载
-          </button>
-          <button
-            className="btn btn-ghost"
-            onClick={() => void navigator.clipboard?.writeText(`${this.state.err}\n${this.state.stack}`).catch(() => undefined)}
-          >
-            复制错误信息
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => this.setState({ err: null, stack: "" })}>重试
+          </Btn>
+          <Btn variant="outline" onClick={() => window.location.reload()}>重新加载
+          </Btn>
+          <Btn variant="ghost" onClick={() => void navigator.clipboard?.writeText(`${this.state.err}\n${this.state.stack}`).catch(() => undefined)}>复制错误信息
+          </Btn>
         </div>
       </div>
     );

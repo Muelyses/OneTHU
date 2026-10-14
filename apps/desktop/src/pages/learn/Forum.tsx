@@ -143,12 +143,9 @@ export function BbsPanel({
           {total > 0 ? `${total} 条` : ""}
         </span>
         <span style={{ flex: "1 1 auto" }} />
-        <button className="btn" onClick={() => reset(() => undefined)} aria-label="刷新讨论列表">
-          <IconRefresh />
-        </button>
-        <button className="btn" onClick={() => setShowNew(true)}>
-          发新话题
-        </button>
+        <Btn variant="outline" onClick={() => reset(() => undefined)} aria-label="刷新讨论列表"><IconRefresh /></Btn>
+        <Btn variant="outline" onClick={() => setShowNew(true)}>发新话题
+        </Btn>
       </div>
       {state === "loading" && threads === null ? (
         <Card>
@@ -192,14 +189,7 @@ export function BbsPanel({
             </div>
           ))}
           {threads && threads.length < total ? (
-            <button
-              className="btn"
-              style={{ width: "100%", marginTop: 10 }}
-              disabled={state === "loading"}
-              onClick={() => load(true, threads!.length)}
-            >
-              {state === "loading" ? "加载中…" : `加载更多（已显示 ${threads!.length}/${total}）`}
-            </button>
+            <Btn variant="outline" disabled={state === "loading"} onClick={() => load(true, threads!.length)}>{state === "loading" ? "加载中…" : `加载更多（已显示 ${threads!.length}/${total}）`}</Btn>
           ) : null}
         </Card>
       )}
@@ -386,9 +376,8 @@ export function ForumThreadPage() {
           )}
           {hasMore ? (
             <Card>
-              <button className="btn" style={{ width: "100%" }} onClick={loadMore}>
-                加载更多回复
-              </button>
+              <Btn variant="outline" onClick={loadMore}>加载更多回复
+              </Btn>
             </Card>
           ) : null}
           {error && head ? (
@@ -401,9 +390,8 @@ export function ForumThreadPage() {
             {replyTo ? (
               <div className="setting-row" style={{ marginBottom: 8 }}>
                 <div className="row-sub">回复 @{replyTo.author || replyTo.hhid}</div>
-                <button className="btn" onClick={() => setReplyTo(null)}>
-                  取消
-                </button>
+                <Btn variant="outline" onClick={() => setReplyTo(null)}>取消
+                </Btn>
               </div>
             ) : null}
             <RichEditor value={draft} onChange={setDraft} placeholder="文明发言（实名制，站点留有日志）…" />
@@ -417,17 +405,10 @@ export function ForumThreadPage() {
                 />
               </label>
               {replyFile ? (
-                <button className="btn" onClick={() => setReplyFile(null)}>
-                  移除附件
-                </button>
+                <Btn variant="outline" onClick={() => setReplyFile(null)}>移除附件
+                </Btn>
               ) : null}
-              <button
-                className="btn"
-                disabled={sending || (!draft.trim() && !replyFile)}
-                onClick={send}
-              >
-                {sending ? "发表中…" : "发表回复"}
-              </button>
+              <Btn variant="outline" disabled={sending || (!draft.trim() && !replyFile)} onClick={send}>{sending ? "发表中…" : "发表回复"}</Btn>
               {sendMsg ? <span className="row-sub">{sendMsg}</span> : null}
             </div>
           </Card>
@@ -482,9 +463,8 @@ function PostBlock({
             </div>
           ) : null}
         </div>
-        <button className="btn" onClick={() => onReply({ hhid: post.hhid, author: post.author })}>
-          回复
-        </button>
+        <Btn variant="outline" onClick={() => onReply({ hhid: post.hhid, author: post.author })}>回复
+        </Btn>
       </div>
     </Card>
   );
@@ -583,17 +563,10 @@ function NewThreadDialog({
             <input type="file" style={{ display: "none" }} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </label>
           {file ? (
-            <button className="btn" onClick={() => setFile(null)}>
-              移除附件
-            </button>
+            <Btn variant="outline" onClick={() => setFile(null)}>移除附件
+            </Btn>
           ) : null}
-          <button
-            className="btn"
-            disabled={sending || !title.trim() || !html.trim() || html === "<p><br></p>"}
-            onClick={submit}
-          >
-            {sending ? "发表中…" : "发表"}
-          </button>
+          <Btn variant="outline" disabled={sending || !title.trim() || !html.trim() || html === "<p><br></p>"} onClick={submit}>{sending ? "发表中…" : "发表"}</Btn>
           {msg ? <span className="row-sub" style={{ wordBreak: "break-all" }}>{msg}</span> : null}
         </div>
       </div>

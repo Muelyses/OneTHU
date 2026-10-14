@@ -80,12 +80,49 @@ function buildAttrs(attrs, sf) {
   return kept;
 }
 
-let files = 0, count = 0, textCount = 0;
+const BUTTON_OK = new Set([
+  "className", "type", "disabled", "onClick", "onMouseDown", "onMouseUp", "onContextMenu", "title",
+  "aria-label", "aria-pressed", "aria-expanded", "aria-haspopup", "role", "tabIndex", "autoFocus", "style",
+]);
+
+const buttonVariant = (cls) => {
+  const c = cls.split(/\s+/);
+  if (c.includes("btn-primary")) return { variant: "solid", tone: "brand" };
+  if (c.includes("btn-danger") || c.includes("plg-danger")) return { variant: "solid", tone: "error" };
+  if (c.includes("btn-ghost")) return { variant: "ghost" };
+  return { variant: "outline" };
+};
+
+let files = 0, count = 0, textCount = 0, btnCount = 0;
 for (const file of walk(APP)) {
   const src = readFileSync(file, "utf8");
   const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const edits = [];
   const visit = (node) => {
+    // <button className="btn…">…</button>
+    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(sf) === "button") {
+      const attrs = node.openingElement.attributes.properties;
+      const cls = attrs.find((a) => a.name?.getText(sf) === "className");
+      const clsText = cls?.initializer?.getText(sf) ?? "";
+      const tokens = clsText.replace(/["']/g, "").split(/\s+/).filter(Boolean);
+      // 只认"按钮族"：btn / btn-*（chip-btn、icon-btn、ex-btn 等派生族不在此列，它们各自成族）
+      const isBtnFamily = tokens.some((t) => t === "btn" || t.startsWith("btn-"));
+      if (isBtnFamily && attrs.every((a) => BUTTON_OK.has(a.name?.getText(sf) ?? ""))) {
+        const { variant, tone } = buttonVariant(clsText.replace(/["']/g, ""));
+        const kept = [`variant="${variant}"`];
+        if (tone) kept.push(`tone="${tone}"`);
+        for (const a of attrs) {
+          const name = a.name?.getText(sf) ?? "";
+          if (name === "className" || name === "type" || name === "style") continue;
+          let text = a.getText(sf);
+          if (name === "title") text = "titleAttr" + text.slice(5);
+          kept.push(text);
+        }
+        const children = node.children.map((c) => c.getText(sf)).join("");
+        edits.push([node.getStart(sf), node.getEnd(), `<Btn ${kept.join(" ")}>${children}</Btn>`, "Btn"]);
+      }
+    }
+
     // <input … /> 与 <textarea>…</textarea>
     if (ts.isJsxSelfClosingElement(node) || ts.isJsxElement(node)) {
       const open = ts.isJsxElement(node) ? node.openingElement : node;
@@ -145,6 +182,7 @@ for (const file of walk(APP)) {
   if (APPLY) writeFileSync(file, out);
   files += 1;
   count += edits.filter((e) => e[3] === "Select").length;
-  textCount += edits.filter((e) => e[3] !== "Select").length;
+  textCount += edits.filter((e) => e[3] === "Input" || e[3] === "TextArea").length;
+  btnCount += edits.filter((e) => e[3] === "Btn").length;
 }
-console.log(`${APPLY ? "已改写" : "可改写"}：<select> ${count} 个，<input>/<textarea> ${textCount} 个 / ${files} 个文件`);
+console.log(`${APPLY ? "已改写" : "可改写"}：<select> ${count}，<input>/<textarea> ${textCount}，<button.btn> ${btnCount} / ${files} 个文件`);

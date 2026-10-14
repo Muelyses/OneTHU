@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 导览压轴步的「OH 自我进化」粒子舞台：纯 canvas，无 UI 依赖。
  *
@@ -270,13 +271,8 @@ export function TourParticles(): ReactNode {
         role="img"
         aria-label="粒子汇聚成才的示意动画：四散的微尘凝成一颗，再裂开成工具、流程、组件"
       />
-      <button
-        className="btn"
-        style={{ position: "absolute", right: 8, bottom: 8, padding: "2px 10px", fontSize: 12, zIndex: 1 }}
-        onClick={() => setReplay((n) => n + 1)}
-      >
-        再来一轮
-      </button>
+      <Btn variant="outline" onClick={() => setReplay((n) => n + 1)}>再来一轮
+      </Btn>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 电子发票 —— info.getInvoiceList（thu-info-app invoice.tsx 移植，分页列表只读）。
  * 数据源：财务综合服务 dzpj（getList.do，webvpn 会话）；PDF 原件需 getInvoicePDF
@@ -86,15 +87,13 @@ export function InvoiceTab() {
 
       {totalPages > 1 && state === "ready" ? (
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12 }}>
-          <button className="btn btn-ghost" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-            上一页
-          </button>
+          <Btn variant="ghost" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>上一页
+          </Btn>
           <span style={{ fontSize: 13, color: "var(--text-2)" }}>
             {page} / {totalPages}
           </span>
-          <button className="btn btn-ghost" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
-            下一页
-          </button>
+          <Btn variant="ghost" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>下一页
+          </Btn>
         </div>
       ) : null}
     </>

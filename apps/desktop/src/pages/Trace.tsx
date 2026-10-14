@@ -479,9 +479,8 @@ export function TracePage(): React.ReactNode {
         <div className="trace-note">
           系统未授予定位权限（可能已被拒绝两次，Android 不会再弹窗）。已改用清华园中心计算 ETA。
           <Btn variant="outline" onClick={() => void locate()}>再次请求</Btn>
-          <button className="btn trace-retry" onClick={() => void import("@tauri-apps/api/core").then((m) => m.invoke("open_app_settings").catch(() => undefined))}>
-            去系统设置
-          </button>
+          <Btn variant="outline" onClick={() => void import("@tauri-apps/api/core").then((m) => m.invoke("open_app_settings").catch(() => undefined))}>去系统设置
+          </Btn>
         </div>
       ) : null}
       {origin?.source === "default" ? (
@@ -528,9 +527,8 @@ export function TracePage(): React.ReactNode {
                 );
               })}
             </div>
-            <button className="btn btn-primary trace-card-go" onClick={() => onGo(selected)}>
-              前往（{appLabel}地图）
-            </button>
+            <Btn variant="solid" tone="brand" onClick={() => onGo(selected)}>前往（{appLabel}地图）
+            </Btn>
           </div>
         ) : null}
 

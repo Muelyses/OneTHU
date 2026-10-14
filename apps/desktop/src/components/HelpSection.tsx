@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 使用帮助（§4.6）：按「我想做什么」组织，不做功能罗列。
  *
@@ -80,12 +81,7 @@ export function HelpSection(): ReactNode {
                 </button>
               ))}
               {task.settingsTab ? (
-                <button
-                  className="btn"
-                  onClick={() => requestSettingsTab(task.settingsTab as string)}
-                >
-                  {task.settingsTab}
-                </button>
+                <Btn variant="outline" onClick={() => requestSettingsTab(task.settingsTab as string)}>{task.settingsTab}</Btn>
               ) : null}
             </div>
           </div>

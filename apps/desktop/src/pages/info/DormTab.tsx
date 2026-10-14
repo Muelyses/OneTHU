@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
@@ -212,9 +213,8 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
               onChange={(e) => setWaterId(e.target.value)}
               placeholder="水站发票/标签上的用户编号"
             />
-            <button className="btn" onClick={() => void queryWater()} disabled={waterState === "busy"}>
-              查询
-            </button>
+            <Btn variant="outline" onClick={() => void queryWater()} disabled={waterState === "busy"}>查询
+            </Btn>
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0 14px" }}>
@@ -244,9 +244,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
           <Input value={address} onChange={(value) => setAddress(value)} placeholder="如：紫荆 1 号楼 301A" />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button className="btn btn-primary" onClick={() => void submitWater()} disabled={waterState === "busy"}>
-            {waterState === "busy" ? "提交中…" : "提交订水"}
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => void submitWater()} disabled={waterState === "busy"}>{waterState === "busy" ? "提交中…" : "提交订水"}</Btn>
           {waterMsg ? (
             <span className={waterState === "error" ? "t-red" : ""} style={{ fontSize: 13 }}>
               {waterMsg}

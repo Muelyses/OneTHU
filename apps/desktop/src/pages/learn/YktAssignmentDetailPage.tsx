@@ -200,14 +200,7 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
       />
       {err ? <div className="ykt-answer-err">{err}</div> : null}
       <div className="ykt-answer-actions">
-        <button
-          className="btn btn-primary"
-          disabled={busy || uploading > 0 || !hasContent}
-          onClick={() => void doSubmit()}
-          title="提交后可在剩余次数内重做（覆盖旧答案）"
-        >
-          {busy ? "提交中…" : uploading > 0 ? "图片上传中…" : unlimited ? "提交作答" : `提交（剩余 ${remaining} 次）`}
-        </button>
+        <Btn variant="solid" tone="brand" disabled={busy || uploading > 0 || !hasContent} onClick={() => void doSubmit()} titleAttr="提交后可在剩余次数内重做（覆盖旧答案）">{busy ? "提交中…" : uploading > 0 ? "图片上传中…" : unlimited ? "提交作答" : `提交（剩余 ${remaining} 次）`}</Btn>
       </div>
     </div>
   );
@@ -241,9 +234,8 @@ function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: 
         <div className="ykt-problem-body">
           {p.bodyHtml ? <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题题干`} /> : null}
           {p.externalUrl ? (
-            <button className="btn ykt-ext-btn" onClick={() => void openExternal(p.externalUrl!)}>
-              打开外链题目 ↗
-            </button>
+            <Btn variant="outline" onClick={() => void openExternal(p.externalUrl!)}>打开外链题目 ↗
+            </Btn>
           ) : (
             <div className="ykt-ans-empty">外链题目：未取到外链地址，请从雨课堂网页版打开。</div>
           )}
@@ -508,14 +500,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
               {...(backToCourseId && from === "learn-course" ? { courseId: backToCourseId } : {})}
             />
             {eligibility.eligible && ykt.externalUrl ? (
-              <button
-                className="btn btn-primary"
-                disabled={submitBusy}
-                onClick={() => void openSubmit()}
-                title="应用内打开雨课堂官方作答页（官方提交逻辑原样保留）"
-              >
-                {submitBusy ? "作答页已打开…" : "作答 / 提交"}
-              </button>
+              <Btn variant="solid" tone="brand" disabled={submitBusy} onClick={() => void openSubmit()} titleAttr="应用内打开雨课堂官方作答页（官方提交逻辑原样保留）">{submitBusy ? "作答页已打开…" : "作答 / 提交"}</Btn>
             ) : null}
             {ykt.externalUrl ? (
               <Btn variant="outline" onClick={openInWeb} titleAttr="在系统浏览器或应用内打开官方页">

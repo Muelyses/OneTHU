@@ -266,19 +266,13 @@ export function SettingsPage() {
         title="设置"
         actions={
           <>
-            <button
-              className="btn"
-              onClick={() => {
+            <Btn variant="outline" onClick={() => {
                 resetActiveOnboarding();
                 location.reload();
-              }}
-              title="重新运行首次使用引导"
-            >
-              导览
-            </button>
-            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
-              管理栏目
-            </button>
+              }} titleAttr="重新运行首次使用引导">导览
+            </Btn>
+            <Btn variant="outline" onClick={() => setManageOpen(true)} titleAttr="栏目显隐与排序">管理栏目
+            </Btn>
           </>
         }
       />
@@ -315,9 +309,8 @@ export function SettingsPage() {
             <div className="setting-title">OneTHU {__APP_VERSION__} “{APP_CODENAME}”</div>
             <div className="setting-desc">清华园随身工具箱 · 开源于 GitHub</div>
           </div>
-          <button className="btn" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>
-            GitHub 项目页
-          </button>
+          <Btn variant="outline" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>GitHub 项目页
+          </Btn>
         </div>
         {/* 运行日志导出属开发者功能：正式版不显示（真机取证走 adb logcat -s onethu:V，
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
@@ -334,9 +327,8 @@ export function SettingsPage() {
             <div className="setting-title">统一认证</div>
             <div className="setting-desc">{user?.displayName || displayStudentId(user?.username) || "未登录"}</div>
           </div>
-          <button className="btn" onClick={() => void logout()}>
-            退出登录
-          </button>
+          <Btn variant="outline" onClick={() => void logout()}>退出登录
+          </Btn>
         </div>
       </Card>
 
@@ -354,9 +346,7 @@ export function SettingsPage() {
               <ErrorLine text={eidMsg} style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }} />
             ) : null}
           </div>
-          <button
-            className="btn"
-            onClick={() => {
+          <Btn variant="outline" onClick={() => {
               const creds = session.getIdCredentials();
               if (!creds) {
                 void openUrl("https://id.tsinghua.edu.cn/do/outoflogin/login/mainUi/login")
@@ -371,10 +361,8 @@ export function SettingsPage() {
               void invoke("open_eid_window", { username: creds.username, password: creds.password })
                 .then(() => setEidMsg("电子身份窗口已打开，账号密码已自动填入"))
                 .catch(() => void openInBrowser());
-            }}
-          >
-            打开电子身份
-          </button>
+            }}>打开电子身份
+          </Btn>
         </div>
       </Card>
 
@@ -391,42 +379,28 @@ export function SettingsPage() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <button
-                className="btn"
-                onClick={() =>
+              <Btn variant="outline" onClick={() =>
                   void confirmOk(
                     "在 iPhone / iPad 上查看日程（可选）\n\n手机上没有 OneTHU 也没关系：日程已在你清华邮箱的云端日历里，在 iPhone/iPad 上添加同一邮箱即可看到：\n· 设置 → 日历 → 账户 → 添加账户 → 其他 → CalDAV 账户\n· 服务器地址：https://mails.tsinghua.edu.cn/coremail/dav/users/你的邮箱/\n· 用户名：完整邮箱；密码：客户端专用密码（与本页一致）\n\n本机不需要此设置——用下方「系统日历同步」一键开启即可，应用直接写系统日历。",
                   )
-                }
-              >
-                iPhone 上查看
-              </button>
-              <button
-                className="btn"
-                disabled={calBusy || cloud.syncing}
-                onClick={() => {
+                }>iPhone 上查看
+              </Btn>
+              <Btn variant="outline" disabled={calBusy || cloud.syncing} onClick={() => {
                   setCalBusy(true);
                   setCalMsg(null);
                   void syncCloudCal()
                     .then((r) => setCalMsg(`已同步：云端共 ${r.total} 个日程（新增 ${r.added}、更新 ${r.updated}、移除 ${r.removed}）。`))
                     .catch((e: unknown) => setCalMsg(`同步失败：${e instanceof Error ? e.message : String(e)}`))
                     .finally(() => setCalBusy(false));
-                }}
-              >
-                {calBusy || cloud.syncing ? "同步中…" : "立即同步"}
-              </button>
-              <button
-                className="btn"
-                onClick={() =>
+                }}>{calBusy || cloud.syncing ? "同步中…" : "立即同步"}</Btn>
+              <Btn variant="outline" onClick={() =>
                   void disconnectCloudCal().then(() => {
                     setCalEmail("");
                     setCalPass("");
                     setCalMsg(null);
                   })
-                }
-              >
-                断开
-              </button>
+                }>断开
+              </Btn>
             </div>
           </div>
         ) : (
@@ -453,20 +427,14 @@ export function SettingsPage() {
                   value={calPass}
                   onChange={(e) => setCalPass(e.target.value)}
                 />
-                <button
-                  className="btn btn-primary"
-                  disabled={!/.+@.+/.test(calEmail) || !calPass || calBusy}
-                  onClick={() => {
+                <Btn variant="solid" tone="brand" disabled={!/.+@.+/.test(calEmail) || !calPass || calBusy} onClick={() => {
                     setCalBusy(true);
                     setCalMsg(null);
                     void configureCloudCal(calEmail, calPass)
                       .then((cals) => setCalMsg(`连接成功，发现日历：${cals.join("、")}。`))
                       .catch((e: unknown) => setCalMsg(`连接失败：${e instanceof Error ? e.message : String(e)}`))
                       .finally(() => setCalBusy(false));
-                  }}
-                >
-                  {calBusy ? "连接中…" : "保存并验证"}
-                </button>
+                  }}>{calBusy ? "连接中…" : "保存并验证"}</Btn>
               </div>
               {calMsg ? <ErrorLine text={calMsg} style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }} /> : null}
             </div>
@@ -496,10 +464,7 @@ export function SettingsPage() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <button
-                className="btn"
-                disabled={sysBusy || syscal.syncing}
-                onClick={() => {
+              <Btn variant="outline" disabled={sysBusy || syscal.syncing} onClick={() => {
                   setSysBusy(true);
                   setSysMsg(null);
                   void syncSystemCalendar()
@@ -508,25 +473,14 @@ export function SettingsPage() {
                     )
                     .catch((e: unknown) => setSysMsg(`同步失败：${e instanceof Error ? e.message : String(e)}`))
                     .finally(() => setSysBusy(false));
-                }}
-              >
-                {sysBusy || syscal.syncing ? "同步中…" : "立即同步"}
-              </button>
-              <button
-                className="btn"
-                disabled={sysBusy}
-                onClick={() => {
+                }}>{sysBusy || syscal.syncing ? "同步中…" : "立即同步"}</Btn>
+              <Btn variant="outline" disabled={sysBusy} onClick={() => {
                   void disableSystemCalendar()
                     .then(() => setSysMsg("已停止自动同步，已写入的日历与事件保留"))
                     .catch((e: unknown) => setSysMsg(String(e instanceof Error ? e.message : e)));
-                }}
-              >
-                停止自动同步
-              </button>
-              <button
-                className="btn"
-                disabled={sysBusy}
-                onClick={() => {
+                }}>停止自动同步
+              </Btn>
+              <Btn variant="outline" disabled={sysBusy} onClick={() => {
                   void confirmOk(
                     "确定删除系统日历里的「OneTHU 日程」日历？\n\n其中由 OneTHU 写入的全部事件将被移除；应用内的日程与云同步不受影响。",
                   ).then((yes) => {
@@ -537,10 +491,8 @@ export function SettingsPage() {
                       .catch((e: unknown) => setSysMsg(`删除失败：${e instanceof Error ? e.message : String(e)}`))
                       .finally(() => setSysBusy(false));
                   });
-                }}
-              >
-                清除系统日历
-              </button>
+                }}>清除系统日历
+              </Btn>
             </div>
           </div>
         ) : (
@@ -552,20 +504,14 @@ export function SettingsPage() {
                 {sysMsg ? <ErrorLine text={sysMsg} style={{ marginTop: 6, color: "var(--text-2)" }} /> : null}
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-                <button
-                  className="btn btn-primary"
-                  disabled={sysBusy || sysSupported === null}
-                  onClick={() => {
+                <Btn variant="solid" tone="brand" disabled={sysBusy || sysSupported === null} onClick={() => {
                     setSysBusy(true);
                     setSysMsg(null);
                     void enableSystemCalendar()
                       .then(() => setSysMsg("系统日历「OneTHU 日程」已写入，此后自动保持最新"))
                       .catch((e: unknown) => setSysMsg(`开启失败：${e instanceof Error ? e.message : String(e)}`))
                       .finally(() => setSysBusy(false));
-                  }}
-                >
-                  {sysBusy ? "开启中…" : "开启并同步"}
-                </button>
+                  }}>{sysBusy ? "开启中…" : "开启并同步"}</Btn>
               </div>
             </div>
           </div>
@@ -587,9 +533,7 @@ export function SettingsPage() {
               今日课程 / 订阅新闻；入口卡全部隐藏）。
             </div>
           </div>
-          <button className="btn" onClick={() => { clearHomeLayout(); setHomeResetAt(Date.now()); }}>
-            {homeResetAt ? "已恢复默认" : "恢复默认布局"}
-          </button>
+          <Btn variant="outline" onClick={() => { clearHomeLayout(); setHomeResetAt(Date.now()); }}>{homeResetAt ? "已恢复默认" : "恢复默认布局"}</Btn>
         </div>
       </Card>
 
@@ -608,9 +552,7 @@ export function SettingsPage() {
             {favMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }}>{favMsg}</div> : null}
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <button
-              className="btn"
-              onClick={() => {
+            <Btn variant="outline" onClick={() => {
                 const json = JSON.stringify(favs.data);
                 const clip = navigator.clipboard;
                 if (!clip?.writeText) {
@@ -621,25 +563,18 @@ export function SettingsPage() {
                   .writeText(json)
                   .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
                   .catch(() => setFavMsg("复制未成功，请改用下方的导入框核对"));
-              }}
-            >
-              导出（复制 JSON）
-            </button>
-            <button className="btn" onClick={() => { setImportOpen((o) => !o); setImportText(""); setFavMsg(null); }}>
-              导入
-            </button>
-            <button
-              className="btn"
-              onClick={() =>
+              }}>导出（复制 JSON）
+            </Btn>
+            <Btn variant="outline" onClick={() => { setImportOpen((o) => !o); setImportText(""); setFavMsg(null); }}>导入
+            </Btn>
+            <Btn variant="outline" onClick={() =>
                 void confirmOk("删除全部用户收藏夹并复位折叠记录？默认一级入口不受影响。").then((ok) => {
                   if (!ok) return;
                   favs.replaceAll(resetFavs());
                   setFavMsg("已恢复默认。");
                 })
-              }
-            >
-              恢复默认
-            </button>
+              }>恢复默认
+            </Btn>
           </div>
         </div>
         {importOpen ? (
@@ -652,10 +587,7 @@ export function SettingsPage() {
               onChange={(e) => setImportText(e.target.value)}
             />
             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <button
-                className="btn btn-primary"
-                disabled={!importText.trim()}
-                onClick={() => {
+              <Btn variant="solid" tone="brand" disabled={!importText.trim()} onClick={() => {
                   const parsed = parseFavs(importText);
                   if (!parsed) {
                     setFavMsg("导入失败：格式不正确，请粘贴本应用导出的内容");
@@ -665,10 +597,8 @@ export function SettingsPage() {
                   setImportOpen(false);
                   setImportText("");
                   setFavMsg("已导入 " + parsed.order.length + " 个根收藏夹。");
-                }}
-              >
-                导入并覆盖
-              </button>
+                }}>导入并覆盖
+              </Btn>
               <Btn variant="ghost" onClick={() => setImportOpen(false)}>取消</Btn>
             </div>
           </div>
@@ -705,9 +635,7 @@ export function SettingsPage() {
             </div>
           </div>
           {hasSaved ? (
-            <button className="btn" disabled={clearing} onClick={() => void onClear()}>
-              {clearing ? "清除中…" : "清除"}
-            </button>
+            <Btn variant="outline" disabled={clearing} onClick={() => void onClear()}>{clearing ? "清除中…" : "清除"}</Btn>
           ) : null}
         </div>
       </Card>
@@ -1176,45 +1104,25 @@ function ExtHwSection() {
             </span>
             <span className="exthw-src-actions">
               {configured.yuketang ? (
-                <button className="btn" disabled={busy !== null} onClick={() => onLogout("yuketang")}>
-                  {busy === "logout-yuketang" ? "退出中…" : "退出"}
-                </button>
+                <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("yuketang")}>{busy === "logout-yuketang" ? "退出中…" : "退出"}</Btn>
               ) : (
                 <>
-                  <button
-                    className="btn btn-primary"
-                    disabled={busy !== null}
-                    onClick={() => {
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => {
                       setYktWebOpen(false);
                       setYktQrOpen((v) => !v);
-                    }}
-                  >
-                    {yktQrOpen ? "收起扫码" : "微信扫码登录"}
-                  </button>
+                    }}>{yktQrOpen ? "收起扫码" : "微信扫码登录"}</Btn>
                   {/* R18 24.2：官方网页登录通道（应用内 WebView，支持扫码 / 短信）
                       R18b 25.3.2：桌面端原生窗口实测白屏卡死 → 隐藏该入口（二维码可用），仅 Android 保留 */}
                   {YKT_WEB_LOGIN_AVAILABLE ? (
-                    <button
-                      className="btn"
-                      disabled={busy !== null}
-                      title="在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录"
-                      onClick={() => {
+                    <Btn variant="outline" disabled={busy !== null} titleAttr="在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录" onClick={() => {
                         setYktQrOpen(false);
                         setYktWebOpen((v) => !v);
-                      }}
-                    >
-                      {yktWebOpen ? "收起网页登录" : "官方网页登录"}
-                    </button>
+                      }}>{yktWebOpen ? "收起网页登录" : "官方网页登录"}</Btn>
                   ) : null}
                 </>
               )}
-              <button
-                className="btn btn-ghost exthw-more"
-                disabled
-                title="雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码"
-              >
-                短信验证码（暂不可用）
-              </button>
+              <Btn variant="ghost" disabled titleAttr="雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码">短信验证码（暂不可用）
+              </Btn>
             </span>
           </div>
           {/* R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），
@@ -1243,41 +1151,20 @@ function ExtHwSection() {
                       : "登录状态：未知（上次检查时网络异常，不判定为失效）"}
               </div>
               <div style={fieldStyle}>
-                <button className="btn" disabled={busy !== null} onClick={onYktCheckSession}>
-                  {busy === "ykt-check" ? "检查中…" : "检查登录状态"}
-                </button>
-                <button
-                  className="btn"
-                  disabled={busy !== null}
-                  title="导出当前登录状态，供其他设备导入（免重复扫码）。文件等同账号绑定，用完请即删。"
-                  onClick={onYktExportCookie}
-                >
-                  {busy === "ykt-export" ? "导出中…" : "导出登录状态"}
-                </button>
-                <button
-                  className="btn"
-                  disabled={busy !== null}
-                  title="导入其他已登录设备导出的登录状态文件，免扫码直接恢复登录"
-                  onClick={onYktImportCookie}
-                >
-                  {busy === "ykt-import" ? "导入中…" : "导入登录状态"}
-                </button>
+                <Btn variant="outline" disabled={busy !== null} onClick={onYktCheckSession}>{busy === "ykt-check" ? "检查中…" : "检查登录状态"}</Btn>
+                <Btn variant="outline" disabled={busy !== null} titleAttr="导出当前登录状态，供其他设备导入（免重复扫码）。文件等同账号绑定，用完请即删。" onClick={onYktExportCookie}>{busy === "ykt-export" ? "导出中…" : "导出登录状态"}</Btn>
+                <Btn variant="outline" disabled={busy !== null} titleAttr="导入其他已登录设备导出的登录状态文件，免扫码直接恢复登录" onClick={onYktImportCookie}>{busy === "ykt-import" ? "导入中…" : "导入登录状态"}</Btn>
               </div>
               {ext.yktSession.alive === false ? (
                 <div className="exthw-note is-error">
                   会话已失效：作业页将拉不到雨课堂数据。可「一键重登（扫码）」，或在其他已登录设备「导出
                   Cookie」后在此「导入 Cookie」恢复。
                   <div style={{ marginTop: 6 }}>
-                    <button
-                      className="btn btn-primary"
-                      disabled={busy !== null}
-                      onClick={() => {
+                    <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => {
                         setYktWebOpen(false);
                         setYktQrOpen(true);
-                      }}
-                    >
-                      一键重登（扫码）
-                    </button>
+                      }}>一键重登（扫码）
+                    </Btn>
                   </div>
                 </div>
               ) : null}
@@ -1350,19 +1237,14 @@ function ExtHwSection() {
               }
               primary={
                 configured.tuoj ? (
-                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuoj")}>
-                    {busy === "logout-tuoj" ? "退出中…" : "退出"}
-                  </button>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tuoj")}>{busy === "logout-tuoj" ? "退出中…" : "退出"}</Btn>
                 ) : (
-                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => onTuojCasLogin("tuoj")}>
-                    {busy === "tuoj-cas-tuoj" ? "登录中…" : "统一认证登录"}
-                  </button>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => onTuojCasLogin("tuoj")}>{busy === "tuoj-cas-tuoj" ? "登录中…" : "统一认证登录"}</Btn>
                 )
               }
               more={
-                <button className="btn btn-ghost exthw-more" onClick={() => setTuojPwdOpen((v) => !v)}>
-                  {tuojPwdOpen ? "▾" : "▸"} 账号密码
-                </button>
+                <Btn variant="ghost" onClick={() => setTuojPwdOpen((v) => !v)}>{tuojPwdOpen ? "▾" : "▸"}账号密码
+                </Btn>
               }
               note={tuojNote("tuoj")}
             >
@@ -1371,9 +1253,7 @@ function ExtHwSection() {
                   <div style={fieldStyle}>
                     <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tuojUser} onChange={(e) => setTuojUser(e.target.value.trim())} />
                     <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tuojPwd} onChange={(e) => setTuojPwd(e.target.value)} />
-                    <button className="btn" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={() => onTuojPwdLogin("tuoj")}>
-                      {busy === "tuoj-pwd-tuoj" ? "登录中…" : "登录"}
-                    </button>
+                    <Btn variant="outline" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={() => onTuojPwdLogin("tuoj")}>{busy === "tuoj-pwd-tuoj" ? "登录中…" : "登录"}</Btn>
                   </div>
                 </div>
               ) : null}
@@ -1392,19 +1272,14 @@ function ExtHwSection() {
               }
               primary={
                 configured.tuojClassic ? (
-                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tuojClassic")}>
-                    {busy === "logout-tuojClassic" ? "退出中…" : "退出"}
-                  </button>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tuojClassic")}>{busy === "logout-tuojClassic" ? "退出中…" : "退出"}</Btn>
                 ) : (
-                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => onTuojCasLogin("tuojClassic")}>
-                    {busy === "tuoj-cas-tuojClassic" ? "登录中…" : "统一认证登录"}
-                  </button>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => onTuojCasLogin("tuojClassic")}>{busy === "tuoj-cas-tuojClassic" ? "登录中…" : "统一认证登录"}</Btn>
                 )
               }
               more={
-                <button className="btn btn-ghost exthw-more" onClick={() => setClassicPwdOpen((v) => !v)}>
-                  {classicPwdOpen ? "▾" : "▸"} 账号密码
-                </button>
+                <Btn variant="ghost" onClick={() => setClassicPwdOpen((v) => !v)}>{classicPwdOpen ? "▾" : "▸"}账号密码
+                </Btn>
               }
               note={tuojNote("tuojClassic")}
             >
@@ -1413,9 +1288,7 @@ function ExtHwSection() {
                   <div style={fieldStyle}>
                     <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={classicUser} onChange={(e) => setClassicUser(e.target.value.trim())} />
                     <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={classicPwd} onChange={(e) => setClassicPwd(e.target.value)} />
-                    <button className="btn" disabled={busy !== null || !classicUser.trim() || !classicPwd} onClick={() => onTuojPwdLogin("tuojClassic")}>
-                      {busy === "tuoj-pwd-tuojClassic" ? "登录中…" : "登录"}
-                    </button>
+                    <Btn variant="outline" disabled={busy !== null || !classicUser.trim() || !classicPwd} onClick={() => onTuojPwdLogin("tuojClassic")}>{busy === "tuoj-pwd-tuojClassic" ? "登录中…" : "登录"}</Btn>
                   </div>
                 </div>
               ) : null}
@@ -1427,20 +1300,15 @@ function ExtHwSection() {
               logged={configured.tyche}
               primary={
                 configured.tyche ? (
-                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("tyche")}>
-                    {busy === "logout-tyche" ? "退出中…" : "退出"}
-                  </button>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tyche")}>{busy === "logout-tyche" ? "退出中…" : "退出"}</Btn>
                 ) : (
-                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => setTycheFormOpen((v) => !v)}>
-                    {tycheFormOpen ? "收起" : "登录"}
-                  </button>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => setTycheFormOpen((v) => !v)}>{tycheFormOpen ? "收起" : "登录"}</Btn>
                 )
               }
               more={
                 configured.tyche ? (
-                  <button className="btn btn-ghost exthw-more" onClick={() => setTycheFormOpen((v) => !v)}>
-                    {tycheFormOpen ? "▾" : "▸"} 重新登录
-                  </button>
+                  <Btn variant="ghost" onClick={() => setTycheFormOpen((v) => !v)}>{tycheFormOpen ? "▾" : "▸"}重新登录
+                  </Btn>
                 ) : undefined
               }
               note={
@@ -1456,9 +1324,7 @@ function ExtHwSection() {
                   <div style={fieldStyle}>
                     <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tycheUser} onChange={(e) => setTycheUser(e.target.value.trim())} />
                     <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tychePwd} onChange={(e) => setTychePwd(e.target.value)} />
-                    <button className="btn btn-primary" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>
-                      {busy === "tyche-login" ? "登录中…" : "登录"}
-                    </button>
+                    <Btn variant="solid" tone="brand" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>{busy === "tyche-login" ? "登录中…" : "登录"}</Btn>
                   </div>
                   {/* R21-A：记住密码 → 会话失效时用存档账密静默自动重登一次（同源 ≥10min、每进程 ≤3 次） */}
                   <label style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, fontSize: 12, opacity: 0.9 }}>
@@ -1480,20 +1346,15 @@ function ExtHwSection() {
               logged={configured.dsa}
               primary={
                 configured.dsa ? (
-                  <button className="btn" disabled={busy !== null} onClick={() => onLogout("dsa")}>
-                    {busy === "logout-dsa" ? "退出中…" : "退出"}
-                  </button>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("dsa")}>{busy === "logout-dsa" ? "退出中…" : "退出"}</Btn>
                 ) : (
-                  <button className="btn btn-primary" disabled={busy !== null} onClick={() => setDsaFormOpen((v) => !v)}>
-                    {dsaFormOpen ? "收起" : "登录"}
-                  </button>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => setDsaFormOpen((v) => !v)}>{dsaFormOpen ? "收起" : "登录"}</Btn>
                 )
               }
               more={
                 configured.dsa ? (
-                  <button className="btn btn-ghost exthw-more" onClick={() => setDsaFormOpen((v) => !v)}>
-                    {dsaFormOpen ? "▾" : "▸"} 重新登录
-                  </button>
+                  <Btn variant="ghost" onClick={() => setDsaFormOpen((v) => !v)}>{dsaFormOpen ? "▾" : "▸"}重新登录
+                  </Btn>
                 ) : undefined
               }
               note={ext.errors.dsa ? <div className="exthw-note is-error">{ext.errors.dsa}</div> : undefined}
@@ -1503,9 +1364,7 @@ function ExtHwSection() {
                   <div style={fieldStyle}>
                     <input className="input" style={{ minWidth: 160, flex: 1 }} type="email" placeholder="邮箱" value={dsaUser} onChange={(e) => setDsaUser(e.target.value.trim())} />
                     <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={dsaPwd} onChange={(e) => setDsaPwd(e.target.value)} />
-                    <button className="btn btn-primary" disabled={busy !== null || !dsaUser.trim() || !dsaPwd} onClick={onDsaLogin}>
-                      {busy === "dsa-login" ? "登录中…" : "登录"}
-                    </button>
+                    <Btn variant="solid" tone="brand" disabled={busy !== null || !dsaUser.trim() || !dsaPwd} onClick={onDsaLogin}>{busy === "dsa-login" ? "登录中…" : "登录"}</Btn>
                   </div>
                 </div>
               ) : null}
@@ -1530,16 +1389,13 @@ function ExtHwSection() {
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <Btn variant="solid" tone="brand" onClick={onSave}>保存</Btn>
-                <button className="btn" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>
-                  {busy === "refresh" || ext.state === "loading" ? "刷新中…" : "立即刷新"}
-                </button>
+                <Btn variant="outline" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>{busy === "refresh" || ext.state === "loading" ? "刷新中…" : "立即刷新"}</Btn>
               </div>
 
               {/* 高级：手动粘贴浏览器登录信息（一般用户用不到） */}
               <div>
-                <button className="btn btn-ghost" style={{ padding: "2px 0" }} onClick={() => setAdvanced((v) => !v)}>
-                  {advanced ? "▾" : "▸"} 高级：手动粘贴浏览器登录信息
-                </button>
+                <Btn variant="ghost" onClick={() => setAdvanced((v) => !v)}>{advanced ? "▾" : "▸"}高级：手动粘贴浏览器登录信息
+                </Btn>
                 {advanced ? (
                   <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
                     <TextArea placeholder="雨课堂登录状态" value={yktCookie} onChange={(value) => setYktCookie(value)} />
@@ -1644,12 +1500,10 @@ function DownloadSettings() {
             ) : null}
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <button className="btn" disabled={loading || busy} onClick={() => void changeDirectory(false)}>
-              选择文件夹
-            </button>
-            <button className="btn" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>
-              恢复默认
-            </button>
+            <Btn variant="outline" disabled={loading || busy} onClick={() => void changeDirectory(false)}>选择文件夹
+            </Btn>
+            <Btn variant="outline" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>恢复默认
+            </Btn>
           </div>
         </div>
       </Card>
@@ -1679,9 +1533,7 @@ function DebugLogRow() {
         <div className="setting-title">运行日志</div>
         <div className="setting-desc">{where ? `已导出：${where}` : "用于问题排查，导出到系统下载"}</div>
       </div>
-      <button className="btn" disabled={busy} onClick={() => void run()}>
-        {busy ? "导出中…" : "导出日志"}
-      </button>
+      <Btn variant="outline" disabled={busy} onClick={() => void run()}>{busy ? "导出中…" : "导出日志"}</Btn>
     </div>
   );
 }
@@ -1707,9 +1559,7 @@ function DiagnosticsRow() {
         <div className="setting-title">诊断摘要</div>
         <div className="setting-desc">反馈问题时粘贴这段文字，不含学号等个人信息</div>
       </div>
-      <button className="btn" disabled={busy} onClick={() => void run()}>
-        {busy ? "复制中…" : "复制摘要"}
-      </button>
+      <Btn variant="outline" disabled={busy} onClick={() => void run()}>{busy ? "复制中…" : "复制摘要"}</Btn>
     </div>
   );
 }
@@ -1818,8 +1668,8 @@ function AppearanceSection(): ReactNode {
             <div className="setting-desc">横版：标签在顶部一排；竖版：标签在左侧栏。标签栏上的切换钮可随时改，这里设的是默认值。</div>
           </div>
           <div style={{ display: "flex", gap: 8, flex: "none" }}>
-            <button className={"btn " + (tabLayoutDefault === "h" ? "btn-primary" : "btn-ghost")} style={{ flex: "none" }} aria-pressed={tabLayoutDefault === "h"} onClick={() => setTabLayoutDefault("h")}>横版</button>
-            <button className={"btn " + (tabLayoutDefault === "v" ? "btn-primary" : "btn-ghost")} style={{ flex: "none" }} aria-pressed={tabLayoutDefault === "v"} onClick={() => setTabLayoutDefault("v")}>竖版</button>
+            <Btn variant="solid" tone="brand" aria-pressed={tabLayoutDefault === "h"} onClick={() => setTabLayoutDefault("h")}>横版</Btn>
+            <Btn variant="solid" tone="brand" aria-pressed={tabLayoutDefault === "v"} onClick={() => setTabLayoutDefault("v")}>竖版</Btn>
           </div>
         </div>
       )}
@@ -1844,27 +1694,15 @@ function AppearanceSection(): ReactNode {
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
           {/* ③ 两个按钮并列、同一套胶囊口径：安装（市场 + 主题筛选）｜管理（主题插件的启用/停用） */}
-          <button
-            className="btn btn-primary"
-            style={{ flex: "none" }}
-            title="到插件市场安装主题（自动筛选「主题」类别）"
-            onClick={() => {
+          <Btn variant="solid" tone="brand" titleAttr="到插件市场安装主题（自动筛选「主题」类别）" onClick={() => {
               requestPluginsView({ view: "market", category: "theme" });
-            }}
-          >
-            安装主题
-          </button>
-          <button
-            className="btn btn-primary"
-            style={{ flex: "none" }}
-            title="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）"
-            onClick={() => {
+            }}>安装主题
+          </Btn>
+          <Btn variant="solid" tone="brand" titleAttr="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）" onClick={() => {
               /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */
               requestPluginsView({ view: "mine", category: "theme" });
-            }}
-          >
-            管理主题
-          </button>
+            }}>管理主题
+          </Btn>
         </div>
       </div>
       {/* ③ 主题板**恢复成原来那套**（用户给的旧图样式：色卡 + 名称 + 使用中/社区胶囊 + 应用按钮），
@@ -2076,12 +1914,8 @@ function GeekSection(): ReactNode {
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, flex: "none" }}>
-            <button className="btn btn-ghost" disabled={busy !== null} onClick={() => void download()}>
-              {busy === "dl" ? "下载中…" : "下载专用版"}
-            </button>
-            <button className="btn" disabled={busy !== null || !probe} onClick={() => void launch()}>
-              {busy === "launch" ? "启动中…" : "启动探索"}
-            </button>
+            <Btn variant="ghost" disabled={busy !== null} onClick={() => void download()}>{busy === "dl" ? "下载中…" : "下载专用版"}</Btn>
+            <Btn variant="outline" disabled={busy !== null || !probe} onClick={() => void launch()}>{busy === "launch" ? "启动中…" : "启动探索"}</Btn>
           </div>
         </div>
       ) : null}

@@ -204,9 +204,8 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         {err ? <div style={{ color: "var(--red, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
       </div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
-        <button className="btn" onClick={() => setNonce((n) => n + 1)}>
-          刷新二维码
-        </button>
+        <Btn variant="outline" onClick={() => setNonce((n) => n + 1)}>刷新二维码
+        </Btn>
         <Btn variant="ghost" onClick={handleCancel}>
           取消
         </Btn>
@@ -308,9 +307,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
         <div style={{ color: "var(--red, #c04848)", fontSize: 12, marginTop: 8, whiteSpace: "pre-wrap" }}>{err}</div>
       ) : null}
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10, flexWrap: "wrap" }}>
-        <button className="btn btn-primary" disabled={phase === "reading"} onClick={read}>
-          {phase === "reading" ? "读取中…" : "我已登录，读取登录信息"}
-        </button>
+        <Btn variant="solid" tone="brand" disabled={phase === "reading"} onClick={read}>{phase === "reading" ? "读取中…" : "我已登录，读取登录信息"}</Btn>
         <Btn variant="ghost" onClick={onCancel}>
           取消
         </Btn>

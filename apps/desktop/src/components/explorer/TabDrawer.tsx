@@ -747,9 +747,8 @@ export function WorkspacePanel(): ReactNode {
               <Btn variant="ghost" onClick={() => setNaming(false)}>取消</Btn>
             </span>
           ) : (
-            <button className="btn btn-ghost ex-btn-sm" onClick={() => setNaming(true)}>
-              存当前 {snap.tabs.length} 个为工作区
-            </button>
+            <Btn variant="ghost" onClick={() => setNaming(true)}>存当前 {snap.tabs.length}个为工作区
+            </Btn>
           )
         ) : null}
       </div>
@@ -775,22 +774,17 @@ export function WorkspacePanel(): ReactNode {
                   </span>
                 </div>
                 <div className="ex-row-actions">
-                  <button className="btn btn-ghost ex-btn-sm" onClick={() => { openWorkspace(w.id); closeTabDrawer(); }}>打开</button>
+                  <Btn variant="ghost" onClick={() => { openWorkspace(w.id); closeTabDrawer(); }}>打开</Btn>
                   <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>编辑</Btn>
                   {w.live ? (
                     <Btn variant="ghost" titleAttr="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</Btn>
                   ) : null}
-                  <button
-                    className="btn btn-ghost ex-btn-sm ex-danger"
-                    title="彻底删除：连同其中的标签页一起关闭"
-                    onClick={() =>
+                  <Btn variant="ghost" titleAttr="彻底删除：连同其中的标签页一起关闭" onClick={() =>
                       void confirmOk(`彻底删除工作区「${w.name}」及其中的 ${count} 个标签页？`).then((ok) => {
                         if (ok) closeLiveWorkspace(w.id);
                       })
-                    }
-                  >
-                    彻底删除
-                  </button>
+                    }>彻底删除
+                  </Btn>
                 </div>
               </div>
             );
@@ -1028,9 +1022,8 @@ function TabDrawerInner(): ReactNode {
           {query.trim() ? null : <WorkspacePanel />}
         </div>
         <footer className="ex-sheet-foot">
-          <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); closeTabDrawer(); }}>
-            + 新建标签页（回首页）
-          </button>
+          <Btn variant="ghost" onClick={() => { focusTab(HOME_TAB_ID); closeTabDrawer(); }}>+ 新建标签页（回首页）
+          </Btn>
         </footer>
       </aside>
       {menuFor ? <MoveMenu tab={menuFor.tab} x={menuFor.x} y={menuFor.y} snap={snap} onClose={() => setMenuFor(null)} /> : null}

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 全部作业（learnX Assignments）：按状态分组（进行中/已逾期/已交/已批改），组内按截止时间排序 */
 import { useMemo, useState } from "react";
 import { parseLearnTime, SOURCE_NAMES } from "@onethu/core";
@@ -67,27 +68,18 @@ function ExtHwGuide() {
             </div>
           ) : null}
         </span>
-        <button className="btn btn-primary" onClick={() => setLoginOpen(true)}>
-          登录雨课堂
-        </button>
-        <button
-          className="btn"
-          onClick={() => {
+        <Btn variant="solid" tone="brand" onClick={() => setLoginOpen(true)}>登录雨课堂
+        </Btn>
+        <Btn variant="outline" onClick={() => {
             requestExtHwScroll();
             navigate("settings");
-          }}
-        >
-          去设置
-        </button>
-        <button
-          className="btn btn-ghost"
-          onClick={() => {
+          }}>去设置
+        </Btn>
+        <Btn variant="ghost" onClick={() => {
             dismissExtHwGuide();
             setDismissed(true);
-          }}
-        >
-          知道了
-        </button>
+          }}>知道了
+        </Btn>
       </div>
       <ConnectGate need="yuketang" open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
@@ -125,24 +117,18 @@ function ExtHwSourceErrorNote() {
           ))}
         </span>
         {yktFailed ? (
-          <button className="btn btn-primary" onClick={() => setYktLoginOpen(true)}>
-            雨课堂扫码重登
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => setYktLoginOpen(true)}>雨课堂扫码重登
+          </Btn>
         ) : null}
         {rows.some((r) => r.id === "tuoj" || r.id === "tuojClassic") ? (
-          <button className="btn btn-primary" onClick={() => setTuojLoginOpen(true)}>
-            TUOJ 重新登录
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => setTuojLoginOpen(true)}>TUOJ 重新登录
+          </Btn>
         ) : null}
-        <button
-          className="btn"
-          onClick={() => {
+        <Btn variant="outline" onClick={() => {
             requestExtHwScroll();
             navigate("settings");
-          }}
-        >
-          去设置重新登录
-        </button>
+          }}>去设置重新登录
+        </Btn>
       </div>
       <ConnectGate need="yuketang" open={yktLoginOpen} onClose={() => setYktLoginOpen(false)} />
       <ConnectGate need="tuoj" open={tuojLoginOpen} onClose={() => setTuojLoginOpen(false)} />
@@ -230,14 +216,11 @@ export function AssignmentsPage() {
             <PageAtomStar atomKey="learn-assignments" title="全部作业" />
             <BackButton to="learn" label="课程列表" />
             {extCourseId ? (
-              <button className="btn btn-ghost" onClick={() => navigate("learn-assignments")}>
-                查看全部作业
-              </button>
+              <Btn variant="ghost" onClick={() => navigate("learn-assignments")}>查看全部作业
+              </Btn>
             ) : null}
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />

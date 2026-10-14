@@ -74,13 +74,7 @@ export function LoginPage() {
             <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
             记住密码（本机保存，重启后自动登录）
           </label>
-          <button
-            className="btn btn-primary"
-            style={{ width: "100%", height: 40, marginTop: 4 }}
-            disabled={busy || !username || !password}
-          >
-            {busy ? "正在登录统一认证…" : "登录"}
-          </button>
+          <Btn variant="solid" tone="brand" disabled={busy || !username || !password}>{busy ? "正在登录统一认证…" : "登录"}</Btn>
         </form>
 
         <div className="login-foot">
@@ -181,15 +175,8 @@ export function TwoFactorPage() {
             <Btn variant="ghost" onClick={backToLogin}>
               返回登录
             </Btn>
-            <button
-              type="button"
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              disabled={!selected}
-              onClick={() => setStage("code")}
-            >
-              下一步
-            </button>
+            <Btn variant="solid" tone="brand" disabled={!selected} onClick={() => setStage("code")}>下一步
+            </Btn>
           </div>
         </div>
       </div>
@@ -229,31 +216,15 @@ export function TwoFactorPage() {
           </label>
           <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
             {!isTotp ? (
-              <button
-                type="button"
-                className="btn"
-                style={{ flex: "0 0 auto" }}
-                onClick={() => void onSend()}
-                disabled={sending || !selected}
-              >
-                {sending ? "发送中…" : sent ? "重新发送" : "发送验证码"}
-              </button>
+              <Btn variant="outline" onClick={() => void onSend()} disabled={sending || !selected}>{sending ? "发送中…" : sent ? "重新发送" : "发送验证码"}</Btn>
             ) : null}
-            <button
-              type="submit"
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              disabled={busy || submitting || (!isTotp && !sent) || !code.trim()}
-            >
-              {busy || submitting ? "校验中…" : "验证并登录"}
-            </button>
+            <Btn variant="solid" tone="brand" disabled={busy || submitting || (!isTotp && !sent) || !code.trim()}>{busy || submitting ? "校验中…" : "验证并登录"}</Btn>
           </div>
         </form>
 
         <div className="login-foot">
-          <button className="btn-ghost btn" onClick={() => { setStage("select"); setCode(""); setSent(false); }}>
-            ← 更改验证方式
-          </button>
+          <Btn variant="ghost" onClick={() => { setStage("select"); setCode(""); setSent(false); }}>← 更改验证方式
+          </Btn>
           <Btn variant="ghost" onClick={backToLogin}>
             返回登录
           </Btn>

@@ -759,22 +759,15 @@ export function SchedulePage() {
           <>
             <PageAtomStar atomKey="schedule" title="日程" />
             {(mode === "timetable" && !inCurrentWeek) || (mode === "agenda" && ymdOf(new Date()).slice(0, 7) !== ymdOf(anchor).slice(0, 7)) ? (
-              <button className="btn" onClick={() => { setAnchor(new Date()); setSelected(todayStr); }}>
-                回到今天
-              </button>
+              <Btn variant="outline" onClick={() => { setAnchor(new Date()); setSelected(todayStr); }}>回到今天
+              </Btn>
             ) : null}
-            <button
-              className="btn"
-              onClick={() => {
+            <Btn variant="outline" onClick={() => {
                 setReloadTick((t) => t + 1);
                 if (!calendar.data) void calendar.reload();
                 else void campus.reload();
-              }}
-              disabled={winLoading}
-            >
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+              }} disabled={winLoading}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />
@@ -795,9 +788,7 @@ export function SchedulePage() {
             但直接砍掉会丢 6:30 升旗 / 晚间自定义日程——所以交给用户自己选，
             默认全天（既有观感不变）。选择落 localStorage，两端共享。 */}
         <div style={{ position: "relative" }}>
-          <button className="btn" onClick={() => setWinOpen((v) => !v)} title="选择课表显示的时间段">
-            时段 {hhmmWin(win.from)}–{hhmmWin(win.to)}
-          </button>
+          <Btn variant="outline" onClick={() => setWinOpen((v) => !v)} titleAttr="选择课表显示的时间段">时段 {hhmmWin(win.from)}–{hhmmWin(win.to)}</Btn>
           {winOpen ? (
             <>
               <div style={{ position: "fixed", inset: 0, zIndex: 20 }} onClick={() => setWinOpen(false)} />
@@ -828,7 +819,7 @@ export function SchedulePage() {
                       {p.label}
                     </button>
                   ))}
-                  <button className="btn" style={{ fontSize: 12 }} onClick={() => setWin(FULL_DAY)}>恢复全天</button>
+                  <Btn variant="outline" onClick={() => setWin(FULL_DAY)}>恢复全天</Btn>
                 </div>
               </div>
             </>
@@ -838,17 +829,11 @@ export function SchedulePage() {
         <span style={{ fontSize: 12, color: "var(--text-3, #999)" }}>
           {canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置"}
         </span>
-        <button className="btn" onClick={() => void onSync()} disabled={!canCloud || cal.syncing}>
-          <IconRefresh width={14} height={14} />
-          {cal.syncing ? "同步中…" : "同步"}
-        </button>
-        <button className="btn" onClick={() => void onSystemCal()} disabled={busy}>
-          {sysNative === false ? "导出 .ics" : "同步到系统日历"}
-        </button>
+        <Btn variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing}><IconRefresh width={14} height={14} />{cal.syncing ? "同步中…" : "同步"}</Btn>
+        <Btn variant="outline" onClick={() => void onSystemCal()} disabled={busy}>{sysNative === false ? "导出 .ics" : "同步到系统日历"}</Btn>
 
-        <button className="btn btn-primary" onClick={() => setDraft(emptyDraft(defaultDraftDate, canCloud))}>
-          ＋ 添加日程
-        </button>
+        <Btn variant="solid" tone="brand" onClick={() => setDraft(emptyDraft(defaultDraftDate, canCloud))}>＋ 添加日程
+        </Btn>
       </div>
       {msg ? (
         <div style={{ fontSize: 12.5, color: "var(--text-2)", marginBottom: 8, whiteSpace: "pre-wrap" }}>{msg}</div>
@@ -856,19 +841,13 @@ export function SchedulePage() {
 
       {/* 导航（两视图共用）：日历快跳 + 窗口步进 + 今天 ‖ 学期周跳转 */}
       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: calOpen ? 8 : 10 }}>
-        <button className="btn" onClick={() => setCalOpen((v) => !v)} title="打开日历，快速跳到任意年月">
-          <IconSchedule width={14} height={14} />
-          {label}
-        </button>
-        <button className="btn" onClick={() => setAnchor(stepAnchor(-1))} title={mode === "timetable" ? "上一周" : "上个月"}>
-          ‹
-        </button>
-        <button className="btn" onClick={() => setAnchor(stepAnchor(1))} title={mode === "timetable" ? "下一周" : "下个月"}>
-          ›
-        </button>
-        <button className="btn" onClick={() => { setAnchor(new Date()); setSelected(todayStr); }}>
-          今天
-        </button>
+        <Btn variant="outline" onClick={() => setCalOpen((v) => !v)} titleAttr="打开日历，快速跳到任意年月"><IconSchedule width={14} height={14} />{label}</Btn>
+        <Btn variant="outline" onClick={() => setAnchor(stepAnchor(-1))} titleAttr={mode === "timetable" ? "上一周" : "上个月"}>‹
+        </Btn>
+        <Btn variant="outline" onClick={() => setAnchor(stepAnchor(1))} titleAttr={mode === "timetable" ? "下一周" : "下个月"}>›
+        </Btn>
+        <Btn variant="outline" onClick={() => { setAnchor(new Date()); setSelected(todayStr); }}>今天
+        </Btn>
         {semesters.length > 0 ? (
           <>
             <span style={{ width: 1, alignSelf: "stretch", background: "var(--border, #e8e8e8)" }} />
@@ -905,7 +884,7 @@ export function SchedulePage() {
             <Btn variant="outline" titleAttr="下一月" onClick={() => calShift(1)}>›</Btn>
             <Btn variant="outline" titleAttr="下一年" onClick={() => calShift(12)}>»</Btn>
             <span style={{ flex: 1 }} />
-            <button className="btn" onClick={() => setCalView(new Date(new Date().getFullYear(), new Date().getMonth(), 1))}>本月</button>
+            <Btn variant="outline" onClick={() => setCalView(new Date(new Date().getFullYear(), new Date().getMonth(), 1))}>本月</Btn>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center" }}>
             {DAY_NAMES.map((n) => (
@@ -1231,13 +1210,8 @@ export function SchedulePage() {
                         <span>{detail.hwMeta?.ext ? detail.hwMeta.source ?? "外部" : "网络学堂"}</span>
                       </div>
                       {detail.hwMeta?.externalUrl ? (
-                        <button
-                          className="btn"
-                          style={{ marginTop: 14, width: "100%" }}
-                          onClick={() => void openUrl(detail.hwMeta?.externalUrl ?? "")}
-                        >
-                          打开官方页面
-                        </button>
+                        <Btn variant="outline" onClick={() => void openUrl(detail.hwMeta?.externalUrl ?? "")}>打开官方页面
+                        </Btn>
                       ) : null}
                     </>
                   ) : (
@@ -1276,9 +1250,8 @@ export function SchedulePage() {
                     课程与考试来自教务系统数据，不能在此修改；自建日程点击即可编辑。
                   </div>
                   <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
-                    <button className="btn" onClick={() => setDetail(null)}>
-                      关闭
-                    </button>
+                    <Btn variant="outline" onClick={() => setDetail(null)}>关闭
+                    </Btn>
                   </div>
                 </div>
               </div>
@@ -1343,15 +1316,12 @@ export function SchedulePage() {
             </label>
           ) : null}
           <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-            <button className="btn btn-primary" disabled={!draft.title.trim() || busy} onClick={() => void onSaveDraft()}>
-              {busy ? "保存中…" : "保存"}
-            </button>
+            <Btn variant="solid" tone="brand" disabled={!draft.title.trim() || busy} onClick={() => void onSaveDraft()}>{busy ? "保存中…" : "保存"}</Btn>
             <Btn variant="outline" onClick={() => setDraft(null)}>取消</Btn>
             <span style={{ flex: 1 }} />
             {draft.uid ? (
-              <button className="btn" style={{ color: "#e5484d" }} disabled={busy} onClick={() => void onDeleteDraft()}>
-                删除
-              </button>
+              <Btn variant="outline" disabled={busy} onClick={() => void onDeleteDraft()}>删除
+              </Btn>
             ) : null}
           </div>
           </div>

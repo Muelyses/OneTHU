@@ -218,15 +218,11 @@ export function WidgetBindModal(): ReactNode {
           </div>
 
           {cur.kind !== "today" ? (
-            <button
-              className="btn btn-ghost"
-              onClick={() => {
+            <Btn variant="ghost" onClick={() => {
                 unbindWidgetInstance(id);
                 done("已恢复为「日程与 DDL」");
-              }}
-            >
-              恢复默认（日程与 DDL）
-            </button>
+              }}>恢复默认（日程与 DDL）
+            </Btn>
           ) : null}
         </div>
       </div>

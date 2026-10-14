@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
  * 学生宿舍公共空间预约（myhome 共享家园网 kongjian WebForms 链路）。
@@ -339,15 +340,11 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
               </div>
               <textarea className="input" value={purpose} onChange={(e) => setPurpose(e.target.value)} placeholder="用途（选填）" rows={2} style={{ width: "100%", fontSize: 13, padding: "8px 10px", marginBottom: 8, boxSizing: "border-box", resize: "vertical" }} />
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                <button className="btn" style={{ height: 28 }} onClick={() => setPicked(null)}>
-                  取消
-                </button>
-                  <button className="btn" style={{ height: 28 }} onClick={() => setPicked(null)}>
-                    取消
-                  </button>
-                  <button className="btn btn-primary" style={{ height: 28 }} disabled={busy} onClick={() => void submit()}>
-                    {busy ? "提交中…" : "确定预约"}
-                  </button>
+                <Btn variant="outline" onClick={() => setPicked(null)}>取消
+                </Btn>
+                  <Btn variant="outline" onClick={() => setPicked(null)}>取消
+                  </Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void submit()}>{busy ? "提交中…" : "确定预约"}</Btn>
                 </div>
               </Card>
             </>
@@ -372,9 +369,8 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
                 </div>
                 {rec.cancelTarget ? (
                   <div style={{ marginTop: 6, textAlign: "right" }}>
-                    <button className="btn" style={{ height: 26, fontSize: 12 }} onClick={() => void cancel(rec)}>
-                      取消预约
-                    </button>
+                    <Btn variant="outline" onClick={() => void cancel(rec)}>取消预约
+                    </Btn>
                   </div>
                 ) : null}
               </Card>

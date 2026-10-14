@@ -350,14 +350,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
         {uploading > 0 ? (
           <span className="ykt-editor-uploading">图片上传中…</span>
         ) : (
-          <button
-            type="button"
-            className="btn btn-sm ykt-img-btn"
-            disabled={disabled}
-            onClick={() => (isAndroid ? cameraRef.current?.click() : pickRef.current?.click())}
-          >
-            {isAndroid ? "📷 拍照上传" : "📎 从文件上传"}
-          </button>
+          <Btn variant="outline" disabled={disabled} onClick={() => (isAndroid ? cameraRef.current?.click() : pickRef.current?.click())}>{isAndroid ? "📷 拍照上传" : "📎 从文件上传"}</Btn>
         )}
       </div>
 
@@ -366,9 +359,8 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
           <div className="ykt-formula-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="ykt-formula-head">
               <b>插入公式（LaTeX）</b>
-              <button type="button" className="btn btn-sm" onClick={() => setFormulaOpen(false)}>
-                关闭
-              </button>
+              <Btn variant="outline" onClick={() => setFormulaOpen(false)}>关闭
+              </Btn>
             </div>
             <textarea
               className="ykt-formula-tex"
@@ -391,9 +383,8 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
             </div>
             {latexBundle ? <style>{latexBundle.inlineCss}</style> : null}
             <div className="ykt-formula-actions">
-              <button type="button" className="btn btn-sm" onClick={() => setFormulaOpen(false)}>
-                取消
-              </button>
+              <Btn variant="outline" onClick={() => setFormulaOpen(false)}>取消
+              </Btn>
               <Btn variant="solid" tone="brand" disabled={!formulaTex.trim()} onClick={insertFormula}>
                 插入公式
               </Btn>

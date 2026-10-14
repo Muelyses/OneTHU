@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 网络学堂入口（learnX Courses）：课程卡片列表 + 全部作业/通知/文件/搜索/学期快捷入口。
  * 原四页签列表功能移入 pages/learn/ 专属页面（Assignments/Notices/Files）。
@@ -151,18 +152,12 @@ export function LearnPage() {
         actions={
           <>
             <PageAtomStar atomKey="learn" title="课程" />
-            <button className="btn btn-ghost" onClick={() => navigate("learn-search")}>
-              <IconSearch width={14} height={14} />
-              搜索
-            </button>
-            <button className="btn btn-ghost" onClick={() => navigate("learn-semester")}>
-              <IconCalendar width={14} height={14} />
-              学期
-            </button>
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="ghost" onClick={() => navigate("learn-search")}><IconSearch width={14} height={14} />搜索
+            </Btn>
+            <Btn variant="ghost" onClick={() => navigate("learn-semester")}><IconCalendar width={14} height={14} />学期
+            </Btn>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />
@@ -221,10 +216,8 @@ export function LearnPage() {
           <Card>
             <Empty text={state === "loading" ? "正在重新加载本学期课程…" : "本学期暂无课程，或数据未就绪。"} />
             <div style={{ display: "flex", justifyContent: "center", paddingBottom: 14 }}>
-              <button className="btn btn-ghost" onClick={() => void reload()} disabled={state === "loading"}>
-                <IconRefresh width={14} height={14} />
-                重新加载
-              </button>
+              <Btn variant="ghost" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />重新加载
+              </Btn>
             </div>
           </Card>
         )

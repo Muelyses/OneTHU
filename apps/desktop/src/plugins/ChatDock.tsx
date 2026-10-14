@@ -1993,18 +1993,10 @@ export function ChatDock(): ReactNode {
                 <IconSpark />
                 <span className="dock-creative-t">创造模式</span>
               </button>
-              <button className="btn dock-btn dock-ico" title="新会话" aria-label="新会话" onClick={() => void newSession()}>
-                <IconPlus />
-              </button>
-              <button className="btn dock-btn dock-ico" title="历史会话" aria-label="历史会话" onClick={() => void openHistory()}>
-                <IconClock />
-              </button>
-              <button className="btn dock-btn dock-ico" title="导出当前会话 JSON" aria-label="导出会话" onClick={() => void exportSession()}>
-                <IconDownload />
-              </button>
-              <button className="btn dock-btn dock-ico" title="导入会话 JSON" aria-label="导入会话" onClick={() => fileRef.current?.click()}>
-                <IconUpload />
-              </button>
+              <Btn variant="outline" titleAttr="新会话" aria-label="新会话" onClick={() => void newSession()}><IconPlus /></Btn>
+              <Btn variant="outline" titleAttr="历史会话" aria-label="历史会话" onClick={() => void openHistory()}><IconClock /></Btn>
+              <Btn variant="outline" titleAttr="导出当前会话 JSON" aria-label="导出会话" onClick={() => void exportSession()}><IconDownload /></Btn>
+              <Btn variant="outline" titleAttr="导入会话 JSON" aria-label="导入会话" onClick={() => fileRef.current?.click()}><IconUpload /></Btn>
               <input
                 ref={fileRef}
                 type="file" accept=".json,application/json"
@@ -2027,9 +2019,7 @@ export function ChatDock(): ReactNode {
                   {prefs.autoSpeak ? <IconSpeak /> : <IconSpeakOff />}
                 </button>
               ) : null}
-              <button className="btn dock-btn dock-ico" title="收起" aria-label="收起" onClick={toggle}>
-                <IconX />
-              </button>
+              <Btn variant="outline" titleAttr="收起" aria-label="收起" onClick={toggle}><IconX /></Btn>
             </div>
           </div>
           {notice ? (
@@ -2108,7 +2098,7 @@ export function ChatDock(): ReactNode {
                     /* 1 号主对话永久保留（用户定案）：不提供删除入口 */
                     <span className="dock-hist-meta" style={{ alignSelf: "center", padding: "0 10px" }} title="主对话不可删除">—</span>
                   ) : (
-                    <button className="btn dock-btn dock-hist-del" aria-label="删除" onClick={() => void deleteSession(s.id)}><IconX /></button>
+                    <Btn variant="outline" aria-label="删除" onClick={() => void deleteSession(s.id)}><IconX /></Btn>
                   )}
                 </div>
               ))}

@@ -289,9 +289,8 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, course?.name ?? "", data?.semester.id ?? "") }}
               title={h.title}
             />
-            <button className="btn" onClick={() => void openExternal(h.url)} title="在系统浏览器打开">
-              网页端打开
-            </button>
+            <Btn variant="outline" onClick={() => void openExternal(h.url)} titleAttr="在系统浏览器打开">网页端打开
+            </Btn>
           </>
         }
       />
@@ -374,20 +373,9 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               <div className="kv kv-wide" key={label}>
                 <span>{label}</span>
                 <b>{a!.name || `附件 ${key}`}{a!.size ? `（${a!.size}）` : ""}</b>
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => openFilePreview({ name: a!.name || `附件 ${key}`, url: a!.downloadUrl })}
-                >
-                  预览
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  disabled={dlBusy === key}
-                  onClick={() => void downloadAtt(a!)}
-                >
-                  <IconDownload width={14} height={14} />
-                  {dlBusy === key ? "下载中…" : "下载"}
-                </button>
+                <Btn variant="ghost" onClick={() => openFilePreview({ name: a!.name || `附件 ${key}`, url: a!.downloadUrl })}>预览
+                </Btn>
+                <Btn variant="ghost" disabled={dlBusy === key} onClick={() => void downloadAtt(a!)}><IconDownload width={14} height={14} />{dlBusy === key ? "下载中…" : "下载"}</Btn>
               </div>
             );
           })}
@@ -458,42 +446,22 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
                       e.target.value = "";
                     }}
                   />
-                  <button
-                    className="btn"
-                    style={{ fontSize: 12 }}
-                    disabled={subBusy}
-                    title="调起后置相机拍照，拍完与选文件一样先预览再提交"
-                    onClick={() => cameraRef.current?.click()}
-                  >
-                    📷 拍照上传
-                  </button>
+                  <Btn variant="outline" disabled={subBusy} titleAttr="调起后置相机拍照，拍完与选文件一样先预览再提交" onClick={() => cameraRef.current?.click()}>📷 拍照上传
+                  </Btn>
                 </>
               ) : null}
               {subFile ? (
                 <span style={{ display: "inline-flex", gap: 6, alignItems: "center", color: "var(--accent)" }}>
                   将上传：{subFile.name}
-                  <button
-                    className="btn btn-ghost"
-                    style={{ height: 22, padding: "0 8px", fontSize: 11 }}
-                    disabled={subBusy}
-                    onClick={() => { setSubFile(null); setCustomName(""); if (fileRef.current) fileRef.current.value = ""; }}
-                  >
-                    清除
-                  </button>
+                  <Btn variant="ghost" disabled={subBusy} onClick={() => { setSubFile(null); setCustomName(""); if (fileRef.current) fileRef.current.value = ""; }}>清除
+                  </Btn>
                 </span>
               ) : null}
               {page?.submittedAttachment ? (
                 <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
                   <span style={{ color: "var(--text-dim, #888)" }}>已上传：{page.submittedAttachment.name}</span>
-                  <button
-                    className="btn btn-ghost"
-                    style={{ height: 22, padding: "0 8px", fontSize: 11, color: "var(--red)" }}
-                    disabled={subBusy}
-                    title="直接向网络学堂发撤回请求；必交附件的作业会被拒绝并提示"
-                    onClick={() => void doRemove()}
-                  >
-                    撤回附件
-                  </button>
+                  <Btn variant="ghost" disabled={subBusy} titleAttr="直接向网络学堂发撤回请求；必交附件的作业会被拒绝并提示" onClick={() => void doRemove()}>撤回附件
+                  </Btn>
                 </span>
               ) : null}
               {page?.submittedAttachment && subFile ? (
@@ -508,14 +476,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
             ) : null}
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ flex: 1 }} />
-              <button
-                className="btn btn-primary"
-                disabled={subBusy || pastDeadline || (!subFile && richEmpty(subContent))}
-                title={pastDeadline ? "已过截止时间（mobile 同款禁用提交）" : undefined}
-                onClick={() => void doSubmit()}
-              >
-                {subBusy ? "提交中…" : "提交"}
-              </button>
+              <Btn variant="solid" tone="brand" disabled={subBusy || pastDeadline || (!subFile && richEmpty(subContent))} titleAttr={pastDeadline ? "已过截止时间（mobile 同款禁用提交）" : undefined} onClick={() => void doSubmit()}>{subBusy ? "提交中…" : "提交"}</Btn>
             </div>
             {pastDeadline ? (
               <div style={{ fontSize: 12, color: "var(--red)" }}>已过截止时间，提交入口已停用（撤回附件仍可用）。</div>

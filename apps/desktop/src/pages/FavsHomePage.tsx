@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 收藏首页（UI/UX 改造方案 §2.2，M1 beta）：底部导航「收藏」tab 直达。
  * - **收藏机制一字不改**（红线）：本页只是根收藏夹的一级列表视图，数据与操作
@@ -21,15 +22,11 @@ export function FavsHomePage(): ReactNode {
         <Card>
           <Empty text="还没有收藏夹。新建一个，把常用的功能收进来。" />
           <div className="svc-actions">
-            <button
-              className="btn btn-primary"
-              onClick={() => {
+            <Btn variant="solid" tone="brand" onClick={() => {
                 const id = favs.create("新建收藏夹", null);
                 if (id) navigate("folder", { folderId: id });
-              }}
-            >
-              新建收藏夹
-            </button>
+              }}>新建收藏夹
+            </Btn>
           </div>
         </Card>
       ) : (

@@ -117,9 +117,8 @@ export function InfoPage() {
         actions={
           <>
             <RootPageStar page="info" title="信息" />
-            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
-              管理栏目
-            </button>
+            <Btn variant="outline" onClick={() => setManageOpen(true)} titleAttr="栏目显隐与排序">管理栏目
+            </Btn>
           </>
         }
       />

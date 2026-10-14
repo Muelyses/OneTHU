@@ -180,7 +180,7 @@ export function NoticeDetailPage() {
         ) : (
           <Card><Empty
             text="未找到该通知，可能数据已刷新，请返回列表重试。"
-            action={<button className="btn btn-ghost" onClick={() => navigate(navParams?.from ?? "learn-notices")}>返回列表</button>}
+            action={<Btn variant="ghost" onClick={() => navigate(navParams?.from ?? "learn-notices")}>返回列表</Btn>}
           /></Card>
         )}
       </>
@@ -208,9 +208,8 @@ export function NoticeDetailPage() {
             />
             {/* 外源公告的官方链接可能缺（源侧没给 id），没有链接就不放一个点了没反应的按钮 */}
             {n.url ? (
-              <button className="btn" onClick={() => void openExternal(n.url)} title="在系统浏览器打开">
-                网页端打开
-              </button>
+              <Btn variant="outline" onClick={() => void openExternal(n.url)} titleAttr="在系统浏览器打开">网页端打开
+              </Btn>
             ) : null}
           </>
         }
@@ -245,20 +244,9 @@ export function NoticeDetailPage() {
             att ? (
               <div className="kv kv-wide">
                 <span>{att.name || n.attachmentName}{att.size ? `（${att.size}）` : ""}</span>
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => openFilePreview({ name: att.name || n.attachmentName || "通知附件", url: att.downloadUrl })}
-                >
-                  预览
-                </button>
-                <button
-                  className="btn btn-ghost"
-                  disabled={downloading}
-                  onClick={() => void doDownload(att)}
-                >
-                  <IconDownload width={14} height={14} />
-                  {downloading ? "下载中…" : "下载"}
-                </button>
+                <Btn variant="ghost" onClick={() => openFilePreview({ name: att.name || n.attachmentName || "通知附件", url: att.downloadUrl })}>预览
+                </Btn>
+                <Btn variant="ghost" disabled={downloading} onClick={() => void doDownload(att)}><IconDownload width={14} height={14} />{downloading ? "下载中…" : "下载"}</Btn>
               </div>
             ) : (
               <div className="kv kv-wide">

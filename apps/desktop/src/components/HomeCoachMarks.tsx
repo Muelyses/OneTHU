@@ -175,9 +175,7 @@ export function HomeCoachMarks(): ReactNode {
         <Btn variant="ghost" onClick={finish}>
           不再提示
         </Btn>
-        <button className="btn btn-primary" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>
-          {last ? "知道了" : "下一条"}
-        </button>
+        <Btn variant="solid" tone="brand" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>{last ? "知道了" : "下一条"}</Btn>
       </div>
     </div>,
     document.body,

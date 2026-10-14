@@ -278,9 +278,7 @@ export function BackButton({
       ? { courseId, ...(to === "learn-course" && courseTab ? { courseTab } : {}) }
       : undefined;
   return (
-    <button className="btn btn-ghost" onClick={() => navigate(to, params)}>
-      ← {label ?? "返回"}
-    </button>
+    <Btn variant="ghost" onClick={() => navigate(to, params)}>← {label ?? "返回"}</Btn>
   );
 }
 
@@ -341,9 +339,8 @@ export function HwRemindPop({
           onChange={(e) => setCustom(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && applyCustom()}
         />
-        <button className="btn" disabled={!(Math.round(Number(custom)) >= REMIND_MIN && Math.round(Number(custom)) <= REMIND_MAX)} onClick={applyCustom}>
-          设定
-        </button>
+        <Btn variant="outline" disabled={!(Math.round(Number(custom)) >= REMIND_MIN && Math.round(Number(custom)) <= REMIND_MAX)} onClick={applyCustom}>设定
+        </Btn>
         {allowClear && value != null ? (
           <Btn variant="ghost" titleAttr="清除（恢复跟随全局默认）" onClick={() => apply(null)}>
             清除
@@ -362,15 +359,7 @@ export function HwRemindButton({ h }: { h: Homework }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="hwremind" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
-      <button
-        className={"btn btn-ghost hwremind-bell" + (cur ? " is-on" : "")}
-        title={cur ? `截止前 ${fmtRemindOffset(cur)} 提醒（覆盖全局默认 ${fmtRemindOffset(def)}）` : `自定义提醒（当前跟随全局默认 ${fmtRemindOffset(def)}）`}
-        aria-label="设置作业提醒"
-        onClick={() => setOpen((o) => !o)}
-      >
-        <IconBell width={14} height={14} />
-        {cur ? <span className="hwremind-tag">{fmtRemindOffset(cur)}</span> : null}
-      </button>
+      <Btn variant="ghost" titleAttr={cur ? `截止前 ${fmtRemindOffset(cur)} 提醒（覆盖全局默认 ${fmtRemindOffset(def)}）` : `自定义提醒（当前跟随全局默认 ${fmtRemindOffset(def)}）`} aria-label="设置作业提醒" onClick={() => setOpen((o) => !o)}><IconBell width={14} height={14} />{cur ? <span className="hwremind-tag">{fmtRemindOffset(cur)}</span> : null}</Btn>
       {open ? (
         <HwRemindPop
           value={cur}
@@ -465,17 +454,10 @@ export function HomeworkRow({
           的 h.id（ext:source:...）稳定可用，提醒链路只需 deadline/title，一并放开 */}
       {isIgnored ? <span className="chip chip-gray" title="已忽略：不提醒、不进作业区与日程">已忽略</span> : null}
       {/* 忽略/恢复：任何状态（未交/已交/已批）的作业都能忽略，故常驻（不随 remind 开关） */}
-      <button
-        className="btn btn-ghost hw-ignore-btn"
-        style={{ height: 22, padding: "0 8px", fontSize: 11, flex: "none" }}
-        title={isIgnored ? "恢复：重新参与提醒与显示" : "忽略：不再提醒，也不在作业区与日程显示"}
-        onClick={(e) => {
+      <Btn variant="ghost" titleAttr={isIgnored ? "恢复：重新参与提醒与显示" : "忽略：不再提醒，也不在作业区与日程显示"} onClick={(e) => {
           e.stopPropagation();
           void toggleIgnore();
-        }}
-      >
-        {isIgnored ? "恢复" : "忽略"}
-      </button>
+        }}>{isIgnored ? "恢复" : "忽略"}</Btn>
       {remind && !isIgnored ? <HwRemindButton h={h} /> : null}
       {/* 列表级星标：与详情页 key 同构（courseId~id~title~课程名~学期），点进行前就能收。
           R10 15.3：外部作业复用同款拼接（courseId=ext:source、id=ext:...，稳定唯一） */}

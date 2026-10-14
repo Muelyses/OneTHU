@@ -426,11 +426,9 @@ export function ZhjwxkCoursesPage() {
           <>
             <PageAtomStar atomKey="zhjwxk" title="选课" />
             <Select value={wb.semester ?? ""} onChange={(value) => void wb.setSemesterOverride(value)}>{(wb.semesterOptions ?? []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select>
-            {wb.phase ? <button className="btn" onClick={() => void wb.refreshQueue()} disabled={wb.queueState === "loading"}>刷新队列</button> : null}
-            <button className="btn" onClick={() => void wb.refresh()} disabled={wb.coreState === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新数据
-            </button>
+            {wb.phase ? <Btn variant="outline" onClick={() => void wb.refreshQueue()} disabled={wb.queueState === "loading"}>刷新队列</Btn> : null}
+            <Btn variant="outline" onClick={() => void wb.refresh()} disabled={wb.coreState === "loading"}><IconRefresh width={14} height={14} />刷新数据
+            </Btn>
           </>
         }
       />
@@ -438,7 +436,7 @@ export function ZhjwxkCoursesPage() {
       {wb.toast ? (
         <Card style={{ padding: "8px 14px", borderColor: "var(--accent)", marginBottom: 10 }}>
           <span style={{ fontSize: "var(--text-sm)" }}>{wb.toast}</span>
-          <button className="btn" style={{ marginLeft: 10 }} onClick={() => wb.setToast(null)}>知道了</button>
+          <Btn variant="outline" onClick={() => wb.setToast(null)}>知道了</Btn>
         </Card>
       ) : null}
       {wb.progress ? <Card style={{ padding: "8px 14px", borderColor: "var(--amber)", marginBottom: 10 }}><span style={{ fontSize: "var(--text-sm)" }}>{wb.progress}</span></Card> : null}
@@ -472,14 +470,8 @@ export function ZhjwxkCoursesPage() {
             <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 3, height: 40, borderRadius: 2, background: "var(--text-3, #b8b8b8)" }} />
           </div>
         ) : (
-          <button
-            className="btn"
-            title="恢复双栏"
-            onClick={() => setSplitP({ pct: 50, collapsed: "none" })}
-            style={{ flex: "0 0 22px", padding: "12px 1px", fontSize: 12, fontWeight: 700, lineHeight: 1, alignSelf: "center", borderRadius: 6, letterSpacing: -1, whiteSpace: "nowrap", overflow: "visible" }}
-          >
-            ‹›
-          </button>
+          <Btn variant="outline" titleAttr="恢复双栏" onClick={() => setSplitP({ pct: 50, collapsed: "none" })}>‹›
+          </Btn>
         )}
         <div
           className="xk-right"
@@ -749,8 +741,8 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
       <Card style={{ padding: "8px 10px", marginBottom: 10, position: "sticky", top: 0, zIndex: 8, background: "var(--surface-2, #faf8f2)", borderColor: "var(--amber)" }}>
         <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text-2)" }}>
           📌 北大、北外课程时间为通知附件形式（含单双周），<b>无法在筛选栏按时间筛选</b>。开放选课通知：
-          <button className="btn" style={{ marginLeft: 6, padding: "1px 8px", fontSize: 11 }} onClick={() => navigate("info", { infoNewsQuery: "北京大学 北京外国语大学" })}>北大·北外本科</button>
-          <button className="btn" style={{ marginLeft: 6, padding: "1px 8px", fontSize: 11 }} onClick={() => navigate("info", { infoNewsQuery: "北京大学 研究生" })}>北大研究生</button>
+          <Btn variant="outline" onClick={() => navigate("info", { infoNewsQuery: "北京大学 北京外国语大学" })}>北大·北外本科</Btn>
+          <Btn variant="outline" onClick={() => navigate("info", { infoNewsQuery: "北京大学 研究生" })}>北大研究生</Btn>
         </div>
       </Card>
       <Card style={{ padding: 10, marginBottom: 10 }}>
@@ -802,9 +794,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
           {wb.searchIncomplete ? (
             <div style={{ textAlign: "center", padding: "8px 0", fontSize: 12, color: "var(--amber)" }}>
               数据不完整：已加载 {listRows.length} 门{wb.searchTotalPages > 0 ? `，教务共 ${wb.searchTotalPages} 页${wb.searchTotalRows > 0 ? `（共 ${wb.searchTotalRows} 门）` : ""}` : "，还有更多"}
-              <button className="btn" style={{ marginLeft: 8 }} disabled={busy} onClick={() => void wb.loadAllSearch()}>
-                {busy ? "加载中…" : "加载当前关键词全部"}
-              </button>
+              <Btn variant="outline" disabled={busy} onClick={() => void wb.loadAllSearch()}>{busy ? "加载中…" : "加载当前关键词全部"}</Btn>
             </div>
           ) : null}
           <Card className="list">
@@ -814,16 +804,14 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
             ) : null}
           </Card>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", alignItems: "center", padding: "10px 0", flexWrap: "wrap" }}>
-            <button className="btn" disabled={busy || (searchMode ? curPage <= 1 : wb.searchPage <= 1)}
-              onClick={() => (searchMode ? setUiPage(curPage - 1) : void wb.gotoPage(wb.searchPage - 1))}>上一页</button>
+            <Btn variant="outline" disabled={busy || (searchMode ? curPage <= 1 : wb.searchPage <= 1)} onClick={() => (searchMode ? setUiPage(curPage - 1) : void wb.gotoPage(wb.searchPage - 1))}>上一页</Btn>
             <span style={{ fontSize: 12, color: "var(--text-3)" }}>
               第 {curPage} 页 / 共 {totalPages} 页{searchMode && !wb.searchIncomplete ? `（${listRows.length} 门）` : ""}
             </span>
-            <button className="btn" disabled={busy || (searchMode ? curPage >= totalPages : !wb.searchHasMore && !(wb.searchTotalPages > wb.searchPage))}
-              onClick={() => {
+            <Btn variant="outline" disabled={busy || (searchMode ? curPage >= totalPages : !wb.searchHasMore && !(wb.searchTotalPages > wb.searchPage))} onClick={() => {
                 if (searchMode) setUiPage(curPage + 1);
                 else void wb.gotoPage(wb.searchPage + 1);
-              }}>下一页</button>
+              }}>下一页</Btn>
             <span style={{ fontSize: 12, color: "var(--text-3)" }}>跳至</span>
             <input className="input" style={{ width: 52, height: 24, fontSize: 12 }} value={goPage}
               onChange={(e) => setGoPage(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && goJump()} />
@@ -945,9 +933,9 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
             : null; })()}
           {r.name}
 
-          {r.teacherId ? <button className="btn" style={{ padding: "0 6px", marginLeft: 6, fontSize: 11 }} onClick={() => openDetail(r.c.code, r.teacherId)}>简介</button> : null}
+          {r.teacherId ? <Btn variant="outline" onClick={() => openDetail(r.c.code, r.teacherId)}>简介</Btn> : null}
           {tbBadge(r) ? (
-            <button className="btn" style={{ padding: "0 6px", marginLeft: 6, fontSize: 11, color: "var(--amber)" }} onClick={() => openReviews({ code: r.c.code, seq: r.c.seq, name: r.name, teacher: r.teacher })}>{tbBadge(r)}</button>
+            <Btn variant="outline" onClick={() => openReviews({ code: r.c.code, seq: r.c.seq, name: r.name, teacher: r.teacher })}>{tbBadge(r)}</Btn>
           ) : null}
           {/* 【教评#31冻结】行内教评徽章（整块注释保留，教务修好解开）
            {(() => {
@@ -1087,26 +1075,24 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
           return (
           <div className="row-sub" style={{ color: "var(--amber)", whiteSpace: "normal", display: "flex", gap: 6, alignItems: "flex-start" }}>
             <span style={{ flex: 1 }}>{o}课程时间无法自动获取</span>
-            <button className="btn" style={{ flexShrink: 0, height: "auto", padding: "2px 8px", fontSize: 11 }}
-              onClick={() => navigate("info", { infoNewsQuery: o === "北大研" ? "北京大学 研究生" : "北京大学 北京外国语大学" })}>
-              点击查看{o === "北大研" ? "北京大学面向我校研究生开放课程" : "北大、北外课程"}的选课通知
-            </button>
+            <Btn variant="outline" onClick={() => navigate("info", { infoNewsQuery: o === "北大研" ? "北京大学 研究生" : "北京大学 北京外国语大学" })}>点击查看{o === "北大研" ? "北京大学面向我校研究生开放课程" : "北大、北外课程"}的选课通知
+            </Btn>
           </div>
           ); })()}
         {confs.length ? <div className="row-sub" style={{ color: "var(--red)", whiteSpace: "normal" }}>冲突: {confs.slice(0, 3).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.b}`).join(" · ")}</div> : null}
         {state === "selected" ? (
           <div className="row-sub" style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4, flexWrap: "wrap" }}>
             {r.zy ? <span style={{ fontSize: 12, color: "var(--text-3)" }}>{FLAG_LABELS[r.flag]} · 第{r.zy}志愿</span> : null}
-            <button className="btn" disabled={!(r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1)) || wb.busy !== null} title={r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy - 1)}>▲</button>
-            <button className="btn" disabled={!(r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1)) || wb.busy !== null} title={r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy + 1)}>▼</button>
-            <button className="btn" disabled={inStage} onClick={() => wb.addToStage(r, r.flag, r.zy || 3)}>{inStage ? "已暂存" : "暂存"}</button>
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void (async () => { if (await confirmDanger(`「${r.name}」（${r.c.code}_${r.c.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, DROP_CONFIRM)) await wb.drop(r.c.code, r.c.seq, false); })()}>退选</button>
+            <Btn variant="outline" disabled={!(r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1)) || wb.busy !== null} titleAttr={r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy - 1)}>▲</Btn>
+            <Btn variant="outline" disabled={!(r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1)) || wb.busy !== null} titleAttr={r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy + 1)}>▼</Btn>
+            <Btn variant="outline" disabled={inStage} onClick={() => wb.addToStage(r, r.flag, r.zy || 3)}>{inStage ? "已暂存" : "暂存"}</Btn>
+            <Btn variant="outline" disabled={wb.busy !== null} onClick={() => void (async () => { if (await confirmDanger(`「${r.name}」（${r.c.code}_${r.c.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, DROP_CONFIRM)) await wb.drop(r.c.code, r.c.seq, false); })()}>退选</Btn>
           </div>
         ) : state === "candidate" ? (
           <div className="row-sub" style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
             <span style={{ color: "var(--amber)", fontSize: 12 }}>{r.cand ? (r.cand.myPos ? `排队第${r.cand.myPos}名 / 共${r.cand.queueTotal}人` : "候选中") : "候选中"}</span>
-            {r.teacherId ? <button className="btn" style={{ padding: "0 6px", fontSize: 11 }} onClick={() => openDetail(r.c.code, r.teacherId)}>简介</button> : null}
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void wb.drop(r.c.code, r.c.seq, true)}>删除</button>
+            {r.teacherId ? <Btn variant="outline" onClick={() => openDetail(r.c.code, r.teacherId)}>简介</Btn> : null}
+            <Btn variant="outline" disabled={wb.busy !== null} onClick={() => void wb.drop(r.c.code, r.c.seq, true)}>删除</Btn>
           </div>
         ) : (
           <div className="row-sub" style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4, flexWrap: "wrap" }}>
@@ -1116,10 +1102,8 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
             {!wb.phase ? (
               <span style={{ fontSize: 12, color: prob.color, minWidth: 96 }}>{prob.prob}</span>
             ) : null}
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void wb.submit(r.c.code, r.c.seq, pick.zy, pick.flag)}>
-              {wb.busy === `submit-${r.c.code}-${r.c.seq}` ? "提交中…" : state === "full" ? "排队选课" : "选课"}
-            </button>
-            <button className="btn" disabled={inStage} onClick={() => wb.addToStage(r, pick.flag, pick.zy)}>{inStage ? "已暂存" : "暂存"}</button>
+            <Btn variant="outline" disabled={wb.busy !== null} onClick={() => void wb.submit(r.c.code, r.c.seq, pick.zy, pick.flag)}>{wb.busy === `submit-${r.c.code}-${r.c.seq}` ? "提交中…" : state === "full" ? "排队选课" : "选课"}</Btn>
+            <Btn variant="outline" disabled={inStage} onClick={() => wb.addToStage(r, pick.flag, pick.zy)}>{inStage ? "已暂存" : "暂存"}</Btn>
           </div>
         )}
       </div>
@@ -1382,8 +1366,7 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
                       </div>
                       {!compact ? <div style={{ fontSize: 8, opacity: 0.9, lineHeight: 1.3 }}>{pvHm(b.begin)}–{pvHm(b.end)}{b.tag ? ` ${b.tag}` : ""}</div> : null}
                       {b.probLabel && height > 44 ? <span style={{ display: "inline-block", marginTop: 1, padding: "0 4px", borderRadius: 999, fontSize: 8, fontWeight: 700, background: "rgba(255,255,255,.25)" }}>{b.probLabel}</span> : null}
-                      <button className="btn" style={{ position: "absolute", top: 1, right: 1, padding: "0 3px", fontSize: 8, lineHeight: 1.4, opacity: 0.65, border: "none", background: "transparent", color: "#fff" }}
-                        title={b.cand ? "退出候补" : "移除"} onClick={(e) => { e.stopPropagation(); if (b.manual && b.id) wb.removeManualEvent(b.id); else if (b.cand && b.code && b.seq) void wb.drop(b.code, b.seq, true); else if (b.code && b.seq) void removeItem(b.code, b.seq); }}>✕</button>
+                      <Btn variant="outline" titleAttr={b.cand ? "退出候补" : "移除"} onClick={(e) => { e.stopPropagation(); if (b.manual && b.id) wb.removeManualEvent(b.id); else if (b.cand && b.code && b.seq) void wb.drop(b.code, b.seq, true); else if (b.code && b.seq) void removeItem(b.code, b.seq); }}>✕</Btn>
                     </div>
                   );
                 })}
@@ -1443,8 +1426,7 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
             </label>
           </div>
           <div style={{ fontSize: 11, color: "var(--text-3)" }}>占用保存在本地，画在时间轴上（支持任意钟点段），便于与课程重叠对照。</div>
-          <button className="btn" style={{ borderColor: "var(--accent)", color: "var(--accent)" }} disabled={!(mBegin < mEnd)}
-            onClick={() => { wb.addManualEventRange(mName, Number(mDay), mBegin, mEnd); setMName(""); setMOpen(false); }}>添加到课表</button>
+          <Btn variant="outline" disabled={!(mBegin < mEnd)} onClick={() => { wb.addManualEventRange(mName, Number(mDay), mBegin, mEnd); setMName(""); setMOpen(false); }}>添加到课表</Btn>
         </div>
       ) : null}
     </Sec>
@@ -1488,7 +1470,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
         : wb.volState === "error" ? (
           <div style={{ fontSize: 10, color: "var(--text-3)" }}>
             志愿数据同步失败
-            <button className="btn" style={{ padding: "0 5px", fontSize: 10 }} onClick={() => void wb.refreshVol(wb.stageCart.map((st) => ({ code: st.code, seq: st.seq || "0", department: "" })), true)}>重试</button>
+            <Btn variant="outline" onClick={() => void wb.refreshVol(wb.stageCart.map((st) => ({ code: st.code, seq: st.seq || "0", department: "" })), true)}>重试</Btn>
           </div>
         ) : wb.volLastSync ? (
           <div style={{ fontSize: 10, color: "var(--text-3)" }}>
@@ -1508,7 +1490,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
                     {s.name}{s.teacher ? <span style={{ color: "var(--text-3)", fontWeight: 400 }}> {s.teacher}</span> : null}
                   </span>
                   {s.credits ? <span style={{ fontSize: 10, color: "var(--text-3)", whiteSpace: "nowrap" }}>{s.credits}学分</span> : null}
-                  <button className="btn" style={{ padding: "0 6px", fontSize: 10 }} title="从暂存区移除" onClick={() => wb.removeFromStage(s.code, s.seq)}>✕</button>
+                  <Btn variant="outline" titleAttr="从暂存区移除" onClick={() => wb.removeFromStage(s.code, s.seq)}>✕</Btn>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <Select value={s.flag} onChange={(value) => wb.updateStageItem(s.code, s.seq, { flag: value as XkFlag })}>{allowedFlags(s.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}</Select>
@@ -1525,11 +1507,10 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       {conflicts.length ? <div style={{ color: "var(--red)", fontSize: 11, marginTop: 6 }}>冲突: {conflicts.slice(0, 5).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.a}/${c.b}`).join(" · ")}</div> : null}
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
         <input className="input" style={{ flex: 1, height: 26, fontSize: 12, minWidth: 110 }} placeholder="草稿名称（如：方案A）" value={draftName} onChange={(e) => setDraftName(e.target.value)} />
-        <button className="btn" onClick={() => { if (draftName.trim()) { wb.saveDraft(draftName.trim()); setDraftName(""); } }}>保存草稿</button>
-        <button className="btn" onClick={() => { const n = globalThis.prompt?.("草稿名称", "我的课表"); if (n) wb.saveCurrentAsDraft(n); }}>存当前选课</button>
+        <Btn variant="outline" onClick={() => { if (draftName.trim()) { wb.saveDraft(draftName.trim()); setDraftName(""); } }}>保存草稿</Btn>
+        <Btn variant="outline" onClick={() => { const n = globalThis.prompt?.("草稿名称", "我的课表"); if (n) wb.saveCurrentAsDraft(n); }}>存当前选课</Btn>
         <Btn variant="outline" onClick={() => wb.setPreview("stage")}>预览暂存</Btn>
-        <button className="btn" style={{ color: "var(--red)" }} disabled={!wb.stageCart.length && !wb.manualEvents.length}
-          onClick={() => { void (async () => { if (await confirmOk(`清空暂存车 ${wb.stageCart.length} 门 + 自定义占用 ${wb.manualEvents.length} 项？`)) { for (const s of [...wb.stageCart]) wb.removeFromStage(s.code, s.seq); wb.clearManualEvents(); } })()}}>清空</button>
+        <Btn variant="outline" disabled={!wb.stageCart.length && !wb.manualEvents.length} onClick={() => { void (async () => { if (await confirmOk(`清空暂存车 ${wb.stageCart.length} 门 + 自定义占用 ${wb.manualEvents.length} 项？`)) { for (const s of [...wb.stageCart]) wb.removeFromStage(s.code, s.seq); wb.clearManualEvents(); } })()}}>清空</Btn>
         <Btn variant="outline" onClick={() => setImportOpen((v) => !v)}>导入</Btn>
       </div>
       {importOpen ? (
@@ -1537,7 +1518,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
           <textarea className="input" style={{ width: "100%", height: 60, fontSize: 11 }} placeholder="粘贴导出的课表数据…" value={importText} onChange={(e) => setImportText(e.target.value)} />
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
             <Btn variant="outline" onClick={putImport}>确认导入到暂存区</Btn>
-            <button className="btn" style={{ color: "var(--red)" }} onClick={() => setImportOpen(false)}>取消</button>
+            <Btn variant="outline" onClick={() => setImportOpen(false)}>取消</Btn>
           </div>
         </div>
       ) : null}
@@ -1550,7 +1531,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
               <span style={{ flex: 1 }} />
               {confirmIdx === idx ? (
                 <>
-                  <button className="btn" onClick={() => { setConfirmIdx(-1); void wb.submitDraft(idx); }}>确认提交</button>
+                  <Btn variant="outline" onClick={() => { setConfirmIdx(-1); void wb.submitDraft(idx); }}>确认提交</Btn>
                   <Btn variant="outline" onClick={() => setConfirmIdx(-1)}>取消</Btn>
                 </>
               ) : (
@@ -1577,7 +1558,7 @@ function QueueSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
         <div key={`${c.code}-${i}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, padding: "4px 0", borderBottom: "1px solid var(--border)" }}>
           <span className="chip chip-amber" style={{ fontSize: 10 }}>{c.myPos ? `第${c.myPos}位/${c.queueTotal}` : "候选"}</span>
           <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer" }} title={`${c.name}（${c.code}${c.seq && c.seq !== "0" ? `·${c.seq}` : ""}）`} onClick={() => jumpTo(c.code, "all", c.seq)}>{c.name}<span style={{ color: "var(--text-3)" }}> {c.code}{c.seq && c.seq !== "0" ? `·${c.seq}` : ""}</span></span>
-          <button className="btn" style={{ padding: "0 5px", fontSize: 10 }} disabled={wb.busy !== null} onClick={() => void wb.drop(c.code, c.seq, true)}>删除</button>
+          <Btn variant="outline" disabled={wb.busy !== null} onClick={() => void wb.drop(c.code, c.seq, true)}>删除</Btn>
         </div>
       ))}
     </Sec>

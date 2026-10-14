@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 雨课堂课程内容页（R25，learn-ykt-course）：把一门雨课堂课发布过的**全部内容**
  * 按类型列出来 —— 不止作业与试卷，还有课件、投票，以及接口将来新增的类型
@@ -197,16 +198,10 @@ export function YktCoursePage() {
         actions={
           <>
             <BackButton to="learn" label="课程列表" />
-            <button
-              className="btn btn-ghost"
-              onClick={() => navigate("learn-assignments", { extCourseId: courseId, extCourseName: courseName })}
-            >
-              只看作业
-            </button>
-            <button className="btn" onClick={() => ext.reload()} disabled={ext.state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="ghost" onClick={() => navigate("learn-assignments", { extCourseId: courseId, extCourseName: courseName })}>只看作业
+            </Btn>
+            <Btn variant="outline" onClick={() => ext.reload()} disabled={ext.state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />

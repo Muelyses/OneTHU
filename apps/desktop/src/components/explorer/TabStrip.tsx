@@ -619,7 +619,7 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
           <Btn variant="outline" onClick={onCancel}>取消</Btn>
-          <button type="button" className="btn" style={{ borderColor: color, color }} onClick={() => onCreate({ name, color, icon })}>创建</button>
+          <Btn variant="outline" onClick={() => onCreate({ name, color, icon })}>创建</Btn>
         </div>
       </div>
     </div>,

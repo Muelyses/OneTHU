@@ -554,10 +554,8 @@ export function TasksPage(): ReactNode {
         meta={data ? semesterText(data.semester.id) : "今天该管的事"}
         actions={
           <>
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />

@@ -217,9 +217,8 @@ export function OnboardingTourMobile(): ReactNode {
 
         {/* 脚：上一步 / 不再显示 / 下一步 */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12, flexWrap: "wrap" }}>
-          <button className="btn" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
-            上一步
-          </button>
+          <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>上一步
+          </Btn>
           <span style={{ flex: 1 }} />
           <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
             不再显示
@@ -227,9 +226,8 @@ export function OnboardingTourMobile(): ReactNode {
           {isLast ? (
             <Btn variant="solid" tone="brand" onClick={closeForever}>开始使用</Btn>
           ) : (
-            <button className="btn btn-primary" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>
-              下一步
-            </button>
+            <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>下一步
+            </Btn>
           )}
         </div>
       </div>

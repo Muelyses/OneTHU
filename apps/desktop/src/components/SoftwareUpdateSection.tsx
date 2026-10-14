@@ -207,12 +207,10 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
             value={customUrl}
             onChange={(e) => setCustomUrl(e.target.value)}
           />
-          <button className="btn" type="button" disabled={busy || !customUrl.trim()} onClick={() => void check()}>
-            用这个源检查
-          </button>
-          <button className="btn" type="button" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>
-            恢复官方双源
-          </button>
+          <Btn variant="outline" disabled={busy || !customUrl.trim()} onClick={() => void check()}>用这个源检查
+          </Btn>
+          <Btn variant="outline" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>恢复官方双源
+          </Btn>
         </div>
         <div className="setting-desc" style={{ marginTop: 4 }}>
           默认不填即官方双源（{SOURCE_LABEL.github} → {SOURCE_LABEL.cloud}）。

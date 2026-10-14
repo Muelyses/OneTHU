@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 空教室 —— info.getClassroomList + getClassroomState（thu-info-app
  * classroomList/classroomDetail 移植）。两级只读视图：教学楼列表 → 本周状态，
@@ -54,9 +55,8 @@ function SlotFilterDropdown({ value, onChange }: { value: Set<number>; onChange:
               </label>
             ))}
             {value.size > 0 ? (
-              <button type="button" className="btn btn-ghost" style={{ marginTop: 4 }} onClick={() => onChange(new Set())}>
-                清空（显示全部）
-              </button>
+              <Btn variant="ghost" onClick={() => onChange(new Set())}>清空（显示全部）
+              </Btn>
             ) : null}
           </div>
         </>

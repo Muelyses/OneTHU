@@ -100,10 +100,7 @@ export function WidgetSettingsSection(): ReactNode {
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
           {/* R21c：ColorOS 等启动器上「绑定完桌面上没有」——直接请求系统放一块，
               绕开各家行为不一致的选择器；不支持时给出明确的手动路径。 */}
-          <button
-            className="btn"
-            title="调用系统方式直接在桌面放一块标准形态小组件"
-            onClick={() => {
+          <Btn variant="outline" titleAttr="调用系统方式直接在桌面放一块标准形态小组件" onClick={() => {
               void (async () => {
                 const r = await pinWidget();
                 if (r.requested) {
@@ -115,10 +112,8 @@ export function WidgetSettingsSection(): ReactNode {
                   showToast("当前启动器不支持一键添加，请长按桌面 → 小组件 → OneTHU", 6000);
                 }
               })();
-            }}
-          >
-            放到桌面
-          </button>
+            }}>放到桌面
+          </Btn>
           <Btn variant="ghost" onClick={() => void pushNow()}>立即刷新</Btn>
           <Btn variant="ghost" onClick={() => void refresh()}>重新载入</Btn>
         </div>
@@ -157,18 +152,14 @@ export function WidgetSettingsSection(): ReactNode {
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, flex: "none" }}>
-            <button className="btn" onClick={() => requestWidgetBind({ to: "instance", id: String(inst.id) })}>换内容</button>
+            <Btn variant="outline" onClick={() => requestWidgetBind({ to: "instance", id: String(inst.id) })}>换内容</Btn>
             {map.byId[String(inst.id)] ? (
-              <button
-                className="btn btn-ghost"
-                onClick={() => {
+              <Btn variant="ghost" onClick={() => {
                   unbindWidgetInstance(inst.id);
                   setMap(loadWidgetInstances());
                   void pushNow();
-                }}
-              >
-                恢复默认
-              </button>
+                }}>恢复默认
+              </Btn>
             ) : null}
           </div>
         </div>

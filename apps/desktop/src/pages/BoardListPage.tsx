@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * OnePage 列表页（P2，方案 §7.9；2026-10-13 起话语从「收藏夹」切换为 OnePage）：多块白板的入口。
  *
@@ -68,16 +69,12 @@ export function BoardListPage(): ReactNode {
         </div>
       )}
       <div className="board-list-actions">
-        <button
-          className="btn"
-          onClick={() => {
+        <Btn variant="outline" onClick={() => {
             const r = createBoard(doc, "新 OnePage " + String(rows.length));
             apply(r.doc);
             say("已新建：" + r.board.name);
-          }}
-        >
-          新建收藏夹
-        </button>
+          }}>新建收藏夹
+        </Btn>
       </div>
 
       {note ? <div className="board-note" role="status">{note}</div> : null}

@@ -169,7 +169,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
 
           {secHead(
             "已安装",
-            <button className="btn btn-ghost" onClick={() => setMsg("已恢复 " + restoreBuiltins() + " 个内置主题")}>恢复内置</button>,
+            <Btn variant="ghost" onClick={() => setMsg("已恢复 " + restoreBuiltins() + " 个内置主题")}>恢复内置</Btn>,
           )}
           {installedThemes.length === 0 ? <div className="plg-hint">没有匹配的已安装主题。</div> : null}
           <div style={{ display: "grid", gap: 8, gridTemplateColumns: "minmax(0, 1fr)" }}>
@@ -192,7 +192,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                   <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2 }}>不套用任何主题，使用应用自带配色</div>
                 </div>
                 {snap.activeId ? (
-                  <button className="btn btn-primary" onClick={() => { deactivateTheme(); setMsg("已回到默认外观"); }}>应用</button>
+                  <Btn variant="solid" tone="brand" onClick={() => { deactivateTheme(); setMsg("已回到默认外观"); }}>应用</Btn>
                 ) : null}
               </div>
             ) : null}
@@ -219,7 +219,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                     </div>
                   </div>
                   <div style={{ display: "flex", gap: 4, flex: "none" }}>
-                    {on ? null : <button className="btn btn-primary" onClick={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }}>应用</button>}
+                    {on ? null : <Btn variant="solid" tone="brand" onClick={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }}>应用</Btn>}
                     {ownerOf(t) ? <Btn variant="ghost" titleAttr="删除主题并卸载来源插件" onClick={() => void delTheme(t)}>卸载</Btn> : null}
                   </div>
                 </div>
@@ -253,9 +253,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                   ) : null}
                   <div className="market-card-foot">
                     <span style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{x.repo}</span>
-                    <button className="btn btn-primary" style={{ flex: "none" }} disabled={busy || has} onClick={() => void install(x)}>
-                      {has ? "已安装" : busy ? "…" : "安装"}
-                    </button>
+                    <Btn variant="solid" tone="brand" disabled={busy || has} onClick={() => void install(x)}>{has ? "已安装" : busy ? "…" : "安装"}</Btn>
                   </div>
                 </div>
               );

@@ -116,9 +116,7 @@ function Compose({ closing, onClose, onSent }: { closing: boolean; onClose: () =
         </div>
         {err && <div className="mail-compose-err">{err}</div>}
         <div className="mail-compose-foot">
-          <button className="btn btn-primary" onClick={() => void send()} disabled={sending || to.trim().length === 0}>
-            {sending ? "发送中…" : "发送"}
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => void send()} disabled={sending || to.trim().length === 0}>{sending ? "发送中…" : "发送"}</Btn>
         </div>
       </div>
     </div>
@@ -161,9 +159,8 @@ a { color: #2f6df6; }
   return (
     <div className="mail-detail">
       <div className="mail-detail-head">
-        <button className="btn btn-ghost mail-back" onClick={onBack}>
-          <IconChevron style={{ transform: "rotate(180deg)" }} /> 返回
-        </button>
+        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回
+        </Btn>
         {head && (
           <span className="mail-detail-headside">
             <span className="mail-detail-date">{fmtMailDate(head.dateMs)}</span>
@@ -259,12 +256,9 @@ export function MailPage(): React.ReactNode {
           <div className="page-head-meta">{mail.email} · IMAP/SMTP 直连</div>
         </div>
         <div className="page-head-actions">
-          <button className="btn btn-ghost" onClick={() => void mail.refresh()} disabled={mail.loading}>
-            <IconRefresh /> {mail.loading ? "同步中…" : "刷新"}
-          </button>
-          <button className="btn" onClick={() => setComposing(true)}>
-            <IconPen /> 写信
-          </button>
+          <Btn variant="ghost" onClick={() => void mail.refresh()} disabled={mail.loading}><IconRefresh />{mail.loading ? "同步中…" : "刷新"}</Btn>
+          <Btn variant="outline" onClick={() => setComposing(true)}><IconPen />写信
+          </Btn>
         </div>
       </div>
       <div className="mail-toolbar">
@@ -286,7 +280,7 @@ export function MailPage(): React.ReactNode {
           {results !== null ? (
             <Btn variant="ghost" titleAttr="退出搜索" onClick={() => { setResults(null); setQ(""); }}>×</Btn>
           ) : (
-            <button className="btn btn-ghost" title="全箱搜索" onClick={() => void doSearch()} disabled={!q.trim() || searching}>{searching ? "…" : "搜"}</button>
+            <Btn variant="ghost" titleAttr="全箱搜索" onClick={() => void doSearch()} disabled={!q.trim() || searching}>{searching ? "…" : "搜"}</Btn>
           )}
         </span>
         {mail.error && <span className="mail-error">{mail.error}</span>}

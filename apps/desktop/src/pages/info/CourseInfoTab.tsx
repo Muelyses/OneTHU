@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 课程信息 —— courseX 课程信息共享计划（tsinghua.app / 星期四）查询页。
  * 众包共享库：learnX 用户把自己网络学堂课程的时间地点共享出来，这里按
@@ -124,14 +125,8 @@ export function CourseInfoTab() {
             aria-label="搜索课程"
           />
         </div>
-        <button
-          className="btn"
-          style={{ alignSelf: "stretch" }}
-          disabled={state === "loading"}
-          onClick={() => void runSearch(input)}
-        >
-          搜索
-        </button>
+        <Btn variant="outline" disabled={state === "loading"} onClick={() => void runSearch(input)}>搜索
+        </Btn>
       </div>
 
       {state === "error" ? (

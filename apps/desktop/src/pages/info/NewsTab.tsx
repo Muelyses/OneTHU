@@ -580,9 +580,7 @@ export function NewsTab({
             aria-label="搜索新闻"
           />
         </div>
-        <button className="btn" style={{ alignSelf: "stretch" }} onClick={() => setSubsOpen(true)}>
-          订阅管理{subs.length > 0 ? `（${subs.length}）` : ""}
-        </button>
+        <Btn variant="outline" onClick={() => setSubsOpen(true)}>订阅管理{subs.length > 0 ? `（${subs.length}）` : ""}</Btn>
       </div>
 
       {/* segmented 二级分栏（InfoPage 同款；无订阅时隐藏，只显示全部新闻） */}
@@ -610,24 +608,13 @@ export function NewsTab({
       {/* 分页/刷新（全部新闻栏专属） */}
       {activeSeg === "all" ? (
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 10 }}>
-          <button
-            className="btn"
-            disabled={!canPrev || state === "loading" || searching}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            上一页
-          </button>
+          <Btn variant="outline" disabled={!canPrev || state === "loading" || searching} onClick={() => setPage((p) => Math.max(1, p - 1))}>上一页
+          </Btn>
           <span className="page-indicator">第 {page} 页</span>
-          <button
-            className="btn"
-            disabled={!fullPage || state === "loading" || searching}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            下一页
-          </button>
-          <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-            刷新
-          </button>
+          <Btn variant="outline" disabled={!fullPage || state === "loading" || searching} onClick={() => setPage((p) => p + 1)}>下一页
+          </Btn>
+          <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}>刷新
+          </Btn>
         </div>
       ) : null}
 
@@ -762,28 +749,13 @@ export function NewsTab({
           </Card>
           {!searching ? (
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 10 }}>
-              <button
-                className="btn"
-                disabled={subPage <= 1 || subFeedState === "loading"}
-                onClick={() => setSubPage((p) => Math.max(1, p - 1))}
-              >
-                上一页
-              </button>
+              <Btn variant="outline" disabled={subPage <= 1 || subFeedState === "loading"} onClick={() => setSubPage((p) => Math.max(1, p - 1))}>上一页
+              </Btn>
               <span className="page-indicator">第 {subPage} 页</span>
-              <button
-                className="btn"
-                disabled={!subCanNext || subFeedState === "loading"}
-                onClick={() => setSubPage((p) => p + 1)}
-              >
-                下一页
-              </button>
-              <button
-                className="btn"
-                disabled={subFeedState === "loading"}
-                onClick={() => setSubFeedTick((t) => t + 1)}
-              >
-                刷新
-              </button>
+              <Btn variant="outline" disabled={!subCanNext || subFeedState === "loading"} onClick={() => setSubPage((p) => p + 1)}>下一页
+              </Btn>
+              <Btn variant="outline" disabled={subFeedState === "loading"} onClick={() => setSubFeedTick((t) => t + 1)}>刷新
+              </Btn>
             </div>
           ) : null}
         </>
@@ -823,10 +795,8 @@ export function NewsTab({
                   </h2>
                   <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                     {detail.item.url ? (
-                      <button className="btn" onClick={() => void openExternal(detail.item.url!)}>
-                        <IconExternal width={14} height={14} />
-                        在浏览器打开
-                      </button>
+                      <Btn variant="outline" onClick={() => void openExternal(detail.item.url!)}><IconExternal width={14} height={14} />在浏览器打开
+                      </Btn>
                     ) : null}
                     <Btn variant="ghost" onClick={() => setDetail(null)}>关闭</Btn>
                   </div>
@@ -865,20 +835,9 @@ export function NewsTab({
                             >
                               {a.name}
                             </span>
-                            <button
-                              className="btn btn-ghost"
-                              onClick={() => openFilePreview({ name: a.name, url: a.url })}
-                            >
-                              预览
-                            </button>
-                            <button
-                              className="btn btn-ghost"
-                              disabled={dlAtt === a.url}
-                              onClick={() => void doDownloadAtt(a.url, a.name)}
-                            >
-                              <IconDownload width={14} height={14} />
-                              {dlAtt === a.url ? "下载中…" : "下载"}
-                            </button>
+                            <Btn variant="ghost" onClick={() => openFilePreview({ name: a.name, url: a.url })}>预览
+                            </Btn>
+                            <Btn variant="ghost" disabled={dlAtt === a.url} onClick={() => void doDownloadAtt(a.url, a.name)}><IconDownload width={14} height={14} />{dlAtt === a.url ? "下载中…" : "下载"}</Btn>
                           </div>
                         ))}
                       </div>
@@ -935,15 +894,7 @@ export function NewsTab({
                               ].filter(Boolean).join(" · ") || `#${c.id}`}
                             </div>
                           </div>
-                          <button
-                            className="btn btn-ghost"
-                            style={{ flexShrink: 0 }}
-                            disabled={opBusy !== null}
-                            onClick={() => void removeCondition(c)}
-                            title="删除该服务端订阅条件"
-                          >
-                            {opBusy === c.id ? "删除中…" : "删除"}
-                          </button>
+                          <Btn variant="ghost" disabled={opBusy !== null} onClick={() => void removeCondition(c)} titleAttr="删除该服务端订阅条件">{opBusy === c.id ? "删除中…" : "删除"}</Btn>
                         </div>
                       ))}
                     </div>

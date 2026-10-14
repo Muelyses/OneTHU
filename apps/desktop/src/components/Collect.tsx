@@ -237,10 +237,8 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
               <Btn variant="ghost" onClick={() => setCreating(false)}>取消</Btn>
             </div>
           ) : (
-            <button className="btn collect-new-btn" onClick={() => setCreating(true)}>
-              <IconFolderPlus width={14} height={14} />
-              新建收藏夹
-            </button>
+            <Btn variant="outline" onClick={() => setCreating(true)}><IconFolderPlus width={14} height={14} />新建收藏夹
+            </Btn>
           )}
         </div>
       </div>

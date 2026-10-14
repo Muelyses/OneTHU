@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 学期切换（learnX SemesterSelection）：列表 + 最新/当前标记，选择后回到课程列表 */
 import { useMemo } from "react";
 import { PageAtomStar } from "../..//components/Collect.js";
@@ -34,10 +35,8 @@ export function SemesterSelectionPage() {
           <>
             <PageAtomStar atomKey="learn-semester" title="学期切换" />
             <BackButton to="learn" label="课程列表" />
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />

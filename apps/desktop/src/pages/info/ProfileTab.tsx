@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 个人信息页 —— getUserInfo（yyfw 漫游 F315577F… 后正则取名/邮箱；
  * grjbxx 对本应用 403 无权限，仅作兜底）。
@@ -30,10 +31,8 @@ export function ProfileTab() {
         /* actions 参数不存在，刷新按钮放下方标题行右缘 */
       />
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-        <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-          <IconRefresh width={14} height={14} />
-          刷新
-        </button>
+        <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+        </Btn>
       </div>
 
       {state === "error" ? <ErrorNote text={error ?? ""} onRetry={() => void reload()} /> : null}

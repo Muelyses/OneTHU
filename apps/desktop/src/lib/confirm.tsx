@@ -161,7 +161,7 @@ function PromptHost(): React.ReactNode {
         />
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
           <Btn variant="outline" onClick={() => answerPrompt(null)}>取消</Btn>
-          <button className="btn" style={{ borderColor: "var(--accent, #6d7ff0)", color: "var(--accent, #6d7ff0)" }} disabled={!val.trim()} onClick={submit}>确定</button>
+          <Btn variant="outline" disabled={!val.trim()} onClick={submit}>确定</Btn>
         </div>
       </div>
     </div>
@@ -199,8 +199,8 @@ function ConfirmBody(): React.ReactNode {
           <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
           <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "rgba(28,39,64,.75)" }}>{cur.msg}</div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
-            <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14 }} onClick={() => answerConfirm(false)}>取消</button>
-            <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14, background: "#e5484d", borderColor: "#e5484d", color: "#fff", boxShadow: "0 6px 20px rgba(229,72,77,.35)" }} onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确认执行"}</button>
+            <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
+            <Btn variant="outline" onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确认执行"}</Btn>
           </div>
         </div>
       </div>
@@ -212,8 +212,8 @@ function ConfirmBody(): React.ReactNode {
         {cur.title ? <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{cur.title}</div> : null}
         <div style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{cur.msg}</div>
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
-          <button className="btn" onClick={() => answerConfirm(false)}>{cur.cancelText ?? "取消"}</button>
-          <button className="btn" style={{ borderColor: "var(--accent, #6d7ff0)", color: "var(--accent, #6d7ff0)" }} onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确定"}</button>
+          <Btn variant="outline" onClick={() => answerConfirm(false)}>{cur.cancelText ?? "取消"}</Btn>
+          <Btn variant="outline" onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确定"}</Btn>
         </div>
       </div>
     </div>

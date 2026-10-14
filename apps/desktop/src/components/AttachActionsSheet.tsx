@@ -436,7 +436,7 @@ export function AttachActionsSheet({
       <div className="ohaa-panel" role="dialog" aria-label="附件动作">
         <div className="ohaa-head">
           <div className="ohaa-title">附件动作</div>
-          <button className="btn" type="button" aria-label="关闭" onClick={close}><IconX /></button>
+          <Btn variant="outline" aria-label="关闭" onClick={close}><IconX /></Btn>
         </div>
 
         <div className="ohaa-files">
@@ -510,9 +510,7 @@ export function AttachActionsSheet({
             </div>
             <div className="ohaa-foot">
               <Btn variant="outline" onClick={close}>取消</Btn>
-              <button className="btn btn-primary" type="button" disabled={busy || !repoId || !sf.configured} onClick={() => void runCloud()}>
-                {busy ? "上传中…" : "上传到云盘"}
-              </button>
+              <Btn variant="solid" tone="brand" disabled={busy || !repoId || !sf.configured} onClick={() => void runCloud()}>{busy ? "上传中…" : "上传到云盘"}</Btn>
             </div>
           </div>
         ) : null}
@@ -536,9 +534,7 @@ export function AttachActionsSheet({
             {homeworks.length === 0 ? (
               <div className="ohaa-note">
                 本机还没有课程/作业缓存。
-                <button className="btn" type="button" style={{ marginLeft: 8 }} disabled={learnLoading} onClick={() => void loadLearn()}>
-                  {learnLoading ? "加载中…" : "加载课程与作业"}
-                </button>
+                <Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? "加载中…" : "加载课程与作业"}</Btn>
               </div>
             ) : null}
             {autoPicked ? <div className="ohaa-note">{autoPicked}</div> : null}
@@ -564,10 +560,7 @@ export function AttachActionsSheet({
                 </div>
                 <div className="ohaa-foot">
                   <Btn variant="outline" onClick={close}>取消</Btn>
-                  <button className="btn btn-primary" type="button" disabled={busy || !selectedLearnHw}
-                    onClick={() => void runHomework()}>
-                    {busy ? "提交中…" : "提交作业"}
-                  </button>
+                  <Btn variant="solid" tone="brand" disabled={busy || !selectedLearnHw} onClick={() => void runHomework()}>{busy ? "提交中…" : "提交作业"}</Btn>
                 </div>
               </>
             ) : (
@@ -579,10 +572,7 @@ export function AttachActionsSheet({
                 {yktItems.length === 0 ? (
                   <div className="ohaa-note">
                     本机还没有雨课堂作业缓存。
-                    <button className="btn" type="button" style={{ marginLeft: 8 }} disabled={extLoading}
-                      onClick={() => { setExtLoading(true); void refreshExtHw().finally(() => setExtLoading(false)); }}>
-                      {extLoading ? "刷新中…" : "刷新雨课堂作业"}
-                    </button>
+                    <Btn variant="outline" disabled={extLoading} onClick={() => { setExtLoading(true); void refreshExtHw().finally(() => setExtLoading(false)); }}>{extLoading ? "刷新中…" : "刷新雨课堂作业"}</Btn>
                   </div>
                 ) : null}
                 <div className="ohaa-field">
@@ -597,10 +587,7 @@ export function AttachActionsSheet({
                 </div>
                 <div className="ohaa-foot">
                   <Btn variant="outline" onClick={close}>取消</Btn>
-                  <button className="btn btn-primary" type="button" disabled={busy || !selectedYkt}
-                    onClick={() => void runHomework()}>
-                    {busy ? "处理中…" : "去官方页提交"}
-                  </button>
+                  <Btn variant="solid" tone="brand" disabled={busy || !selectedYkt} onClick={() => void runHomework()}>{busy ? "处理中…" : "去官方页提交"}</Btn>
                 </div>
               </>
             )}
@@ -622,10 +609,7 @@ export function AttachActionsSheet({
               {courses.length === 0 ? (
                 <span className="ohaa-note">
                   本机还没有课程缓存。
-                  <button className="btn" type="button" style={{ marginLeft: 8 }} disabled={learnLoading}
-                    onClick={() => void loadLearn()}>
-                    {learnLoading ? "加载中…" : "加载课程列表"}
-                  </button>
+                  <Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? "加载中…" : "加载课程列表"}</Btn>
                 </span>
               ) : null}
             </div>
@@ -656,10 +640,7 @@ export function AttachActionsSheet({
             </div>
             <div className="ohaa-foot">
               <Btn variant="outline" onClick={close}>取消</Btn>
-              <button className="btn btn-primary" type="button" disabled={busy || !courseId}
-                onClick={() => void runDiscussion()}>
-                {busy ? "发布中…" : "发布"}
-              </button>
+              <Btn variant="solid" tone="brand" disabled={busy || !courseId} onClick={() => void runDiscussion()}>{busy ? "发布中…" : "发布"}</Btn>
             </div>
           </div>
         ) : null}
@@ -680,9 +661,7 @@ export function AttachActionsSheet({
             </div>
             <div className="ohaa-foot">
               <Btn variant="outline" onClick={close}>取消</Btn>
-              <button className="btn btn-primary" type="button" disabled={busy} onClick={() => void runOh()}>
-                {busy ? "发送中…" : "发给 OH"}
-              </button>
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void runOh()}>{busy ? "发送中…" : "发给 OH"}</Btn>
             </div>
           </div>
         ) : null}
@@ -696,10 +675,7 @@ export function AttachActionsSheet({
             {r.ok && typeof r.images === "number" ? `\n（本次随消息附带 ${r.images} 张图片）` : ""}
             {r.needUi && r.ui?.officialUrl && r.ui.officialChannel === "ykt-submit-webview" && isTauri ? (
               <div style={{ marginTop: 8 }}>
-                <button className="btn btn-primary" type="button" disabled={officialBusy}
-                  onClick={() => void openOfficial(r.ui!.officialUrl!)}>
-                  {officialBusy ? "打开中…" : "打开雨课堂官方作答页"}
-                </button>
+                <Btn variant="solid" tone="brand" disabled={officialBusy} onClick={() => void openOfficial(r.ui!.officialUrl!)}>{officialBusy ? "打开中…" : "打开雨课堂官方作答页"}</Btn>
               </div>
             ) : null}
             {r.ok ? (

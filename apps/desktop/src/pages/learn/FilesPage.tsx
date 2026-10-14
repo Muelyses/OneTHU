@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /** 全部课程文件（learnX Files）：按上传时间倒序，可按课程筛选 */
 import { useMemo, useState } from "react";
 import { PageAtomStar } from "../..//components/Collect.js";
@@ -31,10 +32,8 @@ export function FilesPage() {
           <>
             <PageAtomStar atomKey="learn-files" title="全部课程文件" />
             <BackButton to="learn" label="课程列表" />
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />

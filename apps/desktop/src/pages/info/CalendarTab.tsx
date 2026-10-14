@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
  * 校历 —— info.getCalendarImageUrl（thu-info-app schoolCalendar.tsx 移植，图片版）。
@@ -72,25 +73,21 @@ export function CalendarTab() {
         <Select value={sem} onChange={(value) => setSem(value as Sem)} aria-label="学期"><option value="autumn">秋季学期</option><option value="spring">春季学期</option></Select>
         <Select value={lang} onChange={(value) => setLang(value as Lang)} aria-label="语言"><option value="zh">中文</option><option value="en">English</option></Select>
         {src ? (
-          <button className="btn btn-ghost" onClick={() => void openExternal(src)}>
-            在浏览器打开原图
-          </button>
+          <Btn variant="ghost" onClick={() => void openExternal(src)}>在浏览器打开原图
+          </Btn>
         ) : null}
       </div>
 
       {src && !imgError ? (
         <>
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
-            <button className="btn btn-ghost" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))} disabled={zoom <= 0.5}>
-              −
-            </button>
+            <Btn variant="ghost" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))} disabled={zoom <= 0.5}>−
+            </Btn>
             <span style={{ fontSize: 13, color: "var(--text-2)" }}>{Math.round(zoom * 100)}%</span>
-            <button className="btn btn-ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>
-              +
-            </button>
-            <button className="btn btn-ghost" onClick={() => setZoom(1)}>
-              重置
-            </button>
+            <Btn variant="ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>+
+            </Btn>
+            <Btn variant="ghost" onClick={() => setZoom(1)}>重置
+            </Btn>
           </div>
           <Card style={{ overflow: "auto", padding: 12 }}>
             <img

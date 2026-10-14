@@ -273,17 +273,12 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
                   {w.live ? (
                     <Btn variant="ghost" titleAttr="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</Btn>
                   ) : null}
-                  <button
-                    className="btn btn-ghost ex-btn-sm ex-danger"
-                    title="彻底删除：连同其中的标签页一起关闭"
-                    onClick={() =>
+                  <Btn variant="ghost" titleAttr="彻底删除：连同其中的标签页一起关闭" onClick={() =>
                       void confirmOk(`彻底删除工作区「${w.name}」及其中的标签页？`).then((ok) => {
                         if (ok) closeLiveWorkspace(w.id);
                       })
-                    }
-                  >
-                    彻底删除
-                  </button>
+                    }>彻底删除
+                  </Btn>
                 </div>
               </div>
             ))}
@@ -394,9 +389,8 @@ function OneGoSheetInner(): ReactNode {
           )}
         </div>
         <footer className="ex-sheet-foot">
-          <button className="btn btn-ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>
-            功能目录在首页 ↓
-          </button>
+          <Btn variant="ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>功能目录在首页 ↓
+          </Btn>
         </footer>
       </aside>
     </>,

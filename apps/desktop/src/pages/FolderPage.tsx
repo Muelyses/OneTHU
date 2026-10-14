@@ -97,17 +97,15 @@ export function FolderPage() {
         actions={
           editing ? (
             <>
-              <button className="btn" onClick={() => { setRenameVal(folder.title); setRenaming(true); }}>重命名</button>
+              <Btn variant="outline" onClick={() => { setRenameVal(folder.title); setRenaming(true); }}>重命名</Btn>
               <Btn variant="outline" disabled={orderIdx <= 0} titleAttr="左侧栏顺序上移" onClick={() => favs.moveRoot(rootId, -1)}>上移</Btn>
-              <button className="btn" disabled={orderIdx >= favs.data.order.length - 1} title="左侧栏顺序下移" onClick={() => favs.moveRoot(rootId, 1)}>下移</button>
+              <Btn variant="outline" disabled={orderIdx >= favs.data.order.length - 1} titleAttr="左侧栏顺序下移" onClick={() => favs.moveRoot(rootId, 1)}>下移</Btn>
               <Btn variant="solid" tone="error" onClick={() => void removeRoot()}>删除收藏夹</Btn>
               <Btn variant="solid" tone="brand" onClick={() => setEditing(false)}>完成</Btn>
             </>
           ) : (
-            <button className="btn" onClick={() => setEditing(true)}>
-              <IconPen width={14} height={14} />
-              编辑
-            </button>
+            <Btn variant="outline" onClick={() => setEditing(true)}><IconPen width={14} height={14} />编辑
+            </Btn>
           )
         }
       />
@@ -141,16 +139,10 @@ function FolderWidgetButton({ folderId }: { folderId: string }): ReactNode {
   if (backend !== "android") return null;      // 桌面端不做小组件：不显示假入口
   const on = isWidgetFolder(folderId);
   return (
-    <button
-      className="btn"
-      title={on ? "这块收藏夹已经在桌面某块小组件上" : "把本收藏夹放上桌面小组件（图标组）"}
-      onClick={() => {
+    <Btn variant="outline" titleAttr={on ? "这块收藏夹已经在桌面某块小组件上" : "把本收藏夹放上桌面小组件（图标组）"} onClick={() => {
         requestWidgetBind({ to: "pick", binding: { kind: "folder", folderId } });
         bump((n) => n + 1);
-      }}
-    >
-      {on ? "已在桌面" : "上桌面"}
-    </button>
+      }}>{on ? "已在桌面" : "上桌面"}</Btn>
   );
 }
 
@@ -252,9 +244,8 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
                   </button>
                 ))}
               </SegmentedOverflow>
-              <button className="btn btn-ghost" style={{ flex: "0 0 auto" }} onClick={() => setManageOpen(true)}>
-                管理栏目
-              </button>
+              <Btn variant="ghost" onClick={() => setManageOpen(true)}>管理栏目
+              </Btn>
             </div>
           ) : null}
 
@@ -262,20 +253,14 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
             <div className="fav-toolbar">
               <Btn variant="outline" onClick={() => setPickerOpen(true)}>添加收藏项</Btn>
               <Btn variant="outline" titleAttr="从图标库选择收藏夹图标" onClick={() => setIconOpen(true)}>图标</Btn>
-              <button
-                className="btn"
-                disabled={!canNestUnder(favs.data, folderId)}
-                title={canNestUnder(favs.data, folderId) ? undefined : "最多 " + FAVS_MAX_DEPTH + " 层收藏夹"}
-                onClick={() => {
+              <Btn variant="outline" disabled={!canNestUnder(favs.data, folderId)} titleAttr={canNestUnder(favs.data, folderId) ? undefined : "最多 " + FAVS_MAX_DEPTH + " 层收藏夹"} onClick={() => {
                   setNewSub(true);
                   setNewSubName("");
-                }}
-              >
-                新建子收藏夹
-              </button>
+                }}>新建子收藏夹
+              </Btn>
               <FolderWidgetButton folderId={folderId} />
               {!isRoot && !renaming ? (
-                <button className="btn" onClick={() => { setRenameVal(f.title); setRenaming(true); }}>重命名</button>
+                <Btn variant="outline" onClick={() => { setRenameVal(f.title); setRenaming(true); }}>重命名</Btn>
               ) : null}
               {!isRoot ? (
                 <Btn variant="solid" tone="error" onClick={() => void removeSelf()}>删除子收藏夹</Btn>

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
  * 研讨间预约（cab.lib.tsinghua.edu.cn ic-web，thu-info-app libRoomSelect/libRoomBook/
@@ -46,9 +47,8 @@ function EmailBindHint({ text }: { text: string }) {
           研讨间系统要求先在原网站（cab.lib.tsinghua.edu.cn）登录并绑定邮箱后才能预约，新生未绑定时会一直报「会话未能建立」。
           请在原网站绑定邮箱后，回到这里点「重试」。
         </div>
-        <button className="btn" style={{ marginTop: 8 }} onClick={() => void openExternal("https://cab.lib.tsinghua.edu.cn/")}>
-          打开研讨间网站
-        </button>
+        <Btn variant="outline" onClick={() => void openExternal("https://cab.lib.tsinghua.edu.cn/")}>打开研讨间网站
+        </Btn>
       </div>
     </Card>
   );
@@ -743,17 +743,11 @@ export function LibRoomTab({
                   onChange={(e) => setFilterEnd(e.target.value)}
                 />
                 {filterBeg || filterEnd ? (
-                  <button
-                    type="button"
-                    className="btn btn-ghost"
-                    style={{ height: 32, whiteSpace: "nowrap" }}
-                    onClick={() => {
+                  <Btn variant="ghost" onClick={() => {
                       setFilterBeg("");
                       setFilterEnd("");
-                    }}
-                  >
-                    清除
-                  </button>
+                    }}>清除
+                  </Btn>
                 ) : null}
               </div>
               {filterComplete && !filterValid ? (
@@ -808,14 +802,8 @@ export function LibRoomTab({
                     <SlotGrid slots={roomSlots(r, day.iso)} res={r} />
                   </div>
                   <div className="row-amount">
-                    <button
-                      className="btn btn-primary"
-                      style={{ height: 28 }}
-                      disabled={r.kindName.includes("暂未开放") || r.openStart === null}
-                      onClick={() => pickRoom(r)}
-                    >
-                      预约
-                    </button>
+                    <Btn variant="solid" tone="brand" disabled={r.kindName.includes("暂未开放") || r.openStart === null} onClick={() => pickRoom(r)}>预约
+                    </Btn>
                   </div>
                 </div>
               ))}
@@ -868,19 +856,11 @@ export function LibRoomTab({
               />
             </div>
             <span style={{ flex: 1 }} />
-            <button
-              className="btn btn-primary"
-              style={{ height: 32 }}
-              disabled={!canSubmit}
-              onClick={() => {
+            <Btn variant="solid" tone="brand" disabled={!canSubmit} onClick={() => {
                 if (target && beg && end) void doBook(target, beg, end);
-              }}
-            >
-              {busy ? "提交中…" : "提交预约"}
-            </button>
-            <button className="btn" style={{ height: 32 }} onClick={() => setTarget(null)}>
-              取消
-            </button>
+              }}>{busy ? "提交中…" : "提交预约"}</Btn>
+            <Btn variant="outline" onClick={() => setTarget(null)}>取消
+            </Btn>
           </div>
           <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 8 }}>
             成员：本人（accNo {info.getLibRoomAccNo() ?? "–"}）。
@@ -897,17 +877,10 @@ export function LibRoomTab({
             绑定邮箱 <b>{pendingEmail}</b> 并重试预约？
           </span>
           <span style={{ flex: 1 }} />
-          <button
-            className="btn btn-primary"
-            style={{ height: 28 }}
-            disabled={busy}
-            onClick={() => void confirmEmailAndRetry()}
-          >
-            确认并重试
-          </button>
-          <button className="btn" style={{ height: 28 }} onClick={() => setPendingEmail(null)}>
-            取消
-          </button>
+          <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void confirmEmailAndRetry()}>确认并重试
+          </Btn>
+          <Btn variant="outline" onClick={() => setPendingEmail(null)}>取消
+          </Btn>
         </Card>
       ) : null}
 
@@ -956,32 +929,13 @@ export function LibRoomTab({
                   pendingCancel === r.uuid ? (
                     <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
                       <span style={{ fontSize: 12, color: "var(--text-2)" }}>确认取消？</span>
-                      <button
-                        className="btn btn-primary"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => void cancelRecord(r)}
-                      >
-                        {busyCancel !== null ? "取消中…" : "确认取消"}
-                      </button>
-                      <button
-                        className="btn"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => setPendingCancel(null)}
-                      >
-                        算了
-                      </button>
+                      <Btn variant="solid" tone="brand" disabled={busyCancel !== null} onClick={() => void cancelRecord(r)}>{busyCancel !== null ? "取消中…" : "确认取消"}</Btn>
+                      <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>算了
+                      </Btn>
                     </span>
                   ) : (
-                    <button
-                      className="btn"
-                      style={{ height: 28 }}
-                      disabled={busyCancel !== null}
-                      onClick={() => setPendingCancel(r.uuid)}
-                    >
-                      取消预约
-                    </button>
+                    <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(r.uuid)}>取消预约
+                    </Btn>
                   )
                 ) : null}
               </div>

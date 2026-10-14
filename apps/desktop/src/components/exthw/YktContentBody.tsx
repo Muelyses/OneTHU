@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 雨课堂内容的**内嵌正文渲染**（R27）：按内容形态给出可用的内嵌呈现，绝不打开官方页。
  *
@@ -48,9 +49,8 @@ export function YktContentBody(props: YktContentBodyProps) {
   if (fileUrl) {
     return (
       <div className="ykt-content-body">
-        <button className="btn btn-primary" onClick={() => openFilePreview({ name: title, url: fileUrl })}>
-          用内置预览打开
-        </button>
+        <Btn variant="solid" tone="brand" onClick={() => openFilePreview({ name: title, url: fileUrl })}>用内置预览打开
+        </Btn>
         <div className="row-sub" style={{ marginTop: 8 }}>
           文档在应用内预览（可翻页 / 缩放 / 另存），不跳转官方网页。
         </div>
@@ -67,17 +67,13 @@ export function YktContentBody(props: YktContentBodyProps) {
         </div>
         {images.length > 1 ? (
           <div className="ykt-slide-bar">
-            <button className="btn btn-ghost" disabled={idx <= 0} onClick={() => setPage(idx - 1)}>
-              <IconChevron width={14} height={14} style={{ transform: "rotate(180deg)" }} />
-              上一页
-            </button>
+            <Btn variant="ghost" disabled={idx <= 0} onClick={() => setPage(idx - 1)}><IconChevron width={14} height={14} style={{ transform: "rotate(180deg)" }} />上一页
+            </Btn>
             <span className="ykt-slide-count">
               {idx + 1} / {images.length}
             </span>
-            <button className="btn btn-ghost" disabled={idx >= images.length - 1} onClick={() => setPage(idx + 1)}>
-              下一页
-              <IconChevron width={14} height={14} />
-            </button>
+            <Btn variant="ghost" disabled={idx >= images.length - 1} onClick={() => setPage(idx + 1)}>下一页
+              <IconChevron width={14} height={14} /></Btn>
           </div>
         ) : null}
       </div>
@@ -97,12 +93,8 @@ export function YktContentBody(props: YktContentBodyProps) {
       <div className="ykt-ans-empty">
         这条内容没有可直接渲染的正文（可能是直播、讨论或需要互动的类型）。
         {fallbackUrl ? (
-          <button
-            className="btn btn-ghost"
-            onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}
-          >
-            复制链接
-          </button>
+          <Btn variant="ghost" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>复制链接
+          </Btn>
         ) : null}
       </div>
     </div>

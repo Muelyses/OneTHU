@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 手机端「长按看图」。
  *
@@ -483,17 +484,10 @@ function Viewer({ shot, onClose }: { shot: Shot; onClose: () => void }): ReactNo
         <img className="imgview-img" ref={imgRef} src={shot.src} alt="" draggable={false} />
       </div>
       <div className="imgview-bar">
-        <button
-          type="button"
-          className="btn imgview-save"
-          disabled={saving}
-          onClick={(e) => {
+        <Btn variant="outline" disabled={saving} onClick={(e) => {
             e.stopPropagation();
             save();
-          }}
-        >
-          {saving ? "保存中" : "保存图片"}
-        </button>
+          }}>{saving ? "保存中" : "保存图片"}</Btn>
       </div>
     </div>,
     document.body,

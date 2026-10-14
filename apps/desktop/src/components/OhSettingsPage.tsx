@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * OH 独立页（设置 →「OH」页签）：**普通配置 / 高级配置** 两档。
  *
@@ -135,10 +136,7 @@ function MadModelRow(): ReactNode {
           {busy ? "正在重新签…" : warn ? warn : "免费额度可用；额度不足或过期时点右侧重新签一次。"}
         </div>
       </div>
-      <button
-        className="btn"
-        disabled={busy}
-        onClick={() => {
+      <Btn variant="outline" disabled={busy} onClick={() => {
           setBusy(true);
           void forceRemint()
             .catch(() => undefined)
@@ -146,10 +144,8 @@ function MadModelRow(): ReactNode {
               setBusy(false);
               setDone((v) => !v);
             });
-        }}
-      >
-        重新签
-      </button>
+        }}>重新签
+      </Btn>
     </div>
   );
 }
@@ -170,9 +166,8 @@ function OhAdvancedSlot(): ReactNode {
           模型 / 花费上限 / MCP / 日志在插件子页就地配置——插件页 → OneTHU Harness → 高级配置。
         </div>
       </div>
-      <button className="btn" onClick={() => goEntry("plugins")}>
-        打开插件设置
-      </button>
+      <Btn variant="outline" onClick={() => goEntry("plugins")}>打开插件设置
+      </Btn>
     </div>
   );
 }
@@ -191,17 +186,13 @@ function KeepAliveRow(): ReactNode {
         </div>
       </div>
       {isAndroid ? (
-        <button
-          className="btn"
-          onClick={() => {
+        <Btn variant="outline" onClick={() => {
             void import("@tauri-apps/api/core")
               .then((m) => m.invoke("open_app_settings"))
               .catch(() => undefined);
             setJumped(true);
-          }}
-        >
-          打开系统设置
-        </button>
+          }}>打开系统设置
+        </Btn>
       ) : null}
     </div>
   );
@@ -241,9 +232,8 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
                 设置面板里就地配置——插件页 → OneTHU Harness → 高级配置。
               </div>
             </div>
-            <button className="btn" onClick={() => goEntry("plugins")}>
-              打开插件设置
-            </button>
+            <Btn variant="outline" onClick={() => goEntry("plugins")}>打开插件设置
+            </Btn>
           </div>
 
           {/* 2026-10-13 压缩内容制（fa54a9c）：给一行机制说明——历史超长不再裸丢。

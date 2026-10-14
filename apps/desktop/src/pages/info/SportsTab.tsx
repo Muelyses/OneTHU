@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 /**
  * 体育场馆预约 —— SportsTab（thu-info-app sports 系列（sportsDetail/sportsRecord）移植）。
@@ -273,9 +274,8 @@ export function SportsTab() {
           }}
           aria-label="预约日期"
         />
-        <button className="btn btn-ghost" onClick={() => void loadResources(venue, date)} disabled={resState === "loading"}>
-          刷新
-        </button>
+        <Btn variant="ghost" onClick={() => void loadResources(venue, date)} disabled={resState === "loading"}>刷新
+        </Btn>
       </div>
 
       <SectionHead title={`时段与场地 · ${venue.name}`} aside={closed ? "当前不在开放预约时段" : undefined} />
@@ -349,15 +349,11 @@ export function SportsTab() {
               <label htmlFor="sports-phone">手机号（用于接收预约通知）</label>
               <div style={{ display: "flex", gap: 8 }}>
                 <Input value={phone} onChange={(value) => setPhone(value)} placeholder="11 位手机号" inputMode="numeric" />
-                <button className="btn btn-ghost" onClick={() => void savePhone()} disabled={phoneBusy || !phoneOk} title="保存到体育系统，接收短信通知">
-                  {phoneBusy ? "保存中…" : "保存"}
-                </button>
+                <Btn variant="ghost" onClick={() => void savePhone()} disabled={phoneBusy || !phoneOk} titleAttr="保存到体育系统，接收短信通知">{phoneBusy ? "保存中…" : "保存"}</Btn>
               </div>
             </div>
             {phoneMsg ? <div style={{ marginTop: -6, marginBottom: 8, fontSize: 12, color: "var(--text-3)" }}>{phoneMsg}</div> : null}
-            <button className="btn btn-primary" onClick={openCaptcha} disabled={!phoneOk}>
-              {phoneOk ? "预约（下一步：验证码）" : "请先填写 11 位手机号"}
-            </button>
+            <Btn variant="solid" tone="brand" onClick={openCaptcha} disabled={!phoneOk}>{phoneOk ? "预约（下一步：验证码）" : "请先填写 11 位手机号"}</Btn>
           </Card>
         </>
       ) : null}
@@ -404,12 +400,9 @@ export function SportsTab() {
               placeholder="验证码"
               style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)", fontSize: 14 }}
             />
-            <button className="btn btn-primary" onClick={() => void doBook()} disabled={booking || !code.trim()}>
-              {booking ? "提交中…" : "确认预约"}
-            </button>
-            <button className="btn btn-ghost" onClick={() => { setCaptchaOpen(false); setCode(""); }}>
-              取消
-            </button>
+            <Btn variant="solid" tone="brand" onClick={() => void doBook()} disabled={booking || !code.trim()}>{booking ? "提交中…" : "确认预约"}</Btn>
+            <Btn variant="ghost" onClick={() => { setCaptchaOpen(false); setCode(""); }}>取消
+            </Btn>
           </div>
           {captchaErr ? <div style={{ marginTop: 10, fontSize: 13, lineHeight: 1.5, color: "#d33" }}>{captchaErr}</div> : null}
         </Card>
@@ -443,17 +436,11 @@ export function SportsTab() {
                   <div className="row-sub">{r.time}{r.price ? ` · ¥${r.price}` : ""}</div>
                 </div>
                 {r.bookId ? (
-                  <button
-                    className="btn btn-ghost"
-                    disabled={unsubbing !== null}
-                    onClick={() => {
+                  <Btn variant="ghost" disabled={unsubbing !== null} onClick={() => {
                       if (globalThis.confirm?.(`确定退订「${r.name} ${r.field} ${r.time}」？`)) {
                         void unsubscribe(r.bookId!);
                       }
-                    }}
-                  >
-                    {unsubbing === r.bookId ? "退订中…" : "退订"}
-                  </button>
+                    }}>{unsubbing === r.bookId ? "退订中…" : "退订"}</Btn>
                 ) : null}
               </div>
             ))}

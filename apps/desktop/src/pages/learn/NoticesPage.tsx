@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 全部课程通知（learnX Notices）：按发布时间倒序，可筛重要/未读。
  *
@@ -65,11 +66,9 @@ export function NoticesPage() {
           <>
             <PageAtomStar atomKey="learn-notices" title="全部通知" />
             <BackButton to="learn" label="课程列表" />
-            <button className="btn" onClick={() => navigate("learn-search", { from: "learn-notices" })}>搜索</button>
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="outline" onClick={() => navigate("learn-search", { from: "learn-notices" })}>搜索</Btn>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
+            </Btn>
           </>
         }
       />

@@ -166,7 +166,7 @@ function SearchLandingSelfcheck(): ReactNode {
         <span style={{ color: "var(--text-3)" }}>hit {report.rows.filter((x) => x.hit === "hit").length}/45 · 分节根 {report.rows.filter((x) => x.landedOn === "section-root").length}</span>
         <span style={{ flex: 1 }} />
         <Btn variant="solid" tone="brand" onClick={() => void copyReport()}>复制报告</Btn>
-        <button className="btn btn-ghost" aria-label="关闭" onClick={() => setReport(null)}><IconX width={14} height={14} /></button>
+        <Btn variant="ghost" aria-label="关闭" onClick={() => setReport(null)}><IconX width={14} height={14} /></Btn>
       </div>
       {miss.length ? (
         <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>

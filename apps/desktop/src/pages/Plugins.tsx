@@ -392,9 +392,8 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
           <div className="plg-empty-mark">[ · ]</div>
           <div className="plg-empty-t">机架空空如也</div>
           <div className="plg-empty-d">安装第一个插件，为 OneTHU 挂上新的能力模块。</div>
-          <button className="btn btn-primary" onClick={() => setInstOpen(true)}>
-            安装插件
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => setInstOpen(true)}>安装插件
+          </Btn>
         </div>
       ) : plugins.length === 0 && cat === "theme" ? (
         <div style={{ fontSize: "var(--text-sm)", color: "var(--text-3)", padding: "6px 2px" }}>
@@ -613,51 +612,36 @@ function PluginCard({
           ) : null}
           <Switch on={rec.enabled} label={rec.enabled ? "停用" : "启用"} onToggle={() => void (rec.enabled ? disablePlugin(id) : enablePlugin(id)).catch((e: unknown) => setRunMsg(String(e)))} />
           {id === "onethu.harness" ? (
-            <button className="btn btn-ghost" title="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>
-              MCP
-            </button>
+            <Btn variant="ghost" titleAttr="管理 MCP 服务器" onClick={() => onOpenSheet({ id, mode: "mcp" })}>MCP
+            </Btn>
           ) : null}
           {/* 主题类插件：动作行里一处（**与检查更新/设置/删除同为纯文字**，不再用 chip 胶囊） */}
           {isThemeEntry(m) ? (
-            <button className="btn btn-ghost" title="到「外观与布局 → 主题」里切换（会高亮那一节）" onClick={() => gotoAppearanceTheme()}>
-              去切换主题
-            </button>
+            <Btn variant="ghost" titleAttr="到「外观与布局 → 主题」里切换（会高亮那一节）" onClick={() => gotoAppearanceTheme()}>去切换主题
+            </Btn>
           ) : null}
           {rec.repo && m.kind !== "rust" && !rec.embedded && !rec.builtin && id !== "onethu.harness" ? (
-            <button className="btn btn-ghost" title={`从 ${rec.repo} 检查最新版（本体仓库优先，市场兜底）`} disabled={checkBusy || repoCheck.busy} onClick={() => { onCheckUpdate?.(); void checkUpdate().catch(() => undefined); }}>
-              {checkBusy || repoCheck.busy ? "检查中…" : "检查更新"}
-            </button>
+            <Btn variant="ghost" titleAttr={`从 ${rec.repo} 检查最新版（本体仓库优先，市场兜底）`} disabled={checkBusy || repoCheck.busy} onClick={() => { onCheckUpdate?.(); void checkUpdate().catch(() => undefined); }}>{checkBusy || repoCheck.busy ? "检查中…" : "检查更新"}</Btn>
           ) : null}
           {(repoCheck.remote || repoRemote) && compareVersions(repoCheck.remote ?? "", m.version) > 0 ? (
-            <button
-              className="btn btn-primary"
-              title={`从插件本体仓库更新到 v${repoCheck.remote || repoRemote}（与安装同一管线，覆盖更新并重新激活）`}
-              disabled={repoCheck.busy || checkBusy}
-              onClick={() => {
+            <Btn variant="solid" tone="brand" titleAttr={`从插件本体仓库更新到 v${repoCheck.remote || repoRemote}（与安装同一管线，覆盖更新并重新激活）`} disabled={repoCheck.busy || checkBusy} onClick={() => {
                 const v = repoCheck.remote || repoRemote;
                 if (v) void updateNow(v).catch(() => undefined);
-              }}
-            >
-              {repoCheck.busy ? "更新中…" : `更新至仓库版 v${repoCheck.remote || repoRemote}`}
-            </button>
+              }}>{repoCheck.busy ? "更新中…" : `更新至仓库版 v${repoCheck.remote || repoRemote}`}</Btn>
           ) : null}
           {!repoCheck.remote && !repoRemote && marketVersion && compareVersions(marketVersion, m.version) > 0 ? (
-            <button className="btn btn-ghost plg-update-flag" title={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>
-              可更新 ↑
-            </button>
+            <Btn variant="ghost" titleAttr={`市场已有 v${marketVersion}`} onClick={() => onGoMarket?.()}>可更新 ↑
+            </Btn>
           ) : null}
-          <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>
-            设置
-          </button>
+          <Btn variant="ghost" onClick={() => onOpenSheet({ id, mode: "settings" })}>设置
+          </Btn>
           {m.kind === "rust" ? (
-            <button className="btn btn-ghost" onClick={() => onOpenSheet({ id, mode: "log" })}>
-              日志
-            </button>
+            <Btn variant="ghost" onClick={() => onOpenSheet({ id, mode: "log" })}>日志
+            </Btn>
           ) : null}
           {rec.embedded || rec.builtin || m.id === "onethu.harness" ? null : (
-            <button className="btn btn-ghost plg-danger" onClick={() => void uninstallPlugin(id)}>
-              删除
-            </button>
+            <Btn variant="solid" tone="error" onClick={() => void uninstallPlugin(id)}>删除
+            </Btn>
           )}
         </div>
       </div>
@@ -732,9 +716,8 @@ function PluginCard({
                         onChange={(e) => setInput(e.target.value)}
                       />
                     ) : null}
-                    <button className="btn btn-primary" onClick={() => void doRun(c.id)}>
-                      执行
-                    </button>
+                    <Btn variant="solid" tone="brand" onClick={() => void doRun(c.id)}>执行
+                    </Btn>
                     {runMsg ? <div className="plg-runmsg">{runMsg}</div> : null}
                     {runResult && (runResult.markdown || runResult.items?.length || runResult.kv?.length) ? (
                       <ResultBlock result={runResult} />
@@ -881,9 +864,8 @@ export function McpBody(): ReactNode {
           </div>
         </div>
       ))}
-      <button className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => void edit(-1)}>
-        ＋ 添加 MCP 服务器
-      </button>
+      <Btn variant="ghost" onClick={() => void edit(-1)}>＋ 添加 MCP 服务器
+      </Btn>
     </div>
   );
 }
@@ -977,9 +959,8 @@ export function SettingsBody({
           <span className="plg-hint">修改后点「保存」才会生效</span>
         )}
         <span className="plg-sheet-foot-ops">
-          <button className="btn btn-ghost" onClick={() => setDraft({ ...rec.settings })}>
-            撤销修改
-          </button>
+          <Btn variant="ghost" onClick={() => setDraft({ ...rec.settings })}>撤销修改
+          </Btn>
           <Btn variant="solid" tone="brand" disabled={saving} onClick={save}>
             保存
           </Btn>
@@ -1030,12 +1011,10 @@ export function LogBody({ id }: { id: string }): ReactNode {
       <div className="plg-sheet-foot">
         <span className="plg-hint">{events.length} 条事件 · 最多保留 300 条</span>
         <span className="plg-sheet-foot-ops">
-          <button className="btn btn-ghost" onClick={() => void notifyRust(id, "interrupt").catch(() => undefined)}>
-            打断运行
-          </button>
-          <button className="btn btn-ghost" onClick={() => clearPluginEvents(id)}>
-            清空
-          </button>
+          <Btn variant="ghost" onClick={() => void notifyRust(id, "interrupt").catch(() => undefined)}>打断运行
+          </Btn>
+          <Btn variant="ghost" onClick={() => clearPluginEvents(id)}>清空
+          </Btn>
         </span>
       </div>
     </>
@@ -1145,33 +1124,23 @@ function MarketView({
           </div>
           <div style={{ display: "flex", gap: 8, flex: "none", alignItems: "center" }}>
             {detail.homepage ? (
-              <button
-                className="btn btn-ghost"
-                onClick={() => void (async () => {
+              <Btn variant="ghost" onClick={() => void (async () => {
                   try {
                     const { openUrl } = await import("@tauri-apps/plugin-opener");
                     await openUrl(detail.homepage!);
                   } catch {
                     window.open(detail.homepage!, "_blank");
                   }
-                })()}
-              >
-                主页
-              </button>
+                })()}>主页
+              </Btn>
             ) : null}
             {/* ④ 主题类插件：详情里直接启用/停用（沿用卡片开关语义） */}
             {rec && isThemeEntry(detail) ? (
-              <button
-                className="btn btn-ghost"
-                onClick={() => void (on ? disablePlugin(detail.id) : enablePlugin(detail.id)).catch((e: unknown) => setMsg(String(e)))}
-              >
-                {on ? "停用主题" : "启用主题"}
-              </button>
+              <Btn variant="ghost" onClick={() => void (on ? disablePlugin(detail.id) : enablePlugin(detail.id)).catch((e: unknown) => setMsg(String(e)))}>{on ? "停用主题" : "启用主题"}</Btn>
             ) : null}
             {!installedMap.has(detail.id) ? (
-              <button className="btn btn-primary" disabled={busy} onClick={() => void install(detail)}>
-                安装
-              </button>
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void install(detail)}>安装
+              </Btn>
             ) : null}
           </div>
         </div>
@@ -1211,9 +1180,7 @@ function MarketView({
             </button>
           ))}
         </div>
-        <button className="btn" disabled={busy} onClick={() => void load(true)}>
-          {busy ? "刷新中…" : "刷新"}
-        </button>
+        <Btn variant="outline" disabled={busy} onClick={() => void load(true)}>{busy ? "刷新中…" : "刷新"}</Btn>
       </div>
       {/* ④ 市场自己的类别筛选：与「我的插件」同一套 .segmented 口径 */}
       <div className="segmented" style={{ margin: "0 0 10px", flexWrap: "wrap" }}>
@@ -1230,9 +1197,8 @@ function MarketView({
         msg ? (
           <div className="plg-hint" style={{ color: "var(--red)" }}>
             {msg}
-            <button className="btn" style={{ marginLeft: 10 }} disabled={busy} onClick={() => void load(true)}>
-              重试
-            </button>
+            <Btn variant="outline" disabled={busy} onClick={() => void load(true)}>重试
+            </Btn>
           </div>
         ) : (
           <div className="plg-hint">{busy ? "正在拉取市场名单…" : "准备中…"}</div>
@@ -1284,7 +1250,7 @@ function MarketView({
                   </div>
                 ) : null}
                 <div className="market-card-foot">
-                  <button className="btn btn-ghost" style={{ flex: "none" }} onClick={() => setDetail(item)}>详情</button>
+                  <Btn variant="ghost" onClick={() => setDetail(item)}>详情</Btn>
                   <button
                     className="market-repo-link"
                     title={`在浏览器打开仓库：${normalizeRepoUrl(item.repo)}`}
@@ -1305,21 +1271,13 @@ function MarketView({
                     const local = installedMap.get(item.id);
                     if (local && compareVersions(item.version, local) <= 0) {
                       return (
-                        <button className="btn" disabled title={`本地 v${local}，已是最新`}>
-                          已安装
-                        </button>
+                        <Btn variant="outline" disabled titleAttr={`本地 v${local}，已是最新`}>已安装
+                        </Btn>
                       );
                     }
                     const updating = !!local;
                     return (
-                      <button
-                        className="btn btn-primary"
-                        disabled={busy}
-                        title={updating ? `本地 v${local} → 市场 v${item.version}` : undefined}
-                        onClick={() => void install(item)}
-                      >
-                        {busy ? "…" : updating ? "更新" : "安装"}
-                      </button>
+                      <Btn variant="solid" tone="brand" disabled={busy} titleAttr={updating ? `本地 v${local} → 市场 v${item.version}` : undefined} onClick={() => void install(item)}>{busy ? "…" : updating ? "更新" : "安装"}</Btn>
                     );
                   })()}
                 </div>
@@ -1473,9 +1431,7 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
           />
           <div className="plg-install-foot">
             <span className="plg-hint">粘贴完整模块代码，安装即激活。</span>
-            <button className="btn btn-primary" disabled={busy || !code.trim()} onClick={() => void install(code)}>
-              {busy ? "安装中…" : "安装"}
-            </button>
+            <Btn variant="solid" tone="brand" disabled={busy || !code.trim()} onClick={() => void install(code)}>{busy ? "安装中…" : "安装"}</Btn>
           </div>
         </div>
       ) : null}
@@ -1514,9 +1470,7 @@ function InstallPanel({ onClose }: { onClose: () => void }): ReactNode {
             }} />
           <div className="plg-install-foot">
             <span className="plg-hint">从仓库根目录拉取 plugin.js（或 index.js / main.js），与粘贴安装同一校验管线。</span>
-            <button className="btn btn-primary" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`))}>
-              {busy ? "安装中…" : "安装"}
-            </button>
+            <Btn variant="solid" tone="brand" disabled={busy || !repoInput.trim()} onClick={() => void installFromRepoText(repoInput).catch((e2: unknown) => setMsg(`安装失败：${String(e2 instanceof Error ? e2.message : e2).slice(0, 200)}`))}>{busy ? "安装中…" : "安装"}</Btn>
           </div>
         </div>
       ) : null}

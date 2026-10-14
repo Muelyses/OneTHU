@@ -833,17 +833,9 @@ export function LibraryTab({
           ) : null}
           <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>须在预约开始后 30 分钟内完成签到</div>
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 10 }}>
-            <button className="btn" style={{ height: 28 }} onClick={() => setPendingSeat(null)}>
-              取消
-            </button>
-            <button
-              className="btn btn-primary"
-              style={{ height: 28 }}
-              disabled={busySeat !== null}
-              onClick={() => void book(pendingSeat)}
-            >
-              {busySeat !== null ? "预约中…" : "确认预约"}
-            </button>
+            <Btn variant="outline" onClick={() => setPendingSeat(null)}>取消
+            </Btn>
+            <Btn variant="solid" tone="brand" disabled={busySeat !== null} onClick={() => void book(pendingSeat)}>{busySeat !== null ? "预约中…" : "确认预约"}</Btn>
           </div>
         </Card>
       ) : null}
@@ -893,32 +885,13 @@ export function LibraryTab({
                   pendingCancel === (r.delId ?? r.id) ? (
                     <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
                       <span style={{ fontSize: 12, color: "var(--text-2)" }}>确认取消该预约？</span>
-                      <button
-                        className="btn btn-primary"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => void cancel(r)}
-                      >
-                        {busyCancel !== null ? "取消中…" : "确认取消"}
-                      </button>
-                      <button
-                        className="btn"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => setPendingCancel(null)}
-                      >
-                        算了
-                      </button>
+                      <Btn variant="solid" tone="brand" disabled={busyCancel !== null} onClick={() => void cancel(r)}>{busyCancel !== null ? "取消中…" : "确认取消"}</Btn>
+                      <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>算了
+                      </Btn>
                     </span>
                   ) : (
-                    <button
-                      className="btn"
-                      style={{ height: 28 }}
-                      disabled={busyCancel !== null}
-                      onClick={() => setPendingCancel(r.delId ?? r.id)}
-                    >
-                      取消预约
-                    </button>
+                    <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(r.delId ?? r.id)}>取消预约
+                    </Btn>
                   )
                 ) : null}
               </div>

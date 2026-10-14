@@ -148,16 +148,13 @@ export function WallpaperLibrary({
           <Btn variant="outline" onClick={pickUpload}>
             上传入库…
           </Btn>
-          <button type="button" className="btn" disabled={busy} onClick={() => void runSync(syncWallpaperToCloud)}>
-            同步到云盘
-          </button>
-          <button type="button" className="btn" disabled={busy} onClick={() => void runSync(restoreWallpaperFromCloud)}>
-            从云盘恢复
-          </button>
+          <Btn variant="outline" disabled={busy} onClick={() => void runSync(syncWallpaperToCloud)}>同步到云盘
+          </Btn>
+          <Btn variant="outline" disabled={busy} onClick={() => void runSync(restoreWallpaperFromCloud)}>从云盘恢复
+          </Btn>
           {doc.global ? (
-            <button type="button" className="btn btn-ghost" onClick={() => setGlobalWallpaper(null)}>
-              清除全屏
-            </button>
+            <Btn variant="ghost" onClick={() => setGlobalWallpaper(null)}>清除全屏
+            </Btn>
           ) : null}
         </div>
       )}

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
  * 设置页「语音合成」区块（需求 4）——用户要的两件事在这里落地：
@@ -170,9 +171,7 @@ export function VoiceSettingsSection(): ReactNode {
             ) : null}
           </div>
         </div>
-        <button className="btn btn-ghost" disabled={busy} onClick={() => void refresh()}>
-          {busy ? "检查中…" : "重新检查"}
-        </button>
+        <Btn variant="ghost" disabled={busy} onClick={() => void refresh()}>{busy ? "检查中…" : "重新检查"}</Btn>
       </div>
 
       {/* ③ 音色 */}
@@ -222,9 +221,8 @@ export function VoiceSettingsSection(): ReactNode {
             onKeyUp={commitSlider}
             onBlur={commitSlider}
           />
-          <button className="btn btn-ghost" disabled={prefs.rate === 1} onClick={() => setVoicePrefs({ rate: 1 })}>
-            复位
-          </button>
+          <Btn variant="ghost" disabled={prefs.rate === 1} onClick={() => setVoicePrefs({ rate: 1 })}>复位
+          </Btn>
         </div>
       </div>
 
@@ -258,9 +256,8 @@ export function VoiceSettingsSection(): ReactNode {
             onKeyUp={commitSlider}
             onBlur={commitSlider}
           />
-          <button className="btn btn-ghost" disabled={prefs.pitch === 1} onClick={() => setVoicePrefs({ pitch: 1 })}>
-            复位
-          </button>
+          <Btn variant="ghost" disabled={prefs.pitch === 1} onClick={() => setVoicePrefs({ pitch: 1 })}>复位
+          </Btn>
         </div>
       </div>
 
@@ -274,21 +271,14 @@ export function VoiceSettingsSection(): ReactNode {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
-          <button className="btn" disabled={!usable} onClick={() => void preview()}>
-            {speaking ? "停止" : "试听"}
-          </button>
-          <button
-            className="btn btn-ghost"
-            title="音色、语速、音高全部回到原声，并关闭自动朗读"
-            onClick={() => {
+          <Btn variant="outline" disabled={!usable} onClick={() => void preview()}>{speaking ? "停止" : "试听"}</Btn>
+          <Btn variant="ghost" titleAttr="音色、语速、音高全部回到原声，并关闭自动朗读" onClick={() => {
               void ttsStop();
               setSpeaking(false);
               resetVoicePrefs();
               setMsg("已恢复默认（静音 · 原声原速 · 引擎默认音色）");
-            }}
-          >
-            全部恢复默认
-          </button>
+            }}>全部恢复默认
+          </Btn>
         </div>
       </div>
 

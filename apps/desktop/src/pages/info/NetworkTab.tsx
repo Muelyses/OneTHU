@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 校园网 —— usereg 自服务（thu-info-app network.tsx 移植 + 用户示例页增强）。
  * 数据：账号/状态/用户组（/users+/home）、流量/时长（/home w3 计费组表）、
@@ -245,9 +246,7 @@ export function NetworkTab() {
               placeholder="验证码"
               style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)", fontSize: 14 }}
             />
-            <button className="btn" onClick={() => void doLogin(code.trim())} disabled={loginBusy || !code.trim()}>
-              {loginBusy ? "登录中…" : "登录 usereg"}
-            </button>
+            <Btn variant="outline" onClick={() => void doLogin(code.trim())} disabled={loginBusy || !code.trim()}>{loginBusy ? "登录中…" : "登录 usereg"}</Btn>
           </div>
           {loginErr ? (
             <div style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: "#d33" }}>{loginErr}</div>
@@ -319,18 +318,15 @@ export function NetworkTab() {
                 min={1}
                 style={{ width: 90, height: 34, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
               />
-              <button className="btn" onClick={() => void doSetCount()} disabled={countBusy || !newCount}>
-                {countBusy ? "提交中…" : "修改"}
-              </button>
+              <Btn variant="outline" onClick={() => void doSetCount()} disabled={countBusy || !newCount}>{countBusy ? "提交中…" : "修改"}</Btn>
               <span style={{ fontSize: 12, opacity: 0.7 }}>账号下每个静态 IP 计一个连接数，谨慎修改</span>
             </div>
             {countMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "#0866c6" }}>{countMsg}</div> : null}
 
             <div style={{ borderTop: "1px solid var(--border, #eee)", margin: "16px 0", opacity: 0.5 }} />
             {!showPwd ? (
-              <button className="btn-ghost" onClick={() => setShowPwd(true)}>
-                修改 Tsinghua-Secure 密码
-              </button>
+              <Btn variant="ghost" onClick={() => setShowPwd(true)}>修改 Tsinghua-Secure 密码
+              </Btn>
             ) : (
               <div style={{ display: "grid", gap: 12, maxWidth: 420 }}>
                 <input
@@ -354,12 +350,9 @@ export function NetworkTab() {
                   8~19 位，字母区分大小写，不能与用户名相同，至少含数字、字母、特殊字符(仅限 !@#$%^*().~)中的两种
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button className="btn" onClick={() => void doChpwd()} disabled={pwdBusy || !pwd1}>
-                    {pwdBusy ? "提交中…" : "提交"}
-                  </button>
-                  <button className="btn-ghost" onClick={() => setShowPwd(false)}>
-                    取消
-                  </button>
+                  <Btn variant="outline" onClick={() => void doChpwd()} disabled={pwdBusy || !pwd1}>{pwdBusy ? "提交中…" : "提交"}</Btn>
+                  <Btn variant="ghost" onClick={() => setShowPwd(false)}>取消
+                  </Btn>
                 </div>
               </div>
             )}

@@ -99,8 +99,8 @@ export function TabManageModal({
                   <input type="checkbox" checked={visible} onChange={() => toggle(t.id)} />
                   {t.label}
                 </label>
-                <button className="btn" style={{ padding: "1px 8px" }} disabled={i === 0} onClick={() => move(t.id, -1)} title="上移">↑</button>
-                <button className="btn" style={{ padding: "1px 8px" }} disabled={i === rows.length - 1} onClick={() => move(t.id, 1)} title="下移">↓</button>
+                <Btn variant="outline" disabled={i === 0} onClick={() => move(t.id, -1)} titleAttr="上移">↑</Btn>
+                <Btn variant="outline" disabled={i === rows.length - 1} onClick={() => move(t.id, 1)} titleAttr="下移">↓</Btn>
               </div>
             );
           })}

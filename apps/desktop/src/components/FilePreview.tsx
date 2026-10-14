@@ -146,15 +146,11 @@ class PreviewErrorBoundary extends Component<
           <div style={{ color: "var(--text-3)", marginBottom: 8 }}>{this.props.note}</div>
         ) : null}
         <div style={{ color: "var(--text-3)", marginBottom: 12, wordBreak: "break-all" }}>{this.state.err.slice(0, 300)}</div>
-        <button
-          className="btn"
-          onClick={() => {
+        <Btn variant="outline" onClick={() => {
             this.setState({ err: null });
             this.props.onRetry?.();
-          }}
-        >
-          重试
-        </button>
+          }}>重试
+        </Btn>
       </div>
     );
   }
@@ -402,15 +398,13 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string
       <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
         <Btn variant="outline" disabled={cur <= 1} titleAttr="上一页" onClick={() => jump(cur - 1)}>‹</Btn>
         <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 64, textAlign: "center" }}>{cur} / {doc.numPages}</span>
-        <button className="btn" disabled={cur >= doc.numPages} title="下一页" onClick={() => jump(cur + 1)}>›</button>
+        <Btn variant="outline" disabled={cur >= doc.numPages} titleAttr="下一页" onClick={() => jump(cur + 1)}>›</Btn>
         <span style={{ width: 8 }} />
-        <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
+        <Btn variant="ghost" titleAttr="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</Btn>
         <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
-        <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
+        <Btn variant="ghost" titleAttr="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</Btn>
         <Btn variant="ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</Btn>
-        <button className="btn btn-ghost" disabled={pdfBusy} title="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>
-          {pdfBusy ? "调起中…" : "系统应用打开"}
-        </button>
+        <Btn variant="ghost" disabled={pdfBusy} titleAttr="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>{pdfBusy ? "调起中…" : "系统应用打开"}</Btn>
       </div>
     </div>
   );
@@ -1190,9 +1184,9 @@ function PptxSlidesView({ model }: { model: PptxModel }): React.ReactNode {
       </div>
       <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
         <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>连续滚动查看全部页面</span>
-        <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
+        <Btn variant="ghost" titleAttr="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</Btn>
         <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
-        <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
+        <Btn variant="ghost" titleAttr="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</Btn>
         <Btn variant="ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</Btn>
         {model.unsupported > 0 ? (
           <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>{model.unsupported} 个图表/对象未渲染</span>
@@ -1444,12 +1438,9 @@ export function FilePreviewHost() {
           ) : null}
           {/* 按钮组整体靠右且不收缩：空间不够时整组换行，✕ 永远在面板内 */}
           <span className="fp-actions" style={{ display: "flex", gap: 8, flexShrink: 0, marginLeft: "auto" }}>
-            <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-              {dlBusy ? "下载中…" : "下载"}
-            </button>
-            <button className="btn btn-ghost" disabled={dlBusy} title="这次保存到哪里由你选" onClick={() => void doSaveAs()}>
-              另存为
-            </button>
+            <Btn variant="outline" disabled={dlBusy} onClick={() => void doDownload()}>{dlBusy ? "下载中…" : "下载"}</Btn>
+            <Btn variant="ghost" disabled={dlBusy} titleAttr="这次保存到哪里由你选" onClick={() => void doSaveAs()}>另存为
+            </Btn>
             <Btn variant="outline" onClick={close} aria-label="关闭预览">✕</Btn>
           </span>
         </div>
@@ -1467,12 +1458,9 @@ export function FilePreviewHost() {
               ) : null}
               <div style={{ display: "flex", gap: 8 }}>
                 <Btn variant="outline" onClick={retry}>重试</Btn>
-                <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-                  {dlBusy ? "下载中…" : "下载查看"}
-                </button>
-                <button className="btn btn-ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>
-                  另存为…
-                </button>
+                <Btn variant="outline" disabled={dlBusy} onClick={() => void doDownload()}>{dlBusy ? "下载中…" : "下载查看"}</Btn>
+                <Btn variant="ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>另存为…
+                </Btn>
               </div>
             </div>
           ) : null}
@@ -1551,12 +1539,9 @@ export function FilePreviewHost() {
                 {view.mime}
                 {view.size ? ` · ${fmtBytes(view.size)}` : ""}
               </div>
-              <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-                {dlBusy ? "下载中…" : "下载查看"}
-              </button>
-              <button className="btn btn-ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>
-                另存为…
-              </button>
+              <Btn variant="outline" disabled={dlBusy} onClick={() => void doDownload()}>{dlBusy ? "下载中…" : "下载查看"}</Btn>
+              <Btn variant="ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>另存为…
+              </Btn>
             </div>
           ) : null}
           </PreviewErrorBoundary>

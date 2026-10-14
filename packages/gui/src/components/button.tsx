@@ -22,11 +22,19 @@ export interface BtnProps extends OneBase {
   type?: "button" | "submit" | "reset";
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
+  onMouseUp?: (e: React.MouseEvent<HTMLElement>) => void;
+  onContextMenu?: (e: React.MouseEvent<HTMLElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLElement>) => void;
   tabIndex?: number;
   autoFocus?: boolean;
+  /** 状态语义（可访问性）：下拉/展开/按下三态与 role 都透传 */
+  role?: string;
+  "aria-label"?: string;
+  "aria-pressed"?: boolean;
+  "aria-expanded"?: boolean;
+  "aria-haspopup"?: "menu" | "dialog" | "listbox" | "true" | "false";
   children?: ReactNode;
 }
 

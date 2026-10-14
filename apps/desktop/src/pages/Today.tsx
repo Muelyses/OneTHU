@@ -899,18 +899,13 @@ export function TodayPage() {
           <>
             {editing ? (
               <>
-                <button className="btn" onClick={() => setAddOpen(true)}>
-                  添加卡片
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
+                <Btn variant="outline" onClick={() => setAddOpen(true)}>添加卡片
+                </Btn>
+                <Btn variant="solid" tone="brand" onClick={() => {
                     setEditing(false);
                     setAddOpen(false);
-                  }}
-                >
-                  完成
-                </button>
+                  }}>完成
+                </Btn>
               </>
             ) : (
               <button className="btn" data-coach="home-edit" onClick={() => setEditing(true)}>
@@ -988,19 +983,14 @@ export function TodayPage() {
         <Card>
           <Empty text="首页卡片都被收起来了——恢复默认，或自己挑几张。" />
           <div style={{ display: "flex", justifyContent: "center", gap: 8, paddingBottom: 14 }}>
-            <button
-              className="btn btn-primary"
-              onClick={() => {
+            <Btn variant="solid" tone="brand" onClick={() => {
                 // 一键自救：恢复注册表默认布局（今天页空白大多来自导览里"以为在选、其实全点掉"）
                 restoreDefaultTodayCards(orientation);
                 setLayout(resolveLayout(HOME_CARD_META, null));
-              }}
-            >
-              恢复默认布局
-            </button>
-            <button className="btn" onClick={() => setEditing(true)}>
-              自己挑卡片
-            </button>
+              }}>恢复默认布局
+            </Btn>
+            <Btn variant="outline" onClick={() => setEditing(true)}>自己挑卡片
+            </Btn>
           </div>
         </Card>
       ) : null}

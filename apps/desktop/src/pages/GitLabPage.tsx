@@ -163,9 +163,7 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
         title="清华 GitLab"
         meta={<>git.tsinghua.edu.cn · 代码托管与协作</>}
         actions={
-          <button className="btn btn-ghost" onClick={() => q.reload()} disabled={q.loading}>
-            <IconRefresh /> {q.loading ? "读取中…" : "刷新"}
-          </button>
+          <Btn variant="ghost" onClick={() => q.reload()} disabled={q.loading}><IconRefresh />{q.loading ? "读取中…" : "刷新"}</Btn>
         }
       />
       <div className="gitlab-toolbar">
@@ -191,26 +189,22 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
               setPages(1);
             }} />
           {query ? (
-            <button className="btn mini" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</button>
+            <Btn variant="outline" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</Btn>
           ) : null}
         </div>
       </div>
       {q.loading ? <p className="dim gitlab-hint">读取项目…</p> : null}
       {q.error ? <p className="gitlab-error">{q.error}</p> : null}
       {q.error ? (
-        <button
-          className="btn gitlab-retry"
-          onClick={() => {
+        <Btn variant="outline" onClick={() => {
             void gitlabResetAuth()
               .then(() => {
                 q.reload();
                 showToast("登录状态已重置，正在重试");
               })
               .catch((e) => showToast(String(e).slice(0, 120)));
-          }}
-        >
-          重置统一认证并重试
-        </button>
+          }}>重置统一认证并重试
+        </Btn>
       ) : null}
       <div className="gitlab-cards">
         {(list?.items ?? []).map((p) => (
@@ -236,9 +230,8 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
         ) : null}
       </div>
       {list?.hasMore ? (
-        <button className="btn gitlab-more" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>
-          加载更多
-        </button>
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多
+        </Btn>
       ) : null}
     </>
   );
@@ -298,13 +291,11 @@ function FileView({ projectId, file, refName, baseUrl, onBack }: {
   return (
     <div className="gitlab-file">
       <div className="gitlab-file-head">
-        <button className="btn btn-ghost" onClick={onBack}>
-          <IconChevron style={{ transform: "rotate(180deg)" }} /> 返回目录
-        </button>
+        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回目录
+        </Btn>
         <span className="gitlab-file-path">{file.path}</span>
-        <button className="btn" onClick={() => openExternal(webUrl)}>
-          <IconExternal /> 浏览器打开
-        </button>
+        <Btn variant="outline" onClick={() => openExternal(webUrl)}><IconExternal />浏览器打开
+        </Btn>
       </div>
       {binary ? (
         <p className="dim gitlab-hint">二进制文件不在应用内预览，请用浏览器打开。</p>
@@ -364,9 +355,8 @@ function CodeTab({ projectId, defaultBranch, webUrl }: {
             </span>
           ))}
         </div>
-        <button className="btn btn-ghost" onClick={() => tree.reload()} disabled={tree.loading}>
-          <IconRefresh /> 刷新
-        </button>
+        <Btn variant="ghost" onClick={() => tree.reload()} disabled={tree.loading}><IconRefresh />刷新
+        </Btn>
       </div>
       {branches.error ? <p className="gitlab-error">{branches.error}</p> : null}
       {tree.error ? <p className="gitlab-error">{tree.error}</p> : null}
@@ -392,13 +382,13 @@ function CodeTab({ projectId, defaultBranch, webUrl }: {
         ))}
       </div>
       {tree.data?.hasMore ? (
-        <button className="btn gitlab-more" onClick={() => setPages((n) => n + 1)} disabled={tree.loading}>加载更多</button>
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={tree.loading}>加载更多</Btn>
       ) : null}
       {readme ? (
         <div className="gitlab-readme">
           <div className="gitlab-readme-head">
             <span>{readme.name}</span>
-            <button className="btn mini" onClick={() => openExternal(`${webUrl}/-/blob/${encodeURIComponent(ref)}/${readme.path}`)}>浏览器打开</button>
+            <Btn variant="outline" onClick={() => openExternal(`${webUrl}/-/blob/${encodeURIComponent(ref)}/${readme.path}`)}>浏览器打开</Btn>
           </div>
           {readmeQuery.loading ? <p className="dim gitlab-hint">读取 README…</p> : null}
           {readmeQuery.error ? <p className="gitlab-error">{readmeQuery.error}</p> : null}
@@ -702,9 +692,7 @@ function NoteEditor({ initial, busy, onSave, onCancel }: {
         onChange={(e) => setText(e.target.value)}
       />
       <div className="gitlab-notebox-actions">
-        <button className="btn btn-primary" disabled={busy || text.trim() === ""} onClick={() => onSave(text.trim())}>
-          {busy ? "保存中…" : "保存"}
-        </button>
+        <Btn variant="solid" tone="brand" disabled={busy || text.trim() === ""} onClick={() => onSave(text.trim())}>{busy ? "保存中…" : "保存"}</Btn>
         <Btn variant="ghost" disabled={busy} onClick={onCancel}>取消</Btn>
       </div>
     </div>
@@ -746,9 +734,7 @@ function NoteBox({ kind, projectId, iid, onDone }: {
         onChange={(e) => setText(e.target.value)}
       />
       <div className="gitlab-notebox-actions">
-        <button className="btn btn-primary" disabled={busy || text.trim() === ""} onClick={() => void submit()}>
-          {busy ? "发送中…" : "发表评论"}
-        </button>
+        <Btn variant="solid" tone="brand" disabled={busy || text.trim() === ""} onClick={() => void submit()}>{busy ? "发送中…" : "发表评论"}</Btn>
       </div>
     </div>
   );
@@ -834,9 +820,7 @@ function NoteRow({ note, kind, projectId, iid, discussionId, me, baseUrl, depth,
           ) : null}
           {mine ? (
             <>
-              <button className="btn mini" disabled={busy} onClick={() => setEditing((e) => !e)}>
-                {editing ? "取消" : "编辑"}
-              </button>
+              <Btn variant="outline" disabled={busy} onClick={() => setEditing((e) => !e)}>{editing ? "取消" : "编辑"}</Btn>
               <Btn variant="outline" disabled={busy} onClick={() => void remove()}>删除</Btn>
             </>
           ) : null}
@@ -905,13 +889,9 @@ function DiscussionThread({ discussion, kind, projectId, iid, me, baseUrl, onCha
         <NoteRow key={n.id} note={n} kind={kind} projectId={projectId} iid={iid} discussionId={discussion.id} me={me} baseUrl={baseUrl} depth={1} onChanged={onChanged} />
       ))}
       <div className="gitlab-thread-actions">
-        <button className="btn mini" disabled={busy} onClick={() => setReplying((r) => !r)}>
-          {replying ? "取消回复" : "回复"}
-        </button>
+        <Btn variant="outline" disabled={busy} onClick={() => setReplying((r) => !r)}>{replying ? "取消回复" : "回复"}</Btn>
         {resolvable ? (
-          <button className="btn mini" disabled={busy} onClick={() => void resolve(!resolved)}>
-            {resolved ? "重新打开讨论" : "解决讨论"}
-          </button>
+          <Btn variant="outline" disabled={busy} onClick={() => void resolve(!resolved)}>{resolved ? "重新打开讨论" : "解决讨论"}</Btn>
         ) : null}
         {resolved ? <span className="gitlab-chip ok">已解决</span> : null}
       </div>
@@ -953,9 +933,8 @@ function DiscussionList({ kind, projectId, iid, me, baseUrl, onChanged }: {
         />
       ))}
       {q.data?.hasMore ? (
-        <button className="btn gitlab-more" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>
-          加载更多讨论
-        </button>
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多讨论
+        </Btn>
       ) : null}
     </>
   );
@@ -1025,23 +1004,19 @@ function RequestDetail({ kind, projectId, iid, onBack, onChanged }: {
   return (
     <div className="gitlab-detail">
       <div className="gitlab-file-head">
-        <button className="btn btn-ghost" onClick={onBack}>
-          <IconChevron style={{ transform: "rotate(180deg)" }} /> 返回列表
-        </button>
+        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回列表
+        </Btn>
         <span className="dim">!{iid}</span>
         <span style={{ flex: 1 }} />
         {mr && mr.state === "opened" && (mr.user?.can_merge ?? true) ? (
           <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void merge()}>合入</Btn>
         ) : null}
         {item && item.state !== "merged" ? (
-          <button className="btn" disabled={busy} onClick={() => void toggleState()}>
-            {closed ? "重新打开" : "关闭"}
-          </button>
+          <Btn variant="outline" disabled={busy} onClick={() => void toggleState()}>{closed ? "重新打开" : "关闭"}</Btn>
         ) : null}
         {item ? (
-          <button className="btn" onClick={() => openExternal(item.web_url)}>
-            <IconExternal /> 浏览器打开
-          </button>
+          <Btn variant="outline" onClick={() => openExternal(item.web_url)}><IconExternal />浏览器打开
+          </Btn>
         ) : null}
       </div>
       {detail.loading ? <p className="dim gitlab-hint">读取中…</p> : null}
@@ -1206,11 +1181,10 @@ function RequestList({ kind, projectId, initialIid = null }: {
         <div className="gitlab-search">
           <IconSearch width={14} height={14} />
           <Input placeholder={kind === "issue" ? "搜索 Issue（回车）" : "搜索合并请求（回车）"} value={text} onChange={(value) => setText(value)} onKeyDown={(e) => { if (e.key === "Enter") { setQuery(text.trim()); setPages(1); } }} />
-          {query ? <button className="btn mini" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</button> : null}
+          {query ? <Btn variant="outline" onClick={() => { setQuery(""); setText(""); setPages(1); }}>退出搜索</Btn> : null}
         </div>
-        <button className="btn" onClick={() => void (kind === "issue" ? createIssue() : createMr())}>
-          <IconPen /> 新建
-        </button>
+        <Btn variant="outline" onClick={() => void (kind === "issue" ? createIssue() : createMr())}><IconPen />新建
+        </Btn>
       </div>
       {q.loading ? <p className="dim gitlab-hint">读取列表…</p> : null}
       {q.error ? <p className="gitlab-error">{q.error}</p> : null}
@@ -1243,7 +1217,7 @@ function RequestList({ kind, projectId, initialIid = null }: {
         ) : null}
       </div>
       {list?.hasMore ? (
-        <button className="btn gitlab-more" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</button>
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</Btn>
       ) : null}
     </div>
   );
@@ -1265,13 +1239,11 @@ function PipelineJobs({ projectId, pipeline, onBack }: {
     return (
       <div className="gitlab-jobs">
         <div className="gitlab-file-head">
-          <button className="btn btn-ghost" onClick={() => setOpenJob(null)}>
-            <IconChevron style={{ transform: "rotate(180deg)" }} /> 返回作业列表
-          </button>
+          <Btn variant="ghost" onClick={() => setOpenJob(null)}><IconChevron style={{ transform: "rotate(180deg)" }} />返回作业列表
+          </Btn>
           <span className="gitlab-file-path">{openJob.stage} / {openJob.name}</span>
-          <button className="btn" onClick={() => openExternal(openJob.web_url)}>
-            <IconExternal /> 浏览器打开
-          </button>
+          <Btn variant="outline" onClick={() => openExternal(openJob.web_url)}><IconExternal />浏览器打开
+          </Btn>
         </div>
         {trace.loading ? <p className="dim gitlab-hint">读取日志…</p> : null}
         {trace.error ? <p className="gitlab-error">{trace.error}</p> : null}
@@ -1283,13 +1255,11 @@ function PipelineJobs({ projectId, pipeline, onBack }: {
   return (
     <div className="gitlab-jobs">
       <div className="gitlab-file-head">
-        <button className="btn btn-ghost" onClick={onBack}>
-          <IconChevron style={{ transform: "rotate(180deg)" }} /> 返回流水线列表
-        </button>
+        <Btn variant="ghost" onClick={onBack}><IconChevron style={{ transform: "rotate(180deg)" }} />返回流水线列表
+        </Btn>
         <span className="dim">流水线 #{pipeline.id} · {statusOf(pipeline.status).label} · {pipeline.ref}</span>
-        <button className="btn btn-ghost" onClick={() => jobs.reload()} disabled={jobs.loading}>
-          <IconRefresh /> 刷新
-        </button>
+        <Btn variant="ghost" onClick={() => jobs.reload()} disabled={jobs.loading}><IconRefresh />刷新
+        </Btn>
       </div>
       {jobs.loading ? <p className="dim gitlab-hint">读取作业…</p> : null}
       {jobs.error ? <p className="gitlab-error">{jobs.error}</p> : null}
@@ -1341,9 +1311,8 @@ function PipelineTab({ projectId, defaultBranch }: { projectId: number; defaultB
           onBlur={commit}
         />
         <span style={{ flex: 1 }} />
-        <button className="btn btn-ghost" onClick={() => q.reload()} disabled={q.loading}>
-          <IconRefresh /> 刷新
-        </button>
+        <Btn variant="ghost" onClick={() => q.reload()} disabled={q.loading}><IconRefresh />刷新
+        </Btn>
       </div>
       {q.loading ? <p className="dim gitlab-hint">读取流水线…</p> : null}
       {q.error ? <p className="gitlab-error">{q.error}</p> : null}
@@ -1361,7 +1330,7 @@ function PipelineTab({ projectId, defaultBranch }: { projectId: number; defaultB
         {!q.loading && !q.error && (q.data?.items.length ?? 0) === 0 ? <p className="dim gitlab-hint">没有流水线记录（该项目可能未启用 CI/CD）</p> : null}
       </div>
       {q.data?.hasMore ? (
-        <button className="btn gitlab-more" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</button>
+        <Btn variant="outline" onClick={() => setPages((n) => n + 1)} disabled={q.loading}>加载更多</Btn>
       ) : null}
     </div>
   );
@@ -1413,9 +1382,8 @@ function CodeButton({ project }: { project: GitProjectDetail }): ReactNode {
 
   return (
     <div className="gitlab-code-btn" ref={wrapRef}>
-      <button className="btn btn-primary" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        Code ▾
-      </button>
+      <Btn variant="solid" tone="brand" aria-expanded={open} onClick={() => setOpen((o) => !o)}>Code ▾
+      </Btn>
       {open ? (
         <div className="gitlab-code-menu" role="dialog" aria-label="克隆与下载">
           {project.http_url_to_repo ? (
@@ -1432,9 +1400,7 @@ function CodeButton({ project }: { project: GitProjectDetail }): ReactNode {
               <Btn variant="outline" onClick={() => copy(project.ssh_url_to_repo)}>复制</Btn>
             </div>
           ) : null}
-          <button className="btn gitlab-code-zip" disabled={busy} onClick={download}>
-            <IconDownload /> {busy ? "下载中…" : `下载 ZIP（${project.default_branch || "默认分支"}）`}
-          </button>
+          <Btn variant="outline" disabled={busy} onClick={download}><IconDownload />{busy ? "下载中…" : `下载 ZIP（${project.default_branch || "默认分支"}）`}</Btn>
         </div>
       ) : null}
     </div>
@@ -1485,13 +1451,11 @@ function ProjectView({ projectId, initialTab, initialIid = null, onBack }: {
           </div>
         </div>
         <div className="page-head-actions">
-          <button className="btn btn-ghost" onClick={() => detail.reload()} disabled={detail.loading}>
-            <IconRefresh /> 刷新
-          </button>
+          <Btn variant="ghost" onClick={() => detail.reload()} disabled={detail.loading}><IconRefresh />刷新
+          </Btn>
           <CodeButton project={project} />
-          <button className="btn" onClick={() => openExternal(project.web_url)}>
-            <IconExternal /> 浏览器打开
-          </button>
+          <Btn variant="outline" onClick={() => openExternal(project.web_url)}><IconExternal />浏览器打开
+          </Btn>
         </div>
       </div>
       {project.description ? <p className="dim gitlab-desc">{project.description}</p> : null}

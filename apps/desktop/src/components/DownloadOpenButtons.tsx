@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 下载完成提示右侧的「打开文件 / 打开目录」小图标按钮（R23，霖需求）。
  *
@@ -36,30 +37,14 @@ export function DownloadOpenButtons({ path }: { path: string }): ReactNode {
 
   return (
     <span className="dl-open-btns" role="group" aria-label="打开下载的文件">
-      <button
-        className="btn btn-ghost dl-open-btn"
-        title="打开文件（系统默认应用）"
-        aria-label="打开文件"
-        disabled={busy !== ""}
-        onClick={(e) => {
+      <Btn variant="ghost" titleAttr="打开文件（系统默认应用）" aria-label="打开文件" disabled={busy !== ""} onClick={(e) => {
           e.stopPropagation();
           void run("file");
-        }}
-      >
-        <IconFile width={14} height={14} />
-      </button>
-      <button
-        className="btn btn-ghost dl-open-btn"
-        title="打开目录（定位到文件）"
-        aria-label="打开目录"
-        disabled={busy !== ""}
-        onClick={(e) => {
+        }}><IconFile width={14} height={14} /></Btn>
+      <Btn variant="ghost" titleAttr="打开目录（定位到文件）" aria-label="打开目录" disabled={busy !== ""} onClick={(e) => {
           e.stopPropagation();
           void run("dir");
-        }}
-      >
-        <IconFolder width={14} height={14} />
-      </button>
+        }}><IconFolder width={14} height={14} /></Btn>
     </span>
   );
 }

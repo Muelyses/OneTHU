@@ -173,13 +173,7 @@ function MoveModal({
         {selfNest && <p className="cloud-error" style={{ margin: "8px 0 0" }}>不能移动到自身内部的文件夹</p>}
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
           <Btn variant="outline" onClick={onClose}>取消</Btn>
-          <button
-            className="btn primary"
-            disabled={selfNest || isSamePlace}
-            onClick={() => onDone(repoId, path)}
-          >
-            移动到这里{isSamePlace ? "（已在原位）" : ""}
-          </button>
+          <Btn variant="outline" disabled={selfNest || isSamePlace} onClick={() => onDone(repoId, path)}>移动到这里{isSamePlace ? "（已在原位）" : ""}</Btn>
         </div>
       </div>
     </div>
@@ -348,9 +342,8 @@ export default function CloudPage(): ReactNode {
           <p>首次连接会在应用内打开云盘页面。</p>
           <p>登录后读取现有访问口令，不会自动生成或重置。</p>
           <div className="row" style={{ gap: 8, marginTop: 8 }}>
-            <button className="btn primary" onClick={() => setBindOpen(true)}>
-              连接云盘
-            </button>
+            <Btn variant="outline" onClick={() => setBindOpen(true)}>连接云盘
+            </Btn>
           </div>
           <ConnectGate need="cloud" open={bindOpen} onClose={() => setBindOpen(false)} />
           <p className="dim" style={{ fontSize: "var(--text-xs)" }}>
@@ -369,7 +362,7 @@ export default function CloudPage(): ReactNode {
     return (
       <div className="page">
         <div className="cloud-toolbar">
-          <button className="btn" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>← 资料库</button>
+          <Btn variant="outline" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>← 资料库</Btn>
           <div className="cloud-crumb">
             <b onClick={() => { setPath("/"); setSearchHits(null); setSearchText(""); }}>{repo.name}</b>
             {crumbs.map((c, i) => (
@@ -379,11 +372,7 @@ export default function CloudPage(): ReactNode {
               </span>
             ))}
           </div>
-          <button
-            className="btn"
-            disabled={batchBusy}
-            title="新建文件夹"
-            onClick={async () => {
+          <Btn variant="outline" disabled={batchBusy} titleAttr="新建文件夹" onClick={async () => {
               const name = await promptText("新建文件夹", { placeholder: "文件夹名称" });
               if (!name) return;
               try {
@@ -393,26 +382,15 @@ export default function CloudPage(): ReactNode {
               } catch (e) {
                 showToast(`创建失败：${String(e).slice(0, 80)}`);
               }
-            }}
-          >
-            <IconFolderPlus style={{ width: 14, height: 14 }} /> 新建文件夹
-          </button>
-          <button
-            className="btn"
-            disabled={busy || batchBusy}
-            onClick={() => {
+            }}><IconFolderPlus style={{ width: 14, height: 14 }} />新建文件夹
+          </Btn>
+          <Btn variant="outline" disabled={busy || batchBusy} onClick={() => {
               if (selMode) { exitSel(); return; }
               setSearchHits(null);
               setSearchText("");
               setSelMode(true);
-            }}
-          >
-            {selMode ? "退出批量" : "批量"}
-          </button>
-          <button
-            className="btn"
-            disabled={busy || selMode}
-            onClick={async () => {
+            }}>{selMode ? "退出批量" : "批量"}</Btn>
+          <Btn variant="outline" disabled={busy || selMode} onClick={async () => {
               const r = await invoke<string[]>("seafile_pick_upload", {
                 token: getSeafileToken(), repoId: repo.id, parentDir: path,
               }).catch((e) => { showToast(`上传失败：${String(e).slice(0, 80)}`); return null; });
@@ -421,10 +399,8 @@ export default function CloudPage(): ReactNode {
                 refreshRepos().catch(() => undefined);
                 refreshDir(repo.id, path).catch(() => undefined); // 立刻刷当前目录（缓存失效）
               }
-            }}
-          >
-            <IconUpload style={{ width: 14, height: 14 }} /> 上传
-          </button>
+            }}><IconUpload style={{ width: 14, height: 14 }} />上传
+          </Btn>
         </div>
 
         {!selMode && (
@@ -440,7 +416,7 @@ export default function CloudPage(): ReactNode {
               onKeyDown={(e) => { if (e.key === "Enter") void runSearch(); }}
             />
             {!searching && (searchHits || searchMeta) && (
-              <button className="btn mini" onClick={() => { searchSeqRef.current++; setSearchHits(null); setSearchMeta(null); setSearchText(""); }}>退出搜索</button>
+              <Btn variant="outline" onClick={() => { searchSeqRef.current++; setSearchHits(null); setSearchMeta(null); setSearchText(""); }}>退出搜索</Btn>
             )}
             {searching && <span className="cloud-search-status">搜索中…</span>}
           </div>
@@ -477,25 +453,12 @@ export default function CloudPage(): ReactNode {
             })}
             {entries.length === 0 && !dir.loading && <p className="dim" style={{ padding: 16 }}>空目录</p>}
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", padding: "12px 0", position: "sticky", bottom: 0, background: "var(--bg, #fff)", borderTop: "1px solid var(--border-soft, rgba(127,127,127,.2))" }}>
-              <button
-                className="btn"
-                onClick={() => setSelSet(allSelected ? new Set() : new Set(entries.map((x) => x.name)))}
-              >
-                {allSelected ? "取消全选" : "全选"}
-              </button>
+              <Btn variant="outline" onClick={() => setSelSet(allSelected ? new Set() : new Set(entries.map((x) => x.name)))}>{allSelected ? "取消全选" : "全选"}</Btn>
               <span className="dim" style={{ alignSelf: "center", fontSize: 13 }}>已选 {selSet.size} 项</span>
               <span style={{ flex: 1 }} />
-              <button className="btn" disabled={!selSet.size || batchBusy} onClick={() => void batchDownload()}>
-                {batchBusy ? "处理中…" : `下载（${selSet.size}）`}
-              </button>
-              <button
-                className="btn"
-                style={{ color: "#e5484d", borderColor: "#e5484d" }}
-                disabled={!selSet.size || batchBusy}
-                onClick={() => void batchDelete()}
-              >
-                删除（{selSet.size}）
-              </button>
+              <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDownload()}>{batchBusy ? "处理中…" : `下载（${selSet.size}）`}</Btn>
+              <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDelete()}>删除（{selSet.size}）
+              </Btn>
             </div>
           </div>
         ) : searching ? (
@@ -547,38 +510,22 @@ export default function CloudPage(): ReactNode {
                 <span className="cloud-name">{e.name}</span>
                 <span className="cloud-meta">{e.kind === "file" ? fmtSize(e.size) : ""}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}</span>
                 <span className="cloud-actions">
-                  <button className="btn mini" title="移动到其他位置" onClick={(ev) => { ev.stopPropagation(); setMoving(e); }}>
-                    移动
-                  </button>
-                  <button
-                    className="btn mini"
-                    style={{ color: "#e5484d" }}
-                    title={e.kind === "dir" ? "删除文件夹（含全部内容）" : "删除文件"}
-                    onClick={(ev) => {
+                  <Btn variant="outline" titleAttr="移动到其他位置" onClick={(ev) => { ev.stopPropagation(); setMoving(e); }}>移动
+                  </Btn>
+                  <Btn variant="outline" titleAttr={e.kind === "dir" ? "删除文件夹（含全部内容）" : "删除文件"} onClick={(ev) => {
                       ev.stopPropagation();
                       void deleteEntry(repo, `${path === "/" ? "" : path}/${e.name}`, e).then((ok) => {
                         if (!ok) return;
                         refreshDir(repo.id, path).catch(() => undefined);
                         refreshRepos().catch(() => undefined);
                       }).catch((err) => showToast(`删除失败：${String(err).slice(0, 80)}`));
-                    }}
-                  >
-                    删除
-                  </button>
+                    }}>删除
+                  </Btn>
                   {e.kind === "file" && (
                     <>
-                      <button
-                        className="btn mini"
-                        title="下载到 Downloads"
-                        onClick={(ev) => { ev.stopPropagation(); seafileDownload(repo.id, `${path === "/" ? "" : path}/${e.name}`).catch((err) => showToast(String(err).slice(0, 90))); }}
-                      >
-                        下载
-                      </button>
-                      <button
-                        className="btn mini"
-                        title="生成分享链接"
-                        disabled={sharing === e.name}
-                        onClick={(ev) => {
+                      <Btn variant="outline" titleAttr="下载到 Downloads" onClick={(ev) => { ev.stopPropagation(); seafileDownload(repo.id, `${path === "/" ? "" : path}/${e.name}`).catch((err) => showToast(String(err).slice(0, 90))); }}>下载
+                      </Btn>
+                      <Btn variant="outline" titleAttr="生成分享链接" disabled={sharing === e.name} onClick={(ev) => {
                           ev.stopPropagation();
                           setSharing(e.name);
                           seafileShare(repo.id, `${path === "/" ? "" : path}/${e.name}`, 0)
@@ -589,10 +536,7 @@ export default function CloudPage(): ReactNode {
                             })
                             .catch((err) => showToast(String(err).slice(0, 90)))
                             .finally(() => setSharing(null));
-                        }}
-                      >
-                        {sharing === e.name ? "…" : "分享"}
-                      </button>
+                        }}>{sharing === e.name ? "…" : "分享"}</Btn>
                     </>
                   )}
                 </span>
@@ -624,11 +568,7 @@ export default function CloudPage(): ReactNode {
           {account ? `${account.name || account.email} · ${fmtSize(account.usage)} / ${fmtSize(account.total)}` : busy ? "连接中…" : ""}
         </span>
         <span style={{ flex: 1 }} />
-        <button
-          className="btn"
-          disabled={busy}
-          title="新建资料库"
-          onClick={async () => {
+        <Btn variant="outline" disabled={busy} titleAttr="新建资料库" onClick={async () => {
             const name = await promptText("新建资料库", { placeholder: "资料库名称" });
             if (!name) return;
             try {
@@ -638,16 +578,11 @@ export default function CloudPage(): ReactNode {
             } catch (e) {
               showToast(`创建失败：${String(e).slice(0, 80)}`);
             }
-          }}
-        >
-          <IconFolderPlus style={{ width: 14, height: 14 }} /> 新建资料库
-        </button>
-        <button className="btn" disabled={busy} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}>
-          <IconRefresh style={{ width: 14, height: 14 }} /> 刷新
-        </button>
-        <button
-          className="btn"
-          onClick={async () => {
+          }}><IconFolderPlus style={{ width: 14, height: 14 }} />新建资料库
+        </Btn>
+        <Btn variant="outline" disabled={busy} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}><IconRefresh style={{ width: 14, height: 14 }} />刷新
+        </Btn>
+        <Btn variant="outline" onClick={async () => {
             const ok = await confirmDanger(
               "断开清华云盘？\n\n⚠️ 几乎所有高级与智能功能都依赖云盘，断开后将失去：\n· 跨设备记忆与主对话同步（AI 记忆只留本机）\n· IM 附件转存云盘（微信/飞书收文件仅可查看）\n· 云盘页浏览/下载与文件归档\n· 记忆库与对话历史的多端漫游\n\n确定要断开吗？（随时可在云盘页一键重连）",
               { title: "断开云盘", confirmText: "确认断开" },
@@ -655,10 +590,8 @@ export default function CloudPage(): ReactNode {
             if (!ok) return;
             await clearSeafileToken();
             showToast("已断开云盘（记忆/附件转为本地模式，随时可重连）");
-          }}
-        >
-          <IconExternal style={{ width: 14, height: 14 }} /> 断开
-        </button>
+          }}><IconExternal style={{ width: 14, height: 14 }} />断开
+        </Btn>
       </div>
       {account && (
         <div className="cloud-quota">

@@ -226,13 +226,8 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                   <QRCodeSVG value={fsReg.qrUrl} size={148} />
                 </div>
                 <div className="setting-desc" style={{ marginTop: 6 }}>{fsNote || "等待扫码…"}</div>
-                <button
-                  className="btn"
-                  style={{ marginTop: 6 }}
-                  onClick={() => void openExternal(fsReg.qrUrl).catch(() => undefined)}
-                >
-                  在本机？直接打开确认页（免扫码）
-                </button>
+                <Btn variant="outline" onClick={() => void openExternal(fsReg.qrUrl).catch(() => undefined)}>在本机？直接打开确认页（免扫码）
+                </Btn>
               </div>
               <Btn variant="outline" onClick={() => setFsReg(null)}>取消</Btn>
             </div>
@@ -275,19 +270,13 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
               </div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-primary" onClick={() => void startWxLogin()}>
-                {cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}
-              </button>
+              <Btn variant="solid" tone="brand" onClick={() => void startWxLogin()}>{cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}</Btn>
               {cfg?.channels.wechat?.botToken ? (
-                <button
-                  className="btn"
-                  onClick={() => {
+                <Btn variant="outline" onClick={() => {
                     wechatLoginCancel();
                     setWxQr(null);
-                  }}
-                >
-                  解除绑定
-                </button>
+                  }}>解除绑定
+                </Btn>
               ) : null}
             </div>
           </div>

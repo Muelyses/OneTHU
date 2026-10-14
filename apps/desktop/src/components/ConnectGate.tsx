@@ -208,9 +208,7 @@ export function ConnectGate({
           <div className="setting-desc" style={{ margin: 0 }}>
             用清华账号登录一次即可，不需要额外输入。
           </div>
-          <button className="btn primary" disabled={busy} onClick={() => void tuojLogin()}>
-            {busy ? "登录中…" : "用清华账号登录"}
-          </button>
+          <Btn variant="outline" disabled={busy} onClick={() => void tuojLogin()}>{busy ? "登录中…" : "用清华账号登录"}</Btn>
         </div>
       );
     }
@@ -229,12 +227,8 @@ export function ConnectGate({
             </div>
           ) : null}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button className="btn primary" disabled={busy} onClick={() => void cloudTokenFromWebview()}>
-              {busy ? "等待云盘页面…" : "在应用内连接云盘"}
-            </button>
-            <button className="btn" onClick={() => setManualOpen((v) => !v)}>
-              {manualOpen ? "收起手动填写" : "手动粘贴访问口令"}
-            </button>
+            <Btn variant="outline" disabled={busy} onClick={() => void cloudTokenFromWebview()}>{busy ? "等待云盘页面…" : "在应用内连接云盘"}</Btn>
+            <Btn variant="outline" onClick={() => setManualOpen((v) => !v)}>{manualOpen ? "收起手动填写" : "手动粘贴访问口令"}</Btn>
           </div>
           {manualOpen ? (
             <>
@@ -250,9 +244,7 @@ export function ConnectGate({
                   value={token}
                   onChange={(e) => setToken(e.target.value.trim())}
                 />
-                <button className="btn primary" disabled={!token || busy} onClick={() => void cloudConnect()}>
-                  {busy ? "连接中…" : "连接"}
-                </button>
+                <Btn variant="outline" disabled={!token || busy} onClick={() => void cloudConnect()}>{busy ? "连接中…" : "连接"}</Btn>
               </div>
             </>
           ) : null}
@@ -267,13 +259,7 @@ export function ConnectGate({
         </div>
         <Input placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）" value={mailAddr} onChange={(value) => setMailAddr(value.trim())} />
         <Input type="password" placeholder="客户端专用密码" value={mailCode} onChange={(value) => setMailCode(value)} />
-        <button
-          className="btn primary"
-          disabled={!/.+@.+/.test(mailAddr) || !mailCode || busy}
-          onClick={() => void mailConnect()}
-        >
-          {busy ? "连接中…" : "保存并验证"}
-        </button>
+        <Btn variant="outline" disabled={!/.+@.+/.test(mailAddr) || !mailCode || busy} onClick={() => void mailConnect()}>{busy ? "连接中…" : "保存并验证"}</Btn>
       </div>
     );
   })();

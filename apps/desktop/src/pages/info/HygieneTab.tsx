@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 卫生成绩 —— info.getDormScore（thu-info-app dormScore.tsx 移植）。
  * 家园网宿舍卫生检查成绩单（base64 图片，可缩放）；null = 暂无检查数据。
@@ -65,16 +66,13 @@ export function HygieneTab() {
       ) : image ? (
         <>
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
-            <button className="btn btn-ghost" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))} disabled={zoom <= 0.5}>
-              −
-            </button>
+            <Btn variant="ghost" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))} disabled={zoom <= 0.5}>−
+            </Btn>
             <span style={{ fontSize: 13, color: "var(--text-2)" }}>{Math.round(zoom * 100)}%</span>
-            <button className="btn btn-ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>
-              +
-            </button>
-            <button className="btn btn-ghost" onClick={() => setZoom(1)}>
-              重置
-            </button>
+            <Btn variant="ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>+
+            </Btn>
+            <Btn variant="ghost" onClick={() => setZoom(1)}>重置
+            </Btn>
           </div>
           <Card style={{ overflow: "auto", padding: 12 }}>
             <img

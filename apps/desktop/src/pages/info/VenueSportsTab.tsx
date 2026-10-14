@@ -639,13 +639,9 @@ export function VenueSportsTab({
               inputMode={twoFAType === "totp" ? "text" : "numeric"}
             />
             {twoFAType && twoFAType !== "totp" ? (
-              <button className="btn btn-ghost" onClick={() => void send2FA()} disabled={twoFABusy}>
-                {twoFABusy ? "发送中…" : twoFASent ? "重新发送" : "发送验证码"}
-              </button>
+              <Btn variant="ghost" onClick={() => void send2FA()} disabled={twoFABusy}>{twoFABusy ? "发送中…" : twoFASent ? "重新发送" : "发送验证码"}</Btn>
             ) : null}
-            <button className="btn btn-primary" onClick={() => void submit2FA()} disabled={twoFABusy || !twoFACode.trim()}>
-              {twoFABusy ? "验证中…" : "确认"}
-            </button>
+            <Btn variant="solid" tone="brand" onClick={() => void submit2FA()} disabled={twoFABusy || !twoFACode.trim()}>{twoFABusy ? "验证中…" : "确认"}</Btn>
           </div>
           {twoFAErr ? <div style={{ fontSize: 13, color: "#d33" }}>{twoFAErr}</div> : null}
         </Card>
@@ -662,9 +658,7 @@ export function VenueSportsTab({
           <div style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 12 }}>
             预约清华体育场馆（气膜馆、综体、游泳馆等 33 个场馆）复用 OneTHU 的统一身份登录，通常无需任何操作。仅当统一会话与本机凭证都不可用时，才需要点下方按钮在弹窗里认证一次。
           </div>
-          <button className="btn btn-primary" onClick={() => void doAuth()} disabled={authBusy}>
-            {authBusy ? "登录中…" : "重新登录体育系统"}
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => void doAuth()} disabled={authBusy}>{authBusy ? "登录中…" : "重新登录体育系统"}</Btn>
           {authMsg ? (
             /维护中/.test(authMsg)
               ? <VenueNote text={authMsg} onRetry={() => void doAuth()} />
@@ -680,9 +674,7 @@ export function VenueSportsTab({
       <SectionHead
         title="场馆与日期"
         aside={
-          <button className="btn btn-ghost" style={{ padding: "2px 10px" }} onClick={() => void doAuth()} disabled={authBusy}>
-            {authBusy ? "授权中…" : "重新授权"}
-          </button>
+          <Btn variant="ghost" onClick={() => void doAuth()} disabled={authBusy}>{authBusy ? "授权中…" : "重新授权"}</Btn>
         }
       />
       {sceneState === "error" ? <VenueNote text={sceneErr ?? ""} onRetry={() => void loadScenes()} /> : null}
@@ -718,19 +710,12 @@ export function VenueSportsTab({
           }}
           aria-label="预约日期"
         />
-        <button className="btn btn-ghost" onClick={() => setDate(todayStr())}>
-          今天
-        </button>
-        <button className="btn btn-ghost" onClick={() => setDate(todayStr(1))}>
-          明天
-        </button>
-        <button
-          className="btn btn-ghost"
-          disabled={sitesState === "loading" || !venue}
-          onClick={() => venue && void loadSites(venue.uuid, date, classEnum === "ROOM" ? room : building, devKind, classEnum, useType)}
-        >
-          刷新
-        </button>
+        <Btn variant="ghost" onClick={() => setDate(todayStr())}>今天
+        </Btn>
+        <Btn variant="ghost" onClick={() => setDate(todayStr(1))}>明天
+        </Btn>
+        <Btn variant="ghost" disabled={sitesState === "loading" || !venue} onClick={() => venue && void loadSites(venue.uuid, date, classEnum === "ROOM" ? room : building, devKind, classEnum, useType)}>刷新
+        </Btn>
       </div>
 
       <SectionHead title={`场次与场地 · ${venue?.sceneName ?? ""}`} aside={date} />
@@ -869,14 +854,8 @@ export function VenueSportsTab({
             <Btn variant="solid" tone="brand" onClick={goOfficialBooking}>
               在应用内打开官方预约页
             </Btn>
-            <button
-              className="btn btn-ghost"
-              style={{ marginLeft: 8 }}
-              title="应用内页面打不开时走系统浏览器（需在浏览器里登录一次）"
-              onClick={() => void openExternal(venueWebUrl(venue!.uuid))}
-            >
-              改用系统浏览器
-            </button>
+            <Btn variant="ghost" titleAttr="应用内页面打不开时走系统浏览器（需在浏览器里登录一次）" onClick={() => void openExternal(venueWebUrl(venue!.uuid))}>改用系统浏览器
+            </Btn>
             <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8, lineHeight: 1.6 }}>
               官方页面在 OneTHU 内以自己的窗口打开（安卓为全屏页面），登录态与刚才查询场馆时用的
               那一份相同，不需要重新登录；预约提交一律由你在官方页面上操作。
@@ -919,17 +898,11 @@ export function VenueSportsTab({
                   </div>
                 </div>
                 {resvUuid ? (
-                  <button
-                    className="btn btn-ghost"
-                    disabled={unsubbing !== null}
-                    onClick={() => {
+                  <Btn variant="ghost" disabled={unsubbing !== null} onClick={() => {
                       if (globalThis.confirm?.(`确定退订「${r.sceneName ?? ""}${r.siteName ?? ""} ${r.resvDate ?? ""}」？`)) {
                         void unsubscribe(resvUuid);
                       }
-                    }}
-                  >
-                    {unsubbing === resvUuid ? "退订中…" : "退订"}
-                  </button>
+                    }}>{unsubbing === resvUuid ? "退订中…" : "退订"}</Btn>
                 ) : null}
               </div>
             );

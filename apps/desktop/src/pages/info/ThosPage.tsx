@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 在线服务（THOS 服务大厅原生化，上游 thu-info-app 5774b4a9 移植）。
  *
@@ -338,9 +339,8 @@ export function ThosPage() {
         title="在线服务"
         meta={updated ? `更新于 ${new Date(updated).toLocaleTimeString()}` : undefined}
         actions={
-          <button className="btn btn-ghost" onClick={() => void load()} disabled={busy}>
-            刷新
-          </button>
+          <Btn variant="ghost" onClick={() => void load()} disabled={busy}>刷新
+          </Btn>
         }
       />
       {demo ? (

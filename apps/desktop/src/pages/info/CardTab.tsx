@@ -198,9 +198,8 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
               ))}
             </div>
             {err ? <div style={{ color: "#d33", fontSize: 12, marginBottom: 8 }}>{err}</div> : null}
-            <button className="btn btn-primary" style={{ width: "100%" }} disabled={!valid || busy} onClick={() => setStep("confirm")}>
-              下一步
-            </button>
+            <Btn variant="solid" tone="brand" disabled={!valid || busy} onClick={() => setStep("confirm")}>下一步
+            </Btn>
             {!valid ? <div style={{ fontSize: 11, opacity: 0.55, marginTop: 6 }}>{channel === "bank" ? "银行卡圈存最低 10 元；金额需 1 ~ 1000 元（最多两位小数）" : "金额需为 1 ~ 1000 元（最多两位小数）"}</div> : null}
           </>
         ) : null}
@@ -217,10 +216,8 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             </div>
             {err ? <div style={{ color: "#d33", fontSize: 12, marginBottom: 8 }}>{err}</div> : null}
             <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn" style={{ flex: 1 }} disabled={busy} onClick={() => setStep("form")}>返回</button>
-              <button className="btn btn-primary" style={{ flex: 2 }} disabled={busy} onClick={() => void submit()}>
-                {busy ? "下单中…" : "确认"}
-              </button>
+              <Btn variant="outline" disabled={busy} onClick={() => setStep("form")}>返回</Btn>
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void submit()}>{busy ? "下单中…" : "确认"}</Btn>
             </div>
           </>
         ) : null}
@@ -239,27 +236,17 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             {err ? <div style={{ color: "#d33", fontSize: 12, marginBottom: 8 }}>{err}</div> : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {channel === "alipay" && isAndroid ? (
-                <button
-                  className="btn btn-primary"
-                  onClick={async () => {
+                <Btn variant="solid" tone="brand" onClick={async () => {
                     const ok = await openAlipayDeepLink(webUrl);
                     if (!ok) setErr("未检测到支付宝 App，请用另一台手机扫码支付");
-                  }}
-                >
-                  调起支付宝 App 支付
-                </button>
+                  }}>调起支付宝 App 支付
+                </Btn>
               ) : null}
               {webUrl.startsWith("http") ? (
-                <button className="btn" onClick={() => void openExternal(webUrl)}>
-                  {channel === "wechat" && isAndroid ? "在浏览器打开（微信支付）" : "在浏览器打开收款页"}
-                </button>
+                <Btn variant="outline" onClick={() => void openExternal(webUrl)}>{channel === "wechat" && isAndroid ? "在浏览器打开（微信支付）" : "在浏览器打开收款页"}</Btn>
               ) : null}
-              <button
-                className={channel === "alipay" && isAndroid ? "btn" : "btn btn-primary"}
-                onClick={() => { onPaid(); close(); }}
-              >
-                我已完成支付，刷新余额
-              </button>
+              <Btn variant="outline" onClick={() => { onPaid(); close(); }}>我已完成支付，刷新余额
+              </Btn>
             </div>
           </>
         ) : null}
@@ -269,7 +256,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
             <div style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 10 }}>
               圈存请求已提交。资金到账以校园卡<b>余额 / 流水</b>为准；若未到账请稍后在「最近消费」中查看圈存记录。
             </div>
-            <button className="btn btn-primary" style={{ width: "100%" }} onClick={requestClose}>好的</button>
+            <Btn variant="solid" tone="brand" onClick={requestClose}>好的</Btn>
           </>
         ) : null}
       </div>
@@ -422,18 +409,9 @@ export function CardTab({ active = true }: { active?: boolean }) {
                 {data?.info.cardStatus ? ` · ${data.info.cardStatus}` : ""}
               </div>
             </div>
-            <button
-              className="btn"
-              style={{ marginLeft: "auto", height: 30 }}
-              disabled={state === "loading"}
-              title="重新拉取余额与流水"
-              onClick={() => void reload()}
-            >
-              {state === "loading" ? "刷新中…" : "刷新"}
-            </button>
-            <button className="btn btn-primary" style={{ height: 30 }} onClick={() => setRchOpen(true)}>
-              充值
-            </button>
+            <Btn variant="outline" disabled={state === "loading"} titleAttr="重新拉取余额与流水" onClick={() => void reload()}>{state === "loading" ? "刷新中…" : "刷新"}</Btn>
+            <Btn variant="solid" tone="brand" onClick={() => setRchOpen(true)}>充值
+            </Btn>
           </div>
           <div className="card-hero-meta">
             <span>卡号 {data?.info.cardId || "–"}</span>
@@ -480,9 +458,8 @@ export function CardTab({ active = true }: { active?: boolean }) {
                 ? `刷新失败，当前显示 ${updatedAt ? fmtAgo(updatedAt) : "上次"}的数据（${refreshError}）`
                 : `数据已超过 6 小时未更新（${updatedAt ? fmtAgo(updatedAt) : "未知时间"}），可能不是最新`}
             </span>
-            <button className="btn" style={{ height: 26, padding: "0 10px", fontSize: 12 }} onClick={() => void reload()}>
-              重新拉取
-            </button>
+            <Btn variant="outline" onClick={() => void reload()}>重新拉取
+            </Btn>
           </div>
         </Card>
       ) : null}

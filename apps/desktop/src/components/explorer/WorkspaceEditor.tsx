@@ -132,17 +132,12 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
             {free.map((t) => (
               <div key={t.id} style={row}>
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveTabTitle(t.page, t.params).label}</span>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() =>
+                <Btn variant="outline" onClick={() =>
                     live
                       ? setTabWorkspace(t.id, ws.id)
                       : addSavedWorkspaceTab(ws.id, { page: t.page, params: t.params, title: resolveTabTitle(t.page, t.params).label })
-                  }
-                >
-                  加入
-                </button>
+                  }>加入
+                </Btn>
               </div>
             ))}
           </>
@@ -150,7 +145,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
           <Btn variant="outline" onClick={closeWorkspaceEditor}>取消</Btn>
-          <button type="button" className="btn" style={{ borderColor: color, color }} onClick={save}>保存</button>
+          <Btn variant="outline" onClick={save}>保存</Btn>
         </div>
       </div>
     </div>,

@@ -1,3 +1,4 @@
+import { Btn } from "@onethu/gui";
 /**
  * 生活聚合页 —— 宿舍（家园网电费 + 清华水站订水）/ 洗衣机 / 卫生成绩 / 校园卡 /
  * 财务组（电子发票 · 银行代发 · 研究生收入）/ 校园网。
@@ -92,9 +93,8 @@ export function LifePage() {
         actions={
           <>
             <RootPageStar page="life" title="生活" />
-            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
-              管理栏目
-            </button>
+            <Btn variant="outline" onClick={() => setManageOpen(true)} titleAttr="栏目显隐与排序">管理栏目
+            </Btn>
           </>
         }
       />

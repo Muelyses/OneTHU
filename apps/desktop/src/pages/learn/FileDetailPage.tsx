@@ -77,20 +77,9 @@ export function FileDetailPage() {
               atom={{ kind: "file", key: enc(f.courseId, f.id, f.title, course?.name ?? "", data?.semester.id ?? "") }}
               title={f.title}
             />
-            <button
-              className="btn"
-              onClick={() => openFilePreview({ name: learnFileName(f.title || `课件 ${f.id}`, f.fileType), url: LEARN_FILE_DOWNLOAD(f.id) })}
-            >
-              预览
-            </button>
-            <button
-              className="btn btn-primary"
-              disabled={downloading}
-              onClick={() => void doDownload()}
-            >
-              <IconDownload width={14} height={14} />
-              {downloading ? "下载中…" : "下载"}
-            </button>
+            <Btn variant="outline" onClick={() => openFilePreview({ name: learnFileName(f.title || `课件 ${f.id}`, f.fileType), url: LEARN_FILE_DOWNLOAD(f.id) })}>预览
+            </Btn>
+            <Btn variant="solid" tone="brand" disabled={downloading} onClick={() => void doDownload()}><IconDownload width={14} height={14} />{downloading ? "下载中…" : "下载"}</Btn>
           </>
         }
       />

@@ -209,9 +209,7 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
       >
         <div className="ohf-head">
           <span className="ohf-title">{title}</span>
-          <button className="btn" onClick={onCancel} aria-label="取消编辑" type="button">
-            <IconX />
-          </button>
+          <Btn variant="outline" onClick={onCancel} aria-label="取消编辑"><IconX /></Btn>
         </div>
 
         <div className="ohf-stage">
@@ -237,13 +235,8 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
         </div>
 
         <div className="ohf-row">
-          <button
-            className="btn"
-            type="button"
-            onClick={() => setRotate((r) => ROTATIONS[(ROTATIONS.indexOf(r) + 1) % ROTATIONS.length] ?? 0)}
-          >
-            <IconRefresh /> 旋转 90°
-          </button>
+          <Btn variant="outline" onClick={() => setRotate((r) => ROTATIONS[(ROTATIONS.indexOf(r) + 1) % ROTATIONS.length] ?? 0)}><IconRefresh />旋转 90°
+          </Btn>
           <span>{note}</span>
         </div>
 
@@ -251,9 +244,7 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
           <Btn variant="outline" onClick={onCancel} disabled={busy}>
             取消
           </Btn>
-          <button className="btn-primary" type="button" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>
-            {busy ? "处理中…" : "应用"}
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>{busy ? "处理中…" : "应用"}</Btn>
         </div>
       </div>
     </div>,

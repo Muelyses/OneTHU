@@ -79,17 +79,13 @@ export function FormModalHost(): ReactNode {
         ))}
         <div className="plg-form-ops">
           <Btn variant="ghost" onClick={() => close(null)}>取消</Btn>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
+          <Btn variant="solid" tone="brand" onClick={() => {
               for (const f of fields) {
                 if (f.required && !String(draft[f.key] ?? "").trim()) return;
               }
               close(draft);
-            }}
-          >
-            提交
-          </button>
+            }}>提交
+          </Btn>
         </div>
       </div>
     </div>

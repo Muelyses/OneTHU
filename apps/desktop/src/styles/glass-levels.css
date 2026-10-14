@@ -74,16 +74,16 @@ html[data-glass="rich"][data-scheme="dark"] {
   --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.14);
 }
 html[data-glass="deep"] {
-  --surface: rgba(255, 255, 255, 0.74);
+  --surface: rgba(255, 255, 255, 0.20);
   --surface-2: rgba(255, 255, 255, 0.74);
   --surface-3: rgba(240, 240, 242, 0.74);
   --dsw-alias-bg-base: rgba(255, 255, 255, 0.74);
-  --glass-fill: rgba(255, 255, 255, 0.74);
+  --glass-fill: rgba(255, 255, 255, 0.20);
   --glass-fill-regular: rgba(255, 255, 255, 0.74);
   --glass-tint: rgba(255, 255, 255, 0.64);
   --glass-menu-fill: rgba(246, 247, 249, 0.74);
   --glass-card-fill: rgba(255, 255, 255, 0.74);
-  --glass-card-fill-2: rgba(255, 255, 255, 0.74);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.20);
   --glass-card-fill-3: rgba(240, 240, 242, 0.74);
   --glass-shadow: 0 12px 34px rgba(30, 33, 45, 0.16);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.74);

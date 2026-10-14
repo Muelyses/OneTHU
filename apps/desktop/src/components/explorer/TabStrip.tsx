@@ -1,4 +1,4 @@
-import { Input } from "@onethu/gui";
+import { Input, Text } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 顶栏标签条（dev-explorer 工作空间革命）：首页恒在第一（不可关闭、不可多开），
@@ -575,7 +575,7 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
   return createPortal(
     <div
       className="ws-create-mask"
-      style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.25)", display: "flex", alignItems: "center", justifyContent: "center" }}
+      style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-modal)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center" }}
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
@@ -583,11 +583,11 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
       <div
         role="dialog"
         aria-label="新建工作区"
-        style={{ background: "var(--dsw-alias-bg-base, #fff)", color: "var(--dsw-alias-label-primary, inherit)", borderRadius: 14, padding: 18, width: 320, boxShadow: "0 12px 32px rgba(0,0,0,.2)" }}
+        style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", padding: 18, width: 320, boxShadow: "var(--og-elev-menu)" }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 12 }}>新建工作区</div>
+        <Text as="div" weight="semibold">新建工作区</Text>
         <div style={{ width: "100%", marginBottom: 12 }}>{<Input autoFocus value={name} onChange={(value) => setName(value)} placeholder="工作区名字" />}</div>
-        <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>底板颜色</div>
+        <div style={{ marginBottom: 6 }}><Text slot="label" tone="faint">底板颜色</Text></div>
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           {WORKSPACE_COLORS.map((c) => (
             <button
@@ -596,11 +596,11 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
               aria-label={"颜色 " + c}
               aria-pressed={color === c}
               onClick={() => setColor(c)}
-              style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--dsw-alias-label-primary, #000)" : "1px solid transparent", background: c, cursor: "pointer" }}
+              style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--og-content-1)" : "1px solid transparent", background: c, cursor: "pointer" }}
             />
           ))}
         </div>
-        <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>logo</div>
+        <div style={{ marginBottom: 6 }}><Text slot="label" tone="faint">logo</Text></div>
         <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
           {WORKSPACE_ICONS.map((k) => {
             const G = WS_ICON_GLYPH[k] ?? IconFolder;
@@ -611,7 +611,7 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
                 aria-label={"logo " + k}
                 aria-pressed={icon === k}
                 onClick={() => setIcon(k)}
-                style={{ width: 30, height: 30, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, border: icon === k ? `2px solid ${color}` : "1px solid var(--dsw-alias-border-l2, #ddd)", background: "transparent", cursor: "pointer", color: "inherit" }}
+                style={{ width: 30, height: 30, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 8, border: icon === k ? `2px solid ${color}` : "1px solid var(--og-line-2)", background: "transparent", cursor: "pointer", color: "inherit" }}
               >
                 <G width={14} height={14} />
               </button>

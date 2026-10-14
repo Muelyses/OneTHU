@@ -204,7 +204,14 @@ function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeE
     if (!ind || !activeEl || !host) return;
     const hostRect = host.getBoundingClientRect();
     const rect = activeEl.getBoundingClientRect();
-    if (hostRect.width === 0) return;
+    if (hostRect.width === 0) {
+      /* 宿主处于 display:none（分节被设置页/详情页收起）→ 测不出几何。
+         2026-10-14 用户点名「滑动选择条偏移」：此前直接 return，留下上一次的
+         transform —— 回到可见态也不重算，指示条飞到别处。这里把残留几何清掉，
+         并靠下面的 ResizeObserver 在宿主重新可见（尺寸 0→>0）时重测。 */
+      ind.style.transform = "translateX(0) scaleX(0)";
+      return;
+    }
     const x = rect.left - hostRect.left + host.scrollLeft;
     const scale = rect.width / hostRect.width;
     ind.style.transformOrigin = "left center";
@@ -217,6 +224,16 @@ function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeE
     const onResize = (): void => apply();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+  }, [apply]);
+  /* 宿主尺寸变化（含 display:none→可见、label 变字号、条目增删）→ 自动重测。
+     之前只有 window resize —— 隐藏分节切回可见（尺寸 0→>0）不触发 window resize，
+     指示条就一直停在旧几何上（清华 GitLab 实测）。 */
+  useEffect(() => {
+    const host = activeEl?.parentElement;
+    if (!host || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => apply());
+    ro.observe(host);
+    return () => ro.disconnect();
   }, [apply]);
 }
 

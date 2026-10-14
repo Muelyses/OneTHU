@@ -776,7 +776,7 @@ export function ExtHwSettingsSection(): ReactNode {
                     <TextArea mono placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(value) => setClassicCookie(value)} />
                     <TextArea mono placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(value) => setTycheCookie(value)} />
                     <TextArea mono placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(value) => setDsaCookie(value)} />
-                    <OGText as="div" slot="label" tone="faint" style={{ marginTop: 0 }}>粘贴后点击上方「保存」生效。</OGText>
+                    <OGText as="div" slot="label" tone="faint">粘贴后点击上方「保存」生效。</OGText>
                   </div>
                 ) : null}
               </div>

@@ -1,4 +1,3 @@
-import { Btn } from "@onethu/gui";
 /** 常驻对话面板（宿主胶水，R2/R4/R5 的 dock 面）：
  *  发现 activate 返回 dock:true 命令的已启用 rust 插件 → 显示常驻气泡；
  *  对话/会话/导出/用量全部走该插件的 JSON-RPC run 命令（结构化契约见
@@ -15,6 +14,12 @@ import { Btn } from "@onethu/gui";
  *  - 单击 → 展开面板；面板底部默认只留一行入口按钮「点击输入，长按说话」，
  *    点它才展开原来的文本输入框（长按它同样进语音；桌面无原生识别时明确降级提示）；
  *  - 会话切换不清空累计用量（总量跨会话持久，仅本会话计数归零）。
+ *
+ *  OneGUI 收编（2026-10-14，oh.dock scope）：外观全部来自 @onethu/gui ——
+ *  面板壳挂 data-og-scope="oh.dock"（dockScope.ts 登记面/线档，StyleDirector 调度），
+ *  面板内组件直接用 OG 组件（Btn/IconBtn/Chip/AccordionItem/Banner/Row/Spinner/Text）；
+ *  旧 global.css 的 .dock-* 独占段整体退役，语音链（波纹引擎/雾状字幕/--dock-cancel
+ *  取消渐进/冻结页）、.dock-md 排印豁免（GlobalOrb 等共用）、底栏共享兜底三段保留。
  */
 import {
   memo, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore,
@@ -24,6 +29,10 @@ import {
 import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
 import remarkGfm from "remark-gfm";
+import {
+  AccordionItem, Banner, Btn, Chip, IconBtn, Row, Spinner, Text,
+} from "@onethu/gui";
+import "./dockScope.js"; // OH 对话坞专属档位登记（scope: oh.dock，dockScope.ts，受 OneGUI StyleDirector 调度）
 import { callRust, notifyRust } from "./rust.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
 import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
@@ -50,7 +59,297 @@ import { openExternal } from "../pages/info/openExternal.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+/* ══════════ OneGUI 收编 · 外观常量（scope: oh.dock，见 dockScope.ts） ══════════
+ *  颜色/字阶/描边/阴影零字面：全部引用 --og-* 语义令牌（oh.dock scope 把面/线档抬到
+ *  浮体档）；这些对象都经模块常量/纯函数持有，不落在 JSX 的 style={{…}} 字面里（R2 棘轮）。
+ *  几何常量属回落行为几何（胶囊量不到时的居中底板与尺寸口径），沿用 GlobalOrb 的
+ *  BALL_VISUAL 判例：行为几何走 JS 常量；动效时长：旧 keyframes 无令牌档的毫秒保持
+ *  JS 常量（一一对齐旧值），曲线走 --og-ease-*，短时长走 --og-dur-* 档。 */
 const OPEN_KEY = "onethu.chatdock.open";
+
+/** 旧 dock-panel-in / dock-panel-slide 的毫秒（判例：无 --og-dur 档的旧 keyframes 时长保持常量） */
+const PANEL_IN_MS = 380;
+const PANEL_SLIDE_MS = 420;
+
+/** 面板壳材质 = .og-panel 浮层同款取值（overlay 面 + 顶沿光 + 强线 + 投影；scope 已把 line-1 抬到 line-2） */
+const DOCK_PANEL_MAT: CSSProperties = {
+  background: "var(--og-surface-overlay)",
+  backgroundImage: "var(--og-overlay-tint)", // 玻璃的顶沿光（旧内描边上沿高光同位，属 OG 浮层族七件套）
+  border: "1px solid var(--og-line-1)", // oh.dock scope: line-1→line-2（浮体边，等旧 70% inset 环）
+  boxShadow: "var(--og-elev-menu)",
+  color: "var(--og-content-1)",
+  WebkitBackdropFilter: "var(--og-overlay-blur)",
+  backdropFilter: "var(--og-overlay-blur)",
+};
+/** 安卓 WebView 降级（旧 html.is-phone .dock-panel）：不再叠 backdrop-filter（滚动掉帧红线），整块走实档面 */
+const DOCK_PANEL_MAT_PHONE: CSSProperties = {
+  background: "var(--og-surface-1)",
+  backgroundImage: "none",
+  border: "1px solid var(--og-line-1)",
+  boxShadow: "var(--og-elev-2)",
+  color: "var(--og-content-1)",
+};
+
+/** 回落底板的公共几何（fixed 浮窗、列向排布、命中区＝面板矩形本身） */
+const PANEL_GEO_COMMON: CSSProperties = {
+  position: "fixed",
+  zIndex: 9992,
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
+  pointerEvents: "auto",
+};
+/** 桌面回落底板：胶囊量不到时的居中形态（原 .dock-panel 基块几何；62vh/420px 是用户拍的默认高——行为档案） */
+const PANEL_GEO_FALLBACK: CSSProperties = {
+  ...PANEL_GEO_COMMON,
+  left: "50%",
+  bottom: "calc(18px + env(safe-area-inset-bottom, 0px))",
+  width: "86vw",
+  height: "62vh",
+  minHeight: 420,
+  maxHeight: "calc(100vh - 40px)", // 旧 36 → --og-space-8(40) 档（只防出屏的兜底档）
+};
+/** 手机回落底板：满水平轴半屏抽屉（原 explorer-oh html.is-phone .dock-panel 的几何并入） */
+const PANEL_GEO_FALLBACK_PHONE: CSSProperties = {
+  ...PANEL_GEO_COMMON,
+  left: 6,
+  right: 6,
+  bottom: "calc(18px + env(safe-area-inset-bottom, 0px))",
+  width: "auto",
+  height: "60vh",
+  minHeight: 0,
+  maxHeight: "94vh",
+};
+
+/** 面板过场（旧 dock-panel-in/out 首尾帧平移）：grow 路径的形态动画仍由 explorer-oh.css 契约承担 */
+const TR_PANEL_IN = `opacity ${PANEL_IN_MS}ms var(--og-ease-decelerate), transform ${PANEL_IN_MS}ms var(--og-ease-decelerate), border-radius ${PANEL_IN_MS}ms var(--og-ease-decelerate)`;
+const TR_PANEL_OUT = `opacity var(--og-dur-3) var(--og-ease-accelerate), transform var(--og-dur-3) var(--og-ease-accelerate), border-radius var(--og-dur-3) var(--og-ease-accelerate)`;
+/** 入场相位（原 keyframes from 帧：opacity .25 / 上移 14px / 圆角满——命中区从首帧就是最终矩形，只动这三样；
+ *  圆角用四角 longhand（不与面板壳的 borderRadius 组合搭 shorthand——React 警告规范） */
+const PANEL_IN_PHASE = (phone: boolean): CSSProperties => ({
+  opacity: 0.25,
+  transform: phone ? "translateY(14px)" : "translateX(-50%) translateY(14px)",
+  borderTopLeftRadius: "var(--og-radius-full)",
+  borderTopRightRadius: "var(--og-radius-full)",
+  borderBottomLeftRadius: "var(--og-radius-full)",
+  borderBottomRightRadius: "var(--og-radius-full)",
+});
+/** 退场相位（原 dock-panel-out to 帧：缩回胶囊方向再沉一点） */
+const PANEL_OUT_PHASE = (phone: boolean): CSSProperties => ({
+  opacity: 0,
+  transform: phone ? "translateY(10px)" : "translateX(-50%) translateY(10px)",
+  borderTopLeftRadius: "var(--og-radius-full)",
+  borderTopRightRadius: "var(--og-radius-full)",
+  borderBottomLeftRadius: "var(--og-radius-full)",
+  borderBottomRightRadius: "var(--og-radius-full)",
+});
+
+/** 面板壳的材质 + 圆角 + 过场合成（phone=安卓降级 / grew=胶囊生长契约生效 / phase=过场相位）。
+ *  圆角口径：顶角 --og-radius-xl（OneGUI 面板档，与 Modal/Sheet 同档；旧桌面 24 → 档位公差）；
+ *  底角：grow 交给 explorer-oh 契约（.ohx-panel-grow 的 14px 原样），回落自己给（手机 sheet 平底）。 */
+const panelMat = (phone: boolean, grew: boolean, phase: "in" | "base" | "out"): CSSProperties => ({
+  ...(phone ? DOCK_PANEL_MAT_PHONE : DOCK_PANEL_MAT),
+  borderTopLeftRadius: "var(--og-radius-xl)",
+  borderTopRightRadius: "var(--og-radius-xl)",
+  ...(grew ? {} : (phone ? {} : {
+    borderBottomLeftRadius: "var(--og-radius-xl)",
+    borderBottomRightRadius: "var(--og-radius-xl)",
+  })),
+  ...(grew ? {} : { transformOrigin: "50% 100%" }),
+  ...(grew ? {} : {
+    transition: phase === "out" ? TR_PANEL_OUT : TR_PANEL_IN,
+    ...(phase === "out" ? PANEL_OUT_PHASE(phone) : phase === "in" ? PANEL_IN_PHASE(phone) : null),
+  }),
+});
+
+/** 用户气泡材质（旧 .dock-msg + .dock-msg-user；accent 柔面 + 柔线描边 + 说话侧 6px 尾角=--og-radius-sm）。
+ *  正文走密度档：桌面 --text-base / 手机 --text-sm（与保留段 .dock-md 排印族同源，正文字号一致性优先）。 */
+const matBubbleUser = (phone: boolean): CSSProperties => ({
+  alignSelf: "flex-end",
+  maxWidth: "84%",
+  padding: "var(--og-space-2) var(--og-space-3)",
+  fontSize: phone ? "var(--text-sm)" : "var(--text-base, var(--md-sys-typescale-body))",
+  lineHeight: 1.5,
+  whiteSpace: "pre-wrap",
+  overflowWrap: "break-word",
+  color: "var(--og-content-1)",
+  background: phone
+    ? "linear-gradient(180deg, color-mix(in srgb, var(--og-accent-soft) 76%, transparent), color-mix(in srgb, var(--og-accent-soft) 58%, transparent))"
+    : "color-mix(in srgb, var(--og-accent-soft) 62%, transparent)",
+  border: "0",
+  WebkitBackdropFilter: phone ? "none" : "var(--og-surface-blur)",
+  backdropFilter: phone ? "none" : "var(--og-surface-blur)",
+  borderRadius: "var(--og-radius-xl) var(--og-radius-xl) var(--og-radius-sm) var(--og-radius-xl)",
+  boxShadow: "inset 0 0 0 1px var(--og-accent-soft-line), var(--og-elev-2)",
+  transition: `opacity var(--og-dur-2) var(--og-ease-spring), transform var(--og-dur-2) var(--og-ease-spring)`,
+});
+
+/** OH 气泡的壳与正文容器（旧 .dock-msg-assistant 壳 + 内层 .dock-msg 的 padding/形态）。
+ *  结构不变：壳只出玻璃材质，正文 padding/字阶挂内层 .dock-msg（类名保留做排印锚点）。 */
+const matBubbleOh = (phone: boolean): CSSProperties => ({
+  alignSelf: "flex-start",
+  background: phone
+    ? "linear-gradient(180deg, color-mix(in srgb, var(--og-surface-2) 80%, transparent), color-mix(in srgb, var(--og-surface-2) 60%, transparent))"
+    : "color-mix(in srgb, var(--og-surface-2) 62%, transparent)",
+  border: "0",
+  WebkitBackdropFilter: phone ? "none" : "var(--og-surface-blur)",
+  backdropFilter: phone ? "none" : "var(--og-surface-blur)",
+  borderRadius: "var(--og-radius-xl) var(--og-radius-xl) var(--og-radius-xl) var(--og-radius-sm)",
+  color: "var(--og-content-1)",
+  boxShadow: "inset 0 0 0 1px var(--og-line-1), var(--og-elev-2)",
+  transition: `opacity var(--og-dur-2) var(--og-ease-spring), transform var(--og-dur-2) var(--og-ease-spring)`,
+});
+/** 内层正文容器（旧 .dock-msg 在 OH 气泡里的 padding/字阶/形态；背景由壳出） */
+const matBubbleOhBody = (phone: boolean): CSSProperties => ({
+  maxWidth: "84%",
+  padding: "var(--og-space-2) var(--og-space-3)",
+  fontSize: phone ? "var(--text-sm)" : "var(--text-base, var(--md-sys-typescale-body))",
+  lineHeight: 1.5,
+  whiteSpace: "pre-wrap",
+  overflowWrap: "break-word",
+});
+
+/** 最新一条的挂载相位（旧 @keyframes dock-msg-pop from 帧：opacity 0 / 上移 6px / scale .94） */
+const MSG_FROM: CSSProperties = { opacity: 0, transform: "translateY(6px) scale(0.94)" };
+
+/** 消息列容器（旧 .dock-msgs）：布局/间距走 --og-space-*；手机档收紧（原 html.is-phone 两档） */
+const matMsgs = (phone: boolean): CSSProperties => ({
+  flex: 1,
+  overflowY: "auto",
+  touchAction: "pan-y",
+  overscrollBehavior: "contain",
+  WebkitOverflowScrolling: "touch",
+  display: "flex",
+  flexDirection: "column",
+  padding: phone
+    ? "var(--og-space-3) var(--og-space-3) var(--og-space-2)"
+    : "var(--og-space-4) var(--og-space-4) var(--og-space-2)",
+  gap: phone ? "var(--og-space-2)" : "var(--og-space-3)",
+});
+
+/** 开场空态（旧 .dock-empty，历史会话里也复用这一份） */
+const matEmpty: CSSProperties = {
+  margin: "auto",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "stretch",
+  justifyContent: "center",
+  gap: "var(--og-space-6)",
+  padding: "var(--og-space-2) var(--og-space-3)",
+  textAlign: "left",
+  minHeight: "100%",
+};
+/** 开场三行大字的行/字（旧 .dock-hero/.dock-hero-line/.dock-hero-ch；逐字坠落相位由 useMountPhase 驱动） */
+const MAT_HERO: CSSProperties = {
+  display: "flex", flexDirection: "column", alignItems: "flex-start",
+  gap: "var(--og-space-2)",
+};
+const MAT_HERO_LINE: CSSProperties = { display: "flex" };
+const MAT_HERO_CH: CSSProperties = {
+  fontSize: "var(--og-text-title)", // 旧 22px → OneGUI 标题档 20（档位公差）
+  fontWeight: 700,
+  letterSpacing: "0.04em",
+  color: "var(--og-content-1)",
+  transition: `opacity ${PANEL_SLIDE_MS}ms var(--og-ease-spring), transform ${PANEL_SLIDE_MS}ms var(--og-ease-spring)`,
+};
+const MAT_HERO_CH_FROM: CSSProperties = { opacity: 0, transform: "translateY(-34px) scale(0.9)" };
+/** 建议芯片容器（旧 .dock-empty-chips；芯片本体走 OG Chip） */
+const matEmptyChips = (settled: boolean): CSSProperties => ({
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "flex-start",
+  gap: "var(--og-space-2)",
+  maxWidth: "var(--og-ctl-modal-sm)", // 旧 320px 画布宽度档
+  transition: `opacity var(--og-dur-3) var(--og-ease-standard)`,
+  transitionDelay: "1850ms", // 旧 dock-chips-in 1.85s 延迟（大字落定后浮现）
+  opacity: settled ? 1 : 0,
+});
+/** 附件窄屏的图片瓦片与占位（旧 .dock-imgs/.dock-img/.dock-img-miss） */
+const MAT_IMGS: CSSProperties = {
+  display: "flex", flexWrap: "wrap", gap: "var(--og-space-2)",
+  marginBottom: "var(--og-space-1)",
+};
+const MAT_IMG_TILE: CSSProperties = {
+  padding: 0, lineHeight: 0, overflow: "hidden", cursor: "zoom-in",
+  border: "1px solid var(--og-line-1)", borderRadius: "var(--og-radius-lg)", background: "var(--og-surface-1)",
+};
+const MAT_IMG_TILE_IMG: CSSProperties = {
+  display: "block", width: "auto", height: "auto",
+  maxWidth: "min(240px, 60vw)", maxHeight: 200, objectFit: "cover",
+};
+const MAT_IMG_MISS: CSSProperties = { color: "var(--og-content-3)", fontSize: "var(--og-text-micro)" };
+/** 头部行与两侧（旧 .dock-head/.dock-title/.dock-ops） */
+const MAT_HEAD: CSSProperties = {
+  display: "flex", alignItems: "center", justifyContent: "space-between",
+  gap: "var(--og-space-2)",
+  padding: "var(--og-space-3) var(--og-space-3) var(--og-space-3) var(--og-space-4)",
+  flexWrap: "nowrap",
+};
+const MAT_TITLE: CSSProperties = { display: "inline-flex", alignItems: "center", gap: "var(--og-space-2)" };
+const matOps: CSSProperties = {
+  display: "flex", gap: "var(--og-space-1)", flexWrap: "nowrap", justifyContent: "flex-end", flexShrink: 0,
+};
+/** 消息操作行（旧 .dock-msg-ops：朗读键所在行） */
+const MAT_MSG_OPS: CSSProperties = {
+  display: "flex", gap: "var(--og-space-2)", marginTop: "var(--og-space-1)",
+  // 旧 hover 才浮现的 50% 呼吸收编后不可行（inline 无法 :hover）：常显 ghost 图标钮，出声态由 is-on 提亮
+  opacity: 0.72,
+};
+/** 思考链正文的多行排版（旧 .dock-think-body 的 pre-wrap/字断/滚动上限） */
+const MAT_PRE: CSSProperties = {
+  whiteSpace: "pre-wrap", wordBreak: "break-word", maxWidth: "100%",
+  maxHeight: 220, overflowY: "auto",
+};
+/** 流式状态行（旧 .dock-thinking：思考提示 + 号角） */
+const MAT_INLINE_ROW: CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "var(--og-space-2)",
+};
+/** 历史会话手写浮层（面板族的「手写 Sheet 模式」：锚在面板内，不走 portal——外点收窗守卫无需改动 */
+const matHistorySheet = (settled: boolean): CSSProperties => ({
+  position: "absolute",
+  inset: "44px 0 64px 0",
+  zIndex: 1,
+  background: "var(--og-surface-overlay)",
+  backgroundImage: "var(--og-overlay-tint)",
+  border: "1px solid var(--og-line-1)",
+  borderRadius: "var(--og-radius-lg)",
+  boxShadow: "var(--og-elev-menu)",
+  WebkitBackdropFilter: "var(--og-overlay-blur)",
+  backdropFilter: "var(--og-overlay-blur)",
+  display: "flex", flexDirection: "column",
+  overflowY: "auto",
+  padding: "var(--og-space-2) var(--og-space-3)",
+  gap: "var(--og-space-1)",
+  transition: `opacity var(--og-dur-2) var(--og-ease-standard), transform var(--og-dur-2) var(--og-ease-standard)`,
+  ...(settled ? {} : { opacity: 0, transform: "translateY(4px)" }),
+});
+const MAT_HIST_HEAD: CSSProperties = {
+  display: "flex", alignItems: "center", justifyContent: "space-between",
+  padding: "var(--og-space-1) var(--og-space-1) var(--og-space-2)",
+};
+
+/** 挂载相位（ohOrb settled 判例）：首帧落 from 值，双 rAF 后翻 true → transition 滑回基态。
+ *  旧 keyframes 是全局 <style> 的挂载动画；transition 没有挂载帧，靠这个相位补同一拍。
+ *  on=false 复位（长命组件的每帧重演：面板每次打开都要重放入场）；缺省 on=true =
+ *  短命子组件的挂载一次（翻牌后不再回退——历史气泡不闪帧）。 */
+function useMountPhase(on = true): boolean {
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    if (!on) {
+      setSettled(false);
+      return;
+    }
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setSettled(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [on]);
+  return settled;
+}
 
 /* 平台判定：安卓才有「显示在其他应用上层」这道系统权限窗。
    桌面端现在 overlayDesktop 还是骨架（supported=false）→ 按钮本就不渲染；
@@ -320,7 +619,7 @@ function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
       alive = false;
     };
   }, [src, direct]);
-  if (!url) return <span className="dock-img-miss">{alt || "图片（没能读出来）"}</span>;
+  if (!url) return <span className="dock-img-miss" style={MAT_IMG_MISS}>{alt || "图片（没能读出来）"}</span>;
   return (
     <img
       {...rest}
@@ -359,26 +658,25 @@ function mergeHydrated(view: ViewMsg[], cur: ViewMsg[]): ViewMsg[] {
   return tail.length > 0 ? [...view, ...tail] : view;
 }
 
-/** 可折叠链块：思考过程 / 工具调用（流式期展开，落定折叠，随时展开回看） */
+/** 可折叠链块：思考过程 / 工具调用（流式期展开，落定折叠，随时展开回看）。
+ *  OneGUI 收编：直接走 OG AccordionItem（og-accordion-head/body 五件套出外观与 a11y），
+ *  旧 .dock-think 手写抽屉与 plg-caret 箭头退役。 */
 function ChainBlock({ label, lines, defaultOpen = false }: { label: string; lines: string[]; defaultOpen?: boolean }): ReactNode {
   const [open, setOpen] = useState(defaultOpen);
   if (lines.length === 0) return null;
   const total = lines.reduce((n, l) => n + l.length, 0);
   return (
-    <div className="dock-think">
-      <button className="dock-think-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        <span className="dock-think-label">{label}</span>
-        <span className="dock-think-meta">{open ? "点击收起" : `${lines.length} 条 · ${total} 字`}</span>
-        <i className={"plg-caret" + (open ? " is-open" : "")} />
-      </button>
-      {open ? (
-        <div className="dock-think-body">
-          {lines.map((l, i) => (
-            <div key={i}>{l}</div>
-          ))}
-        </div>
-      ) : null}
-    </div>
+    <AccordionItem
+      id={label}
+      title={label}
+      sub={open ? "点击收起" : `${lines.length} 条 · ${total} 字`}
+      open={open}
+      onToggle={() => setOpen((o) => !o)}
+    >
+      {lines.map((l, i) => (
+        <div key={i}>{l}</div>
+      ))}
+    </AccordionItem>
   );
 }
 interface UsageInfo {
@@ -444,110 +742,184 @@ const HERO_CHARS: Array<Array<{ ch: string; delay: number }>> = (() => {
 
 const SUGGESTIONS = ["明天图书馆哪有空座？", "这周考试安排", "卡里还有多少钱", "明天下午有什么日程"];
 
-const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
+/** 开场逐字下落的三行大字（旧 dock-hero-drop 平移：两帧 transition + transitionDelay 分档；
+ *  模糊帧没有令牌档省略——移动+回弹节奏保留）。 */
+function DockHero(): ReactNode {
+  const settled = useMountPhase();
   return (
-    <div className="dock-msgs" ref={p.scrollRef} onClick={p.onMsgsClick}>
+    <div className="dock-hero" style={MAT_HERO} aria-label="你好！我是小OH，有什么能帮你的吗？">
+      {HERO_CHARS.map((line, i) => (
+        <div className="dock-hero-line" style={MAT_HERO_LINE} key={i}>
+          {line.map((c, j) => (
+            <span
+              className="dock-hero-ch"
+              key={j}
+              style={{ transitionDelay: `${c.delay}s`, ...(settled ? MAT_HERO_CH : MAT_HERO_CH_FROM) }}
+            >{c.ch}</span>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** 建议指令条（旧 dock-chips-in：大字落定后浮现；芯片本体直接走 OG Chip——hover/按压状态层由出） */
+function DockSuggestedChips({ onPick }: { onPick: (t: string) => void }): ReactNode {
+  const settled = useMountPhase();
+  return (
+    <div className="dock-empty-chips" style={matEmptyChips(settled)}>
+      {SUGGESTIONS.map((s) => (
+        <Chip key={s} size="sm" onClick={() => onPick(s)}>{s}</Chip>
+      ))}
+    </div>
+  );
+}
+
+/** 单条气泡（OneGUI 收编：材质走 --og-*；最新一条走旧 msg-pop 时间轴的相位直译——历史不动画）。 */
+function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak }: {
+  m: ViewMsg;
+  isNew: boolean;
+  ttsOk: boolean;
+  autoSpeak: boolean;
+  speakingText: string | null;
+  onSpeak: (t: string) => void;
+}): ReactNode {
+  const settled = useMountPhase();
+  const phone = isPhoneNow();
+  const mat = m.role === "user" ? matBubbleUser(phone) : matBubbleOh(phone);
+  if (m.role === "assistant") {
+    return (
+      <div
+        className={"dock-msg-assistant" + (isNew ? " is-new" : "")}
+        style={{ ...mat, ...(isNew && !settled ? MSG_FROM : null) }}
+      >
+        {m.meta?.think ? <ChainBlock label="思考过程" lines={[m.meta.think]} /> : null}
+        {m.meta?.trace?.length ? <ChainBlock label="工具调用" lines={m.meta.trace} /> : null}
+        {/* 正文容器：内层 .dock-msg（padding/字阶/形态常量）+ .dock-md（排印豁免保留段，GlobalOrb 同用） */}
+        <div className="dock-msg dock-md" style={matBubbleOhBody(phone)}>
+          <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{m.text}</Markdown>
+        </div>
+        {/* 需求 4：朗读这一条（手动＝明确意图，无视静音开关；再点一次＝停）。OneGUI 收编 → IconBtn，
+            出声态 is-on 由 global.css 保留段接线（Icons.tsx 的 IconSpeak 两道声波呼吸，仓共享件） */}
+        {ttsOk ? (
+          <div className="dock-msg-ops" style={MAT_MSG_OPS}>
+            <IconBtn
+              round
+              label={speakingText === m.text ? "停止朗读" : "朗读这一条"}
+              titleAttr={speakingText === m.text
+                ? "停止朗读"
+                : autoSpeak ? "朗读这一条（已开自动朗读）" : "朗读这一条（当前静音，点它就念）"}
+              variant="ghost"
+              size="sm"
+              tone={speakingText === m.text ? "brand" : "default"}
+              icon={<IconSpeak width={15} height={15} />}
+              className={speakingText === m.text ? "is-on" : undefined}
+              aria-pressed={speakingText === m.text}
+              onClick={() => onSpeak(m.text)}
+            />
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+  return (
+    <div
+      className={"dock-msg dock-msg-user" + (isNew ? " is-new" : "")}
+      style={{ ...mat, ...(isNew && !settled ? MSG_FROM : null) }}
+    >
+      {m.images && m.images.length > 0 ? (
+        <div className="dock-imgs" style={MAT_IMGS}>
+          {m.images.map((im, j) => (
+            <button
+              key={j}
+              className="dock-img og-interactive"
+              style={MAT_IMG_TILE}
+              title={`${im.name}（点开看大图）`}
+              aria-label={`查看图片 ${im.name}`}
+              onClick={() => {
+                openImageViewer(im.src, im.name);
+              }}
+            >
+              <img src={im.src} alt={im.name} style={MAT_IMG_TILE_IMG} />
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {m.text}
+    </div>
+  );
+}
+
+const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
+  const phone = isPhoneNow();
+  return (
+    <div className="dock-msgs" ref={p.scrollRef} onClick={p.onMsgsClick} style={matMsgs(phone)}>
       {p.msgs.length === 0 && p.stream == null ? (
-        <div className="dock-empty">
+        <div className="dock-empty" style={matEmpty}>
           {/* 新会话开场：左对齐、逐字下落的三行大字（每次新建对话重挂载即重演） */}
-          <div className="dock-hero" aria-label="你好！我是小OH，有什么能帮你的吗？">
-            {HERO_CHARS.map((line, i) => (
-              <div className="dock-hero-line" key={i}>
-                {line.map((c, j) => (
-                  <span className="dock-hero-ch" style={{ animationDelay: `${c.delay}s` }} key={j}>{c.ch}</span>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="dock-empty-chips">
-            {SUGGESTIONS.map((s) => (
-              <button key={s} className="dock-chip" onClick={() => p.onPick(s)}>{s}</button>
-            ))}
-          </div>
+          <DockHero />
+          <DockSuggestedChips onPick={p.onPick} />
         </div>
       ) : null}
       {p.msgs.map((m, i) => {
-        /* 气泡弹入只给最新一条（历史不动画）：最后一条挂 .is-new，CSS 里配 --ease-spring 的 pop */
+        /* 气泡弹入只给最新一条（历史不动画）：最后一条挂 .is-new，相位过渡对齐旧 --ease-spring pop */
         const isNew = i === p.msgs.length - 1;
-        return m.role === "assistant" ? (
-          <div key={i} className={"dock-msg-assistant" + (isNew ? " is-new" : "")}>
-            {m.meta?.think ? <ChainBlock label="思考过程" lines={[m.meta.think]} /> : null}
-            {m.meta?.trace?.length ? <ChainBlock label="工具调用" lines={m.meta.trace} /> : null}
-            <div className="dock-msg dock-md">
-              <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{m.text}</Markdown>
-            </div>
-            {/* 需求 4：朗读这一条（手动＝明确意图，无视静音开关；再点一次＝停） */}
-            {p.ttsOk ? (
-              <div className="dock-msg-ops">
-                <button
-                  className={"dock-speak" + (p.speakingText === m.text ? " is-on" : "")}
-                  onClick={() => p.onSpeak(m.text)}
-                  title={
-                    p.speakingText === m.text ? "停止朗读"
-                      : p.autoSpeak ? "朗读这一条（已开自动朗读）" : "朗读这一条（当前静音，点它就念）"
-                  }
-                  aria-label={p.speakingText === m.text ? "停止朗读" : "朗读这一条"}
-                  aria-pressed={p.speakingText === m.text}
-                >
-                  <IconSpeak width={15} height={15} />
-                </button>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <div key={i} className={"dock-msg dock-msg-user" + (isNew ? " is-new" : "")}>
-            {m.images && m.images.length > 0 ? (
-              <div className="dock-imgs">
-                {m.images.map((im, j) => (
-                  <button
-                    key={j}
-                    className="dock-img"
-                    title={`${im.name}（点开看大图）`}
-                    aria-label={`查看图片 ${im.name}`}
-                    onClick={() => {
-                      openImageViewer(im.src, im.name);
-                    }}
-                  >
-                    <img src={im.src} alt={im.name} />
-                  </button>
-                ))}
-              </div>
-            ) : null}
-            {m.text}
-          </div>
+        return (
+          <DockBubble
+            key={i}
+            m={m}
+            isNew={isNew}
+            ttsOk={p.ttsOk}
+            autoSpeak={p.autoSpeak}
+            speakingText={p.speakingText}
+            onSpeak={p.onSpeak}
+          />
         );
       })}
       {p.trace.length > 0 ? <ChainBlock label="工具调用" lines={p.trace} defaultOpen /> : null}
       {p.think ? (
-        <div className="dock-think">
-          <button className="dock-think-head" onClick={p.onToggleThink} aria-expanded={p.thinkOpen}>
-            <span className="dock-think-label">思考过程</span>
-            <span className="dock-think-meta">{p.thinkOpen ? "点击收起" : `${p.think.length} 字 · 已折叠`}</span>
-            <i className={"plg-caret" + (p.thinkOpen ? " is-open" : "")} />
-          </button>
-          {p.thinkOpen ? <div className="dock-think-body">{p.think}</div> : null}
-        </div>
+        /* 流式思考链（旧 .dock-think 手写抽屉收编 → OG AccordionItem） */
+        <AccordionItem
+          id="think"
+          title="思考过程"
+          sub={p.thinkOpen ? "点击收起" : `${p.think.length} 字 · 已折叠`}
+          open={p.thinkOpen}
+          onToggle={p.onToggleThink}
+        >
+          <div style={MAT_PRE}>{p.think}</div>
+        </AccordionItem>
       ) : null}
       {p.stream != null ? (
-        <div className="dock-msg dock-msg-assistant dock-streaming">
+        <div className="dock-msg dock-msg-assistant dock-streaming" style={{ ...matBubbleOh(phone), ...matBubbleOhBody(phone), maxWidth: "84%" }}>
           {p.stream ? (
-            <div className="dock-md">
-              <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{p.stream}</Markdown>
-            </div>
+            <>
+              <div className="dock-md">
+                <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{p.stream}</Markdown>
+              </div>
+              {/* 流式光标（旧 dock-caret 眨眼条）收编 → OG Spinner（加载语义，OG 动效档驱动） */}
+              <span style={MAT_INLINE_ROW}><Spinner size="sm" /></span>
+            </>
           ) : (
-            <span className="dock-thinking">{p.status ?? "思考中…"}</span>
+            <span style={MAT_INLINE_ROW}>
+              <Spinner size="sm" />
+              <Text tone="quiet">{p.status ?? "思考中…"}</Text>
+            </span>
           )}
-          {p.stream ? <span className="dock-caret" /> : null}
         </div>
       ) : null}
       {p.confirmCard ? (
-        <div className="dock-confirm">
-          <div className="dock-confirm-text">{p.confirmCard}</div>
-          <div className="dock-confirm-ops">
-            <Btn variant="solid" tone="brand" disabled={p.busy} onClick={() => p.onSend("确认")}>确认执行</Btn>
-            <Btn variant="outline" disabled={p.busy} onClick={() => p.onSend("取消")}>取消</Btn>
-          </div>
-        </div>
+        /* 确认卡（旧 .dock-confirm 三件）→ OG Banner（tone=warning；动作区同款 Btn） */
+        <Banner
+          tone="warning"
+          action={
+            <span style={MAT_MSG_OPS}>
+              <Btn variant="solid" tone="brand" size="sm" disabled={p.busy} onClick={() => p.onSend("确认")}>确认执行</Btn>
+              <Btn variant="outline" size="sm" disabled={p.busy} onClick={() => p.onSend("取消")}>取消</Btn>
+            </span>
+          }
+        >
+          <span style={MAT_PRE}>{p.confirmCard}</span>
+        </Banner>
       ) : null}
     </div>
   );
@@ -714,6 +1086,10 @@ export function ChatDock(): ReactNode {
   const [panelH, setPanelH] = useState<number | null>(() => readDockHeight());
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{ y0: number; h0: number } | null>(null);
+  /* OneGUI 收编的过场相位：面板回落底板（grow 不可量时）与历史浮层的挂载——
+     grow 路径的 ohx-grow/ohx-shrink 契约动画照旧，相位只补回落路径的入场/离场拍 */
+  const panelSettled = useMountPhase(open && !closing);
+  const histSettled = useMountPhase(history != null);
 
   /** ② 滚到底（面板打开 / 水合后 / 流式增量 / 发送后 / 图片撑高都要跟进）。
    *  双帧写两次：内容高度常在下一帧才定（图片、代码块异步撑高）。 */
@@ -1913,6 +2289,8 @@ export function ChatDock(): ReactNode {
      OH 对话本身仍需 pid（send/runCmd 各自有 !pid 守卫）。 */
   if (!pid && !open) return null;
   /* 语音态：条内只留一行提示（波纹在上），识别出的字一律进条上方的雾状字幕带 —— 两处不重复 */
+  /* OneGUI 收编的外观降级开关：安卓手机档去 blur/换实档面（原 html.is-phone 契约，纯读平台） */
+  const phone = isPhoneNow();
   const voiceHint = voiceHintOf(voice, cancelling, mode);
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
   const subText = cancelling && voice !== "off"
@@ -1939,23 +2317,28 @@ export function ChatDock(): ReactNode {
 
       {open || closing ? (
         <div
+          data-og-scope="oh.dock"
           className={"dock-panel" + (capsuleRect ? " ohx-panel-grow" : "") + (capsuleRect?.topdock ? " is-topdock" : "") + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
           role="dialog"
           aria-label="OneTHU Harness 对话"
           style={{
-            /* 从胶囊顶边长出来：left/width 量可见胶囊的 rect；bottom 走 explorer-ui 契约变量。
-               量不到胶囊（极端：底栏未渲染）时不挂 ohx-panel-grow，退回旧居中形态，绝不错位。 */
+            /* 从胶囊顶边长出来：left/width 量可见胶囊的 rect；bottom 走 explorer-ui 契约变量（行为几何原样）。
+               材质/圆角/过场相位合进 panelMat（oh.dock scope 调度，OneGUI 令牌，见文件头常量块）。
+               量不到胶囊（极端：底栏未渲染）时挂回落底板常量（旧居中形态），绝不错位。 */
+            ...PANEL_GEO_COMMON,
             ...(capsuleRect
               ? capsuleRect.topdock
                 ? /* 顶置底栏（桌面/横屏）：窗从胶囊**底边向下**生长，朝上会出屏 */
                   { left: capsuleRect.left, width: capsuleRect.width, bottom: "auto", top: capsuleRect.bottom + 4 }
                 : { left: capsuleRect.left, width: capsuleRect.width, bottom: "calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 4px)" }
-              : null),
+              : (phone ? PANEL_GEO_FALLBACK_PHONE : PANEL_GEO_FALLBACK)),
             ...(panelH != null
             ? { height: `${panelH}px`, minHeight: 0 }
-            : isPhoneNow()
+            : phone
               ? { height: "60vh", minHeight: 0 } /* 手机默认半屏（A5），把手上拉可到 0.94 */
               : null),
+            /* 过场相位：in=首帧 from 值 → base；out=离场。grow 路径的 ohx-grow/ohx-shrink 契约动画照旧承担 */
+            ...panelMat(phone, !!capsuleRect, closing ? "out" : panelSettled ? "base" : "in"),
           }}
           onPointerDown={(e) => e.stopPropagation()}
           onPointerUp={(e) => e.stopPropagation()}
@@ -1974,30 +2357,37 @@ export function ChatDock(): ReactNode {
             onPointerCancel={onHandleUp}
             onLostPointerCapture={onHandleUp}
           />
-          <div className="dock-head">
-            <span className="dock-title" title="小OH"><HarnessMark size={15} /></span>
-            {/* dev-explorer：搜索 | OH 二合一开关（同一扇窗两种形态；小窗可拖、气泡不动的口径不变） */}
+          {/* 头部行（OneGUI 收编）：动作钮走 Btn/IconBtn（ghost/outline 语义出外观与 a11y），
+              创造模式以 tone=brand + is-on 类点亮（旧 .dock-btn.dock-creative 手写样退役）。 */}
+          <div className="dock-head" style={MAT_HEAD}>
+            <span className="dock-title" style={MAT_TITLE} title="小OH"><HarnessMark size={15} /></span>
+            {/* dev-explorer：搜索 | OH 二合一开关（同一扇窗两种形态；小窗可拖、气泡不动的口径不变）。
+                OOSE 红线：`?explorer-preview=search-oh` 以 `.dock-panel [role='tab']` 命中第二个 tab
+                收到 OH —— 这组_raw-tablist 结构（explorer-oh.css 契约样式）保持原样。
+                 */}
             <div className="ohx-modeswitch" role="tablist" aria-label="搜索或对话">
               <button role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</button>
               <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</button>
             </div>
-            <div className="dock-ops">
+            <div className="dock-ops" style={matOps}>
               {/* 创造模式（2026-10-13）：图标+文字开关钮（用户拍板：不能只是一颗星，旁边要写字）。
-                  开=主题 tint 描边点亮；引擎下轮对话收到 creativeMode=true，系统提示词追加「主动创造」段 */}
-              <button
-                className={"btn dock-btn dock-creative" + (creative ? " is-on" : "")}
-                title={creative ? "创造模式已开：小OH会更主动动手创建插件、主题、OnePage 与脚本工具" : "创造模式：开启后小OH更主动动手创建插件、主题、OnePage 与脚本工具"}
+                  开=OG brand tone 描边点亮；引擎下轮对话收到 creativeMode=true，系统提示词追加「主动创造」段 */}
+              <Btn
+                variant="ghost" size="sm"
+                tone={creative ? "brand" : "default"}
+                titleAttr="创造模式：开启后小OH更主动动手创建插件、主题、OnePage 与脚本工具"
                 aria-label="创造模式"
                 aria-pressed={creative}
+                className={creative ? "is-on" : undefined}
+                icon={<IconSpark />}
                 onClick={() => setCreative(!creative)}
               >
-                <IconSpark />
-                <span className="dock-creative-t">创造模式</span>
-              </button>
-              <Btn variant="outline" titleAttr="新会话" aria-label="新会话" onClick={() => void newSession()}><IconPlus /></Btn>
-              <Btn variant="outline" titleAttr="历史会话" aria-label="历史会话" onClick={() => void openHistory()}><IconClock /></Btn>
-              <Btn variant="outline" titleAttr="导出当前会话 JSON" aria-label="导出会话" onClick={() => void exportSession()}><IconDownload /></Btn>
-              <Btn variant="outline" titleAttr="导入会话 JSON" aria-label="导入会话" onClick={() => fileRef.current?.click()}><IconUpload /></Btn>
+                创造模式
+              </Btn>
+              <IconBtn label="新会话" variant="outline" size="sm" titleAttr="新会话" icon={<IconPlus />} onClick={() => void newSession()} />
+              <IconBtn label="历史会话" variant="outline" size="sm" titleAttr="历史会话" icon={<IconClock />} onClick={() => void openHistory()} />
+              <IconBtn label="导出会话" variant="outline" size="sm" titleAttr="导出当前会话 JSON" icon={<IconDownload />} onClick={() => void exportSession()} />
+              <IconBtn label="导入会话" variant="outline" size="sm" titleAttr="导入会话 JSON" icon={<IconUpload />} onClick={() => fileRef.current?.click()} />
               <input
                 ref={fileRef}
                 type="file" accept=".json,application/json"
@@ -2009,22 +2399,26 @@ export function ChatDock(): ReactNode {
                 }}
               />
               {ttsOk ? (
-                <button
-                  className={"btn dock-btn dock-ico dock-tts" + (prefs.autoSpeak ? " is-on" : "")}
-                  title={prefs.autoSpeak ? "自动朗读已开启（点击改静音；长按进语音合成设置）" : "当前静音（点击开自动朗读；长按进语音合成设置）"}
-                  aria-label={prefs.autoSpeak ? "关闭自动朗读" : "开启自动朗读"}
+                <IconBtn
+                  label={prefs.autoSpeak ? "关闭自动朗读" : "开启自动朗读"}
+                  titleAttr={prefs.autoSpeak ? "自动朗读已开启（点击改静音；长按进语音合成设置）" : "当前静音（点击开自动朗读；长按进语音合成设置）"}
+                  variant="ghost" size="sm"
+                  tone={prefs.autoSpeak ? "brand" : "default"}
+                  className={prefs.autoSpeak ? "is-on" : undefined}
+                  icon={prefs.autoSpeak ? <IconSpeak /> : <IconSpeakOff />}
                   aria-pressed={prefs.autoSpeak}
                   onClick={toggleAutoSpeak}
                   onContextMenu={(e) => { e.preventDefault(); openVoiceSettings(); }}
-                >
-                  {prefs.autoSpeak ? <IconSpeak /> : <IconSpeakOff />}
-                </button>
+                />
               ) : null}
-              <Btn variant="outline" titleAttr="收起" aria-label="收起" onClick={toggle}><IconX /></Btn>
+              <IconBtn label="收起" variant="outline" size="sm" titleAttr="收起" icon={<IconX />} onClick={toggle} />
             </div>
           </div>
           {notice ? (
-            <div className="dock-notice" onClick={() => setNotice(null)}>{notice}</div>
+            /* 通知条（旧 .dock-notice 琥珀一行）→ OG Banner（tone=warning，X 退场按钮出 dismiss） */
+            <Banner tone="warning" onDismiss={() => setNotice(null)}>
+              <span style={MAT_PRE}>{notice}</span>
+            </Banner>
           ) : null}
           {/* dev-explorer：search 态整块换成搜索面（同窗切换；oh 态气泡区原样保留） */}
           {/* dev-explorer：pid 未就绪（浏览器预览/Harness 未加载）时 OH 对话不可能在此渲染——
@@ -2084,24 +2478,43 @@ export function ChatDock(): ReactNode {
           </div>
           ) : null}
           {history != null ? (
-            <div className="dock-history" role="menu">
-              <div className="dock-history-head">
+            /* 历史会话浮层（OG 收编）：手写 Sheet 模式——锚在面板内（不走 portal，外点收窗
+               closest(".dock-panel") 守卫仍可覆盖），材质/描边走 oneGUI 浮层令牌 + 挂载相位；
+               行本体直接用 OG Row（标题/元信息/尾钮槽），删除钮 stopPropagation 保序（不再误切会话）。 */
+            <div className="dock-history" role="menu" style={matHistorySheet(histSettled)}>
+              <div className="dock-history-head" style={MAT_HIST_HEAD}>
                 <b>历史会话</b>
-                <Btn variant="outline" onClick={() => setHistory(null)}>关闭</Btn>
+                <Btn variant="outline" size="sm" onClick={() => setHistory(null)}>关闭</Btn>
               </div>
-              {history.length === 0 ? <div className="dock-empty">（无会话）</div> : history.map((s, idx) => (
-                <div key={s.id} className="dock-hist-row">
-                  <button className="dock-hist-main" onClick={() => void switchSession(s.id)}>
-                    <span className="dock-hist-title">{idx === 0 ? "① " : ""}{s.title || "未命名"}</span>
-                    <span className="dock-hist-meta">{idx === 0 ? "主对话 · " : ""}{s.messages} 轮 · {fmtUsd(s.costUsd)}</span>
-                  </button>
-                  {idx === 0 ? (
-                    /* 1 号主对话永久保留（用户定案）：不提供删除入口 */
-                    <span className="dock-hist-meta" style={{ alignSelf: "center", padding: "0 10px" }} title="主对话不可删除">—</span>
-                  ) : (
-                    <Btn variant="outline" aria-label="删除" onClick={() => void deleteSession(s.id)}><IconX /></Btn>
-                  )}
-                </div>
+              {history.length === 0 ? (
+                <div className="dock-empty" style={matEmpty}>（无会话）</div>
+              ) : history.map((s, idx) => (
+                idx === 0 ? (
+                  /* 1 号主对话永久保留（用户定案）：不提供删除入口 */
+                  <Row
+                    key={s.id}
+                    title={`① ${s.title || "未命名"}`}
+                    sub={`主对话 · ${s.messages} 轮 · ${fmtUsd(s.costUsd)}`}
+                    titleAttr="主对话不可删除"
+                    trailing={<Text slot="micro" tone="faint">—</Text>}
+                  />
+                ) : (
+                  <Row
+                    key={s.id}
+                    title={s.title || "未命名"}
+                    sub={`${s.messages} 轮 · ${fmtUsd(s.costUsd)}`}
+                    onClick={() => void switchSession(s.id)}
+                    trailing={
+                      <IconBtn
+                        label="删除"
+                        variant="outline"
+                        size="sm"
+                        icon={<IconX />}
+                        onClick={(e) => { e.stopPropagation(); void deleteSession(s.id); }}
+                      />
+                    }
+                  />
+                )
               ))}
             </div>
           ) : null}

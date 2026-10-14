@@ -3029,161 +3029,37 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 .plugin-toast { background: #1f2329; color: #fff; padding: 8px 14px; border-radius: var(--r-pill); font-size: var(--text-sm); box-shadow: 0 4px 14px rgba(0,0,0,.18); opacity: 1; transition: opacity .3s; max-width: 78vw; }
 .plugin-toast.out { opacity: 0; }
 /* ============================================================
-   插件对话面板（ChatDock v2）：可拖拽 FAB（边缘吸附）+ 原地化开面板 + 竖屏手机底部抽屉
+   插件对话面板（ChatDock）：OneGUI 收编（oh.dock scope，dockScope.ts 登记）
+   —— 2026-10-14 换血说明：
+   · 独占段退役（零 JSX 引用，或外观改由 OG 组件/令牌出；面板壳与回落底板几何收录进
+     ChatDock.tsx 的常量块，grow 生长契约仍在 explorer-oh.css）：
+     .dock-island（idle 胶囊已外移 OhCapsule；含 is-ball/is-open/is-press/is-voice、
+       island-fog/idle/voice/::after 与 dock-island-in/ch keyframes）、.dock-bar、
+       .dock-search、.dock-badge（OhCapsule 用 OG Badge）、.dock-entry、.dock-input、
+       .dock-send（输入在胶囊里）、.dock-orb、.dock-trace、.dock-head/.dock-title/
+       .dock-ops/.dock-btn/.dock-ico/.dock-tts、.dock-notice、.dock-msg 气泡与图瓦、
+       .dock-think/confirm/history/plg-caret（OG AccordionItem/Banner/Row）、
+       .dock-panel 材质与入场/退场 keyframes（面板壳 inline + 挂载相位过渡）。
+   · 共享保留（有引用，别删）：
+     .dock-md 排印视口豁免族 与 .dock-md-img（GlobalOrb/插件壳/MailPage 判例共用）；
+     .dock-wave/-dot/voicebar/voicebar-hint（波纹点位引擎样式底座，OhCapsule 收音态同用；
+       引擎 60fps 只直写 transform/opacity，底座不动）；
+     .dock-voice-sub 雾状字幕带 与 .dock-voice-toast 失败浮片 + body.dock-voice-lock
+       （语音链红线：--dock-cancel 由 JS 连续写 :root 做取消渐进，时序原样；仅把颜色源
+       换接 OneGUI 令牌 --og-error/--og-content-1/--og-surface-overlay/--og-line-2）；
+     .dock-handle（拖拽改高红线行为件，色源换 OG 令牌）；
+     .dock-input-row/.dock-attach 附带 AttachTray 手机折叠兜底（任务点名的共享基建）；
+     @keyframes dock-msg-in（Trace 页 .trace-card 入场共用）、
+     @keyframes dock-speak-wave（Icons.tsx IconSpeak 声波 path 仓共享）。
    ============================================================ */
 
-/* FAB：位置由 JS 内联 left/top 控制；is-snapping=吸附过渡，is-drag=拖拽中 */
-/* ───────── 灵动岛胶囊（底部中央；点击展开 / 长按语音） ───────── */
-.dock-island {
-  position: fixed;
-  left: 50%;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
-  z-index: 9991;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  height: 46px;
-  /* R21c：**内容自适应**，不再用 JS 测得的定宽。原先 width: var(--island-w) 的宽度来自
-     getBoundingClientRect 测量，而文字 span 在 flex 里默认可收缩——字体度量一变宽
-     （HyperOS/MiSans 等），测得宽度跟不上实际渲染宽度，文字就溢出胶囊而不是把胶囊撑长
-     （用户实录：小米 HyperOS 上「靠近日程显示条的长文字超出胶囊」，其他设备正常）。 */
-  width: auto;
-  min-width: 138px;
-  max-width: calc(100vw - 28px);
-  padding: 0 20px 0 13px;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--border);
-  background: var(--md-sys-color-surface-container-lowest);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10), 0 10px 28px rgba(0, 0, 0, 0.14);
-  color: var(--text-2);
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  /* 手势锁定（2026-10-10 用户实录「一上划就取消」）：manipulation 允许浏览器把上划当**页面滚动**，
-     于是指针被抢走 → pointercancel/lostpointercapture → 按取消收场，页面还跟着滚。
-     none＝这块区域的手势（含纵向）全归我们，页面不滚、指针不被抢。静态写死，不靠 pressing 加类。 */
-  touch-action: none;
-  /* 长按变长的观感来源：宽度/高度/圆角/背景/阴影同一条 300ms 曲线一起过渡（不瞬移、不拉伸）。
-     注：宽度用 min-width 过渡——width:auto 无法与长度插值。 */
-  transition:
-    min-width 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    border-radius 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    background-color 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.3s cubic-bezier(0.22, 1.2, 0.36, 1),
-    opacity 0.2s ease,
-    border-color 0.25s,
-    box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    color 0.2s;
-  animation: dock-island-in 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) both;
+/* ── 语音链保留段（红线「语音/手势链一根毛别动」，仅颜色源换 OneGUI 令牌）──────
+   雾心色收编 OlagOne 浮层面：旧「浅 bg-layer-1 / 深 bg-layer-2」两套声明换成会翻档的
+   --og-surface-overlay（浅=白、深=#1b2029，正是旧两套的「比画面亮一档的浮体面」）。 */
+/* 雾心色：浅=白 / 深=#1b2029（会翻档的浮体面令牌——旧两套同值收编进来一个变量） */
+.dock-voice-sub {
+  --fog-core: var(--og-surface-overlay);
 }
-/* task-19 底栏对偶：左侧圆形检索钮 + 灵动岛（岛仍是原来的岛；这里只把它从"自己 fixed 居中"
-   挪进底栏容器里，手势与内部结构一行没动）。检索条展开时岛缩成球（.is-ball）。 */
-.dock-bar {
-  position: fixed;
-  left: 50%;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
-  z-index: 9992;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  pointer-events: auto;
-}
-.dock-bar .dock-island { position: relative; left: auto; bottom: auto; transform: none; }
-.dock-search {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: var(--r-pill);
-  color: var(--text-2);
-  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 86%, transparent);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  backdrop-filter: var(--glass-menu-blur);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: width var(--dur-2) var(--ease-spring), color var(--dur-1) ease, background var(--dur-1) ease;
-}
-.dock-search:hover { color: var(--accent); }
-/* 岛缩成球：只留 (OH) 标，宽度收到 40px（与检索钮同号） */
-.dock-island.is-ball { min-width: 40px; padding: 0; justify-content: center; }
-.dock-island.is-ball .dock-island-text { display: none; }
-html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-color-surface-container-lowest), color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 96%, var(--md-sys-color-surface-container))); -webkit-backdrop-filter: none; backdrop-filter: none; }
-
-.dock-island:hover { color: var(--text-1); border-color: var(--accent-border); }
-/* 面板展开时：胶囊缩没（morph 交给面板，从胶囊位置原地长开） */
-.dock-island.is-open {
-  transform: translateX(-50%) scale(0.3);
-  opacity: 0;
-  pointer-events: none;
-}
-/* 按住未到长按阈值：只加深一点阴影的「准备」反馈（不位移、不抖） */
-.dock-island.is-press {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16), 0 12px 30px rgba(0, 0, 0, 0.16);
-}
-
-/* ── 长按语音：自然变长 ─────────────────────────────────────────────
-   长度靠 min-width（可与基础 138px 平滑插值），圆角/高度/背景/阴影同步过渡；
-   颜色一律走 token（--dsw-alias-* 缺失时回落仓库既有 System token），深浅色同时成立。 */
-.dock-island.is-voice {
-  min-width: min(74vw, 420px);
-  height: 54px;
-  padding: 0 16px;
-  border-radius: var(--dsw-radius-lg, var(--md-sys-shape-corner-extra-large));
-  border-color: var(--dsw-alias-border-l2, var(--border));
-  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-1, var(--md-sys-color-surface-container-lowest)) 58%, transparent);
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10);
-  color: var(--dsw-alias-label-primary, var(--text-1));
-}
-/* 常态内容（标识 + 智能文本）：语音态淡出（仍在流里，宽度由 min-width 主导，不给过渡添乱） */
-
-.dock-island.is-voice .dock-island-idle { opacity: 0; }
-/* 雾层：backdrop-filter 模糊 + 顶部一道柔和高光（深色下不刺眼） */
-
-.dock-island.is-voice .dock-island-fog { opacity: 1; }
-/* 雾里的内容（波纹 + 转写 + 提示）：稍晚一点点淡入，让「变长」先发生 */
-
-.dock-island.is-voice .dock-island-voice { opacity: 1; }
-
-/* 雾心色（深浅各一套）：浅色＝偏白的雾（真实雾是把背后内容「罩白」，比页面底色深的灰只能变暗、
-   在纯白底上等于看不见）；深色＝比页面底色亮一档的面（#232b3d on #0e1117）。 */
-.dock-voice-sub,
-.dock-island.is-voice::after {
-  --fog-core: var(--dsw-alias-bg-layer-1, var(--md-sys-color-surface-container-lowest));
-}
-:root[data-scheme="dark"] .dock-voice-sub,
-:root[data-scheme="dark"] .dock-island.is-voice::after {
-  --fog-core: var(--dsw-alias-bg-layer-2, var(--md-sys-color-surface-container-high));
-}
-
-/* 条自己升起的一团雾晕（加分项）：让「条」与「上方雾团」之间没有边界——无边框、纯径向 + blur。
-   z-index:-1 = 压在条自身背景之上、波纹点之下（负 z 子元素在父背景之后、内容之前绘制）。 */
-.dock-island.is-voice::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 40%;
-  width: 132%;
-  height: 120px;
-  transform: translateX(-50%);
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(closest-side,
-    color-mix(in srgb, var(--fog-core) 34%, transparent),
-    transparent 76%);
-  filter: blur(18px);
-  opacity: 0.5;
-}
-
-/* ── 语音条内容（灵动岛 / 面板入口条共用）：只有波纹点 + 一行提示 ──
-   识别出的字在条上方的雾状字幕带（.dock-voice-sub）里，这里不再重复。 */
 .dock-voicebar { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; flex: 1; min-width: 0; }
 .dock-wave { display: inline-flex; align-items: center; gap: 4px; height: 24px; flex: none; }
 /* 波纹点：高度（scaleY）与透明度由 JS 每帧按音量写入；取不到电平时走时间正弦（永不空转） */
@@ -3191,12 +3067,12 @@ html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-co
   display: block;
   width: 4px;
   height: 22px;
-  border-radius: var(--dsw-radius-xs, 4px);
+  border-radius: var(--og-radius-xs);
   transform: scaleY(0.4);
   transform-origin: 50% 50%;
   background: linear-gradient(180deg,
-    var(--dsw-alias-brand-primary, var(--md-sys-color-primary)),
-    color-mix(in srgb, var(--dsw-alias-brand-primary, var(--md-sys-color-primary)) 45%, transparent));
+    var(--og-accent),
+    color-mix(in srgb, var(--og-accent) 45%, transparent));
   will-change: transform, opacity;
 }
 /* 提示贴条右端（波纹居中，构图对称；提示不参与居中计算） */
@@ -3204,7 +3080,7 @@ html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-co
   position: absolute;
   right: 0;
   font-size: var(--text-xxs, 11px);
-  color: var(--dsw-alias-label-secondary, var(--text-3));
+  color: var(--og-content-3);
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
@@ -3236,7 +3112,7 @@ html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-co
      第一层就是警示雾：--dock-cancel=0 时 alpha 0，正常态观感不变。 */
   background:
     radial-gradient(52% 74% at 52% 57%,
-      color-mix(in srgb, var(--md-sys-color-error) calc(var(--dock-cancel, 0) * 22%), transparent) 0%,
+      color-mix(in srgb, var(--og-error) calc(var(--dock-cancel, 0) * 22%), transparent) 0%,
       transparent 78%),
     radial-gradient(30% 56% at 41% 46%,
       color-mix(in srgb, var(--fog-core) 30%, transparent) 0%,
@@ -3281,24 +3157,14 @@ html.is-phone .dock-search { background: linear-gradient(180deg, var(--md-sys-co
   text-align: center;
   /* 字色随位移从常规色连续走到警示色（calc 百分比 → 无瞬跳；正常态 --dock-cancel=0 即原色） */
   color: color-mix(in srgb,
-    var(--dsw-alias-label-primary, var(--text-1)) calc((1 - var(--dock-cancel, 0)) * 100%),
-    var(--md-sys-color-error));
+    var(--og-content-1) calc((1 - var(--dock-cancel, 0)) * 100%),
+    var(--og-error));
   text-shadow: 0 1px 14px rgba(0, 0, 0, 0.14);
   animation: dock-sub-fade 0.14s ease both;
 }
 :root[data-scheme="dark"] .dock-voice-sub-text { text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5); }
 @keyframes dock-sub-fade { from { opacity: 0.72; } }
 
-/* 键盘下坠：文本变化时逐字落下（React key 重挂触发） */
-.dock-island-text i {
-  display: inline-block;
-  font-style: normal;
-  animation: dock-island-ch 0.34s cubic-bezier(0.2, 0.85, 0.3, 1.3) both;
-}
-@keyframes dock-island-ch { from { transform: translateY(-13px); opacity: 0; } }
-/* 注意：这里刻意**不加 scale**——带缩放时元素的命中区域会一起缩，动画期间的点按会穿透到页面
-   （见 dock-panel-in 的注释与 2026-10-10 的实测）。透视变形只用位移 + 透明度。 */
-@keyframes dock-island-in { from { transform: translateX(-50%) translateY(26px); opacity: 0; } }
 /* 语音手势期间冻结页面：touch-action 沿祖先链取交集，body 上写 none 就等于整页不许滚 */
 body.dock-voice-lock {
   overscroll-behavior: none;
@@ -3315,13 +3181,13 @@ body.dock-voice-lock {
   transform: translateX(-50%);
   max-width: min(86vw, 420px);
   padding: 12px 16px;
-  border: 1px solid var(--dsw-alias-border-l2, var(--border));
-  border-radius: var(--dsw-radius-md, var(--md-sys-shape-corner-large));
-  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-2, var(--surface-2)) 84%, transparent);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  backdrop-filter: var(--glass-menu-blur);
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.16);
-  color: var(--dsw-alias-label-primary, var(--text-1));
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-lg);
+  background-color: color-mix(in srgb, var(--og-surface-1) 84%, transparent);
+  -webkit-backdrop-filter: var(--og-overlay-blur);
+  backdrop-filter: var(--og-overlay-blur);
+  box-shadow: var(--og-elev-3);
+  color: var(--og-content-1);
   font-size: var(--text-xs);
   line-height: 1.5;
   text-align: center;
@@ -3335,54 +3201,8 @@ body.dock-voice-lock {
   100% { opacity: 0; transform: translateX(-50%) translateY(4px) scale(0.99); }
 }
 
-.dock-badge {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: var(--r-pill);
-  background: var(--accent);
-  color: #fff;
-  font-size: 10px;
-  line-height: 16px;
-  font-weight: 600;
-}
-
-/* 面板：桌面/横排从 FAB 原位化开（transform-origin 由 JS 对准 FAB 角） */
-.dock-panel {
-  position: fixed;
-  left: 50%;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
-  transform-origin: 50% 100%;
-  z-index: 9992;
-  width: 86vw; /* 用户拍板：80–90% 取 86 */
-  height: 62vh; /* 实测 50vh 太矮：hero 开场文被切——加高（仍不全屏） */
-  min-height: 420px; /* 横屏/矮窗地板：保证 hero 三行 + 建议芯片完整可见 */
-  max-height: calc(100vh - 36px);
-  display: flex;
-  flex-direction: column;
-  /* 面板自己接住点按：绝不依赖「下层恰好没元素」。命中区域＝面板矩形本身（见下面 keyframes 注释） */
-  pointer-events: auto;
-  /* ④ 整块毛玻璃底板（用户实录「最上部都不要渐变起雾，整个背板调成磨砂玻璃、整块能看得到」）：
-     半透明面 + backdrop 模糊 + 内描边 + 上沿高光；**没有**任何渐变/遮罩把顶部淡出。 */
-  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 86%, transparent);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  backdrop-filter: var(--glass-menu-blur);
-  border: 0;
-  border-radius: 24px;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    0 18px 48px rgba(0, 0, 0, 0.22);
-  overflow: hidden;
-  animation: dock-panel-in 0.38s cubic-bezier(0.22, 1.1, 0.36, 1) both;
-}
-/* A 面板把手（用户：所有地方都可以在最上面有个 handle，上下拖动拉长拉短悬浮窗）：
-   一条 36×5 的圆角条，hover/拖动提亮并微微变长；竖直拖动改面板高度（贴底所以往上=变高）。 */
+/* ── 把手（拖拽改高红线行为件保留：命中区 16px / bar 36×5 与 hover·拖拽提亮渐长原样；
+   颜色源收编 OneGUI——常态 content-2，hover/is-drag 走强调 quiet 档） */
 .dock-handle {
   flex: none;
   height: 16px;
@@ -3398,354 +3218,55 @@ body.dock-voice-lock {
   width: 36px;
   height: 5px;
   border-radius: var(--r-pill);
-  background: var(--border);
-  transition: background var(--dur-1) ease, width var(--dur-1) ease;
+  background: var(--og-content-2);
+  transition: background var(--og-dur-1) var(--og-ease-standard), width var(--og-dur-1) var(--og-ease-standard);
 }
 .dock-handle:hover::before,
-.dock-handle.is-drag::before { background: var(--accent-border); width: 48px; }
+.dock-handle.is-drag::before { background: var(--og-accent-quiet); width: 48px; }
 
-.dock-panel.is-closing {
-  animation: dock-panel-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both;
-}
-/* 语音松手后的滑动进场（区别于点击的 morph） */
-.dock-panel.is-slide { animation: dock-panel-slide 0.42s cubic-bezier(0.22, 1.05, 0.36, 1) both; }
-/* ⚠️ 命中盒陷阱（2026-10-10 用户实录「点 OH 时后面遮挡的作业/通知被一起点开」）：
-   进场动画原来是 scale(0.18, 0.1)——**变换会把命中区域一起缩小**，于是「点击岛 → 面板在 pointerup
-   里挂载 → 紧随其后的 click 按坐标重新命中」这一拍，岛上离中心较远的点落在缩略框之外 → 命中页面
-   底下的作业行。实测（冻结动画取 elementFromPoint）：t=0 时 scale=(0.180,0.100)，岛左端(中心-170px)
-   命中 row；t=80ms scale≈(0.79,0.77) 才命中面板。所以这里只留位移 + 透明度 + 圆角 morph，
-   **命中区域从第一帧就是最终矩形**；观感仍是「从岛的位置化开」。 */
-@keyframes dock-panel-in {
-  from { opacity: 0.25; transform: translateX(-50%) translateY(14px); border-radius: var(--r-pill); }
-}
-@keyframes dock-panel-out {
-  to { opacity: 0; transform: translateX(-50%) translateY(10px); border-radius: var(--r-pill); }
-}
-@keyframes dock-panel-slide { from { opacity: 0; transform: translateX(-50%) translateY(46%); } }
-
-/* 无障碍：系统减弱动态效果时，全部 dock 动画/过渡退场 */
+/* 无障碍：系统减弱动态效果时（保留段收口）：语音链雾/浮片与开场大字的动画退场；
+   波纹点位引擎自己在 JS 里读 prefers-reduced-motion 退化为静帧点列（引擎红线，不在 CSS）。
+   面板/气泡/芯片等的过场已收编 --og-dur/--og-ease（motion=reduced 由管线出 1ms 档），无需在此重复。 */
 @media (prefers-reduced-motion: reduce) {
-  .dock-island, .dock-panel, .dock-voice-toast, .dock-island-fog, .dock-island-voice,
-  .dock-island-idle, .dock-wave-dot, .dock-entry,
-  .dock-voice-sub, .dock-voice-sub-text, .dock-speak, .dock-speak-wave,
-  .dock-msg, .dock-think, .dock-confirm, .dock-history, .dock-chip,
-  .dock-hero-ch, .dock-empty-chips {
+  .dock-voice-sub, .dock-voice-sub-text, .dock-voice-toast, .dock-hero-ch, .dock-empty-chips {
     animation: none !important;
     transition: none !important;
   }
-  .dock-hero-ch, .dock-empty-chips { opacity: 1; }
-  /* 语音态：雾与内容直接可见（JS 侧同时退化为静帧点列，不开 rAF） */
-  .dock-island.is-voice .dock-island-fog, .dock-island.is-voice .dock-island-voice { opacity: 1; }
+  .dock-hero-ch, .dock-empty-chips { opacity: 1; transition: none !important; }
 }
 
-.dock-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  /* 07：头部不再是一块独立的「控制面板」——与面板同一个面（滚动时能挡住内容），
-     层级只靠图标墨色（默认 text-3，hover 才到主色）。不加载任何分隔线。 */
-  padding: 12px 12px 12px 16px;
-  background: var(--md-sys-color-surface-container-lowest);
-}
-.dock-title { display: inline-flex; align-items: center; gap: 7px;  font-size: var(--text-sm); font-weight: 600; color: var(--text-1); }
-.dock-ops { display: flex; gap: 3px; flex-wrap: nowrap; justify-content: flex-end; flex-shrink: 0; }
-.dock-btn {
-  height: 26px;
-  padding: 0 8px;
-  font-size: var(--text-xs);
-  border-radius: var(--r-sm);
-  white-space: nowrap;
-}
-/* 头部图标钮：统一宽高，窄屏不换行不变形（悬停 tooltip 提示语义） */
-.dock-btn.dock-ico {
-  width: 32px;
-  height: 28px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  color: var(--text-3); /* 图标退后：默认不抢内容 */
-  border-radius: var(--dsw-radius-sm, var(--r-sm));
-  transition: color 0.15s ease, background 0.15s ease;
-}
-.dock-btn.dock-ico:hover { color: var(--accent); background: var(--md-sys-color-state-hover); }
-/* OH 对话面板头部的「悬浮球」入口：已本次关闭时置灰（仍可点——点它就是重新打开） */
-.dock-orb.is-off { color: var(--text-3); opacity: 0.6; }
-.dock-orb.is-off:hover { color: var(--accent); opacity: 1; }
-/* 头部「自动朗读」开关：开＝点亮（与消息里的朗读按钮同色语义），关＝常规灰 */
-.dock-tts.is-on { color: var(--accent); }
-/* 触屏密度层 html.is-phone .btn { height:38px } 特异度更高会顶穿头部行高——
-   头部图标钮在此定高压制（触屏顺带加大点击面 32×28） */
-html.is-phone .dock-head .dock-btn.dock-ico { height: 28px; width: 32px; }
-html.is-phone .dock-head .dock-btn:not(.dock-ico) { height: 28px; padding: 0 12px; }
-
-.dock-notice {
-  padding: 8px 12px;
-  font-size: var(--text-xs);
-  color: var(--amber);
-  background: var(--amber-soft);
-  cursor: pointer;
-}
-
-/* ① 手机档信息密度（用户实录「字太大了，信息密度过低」）：**只动面板内**——
-   正文档单独降到 14px / 行高 1.5，气泡内边距与消息间距同步收紧一档；
-   全站正文基准（--text-base 15px）不动，桌面档也不动。 */
-html.is-phone .dock-msg,
+/* 头部行/题/动作钮/图标钮/orb/tts/notice 已退役：ChatDock 用 OG Btn·IconBtn·Banner + inline 常量。
+ */
+/* 手机档信息密度（只动面板内）：气泡字阶已并入 inline 常量（isPhoneNow() → --text-sm 同值）；
+   .dock-md 排印豁免族沿用（GlobalOrb 的 OH 对话正文共用同一档）。 */
 html.is-phone .dock-md { font-size: var(--text-sm); line-height: 1.5; } /* 手机 --text-sm = 14px（走令牌，density 护栏要求） */
-html.is-phone .dock-msgs { padding: 12px 12px 8px; gap: 8px; }
-html.is-phone .dock-msg { padding: 8px 12px; }
 
-.dock-msgs {
-  flex: 1;
-  overflow-y: auto;
-  /* 只让消息区自己纵向滚；overscroll-behavior 防「滚到底继续带动页面」 */
-  touch-action: pan-y;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  /* ⑥ 现代化：一屏消息的呼吸感来自间距（12/16），不靠边框 */
-  padding: 16px 16px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
 
-.dock-empty {
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: 24px;
-  padding: 8px 12px;
-  text-align: left;
-  color: var(--text-3);
-  font-size: var(--text-sm);
-  line-height: 1.8;
-  min-height: 100%;
-}
 
-/* 新会话开场：左对齐三行大字，一个字一个字从上方坠落（错落 + 回弹 + 迷雾聚焦） */
-.dock-hero { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-.dock-hero-line { display: flex; }
-.dock-hero-ch {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--text-1);
-  opacity: 0; /* 动画未开始前不可见（delay 期间藏住） */
-  animation: dock-hero-drop 0.5s cubic-bezier(0.22, 1.35, 0.36, 1) both;
-}
-@keyframes dock-hero-drop {
-  from { opacity: 0; transform: translateY(-34px) scale(0.9); filter: blur(6px); }
-  55% { opacity: 1; filter: blur(0); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-
-/* 建议指令：大字落定后浮现（同样左对齐） */
-.dock-empty-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 8px;
-  max-width: 320px;
-  animation: dock-chips-in 0.4s ease 1.85s both;
-}
-@keyframes dock-chips-in { from { opacity: 0; transform: translateY(6px); } }
-.dock-chip {
-  border: 1px solid var(--border-soft);
-  background: var(--surface-2);
-  color: var(--text-2);
-  border-radius: var(--r-pill);
-  padding: 8px 12px;
-  font-size: var(--text-xs);
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.15s ease;
-}
-.dock-chip:hover { border-color: var(--accent-border); color: var(--accent); background: var(--accent-soft); }
-.dock-chip:active { transform: scale(0.97); }
-
-/* 消息入场交给 .is-new 的弹入（见气泡段）；这里只保留链块/确认条的轻入场 */
-.dock-think, .dock-confirm { animation: dock-msg-in 0.18s ease both; }
+/* @keyframes dock-msg-in / dock-msg-out（共享保留）：Trace 页 .trace-card 的入场/退场仍引用
+   （寻迹详情卡）；ChatDock 侧的轻入场已随 OG 组件/挂载相位退役，这两帧只服务 body 家族外件。 */
 @keyframes dock-msg-in { from { opacity: 0; transform: translateY(4px); } }
 @keyframes dock-msg-out { to { opacity: 0; transform: translateY(4px); } }
 .trace-card.is-closing {
   animation: dock-msg-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both;
 }
 
-/* ── 气泡（liquid glass，2026-10-11 用户拍板：与悬浮层同一套材质语言）──
-   材质三件套：半透明面 + backdrop 模糊 + **上沿 1px 内高光**；外阴影柔和，不要硬边、不要纯灰块。
-   圆角 18px（dsw 半径档），**说话方那一侧尾角 6px**——谁在说话一眼看得出，不靠颜色堆对比。 */
-.dock-msg {
-  max-width: 84%;
-  /* 气泡不许比文字高（用户红线）：垂直 8 / 水平 12，行高 1.5 →
-     桌面单行总高 21+16 = 37px、手机 22.5+16 = 38.5px，都在「≤40px」内 */
-  padding: 8px 12px;
-  border-radius: var(--dsw-radius-lg, 18px);
-  /* 正文走密度档：桌面 --text-base（14px），手机档 15px（§3.8） */
-  font-size: var(--text-base, var(--md-sys-typescale-body));
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-}
-.dock-msg-user {
-  align-self: flex-end;
-  background: color-mix(in srgb, var(--accent-soft) 62%, transparent);
-  /* 描边走 inset（外描边会占 2px 高，手机档就把单行气泡顶到 40.5px > 红线 40px） */
-  border: 0;
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  backdrop-filter: var(--glass-menu-blur);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent-border) 55%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 4px 14px rgba(0, 0, 0, 0.18);
-  border-radius: var(--dsw-radius-lg, 18px) var(--dsw-radius-lg, 18px) 6px var(--dsw-radius-lg, 18px);
-  color: var(--text-1);
-}
-.dock-msg-assistant {
-  align-self: flex-start;
-  background: color-mix(in srgb, var(--md-sys-color-surface-container) 62%, transparent);
-  border: 0; /* 同上：描边走 inset */
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  backdrop-filter: var(--glass-menu-blur);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 70%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 4px 14px rgba(0, 0, 0, 0.18);
-  border-radius: var(--dsw-radius-lg, 18px) var(--dsw-radius-lg, 18px) var(--dsw-radius-lg, 18px) 6px;
-  color: var(--text-1);
-}
-/* 深色：高光与投影都收一档，别在暗底上晃眼 */
-/* C：深色档底板同档加实（0.86）——深底上"太透"更明显 */
-:root[data-scheme="dark"] .dock-panel {
-  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 86%, transparent);
-}
-:root[data-scheme="dark"] .dock-msg-user {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent-border) 55%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 4px 14px rgba(0, 0, 0, 0.34);
-}
-:root[data-scheme="dark"] .dock-msg-assistant {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 70%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 4px 14px rgba(0, 0, 0, 0.34);
-}
-/* 安卓 WebView 的降级分支：多个气泡同时 backdrop-filter 会贵（滚动掉帧）。
-   手机档换成**半透明渐变 + 同款上沿高光**——玻璃感靠色阶与高光保留，不砍质感。 */
-html.is-phone .dock-msg-user {
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--accent-soft) 76%, transparent),
-    color-mix(in srgb, var(--accent-soft) 58%, transparent));
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-html.is-phone .dock-msg-assistant {
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--md-sys-color-surface-container) 80%, transparent),
-    color-mix(in srgb, var(--md-sys-color-surface-container) 60%, transparent));
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
+/* 气泡材质说明：ChatDock 的 dock-msg-user/assistant 与 dark/手机降级已在 TSX 常量块走 --og-*；
+   （安卓 WebView 降级红线在常量里保留：手机去 backdrop-filter）。 */
 
-/* 「自然弹出」：新消息 scale .94→1 + 上移 6px + Overshoot（--ease-spring）。
-   **只让最新一条播**（.is-new 由消息列表挂在最后一条上）——历史气泡不动画，翻上去看不会满屏乱动。 */
-@keyframes dock-msg-pop {
-  from { opacity: 0; transform: translateY(6px) scale(0.94); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.dock-msg.is-new,
-.dock-msg-assistant.is-new { animation: dock-msg-pop var(--dur-2) var(--ease-spring) both; }
-/* 消息里的图片（④）：缩略图直接显示；点击交给 ImageViewer 放大（长按同样看图） */
-.dock-imgs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
-.dock-img {
-  padding: 0;
-  line-height: 0;
-  overflow: hidden;
-  cursor: zoom-in;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--dsw-radius-md, var(--r-md));
-  background: var(--surface);
-}
-.dock-img:hover { border-color: var(--accent-border); }
-.dock-img img { display: block; width: auto; height: auto; max-width: min(240px, 60vw); max-height: 200px; object-fit: cover; }
-/* 正文图片（markdown）：本机路径会被读成 data URL 再渲染 */
+
+
+/* .dock-md-img（共享保留）：markdown 正文图块的排印档（GlobalOrb 的 OH 对话正文同判例引用）；
+   图瓦（用户附件缩略图）与缺失占位已并入 ChatDesk inline 常量（--og-* 出色）。 */
 .dock-md-img { display: block; max-width: 100%; margin: 8px 0; cursor: zoom-in; border-radius: var(--dsw-radius-md, var(--r-md)); }
-.dock-img-miss { color: var(--text-3); font-size: var(--text-xs); }
 
-/* 流式气泡不留 min-height：高度由内容撑（红线：气泡不许比文字高） */
-.dock-thinking { color: var(--text-3); }
-.dock-thinking::after {
-  content: "…";
-  display: inline-block;
-  animation: dock-pulse 1.2s ease-in-out infinite;
-}
-@keyframes dock-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-.dock-caret {
-  display: inline-block;
-  width: 7px;
-  height: 14px;
-  margin-left: 2px;
-  vertical-align: -2px;
-  background: var(--accent);
-  animation: dock-pulse 1s steps(2) infinite;
-}
 
-.dock-trace {
-  align-self: stretch;
-  border-left: 2px solid var(--border);
-  padding: 2px 0 2px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.dock-confirm {
-  align-self: stretch;
-  border: 1px solid var(--amber);
-  background: var(--amber-soft);
-  border-radius: var(--r-md);
-  padding: 8px 10px;
-}
-.dock-confirm-text { font-size: var(--text-sm); line-height: 1.5; color: var(--text-1); white-space: pre-wrap; }
-.dock-confirm-ops { display: flex; gap: 6px; margin-top: 8px; }
-
-/* 「朗读这一条」（需求 4）：平时低调，hover/触屏可见；出声时小喇叭的两道波纹呼吸 */
-.dock-msg-ops { display: flex; gap: 4px; margin-top: 4px; }
-.dock-speak {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: var(--r-pill);
-  background: transparent;
-  color: var(--text-3);
-  cursor: pointer;
-  opacity: 0.5;
-  transition: opacity 0.18s ease, color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-}
-.dock-msg-assistant:hover .dock-speak { opacity: 1; }
-.dock-speak:hover { color: var(--accent); border-color: var(--accent-border); background: var(--accent-soft); opacity: 1; }
-/* 播放中：**只换颜色**（用户实录「无论点击前后都是蓝色框，这个显然不合适」）——
-   不再有常驻的 accent 描边/底色，状态靠图标着色 + 声波呼吸表达。 */
-.dock-speak.is-on { opacity: 1; color: var(--accent); border-color: transparent; background: transparent; }
-/* B：dock 内的按钮一律不画焦点框（键盘仍可聚焦、可用，只是不可见）——安卓点按后
-   :focus-visible 会命中，就成了"一直显示的蓝框"。文本输入框的聚焦环保留（那是功能指示）。 */
-.dock-panel button:focus,
-.dock-panel button:focus-visible,
-.dock-island:focus,
-.dock-island:focus-visible { outline: none; box-shadow: none; }
-.dock-speak.is-on .dock-speak-wave { animation: dock-speak-wave 1.1s ease-in-out infinite; }
+/* 「朗读这一条」收编 → OG IconBtn（round/ghost/size=sm，tone=brand 点亮，is-on 状态类由 ChatDock 挂）。
+   Icons.tsx 的 IconSpeak path 挂 .dock-speak-wave（仓共享件）——出声时两道声波呼吸：
+   状态选择器换 OG 状态类（.og-iconbtn.is-on），keyframes 无 transition 替代，保留在本段。 */
+.og-iconbtn.is-on { color: var(--og-accent-quiet); }
+.og-iconbtn.is-on .dock-speak-wave { animation: dock-speak-wave 1.1s ease-in-out infinite; }
 @keyframes dock-speak-wave { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
-
 /* 附件三入口（07）：现在住在底栏里（见 .dock-input-row），不再是自成一层的薄条 */
 .dock-attach { flex: none; }
 .dock-attach .btn { height: 34px; padding: 0 12px; font-size: var(--text-xs); }
@@ -3755,61 +3276,9 @@ html.is-phone .dock-msg-assistant {
 html.is-phone .oh-attach-btn > span:last-child { display: none; }
 html.is-phone .oh-attach-btn { padding: 0 10px; }
 
-/* ④ 手机档：backdrop-filter 换不透明渐变（整块仍然"看得见"），保留内描边与上沿高光 */
-html.is-phone .dock-panel {
-  /* C：手机档整块加实一档（用户「底板再厚重一点，这个有点透」），仍无顶部渐隐 */
-  background: linear-gradient(180deg,
-    var(--md-sys-color-surface-container-lowest),
-    color-mix(in srgb, var(--md-sys-color-surface-container-lowest) 96%, var(--md-sys-color-surface-container)));
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-
-/* 入口条（输入区默认形态，取代常驻的「问点什么」输入框）：点击输入、长按说话；
-   长按即就地长成语音条（高度/圆角/背景与胶囊同一套过渡）。 */
-.dock-entry {
-  flex: 1 1 160px; /* 与附件胶囊同高（34px）并排；放不下就整条折到上一行 */
-  display: flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  background-color: var(--md-sys-color-surface-container-lowest);
-  color: var(--text-2);
-  font-family: inherit;
-  font-size: var(--text-sm);
-  text-align: left;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none; /* 同 .dock-island：入口条上的纵向手势也归我们（上划取消要用） */
-  transition:
-    min-height 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    border-radius 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    background-color 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    border-color 0.25s,
-    box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
-    color 0.2s;
-}
-.dock-entry:hover { border-color: var(--accent-border); color: var(--text-1); }
-
-.dock-entry.is-voice {
-  min-height: 46px;
-  border-radius: var(--dsw-radius-md, var(--r-md));
-  border-color: var(--dsw-alias-border-l2, var(--border));
-  background-color: color-mix(in srgb, var(--dsw-alias-bg-layer-1, var(--md-sys-color-surface-container-lowest)) 58%, transparent);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.10);
-  color: var(--dsw-alias-label-primary, var(--text-1));
-}
-/* 失败文案就地落在入口条里（本次长按发生在面板内时） */
-.dock-entry.is-fail {
-  border-color: color-mix(in srgb, var(--md-sys-color-error) 42%, transparent);
-  background-color: color-mix(in srgb, var(--md-sys-color-error) 8%, transparent);
-}
-
-/* 一体化底栏（07）：附件 / 输入 / 发送同栏；窄屏自动折行（附件条到上一行），
-   整条栏只有**一条**功能性分隔线（density 护栏：装饰性分隔线一律不加）。 */
+/* 一体化底栏（07）：附件 / 输入 / 发送同栏（共享保留——任务点名的兜底：AttachTray 与
+   GlobalOrb 的附件区同用，.oh-attach 间距与手机折叠都吃这里的契约）；
+   输入框与发送钮已退役（输入收进底栏胶囊 ohx-input，发送走胶囊 Enter），栏只剩附件三入口。 */
 .dock-input-row {
   display: flex;
   flex-wrap: wrap;
@@ -3820,74 +3289,10 @@ html.is-phone .dock-panel {
   background: var(--md-sys-color-surface-container-lowest);
 }
 .dock-input-row .oh-attach { gap: 8px; }
-/* ③① 输入态与入口态**同形**：都是一条 34px 的胶囊（用户实录「点一下直接到纯文字框，还是个贼拥挤的」）。
-   单行胶囊：padding 4 + 行高 26 + padding 4 = 34，文字自然居中。 */
-.dock-input {
-  /* ③① 与入口胶囊**同形同高**（都是 34px 内容 + 2px 内描边 = 36px）：
-     竖向 padding 归零、行高撑满内容高 → 单行文字自然居中，不再是"被挤扁的多行框"。 */
-  flex: 1 1 160px;
-  min-width: 0; /* 窄屏别因 textarea 的固有宽度折行 */
-  resize: none;
-  height: 34px;
-  min-height: 34px;
-  max-height: 34px;
-  overflow-y: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 0 12px;
-  line-height: 34px;
-  font-size: var(--text-sm);
-  font-family: inherit;
-  background: var(--md-sys-color-surface-container-lowest);
-  color: var(--text-1);
-}
-.dock-input:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring); }
-.dock-send { height: 34px; min-width: 40px; padding: 0 12px; font-size: 15px; }
 
-.dock-history {
-  position: absolute;
-  inset: 44px 0 64px 0;
-  background: var(--md-sys-color-surface-container-lowest);
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 8px 10px;
-  gap: 4px;
-  animation: dock-msg-in 0.16s ease both;
-}
-.dock-history-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2px 2px 6px;
-  font-size: var(--text-sm);
-}
-.dock-hist-row { display: flex; align-items: center; gap: 4px; }
-.dock-hist-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 7px 9px;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--r-sm);
-  background: var(--surface-2);
-  cursor: pointer;
-  text-align: left;
-}
-.dock-hist-main:hover { border-color: var(--accent-border); background: var(--accent-soft); }
-.dock-hist-title {
-  font-size: var(--text-sm);
-  color: var(--text-1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.dock-hist-meta { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; color: var(--text-3); }
 
+/* 历史会话浮层（手写 Sheet + OG Row）与 plg-caret 折叠箭头已退役：ChatDock 走 OG 组件出外观与 a11y。
+ */
 /* .plg-caret（共享保留）：ChatDock 的思考链折叠箭头仍用（本页命令舱段已走 AccordionItem） */
 .plg-caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; transition: transform 0.18s ease; display: inline-block; }
 .plg-caret.is-open { transform: rotate(180deg); }
@@ -3930,17 +3335,12 @@ html.is-phone .home-modal.is-closing {
 .harness-mark .o { font-family: Georgia, "Playfair Display", "Times New Roman", serif; font-weight: 500; font-size: 1.14em; }
 .harness-mark .h { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Microsoft YaHei", sans-serif; font-weight: 700; font-size: 1.06em; }
 
-/* 思维链：流式期间展开，回答开始自动折叠，可展开回看 */
-/* 思考过程 / 工具调用（⑥ 统一）：与气泡同一套半径与描边，头部可点、hover 走状态层 */
-.dock-think { margin: 4px 0 8px; border: 1px solid var(--border-soft); border-radius: var(--dsw-radius-md, var(--r-md)); background: var(--surface-2); overflow: hidden; max-width: 100%; }
-.dock-think-head { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent; padding: 8px 12px; font-size: var(--text-xs); color: var(--text-3); cursor: pointer; text-align: left; transition: background 0.15s ease; }
-.dock-think-head:hover { background: var(--md-sys-color-state-hover); }
-.dock-think-label { font-weight: 600; color: var(--text-2); letter-spacing: 0.02em; }
-.dock-think-meta { font-family: var(--font-mono); font-size: var(--text-xxs); color: var(--text-3); }
-.dock-think-body { padding: 4px 12px 12px; font-size: var(--text-xs); color: var(--text-3); line-height: 1.7; white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; border-top: 1px dashed var(--border-soft); }
+/* 思维链（旧 .dock-think 五件套）已退役：ChatDock 的思考/工具链直接走 OG AccordionItem
+   （og-accordion-head/body 出可点性、状态层与 a11y——插件页命令舱段同判例）。
 
-/* 对话 Markdown（Harness 紧凑风）：字号跟**消息正文密度档**走（桌面 14 / 手机 15），
-   与 .dock-msg 一致——用户气泡是纯文本、OH 气泡是 markdown，两边不能一个 13 一个 14。 */
+/* 对话 Markdown（Harness 紧凑风，共享保留）：字号跟**消息正文密度档**走（桌面 14 / 手机 15），
+   与 ChatDock 气泡正文同一档（inline 常量同源）：用户气泡是纯文本、OH 气泡是 markdown，
+   两边不能一个 13 一个 14——GlobalOrb 的 OH 正文/插件壳的诊断也走这一族。 */
 .dock-md { font-size: var(--text-base, var(--md-sys-typescale-body)); line-height: 1.5; min-width: 0; overflow-wrap: break-word; }
 .dock-md > :first-child { margin-top: 0; }
 .dock-md > :last-child { margin-bottom: 0; }
@@ -5130,8 +4530,7 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
   /* 内容不被底栏遮住；回顶/刷新 FAB 抬到底栏上方 */
   .content { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
   .hard-refresh-fab { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
-  /* OH 灵动岛抬到底栏上方，避免与 5 Tab 重合（面板展开时仍覆盖底栏，属模态行为） */
-  .dock-island { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+  /* OH 对话坞的语音链浮件抬到底栏上方，避免与 5 Tab 重合（面板展开时仍覆盖底栏，属模态行为） */
   .dock-voice-toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px) + 60px); }
   .dock-voice-sub { bottom: calc(102px + env(safe-area-inset-bottom, 0px)); } /* 条顶 134 − 32 */
   /* 新 IA：移动端侧边栏（抽屉）退役——底栏 5 Tab + 服务目录页承接全部入口；
@@ -5630,7 +5029,7 @@ section > .svc-label { margin-top: 14px; }
 
 /* ============================================================
    日程页（课表网格 / 当日列表）：窄档底部按「OH 悬浮岛带」多留一段空白。
-   岛是 fixed 且横向居中：窄档岛底距屏底 80 + 岛高 46 = 126（见上面 .dock-island
+   对话坞浮件是 fixed 且横向居中：窄档浮件底距屏底 80（语音链保留段锚点公式，
    那条），本页最后一屏正好落在这一带，最后一行（一节晚课、一条晚间日程）会被岛
    压住（用户实录 2026-10-12）——数值与待办页同口径：留到 142（126 + 16 间隙），
    再叠安全区。宽档（桌面模式）不改动：那边岛落回屏底 18px，观感保持原样。

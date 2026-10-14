@@ -1,4 +1,4 @@
-import { Btn } from "@onethu/gui";
+import { Btn, Chip, Inline, Row, Sheet, Stack, Surface, Text } from "@onethu/gui";
 /**
  * 图片滤镜编辑（需求 8）：预设缩略图横排 + 旋转 + 应用/取消。
  *
@@ -10,7 +10,7 @@ import { Btn } from "@onethu/gui";
  *    否则大图那几百毫秒会把按钮的忙碌态一起卡住，用户以为没反应。
  *  - 组件自包含（自带样式、portal 到 body），宿主只需要给图源与两个回调。
  */
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
   FILTER_PRESETS, MAX_EDGE, PREVIEW_EDGE, applyFilter, applyFilterToCanvas, canvasToDataUrl,
@@ -18,7 +18,7 @@ import {
   type FilterPreset, type ImageSource, type RotationDeg,
 } from "../lib/imageFilters.js";
 import { extForMime } from "../lib/attach.js";
-import { IconRefresh, IconX } from "./Icons.js";
+import { IconRefresh } from "./Icons.js";
 
 export interface FilterResult {
   /** 处理后的图（dataURL，默认 JPEG q0.88） */
@@ -59,35 +59,6 @@ function outputName(base: string | undefined, preset: FilterPreset, rotate: Rota
   return `${raw}${suffix}.${extForMime(mime)}`;
 }
 
-const SHEET_CSS = `
-.ohf-backdrop { position: fixed; inset: 0; z-index: 10050; background: rgba(0, 0, 0, .45);
-  display: flex; align-items: flex-end; justify-content: center; }
-.ohf-panel { width: 100%; max-width: 560px; max-height: 90vh; overflow: auto;
-  background: var(--dsw-alias-bg-layer-1, #fff); color: var(--dsw-alias-label-primary, #1c1f24);
-  border-radius: var(--dsw-radius-xl, 20px) var(--dsw-radius-xl, 20px) 0 0;
-  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, .08));
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, .28); padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
-@media (min-width: 600px) {
-  .ohf-backdrop { align-items: center; }
-  .ohf-panel { border-radius: var(--dsw-radius-xl, 20px); }
-}
-.ohf-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ohf-title { font-size: 16px; font-weight: 600; }
-.ohf-stage { margin: 12px 0; padding: 8px; border-radius: var(--dsw-radius-md, 12px);
-  background: var(--dsw-alias-bg-layer-2, #f4f4f6); display: flex; align-items: center; justify-content: center; }
-.ohf-stage img { max-width: 100%; max-height: 36vh; object-fit: contain; border-radius: var(--dsw-radius-sm, 8px); }
-.ohf-strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 8px; }
-.ohf-thumb { flex: 0 0 auto; width: 72px; padding: 4px; cursor: pointer; text-align: center;
-  background: transparent; border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, .1));
-  border-radius: var(--dsw-radius-md, 12px); color: inherit; }
-.ohf-thumb img { width: 100%; height: 56px; object-fit: cover; border-radius: var(--dsw-radius-xs, 4px); display: block; }
-.ohf-thumb span { display: block; font-size: 12px; margin-top: 4px; opacity: .8; }
-.ohf-thumb[aria-pressed="true"] { border-color: var(--dsw-alias-brand-primary, #111); }
-.ohf-thumb[aria-pressed="true"] span { opacity: 1; font-weight: 600; }
-.ohf-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px;
-  color: var(--dsw-alias-label-secondary, #5c6370); }
-.ohf-foot { display: flex; gap: 12px; justify-content: flex-end; margin-top: 12px; }
-`;
 
 export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
   const {
@@ -192,62 +163,51 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
         ? "正在生成，请稍候…"
         : `${info?.hint ?? ""}${rotate ? ` · 已旋转 ${rotate}°` : ""}${dirty ? "" : " · 未改动"}`;
 
-  const panelStyle: CSSProperties = { touchAction: "pan-y" };
-
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="ohf-backdrop" onClick={onCancel} role="presentation">
-      <style>{SHEET_CSS}</style>
-      <div
-        className="ohf-panel"
-        style={panelStyle}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="ohf-head">
-          <span className="ohf-title">{title}</span>
-          <Btn variant="outline" onClick={onCancel} aria-label="取消编辑"><IconX /></Btn>
-        </div>
+    <Sheet
+      open
+      onClose={onCancel}
+      title={title}
+      maskClose
+      className="ohf-panel"
+      scope="imageFilter.sheet"
+    >
+      <Stack gap={3}>
+        <Surface level={2} radius="md" pad="sm" className="ohf-stage">
+          {preview ? <img src={preview} alt="处理后的预览" /> : <Text slot="label" tone="faint">读取中…</Text>}
+        </Surface>
 
-        <div className="ohf-stage">
-          {preview ? <img src={preview} alt="处理后的预览" /> : <span style={{ fontSize: 12, opacity: 0.7 }}>读取中…</span>}
-        </div>
-
-        <div className="ohf-strip" role="group" aria-label="滤镜预设">
+        <div role="group" aria-label="滤镜预设">
+        <Inline gap={2} wrap>
           {thumbs.map((t) => {
-            const meta = FILTER_PRESETS.find((p) => p.id === t.id);
+            const meta = FILTER_PRESETS.find((f) => f.id === t.id);
             return (
-              <button
+              <Chip
                 key={t.id}
-                type="button"
-                className="ohf-thumb"
-                aria-pressed={t.id === preset}
+                selected={t.id === preset}
                 onClick={() => setPreset(t.id)}
+                icon={<img src={t.url} alt={meta?.label ?? t.id} width={56} height={56} style={{ borderRadius: "var(--og-radius-xs)", objectFit: "cover" as const }} />}
               >
-                <img src={t.url} alt={meta?.label ?? t.id} />
-                <span>{meta?.label ?? t.id}</span>
-              </button>
+                {meta?.label ?? t.id}
+              </Chip>
             );
           })}
+        </Inline>
         </div>
 
-        <div className="ohf-row">
-          <Btn variant="outline" onClick={() => setRotate((r) => ROTATIONS[(ROTATIONS.indexOf(r) + 1) % ROTATIONS.length] ?? 0)}><IconRefresh />旋转 90°
-          </Btn>
-          <span>{note}</span>
-        </div>
+        <Row
+          leading={<Btn variant="outline" size="sm" onClick={() => setRotate((r) => ROTATIONS[(ROTATIONS.indexOf(r) + 1) % ROTATIONS.length] ?? 0)}>旋转 90°</Btn>}
+          title={<Text slot="label" tone="faint">{note}</Text>}
+        />
+      </Stack>
 
-        <div className="ohf-foot">
-          <Btn variant="outline" onClick={onCancel} disabled={busy}>
-            取消
-          </Btn>
-          <Btn variant="solid" tone="brand" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>{busy ? "处理中…" : "应用"}</Btn>
-        </div>
-      </div>
-    </div>,
+      <Inline gap={2} justify="end" className="ohf-foot">
+        <Btn variant="outline" onClick={onCancel} disabled={busy}>取消</Btn>
+        <Btn variant="solid" tone="brand" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>{busy ? "处理中…" : "应用"}</Btn>
+      </Inline>
+    </Sheet>,
     document.body,
   );
 }

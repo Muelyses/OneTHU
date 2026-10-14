@@ -124,6 +124,37 @@ for (const file of walk(APP)) {
       }
     }
 
+    // 页面私有"小按钮族" → IconBtn（单图标 + 有标签）或 Btn（文字）
+    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(sf) === "button") {
+      const SMALL = ["ex-bbar-btn", "dock-btn", "hs-dock-btn", "hs-detail-btn", "dl-open-btn", "fav-tile-btn",
+        "filter-dd-btn", "heb-btn", "ex-btn", "gitlab-code-btn", "plg-repo-btn", "collect-new-btn", "course-card-btn"];
+      const attrs = node.openingElement.attributes.properties;
+      const cls = attrs.find((a) => a.name?.getText(sf) === "className");
+      const tokens = (cls?.initializer?.getText(sf)?.replace(/["']/g, "") ?? "").split(/\s+/).filter(Boolean);
+      const family = tokens.find((t) => SMALL.includes(t));
+      const labelAttr = attrs.find((a) => ["aria-label", "title"].includes(a.name?.getText(sf) ?? ""));
+      const labelText = labelAttr?.initializer?.getText(sf) ?? "";
+      const kids = node.children.map((c) => c.getText(sf)).join("").trim();
+      const okAttrs = attrs.every((a) => [
+        "className", "onClick", "onMouseDown", "disabled", "title", "aria-label", "aria-pressed",
+        "aria-expanded", "aria-haspopup", "role", "tabIndex", "type",
+      ].includes(a.name?.getText(sf) ?? ""));
+      if (family && okAttrs) {
+        const extra = [];
+        for (const a of attrs) {
+          const name = a.name?.getText(sf) ?? "";
+          if (["className", "title", "aria-label", "type"].includes(name)) continue;
+          extra.push(a.getText(sf));
+        }
+        const tail = extra.length ? " " + extra.join(" ") : "";
+        if (kids.startsWith("<") && !kids.includes("</") + "" && labelAttr) {
+          edits.push([node.getStart(sf), node.getEnd(), `<IconBtn label=${labelText} icon={${kids}}${tail} />`, "IconBtn"]);
+        } else if (kids && !kids.startsWith("<")) {
+          edits.push([node.getStart(sf), node.getEnd(), `<Btn variant="ghost" size="sm"${tail}>${kids}</Btn>`, "Btn"]);
+        }
+      }
+    }
+
     // <button className="icon-btn…"> 单图标无文字钮 → IconBtn
     if (ts.isJsxElement(node) && node.openingElement.tagName.getText(sf) === "button") {
       const attrs = node.openingElement.attributes.properties;

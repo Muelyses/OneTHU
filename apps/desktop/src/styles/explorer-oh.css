@@ -1,78 +1,19 @@
 /* ══════════ dev-explorer · explorer-oh 专属样式 ══════════
-   胶囊条 / 原位语音胶囊 / 面板搜索模式 / 偏好分节 / 悬浮球搜索。
-   只用既有 token（surface / border / text 系 / accent / radius / duration），不自造色值。 */
+   原位语音胶囊（VoiceBar 复用）/ 面板搜索模式 / 偏好分节 / 悬浮球搜索 / 面板生长动画。
+   OH 胶囊条已收编 OneGUI：档位走 oh.capsule scope（ohCapsuleScope.ts 登记）、
+   外观由 explorer-ui.css 契约与 OG 表件出（Badge/Grow/Input.ohx-input）；
+   这里只剩行为几何与令牌引用，不自造色值/尺寸。 */
 
-/* ── OH 胶囊条（OhCapsule；摆位归宿主，这里只管形状与反馈） ── */
-.ohx-capsule {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  height: 36px;
-  width: 100%;
-  min-width: 0;
-  padding: 0 14px;
-  border-radius: 999px;
-  /* 轮廓更清晰（2026-10-13 用户反馈）：双层描边——外实内亮，弱光环境下也能看出胶囊边界 */
-  border: 1px solid var(--border-strong, color-mix(in srgb, var(--text-1) 32%, transparent));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 2px 10px rgba(0, 0, 0, 0.12);
-  background: var(--surface);
-  color: var(--text-1);
-  cursor: pointer;
-  overflow: hidden;
-  transition: margin var(--dur-3, 0.3s) var(--md-sys-motion-easing-spring, cubic-bezier(0.34, 1.4, 0.64, 1)), border-color var(--dur-2) ease, background var(--dur-2) ease;
-}
-/* 白长条最终形态：按压/长按不再缩放、不再有任何阴影——只有左右弹性伸长（is-hold/is-open 的
-   margin 伸长由 explorer-ui.css 契约规则承载；这里给任意宿主一个同语言的轻量按压反馈） */
-.ohx-capsule.is-press { margin: 0 -4px; }
-.ohx-capsule.is-hold { border-color: var(--accent); }
-.ohx-capsule.is-open { cursor: text; border-color: var(--accent); }
-.ohx-capsule-badge {
-  position: static;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-primary, #fff);
-  font-size: 10px;
-  line-height: 16px;
-  font-weight: 600;
-  text-align: center;
-  flex: none;
-}
-/* 占位文字（常态：看起来像输入框的按钮，不是输入框） */
-.ohx-capsule-ph {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: left;
-  font-size: 13px;
-  color: var(--text-3);
-}
-/* 胶囊内嵌输入框（展开态真输入框；explorer-ui.css 已有 .ex-bbar-center 版，这里兜底任意宿主） */
-.ohx-input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: var(--text-1);
-  font: inherit;
-  font-size: 13px;
-  padding: 0;
-}
-/* 收音中：波纹条吃满胶囊（VoiceBar 复用 dock-voicebar，点位动画引擎在 ChatDock 不变） */
-.ohx-capsule-voice { display: flex; align-items: center; flex: 1; min-width: 0; }
+/* ── OH 胶囊条（OneGUI 收编；explorer-oh 只留行为几何） ──
+   外观来源已归 OneGUI：白底/描边/hover/弹满/margin 语义由 explorer-ui.css 的
+   .ex-bbar-center 契约规则（OneGUI 令牌桥）承载；徽标 = OG Badge、收音容器 = OG Grow、
+   展开输入 = OG Input.ohx-input（explorer-oh 的 .ohx-input 兜底规则已随壳样式一起退役）。
+   专属档位登记进 OneGUI 管线：OhCapsule 外壳挂 data-og-scope="oh.capsule"，
+   见 components/explorer/ohCapsuleScope.ts（line-1→line-2 强线档在手机 rim 里被读走）。 */
+.ohx-capsule { cursor: pointer; overflow: hidden; }
+/* 按压弹性伸长：与 is-hold/is-open 的弹满同语言（explorer-ui 契约承载基态 margin）。
+   带 .ex-bbar-center 前缀固定胜出宿主基态（两文件注入顺序不再影响手感）。 */
+.ex-bbar-center .ohx-capsule.is-press { margin: 0 calc(var(--og-space-1) * -1); }
 .ohx-capsule.is-voice { cursor: grabbing; }
 
 /* ── 面板头部的 搜索|OH 模式切换 ── */
@@ -296,35 +237,31 @@
 .dock-oh-missing b { display: block; margin-bottom: 6px; color: var(--text-1); font-size: 14px; }
 .dock-oh-missing p { margin: 4px 0; }
 
-/* 胶囊内常驻一星：贴右缘，搜索展开时不渲染（OhCapsule 控制） */
-.ohx-slot { flex: none; display: inline-block; width: 24px; height: 22px; } /* 与右侧星星等宽，让占位文字居中 */
-.ohx-star { position: static; margin-left: 0; margin-right: 2px; flex: none; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; color: var(--text-3, #9aa0a6); cursor: pointer; }
-.ohx-star:hover { background: var(--hover, rgba(0, 0, 0, 0.06)); color: var(--text-1); }
-.ohx-star.is-lit { color: #e8a317; }
-
-/* ══════════ 液态玻璃 v4：OH 胶囊 = chip tier + hover 扫光 ═══════════ */
-.ohx-capsule {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  border-color: var(--glass-border);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline);
-  overflow: hidden;
+/* 胶囊内常驻一星：贴右缘，搜索展开时不渲染（OhCapsule 控制）——
+   几何走 OneGUI 结构令牌（22px 方块=chip-sm 档、圆角=radius-sm、右缝=geo-xs）；
+   配色走 OneGUI 语义档（hover 层/字阶三档/token 警示金：--amber → --og-warning）。 */
+.ohx-slot { flex: none; display: inline-block; width: var(--og-space-6); height: var(--og-ctl-chip-h-sm); } /* 与右侧星星等宽，让占位文字居中 */
+.ohx-star {
+  position: static;
+  margin-left: 0;
+  margin-right: var(--og-geo-xs);
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-ctl-chip-h-sm);
+  height: var(--og-ctl-chip-h-sm);
+  border-radius: var(--og-radius-sm);
+  color: var(--text-3);
+  cursor: pointer;
 }
-.ohx-capsule::after {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  pointer-events: none;
-  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
-  transform: translateX(-130%) skewX(-8deg);
-  transition: transform 0.6s var(--lg-ease, cubic-bezier(0.16, 1, 0.3, 1));
-}
-.ohx-capsule:hover::after { transform: translateX(130%) skewX(-8deg); }
+.ohx-star:hover { background: var(--hover); color: var(--text-1); }
+.ohx-star.is-lit { color: var(--amber); }
 
+/* ══════════ 液态玻璃 v4 实验层：随 OneGUI 换血退役 ═══════════
+   胶囊的玻璃 tint/rim/扫光：中性皮肤下按 OneGUI 过渡桥裁定「白镜面 hover 高光属玻璃皮肤
+   专属，中性基准不留」，且白长条定案（explorer-ui.css bbar 契约）本就压过这些实验层，
+   原块删除——材质由 OneGUI 令牌与皮肤链出，胶囊不再私自持有玻璃叠加。 */
 /* ═══ 液态玻璃 v4.2 收尾（explorer-oh 域） ═══ */
 .ohx-chip {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
@@ -345,15 +282,8 @@
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
-/* ═══ 液态玻璃 v4.3 收尾（explorer-oh 域）：OH 胶囊家族进玻璃 ═══ */
-/* 白胶囊 = 玻璃 hero：tint + fill-regular 叠层 + chip blur；双层描边定稿保留，色换玻璃系 */
-.ohx-capsule,
-.ex-bbar-center .ohx-capsule {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  border-color: color-mix(in srgb, var(--text-1) 22%, var(--glass-border));
-}
+/* ═══ 液态玻璃 v4.3 收尾（explorer-oh 域）：胶囊部分随 OneGUI 换血退役 ═══
+   白胶囊的玻璃叠层已删（见 v4 注释；bbar 契约出白长条材质），此处只留搜索面板/历史 chip。 */
 /* 面板底 / 搜索栏 / 预设 segment / 历史 chip */
 .ohx-searchpane,
 
@@ -397,21 +327,21 @@ html.is-phone .dock-head .dock-btn.dock-creative {
 html.is-phone .dock-head .dock-btn.dock-creative svg { width: 13px; height: 13px; }
 
 /* ══════════ 手机档（html.is-phone）：胶囊 rim 与留缝 ══════════
-   用户第三次点名「胶囊边框太浅」：手机端玻璃 rim 明显加强——外描边 1px（text-1 38%，
-   亮暗主题下都清晰）+ 发丝环提到 0.16 档 + rim 顶光保持三件套同级强度；
-   材质（tint/blur）不变，也不碰胶囊的动画语义（is-press/is-hold 的弹性照旧）。 */
+   「胶囊边框太浅」的手机加强走 OneGUI scope：rim 读 oh.capsule 的 line-1→line-2 强线档
+   （档位登记在 ohCapsuleScope.ts，由 OneGUI 管线落值——不再手写 text-1 mix 百分比）；
+   材质（玻璃阴影/顶光跟随皮肤链）与动画语义不变。 */
 html.is-phone .ohx-capsule {
-  border: 1px solid color-mix(in srgb, var(--text-1) 38%, transparent);
+  border: var(--og-geo-hairline) solid var(--og-c-line-1);
   box-shadow:
     var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px color-mix(in srgb, var(--text-1) 16%, transparent);
+    inset 0 var(--og-geo-hairline) 0 var(--glass-rim-top),
+    inset 0 0 0 var(--og-geo-hairline) var(--og-c-line-1);
 }
 /* 常态左右留缝收紧：36px → 8px；按压/展开仍「弹一下」（4px 缝，动画 margin 语义原样） */
-html.is-phone .ex-bbar-center .ohx-capsule { margin: 0 8px; }
+html.is-phone .ex-bbar-center .ohx-capsule { margin: 0 var(--og-space-2); }
 html.is-phone .ex-bbar-center .ohx-capsule.is-press,
 html.is-phone .ex-bbar-center .ohx-capsule.is-hold,
-html.is-phone .ex-bbar-center .ohx-capsule.is-open { margin: 0 4px; }
+html.is-phone .ex-bbar-center .ohx-capsule.is-open { margin: 0 var(--og-space-1); }
 /* 小窗内搜索/收音的字略小一档的手机密度（占位与输入都是 13px 的桌面值照旧） */
 html.is-phone .ex-bbar-center .ohx-capsule .ohx-capsule-ph { font-size: var(--text-sm); }
 html.is-phone .ex-bbar-center .ohx-capsule .ohx-input { font-size: var(--text-sm); }

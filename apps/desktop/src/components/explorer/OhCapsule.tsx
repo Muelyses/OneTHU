@@ -1,6 +1,12 @@
-import { Input } from "@onethu/gui";
+import { Badge, Grow, Input } from "@onethu/gui";
 /**
  * OH 胶囊条（dev-explorer 二轮定稿）：**白色长条**，横在底栏中央、两端快贴住标签页与 OneGO。
+ *
+ * OneGUI 收编（dev3 换血）：外壳自挂 `data-og-scope="oh.capsule"`（档位在 ohCapsuleScope.ts
+ * 经 og.defineScope 登记，由 OneGUI 管线调度）；徽标走 OG Badge、收音容器走 OG Grow、
+ * 展开态输入走 OG Input（className="ohx-input" 供手势守卫与 explorer-ui 契约规则识别）；
+ * 白长条本体的白底/描边由 explorer-ui.css 的 .ex-bbar-center 契约规则出（OneGUI 令牌桥）
+ * 本文件不再持有任何外观样式。
  *
  * 三种本体形态（用户 2026-10-12 口径「胶囊本身变成输入框/显示波纹的语音胶囊」）：
  *  - 常态：HarnessMark + 占位文字「搜索或问小OH」（看起来像输入框的**按钮**，不是输入框）+ 未读徽标；
@@ -29,6 +35,7 @@ import {
 } from "../../plugins/ChatDock.js";
 import { useExplorerPrefs } from "../../state/explorerPrefs.js";
 import { useIslandText, ISLAND_DEFAULT_TEXT } from "../../state/island.js";
+import "./ohCapsuleScope.js"; // OH 专属档位登记进 OneGUI 管线（scope: oh.capsule，受 OneGUI 调度）
 
 /** 长按阈值（与 ChatDock 的 VOICE_HOLD_MS 同值；跨过即开始收音） */
 const HOLD_MS = 450;
@@ -141,6 +148,7 @@ export function OhCapsule(): React.ReactNode {
 
   return (
     <button
+      data-og-scope="oh.capsule"
       className={
         "ohx-capsule" +
         (pressing ? " is-press" : "") +
@@ -159,17 +167,20 @@ export function OhCapsule(): React.ReactNode {
       {!voiceOn && !isOpen ? <span className="ohx-slot" aria-hidden="true" /> : null}
       <HarnessMark size={15} />
       {voiceOn ? (
-        /* 收音中：本体就是波纹条（点位动画引擎在 ChatDock，全局 .dock-wave-dot 直写） */
-        <span className="ohx-capsule-voice">
+        /* 收音中：本体就是波纹条（点位动画引擎在 ChatDock，全局 .dock-wave-dot 直写）；
+           容器用 OG Grow（flex:1 + min-width:0，OG 表件出布局），行为类名保留给契约 */
+        <Grow className="ohx-capsule-voice">
           <VoiceBar hint={ui.hint} />
-        </span>
+        </Grow>
       ) : isOpen ? (
-        /* 展开态：真输入框——搜索态=检索词、对话态=消息草稿，与上方窗一个连续交互体 */
-        <Input autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={PLACEHOLDER} aria-label="搜索或问小OH" />
+        /* 展开态：真输入框——搜索态=检索词、对话态=消息草稿，与上方窗一个连续交互体。
+           className="ohx-input" 挂回 OG Input 的壳上：Explorer-ui 契约的 .ohx-input 规则
+           （去壳框/满宽）重新生效，同时 pointerDown 的 closest(".ohx-input") 守卫恢复可判 */
+        <Input className="ohx-input" autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={PLACEHOLDER} aria-label="搜索或问小OH" />
       ) : (
         <span className="ohx-capsule-ph">{idleText}</span>
       )}
-      {badge > 0 && !voiceOn ? <span className="ohx-capsule-badge">{badge > 9 ? "9+" : badge}</span> : null}
+      {badge > 0 && !voiceOn ? <Badge count={badge} tone="accent" className="ohx-capsule-badge" /> : null}
       {!voiceOn && !isOpen ? <CapsuleStar /> : null}
     </button>
   );

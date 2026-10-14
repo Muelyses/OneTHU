@@ -541,7 +541,7 @@ export function Drawer({
 
 function MenuItemList(p: {
   items: readonly MenuItem[];
-  /** 选项 DOM id 前缀（键盘落点与 aria 都要用） */
+  /** 选项 DOM id 前缀（键盘用它在列表里找落点） */
   listId: string;
   active: number | null;
   onHover: (i: number) => void;
@@ -549,13 +549,11 @@ function MenuItemList(p: {
   role?: string;
   label?: string;
 }): ReactNode {
-  const activeId = p.active !== null && p.active >= 0 && p.items[p.active] !== "separator" ? `${p.listId}-${p.active}` : undefined;
   return (
     <div
       className="og-menu-list"
       role={p.role ?? "presentation"}
       aria-label={p.label}
-      aria-activedescendant={activeId}
       onPointerLeave={() => p.onHover(-1)}
     >
       {p.items.map((item, i) =>
@@ -615,7 +613,7 @@ interface MenuKeysOptions {
   setActive: (i: number) => void;
   onPick: (i: number, item: MenuAction) => void;
   listId: string;
-  /** ⌘ Tab 离开即关（菜单要；模态里的动作表不要） */
+  /** Tab 离开即关（菜单要；模态里的动作表不要） */
   closeOnTab: boolean;
   onClose: () => void;
   /** 有栈身份时只在最上层响应（动作表由壳负责，故可省） */
@@ -679,7 +677,16 @@ function AnchoredMenu(p: AnchoredMenuProps): ReactNode {
   const layerId = useId();
   const listId = useId();
   const [active, setActive] = useState<number | null>(null);
-  const { ref, placement } = useFloating({ open: p.open, anchor: p.anchor, side: "bottom", align: "start", dep: p.items.length });
+  /* 没给锚点时用"打开那一刻的焦点元素"（触发菜单的按钮通常就在那儿）；
+     只在打开那一刻取一次快照 —— 之后的焦点变化不该让菜单自己挪位置。 */
+  const [fallback, setFallback] = useState<RectLike | null>(null);
+  const { ref, placement } = useFloating({
+    open: p.open,
+    anchor: p.anchor ?? fallback,
+    side: "bottom",
+    align: "start",
+    dep: p.items.length,
+  });
   const pick = useCallback(
     (_i: number, item: MenuAction): void => {
       item.onSelect?.();
@@ -687,6 +694,15 @@ function AnchoredMenu(p: AnchoredMenuProps): ReactNode {
     },
     [p.onClose],
   );
+
+  useLayoutEffect(() => {
+    if (!p.open || p.anchor) {
+      setFallback(null);
+      return;
+    }
+    const activeEl = document.activeElement;
+    setFallback(activeEl instanceof Element && activeEl !== document.body && activeEl !== document.documentElement ? activeEl.getBoundingClientRect() : null);
+  }, [p.open, p.anchor]);
 
   useLayer(layerId, p.open);
   useEscape(p.open, layerId, p.onClose);

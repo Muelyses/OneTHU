@@ -31,9 +31,9 @@
     "apps/desktop/src/components/boardCards.tsx": 14,
     "apps/desktop/src/components/explorer/FolderIconPicker.tsx": 4,
     "apps/desktop/src/components/explorer/HomeSpheres.tsx": 2,
-    "apps/desktop/src/components/explorer/TabStrip.tsx": 6,
+    "apps/desktop/src/components/explorer/TabStrip.tsx": 4,
     "apps/desktop/src/components/explorer/WallpaperLibrary.tsx": 1,
-    "apps/desktop/src/components/explorer/WorkspaceEditor.tsx": 5,
+    "apps/desktop/src/components/explorer/WorkspaceEditor.tsx": 4,
     "apps/desktop/src/components/exthw/ProblemBody.tsx": 1,
     "apps/desktop/src/components/exthw/YktContentBody.tsx": 1,
     "apps/desktop/src/lib/confirm.tsx": 8,
@@ -58,7 +58,6 @@
     "apps/desktop/src/pages/info/HygieneTab.tsx": 3,
     "apps/desktop/src/pages/info/InvoiceTab.tsx": 1,
     "apps/desktop/src/pages/info/KongjianTab.tsx": 6,
-    "apps/desktop/src/pages/info/LibRoomTab.tsx": 13,
     "apps/desktop/src/pages/info/NetworkTab.tsx": 14,
     "apps/desktop/src/pages/info/PayrollTab.tsx": 1,
     "apps/desktop/src/pages/info/ProfileTab.tsx": 1,
@@ -77,8 +76,7 @@
     "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx": 1,
     "apps/desktop/src/pages/learn/YktCoursePage.tsx": 1,
     "apps/desktop/src/pages/learn/shared.tsx": 1,
-    "apps/desktop/src/pages/zhjwxk/Courses.tsx": 2,
-    "apps/desktop/src/plugins/ChatDock.tsx": 1
+    "apps/desktop/src/pages/zhjwxk/Courses.tsx": 2
   },
   "colors": {
     "apps/desktop/src/components/DevPanel.tsx": 23,
@@ -93,8 +91,6 @@
     "apps/desktop/src/components/ThemePickerModal.tsx": 1,
     "apps/desktop/src/components/boardCards.tsx": 4,
     "apps/desktop/src/components/explorer/FolderIconPicker.tsx": 4,
-    "apps/desktop/src/components/explorer/TabStrip.tsx": 5,
-    "apps/desktop/src/components/explorer/WorkspaceEditor.tsx": 5,
     "apps/desktop/src/components/exthw/ProblemBody.tsx": 6,
     "apps/desktop/src/components/exthw/YktSubjectiveEditor.tsx": 3,
     "apps/desktop/src/gallery/OneGUIGallery.tsx": 4,
@@ -191,7 +187,6 @@
     "apps/desktop/src/pages/info/DormTab.tsx": 2,
     "apps/desktop/src/pages/info/InfoPage.tsx": 1,
     "apps/desktop/src/pages/info/KongjianTab.tsx": 1,
-    "apps/desktop/src/pages/info/LibRoomTab.tsx": 3,
     "apps/desktop/src/pages/info/LifePage.tsx": 1,
     "apps/desktop/src/pages/info/NetworkTab.tsx": 5,
     "apps/desktop/src/pages/info/ReservePage.tsx": 1,
@@ -209,7 +204,7 @@
     "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx": 1,
     "apps/desktop/src/pages/learn/YktCoursePage.tsx": 2,
     "apps/desktop/src/pages/learn/shared.tsx": 3,
-    "apps/desktop/src/plugins/ChatDock.tsx": 17,
+    "apps/desktop/src/plugins/ChatDock.tsx": 10,
     "apps/desktop/src/state/seafileAuto.ts": 1
   },
   "legacyClasses": {
@@ -236,14 +231,14 @@
     "apps/desktop/src/pages/learn/SearchPage.tsx": 1,
     "apps/desktop/src/pages/learn/shared.tsx": 3
   },
-  "legacyCssLines": 10904,
+  "legacyCssLines": 10303,
   "legacyCssPerFile": {
     "apps/desktop/src/styles/explorer-home.css": 850,
     "apps/desktop/src/styles/explorer-oh.css": 367,
     "apps/desktop/src/styles/explorer-ui.css": 928,
     "apps/desktop/src/styles/explorer.css": 594,
     "apps/desktop/src/styles/glass-levels.css": 113,
-    "apps/desktop/src/styles/global.css": 7165,
+    "apps/desktop/src/styles/global.css": 6564,
     "apps/desktop/src/styles/motion.css": 887
   }
 }

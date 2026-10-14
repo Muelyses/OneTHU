@@ -8,7 +8,9 @@
   width: var(--og-icon-md);
   height: var(--og-icon-md);
   stroke-width: var(--og-icon-stroke);
-  vertical-align: middle;
+  /* 行内 icon 的垂直基线：`middle` 对 CJK 全角正文会浮到偏上（「icon 长在文字左上角」的来由）。
+     负偏移把图形光心压回正文几何中线；按钮等 flex 容器走自己的居中布局，不受此行影响。 */
+  vertical-align: -0.14em;
 }
 
 .og-icon--sm { width: var(--og-icon-sm); height: var(--og-icon-sm); stroke-width: var(--og-icon-stroke-sm); }

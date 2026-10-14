@@ -1,3 +1,4 @@
+import { Chip } from "@onethu/gui";
 /**
  * 首页固定层（2026-10-13 定稿）：居中大时间 + 时间下的一级功能区 + 两个功能按钮。
  *
@@ -142,14 +143,19 @@ export function HomeChrome(): ReactNode {
             ))}
           </div>
           <div className="hs-dock-actions">
-            <button type="button" className="hs-dock-btn" aria-expanded={moreOpen} onClick={() => { setMoreOpen((v) => !v); setDetailOpen(false); }}>
-              <IconMore width={14} height={14} />
-              <span>更多功能</span>
-            </button>
-            <button type="button" className="hs-dock-btn" aria-expanded={detailOpen} onClick={() => { setDetailOpen((v) => !v); setMoreOpen(false); }}>
-              <span>详细功能</span>
-              <IconChevron width={14} height={14} />
-            </button>
+            {/* 2026-10-14：这俩曾是"透明文字"（旧 .hs-dock-btn 的 ghost 收口在壁纸上看不见）——
+                收进 OG Chip 后有实底胶囊，开合态 selected 高亮跟随 */}
+            <Chip
+              size="sm"
+              selected={moreOpen}
+              onClick={() => { setMoreOpen((v) => !v); setDetailOpen(false); }}
+              icon={<IconMore width={14} height={14} />}
+            >
+              更多功能
+            </Chip>
+            <Chip size="sm" selected={detailOpen} onClick={() => { setDetailOpen((v) => !v); setMoreOpen(false); }}>
+              详细功能
+            </Chip>
           </div>
         </div>
       </div>

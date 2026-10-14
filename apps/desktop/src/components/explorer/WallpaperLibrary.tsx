@@ -57,17 +57,6 @@ function WallCell({ entry, variant }: { entry: LibraryEntry; variant: "panel" | 
       >
         <WallThumb entry={entry} />
       </button>
-      {variant === "panel" ? (
-        <button
-          type="button"
-          className={"wall-chip wall-chip-full" + (fullActive ? " is-on" : "")}
-          onClick={apply}
-          aria-label={"设为全屏：" + entry.name}
-          title="设为全屏"
-        >
-          全屏
-        </button>
-      ) : null}
       {variant === "panel" && !entry.builtin ? (
         <button
           type="button"

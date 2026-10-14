@@ -39,7 +39,6 @@ import { ErrorLine } from "./Details.js";
 import { CommandPalette } from "./CommandPalette.js";
 import { TabStrip } from "./explorer/TabStrip.js";
 import { ShellWallpaperLayer } from "./explorer/WallpaperVideo.js";
-import { HomeChrome } from "./explorer/HomeSpheres.js";
 import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";

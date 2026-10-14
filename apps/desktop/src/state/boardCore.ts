@@ -1,3 +1,4 @@
+import { ensureNoOverlap } from "./boardReflow.js";
 /**
  * 白板文档核心（纯逻辑 + 依赖注入，不依赖任何视图模块）。
  *
@@ -27,8 +28,9 @@ export function colsForWidth(width: number): number {
   return width >= BOARD_WIDE_MIN ? BOARD_COLS_WIDE : BOARD_COLS;
 }
 /**
- * 基准瓦片高（px）：画布行高固定为它，高度单位因此有确定含义（霖 2026-10-10 定）。
- * 必须与 global.css 的 .board-canvas grid-auto-rows 一致——护栏会比对两处，避免各改一边。
+ * 基准瓦片高（px）：**格单位的高度含义**（1 行 = TILE_H），格↔px 迁移按它换算。
+ * 旧网格画布（.board-canvas 的 grid-auto-rows）2026-10-15 已随白板页退役，
+ * 现在它只服务迁移与契约空间（配套 TILE_W 见下），不再与任何 CSS 成对。
  */
 export const TILE_H = 88;
 /** 行间距（与 CSS gap 一致）。 */
@@ -55,6 +57,9 @@ export const CANVAS_REF_W = BOARD_PAD * 2 + TILE_W * BOARD_COLS + TILE_GAP * (BO
 /** 自由层的缩放下限（与 state/freeBoard.ts 的 MIN_W / MIN_H 同口径）。 */
 export const RECT_MIN_W = 120;
 export const RECT_MIN_H = 64;
+/** 脏数据上限（旧键/手写 JSON 的防御）：只夹下限不够——`w=99999` 会渲染成占满屏的大件。 */
+export const RECT_MAX_W = 1600;
+export const RECT_MAX_H = 4000;
 
 export type Orientation = "portrait" | "landscape";
 
@@ -307,20 +312,65 @@ export function defaultBoardDoc(deps: BoardDeps): BoardDoc {
   return { v: 1, boards: [board], activeBoardId: board.id, order: deps.loadOrder() };
 }
 
-/** 读文档：缺失或损坏 → 迁移一份并落盘；文档已在则**原样返回**（幂等）。 */
+/* ══════════════════════════════════════════════════════════════════════════
+   写入口的唯一不变量：**落库的文档里，格子不许重叠**。
+
+   这条原来挂在白板页的 `apply()` 上（「无论哪个操作漏了让位，写进去的文档都不会重叠」），
+   2026-10-15 白板页退役时被一起带走了 —— 而插件/OH 的 `ext.onePage*`（facade 直写 cell）、
+   OneGO、收藏落点、自由画布四条路都还在往里写，于是"叠在一起的卡片"又回来了
+   （oh-wire 的对抗性验证反例①）。
+
+   现在把漏斗放在**持久化本身**（saveBoard / 载入修复），而不是每个写操作各记一次：
+   谁写都得过这道闸，将来新增写路径也不会漏。口径：
+     · 只修 `cell`（契约层坐标），**不碰 `rect`** —— 重叠在自由画布上是特性（用户点名要的
+       「可以互相覆盖」），画布位置由 rect 决定（rectOf 优先 rect），拆格子不会挪动视觉；
+     · 不可变：没有重叠时返回**同一引用**（调用方据此判断"要不要真写盘"）；
+     · 载入即修复一次并落盘（历史/手写脏数据不能永远叠着）；文档没坏时零副作用。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** 文档级重叠修复：逐板逐朝向把重叠的格子拆开（只动 cell）。无变化返回原引用。 */
+export function repairOverlaps(doc: BoardDoc): BoardDoc {
+  let touched = false;
+  const boards: Board[] = doc.boards.map((b) => {
+    let cells = b.cells;
+    for (const o of Object.keys(b.cells) as Orientation[]) {
+      const list = b.cells[o] ?? [];
+      if (list.length < 2) continue;
+      const safe = ensureNoOverlap(list);
+      if (!safe.some((it, i) => !sameCell(it.cell, list[i]?.cell))) continue;
+      if (cells === b.cells) cells = { ...b.cells };
+      cells[o] = safe;
+      touched = true;
+    }
+    return cells === b.cells ? b : { ...b, cells };
+  });
+  return touched ? { ...doc, boards } : doc;
+}
+
+function sameCell(a: BoardCell, b: BoardCell | undefined): boolean {
+  return !!b && a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
+}
+
+/** 读文档：缺失或损坏 → 迁移一份并落盘；已在但带重叠 → 修一次并落盘；否则**原样返回**（幂等）。 */
 export function loadBoard(deps: BoardDeps): BoardDoc {
   const store = deps.storage ?? globalThis.localStorage;
   const parsed = parseBoard(store?.getItem(BOARD_KEY) ?? null);
-  if (parsed) return parsed;
-  const fresh = defaultBoardDoc(deps);
-  saveBoard(fresh, deps);
-  return fresh;
+  if (!parsed) {
+    const fresh = defaultBoardDoc(deps);
+    saveBoard(fresh, deps);
+    return fresh;
+  }
+  const safe = repairOverlaps(parsed);
+  if (safe !== parsed) saveBoard(safe, deps);
+  return safe;
 }
 
 export function saveBoard(doc: BoardDoc, deps: BoardDeps): void {
   try {
-    (deps.storage ?? globalThis.localStorage)?.setItem(BOARD_KEY, JSON.stringify(doc));
-    if (doc.order && typeof doc.order === "object") deps.saveOrder(doc.order);
+    /* 唯一写入口：任何来源（页面 / 自由画布 / 插件 / OH / OneGO）都过这道不变量 */
+    const safe = repairOverlaps(doc);
+    (deps.storage ?? globalThis.localStorage)?.setItem(BOARD_KEY, JSON.stringify(safe));
+    if (safe.order && typeof safe.order === "object") deps.saveOrder(safe.order);
   } catch {
     /* 存储失败（配额/隐私模式）：保持内存态可用，由调用方决定是否提示 */
   }
@@ -516,8 +566,8 @@ export function parseLegacyFreeBoard(raw: string | null): BoardPxItem[] {
       spec: r.spec as WidgetSpec,
       x: Math.max(0, Math.round(legacyNum(r.x, 20))),
       y: Math.max(0, Math.round(legacyNum(r.y, 20))),
-      w: Math.max(RECT_MIN_W, Math.round(legacyNum(r.w, 240))),
-      h: Math.max(RECT_MIN_H, Math.round(legacyNum(r.h, 120))),
+      w: Math.min(RECT_MAX_W, Math.max(RECT_MIN_W, Math.round(legacyNum(r.w, 240)))),
+      h: Math.min(RECT_MAX_H, Math.max(RECT_MIN_H, Math.round(legacyNum(r.h, 120)))),
     };
     if (r.folded === true) px.folded = true;
     if (typeof r.opacity === "number" && Number.isFinite(r.opacity)) px.opacity = Math.min(1, Math.max(0.25, r.opacity));

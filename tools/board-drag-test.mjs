@@ -83,9 +83,36 @@ const r1 = R.reflowForMove(tall, "tall", { x: 0, y: 3 });
 ok(r1.find((x) => x.id === "tall").cell.y === 3, "让位后被移项没有落在目标格");
 ok(r1.find((x) => x.id === "down1").cell.y === 12, "落点下方的条目被波及（让位不该动无关项）");
 const overlaps = (arr) => arr.some((a, i) => arr.some((b, j) => i !== j && a.cell.x < b.cell.x + b.cell.w && b.cell.x < a.cell.x + a.cell.w && a.cell.y < b.cell.y + b.cell.h && b.cell.y < a.cell.y + a.cell.h));
-/* 让位**可能**留下瞬时重叠（位移模型只平移、不重排），写入口用 ensureNoOverlap 兜底——
-   这一对才是真实不变量（旧守栏此处用了已删除模块的 overlaps，恒假 → 空断言，本轮修掉）。 */
-ok(overlaps(r1) && !overlaps(R.ensureNoOverlap(r1)), "让位+兜底之后仍存在重叠（写入口的不变量失效）");
+/* 让位本身**允许**留下瞬时重叠（位移模型只平移、不重排）；真正的不变量在写入口。
+   注意这段自此往下驱动的是**生产路径**（boardCore.saveBoard / loadBoard —— 应用侧
+   state/board.ts 的 saveBoard 就是它的包装，插件/OH 的 ext.onePage* 直写 cell 也落在它上面）。
+   上一版守栏在这里给自己背书：只证明了 ensureNoOverlap「能拆」，没证明生产里有人**调**
+   （oh-wire 反例①）。所以这里必须走真漏斗、断言落库结果。 */
+ok(overlaps(r1), "fixture 前提变了：reflowForMove 现在不留重叠？（那这组用例的前提要重写）");
+const mem = new Map();
+const storage = { getItem: (k) => (mem.has(k) ? mem.get(k) : null), setItem: (k, v) => { mem.set(k, v); } };
+const deps = { knownIds: [], loadLayoutItems: () => null, resolveLayout: () => [], loadOrder: () => ({}), saveOrder: () => {}, storage };
+const overlapDoc = docOf([item("tall", 0, 3, 4, 8), item("up2", 0, 2, 4, 2)]);
+ok(overlaps(overlapDoc.boards[0].cells.portrait), "写入口用例的输入本身必须是有重叠的（否则是空转断言）");
+B.saveBoard(overlapDoc, deps);
+const persisted = B.parseBoard(mem.get(B.BOARD_KEY));
+ok(!!persisted && !overlaps(persisted.boards[0].cells.portrait), "重叠文档经**写入口**落库后仍然重叠（不变量没接上生产路径）");
+/* 载入即修复一次：历史/手写脏数据不能永远叠着（策略见 boardCore 的注释） */
+mem.set(B.BOARD_KEY, JSON.stringify(overlapDoc));
+const loaded = B.loadBoard(deps);
+ok(!overlaps(loaded.boards[0].cells.portrait), "载入带重叠的文档没有修复");
+ok(!overlaps(B.parseBoard(mem.get(B.BOARD_KEY)).boards[0].cells.portrait), "载入修复没有落盘（下次进来又叠着）");
+/* 自由画布的重叠是特性：不变量只拆 cell，绝不碰 rect（否则画布摆位会被"拆格子"挪走） */
+const pxDoc = docOf([
+  Object.assign(item("a", 0, 0, 4, 4), { rect: { x: 10, y: 10, w: 300, h: 300 } }),
+  Object.assign(item("b", 0, 0, 4, 4), { rect: { x: 40, y: 40, w: 300, h: 300 } }),
+]);
+B.saveBoard(pxDoc, deps);
+const keptPx = B.parseBoard(mem.get(B.BOARD_KEY)).boards[0].cells.portrait;
+ok(keptPx[0].rect.x === 10 && keptPx[1].rect.x === 40 && keptPx[0].rect.y === 10, "写入口动了 rect —— 自由画布的摆位/重叠是特性，只能拆 cell");
+/* 重构报警：漏斗必须在持久化那两个函数里（挪走就会红） */
+const coreSrc = readFileSync("apps/desktop/src/state/boardCore.ts", "utf8");
+ok(/export function repairOverlaps/.test(coreSrc) && /const safe = repairOverlaps\(doc\)/.test(coreSrc) && /const safe = repairOverlaps\(parsed\)/.test(coreSrc), "写入口（saveBoard / loadBoard）没有再接重叠不变量");
 const docM = E.moveItem(docOf(tall), "b1", "portrait", "tall", { x: 0, y: 3 });
 const cellsM = docM.boards[0].cells.portrait.map((c) => c.id + "@" + c.cell.x + "," + c.cell.y).sort().join("|");
 const prevM = r1.map((c) => c.id + "@" + c.cell.x + "," + c.cell.y).sort().join("|");

@@ -862,11 +862,14 @@
   border-radius: var(--r-md);
   transition: background var(--dur-2) ease, box-shadow var(--dur-2) ease;
 }
-/* task-22 检索直达扩展锚点（插件页卡片按钮 / 工具行 / 市场条）：同一套高亮 token，不另造配色 */
+/* task-22 检索直达扩展锚点（插件页卡片按钮 / 工具行 / 市场条）：同一套高亮 token，不另造配色；
+   插件页收编后锚点落在 OG 按钮与分段控件上（.og-btn/.og-segment），旧四组随各自页面轮自然清零 */
 .btn.row-focus,
 .market-bar.row-focus,
 .segmented.row-focus,
-.plg-card-top.row-focus {
+.plg-card-top.row-focus,
+.og-btn.row-focus,
+.og-segment.row-focus {
   box-shadow: inset 0 0 0 2px var(--accent-border);
   background: var(--accent-soft);
   border-radius: var(--r-md);
@@ -2964,145 +2967,20 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 
 .plg-code { font-family: var(--font-mono); font-size: 0.92em; background: var(--surface-3); padding: 1px 5px; border-radius: 4px; }
 
-/* 电表条：安装 / 运行 / 命令 / 内置 */
-.plg-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-2); margin-bottom: var(--gap-4); }
-.plg-stat { display: flex; align-items: baseline; gap: 8px; padding: 10px 14px; background: var(--md-sys-color-surface-container-lowest); border-radius: var(--md-sys-shape-corner-large); }
-.plg-stat-n { font-family: var(--font-mono); font-size: var(--text-lg); font-weight: 600; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 7px; }
-.plg-stat-l { font-size: var(--text-xs); color: var(--text-3); }
-
-/* 状态 LED */
-.plg-led { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); display: inline-block; flex: none; }
-.plg-led.is-run { background: var(--green); box-shadow: 0 0 0 3px var(--green-soft); animation: plg-pulse 2.2s ease-in-out infinite; }
-.plg-led.is-err { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-soft); }
-@keyframes plg-pulse { 0%, 100% { box-shadow: 0 0 0 3px var(--green-soft); } 50% { box-shadow: 0 0 0 5px var(--green-soft); } }
-
-/* 机架 + 模块卡 */
-.plg-rack { display: grid; gap: var(--gap-3); }
-.plg-card { display: flex; gap: var(--gap-3); padding: var(--gap-3) var(--gap-4); background: var(--md-sys-color-surface-container-lowest); border: 1px solid transparent; border-left-width: 3px; border-radius: var(--md-sys-shape-corner-large); animation: plg-in 0.34s cubic-bezier(0.2, 0.7, 0.3, 1) both; transition: opacity var(--dur-2) var(--ease-out); }
-/* §3.9-5：卡片 hover 走状态层（不再改描边/叠阴影，§3 阴影克制） */
-.plg-card { position: relative; }
-.plg-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--md-sys-color-state-hover);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur-2) var(--ease-out);
-}
-.plg-card:hover::after { opacity: 1; }
-.plg-card.is-on { border-left-color: var(--green); }
-.plg-card.is-err { border-left-color: var(--amber); }
-@keyframes plg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-/* 模块针脚（双字母 monogram；内置核心用业务蓝） */
+/* 模块针脚 + logo 槽（共享保留）：PluginLogo 的 img 无固有尺寸，.plg-pin 是本页与
+   PluginLogo 的尺寸槽（40px 框）；is-oh 档被 state/theme.ts 夜主题覆盖引用（API 语义保留）。 */
 .plg-pin { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--surface-2); font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-2); }
 .plg-pin.is-core { background: var(--accent-soft); border-color: var(--accent-border); color: var(--accent); }
-/* OH 内置标识：白底黑字图片 logo（与其他插件针脚同位同样式） */
 .plg-pin.is-oh { background: #fff; border-color: var(--border-strong); color: #000; }
 .plg-logo { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; display: block; }
 
-.plg-title { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
-.plg-name { font-size: var(--text-base); font-weight: 600; }
-.plg-ver { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-3); }
-.plg-kind { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-3); }
-.plg-core { font-size: 10.5px; padding: 2px 7px; border-radius: var(--r-pill); background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-border); }
-
-.plg-ops { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.plg-state { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--text-3); }
-.plg-state.is-run { color: var(--text-1); }
-.plg-state.is-err { color: var(--amber); }
-
-/* 启停小开关 */
-.plg-switch {
-  position: relative;
-  width: 36px; /* 与 .switch 同一套几何（原 34×20 是第二套尺寸） */
-  height: 22px;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--md-sys-color-outline);
-  background: var(--md-sys-color-surface-container-high);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition:
-    background var(--dur-1) var(--ease-out),
-    border-color var(--dur-1) var(--ease-out);
-}
-.plg-switch:focus-visible { box-shadow: var(--md-sys-focus-ring); outline: none; }
-.plg-switch i { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--md-sys-color-outline); box-shadow: var(--shadow-1); transition: transform var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out); }
-.plg-switch.is-on { background: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
-.plg-switch.is-on i { transform: translateX(14px); background: var(--md-sys-color-on-primary); }
-.plg-switch:disabled { opacity: var(--md-sys-state-opacity-disabled); cursor: default; }
-
-.plg-danger:hover { background: var(--red-soft); color: var(--red); border-color: transparent; }
-
-.plg-desc { margin: 0; color: var(--text-2); font-size: var(--text-sm); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-/* 权限胶囊 */
-.plg-perms { display: flex; flex-wrap: wrap; gap: 5px; }
-.plg-perm { font-size: 10.5px; padding: 2px 8px; border-radius: var(--r-pill); background: var(--surface-2); border: 1px solid var(--border-soft); color: var(--text-2); }
-
-/* 展开舱段（grid-rows 过渡） */
-.plg-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.24s ease; }
-.plg-detail.is-open { grid-template-rows: 1fr; }
-.plg-detail-in { overflow: hidden; min-height: 0; display: grid; gap: var(--gap-3); padding-top: 10px; border-top: 1px dashed var(--border); }
-
-.plg-settings { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 8px 12px; }
-.plg-settings.is-sheet { grid-template-columns: 1fr; gap: 10px; }
-.plg-setting { display: grid; gap: 4px; font-size: var(--text-sm); }
-.plg-setting > span { color: var(--text-2); }
-
-.plg-cmds { display: grid; gap: 12px; }
-.plg-cmd { display: grid; gap: 6px; justify-items: start; }
-.plg-cmd-t { font-size: var(--text-sm); font-weight: 500; }
+/* .plg-runmsg（共享保留）：ThemePickerModal 的安装报错行仍用（本页已走 OG Text/Surface） */
 .plg-runmsg { white-space: pre-wrap; max-height: 200px; overflow: auto; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: var(--r-md); padding: 6px 9px; }
 
-/* 运行轨迹终端 */
-.plg-term { max-height: 240px; overflow: auto; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: var(--r-md); padding: 8px 10px; display: grid; gap: 2px; font-family: var(--font-mono); font-size: 11px; }
-.plg-term-empty { color: var(--text-3); text-align: center; padding: 14px 0; letter-spacing: 0.06em; }
-.plg-ev { display: flex; gap: 7px; line-height: 1.65; }
-.plg-ev-t { color: var(--text-dim); flex: none; }
-.plg-ev-tag { flex: none; width: 10px; }
-.plg-ev-text { color: var(--text-2); word-break: break-all; min-width: 0; }
-.plg-ev-progress .plg-ev-tag { color: var(--accent); }
-.plg-ev-progress .plg-ev-text { color: var(--text-1); }
-.plg-ev-exit .plg-ev-tag, .plg-ev-exit .plg-ev-text { color: var(--red); }
-.plg-ev-log .plg-ev-tag { color: var(--text-3); }
-
-/* 安装面板：三路 tab + 虚线拖入区 */
-.plg-install { background: var(--md-sys-color-surface-container-lowest); border-radius: var(--md-sys-shape-corner-large); padding: var(--gap-3) var(--gap-4); margin-bottom: var(--gap-4); display: grid; gap: var(--gap-3); animation: plg-in 0.3s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-.plg-install-tabs { display: inline-flex; gap: 2px; padding: 2px; background: var(--surface-3); border-radius: var(--r-md); width: fit-content; max-width: 100%; flex-wrap: wrap; }
-.plg-tab { border: 0; background: transparent; padding: 5px 12px; border-radius: 6px; font-size: var(--text-sm); color: var(--text-2); font-weight: 500; cursor: pointer; transition: background 0.12s ease, color 0.12s ease; min-height: 28px; }
-.plg-tab.is-on { background: var(--md-sys-color-surface-container-lowest); color: var(--text-1); box-shadow: var(--shadow-1); }
-.plg-install-body { display: grid; gap: 10px; }
-.plg-paste { font-family: var(--font-mono); font-size: var(--text-xs); line-height: 1.6; }
-.plg-install-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-2); flex-wrap: wrap; }
+/* .plg-hint（共享保留）：renderPage/ThemePickerModal 的弱说明字仍用 */
 .plg-hint { color: var(--text-3); font-size: var(--text-xs); }
-.plg-msg { color: var(--text-1); font-size: var(--text-sm); word-break: break-all; }
-.plg-filebox { display: grid; gap: 4px; justify-items: center; padding: 22px 14px; border: 1.5px dashed var(--border-strong); border-radius: var(--r-md); cursor: pointer; transition: border-color 0.15s ease, background 0.15s ease; position: relative; width: 100%; font: inherit; background: var(--md-sys-color-surface-container-lowest); }
-.plg-filebox:hover { border-color: var(--accent); background: var(--accent-soft); }
-.plg-filebox input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.plg-filebox-t { font-size: var(--text-sm); font-weight: 500; color: var(--text-1); pointer-events: none; }
-.plg-filebox-d { font-size: var(--text-xs); color: var(--text-3); pointer-events: none; }
 
-/* 空态 */
-.plg-empty { display: grid; justify-items: center; gap: 8px; padding: 52px 16px; border: 1.5px dashed var(--border-strong); border-radius: var(--r-lg); text-align: center; }
-.plg-empty-mark { font-family: var(--font-mono); font-size: 22px; color: var(--text-dim); letter-spacing: 0.1em; }
-.plg-empty-t { font-size: var(--text-md); font-weight: 600; }
-.plg-empty-d { color: var(--text-3); font-size: var(--text-sm); margin-bottom: 6px; }
-
-@media (prefers-reduced-motion: reduce) { .plg-card, .plg-install { animation: none; } .plg-led.is-run { animation: none; } }
 @media (max-width: 839.98px) {
-  .plg-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .plg-stat { padding: 8px 12px; }
-  .plg-stat-n { font-size: var(--text-md); }
-  .plg-card-top { flex-wrap: wrap; }
-  .plg-card-top .plg-ops { width: 100%; justify-content: flex-start; padding-top: 2px; }
-  .plg-pin { width: 34px; height: 34px; font-size: 11px; }
-  .plg-state-sub { display: none; }
-  html.is-phone .plg-ops .btn { height: 32px; padding: 0 12px; font-size: 12px; }
-  .plg-mask { align-items: stretch; }
-  .plg-sheet { width: 100%; max-width: 100%; max-height: 92dvh; border-radius: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0; margin: 0; }
 
   /* B3b：弹层统一成底部抽屉（bottom sheet）——贴底、满宽、上圆角、把手、安全区 */
   .home-modal-mask { align-items: flex-end; padding: 0; }
@@ -4010,12 +3888,7 @@ html.is-phone .dock-panel {
 }
 .dock-hist-meta { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; color: var(--text-3); }
 
-/* ---------- 插件页 v2：卡片新结构 + 设置/日志 Sheet ---------- */
-.plg-card { display: grid; gap: 8px; padding: var(--gap-3) var(--gap-4); }
-.plg-card-top { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.plg-card-id { flex: 1; min-width: 0; display: grid; gap: 3px; justify-items: start; }
-.plg-state-sub { color: var(--text-dim); font-family: var(--font-mono); font-size: 10px; margin-left: 6px; }
-.plg-cmds-toggle { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--accent); font-size: var(--text-sm); cursor: pointer; padding: 2px 0; width: fit-content; min-height: 24px; }
+/* .plg-caret（共享保留）：ChatDock 的思考链折叠箭头仍用（本页命令舱段已走 AccordionItem） */
 .plg-caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid currentColor; transition: transform 0.18s ease; display: inline-block; }
 .plg-caret.is-open { transform: rotate(180deg); }
 
@@ -4032,34 +3905,24 @@ html.is-phone .dock-panel {
 @keyframes m-fade-out { to { opacity: 0; } }
 @keyframes m-pop-out { to { opacity: 0; transform: scale(0.96); } }
 @keyframes m-sheet-down { to { opacity: 0; transform: translateY(100%); } }
-.plg-mask.is-closing,
 .home-modal-mask.is-closing,
 .confirm-mask.is-closing,
 .mail-compose-mask.is-closing {
   animation: m-fade-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both;
 }
-.plg-sheet.is-closing,
 .home-modal.is-closing,
 .confirm-card.is-closing,
 .mail-compose.is-closing {
   animation: m-pop-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both;
 }
 /* 手机上是抽屉：退场必须往下滑，不能缩小 */
-html.is-phone .plg-sheet.is-closing,
 html.is-phone .home-modal.is-closing {
   animation: m-sheet-down var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both;
 }
-.plg-mask { position: fixed; inset: 0; background: rgba(15, 17, 21, 0.44); z-index: 9995; display: flex; align-items: center; justify-content: center; animation: plg-fade 0.18s ease both; }
+/* @keyframes plg-fade / plg-up（共享保留）：MailPage 写信弹层（.mail-compose-mask/.mail-compose）与
+   toast-host 的入场动画仍引用这两组关键帧；本页 Sheet 遮罩/面板相位已由 OneGUI 承担 */
 @keyframes plg-fade { from { opacity: 0; } }
-.plg-sheet { width: min(560px, calc(100% - 24px)); max-height: min(86dvh, 720px); background: var(--md-sys-color-surface-container-lowest); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-3); display: flex; flex-direction: column; overflow: hidden; animation: plg-up 0.22s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
 @keyframes plg-up { from { transform: translateY(16px); opacity: 0; } }
-.plg-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border-soft); font-size: var(--text-base); flex: none; }
-.plg-sheet-body { padding: 14px 16px; overflow: auto; display: grid; gap: 10px; align-content: start; flex: 1; min-height: 0; }
-.plg-sheet-foot { display: flex; align-items: center; gap: 8px; justify-content: space-between; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--border-soft); background: var(--surface-2); flex: none; }
-.plg-sheet-foot-ops { display: inline-flex; gap: 8px; align-items: center; }
-.plg-saved { color: var(--green); font-size: var(--text-xs); display: inline-flex; gap: 6px; align-items: center; }
-.plg-term.is-tall { max-height: none; height: 56dvh; }
-.plg-sheet .plg-term { height: auto; flex: 1; min-height: 0; }
 
 /* ---------- Harness 品牌 (OH) + 思维链 + 对话 Markdown ---------- */
 .harness-mark { display: inline-flex; align-items: baseline; line-height: 1; color: currentColor; gap: 0.05em; white-space: nowrap; }
@@ -4096,9 +3959,6 @@ html.is-phone .home-modal.is-closing {
 .dock-md hr { border: 0; border-top: 1px solid var(--border-soft); margin: 8px 0; }
 .dock-md img { max-width: 100%; border-radius: var(--r-sm); }
 
-/* 运行日志：结构化 log 行（LLM 请求/应答/错误、工具耗时）——等宽弱化色区别于进度 */
-.plg-ev.is-log .plg-ev-text { color: var(--text-3); font-family: var(--font-mono); font-size: 10.5px; line-height: 1.55; }
-.plg-ev.is-log .plg-ev-tag { color: var(--text-3); }
 
 /* ============================================================
    寻迹（Trace）：Leaflet + 高德瓦片 · 紧迫度标注 · 详情卡
@@ -4958,16 +4818,8 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
   .ykt-problem-chip { margin-left: 0; }
   .ykt-problem-head { row-gap: 4px; }
 }
-/* ── 插件市场（安装面板 · 市场页签）── */
-
-/* ── 插件市场独立视图 ── */
-.market-view { display: flex; flex-direction: column; gap: 10px; }
-.market-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.market-search { flex: 1; min-width: 220px; }
-.market-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 10px;
-}
+/* ── 插件市场卡（共享保留）：ThemePickerModal 的主题候选卡与本页同构；
+   本页市场格已走 OG Grid+Card+Row，motion.ts 的 REVEAL_SELECTOR 仍引用 .market-grid（空转无害）── */
 .market-card {
   display: flex; flex-direction: column; gap: 6px;
   padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-lg);
@@ -4982,18 +4834,13 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
   padding: 1px 7px; border-radius: var(--r-pill); background: var(--amber-soft);
 }
 .market-card-meta { font-size: 11px; color: var(--text-3); }
-/* ③ 市场详情页（2026-10-12）：卡头 + 简介图 + markdown 正文；图片点开走 openImageViewer */
-.market-detail-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-.market-detail-logo { width: 40px; height: 40px; border-radius: var(--r-md); object-fit: cover; flex: none; background: var(--surface-2); }
-.market-card-logo { width: 28px; height: 28px; border-radius: var(--r-sm); object-fit: cover; flex: none; background: var(--surface-2); }
-.market-card-logo.is-mono { display: inline-flex; align-items: center; justify-content: center; font-size: var(--text-xs); font-weight: 600; color: var(--accent); background: var(--accent-soft); }
-.market-shots { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); margin-bottom: 12px; }
-.market-shot { padding: 0; border: 1px solid var(--border-soft); border-radius: var(--r-md); overflow: hidden; background: var(--surface-2); cursor: zoom-in; line-height: 0; }
-.market-shot img { display: block; width: 100%; height: auto; max-height: 220px; object-fit: cover; }
-.market-shot:hover { border-color: var(--accent-border); }
+
+/* .market-readme（共享保留）：react-markdown 的排印视口豁免块——详情正文与 ResultBlock 的
+   GFM 渲染共此容器；图内点击打开看图器（同 MailPage/.dock-md 判例的任意 HTML 排印区） */
 .market-readme { font-size: var(--text-sm); line-height: 1.62; color: var(--text-1); }
 .market-readme img { max-width: 100%; border-radius: var(--r-md); cursor: zoom-in; }
 
+/* ThemePickerModal 共用的候选卡各族（desc/tags/tag/foot） */
 .market-card-desc {
   font-size: 12px; color: var(--text-2); line-height: 1.5; min-height: 34px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
@@ -5012,51 +4859,8 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
   text-overflow: ellipsis; white-space: nowrap; max-width: 65%;
 }
 
-/* ── 插件页：工具行与仓库跳转 ── */
-.plg-toolbar {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  margin-bottom: 10px;
-}
-.plg-install-toggle { font-size: 12px; padding: 4px 12px; }
-.plg-repo-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px; flex: none;
-  border: 1px solid var(--border); border-radius: var(--r-sm);
-  background: transparent; color: var(--text-3); cursor: pointer;
-  transition: color .15s ease, border-color .15s ease, background .15s ease;
-}
-.plg-repo-btn:hover { color: var(--text-1); border-color: var(--border-strong); background: var(--hover); }
-.market-repo-link {
-  display: inline-flex; align-items: center; gap: 5px; min-width: 0;
-  font-family: var(--font-mono, ui-monospace, monospace); font-size: 10px;
-  color: var(--text-3); background: transparent; border: none; cursor: pointer;
-  padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;
-  transition: color .15s ease;
-}
-.market-repo-link:hover { color: var(--accent); text-decoration: underline; }
-.market-repo-link svg { flex: none; opacity: .8; }
-.market-installed-badge {
-  margin-left: 6px; padding: 1px 7px; border-radius: var(--r-pill);
-  font-size: 10px; font-weight: 600; vertical-align: 1px;
-  background: var(--green-soft); color: var(--green);
-}
-
-/* ── 插件结构化结果（ResultBlock）── */
-.plg-result { margin-top: 6px; border: 1px solid var(--border-soft); border-radius: var(--r-md); background: var(--surface-2); padding: 8px 10px; }
-.plg-result-md { font-size: 12px; color: var(--text-1); line-height: 1.55; }
-.plg-result-md table { border-collapse: collapse; margin: 6px 0; width: 100%; }
-.plg-result-md th, .plg-result-md td { border: 1px solid var(--border); padding: 3px 8px; font-size: 11px; text-align: left; }
-.plg-result-md code { background: var(--surface-3); border-radius: 4px; padding: 1px 4px; font-size: 11px; }
-.plg-result-md pre { background: var(--surface-3); border-radius: var(--r-sm); padding: 8px; overflow: auto; }
-.plg-result-kv { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
-.plg-result-kvrow { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; }
-.plg-result-kvk { color: var(--text-3); flex: none; }
-.plg-result-kvv { color: var(--text-1); text-align: right; word-break: break-all; }
-.plg-result-items { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
-.plg-result-item { padding: 5px 8px; border: 1px solid var(--border-soft); border-radius: var(--r-sm); background: var(--md-sys-color-surface-container-lowest); }
-.plg-result-item-t { font-size: 12px; font-weight: 600; color: var(--text-1); }
-.plg-result-item-s { font-size: 11px; color: var(--text-2); margin-top: 1px; }
-.plg-result-item-m { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+/* .market-installed-badge（共享保留）：ThemePickerModal 的「已装」本地徽标仍用；
+   本页同语义已走 Tag tone=success */
 
 /* ── 插件表单弹窗 ── */
 .plg-form-overlay {
@@ -5075,20 +4879,6 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
 .plg-form-label { font-size: 11px; color: var(--text-3); }
 .plg-form-ops { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
 
-/* ── MCP 服务器管理 ── */
-.mcp-body { flex: 1; min-height: 0; overflow: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
-.mcp-item {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r-md);
-  background: var(--md-sys-color-surface-container-lowest);
-}
-.mcp-item-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.mcp-item-name { font-size: 13px; font-weight: 600; color: var(--text-1); }
-.mcp-item-main .plg-code {
-  font-size: 10px; color: var(--text-3);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-
 /* ── 插件动态 tab（UI 自由化）── */
 .plg-tab-page { display: flex; flex-direction: column; gap: 8px; }
 .plg-tab-head { display: flex; align-items: baseline; gap: 8px; color: var(--text-1); }
@@ -5098,7 +4888,6 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
 .plg-tab-root > * { max-width: 100%; }
 .plg-svg-icon svg { width: 100%; height: 100%; display: block; }
 
-/* ── 已装卡片「可更新」徽标 ── */
 
 /* ── 侧栏用户收藏夹段：限高滚动，保住「新建/已折叠收藏夹」栏完整可见 ── */
 .nav-folders-scroll {

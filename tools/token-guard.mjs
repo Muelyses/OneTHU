@@ -12,7 +12,11 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOTS = ["apps/desktop/src", "packages/ui/src"];
+/* 扫描根（2026-10-15 修）：必须含 packages/gui/src —— OneGUI 换血后
+   apps/desktop 的样式大量引用库令牌 `--og-*`，而它们的**定义**在
+   packages/gui/src/tokens/*.css + skins/*.css 里。此前漏了库根 → 95 个
+   `--og-*` 被判"引用却未定义"，于是**整条 guard 链第一步就红**（红的第一步 = 全链形同虚设）。 */
+const ROOTS = ["apps/desktop/src", "packages/ui/src", "packages/gui/src"];
 function walk(dir, out = []) {
   for (const e of readdirSync(dir)) {
     const p = join(dir, e);
@@ -32,7 +36,14 @@ function checkCommentNesting(f, t) {
   for (let i = 0; i < t.length - 1; i++) {
     const two = t.slice(i, i + 2);
     if (two === "/*") {
-      if (inComment) commentNest.push(f + " 注释嵌套（注释里又出现 /*）");
+      /* 注释里写**路径通配符**（如 `skins/*.css`、`tools/*.mjs`、`styles/**`）会含 `/*`，
+         那不是嵌套 —— 判据：紧邻的字符构成路径形状（前一个字符是路径字符、后一个仍属路径）。
+         真嵌套长这样：`/* 说明\n/* 另一段 */`（内层 `/*` 前是空白/换行/中文）→ 仍然照抓。
+         2026-10-15：这条假报曾把库根加进扫描后立刻绊住（semantic.css:8 的 `skins/*.css`）。 */
+      const prev = t[i - 1] ?? "";
+      const next = t[i + 2] ?? "";
+      const glob = /[A-Za-z0-9_.\-]/.test(prev) && /[.*\w\-]/.test(next);
+      if (inComment && !glob) commentNest.push(f + " 注释嵌套（注释里又出现 /*）");
       inComment = true;
       i++;
     } else if (two === "*/") {
@@ -67,6 +78,10 @@ for (const f of files) {
     // 两种形态：JS 对象键 style={{ "--i": n }}，以及模板字符串拼的 style="--i:3"（theme.ts 注入主题就是这么干的）
     for (const m of text.matchAll(/["'](--[a-z0-9-]+)["']\s*:/g)) runtimeInjected.add(m[1]);
     for (const m of text.matchAll(/(--[a-z0-9-]+)\s*:/g)) runtimeInjected.add(m[1]);
+    /* 第三种：TS **计算键**写法 `style={{ ["--x" as string]: v }}`（gui 的滑条就是这么注入位置的）
+       —— 上面两条都要求引号后紧跟冒号，这种被 ` as string]` 挡住 → 2026-10-15 曾把
+       --og-c-slider-pos / -pos-a / -pos-b 三个判成"引用却未定义"。 */
+    for (const m of text.matchAll(/\[\s*["'](--[a-z0-9-]+)["']\s+as\s+string\s*\]\s*:/g)) runtimeInjected.add(m[1]);
   }
 }
 

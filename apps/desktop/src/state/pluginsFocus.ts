@@ -11,7 +11,16 @@
 export interface PluginsFocusSpec {
   /** 主锚点：`[data-set-id="<target>"]`（与 Layout.slugOf 同一套 id 口径） */
   target?: string;
-  /** 主锚点不存在时的退路锚点（**分节根 / 档位根**），如 "sec-我的插件"、"oh-tier-basic" */
+  /**
+   * 主锚点不存在时的退路锚点：**只写裸 slug，解析器自己会补前缀**。
+   * ⚠️ 2026-10-15 血案（7 处结构性腐坏）：`focusSettingsTarget` 内部按
+   * `row-<slug>` / `sec-<slug>` 拼 `[data-set-id]`，调用方若自带 "sec-"/"row-"
+   * 就会拼成 `sec-sec-…` / `row-oh-tier-…` —— **永不命中、且不报错**（用户侧=点了没反应）。
+   * 正确写法是裸 slug：`fallbackTarget: "我的插件"` / `"高级配置"`（档位按钮的 data-set-id
+   * 就是裸 `oh-tier-advanced` 或字面量 `row-高级配置`，见 TierSwitch）。
+   * 已有静态护栏扫全仓 target/fallbackTarget/root 字面量，自带前缀即红
+   * （tools/board-nav-bridge-test.mjs 第 ⑨ 组）。
+   */
   fallbackTarget?: string;
   /** 目标整段找不到时给用户的一句话解释 */
   note?: string;

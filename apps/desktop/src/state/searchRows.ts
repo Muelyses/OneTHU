@@ -50,8 +50,10 @@ export interface SearchRow {
   visible?: () => boolean;
   /** 条件隐藏行落到分节根时的一句话解释（调用方 toast / 交回 OH 复述） */
   fallbackNote?: string;
-  /** 条件隐藏行 / landOn 行的**分节根锚点**（插件家族用：data-set-id，如 "sec-我的插件"、"oh-tier-basic"）；
-   *  设置家族默认走 row.section（不填 root 也行）。 */
+  /** 条件隐藏行 / landOn 行的**分节根锚点**（插件家族用）。**只写裸 slug，别自带 "sec-"/"row-" 前缀**
+   *  —— 解析器（Layout.focusSettingsTarget）自己会拼 `sec-<slug>`/`row-<slug>`，自带一遍就是
+   *  `sec-sec-…`：永不命中且不报错（2026-10-15 一次扫出 7 处，护栏第 ⑨ 组现已静态拦截）。
+   *  例：`root: "我的插件"` / `root: "高级配置"`；设置家族默认走 row.section（不填 root 也行）。 */
   root?: string;
   /** 该行在当前 UI **没有独立控件**（按钮收在别的控件里/该行此时不需要）：
    *  注册时就声明「落分节根 + 解释」，不许静默把分节头当命中。 */

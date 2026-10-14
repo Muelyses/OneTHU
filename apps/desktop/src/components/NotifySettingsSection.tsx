@@ -21,7 +21,7 @@ import { groupPluginNotifications } from "../state/notifyIds.js";
 import { runNotifyDoctor, type DoctorReport } from "../state/notifyDoctor.js";
 import { ensureNotifyRuntime } from "../state/notifySources.js";
 import type { NotifyPlanItem, NotifySettings } from "../state/notifyPlan.js";
-import { SettingsRow, Switch as OGSwitch } from "@onethu/gui";
+import { Select as OGSelect, SettingsRow, Switch as OGSwitch } from "@onethu/gui";
 
 /** 常用提前量（分钟）；0 = 不提醒课程 */
 const CLASS_LEADS: Array<[number, string]> = [
@@ -148,22 +148,18 @@ export function NotifySettingsSection(): ReactNode {
 
       {s.enabled ? (
       <>
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">课程与日程提前量</div>
-          <div className="setting-desc">按课表、考试与自定义日程提前提醒。</div>
-        </div>
-        <select
-          className="input"
-          style={{ width: 140 }}
-          value={s.classLead}
-          onChange={(e) => patch({ classLead: Number(e.target.value) })}
-        >
-          {CLASS_LEADS.map(([v, label]) => (
-            <option key={v} value={v}>{label}</option>
-          ))}
-        </select>
-      </div>
+      <SettingsRow
+        title="课程与日程提前量"
+        sub="按课表、考试与自定义日程提前提醒。"
+        control={
+          <OGSelect
+            size="sm"
+            value={String(s.classLead)}
+            onChange={(v) => patch({ classLead: Number(v) })}
+            options={CLASS_LEADS.map(([v, label]) => ({ value: String(v), label }))}
+          />
+        }
+      />
 
       <div className="setting-row">
         <div>

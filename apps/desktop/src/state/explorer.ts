@@ -15,6 +15,8 @@
  * - 整个标签列表 + 活动页 + 工作区持久化（localStorage），启动恢复。
  */
 import { useSyncExternalStore } from "react";
+import { loadBoard } from "./board.js";
+import { openOnePage } from "./onePage.js";
 import type { LearnNav, Page } from "./app.js";
 import { topLevelPage } from "./app.js";
 import { NAV_REGISTRY } from "./navigation.js";
@@ -195,6 +197,8 @@ export function findInstanceTab(page: Page, params: LearnNav | null): ExplorerTa
 
 /** 页级静态名（兜底；数据快照未就绪时 TabStrip 至少显示域清晰的标题） */
 const PAGE_TITLES: Partial<Record<Page, string>> = {
+  board: "白板",
+  boards: "所有白板",
   "learn-course": "课程详情",
   "learn-assignments": "网络学堂 · 全部作业",
   "learn-notices": "网络学堂 · 全部通知",
@@ -239,7 +243,14 @@ export function titleOf(page: Page, params?: LearnNav | null, fallback?: string)
 const ownHashes = new Set<string>();
 
 function writeHashFor(tab: ExplorerTab): void {
-  const h = tab.kind === "home" ? "#/today" : tab.page === "folder" && tab.params?.folderId ? `#/folder/${tab.params.folderId}` : `#/${topLevelPage(tab.page)}`;
+  const h =
+    tab.kind === "home"
+      ? "#/today"
+      : tab.page === "folder" && tab.params?.folderId
+        ? `#/folder/${tab.params.folderId}`
+        : tab.page === "board"
+          ? `#/board${activeBoardIdOf() ? "/" + activeBoardIdOf() : ""}` /* 板 id 进 hash：白板可分享/可冷启动恢复 */
+          : `#/${topLevelPage(tab.page)}`;
   if (location.hash === h) return;
   ownHashes.add(h);
   if (ownHashes.size > 8) {
@@ -247,6 +258,37 @@ function writeHashFor(tab: ExplorerTab): void {
     if (first) ownHashes.delete(first);
   }
   location.hash = h;
+}
+
+/** 当前生效板的 id（写 hash 用；读不到就空串 → 退化成 #/board） */
+function activeBoardIdOf(): string {
+  try {
+    const doc = loadBoard();
+    return doc.boards.find((b) => b.id === doc.activeBoardId)?.id ?? "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * `#/board/<板 id>` 深链（2026-10-15 补，对齐 #/folder/<id> 的既有先例）：
+ * 把那块板设为当前板再开白板页——这样白板标签可分享、冷启动能恢复。
+ * 认出来了返回 true（调用方不要再按"一级页名单"走一遍）。
+ */
+function openBoardFromHash(hash: string): boolean {
+  const m = /^#\/board\/(board\.[A-Za-z0-9_.]+)$/.exec(hash);
+  if (!m) return false;
+  const id = m[1] ?? "";
+  if (!id) return false;
+  let title = "白板";
+  try {
+    title = loadBoard().boards.find((b) => b.id === id)?.name ?? title;
+  } catch {
+    /* 读不到就用兜底标题 */
+  }
+  openOnePage(id);
+  openTab("board", null, { title });
+  return true;
 }
 
 /** AppProvider 挂载时注册一次：处理浏览器前进/后退与外部深链 */
@@ -269,8 +311,9 @@ export function initExplorerHashBridge(): () => void {
       openTab("folder", { folderId: m[1] });
       return;
     }
+    if (openBoardFromHash(target)) return;
     const h = target.replace(/^#\/?/, "");
-    const known = (["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs"] as const).includes(h as never);
+    const known = (["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs", "boards", "board"] as const).includes(h as never);
     if (h && known) openTab(h as Page);
   };
   addEventListener("hashchange", onHash);
@@ -284,9 +327,10 @@ export function openTabFromBootHash(): void {
     openTab("folder", { folderId: m[1] });
     return;
   }
+  if (openBoardFromHash(location.hash)) return;
   const h = location.hash.replace(/^#\/?/, "");
   if (!h || h === "today") return;
-  const known = (["learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs"] as const).includes(h as never);
+  const known = (["learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs", "boards", "board"] as const).includes(h as never);
   if (known) openTab(h as Page);
 }
 

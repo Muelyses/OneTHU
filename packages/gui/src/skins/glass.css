@@ -55,9 +55,12 @@
   --og-surface-overlay: var(--og-fill-overlay);
   --og-surface-inverse: rgba(24, 28, 36, 0.88);
 
-  --og-line-1: rgba(255, 255, 255, 0.5);
-  --og-line-2: rgba(255, 255, 255, 0.62);
-  --og-line-3: rgba(255, 255, 255, 0.78);
+  /* 线：亮色档不用白 rim 做描边——半透明白压在浅色壁纸/浅玻璃上等于隐形
+     （2026-10-14 用户点名「不放鼠标看都看不清」）。玻璃的镜面感走 surface-tint 渐变，
+     描边本身用中性黑 hairline，浅深壁纸都可见。 */
+  --og-line-1: rgba(16, 20, 28, 0.16);
+  --og-line-2: rgba(16, 20, 28, 0.22);
+  --og-line-3: rgba(16, 20, 28, 0.32);
 
   --og-surface-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
   --og-surface-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
@@ -110,9 +113,9 @@
   --og-surface-overlay: var(--og-fill-overlay);
   --og-surface-inverse: rgba(238, 241, 245, 0.9);
 
-  --og-line-1: rgba(255, 255, 255, 0.14);
-  --og-line-2: rgba(255, 255, 255, 0.2);
-  --og-line-3: rgba(255, 255, 255, 0.3);
+  --og-line-1: rgba(255, 255, 255, 0.18);
+  --og-line-2: rgba(255, 255, 255, 0.24);
+  --og-line-3: rgba(255, 255, 255, 0.34);
 
   --og-surface-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
   --og-overlay-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));

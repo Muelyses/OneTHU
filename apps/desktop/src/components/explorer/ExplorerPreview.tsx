@@ -1,11 +1,12 @@
 /**
  * dev 视觉自检驱动（仅 dev 构建；正式版被 rollup 剥离）：
  * `?explorer-preview=<场景>` 挂载后程序化摆好 explorer 状态，供无头截图审样式。
- * 场景：home / tabs / drawer / onego / overlay / overlay-oh / search / ctxmenu
+ * 场景：home / otherinfo / tabs / drawer / onego / overlay(+?settings-tab=页签) / overlay-oh / search / ctxmenu
  * 与 ?searchland=selfcheck 同一惯例：不进导航、不进产物。
  */
 import { useEffect, useState } from "react";
 import { focusTab, openSettings, openTab } from "../../state/explorer.js";
+import { requestSettingsTab } from "../../state/settingsMode.js";
 import { openTabDrawer } from "./TabDrawer.js";
 import { openOneGoSheet } from "./OneGoSheet.js";
 import { requestOhPanel } from "../../plugins/ohControl.js";
@@ -13,6 +14,10 @@ import { useDockUi } from "../../plugins/ChatDock.js";
 
 const SCENARIOS: Record<string, () => void> = {
   home: () => focusTab("home"),
+  otherinfo: () => {
+    focusTab("home");
+    window.setTimeout(() => openTab("otherinfo"), 250);
+  },
   tabs: () => {
     openTab("learn-assignments");
     openTab("cloud", undefined, { activate: false });
@@ -24,7 +29,13 @@ const SCENARIOS: Record<string, () => void> = {
     window.setTimeout(openTabDrawer, 250);
   },
   onego: () => window.setTimeout(openOneGoSheet, 250),
+  /** 指定页签的设置浮层：overlay + ?settings-tab=<页签名> */
   overlay: () => window.setTimeout(() => openSettings("settings"), 250),
+  "settings-tab": () => window.setTimeout(() => {
+    openSettings("settings");
+    const tab = new URLSearchParams(window.location.search).get("settings-tab") ?? "外观与布局";
+    requestSettingsTab(tab);
+  }, 250),
   "overlay-oh": () => window.setTimeout(() => openSettings("oh"), 250),
   "overlay-plugins": () => window.setTimeout(() => openSettings("plugins"), 250),
   "home-scrolled": () => {

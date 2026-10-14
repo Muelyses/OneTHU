@@ -36,10 +36,13 @@
   --og-content-on-accent: var(--og-ref-ink-0);
   --og-content-on-soft: var(--og-content-1);  /* 彩色柔底（-soft）上的字 */
 
-  /* ── 线：三档描边 + 焦点环 + 遮罩 ── */
-  --og-line-1: rgba(16, 20, 28, 0.08);   /* 分隔线、卡片描边（hairline） */
-  --og-line-2: rgba(16, 20, 28, 0.14);   /* 输入框、需要看清的边界 */
-  --og-line-3: rgba(16, 20, 28, 0.28);   /* 强边界（表头、拖拽指示） */
+  /* ── 线：三档描边 + 焦点环 + 遮罩 ──
+     2026-10-14 用户点名「轮廓不放鼠标都看不清」：描边是卡片的骨相，不依赖 hover。
+     三档整体从 0.08/0.14/0.28 提到 0.14/0.20/0.30 —— hairline 在实色面上仍克制，
+     但在 100% 缩放不糊屏上能一眼看到边界。dark 档同理对照提档。 */
+  --og-line-1: rgba(16, 20, 28, 0.14);   /* 分隔线、卡片描边（hairline） */
+  --og-line-2: rgba(16, 20, 28, 0.20);   /* 输入框、需要看清的边界 */
+  --og-line-3: rgba(16, 20, 28, 0.30);   /* 强边界（表头、拖拽指示） */
   --og-ring: 0 0 0 var(--og-ring-width) rgba(144, 57, 156, 0.28);
   --og-scrim: rgba(10, 12, 16, 0.42);
 
@@ -104,9 +107,9 @@
   --og-content-on-accent: var(--og-ref-brand-20);
   --og-content-on-soft: var(--og-content-1);
 
-  --og-line-1: rgba(255, 255, 255, 0.09);
-  --og-line-2: rgba(255, 255, 255, 0.16);
-  --og-line-3: rgba(255, 255, 255, 0.3);
+  --og-line-1: rgba(255, 255, 255, 0.12);
+  --og-line-2: rgba(255, 255, 255, 0.18);
+  --og-line-3: rgba(255, 255, 255, 0.32);
   --og-ring: 0 0 0 var(--og-ring-width) rgba(223, 176, 231, 0.38);
   --og-scrim: rgba(0, 0, 0, 0.58);
 

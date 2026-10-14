@@ -301,3 +301,43 @@ html:root :is(.board-fab, .free-fab, .hard-refresh-fab, .top-fab) {
     box-shadow: var(--og-elev-3);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * 玻璃残留变量接驳（TEMP，换血完成后本文件整份删除，随它一起消失）
+ *
+ * 问题（用户 2026-10-14 点名「几乎所有轮廓只有鼠标上面才显示」）：
+ *   旧样式表尾部还有几百条规则引用 --glass-* 玻璃残留变量，原值是
+ *   「半透明白填充 + 白 rim + 白 rim 发丝环」。玻璃档位已收编进 OneGUI 的 glass 皮肤，
+ *   主应用默认平衡档 → data-glass 不落属性 → 皮肤是**中性**（无玻璃）——
+ *   但这些残留仍按旧 :root 玻璃急值解析：22% 白填充 + 12% 白发丝环
+ *   压在 #f6f8fa 近白画布上 ≈ 恰好看不出，只有 hover 的 8% 状态层才显形。
+ *
+ * 修法（单源，不逐页改）：中性皮肤下把残留**指到 OneGUI 语义口径**——
+ *   填充→实色面档；rim→透明；发丝环→语义线档；tint→透明；blur→none；阴影→海拔档。
+ *   （data-glass 存在时皮肤是 glass 而非 neutral —— 本块不作用，档位照旧由 glass-levels 负责。）
+ * ════════════════════════════════════════════════════════════════════════════ */
+[data-og-skin="neutral"],
+[data-og-skin="neutral"][data-scheme="dark"] {
+  --glass-fill: var(--og-surface-1);
+  --glass-fill-regular: var(--og-surface-1);
+  --glass-card-fill: var(--og-surface-1);
+  --glass-card-fill-2: var(--og-surface-1);
+  --glass-card-fill-3: var(--og-surface-2);
+  --glass-menu-fill: var(--og-surface-overlay);
+  --glass-tint: transparent;
+  --glass-tint-top: transparent;
+  --glass-tint-bottom: transparent;
+  --glass-tint-top-hover: transparent;
+  --glass-tint-bottom-hover: transparent;
+  --glass-rim-top: transparent;
+  --glass-rim-bottom: transparent;
+  --glass-rim-hairline: var(--og-line-1);  /* inset 发丝环 → 卡片描边（残卡不再无轮廓） */
+  --glass-border: var(--og-line-1);
+  --glass-shadow: var(--og-elev-1);
+  --lg-rim-hover: none;   /* hover 白镜面高亮属玻璃皮肤专属，中性基准不留 */
+  --glass-panel-blur: none;
+  --glass-chip-blur: none;
+  --glass-card-blur: none;
+  --glass-menu-blur: none;
+}
+

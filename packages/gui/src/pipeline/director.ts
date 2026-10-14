@@ -342,17 +342,20 @@ export function resolveScopeDecl(key: ScopeToken, value: string): string | null 
   const family = SCOPE_TOKENS[key];
   if (!family) return null;
   switch (family) {
+    /* 面/字/线三族：直接**改写语义令牌本身**（自定义属性在 [data-og-scope] 子树级联，
+       组件读 var(--og-surface-1) 等即跟着变）——2026-10-14 修「scope 只声明无消费」：
+       原来 alias 家族 --og-c-surface-1 没有任何组件读它，scope 登记后零视觉效果。 */
     case "surface": {
       const target = value.startsWith("surface-") ? SURFACES.find((s) => s === `--og-${value}`) : byIndex(SURFACES, value);
-      return target ? `${tokenVar(key)}:var(${target});` : null;
+      return target ? `--og-${key}:var(${target});` : null;
     }
     case "content": {
       const target = value.startsWith("content-") ? CONTENTS.find((s) => s === `--og-${value}`) : byIndex(CONTENTS, value);
-      return target ? `${tokenVar(key)}:var(${target});` : null;
+      return target ? `--og-${key}:var(${target});` : null;
     }
     case "line": {
       const target = value.startsWith("line-") ? LINES.find((s) => s === `--og-${value}`) : byIndex(LINES, value);
-      return target ? `${tokenVar(key)}:var(${target});` : null;
+      return target ? `--og-${key}:var(${target});` : null;
     }
     case "radius": {
       const target = value.startsWith("radius-") ? RADII.find((s) => s === `--og-${value}`) : RADII.find((s) => s === `--og-radius-${value}`);

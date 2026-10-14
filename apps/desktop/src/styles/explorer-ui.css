@@ -630,7 +630,9 @@
   border-radius: 999px;
   background: var(--surface);
   color: var(--text-3);
-  border: 1px solid var(--border);
+  /* 描边直读语义线二档（2026-10-14：--border 兼容链在主题/壁纸分支另有来源，
+     idle 曾被描成 accent 紫线；改直读 --og-line-2 后 idle=黑 hairline，hold/open 仍走 accent） */
+  border: 1px solid var(--og-line-2);
   box-shadow: none;
   justify-content: center; /* 常态占位文字整体居中（对称）；展开后 input 占满自然靠左 */
   gap: 8px;

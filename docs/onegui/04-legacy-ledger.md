@@ -7,21 +7,21 @@
 
 | # | 独立样式源 | 当前 | 目标 |
 |---|---|---:|---:|
-| A | 旧样式表规则（apps/desktop/src/styles） | 2742 | 0 |
+| A | 旧样式表规则（apps/desktop/src/styles） | 2730 | 0 |
 | B | 组件内嵌 CSS（`<style>` 块 / `*_CSS` 模板字符串） | 7 | 0 |
 | C1 | 内联样式（含外观属性 `style={{…}}`） | 938 | 0 |
 | C2 | 内联几何（纯定位/尺寸，迁移后由组件 prop 承担） | 296 | 0 |
 | D | TSX 字面色值（`#rgb`/`rgba()`/`hsl()`） | 663 | 0 |
 | E | 裸控件（`<button|input|select|textarea>`） | 396 | 0 |
 | F | 运行时注入（createElement(style)/innerHTML/insertRule） | 4 | 0 |
-| | **合计** | **4750** | **0** |
+| | **合计** | **4738** | **0** |
 
-## A. 旧样式表（8 个文件 / 12480 行 / 1524 个类名 / 2742 条规则）
+## A. 旧样式表（8 个文件 / 12443 行 / 1516 个类名 / 2730 条规则）
 
 | 文件 | 行 | 规则 | 类名 | 零引用类名 | 过渡桥 |
 |---|---|---|---|---|---|
-| `apps/desktop/src/styles/global.css` | 8356 | 2009 | 1126 | 103 |  |
-| `apps/desktop/src/styles/explorer-ui.css` | 939 | 206 | 100 | 5 |  |
+| `apps/desktop/src/styles/global.css` | 8332 | 2002 | 1120 | 97 |  |
+| `apps/desktop/src/styles/explorer-ui.css` | 926 | 201 | 98 | 3 |  |
 | `apps/desktop/src/styles/motion.css` | 887 | 179 | 74 | 4 |  |
 | `apps/desktop/src/styles/explorer-home.css` | 850 | 149 | 86 | 8 |  |
 | `apps/desktop/src/styles/explorer.css` | 594 | 105 | 66 | 4 |  |
@@ -29,7 +29,7 @@
 | `apps/desktop/src/styles/onegui-bridge.css` | 304 | 12 | 30 | 8 | 是（TEMP） |
 | `apps/desktop/src/styles/glass-levels.css` | 113 | 6 | 0 | 0 |  |
 
-**零引用类名 133 个**（可先删；注意动态拼接类名要人工确认）——前 20：
+**零引用类名 125 个**（可先删；注意动态拼接类名要人工确认）——前 20：
 - apps/desktop/src/styles/explorer-home.css: .home-searchbar
 - apps/desktop/src/styles/explorer-home.css: .home-resume
 - apps/desktop/src/styles/explorer-home.css: .home-resume-chip
@@ -39,8 +39,6 @@
 - apps/desktop/src/styles/explorer-home.css: .hs-logo
 - apps/desktop/src/styles/explorer-home.css: .hs-detail-btn
 - apps/desktop/src/styles/explorer-oh.css: .ohx-searchbar
-- apps/desktop/src/styles/explorer-ui.css: .ex-btn-sm
-- apps/desktop/src/styles/explorer-ui.css: .ex-danger
 - apps/desktop/src/styles/explorer-ui.css: .ex-input
 - apps/desktop/src/styles/explorer-ui.css: .ex-tab-star
 - apps/desktop/src/styles/explorer-ui.css: .explorer-tabstrip-wrap
@@ -50,6 +48,8 @@
 - apps/desktop/src/styles/explorer.css: .wall-lib-upload
 - apps/desktop/src/styles/global.css: .brand-mark
 - apps/desktop/src/styles/global.css: .brand-name
+- apps/desktop/src/styles/global.css: .btn-danger
+- apps/desktop/src/styles/global.css: .tt-cell
 
 ## B. 组件内嵌 CSS（7 处）
 

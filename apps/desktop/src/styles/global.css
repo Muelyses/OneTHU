@@ -1427,12 +1427,7 @@ select.input:focus {
 
 /* 楼栋搜索下拉（filter-dd 变体）：搜索框 + 分组滚动列表 */
 .search-dd-search,
-.washer-dd-search {
-  height: 30px;
-  min-height: 0;
-  font-size: 12px;
-  margin-bottom: 6px;
-}
+
 .search-dd-list,
 .washer-dd-list {
   max-height: 280px;
@@ -4059,8 +4054,6 @@ html.is-phone .dock-panel {
   white-space: nowrap;
 }
 .dock-hist-meta { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; color: var(--text-3); }
-.dock-hist-del { flex-shrink: 0; color: var(--text-3); }
-.dock-hist-del:hover { color: var(--red); }
 
 /* ---------- 插件页 v2：卡片新结构 + 设置/日志 Sheet ---------- */
 .plg-card { display: grid; gap: 8px; padding: var(--gap-3) var(--gap-4); }
@@ -5879,7 +5872,6 @@ html.is-phone .cloud-search input {
 }
 .ykt-remark-item + .ykt-remark-item { margin-top: 6px; }
 .ykt-remark-item b { margin-right: 2px; font-size: var(--text-xs); color: var(--text-2); }
-.ykt-ext-btn { margin-top: 8px; }
 
 /* 窄屏（≤480px）：题号/题型/徽标允许整行换行，得分徽标不强制右吸避免拥挤 */
 @media (max-width: 480px) {
@@ -6027,7 +6019,6 @@ html.is-phone .cloud-search input {
 .plg-svg-icon svg { width: 100%; height: 100%; display: block; }
 
 /* ── 已装卡片「可更新」徽标 ── */
-.plg-update-flag { color: var(--accent, #3b82f6); font-weight: 600; }
 
 /* ── 侧栏用户收藏夹段：限高滚动，保住「新建/已折叠收藏夹」栏完整可见 ── */
 .nav-folders-scroll {
@@ -6118,7 +6109,7 @@ html.is-phone .cloud-search input {
 .ykt-editor img.kfformula { max-width: 100%; vertical-align: middle; }
 /* 上传脚注：单按钮（桌面=从文件上传 / Android=拍照上传），上传中替换为状态文本 */
 .ykt-editor-foot { display: flex; align-items: center; margin-top: 8px; }
-.ykt-img-btn { flex: none; }
+
 .ykt-editor-uploading { font-size: var(--text-sm, 12px); color: var(--accent); }
 /* 提交行 */
 .ykt-answer-actions { display: flex; align-items: center; gap: var(--gap-3); margin-top: 8px; }
@@ -6216,21 +6207,6 @@ html.is-phone .cloud-search input {
   gap: 4px;
   margin-left: 6px;
   flex: none;
-}
-.dl-open-btn {
-  height: 22px;
-  width: 24px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  padding: 0;
-  font-size: 12px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* ═══════════════════════════════════════════════════════════════

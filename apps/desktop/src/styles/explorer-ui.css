@@ -362,22 +362,9 @@
   cursor: pointer;
 }
 .ex-mini:hover { background: color-mix(in srgb, var(--text-1) 8%, transparent); color: var(--text-1); }
-.ex-btn-sm { padding: 2px 10px; font-size: 12px; }
-.ex-danger { color: var(--red, #d64545); }
-.ex-danger:hover { color: var(--red, #d64545); }
 
 /* ── 输入 / 新建行 / 提示 ── */
-.ex-input {
-  flex: 1;
-  min-width: 0;
-  padding: 5px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
-  color: var(--text-1);
-  font-size: 12.5px;
-}
-.ex-input:focus { outline: none; border-color: var(--accent); }
+
 .ex-newrow { display: flex; gap: 8px; margin: 4px 0 8px; }
 .ex-empty-hint {
   padding: 10px 8px;

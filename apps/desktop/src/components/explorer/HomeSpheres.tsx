@@ -22,7 +22,8 @@ import {
   subscribeSpheres,
   undockSphere,
 } from "../../state/homeSpheres.js";
-import { byCategory, NAV_CATEGORIES } from "../../state/navigation.js";
+import { byCategory, NAV_CATEGORIES, pluginCatalogEntries } from "../../state/navigation.js";
+import { pluginTabsSnapshot, subscribePluginTabs } from "../../plugins/tabs.js";
 import { openTab } from "../../state/explorer.js";
 import { IconChevron, IconMore, IconX } from "../Icons.js";
 
@@ -71,6 +72,8 @@ function DockSphere({
 
 export function HomeChrome(): ReactNode {
   const doc = useSyncExternalStore(subscribeSpheres, spheresSnapshot, spheresSnapshot);
+  /* 插件功能页也进「详细功能」目录：订阅它们的增删（注册/卸载即时反映） */
+  const pluginTabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
   const [moreOpen, setMoreOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [opacityMenu, setOpacityMenu] = useState<"time" | "dock" | null>(null);
@@ -248,6 +251,25 @@ export function HomeChrome(): ReactNode {
                       </div>
                     );
                   })}
+                  {/* 插件功能页（动态类目，2026-10-15）：与一级页同一套目录行，
+                      以前它们只在服务页「插件功能页」里出现，详细目录查不到。 */}
+                  {pluginCatalogEntries(pluginTabs).length > 0 ? (
+                    <div className="hs-detail-group">
+                      <div className="hs-detail-group-name">插件</div>
+                      {pluginCatalogEntries(pluginTabs).map((e2) => (
+                        <button
+                          key={e2.id}
+                          type="button"
+                          className="hs-detail-row"
+                          title={e2.note ? e2.name + "：" + e2.note : e2.name}
+                          onClick={() => go({ page: e2.page, label: e2.name })}
+                        >
+                          <span>{e2.name}</span>
+                          <IconChevron width={12} height={12} className="hs-detail-caret" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>,

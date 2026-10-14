@@ -25,7 +25,10 @@
 import type { LearnNav, Page } from "./app.js";
 
 /** 服务页分组（§2.2）：学习 / 日程 / 生活 / 预约 / 行政 */
-export type NavCategory = "学习" | "日程" | "生活" | "预约" | "行政";
+export type NavCategory = "学习" | "日程" | "生活" | "预约" | "行政" | "插件";
+/* 「插件」是**动态**类目（2026-10-15）：插件功能页由 ctx.registerTab 运行时注册/卸载，
+   塞不进这个静态 registry，所以它不出现在 NAV_CATEGORIES 的静态循环里 ——
+   消费者（首页「详细功能」目录）用下面的 pluginCatalogEntries(tabs) 单独追加一组。 */
 
 /** 可见性分级（§1.2） */
 export type NavVisibility = "core" | "group" | "buried" | "advanced";
@@ -146,6 +149,24 @@ export const NAV_CATEGORIES: readonly NavCategory[] = ["学习", "日程", "生�
 
 export function byCategory(cat: NavCategory): NavEntry[] {
   return NAV_REGISTRY.filter((e) => e.category === cat && e.visibility !== "advanced");
+}
+
+/**
+ * 插件功能页 → 目录条目（2026-10-15 用户点名「插件创建的页面也要出现在首页一级程序坞」的
+ * 目录侧配套）：插件页只在服务页的「插件功能页」分组与首页程序坞可见，详细功能目录里查不到。
+ * 这里做**纯转换**（tab 列表由调用方订阅 subscribePluginTabs 后传入，本函数不订阅、不持有状态），
+ * 类别统一记 "插件"，排序沿用注册顺序。
+ */
+export function pluginCatalogEntries(tabs: readonly { pageKey: string; title: string }[]): NavEntry[] {
+  return tabs.map((t) => ({
+    id: t.pageKey,
+    name: t.title,
+    category: "插件",
+    visibility: "group",
+    page: t.pageKey as Page,
+    keywords: ["插件", "功能页", t.title],
+    note: "插件功能页",
+  }));
 }
 
 /** 常用推荐空状态兜底顺序（§2.5：按 core 顺序展示默认推荐） */

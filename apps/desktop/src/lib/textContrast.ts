@@ -1,15 +1,16 @@
 /**
- * 全字符对比度引擎 · 定格版（2026-10-14 用户拍板）：
- * 「实时渲染字体颜色应该在用户看到的那一刻就停止为静态，
- *   并且在整个生命周期不再变化。」
+ * 全字符对比度引擎 · 定格版（2026-10-14 用户拍板，当天二次修订）：
+ * 「实时渲染字体颜色应该在用户看到的那一刻就停止为静态」——首个契约；
+ * 「每当发生壁纸切换/主题切换/玻璃质等级切换的时候，这个字体颜色都要重新取一遍」
+ * ——用户当天对极致档（近白底 + 白字）打回后追加的第二契约。
  *
  * 实现：
  *  - 每个文本叶子在**首次进入视口**那一刻计算一次：壁纸离屏采样(1/8 网格) +
  *    全局纱 + 沿途玻璃 rgba 层合成亮度 → 对比率 ≥3 达标则一字节不写（交还主题），
- *    不达标才写一次内联色，随后 data-tx="lock"，**整个生命周期不再变化**。
+ *    不达标才写一次内联色，随后 data-tx="lock"。
+ *  - **仅**在 wallpaper / theme / glass-level 三类显式环境变更时整体重取一次
+ *    （reapplyAll → settleAll）；滚动与普通 DOM 变更都不触发重算——那是首版乱闪的根源。
  *  - 新挂载的元素 = 新生命周期，各自定格一次。
- *  - 监听仅两类：元素进入视口（IntersectionObserver）与结构增删（新叶子消费）。
- *    刻意没有滚动/样式事件——那是首版乱闪的根源。
  */
 import { builtinCss, displayRef, subscribeWallpaper, wallpaperSnapshot } from "../state/wallpaper.js";
 
@@ -25,6 +26,8 @@ let wallKey = "";
 let started = false;
 let io: IntersectionObserver | null = null;
 let scanScheduled = 0;
+let reapplyScheduled = 0;
+let pendingSettle = false;
 
 function lum(rgb: [number, number, number]): number {
   const f = (c: number) => {
@@ -88,7 +91,8 @@ function rebuildWall(): void {
       const scale = Math.max(c.width / iw, c.height / ih);
       ctx.drawImage(img, (c.width - iw * scale) / 2, (c.height - ih * scale) / 2, iw * scale, ih * scale);
       wall = c;
-      scanNew();
+      if (pendingSettle) { pendingSettle = false; scanNew(); settleAll(); }
+      else scanNew();
     } catch { wall = null; }
   };
   img.onerror = () => { wall = null; };
@@ -168,9 +172,11 @@ function compositeLum(el: HTMLElement): number {
 const WANT_DARK = "rgba(255, 255, 255, 0.95)";
 const WANT_LIGHT = "rgba(20, 22, 28, 0.94)";
 
-/** 元素生命周期只进一次：进视口即定格 */
-function settle(el: HTMLElement): void {
-  if (tracked.has(el)) return;
+/** 元素生命周期只进一次：进视口即定格。
+ *  resettle=true 时用于「壁纸/主题/玻璃档切换」重取——先清掉上一轮内联色再重算，
+ *  保证换背景后不留旧色（用户点名：极致档近白底上白字看不见）。 */
+function settle(el: HTMLElement, resettle = false): void {
+  if (!resettle && tracked.has(el)) return;
   tracked.add(el);
   try {
     if (el.closest('[data-tx="keep"]')) return;
@@ -184,10 +190,42 @@ function settle(el: HTMLElement): void {
     if (cm.length < 3) return;
     const bg = compositeLum(el);
     const tLum = lum([cm[0] as number, cm[1] as number, cm[2] as number]);
-    if (contrast(tLum, bg) >= MIN_CONTRAST) return;   // 主题给得出对比度：一字节不碰
+    if (contrast(tLum, bg) >= MIN_CONTRAST) {   // 主题给得出对比度：一字节不碰
+      if (resettle && el.dataset.tx === "lock") {
+        el.style.removeProperty("color");
+        delete el.dataset.tx;
+      }
+      return;
+    }
     el.style.setProperty("color", bg < 0.5 ? WANT_DARK : WANT_LIGHT);
     el.dataset.tx = "lock";
   } catch { /* 单叶失败不影响整体 */ }
+}
+
+/** 壁纸/主题/玻璃档变化：清掉已定格的内联色，就地按新背景重取一次。
+ *  刻意不新增滚动触发——那是首版乱闪的根源，此函数只由这三类显式变更调用。 */
+function settleAll(): void {
+  const root = (document.querySelector(".explorer-shell") as HTMLElement | null) ?? document.body;
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  const list: HTMLElement[] = [];
+  let node = walker.nextNode() as HTMLElement | null;
+  let budget = NODE_BUDGET;
+  while (node && budget > 0) {
+    const el = node;
+    node = walker.nextNode() as HTMLElement | null;
+    budget--;
+    if (el instanceof SVGElement || el.closest('[data-tx="keep"]')) continue;
+    const hasOwnText = [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim());
+    if (!hasOwnText || el.children.length > 0) continue;
+    if (el.dataset.tx === "lock") {
+      el.style.removeProperty("color");
+      delete el.dataset.tx;
+    }
+    if (tracked.has(el)) list.push(el);
+  }
+  // 一次性清干净再重算，避免集合读写交错漏元素
+  for (const el of list) settle(el, true);
 }
 
 function scanNew(): void {
@@ -220,17 +258,39 @@ function startIO(): void {
   }, { root: null, threshold: 0.01 });
 }
 
+/** 环境变了（壁纸/主题/玻璃档）：重建壁纸采样 → 已定格元素重取色。
+ *  壁纸是异步解码的，故先挂 pendingSettle，onload 到达后补一次 settleAll。 */
+function reapplyAll(): void {
+  if (reapplyScheduled) return;
+  reapplyScheduled = window.setTimeout(() => {
+    reapplyScheduled = 0;
+    wallKey = "";
+    pendingSettle = true;
+    rebuildWall();
+    scanNew();
+    if (wall) { pendingSettle = false; settleAll(); }
+  }, 80);
+}
+
 /** 启动（main.tsx 调一次；幂等） */
 export function installTextContrast(): void {
   if (started) return;
   started = true;
   rebuildWall();
   startIO();
-  subscribeWallpaper(() => { wallKey = ""; rebuildWall(); scanNew(); });
-  new MutationObserver(() => {
+  subscribeWallpaper(() => reapplyAll());
+  const mo = new MutationObserver((records) => {
+    // 主题(dark)/玻璃档/壁纸明暗变了 → 已定格元素重取色（用户点名的实时契约）
+    if (records.some((r) => r.type === "attributes")) { reapplyAll(); return; }
     if (scanScheduled) return;
     scanScheduled = window.setTimeout(() => { scanScheduled = 0; scanNew(); }, 350);
-  }).observe(document.documentElement, { childList: true, subtree: true });
-  window.addEventListener("resize", () => { wallKey = ""; rebuildWall(); scanNew(); });
+  });
+  mo.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,                       // 只管三个环境属性，不监听 style（否则自触发死循环）
+    attributeFilter: ["data-scheme", "data-glass", "data-wallpaper-lum"],
+  });
+  window.addEventListener("resize", () => reapplyAll());
   scanNew();
 }

@@ -212,29 +212,8 @@
 /* 环境光已上移到 body（base.css，全局 everywhere）：壳层不再重复铺 */
 
 
-/* 顶栏/侧栏 = 面板级玻璃（tint 渐变 + 轻 blur + rim 三件套） */
-.explorer-topbar {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-regular);
-  backdrop-filter: var(--glass-card-blur);
-  -webkit-backdrop-filter: var(--glass-card-blur);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-}
-.ex-rail {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
-  backdrop-filter: var(--glass-card-blur);
-  -webkit-backdrop-filter: var(--glass-card-blur);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-}
+/* 顶栏/侧栏 = 面板级玻璃。配方本体已由 global.css 的「玻璃收口」规则统一提供
+   （tint 渐变 + fill + blur + rim，一条规则管全站），这里只保留各自差异项。 */
 
 /* 标签 = 安静态（用户定稿：标签栏不用玻璃 chip）——激活=淡主题色填充 */
 .ex-tab { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
@@ -307,11 +286,7 @@
 .explorer-shell[data-wallpaper-lum="dark"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-mobile-strip {
-  /* 栏体背景随玻璃档位（card-fill-2），不再写死 rgba（那是逃出档位的异源） */
-  /* 栏体 = 卡片同款玻璃（单一水平单一色相）；字色由内容字色令牌+对比度引擎兜 */
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-card-fill-2);
+  /* 栏体配方已收口 global.css（不在此重复 background） */
   color: #f2f4f8;
   --text-1: #f2f4f8;
   --text-2: rgba(242, 244, 248, 0.8);
@@ -320,6 +295,10 @@
   --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
   --md-sys-color-outline: rgba(242, 244, 248, 0.45);
   --md-sys-color-outline-variant: rgba(242, 244, 248, 0.16);
+  --dsw-alias-label-primary: #f2f4f8;
+  --dsw-alias-label-secondary: rgba(242, 244, 248, 0.8);
+  --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.14);
+  --dsw-alias-bg-layer-2: rgba(255, 255, 255, 0.2);
   --md-sys-color-primary: #f2f4f8;
   --hover: rgba(255, 255, 255, 0.12);
   --glass-tint: rgba(255, 255, 255, 0.12);
@@ -330,18 +309,13 @@
   --border-soft: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.26);
   --dsw-alias-border-l1: rgba(255, 255, 255, 0.14);
-  --glass-menu-fill: rgba(255, 255, 255, 0.1);
-  --dsw-alias-bg-base: rgba(21, 23, 31, 0.55); /* 与栏体 background 同值：不再把玻璃压成不透明底 */
   --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.12);
 }
 .explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="light"] .ex-mobile-strip {
-  /* 栏体 = 卡片同款玻璃（单一水平单一色相） */
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-card-fill-2);
+  /* 栏体配方已收口 global.css（不在此重复 background） */
   color: #1c1f28;
   --text-1: #1c1f28;
   --text-2: rgba(28, 31, 40, 0.78);
@@ -350,6 +324,10 @@
   --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
   --md-sys-color-outline: rgba(28, 31, 40, 0.4);
   --md-sys-color-outline-variant: rgba(28, 31, 40, 0.16);
+  --dsw-alias-label-primary: #1c1f28;
+  --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
+  --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.1);
+  --dsw-alias-bg-layer-2: rgba(28, 31, 40, 0.14);
   --md-sys-color-primary: #1c1f28;
   --hover: rgba(28, 31, 40, 0.07);
   --glass-tint: rgba(28, 31, 40, 0.08);
@@ -360,8 +338,6 @@
   --border-soft: rgba(28, 31, 40, 0.1);
   --border-strong: rgba(28, 31, 40, 0.26);
   --dsw-alias-border-l1: rgba(28, 31, 40, 0.14);
-  --glass-menu-fill: rgba(255, 255, 255, 0.68);
-  --dsw-alias-bg-base: rgba(252, 253, 255, 0.72); /* 与栏体 background 同值 */
   --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.08);
 }
 
@@ -373,13 +349,11 @@
   --text-3: rgba(242, 244, 248, 0.62);
   --md-sys-color-on-surface: #f2f4f8;
   --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
+  --dsw-alias-label-primary: #f2f4f8;
+  --dsw-alias-label-secondary: rgba(242, 244, 248, 0.8);
   --md-sys-color-primary: #f2f4f8;
-  --surface: rgba(21, 23, 31, 0.55);
   --border: rgba(255, 255, 255, 0.16);
   --hover: rgba(255, 255, 255, 0.12);
-  --glass-tint: rgba(255, 255, 255, 0.12);
-  --glass-fill: rgba(21, 23, 31, 0.55);
-  --glass-fill-regular: rgba(21, 23, 31, 0.55);
   --glass-border: rgba(255, 255, 255, 0.14);
   --glass-rim-top: rgba(255, 255, 255, 0.34);
   --glass-rim-hairline: rgba(255, 255, 255, 0.12);
@@ -391,13 +365,11 @@
   --text-3: rgba(28, 31, 40, 0.62);
   --md-sys-color-on-surface: #1c1f28;
   --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
+  --dsw-alias-label-primary: #1c1f28;
+  --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
   --md-sys-color-primary: #1c1f28;
-  --surface: rgba(252, 253, 255, 0.72);
   --border: rgba(28, 31, 40, 0.16);
   --hover: rgba(28, 31, 40, 0.07);
-  --glass-tint: rgba(28, 31, 40, 0.08);
-  --glass-fill: rgba(252, 253, 255, 0.72);
-  --glass-fill-regular: rgba(252, 253, 255, 0.72);
   --glass-border: rgba(28, 31, 40, 0.12);
   --glass-rim-top: rgba(255, 255, 255, 0.72);
   --glass-rim-hairline: rgba(28, 31, 40, 0.08);
@@ -566,7 +538,7 @@ html.is-phone .hard-refresh-fab.top-fab {
    玻璃卡（.free-item/.home-card）内部**回归主题字色**——卡体有自己的玻璃填充，
    字色跟着卡底走而不跟壁纸走（浅主题的卡上永远是深字、深主题是浅字），
    避免「canvas 档翻白字进了卡、卡底又是浅玻璃」的倒挂。 */
-.explorer-shell[data-wallpaper-lum="dark"] .explorer-content,
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content {
   color: #f2f4f8;
   --text-1: #f2f4f8;
   --text-2: rgba(242, 244, 248, 0.8);
@@ -574,7 +546,7 @@ html.is-phone .hard-refresh-fab.top-fab {
   --md-sys-color-on-surface: #f2f4f8;
   --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
 }
-.explorer-shell[data-wallpaper-lum="light"] .explorer-content,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content {
   color: #1c1f28;
   --text-1: #1c1f28;
   --text-2: rgba(28, 31, 40, 0.78);

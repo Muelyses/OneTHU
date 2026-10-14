@@ -8150,7 +8150,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-rim-bottom: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(30, 33, 45, 0.12);
   --glass-shadow: 0 10px 30px rgba(30, 33, 45, 0.1);
-  --glass-menu-fill: rgba(246, 247, 249, 0.55);
+  --glass-menu-fill: rgba(246, 247, 249, 0.44);
   /* 液态玻璃 = 折射（url(#dsh-liquid-refract)，仅 Chromium 生效）+ 模糊（全引擎回退）。
      WebKit/Gecko 忽略 url() 项，只剩模糊，玻璃质感仍在。 */
   --glass-refract: url(#dsh-liquid-refract);
@@ -8179,9 +8179,9 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 }
 
 :root[data-scheme="dark"] {
-  --glass-card-fill: rgba(255, 255, 255, 0.07);
+  --glass-card-fill: rgba(255, 255, 255, 0.12);
   --glass-card-fill-2: rgba(255, 255, 255, 0.12);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.18);
+  --glass-card-fill-3: rgba(255, 255, 255, 0.12);
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3);
   --glass-rim-top: rgba(255, 255, 255, 0.5);
@@ -8189,10 +8189,10 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-rim-bottom: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  --glass-menu-fill: rgba(22, 22, 27, 0.55);
-  --glass-fill: rgba(255, 255, 255, 0.07);
-  --glass-fill-regular: rgba(30, 30, 36, 0.55);
-  --glass-tint: rgba(255, 255, 255, 0.06);
+  --glass-menu-fill: rgba(22, 22, 27, 0.12);
+  --glass-fill: rgba(255, 255, 255, 0.12);
+  --glass-fill-regular: rgba(30, 30, 36, 0.12);
+  --glass-tint: rgba(255, 255, 255, 0.12);
 }
 
 /* rim 三件套（一条 box-shadow 表达，全部玻璃面共用）。

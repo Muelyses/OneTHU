@@ -9,10 +9,45 @@
  * 持久化只存「哪些球停靠、什么顺序 + 两块的不透明度」；球的图标/名字永远是
  * NAV 注册表的事实，这里不复制。旧的 loose（拖出球）随自由画布退役，字段不再写。
  */
+import { createElement } from "react";
 import { NAV } from "../components/Layout.js";
+import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 
 /** 一级页条目（Layout 的 NAV 数组元素形状：page + label + icon，纯页面无参数） */
 export type SphereNavEntry = (typeof NAV)[number];
+
+/**
+ * 插件功能页 → 一颗球（2026-10-15 用户点名「插件创建的页面也要出现在首页一级程序坞」）。
+ *
+ * 插件经 `ctx.registerTab({id,title,iconSvg})` 注册的页面（pageKey = `plugin:<插件>:<页>`）
+ * 以前只有一个宿主入口：服务页的「插件功能页」分组。现在让它们与 NAV 一级页**同权**：
+ * 出现在「更多功能」小窗里可停靠、可取消停靠，停靠后就长在首页程序坞上。
+ * 字段与 NAV 球同构（page/label/icon），`page` 直接吃 `plugin:${string}`（Page 联合里已有）。
+ */
+function pluginEntries(): SphereNavEntry[] {
+  return pluginTabsSnapshot().map((t) => ({
+    page: t.pageKey as SphereNavEntry["page"],
+    label: t.title,
+    /* 插件给的是 inline SVG 字符串：套一层 .plg-svg-icon（该类的 svg 规则是 100%×100%），
+       并把 width/height 强制成球要的尺寸 —— 插件 SVG 若没写尺寸，SVG 默认 300×150 会把球撑爆。 */
+    icon: ({ width = 16, height = 16 }: { width?: number; height?: number } = {}) =>
+      createElement("span", {
+        className: "plg-svg-icon",
+        dangerouslySetInnerHTML: { __html: sizedPluginSvg(t.iconSvg, width, height) },
+      }),
+  }));
+}
+
+/** 缺省拼图占位（与 Layout 的插件条目同款）+ 强制尺寸 */
+function sizedPluginSvg(svg: string | undefined, w: number, h: number): string {
+  const raw =
+    (svg ?? "").trim() ||
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 2.5 4.2 6l-2.4 4.5L6 13.5l3-2 3 2 2.2-3-2.4-4.5L10 2.5l-4 0z"/></svg>';
+  return raw.replace(/<svg\b([^>]*)>/, (_m, attrs: string) => {
+    const cleaned = attrs.replace(/\s(width|height)\s*=\s*"[^"]*"/g, "");
+    return `<svg${cleaned} width="${w}" height="${h}">`;
+  });
+}
 
 export interface SpheresDoc {
   v: 1;
@@ -42,7 +77,9 @@ function sanitize(raw: unknown): SpheresDoc {
   const base = defaultDoc();
   if (!raw || typeof raw !== "object") return base;
   const r = raw as Partial<SpheresDoc>;
-  const known = new Set<string>(NAV.map((n) => n.page as string));
+  /* 已知球 = NAV 一级页 ∪ 插件功能页（插件页 pageKey 是 `plugin:…`；不放进白名单，
+     插件页的停靠会在下次读取时被 sanitize 吃掉 —— 这正是"插件页进不了程序坞"的一环） */
+  const known = new Set<string>([...NAV.map((n) => n.page as string), ...pluginTabsSnapshot().map((t) => t.pageKey)]);
   const docked = Array.isArray(r.docked)
     ? (r.docked.filter((x): x is string => typeof x === "string" && known.has(x)))
     : base.docked;
@@ -77,6 +114,7 @@ function currentDoc(): SpheresDoc {
 
 function commit(next: SpheresDoc): void {
   doc = next;
+  pubCache = next;
   try {
     localStorage.setItem(KEY, JSON.stringify(doc));
   } catch {
@@ -85,8 +123,17 @@ function commit(next: SpheresDoc): void {
   listeners.forEach((f) => f());
 }
 
+/* 对外快照：useSyncExternalStore 用 Object.is 比对，内容没变也知道不了"插件页多/少了一颗球"，
+   所以插件 tab 增删时换一个新引用（内容相同）+ 通知订阅者，坞才会重渲染出/收掉那颗球。 */
+let pubCache: SpheresDoc | null = null;
+
+subscribePluginTabs(() => {
+  pubCache = { ...currentDoc() };
+  listeners.forEach((f) => f());
+});
+
 export function spheresSnapshot(): SpheresDoc {
-  return currentDoc();
+  return (pubCache ??= currentDoc());
 }
 
 export function subscribeSpheres(f: () => void): () => void {
@@ -115,12 +162,12 @@ export function setDockOpacity(v: number): void {
   commit({ ...currentDoc(), dockOpacity: clampOp(v) });
 }
 
-/** 按 id 找 NAV 行 */
+/** 按 id 找球：先查 NAV 一级页，再查插件功能页 */
 export function sphereEntry(id: string): SphereNavEntry | null {
-  return NAV.find((n) => n.page === id) ?? null;
+  return NAV.find((n) => n.page === id) ?? pluginEntries().find((n) => n.page === id) ?? null;
 }
 
-/** 全部一级页（更多功能小窗的数据源，保持 NAV 顺序） */
+/** 全部可停靠的球（更多功能小窗的数据源）：NAV 一级页在前，插件功能页在后 */
 export function allSphereEntries(): SphereNavEntry[] {
-  return NAV;
+  return [...NAV, ...pluginEntries()];
 }

@@ -1,5 +1,4 @@
-import { Input } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import { Btn, Input, Row, Sheet, Stack, Text } from "@onethu/gui";
 /**
  * 收藏星标 + 收藏弹层 + 收藏项搜索添加弹层（万物收藏项化 UI 件）。
  * - CollectStar：行尾/卡头星标按钮，点亮态 = 已收进任意用户收藏夹；
@@ -15,30 +14,114 @@ import { Empty } from "./Layout.js";
 import { IconChevron, IconFolderPlus, IconSearch, IconStar } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
 import { atomKeyOf } from "../state/favorites.js";
-import { createOnePageForAtom, onePagesWithAtom, removeOnePage } from "../state/onePage.js";
+import { addAtomToBoard, addAtomToHome, boardItemCount, createOnePageForAtom, onePagesWithAtom, removeAtomFromBoard, removeOnePage, userOnePages } from "../state/onePage.js";
 import { pageAtomRef, resolveAtom, searchAtoms, tabAtomKey, type AtomHit } from "../state/atoms.js";
 import { confirmOk } from "../lib/confirm.js";
 import type { AtomRef } from "../state/favorites.js";
 
-/** 星标按钮（2026-10-13 起 = OnePage 一星，统一走白板；旧的「收藏到…多选收藏夹」弹层随旧体系退役） */
+/** 星标按钮（元素收藏；2026-10-15 起不再直接建板，先问落点：首页 / 已有 OnePage / 新建） */
 export function CollectStar({ atom, title }: { atom: AtomRef; title?: string }) {
   const view = resolveAtom(atom);
-  const { lit, toggle } = useOnePageStar(atom, view?.title ?? title ?? "OnePage", view?.sub ?? title ?? "");
+  const name = view?.title ?? title ?? "OnePage";
+  const full = view?.sub ?? title ?? "";
+  const { lit, uncollect } = useAtomStar(atom, name, full);
+  const [picking, setPicking] = useState(false);
   return (
-    <button
-      type="button"
-      className={"collect-star" + (lit ? " is-on" : "")}
-      aria-label={(lit ? "已收藏为 OnePage，点击取消" : "收藏为 OnePage") + (title ? "：" + title : "")}
-      title={lit ? "已收藏 · 点击取消" : "收藏为 OnePage"}
-      onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        void toggle();
-      }}
-    >
-      <IconStar width={14} height={14} />
-    </button>
+    <>
+      <button
+        type="button"
+        className={"collect-star" + (lit ? " is-on" : "")}
+        aria-label={(lit ? "已收藏，点击取消" : "收藏到…") + (title ? "：" + title : "")}
+        title={lit ? "已收藏 · 点击取消" : "收藏到…（首页 / 已有 OnePage / 新建）"}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (lit) void uncollect();
+          else setPicking(true);
+        }}
+      >
+        <IconStar width={14} height={14} />
+      </button>
+      {picking ? <OnePageLandingSheet atom={atom} name={name} full={full} onClose={() => setPicking(false)} /> : null}
+    </>
   );
+}
+
+/**
+ * 「收藏到…」落点选择（用户 2026-10-15 定案）：
+ *   ① 首页（最常用，排第一）② 已有 OnePage（逐块列出来）③ **最后**才是新建 OnePage。
+ * 元素收藏（CollectStar）走这里；标签页收藏（OnePageStar/RootPageStar/PageAtomStar）
+ * 仍是一星成页——用户明确「是元素，不是标签页」。
+ */
+export function OnePageLandingSheet({ atom, name, full, onClose }: { atom: AtomRef; name: string; full: string; onClose: () => void }) {
+  const key = atomKeyOf(atom);
+  const [boards, setBoards] = useState(() => userOnePages());
+  const [note, setNote] = useState<string | null>(null);
+  const doPick = (fn: () => { added: unknown; reason?: string } | void): void => {
+    const r = fn();
+    if (r && !r.added) {
+      setNote(r.reason === "duplicate" ? "这块板上已经有它了" : "没能放上去（目标板不存在）");
+      return;
+    }
+    onClose();
+  };
+  return (
+    <Sheet open onClose={onClose} title="收藏到…">
+      <Stack gap={1}>
+        <Text slot="micro" tone="faint">{full || name}</Text>
+        <Row
+          title="首页"
+          sub="加到首页白板（最常用）"
+          onClick={() => doPick(() => addAtomToHome(key))}
+        />
+        {boards.map((b) => (
+          <Row
+            key={b.id}
+            title={b.name}
+            sub="已有 OnePage"
+            onClick={() => doPick(() => addAtomToBoard(b.id, key))}
+          />
+        ))}
+        <Row
+          title="新建 OnePage"
+          sub={`建一块只含「${name}」的新白板`}
+          onClick={() => { createOnePageForAtom(name, key); onClose(); }}
+        />
+        {note ? <Text slot="micro" tone="faint">{note}</Text> : null}
+      </Stack>
+    </Sheet>
+  );
+}
+
+/**
+ * 元素级星标状态（与标签页的 useOnePageStar 分开）：
+ * - lit = 任意一块板（含首页）上有这颗原子的入口；
+ * - uncollect = 从**所有**板上摘掉入口（不删板）；若某块用户板因此变空，
+ *   那多半是当初为它建的空壳 → 问一句再收掉（保持旧「取消 = 收回」的手感）。
+ */
+export function useAtomStar(ref: AtomRef | null, name: string, full: string): { lit: boolean; uncollect: () => Promise<void> } {
+  const key = ref ? atomKeyOf(ref) : null;
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const on = (): void => setTick((t) => t + 1);
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
+  void tick;
+  const lit = key ? onePagesWithAtom(key).length > 0 : false;
+  const uncollect = async (): Promise<void> => {
+    if (!key) return;
+    const homes = onePagesWithAtom(key);
+    for (const b of homes) removeAtomFromBoard(b.id, key);
+    const emptied = homes.filter((b) => b.kind !== "system" && boardItemCount(b.id) === 0);
+    if (emptied.length > 0) {
+      const names = emptied.map((b) => `「${b.name}」`).join("、");
+      const ok = await confirmOk(`刚收回的入口让 ${names} 变成空板了，一并删掉？\n（「取消」只收回入口，板留着）`);
+      if (ok) for (const b of emptied) removeOnePage(b.id);
+    }
+    void name;
+  };
+  return { lit, uncollect };
 }
 
 /** 「收藏到…」弹层：多选收藏夹 + 当场新建 */

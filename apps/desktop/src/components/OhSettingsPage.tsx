@@ -42,7 +42,7 @@ defineSearchRows([
   { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("OH 模型 / 多模态开关", "basic") },
   { id: "oh-contextmode", tab: "OneTHU Harness", section: "模型与多模态", title: "上下文记忆模式", aliases: ["上下文", "记忆", "压缩", "历史", "要点", "压缩内容制"], desc: "历史超长自动收成要点清单，重要内容不再丢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "上下文记忆模式"], displayRoot: "设置", go: () => goOhRow("上下文记忆模式", "basic") },
   { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置", go: () => goOhRow("后台保活（华为 / 荣耀）", "basic") },
-  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], desc: "插件自己的面板，就地渲染" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "sec-模型MCP日志", fallbackTarget: "oh-tier-advanced", waitMs: 1400 }); } },
+  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "sec-模型MCP日志", fallbackTarget: "oh-tier-advanced", waitMs: 1400 }); } },
 ]);
 
 /* task-22：OH 行级直达的**本地快捷**（三段式的 ②+③）：切档 + 滚到行（找不到行时落档位根）。+
@@ -258,7 +258,7 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
           {/* 同一份实现的 advanced 档：通道开关、手工凭据、微信灰置说明 */}
           <ImSettingsSection tier="advanced" />
 
-          <SubHead id="sec-模型MCP日志">模型 / MCP / 日志（插件自己的面板，就地渲染）</SubHead>
+          <SubHead id="sec-模型MCP日志">模型 / MCP / 日志</SubHead>
           {advancedPanels ?? <OhAdvancedSlot />}
         </>
       )}

@@ -221,7 +221,11 @@ function settle(el: HTMLElement, resettle = false): void {
       }
       return;
     }
-    el.style.setProperty("color", bg < 0.5 ? WANT_DARK : WANT_LIGHT);
+    // 黑白二选一必须「两个候选都算一遍取高者」：
+    // 旧实现用 bg < 0.5 当分界是错的——0.5 是 sRGB 中灰，不是白字/黑字等对比的交叉点（交叉点 L≈0.179）。
+    // 实测反例：底 L=0.352 时白字仅 2.33:1，而黑字可取 6.5:1，旧逻辑却挑了白字（首页时钟/OneGO! 事故）。
+    const white = contrast(1, bg), black = contrast(0, bg);
+    el.style.setProperty("color", white >= black ? WANT_DARK : WANT_LIGHT);
     el.dataset.tx = "lock";
   } catch { /* 单叶失败不影响整体 */ }
 }

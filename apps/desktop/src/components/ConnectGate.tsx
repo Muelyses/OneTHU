@@ -151,7 +151,7 @@ export function ConnectGate({
     position: "fixed",
     inset: 0,
     zIndex: 1200,
-    background: "rgba(0,0,0,.4)",
+    background: "var(--og-scrim)",
     display: "flex",
     alignItems: expanded ? "center" : "flex-end",
     justifyContent: "center",
@@ -162,8 +162,8 @@ export function ConnectGate({
     minWidth: 0,
     maxHeight: expanded ? "86dvh" : "92dvh",
     overflowY: "auto",
-    background: "var(--md-sys-color-surface)",
-    color: "var(--text-1)",
+    background: "var(--og-surface-overlay)",
+    color: "var(--og-content-1)",
     borderRadius: expanded ? "var(--r-lg)" : "var(--r-lg) var(--r-lg) 0 0",
     padding: "16px 16px calc(16px + env(safe-area-inset-bottom))",
     boxSizing: "border-box",
@@ -205,7 +205,7 @@ export function ConnectGate({
     if (need === "tuoj") {
       return (
         <div style={{ display: "grid", gap: 10 }}>
-          <div className="setting-desc" style={{ margin: 0 }}>
+          <div className="og-text og-text--label og-text--t-faint">
             用清华账号登录一次即可，不需要额外输入。
           </div>
           <Btn variant="outline" disabled={busy} onClick={() => void tuojLogin()}>{busy ? "登录中…" : "用清华账号登录"}</Btn>
@@ -215,14 +215,14 @@ export function ConnectGate({
     if (need === "cloud") {
       return (
         <div style={{ display: "grid", gap: 10 }}>
-          <div className="setting-desc" style={{ margin: 0 }}>
+          <div className="og-text og-text--label og-text--t-faint">
             点击后会在 OneTHU 内打开清华云盘页。
           </div>
-          <div className="setting-desc" style={{ margin: 0 }}>
+          <div className="og-text og-text--label og-text--t-faint">
             登录后读取现有访问口令并保存到本机，不会生成或重置。
           </div>
           {autoMsg ? (
-            <div className="setting-desc" style={{ margin: 0, color: "var(--state-warn-primary, #b45309)" }}>
+            <div className="og-text og-text--label og-text--t-warning">
               {autoMsg}
             </div>
           ) : null}
@@ -232,7 +232,7 @@ export function ConnectGate({
           </div>
           {manualOpen ? (
             <>
-              <div className="setting-desc" style={{ margin: 0 }}>
+              <div className="og-text og-text--label og-text--t-faint">
                 云盘网页端个人资料页：已有访问口令可点眼睛显示后复制。
                 没有访问口令时，请手动生成并粘贴到下面（仅存本机）。
               </div>
@@ -248,7 +248,7 @@ export function ConnectGate({
     /* mail：真实输入框——与设置页同一个动作（accountSetup → cloudCal），语义不分叉 */
     return (
       <div style={{ display: "grid", gap: 10 }}>
-        <div className="setting-desc" style={{ margin: 0 }}>
+        <div className="og-text og-text--label og-text--t-faint">
           密码不是邮箱登录密码，是「客户端专用密码」：网页版邮箱 → 设置 → 客户端专用密码。
         </div>
         <Input placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）" value={mailAddr} onChange={(value) => setMailAddr(value.trim())} />
@@ -268,12 +268,12 @@ export function ConnectGate({
             ✕
           </Btn>
         </div>
-        <div className="setting-desc" style={{ margin: "0 0 12px" }}>
+        <div className="og-text og-text--label og-text--t-faint" style={{ marginBottom: 12 }}>
           {WHY[need]}
         </div>
         {body}
         {err ? (
-          <div style={{ marginTop: 10, fontSize: "var(--text-sm)", color: "var(--red, #c04848)" }}>{err}</div>
+          <div style={{ marginTop: 10, fontSize: "var(--text-sm)", color: "var(--og-error)" }}>{err}</div>
         ) : null}
       </div>
     </div>,

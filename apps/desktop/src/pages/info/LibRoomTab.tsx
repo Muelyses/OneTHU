@@ -1,14 +1,12 @@
-import { Btn } from "@onethu/gui";
-import { Select } from "@onethu/gui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 /**
  * 研讨间预约（cab.lib.tsinghua.edu.cn ic-web，thu-info-app libRoomSelect/libRoomBook/
  * libRoomPerformBook 桌面化移植）：
  * - 房型（kindId/kindName）选择 + 未来 5 天日期选择（lib validDateNum=5）
- * - 可约资源列表：每房间开放时段条（占段=红/空闲=绿，convertUsageToSegments 同款）
- *   + 逐格三态时段（30 分钟一格：绿=可约 / 红=已被占 / 灰=不可选，格内显式标注
- *   时段文本与占用状态，明确指出哪几个时段被占）；资源请求带代数去重（仅最新一次
- *   请求可落状态），房型/日期切换才清空列表，预约/取消后的刷新为软刷新（旧列表
- *   保留展示，杜绝占用条闪没）
+ * - 可约资源列表：逐格三态时段（30 分钟一格：绿=可约 / 红=已被占 / 灰=不可选，
+ *   格内显式标注时段文本与占用状态，明确指出哪几个时段被占）；资源请求带代数去重
+ *   （仅最新一次请求可落状态），房型/日期切换才清空列表，预约/取消后的刷新为软刷新
+ *   （旧列表保留展示，杜绝占用格闪没）
  * - 时段筛选：按 5 分钟粒度选起止时间，只显示整段连续空闲且满足房间
  *   开放时间、最短/最长时长与当日未过期约束的房间；从筛选结果点「预约」
  *   会自动带入该时段
@@ -21,10 +19,40 @@ import { Select } from "@onethu/gui";
  * - 成员：仅以本人 accNo 提交（minUser>1 的多人房间给出说明，成员搜索端点已在
  *   InfoClient.fuzzySearchLibRoomMember 移植，UI 暂不开放）
  * - 首次预约报「填写邮箱地址」→ getUserInfo 邮箱确认 → ic-web/account/update 绑定后重试
+ *
+ * 2026-10-14 OneGUI 换血：筛选条 = Field+Inline+Grow（房型 SearchSelect/CollectStar
+ * 原样复用，保留 .ss-row 给下拉撤底边距；日期 5 天走 Segment——原生 time 输入换
+ * SearchSelect 复用，5 分钟粒度候选全日可搜，与预约面板同一时段选择族）·
+ * 错误/免登录引导/预约结果 = Banner（error 免登录可重试、success/error 语义色）·
+ * 骨架 LoadingBlock、空态 EmptyState · 可约房间行 = Card flush + List divided + Row
+ * （房间状态语义 Tag tone=neutral，.row-amount 换 trailing 预约钮）· 逐格三态时段格 =
+ * Btn tonal 轻量化网格（可约 success / 已被占 error / 不可选中性 disabled，本线
+ * 座位格判例同款，selected 高亮=面板当前开始时刻，.slot-grid/.slot-cell 共享类其他
+ * 场次页仍用保留）· 预约面板 = Card+Field+Spacer+实体按钮；顶部精确段条（UsageBar）
+ * 退役：占段精确信息由三态格与 sub 行全量承载（同一 convertUsageToSegments 源），
+ * aria 概述并入 Row sub 文本。
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+
+/* ── OG 全量 imported ── */
 import { isAuthError, type LibRoomBookRecord, type LibRoomRes } from "@onethu/core";
-import { Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
+import {
+  Banner,
+  Btn,
+  Card,
+  EmptyState,
+  Field,
+  Grow,
+  Inline,
+  List,
+  LoadingBlock,
+  Row,
+  Section,
+  Segment,
+  Spacer,
+  Stack,
+  Tag,
+  Text,
+} from "@onethu/gui";
 import { SearchSelect } from "../../components/SearchSelect.jsx";
 import { CollectStar } from "../../components/Collect.js";
 import { enc, noteAtomCache } from "../../state/atoms.js";
@@ -34,23 +62,24 @@ import { openExternal } from "./openExternal.js";
 import { useApp } from "../../state/context.js";
 import { softRecover } from "../../lib/reload.js";
 
-/** 研讨间「未绑定邮箱」检测卡（2026-09 用户反馈：新生首次使用必须在 cab.lib
- *  原网站绑定邮箱，否则会话建立/userInfo 校验恒败，只报错会让用户干等）。
- *  命中会话失败类文案时显示引导 + 一键打开原站；其余错误原样只走 ErrorNote。 */
+/* 研讨间「未绑定邮箱」引导条（2026-09 用户反馈：新生首次使用必须在 cab.lib
+ * 原网站绑定邮箱，否则会话建立/userInfo 校验恒败，只报错会让用户干等）。
+ * 命中会话失败类文案时显示引导 + 一键打开原站；其余错误原样只走 Banner。 */
 function EmailBindHint({ text }: { text: string }) {
   if (!/研讨间会话未能建立|研讨间登录失败|userInfo 校验/.test(text)) return null;
   return (
-    <Card style={{ marginBottom: 12, borderLeft: "3px solid var(--accent)" }}>
-      <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-        <b>首次使用研讨间？需要先绑定邮箱</b>
-        <div style={{ opacity: 0.75, marginTop: 4 }}>
-          研讨间系统要求先在原网站（cab.lib.tsinghua.edu.cn）登录并绑定邮箱后才能预约，新生未绑定时会一直报「会话未能建立」。
-          请在原网站绑定邮箱后，回到这里点「重试」。
-        </div>
-        <Btn variant="outline" onClick={() => void openExternal("https://cab.lib.tsinghua.edu.cn/")}>打开研讨间网站
+    <Banner
+      tone="warning"
+      title="首次使用研讨间？需要先绑定邮箱"
+      action={
+        <Btn variant="outline" onClick={() => void openExternal("https://cab.lib.tsinghua.edu.cn/")}>
+          打开研讨间网站
         </Btn>
-      </div>
-    </Card>
+      }
+    >
+      研讨间系统要求先在原网站（cab.lib.tsinghua.edu.cn）登录并绑定邮箱后才能预约，新生未绑定时会一直报「会话未能建立」。
+      请在原网站绑定邮箱后，回到这里点「重试」。
+    </Banner>
   );
 }
 
@@ -103,10 +132,21 @@ function dayChoices(): DayChoice[] {
   return out;
 }
 
+/** 空闲时段筛选候选：全日 00:00~23:55 每 5 分钟一档（原 step=300 time 输入的同域
+ *  替代——SearchSelect ≥6 选项自动带搜索框，5 分钟粒度可搜可点）。 */
+const TIME_OPTIONS: Array<{ value: string; label: string }> = (() => {
+  const out: Array<{ value: string; label: string }> = [];
+  for (let m = 0; m < 24 * 60; m += 5) {
+    const hm = `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+    out.push({ value: hm, label: hm });
+  }
+  return out;
+})();
+
 /* ------------- 时段切分（libRoomBookTimeIndicator 逐行移植） ------------- */
 
 /** [start, duration(分钟), occupied] —— lib convertUsageToSegments */
-type Segment = [string, number, boolean];
+type SegmentData = [string, number, boolean];
 
 const timeDiff = (start: string, end: string): number => {
   const sh = Number(start.slice(0, 2));
@@ -116,11 +156,11 @@ const timeDiff = (start: string, end: string): number => {
   return eh * 60 + em - (sh * 60 + sm);
 };
 
-const convertUsageToSegments = (res: LibRoomRes): Segment[] => {
+const convertUsageToSegments = (res: LibRoomRes): SegmentData[] => {
   if (res.openStart === null || res.openEnd === null) return [];
   try {
     const sorted = [...res.usage].sort((a, b) => (a.start < b.start ? -1 : 1));
-    const result: Segment[] = [];
+    const result: SegmentData[] = [];
     let lastTime = res.openStart;
     for (const u of sorted) {
       const beginTime = hhmm(u.start);
@@ -183,29 +223,6 @@ const validEnds = (res: LibRoomRes, begs: TimePoint[], beg: string): TimePoint[]
   }
   return result;
 };
-
-/** 开放时段条（libRoomBookTimeIndicator 桌面化：占段红 / 空闲绿） */
-function UsageBar({ res }: { res: LibRoomRes }) {
-  if (res.openStart === null || res.openEnd === null) {
-    return <div style={{ fontSize: 12, color: "var(--text-3)" }}>当日不开放</div>;
-  }
-  const segments = convertUsageToSegments(res);
-  return (
-    <div
-      style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", marginTop: 6 }}
-      role="img"
-      aria-label={`开放 ${res.openStart}~${res.openEnd}`}
-    >
-      {segments.map(([start, duration, occupied]) => (
-        <div
-          key={start}
-          title={`${start} 起 ${duration} 分钟${occupied ? " · 已占用" : " · 空闲"}`}
-          style={{ flex: duration, background: occupied ? "var(--red)" : "var(--green-soft)" }}
-        />
-      ))}
-    </div>
-  );
-}
 
 /* ------------- 逐格三态时段（可约 / 已被占 / 不可选） ------------- */
 
@@ -304,8 +321,16 @@ const SLOT_STATE_LABEL: Record<SlotState, string> = {
   blocked: "不可选",
 };
 
-/** 三态时段格：默认只读（房间列表）；传 selectedBeg+onPickFree 即为预约面板的
- *  可点改选模式（点任一绿格改选开始时刻；红/灰格不可点）。 */
+const SLOT_TONE: Record<SlotState, OGBToneAlias> = {
+  free: "success",
+  occupied: "error",
+  blocked: "default",
+};
+type OGBToneAlias = "default" | "quiet" | "brand" | "error" | "warning" | "success" | "info";
+
+/** 三态时段格 = Btn tonal 轻量化网格（座位格判例同款）：默认只读（房间列表）；
+ *  传 selectedBeg+onPickFree 即为预约面板的可点改选模式（点任一绿格改选开始时刻，
+ *  selected 高亮当前开始；红/灰格 disabled 不可点）。 */
 function SlotGrid({
   slots,
   res,
@@ -319,46 +344,30 @@ function SlotGrid({
 }) {
   if (slots.length === 0) return null;
   return (
-    <div className="slot-grid slot-grid-tight" style={{ marginTop: 6 }}>
+    <Inline gap={1} wrap>
       {slots.map((sl) => {
-        const cls =
-          sl.state === "occupied"
-            ? "slot-cell occ"
-            : sl.state === "free"
-              ? "slot-cell"
-              : "slot-cell taken";
         const label = SLOT_STATE_LABEL[sl.state];
-        const selected = selectedBeg !== undefined && onPickFree !== undefined && sl.state === "free" && sl.start === selectedBeg;
         const interactive = onPickFree !== undefined && sl.state === "free";
+        const selected = selectedBeg !== undefined && interactive && sl.start === selectedBeg;
         const tip = `${sl.start}~${sl.end} · ${label}${
           sl.state === "occupied" ? usageAt(res, toMin(sl.start), toMin(sl.end)) : ""
         }${interactive ? " · 点击选此开始时刻" : ""}`;
-        const body = (
-          <>
-            <b>{sl.start}~{sl.end}</b>
-            <small>{label}</small>
-          </>
-        );
-        if (interactive) {
-          return (
-            <button
-              key={`${sl.start}-${sl.end}`}
-              type="button"
-              className={cls + (selected ? " picked" : "")}
-              title={tip}
-              onClick={() => onPickFree!(sl)}
-            >
-              {body}
-            </button>
-          );
-        }
         return (
-          <span key={`${sl.start}-${sl.end}`} className={cls} title={tip}>
-            {body}
-          </span>
+          <Btn
+            key={`${sl.start}-${sl.end}`}
+            variant="tonal"
+            tone={SLOT_TONE[sl.state]}
+            size="sm"
+            disabled={!interactive}
+            selected={selected || undefined}
+            titleAttr={tip}
+            onClick={interactive ? () => onPickFree!(sl) : undefined}
+          >
+            {sl.start}~{sl.end} {label}
+          </Btn>
         );
       })}
-    </div>
+    </Inline>
   );
 }
 
@@ -413,7 +422,7 @@ export function LibRoomTab({
   const [busyCancel, setBusyCancel] = useState<string | null>(null);
 
   /* 登录态丢失静默自愈：每条加载链路独立计数（成功清零），同一次失败最多自动恢复 1 次；
-   * 恢复中保持 loading 骨架不闪红，自动恢复也失败才亮 ErrorNote（手动重试清零重计）。 */
+   * 恢复中保持 loading 骨架不闪红，自动恢复也失败才亮 Banner（手动重试清零重计）。 */
   const kindRecover = useRef(0);
   const resRecover = useRef(0);
   const recRecover = useRef(0);
@@ -432,7 +441,7 @@ export function LibRoomTab({
       noteAtomCache({ libroomKinds: list.map((k) => ({ kindId: k.kindId, kindName: k.kindName })) });
     } catch (err) {
       logErr("LIBROOM-KIND", err);
-      // 登录态丢失：不闪红，静默重建研讨间 cab 会话后自动重载一次；仍失败才亮 ErrorNote
+      // 登录态丢失：不闪红，静默重建研讨间 cab 会话后自动重载一次；仍失败才亮 Banner
       // 登录态丢失：softRelogin 透明全链重建 → 原地重拉
       if (isAuthError(err) && (await softRecover("libroom"))) return loadKinds();
       // softRecover 失败/节流 → 落回数据级恢复兜底
@@ -490,7 +499,7 @@ export function LibRoomTab({
    * - 请求代数去重：resGen 自增，仅最新一次发出的请求可落状态（resTick 重取、
    *   房型/日期连点时旧响应一律丢弃，杜绝互相覆盖）；
    * - 软/硬刷新：房型/日期变化（源变化）才清空列表与选房；预约/取消后的 resTick
-   *   重取保留旧列表展示（stale-while-revalidate），占用条不再先消失再出现。 */
+   *   重取保留旧列表展示（stale-while-revalidate），占用格不再先消失再出现。 */
   const resGen = useRef(0);
   const lastResSource = useRef<string | null>(null);
   useEffect(() => {
@@ -513,9 +522,9 @@ export function LibRoomTab({
         lastResSource.current = source;
         setResources(list);
         setResState("ready");
-        // 面板开着时同步刷新占用（如取消自己的预约后该时段回绿）：
-        // 仅替换 res，保留用户已选的 beg/end 字符串；新数据下不再合法时
-        // ends 落空 → 提交按钮自动禁用，用户重选即可。
+        // 面板开着时同步刷新占用（如取消自己的预约后该时段回绿）：仅替换 res，
+        // 保留用户已选的 beg/end 字符串；新数据下不再合法时 ends 落空 → 提交按钮
+        // 自动禁用，用户重选即可。
         setTarget((t) => {
           if (!t) return null;
           const fresh = list.find((x) => x.devId === t.res.devId);
@@ -676,137 +685,175 @@ export function LibRoomTab({
   const canSubmit =
     target !== null && beg !== "" && end !== "" && !busy && target.res.minUser <= 1;
 
+  const dayOptions = days.map((d) => ({
+    value: String(d.offset),
+    label: d.label,
+  }));
+
   return (
-    <>
-      <SectionHead title="研讨间" aside="cab.lib.tsinghua.edu.cn · ic-web" />
+    <Stack gap={3}>
+      <Section title="研讨间" hint="cab.lib.tsinghua.edu.cn · ic-web" />
       {kindState === "error" ? (
-        <ErrorNote
-          text={kindError ?? ""}
-          onRetry={() => {
-            kindRecover.current = 0;
-            void loadKinds();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                kindRecover.current = 0;
+                void loadKinds();
+              }}
+            >
+              重试
+            </Btn>
+          }
+        >
+          {kindError ?? ""}
+        </Banner>
       ) : null}
       {kindState === "error" ? <EmailBindHint text={kindError ?? ""} /> : null}
-      {kindState === "loading" && !kinds ? <SkeletonRows rows={2} /> : null}
+      {kindState === "loading" && !kinds ? <LoadingBlock rows={2} /> : null}
 
       {kinds && kinds.length > 0 ? (
         <>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-            <div className="field" style={{ margin: 0, minWidth: 220 }}>
-              <label htmlFor="libroom-kind">房型</label>
-              <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-                  <SearchSelect
-                    value={kindId != null ? String(kindId) : ""}
-                    onChange={(v) => setKindId(Number(v) || null)}
-                    placeholder="选择房型…"
-                    options={kinds.map((k) => ({ value: String(k.kindId), label: k.kindName }))}
-                  />
-                </div>
-                {kindId != null ? (
-                  <CollectStar
-                    atom={{ kind: "libroom-k", key: enc(kindId, kinds?.find((k) => k.kindId === kindId)?.kindName ?? "") }}
-                    title={kinds?.find((k) => k.kindId === kindId)?.kindName ?? "研讨间房型"}
-                  />
-                ) : null}
-              </div>
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-date">日期</label>
-              <Select id="libroom-date" value={day.offset} onChange={(value) => setDay(days[Number(value)] ?? days[0]!)}>{days.map((d) => (
-                  <option key={d.offset} value={d.offset}>
-                    {d.label}
-                  </option>
-                ))}</Select>
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-filter-beg">空闲时段</label>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <input
-                  id="libroom-filter-beg"
-                  className="input"
-                  type="time"
-                  step={300}
-                  aria-label="空闲时段开始"
+          {/* 筛选条：房型 / 日期 / 空闲时段（Field + Inline + Grow 判例同款） */}
+          <Inline gap={3} wrap vAlign="end">
+            <Grow>
+              <Field label="房型">
+                <Inline gap={1} className="ss-row">
+                  <Grow>
+                    <SearchSelect
+                      value={kindId != null ? String(kindId) : ""}
+                      onChange={(v) => setKindId(Number(v) || null)}
+                      placeholder="选择房型…"
+                      options={kinds.map((k) => ({ value: String(k.kindId), label: k.kindName }))}
+                    />
+                  </Grow>
+                  {kindId != null ? (
+                    <CollectStar
+                      atom={{ kind: "libroom-k", key: enc(kindId, kinds?.find((k) => k.kindId === kindId)?.kindName ?? "") }}
+                      title={kinds?.find((k) => k.kindId === kindId)?.kindName ?? "研讨间房型"}
+                    />
+                  ) : null}
+                </Inline>
+              </Field>
+            </Grow>
+            <Field label="日期">
+              <Segment
+                size="sm"
+                options={dayOptions}
+                value={String(day.offset)}
+                onChange={(value) => setDay(days[Number(value)] ?? days[0]!)}
+              />
+            </Field>
+            <Field
+              label="空闲时段"
+              error={filterComplete && !filterValid ? "结束时间需晚于开始时间" : undefined}
+            >
+              <Inline gap={1} vAlign="center" wrap>
+                <SearchSelect
                   value={filterBeg}
-                  onChange={(e) => setFilterBeg(e.target.value)}
+                  onChange={setFilterBeg}
+                  placeholder="开始…"
+                  options={TIME_OPTIONS}
                 />
-                <span style={{ color: "var(--text-3)" }}>至</span>
-                <input
-                  className="input"
-                  type="time"
-                  step={300}
-                  aria-label="空闲时段结束"
+                <Text slot="label" tone="faint" nowrap>至</Text>
+                <SearchSelect
                   value={filterEnd}
-                  onChange={(e) => setFilterEnd(e.target.value)}
+                  onChange={setFilterEnd}
+                  placeholder="结束…"
+                  options={TIME_OPTIONS}
                 />
                 {filterBeg || filterEnd ? (
-                  <Btn variant="ghost" onClick={() => {
+                  <Btn
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
                       setFilterBeg("");
                       setFilterEnd("");
-                    }}>清除
+                    }}
+                  >
+                    清除
                   </Btn>
                 ) : null}
-              </div>
-              {filterComplete && !filterValid ? (
-                <div className="t-red" style={{ fontSize: 12, marginTop: 4 }}>结束时间需晚于开始时间</div>
-              ) : null}
-            </div>
-          </div>
+              </Inline>
+            </Field>
+          </Inline>
 
-          <SectionHead
+          <Section
             title="可约房间"
-            aside={`${day.label}${filterValid ? ` · ${filterBeg}~${filterEnd} 连续空闲 ${visibleResources?.length ?? 0} 间` : ""} · 时段格 绿=可约 红=已被占 灰=不可选${resState === "loading" && resources !== null ? " · 刷新中…" : ""}`}
+            hint={`${day.label}${filterValid ? ` · ${filterBeg}~${filterEnd} 连续空闲 ${visibleResources?.length ?? 0} 间` : ""} · 时段格 绿=可约 红=已被占 灰=不可选${resState === "loading" && resources !== null ? " · 刷新中…" : ""}`}
           />
-          {resState === "loading" && resources === null ? <SkeletonRows rows={4} /> : null}
+          {resState === "loading" && resources === null ? <LoadingBlock rows={4} /> : null}
           {resState === "error" ? (
-            <ErrorNote
-              text={resError ?? ""}
-              onRetry={() => {
-                resRecover.current = 0;
-                setResTick((n) => n + 1);
-              }}
-            />
+            <Banner
+              tone="error"
+              action={
+                <Btn
+                  variant="ghost"
+                  tone="error"
+                  size="sm"
+                  onClick={() => {
+                    resRecover.current = 0;
+                    setResTick((n) => n + 1);
+                  }}
+                >
+                  重试
+                </Btn>
+              }
+            >
+              {resError ?? ""}
+            </Banner>
           ) : null}
           {resState === "error" ? <EmailBindHint text={resError ?? ""} /> : null}
           {resources !== null && resources.length === 0 ? (
             <Card>
-              <Empty text="该房型当日暂无可约房间。" />
+              <EmptyState title="该房型当日暂无可约房间。" />
             </Card>
           ) : null}
           {resources !== null && resources.length > 0 && visibleResources?.length === 0 ? (
             <Card>
-              <Empty text={`没有研讨间在 ${filterBeg}~${filterEnd} 整段可约，请调整时间或清除筛选。`} />
+              <EmptyState title={`没有研讨间在 ${filterBeg}~${filterEnd} 整段可约，请调整时间或清除筛选。`} />
             </Card>
           ) : null}
           {visibleResources !== null && visibleResources.length > 0 ? (
-            <Card className="list">
-              {visibleResources.map((r) => (
-                <div className="row" key={r.devId}>
-                  <div className="row-main">
-                    <div className="row-title">
-                      {r.roomName}
-                      {r.maxUser > 1 ? `（${r.minUser}~${r.maxUser} 人）` : ""}
-                      {r.kindName.includes("暂未开放") ? "（暂未开放）" : ""}
-                    </div>
-                    <div className="row-sub">
-                      {r.openStart && r.openEnd
-                        ? `开放 ${r.openStart}~${r.openEnd} · 单次 ${r.minMinute}~${r.maxMinute} 分钟`
-                        : "当日不开放"}
-                      {r.usage.length > 0 ? ` · 已约 ${r.usage.length} 段` : ""}
-                    </div>
-                    <UsageBar res={r} />
-                    {/* 逐格三态：明确列出被占时段文本（红=已被占 / 绿=可约 / 灰=不可选） */}
+            <Card flush>
+              <List divided>
+                {visibleResources.map((r) => (
+                  <Row
+                    flush
+                    key={r.devId}
+                    title={
+                      <>
+                        <Text as="span" slot="body" weight="medium">
+                          {r.roomName}
+                          {r.maxUser > 1 ? `（${r.minUser}~${r.maxUser} 人）` : ""}
+                        </Text>
+                        {r.kindName.includes("暂未开放") ? <Tag tone="neutral">暂未开放</Tag> : null}
+                      </>
+                    }
+                    sub={`${r.openStart && r.openEnd
+                      ? `开放 ${r.openStart}~${r.openEnd} · 单次 ${r.minMinute}~${r.maxMinute} 分钟`
+                      : "当日不开放"}${r.usage.length > 0 ? ` · 已约 ${r.usage.length} 段` : ""}`}
+                    trailing={
+                      <Btn
+                        variant="solid"
+                        tone="brand"
+                        disabled={r.kindName.includes("暂未开放") || r.openStart === null}
+                        onClick={() => pickRoom(r)}
+                      >
+                        预约
+                      </Btn>
+                    }
+                  >
+                    {/* 逐格三态：明确列出被占时段（红=已被占 / 绿=可约 / 灰=不可选），
+                        原顶部精确段条信息由本格与会话注释全量承载 */}
                     <SlotGrid slots={roomSlots(r, day.iso)} res={r} />
-                  </div>
-                  <div className="row-amount">
-                    <Btn variant="solid" tone="brand" disabled={r.kindName.includes("暂未开放") || r.openStart === null} onClick={() => pickRoom(r)}>预约
-                    </Btn>
-                  </div>
-                </div>
-              ))}
+                  </Row>
+                ))}
+              </List>
             </Card>
           ) : null}
         </>
@@ -814,135 +861,153 @@ export function LibRoomTab({
 
       {/* 选房后的预约面板 */}
       {target ? (
-        <Card style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 13, marginBottom: 8 }}>
-            预约 <b>{target.res.roomName}</b> · {target.day.iso}
-            {target.res.maxUser > 1 ? `（${target.res.minUser}~${target.res.maxUser} 人）` : ""}
-          </div>
-          {/* 三态时段格：点任一「可约」格即改选开始时刻（可反复改选），
-              改开始后结束时刻自动回落到该开始的首个合法值（lib 同语义） */}
-          <SlotGrid
-            slots={targetSlots}
-            res={target.res}
-            selectedBeg={beg}
-            onPickFree={(sl) => {
-              setBookError(null);
-              setNotice(null);
-              setBeg(sl.start);
-            }}
-          />
-          <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 6 }}>
-            点「可约」格改选开始时刻；结束时刻在下方下拉微调（须满足单次 {target.res.minMinute}~{target.res.maxMinute} 分钟）。
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end", marginTop: 8 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-beg">开始</label>
-              <SearchSelect
-                value={beg}
-                onChange={(v) => setBeg(v)}
-                placeholder={begins.length === 0 ? "无可约时段" : "开始"}
-                disabled={begins.length === 0}
-                options={begins.map((b) => ({ value: b.start, label: b.start }))}
-              />
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-end">结束</label>
-              <SearchSelect
-                value={end}
-                onChange={(v) => setEnd(v)}
-                placeholder={ends.length === 0 ? "–" : "结束"}
-                disabled={ends.length === 0}
-                options={ends.map((p2) => ({ value: p2.start, label: p2.start }))}
-              />
-            </div>
-            <span style={{ flex: 1 }} />
-            <Btn variant="solid" tone="brand" disabled={!canSubmit} onClick={() => {
-                if (target && beg && end) void doBook(target, beg, end);
-              }}>{busy ? "提交中…" : "提交预约"}</Btn>
-            <Btn variant="outline" onClick={() => setTarget(null)}>取消
-            </Btn>
-          </div>
-          <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 8 }}>
-            成员：本人（accNo {info.getLibRoomAccNo() ?? "–"}）。
-            {target.res.minUser > 1
-              ? ` 该房间需 ${target.res.minUser}~${target.res.maxUser} 人成组，本应用暂不支持添加成员，请到图书馆研讨间系统网页端预约。`
-              : ` 单次可约 ${target.res.minMinute}~${target.res.maxMinute} 分钟，5 分钟粒度。`}
-          </div>
+        <Card>
+          <Stack gap={2}>
+            <Inline gap={2} vAlign="baseline" wrap>
+              <Text as="h3" slot="subtitle">
+                预约 {target.res.roomName} · {target.day.iso}
+              </Text>
+              {target.res.maxUser > 1 ? (
+                <Tag tone="neutral">{target.res.minUser}~{target.res.maxUser} 人</Tag>
+              ) : null}
+              <Tag tone="brand">{target.day.label}</Tag>
+            </Inline>
+            {/* 三态时段格：点任一「可约」格即改选开始时刻（可反复改选），
+                改开始后结束时刻自动回落到该开始的首个合法值（lib 同语义） */}
+            <SlotGrid
+              slots={targetSlots}
+              res={target.res}
+              selectedBeg={beg}
+              onPickFree={(sl) => {
+                setBookError(null);
+                setNotice(null);
+                setBeg(sl.start);
+              }}
+            />
+            <Text slot="micro" tone="faint">
+              点「可约」格改选开始时刻；结束时刻在下方选择器微调（须满足单次 {target.res.minMinute}~{target.res.maxMinute} 分钟）。
+            </Text>
+            <Inline gap={2} wrap vAlign="end">
+              <Field label="开始">
+                <SearchSelect
+                  value={beg}
+                  onChange={setBeg}
+                  placeholder={begins.length === 0 ? "无可约时段" : "开始"}
+                  disabled={begins.length === 0}
+                  options={begins.map((b) => ({ value: b.start, label: b.start }))}
+                />
+              </Field>
+              <Field label="结束">
+                <SearchSelect
+                  value={end}
+                  onChange={setEnd}
+                  placeholder={ends.length === 0 ? "–" : "结束"}
+                  disabled={ends.length === 0}
+                  options={ends.map((p2) => ({ value: p2.start, label: p2.start }))}
+                />
+              </Field>
+              <Spacer />
+              <Btn
+                variant="solid"
+                tone="brand"
+                disabled={!canSubmit}
+                onClick={() => {
+                  if (target && beg && end) void doBook(target, beg, end);
+                }}
+              >
+                {busy ? "提交中…" : "提交预约"}
+              </Btn>
+              <Btn variant="outline" onClick={() => setTarget(null)}>取消</Btn>
+            </Inline>
+            <Text slot="label" tone="quiet">
+              成员：本人（accNo {info.getLibRoomAccNo() ?? "–"}）。
+              {target.res.minUser > 1
+                ? ` 该房间需 ${target.res.minUser}~${target.res.maxUser} 人成组，本应用暂不支持添加成员，请到图书馆研讨间系统网页端预约。`
+                : ` 单次可约 ${target.res.minMinute}~${target.res.maxMinute} 分钟，5 分钟粒度。`}
+            </Text>
+          </Stack>
         </Card>
       ) : null}
 
       {pendingEmail ? (
-        <Card style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-          <span style={{ fontSize: 13 }}>
-            绑定邮箱 <b>{pendingEmail}</b> 并重试预约？
-          </span>
-          <span style={{ flex: 1 }} />
-          <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void confirmEmailAndRetry()}>确认并重试
-          </Btn>
-          <Btn variant="outline" onClick={() => setPendingEmail(null)}>取消
-          </Btn>
+        <Card>
+          <Inline gap={2} wrap vAlign="center">
+            <Text slot="body" weight="medium">绑定邮箱 {pendingEmail} 并重试预约？</Text>
+            <Spacer />
+            <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void confirmEmailAndRetry()}>
+              确认并重试
+            </Btn>
+            <Btn variant="outline" onClick={() => setPendingEmail(null)}>取消</Btn>
+          </Inline>
         </Card>
       ) : null}
 
-      {bookError ? <ErrorNote text={bookError} /> : null}
-      {notice ? (
-        <Card style={{ marginTop: 12 }}>
-          <span className={notice.ok ? "" : "t-red"} style={{ fontSize: 13 }}>
-            {notice.text}
-          </span>
-        </Card>
-      ) : null}
+      {bookError ? <Banner tone="error">{bookError}</Banner> : null}
+      {notice ? <Banner tone={notice.ok ? "success" : "error"}>{notice.text}</Banner> : null}
 
-      <SectionHead title="我的预约" aside="研讨间预约记录（未来 6 天）" />
-      {recState === "loading" ? <SkeletonRows rows={2} /> : null}
+      <Section title="我的预约" hint="研讨间预约记录（未来 6 天）" />
+      {recState === "loading" ? <LoadingBlock rows={2} /> : null}
       {recState === "error" ? (
-        <ErrorNote
-          text={recError ?? ""}
-          onRetry={() => {
-            recRecover.current = 0;
-            void loadRecords();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                recRecover.current = 0;
+                void loadRecords();
+              }}
+            >
+              重试
+            </Btn>
+          }
+        >
+          {recError ?? ""}
+        </Banner>
       ) : null}
       {recState === "error" ? <EmailBindHint text={recError ?? ""} /> : null}
       {recState === "ready" && (records ?? []).length === 0 ? (
         <Card>
-          <Empty text="暂无研讨间预约记录。" />
+          <EmptyState title="暂无研讨间预约记录。" />
         </Card>
       ) : null}
       {recState === "ready" && (records ?? []).length > 0 ? (
-        <Card className="list">
-          {(records ?? []).map((r) => (
-            <div className="row" key={r.uuid || r.rsvId}>
-              <div className="row-main">
-                <div className="row-title">
-                  {r.devName || "研讨间"}
-                  {r.kindName ? ` · ${r.kindName}` : ""}
-                </div>
-                <div className="row-sub">
-                  {r.date} {hhmmSafe(r.begin)}~{hhmmSafe(r.end)}
-                  {r.members.length > 0 ? ` · 成员 ${r.members.map((m) => m.name).join("、")}` : ""}
-                </div>
-              </div>
-              <div className="row-amount">
-                {r.uuid ? (
-                  pendingCancel === r.uuid ? (
-                    <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 12, color: "var(--text-2)" }}>确认取消？</span>
-                      <Btn variant="solid" tone="brand" disabled={busyCancel !== null} onClick={() => void cancelRecord(r)}>{busyCancel !== null ? "取消中…" : "确认取消"}</Btn>
-                      <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>算了
+        <Card flush>
+          <List divided>
+            {(records ?? []).map((r) => (
+              <Row
+                flush
+                key={r.uuid || r.rsvId}
+                title={`${r.devName || "研讨间"}${r.kindName ? ` · ${r.kindName}` : ""}`}
+                sub={`${r.date} ${hhmmSafe(r.begin)}~${hhmmSafe(r.end)}${
+                  r.members.length > 0 ? ` · 成员 ${r.members.map((m) => m.name).join("、")}` : ""
+                }`}
+                trailing={
+                  r.uuid ? (
+                    pendingCancel === r.uuid ? (
+                      <Inline gap={2} vAlign="center">
+                        <Text slot="label" tone="quiet">确认取消？</Text>
+                        <Btn variant="solid" tone="error" disabled={busyCancel !== null} onClick={() => void cancelRecord(r)}>
+                          {busyCancel !== null ? "取消中…" : "确认取消"}
+                        </Btn>
+                        <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>
+                          算了
+                        </Btn>
+                      </Inline>
+                    ) : (
+                      <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(r.uuid)}>
+                        取消预约
                       </Btn>
-                    </span>
-                  ) : (
-                    <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(r.uuid)}>取消预约
-                    </Btn>
-                  )
-                ) : null}
-              </div>
-            </div>
-          ))}
+                    )
+                  ) : null
+                }
+              />
+            ))}
+          </List>
         </Card>
       ) : null}
-    </>
+    </Stack>
   );
 }

@@ -215,6 +215,19 @@ textarea.og-input-el {
   box-shadow: var(--og-ring);
 }
 .og-select .og-select-el:disabled { cursor: not-allowed; }
+/* 聚焦/激活态也要钉死「本体无面」：app 层 `.field select:focus, .input:focus`
+   （global.css:1207，(0,2,1)）比上面的 (0,2,0) 高一档，会给本体补第二张脸 ——
+   实测 .field 内的 OG 下拉一聚焦 bg 从 `none` 被改写回 surface-container-lowest
+   并叠一圈 `--md-sys-focus-ring`，与壳的 :focus-within 环同心双环（水平内缩 13px）。
+   (0,3,0) 压过 (0,2,1)：本体的面永远只有壳这一张，任何状态都不例外。 */
+.og-select .og-select-el:focus,
+.og-select .og-select-el:focus-visible,
+.og-select .og-select-el:active {
+  outline: none;
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+}
 .og-select-caret {
   position: absolute;
   right: var(--og-ctl-pad-x-sm);

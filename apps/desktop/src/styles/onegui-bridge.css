@@ -17,13 +17,17 @@
  * ⚠️ 但它压不过 :root[data-scheme="dark"]（0,2,0）—— 旧的暗色档把整族
  * --md-sys-color-surface-* / --glass-* 又声明了一遍，于是**暗色下这份桥整体失守**
  * （实测：62 个令牌被旧暗色档拿走，surface-container-lowest=7% 白、
- * surface-container-low=3% 白 = 控件直接变透明）。所以主块补一个同时命中
- * `html:root[data-og-skin]`（0,2,1）的分支：data-og-skin 由 OneGUI 管线写在 <html>，
- * 恒存在；万一还没写上，退回 html:root（0,1,1）保持旧行为，不引入空白期。
+ * surface-container-low=3% 白 = 控件直接变透明）。所以主块补 (0,2,1) 的分支压过它：
+ *   · `html:root[data-og-skin]` —— data-og-skin 由 OneGUI 管线写在 <html>（常态命中）；
+ *   · `html:root:not([data-og-skin])` —— :not() 贡献参数特异度 → 同样 (0,2,1)，
+ *     覆盖"管线还没写上属性"的那几毫秒。**两个分支合起来把状态空间全划完**，
+ *     否则整条修复会承重在 data-og-skin 上：实测删掉属性，--glass-border 立刻
+ *     0.18→0.08、surface-container-lowest #141922→rgba(255,255,255,.07)（旧暗色档复位）。
  * ══════════════════════════════════════════════════════════════════════════ */
 
 html:root,
-html:root[data-og-skin] {
+html:root[data-og-skin],
+html:root:not([data-og-skin]) {
   /* ── 面 ── */
   --bg: var(--og-surface-0);
   --bg-soft: var(--og-surface-2);
@@ -340,7 +344,9 @@ html:root :is(.board-fab, .free-fab, .hard-refresh-fab, .top-fab) {
  * ════════════════════════════════════════════════════════════════════════════ */
 /* 选择器同样要 0,2,1：中性块的 --glass-border 原写 var(--og-line-1)（发丝档），且整体
    被 :root[data-scheme="dark"]（0,2,0）压掉 —— 暗色下残留玻璃量还是「白 8~12% 发丝环」，
-   正是用户点名「几乎所有轮廓只有鼠标上面才显示」的暗色版。 */
+   正是用户点名「几乎所有轮廓只有鼠标上面才显示」的暗色版。
+   `:not([data-og-skin])` = 中性基准（没有 data-glass 就是中性，管线落属性前也一样）。 */
+html:root:not([data-og-skin]),
 html:root[data-og-skin="neutral"],
 html:root[data-og-skin="neutral"][data-scheme="dark"] {
   --glass-fill: var(--og-surface-1);

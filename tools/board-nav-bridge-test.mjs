@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 /**
- * OH → 白板导航桥护栏（2026-10-15，oh-wire / task-2）。
+ * OH → 门面接线护栏（2026-10-15，oh-wire / task-2）：白板导航桥 + 首页程序坞 + 收藏落点。
  *
- * 盯住的是**门面这一层**（插件与 OH 唯一的执行入口）对白板的两个缺口：
+ * 三块都在**门面这一层**（插件与 OH 唯一的执行入口，plugins/facade.ts）：
+ *   ⑦ 首页程序坞 `ext.homeDock.set`：一级页 ∪ 插件功能页同权停靠/取消停靠，认不出的 id 报错；
+ *   ⑧ 收藏落点 `ext.onePageAddAtom`：落首页（不给 boardId）或落某块 OnePage，重复/板不存在给原因。
+ *
+ * 白板导航桥盯的是两个缺口：
  *   ① `ext.tabOpen("board"/"boards")` 能不能过白名单（一级页名单副本漏页就会被拦成
  *      「不认识的页面」）；
  *   ② `nav.go("board", {boardId})` 会不会真的**切到那块板**——白板页渲染的是「当前板」
@@ -66,6 +70,32 @@ const NOOP = [
   "});",
 ].join("\\n");
 const stubModule = (names) => NOOP + "\\nexport default noop;\\n" + names.map((n) => "export const " + n + " = noop;").join("\\n") + "\\n";
+/** .tsx 一律只做模块图填充；**例外**：components/Layout.tsx 的 NAV 是纯数据数组
+    （首页一级页目录，也是首页程序坞的白名单）—— 从源码里抠出来求值，桩掉会让坞的断言
+    失去意义。求值走 Function + with(Proxy)：icon: IconPen 这类标识符统一取到 noop
+    （symbol 键返回 undefined，否则 Symbol.unscopables 会被当成「全部不可作用域」→ ReferenceError）。 */
+function tsxStub(file) {
+  const names = namesOf(file);
+  const out = stubModule(names.filter((n) => n !== "NAV"));
+  try {
+    const src = readFileSync(file, "utf8");
+    const at = src.indexOf("export const NAV");
+    if (at < 0) return out;
+    const eq = src.indexOf("= [", at); /* 类型注解里可能有 Page[]，认赋值点才稳 */
+    if (eq < 0) return out;
+    const start = eq + 2;
+    let depth = 0;
+    let end = -1;
+    for (let i = start; i >= 0 && i < src.length; i++) {
+      if (src[i] === "[") depth++;
+      else if (src[i] === "]") { depth--; if (depth === 0) { end = i + 1; break; } }
+    }
+    if (end <= start) return out;
+    const literal = src.slice(start, end);
+    return out + "export const NAV = new Function('scope', 'with (scope) { return (' + "
+      + JSON.stringify(literal) + " + '); }')(new Proxy({}, { has: () => true, get: (_t, k) => (typeof k === 'symbol' ? undefined : noop) }));\\n";
+  } catch { return out; }
+}
 /** 桩出的具名导出清单：从真源码里扫 export，名字对齐后 import 才不会爆 */
 function namesOf(file) {
   const src = readFileSync(file, "utf8");
@@ -137,7 +167,7 @@ export async function resolve(specifier, context, next) {
 }
 export async function load(url, context, next) {
   const clean = url.split("?")[0];
-  if (clean.endsWith(".tsx")) return { format: "module", source: stubModule(namesOf(fileURLToPath(clean))), shortCircuit: true };
+  if (clean.endsWith(".tsx")) return { format: "module", source: tsxStub(fileURLToPath(clean)), shortCircuit: true };
   if (/\\.(css|svg|png|jpg)$/.test(url)) return { format: "module", source: "export default {};", shortCircuit: true };
   return next(url, context);
 }
@@ -190,6 +220,41 @@ let threw = "";
 try { api.nav.go("board", { boardId: "board.不存在" }); } catch (e) { threw = String(e?.message ?? e); }
 ok(threw.includes("没有这块白板"), `未知板 id 明确报错（${threw.slice(0, 24)}…）`);
 ok(loadBoard().activeBoardId === b, "报错后当前板没被改坏");
+
+/* ⑦ 首页程序坞：只读快照 / 停靠 / 取消停靠 / 未注册 id 报错 */
+const { spheresSnapshot } = await import("../apps/desktop/src/state/homeSpheres.ts");
+const dock0 = spheresSnapshot().docked.slice();
+const snap = api.ext.homeDock.set();
+ok(Array.isArray(snap.docked) && snap.docked.length === dock0.length, `homeDock.set() 只读快照：坞上 ${snap.docked?.length} 颗球`);
+ok(snap.dockable?.length >= 5, `可停靠清单含一级页（共 ${snap.dockable?.length} 项）`);
+const DOCK_TARGET = "life"; /* 一级页（NAV 里；且不在默认前 8 颗里，停靠/取消停靠都能看见变化） */
+if (dock0.includes(DOCK_TARGET)) api.ext.homeDock.set(DOCK_TARGET, false);
+const docked = api.ext.homeDock.set(DOCK_TARGET, true);
+ok(docked.docked.includes(DOCK_TARGET) && spheresSnapshot().docked.includes(DOCK_TARGET), "停靠一级页「生活」：状态层与返回值一致");
+ok(!api.ext.homeDock.set(DOCK_TARGET, false).docked.includes(DOCK_TARGET), "取消停靠生效");
+/* 本轮新能力：**插件功能页**也能进坞（pageKey = plugin:<插件>:<页>，注册在 plugins/tabs.ts） */
+const { registerPluginTab, unregisterPluginTabs } = await import("../apps/desktop/src/plugins/tabs.ts");
+registerPluginTab({ pageKey: "plugin:oh.wire.test:dock", pluginId: "oh.wire.test", title: "打卡" });
+const pluginSnap = api.ext.homeDock.set();
+ok(pluginSnap.dockable.includes("plugin:oh.wire.test:dock"), "插件功能页进了「可停靠」清单（一级页 ∪ 插件页）");
+ok(api.ext.homeDock.set("plugin:oh.wire.test:dock", true).docked.includes("plugin:oh.wire.test:dock"), "插件功能页真正停靠进坞");
+api.ext.homeDock.set("plugin:oh.wire.test:dock", false); /* 先取消停靠再注销插件 */
+unregisterPluginTabs("oh.wire.test");
+ok(spheresSnapshot().docked.join(",") === dock0.join(","), "坞回到初始状态（无残留）");
+let dockErr = "";
+try { api.ext.homeDock.set("plugin:不存在:main", true); } catch (e) { dockErr = String(e?.message ?? e); }
+ok(dockErr.includes("不认识这个页面"), "未注册的插件页 id 报错（不静默停靠一颗看不见的球）");
+
+/* ⑧ 收藏落点：落指定板 / 重复给 duplicate / 不给 boardId 落首页（系统板）/ 板不存在给 no-board */
+const landingBoard = onePage.createOnePage("收藏落点板");
+const toBoard = api.ext.onePageAddAtom({ boardId: landingBoard }, "course:oh-wire-1");
+ok(toBoard.ok === true && toBoard.boardId === landingBoard, "落指定 OnePage 成功");
+ok(api.ext.onePageAddAtom({ boardId: landingBoard }, "course:oh-wire-1").reason === "duplicate", "同板同原子 → reason=duplicate（自带查重）");
+const toHome = api.ext.onePageAddAtom({ to: "home" }, "course:oh-wire-2");
+const homeBoard = onePage.allOnePages().find((b) => b.id === toHome.boardId);
+ok(toHome.ok === true && homeBoard?.kind === "system", "不给 boardId = 落首页（系统板）");
+ok(onePage.onePagesWithAtom("course:oh-wire-2").length === 1, "首页上确实躺着那颗原子（可查回）");
+ok(api.ext.onePageAddAtom({ boardId: "board.不存在" }, "course:oh-wire-3").reason === "no-board", "目标板不存在 → reason=no-board");
 
 /* ⑥ 一级页名单副本：ext.tabOpen 对白板两页放行（漏了会被拦成「不认识的页面」） */
 ok(!!api.ext.tabOpen("board")?.id, "ext.tabOpen(\"board\") 放行");

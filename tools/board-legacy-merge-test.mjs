@@ -16,6 +16,11 @@
  *   idem      重复读不重复并；标志位丢失后重跑也不长双份（防御兜住）
  *   pen-migrate / pen-both / pen-none / pen-junk / pen-empty
  *             画笔 `onethu.board.pen.v1`：旧键 `free:home|default` → `board.today|portrait`
+ *   pen-emptynewkey  目标键是**空数组**时迁移仍要成功（空数组 truthy → 迁移条件 `!boards[HOME_KEY]`
+ *                    今天能过，靠的是 sanitize 先把空数组丢掉；这条把那个**跨函数隐式依赖**钉住：
+ *                    谁放宽 sanitize 就得同时把迁移条件改成按长度判断）
+ *   pen-otherboard   别把别人的笔迹搬走（防"顺手重写整个 boards 对象"）
+ *   pen-quota        落盘失败（配额/隐私模式）时**内存态仍可用**（注释背书的路径，现在有断言）
  *
  * 跑法：node --import ./tools/ts-resolve-register.mjs tools/board-legacy-merge-test.mjs
  *   （父进程按场景 spawn 自己；每个场景独立进程——freeBoard 的"只并一次"是模块级状态，
@@ -37,6 +42,17 @@ if (SCENARIO.startsWith("pen-")) {
   if (SCENARIO === "pen-none") seed(null);
   if (SCENARIO === "pen-junk") seed(JSON.stringify({ v: 1, boards: { "free:home|default": ["垃圾", { id: "坏点集", pts: [1] }], "board.today|portrait": [stroke("keep")] } }));
   if (SCENARIO === "pen-empty") seed(JSON.stringify({ v: 1, boards: { "free:home|default": [] } }));
+  if (SCENARIO === "pen-emptynewkey") seed(JSON.stringify({ v: 1, boards: { "free:home|default": [stroke("legacy")], "board.today|portrait": [] } }));
+  if (SCENARIO === "pen-otherboard") seed(JSON.stringify({ v: 1, boards: { "free:home|default": [stroke("legacy")], "board.other|portrait": [stroke("other"), stroke("other2")] } }));
+  if (SCENARIO === "pen-quota") {
+    seed(JSON.stringify({ v: 1, boards: { "free:home|default": [stroke("legacy")] } }));
+    /* 配额满/隐私模式：写盘必抛。load() 内层 catch 应吞掉错误但保留内存迁移结果。 */
+    const realSet = globalThis.localStorage.setItem.bind(globalThis.localStorage);
+    globalThis.localStorage.setItem = (k, v) => {
+      if (k === KEY) throw new Error("QuotaExceededError（守栏故意注入）");
+      return realSet(k, v);
+    };
+  }
 
   const pen = await import("../apps/desktop/src/state/boardPen.ts");
   const fails = [];
@@ -67,6 +83,21 @@ if (SCENARIO.startsWith("pen-")) {
   if (SCENARIO === "pen-empty") {
     ok(keys(doc.boards) === "", "空旧键不触发迁移（sanitize 丢掉空数组，内存不留键）");
     ok(keys(stored()) === "free:home|default", "存储里的空旧键不清理（无害残留，不写盘）");
+  }
+  if (SCENARIO === "pen-emptynewkey") {
+    ok((doc.boards["board.today|portrait"] ?? []).length === 1, "目标键是空数组时迁移仍成功（别让一个空数组挡住老用户的批注）");
+    ok(!("free:home|default" in doc.boards), "旧键已改写掉");
+    ok((stored()["board.today|portrait"] ?? []).length === 1, "并且已落盘");
+    if (!(doc.boards["board.today|portrait"] ?? []).length) console.log("   ↳ 若这条红了：迁移条件 `!boards[HOME_KEY]` 不能只靠 sanitize 丢空数组的副作用，请改成按长度判断");
+  }
+  if (SCENARIO === "pen-otherboard") {
+    ok((doc.boards["board.other|portrait"] ?? []).length === 2, "别的板的笔迹一条不动（条数不变）");
+    ok((doc.boards["board.other|portrait"] ?? []).every((x) => x.id.startsWith("other")), "别的板的笔迹内容不变（不是被重写/串味）");
+    ok((doc.boards["board.today|portrait"] ?? []).length === 1 && !("free:home|default" in doc.boards), "首页那条照常迁移");
+  }
+  if (SCENARIO === "pen-quota") {
+    ok(pen.strokesOf(pen.penKeyOf("board.today", "portrait")).length === 1, "写盘失败时内存态仍拿到迁移后的笔迹（用户这一会话仍看得到自己的批注）");
+    ok(keys(stored()) === "free:home|default", "确认写盘确实失败（存储里还是旧键）—— 下次启动再试，是设计内的");
   }
 
   console.log(fails.length ? `✗ ${SCENARIO} ${fails.length} 项失败` : `✅ ${SCENARIO} 通过`);
@@ -161,7 +192,8 @@ if (SCENARIO) {
 
 /* ── 父进程模式：逐场景 spawn 自己（模块级"只并一次"状态必须隔离） ── */
 const self = fileURLToPath(import.meta.url);
-const scenarios = ["dup", "malformed", "v2", "defense", "idem", "pen-migrate", "pen-both", "pen-none", "pen-junk", "pen-empty"];
+const scenarios = ["dup", "malformed", "v2", "defense", "idem",
+  "pen-migrate", "pen-both", "pen-none", "pen-junk", "pen-empty", "pen-emptynewkey", "pen-otherboard", "pen-quota"];
 let bad = 0;
 for (const sc of scenarios) {
   try {
@@ -173,5 +205,5 @@ for (const sc of scenarios) {
     console.error(`✗ 场景 ${sc} 失败（exit ${e.status}）`);
   }
 }
-console.log(bad ? `\n✗ 旧键迁移守栏：${bad}/${scenarios.length} 个场景失败` : `\n✅ 旧键迁移守栏：${scenarios.length} 个场景全绿（首页自由板 5 + 画笔 5；脏数据口径）`);
+console.log(bad ? `\n✗ 旧键迁移守栏：${bad}/${scenarios.length} 个场景失败` : `\n✅ 旧键迁移守栏：${scenarios.length} 个场景全绿（首页自由板 5 + 画笔 8；脏数据/隐式依赖口径）`);
 process.exit(bad ? 1 : 0);

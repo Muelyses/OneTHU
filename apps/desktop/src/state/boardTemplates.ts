@@ -26,7 +26,7 @@ export const BOARD_TEMPLATES: readonly BoardTemplate[] = [
   {
     id: "tpl-today",
     name: "今日速览",
-    description: "课表、作业、通知与余额，与「今日」页同构。",
+    description: "课表、作业、通知与余额，与「首页」同构。",
     items: [
       { spec: { kind: "custom", id: "classes" }, cell: { x: 0, y: 0, w: MAIN, h: 5 } },
       { spec: { kind: "custom", id: "homework" }, cell: { x: 0, y: 0, w: MAIN, h: 5 } },

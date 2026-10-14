@@ -870,7 +870,7 @@ export function TodayPage() {
   return (
     <>
       <PageHead
-        title="今日"
+        title="首页"
         meta={
           (expanded ? greetWord + " · " : "") +
           fmtMonthDayWeek(now) +

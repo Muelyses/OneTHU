@@ -144,7 +144,7 @@ export const PRESETS: Preset[] = [
   {
     id: "minimal",
     label: "极简",
-    hint: "只留今日、网络学堂、信息、生活、在线服务",
+    hint: "只留首页、网络学堂、信息、生活、在线服务",
     pages: ["today", "learn", "info", "life", "thos"],
     tabs: { info: ["report", "exams", "profile"], life: ["card", "dorm", "washer"] },
     cards: ["learn"],

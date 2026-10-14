@@ -165,7 +165,7 @@ export function buildSystemBoard(deps: BoardDeps): Board {
   for (const o of ["portrait", "landscape"] as const) {
     cells[o] = layoutToCells(deps.resolveLayout(deps.loadLayoutItems(o)));
   }
-  return { id: SYSTEM_BOARD_ID, name: "今日", icon: "today", kind: "system", cells };
+  return { id: SYSTEM_BOARD_ID, name: "首页", icon: "today", kind: "system", cells };
 }
 
 export function defaultBoardDoc(deps: BoardDeps): BoardDoc {

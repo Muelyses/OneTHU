@@ -211,7 +211,7 @@ export function BbsPanel({
 }
 
 function Badge({ text, tone }: { text: string; tone: "red" | "gold" }) {
-  const color = tone === "red" ? "#d24545" : "#a8842c";
+  const color = tone === "red" ? "var(--og-error)" : "var(--og-warning)";
   return (
     <span
       style={{
@@ -454,7 +454,7 @@ function PostBlock({
             <div
               style={{
                 margin: "10px 0 0 14px",
-                borderLeft: "2px solid var(--border, rgba(0,0,0,.1))",
+                borderLeft: "2px solid var(--og-line-1)",
                 paddingLeft: 12,
               }}
             >
@@ -508,8 +508,8 @@ function NewThreadDialog({
         animation: "m-fade var(--dur-2) var(--ease-out) both",
         position: "fixed",
         inset: 0,
-        background: "rgba(15,23,42,.45)",
-        zIndex: 60,
+        background: "var(--og-scrim)",
+        zIndex: "var(--og-z-modal)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -520,13 +520,13 @@ function NewThreadDialog({
       <div
         style={{
           animation: "m-spring-in var(--dur-3) var(--ease-out) both",
-          background: "var(--surface, #fff)",
-          borderRadius: 14,
+          background: "var(--og-surface-overlay)",
+          borderRadius: "var(--og-radius-xl)",
           padding: 16,
           width: "min(640px, 94vw)",
           maxHeight: "88vh",
           overflowY: "auto",
-          boxShadow: "0 18px 50px rgba(0,0,0,.22)",
+          boxShadow: "var(--og-elev-menu)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>

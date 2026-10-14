@@ -1,25 +1,28 @@
-import { TextArea, Input } from "@onethu/gui";
-import { Select } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import type { CourseInfo, Homework } from "@onethu/core";
+import {
+  Banner, Btn, Inline, Input, Row, Segment, Select, Sheet, Stack, Surface, Text, TextArea,
+} from "@onethu/gui";
 /**
  * 附件动作面板（需求 7）：拿到附件后选「转存云盘 / 交作业（网络学堂 + 雨课堂）/ 发讨论区」。
  *
- * 组件自包含（自带样式、portal 到 body）：宿主只需要给 `files`，入口挂载由 Lead / 悬浮面板负责。
- * 三个动作的执行全在 `lib/attachActions.ts`；本组件只做：上下文选择 + 确认 + 结果呈现。
+ * 外壳全收编进 OneGUI（dev3 换血）：旧版自带 SHEET_CSS/`.ohaa-*` 家族样式全部拆除，
+ * 遮罩/面板/head/foot/退场动画由 `Sheet` 库件给（portal 到 body、Esc/遮罩关闭、
+ * 手机贴底+抓手+安全区都是同一套库件语言）。`lib/attachActions.ts` 里的执行管线、
+ * `ConfirmFn` 内联确认闸、结果呈现这三件事仍是本组件自己负责。
  *
  * ## 设计口径
  *  - **确认在面板内完成**（内联确认条，`ConfirmFn` 注入给 lib）：悬浮窗里不依赖宿主是否挂了
  *    `<ConfirmHost/>`，也保证用户在按下「提交」前一眼看到「交到哪份作业、带哪个文件」。
  *  - **上下文不凭空猜**：云盘资料库/目录、课程、作业、板块都要用户看得见地选；
  *    能自动带出的（最近截止的作业）会带出来并**明确标注「可改」**，不静默决定。
- *  - **结果诚实**：`ok / needUi / error` 三态直出；`needUi` 时给出下一步（应用内路由提示，
- *    雨课堂还会给「打开官方作答页」的真实可点按钮）。
+ *  - **结果诚实**：`ok / needUi / error` 三态直出（Banner success|warning|error）；`needUi`
+ *    时给出下一步（应用内路由提示，雨课堂还会给「打开官方作答页」的真实可点按钮）。
  *  - 不用 `useApp()`：本组件要能在悬浮窗里跑（那里没有 AppProvider）。需要回本体时走
  *    `onDone(result)`，由宿主决定怎么导航。
+ *  - 零手写样式：外观档位在 `AttachActionsScope.ts`（scope: ohaa.sheet）里登记；
+ *    ChatDock 的点外守卫用 `[data-og-scope="ohaa.sheet"]` 找这层面板。
  */
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
-import { createPortal } from "react-dom";
-import type { CourseInfo, Homework } from "@onethu/core";
 import { formatSize, sendToOh, type AttachFile } from "../lib/attach.js";
 import {
   postDiscussion, rememberedCloudTarget, saveAllToCloud, submitHomework,
@@ -32,7 +35,7 @@ import { learn, logLine } from "../lib/clients.js";
 import { openYktSubmitWebview } from "../lib/yktSubmitWebview.js";
 import { confirmOk } from "../lib/confirm.js";
 import { isTauri } from "../lib/transport.js";
-import { IconX } from "./Icons.js";
+import { ATTACH_SHEET_SCOPE } from "./AttachActionsScope.js";
 
 export type AttachActionId = "cloud" | "homework" | "discussion" | "oh";
 
@@ -69,6 +72,9 @@ const ROUTE_LABEL: Record<string, string> = {
   "learn-forum-thread": "课程讨论区",
 };
 
+/** 结果文案里叠着多行 `\n`：pre-wrap 是排版几何（不是 R2 外观，onegui-guard 不数它） */
+const PREWRAP_STYLE: CSSProperties = { whiteSpace: "pre-wrap", wordBreak: "break-word" };
+
 function uiHint(ui: AttachActionUi | undefined): string {
   if (!ui) return "";
   const where = ui.route ? ROUTE_LABEL[ui.route] ?? ui.route : "";
@@ -81,55 +87,6 @@ function mostUrgent<T>(list: T[], deadline: (x: T) => string, done: (x: T) => bo
   const pool = pending.length > 0 ? pending : list;
   return [...pool].sort((a, b) => (deadline(a) || "9999").localeCompare(deadline(b) || "9999"))[0];
 }
-
-const SHEET_CSS = `
-.ohaa-backdrop { position: fixed; inset: 0; z-index: 10060; background: rgba(0, 0, 0, .45);
-  display: flex; align-items: flex-end; justify-content: center; }
-.ohaa-panel { width: 100%; max-width: 560px; max-height: 92vh; overflow: auto;
-  background: var(--dsw-alias-bg-layer-1, #fff); color: var(--dsw-alias-label-primary, #1c1f24);
-  border-radius: var(--dsw-radius-xl, 20px) var(--dsw-radius-xl, 20px) 0 0;
-  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, .08));
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, .28); padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
-@media (min-width: 600px) {
-  .ohaa-backdrop { align-items: center; }
-  .ohaa-panel { border-radius: var(--dsw-radius-xl, 20px); }
-}
-.ohaa-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ohaa-title { font-size: 16px; font-weight: 600; }
-.ohaa-files { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 12px; }
-.ohaa-file { display: flex; align-items: center; gap: 8px; font-size: 13px;
-  color: var(--dsw-alias-label-secondary, #5c6370); }
-.ohaa-file img { width: 34px; height: 34px; object-fit: cover; border-radius: var(--dsw-radius-xs, 4px);
-  border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, .08)); }
-.ohaa-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-.ohaa-tab { flex: 1; height: 36px; cursor: pointer; font-size: 13px;
-  border-radius: var(--dsw-radius-sm, 8px); border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, .1));
-  background: var(--dsw-alias-bg-layer-2, #f4f4f6); color: inherit; }
-.ohaa-tab[aria-selected="true"] { border-color: var(--dsw-alias-brand-primary, #1c1f24);
-  background: transparent; font-weight: 600; }
-.ohaa-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-.ohaa-label { font-size: 12px; color: var(--dsw-alias-label-secondary, #5c6370); }
-.ohaa-note { font-size: 12px; line-height: 1.6; color: var(--dsw-alias-label-secondary, #5c6370); margin: 4px 0 10px; }
-.ohaa-note.warn { color: var(--dsw-alias-state-warn-primary, #f59e0b); }
-.ohaa-row { display: flex; gap: 8px; align-items: center; }
-.ohaa-dirs { max-height: 132px; overflow: auto; margin-top: 6px; border: 1px solid var(--dsw-alias-border-l1, rgba(0,0,0,.08));
-  border-radius: var(--dsw-radius-sm, 8px); padding: 4px; }
-.ohaa-dir { display: block; width: 100%; text-align: left; background: transparent; border: none; cursor: pointer;
-  padding: 6px 8px; border-radius: var(--dsw-radius-xs, 4px); color: inherit; font-size: 13px; }
-.ohaa-dir:hover { background: var(--dsw-alias-bg-layer-2, #f4f4f6); }
-.ohaa-foot { margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
-.ohaa-result { margin-top: 10px; padding: 10px 12px; border-radius: var(--dsw-radius-sm, 8px); font-size: 13px;
-  line-height: 1.6; white-space: pre-wrap; word-break: break-word;
-  background: var(--dsw-alias-bg-layer-2, #f4f4f6); border: 1px solid var(--dsw-alias-border-l1, rgba(0, 0, 0, .08)); }
-.ohaa-result.ok { color: var(--dsw-alias-state-success-primary, #22c55e); }
-.ohaa-result.warn { color: var(--dsw-alias-state-warn-primary, #f59e0b); }
-.ohaa-result.err { color: var(--dsw-alias-state-error-primary, #f25a5a); }
-.ohaa-confirm { margin-top: 12px; padding: 12px; border-radius: var(--dsw-radius-md, 12px);
-  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, .16)); background: var(--dsw-alias-bg-layer-2, #f4f4f6); }
-.ohaa-confirm-msg { font-size: 13px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
-`;
-
-const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box" };
 
 export function AttachActionsSheet({
   files, onClose, onDone, initialAction = "cloud",
@@ -430,249 +387,268 @@ export function AttachActionsSheet({
   const showResult = result !== null;
   const r = result?.r;
 
-  return createPortal(
-    <div className="ohaa-backdrop" onClick={(e) => e.target === e.currentTarget && close()}>
-      <style>{SHEET_CSS}</style>
-      <div className="ohaa-panel" role="dialog" aria-label="附件动作">
-        <div className="ohaa-head">
-          <div className="ohaa-title">附件动作</div>
-          <Btn variant="outline" aria-label="关闭" onClick={close}><IconX /></Btn>
-        </div>
-
-        <div className="ohaa-files">
+  return (
+    <Sheet open onClose={close} title="附件动作" scope={ATTACH_SHEET_SCOPE}>
+      <Stack gap={3}>
+        {/* ── 文件清单（Row：leading=缩略图 / title=文件名 / meta=大小） ── */}
+        <Stack gap={1}>
           {files.map((f, i) => (
-            <div className="ohaa-file" key={`${f.name}-${i}`}>
-              {f.previewUrl ? <img src={f.previewUrl} alt="" /> : null}
-              <span>{f.name}</span>
-              <span>· {formatSize(f.size)}</span>
-            </div>
+            <Row
+              key={`${f.name}-${i}`}
+              size="sm"
+              leading={f.previewUrl ? (
+                <img src={f.previewUrl} alt="" style={{ display: "block", width: 34, height: 34, objectFit: "cover" }} />
+              ) : null}
+              title={f.name}
+              meta={`· ${formatSize(f.size)}`}
+            />
           ))}
-        </div>
+        </Stack>
 
-        <div className="ohaa-tabs" role="tablist">
-          {ACTIONS.map((a) => (
-            <button
-              key={a.id}
-              className="ohaa-tab"
-              type="button"
-              role="tab"
-              aria-selected={action === a.id}
-              onClick={() => { setAction(a.id); setResult(null); }}
-            >
-              {a.label}
-            </button>
-          ))}
-        </div>
+        {/* ── 动作切换（旧 tabs 语义 → Segment radiogroup，库的统一控件语言） ── */}
+        <Segment
+          block
+          options={ACTIONS.map((a) => ({ value: a.id, label: a.label }))}
+          value={action}
+          onChange={(value) => {
+            setAction(value as AttachActionId);
+            setResult(null);
+          }}
+        />
 
         {/* ── ① 转存云盘 ── */}
         {action === "cloud" ? (
-          <div>
-            {!sfReady ? <div className="ohaa-note">正在读云盘配置…</div> : null}
+          <Stack gap={3}>
+            {!sfReady ? <Text slot="label" as="div" tone="faint">正在读云盘配置…</Text> : null}
             {sfReady && !sf.configured ? (
-              <div className="ohaa-note warn">
-                云盘还没连接：到「云盘」页连上清华云盘后才能转存（这条通道不做静默降级）。
-              </div>
+              <Banner tone="warning" title="云盘还没连接：到「云盘」页连上清华云盘后才能转存（这条通道不做静默降级）。" />
             ) : null}
-            <div className="ohaa-field">
-              <span className="ohaa-label">资料库（不替你猜库）</span>
-              <Select value={repoId} onChange={(value) => setRepoId(value)}><option value="">— 请选择 —</option>{sf.repos.map((rp) => (
+            <Stack gap={1}>
+              <Text slot="label" tone="faint">资料库（不替你猜库）</Text>
+              <Select value={repoId} onChange={(value) => setRepoId(value)}>
+                <option value="">— 请选择 —</option>
+                {sf.repos.map((rp) => (
                   <option key={rp.id} value={rp.id}>{rp.name}</option>
-                ))}</Select>
-            </div>
-            <div className="ohaa-field">
-              <span className="ohaa-label">目标目录（不存在会自动创建）</span>
-              <div className="ohaa-row">
+                ))}
+              </Select>
+            </Stack>
+            <Stack gap={1}>
+              <Text slot="label" tone="faint">目标目录（不存在会自动创建）</Text>
+              <Inline gap={2}>
                 <Input value={dir} onChange={(value) => { setDir(value); setDirEntries(null); }} />
                 <Btn variant="outline" disabled={!repoId} onClick={() => void browseDir()}>看子目录</Btn>
-              </div>
-              {dirMsg ? <span className="ohaa-note">{dirMsg}</span> : null}
+              </Inline>
+              {dirMsg ? <Text slot="label" as="div" tone="faint">{dirMsg}</Text> : null}
               {dirEntries && dirEntries.length > 0 ? (
-                <div className="ohaa-dirs">
-                  {dirEntries.map((e) => (
-                    <button
-                      className="ohaa-dir"
-                      type="button"
-                      key={e.name}
-                      onClick={() => {
-                        const base = dir.endsWith("/") ? dir.slice(0, -1) : dir;
-                        setDir(`${base}/${e.name}`);
-                        setDirEntries(null);
-                      }}
-                    >
-                      {e.name}
-                    </button>
-                  ))}
-                </div>
+                <Surface level={2} radius="md" pad="sm">
+                  <Stack gap={0}>
+                    {dirEntries.map((e) => (
+                      <Row
+                        key={e.name}
+                        size="sm"
+                        title={e.name}
+                        onClick={() => {
+                          const base = dir.endsWith("/") ? dir.slice(0, -1) : dir;
+                          setDir(`${base}/${e.name}`);
+                          setDirEntries(null);
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                </Surface>
               ) : null}
-            </div>
-            <div className="ohaa-note">
+            </Stack>
+            <Text slot="label" as="div" tone="faint">
               远端名 = 文件名；同名会被覆盖。{many ? `共 ${files.length} 个文件，按顺序逐个上传。` : ""}
-            </div>
-            <div className="ohaa-foot">
+            </Text>
+            <Inline gap={2} justify="end">
               <Btn variant="outline" onClick={close}>取消</Btn>
               <Btn variant="solid" tone="brand" disabled={busy || !repoId || !sf.configured} onClick={() => void runCloud()}>{busy ? "上传中…" : "上传到云盘"}</Btn>
-            </div>
-          </div>
+            </Inline>
+          </Stack>
         ) : null}
 
         {/* ── ② 交作业 ── */}
         {action === "homework" ? (
-          <div>
-            <div className="ohaa-tabs" role="tablist">
-              <button className="ohaa-tab" type="button" role="tab" aria-selected={platform === "learn"}
-                onClick={() => { setPlatform("learn"); setAutoPicked(""); setResult(null); }}>
-                网络学堂
-              </button>
-              <button className="ohaa-tab" type="button" role="tab" aria-selected={platform === "ykt"}
-                onClick={() => { setPlatform("ykt"); setAutoPicked(""); setResult(null); }}>
-                雨课堂
-              </button>
-            </div>
+          <Stack gap={3}>
+            <Segment
+              size="sm"
+              options={[
+                { value: "learn", label: "网络学堂" },
+                { value: "ykt", label: "雨课堂" },
+              ]}
+              value={platform}
+              onChange={(value) => {
+                setPlatform(value as "learn" | "ykt");
+                setAutoPicked("");
+                setResult(null);
+              }}
+            />
 
-            {many ? <div className="ohaa-note warn">交作业一次只交一份，这里用第 1 个：{first.name}</div> : null}
+            {many ? <Banner tone="warning" title={`交作业一次只交一份，这里用第 1 个：${first.name}`} /> : null}
 
             {homeworks.length === 0 ? (
-              <div className="ohaa-note">
+              <Text slot="label" as="div" tone="faint">
                 本机还没有课程/作业缓存。
                 <Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? "加载中…" : "加载课程与作业"}</Btn>
-              </div>
+              </Text>
             ) : null}
-            {autoPicked ? <div className="ohaa-note">{autoPicked}</div> : null}
+            {autoPicked ? <Text slot="label" as="div" tone="faint">{autoPicked}</Text> : null}
 
             {platform === "learn" ? (
-              <>
-                <div className="ohaa-field">
-                  <span className="ohaa-label">课程</span>
-                  <Select value={courseId} onChange={(value) => { setCourseId(value); setHwId(""); }}><option value="">— 请选择 —</option>{courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select>
-                </div>
-                <div className="ohaa-field">
-                  <span className="ohaa-label">作业（网络学堂在线提交的）</span>
-                  <Select value={hwId} onChange={(value) => setHwId(value)} disabled={!courseId}><option value="">— 请选择 —</option>{courseHw.map((h) => (
+              <Stack gap={3}>
+                <Stack gap={1}>
+                  <Text slot="label" tone="faint">课程</Text>
+                  <Select value={courseId} onChange={(value) => { setCourseId(value); setHwId(""); }}>
+                    <option value="">— 请选择 —</option>
+                    {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </Select>
+                </Stack>
+                <Stack gap={1}>
+                  <Text slot="label" tone="faint">作业（网络学堂在线提交的）</Text>
+                  <Select value={hwId} onChange={(value) => setHwId(value)} disabled={!courseId}>
+                    <option value="">— 请选择 —</option>
+                    {courseHw.map((h) => (
                       <option key={h.id} value={h.id}>{h.title}{h.submitted ? "（已交）" : ""}</option>
-                    ))}</Select>
-                </div>
-                <div className="ohaa-field">
-                  <span className="ohaa-label">正文（可选；留空会清空该作业此前的正文）</span>
+                    ))}
+                  </Select>
+                </Stack>
+                <Stack gap={1}>
+                  <Text slot="label" tone="faint">正文（可选；留空会清空该作业此前的正文）</Text>
                   <TextArea value={content} onChange={(value) => setContent(value)} placeholder="一般不填；附件就是全部内容" />
-                </div>
-                <div className="ohaa-note">
+                </Stack>
+                <Text slot="label" as="div" tone="faint">
                   提交前会再确认一次；提交是**整体覆盖**（正文与附件以本次为准）。
-                </div>
-                <div className="ohaa-foot">
+                </Text>
+                <Inline gap={2} justify="end">
                   <Btn variant="outline" onClick={close}>取消</Btn>
                   <Btn variant="solid" tone="brand" disabled={busy || !selectedLearnHw} onClick={() => void runHomework()}>{busy ? "提交中…" : "提交作业"}</Btn>
-                </div>
-              </>
+                </Inline>
+              </Stack>
             ) : (
-              <>
-                <div className="ohaa-note warn">
-                  雨课堂没有可用的附件提交通道：本面板**不会**替你在雨课堂提交，只会把你带到官方作答页，
-                  由你在页面里把附件随作答一起交上去（页面自带雨课堂的截止/次数校验）。
-                </div>
+              <Stack gap={3}>
+                <Banner
+                  tone="warning"
+                  title="雨课堂没有可用的附件提交通道：本面板**不会**替你在雨课堂提交，只会把你带到官方作答页，由你在页面里把附件随作答一起交上去（页面自带雨课堂的截止/次数校验）。"
+                />
                 {yktItems.length === 0 ? (
-                  <div className="ohaa-note">
+                  <Text slot="label" as="div" tone="faint">
                     本机还没有雨课堂作业缓存。
                     <Btn variant="outline" disabled={extLoading} onClick={() => { setExtLoading(true); void refreshExtHw().finally(() => setExtLoading(false)); }}>{extLoading ? "刷新中…" : "刷新雨课堂作业"}</Btn>
-                  </div>
+                  </Text>
                 ) : null}
-                <div className="ohaa-field">
-                  <span className="ohaa-label">雨课堂课程</span>
-                  <Select value={yktCourse} onChange={(value) => { setYktCourse(value); setYktLeaf(""); }}><option value="">— 请选择 —</option>{yktCourses.map((c) => <option key={c} value={c}>{c}</option>)}</Select>
-                </div>
-                <div className="ohaa-field">
-                  <span className="ohaa-label">雨课堂作业</span>
-                  <Select value={yktLeaf} onChange={(value) => setYktLeaf(value)} disabled={!yktCourse}><option value="">— 请选择 —</option>{yktRows.map((i) => (
+                <Stack gap={1}>
+                  <Text slot="label" tone="faint">雨课堂课程</Text>
+                  <Select value={yktCourse} onChange={(value) => { setYktCourse(value); setYktLeaf(""); }}>
+                    <option value="">— 请选择 —</option>
+                    {yktCourses.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </Select>
+                </Stack>
+                <Stack gap={1}>
+                  <Text slot="label" tone="faint">雨课堂作业</Text>
+                  <Select value={yktLeaf} onChange={(value) => setYktLeaf(value)} disabled={!yktCourse}>
+                    <option value="">— 请选择 —</option>
+                    {yktRows.map((i) => (
                       <option key={i.id} value={i.id}>{i.title}{i.submitted ? "（已交）" : ""}</option>
-                    ))}</Select>
-                </div>
-                <div className="ohaa-foot">
+                    ))}
+                  </Select>
+                </Stack>
+                <Inline gap={2} justify="end">
                   <Btn variant="outline" onClick={close}>取消</Btn>
                   <Btn variant="solid" tone="brand" disabled={busy || !selectedYkt} onClick={() => void runHomework()}>{busy ? "处理中…" : "去官方页提交"}</Btn>
-                </div>
-              </>
+                </Inline>
+              </Stack>
             )}
-          </div>
+          </Stack>
         ) : null}
 
         {/* ── ③ 发讨论区 ── */}
         {action === "discussion" ? (
-          <div>
-            <div className="ohaa-tabs" role="tablist">
-              <button className="ohaa-tab" type="button" role="tab" aria-selected={mode === "new"}
-                onClick={() => { setMode("new"); setResult(null); }}>发新话题</button>
-              <button className="ohaa-tab" type="button" role="tab" aria-selected={mode === "reply"}
-                onClick={() => { setMode("reply"); setResult(null); }}>回复话题</button>
-            </div>
-            <div className="ohaa-field">
-              <span className="ohaa-label">课程</span>
-              <Select value={courseId} onChange={(value) => { setCourseId(value); setBoardId(""); setHwId(""); }}><option value="">— 请选择 —</option>{courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select>
+          <Stack gap={3}>
+            <Segment
+              size="sm"
+              options={[
+                { value: "new", label: "发新话题" },
+                { value: "reply", label: "回复话题" },
+              ]}
+              value={mode}
+              onChange={(value) => {
+                setMode(value as "new" | "reply");
+                setResult(null);
+              }}
+            />
+            <Stack gap={1}>
+              <Text slot="label" tone="faint">课程</Text>
+              <Select value={courseId} onChange={(value) => { setCourseId(value); setBoardId(""); setHwId(""); }}>
+                <option value="">— 请选择 —</option>
+                {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </Select>
               {courses.length === 0 ? (
-                <span className="ohaa-note">
+                <Text slot="label" as="div" tone="faint">
                   本机还没有课程缓存。
                   <Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? "加载中…" : "加载课程列表"}</Btn>
-                </span>
+                </Text>
               ) : null}
-            </div>
+            </Stack>
             {mode === "new" ? (
-              <>
-                <div className="ohaa-field">
-                  <span className="ohaa-label">板块</span>
-                  <Select value={boardId} onChange={(value) => setBoardId(value)} disabled={!courseId}><option value="">— 请选择 —</option>{boards.map((b) => <option key={b.bqid} value={b.bqid}>{b.name}</option>)}</Select>
-                  {boardsMsg ? <span className="ohaa-note">{boardsMsg}</span> : null}
-                </div>
-                <div className="ohaa-field">
-                  <span className="ohaa-label">标题</span>
-                  <Input value={title} onChange={(value) => setTitle(value)} />
-                </div>
-              </>
+              <Stack gap={1}>
+                <Text slot="label" tone="faint">板块</Text>
+                <Select value={boardId} onChange={(value) => setBoardId(value)} disabled={!courseId}>
+                  <option value="">— 请选择 —</option>
+                  {boards.map((b) => <option key={b.bqid} value={b.bqid}>{b.name}</option>)}
+                </Select>
+                {boardsMsg ? <Text slot="label" as="div" tone="faint">{boardsMsg}</Text> : null}
+              </Stack>
             ) : (
-              <div className="ohaa-field">
-                <span className="ohaa-label">话题 id（tltid）</span>
+              <Stack gap={1}>
+                <Text slot="label" tone="faint">话题 id（tltid）</Text>
                 <Input value={threadId} onChange={(value) => setThreadId(value)} placeholder="从讨论区页面复制；也可以直接粘贴话题链接" />
-              </div>
+              </Stack>
             )}
-            <div className="ohaa-field">
-              <span className="ohaa-label">正文（纯文本，发出去会自动排版）</span>
+            <Stack gap={1}>
+              <Text slot="label" tone="faint">正文（纯文本，发出去会自动排版）</Text>
               <TextArea value={body} onChange={(value) => setBody(value)} placeholder="可以只发附件，正文留空" />
-            </div>
-            <div className="ohaa-note">
+            </Stack>
+            <Text slot="label" as="div" tone="faint">
               附件：{first.name}（{formatSize(first.size)}）· 发布前会再确认一次，发出去全班可见。
-            </div>
-            <div className="ohaa-foot">
+            </Text>
+            <Inline gap={2} justify="end">
               <Btn variant="outline" onClick={close}>取消</Btn>
               <Btn variant="solid" tone="brand" disabled={busy || !courseId} onClick={() => void runDiscussion()}>{busy ? "发布中…" : "发布"}</Btn>
-            </div>
-          </div>
+            </Inline>
+          </Stack>
         ) : null}
 
         {/* ── ④ 问 OH（把附件作为一条消息发给 OH） ── */}
         {action === "oh" ? (
-          <div>
-            <div className="ohaa-note">
+          <Stack gap={3}>
+            <Text slot="label" as="div" tone="faint">
               把附件作为**一条完整消息**发给 OH（不弹输入框，直接发）。
               {files.some((f) => f.mime.startsWith("image/"))
                 ? "图片会随消息带上：开了「多模态」开关时按图像模态直接喂给模型（图片文字都能读）；没开时只发送文字说明与预览。"
                 : "非图片附件只带名称/类型/大小与文本预览。"}
               开关位置：设置 → 插件 → OneTHU Harness → 多模态。
-            </div>
-            <div className="ohaa-note">
+            </Text>
+            <Text slot="label" as="div" tone="faint">
               {many ? `${files.length} 个附件会一起发；` : ""}
               图片单条最多 4 张、单张 ≤6MB，超出的会在正文里写明原因（不会静默丢件）。
-            </div>
-            <div className="ohaa-foot">
+            </Text>
+            <Inline gap={2} justify="end">
               <Btn variant="outline" onClick={close}>取消</Btn>
               <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void runOh()}>{busy ? "发送中…" : "发给 OH"}</Btn>
-            </div>
-          </div>
+            </Inline>
+          </Stack>
         ) : null}
 
-        {/* ── 结果 ── */}
+        {/* ── 结果（Banner success|warning|error；多行 \n 原文案保留，按钮行几何内联只此一处） ── */}
         {showResult && r ? (
-          <div className={`ohaa-result ${r.ok ? "ok" : r.needUi ? "warn" : "err"}`}>
-            {r.ok ? (r.path ? `已上传：${r.path}` : "已完成") : `${r.needUi ? "需要你继续一步" : "没做成"}\n${r.error ?? ""}`}
-            {r.needUi ? `\n${uiHint(r.ui)}` : ""}
-            {r.ok && r.answer ? `\n\nOH：${r.answer}` : ""}
-            {r.ok && typeof r.images === "number" ? `\n（本次随消息附带 ${r.images} 张图片）` : ""}
+          <Banner tone={r.ok ? "success" : r.needUi ? "warning" : "error"}>
+            <div style={PREWRAP_STYLE}>
+              {r.ok ? (r.path ? `已上传：${r.path}` : "已完成") : `${r.needUi ? "需要你继续一步" : "没做成"}\n${r.error ?? ""}`}
+              {r.needUi ? `\n${uiHint(r.ui)}` : ""}
+              {r.ok && r.answer ? `\n\nOH：${r.answer}` : ""}
+              {r.ok && typeof r.images === "number" ? `\n（本次随消息附带 ${r.images} 张图片）` : ""}
+            </div>
             {r.needUi && r.ui?.officialUrl && r.ui.officialChannel === "ykt-submit-webview" && isTauri ? (
               <div style={{ marginTop: 8 }}>
                 <Btn variant="solid" tone="brand" disabled={officialBusy} onClick={() => void openOfficial(r.ui!.officialUrl!)}>{officialBusy ? "打开中…" : "打开雨课堂官方作答页"}</Btn>
@@ -683,21 +659,30 @@ export function AttachActionsSheet({
                 <Btn variant="outline" onClick={close}>完成</Btn>
               </div>
             ) : null}
-          </div>
+          </Banner>
         ) : null}
 
-        {/* ── 内联确认（写操作的最后一道闸） ── */}
+        {/* ── 内联确认（写操作的最后一道闸；confirmResolve ref 约定不变） ── */}
         {confirmMsg ? (
-          <div className="ohaa-confirm">
-            <div className="ohaa-confirm-msg">{confirmMsg}</div>
-            <div className="ohaa-foot">
-              <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
-              <Btn variant="solid" tone="error" onClick={() => answerConfirm(true)}>确认执行</Btn>
-            </div>
-          </div>
+          <Surface level={2} pad="md" radius="md">
+            <Stack gap={2}>
+              <div style={PREWRAP_STYLE}>
+                <Text as="div">{confirmMsg}</Text>
+              </div>
+              <Inline gap={2} justify="end">
+                <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
+                <Btn variant="solid" tone="error" onClick={() => answerConfirm(true)}>确认执行</Btn>
+              </Inline>
+            </Stack>
+          </Surface>
         ) : null}
-      </div>
-    </div>,
-    document.body,
+      </Stack>
+    </Sheet>
   );
 }
+
+/* 旧的手写样式（SHEET_CSS + `.ohaa-*` 家族 + 死掉的 inputStyle）已全部拆除：
+   - 遮罩/面板/标题栏/关闭钮/退场动画 = OG Sheet（overlay.tsx 的模态族壳）；
+   - 文件行/目录行 = OG Row；动作/平台/模式切换 = OG Segment；
+   - 字段 = Stack + Text(slot=label)；warn 与结果/确认 = OG Banner / Surface；
+   - 材质档位登记在 AttachActionsScope.ts（scope: ohaa.sheet），面板零 <style>。 */

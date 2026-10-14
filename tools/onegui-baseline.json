@@ -272,7 +272,7 @@
   "legacyClasses": {
     "apps/desktop/src/components/HelpSection.tsx": 2,
     "apps/desktop/src/components/ImSettingsSection.tsx": 18,
-    "apps/desktop/src/components/NotifySettingsSection.tsx": 16,
+    "apps/desktop/src/components/NotifySettingsSection.tsx": 14,
     "apps/desktop/src/components/OhSettingsPage.tsx": 11,
     "apps/desktop/src/components/SoftwareUpdateSection.tsx": 2,
     "apps/desktop/src/components/VoiceSettingsSection.tsx": 10,

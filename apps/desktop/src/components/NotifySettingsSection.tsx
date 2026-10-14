@@ -21,6 +21,7 @@ import { groupPluginNotifications } from "../state/notifyIds.js";
 import { runNotifyDoctor, type DoctorReport } from "../state/notifyDoctor.js";
 import { ensureNotifyRuntime } from "../state/notifySources.js";
 import type { NotifyPlanItem, NotifySettings } from "../state/notifyPlan.js";
+import { SettingsRow, Switch as OGSwitch } from "@onethu/gui";
 
 /** 常用提前量（分钟）；0 = 不提醒课程 */
 const CLASS_LEADS: Array<[number, string]> = [
@@ -139,15 +140,11 @@ export function NotifySettingsSection(): ReactNode {
 
   return (
     <>
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">提醒</div>
-          <div className="setting-desc">
-            把课程、日程与作业 DDL 推到系统通知，另有每日早报。打开后可细调下面的提前量与静默时段。
-          </div>
-        </div>
-        <Switch on={s.enabled} onChange={(v) => patch({ enabled: v })} label="提醒总开关" />
-      </div>
+      <SettingsRow
+        title="提醒"
+        sub="把课程、日程与作业 DDL 推到系统通知，另有每日早报。打开后可细调下面的提前量与静默时段。"
+        control={<OGSwitch checked={s.enabled} onChange={(v) => patch({ enabled: v })} aria-label="提醒总开关" />}
+      />
 
       {s.enabled ? (
       <>

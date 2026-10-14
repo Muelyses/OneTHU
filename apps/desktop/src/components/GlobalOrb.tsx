@@ -6,10 +6,14 @@
  *   panel → 单击后铺开的悬浮小窗：**整块圆角毛玻璃 + 裸文字条目**，不是应用内那套气泡 UI
  *   （bar 语音条：桌面已按用户口径下线，仅安卓原生侧保留；桌面说话走输入框 + 系统听写）
  *
- * 设计口径（2026-10-10 用户拍板）：
- *   - 不要气泡、不要框、不要头像：只有雾，和雾里的文字条目（双方的话都能一眼分清）
- *   - 内容**完整渲染**（不截断），可上下滑动
- *   - 一切颜色用 --dsw-alias-* token；雾 = 半透明 + backdrop-filter + 径向羽化
+ * 设计口径（2026-10-14 OneGUI 收编）：外观全部来自 @onethu/gui ——
+ *   - 两块壳自挂 data-og-scope="oh.orb"（专属档位在 explorer/ohOrbScope.ts 经 og.defineScope
+ *     登记，由 StyleDirector 写进受控样式表）；壳上只写「纯几何 + OG 语义令牌引用」，
+ *     零字面色、零运行时注入样式：旧组件自带 <style> 块（5 条 keyframes）已整体拆除，
+ *     过场改为 CSS transition（transform/opacity/border-radius 状态 + OG Motion 令牌
+ *     --og-dur-一族、--og-ease-一族），
+ *     时长毫秒仍取与原生窗口切换同拍的 JS 常量；
+ *   - 顶栏开关走 Segment、动作走 Btn，搜索/对话正文走 Text/Row/Chip/Input。
  *
  * 红线：这里只走纯前端通道（askOh / ohRun），绝不主动把主窗口拉到前台。
  */
@@ -19,6 +23,7 @@ import {
 } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Btn, Chip, Input, Row, Segment, Text, scopeProps } from "@onethu/gui";
 import {
   onOverlayEvent, overlayHide, overlayPushUi, overlaySetMode, setOverlayClosedByUser,
   type OverlayMode,
@@ -37,6 +42,7 @@ import { speakReply } from "../lib/tts.js";
 import { useOhSearch, jumpEntry, jumpAtom, jumpSearchRow, jumpSettingsTab, jumpTabPayload } from "../plugins/ohSearch.js";
 import { explorerPrefsSnapshot, useSearchHistory, type SearchJump } from "../state/explorerPrefs.js";
 import { displayBreadcrumb } from "../state/searchRows.js";
+import { OH_ORB_SCOPE } from "./explorer/ohOrbScope.js"; // OH 专属档位登记进 OneGUI 管线（scope: oh.orb，受 OneGUI 调度）
 
 /** 面板窗比视觉块四周多出的留白（与 overlay_win.rs 的 PANEL_SHADOW_PAD 同值）：
  *  那圈留白专门给面板的柔和外阴影，视觉块仍严格落在 14px 边距上。 */
@@ -80,7 +86,7 @@ async function applyPanelHeight(h: number): Promise<void> {
  *   （2026-10-11 用户实录：「半个球」「球形状阴影不对」= 球按整屏定位 + 投影被 64px 窗裁断）。 */
 const BALL_VISUAL = 58; // 与 overlay_win.rs 的 BALL_VISUAL 一致
 const BALL_PAD = 8; //     与 overlay_win.rs 的 BALL_PAD 一致（安卓 BALL_WIN_DP = BALL_DP + 16 同口径）
-const PANEL_RADIUS = 24; // 悬浮小窗圆角（安卓 PANEL_RADIUS_DP = 24）
+/* 小窗圆角收编 OneGUI：走 --og-radius-2xl 语义档（安卓原生仍用它的 PANEL_RADIUS_DP=24）。 */
 
 /* ── 过场时长：与安卓同源（Drop 150 + Bloom 280 ≈ 430ms / Collapse 260 / BallIn 200） ── */
 const DROP_MS = 150;
@@ -88,29 +94,24 @@ const BLOOM_MS = 280;
 const COLLAPSE_MS = 260;
 const BALL_IN_MS = 200;
 
-/** 关键帧集中一处（组件自带 <style>，不往 global.css 塞东西——那是别人的写域） */
-const ORB_KEYFRAMES = `
-@keyframes ohOrbDrop{0%{transform:scale(1,1)}45%{transform:scale(.88,1.14) translateY(3px)}100%{transform:scale(.86,1.16) translateY(4px);opacity:.82}}
-@keyframes ohOrbBounce{0%{transform:scale(.82);opacity:.55}55%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
-@keyframes ohOrbBloom{0%{opacity:0;transform:scale(.94) translateY(14px);border-radius:50%}60%{opacity:1}100%{opacity:1;transform:none;border-radius:${PANEL_RADIUS}px}}
-@keyframes ohOrbCollapse{0%{opacity:1;transform:none;border-radius:${PANEL_RADIUS}px}100%{opacity:0;transform:scale(.94) translateY(14px);border-radius:50%}}
-@keyframes ohOrbBarIn{0%{opacity:0;transform:scaleX(.18)}100%{opacity:1;transform:scaleX(1)}}
-`;
+/* ── 过场的「球形起止」状态（onegui 收编）：旧 5 条 keyframes 的 0%/100% 两帧平移成
+ *  transition 的起止值。铺开与收拢互为镜像，共用这一组；滴落/弹回是球壳自己的两个值，
+ *  写在球壳 JSX 上。曲线/时长改走 OG Motion 令牌（--og-ease-*）+ 与原生窗口切换同拍的
+ *  JS 毫秒常量，不再有任何 <style> 注入。（ohOrbBarIn 属已下线的 bar 形态，连体删除。） */
+const ORB_BALLISH: CSSProperties = {
+  opacity: 0,
+  transform: "scale(0.94) translateY(14px)",
+  borderRadius: "var(--og-radius-full)",
+};
 
 interface Bubble { role: "user" | "oh"; text: string }
 
-/** 正文投影：对齐安卓 OverlayViews.shadow()（半径 6、dy 1、α0.25 一档；深色加重） */
-const textShadow = `0 1px 6px rgba(0,0,0,${isDarkUi() ? 0.5 : 0.18})`;
-
-/** 背板（用户口径 2026-10-11 两端统一）：**整块可见的圆角毛玻璃**，不要顶部渐隐、不要径向化开。
- *  做法 = 半透明同色块 + backdrop-filter 模糊 + 1px 细边 + 轻投影，四角边界清晰。
+/** 背板收编 OneGUI：玻璃块的两个常量（background/backdropFilter/border/boxShadow）不再由本文件持有，
+ *  面板壳直接引用 OneGUI 的浮层令牌族（--og-surface-overlay / --og-overlay-blur / --og-overlay-tint /
+ *  --og-elev-menu，玻璃皮肤下半透明 + 模糊 + 顶沿渐变同量级，中性皮肤下实档浮面），
+ *  scope: oh.orb 把面/线档锁成浮体档（见 explorer/ohOrbScope.ts）。
  *  注：透明悬浮窗里 backdrop-filter 只采样本窗口内容（macOS 合成器采样不到别家 App），
  *  所以视觉上是「半透明纸」而非「磨砂玻璃」——平台限制，但整块可见、边界清晰这两条成立。 */
-/** 背板不透明度：安卓落地值 0.90（浅）/ 0.80（深），桌面取同量级
- *  （用户 2026-10-11：「底板再厚重一点，这个有点透」；原桌面 0.74/0.74 偏透）。 */
-const GLASS_ALPHA_LIGHT = 0.9;
-const GLASS_ALPHA_DARK = 0.8;
-
 /** 当前是否深色（本仓主题挂 <html data-theme|data-scheme>；取不到就按浅色） */
 function isDarkUi(): boolean {
   try {
@@ -120,24 +121,6 @@ function isDarkUi(): boolean {
     return false;
   }
 }
-
-const glassBlock = (extra?: CSSProperties): CSSProperties => {
-  const dark = isDarkUi();
-  const alpha = Math.round((dark ? GLASS_ALPHA_DARK : GLASS_ALPHA_LIGHT) * 100);
-  return {
-    position: "absolute",
-    inset: 0,
-    zIndex: 0,
-    pointerEvents: "none",
-    background: `color-mix(in srgb, var(--dsw-alias-bg-layer-1, ${dark ? "#151517" : "#fff"}) ${alpha}%, transparent)`,
-    backdropFilter: "blur(22px) saturate(1.25)",
-    WebkitBackdropFilter: "blur(22px) saturate(1.25)",
-    border: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.14)) 70%, transparent)",
-    // 上沿高光（安卓 withAlpha(white,158/56) 同量级）——整块玻璃的「厚度」感就靠它
-    boxShadow: dark ? "inset 0 1px 0 rgba(255,255,255,.10)" : "inset 0 1px 0 rgba(255,255,255,.55)",
-    ...extra,
-  };
-};
 
 /** markdown 里的图片：只渲染直链（data:/blob:/http(s)）。悬浮窗是独立 webview，
  *  没有主窗口那套本地路径读取通道（ChatDock 里有 dataUrlForPath），所以本地路径图**不渲染**，
@@ -164,25 +147,6 @@ function MdLink({ href, children, ...rest }: ComponentProps<"a">): ReactNode {
   );
 }
 
-/** 顶栏胶囊（与安卓 OverlayViews.capsule 同值：浅 #FFFFFF α0.86 / 深 #000000 α0.45 + 1px 细边） */
-function capsuleStyle(active: boolean): CSSProperties {
-  const dark = isDarkUi();
-  return {
-    fontSize: 12,
-    lineHeight: "18px",
-    padding: "4px 10px",
-    borderRadius: 999,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    color: "inherit",
-    border: `1px solid ${dark ? "rgba(255,255,255,.20)" : "rgba(0,0,0,.12)"}`,
-    background: dark
-      ? `rgba(0,0,0,${active ? 0.45 : 0.3})`
-      : `rgba(255,255,255,${active ? 0.86 : 0.66})`,
-    opacity: active ? 0.95 : 0.75,
-  };
-}
-
 export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { initialMode?: OverlayMode }): ReactNode {
   const [mode, setMode] = useState<OverlayMode>(initialMode);
   /* dev-explorer：面板形态内的 搜索|OH 二合一。初值跟随「点击胶囊默认打开」偏好
@@ -195,6 +159,11 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const [sheetFiles, setSheetFiles] = useState<AttachFile[] | null>(null);
   /** 过场状态：drop（球滴落）→ bloom（面板铺开）/ collapse（收拢）→ bounce（球弹回） */
   const [anim, setAnim] = useState<"none" | "drop" | "bloom" | "collapse" | "bounce">("none");
+  /** 过场「落位」标志：bloom/bounce 首帧先把壳落到球形起止值（ORB_BALLISH / 球壳 JSX），
+   *  隔一帧翻 true → 壳上的 CSS transition（OG Motion 令牌给曲线）把它推回基态。
+   *  旧 keyframes 是「组件自带 <style>」的挂载动画；transition 没有挂载帧，
+   *  靠这个相位补同一拍，时长毫秒数与旧值一一对齐。 */
+  const [settled, setSettled] = useState(false);
   /** 球心相对本窗左上角（逻辑 px），由原生 geometry 事件回传：决定「从球的方位滴落/收拢」 */
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
   const animTimer = useRef<number | null>(null);
@@ -210,7 +179,6 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   const pressStart = useRef<{ x: number; y: number } | null>(null);
   const draggedRef = useRef(false);
   const scroller = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const scrollToEnd = (): void => {
     requestAnimationFrame(() => {
@@ -222,6 +190,23 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  /* bloom/bounce 的挂载相位：首帧落 from 值，双 rAF 后翻 settled（transition 由此滑回基态）。
+     drop/collapse 不经过这里——它们的元素已在挂载态，真过渡直接发生。 */
+  useEffect(() => {
+    if (anim !== "bloom" && anim !== "bounce") {
+      setSettled(false);
+      return;
+    }
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setSettled(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [anim]);
 
   /** 过场定时器统一收口（连点/中途切形态不会叠动画） */
   const later = useCallback((ms: number, fn: () => void): void => {
@@ -350,108 +335,120 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
 
   if (mode === "hidden") return null;
 
-  /* ── 球：实底 + 1px 细边 + 轻投影（安卓 A② 口径）──
-   *  几何铁律（2026-10-11 修「半个球 / 阴影不对」）：
+  /* ── 球：onegui 收编后的壳 ──
+   *  几何铁律（2026-10-11 修「半个球 / 阴影不对」）不变：
    *    ① 外框吃满窗口（inset:0），手势挂在外框 → 球外那圈留白也吃点击，没有死区；
    *    ② 球**只在内层**画（BALL_VISUAL），四周留 BALL_PAD 给投影；
    *    ③ 投影半径压到 6px：留白 8px > 偏移 2px + 可见尾巴，绝不会被窗口边界裁出硬线；
-   *    ④ 不再用 right/bottom 定位（那是整屏窗口的写法，球窗里必然被推出窗外 = 半个球）。 */
-  /* ── 球：实底 + 1px 细边 + 轻投影（安卓 A② 口径）──
-   *  几何铁律（2026-10-11 修「半个球 / 阴影不对」）：
-   *    ① 外框吃满窗口（inset:0），手势挂外框 → 球外留白也吃点击，没有死区；
-   *    ② 球**只在内层**画（BALL_VISUAL），四周留 BALL_PAD 给投影；
-   *    ③ 投影半径压到 6px：留白 8px > 偏移 2px + 可见尾巴，不会被窗口边界裁出硬线；
    *    ④ 不用 right/bottom 定位（那是整屏窗口的写法，球窗里必然被推出窗外 = 半个球）。
-   *  桌面球只做两件事：**单击开面板**、**按住拖动**。
-   *  长按语音已按用户口径整体下线（2026-10-11「把电脑悬浮球长按语音关了」）——
-   *  桌面要说话就用面板里的输入框 + 系统听写。 */
+   *  桌面球只做两件事：**单击开面板**、**按住拖动**。长按语音已按用户口径整体下线
+   *  （2026-10-11），桌面要说话就用面板里的输入框 + 系统听写。
+   *  外观：壳上只引用 OG 语义令牌（scope oh.orb 把 surface-1/line-1 上调到浮体档）；
+   *  圆 = --og-radius-full，浮起 = --og-elev-2，模糊挂 --og-surface-blur（玻璃皮肤生效）。
+   *  滴落（drop）/弹回（bounce）= CSS transition：旧 ohOrbDrop / ohOrbBounce 的首尾帧
+   *  原值平移；弹回的中段过冲交给 --og-ease-spring 曲线本身（与旧贝塞尔同族同参数）。 */
   if (mode === "ball") {
+    const fromBall = anim === "bounce" && !settled;
     return (
-      <>
-        <style>{ORB_KEYFRAMES}</style>
-        {/* 手势在外框上（= 整个窗口）；`data-oh-ball` 是 overlayDesktop 手势桥的闸门：
-            只有从这里按下的按压才可能触发拖窗，拖把手/划消息/点输入框都不会误触。 */}
+      /* 手势在外框上（= 整个窗口）；`data-oh-ball` 是 overlayDesktop 手势桥的闸门：
+          只有从这里按下的按压才可能触发拖窗，拖把手/划消息/点输入框都不会误触。 */
+      <div
+        role="button"
+        data-oh-ball="1"
+        aria-label="OH 悬浮球：单击打开对话，按住可拖动"
+        style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          userSelect: "none", touchAction: "none", cursor: "pointer",
+        }}
+        onPointerDown={(e) => {
+          pressStart.current = { x: e.clientX, y: e.clientY };
+          draggedRef.current = false;
+        }}
+        onPointerMove={(e) => {
+          const st = pressStart.current;
+          if (!st || draggedRef.current) return;
+          if (Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > DRAG_PX) {
+            draggedRef.current = true;
+            logOrb(`位移 > ${DRAG_PX}px → 判定拖动（松手不再开面板）`);
+          }
+        }}
+        onPointerUp={() => {
+          const wasDrag = draggedRef.current;
+          draggedRef.current = false;
+          pressStart.current = null;
+          if (!wasDrag) openPanel(); // 球滴落 → 面板铺开
+        }}
+      >
         <div
-          role="button"
-          data-oh-ball="1"
-          aria-label="OH 悬浮球：单击打开对话，按住可拖动"
+          {...scopeProps(OH_ORB_SCOPE)}
+          aria-hidden
           style={{
-            position: "fixed", inset: 0, zIndex: 9999,
+            width: BALL_VISUAL, height: BALL_VISUAL,
+            borderRadius: "var(--og-radius-full)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            userSelect: "none", touchAction: "none", cursor: "pointer",
-          }}
-          onPointerDown={(e) => {
-            pressStart.current = { x: e.clientX, y: e.clientY };
-            draggedRef.current = false;
-          }}
-          onPointerMove={(e) => {
-            const st = pressStart.current;
-            if (!st || draggedRef.current) return;
-            if (Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > DRAG_PX) {
-              draggedRef.current = true;
-              logOrb(`位移 > ${DRAG_PX}px → 判定拖动（松手不再开面板）`);
-            }
-          }}
-          onPointerUp={() => {
-            const wasDrag = draggedRef.current;
-            draggedRef.current = false;
-            pressStart.current = null;
-            if (!wasDrag) openPanel(); // 球滴落 → 面板铺开
+            background: "var(--og-surface-1)",
+            color: "var(--og-content-1)",
+            border: "1px solid var(--og-line-1)",
+            boxShadow: "var(--og-elev-2)",
+            backdropFilter: "var(--og-surface-blur)",
+            WebkitBackdropFilter: "var(--og-surface-blur)",
+            transition:
+              anim === "bounce"
+                ? `transform ${BALL_IN_MS}ms var(--og-ease-spring), opacity ${BALL_IN_MS}ms var(--og-ease-spring)`
+                : `transform ${DROP_MS}ms var(--og-ease-standard), opacity ${DROP_MS}ms var(--og-ease-standard)`,
+            transform: anim === "drop"
+              ? "scale(0.86,1.16) translateY(4px)"
+              : fromBall ? "scale(0.82)" : undefined,
+            opacity: anim === "drop" ? 0.82 : fromBall ? 0.55 : undefined,
           }}
         >
-          <div
-            aria-hidden
-            style={{
-              width: BALL_VISUAL, height: BALL_VISUAL, borderRadius: "50%",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              background: "var(--dsw-alias-bg-layer-1, #fff)",
-              color: "var(--dsw-alias-label-primary, #1c1f24)",
-              border: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.12)) 80%, transparent)",
-              boxShadow: "0 2px 6px rgba(0,0,0,.20)",
-              animation:
-                anim === "drop"
-                  ? `ohOrbDrop ${DROP_MS}ms cubic-bezier(.4,0,.6,1) forwards`
-                  : anim === "bounce"
-                    ? `ohOrbBounce ${BALL_IN_MS}ms cubic-bezier(.34,1.4,.5,1)`
-                    : undefined,
-            }}
-          >
-            <HarnessMark size={17} />
-          </div>
+          <HarnessMark size={17} />
         </div>
-      </>
+      </div>
     );
   }
 
-  /* ── 对话面：悬浮小窗（安卓 A①：左右/底部各留 14、高 44%~80%、圆角 24）里的整块毛玻璃 ──
+  /* ── 对话面：悬浮小窗（安卓 A①：左右/底部各留 14、高 44%~80%）里的整块毛玻璃 ──
    *  窗口尺寸由原生给（`overlay_win.rs`：视觉块 14 边距 + 四周 PANEL_SHADOW_PAD 阴影留白），
-   *  这里负责：inset 14 的视觉块 + 24px 圆角 + overflow:hidden + 柔和外阴影。 */
+   *  这里负责：inset 14 的视觉块 + 圆角 + overflow:hidden + 柔和外阴影。
+   *  材质 = OneGUI 浮层令牌族（Surface--overlay 组件同款取值：--og-surface-overlay 半透明面 +
+   *  --og-overlay-blur 模糊 + --og-overlay-tint 顶沿光 + --og-elev-menu 阴影 + line 档走 scope
+   *  提档）。Surface 组件收不下这份「fixed 落位 + 过场状态」的内联几何（组件刻意不暴露
+   *  style），所以壳直接引用组件同一组语义令牌 —— 值源仍全在 OH scope 与 OG 皮肤里。
+   *  铺开（bloom）/收拢（collapse）= CSS transition，共用球形起止值 ORB_BALLISH；
+   *  进场沿 decelerate、离场沿 accelerate —— 旧 ohOrbBloom/ohOrbCollapse 原值平移。 */
+  const fromBallish = anim === "collapse" || (anim === "bloom" && !settled);
+  const goOut = anim === "collapse";
+  const goMs = goOut ? COLLAPSE_MS : BLOOM_MS;
+  const goEase = goOut ? "var(--og-ease-accelerate)" : "var(--og-ease-decelerate)";
   return (
-    <>
-      <style>{ORB_KEYFRAMES}</style>
-      <div
-        style={{
-          position: "fixed", inset: PANEL_PAD, zIndex: 9999,
-          display: "flex", flexDirection: "column", padding: "8px 16px 12px",
-          borderRadius: PANEL_RADIUS, overflow: "hidden",
-          border: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.14)) 70%, transparent)",
-          color: "var(--dsw-alias-label-primary, #1c1f24)",
-          // 柔和外阴影（用户口径）：窗口特意留了 PANEL_PAD，阴影尾巴落在留白里不会被裁
-          boxShadow: "0 4px 12px rgba(0,0,0,.18)",
-          // 「从球所在的方位滴落铺开 / 收拢回去」：origin = 球心相对**视觉块**的坐标
-          transformOrigin: origin
-            ? `${origin.x - PANEL_PAD}px ${origin.y - PANEL_PAD}px`
-            : "50% 100%",
-          animation:
-            anim === "bloom"
-              ? `ohOrbBloom ${BLOOM_MS}ms cubic-bezier(.22,.9,.24,1)`
-              : anim === "collapse"
-                ? `ohOrbCollapse ${COLLAPSE_MS}ms cubic-bezier(.5,0,.75,0) forwards`
-                : undefined,
-          pointerEvents: anim === "collapse" ? "none" : "auto",
-        }}
-      >
-        <div aria-hidden style={glassBlock({ border: "none" })} />
+    <div
+      {...scopeProps(OH_ORB_SCOPE)}
+      style={{
+        position: "fixed", inset: PANEL_PAD, zIndex: 9999,
+        display: "flex", flexDirection: "column",
+        padding: "var(--og-space-2) var(--og-space-4) var(--og-space-3)",
+        borderRadius: fromBallish ? "var(--og-radius-full)" : "var(--og-radius-2xl)",
+        overflow: "hidden",
+        color: "var(--og-content-1)",
+        border: "1px solid var(--og-line-1)",
+        background: "var(--og-surface-overlay)",
+        backgroundImage: "var(--og-overlay-tint)", // 顶沿光（Surface--overlay 同款取值），玻璃的「厚度」感
+        boxShadow: "var(--og-elev-menu)", // 阴影尾巴落在 PANEL_PAD 留白里不会被窗口边界裁
+        backdropFilter: "var(--og-overlay-blur)",
+        WebkitBackdropFilter: "var(--og-overlay-blur)",
+        // 「从球所在的方位滴落铺开 / 收拢回去」：origin = 球心相对**视觉块**的坐标
+        transformOrigin: origin
+          ? `${origin.x - PANEL_PAD}px ${origin.y - PANEL_PAD}px`
+          : "50% 100%",
+        transition:
+          `transform ${goMs}ms ${goEase}, opacity ${goMs}ms ${goEase}, border-radius ${goMs}ms ${goEase}`,
+        transform: fromBallish ? ORB_BALLISH.transform : undefined,
+        opacity: fromBallish ? ORB_BALLISH.opacity : undefined,
+        pointerEvents: goOut ? "none" : "auto",
+      }}
+    >
         {/* 顶部把手（用户口径 2026-10-11：内外悬浮窗最上面都要有个 handle，上下拖可拉长拉短）：
             36×5 圆角条、按下提亮；竖直拖动 → overlay_set_panel_height（Rust 侧夹 30%~80% 屏高并落盘）。
             把手自己的按压被 stopPropagation + 手势桥闸门挡住，不会误触发拖窗。 */}
@@ -503,108 +500,94 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             setHandleDown(false);
           }}
           style={{
-            position: "relative", zIndex: 3, margin: "0 auto 4px", padding: "5px 0", // 5px 视觉 + 上下各 5px 命中区
+            position: "relative", zIndex: 3,
+            marginInline: "auto", marginBottom: "var(--og-space-1)",
+            paddingBlock: "var(--og-space-1)", // 上下命中区（旧 5px 同量级）
             cursor: "ns-resize", touchAction: "none",
           }}
         >
           <div
             aria-hidden
             style={{
-              width: 36, height: 5, borderRadius: 999, margin: "0 auto",
+              // 36×5 几何把手（无对应 OG 结构令牌，同 BALL_VISUAL 一样属几何约定）
+              width: 36, height: 5, borderRadius: "var(--og-radius-full)", marginInline: "auto",
               background: handleDown
-                ? "var(--dsw-alias-label-secondary, rgba(0,0,0,.45))"
-                : "color-mix(in srgb, var(--dsw-alias-label-secondary, rgba(0,0,0,.4)) 55%, transparent)",
-              transition: "background .15s ease",
+                ? "var(--og-content-2)"
+                : "color-mix(in srgb, var(--og-content-2) 55%, transparent)",
+              transition: `background var(--og-dur-1) var(--og-ease-standard)`,
             }}
           />
         </div>
         {/* 顶栏**只留三个动作**（用户口径 2026-10-11）：回到 OneTHU / 自动朗读 / 收起
             ——「本次关闭悬浮球」已删（收进本体，浮层不再自带注销开关）。 */}
-        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
-          {/* dev-explorer：搜索 | OH 二合一开关（替代原先裸标识位；默认动作在铺开时已按偏好落位） */}
-          <div style={{ display: "flex", alignItems: "center", gap: 4, border: `1px solid ${isDarkUi() ? "rgba(255,255,255,.20)" : "rgba(0,0,0,.12)"}`, borderRadius: 999, padding: 2 }}>
-            {([
-              { v: "search" as const, label: "搜索" },
-              { v: "oh" as const, label: "OH" },
-            ]).map((o) => (
-              <button
-                key={o.v}
-                onClick={() => setOmode(o.v)}
-                aria-pressed={omode === o.v}
-                style={{
-                  ...capsuleStyle(omode === o.v),
-                  fontSize: 11,
-                  lineHeight: "16px",
-                  padding: "3px 10px",
-                  border: "none",
-                }}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            {[
-              { key: "back", label: "回到 OneTHU", active: true, onClick: backToApp },
-              {
-                key: "read",
-                label: prefs.autoSpeak ? "自动朗读 · 开" : "自动朗读",
-                active: prefs.autoSpeak,
-                onClick: () => setVoicePrefs({ autoSpeak: !prefs.autoSpeak }),
-              },
-              { key: "collapse", label: "收起", active: true, onClick: collapseToBall },
-            ].map((a) => (
-              <button
-                key={a.key}
-                onClick={a.onClick}
-                style={capsuleStyle(a.active)}
-              >
-                {a.label}
-              </button>
-            ))}
+        <div style={{ position: "relative", zIndex: 1, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "var(--og-space-2)", marginBottom: "var(--og-space-2)" }}>
+          {/* dev-explorer：搜索 | OH 二合一开关（OG Segment：radiogroup + 方向键可达；
+              默认动作在铺开时已按偏好落位） */}
+          <Segment
+            size="sm"
+            options={[
+              { value: "search", label: "搜索" },
+              { value: "oh", label: "OH" },
+            ]}
+            value={omode}
+            onChange={(v) => setOmode(v as "search" | "oh")}
+          />
+          <div style={{ display: "flex", flex: "none", alignItems: "center", gap: "var(--og-space-1)" }}>
+            <Btn size="sm" variant="outline" tone="quiet" onClick={backToApp}>回到 OneTHU</Btn>
+            <Btn size="sm" variant="outline" tone="quiet" selected={prefs.autoSpeak} onClick={() => setVoicePrefs({ autoSpeak: !prefs.autoSpeak })}>
+              {prefs.autoSpeak ? "自动朗读 · 开" : "自动朗读"}
+            </Btn>
+            <Btn size="sm" variant="outline" tone="quiet" onClick={collapseToBall}>收起</Btn>
           </div>
         </div>
 
       {omode === "search" ? (
-        /* ── dev-explorer：搜索形态（同窗切换；跳转经 Tauri 事件递主窗口 openTab 后回到 OneTHU） ── */
-        <div style={{ position: "relative", zIndex: 1, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <input
-              autoFocus
-              value={oquery}
-              onChange={(e) => setOquery(e.target.value)}
-              placeholder="搜功能、作业、文件、设置…"
-              aria-label="搜索"
-              style={{
-                flex: 1, border: "none", outline: "none", background: "transparent",
-                color: "inherit", fontSize: 15, padding: "6px 2px", textShadow,
-                borderBottom: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.18)) 70%, transparent)",
-              }}
-            />
+        /* ── dev-explorer：搜索形态（同窗切换；跳转经 Tauri 事件递主窗口 openTab 后回到 OneTHU） ──
+           直接压在玻璃上的正文统一走 textShadow（OG 无字面阴影令牌，颜色引用 --og-scrim，
+           浅深两套 scheme 都是墨色雾，子树文字级联继承）。 */
+        <div style={{ position: "relative", zIndex: 1, flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: "var(--og-space-2)", textShadow: "0 1px 6px var(--og-scrim)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--og-space-2)" }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Input
+                autoFocus
+                size="sm"
+                value={oquery}
+                onChange={setOquery}
+                placeholder="搜功能、作业、文件、设置…"
+                aria-label="搜索"
+              />
+            </div>
             {oquery ? (
-              <button onClick={() => setOquery("")} style={{ ...capsuleStyle(false), flex: "none" }}>清空</button>
+              <Btn size="sm" variant="ghost" tone="quiet" onClick={() => setOquery("")}>清空</Btn>
             ) : null}
           </div>
           {!oquery.trim() ? (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, overflowY: "auto" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--og-space-2)", overflowY: "auto" }}>
               {ohist.length === 0 ? (
-                <span style={{ fontSize: 13, opacity: 0.55, textShadow }}>还没有搜索记录；搜一次功能或实体就会留在这里</span>
+                <Text slot="label" tone="faint" as="span">还没有搜索记录；搜一次功能或实体就会留在这里</Text>
               ) : ohist.map((h: SearchJump, i: number) => (
-                <button
+                <span
                   key={`${h.at}-${i}`}
                   title={`${h.title}（${h.query}）`}
-                  onClick={() => { jumpTabPayload(h.page, h.params, h.title, h.query); backToApp(); }}
-                  style={{ ...capsuleStyle(false), maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis" }}
+                  style={{ maxWidth: "var(--og-ctl-tab-max-w)", minWidth: 0 }}
                 >
-                  {h.title || h.query}
-                </button>
+                  <Chip
+                    size="sm"
+                    className="og-truncate"
+                    onClick={() => { jumpTabPayload(h.page, h.params, h.title, h.query); backToApp(); }}
+                  >
+                    {h.title || h.query}
+                  </Chip>
+                </span>
               ))}
             </div>
           ) : !oresult ? (
-            <div style={{ fontSize: 13, opacity: 0.6, textShadow }}>搜索中…</div>
+            <Text slot="label" tone="faint" as="p">搜索中…</Text>
           ) : ototal === 0 ? (
-            <button
-              style={{ ...capsuleStyle(true), textAlign: "center" }}
+            <Btn
+              block
+              variant="outline"
+              tone="quiet"
               onClick={() => {
                 const q = oquery.trim();
                 setOmode("oh"); // 丝滑切换开关：留在同一扇窗里到 OH 对话页
@@ -613,57 +596,57 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
               }}
             >
               没搜到「{oquery.trim()}」？直接问小 (OH)
-            </button>
+            </Btn>
           ) : (
             <div className="ohx-orb-results">
               {oresult.rows.map((x) => (
-                <button
+                <Row
                   key={"row:" + x.row.id}
+                  size="sm"
+                  compact
+                  title={x.row.title}
+                  sub={displayBreadcrumb(x.row).join(" → ")}
                   onClick={() => { jumpSearchRow(x.row, oquery.trim()); backToApp(); }}
-                  style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
-                >
-                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>{x.row.title}</span>
-                  <span style={{ fontSize: 12, opacity: 0.6, textShadow }}>{displayBreadcrumb(x.row).join(" → ")}</span>
-                </button>
+                />
               ))}
               {oresult.entries.map((en) => (
-                <button
+                <Row
                   key={"n:" + en.id}
+                  size="sm"
+                  compact
+                  title={en.name}
+                  sub={en.note ?? en.category}
+                  trailing={<Text slot="micro" tone="faint">功能</Text>}
                   onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, oquery.trim()); backToApp(); }}
-                  style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
-                >
-                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>{en.name}</span>
-                  <span style={{ fontSize: 12, opacity: 0.6, textShadow, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{en.note ?? en.category}</span>
-                  <span style={{ fontSize: 11, opacity: 0.55 }}>功能</span>
-                </button>
+                />
               ))}
               {oresult.atoms.map((a) => (
-                <button
+                <Row
                   key={"a:" + a.kind + "|" + a.key}
+                  size="sm"
+                  compact
+                  title={a.title}
+                  sub={(a.group ? a.group + " · " : "") + (a.sub ?? "")}
+                  trailing={<Text slot="micro" tone="faint">页面</Text>}
                   onClick={() => { jumpAtom(a.kind, a.key, a.title, oquery.trim()); backToApp(); }}
-                  style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
-                >
-                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>{a.title}</span>
-                  <span style={{ fontSize: 12, opacity: 0.6, textShadow, flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{(a.group ? a.group + " · " : "") + (a.sub ?? "")}</span>
-                  <span style={{ fontSize: 11, opacity: 0.55 }}>页面</span>
-                </button>
+                />
               ))}
               {oresult.tabs.map((t) => (
-                <button
+                <Row
                   key={"t:" + t}
+                  size="sm"
+                  compact
+                  title={"设置 · " + t}
+                  trailing={<Text slot="micro" tone="faint">设置</Text>}
                   onClick={() => { jumpSettingsTab(t); backToApp(); }}
-                  style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "inherit", textAlign: "left", padding: "7px 4px", borderRadius: 8, cursor: "pointer", width: "100%" }}
-                >
-                  <span style={{ fontSize: 14.5, fontWeight: 500, textShadow }}>设置 · {t}</span>
-                  <span style={{ fontSize: 11, opacity: 0.55 }}>设置</span>
-                </button>
+                />
               ))}
             </div>
           )}
         </div>
       ) : (
       <>
-      <div ref={scroller} style={{ position: "relative", zIndex: 1, flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 14, paddingRight: 2 }}>
+      <div ref={scroller} style={{ position: "relative", zIndex: 1, flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--og-space-4)", paddingRight: "var(--og-geo-xs)", textShadow: "0 1px 6px var(--og-scrim)" }}>
         {msgs.map((m, i) => (
           <div
             key={i}
@@ -671,32 +654,33 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
               alignSelf: m.role === "user" ? "flex-end" : "flex-start",
               maxWidth: m.role === "user" ? "84%" : "94%",
               textAlign: m.role === "user" ? "right" : "left",
-              fontSize: 15, lineHeight: 1.62, whiteSpace: "pre-wrap", wordBreak: "break-word",
-              opacity: m.role === "user" ? 0.62 : 1,
-              fontStyle: m.role === "user" ? "normal" : "normal",
-              letterSpacing: 0.2, textShadow,
+              whiteSpace: "pre-wrap", wordBreak: "break-word",
             }}
           >
-            {m.role === "oh" ? (
-              <div className="dock-md">
-                <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage, a: MdLink }}>
-                  {m.text}
-                </Markdown>
-              </div>
-            ) : (
-              m.text
-            )}
+            {/* 直压玻璃的正文走 OG Text 字阶（subtitle 替旧 15px 自由值）；自己说的降一档
+                字色（旧 opacity .62 的"雾里半字"改成 content-2 语义档），不碰透明度。 */}
+            <Text as="div" slot="subtitle" tone={m.role === "user" ? "quiet" : "default"}>
+              {m.role === "oh" ? (
+                <div className="dock-md">
+                  <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage, a: MdLink }}>
+                    {m.text}
+                  </Markdown>
+                </div>
+              ) : (
+                m.text
+              )}
+            </Text>
           </div>
         ))}
         {typing ? (
-          <div style={{ alignSelf: "flex-start", fontSize: 14, opacity: 0.5, letterSpacing: 2, textShadow }}>
-            ···
+          <div style={{ alignSelf: "flex-start", letterSpacing: 2 }}>
+            <Text slot="body" tone="faint" as="div">···</Text>
           </div>
         ) : null}
       </div>
 
       {/* 需求 6：附件入口就在悬浮球打开后的这个位置（拍照 / 相册 / 上传，单张图片可先修一下再发） */}
-      <div style={{ position: "relative", zIndex: 1, marginTop: 8 }}>
+      <div style={{ position: "relative", zIndex: 1, marginTop: "var(--og-space-2)" }}>
         <AttachTray
           onPicked={async (files: AttachFile[]) => {
             const summary = files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、");
@@ -711,20 +695,16 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           e.preventDefault();
           void send(input);
         }}
-        style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}
+        style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: "var(--og-space-2)", marginTop: "var(--og-space-3)" }}
       >
-        <input
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onFocus={() => setTyping(false)}
-          placeholder="点击输入（可直接用系统听写说话）"
-          style={{
-            flex: 1, border: "none", outline: "none", background: "transparent",
-            color: "inherit", fontSize: 15, padding: "8px 2px", textShadow,
-            borderBottom: "1px solid color-mix(in srgb, var(--dsw-alias-border-l2, rgba(0,0,0,.18)) 70%, transparent)",
-          }}
-        />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <Input
+            value={input}
+            onChange={setInput}
+            onFocusChange={(on) => { if (on) setTyping(false); }}
+            placeholder="点击输入（可直接用系统听写说话）"
+          />
+        </div>
       </form>
       </>
       )}
@@ -744,6 +724,5 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         />
       ) : null}
       </div>
-    </>
   );
 });

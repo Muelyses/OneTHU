@@ -58,7 +58,9 @@ function load(): PenDoc {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const doc = sanitize(JSON.parse(raw));
-      /* 老键 → 系统板键：只在目标键还没有笔迹时改写（同一次会话里改了两次也不动它）。 */
+      /* 老键 → 系统板键：只在目标键还没有笔迹时改写（同一次会话里改了两次也不动它）。
+         目标键已有笔迹时（防御分支）旧键**原样留在盘上，只作审计/回退**——渲染只查 HOME_KEY，
+         所以那批笔画从此不会出现在画布上，这是刻意的：覆盖新笔迹比丢老笔迹更糟。 */
       const legacy = doc.boards[LEGACY_HOME_KEY];
       if (legacy && legacy.length > 0 && !doc.boards[HOME_KEY]) {
         const boards = { ...doc.boards, [HOME_KEY]: legacy };

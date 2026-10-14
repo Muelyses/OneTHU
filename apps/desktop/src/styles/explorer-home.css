@@ -223,6 +223,10 @@
   z-index: 30;
   pointer-events: none;
 }
+/* 居中修正：.home-chrome-layer 挂在 .explorer-content 内，而后者为侧栏让位有 margin-left，
+   于是钟/功能坞的"中心"恒等于「内容区中心」（偏右 116px），而顶栏/标签条是整窗居中（用户实测偏右）。
+   这里把让位量抵掉，让本层回到整窗坐标系；--ex-rail-w 由 explorer-ui.css 提供，兜底 232px。 */
+.home-chrome-layer { margin-left: calc(0px - var(--ex-rail-w, 232px)); }
 .home-chrome-layer .chrome-block { position: absolute; left: 0; right: 0; }
 .home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top) + 24px); }
 .home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 148px); }
@@ -329,7 +333,10 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 .board-fab-col {
   position: fixed;
   right: 18px;
-  bottom: 96px;
+  /* 钉在底部强制刷新钮（bottom:18px !important + 40px 高）正上方：
+     58 + 12 间距 + ➕46 + 8 间距 + ✏️40 = 164px 起算，底边 = 164px。
+     此前 96px 会与刷新钮重叠且随内容变化而"跑"（用户点名）。 */
+  bottom: 164px;
   z-index: 35;
   display: flex;
   flex-direction: column;
@@ -632,7 +639,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 .free-fab-col {
   position: fixed;
   right: 72px;
-  bottom: 96px;
+  bottom: 164px;   /* 与 .board-fab-col 同基线：始终叠在强制刷新钮之上（用户点名） */
   /* 必须高于画笔层（.freeboard .board-pen z 90）：笔开着时浮钮/色板才点得到，
      否则整个按钮区被画笔层吃掉、只能画画关不掉（2026-10-13 用户实测） */
   z-index: 95;
@@ -859,9 +866,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
    fill-regular 实感填充 + tint 渐变叠层 + menu blur + rim 三件套；「不要边框」的定稿
    升级为「要玻璃 rim」——rim 不是边框，是玻璃的顶光/发丝线。 */
 .hs-dock-row {
+  /* 与栏体同源：card-fill-2（档位令牌）+ 同一条 blur 令牌 + rim 三件套 —— 不再自成一份配方 */
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-regular);
+    var(--glass-card-fill-2);
+  backdrop-filter: var(--lg-blur-clear);
+  -webkit-backdrop-filter: var(--lg-blur-clear);
   border: 1px solid var(--glass-border);
   box-shadow:
     inset 0 1px 0 var(--glass-rim-top),

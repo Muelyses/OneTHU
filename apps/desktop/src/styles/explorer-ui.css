@@ -566,14 +566,14 @@
 .ex-tabstrip.is-vertical .ex-ws-band { display: flex; flex-direction: column; align-items: stretch; width: 100%; box-sizing: border-box; padding: 2px 4px 4px; }
 .ex-tabstrip.is-vertical .ex-ws-head { justify-content: space-between; }
 .ex-tabstrip.is-vertical .ex-ws-fold { flex: 1; min-width: 0; }
-.tabs-vertical .explorer-content { margin-left: 232px; padding-top: calc(var(--explorer-bar-h, 48px) + 12px); }
+.tabs-vertical .explorer-content { margin-left: 232px; --ex-rail-w: 232px; padding-top: calc(var(--explorer-bar-h, 48px) + 12px); }
 .ex-rail-actions { display: flex; justify-content: flex-end; gap: 6px; padding-top: 6px; padding-bottom: 8px; border-top: 1px solid var(--dsw-alias-border-l1, #eee); }
 .ex-layout-toggle { font-size: 12px; }
 
 /* ══════════ 竖版侧栏：完整 / 窄（缩略，悬停展开为完整） ══════════ */
 .ex-rail { transition: width 0.18s ease; }
 .tabs-vertical.rail-narrow .ex-rail { width: 56px; }
-.tabs-vertical.rail-narrow .explorer-content { margin-left: 56px; }
+.tabs-vertical.rail-narrow .explorer-content { margin-left: 56px; --ex-rail-w: 56px; }
 .tabs-vertical.rail-narrow .ex-rail:hover { width: 232px; z-index: 50; box-shadow: 6px 0 24px rgba(0, 0, 0, 0.14); }
 .tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab-title,
 .tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab-close,

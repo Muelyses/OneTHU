@@ -32,7 +32,17 @@
   gap: 8px;
   min-height: 46px;
   padding: 0 10px;
-  background: var(--surface);
+  /* 材质 = global.css「壳层玻璃收口」那一处；此处只兜底一份，避免像本轮这样被删空 */
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-card-fill-2);
+  backdrop-filter: var(--lg-blur-clear);
+  -webkit-backdrop-filter: var(--lg-blur-clear);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
   border-bottom: 1px solid var(--border);
   transition: box-shadow var(--dur-2, 0.2s) var(--ease-out, ease);
 }
@@ -300,7 +310,6 @@
   --md-sys-color-outline-variant: rgba(28, 31, 40, 0.16);
   --dsw-alias-label-primary: #1c1f28;
   --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
-  --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.1);
   --dsw-alias-bg-layer-2: rgba(28, 31, 40, 0.14);
   --md-sys-color-primary: #1c1f28;
   --hover: rgba(28, 31, 40, 0.07);
@@ -354,8 +363,9 @@
   --dsw-alias-label-primary: #f2f4f8;
   --dsw-alias-label-secondary: rgba(242, 244, 248, 0.8);
   --md-sys-color-primary: #f2f4f8;
-  --glass-fill: rgba(21, 23, 31, 0.44);
-  --glass-fill-regular: rgba(21, 23, 31, 0.44);
+  /* 引用档位令牌，不写死 —— 此前写死 .44 导致程序坞在 clear/rich/deep 档下不跟档（用户点名的「独树一帜」第二根因） */
+  --glass-fill: var(--glass-card-fill-2);
+  --glass-fill-regular: var(--glass-card-fill-2);
   --border: rgba(255, 255, 255, 0.16);
   --hover: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.14);
@@ -372,8 +382,8 @@
   --dsw-alias-label-primary: #1c1f28;
   --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
   --md-sys-color-primary: #1c1f28;
-  --glass-fill: rgba(252, 253, 255, 0.44);
-  --glass-fill-regular: rgba(252, 253, 255, 0.44);
+  --glass-fill: var(--glass-card-fill-2);
+  --glass-fill-regular: var(--glass-card-fill-2);
   --border: rgba(28, 31, 40, 0.16);
   --hover: rgba(28, 31, 40, 0.07);
   --glass-border: rgba(28, 31, 40, 0.12);

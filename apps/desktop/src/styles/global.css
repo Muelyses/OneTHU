@@ -8341,6 +8341,27 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
+/* ── 壳层玻璃收口（2026-10-14）：栏体 = 一处配方，全站引用 ──────────────
+   此前顶栏/竖栏/底栏/首页程序坞各写一份 material（blur 与 rim 各不相同，实测 6/12/14/20/22px 五种），
+   是「同一屏上几种质感」的结构性根因。现在只在这里写一次，各文件的材质声明已撤除。
+   注意：本块在 handout 之前，后续文件的同名属性会覆盖它 —— 新增栏体务必引用本块令牌，不要再手写 material。 */
+.explorer-topbar,
+.ex-rail,
+.ex-bbar,
+.ex-mobile-strip,
+.hs-dock-row {
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-card-fill-2);
+  backdrop-filter: var(--lg-blur-clear);
+  -webkit-backdrop-filter: var(--lg-blur-clear);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline),
+    inset 0 -1px 0 var(--glass-rim-bottom);
+}
+
 /* ── 玻璃只算一层（2026-10-14 统一收口，从 explorer.css 归并进单一玻璃源）──
    玻璃卡（free-item/home-card/card）内部的次级卡与直达 widget 卡（.hw-card/.balance-strip
    等）一律透明——0.72×0.66 的旧嵌套实测把卡糊成纸白；材质由最外层玻璃板一层提供。
@@ -8360,7 +8381,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
    三档材质沿用既有口径；原规则一律不动（card-layers 等护栏读的是首个规则块），这里后置覆盖：
    · menu tier（浮层面板）＝ menu-fill + menu-blur(22) + rim 三件套——浮在任意内容上必须可读
    · chip tier（悬浮控件/可点小件）＝ tint 渐变 + chip-blur(6) + rim-top
-   · panel-lite（常驻卡面）＝ tint 渐变 + panel-blur(6) + rim 三件套
+   · panel-lite（常驻卡面）＝ tint 渐变 + panel-blur(20) + rim 三件套
    成群小件（课表课程格等）沿用「预算外」定稿：只上 tint + rim，不加 blur。 */
 
 /* ---- 点名 1：其他 Info 应用入口卡 = panel-lite（hover 反馈仍走共享状态层，不换底色） ----

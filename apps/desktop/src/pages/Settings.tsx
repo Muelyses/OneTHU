@@ -1453,26 +1453,22 @@ function DownloadSettings() {
     <>
       <SectionHead title="下载" />
       <Card>
-        <div className="setting-row" style={{ flexWrap: "wrap" }}>
-          <div style={{ flex: "1 1 240px", minWidth: 0 }}>
-            <div className="setting-title">下载位置</div>
-            <div className="setting-desc" style={{ overflowWrap: "anywhere" }}>
+        <SettingsRow
+          title="下载位置"
+          sub={
+            <>
               {loading ? "正在读取…" : directory?.path || "下载位置读取失败，请重新选择文件夹或恢复默认。"}
-            </div>
-            <div className="setting-desc">
-              网络学堂附件与云盘文件将保存到这里，已下载的文件不会移动；单个文件也可以用「另存为」临时挑别处。
-            </div>
-            {message ? (
-              <div role="status" style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)", overflowWrap: "anywhere" }}>{message}</div>
-            ) : null}
-          </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <Btn variant="outline" disabled={loading || busy} onClick={() => void changeDirectory(false)}>选择文件夹
-            </Btn>
-            <Btn variant="outline" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>恢复默认
-            </Btn>
-          </div>
-        </div>
+              <OGText slot="label" tone="faint">网络学堂附件与云盘文件将保存到这里，已下载的文件不会移动；单个文件也可以用「另存为」临时挑别处。</OGText>
+              {message ? <OGText slot="label" tone="quiet" as="span">{message}</OGText> : null}
+            </>
+          }
+          control={
+            <>
+              <Btn variant="outline" size="sm" disabled={loading || busy} onClick={() => void changeDirectory(false)}>选择文件夹</Btn>
+              <Btn variant="outline" size="sm" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>恢复默认</Btn>
+            </>
+          }
+        />
       </Card>
     </>
   );

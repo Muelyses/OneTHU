@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * 旧首页自由板键 → 系统板 的**迁移守栏**（2026-10-15，oh-wire）。
+ * **旧键迁移守栏**（2026-10-15，oh-wire）：首页自由板键 → 系统板；画笔旧键 → 系统板笔键。
+ * 两份都是"升级路径的一次性数据手术"，坏一次就是用户摆位/手写批注再也回不来，所以都要守。
+ * （画笔那份是 board-rig 用真浏览器一次性取证过的，但一次性取证会随代码漂移失效——
+ *   这里把它固化成守栏：真模块 + 真 localStorage + 严格对齐真 schema，不造桩 schema。）
  *
  * 为什么有这条：`onethu.freeboard.home.v1`（旧首页自由板）只读一次并进系统板，标志位
  * `onethu.freeboard.merged.v1`。这是一次性**数据手术**：跑错一次就是用户摆位错乱/卡片复活/长双份，
@@ -11,6 +14,8 @@
  *   malformed 旧键是坏 JSON；v2 旧键版本不符 → 一条不并、原板不动、照样写标志位（不反复重试）
  *   defense   板里**已有 px 条目** → 整条防御：旧键一律不并
  *   idem      重复读不重复并；标志位丢失后重跑也不长双份（防御兜住）
+ *   pen-migrate / pen-both / pen-none / pen-junk / pen-empty
+ *             画笔 `onethu.board.pen.v1`：旧键 `free:home|default` → `board.today|portrait`
  *
  * 跑法：node --import ./tools/ts-resolve-register.mjs tools/board-legacy-merge-test.mjs
  *   （父进程按场景 spawn 自己；每个场景独立进程——freeBoard 的"只并一次"是模块级状态，
@@ -21,6 +26,53 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const SCENARIO = process.argv[2] ?? "";
+
+if (SCENARIO.startsWith("pen-")) {
+  /* ── 子进程模式：画笔旧键迁移（boardPen 的 load() 跑在模块顶层，必须先种存储再 import） ── */
+  const KEY = "onethu.board.pen.v1";
+  const stroke = (id) => ({ id, color: "#f00", w: 2, pts: [10, 20, 30, 40] }); /* 真 schema：pts 扁平千分比点集 */
+  const seed = (raw) => { if (raw === null) globalThis.localStorage.removeItem(KEY); else globalThis.localStorage.setItem(KEY, raw); };
+  if (SCENARIO === "pen-migrate") seed(JSON.stringify({ v: 1, boards: { "free:home|default": [stroke("s1"), stroke("s2")] } }));
+  if (SCENARIO === "pen-both") seed(JSON.stringify({ v: 1, boards: { "free:home|default": [stroke("old")], "board.today|portrait": [stroke("new")] } }));
+  if (SCENARIO === "pen-none") seed(null);
+  if (SCENARIO === "pen-junk") seed(JSON.stringify({ v: 1, boards: { "free:home|default": ["垃圾", { id: "坏点集", pts: [1] }], "board.today|portrait": [stroke("keep")] } }));
+  if (SCENARIO === "pen-empty") seed(JSON.stringify({ v: 1, boards: { "free:home|default": [] } }));
+
+  const pen = await import("../apps/desktop/src/state/boardPen.ts");
+  const fails = [];
+  const ok = (c, m) => { if (c) console.log("  ✓ " + m); else fails.push(m); };
+  const stored = () => JSON.parse(globalThis.localStorage.getItem(KEY) ?? '{"v":1,"boards":{}}').boards;
+  const keys = (o) => Object.keys(o).sort().join(",");
+  const doc = pen.penSnapshot();
+  console.log(`—— ${SCENARIO}：内存键 [${keys(doc.boards)}] / 存储键 [${keys(stored())}]`);
+
+  if (SCENARIO === "pen-migrate") {
+    ok(keys(doc.boards) === "board.today|portrait", "内存：旧键 → 系统板键");
+    ok((doc.boards["board.today|portrait"] ?? []).length === 2, "两条笔画都搬过去（老用户的手写批注不能丢）");
+    ok(keys(stored()) === "board.today|portrait", "**已落盘**（不是只在内存里搬）");
+    ok(pen.strokesOf(pen.penKeyOf("board.today", "portrait")).length === 2, "按新键取得到（渲染路径同键）");
+    ok(pen.strokesOf("free:home|default").length === 0, "旧键取不到东西了");
+    ok(keys(stored()) === "board.today|portrait", "再读一次不复制不回落（幂等）");
+  }
+  if (SCENARIO === "pen-both") {
+    ok(keys(doc.boards) === "board.today|portrait,free:home|default", "两边都有笔迹：旧键原样留着、不合并（覆盖新笔迹比留老笔迹更糟）");
+    ok((doc.boards["board.today|portrait"] ?? []).length === 1, "新键不被覆盖");
+    ok((doc.boards["free:home|default"] ?? []).length === 1, "旧键不被删（盘上留作审计/回退）");
+  }
+  if (SCENARIO === "pen-none") ok(keys(doc.boards) === "" && keys(stored()) === "", "没有旧键时不造键（新用户干净）");
+  if (SCENARIO === "pen-junk") {
+    ok(keys(doc.boards) === "board.today|portrait", "旧键里全是垃圾：sanitize 先挡住 → 不搬进新键、也不平白造键");
+    ok((doc.boards["board.today|portrait"] ?? []).length === 1, "新键的笔迹保留");
+  }
+  if (SCENARIO === "pen-empty") {
+    ok(keys(doc.boards) === "", "空旧键不触发迁移（sanitize 丢掉空数组，内存不留键）");
+    ok(keys(stored()) === "free:home|default", "存储里的空旧键不清理（无害残留，不写盘）");
+  }
+
+  console.log(fails.length ? `✗ ${SCENARIO} ${fails.length} 项失败` : `✅ ${SCENARIO} 通过`);
+  for (const f of fails) console.error("   ✗ " + f);
+  process.exit(fails.length ? 1 : 0);
+}
 
 if (SCENARIO) {
   /* ── 子进程模式：跑一个场景 ── */
@@ -109,7 +161,7 @@ if (SCENARIO) {
 
 /* ── 父进程模式：逐场景 spawn 自己（模块级"只并一次"状态必须隔离） ── */
 const self = fileURLToPath(import.meta.url);
-const scenarios = ["dup", "malformed", "v2", "defense", "idem"];
+const scenarios = ["dup", "malformed", "v2", "defense", "idem", "pen-migrate", "pen-both", "pen-none", "pen-junk", "pen-empty"];
 let bad = 0;
 for (const sc of scenarios) {
   try {
@@ -121,5 +173,5 @@ for (const sc of scenarios) {
     console.error(`✗ 场景 ${sc} 失败（exit ${e.status}）`);
   }
 }
-console.log(bad ? `\n✗ 旧键迁移守栏：${bad}/${scenarios.length} 个场景失败` : `\n✅ 旧键迁移守栏：${scenarios.length} 个场景全绿（脏数据口径）`);
+console.log(bad ? `\n✗ 旧键迁移守栏：${bad}/${scenarios.length} 个场景失败` : `\n✅ 旧键迁移守栏：${scenarios.length} 个场景全绿（首页自由板 5 + 画笔 5；脏数据口径）`);
 process.exit(bad ? 1 : 0);

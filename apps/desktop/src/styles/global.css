@@ -8186,10 +8186,13 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
      现在全部走这几个令牌，改一处即全站一致。 */
   --ctl-size: 44px;
   --ctl-radius: 50%;
-  /* --ctl-bg 就是「强制刷新钮的填充」：原声明是 surface-container-lowest，而各圆钮用 --surface，
-     两者在不同上下文会解析成不同值 → 四个钮永远差一点。现统一到 --surface（档位令牌）：
-     它随四档走（clear .30 / 均衡 .44 / rich .60 / deep .74），且与卡片、栏体同族。 */
-  --ctl-bg: var(--surface);
+  /* 控件填充 = 用户点名的「强制刷新钮材质」：20% 白（很透）。
+     依据：用截图实测反解——画布底 (115,128,146) 上，
+       20% 白 → (143,153,168)，与刷新钮实测 (124.8,146.7,149.3)/lum142 吻合；
+       44% 白 → ➕(186)，74% → 程序坞小球(205)。
+     密诀不是"更白"，而是**更透**：透出深色壁纸后，钮会自然变深、有玻璃感；
+     厚白填充（.44/.74）把壁纸盖住才发闷发白。四个钮 100% 共用本令牌，改一处全站一致。 */
+  --ctl-bg: rgba(255, 255, 255, 0.2);
   --ctl-border: 1px solid var(--border);
   --ctl-fg: var(--text-2);
   --ctl-shadow: var(--md-sys-elevation-2, 0 2px 10px rgba(0, 0, 0, 0.14));

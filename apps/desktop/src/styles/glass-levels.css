@@ -26,7 +26,7 @@ html[data-glass="clear"][data-scheme="dark"] {
   --surface-3: rgba(26, 26, 32, 0.06);
   --dsw-alias-bg-base: rgba(18, 19, 24, 0.4);
   --glass-fill: rgba(255, 255, 255, 0.06);
-  --glass-fill-regular: rgba(30, 30, 36, 0.06);
+  --glass-fill-regular: rgba(255, 255, 255, 0.06); /* 与家族同色：此前 30,30,36 近黑会让底栏/首页卡在深色下变暗 */
   --glass-tint: rgba(255, 255, 255, 0.04);
   --glass-menu-fill: rgba(22, 22, 27, 0.06);
   --glass-card-fill: rgba(255, 255, 255, 0.06);
@@ -62,7 +62,7 @@ html[data-glass="rich"][data-scheme="dark"] {
   --surface-3: rgba(26, 26, 32, 0.14);
   --dsw-alias-bg-base: rgba(18, 19, 24, 0.6);
   --glass-fill: rgba(255, 255, 255, 0.14);
-  --glass-fill-regular: rgba(30, 30, 36, 0.14);
+  --glass-fill-regular: rgba(255, 255, 255, 0.14);
   --glass-tint: rgba(255, 255, 255, 0.08);
   --glass-menu-fill: rgba(22, 22, 27, 0.14);
   --glass-card-fill: rgba(255, 255, 255, 0.14);
@@ -98,7 +98,7 @@ html[data-glass="deep"][data-scheme="dark"] {
   --surface-3: rgba(26, 26, 32, 0.20);
   --dsw-alias-bg-base: rgba(18, 19, 24, 0.78);
   --glass-fill: rgba(255, 255, 255, 0.20);
-  --glass-fill-regular: rgba(30, 30, 36, 0.20);
+  --glass-fill-regular: rgba(255, 255, 255, 0.20);
   --glass-tint: rgba(255, 255, 255, 0.1);
   --glass-menu-fill: rgba(22, 22, 27, 0.20);
   --glass-card-fill: rgba(255, 255, 255, 0.20);

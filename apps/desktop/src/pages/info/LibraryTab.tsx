@@ -22,8 +22,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { LibBookRecord, Library, LibraryFloor, LibrarySeat, LibrarySection } from "@onethu/core";
 import { infoUrls, isAuthError } from "@onethu/core";
 import {
-  Banner, Btn, Card, EmptyState, Field, Grow, IconPlug, Inline, List, LoadingBlock, Row, Section,
-  Select, Stack, Surface, Tag, Text,
+  Banner, Btn, Card, EmptyState, Field, IconPlug, Inline, List, LoadingBlock, Row, Section,
+  Select, Spacer, Stack, Surface, Tag, Text,
 } from "@onethu/gui";
 import { CollectStar } from "../../components/Collect.js";
 import { SearchSelect } from "../../components/SearchSelect.jsx";
@@ -581,9 +581,10 @@ export function LibraryTab({
       {libState === "loading" && !libs ? <LoadingBlock rows={2} /> : null}
 
       {libs && libs.length > 0 ? (
-        <Inline gap={2} wrap>
-          <Grow>
-            <Field label="馆">
+        /* 筛选条收紧（用户点名 2026-10-14）：馆/楼层/区域走自然宽度紧凑成排（星贴各自下拉），
+           不再用 Grow 把每格铺满 1/3 窗宽留出大空档；只有日期用 Spacer 推到行尾。 */
+        <Inline gap={3} wrap vAlign="end">
+          <Field label="馆">
               <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={libId != null ? String(libId) : ""}
@@ -603,9 +604,7 @@ export function LibraryTab({
                 ) : null}
               </Inline>
             </Field>
-          </Grow>
-          <Grow>
-            <Field label="楼层">
+          <Field label="楼层">
               <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={floorId != null ? String(floorId) : ""}
@@ -626,9 +625,7 @@ export function LibraryTab({
                 ) : null}
               </Inline>
             </Field>
-          </Grow>
-          <Grow>
-            <Field label="区域">
+          <Field label="区域">
               <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={sectionId != null ? String(sectionId) : ""}
@@ -659,7 +656,7 @@ export function LibraryTab({
                 ) : null}
               </Inline>
             </Field>
-          </Grow>
+          <Spacer />
           <Field label="日期">
             <Select
               aria-label="日期"

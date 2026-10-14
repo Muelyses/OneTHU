@@ -585,14 +585,15 @@ export function LibRoomTab({
     [resources, filterValid, day.iso, filterBeg, filterEnd],
   );
 
-  const pickRoom = (res: LibRoomRes): void => {
+  const pickRoom = (res: LibRoomRes, preferredBeg?: string): void => {
     setBookError(null);
     setPendingEmail(null);
     setNotice(null);
     setTarget({
       res,
       day,
-      preferredBeg: filterValid ? filterBeg : undefined,
+      /* 点列表上某个绿格发起：优先用被点的那格当开始时刻；否则用全局时间筛选 */
+      preferredBeg: preferredBeg ?? (filterValid ? filterBeg : undefined),
       preferredEnd: filterValid ? filterEnd : undefined,
     });
   };
@@ -608,10 +609,9 @@ export function LibRoomTab({
         setBookError("研讨间账号信息缺失（accNo），请重试");
         return;
       }
-      if (t.res.minUser > 1) {
-        setBookError(`该房间需 ${t.res.minUser}~${t.res.maxUser} 人成组，本应用暂不支持添加成员，请到图书馆研讨间系统网页端预约`);
-        return;
-      }
+      /* 不再因 minUser>1 硬性阻断（用户点名「红色绿色的都不让预约」）：
+         以仅本人（accNo）先按后端真实规则提交——馆方若要求成组人数会明确拒绝，
+         那时把后端原话交给用户并指路网页端加成员；馆方放行就按用户的选择预约成功。 */
       setBusy(true);
       setBookError(null);
       try {
@@ -641,7 +641,13 @@ export function LibRoomTab({
           setBookError("首次预约需绑定邮箱地址（未能自动获取邮箱），请先在图书馆研讨间系统网页端绑定后重试");
           return;
         }
-        setBookError(explainNetworkError(err));
+        const explained = explainNetworkError(err);
+        /* 后端按成组规则拒绝（人数/成员不足）：原话照给 + 指路网页端加成员 */
+        setBookError(
+          /人数|成员|成组/.test(explained) && t.res.minUser > 1
+            ? `${explained}（本应用仅以本人提交；该房间要求 ${t.res.minUser}~${t.res.maxUser} 人成组，请到图书馆研讨间系统网页端添加成员后预约）`
+            : explained,
+        );
       } finally {
         setBusy(false);
       }
@@ -848,9 +854,14 @@ export function LibRoomTab({
                       </Btn>
                     }
                   >
-                    {/* 逐格三态：明确列出被占时段（红=已被占 / 绿=可约 / 灰=不可选），
-                        原顶部精确段条信息由本格与会话注释全量承载 */}
-                    <SlotGrid slots={roomSlots(r, day.iso)} res={r} />
+                    {/* 逐格三态：明确列出被占时段（红=已被占 / 绿=可约 / 灰=不可选）。
+                        绿格直接可点：点任何一段「可约」即以该格为开始时刻发起预约
+                        （用户点名「红色绿色的都不让我选择预约」——绿格原先整排只读）。 */}
+                    <SlotGrid
+                      slots={roomSlots(r, day.iso)}
+                      res={r}
+                      onPickFree={(sl) => pickRoom(r, sl.start)}
+                    />
                   </Row>
                 ))}
               </List>
@@ -888,7 +899,8 @@ export function LibRoomTab({
               点「可约」格改选开始时刻；结束时刻在下方选择器微调（须满足单次 {target.res.minMinute}~{target.res.maxMinute} 分钟）。
             </Text>
             <Inline gap={2} wrap vAlign="end">
-              <Field label="开始">
+              {/* 两个时段选择并排各占半行（Grow），不再各霸一行 */}
+              <Grow><Field label="开始">
                 <SearchSelect
                   value={beg}
                   onChange={setBeg}
@@ -896,8 +908,8 @@ export function LibRoomTab({
                   disabled={begins.length === 0}
                   options={begins.map((b) => ({ value: b.start, label: b.start }))}
                 />
-              </Field>
-              <Field label="结束">
+              </Field></Grow>
+              <Grow><Field label="结束">
                 <SearchSelect
                   value={end}
                   onChange={setEnd}
@@ -905,8 +917,7 @@ export function LibRoomTab({
                   disabled={ends.length === 0}
                   options={ends.map((p2) => ({ value: p2.start, label: p2.start }))}
                 />
-              </Field>
-              <Spacer />
+              </Field></Grow>
               <Btn
                 variant="solid"
                 tone="brand"
@@ -922,7 +933,7 @@ export function LibRoomTab({
             <Text slot="label" tone="quiet">
               成员：本人（accNo {info.getLibRoomAccNo() ?? "–"}）。
               {target.res.minUser > 1
-                ? ` 该房间需 ${target.res.minUser}~${target.res.maxUser} 人成组，本应用暂不支持添加成员，请到图书馆研讨间系统网页端预约。`
+                ? ` 该房间标称需 ${target.res.minUser}~${target.res.maxUser} 人成组：应用会先以仅本人提交，馆方若拒绝会给出原话，届时请到研讨间系统网页端添加成员。`
                 : ` 单次可约 ${target.res.minMinute}~${target.res.maxMinute} 分钟，5 分钟粒度。`}
             </Text>
           </Stack>

@@ -182,3 +182,122 @@ html:root {
   --md-sys-typescale-label: var(--og-text-label);
   --md-sys-typescale-label-medium-size: var(--og-text-label);
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+ * 小控件族收口（TEMP）：全站 30 个私有小按钮/胶囊/FAB 类名 → OneGUI 的三种模型
+ *
+ * 现状（用户点名的"细节处小按钮太多、程序坞那两个钮不在调子"）：
+ *   .icon-btn .chip-btn .dock-btn .ex-bbar-btn .ex-btn .hs-dock-btn .hs-detail-btn
+ *   .dl-open-btn .fav-tile-btn .filter-dd-btn .heb-btn .ykt-ext-btn .ykt-img-btn
+ *   .gitlab-code-btn .plg-repo-btn .course-card-btn .collect-new-btn .home-entry-btn …
+ * 每个都有自己的高度/圆角/底色/hover。这里统一到：
+ *   ① 图标按钮 = Btn ghost md       ② 胶囊 = Chip        ③ 浮动钮 = IconBtn/Fab
+ * 只改"外观属性"（尺寸/圆角/底色/描边/字阶/状态层），不动各族的定位与布局 ——
+ * 于是程序坞按钮、页内小操作、市场按钮在视觉上是同一族，而页面结构不用改。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+html:root :is(
+  .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
+  .dl-open-btn, .fav-tile-btn, .filter-dd-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
+  .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-1);
+  min-height: var(--og-ctl-h-md);
+  padding: 0 var(--og-ctl-pad-x-sm);
+  border: 1px solid transparent;
+  border-radius: var(--og-radius-md);
+  background-color: transparent;
+  background-image: none;
+  color: var(--og-content-2);
+  font-size: var(--og-text-label);
+  font-weight: var(--og-weight-medium);
+  line-height: 1;
+  box-shadow: none;
+  backdrop-filter: none;
+  transition:
+    background-color var(--og-dur-1) var(--og-ease-standard),
+    border-color var(--og-dur-1) var(--og-ease-standard),
+    color var(--og-dur-1) var(--og-ease-standard);
+}
+
+@media (hover: hover) {
+  html:root :is(
+    .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
+    .dl-open-btn, .fav-tile-btn, .filter-dd-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
+    .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
+  ):hover {
+    background-color: var(--og-hover);
+    color: var(--og-content-1);
+  }
+}
+
+html:root :is(
+  .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
+  .dl-open-btn, .fav-tile-btn, .filter-dd-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
+  .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
+):active {
+  background-color: var(--og-press);
+}
+
+/* 方形图标钮：宽高相等（圆钮族由 .round 或 FAB 族承担） */
+html:root :is(.icon-btn, .hs-dock-btn, .hs-detail-btn, .ykt-img-btn, .dl-open-btn) {
+  min-width: var(--og-ctl-h-md);
+  padding: 0;
+}
+
+/* ② 胶囊族 */
+html:root :is(.chip-btn, .dock-chip, .home-resume-chip, .live-chip, .ohx-chip, .today-quick-chip, .gitlab-chip, .wall-chip, .seg-pill) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-1);
+  height: var(--og-ctl-chip-h-md);
+  min-height: var(--og-ctl-chip-h-md);
+  padding: 0 var(--og-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--og-radius-full);
+  background-color: var(--og-surface-3);
+  background-image: none;
+  color: var(--og-content-2);
+  font-size: var(--og-text-label);
+  font-weight: var(--og-weight-medium);
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  html:root :is(.chip-btn, .dock-chip, .home-resume-chip, .live-chip, .ohx-chip, .today-quick-chip, .gitlab-chip, .wall-chip, .seg-pill):hover {
+    background-color: var(--og-surface-4);
+    color: var(--og-content-1);
+  }
+}
+
+/* ③ 浮动动作钮（程序坞旁那两个小钮、白板 ➕、强制刷新）：同一模型同一材质 */
+html:root :is(.board-fab, .free-fab, .hard-refresh-fab, .top-fab) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-2);
+  height: calc(var(--og-ctl-h-lg) + var(--og-space-3));
+  min-width: calc(var(--og-ctl-h-lg) + var(--og-space-3));
+  padding: 0 var(--og-space-3);
+  border: 1px solid var(--og-line-1);
+  border-radius: var(--og-radius-full);
+  background-color: var(--og-surface-1);
+  background-image: var(--og-surface-tint);
+  color: var(--og-content-1);
+  font-size: var(--og-text-label);
+  font-weight: var(--og-weight-medium);
+  box-shadow: var(--og-elev-2);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+  transition: box-shadow var(--og-dur-2) var(--og-ease-standard), background-color var(--og-dur-1) var(--og-ease-standard);
+}
+
+@media (hover: hover) {
+  html:root :is(.board-fab, .free-fab, .hard-refresh-fab, .top-fab):hover {
+    box-shadow: var(--og-elev-3);
+  }
+}

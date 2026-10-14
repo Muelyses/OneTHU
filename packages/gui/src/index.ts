@@ -26,6 +26,16 @@ export type { OneBase, OGSize, OGTone, OGEmphasis, OGLevel } from "./components/
 
 /* ── 组件 ── */
 export {
+  Avatar, Tile, StatTile, Table, Accordion, AccordionItem, Progress, Ring, Skeleton, Spinner,
+  Timeline, Breadcrumb, Pagination, CodeBlock,
+} from "./components/display.js";
+export type {
+  AvatarProps, AvatarTone, TileProps, StatTileProps, TableProps, TableColumn, AccordionProps,
+  AccordionItemProps, ProgressProps, RingProps, SkeletonProps, SkeletonSize, SpinnerProps,
+  TimelineItem, BreadcrumbProps, PaginationProps, CodeBlockProps,
+} from "./components/display.js";
+
+export {
   Page, PageHead, Toolbar, SettingsList, SettingsRow, Tabs, VerticalTabs, Segment, Banner, SectionCard,
   LoadingBlock, DataList, DataRow,
 } from "./components/patterns.js";

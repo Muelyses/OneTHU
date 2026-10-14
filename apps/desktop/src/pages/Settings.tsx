@@ -1,3 +1,4 @@
+import { Text as OGText } from "@onethu/gui";
 import { SettingsRow } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 import { TextArea } from "@onethu/gui";

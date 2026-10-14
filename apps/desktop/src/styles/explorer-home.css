@@ -669,14 +669,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 .free-fab:hover { transform: scale(1.06); color: var(--text-1); }
 .free-fab.is-on { color: var(--accent); border-color: var(--accent-border, var(--border)); background: var(--accent-soft, var(--surface)); }
 .free-pen-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md, 12px);
-  background: var(--surface);
-  box-shadow: var(--ctl-shadow);   /* 统一到强制刷新钮同款投影（此前各自写死一层 rgba） */
+  /* 控件基准（用户点名模仿强制刷新钮）：实底 + 细描边 + 同款投影 */
+  background: var(--ctl-bg);
+  border: var(--ctl-border);
+  box-shadow: var(--ctl-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .free-pen-panel input[type="color"] {
   width: 100%;
@@ -766,9 +764,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 .hs-logo,
 .hs-dock-btn,
 .hs-detail-btn,
-.hs-close,
-.free-fab,
-.free-pen-panel {
+.hs-close {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   backdrop-filter: var(--glass-chip-blur);
   -webkit-backdrop-filter: var(--glass-chip-blur);
@@ -839,13 +835,11 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 .free-usergen p { margin: 0 0 8px; }
 .free-usergen a { color: var(--accent); }
 
-/* ═══ 液态玻璃 v4.2 收尾（explorer-home 域：本文件在导入序最后，可压住上文旧底） ═══ */
+/* ═══ 液态玻璃 v4.2 收尾（explorer-home 域：本文件在导入序最后，可压住上文旧底） ═══
+   2026-10-14 用户点名「模仿强制刷新钮」：本块原本用 tint 渐变 + chip blur + rim 把
+   .board-fab 的基准材质整块盖掉（同特异度、后到者胜），现改为只补基准缺的投影。 */
 .board-fab {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
-  border-color: var(--glass-border);
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top);
+  box-shadow: var(--ctl-shadow);
 }
 .free-toolbar {
   background: var(--glass-menu-fill);
@@ -884,11 +878,9 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 
 /* ═══ 液态玻璃 v4.3 收尾（explorer-home 域）：首页浮件全进玻璃 ═══ */
 
-/* 假搜索胶囊 / 续听 chip / 浮钮 = chip tier */
+/* 假搜索胶囊 / 续听 chip = chip tier（.board-fab/.free-fab 已改走控件基准，从本组摘除） */
 .home-searchbar,
-.home-resume-chip,
-.board-fab,
-.free-fab {
+.home-resume-chip {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
   border-color: var(--glass-border);
   backdrop-filter: var(--glass-chip-blur);
@@ -897,10 +889,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 }
 .board-fab.is-on,
 .free-fab.is-on {
+  /* 选中态：主题色 tint 叠在控件实底上（与基准同底，不换成档位填充族） */
   background: linear-gradient(180deg,
     color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent),
     color-mix(in srgb, var(--md-sys-color-primary) 6%, transparent)),
-    var(--glass-fill-regular);
+    var(--ctl-bg);
+  border-color: var(--accent-border, var(--border));
 }
 
 /* 更多功能 / 添加组件小窗 = menu tier（浮在任意内容上必须可读） */

@@ -133,10 +133,13 @@ function seatTip(s: LibrarySeat, usable: boolean): string {
 function SeatCell({
   seat,
   busy,
+  picked,
   onPick,
 }: {
   seat: LibrarySeat;
   busy: boolean;
+  /** 待确认预约中的座位：tonal 选中态（外圈 outline）圈出来，不然用户找不到自己点了哪格 */
+  picked?: boolean;
   onPick: (s: LibrarySeat) => void;
 }) {
   const usable = seat.availability === "usable" && seat.valid;
@@ -155,6 +158,7 @@ function SeatCell({
       size="md"
       titleAttr={seatTip(seat, true)}
       disabled={busy}
+      selected={picked || undefined}
       iconRight={power}
       onClick={() => onPick(seat)}
     >
@@ -741,7 +745,7 @@ export function LibraryTab({
             {/* 座位网格：flex-wrap，窄窗口自动换行不横向溢出 */}
             <Inline gap={1} wrap>
               {gridSeats.map((s) => (
-                <SeatCell key={s.id} seat={s} busy={busySeat !== null} onPick={pickSeat} />
+                <SeatCell key={s.id} seat={s} busy={busySeat !== null} picked={pendingSeat?.id === s.id} onPick={pickSeat} />
               ))}
             </Inline>
           </Stack>

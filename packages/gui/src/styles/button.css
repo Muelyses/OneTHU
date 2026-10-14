@@ -219,6 +219,14 @@
   border-color: var(--og-accent-soft-line);
 }
 
+/* 选中态外圈（用户点名 2026-10-14：研讨间/座位/场馆格选中「有点难以发现」）：
+   tonal 格的同色填充太含蓄，外面补一圈强调色 outline（不入布局、贴半径）。
+   只限 tonal——Row/Surface/Chip 的选中态本来就是明确的选中表达，不叠圈。 */
+.og-btn--tonal.is-selected {
+  outline: var(--og-ring-width) solid var(--og-accent);
+  outline-offset: calc(var(--og-ring-width) / 2);
+}
+
 /* ── 部件 ── */
 .og-btn-icon {
   display: inline-flex;

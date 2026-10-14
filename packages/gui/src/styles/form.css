@@ -182,11 +182,33 @@ textarea.og-input-el {
    为基准尺寸 → 逢行必独占一行（日程快跳/研讨间预约面板实测，用户点名「一个占一行极其浪费」）；
    本体 .og-select-el 本就是自然宽，fit-content 只改流动行为，不改变本体大小。 */
 .og-select { position: relative; width: fit-content; max-width: 100%; }
+/* 控制面全接管（用户点名透明选择框：appearance:none 剥掉原生脸后，gui 本尊没给面/线，
+   只有恰好躺在 app .field 规则里的实例才有框——其余场景全是透明裸框）。
+   与 .og-input 同一令牌口径：surface-1 填、line-2 线、聚焦 accent rim。 */
 .og-select-el {
   appearance: none;
   cursor: pointer;
-  padding-right: var(--og-space-5);
+  display: inline-block;
+  height: var(--og-ctl-h-md);
+  padding: 0 calc(var(--og-space-5) + var(--og-ctl-pad-x-sm)) 0 var(--og-ctl-pad-x-md);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-md);
+  background: var(--og-surface-1);
+  color: var(--og-content-1);
+  font-family: inherit;
+  font-size: var(--og-text-body);
+  transition:
+    border-color var(--og-dur-1) var(--og-ease-standard),
+    box-shadow var(--og-dur-2) var(--og-ease-standard),
+    background-color var(--og-dur-1) var(--og-ease-standard);
 }
+.og-select-el:hover { border-color: var(--og-line-3); }
+.og-select-el:focus-visible {
+  outline: none;
+  border-color: var(--og-accent);
+  box-shadow: 0 0 0 var(--og-ring-width) var(--og-accent-soft);
+}
+.og-select-el:disabled { cursor: not-allowed; opacity: var(--og-disabled-opacity); }
 .og-select-caret {
   position: absolute;
   right: var(--og-ctl-pad-x-sm);

@@ -2455,7 +2455,7 @@ select.input:focus {
 .slot-cell:disabled { cursor: not-allowed; }
 .slot-cell.taken { background: var(--surface-3, rgba(0, 0, 0, 0.05)); color: var(--text-3, #999); }
 .slot-cell.occ { background: var(--red-soft, rgba(239, 68, 68, 0.1)); color: var(--red, #dc2626); cursor: not-allowed; }
-.slot-cell.picked { background: var(--accent, #16a34a); color: var(--md-sys-color-on-primary); }
+.slot-cell.picked { background: var(--accent, #16a34a); color: var(--md-sys-color-on-primary); outline: 2px solid var(--accent); outline-offset: 2px; } /* 外圈：选中难发现（用户点名），并回旧样式表行数 */
 .slot-cell.picked small { opacity: 0.92; }
 
 /* ===== 移动端卡片密度：今日入口卡 / 今日home卡 / 网络学堂课程卡（≤840 竖屏带） ===== */

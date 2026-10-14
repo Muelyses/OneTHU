@@ -8,6 +8,13 @@
  * 现在的口径与侧栏排位一致：**原位置与落点之间的项整体平移"你移动的那几行"**。
  * 挪一格邻居就挪一格；原位置留下的空档改到落点那一侧，净效果是"空档在移动"。
  * 最后再跑一遍最小让位兜底（高度不齐时保证绝无重叠）。
+ *
+ * **2026-10-15 现状（保留理由，勿随手删）**：白板页退役后，自由画布（px 层）不再走这条让位
+ * ——重叠在自由画布上是特性，不是要修的错。但**网格契约那条线仍然活着**：插件与 OH 的
+ * `ext.onePage` 走 `plugins/facade.ts` 直接写 `cell.{x,y,w,h}`，OneGO / 收藏落点走
+ * `state/onePage.ts` 的 `addItemTo`（内部 `findFreeCell` + `pushDown`），两者都必须无重叠。
+ * 所以本模块与 `ensureNoOverlap`（写入口的最后一道不变量）继续保留，并由
+ * `tools/board-drag-test.mjs` 第 ⑦ 节逐条驱动。
  */
 import { overlaps, pushDown } from "./collectable.js";
 import type { BoardItem } from "./boardCore.js";

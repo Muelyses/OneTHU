@@ -10,6 +10,10 @@
  *
  * 纯逻辑（改哪一条、夹取、图层序、迁移合并）全在 state/boardCore.ts —— node 护栏直接驱动。
  * 本文件只负责「读哪块板 / 写回哪块板 / 什么时候算变了」。
+ *
+ * **写 rect 的同时会派生 cell**（boardCore.withRect）：cell 是插件/OH 的 `ext.onePage` 契约
+ * （`plugins/facade.ts` 直接读写 `cell.{x,y,w,h}`），所以自由画布上摆过的东西，插件那边看到的
+ * 坐标也是对的——两套坐标从此不会各说各话（这正是之前"两套数据不同源"的病根）。
  */
 import {
   SYSTEM_BOARD_ID,

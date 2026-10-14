@@ -2564,19 +2564,13 @@ select.input:focus {
   flex: none;
 }
 
-/* ===== 选课（zhjwxk）竖屏三页签 + 弹窗适配 ===== */
+/* ===== 选课（zhjwxk）竖屏三页签 ===== */
+/* 注：弹窗（简介/社区点评）已收编 OneGUI Modal（含竖屏适配），旧 .xk-mask/.xk-panel
+   覆盖块随页级 UI 换血删除 —— 这两个类不再由页面输出。 */
 .xk-mobile-tabs { display: none; }
 @media (max-width: 839.98px) {
   .xk-two-col { display: none !important; }
   .xk-mobile-tabs { display: block; }
-  /* 课程简介 / 选课评价弹窗：竖屏收窄适配（!important 压过内联样式） */
-  .xk-mask { padding: 10px !important; }
-  .xk-panel {
-    max-width: 100% !important;
-    max-height: 88vh !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.18) !important;
-  }
 }
 
 /* 今日概览条（stats-overview 专用）：竖屏横屏一律三列紧凑单行

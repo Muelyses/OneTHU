@@ -98,6 +98,7 @@
 | 应用侧 TSX 字面色值（#rgb/rgba） | 675 | 0 |
 | 应用侧裸 `<button\|input\|select\|textarea>` | 1143 | 0 |
 | `apps/desktop/src/styles/*.css` | 12,661 行 / 1,403 类 | 删除 |
+| 页面里手写的旧类名（card / empty / skeleton / error-note / section-head） | 170 / 62 / 7 / 5 / 3 处 | 0 |
 | `packages/ui`（旧令牌包） | tokens + base | 由 OneGUI 取代后删除 |
 
 跑法：`pnpm guard:onegui`（迁移一批后 `node tools/onegui-guard.mjs --write-baseline` 下调基线）。
@@ -105,7 +106,9 @@
 ## 4. 迁移顺序（每页 = 一次提交）
 
 1. ✅ 库：令牌 → 管线 → 布局 → 文本 → 面/卡 → 按钮 → 行/列表 → 表单 → 浮层 → 页面模式 → 展示件 → 图标 → 画廊 → 护栏
-2. ⏳ 壳层：顶栏 / 竖栏 / 标签条 / 抽屉 / 设置浮层 / 命令面板
+2. 🔄 壳层：`AppShell` 等外框件已入库（桌面竖栏 + 手机底部条已截图验收）；
+   `Layout.tsx` 的七个旧原语（Card/Empty/SectionHead/ErrorNote/SkeletonRows/Switch）已切成 OneGUI 适配层
+   —— 60/40/28/30/8 个调用点一刻之间改由 OneGUI 渲染。**还剩**：`Layout.tsx` 外框本体（竖栏/顶栏/标签条/抽屉/设置浮层/命令面板）换 AppShell。
 3. ⏳ 攻坚面：清华云盘（cloud-*）、网络学堂（作业/通知/富文本壳）、设置页 + 全部弹层
 4. ⏳ 其余页面：`pages/` 全量，逐页删旧 CSS
 5. ⏳ 清场：删 `apps/desktop/src/styles/*`、删 `packages/ui`、旧风格护栏由 `onegui-guard` 取代、`design-language.md` 重写为 OneGUI 手册

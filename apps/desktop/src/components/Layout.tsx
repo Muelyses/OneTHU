@@ -43,6 +43,22 @@ import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
 import { useTabLayoutMode } from "../state/tabLayout.js";
+
+/* ══ OneGUI 适配层 ═════════════════════════════════════════════════════════
+ * 下面这七个原语（SectionHead / Card / Empty / ErrorNote / SkeletonRows / Switch）
+ * 曾经是"手写 DOM + global.css 的类"，热力覆盖 60/40/31/28/30/8 个文件。
+ * 现在实现体整体换成 @onethu/gui 的组件：**名字与 props 一字不动**，
+ * 于是 60+ 个调用点在一刻之间全部改由 OneGUI 渲染，页面再逐个迁到直接 import。
+ * 迁移完成后这一层会被删除（它不是第二套实现，只是过渡期的转接头）。 */
+import {
+  Banner as OGBanner,
+  Btn as OGBtn,
+  Card as OGCard,
+  EmptyState as OGEmptyState,
+  LoadingBlock as OGLoadingBlock,
+  Section as OGSection,
+  Switch as OGSwitch,
+} from "@onethu/gui";
 import { useIsPhone } from "../state/phoneSheets.js";
 import { BottomBar } from "./explorer/BottomBar.js";
 import { TabDrawer } from "./explorer/TabDrawer.js";
@@ -706,12 +722,7 @@ export function SectionHead({
   title: string;
   aside?: ReactNode;
 }) {
-  return (
-    <div className="section-head">
-      <h2>{title}</h2>
-      {aside ? <span className="section-aside">{aside}</span> : null}
-    </div>
-  );
+  return <OGSection title={title} aside={aside} />;
 }
 
 export function Card({
@@ -723,11 +734,16 @@ export function Card({
   style?: CSSProperties;
   children: ReactNode;
 }) {
-  return (
-    <div className={`card ${className}`} style={style}>
+  // 旧约定：className 里带 "list" 表示"内容自己贴边"（行自带内边距）→ 贴边卡
+  const flush = /(^|\s)list(\s|$)/.test(className);
+  const rest = className.replace(/(^|\s)list(\s|$)/g, " ").trim();
+  const card = (
+    <OGCard flush={flush} className={rest || undefined}>
       {children}
-    </div>
+    </OGCard>
   );
+  // 旧调用点有的用 style 传宽度等几何：包一层（不把 style 泄漏进库组件）
+  return style ? <div style={style}>{card}</div> : card;
 }
 
 /* 空状态：text 必填，icon/hint/action 可选（B5b）。
@@ -743,42 +759,24 @@ export function Empty({
   hint?: string;
   action?: ReactNode;
 }) {
-  return (
-    <div className="empty">
-      {icon ? <div className="empty-icon" aria-hidden="true">{icon}</div> : null}
-      <div className="empty-title">{text}</div>
-      {hint ? <div className="empty-hint">{hint}</div> : null}
-      {action ? <div className="empty-action">{action}</div> : null}
-    </div>
-  );
+  return <OGEmptyState title={text} icon={icon} hint={hint} action={action} />;
 }
 
 export function ErrorNote({ text, onRetry }: { text: string; onRetry?: () => void }) {
   return (
-    <div className="error-note">
-      <ErrorLine text={text} />
-      {onRetry ? (
-        <button className="btn btn-ghost" onClick={onRetry}>
-          重试
-        </button>
-      ) : null}
-    </div>
+    <OGBanner
+      tone="error"
+      title={<ErrorLine text={text} />}
+      action={onRetry ? <OGBtn variant="ghost" tone="error" size="sm" onClick={onRetry}>重试</OGBtn> : null}
+    />
   );
 }
 
 export function SkeletonRows({ rows = 4 }: { rows?: number }) {
   return (
-    <Card>
-      {Array.from({ length: rows }, (_, i) => (
-        <div className="row" key={i} style={{ animation: "none" }}>
-          <div className="skeleton" style={{ width: 64, height: 32 }} />
-          <div className="row-main">
-            <div className="skeleton" style={{ width: "55%", height: 13 }} />
-            <div className="skeleton" style={{ width: "30%", height: 10, marginTop: 7 }} />
-          </div>
-        </div>
-      ))}
-    </Card>
+    <OGCard pad="none">
+      <OGLoadingBlock rows={rows} />
+    </OGCard>
   );
 }
 
@@ -791,15 +789,7 @@ export function Switch({
   onChange: (v: boolean) => void;
   label: string;
 }) {
-  return (
-    <button
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      className={"switch" + (on ? " on" : "")}
-      onClick={() => onChange(!on)}
-    />
-  );
+  return <OGSwitch checked={on} onChange={() => onChange(!on)} aria-label={label} />;
 }
 
 /* 保留未用引用防 tree-shake 误报：这些图标被 NAV 数据表引用 */

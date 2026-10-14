@@ -1499,13 +1499,11 @@ function DebugLogRow() {
     }
   };
   return (
-    <div className="setting-row">
-      <div>
-        <div className="setting-title">运行日志</div>
-        <div className="setting-desc">{where ? `已导出：${where}` : "用于问题排查，导出到系统下载"}</div>
-      </div>
-      <Btn variant="outline" disabled={busy} onClick={() => void run()}>{busy ? "导出中…" : "导出日志"}</Btn>
-    </div>
+    <SettingsRow
+      title="运行日志"
+      sub={where ? `已导出：${where}` : "用于问题排查，导出到系统下载"}
+      control={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void run()}>{busy ? "导出中…" : "导出日志"}</Btn>}
+    />
   );
 }
 

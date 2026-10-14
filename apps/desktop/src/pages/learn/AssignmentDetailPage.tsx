@@ -459,13 +459,13 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               ) : null}
               {page?.submittedAttachment ? (
                 <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ color: "var(--text-dim, #888)" }}>已上传：{page.submittedAttachment.name}</span>
+                  <span style={{ color: "var(--og-content-disabled)" }}>已上传：{page.submittedAttachment.name}</span>
                   <Btn variant="ghost" disabled={subBusy} titleAttr="直接向网络学堂发撤回请求；必交附件的作业会被拒绝并提示" onClick={() => void doRemove()}>撤回附件
                   </Btn>
                 </span>
               ) : null}
               {page?.submittedAttachment && subFile ? (
-                <span style={{ color: "var(--text-dim, #888)", fontSize: 12 }}>提交后新附件将替换已上传附件</span>
+                <span style={{ color: "var(--og-content-disabled)", fontSize: 12 }}>提交后新附件将替换已上传附件</span>
               ) : null}
             </div>
             {needFileHint ? (
@@ -482,7 +482,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               <div style={{ fontSize: 12, color: "var(--red)" }}>已过截止时间，提交入口已停用（撤回附件仍可用）。</div>
             ) : null}
             {h.submitted && h.submitTime ? (
-              <div style={{ fontSize: 12, color: "var(--text-dim, #888)" }}>上次提交于 {fmtDateTime(h.submitTime)}</div>
+              <div style={{ fontSize: 12, color: "var(--og-content-disabled)" }}>上次提交于 {fmtDateTime(h.submitTime)}</div>
             ) : null}
             {subMsg ? <div style={{ fontSize: 12, color: subOk ? "var(--green)" : "var(--red)", wordBreak: "break-all" }}>{subMsg}</div> : null}
           </div>

@@ -234,6 +234,8 @@ export interface AppShellProps {
   brand?: ReactNode;
   /** 壁纸层（玻璃皮肤需要；中性皮肤留空即可） */
   wallpaper?: ReactNode;
+  /** 端形态：默认跟管线 platform 轴；预览/内嵌时可以显式指定 */
+  platform?: "desktop" | "mobile";
   scope?: string;
   className?: string;
   children?: ReactNode;
@@ -244,9 +246,10 @@ export interface AppShellProps {
  */
 export function AppShell({
   tabs, activeTab, onSelectTab, desktopLayout = "rail", railNarrow, onMore, railActions, tabLeading,
-  actions, brand, wallpaper, scope, className, children,
+  actions, brand, wallpaper, scope, className, children, platform: platformProp,
 }: AppShellProps): ReactNode {
-  const platform = useAxes().platform;
+  const axisPlatform = useAxes().platform;
+  const platform = platformProp ?? axisPlatform;
   const mobile = platform === "mobile";
   const [scrolled, setScrolled] = useState(false);
 

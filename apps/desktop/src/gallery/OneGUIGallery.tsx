@@ -333,6 +333,7 @@ function ShellPreview(): ReactNode {
             tabs={tabs}
             activeTab={active}
             onSelectTab={setActive}
+            platform="mobile"
             onMore={() => undefined}
             brand={<Text slot="label" as="span">OneTHU</Text>}
             actions={<IconBtn label="刷新" size="sm" variant="ghost" icon={<IconRefresh />} />}

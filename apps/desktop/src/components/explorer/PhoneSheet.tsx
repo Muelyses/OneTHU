@@ -6,7 +6,7 @@
  *  - 松手按**速度**与**就近**吸附到两档：上甩 → 全屏，下甩 → 半屏；
  *  - 档位存 state/phoneSheets.ts（palette 写法），下次打开沿用上次的档位。
  *
- * 使用方：TabDrawer / OneGoSheet / BoardPage（OnePage）的手机分支共用一份；
+ * 使用方：TabDrawer / OneGoSheet / OnePageSurface（OnePage）的手机分支共用一份；
  * 档位值读取走 state/phoneSheets.ts 的 `useSheetSnap(id)`。
  */
 import { useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";

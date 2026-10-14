@@ -8,7 +8,7 @@ import { Chip } from "@onethu/gui";
  * 直接点球 = 跳转。「详细功能」弹完整功能目录（分类列表）。
  *
  * 交互层的其余部分（时间/日期/天气/卡片/便笺/画笔…）全部是自由白板组件，
- * 走 BoardPage 的画布（HomeTab 以无头模式嵌入），z 序在 chrome 之下。
+ * 走 FreeBoard 的自由画布（HomeTab 里 `<HomeChrome/> + <FreeBoard boardId/>`），z 序在 chrome 之下。
  */
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";

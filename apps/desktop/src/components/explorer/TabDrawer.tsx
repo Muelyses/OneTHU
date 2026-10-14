@@ -96,7 +96,7 @@ type ExplorerStateView = ReturnType<typeof useExplorerState>;
    松手 flushSync 落序）。行结构与「栏」不同——工作区块 = 组头 + 成员行（还不是容器），
    所以单独收敛在这里。鼠标：按下位移 >6px 进入拖拽；触屏（手机）：按住 320ms 武装拖拽，
    按住 500ms 不动 = 菜单；位移超 10px 全部取消（原生竖滚照常可用，armed 后才拦 Picture——
-   即 BoardPage stopNativeScroll 同款约束，不动 touch-action）。 */
+   即旧 BoardPage stopNativeScroll 同款约束（该页已下线，现由 OnePageSurface/FreeBoard 承担），不动 touch-action）。 */
 
 interface TabDrop {
   dragId: string;

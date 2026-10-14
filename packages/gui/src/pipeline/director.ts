@@ -101,7 +101,11 @@ const DEFAULT_AXES: OGAxes = {
   density: "comfortable",
   motion: "full",
   platform: "desktop",
-  theme: null,
+  /* 默认主题 = 业务蓝（tokens.css 的 --md-sys-color-secondary 同值）：
+     库内置的 brand-40（清华紫）是画廊/皮肤演示用品牌，主应用"象牙·默认"的强调色
+     是业务蓝——纯桥不喂 theme 轴时，OG 全线会停在库默认紫上（2026-10-14 用户点名#1）。
+     主题三态由宿主桥喂：dynamic→调色板值、theme→主题 accent、象牙/空→保持此默认。 */
+  theme: { id: "app-base", accent: "#4176e6" },
 };
 
 export class StyleDirector {

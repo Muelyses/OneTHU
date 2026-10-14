@@ -184,15 +184,38 @@ export function rectOf(item: BoardItem): BoardRect {
   return item.rect ?? rectFromCell(item.cell);
 }
 
-/** 把 px 矩形写回条目：rect 记 px，cell 同步派生（插件/OH 契约读 cell，必须一致）。 */
+/**
+ * 把 px 矩形写回条目：rect 记 px，cell 同步派生（插件/OH 契约读 cell，必须一致）。
+ *
+ * 坐标口径：**x/y 一并夹到 ≥ 0**。自由画布的原点在左上角，条目被拖到画布外就"不见了"，
+ * 而 cell 那边看着一切正常（cellFromRect 会把负坐标夹成 0），排查起来极难——所以写入层
+ * 直接不许负坐标落地（拖动在视觉上也按同口径夹住，见 FreeBoard 的 live 矩形）。
+ *
+ * cell 派生走 **4 列基准**（BOARD_COLS），与活网格在宽屏的 8 列（colsForWidth）无关：
+ * BoardPage 退役后 cell 的唯一消费者是插件/OH 的 ext.onePage 契约，那套坐标一直是基准单位。
+ */
 export function withRect(item: BoardItem, rect: BoardRect, cols: number = BOARD_COLS): BoardItem {
   const fixed: BoardRect = {
-    x: Math.round(rect.x),
-    y: Math.round(rect.y),
+    x: Math.max(0, Math.round(rect.x)),
+    y: Math.max(0, Math.round(rect.y)),
     w: Math.max(RECT_MIN_W, Math.round(rect.w)),
     h: Math.max(RECT_MIN_H, Math.round(rect.h)),
   };
   return { ...item, rect: fixed, cell: cellFromRect(fixed, cols), manual: true };
+}
+
+/** 由 px 矩形直接造一个板条目（迁移/新增共用；cell 同步派生，见 withRect 的坐标口径）。 */
+export function pxBoardItem(
+  id: string,
+  spec: WidgetSpec,
+  rect: BoardRect,
+  extra?: { folded?: boolean; opacity?: number },
+  cols: number = BOARD_COLS,
+): BoardItem {
+  const base: BoardItem = { id, spec, cell: cellFromRect(rect, cols) };
+  if (extra?.folded) base.folded = true;
+  if (typeof extra?.opacity === "number") base.opacity = extra.opacity;
+  return withRect(base, rect, cols);
 }
 
 /**
@@ -313,4 +336,207 @@ export function systemBoard(doc: BoardDoc): Board | null {
  */
 export function activeBoard(doc: BoardDoc): Board | null {
   return doc.boards.find((b) => b.id === doc.activeBoardId) ?? systemBoard(doc);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   自由图层（px）条目操作 —— 纯函数，落库与 UI 手势共用同一套口径。
+
+   为什么这些也放在 core：白板页（BoardPage）退役后，自由画布是**唯一的**编辑面，
+   「拖一下改什么」必须能被 node 护栏逐条驱动（视图只负责把指针换算成这里的调用）。
+   列表操作返回 null = 本次没有实质变化（调用方据此跳过写盘）。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** 自由画布上的一个条目（渲染模型）：px 矩形 + spec + 自由层两个字段。 */
+export interface BoardPxItem {
+  id: string;
+  spec: WidgetSpec;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  folded?: boolean;
+  opacity?: number;
+}
+
+export function rectHit(a: BoardRect, b: BoardRect): boolean {
+  return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+}
+
+export function toPxItem(item: BoardItem): BoardPxItem {
+  const r = rectOf(item);
+  const out: BoardPxItem = { id: item.id, spec: item.spec, x: r.x, y: r.y, w: r.w, h: r.h };
+  if (item.folded === true) out.folded = true;
+  if (typeof item.opacity === "number") out.opacity = item.opacity;
+  return out;
+}
+
+export function toPxItems(items: readonly BoardItem[]): BoardPxItem[] {
+  return items.map(toPxItem);
+}
+
+function sameRect(a: BoardRect, b: BoardRect): boolean {
+  return a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
+}
+
+/** 改一条：未命中或改完没变 → null（UI 不必重渲染，也不写盘）。 */
+function patchPx(items: readonly BoardItem[], id: string, patch: (it: BoardItem) => BoardItem): BoardItem[] | null {
+  const i = items.findIndex((x) => x.id === id);
+  const it = i < 0 ? undefined : items[i];
+  if (!it) return null;
+  const next = patch(it);
+  if (next === it) return null;
+  const out = items.slice();
+  out[i] = next;
+  return out;
+}
+
+/** 移动：x/y 夹到 ≥ 0（画布外看不见，见 withRect 的坐标口径）。 */
+export function movePx(items: readonly BoardItem[], id: string, x: number, y: number, cols: number = BOARD_COLS): BoardItem[] | null {
+  return patchPx(items, id, (it) => {
+    const r = rectOf(it);
+    const nx = Math.max(0, Math.round(x));
+    const ny = Math.max(0, Math.round(y));
+    if (nx === r.x && ny === r.y) return it;
+    return withRect(it, { ...r, x: nx, y: ny }, cols);
+  });
+}
+
+/** 缩放：宽高夹到下限（120×64），x/y 夹到 ≥ 0——与 BoardPage 的四边把手同一套算术结论。 */
+export function resizePx(items: readonly BoardItem[], id: string, rect: BoardRect, cols: number = BOARD_COLS): BoardItem[] | null {
+  return patchPx(items, id, (it) => {
+    const r = rectOf(it);
+    const next = withRect(it, { ...r, ...rect }, cols);
+    return next.rect && sameRect(next.rect, r) ? it : next;
+  });
+}
+
+/** 折叠（便笺收起）：只是显示态，不动几何。 */
+export function foldPx(items: readonly BoardItem[], id: string, folded: boolean): BoardItem[] | null {
+  return patchPx(items, id, (it) => ((it.folded === true) === folded ? it : { ...it, folded: folded || undefined }));
+}
+
+/** 透明度四档（1 / 0.75 / 0.5 / 0.3；夹到 0.25~1）。 */
+export function opacityPx(items: readonly BoardItem[], id: string, opacity: number): BoardItem[] | null {
+  const v = Math.min(1, Math.max(0.25, opacity));
+  return patchPx(items, id, (it) => (it.opacity === v ? it : { ...it, opacity: v }));
+}
+
+/** 改写条目 props（文件夹入口、模板选择器、便笺文字…都走它）。 */
+export function propsPx(items: readonly BoardItem[], id: string, props: Record<string, unknown> | undefined): BoardItem[] | null {
+  return patchPx(items, id, (it) => ({ ...it, spec: { ...it.spec, props } }));
+}
+
+export function removePx(items: readonly BoardItem[], id: string): BoardItem[] | null {
+  if (!items.some((it) => it.id === id)) return null;
+  return items.filter((it) => it.id !== id);
+}
+
+/** 置顶（无条件挪到数组末尾 = 最上层）。 */
+export function bringToFrontPx(items: readonly BoardItem[], id: string): BoardItem[] | null {
+  const i = items.findIndex((x) => x.id === id);
+  if (i < 0 || i === items.length - 1) return null;
+  const out = items.slice();
+  const it = out.splice(i, 1)[0];
+  if (!it) return null;
+  out.push(it);
+  return out;
+}
+
+/**
+ * 聪明图层调整：只升到**与自己重叠的那一簇**的最高层之上，无关组件的图层序完全不动
+ * （霖 2026-10-13 定案；没有重叠时什么都不发生）。
+ */
+export function raiseAboveOverlappingPx(items: readonly BoardItem[], id: string): BoardItem[] | null {
+  const i = items.findIndex((x) => x.id === id);
+  const me = i < 0 ? undefined : items[i];
+  if (!me) return null;
+  const mine = rectOf(me);
+  let target = i;
+  for (let j = i + 1; j < items.length; j += 1) {
+    const other = items[j];
+    if (other && rectHit(mine, rectOf(other))) target = j;
+  }
+  if (target === i) return null;
+  const out = items.slice();
+  const it = out.splice(i, 1)[0];
+  if (!it) return null;
+  /* 移除 i 后原 target 处的元素前移一位；插到 target 位 = 紧贴它上方 */
+  out.splice(target, 0, it);
+  return out;
+}
+
+/** 追加一条（放最上层）：调用方给 id 与 px 矩形。 */
+export function appendPx(items: readonly BoardItem[], id: string, spec: WidgetSpec, rect: BoardRect, extra?: { folded?: boolean; opacity?: number }, cols: number = BOARD_COLS): BoardItem[] {
+  return [...items, pxBoardItem(id, spec, rect, extra, cols)];
+}
+
+/* ── 旧「首页自由板」键（onethu.freeboard.home.v1）的兼容读取与并入 ─────────
+   老用户的首页摆位全在那个键里，不能丢；而系统板里同 spec 的条目正是当年被
+   seedFromLegacyOnce 复制过去的那批——两条都留着就是双份，所以按 spec 去重。 */
+
+/** 旧键的条目模型（与 BoardPxItem 同形，单独一份是为了不被后续改名牵连）。 */
+function legacyNum(v: unknown, d: number): number {
+  return typeof v === "number" && Number.isFinite(v) ? v : d;
+}
+
+/**
+ * 解析旧键：脏数据当没有；**x/y 也夹到 ≥ 0**——旧实现没夹，负坐标的条目
+ * 一进新画布就是「东西不见了」而 cell 侧一切正常（最难查的一类）。
+ */
+export function parseLegacyFreeBoard(raw: string | null): BoardPxItem[] {
+  if (!raw) return [];
+  let obj: unknown;
+  try {
+    obj = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  const d = obj as { v?: unknown; items?: unknown } | null;
+  if (!d || d.v !== 1 || !Array.isArray(d.items)) return [];
+  const out: BoardPxItem[] = [];
+  for (const raw2 of d.items) {
+    const r = raw2 as Partial<BoardPxItem> | null;
+    if (!r || typeof r.id !== "string" || !r.id || !r.spec || typeof r.spec !== "object") continue;
+    const px: BoardPxItem = {
+      id: r.id,
+      spec: r.spec as WidgetSpec,
+      x: Math.max(0, Math.round(legacyNum(r.x, 20))),
+      y: Math.max(0, Math.round(legacyNum(r.y, 20))),
+      w: Math.max(RECT_MIN_W, Math.round(legacyNum(r.w, 240))),
+      h: Math.max(RECT_MIN_H, Math.round(legacyNum(r.h, 120))),
+    };
+    if (r.folded === true) px.folded = true;
+    if (typeof r.opacity === "number" && Number.isFinite(r.opacity)) px.opacity = Math.min(1, Math.max(0.25, r.opacity));
+    out.push(px);
+  }
+  return out;
+}
+
+/**
+ * 旧键条目 → 系统板条目列表：旧布局是首页画布的**事实来源**，放前面（原图层序）。
+ *
+ * 两条过滤：
+ *   ① 同 spec 的网格条目让位——它们在旧实现里正是被 seedFromLegacyOnce 复制到自由板的那批，
+ *      两条都留就是双份；
+ *   ② 旧「今日」页的网格陈迹（`layoutToCells` 造出来的 `today.<卡片>` 条目）整条剔除：
+ *      它们是那个页面的卡片布局，不是首页画布上的东西。留着的话，用户在自由画布上
+ *      删掉的卡片会"复活"——「白板接入」不该顺带改写首页。
+ *      （旧自由板键为空时走不到这里：那种情况下网格条目按格迁移成 px，就是老样子。）
+ */
+export function mergeLegacyPx(legacy: readonly BoardPxItem[], existing: readonly BoardItem[], cols: number = BOARD_COLS): BoardItem[] {
+  const seen = new Set(legacy.map((it) => JSON.stringify(it.spec)));
+  const taken = new Set<string>();
+  const out: BoardItem[] = [];
+  for (const it of legacy) {
+    let id = it.id;
+    while (taken.has(id)) id = id + "*";
+    taken.add(id);
+    out.push(pxBoardItem(id, it.spec, { x: it.x, y: it.y, w: it.w, h: it.h }, { folded: it.folded, opacity: it.opacity }, cols));
+  }
+  for (const it of existing) {
+    if (taken.has(it.id) || seen.has(JSON.stringify(it.spec)) || it.id.startsWith("today.")) continue;
+    taken.add(it.id);
+    out.push(it);
+  }
+  return out;
 }

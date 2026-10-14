@@ -7,7 +7,11 @@
  *
  * 坐标：点集存**画布百分比**（0..1000 的千分比整数，省体积也免浮点漂移），渲染时按
  * 画布实际尺寸换算——窗口宽窄变化时笔迹跟随内容缩放，不会错位。
+ *
+ * 键：**板 id + 朝向**（penKeyOf）。首页自由画布 2026-10-15 前的键是 "free:home|default"，
+ * 老用户的批注不能丢 —— 首次读盘时一次性改写到系统板键（HOME_PEN_KEY）。
  */
+import { SYSTEM_BOARD_ID } from "./boardCore.js";
 
 export interface PenStroke {
   id: string;
@@ -24,6 +28,10 @@ export interface PenDoc {
 }
 
 const KEY = "onethu.board.pen.v1";
+/** 首页自由画布的历史笔键与现键（迁移用；见文件头注释）。 */
+const LEGACY_HOME_KEY = "free:home|default";
+const HOME_KEY = SYSTEM_BOARD_ID + "|portrait";
+export const HOME_PEN_KEY = HOME_KEY;
 
 function sanitize(raw: unknown): PenDoc {
   const base: PenDoc = { v: 1, boards: {} };
@@ -48,7 +56,22 @@ function sanitize(raw: unknown): PenDoc {
 function load(): PenDoc {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return sanitize(JSON.parse(raw));
+    if (raw) {
+      const doc = sanitize(JSON.parse(raw));
+      /* 老键 → 系统板键：只在目标键还没有笔迹时改写（同一次会话里改了两次也不动它）。 */
+      const legacy = doc.boards[LEGACY_HOME_KEY];
+      if (legacy && legacy.length > 0 && !doc.boards[HOME_KEY]) {
+        const boards = { ...doc.boards, [HOME_KEY]: legacy };
+        delete boards[LEGACY_HOME_KEY];
+        try {
+          localStorage.setItem(KEY, JSON.stringify({ v: 1, boards }));
+        } catch {
+          /* 写不进去也照样用内存态（下次进来再试） */
+        }
+        return { v: 1, boards };
+      }
+      return doc;
+    }
   } catch {
     /* 脏数据当没有 */
   }

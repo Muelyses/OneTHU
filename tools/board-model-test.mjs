@@ -163,9 +163,74 @@ ok(!!extra && extra.boards[0].cells.portrait[0].folded === true && extra.boards[
 const clamped = B.parseBoard(JSON.stringify({ v: 1, order: {}, activeBoardId: "b", boards: [{ id: "b", name: "n", icon: "i", kind: "user", cells: { portrait: [{ id: "a", spec: { kind: "divider" }, cell: { x: 0, y: 0, w: 2, h: 1 }, opacity: 9 }] } }] }));
 ok(!!clamped && clamped.boards[0].cells.portrait[0].opacity === 1, "透明度没有夹到 0.25~1（实际 " + (clamped && clamped.boards[0].cells.portrait[0].opacity) + "）");
 
+/* ⑩ 自由层（px）条目操作：拖动/缩放/图层/折叠/透明度都必须是纯函数且「没变就返回 null」，
+   视图只负责把手势换算成这些调用（BoardPage 退役后这是唯一的编辑面）。 */
+const px = (id, x, y, w, h, extra) => Object.assign({ id, spec: { kind: "custom", id }, cell: { x: 0, y: 0, w: 1, h: 1 }, rect: { x, y, w, h } }, extra ?? {});
+const list = [px("a", 10, 20, 200, 100), px("b", 300, 20, 200, 100), px("c", 10, 400, 200, 100)];
+const rectsOf = (arr) => arr.map((it) => B.toPxItem(it)).map((p) => p.x + "," + p.y + "," + p.w + "," + p.h).join("|");
+/* 移动：写入 px 且同步派生 cell；x/y 为负 → 夹到 0（画布外看不见）；无变化 → null。 */
+const moved = B.movePx(list, "a", 44.6, -30);
+ok(!!moved && moved[0].rect.x === 45 && moved[0].rect.y === 0, "movePx 没有取整/夹正（实际 " + (moved && JSON.stringify(moved[0].rect)) + "）");
+ok(!!moved && moved[0].cell.x >= 0 && moved[0].cell.x + moved[0].cell.w <= B.BOARD_COLS, "movePx 派生出的 cell 越界了");
+ok(B.movePx(list, "a", 10, 20) === null, "movePx 对「原地不动」应返回 null（否则每帧都写盘）");
+ok(B.movePx(list, "nope", 1, 1) === null, "movePx 对不存在的条目应返回 null");
+ok(list[0].rect.x === 10, "movePx 改动了入参（应为不可变）");
+/* 缩放：宽高夹到 120×64；只改几何。 */
+const resized = B.resizePx(list, "b", { x: 300, y: 20, w: 4, h: 4 });
+ok(!!resized && resized[1].rect.w === B.RECT_MIN_W && resized[1].rect.h === B.RECT_MIN_H, "resizePx 没有夹到缩放下限");
+ok(B.resizePx(list, "b", { x: 300, y: 20, w: 200, h: 100 }) === null, "resizePx 对「尺寸没变」应返回 null");
+/* 折叠 / 透明度：显示态，来回可逆，重复操作返回 null。 */
+const folded = B.foldPx(list, "a", true);
+ok(!!folded && folded[0].folded === true && B.foldPx(folded, "a", true) === null, "foldPx 没有生效或重复调用不是 null");
+const unfolded = B.foldPx(folded, "a", false);
+ok(!!unfolded && unfolded[0].folded === undefined && B.foldPx(unfolded, "a", false) === null, "foldPx(false) 没有清掉折叠态（或重复调用不是 null）");
+const dim = B.opacityPx(list, "a", 0.5);
+ok(!!dim && dim[0].opacity === 0.5 && B.opacityPx(dim, "a", 0.5) === null, "opacityPx 没有生效或不是幂等 null");
+ok(!!B.opacityPx(list, "a", 9) && B.opacityPx(list, "a", 9)[0].opacity === 1, "opacityPx 没有夹到 1");
+/* 删除 / 置顶 / 智能置顶 */
+ok(B.removePx(list, "c").length === 2 && B.removePx(list, "nope") === null, "removePx 的删除/未命中语义不对");
+const front = B.bringToFrontPx(list, "a");
+ok(!!front && front.map((x) => x.id).join(",") === "b,c,a", "bringToFrontPx 没有挪到最上层（数组序 = 图层序）");
+ok(B.bringToFrontPx(list, "c") === null, "已在最上层还置顶应返回 null");
+/* 智能置顶：只升到「与自己重叠的那一簇」之上，无关组件序不动（霖 2026-10-13 定案）。 */
+const cluster = [px("a", 0, 0, 200, 100), px("far", 900, 900, 200, 100), px("b", 50, 0, 200, 100), px("c", 100, 0, 200, 100)];
+const raised = B.raiseAboveOverlappingPx(cluster, "a");
+ok(!!raised && raised.map((x) => x.id).join(",") === "far,b,c,a", "智能置顶没有只升到重叠簇之上（实际 " + (raised && raised.map((x) => x.id).join(",")) + "）");
+ok(B.raiseAboveOverlappingPx(cluster, "far") === null, "没有重叠时智能置顶不该动（应返回 null）");
+/* 追加：rect 与 cell 同源（插件/OH 契约读 cell）。 */
+const appended = B.appendPx(list, "z", { kind: "custom", id: "note" }, { x: 60, y: 44, w: 220, h: 160 });
+ok(appended.length === 4 && appended[3].id === "z", "appendPx 没有追加到最后（最上层）");
+ok(JSON.stringify(appended[3].cell) === JSON.stringify(B.cellFromRect(appended[3].rect)), "appendPx 的 cell 与 rect 不同源");
+/* 旧键（onethu.freeboard.home.v1）兼容读：脏数据当没有，坐标一并夹正。 */
+ok(B.parseLegacyFreeBoard(null).length === 0 && B.parseLegacyFreeBoard("not json").length === 0, "旧键解析：缺失/脏数据应得空表");
+ok(B.parseLegacyFreeBoard(JSON.stringify({ v: 2, items: [{ id: "a", spec: { kind: "divider" }, x: 1, y: 1, w: 200, h: 100 }] })).length === 0, "旧键解析：版本不符应得空表");
+const legacyItems = B.parseLegacyFreeBoard(JSON.stringify({ v: 1, items: [
+  { id: "f.a", spec: { kind: "custom", id: "note" }, x: -40, y: 24, w: 12, h: 900, folded: true, opacity: 0.3 },
+  { id: "f.b", spec: { kind: "divider" }, x: 300, y: 200 },
+  { id: "", spec: { kind: "divider" }, x: 0, y: 0 },
+  { nope: true },
+] }));
+ok(legacyItems.length === 2, "旧键解析：应只留下合法条目（实际 " + legacyItems.length + "）");
+ok(legacyItems[0].x === 0 && legacyItems[0].y === 24 && legacyItems[0].w === B.RECT_MIN_W && legacyItems[0].h === 900, "旧键解析：负 x 应夹 0、过窄应夹下限（实际 " + JSON.stringify(legacyItems[0]) + "）");
+ok(legacyItems[0].folded === true && legacyItems[0].opacity === 0.3, "旧键解析：折叠/透明度应保留");
+ok(legacyItems[1].w === 240 && legacyItems[1].h === 120, "旧键解析：缺尺寸应回落历史默认值（240×120）");
+/* 并入系统板：旧布局是首页画布的事实来源（放前面），同 spec 的网格条目让位；其余接在后面。 */
+const gridDup = { id: "today.homework", spec: { kind: "custom", id: "note" }, cell: { x: 0, y: 0, w: 3, h: 1 } };
+const gridStray = { id: "today.classes", spec: { kind: "custom", id: "classes" }, cell: { x: 0, y: 9, w: 3, h: 1 } };
+const atomAdded = { id: "it.custom.ab12", spec: { kind: "atom-link", ref: "k" }, cell: { x: 0, y: 5, w: 2, h: 1 } };
+const merged = B.mergeLegacyPx(legacyItems, [gridDup, gridStray, atomAdded]);
+ok(merged.map((x) => x.id).join(",") === "f.a,f.b,it.custom.ab12", "并入顺序/去重不对（实际 " + merged.map((x) => x.id).join(",") + "）");
+ok(!merged.some((x) => x.id.startsWith("today.")), "旧「今日」页的网格陈迹（today.*）不该混进首页画布——用户在自由画布删掉的卡片会复活");
+ok(JSON.stringify(merged[0].rect) === JSON.stringify({ x: 0, y: 24, w: B.RECT_MIN_W, h: 900 }), "并入时没有保留旧 px 摆位");
+ok(merged.every((it) => B.isItem(it)), "并入后的条目必须仍是合法板条目（cell 仍受严格校验）");
+ok(merged.filter((it) => it.rect).every((it) => B.isRect(it.rect) && JSON.stringify(it.cell) === JSON.stringify(B.cellFromRect(it.rect))), "并入时写下的 rect 与派生的 cell 必须同源");
+ok(!merged.find((x) => x.id === "it.custom.ab12").rect, "网格条目（收藏到首页落下的原子）不该被硬塞一个 px 矩形——它按格迁移即可");
+const collide = B.mergeLegacyPx([{ id: "same", spec: { kind: "divider" }, x: 1, y: 1, w: 200, h: 100 }], [{ id: "same", spec: { kind: "custom", id: "folder" }, cell: { x: 0, y: 0, w: 1, h: 1 } }]);
+ok(new Set(collide.map((x) => x.id)).size === collide.length, "并入时 id 撞车没有改名（后一条会被 React/查找逻辑吃掉）");
+
 if (fails.length) {
   console.error("白板文档护栏（P0）：不通过");
   for (const f of fails) console.error("  ✗ " + f);
   process.exit(1);
 }
-console.log("白板文档护栏（P0）：解析严格性 ✓ ｜ 迁移读真实布局并保位次/折叠 ✓ ｜ 幂等 ✓ ｜ 往返含 off ✓ ｜ 跨朝向回落 ✓ ｜ 落盘与排序 ✓ ｜ 规格齐全 ✓ ｜ 格↔px 双向迁移与容错 ✓");
+console.log("白板文档护栏（P0）：解析严格性 ✓ ｜ 迁移读真实布局并保位次/折叠 ✓ ｜ 幂等 ✓ ｜ 往返含 off ✓ ｜ 跨朝向回落 ✓ ｜ 落盘与排序 ✓ ｜ 规格齐全 ✓ ｜ 格↔px 双向迁移与容错 ✓ ｜ px 自由层操作（移动/缩放/图层/折叠/透明度/迁移并入）✓");

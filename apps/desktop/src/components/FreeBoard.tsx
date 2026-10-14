@@ -1,6 +1,10 @@
 /**
  * 自由图层白板（2026-10-13 定稿，霖：要可以互相重叠盖住的高级白板）。
  *
+ * **一块板一份数据**（2026-10-15）：组件按 `{ boardId, orientation }` 参数化，
+ * 读写的就是 BoardDoc 里那块板那个朝向（state/freeBoard.ts 的 px 层）；
+ * 首页 = 系统板（HOME_BOARD_ID / portrait，HomeTab 显式传入），OnePage = 用户板。
+ *
  * 交互（**常态即所即**，没有编辑模式）：
  *   - 拖动：按住组件直接拖（4px 阈值区分点击），鼠标触屏同管线；
  *   - 缩放：选中后四角 + 右/下把手，自由拉（下限 120×64）；
@@ -12,23 +16,16 @@
  * 渲染复用旧卡体注册表（BOARD_CARD_RENDERERS）：px 尺寸近似映射成档位提示
  * （{w,h} 取整档），卡内分档排版能力保留；重叠/盖住是特性，不再有推挤。
  */
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
-  addItem,
-  addNote,
-  bringToFront,
+  freeBoardOps,
   freeBoardSnapshot,
+  HOME_BOARD_ID,
+  HOME_ORIENTATION,
   MIN_H,
   MIN_W,
-  moveItem,
-  raiseAboveOverlapping,
-  removeItem,
-  setItemFolded,
-  setItemOpacity,
-  sizeItem,
   subscribeFreeBoard,
-  updateItemProps,
   type FreeItem,
 } from "../state/freeBoard.js";
 import { allWidgetDefs } from "../state/widgets.js";
@@ -43,13 +40,13 @@ import { openOnePage } from "../state/onePage.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
 import { FolderIcon, IconChevron } from "./Icons.js";
 import { NAV } from "./Layout.js";
-import { PEN_COLORS, addStroke, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes, penKeyOf } from "../state/boardPen.js";
+import { PEN_COLORS, penKeyOf, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes } from "../state/boardPen.js";
 import { sanitizeUserHtml, widgetById as userWidgetById } from "../state/userext.js";
 import { BoardPenLayer } from "./BoardPenLayer.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
+import type { Orientation } from "../state/boardCore.js";
 
 const DRAG_THRESHOLD = 4;
-const PEN_KEY = penKeyOf("free:home", "default");
 type Rect = { x: number; y: number; w: number; h: number };
 
 /** px 尺寸 → 档位提示（卡体分档排版用；只是提示，不约束） */
@@ -60,13 +57,23 @@ function sizeHint(r: Rect): { w: number; h: number } {
   };
 }
 
-function useFreeBoard(): FreeItem[] {
-  useSyncExternalStore(subscribeFreeBoard, freeBoardSnapshot, freeBoardSnapshot);
-  return freeBoardSnapshot().items;
+/** 与数据层同口径的夹取（视觉必须等于落库：否则拖到画布外松手会"弹回去"）。 */
+function clampRect(r: Rect): Rect {
+  return {
+    x: Math.max(0, Math.round(r.x)),
+    y: Math.max(0, Math.round(r.y)),
+    w: Math.max(MIN_W, Math.round(r.w)),
+    h: Math.max(MIN_H, Math.round(r.h)),
+  };
+}
+
+function useFreeBoard(boardId: string, orientation: Orientation): FreeItem[] {
+  const snap = useCallback(() => freeBoardSnapshot(boardId, orientation), [boardId, orientation]);
+  return useSyncExternalStore(subscribeFreeBoard, snap, snap).items;
 }
 
 /** 单个组件体：spec → JSX（复用旧注册表 + 原子入口运行时解析） */
-function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: { w: number; h: number }; onFolderAdd?: () => void }): ReactNode {
+function ItemBody({ item, sizeHint, onFolderAdd, onProps }: { item: FreeItem; sizeHint: { w: number; h: number }; onFolderAdd?: () => void; onProps?: (props: Record<string, unknown> | undefined) => void }): ReactNode {
   const { navigate } = useApp();
   const spec = item.spec;
   if (spec.kind === "text") {
@@ -166,7 +173,7 @@ function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: {
                 ev.preventDefault();
                 ev.stopPropagation();
                 const next = entries.filter((_, j) => j !== i);
-                if (item.id) updateItemProps(item.id, { ...spec.props, entries: next });
+                if (onProps) onProps({ ...spec.props, entries: next });
               }}
             >
               <span className="free-folder-ball">{iconFor(en)}</span>
@@ -233,8 +240,12 @@ function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: {
   );
 }
 
-export function FreeBoard(): ReactNode {
-  const items = useFreeBoard();
+export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTATION }: { boardId?: string; orientation?: Orientation } = {}): ReactNode {
+  const ops = useMemo(() => freeBoardOps(boardId, orientation), [boardId, orientation]);
+  const items = useFreeBoard(boardId, orientation);
+  /* 事件回调（窗口级键盘、浮层菜单）要读到最新的条目：state 在闭包里会过期，故用 ref 镜像。 */
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
   const { navigate } = useApp();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -246,8 +257,10 @@ export function FreeBoard(): ReactNode {
   const [noteEdit, setNoteEdit] = useState<string | null>(null);
   const [folderPicker, setFolderPicker] = useState<{ itemId: string } | null>(null);
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
-  const penSnap = useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
-  const penStrokes = strokesOf(PEN_KEY);
+  /* 笔迹变化要跟着重渲染（快照本身不用取：下面按笔键直接读） */
+  useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
+  const penKey = penKeyOf(boardId, orientation);
+  const penStrokes = strokesOf(penKey);
 
   /** 拖动/缩放的**进行时**覆盖（不落库，松手才 commit——localStorage 经不起每帧写） */
   const [live, setLive] = useState<{ id: string; rect: Rect } | null>(null);
@@ -256,6 +269,17 @@ export function FreeBoard(): ReactNode {
 
   const rectOf = (it: FreeItem): Rect =>
     live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
+
+  /* 画布高度跟着内容长：条目被拖到折叠线以下时外层滚动容器要能滚到它。
+     （绝对定位的孩子不撑父盒；home 的 .freeboard 是 inset:0 的整页画布，天然有这个问题。） */
+  useLayoutEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    const box = el.parentElement;
+    const bottom = items.reduce((m, it) => Math.max(m, it.y + it.h), 0) + 96;
+    const base = box ? box.clientHeight : 0;
+    el.style.minHeight = bottom > base ? `${bottom}px` : "";
+  }, [items]);
 
   useEffect(() => {
     const onBoards = (): void => setMenuOpen(null);
@@ -276,11 +300,11 @@ export function FreeBoard(): ReactNode {
       if (!selected) return;
       if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
-        removeItem(selected);
+        ops.remove(selected);
         setSelected(null);
         return;
       }
-      const it = freeBoardSnapshot().items.find((x) => x.id === selected);
+      const it = itemsRef.current.find((x) => x.id === selected);
       if (!it) return;
       const delta: Record<string, [number, number]> = {
         ArrowLeft: [-8, 0], ArrowRight: [8, 0], ArrowUp: [0, -8], ArrowDown: [0, 8],
@@ -288,7 +312,7 @@ export function FreeBoard(): ReactNode {
       const d = delta[e.key];
       if (!d) return;
       e.preventDefault();
-      moveItem(selected, it.x + d[0], it.y + d[1]);
+      ops.move(selected, it.x + d[0], it.y + d[1]);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -301,14 +325,14 @@ export function FreeBoard(): ReactNode {
     mode: "move" | "se" | "ne" | "sw" | "nw" | "e" | "s",
   ): void => {
     if (penOn) return; // 画笔开启时组件不可拖（画笔最高层）
-    const it = freeBoardSnapshot().items.find((x) => x.id === id);
+    const it = itemsRef.current.find((x) => x.id === id);
     if (!it) return;
     e.stopPropagation();
     /* 不用 setPointerCapture：捕获会把 click 重定向到容器，组件内的入口按钮/链接全被吞。
        拖拽与点击的区分交给「4px 阈值 + 窗口级 click 抑制」（武装后吞一次 click）。 */
     setSelected(id);
     /* 拖动即浮到与自己重叠的那簇之上（不惊动无关组件的图层序） */
-    raiseAboveOverlapping(id);
+    ops.raise(id);
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
     const sx = e.clientX;
     const sy = e.clientY;
@@ -325,7 +349,9 @@ export function FreeBoard(): ReactNode {
         window.addEventListener("click", killClick, true);
       }
       if (m === "move") {
-        setLive({ id, rect: { ...orig, x: orig.x + dx, y: orig.y + dy } });
+        /* 跟手的矩形也要夹（与 clampRect/落库同口径）：拖出画布时视觉停在边界上，
+           松手才不会"弹回去"——数据层的 x/y 夹取见 boardCore.withRect 的坐标口径。 */
+        setLive({ id, rect: clampRect({ ...orig, x: orig.x + dx, y: orig.y + dy }) });
       } else {
         let { x, y, w, h } = orig;
         const west = m === "nw" || m === "sw" || m === "w";
@@ -336,7 +362,7 @@ export function FreeBoard(): ReactNode {
         h = Math.max(MIN_H, h);
         if (west) x = orig.x + orig.w - w;
         if (north) y = orig.y + orig.h - h;
-        setLive({ id, rect: { x, y, w, h } });
+        setLive({ id, rect: { x: Math.max(0, x), y: Math.max(0, y), w, h } });
       }
     };
     const killClick = (ev: MouseEvent): void => {
@@ -351,8 +377,9 @@ export function FreeBoard(): ReactNode {
       window.setTimeout(() => window.removeEventListener("click", killClick, true), 0);
       const cur = liveRef.current;
       if (cur && cur.id === id) {
-        if (mode === "move") moveItem(id, Math.round(cur.rect.x), Math.round(cur.rect.y));
-        else sizeItem(id, Math.round(cur.rect.w), Math.round(cur.rect.h), Math.round(cur.rect.x), Math.round(cur.rect.y));
+        const r = clampRect(cur.rect);
+        if (mode === "move") ops.move(id, r.x, r.y);
+        else ops.resize(id, r);
       }
       setLive(null);
     };
@@ -369,7 +396,7 @@ export function FreeBoard(): ReactNode {
     const spec = d.spec.kind === "custom"
       ? { kind: "custom" as const, id: d.spec.id, props: d.spec.props }
       : JSON.parse(JSON.stringify(d.spec));
-    addItem(spec, at.x, at.y, Math.max(MIN_W, d.defaultSize.w * 110), Math.max(MIN_H, d.defaultSize.h * 72));
+    ops.add(spec, at.x, at.y, Math.max(MIN_W, d.defaultSize.w * 110), Math.max(MIN_H, d.defaultSize.h * 72));
     setAddAt(null);
   };
 
@@ -389,7 +416,7 @@ export function FreeBoard(): ReactNode {
       onDoubleClick={(e) => {
         if (e.target !== e.currentTarget) return;
         const p = canvasPos(e.clientX, e.clientY);
-        addNote(p.x - 110, p.y - 80);
+        ops.addNote(p.x - 110, p.y - 80);
       }}
       onContextMenu={(e) => {
         if (e.target !== e.currentTarget) return;
@@ -423,7 +450,7 @@ export function FreeBoard(): ReactNode {
               e.stopPropagation();
               if (penOn) return;
               setSelected(it.id);
-              bringToFront(it.id);
+              ops.bringToFront(it.id);
               setItemMenu({ id: it.id, x: e.clientX, y: e.clientY });
             }}
           >
@@ -442,12 +469,12 @@ export function FreeBoard(): ReactNode {
                 autoFocus
                 defaultValue={it.spec.kind === "custom" && typeof it.spec.props?.text === "string" ? it.spec.props.text : ""}
                 onBlur={(e) => {
-                  if (it.spec.kind === "custom") updateItemProps(it.id, { ...it.spec.props, text: e.target.value });
+                  if (it.spec.kind === "custom") ops.props(it.id, { ...it.spec.props, text: e.target.value });
                   setNoteEdit(null);
                 }}
               />
             ) : (
-              <ItemBody item={it} sizeHint={sizeHint(r)} onFolderAdd={() => setFolderPicker({ itemId: it.id })} />
+              <ItemBody item={it} sizeHint={sizeHint(r)} onFolderAdd={() => setFolderPicker({ itemId: it.id })} onProps={(props) => ops.props(it.id, props)} />
             )}
             </>
             )}
@@ -455,13 +482,13 @@ export function FreeBoard(): ReactNode {
             {/* 选中浮条：置顶 / 折叠（便笺）/ 删除 */}
             {isSel && !penOn ? (
               <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
-                <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => raiseAboveOverlapping(it.id)}>⤒</button>
+                <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
                 {isNote ? (
                   <button
                     type="button"
                     title={it.folded ? "展开" : "折叠"}
                     className="free-note-toggle"
-                    onClick={() => setItemFolded(it.id, !it.folded)}
+                    onClick={() => ops.fold(it.id, !it.folded)}
                   >
                     {it.folded ? " 展开" : "折叠"}
                   </button>
@@ -472,12 +499,12 @@ export function FreeBoard(): ReactNode {
                     type="button"
                     title={`透明 ${Math.round(v * 100)}%`}
                     className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
-                    onClick={() => setItemOpacity(it.id, v)}
+                    onClick={() => ops.opacity(it.id, v)}
                   >
                     {Math.round(v * 100)}%
                   </button>
                 ))}
-                <button type="button" title="删除" className="is-danger" onClick={() => { removeItem(it.id); setSelected(null); }}>
+                <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
                   <IconTrash width={13} height={13} />
                 </button>
               </div>
@@ -497,10 +524,11 @@ export function FreeBoard(): ReactNode {
         );
       })}
 
-      {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画 */}
+      {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
+          笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。 */}
       <BoardPenLayer
-        boardId="free:home"
-        orientation="default"
+        boardId={boardId}
+        orientation={orientation}
         penOn={penOn}
         color={penColor}
       />
@@ -522,8 +550,8 @@ export function FreeBoard(): ReactNode {
         {penOn ? (
           <div className="free-pen-panel">
             <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(penColor) ? penColor : "#3a3f4a"} onChange={(e) => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />
-            <button type="button" onClick={() => undoStroke(PEN_KEY)} disabled={penStrokes.length === 0}>撤销</button>
-            <button type="button" onClick={() => clearStrokes(PEN_KEY)} disabled={penStrokes.length === 0}>清空</button>
+            <button type="button" onClick={() => undoStroke(penKey)} disabled={penStrokes.length === 0}>撤销</button>
+            <button type="button" onClick={() => clearStrokes(penKey)} disabled={penStrokes.length === 0}>清空</button>
           </div>
         ) : null}
       </div>
@@ -555,7 +583,7 @@ export function FreeBoard(): ReactNode {
                     title="圆形 logo 网格（手机文件夹式）：可收纳一级入口、OnePage 与工作区"
                     onClick={() => {
                       const at = addAt ?? { x: 60, y: 300 };
-                      addItem({ kind: "custom", id: "folder", props: { title: "文件夹", entries: [] } }, at.x, at.y, 180, 180);
+                      ops.add({ kind: "custom", id: "folder", props: { title: "文件夹", entries: [] } }, at.x, at.y, 180, 180);
                       setAddAt(null);
                     }}
                   >
@@ -572,7 +600,7 @@ export function FreeBoard(): ReactNode {
                         title="把这块 OnePage 钉到画布上（点击即打开）"
                         onClick={() => {
                           const at = addAt ?? { x: 60, y: 300 };
-                          addItem({ kind: "custom", id: "onepage", props: { boardId: b.id } }, at.x, at.y, 150, 84);
+                          ops.add({ kind: "custom", id: "onepage", props: { boardId: b.id } }, at.x, at.y, 150, 84);
                           setAddAt(null);
                         }}
                       >
@@ -607,13 +635,13 @@ export function FreeBoard(): ReactNode {
                   </button>
                 </div>
                 {(() => {
-                  const target = freeBoardSnapshot().items.find((x) => x.id === folderPicker.itemId);
+                  const target = itemsRef.current.find((x) => x.id === folderPicker.itemId);
                   if (!target || target.spec.kind !== "custom") return null;
                   const entries = target.spec.kind === "custom" && Array.isArray(target.spec.props?.entries)
                     ? (target.spec.props?.entries as Array<{ kind: string; page?: string; label?: string; boardId?: string; wsId?: string }>)
                     : [];
                   const append = (en: { kind: string; page?: string; label?: string; boardId?: string; wsId?: string }): void => {
-                    if (target.spec.kind === "custom") updateItemProps(folderPicker.itemId, { ...target.spec.props, entries: [...entries, en] });
+                    if (target.spec.kind === "custom") ops.props(folderPicker.itemId, { ...target.spec.props, entries: [...entries, en] });
                   };
                   return (
                     <div className="free-add-list">
@@ -660,9 +688,9 @@ export function FreeBoard(): ReactNode {
         ? createPortal(
             <div className="hs-more-mask" onClick={() => setItemMenu(null)} onContextMenu={(e) => { e.preventDefault(); setItemMenu(null); }}>
               <div className="hs-more hs-menu" role="menu" style={{ position: "fixed", left: itemMenu.x, top: itemMenu.y }} onClick={(e) => e.stopPropagation()}>
-                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { raiseAboveOverlapping(itemMenu.id); setItemMenu(null); }}>置顶（压过重叠组件）</button>
-                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { const it = freeBoardSnapshot().items.find((x) => x.id === itemMenu.id); if (it) setNoteEdit(it.id); setItemMenu(null); }}>编辑内容</button>
-                <button type="button" className="hs-op-item is-danger" role="menuitem" onClick={() => { removeItem(itemMenu.id); setSelected(null); setItemMenu(null); }}>删除</button>
+                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { ops.raise(itemMenu.id); setItemMenu(null); }}>置顶（压过重叠组件）</button>
+                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { const it = itemsRef.current.find((x) => x.id === itemMenu.id); if (it) setNoteEdit(it.id); setItemMenu(null); }}>编辑内容</button>
+                <button type="button" className="hs-op-item is-danger" role="menuitem" onClick={() => { ops.remove(itemMenu.id); setSelected(null); setItemMenu(null); }}>删除</button>
               </div>
             </div>,
             document.body,

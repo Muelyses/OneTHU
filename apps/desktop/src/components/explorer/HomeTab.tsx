@@ -6,31 +6,24 @@
  * - 自由层（FreeBoard）：组件可互相重叠盖住、常态直接拖动/缩放（无编辑模式）、
  *   选中浮条删除/置顶、右键与「＋」添加、双击空白建便笺；
  * - 画笔恒在最高图层（组件盖不住），RGB 色板随时取色 + 撤销/清空。
+ *
+ * 2026-10-15：首页画布 = **系统板**（board.today）的自由层——画布与 OnePage 从此走
+ * 同一份数据（BoardDoc）与同一个组件（FreeBoard 参数化）。旧键
+ * onethu.freeboard.home.v1 的摆位由 px 层一次性并进系统板（state/freeBoard.ts 的
+ * migrateLegacyHomeOnce），这里不再有 seeding 这一步。
  */
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { FreeBoard } from "../FreeBoard.js";
-import { activeBoard, cellsOf, loadBoard } from "../../state/board.js";
+import { HOME_BOARD_ID, HOME_ORIENTATION } from "../../state/freeBoard.js";
 import { HomeChrome } from "./HomeSpheres.js";
-import { seedFromLegacyOnce } from "../../state/freeBoard.js";
-
-/** 首次进入自由白板：把旧网格系统板的内容搬进来一次（之后各管各的，互不同步） */
-function useSeedFromLegacy(): void {
-  useEffect(() => {
-    const doc = loadBoard();
-    const b = activeBoard(doc);
-    if (!b) return;
-    const items = cellsOf(b, "portrait").map((it) => ({ id: it.id, spec: it.spec }));
-    seedFromLegacyOnce(items);
-  }, []);
-}
 
 export function HomeTab(): ReactNode {
-  useSeedFromLegacy();
   return (
     <div className="home-tab home-free">
       {/* 时钟与一级坞 = 画布的一部分（2026-10-14 拍板）：挂进滚动容器随内容滚动；z 30 压住卡片 */}
       <HomeChrome />
-      <FreeBoard />
+      {/* 显式传系统板：首页是**一块**画布（不分朝向），与 OnePage 的按板读写成对称的两半 */}
+      <FreeBoard boardId={HOME_BOARD_ID} orientation={HOME_ORIENTATION} />
     </div>
   );
 }

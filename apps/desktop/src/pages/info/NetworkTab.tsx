@@ -1,4 +1,4 @@
-import { Btn } from "@onethu/gui";
+import { Btn, Text } from "@onethu/gui";
 /**
  * 校园网 —— usereg 自服务（thu-info-app network.tsx 移植 + 用户示例页增强）。
  * 数据：账号/状态/用户组（/users+/home）、流量/时长（/home w3 计费组表）、
@@ -209,8 +209,10 @@ export function NetworkTab() {
       {state === "captcha" ? (
         <Card style={{ marginBottom: 20, padding: 18 }}>
           <div style={{ fontWeight: 600, marginBottom: 10, fontSize: 14 }}>usereg 验证码登录</div>
-          <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 14, lineHeight: 1.6 }}>
-            密码与 INFO 密码一致；输入右侧图内验证码后登录（与网页端流程相同）。
+          <div style={{ marginBottom: 14, lineHeight: 1.6 }}>
+            <Text as="div" slot="label" tone="quiet">
+              密码与 INFO 密码一致；输入右侧图内验证码后登录（与网页端流程相同）。
+            </Text>
           </div>
           <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", marginBottom: 6 }}>
             <div
@@ -221,7 +223,7 @@ export function NetworkTab() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "1px solid var(--border, #ccc)",
+                border: "1px solid var(--og-line-2)",
                 borderRadius: 8,
                 cursor: "pointer",
                 overflow: "hidden",
@@ -230,11 +232,11 @@ export function NetworkTab() {
               title="点击刷新验证码"
             >
               {captchaLoading ? (
-                <span style={{ fontSize: 12, opacity: 0.6 }}>加载中…</span>
+                <Text slot="label" tone="faint">加载中…</Text>
               ) : captcha ? (
                 <img src={captcha} alt="验证码" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
-                <span style={{ fontSize: 12, opacity: 0.6 }}>点击重试</span>
+                <Text slot="label" tone="faint">点击重试</Text>
               )}
             </div>
             <input
@@ -244,12 +246,12 @@ export function NetworkTab() {
                 if (e.key === "Enter") void doLogin(code.trim());
               }}
               placeholder="验证码"
-              style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)", fontSize: 14 }}
+              style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--og-line-2)", fontSize: 14 }}
             />
             <Btn variant="outline" onClick={() => void doLogin(code.trim())} disabled={loginBusy || !code.trim()}>{loginBusy ? "登录中…" : "登录 usereg"}</Btn>
           </div>
           {loginErr ? (
-            <div style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: "#d33" }}>{loginErr}</div>
+            <div style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: "var(--og-error)" }}>{loginErr}</div>
           ) : null}
         </Card>
       ) : null}
@@ -287,7 +289,7 @@ export function NetworkTab() {
                       <div className="row-main">
                         <div className="row-title" style={{ fontFamily: "monospace", fontWeight: 600 }}>
                           {d.ip4 || "–"}
-                          {d.ip6 ? <span style={{ opacity: 0.6, fontSize: 10 }}> · {d.ip6}</span> : null}
+                          {d.ip6 ? <Text slot="micro" tone="faint"> · {d.ip6}</Text> : null}
                         </div>
                         <div className="row-sub">
                           {[d.mac ? `MAC ${d.mac}` : "", d.loggedAt ? `登录 ${d.loggedAt}` : ""].filter(Boolean).join(" · ") || "–"}
@@ -316,14 +318,14 @@ export function NetworkTab() {
                 placeholder="新数量"
                 type="number"
                 min={1}
-                style={{ width: 90, height: 34, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
+                style={{ width: 90, height: 34, padding: "0 10px", borderRadius: 8, border: "1px solid var(--og-line-2)" }}
               />
               <Btn variant="outline" onClick={() => void doSetCount()} disabled={countBusy || !newCount}>{countBusy ? "提交中…" : "修改"}</Btn>
-              <span style={{ fontSize: 12, opacity: 0.7 }}>账号下每个静态 IP 计一个连接数，谨慎修改</span>
+              <Text slot="label" tone="faint">账号下每个静态 IP 计一个连接数，谨慎修改</Text>
             </div>
-            {countMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "#0866c6" }}>{countMsg}</div> : null}
+            {countMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "var(--og-info)" }}>{countMsg}</div> : null}
 
-            <div style={{ borderTop: "1px solid var(--border, #eee)", margin: "16px 0", opacity: 0.5 }} />
+            <div style={{ borderTop: "1px solid var(--og-line-1)", margin: "16px 0", opacity: 0.5 }} />
             {!showPwd ? (
               <Btn variant="ghost" onClick={() => setShowPwd(true)}>修改 Tsinghua-Secure 密码
               </Btn>
@@ -334,7 +336,7 @@ export function NetworkTab() {
                   value={pwd1}
                   onChange={(e) => setPwd1(e.target.value)}
                   placeholder="新密码"
-                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
+                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--og-line-2)" }}
                 />
                 <input
                   type="password"
@@ -344,7 +346,7 @@ export function NetworkTab() {
                     if (e.key === "Enter") void doChpwd();
                   }}
                   placeholder="确认新密码"
-                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
+                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--og-line-2)" }}
                 />
                 <div style={{ fontSize: 12, opacity: 0.7, lineHeight: 1.6 }}>
                   8~19 位，字母区分大小写，不能与用户名相同，至少含数字、字母、特殊字符(仅限 !@#$%^*().~)中的两种
@@ -356,7 +358,7 @@ export function NetworkTab() {
                 </div>
               </div>
             )}
-            {pwdMsg ? <div style={{ marginTop: 10, fontSize: 13, color: "#0866c6" }}>{pwdMsg}</div> : null}
+            {pwdMsg ? <div style={{ marginTop: 10, fontSize: 13, color: "var(--og-info)" }}>{pwdMsg}</div> : null}
           </Card>
         </>
       ) : null}

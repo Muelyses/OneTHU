@@ -2020,17 +2020,17 @@ select.input:focus {
   right: 18px;
   bottom: 18px;
   z-index: 90;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--md-sys-color-surface-container-lowest);
-  color: var(--md-sys-color-on-surface-variant);
+  width: var(--ctl-size);
+  height: var(--ctl-size);
+  border-radius: var(--ctl-radius);
+  border: var(--ctl-border);
+  background: var(--ctl-bg);
+  color: var(--ctl-fg);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--md-sys-elevation-2, 0 2px 10px rgba(0, 0, 0, 0.14));
+  box-shadow: var(--ctl-shadow);
   transition:
     color var(--dur-2) var(--ease-out),
     box-shadow var(--dur-2) var(--ease-out);
@@ -8174,6 +8174,17 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --glass-card-fill: rgba(255, 255, 255, 0.44);
   --glass-card-fill-2: rgba(255, 255, 255, 0.44);
   --glass-card-fill-3: rgba(240, 240, 242, 0.44);
+  /* ── 控件令牌（2026-10-14 用户拍板：「模仿强制刷新按钮的风格」，一处定义全站引用）──
+     规格取自 .hard-refresh-fab 的原始声明：圆(50%) + 实底 --surface + 1px --border
+     + 图标用 --text-2 + 一层轻投影。此前该按钮用 surface-container-lowest，
+     而其余圆钮用 --surface；两者在 [data-wallpaper-lum] 分支里会被重映射成不同值 → 深浅不一。
+     现在全部走这几个令牌，改一处即全站一致。 */
+  --ctl-size: 44px;
+  --ctl-radius: 50%;
+  --ctl-bg: var(--surface);
+  --ctl-border: 1px solid var(--border);
+  --ctl-fg: var(--text-2);
+  --ctl-shadow: var(--md-sys-elevation-2, 0 2px 10px rgba(0, 0, 0, 0.14));
   /* System 名同步玻璃化：直接引用 System 令牌的 90 处与 Compat 同材质 */
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.44);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.44);
@@ -8250,13 +8261,16 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 
 /* ---- 图标按钮 / chip = chip tier ---- */
 .icon-btn {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top);
+  /* 模仿强制刷新钮的材质（用户点名）：实底 + 细描边 + 深图标，不做玻璃叠加。
+     本块是后置覆盖（原为 tint 渐变 + chip blur + 白 rim），会盖掉 base 规则，故必须一起改。 */
+  background: var(--ctl-bg);
+  border: var(--ctl-border);
+  color: var(--ctl-fg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
 }
-.icon-btn:hover { background: linear-gradient(180deg, var(--glass-tint-top-hover), var(--glass-tint-bottom-hover)); }
+.icon-btn:hover { background: var(--hover); color: var(--text-1); }   /* 同基准：悬停叠状态层，不做玻璃渐变 */
 .chip-btn {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   border: 1px solid var(--glass-border);

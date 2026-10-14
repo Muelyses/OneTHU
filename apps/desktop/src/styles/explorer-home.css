@@ -345,12 +345,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   align-items: center;
 }
 .board-fab {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-2);
+  width: var(--ctl-size);          /* 与强制刷新钮同规格（用户点名「模仿它的风格」） */
+  height: var(--ctl-size);
+  border-radius: var(--ctl-radius);
+  border: var(--ctl-border);
+  background: var(--ctl-bg);
+  color: var(--ctl-fg);
   font-size: var(--text-md);
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
@@ -457,9 +457,9 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   /* 材质对齐强制刷新钮（用户点名）：surface 实底 + 1px 细描边；
      笔画色由 --text-2 加深到 --text-1 —— 图标是 SVG（跟着 currentColor），
      对比度引擎只管文字叶子、不管图标，所以浅笔画压浅玻璃就会"看不见"。 */
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-1);
+  border: var(--ctl-border);
+  background: var(--ctl-bg);
+  color: var(--ctl-fg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -653,12 +653,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   gap: 8px;
 }
 .free-fab {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-2);
+  width: var(--ctl-size);
+  height: var(--ctl-size);
+  border-radius: var(--ctl-radius);
+  border: var(--ctl-border);
+  background: var(--ctl-bg);
+  color: var(--ctl-fg);
   font-size: var(--text-md);
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);

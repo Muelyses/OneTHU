@@ -232,6 +232,57 @@ function settle(el: HTMLElement, resettle = false): void {
 
 /** 壁纸/主题/玻璃档变化：清掉已定格的内联色，就地按新背景重取一次。
  *  刻意不新增滚动触发——那是首版乱闪的根源，此函数只由这三类显式变更调用。 */
+/* ── 图标自适应（2026-10-14 用户点名）──────────────────────────────
+   图标是 SVG，颜色走 currentColor，**没有**文本子节点 → 上面的 settle() 永远不会处理它们，
+   于是浅笔画压在浅玻璃上等于隐形（用户：「很多 icon 没有颜色变深导致看不见」）。
+   这里给图标单独的定格：找「含 SVG 且自身无文本」的容器，按同一套候选取优规则改它的 color
+   （SVG 继承 currentColor）。同样只在首进视口定格一次，并在环境变更时随 settleAll 重取。 */
+function isIconHost(el: HTMLElement): boolean {
+  if (!el.querySelector("svg")) return false;
+  for (const n of Array.from(el.childNodes)) {
+    if (n.nodeType === 3 && (n.textContent ?? "").trim()) return false;
+  }
+  return true;
+}
+
+function settleIcon(el: HTMLElement, resettle = false): void {
+  if (!resettle && tracked.has(el)) return;
+  tracked.add(el);
+  try {
+    if (el.closest('[data-tx="keep"]')) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 6 || rect.height < 6) return;
+    if (rect.bottom < -120 || rect.top > window.innerHeight + 120) return;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === "hidden" || cs.display === "none") return;
+    const cm = (cs.color.match(/[\d.]+/g) ?? []).map(Number);
+    if (cm.length < 3) return;
+    const cr = cm[0] ?? 0, cg = cm[1] ?? 0, cb = cm[2] ?? 0;
+    // 纯白/纯黑会被认成"已达标"，但它们正是"隐形笔画"本身 → 必须重算
+    const nearExtreme = cr > 240 || cr < 24;
+    const bg = compositeLum(el);
+    const tLum = lum([cr, cg, cb]);
+    const white = contrast(1, bg), black = contrast(0, bg);
+    const want = white >= black ? WANT_DARK : WANT_LIGHT;
+    const wantIsWhite = white >= black;
+    const curIsWhite = tLum > 0.5;
+    if (!nearExtreme) {
+      if (contrast(tLum, bg) >= MIN_CONTRAST) {
+        if (resettle && el.dataset.txi === "lock") {
+          el.style.removeProperty("color");
+          delete el.dataset.txi;
+        }
+        return;
+      }
+    } else if (wantIsWhite === curIsWhite && contrast(tLum, bg) >= MIN_CONTRAST) {
+      return;   // 已经是正确极性且够清楚：不碰
+    }
+    if (wantIsWhite === curIsWhite && contrast(tLum, bg) >= MIN_CONTRAST) return;
+    el.style.setProperty("color", want);
+    el.dataset.txi = "lock";
+  } catch { /* 单叶失败不影响整体 */ }
+}
+
 function settleAll(): void {
   const root = (document.querySelector(".explorer-shell") as HTMLElement | null) ?? document.body;
   if (!root) return;
@@ -245,15 +296,24 @@ function settleAll(): void {
     budget--;
     if (el instanceof SVGElement || el.closest('[data-tx="keep"]')) continue;
     const hasOwnText = [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim());
-    if (!hasOwnText || el.children.length > 0) continue;
+    const isTextLeaf = hasOwnText && el.children.length === 0;
+    const isIcon = !hasOwnText && isIconHost(el);
+    if (!isTextLeaf && !isIcon) continue;
     if (el.dataset.tx === "lock") {
       el.style.removeProperty("color");
       delete el.dataset.tx;
     }
+    if (el.dataset.txi === "lock") {
+      el.style.removeProperty("color");
+      delete el.dataset.txi;
+    }
     if (tracked.has(el)) list.push(el);
   }
   // 一次性清干净再重算，避免集合读写交错漏元素
-  for (const el of list) settle(el, true);
+  for (const el of list) {
+    if (isIconHost(el) && ![...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim())) settleIcon(el, true);
+    else settle(el, true);
+  }
 }
 
 function scanNew(): void {
@@ -268,10 +328,13 @@ function scanNew(): void {
     node = walker.nextNode() as HTMLElement | null;
     budget--;
     if (el instanceof SVGElement || tracked.has(el)) continue;
-    const hasOwnText = [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim());
-    if (!hasOwnText || el.children.length > 0) continue;
+    const ownsText = [...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim());
+    const isTextLeaf = ownsText && el.children.length === 0;
+    const isIcon = !ownsText && isIconHost(el);
+    if (!isTextLeaf && !isIcon) continue;
     tracked.add(el);
     if (io) io.observe(el);
+    else if (isIcon) settleIcon(el);
     else settle(el);
   }
 }
@@ -281,7 +344,10 @@ function startIO(): void {
     for (const e of entries) {
       if (!e.isIntersecting) continue;
       io?.unobserve(e.target);
-      settle(e.target as HTMLElement);   // 用户看到的那一刻，一次定格
+      const t = e.target as HTMLElement;
+      // 用户看到的那一刻，一次定格（图标与文字同规则，各自分流）
+      if (isIconHost(t) && ![...t.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim())) settleIcon(t);
+      else settle(t);
     }
   }, { root: null, threshold: 0.01 });
 }

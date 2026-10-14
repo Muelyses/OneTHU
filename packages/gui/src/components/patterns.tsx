@@ -235,6 +235,23 @@ function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeE
     ro.observe(host);
     return () => ro.disconnect();
   }, [apply]);
+  /* 第二观测：激活项自身的宽度抖动（「进行中 0」→「进行中 12」数字宽度变化、
+     label 文案切换）——项目条自身变宽不触发宿主缩放（full=1fr 固定总宽），也必须重测。 */
+  useEffect(() => {
+    if (activeEl == null || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => apply());
+    ro.observe(activeEl);
+    return () => ro.disconnect();
+  }, [apply]);
+  /* 挂载后双 rAF 补拍 + 400ms 字体交换兜底：首测常常落在「将变未变」的几何上
+     （CJK 字体、tabular 数字的行宽在字体交换后才稳定）——这是偏移的另一半来源。 */
+  useEffect(() => {
+    let r1 = 0;
+    let r2 = 0;
+    const t1 = window.setTimeout(() => { r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(apply); }); }, 120);
+    const t2 = window.setTimeout(apply, 400);
+    return () => { window.clearTimeout(t1); window.clearTimeout(t2); cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [apply]);
 }
 
 export function Tabs({ items, value, onChange, variant = "line", sticky, scope, className }: TabsProps): ReactNode {

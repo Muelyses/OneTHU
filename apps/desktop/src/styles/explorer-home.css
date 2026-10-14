@@ -772,10 +772,13 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   border-color: var(--glass-border);
   box-shadow: inset 0 1px 0 var(--glass-rim-top), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+/* 悬停反馈：11% 白渐变在浅色面上几乎看不见（基准按钮自身的毛病）——改为状态层叠色，
+   与 .icon-btn:hover 同族；.hs-logo/.hs-detail-btn 的玻璃身份不动。 */
 .hs-logo:hover,
 .hs-dock-btn:hover,
 .hs-detail-btn:hover {
-  background: linear-gradient(180deg, var(--glass-tint-top-hover), var(--glass-tint-bottom-hover));
+  background: var(--hover);
+  color: var(--text-1);
 }
 
 /* 菜单/弹层 = menu tier（浮于任意内容，必须可读） */

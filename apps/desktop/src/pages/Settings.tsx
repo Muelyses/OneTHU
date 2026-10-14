@@ -437,7 +437,7 @@ export function SettingsPage() {
               <div className="setting-desc">
                 日历「OneTHU 日程」· 上次同步 {syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString() : "—"} · {syscal.lastCount} 条。课表与日程变化后会自动更新（含提前 15 分钟的课程提醒）。
                 {syscal.lastError ? (
-                  <div style={{ marginTop: 6, color: "var(--red, #c04848)" }}>最近一次同步失败：{syscal.lastError}</div>
+                  <OGText as="div" slot="label" tone="error">最近一次同步失败：{syscal.lastError}</OGText>
                 ) : null}
                 {sysMsg ? <ErrorLine text={sysMsg} tone="quiet" /> : null}
               </div>

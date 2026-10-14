@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 插件页（侧栏一级入口「插件」）：
@@ -945,7 +946,7 @@ export function SettingsBody({
               <span>{f.label}</span>
               {f.auto ? (
                 /* 自动维护：只读展示实时值（不受草稿影响），避免手改与误覆盖 */
-                <input className="input" type="text" readOnly value={liveSettings[f.key] ?? ""} placeholder="（尚未签发）" />
+                <Input readOnly value={liveSettings[f.key] ?? ""} placeholder="（尚未签发）" />
               ) : f.type === "select" ? (
                 <select
                   className="input"

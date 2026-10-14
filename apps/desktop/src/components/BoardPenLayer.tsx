@@ -16,21 +16,19 @@ import {
   type PenStroke,
 } from "../state/boardPen.js";
 
+/** 画笔画布固定高度（与卡片位置/数量完全无关；卡片再往下拖也不会改变它） */
+const BOARD_CANVAS_H = 2400;
+
 export function BoardPenLayer({
   boardId,
   orientation,
   penOn,
   color,
-  contentExtent = 0,
 }: {
   boardId: string;
   orientation: string;
   penOn: boolean;
   color: string;
-  /** 画布内容底边（含卡片下方留白）。0 = 只有一屏。
-   *  卡片是绝对定位，不会撑高 .freeboard，所以笔层必须显式按内容高度铺，
-   *  否则「底下扩展出来的那片」画不了（用户点名）。 */
-  contentExtent?: number;
 }): ReactNode {
   const snap = useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const key = penKeyOf(boardId, orientation);
@@ -108,7 +106,10 @@ export function BoardPenLayer({
       className={"board-pen" + (penOn ? " is-on" : "")}
       viewBox="0 0 1000 1000"
       preserveAspectRatio="none"
-      style={contentExtent > 0 ? { minHeight: contentExtent + "px" } : undefined}
+      /* 画布尺寸**固定**，与内容无关（用户点名）：
+         曾经用「最下面那张卡的底边」推算高度，结果拖一下卡片画布就变长/变短，
+         笔迹的归一化坐标被一起拉伸重映射 —— 画布不是内容的一部分，它是一块固定的地。 */
+      style={{ minHeight: BOARD_CANVAS_H + "px" }}
       aria-hidden="true"
     >
       {all.map((s) => (

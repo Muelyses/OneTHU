@@ -2024,7 +2024,12 @@ select.input:focus {
   height: var(--ctl-size);
   border-radius: var(--ctl-radius);
   border: var(--ctl-border);
-  background: var(--ctl-bg);
+  /* 玻璃配方与其它圆钮同款：tint 渐变叠在 --surface 上 + backdrop 模糊 */
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--ctl-bg);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
   color: var(--ctl-fg);
   display: flex;
   align-items: center;
@@ -8181,6 +8186,9 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
      现在全部走这几个令牌，改一处即全站一致。 */
   --ctl-size: 44px;
   --ctl-radius: 50%;
+  /* --ctl-bg 就是「强制刷新钮的填充」：原声明是 surface-container-lowest，而各圆钮用 --surface，
+     两者在不同上下文会解析成不同值 → 四个钮永远差一点。现统一到 --surface（档位令牌）：
+     它随四档走（clear .30 / 均衡 .44 / rich .60 / deep .74），且与卡片、栏体同族。 */
   --ctl-bg: var(--surface);
   --ctl-border: 1px solid var(--border);
   --ctl-fg: var(--text-2);

@@ -347,7 +347,11 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   height: var(--ctl-size);
   border-radius: var(--ctl-radius);
   border: var(--ctl-border);
-  background: var(--ctl-bg);
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--ctl-bg);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
   color: var(--ctl-fg);
   font-size: var(--text-md);
   cursor: pointer;
@@ -456,7 +460,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   height: var(--ctl-size);
   border-radius: var(--ctl-radius);
   border: var(--ctl-border);
-  background: var(--ctl-bg);
+  /* 玻璃配方与强制刷新钮/浮钮逐项同款：tint 渐变叠在 --ctl-bg 上 + 同一条 backdrop 模糊 */
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--ctl-bg);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
   color: var(--ctl-fg);
   box-shadow: var(--ctl-shadow);
   display: inline-flex;
@@ -656,7 +665,11 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   height: var(--ctl-size);
   border-radius: var(--ctl-radius);
   border: var(--ctl-border);
-  background: var(--ctl-bg);
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--ctl-bg);
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
   color: var(--ctl-fg);
   font-size: var(--text-md);
   cursor: pointer;

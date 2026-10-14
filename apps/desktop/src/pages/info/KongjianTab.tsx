@@ -1,4 +1,4 @@
-import { Input } from "@onethu/gui";
+import { Input, Tag, Text, TextArea } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
@@ -245,7 +245,7 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
         <>
           <Card style={{ marginBottom: 12, padding: "12px 14px" }}>
             <div className="field" style={{ marginBottom: 10 }}>
-              <label style={{ fontSize: 12, opacity: 0.7 }}>公共空间</label>
+              <label><Text slot="label" tone="faint">公共空间</Text></label>
               <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
                 <div style={{ flex: "1 1 auto", minWidth: 0 }}>
                   <SearchSelect
@@ -265,7 +265,7 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
             </div>
             {page.rooms.length > 0 ? (
               <div style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>房间</div>
+                <div><Text slot="label" tone="faint">房间</Text></div>
                 <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
                   <div style={{ flex: "1 1 auto", minWidth: 0 }}>
                     <SearchSelect
@@ -286,7 +286,7 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
             ) : null}
             {page.dates.length > 0 ? (
               <div>
-                <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>日期</div>
+                <div><Text slot="label" tone="faint">日期</Text></div>
                 <Select value={date} onChange={(value) => pickDate(value)}>{page.dates.map((d) => (
                     <option key={d} value={d}>
                       {d}
@@ -295,7 +295,7 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
               </div>
             ) : null}
             {page.info ? (
-              <div style={{ fontSize: 11, opacity: 0.6, marginTop: 8 }}>{page.info}</div>
+              <div style={{ marginTop: 8 }}><Text slot="micro" tone="faint">{page.info}</Text></div>
             ) : null}
           </Card>
 
@@ -308,7 +308,7 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
             .filter(([, list]) => list.length > 0)
             .map(([label, list]) => (
               <Card key={label} style={{ marginBottom: 12, padding: "12px 14px" }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{label}</div>
+                <Text as="div" slot="body" weight="semibold">{label}</Text>
                 <div className="slot-grid">
                   {list.map((slot, i) => {
                     const bookable = slotBookable(slot);
@@ -339,14 +339,12 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
                 <div style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }}>{<Input value={profile.sid} onChange={(value) => setProfile({ ...profile, sid: value })} placeholder="学号" />}</div>
                 <div style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }}>{<Input value={profile.tel} onChange={(value) => setProfile({ ...profile, tel: value })} placeholder="电话" />}</div>
               </div>
-              <textarea className="input" value={purpose} onChange={(e) => setPurpose(e.target.value)} placeholder="用途（选填）" rows={2} style={{ width: "100%", fontSize: 13, padding: "8px 10px", marginBottom: 8, boxSizing: "border-box", resize: "vertical" }} />
+              <TextArea value={purpose} onChange={(value) => setPurpose(value)} placeholder="用途（选填）" rows={2} />
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
                 <Btn variant="outline" onClick={() => setPicked(null)}>取消
                 </Btn>
-                  <Btn variant="outline" onClick={() => setPicked(null)}>取消
-                  </Btn>
-                  <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void submit()}>{busy ? "提交中…" : "确定预约"}</Btn>
-                </div>
+                <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void submit()}>{busy ? "提交中…" : "确定预约"}</Btn>
+              </div>
               </Card>
             </>
           ) : null}

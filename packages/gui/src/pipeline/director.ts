@@ -414,7 +414,7 @@ export function installOneGUI(opts: InstallOptions = {}): () => void {
     return touch && window.innerWidth < 840 ? "mobile" : "desktop";
   });
   const prefersDark = opts.prefersDark ?? (() => matchMedia("(prefers-color-scheme: dark)").matches);
-  og.mount(root, { platform, prefersDark, storage });
+  og.mount(root, { platform, prefersDark, densityByPlatform: opts.densityByPlatform, storage });
   if (opts.initial) og.set(opts.initial, { persist: false });
   og.syncEnv();
 

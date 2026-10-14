@@ -596,19 +596,15 @@ export function SettingsPage() {
           （基础设置 / 高级配置）——分节与页签都已从这里移除，见 pages/Plugins.tsx 的 OH 入口。 */}
       <SectionHead title="安全" />
       <Card>
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">记住的密码</div>
-            <div className="setting-desc">
-              {hasSaved
-                ? "已在本机保存，重启后自动登录"
-                : "未保存；登录时勾选「记住密码」即可启用"}
-            </div>
-          </div>
-          {hasSaved ? (
-            <Btn variant="outline" disabled={clearing} onClick={() => void onClear()}>{clearing ? "清除中…" : "清除"}</Btn>
-          ) : null}
-        </div>
+        <SettingsRow
+          title="记住的密码"
+          sub={hasSaved ? "已在本机保存，重启后自动登录" : "未保存；登录时勾选「记住密码」即可启用"}
+          control={
+            hasSaved ? (
+              <Btn variant="outline" size="sm" disabled={clearing} onClick={() => void onClear()}>{clearing ? "清除中…" : "清除"}</Btn>
+            ) : null
+          }
+        />
       </Card>
       <TabManageModal
         open={manageOpen}

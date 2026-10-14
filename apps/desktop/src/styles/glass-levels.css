@@ -4,34 +4,34 @@
 html[data-glass="clear"] {
   --surface: rgba(255, 255, 255, 0.30);
   --surface-2: rgba(255, 255, 255, 0.30);
-  --surface-3: rgba(255, 255, 255, 0.30);
+  --surface-3: rgba(240, 240, 242, 0.30);
   --dsw-alias-bg-base: rgba(255, 255, 255, 0.30);
   --glass-fill: rgba(255, 255, 255, 0.30);
   --glass-fill-regular: rgba(255, 255, 255, 0.30);
   --glass-tint: rgba(255, 255, 255, 0.26);
-  --glass-menu-fill: rgba(255, 255, 255, 0.30);
+  --glass-menu-fill: rgba(246, 247, 249, 0.30);
   --glass-menu-blur: var(--glass-refract) blur(22px) saturate(160%);
   --glass-chip-blur: var(--glass-refract) blur(20px) saturate(155%);
   --glass-panel-blur: var(--glass-refract) blur(20px) saturate(155%);
   --lg-blur-clear: blur(22px) saturate(160%);
   --glass-card-fill: rgba(255, 255, 255, 0.30);
   --glass-card-fill-2: rgba(255, 255, 255, 0.30);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.30);
+  --glass-card-fill-3: rgba(240, 240, 242, 0.30);
   --glass-shadow: 0 10px 30px rgba(30, 33, 45, 0.07);
 }
 
 html[data-glass="clear"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.06);
   --surface-2: rgba(255, 255, 255, 0.06);
-  --surface-3: rgba(255, 255, 255, 0.06);
+  --surface-3: rgba(26, 26, 32, 0.06);
   --dsw-alias-bg-base: rgba(18, 19, 24, 0.4);
   --glass-fill: rgba(255, 255, 255, 0.06);
-  --glass-fill-regular: rgba(30, 30, 36, 0.36);
+  --glass-fill-regular: rgba(30, 30, 36, 0.06);
   --glass-tint: rgba(255, 255, 255, 0.04);
   --glass-menu-fill: rgba(22, 22, 27, 0.06);
   --glass-card-fill: rgba(255, 255, 255, 0.06);
   --glass-card-fill-2: rgba(255, 255, 255, 0.06);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.06);
+  --glass-card-fill-3: rgba(26, 26, 32, 0.06);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.06);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.06);
   --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.06);
@@ -41,15 +41,15 @@ html[data-glass="clear"][data-scheme="dark"] {
 html[data-glass="rich"] {
   --surface: rgba(255, 255, 255, 0.60);
   --surface-2: rgba(255, 255, 255, 0.60);
-  --surface-3: rgba(255, 255, 255, 0.60);
+  --surface-3: rgba(240, 240, 242, 0.60);
   --dsw-alias-bg-base: rgba(255, 255, 255, 0.60);
   --glass-fill: rgba(255, 255, 255, 0.60);
   --glass-fill-regular: rgba(255, 255, 255, 0.60);
   --glass-tint: rgba(255, 255, 255, 0.4);
-  --glass-menu-fill: rgba(255, 255, 255, 0.60);
+  --glass-menu-fill: rgba(246, 247, 249, 0.60);
   --glass-card-fill: rgba(255, 255, 255, 0.60);
   --glass-card-fill-2: rgba(255, 255, 255, 0.60);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.60);
+  --glass-card-fill-3: rgba(240, 240, 242, 0.60);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.60);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.60);
   --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.60);
@@ -59,15 +59,15 @@ html[data-glass="rich"] {
 html[data-glass="rich"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.14);
   --surface-2: rgba(255, 255, 255, 0.14);
-  --surface-3: rgba(255, 255, 255, 0.14);
+  --surface-3: rgba(26, 26, 32, 0.14);
   --dsw-alias-bg-base: rgba(18, 19, 24, 0.6);
   --glass-fill: rgba(255, 255, 255, 0.14);
-  --glass-fill-regular: rgba(30, 30, 36, 0.72);
+  --glass-fill-regular: rgba(30, 30, 36, 0.14);
   --glass-tint: rgba(255, 255, 255, 0.08);
   --glass-menu-fill: rgba(22, 22, 27, 0.14);
   --glass-card-fill: rgba(255, 255, 255, 0.14);
   --glass-card-fill-2: rgba(255, 255, 255, 0.14);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.14);
+  --glass-card-fill-3: rgba(26, 26, 32, 0.14);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.14);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.14);
   --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.14);
@@ -76,15 +76,15 @@ html[data-glass="rich"][data-scheme="dark"] {
 html[data-glass="deep"] {
   --surface: rgba(255, 255, 255, 0.74);
   --surface-2: rgba(255, 255, 255, 0.74);
-  --surface-3: rgba(255, 255, 255, 0.74);
+  --surface-3: rgba(240, 240, 242, 0.74);
   --dsw-alias-bg-base: rgba(255, 255, 255, 0.74);
   --glass-fill: rgba(255, 255, 255, 0.74);
   --glass-fill-regular: rgba(255, 255, 255, 0.74);
   --glass-tint: rgba(255, 255, 255, 0.64);
-  --glass-menu-fill: rgba(255, 255, 255, 0.74);
+  --glass-menu-fill: rgba(246, 247, 249, 0.74);
   --glass-card-fill: rgba(255, 255, 255, 0.74);
   --glass-card-fill-2: rgba(255, 255, 255, 0.74);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.74);
+  --glass-card-fill-3: rgba(240, 240, 242, 0.74);
   --glass-shadow: 0 12px 34px rgba(30, 33, 45, 0.16);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.74);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.74);
@@ -95,15 +95,15 @@ html[data-glass="deep"] {
 html[data-glass="deep"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.20);
   --surface-2: rgba(255, 255, 255, 0.20);
-  --surface-3: rgba(255, 255, 255, 0.20);
+  --surface-3: rgba(26, 26, 32, 0.20);
   --dsw-alias-bg-base: rgba(18, 19, 24, 0.78);
   --glass-fill: rgba(255, 255, 255, 0.20);
-  --glass-fill-regular: rgba(30, 30, 36, 0.88);
+  --glass-fill-regular: rgba(30, 30, 36, 0.20);
   --glass-tint: rgba(255, 255, 255, 0.1);
   --glass-menu-fill: rgba(22, 22, 27, 0.20);
   --glass-card-fill: rgba(255, 255, 255, 0.20);
   --glass-card-fill-2: rgba(255, 255, 255, 0.20);
-  --glass-card-fill-3: rgba(255, 255, 255, 0.20);
+  --glass-card-fill-3: rgba(26, 26, 32, 0.20);
   --glass-shadow: 0 22px 46px rgba(0, 0, 0, 0.5);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.20);
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.20);

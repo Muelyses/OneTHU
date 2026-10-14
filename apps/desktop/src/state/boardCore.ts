@@ -356,6 +356,8 @@ export interface BoardPxItem {
   h: number;
   folded?: boolean;
   opacity?: number;
+  /** 位置锁定（自由画布上=挡拖动/缩放；面板上的「钉」） */
+  pinned?: boolean;
 }
 
 export function rectHit(a: BoardRect, b: BoardRect): boolean {
@@ -367,6 +369,7 @@ export function toPxItem(item: BoardItem): BoardPxItem {
   const out: BoardPxItem = { id: item.id, spec: item.spec, x: r.x, y: r.y, w: r.w, h: r.h };
   if (item.folded === true) out.folded = true;
   if (typeof item.opacity === "number") out.opacity = item.opacity;
+  if (item.pinned === true) out.pinned = true;
   return out;
 }
 
@@ -421,9 +424,20 @@ export function opacityPx(items: readonly BoardItem[], id: string, opacity: numb
   return patchPx(items, id, (it) => (it.opacity === v ? it : { ...it, opacity: v }));
 }
 
-/** 改写条目 props（文件夹入口、模板选择器、便笺文字…都走它）。 */
+/**
+ * 改写条目内容/属性：文字组件写 `spec.text`（内容就取自那里），其余写 `spec.props`。
+ * 口径与 grid 时代的 boardEdit.setItemProps 一致——文字、文件夹入口、模板选择器共用这一条。
+ */
 export function propsPx(items: readonly BoardItem[], id: string, props: Record<string, unknown> | undefined): BoardItem[] | null {
-  return patchPx(items, id, (it) => ({ ...it, spec: { ...it.spec, props } }));
+  return patchPx(items, id, (it) => {
+    const spec: WidgetSpec = it.spec.kind === "text" && typeof props?.text === "string" ? { ...it.spec, text: props.text } : it.spec;
+    return { ...it, spec, props: { ...it.props, ...props } };
+  });
+}
+
+/** 固定（位置锁定）：自由画布上=挡拖动/缩放，右键菜单仍可取消固定（否则就锁死了）。 */
+export function pinPx(items: readonly BoardItem[], id: string): BoardItem[] | null {
+  return patchPx(items, id, (it) => ({ ...it, pinned: !it.pinned }));
 }
 
 export function removePx(items: readonly BoardItem[], id: string): BoardItem[] | null {

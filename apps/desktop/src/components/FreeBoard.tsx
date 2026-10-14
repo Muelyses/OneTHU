@@ -1,22 +1,26 @@
 /**
  * 自由图层白板（2026-10-13 定稿，霖：要可以互相重叠盖住的高级白板）。
  *
- * **一块板一份数据**（2026-10-15）：组件按 `{ boardId, orientation }` 参数化，
- * 读写的就是 BoardDoc 里那块板那个朝向（state/freeBoard.ts 的 px 层）；
- * 首页 = 系统板（HOME_BOARD_ID / portrait，HomeTab 显式传入），OnePage = 用户板。
+ * **一块板一份数据**（2026-10-15）：组件按 `{ boardId, orientation }` 参数化，读写的就是
+ * BoardDoc 里那块板那个朝向（state/freeBoard.ts 的 px 层）。首页 = 系统板（HomeTab 显式传入），
+ * OnePage = 用户板（OnePageSurface 传 activeBoardId）——**首页与 OnePage 从此是同一块画布**，
+ * 「假白板」（4/8 列网格 + 编辑态）那条线整体退役。
  *
  * 交互（**常态即所即**，没有编辑模式）：
- *   - 拖动：按住组件直接拖（4px 阈值区分点击），鼠标触屏同管线；
+ *   - 拖动：按住组件直接拖（4px 阈值区分点击），鼠标触屏同管线；固定的组件拖动被挡；
  *   - 缩放：选中后四角 + 右/下把手，自由拉（下限 120×64）；
- *   - 点选：浮出迷你条（置顶 / 折叠（便笺）/ 删除），Delete 删、Esc 取消、方向键微调；
- *   - 图层：选中/拖动即置顶；数组序 = 图层序，后放的在上；
+ *   - 点选：浮出迷你条（置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除），Delete 删、Esc 取消、方向键微调；
+ *   - 图层：选中/拖动即浮到与自己重叠的那簇之上；数组序 = 图层序，后放的在上；
+ *   - 右键 / 长按组件：七项菜单（选择条目 / 改变大小 / 编辑 / 固定 / 置顶 / 详情 / 删除）；
  *   - 右键空白 / 「＋」浮钮：添加组件（放在指针处）；双击空白：快速建便笺；
- *   - 画笔：恒在**最高图层**（z 90，组件盖不住、拖不走），RGB 色板任意取色 + 撤销/清空。
+ *   - 双击便笺或文字：就地编辑；画笔恒在最高图层（z 90），RGB 取色 + 撤销/清空。
  *
- * 渲染复用旧卡体注册表（BOARD_CARD_RENDERERS）：px 尺寸近似映射成档位提示
- * （{w,h} 取整档），卡内分档排版能力保留；重叠/盖住是特性，不再有推挤。
+ * 组件体走 WidgetHost（与旧白板页同一套渲染语义：divider / 文字 / 跳转 / 原子入口 / 卡片 /
+ * 自定义 + 降级壳），渲染器 = 白板自足实现 + 各页面发布的卡体 + 活数据三层合并
+ * （列表类组件因此在任何页面都能显示真实内容，而不是离开来源页就变空壳）。
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { ActionSheet, Btn } from "@onethu/gui";
 import { createPortal } from "react-dom";
 import {
   freeBoardOps,
@@ -28,34 +32,38 @@ import {
   subscribeFreeBoard,
   type FreeItem,
 } from "../state/freeBoard.js";
-import { allWidgetDefs } from "../state/widgets.js";
-import type { WidgetDef } from "../state/widgetMeta.js";
+import { ATOM_TEMPLATE_IDS, allWidgetDefs } from "../state/widgets.js";
+import { defForSpec, isTierControlled, type WidgetDef, type WidgetSize } from "../state/widgetMeta.js";
+import { planForItem } from "../state/widgetRender.js";
+import { BOARD_TEMPLATES, templateItems, type BoardTemplate } from "../state/boardTemplates.js";
+import { WidgetHost, type WidgetRenderer } from "./WidgetHost.js";
+import { BoardAddDrawer } from "./BoardAddDrawer.js";
+import { BoardItemPicker, type PickerItem } from "./BoardItemPicker.js";
 import { BOARD_CARD_RENDERERS } from "./boardCards.js";
-import { cardRendererKey } from "../state/liveCards.js";
+import { cardRendererKey, liveRenderers, subscribeLiveCards } from "../state/liveCards.js";
+import { cardRenderers, subscribeTodayCards } from "../state/todayCards.js";
 import { resolveAtom } from "../state/atoms.js";
 import { atomRefFromKey } from "../state/favorites.js";
 import { useApp } from "../state/context.js";
-import { loadBoard } from "../state/board.js";
+import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
+import { consumeEditOnOpen } from "../state/boardIntent.js";
 import { openOnePage } from "../state/onePage.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
-import { FolderIcon, IconChevron } from "./Icons.js";
-import { NAV } from "./Layout.js";
+import { FolderIcon } from "./Icons.js";
+import { Card, Empty, NAV, PageHead } from "./Layout.js";
 import { PEN_COLORS, penKeyOf, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes } from "../state/boardPen.js";
 import { sanitizeUserHtml, widgetById as userWidgetById } from "../state/userext.js";
 import { BoardPenLayer } from "./BoardPenLayer.js";
+import { useContextMenu, type CtxItem } from "./ContextMenu.js";
+import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
+import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
+import { useLearnData } from "../state/data.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
-import type { Orientation } from "../state/boardCore.js";
 
 const DRAG_THRESHOLD = 4;
+/** 长按出菜单（与全站口径一致：ContextMenu 的 LONG_PRESS_MS 同为 500）。 */
+const LONG_PRESS_MS = 500;
 type Rect = { x: number; y: number; w: number; h: number };
-
-/** px 尺寸 → 档位提示（卡体分档排版用；只是提示，不约束） */
-function sizeHint(r: Rect): { w: number; h: number } {
-  return {
-    w: Math.max(1, Math.min(4, Math.round(r.w / 110))),
-    h: Math.max(1, Math.min(4, Math.round(r.h / 72))),
-  };
-}
 
 /** 与数据层同口径的夹取（视觉必须等于落库：否则拖到画布外松手会"弹回去"）。 */
 function clampRect(r: Rect): Rect {
@@ -67,39 +75,63 @@ function clampRect(r: Rect): Rect {
   };
 }
 
+/**
+ * px 矩形 → 板条目视图：WidgetHost / planForItem / 档位抽屉都吃 BoardItem，
+ * cell 由 px 反算（4 列基准 + 基准瓦片），于是「档位提示」与画布上的真实大小对得上。
+ */
+function viewOf(item: FreeItem): BoardItem {
+  return { id: item.id, spec: item.spec, cell: cellFromRect({ x: item.x, y: item.y, w: item.w, h: item.h }) };
+}
+
+/** 档位（格单位）→ px 尺寸：抽屉选的是档位，画布要的是像素。 */
+function pxSizeOf(size: WidgetSize): { w: number; h: number } {
+  const r = rectFromCell({ x: 0, y: 0, w: size.w, h: size.h });
+  return { w: r.w, h: r.h };
+}
+
+/**
+ * 三层渲染器合并：白板自足实现（BOARD_CARD_RENDERERS）→ 各页面发布的卡体 → 活数据。
+ * （旧白板页的处理，2026-10-15 搬进自由画布：首页与 OnePage 共用同一份。）
+ */
+function mergeRenderers(): Record<string, WidgetRenderer> {
+  return { ...BOARD_CARD_RENDERERS, ...cardRenderers(), ...liveRenderers() };
+}
+
+function useRenderers(): Record<string, WidgetRenderer> {
+  const [renderers, setRenderers] = useState<Record<string, WidgetRenderer>>(mergeRenderers);
+  useEffect(() => {
+    const sync = (): void => setRenderers(mergeRenderers());
+    const off1 = subscribeTodayCards(sync);
+    const off2 = subscribeLiveCards(sync);
+    return () => {
+      off1();
+      off2();
+    };
+  }, []);
+  return renderers;
+}
+
 function useFreeBoard(boardId: string, orientation: Orientation): FreeItem[] {
   const snap = useCallback(() => freeBoardSnapshot(boardId, orientation), [boardId, orientation]);
   return useSyncExternalStore(subscribeFreeBoard, snap, snap).items;
 }
 
-/** 单个组件体：spec → JSX（复用旧注册表 + 原子入口运行时解析） */
-function ItemBody({ item, sizeHint, onFolderAdd, onProps }: { item: FreeItem; sizeHint: { w: number; h: number }; onFolderAdd?: () => void; onProps?: (props: Record<string, unknown> | undefined) => void }): ReactNode {
+/**
+ * 单个组件体：spec → JSX。
+ *
+ * 自由层专属的「组合组件」（目录里查不到的：OnePage 入口 / 文件夹 / 用户生成）自己画，
+ * 其余一律交给 WidgetHost —— 与旧白板页同一套渲染语义，降级壳与空态文案也一致。
+ */
+function ItemBody({ item, defs, renderers, onOpen, onFolderAdd, onProps }: {
+  item: FreeItem;
+  defs: readonly WidgetDef[];
+  renderers: Record<string, WidgetRenderer>;
+  onOpen: (item: BoardItem) => void;
+  onFolderAdd?: () => void;
+  onProps?: (props: Record<string, unknown> | undefined) => void;
+}): ReactNode {
   const { navigate } = useApp();
   const spec = item.spec;
-  if (spec.kind === "text") {
-    return spec.variant === "title"
-      ? <h3 className="wg-title">{spec.text}</h3>
-      : <p className="wg-label">{spec.text}</p>;
-  }
-  if (spec.kind === "divider") return <hr className="wg-divider" />;
-  if (spec.kind === "atom-link") {
-    const ref = atomRefFromKey(spec.ref);
-    const view = ref ? resolveAtom(ref) : null;
-    return (
-      <button type="button" className="wg-entry" onClick={() => view?.open(navigate)}>
-        <span className="wg-entry-title">{view?.title ?? "入口已失效"}</span>
-        <span className="wg-entry-arrow" aria-hidden="true">›</span>
-      </button>
-    );
-  }
-  if (spec.kind === "nav") {
-    return (
-      <button type="button" className="wg-entry" onClick={() => navigate(spec.page as never, spec.params as never)}>
-        <span className="wg-entry-title">{spec.label ?? spec.page}</span>
-        <span className="wg-entry-arrow" aria-hidden="true">›</span>
-      </button>
-    );
-  }
   /* OnePage 入口（组合组件之一）：把另一块 OnePage 钉在画布上，点击即打开 */
   if (spec.kind === "custom" && spec.id === "onepage") {
     const boardId = typeof spec.props?.boardId === "string" ? spec.props.boardId : "";
@@ -215,47 +247,86 @@ function ItemBody({ item, sizeHint, onFolderAdd, onProps }: { item: FreeItem; si
       />
     );
   }
-  if (spec.kind === "custom") {
-    const r = BOARD_CARD_RENDERERS[cardRendererKey(spec.id)];
-    /* 便笺空内容：自由白板上没有「属性」菜单，提示改为双击编辑 */
-    const props =
-      spec.id === "note"
-        ? { ...spec.props, text: typeof spec.props?.text === "string" && spec.props.text ? spec.props.text : "双击便笺写内容" }
-        : spec.props;
-    if (r) {
-      const out = r(props, sizeHint);
-      if (out) return out;
+  /* 其余（分隔线 / 文字 / 跳转 / 原子入口 / 卡片 / 目录里的自定义组件）走统一宿主 */
+  return <WidgetHost item={viewOf(item)} defs={defs} onOpen={onOpen} renderers={renderers} />;
+}
+
+/** 「选择条目」子层：只在真要挑具体项时才挂载——顺带才去取网络学堂数据，首页不受牵连。 */
+function TemplateItemPicker({ item, onPick, onClose }: {
+  item: FreeItem;
+  onPick: (props: Record<string, unknown>) => void;
+  onClose: () => void;
+}): ReactNode {
+  const learn = useLearnData();
+  const items: PickerItem[] = useMemo(() => {
+    if (item.spec.kind !== "custom") return [];
+    const data = learn.data;
+    if (item.spec.id === "learn-file") {
+      const byCourse = new Map((data?.courses ?? []).map((c) => [c.id, c.name]));
+      return [...(data?.files ?? [])]
+        .sort((a, b) => String(b.uploadTime).localeCompare(String(a.uploadTime)))
+        .map((f) => ({
+          key: f.courseId + ":" + f.id,
+          label: f.title || "课件 " + f.id,
+          sub: (byCourse.get(f.courseId) ?? "") + " · " + String(f.uploadTime).slice(0, 10),
+          props: { courseId: f.courseId, itemId: f.id, title: f.title },
+        }));
     }
-    return (
-      <div className="wg-card-shell">
-        <span className="wg-card-title">{spec.id}</span>
-        <span className="wg-card-hint">暂无内容</span>
-      </div>
-    );
-  }
+    return [];
+  }, [item, learn.data]);
+  const currentKey = item.spec.kind === "custom"
+    ? String(item.spec.props?.courseId ?? "") + ":" + String(item.spec.props?.itemId ?? "")
+    : undefined;
   return (
-    <div className="wg-card-shell">
-      <span className="wg-card-hint">内容由原页面提供</span>
-    </div>
+    <BoardItemPicker
+      open
+      title="选择课程文件"
+      searchHint="搜索课程或文件名"
+      items={items}
+      currentKey={currentKey}
+      onPick={onPick}
+      onClose={onClose}
+    />
   );
 }
 
-export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTATION }: { boardId?: string; orientation?: Orientation } = {}): ReactNode {
+/**
+ * 自由画布。`chrome` 给了就同时渲染页头（标题 + 页面菜单）——那是 OnePage 页面的形态；
+ * 首页不传（首页的固定层由 HomeChrome 负责，画布是满幅的）。
+ */
+export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTATION, chrome }: {
+  boardId?: string;
+  orientation?: Orientation;
+  chrome?: { title: string };
+} = {}): ReactNode {
   const ops = useMemo(() => freeBoardOps(boardId, orientation), [boardId, orientation]);
   const items = useFreeBoard(boardId, orientation);
   /* 事件回调（窗口级键盘、浮层菜单）要读到最新的条目：state 在闭包里会过期，故用 ref 镜像。 */
   const itemsRef = useRef(items);
   itemsRef.current = items;
   const { navigate } = useApp();
+  const menu = useContextMenu();
+  const defs = useMemo(() => allWidgetDefs(), []);
+  const renderers = useRenderers();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState<{ x: number; y: number } | null>(null);
-  const itemMenuState = useState<{ id: string; x: number; y: number } | null>(null);
-  const itemMenu = itemMenuState[0];
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
-  const [noteEdit, setNoteEdit] = useState<string | null>(null);
+  /** 就地编辑中的条目（便笺 / 文字组件）。 */
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [folderPicker, setFolderPicker] = useState<{ itemId: string } | null>(null);
+  /** 简易添加菜单（右键空白 / ＋ 浮钮）：保留自由画布的「就地放一个」。 */
+  const [addAt, setAddAt] = useState<{ x: number; y: number } | null>(null);
+  /* ── 从旧白板页搬过来的三件能力 ── */
+  /** 档位抽屉：addOpen = 添加组件；resizeFor 非空 = 「改变大小」。 */
+  const [addOpen, setAddOpen] = useState(false);
+  const [resizeFor, setResizeFor] = useState<{ id: string; defId: string; size: WidgetSize } | null>(null);
+  /** 模板选择（空板引导之外的第二条入口）。 */
+  const [tplOpen, setTplOpen] = useState(false);
+  /** 「选择条目」的目标条目 id（模板组件用）。 */
+  const [pickFor, setPickFor] = useState<string | null>(null);
+  /** 一次性提示（「详情」与添加失败的原因）。 */
+  const [note, setNote] = useState<string | null>(null);
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   /* 笔迹变化要跟着重渲染（快照本身不用取：下面按笔键直接读） */
   useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
@@ -270,8 +341,18 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const rectOf = (it: FreeItem): Rect =>
     live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
 
+  const say = useCallback((text: string): void => {
+    setNote(text);
+    window.setTimeout(() => setNote(null), 1800);
+  }, []);
+
+  /* 从今日页「编辑白板布局」进来时直接开添加抽屉（自由画布没有编辑态，落地动作就是"加东西"）。 */
+  useEffect(() => {
+    if (chrome && consumeEditOnOpen()) setAddOpen(true);
+  }, [chrome]);
+
   /* 画布高度跟着内容长：条目被拖到折叠线以下时外层滚动容器要能滚到它。
-     （绝对定位的孩子不撑父盒；home 的 .freeboard 是 inset:0 的整页画布，天然有这个问题。） */
+     （绝对定位的孩子不撑父盒；首页的 .freeboard 是 inset:0 的整页画布，天然有这个问题。） */
   useLayoutEffect(() => {
     const el = hostRef.current;
     if (!el) return;
@@ -281,12 +362,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     el.style.minHeight = bottom > base ? `${bottom}px` : "";
   }, [items]);
 
-  useEffect(() => {
-    const onBoards = (): void => setMenuOpen(null);
-    window.addEventListener("onethu.boards.changed", onBoards);
-    return () => window.removeEventListener("onethu.boards.changed", onBoards);
-  }, []);
-
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -294,7 +369,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement | null)?.isContentEditable) return;
       if (e.key === "Escape") {
         setSelected(null);
-        setMenuOpen(null);
+        setEditingId(null);
         return;
       }
       if (!selected) return;
@@ -316,9 +391,37 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected]);
+  }, [selected, ops]);
 
-  /** 拖动/缩放共用指针管线：按下 → 窗口 move（rAF 不必，直接写 live）→ up 落库 */
+  /** 条目右键 / 长按菜单（旧白板页的 openItemMenu，2026-10-15 搬到自由画布）。 */
+  const openItemMenu = useCallback((item: FreeItem, x: number, y: number): void => {
+    const view = viewOf(item);
+    const plan = planForItem(view, defs);
+    const def = defForSpec(item.spec, defs);
+    const list: CtxItem[] = [];
+    /* 模板组件（课程文件条目等）：选择显示哪一条具体项 */
+    if (item.spec.kind === "custom" && ATOM_TEMPLATE_IDS.includes("custom:" + item.spec.id)) {
+      const picked = !!item.spec.props && Object.keys(item.spec.props).length > 0;
+      list.push({ key: "pick", label: picked ? "更换条目" : "选择条目", onSelect: () => setPickFor(item.id) });
+    }
+    /* 尺寸入口分两路：挡位控制 → 复用添加抽屉选档位；自由控制 → 选中出把手。 */
+    if (def && isTierControlled(def)) {
+      const defId = def.id;
+      list.push({ key: "resize", label: "改变大小", onSelect: () => { setSelected(null); setResizeFor({ id: item.id, defId, size: plan.size }); } });
+    } else {
+      list.push({ key: "resize", label: "自由调整大小", onSelect: () => setSelected(item.id) });
+    }
+    if (def && def.editableProps && def.editableProps.length) {
+      list.push({ key: "edit", label: "编辑", onSelect: () => setEditingId(item.id) });
+    }
+    list.push({ key: "pin", label: item.pinned ? "取消固定" : "固定", onSelect: () => ops.pin(item.id) });
+    list.push({ key: "front", label: "置顶", onSelect: () => ops.raise(item.id) });
+    list.push({ key: "info", label: "详情", onSelect: () => say(def ? def.description : "这个组件已经不在组件目录里了。") });
+    list.push({ key: "remove", label: "删除", danger: true, onSelect: () => { ops.remove(item.id); setSelected(null); } });
+    menu.open({ x, y, title: plan.title, items: list });
+  }, [defs, menu, ops, say]);
+
+  /** 拖动/缩放共用指针管线：按下 → 窗口 move（直接写 live）→ up 落库；长按不动则出菜单。 */
   const beginPointer = (
     e: React.PointerEvent,
     id: string,
@@ -331,19 +434,40 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     /* 不用 setPointerCapture：捕获会把 click 重定向到容器，组件内的入口按钮/链接全被吞。
        拖拽与点击的区分交给「4px 阈值 + 窗口级 click 抑制」（武装后吞一次 click）。 */
     setSelected(id);
+    const sx = e.clientX;
+    const sy = e.clientY;
+    let armed = false;
+    let longFired = false;
+    let timer: number | null = null;
+    /* 固定的组件：位置锁定（挡拖动/缩放），但仍可长按出菜单取消固定——否则就锁死了。 */
+    if (it.pinned && mode === "move") {
+      timer = window.setTimeout(() => openItemMenu(it, sx, sy), LONG_PRESS_MS);
+      const onUpPinned = (): void => {
+        window.removeEventListener("pointerup", onUpPinned);
+        window.removeEventListener("pointercancel", onUpPinned);
+        if (timer !== null) window.clearTimeout(timer);
+      };
+      window.addEventListener("pointerup", onUpPinned);
+      window.addEventListener("pointercancel", onUpPinned);
+      return;
+    }
+    /* 长按不动 = 出快捷菜单（与全站长按口径一致）；一旦位移超过阈值就收回菜单并转成拖动。 */
+    timer = window.setTimeout(() => {
+      longFired = true;
+      openItemMenu(it, sx, sy);
+    }, LONG_PRESS_MS);
     /* 拖动即浮到与自己重叠的那簇之上（不惊动无关组件的图层序） */
     ops.raise(id);
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
-    const sx = e.clientX;
-    const sy = e.clientY;
     const m: string = mode; // string 别名：避免 TS 对字面量联合做过强收窄
-    let armed = false;
     const onMove = (ev: PointerEvent): void => {
       const dx = ev.clientX - sx;
       const dy = ev.clientY - sy;
       if (!armed) {
         if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
         armed = true;
+        if (timer !== null) window.clearTimeout(timer);
+        if (longFired) menu.close();
         /* 拖拽武装后吞掉本次手势派生的 click（capture 相位，先于一切目标）：
            否则拖完松手会误触组件内的按钮/链接。 */
         window.addEventListener("click", killClick, true);
@@ -373,6 +497,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
+      if (timer !== null) window.clearTimeout(timer);
       /* click 在 pointerup 之后派发：延迟一拍再摘抑制器 */
       window.setTimeout(() => window.removeEventListener("click", killClick, true), 0);
       const cur = liveRef.current;
@@ -389,15 +514,34 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   };
 
   /** 画布空白右键 / ＋浮钮：添加组件菜单（放在指针处） */
-  const [addAt, setAddAt] = useState<{ x: number; y: number } | null>(null);
-  const defs = allWidgetDefs();
   const placeDef = (d: WidgetDef): void => {
-    const at = addAt ?? { x: 40, y: 300 };
+    const at = dropAt();
     const spec = d.spec.kind === "custom"
       ? { kind: "custom" as const, id: d.spec.id, props: d.spec.props }
       : JSON.parse(JSON.stringify(d.spec));
-    ops.add(spec, at.x, at.y, Math.max(MIN_W, d.defaultSize.w * 110), Math.max(MIN_H, d.defaultSize.h * 72));
+    const size = pxSizeOf(d.defaultSize);
+    ops.add(spec, at.x, at.y, size.w, size.h);
     setAddAt(null);
+  };
+
+  /** 新条目的落点：右键/＋记下的位置优先，否则放在现有内容下方。 */
+  const dropAt = (): { x: number; y: number } => {
+    if (addAt) return addAt;
+    return { x: 24, y: items.reduce((m, it) => Math.max(m, it.y + it.h), 80) + 24 };
+  };
+
+  const applyTemplate = (tpl: BoardTemplate): void => {
+    /* 模板给的是格单位排版，落到自由画布上要映成 px（rectFromCell 同一套换算）。 */
+    const next: BoardItem[] = templateItems(tpl).map((it) => {
+      const rect = rectFromCell(it.cell);
+      return { id: it.id, spec: it.spec, cell: it.cell, rect, manual: true };
+    });
+    if (freeBoardOps(boardId, orientation).replace(next)) {
+      setTplOpen(false);
+      setAddAt(null);
+      setSelected(null);
+      say("已套用模板：" + tpl.name);
+    }
   };
 
   const canvasPos = (clientX: number, clientY: number): { x: number; y: number } => {
@@ -405,155 +549,221 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     return r ? { x: clientX - r.left, y: clientY - r.top } : { x: 40, y: 300 };
   };
 
+  /** 组件的「打开」语义（与旧白板页一致）：跳转页 / 原子入口。 */
+  const onOpen = (boardItem: BoardItem): void => {
+    const spec = boardItem.spec;
+    if (spec.kind === "nav") {
+      navigate(spec.page as never, spec.params as never);
+      return;
+    }
+    if (spec.kind === "atom-link") {
+      const ref = atomRefFromKey(spec.ref);
+      const view = ref ? resolveAtom(ref) : null;
+      if (!view) {
+        say("这条入口已失效，可从右键菜单移除");
+        return;
+      }
+      view.open(navigate);
+    }
+  };
+
+  const pickItem = pickFor ? itemsRef.current.find((x) => x.id === pickFor) : undefined;
+  const resizeDef = useMemo(
+    () => (resizeFor ? defs.find((d) => d.id === resizeFor.defId) ?? null : null),
+    [resizeFor, defs],
+  );
+
   return (
-    <div
-      className="freeboard"
-      ref={hostRef}
-      onPointerDown={(e) => {
-        /* 空白处按下 = 取消选中（组件自身会 stopPropagation） */
-        if (e.target === e.currentTarget) setSelected(null);
-      }}
-      onDoubleClick={(e) => {
-        if (e.target !== e.currentTarget) return;
-        const p = canvasPos(e.clientX, e.clientY);
-        ops.addNote(p.x - 110, p.y - 80);
-      }}
-      onContextMenu={(e) => {
-        if (e.target !== e.currentTarget) return;
-        e.preventDefault();
-        setAddAt(canvasPos(e.clientX, e.clientY));
-      }}
-    >
-      {items.map((it) => {
-        const r = rectOf(it);
-        const isSel = selected === it.id;
-        const isNote = it.spec.kind === "custom" && it.spec.id === "note";
-        return (
-          <div
-            key={it.id}
-            className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "")}
-            style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
-            onPointerDown={(e) => {
-              if (penOn) return;
-              if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
-              beginPointer(e, it.id, "move");
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-              if (isNote) {
+    <div className="freeboard-wrap">
+      {chrome ? (
+        <PageHead
+          title={chrome.title}
+          meta="自由画布：拖动摆放、四角缩放，组件可以互相重叠盖住"
+          menu={[
+            { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
+            { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
+            { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
+            /* 「所有 OnePage」：删掉旧白板页之后，这里是列表页在 UI 里的入口（另一条通路是 OneGO） */
+            { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
+          ]}
+        />
+      ) : null}
+      {chrome && items.length === 0 ? (
+        <Card>
+          <Empty text="这块白板还是空的。可以从模板开始，或从「＋」添加一个组件。" />
+          {/* 空板引导：三套预制排版，点一下就有东西可看 */}
+          <div className="board-tpl-row">
+            {BOARD_TEMPLATES.map((tpl) => (
+              <Btn key={tpl.id} variant="outline" data-template={tpl.id} onClick={() => applyTemplate(tpl)}>
+                {tpl.name}
+              </Btn>
+            ))}
+          </div>
+        </Card>
+      ) : null}
+      <div
+        className={"freeboard" + (chrome ? " is-page" : "")}
+        ref={hostRef}
+        onPointerDown={(e) => {
+          /* 空白处按下 = 取消选中（组件自身会 stopPropagation） */
+          if (e.target === e.currentTarget) setSelected(null);
+        }}
+        onDoubleClick={(e) => {
+          if (e.target !== e.currentTarget) return;
+          const p = canvasPos(e.clientX, e.clientY);
+          ops.addNote(Math.max(0, p.x - 110), Math.max(0, p.y - 80));
+        }}
+        onContextMenu={(e) => {
+          if (e.target !== e.currentTarget) return;
+          e.preventDefault();
+          setAddAt(canvasPos(e.clientX, e.clientY));
+        }}
+      >
+        {items.map((it) => {
+          const r = rectOf(it);
+          const isSel = selected === it.id;
+          const isNote = it.spec.kind === "custom" && it.spec.id === "note";
+          const isText = it.spec.kind === "text";
+          const editingNow = editingId === it.id && (isNote || isText);
+          return (
+            <div
+              key={it.id}
+              className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
+              style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
+              onPointerDown={(e) => {
+                if (penOn) return;
+                if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
+                beginPointer(e, it.id, "move");
+              }}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                if (isNote || isText) {
+                  setSelected(it.id);
+                  setEditingId(it.id);
+                }
+              }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (penOn) return;
                 setSelected(it.id);
-                setNoteEdit(it.id);
-              }
-            }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (penOn) return;
-              setSelected(it.id);
-              ops.bringToFront(it.id);
-              setItemMenu({ id: it.id, x: e.clientX, y: e.clientY });
-            }}
+                ops.bringToFront(it.id);
+                openItemMenu(it, e.clientX, e.clientY);
+              }}
+            >
+              {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
+              {it.folded ? (
+                <div className="free-folded" title="已折叠（浮条里可展开）">
+                  <span className="free-note-dot" aria-hidden="true" />
+                  <span>便笺</span>
+                </div>
+              ) : (
+              <>
+              {/* 便笺与文字：内容可就地编辑（双击进入） */}
+              {editingNow ? (
+                <textarea
+                  className="free-note-editor"
+                  autoFocus
+                  defaultValue={isNote
+                    ? (it.spec.kind === "custom" && typeof it.spec.props?.text === "string" ? it.spec.props.text : "")
+                    : (it.spec.kind === "text" ? it.spec.text : "")}
+                  onBlur={(e) => {
+                    const text = e.target.value;
+                    if (it.spec.kind === "custom") ops.props(it.id, { ...it.spec.props, text });
+                    else ops.props(it.id, { text });
+                    setEditingId(null);
+                  }}
+                />
+              ) : (
+                <ItemBody
+                  item={it}
+                  defs={defs}
+                  renderers={renderers}
+                  onOpen={onOpen}
+                  onFolderAdd={() => setFolderPicker({ itemId: it.id })}
+                  onProps={(props) => ops.props(it.id, props)}
+                />
+              )}
+              </>
+              )}
+
+              {/* 选中浮条：置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除 */}
+              {isSel && !penOn ? (
+                <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
+                  <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
+                  {isNote ? (
+                    <button
+                      type="button"
+                      title={it.folded ? "展开" : "折叠"}
+                      className="free-note-toggle"
+                      onClick={() => ops.fold(it.id, !it.folded)}
+                    >
+                      {it.folded ? " 展开" : "折叠"}
+                    </button>
+                  ) : null}
+                  {[1, 0.75, 0.5, 0.3].map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      title={`透明 ${Math.round(v * 100)}%`}
+                      className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
+                      onClick={() => ops.opacity(it.id, v)}
+                    >
+                      {Math.round(v * 100)}%
+                    </button>
+                  ))}
+                  <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>钉</button>
+                  <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
+                    <IconTrash width={13} height={13} />
+                  </button>
+                </div>
+              ) : null}
+
+              {/* 把手：四角 + 右/下（选中才出现；固定的组件不出把手） */}
+              {isSel && !penOn && !it.pinned
+                ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
+                    <span
+                      key={h}
+                      className={"free-handle fh-" + h}
+                      onPointerDown={(ev) => beginPointer(ev, it.id, h)}
+                    />
+                  ))
+                : null}
+            </div>
+          );
+        })}
+
+        {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
+            笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。 */}
+        <BoardPenLayer
+          boardId={boardId}
+          orientation={orientation}
+          penOn={penOn}
+          color={penColor}
+        />
+
+        {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
+        <div className="free-fab-col">
+          <button type="button" className="free-fab" title="添加组件" aria-label="添加组件" onClick={() => setAddAt({ x: 60, y: 300 })}>
+            <IconPlus width={18} height={18} />
+          </button>
+          <button
+            type="button"
+            className={"free-fab" + (penOn ? " is-on" : "")}
+            title={penOn ? "画笔：关" : "画笔：开（最高图层）"}
+            aria-pressed={penOn}
+            onClick={() => setPenOn((v) => !v)}
           >
-            {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
-            {it.folded ? (
-              <div className="free-folded" title="已折叠（浮条里可展开）">
-                <span className="free-note-dot" aria-hidden="true" />
-                <span>便笺</span>
-              </div>
-            ) : (
-            <>
-            {/* 便笺：内容可就地编辑（双击进入） */}
-            {isNote && noteEdit === it.id ? (
-              <textarea
-                className="free-note-editor"
-                autoFocus
-                defaultValue={it.spec.kind === "custom" && typeof it.spec.props?.text === "string" ? it.spec.props.text : ""}
-                onBlur={(e) => {
-                  if (it.spec.kind === "custom") ops.props(it.id, { ...it.spec.props, text: e.target.value });
-                  setNoteEdit(null);
-                }}
-              />
-            ) : (
-              <ItemBody item={it} sizeHint={sizeHint(r)} onFolderAdd={() => setFolderPicker({ itemId: it.id })} onProps={(props) => ops.props(it.id, props)} />
-            )}
-            </>
-            )}
-
-            {/* 选中浮条：置顶 / 折叠（便笺）/ 删除 */}
-            {isSel && !penOn ? (
-              <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
-                <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
-                {isNote ? (
-                  <button
-                    type="button"
-                    title={it.folded ? "展开" : "折叠"}
-                    className="free-note-toggle"
-                    onClick={() => ops.fold(it.id, !it.folded)}
-                  >
-                    {it.folded ? " 展开" : "折叠"}
-                  </button>
-                ) : null}
-                {[1, 0.75, 0.5, 0.3].map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    title={`透明 ${Math.round(v * 100)}%`}
-                    className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
-                    onClick={() => ops.opacity(it.id, v)}
-                  >
-                    {Math.round(v * 100)}%
-                  </button>
-                ))}
-                <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
-                  <IconTrash width={13} height={13} />
-                </button>
-              </div>
-            ) : null}
-
-            {/* 把手：四角 + 右/下（选中才出现；画笔层在更上面） */}
-            {isSel && !penOn
-              ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
-                  <span
-                    key={h}
-                    className={"free-handle fh-" + h}
-                    onPointerDown={(ev) => beginPointer(ev, it.id, h)}
-                  />
-                ))
-              : null}
-          </div>
-        );
-      })}
-
-      {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
-          笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。 */}
-      <BoardPenLayer
-        boardId={boardId}
-        orientation={orientation}
-        penOn={penOn}
-        color={penColor}
-      />
-
-      {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
-      <div className="free-fab-col">
-        <button type="button" className="free-fab" title="添加组件" aria-label="添加组件" onClick={() => setAddAt({ x: 60, y: 300 })}>
-          <IconPlus width={18} height={18} />
-        </button>
-        <button
-          type="button"
-          className={"free-fab" + (penOn ? " is-on" : "")}
-          title={penOn ? "画笔：关" : "画笔：开（最高图层）"}
-          aria-pressed={penOn}
-          onClick={() => setPenOn((v) => !v)}
-        >
-          <IconPen width={18} height={18} />
-        </button>
-        {penOn ? (
-          <div className="free-pen-panel">
-            <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(penColor) ? penColor : "#3a3f4a"} onChange={(e) => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />
-            <button type="button" onClick={() => undoStroke(penKey)} disabled={penStrokes.length === 0}>撤销</button>
-            <button type="button" onClick={() => clearStrokes(penKey)} disabled={penStrokes.length === 0}>清空</button>
-          </div>
-        ) : null}
+            <IconPen width={18} height={18} />
+          </button>
+          {penOn ? (
+            <div className="free-pen-panel">
+              <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(penColor) ? penColor : "#3a3f4a"} onChange={(e) => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />
+              <button type="button" onClick={() => undoStroke(penKey)} disabled={penStrokes.length === 0}>撤销</button>
+              <button type="button" onClick={() => clearStrokes(penKey)} disabled={penStrokes.length === 0}>清空</button>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {/* 添加组件菜单（居中；右键空白时记住落点） */}
@@ -582,7 +792,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                     className="hs-detail-row"
                     title="圆形 logo 网格（手机文件夹式）：可收纳一级入口、OnePage 与工作区"
                     onClick={() => {
-                      const at = addAt ?? { x: 60, y: 300 };
+                      const at = dropAt();
                       ops.add({ kind: "custom", id: "folder", props: { title: "文件夹", entries: [] } }, at.x, at.y, 180, 180);
                       setAddAt(null);
                     }}
@@ -599,7 +809,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                         className="hs-detail-row"
                         title="把这块 OnePage 钉到画布上（点击即打开）"
                         onClick={() => {
-                          const at = addAt ?? { x: 60, y: 300 };
+                          const at = dropAt();
                           ops.add({ kind: "custom", id: "onepage", props: { boardId: b.id } }, at.x, at.y, 150, 84);
                           setAddAt(null);
                         }}
@@ -615,6 +825,19 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                         <span>{d.title}</span>
                       </button>
                     ))}
+                  {/* 全部组件 + 尺寸档位（旧白板页的抽屉）：自由画布上也能挑档位落一个 */}
+                  <div className="hs-detail-group-name">更多</div>
+                  <button
+                    type="button"
+                    className="hs-detail-row"
+                    title="打开组件抽屉：逐个预览、可选尺寸档位"
+                    onClick={() => {
+                      setAddOpen(true);
+                      setAddAt(null);
+                    }}
+                  >
+                    <span>全部组件与尺寸…</span>
+                  </button>
                 </div>
                 <div className="hs-op-hint">会放在空白处右键/＋号的位置；拖动与缩放随时可调</div>
               </div>
@@ -637,11 +860,12 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 {(() => {
                   const target = itemsRef.current.find((x) => x.id === folderPicker.itemId);
                   if (!target || target.spec.kind !== "custom") return null;
-                  const entries = target.spec.kind === "custom" && Array.isArray(target.spec.props?.entries)
+                  const entries = Array.isArray(target.spec.props?.entries)
                     ? (target.spec.props?.entries as Array<{ kind: string; page?: string; label?: string; boardId?: string; wsId?: string }>)
                     : [];
+                  const baseProps = target.spec.props as Record<string, unknown> | undefined;
                   const append = (en: { kind: string; page?: string; label?: string; boardId?: string; wsId?: string }): void => {
-                    if (target.spec.kind === "custom") ops.props(folderPicker.itemId, { ...target.spec.props, entries: [...entries, en] });
+                    ops.props(folderPicker.itemId, { ...baseProps, entries: [...entries, en] });
                   };
                   return (
                     <div className="free-add-list">
@@ -683,23 +907,118 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           )
         : null}
 
-      {/* 组件右键菜单 */}
-      {itemMenu
-        ? createPortal(
-            <div className="hs-more-mask" onClick={() => setItemMenu(null)} onContextMenu={(e) => { e.preventDefault(); setItemMenu(null); }}>
-              <div className="hs-more hs-menu" role="menu" style={{ position: "fixed", left: itemMenu.x, top: itemMenu.y }} onClick={(e) => e.stopPropagation()}>
-                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { ops.raise(itemMenu.id); setItemMenu(null); }}>置顶（压过重叠组件）</button>
-                <button type="button" className="hs-op-item" role="menuitem" onClick={() => { const it = itemsRef.current.find((x) => x.id === itemMenu.id); if (it) setNoteEdit(it.id); setItemMenu(null); }}>编辑内容</button>
-                <button type="button" className="hs-op-item is-danger" role="menuitem" onClick={() => { ops.remove(itemMenu.id); setSelected(null); setItemMenu(null); }}>删除</button>
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+      {/* 套用模板（空板引导之外的第二条入口，同一份纯逻辑） */}
+      <ActionSheet
+        open={tplOpen}
+        title="套用模板"
+        items={BOARD_TEMPLATES.map((tpl) => ({
+          id: tpl.id,
+          label: tpl.name + " · " + tpl.description,
+          onSelect: () => applyTemplate(tpl),
+        }))}
+        onClose={() => setTplOpen(false)}
+      />
+
+      {/* 添加组件抽屉：常驻渲染（自己管退场动画）；「改变大小」复用同一个抽屉（自动选中当前档位） */}
+      <BoardAddDrawer
+        open={addOpen || !!resizeFor || !!resizeDef}
+        defs={defs}
+        renderers={renderers}
+        mode={resizeFor ? "resize" : "add"}
+        target={resizeFor ? { defId: resizeFor.defId, size: resizeFor.size } : null}
+        onAdd={(d, size) => {
+          const at = dropAt();
+          const key = JSON.stringify(d.spec);
+          if (itemsRef.current.some((it) => JSON.stringify(it.spec) === key)) {
+            say("白板上已有这个组件");
+            return;
+          }
+          const px = pxSizeOf(size);
+          const spec = d.spec.kind === "custom"
+            ? { kind: "custom" as const, id: d.spec.id, props: d.spec.props }
+            : JSON.parse(JSON.stringify(d.spec));
+          ops.add(spec, at.x, at.y, px.w, px.h);
+          say("已添加：" + d.title + " " + size.w + "×" + size.h);
+          setAddOpen(false);
+          setAddAt(null);
+        }}
+        onResize={(_d, size) => {
+          if (!resizeFor) return;
+          const cur = itemsRef.current.find((it) => it.id === resizeFor.id);
+          if (!cur) return;
+          const px = pxSizeOf(size);
+          ops.resize(resizeFor.id, { x: cur.x, y: cur.y, w: px.w, h: px.h });
+          setResizeFor(null);
+          say("已改为 " + size.w + "×" + size.h);
+        }}
+        onClose={() => {
+          setAddOpen(false);
+          setResizeFor(null);
+        }}
+      />
+
+      {/* 「选择条目」：模板组件（课程文件等）选一条具体项，定位参数写进 spec.props */}
+      {pickItem ? (
+        <TemplateItemPicker
+          item={pickItem}
+          onPick={(props) => {
+            ops.props(pickItem.id, props);
+            setPickFor(null);
+            say("已选择条目");
+          }}
+          onClose={() => setPickFor(null)}
+        />
+      ) : null}
+
+      {note ? <div className="board-note" role="status">{note}</div> : null}
     </div>
   );
+}
 
-  function setItemMenu(v: { id: string; x: number; y: number } | null): void {
-    itemMenuState[1](v);
-  }
+/**
+ * OnePage 页面壳：页头 + 自由画布（+ 手机档的底部抽屉）。
+ *
+ * 取代已退役的 pages/BoardPage.tsx —— 页面 id 仍是 `board`（深链 #/board/<板 id> 照旧），
+ * 画布换成与首页同一块自由白板；「所有 OnePage」入口在页头菜单里（另一条通路是 OneGO）。
+ */
+export function OnePageSurface(): ReactNode {
+  const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
+  /* OneGO / 收藏星 / 星标在别处改了板文档 → 重读（否则刚新建的 OnePage 打不开） */
+  useEffect(() => {
+    const on = (): void => setDoc(loadBoard());
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
+  const board = activeBoard(doc);
+  /* 朝向按设备：平板横竖屏各有一套布局（与旧白板页同一口径；缺 landscape 时回落 portrait）。 */
+  const [portrait] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.matchMedia("(orientation: portrait)").matches : true,
+  );
+  const orientation: Orientation = portrait ? "portrait" : "landscape";
+  const phoneUi = useIsPhone();
+  const mobSnap = useSheetSnap("onepage");
+  const sheetRef = useRef<HTMLDivElement | null>(null);
+  const sheet = useSheetDrag(sheetRef, { id: "onepage" });
+
+  const body: ReactNode = board
+    ? <FreeBoard boardId={board.id} orientation={orientation} chrome={{ title: board.name }} />
+    : (
+      <Card>
+        <Empty text="这块 OnePage 已经不存在了。" />
+      </Card>
+    );
+  if (!phoneUi) return body;
+  return (
+    <div
+      ref={sheetRef}
+      className={
+        "onepage-sheet" +
+        (sheet.dragging ? " is-mob-drag" : mobSnap === "full" ? " is-mob-full" : " is-mob-half")
+      }
+      style={sheet.dragH != null ? { height: `${sheet.dragH}px` } : undefined}
+    >
+      <PhoneSheetGrip label="OnePage 面板：拖住改高度（半屏或全屏）" gripProps={sheet.gripProps} />
+      <div className="onepage-sheet-body">{body}</div>
+    </div>
+  );
 }

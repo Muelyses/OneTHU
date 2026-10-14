@@ -23,6 +23,7 @@ import {
   movePx,
   opacityPx,
   parseLegacyFreeBoard,
+  pinPx,
   propsPx,
   raiseAboveOverlappingPx,
   removePx,
@@ -218,6 +219,11 @@ export function freeBoardOps(boardId: string = HOME_BOARD_ID, orientation: Orien
     props: (id: string, props: Record<string, unknown> | undefined): void => {
       editPx(boardId, orientation, (items) => propsPx(items, id, props));
     },
+    pin: (id: string): void => {
+      editPx(boardId, orientation, (items) => pinPx(items, id));
+    },
+    /** 整块替换（套用模板）：给的就是完整条目列表，不做合并。 */
+    replace: (next: BoardItem[]): boolean => commitPx(boardId, orientation, next),
     remove: (id: string): void => {
       editPx(boardId, orientation, (items) => removePx(items, id));
     },

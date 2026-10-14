@@ -37,6 +37,25 @@ export const TILE_GAP = 8;
 /** main 栏占 3 基准单位、rail 占 1：与今日页现状的两栏比例同构。 */
 export const MAIN_W = 3;
 
+/* ── px 自由图层（2026-10-15）──────────────────────────────────────────────
+   一块板（首页系统板 / 用户 OnePage）只有**一份**数据：BoardItem。
+   cell 是网格语义（插件/OH 的 ext.onePage 契约读的就是它，见 plugins/facade.ts），
+   rect 是可选的 px 矩形——自由图层（components/FreeBoard.tsx）按 px 摆放，允许重叠。
+   两者靠下面这对换算保持同步：拖动/缩放写 rect 时同时把 cell 派生回去（withRect），
+   于是「自由画布」与「网格契约」不会各说各话（这正是之前两套数据不同源的病根）。 */
+
+/**
+ * 迁移基准画布内宽（px）。格→px 必须有一个**与视口无关**的确定宽度：否则同一条目
+ * 在手机/平板会算出不同 px，一旦落盘布局就随窗口漂移。取「4 基准列满铺」为参考画布。
+ */
+export const BOARD_PAD = 8;
+/** 基准瓦片宽（px）：与 TILE_H 同口径，4 个基准单位 + 3 道间距 + 两侧内边距 = 参考画布宽。 */
+export const TILE_W = 90;
+export const CANVAS_REF_W = BOARD_PAD * 2 + TILE_W * BOARD_COLS + TILE_GAP * (BOARD_COLS - 1);
+/** 自由层的缩放下限（与 state/freeBoard.ts 的 MIN_W / MIN_H 同口径）。 */
+export const RECT_MIN_W = 120;
+export const RECT_MIN_H = 64;
+
 export type Orientation = "portrait" | "landscape";
 
 export type WidgetSpec =
@@ -49,14 +68,22 @@ export type WidgetSpec =
 
 export interface BoardCell { x: number; y: number; w: number; h: number }
 
+/** px 矩形（自由图层）：x/y 取画布左上角原点，w/h 是像素。 */
+export interface BoardRect { x: number; y: number; w: number; h: number }
+
 export interface BoardItem {
   /** 用户手动设过尺寸：拟合（按内容自动调高矮）必须跳过它，否则退出编辑态就被改回去。 */
   manual?: boolean;
   id: string;
   spec: WidgetSpec;
   cell: BoardCell;
+  /** px 矩形（可选）：缺省即「没在这个板子上自由摆过」，渲染时由 cell 迁移（rectOf）。 */
+  rect?: BoardRect;
   collapsed?: boolean;
   pinned?: boolean;
+  /** 自由图层的折叠态（便笺收起成标题条）与透明度四档之一。 */
+  folded?: boolean;
+  opacity?: number;
   props?: Record<string, unknown>;
 }
 
@@ -106,6 +133,83 @@ export function isItem(x: unknown): x is BoardItem {
   return !!it && typeof it.id === "string" && typeof it.spec === "object" && it.spec !== null && isCell(it.cell);
 }
 
+/** px 矩形的合法判据：只要求「是个真矩形」（尺寸为正、数都是有限数）。
+    缩放下限（RECT_MIN_*）是**写入**时的夹取口径，不能拿它判合法性——
+    格→px 迁移出来的单格矩形（90×88）本身就比下限小，那是合法的旧布局。 */
+export function isRect(x: unknown): x is BoardRect {
+  const r = x as BoardRect | null;
+  return !!r && [r.x, r.y, r.w, r.h].every((n) => typeof n === "number" && Number.isFinite(n)) && r.w > 0 && r.h > 0;
+}
+
+/* ── 格 ↔ px 双向迁移 ─────────────────────────────────────────────────────
+   正向（格→px）用于「从没自由摆过的条目」首次上自由画布；反向（px→格）用于把用户的
+   px 拖动/缩放**派生**回网格契约。两者必须互为逆运算——护栏逐格验证往返相等。 */
+
+/** 列起点（px）：x=0 贴左内边距，每个基准单位 = 瓦片宽 + 一道间距。 */
+export function pxFromCol(x: number): number {
+  return BOARD_PAD + x * (TILE_W + TILE_GAP);
+}
+
+/** 列跨度（px）：w 个单位 = w 个瓦片 + (w-1) 道间距（单个单位不留空档）。 */
+export function pxFromSpan(w: number, tile: number, gap: number): number {
+  return w * tile + Math.max(0, w - 1) * gap;
+}
+
+/** 格 → px 矩形（迁移正方向）。 */
+export function rectFromCell(cell: BoardCell): BoardRect {
+  const w = Math.max(1, Math.round(cell.w));
+  const h = Math.max(1, Math.round(cell.h));
+  return {
+    x: pxFromCol(Math.max(0, cell.x)),
+    y: Math.max(0, cell.y) * (TILE_H + TILE_GAP),
+    w: pxFromSpan(w, TILE_W, TILE_GAP),
+    h: pxFromSpan(h, TILE_H, TILE_GAP),
+  };
+}
+
+/** px 矩形 → 格（迁移反方向）：四舍五入到最近的格，再夹进列内（宽不得越界）。 */
+export function cellFromRect(rect: BoardRect, cols: number = BOARD_COLS): BoardCell {
+  const limit = Math.max(1, Math.round(cols));
+  const w = Math.min(limit, Math.max(1, Math.round((rect.w + TILE_GAP) / (TILE_W + TILE_GAP))));
+  const h = Math.max(1, Math.round((rect.h + TILE_GAP) / (TILE_H + TILE_GAP)));
+  const x = Math.max(0, Math.round((rect.x - BOARD_PAD) / (TILE_W + TILE_GAP)));
+  return { x: Math.max(0, Math.min(x, limit - w)), y: Math.max(0, Math.round(rect.y / (TILE_H + TILE_GAP))), w, h };
+}
+
+/**
+ * 取条目的 px 矩形：**只算不写**——没自由摆过的条目每次渲染都由格迁移，
+ * 用户真的拖过一次才落 rect（存储里不会平白多出一堆 px 快照）。
+ */
+export function rectOf(item: BoardItem): BoardRect {
+  return item.rect ?? rectFromCell(item.cell);
+}
+
+/** 把 px 矩形写回条目：rect 记 px，cell 同步派生（插件/OH 契约读 cell，必须一致）。 */
+export function withRect(item: BoardItem, rect: BoardRect, cols: number = BOARD_COLS): BoardItem {
+  const fixed: BoardRect = {
+    x: Math.round(rect.x),
+    y: Math.round(rect.y),
+    w: Math.max(RECT_MIN_W, Math.round(rect.w)),
+    h: Math.max(RECT_MIN_H, Math.round(rect.h)),
+  };
+  return { ...item, rect: fixed, cell: cellFromRect(fixed, cols), manual: true };
+}
+
+/**
+ * 非法 rect **只回落成「没存过」**（丢给 rectOf 走格迁移），不让整份文档作废：
+ * rect 是显示层的派生字段，坏一个不该连累用户全部内容。cell 仍按 isItem 严格校验。
+ */
+function cleanItem(it: BoardItem): BoardItem {
+  const bad = it.rect !== undefined && !isRect(it.rect);
+  const opacity = typeof it.opacity === "number" && Number.isFinite(it.opacity) ? Math.min(1, Math.max(0.25, it.opacity)) : undefined;
+  if (!bad && opacity === it.opacity && (it.folded === undefined || it.folded === true)) return it;
+  const out: BoardItem = { ...it, folded: it.folded === true ? true : undefined };
+  if (bad) delete out.rect;
+  else if (it.rect) out.rect = { ...it.rect };
+  out.opacity = opacity;
+  return out;
+}
+
 /** 解析：任何一处不合法都回落 null（由调用方决定默认值），绝不半信半疑地渲染。 */
 export function parseBoard(raw: string | null): BoardDoc | null {
   if (!raw) return null;
@@ -125,7 +229,14 @@ export function parseBoard(raw: string | null): BoardDoc | null {
   if (typeof d.activeBoardId !== "string") return null;
   if (!d.boards.some((b) => b.id === d.activeBoardId)) return null;
   if (!d.order || typeof d.order !== "object") return null;
-  return d;
+  /* 校验通过后再做一次**派生字段**清理（rect / opacity / folded）：不改语义，
+     只把非法 rect 丢成「没存过」（回落格迁移），避免一个坏 px 矩形让整份文档作废。 */
+  const boards: Board[] = d.boards.map((b) => {
+    const cells: Board["cells"] = {};
+    for (const o of Object.keys(b.cells) as Orientation[]) cells[o] = (b.cells[o] ?? []).map(cleanItem);
+    return { ...b, cells };
+  });
+  return { ...d, boards };
 }
 
 /** 今日页布局 → 单元格（main 占左 3 单位、rail 占右 1 单位；y = 栏内序）。 */

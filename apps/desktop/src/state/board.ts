@@ -12,10 +12,11 @@ import {
 } from "./boardCore.js";
 
 export {
-  BOARD_COLS, BOARD_KEY, EMPTY_BOARD, MAIN_W, SYSTEM_BOARD_ID, TILE_GAP, TILE_H, activeBoard, cellsOf, cellsToLayout, isCell, isItem, isOrientation,
-  layoutToCells, parseBoard, systemBoard,
+  BOARD_COLS, BOARD_PAD, BOARD_KEY, CANVAS_REF_W, EMPTY_BOARD, MAIN_W, RECT_MIN_H, RECT_MIN_W, SYSTEM_BOARD_ID,
+  TILE_GAP, TILE_H, TILE_W, activeBoard, cellFromRect, cellsOf, cellsToLayout, isCell, isItem, isOrientation, isRect,
+  layoutToCells, parseBoard, rectFromCell, rectOf, systemBoard, withRect,
 } from "./boardCore.js";
-export type { Board, BoardCell, BoardDoc, BoardItem, LayoutLike, Orientation, WidgetSpec } from "./boardCore.js";
+export type { Board, BoardCell, BoardDoc, BoardItem, BoardRect, LayoutLike, Orientation, WidgetSpec } from "./boardCore.js";
 
 /** 注入应用侧依赖：卡片注册表 + 今日页两套持久化。 */
 export const boardDeps: BoardDeps = {

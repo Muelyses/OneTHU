@@ -102,9 +102,70 @@ ok(!/saveLayout\(/.test(today) && !/loadLayout\(/.test(today), "今日页仍在�
 ok(!/saveHomeOrder\(/.test(today) && !/loadHomeOrder\(/.test(today), "今日页仍在直接读写旧的排序存储（P0 后应只走白板文档）");
 ok(/saveBoard\(doc\)/.test(today), "今日页没有把文档落盘");
 
+/* ⑨ px 自由图层字段（2026-10-15）：BoardItem 增加**可选** rect —— 一块板一份数据，
+   格（cell）保持原样当插件/OH 契约，px（rect）是自由画布的摆放；两者必须能双向迁移。 */
+const cellOf = (x, y, w, h) => ({ x, y, w, h });
+const CELLS = [
+  cellOf(0, 0, 4, 1), cellOf(0, 0, 1, 8), cellOf(3, 0, 1, 1), cellOf(1, 2, 2, 3),
+  cellOf(0, 12, 3, 2), cellOf(2, 5, 2, 1),
+];
+for (const c of CELLS) {
+  const r = B.rectFromCell(c);
+  const back = B.cellFromRect(r);
+  ok(JSON.stringify(back) === JSON.stringify(c), "格→px→格 往返不相等：" + JSON.stringify(c) + " → " + JSON.stringify(r) + " → " + JSON.stringify(back));
+  ok(r.x >= 0 && r.y >= 0 && r.w > 0 && r.h > 0, "迁移出的 px 矩形非法：" + JSON.stringify(r));
+  ok(B.isRect(r), "rectFromCell 的结果必须通过 isRect（宽度下限）");
+}
+/* 迁移基准画布：4 个基准单位 + 两侧内边距正好铺满参考画布宽（多一列就出画布了）。 */
+const full = B.rectFromCell(cellOf(0, 0, B.BOARD_COLS, 1));
+ok(full.x === B.BOARD_PAD && full.x + full.w === B.CANVAS_REF_W - B.BOARD_PAD, "满宽条目应左右内边距对称铺满参考画布（实际 " + full.x + ".." + (full.x + full.w) + "，参考宽 " + B.CANVAS_REF_W + "）");
+ok(B.CANVAS_REF_W === B.BOARD_PAD * 2 + B.TILE_W * B.BOARD_COLS + B.TILE_GAP * (B.BOARD_COLS - 1), "参考画布宽与瓦片宽/间距不自洽（改一边会静默错位）");
+/* 网格不重叠 → 迁移出的 px 也不重叠（旧板的观感必须原样搬到自由画布上）。 */
+const grid = [cellOf(0, 0, 3, 1), cellOf(3, 0, 1, 1), cellOf(0, 1, 4, 2)];
+const rects = grid.map((c) => B.rectFromCell(c));
+const hitRect = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+ok(!rects.some((a, i) => rects.some((b, j) => i !== j && hitRect(a, b))), "格不重叠但迁移出的 px 重叠了");
+/* px → 格：越界必须夹回列内（宽不得越界），高度不得小于 1。 */
+const wideCell = B.cellFromRect({ x: 0, y: 0, w: 9999, h: 9999 });
+ok(wideCell.w === B.BOARD_COLS && wideCell.x === 0, "超宽矩形没有夹到列数内（实际 w=" + wideCell.w + " x=" + wideCell.x + "）");
+const rightCell = B.cellFromRect({ x: 9999, y: 0, w: 200, h: 88 });
+ok(rightCell.x === B.BOARD_COLS - rightCell.w, "右侧越界的矩形没有夹回画布内（实际 x=" + rightCell.x + "）");
+ok(B.cellFromRect({ x: -50, y: -50, w: 200, h: 88 }).x === 0 && B.cellFromRect({ x: -50, y: -50, w: 200, h: 88 }).y === 0, "负坐标没有夹到 0");
+const tiny = B.cellFromRect({ x: 0, y: 0, w: 1, h: 1 });
+ok(tiny.w === 1 && tiny.h === 1, "小于一格的矩形应夹成 1x1（实际 " + tiny.w + "x" + tiny.h + "）");
+/* 缺省即迁移：没存过 rect 的条目由格算出 px（只算不写），存过的原样返回。 */
+const noRect = { id: "a", spec: { kind: "divider" }, cell: cellOf(0, 0, 2, 1) };
+ok(JSON.stringify(B.rectOf(noRect)) === JSON.stringify(B.rectFromCell(noRect.cell)), "rectOf 没有对「没存过」的条目做格→px 迁移");
+ok(B.rectOf(noRect) !== noRect.rect && noRect.rect === undefined, "rectOf 不该写回条目（迁移是只读的）");
+const stored = { id: "b", spec: { kind: "divider" }, cell: cellOf(0, 0, 2, 1), rect: { x: 40, y: 44, w: 222, h: 96 } };
+ok(JSON.stringify(B.rectOf(stored)) === JSON.stringify(stored.rect), "rectOf 应优先用存过的 px 矩形（用户的摆放不能被格覆盖）");
+/* 写回：rect 记 px，cell 同步派生，并打 manual（用户自由摆过的条目不再被自动拟合改回去）。 */
+const written = B.withRect(noRect, { x: 40.4, y: 44.6, w: 222.2, h: 96.8 }, B.BOARD_COLS);
+ok(written.rect.x === 40 && written.rect.y === 45 && written.rect.w === 222 && written.rect.h === 97, "withRect 没有取整写入 px（实际 " + JSON.stringify(written.rect) + "）");
+ok(B.isCell(written.cell) && written.cell.w >= 1 && written.cell.h >= 1, "withRect 没有同步派生合法 cell（插件/OH 契约读的是它）");
+ok(written.manual === true, "自由摆放没有打 manual 标记");
+const shrunk = B.withRect(noRect, { x: 0, y: 0, w: 10, h: 10 });
+ok(shrunk.rect.w === B.RECT_MIN_W && shrunk.rect.h === B.RECT_MIN_H, "withRect 没有夹到 px 缩放下限（实际 " + shrunk.rect.w + "x" + shrunk.rect.h + "）");
+ok(JSON.stringify(B.cellFromRect(B.rectOf(written))) === JSON.stringify(written.cell), "写回后 cell 与 rect 仍不同源（应互为派生）");
+/* 解析容错：坏 rect 只回落成「没存过」，不可牵连整份文档；cell 仍严格。 */
+const docRect = (rect) => JSON.stringify({ v: 1, order: {}, activeBoardId: "b", boards: [{ id: "b", name: "n", icon: "i", kind: "user", cells: { portrait: [{ id: "a", spec: { kind: "divider" }, cell: { x: 0, y: 0, w: 2, h: 1 }, rect }] } }] });
+for (const bad of [{ x: 0, y: 0, w: 0, h: 88 }, { x: "3", y: 0, w: 200, h: 88 }, { x: 0, y: 0, w: Number.NaN, h: 88 }, { x: 0, y: 0, w: 200 }, { x: 0, y: 0, w: -200, h: 88 }]) {
+  const parsed = B.parseBoard(docRect(bad));
+  ok(!!parsed, "坏 rect 让整份文档回落 null（应只丢这个派生字段）：" + JSON.stringify(bad));
+  ok(parsed && parsed.boards[0].cells.portrait[0].rect === undefined, "坏 rect 没有被丢掉：" + JSON.stringify(bad));
+}
+const goodParsed = B.parseBoard(docRect({ x: 8, y: 0, w: 200, h: 88 }));
+ok(goodParsed && JSON.stringify(goodParsed.boards[0].cells.portrait[0].rect) === JSON.stringify({ x: 8, y: 0, w: 200, h: 88 }), "合法 rect 必须原样保留（解析不能顺手改用户的摆放）");
+ok(goodParsed && goodParsed.boards[0].cells.portrait[0].cell.w === 2, "清理派生字段时动到了 cell");
+/* 透明度 / 折叠态：自由层的两个附加字段也要能存读。 */
+const extra = B.parseBoard(JSON.stringify({ v: 1, order: {}, activeBoardId: "b", boards: [{ id: "b", name: "n", icon: "i", kind: "user", cells: { portrait: [{ id: "a", spec: { kind: "divider" }, cell: { x: 0, y: 0, w: 2, h: 1 }, rect: { x: 8, y: 0, w: 200, h: 88 }, folded: true, opacity: 0.5 }] } }] }));
+ok(!!extra && extra.boards[0].cells.portrait[0].folded === true && extra.boards[0].cells.portrait[0].opacity === 0.5, "自由层的折叠/透明度字段没有存读");
+const clamped = B.parseBoard(JSON.stringify({ v: 1, order: {}, activeBoardId: "b", boards: [{ id: "b", name: "n", icon: "i", kind: "user", cells: { portrait: [{ id: "a", spec: { kind: "divider" }, cell: { x: 0, y: 0, w: 2, h: 1 }, opacity: 9 }] } }] }));
+ok(!!clamped && clamped.boards[0].cells.portrait[0].opacity === 1, "透明度没有夹到 0.25~1（实际 " + (clamped && clamped.boards[0].cells.portrait[0].opacity) + "）");
+
 if (fails.length) {
   console.error("白板文档护栏（P0）：不通过");
   for (const f of fails) console.error("  ✗ " + f);
   process.exit(1);
 }
-console.log("白板文档护栏（P0）：解析严格性 ✓ ｜ 迁移读真实布局并保位次/折叠 ✓ ｜ 幂等 ✓ ｜ 往返含 off ✓ ｜ 跨朝向回落 ✓ ｜ 落盘与排序 ✓ ｜ 规格齐全 ✓");
+console.log("白板文档护栏（P0）：解析严格性 ✓ ｜ 迁移读真实布局并保位次/折叠 ✓ ｜ 幂等 ✓ ｜ 往返含 off ✓ ｜ 跨朝向回落 ✓ ｜ 落盘与排序 ✓ ｜ 规格齐全 ✓ ｜ 格↔px 双向迁移与容错 ✓");

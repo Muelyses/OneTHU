@@ -156,7 +156,8 @@ export function SettingsPage() {
       const t = setTimeout(() => {
         if (focusSettingsTarget(wantSec)) return; // 行级直达优先（搜索落到"哪一行"）
         jumpToSection([wantSec]);
-        const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+        /* 两族一起认：OneGUI 迁移后分节头是 .og-section（未迁页仍是 .section-head） */
+        const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
         const hit = heads.find((el) => (el.textContent ?? "").trim().startsWith(wantSec));
         const card = hit?.nextElementSibling as HTMLElement | null;
         for (const el of [hit, card]) {
@@ -188,13 +189,16 @@ export function SettingsPage() {
   }, [consumePendingRequests]);
 
   /**
-   * 页签显隐。两个坑（2026-09-20 实测）：
+   * 页签显隐。三个坑（2026-09-20 实测；③ 2026-10-14 补）：
    *  ① `hidden` 属性会被 app 里的 display 规则压过去 → 必须用行内 style.display；
    *  ② 各分节并非同一父节点的兄弟：外部作业源 / 下载 / 外观等分节渲染在子组件内部，
-   *     因此必须逐个 .section-head 在**各自父节点内**向后收拢其内容，不能只遍历首层兄弟。
-   */
+   *     因此必须逐个分节头在**各自父节点内**向后收拢其内容，不能只遍历首层兄弟。
+   *  ③ 分节头现在是**两族**：OneGUI 迁移后是 .og-section（children 装在头节点内），
+   *     未迁页面仍是 .section-head（内容是头后面的兄弟节点）——只认旧族会让
+   *     显隐 effect 空转（querySelectorAll 找到 0 个），所有分节在**每个页签**下都可见
+   *     （网格在 2026-10-14 用户实测「设置栏各自不对应了」——即为它）。 */
   useEffect(() => {
-    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
     for (const head of heads) {
       const title = (head.textContent ?? "").trim();
       const group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
@@ -204,10 +208,12 @@ export function SettingsPage() {
         el.style.display = show ? "" : "none";
       };
       apply(head);
-      let sib = head.nextElementSibling as HTMLElement | null;
-      while (sib && !sib.classList.contains("section-head")) {
-        apply(sib);
-        sib = sib.nextElementSibling as HTMLElement | null;
+      if (show === false) {
+        let sib = head.nextElementSibling as HTMLElement | null;
+        while (sib && !sib.classList.contains("section-head") && !sib.classList.contains("og-section")) {
+          apply(sib);
+          sib = sib.nextElementSibling as HTMLElement | null;
+        }
       }
     }
   }, [tab, tabLayout.hidden.join(",")]);

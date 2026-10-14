@@ -24,7 +24,10 @@ defineSearchRows([
     id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "悬浮球", "开启悬浮球"], displayRoot: "设置",
     visible: () => isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined),
     fallbackNote: "当前平台不支持在其他应用上层显示悬浮球（仅安卓可用）；已带到 OH「悬浮球」分节。",
-    root: "oh-tier-basic",
+    /* 落点=OH 基础档的档位按钮（OhSettingsPage 的 TierSwitch，data-set-id=`row-基础设置`）。
+       注意：focusSettingsTarget 会自己补 `row-`/`sec-` 前缀 —— 这里传**档位名**，不是锚点全名
+       （旧值 "oh-tier-basic" 会被拼成 `row-oh-tier-basic`，谁都命中不了）。 */
+    root: "基础设置",
     go: () => goOhRow("开启悬浮球", "basic"),
   },
 ]);

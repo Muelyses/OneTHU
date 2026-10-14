@@ -5,6 +5,8 @@
  * 三块都在**门面这一层**（插件与 OH 唯一的执行入口，plugins/facade.ts）：
  *   ⑦ 首页程序坞 `ext.homeDock.set`：一级页 ∪ 插件功能页同权停靠/取消停靠，认不出的 id 报错；
  *   ⑧ 收藏落点 `ext.onePageAddAtom`：落首页（不给 boardId）或落某块 OnePage，重复/板不存在给原因。
+ *   ⑨ 锚点卫生（静态）：跨页 focus 的目标串不许自带 `row-`/`sec-` 前缀 —— 解析器
+ *      （Layout.tsx:595 的 focusSettingsTarget）会自己补一次，自带前缀 = 双前缀 = 永远命不中。
  *
  * 白板导航桥盯的是两个缺口：
  *   ① `ext.tabOpen("board"/"boards")` 能不能过白名单（一级页名单副本漏页就会被拦成
@@ -227,6 +229,8 @@ const dock0 = spheresSnapshot().docked.slice();
 const snap = api.ext.homeDock.set();
 ok(Array.isArray(snap.docked) && snap.docked.length === dock0.length, `homeDock.set() 只读快照：坞上 ${snap.docked?.length} 颗球`);
 ok(snap.dockable?.length >= 5, `可停靠清单含一级页（共 ${snap.dockable?.length} 项）`);
+ok(typeof api.ext.homeDock === "function", "ext.homeDock 本身可调用（门面 rpc 是平铺两段式 api[ns][method]，嵌套命名空间只能这么到达）");
+ok(snap.entries?.some((e) => e.page === "life" && e.label === "生活"), "只读快照带名字（OH 才能把「打卡页」对到 page id）");
 const DOCK_TARGET = "life"; /* 一级页（NAV 里；且不在默认前 8 颗里，停靠/取消停靠都能看见变化） */
 if (dock0.includes(DOCK_TARGET)) api.ext.homeDock.set(DOCK_TARGET, false);
 const docked = api.ext.homeDock.set(DOCK_TARGET, true);
@@ -259,6 +263,32 @@ ok(api.ext.onePageAddAtom({ boardId: "board.不存在" }, "course:oh-wire-3").re
 /* ⑥ 一级页名单副本：ext.tabOpen 对白板两页放行（漏了会被拦成「不认识的页面」） */
 ok(!!api.ext.tabOpen("board")?.id, "ext.tabOpen(\"board\") 放行");
 ok(!!api.ext.tabOpen("boards")?.id, "ext.tabOpen(\"boards\") 放行");
+
+/* ⑨ 锚点卫生（静态扫源码）：目标串自带 row-/sec- 前缀 → focusSettingsTarget 再补一次
+   → 永远命不中（用户侧=搜到了、点了没反应）。这一条是"腐坏会复发"的教训换来的：
+   2026-10-15 一次清扫就抓到 7 处（OH 家族 14 个 goOhRow 调用全在内）。 */
+{
+  const { readFileSync, readdirSync, statSync } = await import("node:fs");
+  const files = [];
+  const walk = (dir) => {
+    for (const e of readdirSync(dir)) {
+      const p = dir + "/" + e;
+      const st = statSync(p);
+      if (st.isDirectory()) walk(p);
+      else if (/\.(ts|tsx)$/.test(e)) files.push(p);
+    }
+  };
+  walk(new URL("../apps/desktop/src", import.meta.url).pathname);
+  const bad = [];
+  for (const f of files) {
+    for (const line of readFileSync(f, "utf8").split("\n")) {
+      for (const m of line.matchAll(/(?:target|fallbackTarget|root)\s*:\s*"(row-|sec-)[^"]*"/g)) {
+        bad.push(`${f.split("/src/")[1]}: ${m[0]}`);
+      }
+    }
+  }
+  ok(bad.length === 0, `跨页锚点不带 row-/sec- 前缀（违例 ${bad.length} 处）${bad.length ? "：" + bad.join(" / ") : ""}`);
+}
 
 console.log(fails.length ? `\n✗ 白板导航桥 ${fails.length} 项失败` : "\n✅ 白板导航桥全绿");
 for (const f of fails) console.error("   ✗ " + f);

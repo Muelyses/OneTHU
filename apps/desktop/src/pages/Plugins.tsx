@@ -123,16 +123,22 @@ function takePluginsView(): PluginsViewReq | null {
 
 /* task-19/22：插件页动作行的声明式注册（「检查更新」「去切换主题」等）。
    go 完成插件家族的二级/三级：切视图（我的插件 / 市场 / 主题筛选）→ 展开安装面板 → 落行滚动高亮；
-   条件隐藏行（当前没有可检查更新的卡）→ 落「我的插件」分节根 + 一句解释，不冒充命中。 */
+   条件隐藏行（当前没有可检查更新的卡）→ 落「我的插件」分节根 + 一句解释，不冒充命中。
+
+   **锚点口径（2026-10-15 oh-wire 复核，与 Layout.tsx:595-617 的解析器对齐）**：
+   focusSettingsTarget 会**自己补** `row-`/`sec-` 前缀（slug=slugOf(want) 后查
+   `row-<slug>` / `sec-<slug>`），所以 target/fallbackTarget/root 一律传**光名字**：
+   传给分节/行/按钮的**标题或文本**，而不是它们身上的 data-set-id（传 "sec-我的插件" 会被
+   拼成 `sec-sec-我的插件`，永远命不中——用户侧表现=搜到了、点了没反应）。 */
 defineSearchRows([
   {
     id: "plg-check-update", tab: "插件", section: "我的插件", title: "检查更新", aliases: ["更新", "检查新版本"], desc: "从插件本体仓库检查最新版" , breadcrumb: ["插件", "我的插件", "检查更新"], displayRoot: "插件",
     /* 按钮只出现在「来自仓库且非内置核心」的插件卡上；整页没有这类卡 = 隐藏行 */
     visible: () => installedPlugins().some((p) => p.repo && p.manifest.kind !== "rust" && !p.embedded && !p.builtin && p.manifest.id !== "onethu.harness"),
     fallbackNote: "「检查更新」按钮在每个来自仓库的插件卡上；当前列表没有这类卡，已带到「我的插件」视图。",
-    root: "sec-我的插件",
+    root: "我的插件",
     go: () => {
-      requestPluginsFocus({ target: "row-检查更新", fallbackTarget: "sec-我的插件", note: "「检查更新」按钮在每个来自仓库的插件卡上；当前列表没有这类卡，已带到「我的插件」视图。" });
+      requestPluginsFocus({ target: "检查更新", fallbackTarget: "我的插件", note: "「检查更新」按钮在每个来自仓库的插件卡上；当前列表没有这类卡，已带到「我的插件」视图。" });
     },
   },
   { id: "plg-switch-theme", tab: "插件", section: "我的插件", title: "去切换主题", aliases: ["切换主题", "换主题"], desc: "到「外观与布局 → 主题」切换（会高亮那一节）" , breadcrumb: ["插件", "我的插件", "去切换主题"], displayRoot: "插件", go: () => gotoAppearanceTheme() },
@@ -140,21 +146,21 @@ defineSearchRows([
     id: "plg-detail", tab: "插件", section: "插件市场", title: "详情", aliases: ["插件详情", "简介图", "readme"], desc: "查看插件详情（简介图 + 详情正文）" , breadcrumb: ["插件", "插件市场", "详情"], displayRoot: "插件",
     go: () => {
       requestPluginsView({ view: "market" });
-      requestPluginsFocus({ target: "row-详情", fallbackTarget: "sec-插件市场" });
+      requestPluginsFocus({ target: "详情", fallbackTarget: "插件市场" });
     },
   },
   {
     id: "plg-mine-market", tab: "插件", section: "我的插件", title: "我的插件 / 插件市场", aliases: ["插件列表", "插件市场"], desc: "插件页两个视图切换" , breadcrumb: ["插件", "我的插件", "我的插件 / 插件市场"], displayRoot: "插件",
     go: () => {
       requestPluginsView({ view: "mine" });
-      requestPluginsFocus({ target: "sec-视图切换", fallbackTarget: "sec-我的插件" });
+      requestPluginsFocus({ target: "视图切换", fallbackTarget: "我的插件" });
     },
   },
   {
     id: "plg-install", tab: "插件", section: "我的插件", title: "安装插件", aliases: ["装插件", "从仓库安装"], desc: "从仓库 / 市场安装插件" , breadcrumb: ["插件", "我的插件", "安装插件"], displayRoot: "插件",
     go: () => {
       requestPluginsView({ view: "mine", install: true });
-      requestPluginsFocus({ target: "row-安装插件", fallbackTarget: "sec-我的插件" });
+      requestPluginsFocus({ target: "安装插件", fallbackTarget: "我的插件" });
     },
   },
 ]);

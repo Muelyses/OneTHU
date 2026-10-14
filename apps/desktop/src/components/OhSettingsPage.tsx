@@ -15,7 +15,7 @@ import { Btn, SettingsRow, Text } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import { useEffect, useState, type ReactNode } from "react";
 import { useApp } from "../state/context.js";
-import { goEntry, slugOf } from "./Layout.js";
+import { goEntry } from "./Layout.js";
 import { requestPluginsFocus } from "../state/pluginsFocus.js";
 import { VoiceSettingsSection } from "./VoiceSettingsSection.js";
 import { OverlaySettingsSection } from "./OverlaySettingsSection.js";
@@ -56,10 +56,15 @@ defineSearchRows([
 ]);
 
 /* task-22：OH 行级直达的**本地快捷**（三段式的 ②+③）：切档 + 滚到行（找不到行时落档位根）。+
-   语音/悬浮球/IM 的行注册也走它（单一实现，避免四处手写切档请求）。 */
+   语音/悬浮球/IM 的行注册也走它（单一实现，避免四处手写切档请求）。
+   锚点口径（2026-10-15 oh-wire 复核）：focusSettingsTarget **自己会补** `row-`/`sec-` 前缀，
+   所以 target 传**行标题**（自动打 id 的行 / JSX 里钉了 id 的行都命中），fallbackTarget 传
+   **档位按钮的文本**（TierSwitch 的 data-set-id 就是 `row-<档位名>`，见下）。旧值
+   "row-"+slugOf(title) 与 `oh-tier-${tier}` 会被拼成 `row-row-…` / `row-oh-tier-…`，
+   **永远命不中** —— 14 处 goOhRow 调用（OH/语音/悬浮球/IM 的行）全都在"点了没反应"。 */
 export function goOhRow(title: string, tier: OhTier, note?: string): void {
   requestOhTier(tier);
-  requestPluginsFocus({ target: "row-" + slugOf(title), fallbackTarget: `oh-tier-${tier}`, note });
+  requestPluginsFocus({ target: title, fallbackTarget: tier === "basic" ? "基础设置" : "高级配置", note });
 }
 
 export function requestOhTier(t: OhTier): void {
@@ -81,6 +86,10 @@ function takeTier(): OhTier | null {
 /* 2026-10-11 用户要求「彻查，给个状态机」：OH 子页的入口态统一由
    components/Layout.tsx 的 goEntry()/useEntry() 管理——这里**不再有任何入口旗标或订阅**。 */
 
+/** 档位根的锚点值（**字面量**，静态审计/grep 能直接看见）：
+ *  focusSettingsTarget 补 `row-<slugOf(want)>`，所以调用方传「基础设置」/「高级配置」即命中。 */
+const TIER_ANCHOR: Record<"basic" | "advanced", string> = { basic: "row-基础设置", advanced: "row-高级配置" };
+
 /** 档位切换条（分段控件，与设置页页签同形态但更轻） */
 function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: (t: "basic" | "advanced") => void }): ReactNode {
   const item = (id: "basic" | "advanced", label: string): ReactNode => (
@@ -88,8 +97,13 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
       className={"nav-item" + (tier === id ? " is-active" : "")}
       role="tab"
       aria-selected={tier === id}
-      /* task-22：档位根锚点——检索直达「找不到行」时落这里再解释（分节根口径） */
-      data-set-id={`oh-tier-${id}`}
+      /* task-22：档位根锚点——检索直达「找不到行」时落这里再解释（分节根口径）。
+         2026-10-15 oh-wire 复核：锚点值必须是**解析器会自己补前缀**的形状
+         （focusSettingsTarget 用 `row-<slugOf(want)>` 查 data-set-id）——所以这里写
+         `row-基础设置` / `row-高级配置`，调用方传「基础设置」/「高级配置」即可命中。
+         （旧值 `oh-tier-basic`/`oh-tier-advanced` 谁都命中不了：传光名字会被补成
+         `row-oh-tier-basic`，传全名会被补成 `row-row-…`。） */
+      data-set-id={TIER_ANCHOR[id]}
       style={{ flex: 1, justifyContent: "center" }}
       onClick={() => onChange(id)}
     >

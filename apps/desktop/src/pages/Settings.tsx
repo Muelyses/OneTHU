@@ -508,75 +508,79 @@ export function SettingsPage() {
       <DownloadSettings />
 
       <SectionHead title="首页布局" />
-      <Card>
+      <SettingsList>
         <SettingsRow
           title="恢复默认首页布局"
           sub="清除「今日」页卡片的排列、折叠与隐藏记录，下次打开首页回到默认版式（主栏：日程与提醒 / 未提交作业 / 最近通知；侧栏：校园卡余额 / 今日预约 / 今日课程 / 订阅新闻；入口卡全部隐藏）。"
           control={<Btn variant="outline" size="sm" onClick={() => { clearHomeLayout(); setHomeResetAt(Date.now()); }}>{homeResetAt ? "已恢复默认" : "恢复默认布局"}</Btn>}
         />
-      </Card>
+      </SettingsList>
 
       <SectionHead title="工作空间" />
       <ExplorerPrefsSection />
 
       <SectionHead title="收藏夹" />
-      <Card>
-        <div className="setting-row" style={{ alignItems: "flex-start" }}>
-          <div>
-            <div className="setting-title">恢复默认收藏夹</div>
-            <div className="setting-desc">
+      <SettingsList>
+        <SettingsRow
+          title="恢复默认收藏夹"
+          sub={
+            <>
               删除全部用户收藏夹与折叠记录（默认一级入口不受影响，永远在左侧栏）。
               各功能仍在原来的页面，收藏夹只是跳转入口。
-            </div>
-            {favMsg ? <OGText slot="label" tone="quiet" as="span">{favMsg}</OGText> : null}
-          </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <Btn variant="outline" onClick={() => {
-                const json = JSON.stringify(favs.data);
-                const clip = navigator.clipboard;
-                if (!clip?.writeText) {
-                  setFavMsg("剪贴板不可用，请改用导入框核对");
-                  return;
-                }
-                void clip
-                  .writeText(json)
-                  .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
-                  .catch(() => setFavMsg("复制未成功，请改用下方的导入框核对"));
-              }}>导出（复制 JSON）
-            </Btn>
-            <Btn variant="outline" onClick={() => { setImportOpen((o) => !o); setImportText(""); setFavMsg(null); }}>导入
-            </Btn>
-            <Btn variant="outline" onClick={() =>
-                void confirmOk("删除全部用户收藏夹并复位折叠记录？默认一级入口不受影响。").then((ok) => {
-                  if (!ok) return;
-                  favs.replaceAll(resetFavs());
-                  setFavMsg("已恢复默认。");
-                })
-              }>恢复默认
-            </Btn>
-          </div>
-        </div>
-        {importOpen ? (
-          <div style={{ marginTop: 12 }}>
-            <TextArea placeholder={"粘贴收藏夹内容（另一台设备导出的）…"} value={importText} onChange={(value) => setImportText(value)} />
-            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-              <Btn variant="solid" tone="brand" disabled={!importText.trim()} onClick={() => {
-                  const parsed = parseFavs(importText);
-                  if (!parsed) {
-                    setFavMsg("导入失败：格式不正确，请粘贴本应用导出的内容");
+              {favMsg ? <>　{favMsg}</> : null}
+            </>
+          }
+          control={
+            <Inline gap={2} wrap>
+              <Btn variant="outline" onClick={() => {
+                  const json = JSON.stringify(favs.data);
+                  const clip = navigator.clipboard;
+                  if (!clip?.writeText) {
+                    setFavMsg("剪贴板不可用，请改用导入框核对");
                     return;
                   }
-                  favs.replaceAll(parsed);
-                  setImportOpen(false);
-                  setImportText("");
-                  setFavMsg("已导入 " + parsed.order.length + " 个根收藏夹。");
-                }}>导入并覆盖
+                  void clip
+                    .writeText(json)
+                    .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
+                    .catch(() => setFavMsg("复制未成功，请改用下方的导入框核对"));
+                }}>导出（复制 JSON）
               </Btn>
-              <Btn variant="ghost" onClick={() => setImportOpen(false)}>取消</Btn>
-            </div>
+              <Btn variant="outline" onClick={() => { setImportOpen((o) => !o); setImportText(""); setFavMsg(null); }}>导入
+              </Btn>
+              <Btn variant="outline" onClick={() =>
+                  void confirmOk("删除全部用户收藏夹并复位折叠记录？默认一级入口不受影响。").then((ok) => {
+                    if (!ok) return;
+                    favs.replaceAll(resetFavs());
+                    setFavMsg("已恢复默认。");
+                  })
+                }>恢复默认
+              </Btn>
+            </Inline>
+          }
+        />
+        {importOpen ? (
+          <div className="og-settings-row" style={{ alignItems: "stretch" }}>
+            <span className="og-settings-row-main">
+              <TextArea placeholder={"粘贴收藏夹内容（另一台设备导出的）…"} value={importText} onChange={(value) => setImportText(value)} />
+              <Inline gap={2}>
+                <Btn variant="solid" tone="brand" disabled={!importText.trim()} onClick={() => {
+                    const parsed = parseFavs(importText);
+                    if (!parsed) {
+                      setFavMsg("导入失败：格式不正确，请粘贴本应用导出的内容");
+                      return;
+                    }
+                    favs.replaceAll(parsed);
+                    setImportOpen(false);
+                    setImportText("");
+                    setFavMsg("已导入 " + parsed.order.length + " 个根收藏夹。");
+                  }}>导入并覆盖
+                </Btn>
+                <Btn variant="ghost" onClick={() => setImportOpen(false)}>取消</Btn>
+              </Inline>
+            </span>
           </div>
         ) : null}
-      </Card>
+      </SettingsList>
 
       <SectionHead title="外观" />
       <SettingsList>

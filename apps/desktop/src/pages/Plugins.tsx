@@ -34,6 +34,7 @@ import { useApp } from "../state/context.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestSettingsSection, requestSettingsTab } from "../state/settingsMode.js";
 import { OhSettingsPage } from "../components/OhSettingsPage.js";
+import { mcpServerEnabled, setMcpServer } from "../state/userext.js";
 import { openImageViewer } from "../components/ImageViewer.js";
 import { isThemeEntry, resolveAssetUrl } from "../lib/market.js";
 import { useExitHold } from "../lib/motion.js";
@@ -777,6 +778,30 @@ function PluginSheet({
   );
 }
 
+/** OH MCP **服务器**开关（用户 2026-10-15 点名：「OH MCP 是把我们自己暴露成 MCP」）。
+ *  开 = harness 在 127.0.0.1:8787 起本机 MCP server（POST /mcp，Streamable-HTTP），
+ *  别的 agent / 脚本 / 编辑器插件能直接调 OneTHU 的接口；关 = 连接一律 403。
+ *  跟着 MCP 面板走：高级档就地渲染与 Sheet 形态共用这一份实现，不复制第二处。 */
+function McpSwitchRow(): ReactNode {
+  const [on, setOn] = useState(() => mcpServerEnabled());
+  return (
+    <SettingsRow
+      title="OH MCP 服务器"
+      sub={on ? "已开启：本机客户端可连 127.0.0.1:8787" : "已关闭：不对外提供本机 MCP"}
+      control={
+        <Switch
+          checked={on}
+          aria-label="OH MCP 服务器开关"
+          onChange={(v) => {
+            setMcpServer(v);
+            setOn(v);
+          }}
+        />
+      }
+    />
+  );
+}
+
 /** MCP 服务器管理：逐条增删改（表单弹窗），存宿主侧结构化存储，OH 启动对话时经 settings 注入 */
 export function McpBody(): ReactNode {
   const [list, setList] = useState<McpServerEntry[]>(() => loadMcpServers());
@@ -815,8 +840,16 @@ export function McpBody(): ReactNode {
   };
   return (
     <Stack gap={2} fill>
+      <McpSwitchRow />
+      {/* 使用说明（用户点名要"使用说明"）：只写事实 —— 端点、暴露范围、何时生效。 */}
       <Text as="p" slot="micro" tone="faint">
-        每条为一个 stdio MCP server；OH 对话时其工具以 <code className="plg-code">mcp_&lt;名称&gt;_&lt;工具&gt;</code> 注入。
+        开启后，本机其它 MCP 客户端填 <code className="plg-code">http://127.0.0.1:8787/mcp</code>（Streamable-HTTP）即可调用 OneTHU。
+      </Text>
+      <Text as="p" slot="micro" tone="faint">
+        只暴露无需确认的工具（要二次确认的写操作不上墙），仅本机回环、不跨机；改完发一条消息或重开 OH 生效。
+      </Text>
+      <Text as="p" slot="micro" tone="faint">
+        下面是**反向**的：让 OH 去连别人的 MCP 服务器 ——
       </Text>
       {list.length === 0 ? (
         <Text as="p" slot="micro" tone="faint">尚未添加。点「添加 MCP 服务器」开始。</Text>

@@ -1608,6 +1608,9 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           } catch {
             /* 存储不可用时留空 */
           }
+          // OH MCP **服务器**开关（用户 2026-10-15）：把 OneTHU 自己暴露成本机 MCP server。
+          // sidecar 每次 activate/run 读一次这个值，决定 127.0.0.1 上起不起 listener。
+          out["mcpServer"] = userExtSnapshot().mcpServer ? "true" : "false";
           // 创造模式（2026-10-13）：userext 的开关随 settings 泵进 OH 引擎——
           // Rust Config::from_settings 每轮 run 实时读 creativeMode，切按钮 = 下轮对话生效。
           // 存字符串贴合 settings map 的 Record<string,string> 口径（Rust 侧 as_str 读取）。

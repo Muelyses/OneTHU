@@ -87,10 +87,16 @@ export interface UserExtDoc {
   /** 创造模式（2026-10-13）：开启后 OH 更主动地创造插件/主题/OnePage/自我扩展。
    *  经门面 settings.get 以 creativeMode 注进引擎（Rust Config 每轮实时读），存档不换键。 */
   creative: boolean;
+  /** OH MCP **服务器**开关（2026-10-15 用户点名「OH MCP 是把我们自己暴露成 MCP」）：
+   *  开 = harness sidecar 在 127.0.0.1 起一个本机 MCP server（POST /mcp，Streamable-HTTP），
+   *  让别的 agent / 脚本能直接调 OneTHU 的接口；关 = 不接受任何本机连接。
+   *  通道：门面 settings.get 注出 "mcpServer"，sidecar 每次 activate/run 读一次并起/停 listener
+   *  （见 plugins/OneTHU-Harness/bin/src/main.rs）。默认**关**：本机暴露要用户自己开。 */
+  mcpServer: boolean;
 }
 
 function empty(): UserExtDoc {
-  return { v: 1, tools: [], flows: [], widgets: [], themes: [], activeThemeId: null, phone: null, creative: false };
+  return { v: 1, tools: [], flows: [], widgets: [], themes: [], activeThemeId: null, phone: null, creative: false, mcpServer: false };
 }
 
 function load(): UserExtDoc {
@@ -119,6 +125,7 @@ function load(): UserExtDoc {
           activeThemeId: typeof p.activeThemeId === "string" ? p.activeThemeId : null,
           phone,
           creative: p.creative === true, // 旧存档没有此键 = 默认关（v1 追加字段的兜底口径）
+          mcpServer: p.mcpServer === true, // 同上：旧存档 = 默认关
         };
       }
     }
@@ -237,6 +244,18 @@ export function setCreative(on: boolean): void {
   if (doc.creative === on) return;
   doc.creative = on;
   commit();
+}
+
+/** OH MCP 服务器开关（OH 设置高级档；commit 后下一轮 run 的 settings 泵进 sidecar 生效） */
+export function setMcpServer(on: boolean): void {
+  if (doc.mcpServer === on) return;
+  doc.mcpServer = on;
+  commit();
+}
+
+/** 读 OH MCP 服务器开关（门面 settings.get 与设置页开关共用，避免两处各读各的） */
+export function mcpServerEnabled(): boolean {
+  return doc.mcpServer;
 }
 
 export function touchFlow(id: string, ok: boolean): void {

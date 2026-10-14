@@ -21,11 +21,16 @@ export function BoardPenLayer({
   orientation,
   penOn,
   color,
+  contentExtent = 0,
 }: {
   boardId: string;
   orientation: string;
   penOn: boolean;
   color: string;
+  /** 画布内容底边（含卡片下方留白）。0 = 只有一屏。
+   *  卡片是绝对定位，不会撑高 .freeboard，所以笔层必须显式按内容高度铺，
+   *  否则「底下扩展出来的那片」画不了（用户点名）。 */
+  contentExtent?: number;
 }): ReactNode {
   const snap = useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const key = penKeyOf(boardId, orientation);
@@ -103,6 +108,7 @@ export function BoardPenLayer({
       className={"board-pen" + (penOn ? " is-on" : "")}
       viewBox="0 0 1000 1000"
       preserveAspectRatio="none"
+      style={contentExtent > 0 ? { minHeight: contentExtent + "px" } : undefined}
       aria-hidden="true"
     >
       {all.map((s) => (

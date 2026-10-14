@@ -235,6 +235,17 @@ function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: {
 
 export function FreeBoard(): ReactNode {
   const items = useFreeBoard();
+  /* 画布可用高度：卡片是绝对定位，撑不高 .freeboard，所以笔层要按
+     「最低一张卡的底边 + 一屏留白」显式铺满，否则下方扩展区画不了（用户点名）。 */
+  const boardContentExtent = (() => {
+    let bottom = 0;
+    for (const it of items) {
+      const r = live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
+      if (r.y + r.h > bottom) bottom = r.y + r.h;
+    }
+    /* +520：卡片下方留出可继续作画/摆放的空间（用户：底下扩展的空间也要能画） */
+    return bottom > 0 ? bottom + 520 : 0;
+  })();
   const { navigate } = useApp();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -498,7 +509,13 @@ export function FreeBoard(): ReactNode {
       })}
 
       {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画 */}
-      <BoardPenLayer boardId="free:home" orientation="default" penOn={penOn} color={penColor} />
+      <BoardPenLayer
+        boardId="free:home"
+        orientation="default"
+        penOn={penOn}
+        color={penColor}
+        contentExtent={boardContentExtent}
+      />
 
       {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
       <div className="free-fab-col">

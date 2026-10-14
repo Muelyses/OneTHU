@@ -189,3 +189,32 @@
 3. **B 组件内嵌 CSS / F 运行时注入**：先搬进 OneGUI 的组件样式表，再删注入点。
 4. **A 旧样式表**：随页面迁移逐族删除；过渡桥（TEMP）最后与旧样式表一起删。
 5. **C2 内联几何**：迁到组件 prop（`pos`/`Grid`/`Stack`）后清零。
+
+---
+
+## 附：批量改写的边界与实测记录（2026-10-14，别重复试）
+
+**已经批完的族（工具：`tools/onegui-select-rewrite.mjs`，AST 级，干跑默认、`--apply` 落盘）**
+
+| 族 | 数量 | 备注 |
+|---|---:|---|
+| `<button className="btn*">` → `Btn` | 430 | 早期 189 个用正则（简单标签），余下用 AST |
+| `<input>/<textarea>` → `Input/TextArea` | 73 | 纯宽度样式丢弃；参与排版的转"几何外壳 div" |
+| `<select>` → `Select` | 36 | 库侧配套：`Select` 接受 number 值 |
+| `icon-btn` 单图标钮 → `IconBtn` | 5 | 需 `aria-label`/`title` 字面量 |
+| 小按钮族（.ex-bbar-btn/.dock-btn/.hs-dock-btn…） | 1 | 实测可机械转换空间已见底 |
+
+**明确不可批处理的族（三次失败，已回退，勿再试）**
+
+1. **动态 `className` 拼接**（`className={cond ? "btn" : "btn-ghost"}`）：类名承载运行时分支语义，
+   机械替换会丢分支 → 必须人工翻译成 `variant`/`selected`/`tone`。
+2. **`.setting-row` 三元组**（标题 div + 说明 div + 控件）：嵌套结构语义，全仓一次跑会在大文件
+   （`FolderPage.tsx` 两次成为警报器）误判并切碎 JSX。若将来要批，必须**按文件逐个跑 + 每文件立刻 typecheck**。
+3. **正则处理 JSX 属性区**：属性里含 `>`（`=>`）与嵌套 `{{…}}`，正则必坏；要批只能用 AST。
+
+**CSS 侧机械清理三重见底**（也都别重复试）：
+① 单类裸规则 → ② 带伪类的孤儿 → ③ 主体孤儿＋祖先孤儿（并排除第三方前缀 `ql-`/`katex`/`leaflet`/`pdf`/`monaco`/`hls`…）。
+第三次跑严格口径得 **0 条**：剩余 12.4k 行旧 CSS 全部"至少被真实引用或属于第三方"，**只能随页面迁移逐族删除**。
+
+**逐行人工迁移的已验证节奏**：读一屏（20–40 行）→ 改 2–4 行 → `typecheck` → `vite build` →
+`node tools/onegui-guard.mjs --write-baseline` 收紧 → 提交。`Settings.tsx` 前两行即按此完成（旧类名 142 → 138）。

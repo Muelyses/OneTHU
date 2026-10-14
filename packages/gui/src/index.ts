@@ -46,10 +46,11 @@ export type {
 } from "./components/patterns.js";
 
 export {
-  Modal, Drawer, Menu, ContextMenu, ActionSheet, Tooltip, Popover,
+  Modal, Sheet, Drawer, Menu, ContextMenu, ActionSheet, Tooltip, Popover,
 } from "./components/overlay.js";
 export type {
-  ModalProps, DrawerProps, MenuProps, MenuItem, ContextMenuProps, ActionSheetProps, TooltipProps, PopoverProps,
+  ModalProps, SheetProps, DrawerProps, MenuProps, MenuAction, MenuItem, ContextMenuProps, ActionSheetProps,
+  TooltipProps, PopoverProps, OverlaySide, RectLike, OverlayAnchor, Placement,
 } from "./components/overlay.js";
 
 export { Stack, Inline, Spacer, Grow } from "./components/layout.js";

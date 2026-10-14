@@ -17,7 +17,7 @@
 
 /* ── 胶囊 ── */
 .og-chip {
-  --og-c-chip-h: 26px;
+  --og-c-chip-h: var(--og-ctl-chip-h-md);
   --og-c-chip-pad: var(--og-space-3);
   --og-c-chip-ink: var(--og-content-2);
   --og-c-chip-fill: var(--og-surface-3);
@@ -43,8 +43,8 @@
   user-select: none;
 }
 
-.og-chip--sm { --og-c-chip-h: 22px; --og-c-chip-pad: var(--og-space-2); font-size: var(--og-text-micro); }
-.og-chip--lg { --og-c-chip-h: 32px; --og-c-chip-pad: var(--og-space-4); font-size: var(--og-text-body); }
+.og-chip--sm { --og-c-chip-h: var(--og-ctl-chip-h-sm); --og-c-chip-pad: var(--og-space-2); font-size: var(--og-text-micro); }
+.og-chip--lg { --og-c-chip-h: var(--og-ctl-chip-h-lg); --og-c-chip-pad: var(--og-space-4); font-size: var(--og-text-body); }
 
 .og-chip--interactive { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color var(--og-dur-1) var(--og-ease-standard); }
 
@@ -88,7 +88,7 @@
 .og-tag {
   display: inline-flex;
   align-items: center;
-  height: 20px;
+  height: var(--og-ctl-tag-h);
   padding: 0 var(--og-space-2);
   border-radius: var(--og-radius-xs);
   background: var(--og-surface-3);
@@ -110,8 +110,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--og-space-4);
-  height: var(--og-space-4);
+  min-width: var(--og-ctl-badge);
+  height: var(--og-ctl-badge);
   padding: 0 var(--og-space-1);
   border-radius: var(--og-radius-full);
   background: var(--og-accent);
@@ -159,7 +159,7 @@
 
 /* ── 进度条 ── */
 .og-progress {
-  --og-c-progress-h: 6px;
+  --og-c-progress-h: var(--og-ctl-progress-md);
   position: relative;
   width: 100%;
   height: var(--og-c-progress-h);
@@ -168,8 +168,8 @@
   overflow: hidden;
 }
 
-.og-progress--sm { --og-c-progress-h: 4px; }
-.og-progress--lg { --og-c-progress-h: 10px; }
+.og-progress--sm { --og-c-progress-h: var(--og-ctl-progress-sm); }
+.og-progress--lg { --og-c-progress-h: var(--og-ctl-progress-lg); }
 
 .og-progress-fill {
   height: 100%;

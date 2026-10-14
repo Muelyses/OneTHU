@@ -157,14 +157,14 @@
 
 /* 网格化的卡片族（文件浏览器、插件市场、服务目录共用） */
 .og-grid {
-  --og-grid-min: 200px;
+  --og-grid-min: var(--og-grid-min-md);
   display: grid;
   gap: var(--og-space-3);
   grid-template-columns: repeat(auto-fill, minmax(var(--og-grid-min), 1fr));
 }
 
-.og-grid--sm { --og-grid-min: 148px; }
-.og-grid--lg { --og-grid-min: 264px; }
+.og-grid--sm { --og-grid-min: var(--og-grid-min-sm); }
+.og-grid--lg { --og-grid-min: var(--og-grid-min-lg); }
 
 /* 手机上永远单列：密度/平台由管线给，组件不写断点 */
 [data-og-platform="mobile"] .og-grid {

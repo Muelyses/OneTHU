@@ -189,17 +189,26 @@ export interface TabsProps {
   className?: string;
 }
 
-/** 指示器几何：位置与形变放同一条 transform（历史教训：两条线程会错位） */
-function useIndicator(activeEl: HTMLElement | null, deps: unknown[], varPrefix: string): void {
+/**
+ * 指示器几何：位置与形变写在**同一条 transform** 上（历史教训：位置走 transform、长度走 height，
+ * 两条线程各计时，主线程一忙就错位）。实现上直接量激活项与容器的相对几何，
+ * 写到指示器自己的 transform 上 —— 不走"容器 CSS 变量"，少一层继承，也不怕容器重排。
+ */
+function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeEl: HTMLElement | null, deps: unknown[]): void {
   const apply = useCallback(() => {
+    const ind = indicatorRef.current;
     const host = activeEl?.parentElement;
-    if (!activeEl || !host) return;
+    if (!ind || !activeEl || !host) return;
     const hostRect = host.getBoundingClientRect();
     const rect = activeEl.getBoundingClientRect();
+    if (hostRect.width === 0) return;
     const x = rect.left - hostRect.left + host.scrollLeft;
-    host.style.setProperty(`--og-c-${varPrefix}-x`, `${x}px`);
-    host.style.setProperty(`--og-c-${varPrefix}-s`, `${hostRect.width === 0 ? 0 : rect.width / hostRect.width}`);
-  }, [activeEl, varPrefix]);
+    const scale = rect.width / hostRect.width;
+    ind.style.transformOrigin = "left center";
+    // 竖直方向：line 变体贴底（不需要位移），pill/soft 由 CSS 的 translateY(-50%) 负责
+    const vertical = ind.dataset.ogVertical === "1" ? " translateY(-50%)" : "";
+    ind.style.transform = `translateX(${x}px)${vertical} scaleX(${scale})`;
+  }, [activeEl, indicatorRef]);
   useLayoutEffect(apply, [apply, ...deps]);
   useEffect(() => {
     const onResize = (): void => apply();
@@ -210,7 +219,8 @@ function useIndicator(activeEl: HTMLElement | null, deps: unknown[], varPrefix: 
 
 export function Tabs({ items, value, onChange, variant = "line", sticky, scope, className }: TabsProps): ReactNode {
   const [activeEl, setActiveEl] = useState<HTMLElement | null>(null);
-  useIndicator(activeEl, [value, items.length], "tabs");
+  const indicatorRef = useRef<HTMLSpanElement | null>(null);
+  useIndicator(indicatorRef, activeEl, [value, items.length]);
   const onKey = (e: React.KeyboardEvent, idx: number): void => {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") return;
     e.preventDefault();
@@ -241,7 +251,7 @@ export function Tabs({ items, value, onChange, variant = "line", sticky, scope, 
           {item.badge !== undefined ? <span className="og-tab-badge">{item.badge}</span> : null}
         </button>
       ))}
-      <span className="og-tabs-indicator" aria-hidden="true" />
+      <span ref={indicatorRef} data-og-vertical={variant === "line" ? "0" : "1"} data-og-dynamic="indicator" className="og-tabs-indicator" aria-hidden="true" />
     </div>
   );
 }
@@ -290,7 +300,8 @@ export interface SegmentProps {
 
 export function Segment({ options, value, onChange, size = "md", block, scope, className }: SegmentProps): ReactNode {
   const [activeEl, setActiveEl] = useState<HTMLElement | null>(null);
-  useIndicator(activeEl, [value, options.length], "seg");
+  const indicatorRef = useRef<HTMLSpanElement | null>(null);
+  useIndicator(indicatorRef, activeEl, [value, options.length]);
   return (
     <div
       {...scopeProps(scope)}
@@ -319,7 +330,7 @@ export function Segment({ options, value, onChange, size = "md", block, scope, c
           <span>{opt.label}</span>
         </button>
       ))}
-      <span className="og-segment-indicator" aria-hidden="true" />
+      <span ref={indicatorRef} data-og-vertical="1" data-og-dynamic="indicator" className="og-segment-indicator" aria-hidden="true" />
     </div>
   );
 }

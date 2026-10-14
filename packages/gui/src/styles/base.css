@@ -142,3 +142,7 @@ body {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ── 布局宽度辅助类（画廊/表单排版用；宽度是布局语义，不是外观） ── */
+.og-w-320 { width: min(var(--og-ctl-form-narrow), 100%); }
+.og-w-560 { width: min(var(--og-ctl-form-wide), 100%); }

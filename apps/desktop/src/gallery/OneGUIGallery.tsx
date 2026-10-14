@@ -8,11 +8,16 @@
  *
  * 本文件本身就是"页面怎么写"的样板：只用 OneGUI 组件，零 class、零内联样式。
  */
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
-  Badge, Btn, Card, Chip, Divider, EmptyState, Grid, Icon, IconBtn, Inline, KeyValue, List, Row,
-  Section, Spacer, Stack, Surface, Tag, Text, useAxes, useOneGUI, type OGTheme,
+  Accordion, AccordionItem, Avatar, Badge, Banner, Breadcrumb, Btn, Card, Checkbox, Chip, CodeBlock, Divider,
+  Drawer, EmptyState, Fab, Field, Grid, Icon, IconBtn, Inline, Input, KeyValue, List, LoadingBlock, Modal,
+  BtnGroup, ContextMenu, DataList, Grow, Menu, NumberField, Page, PageHead, Pagination, Popover, Progress, Radio, RadioGroup, RangeSlider, Ring, Row, SearchField, Section,
+  SectionCard, Segment, Select, SettingsList, Sheet, SettingsRow, Skeleton, Slider, Spacer, Spinner, Stack, StatTile,
+  Surface, Switch, Table, Tabs, Tag, Text, TextArea, Tile, Timeline, Toolbar, Tooltip, useAxes, useOneGUI,
+  VerticalTabs, type OGTheme,
 } from "@onethu/gui";
+import { IconFolder, IconLearn, IconRefresh, IconSettings, IconToday } from "@onethu/gui";
 
 const THEMES: OGTheme[] = [
   { id: "brand", name: "清华紫", accent: "#90399c" },
@@ -44,6 +49,245 @@ function AxisPicker<T extends string>({ label, values, value, onPick }: {
         <Chip key={v} size="sm" selected={value === v} onClick={() => onPick(v)}>{v}</Chip>
       ))}
     </Inline>
+  );
+}
+
+
+/** 第二批：表单 / 浮层 / 页面模式 / 展示件（新组件也要在这里登记） */
+function CatalogExtra(): ReactNode {
+  const [text, setText] = useState("www");
+  const [num, setNum] = useState(3);
+  const [pick, setPick] = useState("b");
+  const [on, setOn] = useState(true);
+  const [slide, setSlide] = useState(40);
+  const [range, setRange] = useState<[number, number]>([20, 70]);
+  const [modal, setModal] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [tab, setTab] = useState("all");
+  const [vtab, setVtab] = useState("learn");
+  const [seg, setSeg] = useState("week");
+  const [page, setPage] = useState(3);
+  const [openKeys, setOpenKeys] = useState<string[]>(["a"]);
+
+  return (
+    <Stack gap={7}>
+      <Group title="Field / Input / TextArea / Search" hint="输入壳共享同一套描边与聚焦环">
+        <Stack gap={3} className="og-w-320">
+          <Field label="学号" hint="用于登录校园服务" required>
+            <Input value={text} onChange={setText} placeholder="请输入学号" />
+          </Field>
+          <Field label="备注" error="这一项必填">
+            <TextArea rows={2} placeholder="多行输入" />
+          </Field>
+          <Field label="搜索">
+            <SearchField defaultValue="" placeholder="搜课程 / 文件 / 邮件" />
+          </Field>
+          <Inline gap={2}>
+            <Input size="sm" placeholder="sm" />
+            <Input size="md" placeholder="md" />
+            <Input size="lg" placeholder="lg" />
+            <Input invalid placeholder="invalid" />
+            <Input disabled placeholder="disabled" />
+          </Inline>
+        </Stack>
+      </Group>
+
+      <Group title="NumberField / Select / Checkbox / Radio" hint="右侧是控件，左侧是内容">
+        <Stack gap={3} className="og-w-320">
+          <NumberField value={num} onChange={setNum} min={0} max={10} unit="门" />
+          <Select value={pick} onChange={setPick} options={[{ value: "a", label: "选项 A" }, { value: "b", label: "选项 B" }, { value: "c", label: "选项 C（禁用）", disabled: true }]} />
+          <Inline gap={4} wrap>
+            <Checkbox label="记住我" defaultChecked />
+            <Checkbox label="半选" indeterminate />
+            <Checkbox label="禁用" disabled />
+          </Inline>
+          <RadioGroup value={pick} onChange={setPick} direction="row">
+            <Radio value="a" label="甲" />
+            <Radio value="b" label="乙" />
+            <Radio value="c" label="丙" disabled />
+          </RadioGroup>
+        </Stack>
+      </Group>
+
+      <Group title="Switch / Slider / RangeSlider" hint="拖拽用 pointer capture；方向键可调">
+        <Stack gap={3} className="og-w-320">
+          <Inline gap={3}>
+            <Switch checked={on} onChange={setOn} />
+            <Text slot="label">{on ? "已开启" : "已关闭"}</Text>
+            <Switch checked={false} disabled />
+          </Inline>
+          <Slider value={slide} onChange={setSlide} showValue />
+          <Slider defaultValue={65} showValue format={(v) => `${v}%`} />
+          <Inline gap={2}>
+            <Slider value={slide} onChange={setSlide} disabled />
+            <Slider value={slide} onChange={setSlide} size="sm" />
+          </Inline>
+          <RangeSlider value={range} onChange={setRange} showValue />
+        </Stack>
+      </Group>
+
+      <Group title="Modal / Drawer / Menu / ActionSheet" hint="portal 到 body；退场有相位">
+        <Btn variant="outline" onClick={() => setModal(true)}>打开弹窗</Btn>
+        <Btn variant="outline" onClick={() => setDrawer(true)}>打开抽屉</Btn>
+        <Btn variant="outline" onClick={() => setMenuOpen(true)}>打开菜单</Btn>
+        <Sheet open={false} onClose={() => undefined} title="底部抽屉" />
+        <Tooltip content="这是工具提示"><Btn variant="ghost">悬停看提示</Btn></Tooltip>
+      </Group>
+
+      <Group title="Page / Toolbar / SettingsList / Banner" hint="页面骨架与设置行">
+        <Stack gap={4} className="og-w-560">
+          <Banner tone="info" title="这是一条信息横幅">可用于校内服务维护通知。</Banner>
+          <Banner tone="warning" title="会话即将过期" action={<Btn size="sm" variant="outline">重新登录</Btn>} />
+          <Banner tone="error" title="同步失败" onDismiss={() => undefined}>网络不可达。</Banner>
+          <SettingsList title="外观">
+            <SettingsRow icon={<IconSettings />} title="跟随系统明暗" control={<Switch checked={on} onChange={setOn} />} />
+            <SettingsRow icon={<IconRefresh />} title="玻璃浓淡" sub="只在玻璃皮肤下生效" value="均衡" caret onClick={() => undefined} />
+            <SettingsRow icon={<IconLearn />} title="网络学堂自动刷新" control={<Switch checked={false} onChange={() => undefined} />} />
+          </SettingsList>
+        </Stack>
+      </Group>
+
+      <Group title="Tabs / VerticalTabs / Segment" hint="一条共享的滑动指示器">
+        <Stack gap={4} className="og-w-560">
+          <Tabs value={tab} onChange={setTab} items={[{ id: "all", label: "全部", badge: 12 }, { id: "todo", label: "待办", badge: 3 }, { id: "done", label: "已完成" }, { id: "old", label: "归档" }]} />
+          <Tabs variant="pill" value={tab} onChange={setTab} items={[{ id: "all", label: "胶囊" }, { id: "todo", label: "待办" }, { id: "done", label: "已完成" }]} />
+          <Tabs variant="soft" value={tab} onChange={setTab} items={[{ id: "all", label: "软底" }, { id: "todo", label: "待办" }]} />
+          <Segment value={seg} onChange={setSeg} options={[{ value: "day", label: "日" }, { value: "week", label: "周" }, { value: "month", label: "月" }]} />
+          <VerticalTabs value={vtab} onChange={setVtab} items={[{ id: "learn", label: "网络学堂", icon: <IconLearn />, badge: 3 }, { id: "today", label: "今日", icon: <IconToday /> }, { id: "files", label: "云盘", icon: <IconFolder /> }]} />
+        </Stack>
+      </Group>
+
+      <Group title="Avatar / Tile / StatTile / Progress / Ring" hint="计数与进度">
+        <Inline gap={3} wrap>
+          <Avatar name="张三" />
+          <Avatar name="李四" size="lg" />
+          <Avatar name="Alice" size="xl" tone="info" />
+          <Avatar size="sm" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect width='32' height='32' fill='%23c33'/%3E%3C/svg%3E" />
+        </Inline>
+      </Group>
+
+      <Grid min="sm">
+        <Tile icon={<IconToday />} label="今日" sub="3 节课" />
+        <Tile icon={<IconLearn />} label="网络学堂" badge={<Badge count={3} standalone tone="error" />} active />
+        <Tile icon={<IconFolder />} label="云盘" disabled />
+        <StatTile label="待交作业" value={3} unit="门" hint="最近一门 2 天后截止" tone="warning" />
+        <StatTile label="云盘占用" value="1.2" unit="GB" tone="info" />
+        <StatTile label="今日课次" value={5} tone="accent" onClick={() => undefined} />
+      </Grid>
+
+      <Stack gap={3} className="og-w-560">
+        <Progress value={0.42} label="云盘配额" showValue />
+        <Progress value={0.8} tone="warning" size="lg" showValue />
+        <Inline gap={4}>
+          <Ring value={0.25}><Text slot="label">25%</Text></Ring>
+          <Ring value={0.6} tone="success" size="lg">6/10</Ring>
+          <Ring value={0.9} tone="error" size="sm" />
+        </Inline>
+      </Stack>
+
+      <Group title="Table / Accordion / Timeline / Breadcrumb / Pagination">
+        <Stack gap={4}>
+          <Stack gap={3} className="og-w-560">
+            <Table
+              columns={[
+                { key: "name", title: "课程", value: (r: { name: string }) => r.name },
+                { key: "credit", title: "学分", align: "right", mono: true, value: (r: { credit: string }) => r.credit },
+                { key: "score", title: "成绩", align: "right", mono: true, value: (r: { score: string }) => r.score },
+              ] as never}
+              rows={[{ name: "高等数学", credit: "4", score: "92" }, { name: "线性代数", credit: "3", score: "88" }, { name: "大学物理", credit: "3", score: "85" }]}
+              rowKey={(r: { name: string }) => r.name}
+            />
+          </Stack>
+          <Card flush>
+            <Accordion openKeys={openKeys} onToggle={(id) => setOpenKeys((prev) => (prev.includes(id) ? prev.filter((k) => k !== id) : [...prev, id]))}>
+              <AccordionItem id="a" title="折叠面板 A" sub="点开看详情">
+                <Text tone="quiet">面板内容：展开用 grid-template-rows，不动画 height。</Text>
+              </AccordionItem>
+              <AccordionItem id="b" title="折叠面板 B" trailing={<Tag tone="info">新</Tag>}>
+                <Text tone="quiet">另一块内容。</Text>
+              </AccordionItem>
+            </Accordion>
+          </Card>
+          <Stack gap={3} className="og-w-560">
+            <Timeline
+              items={[
+                { time: "09:00", title: "高数作业截止", sub: "第 3 章习题", tone: "warning" },
+                { time: "12:30", title: "提交完成", tone: "success" },
+                { time: "18:00", title: "晚课开始", sub: "六教 6A205" },
+              ]}
+            />
+            <Breadcrumb items={[{ label: "云盘", onClick: () => undefined }, { label: "课程资料", onClick: () => undefined }, { label: "高数" }]} />
+            <Pagination page={page} pageCount={12} onChange={setPage} />
+            <CodeBlock code={"pnpm --filter @onethu/desktop dev"} lang="bash" />
+            <LoadingBlock rows={2} />
+            <Inline gap={2}><Spinner /><Spinner size="sm" /><Spinner size="lg" /></Inline>
+          </Stack>
+        </Stack>
+      </Group>
+
+      <Group title="组合：BtnGroup / DataList / Grow / Popover / ContextMenu" hint="装配件也是组件，不是页面自己拼">
+        <Stack gap={4} className="og-w-560">
+          <Inline gap={0}>
+            <BtnGroup>
+              <Btn variant="outline" size="sm">左</Btn>
+              <Btn variant="outline" size="sm">中</Btn>
+              <Btn variant="outline" size="sm">右</Btn>
+            </BtnGroup>
+            <Grow><Text slot="label" tone="faint">Grow：占满剩余宽度</Text></Grow>
+          </Inline>
+          <DataList
+            items={[{ id: "1", name: "高数作业", meta: "2 天后截止" }, { id: "2", name: "线代作业", meta: "已提交" }]}
+            keyOf={(r: { id: string }) => r.id}
+            render={(r: { name: string; meta: string }) => <Row title={r.name} sub={r.meta} caret onClick={() => undefined} />}
+            divided
+          />
+          <Inline gap={2}>
+            <Popover open={false} onClose={() => undefined} anchor={null}><Text>气泡内容</Text></Popover>
+            <ContextMenu open={false} x={0} y={0} onClose={() => undefined} items={[{ id: "a", label: "右键菜单项" }]} />
+            <Text slot="micro" tone="faint">Popover / ContextMenu 由触发点控制开合，这里只登记存在</Text>
+          </Inline>
+        </Stack>
+      </Group>
+
+      <Group title="Skeleton / Empty / 图标集">
+        <Stack gap={3} className="og-w-320">
+          <Skeleton lines={3} />
+          <Inline gap={2}>
+            <Skeleton width="xs" height="xs" circle />
+            <Skeleton width="lg" height="lg" radius="md" />
+            <Skeleton width="md" height="md" />
+          </Inline>
+        </Stack>
+        <IconRefresh />
+        <IconSettings />
+        <IconFolder />
+      </Group>
+
+      <Modal
+        open={modal}
+        onClose={() => setModal(false)}
+        title="确认操作"
+        foot={<><Btn variant="ghost" onClick={() => setModal(false)}>取消</Btn><Btn variant="solid" tone="brand" onClick={() => setModal(false)}>确定</Btn></>}
+      >
+        <Text>弹窗内容：桌面居中、手机底部抽屉，同一份实现。</Text>
+      </Modal>
+
+      <Drawer open={drawer} onClose={() => setDrawer(false)} title="抽屉标题">
+        <Text>侧边抽屉：只动 transform，退场有相位。</Text>
+      </Drawer>
+
+      <Menu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        items={[
+          { id: "open", label: "打开" },
+          { id: "rename", label: "重命名" },
+          "separator",
+          { id: "del", label: "删除", danger: true },
+        ]}
+      />
+    </Stack>
   );
 }
 
@@ -198,6 +442,21 @@ export function OneGUIGallery(): ReactNode {
   const director = useOneGUI();
   const [themeIdx, setThemeIdx] = useState(0);
 
+  // URL 轴覆盖（截图/验收用）：?onegui-gallery&skin=glass&scheme=dark&density=touch&level=rich
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const patch: Record<string, string> = {};
+    const skin = q.get("skin");
+    if (skin === "glass" || skin === "neutral") patch.skin = skin;
+    const scheme = q.get("scheme");
+    if (scheme === "light" || scheme === "dark" || scheme === "auto") patch.scheme = scheme;
+    const density = q.get("density");
+    if (density === "compact" || density === "comfortable" || density === "touch") patch.density = density;
+    const level = q.get("level");
+    if (level) patch.skinLevel = level;
+    if (Object.keys(patch).length > 0) director.set(patch as never, { persist: false });
+  }, [director]);
+
   return (
     <Stack gap={6} pad={6}>
       <Stack gap={2}>
@@ -234,6 +493,7 @@ export function OneGUIGallery(): ReactNode {
       </Surface>
 
       <Catalog />
+      <CatalogExtra />
     </Stack>
   );
 }

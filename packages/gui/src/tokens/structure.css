@@ -93,6 +93,31 @@
   --og-ctl-sheet-max: 92dvh;
   --og-ctl-tooltip-max-w: 260px;
 
+  /* ── 胶囊/标签固有高度 ── */
+  --og-ctl-chip-h-sm: 22px;
+  --og-ctl-chip-h-md: 26px;
+  --og-ctl-chip-h-lg: 32px;
+  --og-ctl-tag-h: 20px;
+  --og-ctl-badge: 16px;
+
+  /* 进度条高度三档 */
+  --og-ctl-progress-sm: 4px;
+  --og-ctl-progress-md: 6px;
+  --og-ctl-progress-lg: 10px;
+
+  /* 页面阅读栏宽度（页面模式的四档） */
+  --og-page-max-narrow: 720px;
+  --og-page-max-wide: 1440px;
+
+  /* 表单/窄栏排版宽度（页面排版用） */
+  --og-ctl-form-narrow: 320px;
+  --og-ctl-form-wide: 560px;
+
+  /* ── 栅格最小列宽（自适应列数） ── */
+  --og-grid-min-sm: 148px;
+  --og-grid-min-md: 200px;
+  --og-grid-min-lg: 264px;
+
   /* ── 图标：四档尺寸 + 两档描边 ── */
   --og-icon-sm: 16px;
   --og-icon-md: 18px;

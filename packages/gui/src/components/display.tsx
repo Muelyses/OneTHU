@@ -163,14 +163,15 @@ export interface AccordionItemProps {
   sub?: ReactNode;
   trailing?: ReactNode;
   children?: ReactNode;
-  open: boolean;
-  onToggle: (id: string) => void;
+  /** 由 Accordion 注入；单独使用时省略（默认收起） */
+  open?: boolean;
+  onToggle?: (id: string) => void;
 }
 
-export function AccordionItem({ id, title, sub, trailing, children, open, onToggle }: AccordionItemProps): ReactNode {
+export function AccordionItem({ id, title, sub, trailing, children, open = false, onToggle }: AccordionItemProps): ReactNode {
   return (
     <div className={cx("og-accordion-item", open ? "is-open" : "")}>
-      <button type="button" className="og-accordion-head" aria-expanded={open} onClick={() => onToggle(id)}>
+      <button type="button" className="og-accordion-head" aria-expanded={open} onClick={() => onToggle?.(id)}>
         <span className="og-accordion-main">
           <span className="og-accordion-title">{title}</span>
           {sub ? <span className="og-accordion-sub">{sub}</span> : null}

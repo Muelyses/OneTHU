@@ -25,8 +25,8 @@
   padding-block: var(--og-space-5) var(--og-space-8);
 }
 
-.og-page--narrow { --og-page-max: 720px; }
-.og-page--wide { --og-page-max: 1440px; }
+.og-page--narrow { --og-page-max: var(--og-page-max-narrow); }
+.og-page--wide { --og-page-max: var(--og-page-max-wide); }
 .og-page--full { --og-page-max: 100%; }
 .og-page--flush { --og-page-pad-x: 0px; }
 
@@ -253,7 +253,7 @@
   border-radius: var(--og-radius-full);
   background: var(--og-accent);
   transform-origin: left center;
-  transform: translateX(var(--og-c-tabs-x, 0px)) scaleX(var(--og-c-tabs-s, 0));
+  transform: translateX(0) scaleX(0);
   transition: transform var(--og-dur-2) var(--og-ease-spring);
   pointer-events: none;
 }
@@ -264,7 +264,6 @@
   bottom: auto;
   height: var(--og-ctl-h-md);
   border-radius: var(--og-radius-md);
-  transform: translateX(var(--og-c-tabs-x, 0px)) translateY(-50%) scaleX(var(--og-c-tabs-s, 0));
 }
 
 .og-tabs--pill .og-tabs-indicator { background: var(--og-accent-soft); }
@@ -351,7 +350,7 @@
   background: var(--og-surface-1);
   box-shadow: var(--og-elev-1);
   transform-origin: left center;
-  transform: translateX(var(--og-c-seg-x, 0px)) scaleX(var(--og-c-seg-s, 0));
+  transform: scaleX(0);
   transition: transform var(--og-dur-2) var(--og-ease-spring);
   pointer-events: none;
 }

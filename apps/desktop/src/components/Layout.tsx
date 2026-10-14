@@ -419,8 +419,6 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className="shell explorer-shell">
       {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
       <ShellWallpaperLayer />
-      {/* 首页固定钟与功能坞必须在页面转场/滚动容器之外，否则 position:fixed 会被 transform 祖先限制。 */}
-      {explorer.activeId === HOME_TAB_ID ? <HomeChrome /> : null}
       {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
           Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
       <ContextMenuLayer>

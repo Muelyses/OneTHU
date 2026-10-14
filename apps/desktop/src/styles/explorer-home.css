@@ -217,7 +217,8 @@
 .home-chrome-layer {
   --home-canvas-top: 104px;
   --home-clock-size: 72px;
-  position: fixed;
+  /* 画布的一部分（2026-10-14 拍板）：absolute 铺满滚动容器，随内容滚动——不再 fixed 铆钉 */
+  position: absolute;
   inset: 0;
   z-index: 30;
   pointer-events: none;

@@ -307,7 +307,10 @@
 .explorer-shell[data-wallpaper-lum="dark"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-mobile-strip {
-  background: rgba(21, 23, 31, 0.55);
+  /* 反色档背景随玻璃档位（--glass-fill-ink），不再写死 0.55（那是逃出档位的异源） */
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-ink);
   color: #f2f4f8;
   --text-1: #f2f4f8;
   --text-2: rgba(242, 244, 248, 0.8);
@@ -334,7 +337,9 @@
 .explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="light"] .ex-mobile-strip {
-  background: rgba(252, 253, 255, 0.72);
+  background:
+    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
+    var(--glass-fill-paper);
   color: #1c1f28;
   --text-1: #1c1f28;
   --text-2: rgba(28, 31, 40, 0.78);
@@ -554,12 +559,12 @@ html.is-phone .hard-refresh-fab.top-fab {
 }
 
 
-/* ══════════ 画布裸文本随壁纸明暗自适应（2026-10-14 用户点名，统一收口）══════════
-   挂在 .home-tab（整个首页画布）：亮壁纸→深字、暗壁纸→白字，与 chrome 层同一套符文；
+/* ══════════ 内容区裸文本随壁纸明暗自适应（2026-10-14 扩全域：标题/表头全部在内）══════════
+   挂在 .explorer-content（首页 + 所有内容页）：亮壁纸→深字、暗壁纸→白字，与 chrome 层同一套符文；
    玻璃卡（.free-item/.home-card）内部**回归主题字色**——卡体有自己的玻璃填充，
    字色跟着卡底走而不跟壁纸走（浅主题的卡上永远是深字、深主题是浅字），
    避免「canvas 档翻白字进了卡、卡底又是浅玻璃」的倒挂。 */
-.explorer-shell[data-wallpaper-lum="dark"] .home-tab {
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content,
   color: #f2f4f8;
   --text-1: #f2f4f8;
   --text-2: rgba(242, 244, 248, 0.8);
@@ -567,7 +572,7 @@ html.is-phone .hard-refresh-fab.top-fab {
   --md-sys-color-on-surface: #f2f4f8;
   --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
 }
-.explorer-shell[data-wallpaper-lum="light"] .home-tab {
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content,
   color: #1c1f28;
   --text-1: #1c1f28;
   --text-2: rgba(28, 31, 40, 0.78);
@@ -576,9 +581,9 @@ html.is-phone .hard-refresh-fab.top-fab {
   --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
 }
 /* 卡内回归主题：按 color-scheme 两套写死基础档值（与 chrome 层分支同一组色） */
-:root:not([data-scheme="dark"]) .home-tab .free-item,
-:root:not([data-scheme="dark"]) .home-tab .home-card,
-:root:not([data-scheme="dark"]) .home-tab .card {
+:root:not([data-scheme="dark"]) .explorer-content .free-item,
+:root:not([data-scheme="dark"]) .explorer-content .home-card,
+:root:not([data-scheme="dark"]) .explorer-content .card {
   color: #1c1f28;
   --text-1: #1c1f28;
   --text-2: rgba(28, 31, 40, 0.78);
@@ -586,9 +591,9 @@ html.is-phone .hard-refresh-fab.top-fab {
   --md-sys-color-on-surface: #1c1f28;
   --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
 }
-:root[data-scheme="dark"] .home-tab .free-item,
-:root[data-scheme="dark"] .home-tab .home-card,
-:root[data-scheme="dark"] .home-tab .card {
+:root[data-scheme="dark"] .explorer-content .free-item,
+:root[data-scheme="dark"] .explorer-content .home-card,
+:root[data-scheme="dark"] .explorer-content .card {
   color: #f2f4f8;
   --text-1: #f2f4f8;
   --text-2: rgba(242, 244, 248, 0.8);

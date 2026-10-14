@@ -18,7 +18,11 @@ html[data-glass="clear"] {
   --glass-card-fill-2: rgba(255, 255, 255, 0.30);
   --glass-card-fill-3: rgba(255, 255, 255, 0.30);
   --glass-shadow: 0 10px 30px rgba(30, 33, 45, 0.07);
-}
+}  /* 字色反差档专用（lum 分支栏体用）：同一档位的两种「底色」——
+     ink=压暗壁用，paper=提亮壁用；alpha 随档位与 fill 家族一致 */
+  --glass-fill-ink: rgba(21, 23, 31, 0.30);
+  --glass-fill-paper: rgba(252, 253, 255, 0.30);
+
 html[data-glass="clear"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.06);
   --surface-2: rgba(255, 255, 255, 0.06);
@@ -53,7 +57,11 @@ html[data-glass="rich"] {
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.60);
   --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.60);
   --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.60);
-}
+}  /* 字色反差档专用（lum 分支栏体用）：同一档位的两种「底色」——
+     ink=压暗壁用，paper=提亮壁用；alpha 随档位与 fill 家族一致 */
+  --glass-fill-ink: rgba(21, 23, 31, 0.60);
+  --glass-fill-paper: rgba(252, 253, 255, 0.60);
+
 html[data-glass="rich"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.14);
   --surface-2: rgba(255, 255, 255, 0.14);
@@ -88,7 +96,11 @@ html[data-glass="deep"] {
   --md-sys-color-surface-container: rgba(255, 255, 255, 0.74);
   --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.74);
   --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.74);
-}
+}  /* 字色反差档专用（lum 分支栏体用）：同一档位的两种「底色」——
+     ink=压暗壁用，paper=提亮壁用；alpha 随档位与 fill 家族一致 */
+  --glass-fill-ink: rgba(21, 23, 31, 0.74);
+  --glass-fill-paper: rgba(252, 253, 255, 0.74);
+
 html[data-glass="deep"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.20);
   --surface-2: rgba(255, 255, 255, 0.20);

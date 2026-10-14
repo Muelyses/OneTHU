@@ -19,6 +19,11 @@ import { builtinCss, displayRef, subscribeWallpaper, wallpaperSnapshot } from ".
 const CELL = 8;              // 壁纸采样网格（px）
 const NODE_BUDGET = 4000;    // 单轮叶子预算
 const MIN_CONTRAST = 3.0;
+const HYSTERESIS = 0.8;      // 反侧需超过达标线这么多才允许翻色
+const TILE = 96;             // 瓦片亮度缓存粒度
+const SETTLE_MS = 180;       // 滚动停稳判定
+const tileCache = new Map<string, number>();
+const rectCache = new WeakMap<HTMLElement, string>();
 
 let wall: HTMLCanvasElement | null = null;
 let wallKey = "";            // 壁纸内容指纹（ref + 视口尺寸）
@@ -46,9 +51,10 @@ function rebuildWall(): void {
   const wp = wallpaperSnapshot();
   const ref = wp.global;
   const W = window.innerWidth, H = window.innerHeight;
-  const key = (ref ?? "none") + "|" + W + "x" + H;
+  const key = (ref ?? "none") + "|" + W + "x" + H + "|" + document.documentElement.dataset.scheme;
   if (key === wallKey && wall) return;
   wallKey = key;
+  tileCache.clear();
   const c = document.createElement("canvas");
   c.width = Math.ceil(W / CELL);
   c.height = Math.ceil(H / CELL);
@@ -100,6 +106,23 @@ function rebuildWall(): void {
 }
 
 /** 采样：视口矩形 → 壁纸在该区域的平均亮度（0..1） */
+/** 瓦片亮度（96px 视口格；缓存随壁纸/档位失效） */
+function tileLum(vx: number, vy: number): number {
+  const key = Math.floor(vx / TILE) + ":" + Math.floor(vy / TILE);
+  let v = tileCache.get(key);
+  if (v != null) return v;
+  if (!wall) return 0.5;
+  const ctx = wall.getContext("2d");
+  if (!ctx) return 0.5;
+  const cx = Math.min(wall.width - 1, Math.floor(vx / CELL));
+  const cy = Math.min(wall.height - 1, Math.floor(vy / CELL));
+  const d = ctx.getImageData(cx, cy, 1, 1).data;
+  v = lum([d[0] ?? 0, d[1] ?? 0, d[2] ?? 0]);
+  tileCache.set(key, v);
+  return v;
+}
+
+/** 文本矩形覆盖瓦片的平均亮度 */
 function wallLum(rect: DOMRect): number {
   if (!wall) return 0.5;
   const x0 = Math.max(0, Math.floor(Math.max(rect.left, 0) / CELL));
@@ -167,7 +190,7 @@ function compositeLum(el: HTMLElement): number {
   if (veil) L = L * (1 - veil) + (dark ? 0 : 1) * veil;
   const layers = parseLayers(el);
   for (const ly of layers) L = L * (1 - ly.a) + lum(ly.rgb) * ly.a;
-  return Math.min(1, Math.max(0, L));
+  return Math.round(Math.min(1, Math.max(0, L)) * 20) / 20;
 }
 
 /* ---------- 引擎主流程 ---------- */
@@ -181,6 +204,10 @@ function adjust(el: HTMLElement): void {
   if (!hasOwnText) return;
   const rect = el.getBoundingClientRect();
   if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) return;
+  // 位置签名不变且已有决定 → 不重算（滚动/布局没动它）
+  const sig = Math.round(rect.left / 8) + ":" + Math.round(rect.top / 8) + ":" + Math.round(rect.width / 8);
+  if (rectCache.get(el) === sig && el.dataset.tx) return;
+  rectCache.set(el, sig);
   const cs = getComputedStyle(el);
   if (cs.visibility === "hidden" || cs.display === "none" || Number(cs.opacity) < 0.05) return;
   const cm = cs.color.match(/[\d.]+/g)?.map(Number) ?? [];
@@ -193,8 +220,15 @@ function adjust(el: HTMLElement): void {
     if (el.dataset.tx === "auto") { el.style.removeProperty("color"); delete el.dataset.tx; }
     return;
   }
+  // 迟滞闸：已翻过一侧的，只有反侧明显更好才允许二次翻
   const want = bg < 0.5 ? WANT_DARK : WANT_LIGHT;
-  if (el.dataset.tx === "auto" && el.style.color === want) return;
+  if (el.dataset.tx === "auto") {
+    const cur = el.style.color;
+    if (cur && cur !== want) {
+      const curRgb = ((cur.match(/([\d.]+)/g) ?? []).map(Number)) as number[];
+      if (curRgb.length >= 3 && contrast(lum(bg < 0.5 ? [255, 255, 255] : [20, 22, 28]), bg) <= contrast(lum(curRgb.slice(0, 3) as [number, number, number]), bg) + HYSTERESIS) return;
+    }
+  }
   el.style.setProperty("color", want);
   el.dataset.tx = "auto";
 }
@@ -216,7 +250,7 @@ function pass(): void {
 }
 
 function schedule(immediate = false): void {
-  if (scheduled) return;
+  if (scheduled) { if (!immediate) return; window.clearTimeout(scheduled); scheduled = 0; }
   scheduled = window.setTimeout(() => {
     scheduled = 0;
     pass();
@@ -243,7 +277,7 @@ export function installTextContrast(): void {
   }, { passive: true });
   new MutationObserver(() => schedule()).observe(document.documentElement, {
     childList: true, subtree: true, attributes: true,
-    attributeFilter: ["class", "style", "data-theme", "data-scheme", "data-glass", "data-wallpaper-lum"],
+    attributeFilter: ["data-theme", "data-scheme", "data-glass", "data-wallpaper-lum"],
   });
   schedule(true);
 }

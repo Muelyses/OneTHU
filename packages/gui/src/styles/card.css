@@ -68,6 +68,13 @@
 .og-surface--p-lg { --og-c-surface-pad: var(--og-space-5); }
 .og-surface--p-xl { --og-c-surface-pad: var(--og-space-6); }
 
+/* 吸顶工具条：位置 sticky，层高走令牌（页面不许自己写 position/z-index） */
+.og-surface.is-sticky {
+  position: sticky;
+  top: var(--og-space-3);
+  z-index: var(--og-z-sticky);
+}
+
 /* ── 可点面：整块可点（云盘文件格、入口卡） ── */
 .og-surface--interactive {
   cursor: pointer;

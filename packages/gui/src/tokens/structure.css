@@ -69,6 +69,20 @@
   --og-page-max: 1160px;
   --og-page-pad-x: var(--og-space-5);
 
+  /* ── 精细几何：组件内部的光学微调（不是布局网格 —— 布局一律用 --og-space-*） ── */
+  --og-geo-hairline: 1px;
+  --og-geo-xs: 2px;
+  --og-geo-sm: 3px;
+
+  /* ── 表单/开关/滑条的固有尺寸（组件只引用，不自己写） ── */
+  --og-ctl-check: 18px;
+  --og-ctl-switch-w: 40px;
+  --og-ctl-switch-h: 24px;
+  --og-ctl-slider-track: 5px;
+  --og-ctl-slider-thumb: 18px;
+  --og-ctl-textarea-min-h: 84px;
+  --og-ctl-textarea-rows: 4;
+
   /* ── 图标：四档尺寸 + 两档描边 ── */
   --og-icon-sm: 16px;
   --og-icon-md: 18px;
@@ -136,6 +150,10 @@
 }
 
 [data-og-density="touch"] {
+  --og-ctl-switch-w: 46px;
+  --og-ctl-switch-h: 28px;
+  --og-ctl-slider-thumb: 22px;
+  --og-ctl-check: 20px;
   --og-ctl-h-sm: 34px;
   --og-ctl-h-md: 42px;
   --og-ctl-h-lg: 50px;

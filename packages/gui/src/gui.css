@@ -18,6 +18,7 @@
 @import "./styles/base.css";
 
 /* ④ 组件 */
+@import "./styles/layout.css";
 @import "./styles/text.css";
 @import "./styles/button.css";
 @import "./styles/card.css";

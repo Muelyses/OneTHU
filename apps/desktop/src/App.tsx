@@ -19,6 +19,9 @@ import { refreshLearnDataSilently, startLearnAutoRefresh, stopLearnAutoRefresh }
 import { TabHost } from "./components/explorer/TabHost.js";
 import { explorerNavigate, initExplorerHashBridge, openTabFromBootHash } from "./state/explorer.js";
 
+/** OneGUI 画廊（?onegui-gallery=1）：dev 专用、免登录，用于组件与皮肤验收 */
+const OneGUIGallery = import.meta.env.DEV ? lazy(() => import("./gallery/OneGUIGallery.js").then((m) => ({ default: m.OneGUIGallery }))) : null;
+
 /** dev 视觉自检驱动（?explorer-preview=…）；正式版整块剥离 */
 const ExplorerPreview = import.meta.env.DEV ? lazy(() => import("./components/explorer/ExplorerPreview.js")) : null;
 
@@ -88,6 +91,15 @@ function Routed() {
 
   // 悬浮球窗口：只出全局悬浮球（红线：这条路径绝不把主窗口拉到前台）
   if (IS_OVERLAY_WINDOW) return <GlobalOrb />;
+
+  // OneGUI 画廊：开发期直接看组件矩阵（不走登录/标签页宿主）
+  if (OneGUIGallery && new URLSearchParams(window.location.search).has("onegui-gallery")) {
+    return (
+      <Suspense fallback={null}>
+        <OneGUIGallery />
+      </Suspense>
+    );
+  }
 
   const body = (() => {
     if (status === "booting") {

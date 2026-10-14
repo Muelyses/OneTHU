@@ -39,6 +39,11 @@ import { activateInstalledPlugins, seedBuiltinHarness } from "./plugins/loader.j
 import "@onethu/ui/tokens.css";
 import { installAuthWatchdog, installKeepalive } from "./lib/reload.js";
 
+// 风格管线（六轴）挂载：皮肤/明暗/密度/动效/强调色/平台一处解析、一处落盘。
+// 平台判定复用 state/platform.ts 的唯一断点（禁止组件各自 matchMedia）。
+installOneGUI({
+  platform: () => (platformOf(window.innerWidth) === "expanded" ? "desktop" : "mobile"),
+});
 installAuthWatchdog();
 installKeepalive();   // 10 分钟会话保活探针：死会话在用户点击前就透明重建
 // 系统日历自动跟随：订阅云/本日程与课表变更（未开启时零开销）
@@ -53,6 +58,10 @@ import "./styles/glass-levels.css";
 // 动效层（local/anim-delight）：令牌 + keyframes + 全局微交互。必须在 global.css 之后，
 // 否则同选择器的 transition/animation 会被 global.css 覆盖。
 import "./styles/motion.css";
+// OneGUI（唯一 UI 体系）：正式样式表 + 风格管线。放在旧样式之后 —— 组件与令牌优先。
+// 旧样式表在换血期间仍在，逐页迁移完成后整批删除（见 docs/onegui/00-plan.md §5）。
+import "@onethu/gui/gui.css";
+import { installOneGUI } from "@onethu/gui";
 import { installScrollReveal } from "./lib/motion.js";
 import { installTextContrast } from "./lib/textContrast.js";
 import { installRipple } from "./components/Ripple.js";

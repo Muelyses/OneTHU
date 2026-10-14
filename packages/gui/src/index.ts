@@ -25,6 +25,9 @@ export { OneStyle, one, cx, scopeProps } from "./components/kit.js";
 export type { OneBase, OGSize, OGTone, OGEmphasis, OGLevel } from "./components/kit.js";
 
 /* ── 组件 ── */
+export { Stack, Inline, Spacer, Grow } from "./components/layout.js";
+export type { StackProps, InlineProps, Gap, Align, Justify } from "./components/layout.js";
+
 export { Text, Section, KeyValue } from "./components/text.js";
 export type { TextProps, TextSlot, TextTone, TextWeight, SectionProps, KeyValueProps } from "./components/text.js";
 
@@ -37,5 +40,14 @@ export type { BtnProps, IconBtnProps, FabProps, BtnGroupProps } from "./componen
 export { List, Row, EmptyState, Divider } from "./components/list.js";
 export type { ListProps, RowProps, RowSize, EmptyStateProps } from "./components/list.js";
 
+export {
+  Field, Input, TextArea, SearchField, NumberField, Select, Checkbox, Radio, RadioGroup, Switch, Slider, RangeSlider,
+} from "./components/form.js";
+export type {
+  FieldProps, InputProps, TextAreaProps, SearchFieldProps, NumberFieldProps, SelectProps, SelectOption,
+  CheckboxProps, RadioProps, RadioGroupProps, SwitchProps, SliderProps, RangeSliderProps,
+} from "./components/form.js";
+
+export * from "./components/icons.js";
 export { Icon, Chip, Tag, Badge } from "./components/chip.js";
 export type { IconProps, IconSize, ChipProps, BadgeProps } from "./components/chip.js";

@@ -19,6 +19,8 @@ export interface SurfaceProps extends OneBase {
   plain?: boolean;
   pad?: SurfacePad;
   radius?: SurfaceRadius;
+  /** 吸顶（页面工具条、筛选条）—— 层高走 --og-z-sticky */
+  sticky?: boolean;
   interactive?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -43,6 +45,7 @@ export function surfaceClass(p: SurfaceProps): string {
     .state("selected", p.selected)
     .state("disabled", p.disabled)
     .state("interactive", p.interactive)
+    .state("sticky", p.sticky)
     .toString();
 }
 

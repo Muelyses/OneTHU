@@ -440,7 +440,10 @@ select {
 /* 顶层页签切换：keyed 容器重新挂载 → 播放一次转场 */
 .page-anim {
   animation: m-page-in var(--dur-3) var(--ease-ios) backwards;
-  will-change: transform, opacity;
+  /* 刻意不写 will-change: transform —— 它会**常驻**为 fixed 后代建立包含块，
+     把页内浮钮（.board-fab-col / .free-fab-col 的 position: fixed）困在页面上，
+     于是浮钮随内容漂移（验证员实测浮钮 Δy≈296 与内容 Δ285 同步，而同屏真 fixed 的刷新钮不动）。
+     动画自身的 transform 已足够触发合成，且动画结束即失效，不会长期改变包含块。 */
 }
 .page-anim[data-dir="back"] {
   animation-name: m-page-in-back;

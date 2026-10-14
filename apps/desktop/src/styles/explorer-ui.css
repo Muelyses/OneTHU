@@ -791,19 +791,14 @@
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
-/* ══════════ 液态玻璃 v4.1→v4.3：竖栏 = 液态玻璃（用户点名：竖直标签页栏要液态玻璃材质） ═══════════
-   fill-regular 实感玻璃填充 + tint 渐变 + clear blur + rim 三件套；窄模式 hover 展开加深一档 ” */
+/* ══════════ 液态玻璃 v4.1→v4.3：竖栏材质已并入收口规则 ═══════════
+   2026-10-14：本块原手写 material（fill-regular + tint + clear blur + rim）与 global.css 的
+   「壳层玻璃收口」同特异度 (0,1,0)，而本文件在 global.css 之后注入 → 本块必胜 → 竖栏脱队：
+   浅色两者同值看不出，**深色下 fill-regular 是 30,30,36 近黑、收口用 card-fill-2 是白**，
+   于是竖栏比顶栏暗一截、还少一层 --glass-shadow。现只保留竖栏独有的右边线，材质交给收口规则。
+   （下面 hover 那条仍保留：它防的是「窄栏展开翻白」的特异性之争，与本块无关。） */
 .ex-rail {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-regular);
-  backdrop-filter: var(--lg-blur-clear);
-  -webkit-backdrop-filter: var(--lg-blur-clear);
   border-right: 1px solid var(--glass-border);
-  box-shadow:
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
 }
 /* hover 展开只抬阴影不换底（2026-10-14）：此前换成 --glass-fill(浅色=0.52 白)，
    亮度档玻璃(特异性 0,3,0)输给本规则(0,4,0)，有壁纸时展开那片翻白。 */

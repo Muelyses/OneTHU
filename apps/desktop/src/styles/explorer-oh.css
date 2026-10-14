@@ -328,14 +328,14 @@ html.is-phone .dock-head .dock-btn.dock-creative svg { width: 13px; height: 13px
 
 /* ══════════ 手机档（html.is-phone）：胶囊 rim 与留缝 ══════════
    「胶囊边框太浅」的手机加强走 OneGUI scope：rim 读 oh.capsule 的 line-1→line-2 强线档
-   （档位登记在 ohCapsuleScope.ts，由 OneGUI 管线落值——不再手写 text-1 mix 百分比）；
-   材质（玻璃阴影/顶光跟随皮肤链）与动画语义不变。 */
+   （档位登记在 ohCapsuleScope.ts，由 OneGUI 管线重渲染语义令牌落值——在 scope 子树里
+   var(--og-line-1) 即被改写为 line-2；不再手写 text-1 mix 百分比）；阴影三件套跟随皮肤链。 */
 html.is-phone .ohx-capsule {
-  border: var(--og-geo-hairline) solid var(--og-c-line-1);
+  border: var(--og-geo-hairline) solid var(--og-line-1);
   box-shadow:
     var(--glass-shadow),
     inset 0 var(--og-geo-hairline) 0 var(--glass-rim-top),
-    inset 0 0 0 var(--og-geo-hairline) var(--og-c-line-1);
+    inset 0 0 0 var(--og-geo-hairline) var(--og-line-1);
 }
 /* 常态左右留缝收紧：36px → 8px；按压/展开仍「弹一下」（4px 缝，动画 margin 语义原样） */
 html.is-phone .ex-bbar-center .ohx-capsule { margin: 0 var(--og-space-2); }

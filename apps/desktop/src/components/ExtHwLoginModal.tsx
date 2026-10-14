@@ -34,8 +34,8 @@ import {
 /** 退场：内联 animation 覆盖入场（本项目不给内联几何弹层写 CSS 规则） */
 const maskOut: React.CSSProperties = { animation: "m-fade-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
 const panelOut: React.CSSProperties = { animation: "m-pop-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
-const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
+const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "var(--og-scrim)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
+const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", boxShadow: "var(--og-elev-menu)", padding: "16px 18px" };
 
 type YktChannel = "qr" | "web" | "sms";
 
@@ -148,7 +148,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
     marginTop: 8,
     padding: "6px 8px",
     borderRadius: 8,
-    background: "rgba(26,111,212,0.08)",
+    background: "var(--og-accent-soft)",
     color: "var(--text-1, #1f2329)",
     textAlign: "left",
   };
@@ -160,7 +160,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         padding: 12,
         border: "1px solid var(--border, #e5e5e5)",
         borderRadius: 10,
-        background: "var(--surface-2, rgba(0,0,0,0.02))",
+        background: "var(--og-surface-2)",
       }}
     >
       <div style={{ textAlign: "center" }}>
@@ -295,7 +295,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
         padding: 12,
         border: "1px solid var(--border, #e5e5e5)",
         borderRadius: 10,
-        background: "var(--surface-2, rgba(0,0,0,0.02))",
+        background: "var(--og-surface-2)",
       }}
     >
       <div style={{ fontSize: 13, lineHeight: 1.6 }}>

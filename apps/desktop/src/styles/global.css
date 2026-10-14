@@ -360,8 +360,6 @@
 
 /* ---------- 时间线 ---------- */
 
-.tl-item:first-child { border-top: 0; }
-
 .tl-time {
   flex: 0 0 48px;
   font-size: var(--text-xs);
@@ -2175,8 +2173,6 @@ select.input:focus {
     backdrop-filter: var(--glass-panel-blur);
   }
 
-  .topbar-menu:active { transform: scale(0.94); }
-
   /* —— 遮罩 + 左滑抽屉 —— */
   .drawer-mask {
     position: fixed;
@@ -2632,8 +2628,6 @@ select.input:focus {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
   max-width: calc(100vw - 24px);
 }
-
-.heb-btn:disabled { opacity: 0.4; }
 
 .heb-up svg { transform: rotate(-90deg); }
 .heb-down svg { transform: rotate(90deg); }
@@ -5894,8 +5888,6 @@ html.is-phone .cloud-search input {
 }
 /* ── 插件市场（安装面板 · 市场页签）── */
 
-.plg-market-item:hover { border-color: var(--border-strong); background: var(--hover); }
-
 /* ── 插件市场独立视图 ── */
 .market-view { display: flex; flex-direction: column; gap: 10px; }
 .market-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -6749,7 +6741,6 @@ section > .svc-label { margin-top: 14px; }
    折叠与否由 Layout 打在 .sidebar 上的 is-collapsed 决定，偏好存本机 localStorage。
    ============================================================ */
 
-.sidebar-collapse:hover { color: var(--md-sys-color-on-surface, var(--text-1)); background: var(--surface-3); }
 .shell { transition: grid-template-columns 0.18s ease; }
 .shell:has(.sidebar.is-collapsed) { --sidebar-w: 72px; }
 .sidebar.is-collapsed { padding-left: 8px; padding-right: 8px; }
@@ -6956,8 +6947,6 @@ html.is-phone .pal-row-bc { font-size: 12px; }
 .pal-empty { padding: 16px 12px; font-size: 13px; color: var(--text-3); }
 
 /* 侧栏顶部的搜索入口：不逼用户记快捷键，也顺手把当前平台的键位写在旁边 */
-
-.sb-search:hover { background: var(--surface-2); color: var(--text-1); }
 
 .sidebar.is-collapsed .sb-search-label, .sidebar.is-collapsed .sb-kbd { display: none; }
 

@@ -7,42 +7,35 @@
 
 | # | 独立样式源 | 当前 | 目标 |
 |---|---|---:|---:|
-| A | 旧样式表规则（apps/desktop/src/styles） | 2758 | 0 |
+| A | 旧样式表规则（apps/desktop/src/styles） | 2742 | 0 |
 | B | 组件内嵌 CSS（`<style>` 块 / `*_CSS` 模板字符串） | 7 | 0 |
 | C1 | 内联样式（含外观属性 `style={{…}}`） | 1022 | 0 |
 | C2 | 内联几何（纯定位/尺寸，迁移后由组件 prop 承担） | 328 | 0 |
 | D | TSX 字面色值（`#rgb`/`rgba()`/`hsl()`） | 676 | 0 |
 | E | 裸控件（`<button|input|select|textarea>`） | 1123 | 0 |
 | F | 运行时注入（createElement(style)/innerHTML/insertRule） | 4 | 0 |
-| | **合计** | **5590** | **0** |
+| | **合计** | **5574** | **0** |
 
-## A. 旧样式表（8 个文件 / 12511 行 / 1534 个类名 / 2758 条规则）
+## A. 旧样式表（8 个文件 / 12480 行 / 1524 个类名 / 2742 条规则）
 
 | 文件 | 行 | 规则 | 类名 | 零引用类名 | 过渡桥 |
 |---|---|---|---|---|---|
-| `apps/desktop/src/styles/global.css` | 8367 | 2015 | 1129 | 84 |  |
+| `apps/desktop/src/styles/global.css` | 8356 | 2009 | 1126 | 81 |  |
 | `apps/desktop/src/styles/explorer-ui.css` | 939 | 206 | 100 | 2 |  |
 | `apps/desktop/src/styles/motion.css` | 887 | 179 | 74 | 4 |  |
-| `apps/desktop/src/styles/explorer-home.css` | 870 | 159 | 93 | 15 |  |
+| `apps/desktop/src/styles/explorer-home.css` | 850 | 149 | 86 | 8 |  |
 | `apps/desktop/src/styles/explorer.css` | 594 | 105 | 66 | 2 |  |
 | `apps/desktop/src/styles/explorer-oh.css` | 437 | 76 | 42 | 1 |  |
 | `apps/desktop/src/styles/onegui-bridge.css` | 304 | 12 | 30 | 3 | 是（TEMP） |
 | `apps/desktop/src/styles/glass-levels.css` | 113 | 6 | 0 | 0 |  |
 
-**零引用类名 111 个**（可先删；注意动态拼接类名要人工确认）——前 20：
+**零引用类名 101 个**（可先删；注意动态拼接类名要人工确认）——前 20：
 - apps/desktop/src/styles/explorer-home.css: .home-searchbar
 - apps/desktop/src/styles/explorer-home.css: .home-resume
-- apps/desktop/src/styles/explorer-home.css: .home-resume-chips
 - apps/desktop/src/styles/explorer-home.css: .home-resume-chip
 - apps/desktop/src/styles/explorer-home.css: .is-workspace
 - apps/desktop/src/styles/explorer-home.css: .home-catalog-row
 - apps/desktop/src/styles/explorer-home.css: .is-sm
-- apps/desktop/src/styles/explorer-home.css: .fh-nw
-- apps/desktop/src/styles/explorer-home.css: .fh-ne
-- apps/desktop/src/styles/explorer-home.css: .fh-sw
-- apps/desktop/src/styles/explorer-home.css: .fh-se
-- apps/desktop/src/styles/explorer-home.css: .fh-e
-- apps/desktop/src/styles/explorer-home.css: .fh-s
 - apps/desktop/src/styles/explorer-home.css: .hs-logo
 - apps/desktop/src/styles/explorer-home.css: .hs-detail-btn
 - apps/desktop/src/styles/explorer-oh.css: .ohx-searchbar
@@ -50,6 +43,13 @@
 - apps/desktop/src/styles/explorer-ui.css: .explorer-tabstrip-wrap
 - apps/desktop/src/styles/explorer.css: .settings-title
 - apps/desktop/src/styles/explorer.css: .wall-thumb-box
+- apps/desktop/src/styles/global.css: .brand-mark
+- apps/desktop/src/styles/global.css: .brand-name
+- apps/desktop/src/styles/global.css: .tt-cell
+- apps/desktop/src/styles/global.css: .tt-course
+- apps/desktop/src/styles/global.css: .empty-icon
+- apps/desktop/src/styles/global.css: .empty-action
+- apps/desktop/src/styles/global.css: .week-grid
 
 ## B. 组件内嵌 CSS（7 处）
 

@@ -404,8 +404,10 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 /* 卡体统一内边距（用户反馈「紧贴左边缘/生硬矩形」）；便笺自管底色不重复缩进 */
 .free-item > :first-child { flex: 1 1 auto; min-height: 0; overflow: auto; border-radius: inherit; pointer-events: auto; padding: 12px; }
 .free-item > .free-note { padding: 0; }
-/* 组件卡片撑满条目盒（旧白板槽位那条规则的等价物）：组件自带卡片常比条目矮，下方会露出
-   一条 .wg-card 底色（看着像"只占了 7/8"）。入口按钮（.wg-entry）除外——整行入口撑满反而变形。 */
+/* 组件卡片撑满条目盒（旧白板槽位那条规则的等价物，**两半都要**：父级不是 flex 容器时，
+   子级那条 flex 是死规则——oh-wire 的对抗性验证反例②就是这么漏的）。入口按钮（.wg-entry）
+   除外：整行入口撑满反而变形。父规则与预览侧（.widget-size-inner .wg-card）对齐。 */
+.free-item .wg-card { height: 100%; display: flex; flex-direction: column; }
 .free-item .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; }
 .free-item.is-penlocked { pointer-events: none; }
 .free-item img { -webkit-user-drag: none; }

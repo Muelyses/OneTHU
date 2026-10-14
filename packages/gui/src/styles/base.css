@@ -146,3 +146,32 @@ body {
 /* ── 布局宽度辅助类（画廊/表单排版用；宽度是布局语义，不是外观） ── */
 .og-w-320 { width: min(var(--og-ctl-form-narrow), 100%); }
 .og-w-560 { width: min(var(--og-ctl-form-wide), 100%); }
+
+/* 手机壳预览：把宽度钉在 390（手机逻辑宽），模拟真机视口 */
+.og-preview-frame--phone {
+  display: flex;
+  justify-content: center;
+  background: var(--og-surface-2);
+}
+
+.og-phone-mock {
+  width: min(390px, 100%);
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--og-line-1);
+  border-radius: var(--og-radius-2xl);
+  background: var(--og-surface-0);
+}
+
+.og-preview-phone { display: flex; justify-content: center; }
+.og-preview-narrow { max-width: var(--og-space-9); }
+
+/* 画廊预览框：把整块壳/页面塞进固定高度里看（overflow 裁剪 + 圆角） */
+.og-preview-frame {
+  height: var(--og-ctl-preview-h);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--og-line-1);
+  border-radius: var(--og-radius-lg);
+  background: var(--og-surface-0);
+}

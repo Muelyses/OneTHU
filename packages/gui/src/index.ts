@@ -25,6 +25,9 @@ export { OneStyle, one, cx, scopeProps } from "./components/kit.js";
 export type { OneBase, OGSize, OGTone, OGEmphasis, OGLevel } from "./components/kit.js";
 
 /* ── 组件 ── */
+export { AppShell, NavRail, TabStrip, MobileTabBar } from "./components/shell.js";
+export type { AppShellProps, NavRailProps, TabStripProps, MobileTabBarProps, ShellTab } from "./components/shell.js";
+
 export {
   Avatar, Tile, StatTile, Table, Accordion, AccordionItem, Progress, Ring, Skeleton, Spinner,
   Timeline, Breadcrumb, Pagination, CodeBlock,

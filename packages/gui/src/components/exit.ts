@@ -4,10 +4,9 @@
  * 退场动画必须有相位：open 变 false 时不能立刻卸载，否则"啪"地消失。
  * 旧的实现散在 lib/useExitPhase.ts + 各弹层里，现在只有这一份（EXIT_MS 与 --og-dur-2 同源）。
  */
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from "react";
 
-/** 与 --og-dur-2（180ms）同源：退场相位时长 */
+/** 默认退场时长（= --og-dur-2 200ms 档）：模态族传 --og-dur-3，锚定族传 --og-dur-2 */
 export const EXIT_MS = 200;
 
 export interface ExitPhase {
@@ -52,97 +51,6 @@ export function useExitPhase(open: boolean, ms = EXIT_MS): ExitPhase {
   return { mounted, closing };
 }
 
-/* ── 滚动锁：多个浮层同时打开时只锁一次 ─────────────────────────────── */
-
-let locks = 0;
-let savedOverflow = "";
-
-export function useScrollLock(active: boolean): void {
-  useEffect(() => {
-    if (!active) return;
-    if (locks === 0) {
-      savedOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-    }
-    locks += 1;
-    return () => {
-      locks = Math.max(0, locks - 1);
-      if (locks === 0) document.body.style.overflow = savedOverflow;
-    };
-  }, [active]);
-}
-
-/* ── Portal：一律挂到 body（祖先 transform 会困住 fixed） ───────────── */
-
-export function Portal({ children }: { children: ReactNode }): ReactNode {
-  const [host, setHost] = useState<HTMLElement | null>(null);
-  useLayoutEffect(() => {
-    setHost(document.body);
-  }, []);
-  return host ? createPortal(children, host) : null;
-}
-
-/* ── 焦点：打开时把焦点移进浮层，关闭时还给原来的元素 ───────────────── */
-
-export function useFocusTrap(active: boolean, ref: React.RefObject<HTMLElement | null>): void {
-  useEffect(() => {
-    if (!active) return;
-    const previous = document.activeElement as HTMLElement | null;
-    const el = ref.current;
-    el?.focus({ preventScroll: true });
-    return () => previous?.focus?.({ preventScroll: true });
-  }, [active, ref]);
-}
-
-/* ── 点击外部 / Escape ─────────────────────────────────────────────── */
-
-export function useDismiss(active: boolean, onDismiss: () => void, ref: React.RefObject<HTMLElement | null>, opts?: { clickOutside?: boolean }): void {
-  useEffect(() => {
-    if (!active) return;
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        onDismiss();
-      }
-    };
-    const onDown = (e: MouseEvent): void => {
-      if (opts?.clickOutside === false) return;
-      const el = ref.current;
-      if (el && !el.contains(e.target as Node)) onDismiss();
-    };
-    document.addEventListener("keydown", onKey, true);
-    document.addEventListener("mousedown", onDown, true);
-    return () => {
-      document.removeEventListener("keydown", onKey, true);
-      document.removeEventListener("mousedown", onDown, true);
-    };
-  }, [active, onDismiss, ref, opts?.clickOutside]);
-}
-
-/* ── 视口内钳位（锚定菜单/气泡用） ─────────────────────────────────── */
-
-export interface Rect { top: number; left: number; width: number; height: number }
-
-export function anchorRect(anchor: HTMLElement | Rect | null | undefined): Rect | null {
-  if (!anchor) return null;
-  if (anchor instanceof HTMLElement) {
-    const r = anchor.getBoundingClientRect();
-    return { top: r.top, left: r.left, width: r.width, height: r.height };
-  }
-  return anchor;
-}
-
-export function clampToViewport(el: HTMLElement | null, rect: Rect, side: "bottom-start" | "bottom-end" | "top-start"): { top: number; left: number } {
-  const pad = 8;
-  const w = el?.offsetWidth ?? 0;
-  const h = el?.offsetHeight ?? 0;
-  let top = side === "top-start" ? rect.top - h - 6 : rect.top + rect.height + 6;
-  let left = side === "bottom-end" ? rect.left + rect.width - w : rect.left;
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  left = Math.max(pad, Math.min(left, vw - w - pad));
-  if (top + h > vh - pad) top = Math.max(pad, vh - h - pad);
-  return { top, left };
-}
-
-export { EXIT_MS as EXIT_DURATION };
+/* 注：浮层的 Portal / 焦点管理 / 滚动锁 / 落位算法都在 components/overlay.tsx
+ * （那边有浮层栈：一次 Esc 只关最上面一层）。这里只保留退场相位这一个机制 ——
+ * 同一件事只允许一份实现，这是 OneGUI 的契约。 */

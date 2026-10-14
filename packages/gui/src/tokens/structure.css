@@ -109,6 +109,13 @@
   --og-page-max-narrow: 720px;
   --og-page-max-wide: 1440px;
 
+  /* 应用壳几何（竖栏宽 / 标签项最大宽） */
+  --og-ctl-rail-w: 224px;
+  --og-ctl-tab-max-w: 220px;
+
+  /* 预览框高度（画廊里放整块壳/页面） */
+  --og-ctl-preview-h: 380px;
+
   /* 表单/窄栏排版宽度（页面排版用） */
   --og-ctl-form-narrow: 320px;
   --og-ctl-form-wide: 560px;

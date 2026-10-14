@@ -10,11 +10,11 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  Accordion, AccordionItem, Avatar, Badge, Banner, Breadcrumb, Btn, Card, Checkbox, Chip, CodeBlock, Divider,
-  Drawer, EmptyState, Fab, Field, Grid, Icon, IconBtn, Inline, Input, KeyValue, List, LoadingBlock, Modal,
+  Accordion, AccordionItem, AppShell, Avatar, Badge, Banner, Breadcrumb, Btn, Card, Checkbox, Chip, CodeBlock, Divider,
+  Drawer, EmptyState, Fab, Field, Grid, Icon, IconBtn, Inline, Input, KeyValue, List, LoadingBlock, Modal, MobileTabBar, NavRail,
   BtnGroup, ContextMenu, DataList, Grow, Menu, NumberField, Page, PageHead, Pagination, Popover, Progress, Radio, RadioGroup, RangeSlider, Ring, Row, SearchField, Section,
   SectionCard, Segment, Select, SettingsList, Sheet, SettingsRow, Skeleton, Slider, Spacer, Spinner, Stack, StatTile,
-  Surface, Switch, Table, Tabs, Tag, Text, TextArea, Tile, Timeline, Toolbar, Tooltip, useAxes, useOneGUI,
+  Surface, Switch, Table, TabStrip, Tabs, Tag, Text, TextArea, Tile, Timeline, Toolbar, Tooltip, useAxes, useOneGUI,
   VerticalTabs, type OGTheme,
 } from "@onethu/gui";
 import { IconFolder, IconLearn, IconRefresh, IconSettings, IconToday } from "@onethu/gui";
@@ -291,6 +291,79 @@ function CatalogExtra(): ReactNode {
   );
 }
 
+
+/** 整壳预览：外框（竖栏/顶栏/内容/底部条）就是 AppShell，页面内容就是 Page —— 没有第二种写法 */
+function ShellPreview(): ReactNode {
+  const [active, setActive] = useState("home");
+  const tabs = [
+    { id: "home", label: "首页", pinned: true, icon: <IconToday /> },
+    { id: "learn", label: "网络学堂", icon: <IconLearn />, badge: 3, onClose: () => undefined },
+    { id: "cloud", label: "清华云盘", icon: <IconFolder />, onClose: () => undefined },
+    { id: "settings", label: "设置", icon: <IconSettings />, onClose: () => undefined },
+  ];
+  return (
+    <Stack gap={3}>
+      <Section title="整壳预览 · 桌面（竖栏）" hint="AppShell: rail + topbar + content" />
+      <div className="og-preview-frame">
+        <AppShell
+          tabs={tabs}
+          activeTab={active}
+          onSelectTab={setActive}
+          desktopLayout="rail"
+          brand={<Text slot="subtitle" as="span">OneTHU</Text>}
+          railActions={<><IconBtn label="复制标签页" size="sm" variant="ghost" icon={<Icon><path d="M8 8h11v11H8z" /><path d="M5 16V5h11" /></Icon>} /><IconBtn label="设置" size="sm" variant="ghost" icon={<IconSettings />} /></>}
+          actions={<><IconBtn label="刷新" size="sm" variant="ghost" icon={<IconRefresh />} /><IconBtn label="设置" size="sm" variant="ghost" icon={<IconSettings />} /></>}
+        >
+          <Page title="网络学堂" sub="3 门待办 · 最近同步 2 分钟前" actions={<Btn size="sm" variant="outline" icon={<IconRefresh />}>刷新</Btn>}>
+            <Toolbar align="between">
+              <Tabs value="hw" onChange={() => undefined} items={[{ id: "hw", label: "作业", badge: 3 }, { id: "notice", label: "通知" }, { id: "file", label: "文件" }]} />
+            </Toolbar>
+            <SettingsList title="待办">
+              <SettingsRow icon={<IconLearn />} title="高等数学 · 第 3 章习题" sub="2 天后截止" value="待交" caret onClick={() => undefined} />
+              <SettingsRow icon={<IconLearn />} title="大学物理 · 实验报告" sub="已提交" value="已交" caret onClick={() => undefined} />
+            </SettingsList>
+          </Page>
+        </AppShell>
+      </div>
+
+      <Section title="整壳预览 · 手机（底部标签条）" hint="同一份 AppShell，platform=mobile" />
+      <div className="og-preview-frame og-preview-frame--phone">
+        <div className="og-phone-mock">
+          <AppShell
+            tabs={tabs}
+            activeTab={active}
+            onSelectTab={setActive}
+            onMore={() => undefined}
+            brand={<Text slot="label" as="span">OneTHU</Text>}
+            actions={<IconBtn label="刷新" size="sm" variant="ghost" icon={<IconRefresh />} />}
+          >
+            <Page title="首页" sub="今天 3 节课">
+              <Card title="今日课程">
+                <List divided>
+                  <Row flush title="高等数学" meta="08:00" sub="六教 6A205" caret onClick={() => undefined} />
+                  <Row flush title="大学物理" meta="10:00" sub="三教 3302" caret onClick={() => undefined} />
+                </List>
+              </Card>
+            </Page>
+          </AppShell>
+        </div>
+      </div>
+      <Section title="导航件单独看" hint="NavRail / TabStrip / MobileTabBar 也可以单独用" />
+      <Stack gap={3} className="og-w-560">
+        <Surface level={1} pad="sm">
+          <TabStrip tabs={tabs} activeTab={active} onSelect={setActive} onMore={() => undefined} />
+        </Surface>
+        <Surface level={1} pad="sm" className="og-preview-phone">
+          <MobileTabBar items={tabs} active={active} onSelect={setActive} />
+        </Surface>
+        <Surface level={1} pad="sm" className="og-preview-narrow">
+          <NavRail tabs={tabs} activeTab={active} onSelect={setActive} />
+        </Surface>
+      </Stack>
+    </Stack>
+  );
+}
+
 /** 组件目录：新组件必须在这里出现（护栏 G6 会核对导出与登记） */
 function Catalog(): ReactNode {
   return (
@@ -492,6 +565,7 @@ export function OneGUIGallery(): ReactNode {
         </Stack>
       </Surface>
 
+      <ShellPreview />
       <Catalog />
       <CatalogExtra />
     </Stack>

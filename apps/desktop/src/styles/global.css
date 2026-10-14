@@ -6264,12 +6264,12 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 .field input,
 .field select,
 .field textarea {
-  background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent);
+  background: var(--og-surface-1); /* 实色面（原 30% surface-container 幽灵填充 = 用户点名「透明选择框」的真身） */
   border-color: var(--glass-border);
   box-shadow: inset 0 1px 0 var(--glass-rim-bottom);
 }
 .field input:focus,
-.field textarea:focus {
+.field select:focus, .field textarea:focus {
   border-color: var(--accent);
   box-shadow: var(--md-sys-focus-ring), inset 0 1px 0 var(--glass-rim-top);
 }

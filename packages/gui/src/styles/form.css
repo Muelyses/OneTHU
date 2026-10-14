@@ -182,33 +182,39 @@ textarea.og-input-el {
    为基准尺寸 → 逢行必独占一行（日程快跳/研讨间预约面板实测，用户点名「一个占一行极其浪费」）；
    本体 .og-select-el 本就是自然宽，fit-content 只改流动行为，不改变本体大小。 */
 .og-select { position: relative; width: fit-content; max-width: 100%; }
-/* 控制面全接管（用户点名透明选择框：appearance:none 剥掉原生脸后，gui 本尊没给面/线，
-   只有恰好躺在 app .field 规则里的实例才有框——其余场景全是透明裸框）。
-   与 .og-input 同一令牌口径：surface-1 填、line-2 线、聚焦 accent rim。 */
-.og-select-el {
+/* 本体回到「原生控件自身无面无线」不变量（面/线一律由上面的 .og-input 壳承担）。
+   —— 前一轮给本体补的第二张脸已撤销：它让每个 OG 下拉变成「框里再套一个框」
+   （CDP 实测 shell 168×30 + 本体 142×30 两圈 line-2 描边，缩进 12px），且本体 height
+   写死 md 档 —— size="sm" 的壳比它矮，落进 app .field 的实例更被遗留 .field select
+   顶到 38px（壳只有 30px）。**同一个控件两条面、两个高度**才是「布局不合理」的真身。
+   特异性提到 (0,2,0)：换血期两套样式表唯一的交界面就是 app 层那几条遗留 select 规则，
+   这个口径压过 .field select/(0,1,1)，OG 下拉再不会被改成 30% 幽灵填充或 38px。 */
+.og-select .og-select-el {
   appearance: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding-right: var(--og-space-5);
+  border: 0;
+  background: none;
   cursor: pointer;
-  display: inline-block;
-  height: var(--og-ctl-h-md);
-  padding: 0 calc(var(--og-space-5) + var(--og-ctl-pad-x-sm)) 0 var(--og-ctl-pad-x-md);
-  border: 1px solid var(--og-line-2);
-  border-radius: var(--og-radius-md);
-  background: var(--og-surface-1);
-  color: var(--og-content-1);
-  font-family: inherit;
-  font-size: var(--og-text-body);
+}
+/* 悬停/聚焦反馈落在壳上（本体无面可改）：与 .og-input.is-focused 同一口径。
+   Select 的 Shell 恒传 focused=false（原生得焦的不是壳），所以焦点用 :focus-within 接。 */
+.og-select .og-input {
   transition:
     border-color var(--og-dur-1) var(--og-ease-standard),
-    box-shadow var(--og-dur-2) var(--og-ease-standard),
-    background-color var(--og-dur-1) var(--og-ease-standard);
+    box-shadow var(--og-dur-2) var(--og-ease-standard);
 }
-.og-select-el:hover { border-color: var(--og-line-3); }
-.og-select-el:focus-visible {
-  outline: none;
-  border-color: var(--og-accent);
-  box-shadow: 0 0 0 var(--og-ring-width) var(--og-accent-soft);
+@media (hover: hover) {
+  .og-select:hover .og-input { --og-c-input-line: var(--og-line-3); }
 }
-.og-select-el:disabled { cursor: not-allowed; opacity: var(--og-disabled-opacity); }
+.og-select .og-input:focus-within {
+  --og-c-input-line: var(--og-line-3);
+  box-shadow: var(--og-ring);
+}
+.og-select .og-select-el:disabled { cursor: not-allowed; }
 .og-select-caret {
   position: absolute;
   right: var(--og-ctl-pad-x-sm);

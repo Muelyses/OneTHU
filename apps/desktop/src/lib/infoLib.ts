@@ -160,8 +160,12 @@ let gitlabSessionRestored = false;
 
 function gitlabSessionFromRes(url: string, res: Response): string {
   try {
-    const host = new URL(res.headers.get("x-onethu-final-url") ?? res.url ?? url).hostname;
-    if (host !== "git.tsinghua.edu.cn") return "";
+    const fin = new URL(res.headers.get("x-onethu-final-url") ?? res.url ?? url);
+    if (fin.hostname !== "git.tsinghua.edu.cn") return "";
+    // 登录页对匿名访客也发一枚 `_gitlab_session`（承载 CSRF）：漫游舞半途而废时
+    // 它会顶掉真票并被写盘，下轮开机 seed 回来照样是未登录 → 又见 401。只记我们
+    // 确知来自已登录侧的兑付响应（2026-10-14 丢登录态治理）。
+    if (fin.pathname.startsWith("/users/sign_in")) return "";
   } catch {
     return "";
   }

@@ -8,8 +8,10 @@
  * 进页刷新，写操作后按前缀失效。
  */
 import { useEffect, useRef, useState } from "react";
-import { helper, libHydrateCredentials, restoreGitlabSession } from "../lib/infoLib.js";
-import { explainNetworkError, nativeCookieClear } from "../lib/transport.js";
+import { helper, libHydrateCredentials, libLoginPending, restoreGitlabSession } from "../lib/infoLib.js";
+import { explainNetworkError, nativeCookieClear, nativeFetch } from "../lib/transport.js";
+import { loginCooldownLeftMs } from "../lib/loginGate.js";
+import { roam } from "@onethu/info-lib";
 import { http } from "../lib/clients.js";
 import type {
   GitAward,
@@ -34,6 +36,86 @@ export type GitlabIssueState = "opened" | "closed" | "all";
 
 /* ══════════ 会话 ══════════ */
 
+/* ── GitLab 会话自愈（2026-10-14「经常丢登录态」治理）─────────────
+ * `_gitlab_session` 是独立短命票（git 域直连、服务端按不活动过期），此前没有任何
+ * 保活巡检覆盖它：长闲置后的第一次点进 GitLab 必撞 401，随即触发下层漫游链——而
+ * 页面一次挂载发出的并行查询（列表 / me / counts…）会各自为同一张死票起一条
+ * 统一认证换票舞，互相踩踏后落入「已消费授权码被反复发放」死结（core.ts roam 的
+ * gitlab 分支实锤注释），唯一出路是手动「重置统一认证并重试」——用户观感即
+ * 「其他登录态都好好的，GitLab 经常丢」。治理（保守、分层、失败静默落回原路）：
+ * ①取数入口 requireSession 单飞探活：死票先静默换一次，N 个并行取数共用同一条
+ *   恢复链；②保活节拍把 git 域纳入巡检（lib/reload.ts，死票在用户点击前换好）。 */
+
+const GITLAB_PROBE_URL = "https://git.tsinghua.edu.cn/api/v4/user";
+/** 「探过活着」的短缓存：同一次页面挂载内的多次 requireSession 不再真发探针 */
+const PROBE_OK_TTL_MS = 5 * 60_000;
+/** 自动换票的因重试节流：一次静默换票后，隔这么久才允许下一次自动发起（手动
+ *  「重置统一认证并重试」与下层 roamingWrapper 的既有阶梯不受此限制） */
+const AUTO_ROAM_COOLDOWN_MS = 60_000;
+
+let ensureInflight: Promise<boolean> | null = null;
+let probeAliveAt = 0;
+let lastAutoRoamAt = 0;
+
+/** git 域会话探活（原生仓 = 权威）：200+JSON = 活；401/403 = 死；其余（网络抖动 /
+ * 5xx / 重定向落登录页）= 不确定——不确定时绝不主动动会话，交给既有重试阶梯。 */
+async function gitlabProbe(): Promise<"alive" | "dead" | "unknown"> {
+  try {
+    const res = await nativeFetch(GITLAB_PROBE_URL, { method: "GET" });
+    if (res.status === 200) {
+      const ctype = (res.headers.get("content-type") ?? "").split(";")[0] ?? "";
+      if (ctype.includes("json")) return "alive";
+      // 200 但非 JSON：教科书外的形态（如巡检请求被 302 进登录页后 200 HTML）——
+      // 终点 URL 是 /users/sign_in 即视为死票，其余照旧视为活。
+      void (await res.text());
+      const fin = res.headers.get("x-onethu-final-url") ?? res.url ?? GITLAB_PROBE_URL;
+      return new URL(fin).pathname.startsWith("/users/sign_in") ? "dead" : "alive";
+    }
+    if (res.status === 401 || res.status === 403) return "dead";
+    return "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
+/**
+ * 单飞会话哨兵：requireSession（取数入口）与 installKeepalive 的 10 分钟节拍共用。
+ * 票死 → 静默漫游换票（复用统一认证凭据 / finger3）→ 回探确认。返回 false = 没
+ * 换好（无凭据 / 冷却期 / 探针不确定 / 换票失败），调用方照常走原路，不新增错误态。
+ */
+export function gitlabEnsureSession(): Promise<boolean> {
+  if (ensureInflight) return ensureInflight;
+  ensureInflight = (async () => {
+    try {
+      await restoreGitlabSession();
+      await libHydrateCredentials();
+      if (!helper.userId || !helper.password) return false;
+      if (Date.now() - probeAliveAt < PROBE_OK_TTL_MS) return true;
+      const verdict = await gitlabProbe();
+      if (verdict === "alive") {
+        probeAliveAt = Date.now();
+        return true;
+      }
+      if (verdict !== "dead") return false;
+      // 并发竞态：排在我们前面的链刚换好新票（探针期间手机时间近似）→ 直接续用
+      if (Date.now() - probeAliveAt < PROBE_OK_TTL_MS) return true;
+      if (Date.now() - lastAutoRoamAt < AUTO_ROAM_COOLDOWN_MS) return false;
+      // 不与正在进行的 2FA 登录链 / 主链重登抢道（都动 id/oauth 域，混跑必互踩）
+      if (libLoginPending() || loginCooldownLeftMs() > 0) return false;
+      lastAutoRoamAt = Date.now();
+      await roam(helper, "gitlab", "");
+      const ok = (await gitlabProbe()) === "alive";
+      if (ok) probeAliveAt = Date.now();
+      return ok;
+    } catch {
+      return false;
+    } finally {
+      ensureInflight = null;
+    }
+  })();
+  return ensureInflight;
+}
+
 /** 把「记住密码」的凭据灌进 lib helper：漫游换票需要它，进程重启后它为空 */
 async function requireSession(): Promise<void> {
   // 先把上次的 GitLab 会话票种回原生 cookie 仓：效期内能续用就不必再走一遍
@@ -43,6 +125,9 @@ async function requireSession(): Promise<void> {
   if (!helper.userId) {
     throw new Error("GitLab 需要统一认证会话：请在登录页重新登录一次（勾选记住密码）");
   }
+  // 单飞探活：死票在用户看到任何红 Banner 前静默换新一次（并行取数共用一条链）。
+  // 失败不打断——真 401 由下层 roamingWrapper 的既有重试阶梯兜底，行为同改造前。
+  await gitlabEnsureSession().catch(() => undefined);
 }
 
 /**

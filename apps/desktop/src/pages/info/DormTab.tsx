@@ -205,14 +205,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
         <div className="field">
           <label htmlFor="water-id">订水编号（水站用户编号）</label>
           <div style={{ display: "flex", gap: 8 }}>
-            <input
-              id="water-id"
-              className="input"
-              style={{ flex: 1, minWidth: 0 }}
-              value={waterId}
-              onChange={(e) => setWaterId(e.target.value)}
-              placeholder="水站发票/标签上的用户编号"
-            />
+            <div style={{ flex: 1, minWidth: 0 }}>{<Input value={waterId} onChange={(value) => setWaterId(value)} placeholder="水站发票/标签上的用户编号" />}</div>
             <Btn variant="outline" onClick={() => void queryWater()} disabled={waterState === "busy"}>查询
             </Btn>
           </div>

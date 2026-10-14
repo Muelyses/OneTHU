@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { stripInlineColors } from "../lib/htmlTheme.js";
 import type { ReactNode } from "react";
@@ -223,13 +224,7 @@ export default function ThubookPage(): ReactNode {
       <style>{BODY_STYLE}</style>
       <div className="thubook-shell" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 10, height: "calc(100vh - 150px)" }}>
         <Card className="thubook-toc" style={{ overflowY: "auto", padding: 10 }}>
-          <input
-            className="input"
-            placeholder="搜索手册…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            style={{ width: "100%", marginBottom: 8, fontSize: 12.5 }}
-          />
+          <div style={{ width: "100%", marginBottom: 8, fontSize: 12.5 }}>{<Input placeholder="搜索手册…" value={q} onChange={(value) => setQ(value)} />}</div>
           {tocLoading ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>目录加载中…</div> : null}
           <div style={{ display: "grid", gap: 2 }}>
             {visible.map((g) => {

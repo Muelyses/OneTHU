@@ -49,12 +49,7 @@ const isTextField = (tag, attrs, sf) => {
   for (const a of attrs) {
     const name = a.name?.getText(sf) ?? "";
     if (name === "ref" || name === "key") return null;
-    if (name === "style") {
-      // 只容忍"纯宽度"的内联样式：转换时丢掉（OneGUI 输入默认整宽 = 统一口径）；
-      // 出现 flex/position/margin 这类参与排版的，整只跳过交人工
-      const inline = a.initializer?.getText(sf) ?? "";
-      if (/flex|position|margin|float|top|left|right|bottom/.test(inline)) return null;
-    }
+    // style 一律允许：纯宽度丢掉（输入默认整宽），参与排版的转成"几何外壳 div"（见 buildAttrs 返回值）
     if (!INPUT_OK.has(name)) return null;
   }
   return tag === "textarea" ? "TextArea" : "Input";
@@ -62,11 +57,16 @@ const isTextField = (tag, attrs, sf) => {
 
 function buildAttrs(attrs, sf) {
   const kept = [];
+  let wrapper = null;
   for (const a of attrs) {
     const name = a.name?.getText(sf) ?? "";
     if (name === "className" || name === "id") continue;
     let text = a.getText(sf);
-    if (name === "style") continue;   // OneGUI 组件不接受 style：带尺寸的输入框整只跳过（见 isTextField）
+    if (name === "style") {
+      const init = a.initializer?.getText(sf) ?? "";
+      if (/flex|position|margin|float|top|left|right|bottom|textAlign/.test(init)) wrapper = init;  // 参与排版 → 外壳承担
+      continue;   // 组件本身永远不接 style
+    }
     if (name === "title") text = "titleAttr" + text.slice(5);
     if (name === "onChange") {
       const init = a.initializer;
@@ -78,7 +78,7 @@ function buildAttrs(attrs, sf) {
     }
     kept.push(text);
   }
-  return kept;
+  return { kept, wrapper };
 }
 
 const BUTTON_OK = new Set([
@@ -161,12 +161,13 @@ for (const file of walk(APP)) {
         const attrs = open.attributes.properties;
         const comp = isTextField(tagName, attrs, sf);
         if (comp) {
-          const kept = buildAttrs(attrs, sf);
+          const { kept, wrapper } = buildAttrs(attrs, sf);
           const selfClose = ts.isJsxSelfClosingElement(node);
           const children = selfClose ? "" : node.children.map((c) => c.getText(sf)).join("");
-          const next = selfClose
+          const inner = selfClose
             ? `<${comp}${kept.length ? " " + kept.join(" ") : ""} />`
             : `<${comp}${kept.length ? " " + kept.join(" ") : ""}>${children}</${comp}>`;
+          const next = wrapper ? `<div style=${wrapper}>{${inner}}</div>` : inner;
           edits.push([node.getStart(sf), node.getEnd(), next, comp]);
         }
       }

@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 /**
  * 「软件更新」分区（设置 → 关于，2026-10-12 合并版）。
  *
@@ -200,13 +201,7 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
       <details>
         <summary className="setting-desc" style={{ cursor: "pointer" }}>高级：自定义更新源</summary>
         <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-          <input
-            className="input"
-            style={{ flex: 1, minWidth: 200 }}
-            placeholder="https://…/latest.json（自建源的清单地址）"
-            value={customUrl}
-            onChange={(e) => setCustomUrl(e.target.value)}
-          />
+          <div style={{ flex: 1, minWidth: 200 }}>{<Input placeholder="https://…/latest.json（自建源的清单地址）" value={customUrl} onChange={(value) => setCustomUrl(value)} />}</div>
           <Btn variant="outline" disabled={busy || !customUrl.trim()} onClick={() => void check()}>用这个源检查
           </Btn>
           <Btn variant="outline" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>恢复官方双源

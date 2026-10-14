@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 顶栏标签条（dev-explorer 工作空间革命）：首页恒在第一（不可关闭、不可多开），
@@ -585,7 +586,7 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
         style={{ background: "var(--dsw-alias-bg-base, #fff)", color: "var(--dsw-alias-label-primary, inherit)", borderRadius: 14, padding: 18, width: 320, boxShadow: "0 12px 32px rgba(0,0,0,.2)" }}
       >
         <div style={{ fontWeight: 600, marginBottom: 12 }}>新建工作区</div>
-        <input className="input" autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="工作区名字" style={{ width: "100%", marginBottom: 12 }} />
+        <div style={{ width: "100%", marginBottom: 12 }}>{<Input autoFocus value={name} onChange={(value) => setName(value)} placeholder="工作区名字" />}</div>
         <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 6 }}>底板颜色</div>
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           {WORKSPACE_COLORS.map((c) => (

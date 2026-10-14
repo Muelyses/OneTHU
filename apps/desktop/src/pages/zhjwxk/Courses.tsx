@@ -748,7 +748,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
       </Card>
       <Card style={{ padding: 10, marginBottom: 10 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input className="input" style={{ flex: 1 }} placeholder="搜索课程名称、教师、课程号…" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <div style={{ flex: 1 }}>{<Input placeholder="搜索课程名称、教师、课程号…" value={query} onChange={(value) => setQuery(value)} />}</div>
           {query ? <Btn variant="outline" onClick={() => setQuery("")}>×</Btn> : null}
         </div>
         <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
@@ -1506,7 +1506,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       )}
       {conflicts.length ? <div style={{ color: "var(--red)", fontSize: 11, marginTop: 6 }}>冲突: {conflicts.slice(0, 5).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.a}/${c.b}`).join(" · ")}</div> : null}
       <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-        <input className="input" style={{ flex: 1, height: 26, fontSize: 12, minWidth: 110 }} placeholder="草稿名称（如：方案A）" value={draftName} onChange={(e) => setDraftName(e.target.value)} />
+        <div style={{ flex: 1, height: 26, fontSize: 12, minWidth: 110 }}>{<Input placeholder="草稿名称（如：方案A）" value={draftName} onChange={(value) => setDraftName(value)} />}</div>
         <Btn variant="outline" onClick={() => { if (draftName.trim()) { wb.saveDraft(draftName.trim()); setDraftName(""); } }}>保存草稿</Btn>
         <Btn variant="outline" onClick={() => { const n = globalThis.prompt?.("草稿名称", "我的课表"); if (n) wb.saveCurrentAsDraft(n); }}>存当前选课</Btn>
         <Btn variant="outline" onClick={() => wb.setPreview("stage")}>预览暂存</Btn>

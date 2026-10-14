@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
@@ -334,9 +335,9 @@ export function KongjianTab({ kongjianSpace, kongjianRoom }: { kongjianSpace?: s
               <SectionHead title="确认预约" aside={`${picked.date} ${picked.time}`} />
               <Card style={{ marginBottom: 14, padding: "12px 14px" }}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-                <input className="input" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} placeholder="姓名" style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }} />
-                <input className="input" value={profile.sid} onChange={(e) => setProfile({ ...profile, sid: e.target.value })} placeholder="学号" style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }} />
-                <input className="input" value={profile.tel} onChange={(e) => setProfile({ ...profile, tel: e.target.value })} placeholder="电话" style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }} />
+                <div style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }}>{<Input value={profile.name} onChange={(value) => setProfile({ ...profile, name: value })} placeholder="姓名" />}</div>
+                <div style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }}>{<Input value={profile.sid} onChange={(value) => setProfile({ ...profile, sid: value })} placeholder="学号" />}</div>
+                <div style={{ flex: 1, minWidth: 120, height: 32, fontSize: 13 }}>{<Input value={profile.tel} onChange={(value) => setProfile({ ...profile, tel: value })} placeholder="电话" />}</div>
               </div>
               <textarea className="input" value={purpose} onChange={(e) => setPurpose(e.target.value)} placeholder="用途（选填）" rows={2} style={{ width: "100%", fontSize: 13, padding: "8px 10px", marginBottom: 8, boxSizing: "border-box", resize: "vertical" }} />
               <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>

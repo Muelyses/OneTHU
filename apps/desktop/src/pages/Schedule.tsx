@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -1274,7 +1275,7 @@ export function SchedulePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
             <label style={{ gridColumn: "1 / -1", fontSize: 12, color: "var(--text-2)" }}>
               标题
-              <input className="input" style={{ marginTop: 4, width: "100%" }} value={draft.title} placeholder="要做什么…" onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
+              <div style={{ marginTop: 4, width: "100%" }}>{<Input value={draft.title} placeholder="要做什么…" onChange={(value) => setDraft({ ...draft, title: value })} />}</div>
             </label>
             <label style={{ fontSize: 12, color: "var(--text-2)" }}>
               日期
@@ -1298,11 +1299,11 @@ export function SchedulePage() {
             ) : null}
             <label style={{ gridColumn: "1 / -1", fontSize: 12, color: "var(--text-2)" }}>
               地点
-              <input className="input" style={{ marginTop: 4, width: "100%" }} value={draft.location} placeholder="可选" onChange={(e) => setDraft({ ...draft, location: e.target.value })} />
+              <div style={{ marginTop: 4, width: "100%" }}>{<Input value={draft.location} placeholder="可选" onChange={(value) => setDraft({ ...draft, location: value })} />}</div>
             </label>
             <label style={{ gridColumn: "1 / -1", fontSize: 12, color: "var(--text-2)" }}>
               备注
-              <input className="input" style={{ marginTop: 4, width: "100%" }} value={draft.note} placeholder="可选" onChange={(e) => setDraft({ ...draft, note: e.target.value })} />
+              <div style={{ marginTop: 4, width: "100%" }}>{<Input value={draft.note} placeholder="可选" onChange={(value) => setDraft({ ...draft, note: value })} />}</div>
             </label>
           </div>
           <label style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 12, color: "var(--text-2)", margin: "10px 0 2px" }}>

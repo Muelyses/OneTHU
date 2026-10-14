@@ -237,13 +237,7 @@ export function ConnectGate({
                 没有访问口令时，请手动生成并粘贴到下面（仅存本机）。
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <input
-                  className="input"
-                  style={{ flex: 1, minWidth: 180 }}
-                  placeholder="粘贴云盘访问口令"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value.trim())}
-                />
+                <div style={{ flex: 1, minWidth: 180 }}>{<Input placeholder="粘贴云盘访问口令" value={token} onChange={(value) => setToken(value.trim())} />}</div>
                 <Btn variant="outline" disabled={!token || busy} onClick={() => void cloudConnect()}>{busy ? "连接中…" : "连接"}</Btn>
               </div>
             </>

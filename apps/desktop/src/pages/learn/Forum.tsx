@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /** 讨论区（learnX bbs_tltb）：课程详情「讨论区」tab 列表 + 话题阅读/回复页。
  *  2026-09 逆向自 讨论区示例/learn.tsinghua.edu.cn.har（viewTlById 页 + pageViewTlById 分页 JSON
@@ -535,14 +536,7 @@ function NewThreadDialog({
             关闭
           </Btn>
         </div>
-        <input
-          className="input"
-          style={{ width: "100%", marginBottom: 10 }}
-          placeholder="标题（必填）"
-          value={title}
-          maxLength={100}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <div style={{ width: "100%", marginBottom: 10 }}>{<Input placeholder="标题（必填）" value={title} maxLength={100} onChange={(value) => setTitle(value)} />}</div>
         {boards.length > 1 ? (
           <div className="tabstrip" style={{ marginBottom: 10 }}>
             {boards.map((b) => (

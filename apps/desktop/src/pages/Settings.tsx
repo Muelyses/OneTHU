@@ -413,21 +413,8 @@ export function SettingsPage() {
                 授权码获取：网页版邮箱（mails.tsinghua.edu.cn）→ 设置 → 客户端专用密码。
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-                <input
-                  className="input"
-                  style={{ minWidth: 200, flex: 1 }}
-                  placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）"
-                  value={calEmail}
-                  onChange={(e) => setCalEmail(e.target.value.trim())}
-                />
-                <input
-                  className="input"
-                  type="password"
-                  style={{ minWidth: 140, flex: 1 }}
-                  placeholder="客户端专用密码"
-                  value={calPass}
-                  onChange={(e) => setCalPass(e.target.value)}
-                />
+                <div style={{ minWidth: 200, flex: 1 }}>{<Input placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）" value={calEmail} onChange={(value) => setCalEmail(value.trim())} />}</div>
+                <div style={{ minWidth: 140, flex: 1 }}>{<Input type="password" placeholder="客户端专用密码" value={calPass} onChange={(value) => setCalPass(value)} />}</div>
                 <Btn variant="solid" tone="brand" disabled={!/.+@.+/.test(calEmail) || !calPass || calBusy} onClick={() => {
                     setCalBusy(true);
                     setCalMsg(null);
@@ -1246,8 +1233,8 @@ function ExtHwSection() {
               {tuojPwdOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tuojUser} onChange={(e) => setTuojUser(e.target.value.trim())} />
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tuojPwd} onChange={(e) => setTuojPwd(e.target.value)} />
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder="用户名" value={tuojUser} onChange={(value) => setTuojUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={tuojPwd} onChange={(value) => setTuojPwd(value)} />}</div>
                     <Btn variant="outline" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={() => onTuojPwdLogin("tuoj")}>{busy === "tuoj-pwd-tuoj" ? "登录中…" : "登录"}</Btn>
                   </div>
                 </div>
@@ -1281,8 +1268,8 @@ function ExtHwSection() {
               {classicPwdOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={classicUser} onChange={(e) => setClassicUser(e.target.value.trim())} />
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={classicPwd} onChange={(e) => setClassicPwd(e.target.value)} />
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder="用户名" value={classicUser} onChange={(value) => setClassicUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={classicPwd} onChange={(value) => setClassicPwd(value)} />}</div>
                     <Btn variant="outline" disabled={busy !== null || !classicUser.trim() || !classicPwd} onClick={() => onTuojPwdLogin("tuojClassic")}>{busy === "tuoj-pwd-tuojClassic" ? "登录中…" : "登录"}</Btn>
                   </div>
                 </div>
@@ -1317,8 +1304,8 @@ function ExtHwSection() {
               {tycheFormOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} placeholder="用户名" value={tycheUser} onChange={(e) => setTycheUser(e.target.value.trim())} />
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={tychePwd} onChange={(e) => setTychePwd(e.target.value)} />
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder="用户名" value={tycheUser} onChange={(value) => setTycheUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={tychePwd} onChange={(value) => setTychePwd(value)} />}</div>
                     <Btn variant="solid" tone="brand" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>{busy === "tyche-login" ? "登录中…" : "登录"}</Btn>
                   </div>
                   {/* R21-A：记住密码 → 会话失效时用存档账密静默自动重登一次（同源 ≥10min、每进程 ≤3 次） */}
@@ -1357,8 +1344,8 @@ function ExtHwSection() {
               {dsaFormOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="email" placeholder="邮箱" value={dsaUser} onChange={(e) => setDsaUser(e.target.value.trim())} />
-                    <input className="input" style={{ minWidth: 160, flex: 1 }} type="password" placeholder="密码" value={dsaPwd} onChange={(e) => setDsaPwd(e.target.value)} />
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="email" placeholder="邮箱" value={dsaUser} onChange={(value) => setDsaUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={dsaPwd} onChange={(value) => setDsaPwd(value)} />}</div>
                     <Btn variant="solid" tone="brand" disabled={busy !== null || !dsaUser.trim() || !dsaPwd} onClick={onDsaLogin}>{busy === "dsa-login" ? "登录中…" : "登录"}</Btn>
                   </div>
                 </div>

@@ -235,8 +235,8 @@ export default function ThubookPage(): ReactNode {
                       onClick={() => void load(g.path)}
                       style={{
                         flex: 1, textAlign: "left", fontSize: 13, fontWeight: 700, padding: "7px 8px", borderRadius: 7,
-                        border: "none", cursor: "pointer", background: current === g.path ? "var(--accent, #6d7ff0)" : "transparent",
-                        color: current === g.path ? "#fff" : "var(--text-1, #1f2329)",
+                        border: "none", cursor: "pointer", background: current === g.path ? "var(--og-accent)" : "transparent",
+                        color: current === g.path ? "var(--og-accent-on)" : "var(--og-content-1)",
                       }}
                     >
                       {g.label}
@@ -249,7 +249,7 @@ export default function ThubookPage(): ReactNode {
                           style={{
                             display: "block", width: "100%", textAlign: "left", fontSize: 12.5, padding: "5px 8px 5px 20px",
                             borderRadius: 7, border: "none", cursor: "pointer",
-                            background: current === c.path ? "var(--accent, #6d7ff0)" : "transparent",
+                            background: current === c.path ? "var(--og-accent)" : "transparent",
                             color: current === c.path ? "#fff" : "var(--text-2, #555)",
                           }}
                         >
@@ -264,7 +264,7 @@ export default function ThubookPage(): ReactNode {
         </Card>
         <Card style={{ overflowY: "auto", padding: "16px 22px" }}>
           {err ? (
-            <ErrorLine text={err} style={{ color: "#e5484d", fontSize: 13, marginBottom: 10 }} />
+            <ErrorLine text={err} style={{ fontSize: 13, marginBottom: 10 }} />
           ) : null}
           {loading ? <div style={{ fontSize: 12.5, color: "var(--text-3, #999)" }}>加载中…</div> : null}
           {/* 正文：站点预渲染 HTML 注入（script/icon/svg 已剔除，图片补全域名+限高） */}

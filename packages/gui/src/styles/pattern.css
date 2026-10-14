@@ -243,25 +243,24 @@
 
 .og-tab.is-active .og-tab-badge { background: var(--og-accent-soft); color: var(--og-accent-quiet); }
 
-/* 指示器：一条元素，translateX + scaleX 走同一条 transform */
+/* 指示器：left/width 由 JS 显式给定（弃 scaleX——圆角会被横向压扁成方形），
+   位移动画走 left/width 过渡；pill/soft 变体 top 自居中，与 transform 完全解耦 */
 .og-tabs-indicator {
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 100%;
+  width: 0;
   height: var(--og-geo-xs);
   border-radius: var(--og-radius-full);
   background: var(--og-accent);
-  transform-origin: left center;
-  transform: translateX(0) scaleX(0);
-  transition: transform var(--og-dur-2) var(--og-ease-spring);
+  transition:
+    left var(--og-dur-2) var(--og-ease-standard),
+    width var(--og-dur-2) var(--og-ease-standard);
   pointer-events: none;
 }
 
 .og-tabs--pill .og-tabs-indicator,
 .og-tabs--soft .og-tabs-indicator {
-  /* 自身居中（top 50% 减半高），不靠 JS 追加 translateY —— 指示条 transform
-     由 JS 全量接管（translateX+scaleX），CSS 里任何 translateY 都会被覆盖丢失 */
   top: calc(50% - var(--og-ctl-h-md) / 2);
   bottom: auto;
   height: var(--og-ctl-h-md);
@@ -351,13 +350,13 @@
   top: var(--og-geo-xs);
   left: 0;
   height: calc(100% - var(--og-geo-xs) * 2);
-  width: 100%;
+  width: 0;
   border-radius: var(--og-radius-full);
   background: var(--og-surface-1);
   box-shadow: var(--og-elev-1);
-  transform-origin: left center;
-  transform: scaleX(0);
-  transition: transform var(--og-dur-2) var(--og-ease-spring);
+  transition:
+    left var(--og-dur-2) var(--og-ease-standard),
+    width var(--og-dur-2) var(--og-ease-standard);
   pointer-events: none;
 }
 

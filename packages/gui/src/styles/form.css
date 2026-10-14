@@ -177,8 +177,11 @@ textarea.og-input-el {
 .og-number-btn[aria-disabled="true"] { opacity: var(--og-disabled-opacity); pointer-events: none; }
 .og-number .og-input-el { text-align: center; }
 
-/* ── 下拉：原生 select 外观全接管 ── */
-.og-select { position: relative; width: 100%; }
+/* ── 下拉：原生 select 外观全接管 ──
+   宽度 = fit-content（不拉伸）：width:100% 会让包裹层在 wrap 的 flex 行里以「整行可用宽」
+   为基准尺寸 → 逢行必独占一行（日程快跳/研讨间预约面板实测，用户点名「一个占一行极其浪费」）；
+   本体 .og-select-el 本就是自然宽，fit-content 只改流动行为，不改变本体大小。 */
+.og-select { position: relative; width: fit-content; max-width: 100%; }
 .og-select-el {
   appearance: none;
   cursor: pointer;

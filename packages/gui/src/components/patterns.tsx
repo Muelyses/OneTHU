@@ -198,6 +198,7 @@ export interface TabsProps {
  * 写到指示器自己的 transform 上 —— 不走"容器 CSS 变量"，少一层继承，也不怕容器重排。
  */
 function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeEl: HTMLElement | null, deps: unknown[]): void {
+  const settledRef = useRef(false);
   const apply = useCallback(() => {
     const ind = indicatorRef.current;
     const host = activeEl?.parentElement;
@@ -206,16 +207,33 @@ function useIndicator(indicatorRef: React.RefObject<HTMLElement | null>, activeE
     const rect = activeEl.getBoundingClientRect();
     if (hostRect.width === 0) {
       /* 宿主处于 display:none（分节被设置页/详情页收起）→ 测不出几何。
-         2026-10-14 用户点名「滑动选择条偏移」：此前直接 return，留下上一次的
-         transform —— 回到可见态也不重算，指示条飞到别处。这里把残留几何清掉，
-         并靠下面的 ResizeObserver 在宿主重新可见（尺寸 0→>0）时重测。 */
-      ind.style.transform = "translateX(0) scaleX(0)";
+         隐藏时把残留几何清掉，靠下面的 ResizeObserver 在宿主重新可见（尺寸 0→>0）时重测。 */
+      ind.style.transform = "none";
+      ind.style.left = "0px";
+      ind.style.width = "0px";
       return;
     }
-    const x = rect.left - hostRect.left + host.scrollLeft;
-    const scale = rect.width / hostRect.width;
-    ind.style.transformOrigin = "left center";
-    ind.style.transform = `translateX(${x}px) scaleX(${scale})`;
+    /* 2026-10-14 二弹：弃用 translateX+scaleX，显式 left/width 定几何。
+       scaleX 会把胶囊的圆角横向压扁（短条目在大宿主里 scale≈0.2 → 圆角方方），
+       这是「指示条不像圆形胶囊、怎么方方的」的真凶；left/width 走布局属性，
+       边框圆角按最终尺寸独立生效，且与 transform 完全解耦（不再有任何 CSS 态被覆盖丢失）。 */
+    ind.style.transform = "none";
+    /* 首现/从隐藏回归（当前宽 0）：瞬移落位不吃过渡；换选值：吃 left/width 滑动 */
+    const jump = !settledRef.current || ind.offsetWidth === 0;
+    const setGeom = (): void => {
+      ind.style.left = `${rect.left - hostRect.left + host.scrollLeft}px`;
+      ind.style.width = `${rect.width}px`;
+    };
+    if (jump) {
+      const prevTransition = ind.style.transition;
+      ind.style.transition = "none";
+      setGeom();
+      void ind.getBoundingClientRect();
+      ind.style.transition = prevTransition;
+      settledRef.current = true;
+    } else {
+      setGeom();
+    }
   }, [activeEl, indicatorRef]);
   useLayoutEffect(apply, [apply, ...deps]);
   useEffect(() => {

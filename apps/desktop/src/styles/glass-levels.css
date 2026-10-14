@@ -38,21 +38,21 @@ html[data-glass="clear"][data-scheme="dark"] {
   --glass-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 }
 html[data-glass="rich"] {
-  --surface: rgba(255, 255, 255, 0.6);
-  --surface-2: rgba(255, 255, 255, 0.81);
-  --surface-3: rgba(240, 243, 247, 0.94);
+  --surface: rgba(255, 255, 255, 0.5);
+  --surface-2: rgba(255, 255, 255, 0.5);
+  --surface-3: rgba(240, 243, 247, 0.47);
   --dsw-alias-bg-base: rgba(255, 255, 255, 0.62);
-  --glass-fill: rgba(255, 255, 255, 0.68);
-  --glass-fill-regular: rgba(255, 255, 255, 0.86);
-  --glass-tint: rgba(255, 255, 255, 0.52);
-  --glass-menu-fill: rgba(246, 247, 249, 0.72);
-  --glass-card-fill: rgba(255, 255, 255, 0.6);
-  --glass-card-fill-2: rgba(255, 255, 255, 0.81);
+  --glass-fill: rgba(255, 255, 255, 0.56);
+  --glass-fill-regular: rgba(255, 255, 255, 0.66);
+  --glass-tint: rgba(255, 255, 255, 0.4);
+  --glass-menu-fill: rgba(246, 247, 249, 0.55);
+  --glass-card-fill: rgba(255, 255, 255, 0.47);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.47);
   --glass-card-fill-3: rgba(240, 243, 247, 0.94);
   --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.6);
-  --md-sys-color-surface-container: rgba(255, 255, 255, 0.81);
-  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.94);
-  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.39);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.6);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.72);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.3);
 }
 html[data-glass="rich"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.09);
@@ -72,22 +72,22 @@ html[data-glass="rich"][data-scheme="dark"] {
   --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.04);
 }
 html[data-glass="deep"] {
-  --surface: rgba(255, 255, 255, 0.74);
-  --surface-2: rgba(255, 255, 255, 0.97);
-  --surface-3: rgba(240, 243, 247, 0.99);
-  --dsw-alias-bg-base: rgba(255, 255, 255, 0.8);
-  --glass-fill: rgba(255, 255, 255, 0.83);
-  --glass-fill-regular: rgba(255, 255, 255, 0.97);
+  --surface: rgba(255, 255, 255, 0.56);
+  --surface-2: rgba(255, 255, 255, 0.46);
+  --surface-3: rgba(240, 243, 247, 0.76);
+  --dsw-alias-bg-base: rgba(255, 255, 255, 0.56);
+  --glass-fill: rgba(255, 255, 255, 0.6);
+  --glass-fill-regular: rgba(255, 255, 255, 0.7);
   --glass-tint: rgba(255, 255, 255, 0.64);
-  --glass-menu-fill: rgba(246, 247, 249, 0.88);
-  --glass-card-fill: rgba(255, 255, 255, 0.74);
-  --glass-card-fill-2: rgba(255, 255, 255, 0.97);
-  --glass-card-fill-3: rgba(240, 243, 247, 0.99);
+  --glass-menu-fill: rgba(246, 247, 249, 0.62);
+  --glass-card-fill: rgba(255, 255, 255, 0.5);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.62);
+  --glass-card-fill-3: rgba(240, 243, 247, 0.76);
   --glass-shadow: 0 12px 34px rgba(30, 33, 45, 0.16);
-  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.74);
-  --md-sys-color-surface-container: rgba(255, 255, 255, 0.97);
-  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.99);
-  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.48);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.5);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.64);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.76);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.36);
 }
 html[data-glass="deep"][data-scheme="dark"] {
   --surface: rgba(255, 255, 255, 0.12);

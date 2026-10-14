@@ -1190,56 +1190,64 @@ function MarketView({
                       </Inline>
                     }
                   />
-                  <Text as="p" slot="subtitle" tone="quiet" clamp={2}>{item.description || item.repo}</Text>
-                  {item.tags?.length ? (
-                    <Inline gap={1} wrap>
-                      {item.tags.map((t) => (
-                        <Chip key={t} size="sm">{t}</Chip>
-                      ))}
-                    </Inline>
-                  ) : null}
-                  {/* 操作行：用 Inline 的 justify="between" 把主操作推到行尾，**不用 Spacer**
-                      ——.og-spacer 是 flex:1 的真 flex item，行一折行它就独占一整行空白
-                      （实测窄卡片下操作区折成 4 行、其中第 3 行是空行 = 用户说的「挤」）。
-                      space-between 零额外 item：折行时只会 2 行，不会出现幽灵空行。 */}
-                  <Inline gap={2} wrap justify="between">
-                    <Btn variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setDetail(item); }}>详情</Btn>
-                    {/* 仓库 = 图标钮（repo 全串走 tooltip / aria-label / 详情页）。
-                        原来把 `smartThise/OneTHU-plugin-hello` 当按钮文字：实测这个按钮
-                        宽 233~243px，**比整张卡的内容区（176~240px）还宽** → 操作行必然折成
-                        3 行（旁边那行还只有「详情」两个字），是"挤"的最大来源。 */}
-                    <Btn
-                      variant="ghost"
-                      size="sm"
-                      icon={<IconGithub size="sm" />}
-                      aria-label={`打开仓库 ${item.repo}`}
-                      titleAttr={`在浏览器打开仓库：${normalizeRepoUrl(item.repo)}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        void (async () => {
-                          const url = normalizeRepoUrl(item.repo);
-                          try {
-                            const { openUrl } = await import("@tauri-apps/plugin-opener");
-                            await openUrl(url);
-                          } catch {
-                            window.open(url, "_blank");
-                          }
-                        })();
-                      }}
-                    />
-                    {(() => {
-                      const local = installedMap.get(item.id);
-                      if (local && compareVersions(item.version, local) <= 0) {
+                  {/* 正文块统一内缩。这个 Card 是 flush（`--og-c-surface-pad: 0`），头部 Row 靠自己的
+                      `og-row--flush`（= `--og-card-pad`）与卡边对齐；而描述 / 标签 / 操作行这三块
+                      原来**内缩 0** —— 于是文字、标签贴着左边、`已安装` 贴着右边（用户截图点名
+                      「字挤着左边，详情和 tag 挤着左边，已安装也挤着右边」）。
+                      这里不写死内缩步长，直接挂设计系统的卡体类 `og-card-body`（padding = --og-card-pad）
+                      —— 与头部 Row 吃同一条令牌，密度轴换档（compact 12 / comfortable 16）也同步。 */}
+                  <Stack gap={1} className="og-card-body">
+                    <Text as="p" slot="subtitle" tone="quiet" clamp={2}>{item.description || item.repo}</Text>
+                    {item.tags?.length ? (
+                      <Inline gap={1} wrap>
+                        {item.tags.map((t) => (
+                          <Chip key={t} size="sm">{t}</Chip>
+                        ))}
+                      </Inline>
+                    ) : null}
+                    {/* 操作行：用 Inline 的 justify="between" 把主操作推到行尾，**不用 Spacer**
+                        ——.og-spacer 是 flex:1 的真 flex item，行一折行它就独占一整行空白
+                        （实测窄卡片下操作区折成 4 行、其中第 3 行是空行 = 用户说的「挤」）。
+                        space-between 零额外 item：折行时只会 2 行，不会出现幽灵空行。 */}
+                    <Inline gap={2} wrap justify="between">
+                      <Btn variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); setDetail(item); }}>详情</Btn>
+                      {/* 仓库 = 图标钮（repo 全串走 tooltip / aria-label / 详情页）。
+                          原来把 `smartThise/OneTHU-plugin-hello` 当按钮文字：实测这个按钮
+                          宽 233~243px，**比整张卡的内容区（176~240px）还宽** → 操作行必然折成
+                          3 行（旁边那行还只有「详情」两个字），是"挤"的最大来源。 */}
+                      <Btn
+                        variant="ghost"
+                        size="sm"
+                        icon={<IconGithub size="sm" />}
+                        aria-label={`打开仓库 ${item.repo}`}
+                        titleAttr={`在浏览器打开仓库：${normalizeRepoUrl(item.repo)}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void (async () => {
+                            const url = normalizeRepoUrl(item.repo);
+                            try {
+                              const { openUrl } = await import("@tauri-apps/plugin-opener");
+                              await openUrl(url);
+                            } catch {
+                              window.open(url, "_blank");
+                            }
+                          })();
+                        }}
+                      />
+                      {(() => {
+                        const local = installedMap.get(item.id);
+                        if (local && compareVersions(item.version, local) <= 0) {
+                          return (
+                            <Btn variant="outline" size="sm" disabled titleAttr={`本地 v${local}，已是最新`}>已安装</Btn>
+                          );
+                        }
+                        const updating = !!local;
                         return (
-                          <Btn variant="outline" size="sm" disabled titleAttr={`本地 v${local}，已是最新`}>已安装</Btn>
+                          <Btn variant="solid" tone="brand" size="sm" disabled={busy} titleAttr={updating ? `本地 v${local} → 市场 v${item.version}` : undefined} onClick={(e) => { e.stopPropagation(); void install(item); }}>{busy ? "…" : updating ? "更新" : "安装"}</Btn>
                         );
-                      }
-                      const updating = !!local;
-                      return (
-                        <Btn variant="solid" tone="brand" size="sm" disabled={busy} titleAttr={updating ? `本地 v${local} → 市场 v${item.version}` : undefined} onClick={(e) => { e.stopPropagation(); void install(item); }}>{busy ? "…" : updating ? "更新" : "安装"}</Btn>
-                      );
-                    })()}
-                  </Inline>
+                      })()}
+                    </Inline>
+                  </Stack>
                 </Stack>
               </Card>
             );

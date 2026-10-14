@@ -43,9 +43,14 @@ import {
 } from "../state/userext.js";
 import { addItem, freeBoardSnapshot, removeItem } from "../state/freeBoard.js";
 import {
+  addAtomToBoard, addAtomToHome,
   allOnePages, createOnePage, mutateBoards, notifyBoardsChanged,
   openOnePage, removeOnePage, renameOnePage,
 } from "../state/onePage.js";
+import { SYSTEM_BOARD_ID } from "../state/boardCore.js";
+import {
+  allSphereEntries, dockSphere, sphereEntry, spheresSnapshot, undockSphere,
+} from "../state/homeSpheres.js";
 import {
   closeLiveWorkspace, closeTab, createLiveWorkspace, deleteWorkspace, dissolveWorkspace,
   duplicateTab, explorerSnapshot, focusTab, openTab, openWorkspace, saveWorkspace,
@@ -1065,6 +1070,47 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           w: it.cell.w,
           h: it.cell.h,
         }));
+      },
+      /* ── 收藏落点（2026-10-15 接线）：收藏「元素」先选落点 = 首页 / 已有 OnePage ──
+         与 components/Collect.tsx 那张落点面板**同一份实现**：只调 state/onePage.ts 的
+         高阶函数（addAtomToHome / addAtomToBoard，自带查重 + findFreeCell 落位，被压到的
+         向下推）。门面**不碰 cells/坐标** —— 白板坐标语义由 board 那一层说了算（4 列网格契约）。 */
+      onePageAddAtom: (
+        target: { to?: string; boardId?: string } | null,
+        atomKey: string,
+      ): { ok: boolean; boardId: string; added?: string; reason?: string } => {
+        gate(perms, "ui", "ext.onePageAddAtom");
+        const key = String(atomKey ?? "").trim();
+        if (!key) throw new Error("atomKey 不能为空：原子引用形如 course:123 / thos:xxx（可从 list_favorite_kinds 或 nav.searchAtoms 拿）");
+        const want = String(target?.boardId ?? "").trim();
+        /* 不带 boardId = 落首页（首页画的就是系统板）；带 boardId = 落那块 OnePage */
+        const r = want ? addAtomToBoard(want, key) : addAtomToHome(key);
+        const boardId = want || SYSTEM_BOARD_ID;
+        if (!r.added) {
+          const reason = r.reason === "duplicate" ? "duplicate" : r.reason === "no-board" ? "no-board" : (r.reason ?? "unknown");
+          return { ok: false, boardId, reason };
+        }
+        return { ok: true, boardId, added: r.added.id };
+      },
+      /* ── 首页程序坞（2026-10-15 接线）：NAV 一级页 ∪ 插件功能页同权，可停靠/取消停靠 ──
+         实现只有一处：state/homeSpheres.ts 的 dockSphere/undockSphere（首页「更多功能」
+         小窗的 ＋/× 走的就是它）。不传 pageId = 只读快照（坞上有哪些球 + 还能停哪些）。 */
+      homeDock: {
+        set: (pageId?: string, on?: boolean): { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[] } => {
+          gate(perms, "ui", "ext.homeDock");
+          const dockable = allSphereEntries().map((e) => String(e.page));
+          const id = String(pageId ?? "").trim();
+          if (!id) {
+            return { ok: true, pageId: "", label: "", docked: [...spheresSnapshot().docked], dockable };
+          }
+          const entry = sphereEntry(id);
+          if (!entry) {
+            throw new Error(`不认识这个页面：${id}（可停靠的只有首页一级页与本机插件功能页；当前可停靠：${dockable.slice(0, 40).join(" / ")}）`);
+          }
+          if (on === true) dockSphere(id);
+          else undockSphere(id);
+          return { ok: true, pageId: id, label: String(entry.label ?? ""), docked: [...spheresSnapshot().docked], dockable };
+        },
       },
       /* ── 工作区 ── */
       workspaceList: (): Array<{ id: string; name: string; live: boolean; tabs: number }> =>

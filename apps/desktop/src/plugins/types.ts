@@ -368,6 +368,15 @@ export interface OnethuApi {
     onePageAddItem(boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }>;
     onePageMoveItem(boardId: string, itemId: string, x: number, y: number): void;
     onePageRemoveItem(boardId: string, itemId: string): void;
+    /** 收藏落点（2026-10-15）：把一颗原子放到**首页**（不给 boardId）或某块 OnePage
+     *  （给 boardId）。与收藏面板同一份实现，自带查重与落位；返回 ok=false + reason
+     *  （duplicate = 板上已经有它；no-board = 板不存在）。不碰坐标。 */
+    onePageAddAtom(target: { to?: string; boardId?: string } | null, atomKey: string): { ok: boolean; boardId: string; added?: string; reason?: string };
+    /** 首页程序坞（2026-10-15）：一级页 ∪ 插件功能页（pageId 形如 plugin:<插件>:<页>）
+     *  停靠/取消停靠一颗球；不传 pageId = 只读快照。认不出的 pageId 抛错并列出可停靠项。 */
+    homeDock: {
+      set(pageId?: string, on?: boolean): { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[] };
+    };
     workspaceList(): Array<{ id: string; name: string; live: boolean; tabs: number }>;
     workspaceCreate(name: string, tabIds?: unknown): { id: string };
     workspaceOpen(id: string): void;

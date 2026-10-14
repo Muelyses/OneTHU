@@ -20,8 +20,8 @@ import { SearchPage } from "../../pages/learn/SearchPage.js";
 import { SemesterSelectionPage } from "../../pages/learn/SemesterSelectionPage.js";
 import { SchedulePage } from "../../pages/Schedule.js";
 import { TodayPage } from "../../pages/Today.js";
-import { BoardPage } from "../../pages/BoardPage.js";
 import { BoardListPage } from "../../pages/BoardListPage.js";
+import { OnePageSurface } from "../FreeBoard.js";
 import { MailPage } from "../../pages/MailPage.js";
 import CloudPage from "../../pages/CloudPage.js";
 import GitLabPage from "../../pages/GitLabPage.js";
@@ -100,7 +100,8 @@ export function renderPage(page: Page): ReactNode {
     case "boards":
       return <BoardListPage />;
     case "board":
-      return <BoardPage />;
+      /* 一块 OnePage = 一块自由白板（与首页同一画布）；页面 id 与深链 #/board/<板 id> 不变 */
+      return <OnePageSurface />;
     case "learn":
       return <LearnPage />;
     case "schedule":

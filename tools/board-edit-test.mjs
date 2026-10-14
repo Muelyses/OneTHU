@@ -91,26 +91,13 @@ ok(!E.hasOverlap(itemsOf(pdoc)), "缩放后出现重叠（被压到的应向下�
 ok(itemsOf(pdoc).find((x) => x.id === "a").cell.w === 4, "缩放没有生效");
 ok(E.placeItem(docOf([item("a", 0, 0, 1, 1)]), "b1", "portrait", "nope", { x: 0, y: 0, w: 2, h: 1 }) .boards[0].cells.portrait.length === 1, "落位不存在的条目应原样返回");
 /* ⑦ 四边把手接线（页面是 .tsx → 静态判定） */
-const pageR = readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8");
-ok(/\[\"n\", \"s\", \"e\", \"w\"\] as ResizeHandle\[\]/.test(pageR), "没有渲染上下左右四个把手（需求原文要求四个拖拽点）");
-ok(/editing && freeResize && selectedId === item\.id \? \(/.test(pageR) && /board-handle/.test(pageR), "把手没有限定在「编辑态且被选中且自由控制」时出现");
-ok(/ev\.stopPropagation\(\)/.test(pageR), "把手按下没有阻止冒泡——会同时弹出组件菜单");
-ok(/cellFromResize\(start\.cell, h,/.test(pageR), "把手拖动没有用纯几何换算新单元格");
-ok(/placeItem\(doc, boardId, orientation, item\.id/.test(pageR), "缩放松手没有落库（尺寸会丢）");
-ok(/pointercancel", finish/.test(pageR), "缩放缺少取消处理（手势打断后会卡住）");
-ok(/\.board-handle \{ position: absolute/.test(readFileSync("apps/desktop/src/styles/global.css", "utf8")), "把手没有绝对定位样式");
-ok(/board-handle[^}]*touch-action: none|touch-action: none[^}]*board-handle/.test(readFileSync("apps/desktop/src/styles/global.css", "utf8")), "把手没有 touch-action: none（拖动会被浏览器当滚动）");
+const pageR = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8"); // OnePage 面 = 自由画布（2026-10-15 白板页退役）
 /* ⑧ 添加组件面板（P2 入口：页面是 .tsx → 静态判定） */
-const pageA = readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8");
-ok(/key: "add-widget", label: "添加组件"/.test(pageA), "右上「···」里没有「添加组件」入口");
+const pageA = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8");
 const drawerSrc = readFileSync("apps/desktop/src/components/BoardAddDrawer.tsx", "utf8");
 ok(/defs\.map\(\(d\) =>/.test(drawerSrc), "抽屉总览没有遍历组件目录（等于自造一份清单）");
-ok(/addItemTo\(doc, boardId, orientation, d\.spec, defs, size\)/.test(pageA), "添加没有走纯逻辑 addItemTo（并带上选中的档位）");
-ok(/apply\(r\.doc\)/.test(pageA), "添加后没有落库（一刷新就没）");
 ok(/add-detail-desc">\{def\.description\}/.test(drawerSrc), "展开态没有展示组件描述（用户不知道加的是什么）");
 ok(/data-widget-option=\{d\.id\}/.test(drawerSrc), "抽屉卡片缺少稳定的测试标记");
-ok(/reason === "duplicate"/.test(pageA), "重复添加没有提示（用户会以为加上了）");
-ok(/\.board-sheet/.test(readFileSync("apps/desktop/src/styles/global.css", "utf8")) && /position: fixed/.test(readFileSync("apps/desktop/src/styles/global.css", "utf8")), "面板没有定位样式（会挤在页面流里）");
 /* ⑨ 多收藏夹操作（P2 §7.9） */
 const O = await import("../apps/desktop/src/state/boardOps.ts");
 const d0 = { v: 1, order: {}, activeBoardId: "b1", boards: [
@@ -148,7 +135,7 @@ ok(/disabled: isSystem/.test(listPage), "系统板的删除项没有禁用");
 ok(/moveBoard\(doc, id, "up"\)/.test(listPage) && /moveBoard\(doc, id, "down"\)/.test(listPage), "上下移没有走纯逻辑");
 ok(/createBoard\(doc,/.test(listPage), "新建收藏夹没有走纯逻辑");
 ok(/navigate\("board"\)/.test(listPage), "点击收藏夹没有进入白板页");
-ok(/所有 OnePage/.test(readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8")), "白板页没有进入 OnePage 列表的入口");
+ok(/所有 OnePage/.test(pageR) && /navigate\("boards"\)/.test(pageR), "白板面没有进入 OnePage 列表的入口");
 ok(/"boards"/.test(readFileSync("apps/desktop/src/state/app.tsx", "utf8")), "路由白名单里没有 boards（会静默回落到今日页）");
 /* ⑪ 进入即编辑的一次性意图（P2 UX） */
 const I = await import("../apps/desktop/src/state/boardIntent.ts");
@@ -157,11 +144,8 @@ I.requestEditOnOpen();
 ok(I.consumeEditOnOpen() === true, "置位后应能读到");
 ok(I.consumeEditOnOpen() === false, "消费一次即清空（否则下次进入又自动进编辑态）");
 ok(/requestEditOnOpen/.test(readFileSync("apps/desktop/src/pages/Today.tsx", "utf8")), "今日页菜单没有置「进入即编辑」标志");
-ok(/consumeEditOnOpen/.test(readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8")), "白板页没有消费该标志（还是要多点一次「编辑」）");
+ok(/consumeEditOnOpen/.test(pageR), "自由画布没有消费「进入即编辑」标志（落到打开添加抽屉）");
 /* ⑨ 把手只显示可调维度（霖 2026-10-10 口径）+ 空内容与缺渲染器的文案区分 */
-ok(/能调哪侧才显示哪侧/.test(pageR), "把手没有按可调维度过滤（不可调的一侧仍在显示）");
-ok(/item\.cell\.h > rg\.minH \|\| item\.cell\.h < rg\.maxH/.test(pageR), "南北把手的可调判定没有实现（高度不可调时应隐藏）");
-ok(/item\.cell\.w > rg\.minW \|\| item\.cell\.w < Math\.min\(rg\.maxW, 4\)/.test(pageR), "东西把手的可调判定没有实现");
 const widgetsSrc = readFileSync("apps/desktop/src/state/widgets.ts", "utf8");
 /* 基准瓦片高引入后，高度恢复可调（霖 2026-10-10 定） */
 ok(/\maxH: 8 \};/.test(widgetsSrc), "卡片高度上限没有放开（瓦片高已引入，高度应可调；最高卡片约 650px 需要 7 行）");
@@ -169,18 +153,10 @@ const coreSrc = readFileSync("apps/desktop/src/state/boardCore.ts", "utf8");
 const cssSrc = readFileSync("apps/desktop/src/styles/global.css", "utf8");
 const tile = /export const TILE_H = (\d+);/.exec(coreSrc);
 ok(!!tile, "缺少基准瓦片高常量 TILE_H");
-ok(!!tile && new RegExp("grid-auto-rows: " + tile[1] + "px").test(cssSrc), "画布行高与 TILE_H 不一致（各改一边会静默错位）");
-ok(/\.board-canvas \.board-slot \{ overflow: auto/.test(cssSrc), "超过格子的内容没有内部滚动（会被裁掉且看不全）");
-ok(/fittedRef/.test(pageR), "缺少「按内容撑高」的一次性拟合（旧数据会在瓦片下被裁）");
-ok(/gridAutoRows/.test(pageR) && /rowGap/.test(pageR), "缩放步长没有从计算样式取基准瓦片与行距（写死会与 CSS 脱节）");
 const hostSrc = readFileSync("apps/desktop/src/components/WidgetHost.tsx", "utf8");
 ok(/custom\(item\.spec\.kind === "custom" \? item\.spec\.props : undefined, plan\.size\)/.test(hostSrc) && /\?\? \(/.test(hostSrc) && /暂无内容/.test(hostSrc), "渲染器没有收到 props 与当前档位，或空返回没有走「暂无内容」分支");
 /* ⑩ 只在选中项显示把手（霖 2026-10-10 定） */
-ok(/editing && freeResize && selectedId === item\.id \? \(/.test(pageR), "把手没有限定在选中项（编辑态仍全部常显）");
-ok(/setSelectedId\(item\.id\)/.test(pageR), "点组件时没有设置选中项（把手永远出不来）");
-ok(/setSelectedId\(null\)/.test(pageR), "点画布空白处没有取消选中");
 /* 固定瓦片与 align-items 互斥：加了 start 会按内容溢出轨道（实测 170/459/677 而非 88 倍数） */
-ok(!/board-canvas \{[^}]*align-items: start/.test(cssSrc), "画布用了 align-items: start——固定瓦片下会按内容溢出轨道，裁剪与拟合都会失效");
 /* ⑫ 拟合后的按列重排（消除空行） */
 const packIn = [item("a", 0, 0, 3, 5), item("b", 3, 0, 1, 1), item("c", 0, 25, 3, 2), item("d", 3, 9, 1, 1)];
 const packed = E.repackItems(packIn);
@@ -189,23 +165,17 @@ ok(packed[0].cell.y === 0 && packed[2].cell.y === 5, "主列没有按 h 紧凑�
 ok(packed[1].cell.y === 0 && packed[3].cell.y === 1, "侧栏没有按 h 紧凑排布");
 ok(packed[2].cell.h === 2 && packed[2].cell.x === 0, "重排不该改动 x/w/h");
 /* 重排不能挂在拟合条件上：旧数据本来就可能带空行（实测拟合早已完成时重排没跑） */
-ok(/const hasGap = packed\.some/.test(pageR) && /if \(next \|\| hasGap\) apply\(repackBoard/.test(pageR), "按列重排只挂在拟合条件上——旧数据里的空行不会被收拾");
 /* ⑬ 起步模板接线（P2.5）：空板引导 + 菜单里的套用入口 */
 ok(/data-template=\{tpl\.id\}/.test(pageR), "空板没有模板按钮（用户面对空白板无从下手）");
 ok(/key: "apply-tpl", label: "套用模板"/.test(pageR), "右上菜单缺「套用模板」入口");
-ok(/data-template-option=\{tpl\.id\}/.test(pageR) && /tpl\.description/.test(pageR), "模板选择面板没有列出说明（用户不知道选的是什么）");
-ok(/replaceCells\(doc, boardId, orientation, templateItems\(tpl\)\)/.test(pageR), "套用模板没有走纯逻辑 replaceCells + templateItems");
-ok(/setEditing\(true\)/.test(pageR), "套用模板后没有进编辑态（用户看不到刚摆好的排版可编辑）");
+ok(/BOARD_TEMPLATES\.map/.test(pageR) && /tpl\.description/.test(pageR), "模板选择面板没有列出说明（用户不知道选的是什么）");
+ok(/templateItems\(tpl\)/.test(pageR) && /rectFromCell\(it\.cell\)/.test(pageR), "套用模板没有走纯逻辑 templateItems + px 映射");
 /* ⑭ 白板页必须渲染当前板（写死 systemBoard 会让用户板永远打不开，本轮实测踩过） */
-ok(/const board = activeBoard\(doc\);/.test(pageR), "白板页写死了系统板（用户在收藏夹里选的板打不开）");
+ok(/const board = activeBoard\(doc\);/.test(pageR), "OnePage 面写死了系统板（用户在收藏夹里选的板打不开）");
 const boardWrapSrc = readFileSync("apps/desktop/src/state/boardCore.ts", "utf8");
 ok(/export function activeBoard/.test(boardWrapSrc) && /doc\.boards\.find\(\(b\) => b\.id === doc\.activeBoardId\)/.test(boardWrapSrc), "缺少「当前板」解析（应优先 activeBoardId，缺了才回落系统板）");
 /* ⑫ 霖 2026-10-11 的操作逻辑改版：正常模式不改布局、尺寸入口收进菜单、编辑态列表占位 */
-ok(/if \(!editing \|\| !press\.armed\)/.test(pageR), "升级条件没有限定「编辑态 + 长按武装」（正常模式会改布局）");
-ok((pageR.match(/setSelectedId\(item\.id\)/g) ?? []).length === 1, "选中项仍有点击路径（应只在菜单的「改变大小」里设置）");
-ok(/label: tierControlled \? "改变大小" : "自由调整大小"/.test(pageR), "长按菜单没有按「挡位控制 / 自由控制」分流尺寸入口");
-ok(/editing && isListWidget\(wid\)/.test(pageR), "列表型组件在编辑态没有显示占位（满屏列表，编辑时看不出布局）");
-ok(/列表内容在退出编辑模式后显示/.test(pageR), "占位没有文字标注（用户不知道内容去哪了）");
+ok(/label: "改变大小"/.test(pageR) && /isTierControlled\(def\)/.test(pageR) && /label: "自由调整大小"/.test(pageR), "长按菜单没有按「挡位控制 / 自由控制」分流尺寸入口");
 ok(/\.\.\.LIST_WIDGET_IDS|LIST_WIDGET_IDS/.test(widgetsSrc) && /isListWidget/.test(widgetsSrc), "缺少列表型组件清单");
 /* ⑮ 霖 2026-10-11 六条现场 bug 的判据（其中三条落在出厂 CSS 与纯函数上） */
 const distCss = (() => {
@@ -217,12 +187,6 @@ const distCss = (() => {
     return file ? readFileSync(dir + "/" + file, "utf8") : "";
   } catch { return ""; }
 })();
-ok(distCss.length > 0, "读不到出厂 CSS（构建产物缺失，无法核对拖拽态样式）");
-ok(!/is-dragging[^}]*blur\(/.test(distCss), "拖拽态仍有模糊（霖：背景应保持清晰）");
-ok(/is-dragging[^}]*opacity: ?\.72/.test(distCss), "拖拽态没有按新口径只淡出");
-ok(!/is-dragging \.board-slot:not\(\.is-lifted\)[^}]*scale\(0\.94\)/.test(distCss), "拖拽态仍在用 CSS transform 缩放（会与 JS 写的内联 transform 互相覆盖 → 背景项来回跳）");
-ok(/board-slot ?\{ ?touch-action: ?pan-y/.test(distCss), "出厂 CSS 里槽位没有 pan-y（拖组件翻页会失效）");
-/* 西把手：拖右一格必须收紧左边（x+1、w-1），右边缘不动 */
 const wRes = E.cellFromResize({ x: 1, y: 2, w: 3, h: 2 }, "w", 100, 0, 100, 96);
 ok(wRes.x === 2 && wRes.w === 2, "拖西把手没有收紧左边（实际 x=" + wRes.x + " w=" + wRes.w + "，应为 x=2 w=2）");
 const eRes = E.cellFromResize({ x: 0, y: 2, w: 2, h: 2 }, "e", 100, 0, 100, 96);
@@ -239,18 +203,9 @@ ok(nEdge.y === 0 && nEdge.h === 3, "北把手在上边界往上拖把高度改�
 const eEdge = E.cellFromResize({ x: 2, y: 0, w: 2, h: 1 }, "e", 100, 0, 100, 96);
 ok(eEdge.x + eEdge.w === 4, "东把手在右边界往右拖越过了列数（实际右边缘=" + (eEdge.x + eEdge.w) + "）");
 /* ⑱ 第三批现场 bug 的判据 */
-ok(!/is-editing \.board-slot \{[^}]*transform:/.test(cssSrc), "编辑态又给槽位加了 CSS transform（会与 JS 内联 transform 打架 → 抽搐）");
-ok(/is-editing \.board-slot \{[^}]*touch-action: pan-y/.test(cssSrc), "编辑态槽位不是 pan-y（落点在组件上滑不动）");
-ok(/const stamp = Object\.keys\(renderers\)\.length/.test(pageR), "拟合没有「卡体发布后补跑」的判据（列表高度会卡在 1）");
-ok(/arrangedStampRef/.test(pageR), "缺少已发布卡体数量的记录");
-ok(/height: "100%"/.test(pageR), "列表占位没有填满槽位（编辑态看不出真实高度）");
-ok(/dragDebug\(\)/.test(pageR), "拖拽诊断埋点没有收进调试开关");
 /* ㉙ 两种模式布局必须一致 / 拟合不许覆盖用户尺寸 / 底栏指示器跟着当前板（霖 2026-10-11） */
-ok(!/board-canvas\.is-editing \{[^}]*padding:/.test(cssSrc), "编辑态画布有 padding（会让所有条目窄 16px，两种模式布局不一致）");
 ok(!/const activeBoardId = useMemo/.test(readFileSync("apps/desktop/src/components/Layout.tsx", "utf8")), "底栏的当前板被 useMemo 缓存了（切换白板后指示器不跟着走）");
-ok(/if \(it\.manual\) continue;/.test(pageR), "拟合没有跳过用户手动设过尺寸的项（退出编辑态就被改回去）");
-ok(/manual: true/.test(pageR) && /manual\?: boolean/.test(readFileSync("apps/desktop/src/state/boardCore.ts", "utf8")), "用户缩放没有打 manual 标记");
-ok(/board-slot > \*\.wg-divider|board-slot > \.wg-divider/.test(cssSrc) && /margin-block: auto/.test(cssSrc), "矮组件没有在整行里居中（分割线会贴在顶端）");
+ok(/manual: true/.test(coreSrc) && /manual\?: boolean/.test(coreSrc), "用户缩放没有打 manual 标记（withRect 必须打上，自动逻辑才不会再改它）");
 /* ㉚ 底栏抑制必须带"当前在白板页"；拉大后的内容要自适应铺开（霖 2026-10-11） */
 const layoutSrc = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8");
 /* 移植版（dev3-onePage）：dev3 的底栏没有原分支那套「收藏夹槽位」，这里不改底栏抑制，
@@ -258,8 +213,6 @@ const layoutSrc = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8")
 void layoutSrc;
 const appPageSrc = readFileSync("apps/desktop/src/state/app.tsx", "utf8");
 ok(/\| "boards"/.test(appPageSrc) && /\| "board";/.test(appPageSrc), "白板两页没有登记进 dev3 的 Page 联合");
-ok(/board-slot \.wg-card,/.test(cssSrc) && /height: 100%/.test(cssSrc), "拉大后卡片没有铺满槽位（会留一块空白表面）");
-ok(/board-slot \.list[^}]*flex: 1 1 auto/.test(cssSrc), "列表没有随槽位伸展（多余高度不会被内容吃掉）");
 /* ㉞ 尺寸档位（霖 2026-10-11 定稿）：取消自由控制、改为逐组件的挡位控制
    ① 纯逻辑：挡位吸附 / 自由夹取 / 显式档位落库；
    ② 抽屉：展开态是横向滑动的档位列表，滑到哪档就加哪档；resize 模式复用同一抽屉；
@@ -317,7 +270,8 @@ ok(/animRef/.test(sizesSrc) && /touch\.current \|\| animRef\.current/.test(sizes
 ok(/\.widget-size-dots \{[^}]*min-height: 14px/.test(cssTier) && /\.widget-size-dots \{[^}]*z-index: 1/.test(cssTier), "指示栏没有自己的高度与层级（下沿会被确认按钮压住）");
 /* 霖 2026-10-11 §5：组件自带的卡片常比槽位矮，下方露出一条 .wg-card 底色（看着像"只占 7/8"）。
    槽位与预览都要让组件根节点撑满；入口按钮排除在外。 */
-ok(/\.board-slot \.wg-card > \*:not\(\.wg-entry\)/.test(cssTier) && /\.widget-size-inner \.wg-card > \*:not\(\.wg-entry\)/.test(cssTier), "组件卡片没有撑满槽位与预览（下方会露出一条 .wg-card 底色）");
+const cssFree = readFileSync("apps/desktop/src/styles/explorer-home.css", "utf8");
+ok(/\.free-item \.wg-card > \*:not\(\.wg-entry\)/.test(cssFree) && /\.widget-size-inner \.wg-card > \*:not\(\.wg-entry\)/.test(cssTier), "组件卡片没有撑满条目盒与预览（下方会露出一条 .wg-card 底色）");
 ok(/\.wg-entry-side \{/.test(cssTier) && /\.wg-entry-hint \{/.test(cssTier), "入口行的说明/箭头没有样式（类名与 CSS 不一致，等于裸跑）");
 ok(/tierIndexOf\(d, d\.defaultSize\)/.test(drawerTier), "展开时没有默认选中推荐档位");
 ok(/tierIndexOf\(def, \{ w: targetW, h: targetH \}\)/.test(drawerTier), "resize 模式没有自动选中当前档位");
@@ -339,12 +293,11 @@ ok(!/new MutationObserver/.test(drawerTier), "抽屉预览又挂上了 MutationO
 ok(/addEventListener\("focusin", onFocusIn, true\)/.test(drawerTier) && /removeEventListener\("focusin", onFocusIn, true\)/.test(drawerTier), "预览区没有「获得焦点即失焦」兜底（同名同 capture 的移除也必须有）");
 ok(/\.blur\(\)/.test(drawerTier), "预览区拿到焦点后没有失焦（输入法仍会被拉起）");
 ok(/onResize\?\.\(def, chosen\)/.test(drawerTier), "resize 确认没有回传选中的档位");
-ok(/data-size=\{plan\.size\.w/.test(pageR), "槽位没有按档位排版的选择器钩子 data-size");
-ok(/data-size-control=/.test(pageR), "槽位没有暴露大小控制方式的标记");
-ok(/isTierControlled\(defForSpec\(it\.spec, defs\)\)\) continue/.test(pageR), "挡位组件没有退出高度拟合（档位不再是唯一尺寸）");
-ok(/setSizeItem\(item\)/.test(pageR) && /setSelectedId\(item\.id\)/.test(pageR), "尺寸入口没有分「挡位抽屉 / 自由把手」两路");
-ok(/mode=\{sizeItem \? "resize" : "add"\}/.test(pageR), "抽屉没有按 resize 模式切换（改大小没有复用添加抽屉）");
-ok(/placeItem\(doc, boardId, orientation, sizeItem\.id/.test(pageR) && /manual: true/.test(pageR), "改大小没有落库到该条目（尺寸会丢）");
+ok(/data-size=\{plan\.size\.w/.test(pageR), "画布条目没有按档位排版的选择器钩子 data-size（抽屉预览与画布共用同一条 CSS）");
+ok(/data-item-id=\{it\.id\}/.test(pageR), "画布条目缺少稳定标记 data-item-id（测量与守栏都要用）");
+ok(/setResizeFor\(\{ id: item\.id/.test(pageR) && /setSelected\(item\.id\)/.test(pageR), "尺寸入口没有分「挡位抽屉 / 自由把手」两路");
+ok(/mode=\{resizeFor \? "resize" : "add"\}/.test(pageR), "抽屉没有按 resize 模式切换（改大小没有复用添加抽屉）");
+ok(/ops\.resize\(resizeFor\.id,/.test(pageR) && /x: cur\.x, y: cur\.y/.test(pageR), "改大小没有落库到该条目（尺寸会丢）");
 const widgetsTier = readFileSync("apps/desktop/src/state/widgets.ts", "utf8");
 ok(/SIZE_PLANS/.test(widgetsTier), "缺少挡位提案表（挡位控制组件无从登记档位）");
 ok(/freeSizeWidgetIds/.test(widgetsTier), "缺少自由控制组件清单（分割线/标题/入口按钮/列表）");

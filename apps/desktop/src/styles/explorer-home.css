@@ -191,43 +191,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 }
 .hs-dock-btn:hover { color: var(--text-1); border-color: var(--accent-border, var(--border)); }
 
-/* 自由画布：给固定层让出顶部空间（默认组件从功能区下方开始摆） */
-
-/* 画布满幅（2026-10-13）：不再画布顶部预留 chrome 高——chrome 浮在画布上（z 更高）。 */
-
-/* 白板无头模式的浮动操作钮（右下） */
-.board-fab-col {
-  position: fixed;
-  right: 18px;
-  /* 钉在底部强制刷新钮（bottom:18px !important + 40px 高）正上方：
-     58 + 12 间距 + ➕46 + 8 间距 + ✏️40 = 164px 起算，底边 = 164px。
-     此前 96px 会与刷新钮重叠且随内容变化而"跑"（用户点名）。 */
-  bottom: 164px;
-  z-index: 35;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-.board-fab {
-  width: var(--ctl-size);          /* 与强制刷新钮同规格（用户点名「模仿它的风格」） */
-  height: var(--ctl-size);
-  border-radius: var(--ctl-radius);
-  border: var(--ctl-border);
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--ctl-bg);
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  color: var(--ctl-fg);
-  font-size: var(--text-md);
-  cursor: pointer;
-  box-shadow: var(--ctl-shadow);   /* 与强制刷新钮同投影（此前是自写的一层 rgba） */
-  transition: transform 140ms ease, color 120ms ease;
-}
-.board-fab:hover { transform: scale(1.06); color: var(--text-1); }
-.board-fab.is-primary { width: 46px; height: 46px; font-weight: 600; }
-.board-fab.is-on { color: var(--accent); border-color: var(--accent-border, var(--border)); background: var(--accent-soft, var(--surface)); }
 
 /* 更多功能 / 详细功能 居中小窗（复用 hs-more 体系） */
 .hs-more-mask {
@@ -420,6 +383,11 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   z-index: 1;
 }
 
+/* OnePage 页面形态（2026-10-15）：画布进页面后不再铺满整屏——页头在上、画布按内容铺开，
+   滚动交给外层面板（首页那套 inset:0 的整页画布仍然保留给 .home-free 里的 .freeboard）。 */
+.freeboard-wrap { position: relative; display: flex; flex-direction: column; min-height: 100%; }
+.freeboard.is-page { position: relative; inset: auto; flex: 1 1 auto; min-height: 60vh; }
+
 .free-item {
   position: absolute;
   border-radius: var(--r-lg, 16px);
@@ -436,6 +404,9 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 /* 卡体统一内边距（用户反馈「紧贴左边缘/生硬矩形」）；便笺自管底色不重复缩进 */
 .free-item > :first-child { flex: 1 1 auto; min-height: 0; overflow: auto; border-radius: inherit; pointer-events: auto; padding: 12px; }
 .free-item > .free-note { padding: 0; }
+/* 组件卡片撑满条目盒（旧白板槽位那条规则的等价物）：组件自带卡片常比条目矮，下方会露出
+   一条 .wg-card 底色（看着像"只占了 7/8"）。入口按钮（.wg-entry）除外——整行入口撑满反而变形。 */
+.free-item .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; }
 .free-item.is-penlocked { pointer-events: none; }
 .free-item img { -webkit-user-drag: none; }
 
@@ -700,12 +671,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 .free-usergen p { margin: 0 0 8px; }
 .free-usergen a { color: var(--accent); }
 
-/* ═══ 液态玻璃 v4.2 收尾（explorer-home 域：本文件在导入序最后，可压住上文旧底） ═══
-   2026-10-14 用户点名「模仿强制刷新钮」：本块原本用 tint 渐变 + chip blur + rim 把
-   .board-fab 的基准材质整块盖掉（同特异度、后到者胜），现改为只补基准缺的投影。 */
-.board-fab {
-  box-shadow: var(--ctl-shadow);
-}
 .free-toolbar {
   background: var(--glass-menu-fill);
   backdrop-filter: var(--glass-menu-blur);
@@ -746,7 +711,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 /* 假搜索胶囊 / 续听 chip = chip tier（.board-fab/.free-fab 已改走控件基准，从本组摘除） */
 .home-searchbar,
 
-.board-fab.is-on,
 .free-fab.is-on {
   /* 选中态：主题色 tint 叠在控件实底上（与基准同底，不换成档位填充族） */
   background: linear-gradient(180deg,
@@ -791,9 +755,6 @@ html.is-phone .hs-dock-sphere .sphere-ball svg { width: 16px; height: 16px; }
 html.is-phone .hs-dock-sphere .sphere-name { max-width: 64px; }
 html.is-phone .hs-dock-actions { gap: 8px; }
 html.is-phone .hs-dock-btn { height: 28px; padding: 0 8px; gap: 4px; }
-/* 手机的白板 FAB 收进标签条上方一拍；并抬到 OnePage 底部抽屉（z 40）之上，否则被抽屉盖住 */
-html.is-phone .board-fab-col { bottom: 152px; z-index: 45; }
-html.is-phone .board-fab-col .board-fab { width: 40px; height: 40px; }
 
 /* ═══ 手机档：OnePage（BoardPage）= 底部抽屉（A6，从半屏起可拉满，同抽屉手柄） ═══ */
 html.is-phone .onepage-sheet {

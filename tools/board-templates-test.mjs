@@ -117,11 +117,11 @@ ok(/AgendaWidget\(\{ size \}/.test(hwSrc) && /cardRendererKey\("agenda"\)/.test(
 ok(/const limit = \(size\?\.h \?\? 4\) >= 4 \? 6 : 2/.test(hwSrc), "日程与提醒没有按高度截断（4×2 两条 / 4×4 铺满）");
 /* ②f 模板组件与"具体项选择器"（霖 2026-10-11 定）：目录条目、props 写入、选择器界面缺一不可 */
 var widgetSrc2 = readFileSync("apps/desktop/src/state/widgets.ts", "utf8");
-var pageSrc = readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8");
+var pageSrc = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8"); // OnePage 面=自由画布
 var pickerSrc = readFileSync("apps/desktop/src/components/BoardItemPicker.tsx", "utf8");
 ok(widgetSrc2.indexOf('id: "custom:learn-file"') >= 0, "课程文件条目不在目录里（模板组件）");
 ok(/ATOM_TEMPLATE_IDS/.test(widgetSrc2) && /ATOM_TEMPLATE_IDS\.includes/.test(pageSrc), "编辑界面没有按模板 id 提供「选择条目」入口");
-ok(/setItemProps\(doc, boardId, orientation, pickerItem\.id, props\)/.test(pageSrc), "选择结果没有写进条目的 spec.props");
+ok(/ops\.props\(pickItem\.id, props\)/.test(pageSrc), "选择结果没有写进条目的 spec.props（px 层走 ops.props）");
 ok(/type="search"/.test(pickerSrc) && /picker-row/.test(pickerSrc), "选择器缺少搜索框或列表行");
 /* 霖 2026-10-12：开始按档位设计排版。统计卡（成绩四张 + 我的三张）统一到 StatTile 一块骨架，
    档位排版只由 [data-size] 上的 CSS 决定（白板槽位与抽屉预览都带这个属性，一条规则两处生效）。 */

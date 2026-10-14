@@ -57,26 +57,19 @@ ok(R.planEditable({ kind: "custom", title: "x", size: { w: 1, h: 1 } }) === true
 const importLines = src.split("\n").filter((l) => /^\s*import\b/.test(l)).join("\n");
 ok(!/\.tsx/.test(importLines), "渲染规划核心 import 了 .tsx（node 无法剥离 JSX）");
 
-/* ⑥ 白板页接线（页面是 .tsx，node 装不动 → 静态判定） */
-const page = readFileSync("apps/desktop/src/pages/BoardPage.tsx", "utf8");
-ok(/WidgetHost/.test(page), "白板页没有用渲染宿主");
-ok(/loadBoard\(\)/.test(page) && /cellsOf\(/.test(page), "白板页没有从白板文档取数据");
-ok(!/loadLayout\(|resolveLayout\(/.test(page), "白板页仍在读旧的布局存储（P0 后应只走白板文档）");
-ok(/planForItem\(/.test(page), "白板页没有用渲染计划（占格会不受目录 sizeRange 约束）");
-ok(/board-canvas/.test(page), "白板页没有画布容器");
-ok(!/#[0-9a-fA-F]{6}/.test(page), "白板页出现硬编码颜色（必须走主题令牌）");
-ok(/Empty text=/.test(page), "空板没有空态提示（会是一片空白）");
-
-/* ⑦ 白板编辑态接线（页面是 .tsx → 静态判定） */
-ok(/menu=\{\[/.test(page), "白板页没有在右上「···」菜单里放「编辑」入口");
-ok(/label: editing \? "完成" : "编辑"/.test(page), "「编辑」入口没有可逆的文案（完成/编辑）");
-ok(/label: "删除", danger: true/.test(page), "删除项没有走危险色（需求原文要求标红）");
-ok(/def\.editableProps && def\.editableProps\.length/.test(page) && /key: "edit", label: "编辑"/.test(page), "「编辑」项没有按「有可编辑属性才出现」的条件判断");
-ok(/label: "详情"/.test(page) && /def \? def\.description/.test(page), "「详情」没有取组件目录里的描述");
-ok(/pinned \? "取消固定" : "固定"/.test(page), "「固定」没有可逆文案");
-ok(/classEditing|is-editing/.test(page), "编辑态没有加类名（点阵与略缩都挂在它上面）");
-ok(/const apply = \(next: BoardDoc\)/.test(page) && /saveBoard\(out\)/.test(page), "编辑没有写回文档（会只改内存、一刷新就没）");
-ok(/onClick=\{/.test(page) && /if \(!editing/.test(page) && /return;/.test(page), "点击没有按「仅编辑态弹菜单」分流（正常态点击应触发组件自身）");
+/* ⑥ OnePage 面接线（页面是 .tsx，node 装不动 → 静态判定）。
+   2026-10-15：白板页（4/8 列网格 + 编辑态）退役，OnePage 与首页共用同一块自由画布（FreeBoard）。 */
+const surface = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8");
+const pxLayer = readFileSync("apps/desktop/src/state/freeBoard.ts", "utf8");
+const renderSrc = readFileSync("apps/desktop/src/components/explorer/renderPage.tsx", "utf8");
+ok(/OnePageSurface/.test(renderSrc) && !/BoardPage/.test(renderSrc), "OnePage 面没有切到自由画布（renderPage 仍指向旧白板页）");
+ok(/WidgetHost/.test(surface), "自由画布没有用渲染宿主");
+ok(/loadBoard\(\)/.test(surface) && /cellsOf\(/.test(pxLayer), "自由画布没有从白板文档取数据");
+ok(!/loadLayout\(|resolveLayout\(/.test(surface + pxLayer), "自由画布仍在读旧的布局存储（P0 后应只走白板文档）");
+ok(/planForItem\(/.test(surface), "自由画布没有用渲染计划（标题与档位提示会不受目录约束）");
+ok(/className=\{"freeboard"/.test(surface), "自由画布没有画布容器");
+ok((surface.match(/#[0-9a-fA-F]{6}/g) ?? []).length <= 1, "自由画布出现新的硬编码颜色（画笔色板那处字面值是既有的，别的一律走主题令牌）");
+ok(/Empty text=/.test(surface), "空板没有空态提示（会是一片空白）");
 
 if (fails.length) {
   console.error("渲染规划护栏（P1）：不通过");

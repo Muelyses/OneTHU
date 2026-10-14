@@ -621,6 +621,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       >
         {items.map((it) => {
           const r = rectOf(it);
+          /* 档位排版钩子：CSS 是**无作用域**的 [data-size=...] 选择器（抽屉预览与画布同一条规则），
+             所以自由画布上的条目也要带上它——统计卡/入口行的分档排版才不会只在抽屉里生效。 */
+          const plan = planForItem(viewOf(it), defs);
           const isSel = selected === it.id;
           const isNote = it.spec.kind === "custom" && it.spec.id === "note";
           const isText = it.spec.kind === "text";
@@ -628,6 +631,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           return (
             <div
               key={it.id}
+              data-item-id={it.id}
+              data-item={it.spec.kind}
+              data-size={plan.size.w + "x" + plan.size.h}
               className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
               style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
               onPointerDown={(e) => {
@@ -712,7 +718,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                       {Math.round(v * 100)}%
                     </button>
                   ))}
-                  <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>钉</button>
+                  <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>钉</button>
                   <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
                     <IconTrash width={13} height={13} />
                   </button>

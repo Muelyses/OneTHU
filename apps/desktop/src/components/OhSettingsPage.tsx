@@ -1,4 +1,4 @@
-import { Btn } from "@onethu/gui";
+import { Btn, SettingsRow, Text } from "@onethu/gui";
 /**
  * OH 独立页（设置 →「OH」页签）：**普通配置 / 高级配置** 两档。
  *
@@ -106,10 +106,10 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
  *  这里再塞一个会被当成新分节被显隐逻辑收走。 */
 function SubHead({ children, id }: { children: ReactNode; id?: string }): ReactNode {
   return (
-    /* ② 与 .setting-row 同一左内边距（16px）与层级——用户截图里「悬浮球」标题顶在最左边。
-       id（task-22 检索直达）：显式锚点 data-set-id，供 goSearchRow 的离家行 / 无行控件落地。 */
-    <div className="setting-title" data-set-id={id} style={{ margin: "4px 0 8px", padding: "0 16px", fontWeight: 600 }}>
-      {children}
+    /* ② 左内边距对齐行（og-settings-row 的 --og-card-pad）；id（task-22 检索直达）**照挂 data-set-id**，
+       供 goSearchRow 的离家行 / 无行控件落地——OneGUI 后仍认这一锚点。 */
+    <div className="og-section-titles" data-set-id={id} style={{ paddingInline: "var(--og-card-pad)" }}>
+      <Text slot="subtitle" as="h4" weight="semibold">{children}</Text>
     </div>
   );
 }
@@ -129,24 +129,22 @@ function MadModelRow(): ReactNode {
     };
   }, [done]);
   return (
-    <div className="setting-row">
-      <div>
-        <div className="setting-title">MadModel 免费档</div>
-        <div className="setting-desc">
-          {busy ? "正在重新签…" : warn ? warn : "免费额度可用；额度不足或过期时点右侧重新签一次。"}
-        </div>
-      </div>
-      <Btn variant="outline" disabled={busy} onClick={() => {
-          setBusy(true);
-          void forceRemint()
-            .catch(() => undefined)
-            .finally(() => {
-              setBusy(false);
-              setDone((v) => !v);
-            });
-        }}>重新签
-      </Btn>
-    </div>
+    <SettingsRow
+      title="MadModel 免费档"
+      sub={busy ? "正在重新签…" : warn ? warn : "免费额度可用；额度不足或过期时点右侧重新签一次。"}
+      control={
+        <Btn variant="outline" size="sm" disabled={busy} onClick={() => {
+            setBusy(true);
+            void forceRemint()
+              .catch(() => undefined)
+              .finally(() => {
+                setBusy(false);
+                setDone((v) => !v);
+              });
+          }}>重新签
+        </Btn>
+      }
+    />
   );
 }
 

@@ -287,29 +287,31 @@
 .explorer-shell[data-wallpaper-lum="dark"] .ex-rail,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-mobile-strip {
   /* 栏体配方已收口 global.css（不在此重复 background） */
-  color: #f2f4f8;
-  --text-1: #f2f4f8;
-  --text-2: rgba(242, 244, 248, 0.8);
-  --text-3: rgba(242, 244, 248, 0.56);
-  --md-sys-color-on-surface: #f2f4f8;
-  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
-  --md-sys-color-outline: rgba(242, 244, 248, 0.45);
-  --md-sys-color-outline-variant: rgba(242, 244, 248, 0.16);
-  --dsw-alias-label-primary: #f2f4f8;
-  --dsw-alias-label-secondary: rgba(242, 244, 248, 0.8);
-  --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.14);
-  --dsw-alias-bg-layer-2: rgba(255, 255, 255, 0.2);
-  --md-sys-color-primary: #f2f4f8;
-  --hover: rgba(255, 255, 255, 0.12);
-  --glass-tint: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-rim-top: rgba(255, 255, 255, 0.34);
-  --glass-rim-hairline: rgba(255, 255, 255, 0.12);
-  --border: rgba(255, 255, 255, 0.16);
-  --border-soft: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.26);
-  --dsw-alias-border-l1: rgba(255, 255, 255, 0.14);
-  --dsw-alias-bg-layer-1: rgba(255, 255, 255, 0.12);
+  /* 栏体 fill 是**浅色玻璃**（档位单源），与壁纸明暗无关 →
+     文字必须用深色档，否则浅字压浅底（实测对比率 1.0，用户点名"字消失"）。
+     原先这里写 #f2f4f8 是 ink 深底时代的残留。 */
+  color: #1c1f28;
+  --text-1: #1c1f28;
+  --text-2: rgba(28, 31, 40, 0.78);
+  --text-3: rgba(28, 31, 40, 0.55);
+  --md-sys-color-on-surface: #1c1f28;
+  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
+  --md-sys-color-outline: rgba(28, 31, 40, 0.4);
+  --md-sys-color-outline-variant: rgba(28, 31, 40, 0.16);
+  --dsw-alias-label-primary: #1c1f28;
+  --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
+  --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.1);
+  --dsw-alias-bg-layer-2: rgba(28, 31, 40, 0.14);
+  --md-sys-color-primary: #1c1f28;
+  --hover: rgba(28, 31, 40, 0.07);
+  --glass-tint: rgba(28, 31, 40, 0.08);
+  --glass-border: rgba(28, 31, 40, 0.12);
+  --glass-rim-top: rgba(255, 255, 255, 0.72);
+  --glass-rim-hairline: rgba(28, 31, 40, 0.08);
+  --border: rgba(28, 31, 40, 0.16);
+  --border-soft: rgba(28, 31, 40, 0.1);
+  --border-strong: rgba(28, 31, 40, 0.26);
+  --dsw-alias-border-l1: rgba(28, 31, 40, 0.14);
 }
 .explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
@@ -352,6 +354,8 @@
   --dsw-alias-label-primary: #f2f4f8;
   --dsw-alias-label-secondary: rgba(242, 244, 248, 0.8);
   --md-sys-color-primary: #f2f4f8;
+  --glass-fill: rgba(21, 23, 31, 0.44);
+  --glass-fill-regular: rgba(21, 23, 31, 0.44);
   --border: rgba(255, 255, 255, 0.16);
   --hover: rgba(255, 255, 255, 0.12);
   --glass-border: rgba(255, 255, 255, 0.14);
@@ -368,6 +372,8 @@
   --dsw-alias-label-primary: #1c1f28;
   --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
   --md-sys-color-primary: #1c1f28;
+  --glass-fill: rgba(252, 253, 255, 0.44);
+  --glass-fill-regular: rgba(252, 253, 255, 0.44);
   --border: rgba(28, 31, 40, 0.16);
   --hover: rgba(28, 31, 40, 0.07);
   --glass-border: rgba(28, 31, 40, 0.12);

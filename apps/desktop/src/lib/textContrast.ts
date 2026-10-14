@@ -138,17 +138,34 @@ const rgbaOne = /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.
 function parseLayers(el: HTMLElement): Array<{ a: number; rgb: [number, number, number] }> {
   const layers: Array<{ a: number; rgb: [number, number, number] }> = [];
   let hop = 0;
-  for (let p = el.parentElement; p && hop < 40; p = p.parentElement, hop++) {
+  for (let p: HTMLElement | null = el; p && hop < 40; p = p.parentElement, hop++) {
+    // 从元素自身起收集：文字叶子常常自己就带一层玻璃底（按钮/chip/栏体），
+    // 旧实现只从 parentElement 起算 → 漏掉它 → 底被估成透明 → 误判"底很亮" → 写白字。
     if (p.tagName === "HTML") break;
     const cs = getComputedStyle(p);
     collect(cs.backgroundColor);
     const bi = cs.backgroundImage;
-    if (bi && bi !== "none") for (const m of bi.matchAll(/rgba?\([^)]*\)/g)) collect(m[0]);
+    if (bi && bi !== "none") {
+      for (const m of bi.matchAll(/rgba?\([^)]*\)/g)) collect(m[0]);
+      // hex 停靠点此前被整片漏掉（gel token 的 tint 渐变里就有）
+      for (const m of bi.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) collect(m[0]);
+    }
     if (p.classList.contains("wall-video-veil")) collect("rgba(0, 0, 0, 0.2)");
   }
   return layers;
   function collect(raw: string): void {
     if (!raw || raw === "none" || raw === "transparent") return;
+    if (/^#[0-9a-fA-F]{3,8}$/.test(raw)) {
+      const hex = raw.slice(1);
+      const full = hex.length <= 4 ? hex.split("").map((c) => c + c).join("") : hex;
+      const a = full.length >= 8 ? parseInt(full.slice(6, 8), 16) / 255 : 1;
+      if (!a) return;
+      layers.push({
+        a,
+        rgb: [parseInt(full.slice(0, 2), 16), parseInt(full.slice(2, 4), 16), parseInt(full.slice(4, 6), 16)],
+      });
+      return;
+    }
     const m = rgbaOne.exec(raw);
     if (!m) return;
     const a = m[4] != null ? Number(m[4]) : 1;
@@ -162,10 +179,17 @@ function compositeLum(el: HTMLElement): number {
   const shell = document.querySelector(".explorer-shell") as HTMLElement | null;
   const mode = shell?.dataset.wallpaperLum;
   const dark = document.documentElement.dataset.scheme === "dark";
-  const veil = mode === "dark" && !dark ? 0.34 : mode === "light" && dark ? 0.36 : 0;
+  // 纱（.explorer-content::before）只在「暗壁纸+亮主题 / 亮壁纸+暗主题」时提白压黑，
+  // 且它是 .explorer-content 的伪元素：栏体/画布件不在其下，故不能无条件减。
+  const inContent = el.closest(".explorer-content") != null && !el.closest(".explorer-topbar, .ex-rail, .ex-bbar, .ex-mobile-strip, .home-chrome-layer");
+  const veil = inContent ? (mode === "dark" && !dark ? 0.34 : mode === "light" && dark ? 0.36 : 0) : 0;
   if (veil) L = L * (1 - veil) + (dark ? 0 : 1) * veil;
   const layers = parseLayers(el);
-  for (const ly of layers) L = L * (1 - ly.a) + lum(ly.rgb) * ly.a;
+  // parseLayers 是「由内向外」收集的；合成必须「由外向内」才等价于真实叠放顺序
+  for (let i = layers.length - 1; i >= 0; i--) {
+    const ly = layers[i] as { a: number; rgb: [number, number, number] };
+    L = L * (1 - ly.a) + lum(ly.rgb) * ly.a;
+  }
   return Math.round(Math.min(1, Math.max(0, L)) * 20) / 20;
 }
 

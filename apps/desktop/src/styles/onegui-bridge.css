@@ -201,17 +201,26 @@ html:root[data-og-skin] {
  *
  * 现状（用户点名的"细节处小按钮太多、程序坞那两个钮不在调子"）：
  *   .icon-btn .chip-btn .dock-btn .ex-bbar-btn .ex-btn .hs-dock-btn .hs-detail-btn
- *   .dl-open-btn .fav-tile-btn .filter-dd-btn .heb-btn .ykt-ext-btn .ykt-img-btn
+ *   .dl-open-btn .fav-tile-btn .heb-btn .ykt-ext-btn .ykt-img-btn
  *   .gitlab-code-btn .plg-repo-btn .course-card-btn .collect-new-btn .home-entry-btn …
  * 每个都有自己的高度/圆角/底色/hover。这里统一到：
  *   ① 图标按钮 = Btn ghost md       ② 胶囊 = Chip        ③ 浮动钮 = IconBtn/Fab
  * 只改"外观属性"（尺寸/圆角/底色/描边/字阶/状态层），不动各族的定位与布局 ——
  * 于是程序坞按钮、页内小操作、市场按钮在视觉上是同一族，而页面结构不用改。
+ *
+ * ⚠️ `.filter-dd-btn` 已从本族**移出**（2026-10-14 彻查）：它是"选择框形的触发器"
+ *   （SearchSelect 的 `<button class="input filter-dd-btn">`，全站 18 处筛选条、
+ *   预约页的馆/楼层/区域/场地/时段都是它），不是图标按钮 —— 本族给的
+ *   `border: 1px solid transparent + background-color: transparent` 把它的
+ *   `.input` 面（line-2 线 + surface-container 填充）整条抹掉：
+ *   CDP 实测 computed = 1px rgba(0,0,0,0) + rgba(0,0,0,0)，**零轮廓零底色**；
+ *   而 hover 分支给 `--og-hover` 状态层 → 于是用户看到的是
+ *   「一堆没有轮廓的下拉选择框，鼠标放上去才看到这个框」。面还给 .input 管。
  * ══════════════════════════════════════════════════════════════════════════ */
 
 html:root :is(
   .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
-  .dl-open-btn, .fav-tile-btn, .filter-dd-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
+  .dl-open-btn, .fav-tile-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
   .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
 ) {
   display: inline-flex;

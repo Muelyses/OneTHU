@@ -2824,25 +2824,8 @@ html.is-phone .course-card-sub { overflow-wrap: normal; }
 }
 .icon-cell:hover { border-color: var(--accent); color: var(--text-1); }
 .icon-cell.is-active { border-color: var(--accent); color: var(--accent); background: var(--hover); }
-/* 其他 Info 应用：入口卡片网格 */
-.app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-/* 更多 info 应用卡：色块 + 圆角，hover 走 §5 状态层（原为改描边 + 改底色两重） */
-.app-card {
-  position: relative; /* 状态层定位 */
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 10px 10px 12px;
-  border-radius: var(--md-sys-shape-corner-medium);
-  background: var(--md-sys-color-surface-container-lowest); cursor: pointer;
-  min-width: 0;
-}
-.app-card.is-active { background: var(--accent-soft); }
-.app-card-icon { display: inline-flex; align-items: center; color: var(--text-3); flex: 0 0 auto; }
-.app-card-name {
-  flex: 1 1 auto; min-width: 0;
-  font-size: 13px; color: var(--text-1);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  line-height: 1.35;
-}
+/* 其他 Info 应用：入口卡片网格已迁 OneGUI（Grid + interactive Card + Row，2026-10-14）
+   —— .app-grid/.app-card/.app-card-icon/.app-card-name 全套删除 */
 .collect-row input[type="checkbox"] { accent-color: var(--amber); width: 15px; height: 15px; }
 .collect-row-icon { display: inline-flex; color: var(--text-3); }
 .collect-row-text { display: flex; flex-direction: column; min-width: 0; }
@@ -8128,28 +8111,7 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
    · panel-lite（常驻卡面）＝ tint 渐变 + panel-blur(20) + rim 三件套
    成群小件（课表课程格等）沿用「预算外」定稿：只上 tint + rim，不加 blur。 */
 
-/* ---- 点名 1：其他 Info 应用入口卡 = panel-lite（hover 反馈仍走共享状态层，不换底色） ----
-   v4.3 用户点名「别再是灰色阴影丑按钮的特化版」：单靠 6% tint 在浅页上读不出材质，
-   补一层 fill-2 玻璃填充（暗色档自动 12% 白），卡面有质感、不再是灰影。 */
-.app-card {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-card-fill-2);
-  backdrop-filter: var(--glass-panel-blur);
-  -webkit-backdrop-filter: var(--glass-panel-blur);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline);
-}
-/* 选中态同材质：主题色 tint 叠打在 fill-2 上（不用 accent 实底死色） */
-.app-card.is-active {
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent),
-      color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent)),
-    var(--glass-card-fill-2);
-}
+/* ---- 点名 1（.app-card panel-lite）已迁 OneGUI 删除（2026-10-14） ---- */
 
 /* ---- 点名 2：校园网「下线」＝ 危险语义液态玻璃 chip（红 tint 用 --red 组合，不写死字面量） ----
    v4.3 加深红 tint 档（14/6% 在浅页上读不出），hover 走渐变加深，不吃任何灰投影 */

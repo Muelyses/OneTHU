@@ -46,7 +46,6 @@
     "apps/desktop/src/pages/Learn.tsx": 1,
     "apps/desktop/src/pages/Login.tsx": 1,
     "apps/desktop/src/pages/MailPage.tsx": 4,
-    "apps/desktop/src/pages/OtherInfoPage.tsx": 1,
     "apps/desktop/src/pages/Plugins.tsx": 12,
     "apps/desktop/src/pages/Schedule.tsx": 46,
     "apps/desktop/src/pages/ScheduleAgenda.tsx": 13,
@@ -207,7 +206,6 @@
     "apps/desktop/src/pages/Learn.tsx": 6,
     "apps/desktop/src/pages/Login.tsx": 6,
     "apps/desktop/src/pages/MailPage.tsx": 5,
-    "apps/desktop/src/pages/OtherInfoPage.tsx": 3,
     "apps/desktop/src/pages/Plugins.tsx": 17,
     "apps/desktop/src/pages/Schedule.tsx": 10,
     "apps/desktop/src/pages/ScheduleAgenda.tsx": 2,
@@ -275,14 +273,14 @@
     "apps/desktop/src/pages/learn/SearchPage.tsx": 1,
     "apps/desktop/src/pages/learn/shared.tsx": 3
   },
-  "legacyCssLines": 12139,
+  "legacyCssLines": 12101,
   "legacyCssPerFile": {
     "apps/desktop/src/styles/explorer-home.css": 850,
     "apps/desktop/src/styles/explorer-oh.css": 437,
     "apps/desktop/src/styles/explorer-ui.css": 926,
     "apps/desktop/src/styles/explorer.css": 594,
     "apps/desktop/src/styles/glass-levels.css": 113,
-    "apps/desktop/src/styles/global.css": 8332,
+    "apps/desktop/src/styles/global.css": 8294,
     "apps/desktop/src/styles/motion.css": 887
   }
 }

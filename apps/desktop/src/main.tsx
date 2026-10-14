@@ -29,6 +29,8 @@ markPhone();
 window.addEventListener("resize", markPhone);
 // 列表/网格入场 stagger（手机密度层才挂）
 installScrollReveal();
+// 全字符对比度：文本在背景栈（壁纸+纱+玻璃层）实测亮度上自动选黑/白字
+installTextContrast();
 // 按钮涟漪（§3.5 B1）：全局单监听，认类名不认调用点；触摸/笔出涟漪，鼠标只走状态层（§2.8.3）
 installRipple();
 
@@ -52,6 +54,7 @@ import "./styles/glass-levels.css";
 // 否则同选择器的 transition/animation 会被 global.css 覆盖。
 import "./styles/motion.css";
 import { installScrollReveal } from "./lib/motion.js";
+import { installTextContrast } from "./lib/textContrast.js";
 import { installRipple } from "./components/Ripple.js";
 import { initDynamicColor, watchDynamicColor } from "./lib/dynamicColor.js";
 import { App } from "./App.js";

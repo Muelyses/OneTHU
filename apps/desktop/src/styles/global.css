@@ -8155,8 +8155,8 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
      WebKit/Gecko 忽略 url() 项，只剩模糊，玻璃质感仍在。 */
   --glass-refract: url(#dsh-liquid-refract);
   --glass-menu-blur: var(--glass-refract) blur(22px) saturate(140%);
-  --glass-fill: rgba(255, 255, 255, 0.52);
-  --glass-fill-regular: rgba(255, 255, 255, 0.66);
+  --glass-fill: rgba(255, 255, 255, 0.44);
+  --glass-fill-regular: rgba(255, 255, 255, 0.44);
   --glass-tint: rgba(255, 255, 255, 0.4);
   --glass-chip-blur: var(--glass-refract) blur(6px) saturate(125%);
   --glass-panel-blur: var(--glass-refract) blur(6px) saturate(130%);
@@ -8168,14 +8168,14 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   --lg-rim-hover: inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 color-mix(in srgb, var(--md-sys-color-on-surface) 14%, transparent);
   --lg-lift-hover: 0 12px 32px -8px rgba(0, 0, 0, 0.34), 0 4px 10px -2px rgba(0, 0, 0, 0.18);
   /* 卡面玻璃 tint（Compat 层 --surface/--surface-2/--surface-3 指向这里） */
-  --glass-card-fill: rgba(255, 255, 255, 0.4);
-  --glass-card-fill-2: rgba(255, 255, 255, 0.48);
-  --glass-card-fill-3: rgba(240, 243, 247, 0.56);
+  --glass-card-fill: rgba(255, 255, 255, 0.44);
+  --glass-card-fill-2: rgba(255, 255, 255, 0.44);
+  --glass-card-fill-3: rgba(255, 255, 255, 0.44);
   /* System 名同步玻璃化：直接引用 System 令牌的 90 处与 Compat 同材质 */
-  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.4);
-  --md-sys-color-surface-container: rgba(255, 255, 255, 0.48);
-  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.56);
-  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.26);
+  --md-sys-color-surface-container-lowest: rgba(255, 255, 255, 0.44);
+  --md-sys-color-surface-container: rgba(255, 255, 255, 0.44);
+  --md-sys-color-surface-container-high: rgba(255, 255, 255, 0.44);
+  --md-sys-color-surface-container-low: rgba(255, 255, 255, 0.44);
 }
 
 :root[data-scheme="dark"] {

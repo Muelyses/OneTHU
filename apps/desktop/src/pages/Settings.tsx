@@ -1015,50 +1015,52 @@ function GeekSection(): ReactNode {
     }
   };
   return (
-    <div className="setting-group-wrap">
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">极客模式（浏览器探索）</div>
-          <div className="setting-desc">
+    <SettingsList>
+      <SettingsRow
+        title="极客模式（浏览器探索）"
+        sub={
+          <>
             高级选项，默认关闭；把不在 OneTHU 里的站点功能用登录态爬回来自己做插件。用独立登录态，和自己浏览器互不干扰。
-          </div>
-          <div className="setting-desc" style={{ color: "var(--md-sys-color-error)" }}>
-            风险自负：探索动作可能被站点风控计入本人账号；不喜欢冒险可通过 OH 建议官方收录。
-          </div>
-        </div>
-        <Switch on={on} onChange={toggle} label="极客模式" />
-      </div>
+            <OGText as="div" slot="label" tone="error">
+              风险自负：探索动作可能被站点风控计入本人账号；不喜欢冒险可通过 OH 建议官方收录。
+            </OGText>
+          </>
+        }
+        control={<Switch on={on} onChange={toggle} label="极客模式" />}
+      />
       {on ? (
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">探索浏览器</div>
-            <div className="setting-desc">
-              {probe
-                ? probe.browsers.length > 0
-                  ? `本机可用浏览器 ${probe.browsers.length} 个；playwright 版${probe.playwrightReady ? "已下载" : "未下载"}`
-                  : "本机没有可直接用的浏览器，可一键下载专用版"
-                : "探测中…"}
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 8, flex: "none" }}>
-            <Btn variant="ghost" disabled={busy !== null} onClick={() => void download()}>{busy === "dl" ? "下载中…" : "下载专用版"}</Btn>
-            <Btn variant="outline" disabled={busy !== null || !probe} onClick={() => void launch()}>{busy === "launch" ? "启动中…" : "启动探索"}</Btn>
-          </div>
-        </div>
+        <SettingsRow
+          title="探索浏览器"
+          sub={
+            probe
+              ? probe.browsers.length > 0
+                ? `本机可用浏览器 ${probe.browsers.length} 个；playwright 版${probe.playwrightReady ? "已下载" : "未下载"}`
+                : "本机没有可直接用的浏览器，可一键下载专用版"
+              : "探测中…"
+          }
+          control={
+            <Inline gap={2}>
+              <Btn variant="ghost" disabled={busy !== null} onClick={() => void download()}>{busy === "dl" ? "下载中…" : "下载专用版"}</Btn>
+              <Btn variant="outline" disabled={busy !== null || !probe} onClick={() => void launch()}>{busy === "launch" ? "启动中…" : "启动探索"}</Btn>
+            </Inline>
+          }
+        />
       ) : null}
       {on ? (
-        <div className="setting-row">
-          <div>
-            <div className="setting-title">启动方式</div>
-            <div className="setting-desc">系统浏览器（复用本机 Chrome/Edge）或探索专用浏览器。</div>
-          </div>
-          <label style={{ display: "flex", alignItems: "center", gap: 6, flex: "none" }}>
-            <input type="radio" checked={mode === "system"} onChange={() => setMode("system")} /> 系统浏览器
-            <input type="radio" checked={mode === "playwright"} onChange={() => setMode("playwright")} /> 专用版
-          </label>
-        </div>
+        <SettingsRow
+          title="启动方式"
+          sub="系统浏览器（复用本机 Chrome/Edge）或探索专用浏览器。"
+          control={
+            <Segment
+              size="sm"
+              value={mode}
+              onChange={(v) => setMode(v as "system" | "playwright")}
+              options={[{ value: "system", label: "系统浏览器" }, { value: "playwright", label: "专用版" }]}
+            />
+          }
+        />
       ) : null}
       {msg ? <OGText as="div" slot="label" tone="faint">{msg}</OGText> : null}
-    </div>
+    </SettingsList>
   );
 }

@@ -1,37 +1,17 @@
 /**
- * 「搜索与胶囊」设置分节（dev-explorer，explorer-oh 专属；Lead 负责挂进设置页）：
+ * 「搜索与胶囊」设置分节（dev-explorer，explorer-oh 专属）：
  *  - 点击胶囊默认打开：搜索 / OH（explorerPrefs.capsuleTap）
- *  - 最近搜索记录：条数展示 + 两次点击确认清空
- * 行式骨架与 .setting-row 一族对齐（不改 Settings.tsx，样式全在 explorer-oh.css）。
+ *  - 最近搜索记录：条数展示 + 两次点击确认清空（超时反悔回落，原 UX 保留）
+ *
+ * 2026-10-14 换血：骨架改为 OneGUI（SettingsList / SettingsRow / Segment / Btn），
+ * 不再写 .setting-row / .ohx-prefseg / .btn 这些页面私有类；行为与文案一字未改。
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { SectionHead } from "./Layout.js";
+import { Btn, Section, Segment, SettingsList, SettingsRow } from "@onethu/gui";
 import {
   useExplorerPrefs, setExplorerPrefs, useSearchHistory, clearSearchHistory,
   type CapsuleDefault,
 } from "../state/explorerPrefs.js";
-
-/** 二选一分段（搜索 | OH）：即点即存，无确认步骤 */
-function PrefSeg({ value, onChange }: { value: CapsuleDefault; onChange: (v: CapsuleDefault) => void }): ReactNode {
-  return (
-    <span className="ohx-prefseg" role="radiogroup">
-      {([
-        { v: "search" as const, label: "搜索" },
-        { v: "oh" as const, label: "OH" },
-      ]).map((o) => (
-        <button
-          key={o.v}
-          role="radio"
-          aria-checked={value === o.v}
-          className={"ohx-prefseg-btn" + (value === o.v ? " is-active" : "")}
-          onClick={() => onChange(o.v)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </span>
-  );
-}
 
 export function ExplorerPrefsSection(): ReactNode {
   const prefs = useExplorerPrefs();
@@ -55,29 +35,31 @@ export function ExplorerPrefsSection(): ReactNode {
   };
 
   return (
-    <section className="ohx-prefsec">
-      <SectionHead title="搜索与胶囊" aside="底栏胶囊与悬浮球的二合一入口" />
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">点击胶囊默认打开</div>
-          <div className="setting-desc">搜索模式可搜功能/作业/文件并直达；OH 模式直接进对话</div>
-        </div>
-        <PrefSeg value={prefs.capsuleTap} onChange={(v) => setExplorerPrefs({ capsuleTap: v })} />
-      </div>
-      {/* voiceTarget 已废弃（用户定案）：胶囊/语音只产生文字，送谁由小窗内的搜索|OH 切换决定 */}
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">最近搜索记录</div>
-          <div className="setting-desc">{hist.length > 0 ? `保留最近 10 条，当前 ${hist.length} 条` : "暂无记录"}</div>
-        </div>
-        <button
-          className={"btn btn-ghost ohx-clear" + (arming ? " is-arming" : "")}
-          onClick={onClear}
-          disabled={hist.length === 0}
-        >
-          {arming ? "再点一次确认清空" : "清空记录"}
-        </button>
-      </div>
-    </section>
+    <>
+      <Section title="搜索与胶囊" hint="底栏胶囊与悬浮球的二合一入口" />
+      <SettingsList>
+        <SettingsRow
+          title="点击胶囊默认打开"
+          sub="搜索模式可搜功能/作业/文件并直达；OH 模式直接进对话"
+          control={
+            <Segment
+              value={prefs.capsuleTap}
+              onChange={(v) => setExplorerPrefs({ capsuleTap: v as CapsuleDefault })}
+              options={[{ value: "search", label: "搜索" }, { value: "oh", label: "OH" }]}
+            />
+          }
+        />
+        {/* voiceTarget 已废弃（用户定案）：胶囊/语音只产生文字，送谁由小窗内的搜索|OH 切换决定 */}
+        <SettingsRow
+          title="最近搜索记录"
+          sub={hist.length > 0 ? `保留最近 10 条，当前 ${hist.length} 条` : "暂无记录"}
+          control={
+            <Btn variant="ghost" size="sm" disabled={hist.length === 0} onClick={onClear}>
+              {arming ? "再点一次确认清空" : "清空记录"}
+            </Btn>
+          }
+        />
+      </SettingsList>
+    </>
   );
 }

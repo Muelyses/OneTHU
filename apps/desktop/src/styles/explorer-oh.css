@@ -228,29 +228,6 @@
 }
 
 /* ── 偏好分节（ExplorerPrefsSection） ── */
-.ohx-prefseg {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  flex: none;
-}
-.ohx-prefseg-btn {
-  border: none;
-  background: transparent;
-  color: var(--text-3);
-  font-size: 12.5px;
-  line-height: 1;
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.ohx-prefseg-btn.is-active { background: var(--accent); color: #fff; }
-.ohx-clear.is-arming { color: #fff; background: var(--danger, #c62828); border-color: transparent; }
 
 /* ── 悬浮球搜索模式（GlobalOrb 内联样式为主，这里只补滚动区） ── */
 .ohx-orb-results {
@@ -367,11 +344,6 @@
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
 /* 偏好分节的分段壳：分段族不加 blur，只上 tint + rim */
-.ohx-prefseg {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
-  border-color: var(--glass-border);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top);
-}
 .dock-oh-missing {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   backdrop-filter: var(--glass-panel-blur);
@@ -405,11 +377,6 @@
   backdrop-filter: var(--glass-chip-blur);
   -webkit-backdrop-filter: var(--glass-chip-blur);
   border-color: var(--glass-border);
-}
-.ohx-prefseg {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill);
-  border-color: var(--glass-border);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
 
 /* ═══ 创造模式开关（2026-10-13）：OH 小窗工具条上的带字开关 ═══

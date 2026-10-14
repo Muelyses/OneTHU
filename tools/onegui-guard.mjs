@@ -117,6 +117,26 @@ function checkGuiPurity() {
 
 /* ── R2/R3：应用侧内联样式与字面色值（棘轮） ────────────────────────── */
 
+/** 已有 OneGUI 替代品的旧类名族：应用侧出现次数只许下降（迁一页掉一批） */
+const LEGACY_CLASSES = [
+  "card", "empty", "section-head", "error-note", "skeleton", "page-head", "setting-row", "setting-title", "switch",
+];
+
+function legacyClassCounts() {
+  const out = {};
+  for (const f of walk(APP, [".tsx"])) {
+    const src = readFileSync(f, "utf8");
+    let count = 0;
+    for (const m of src.matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)) {
+      const value = m[1] ?? m[2] ?? "";
+      const tokens = value.split(/[\s"'`+${}()?:]+/).filter(Boolean);
+      for (const t of tokens) if (LEGACY_CLASSES.includes(t)) count += 1;
+    }
+    if (count > 0) out[rel(f)] = count;
+  }
+  return out;
+}
+
 const APPEARANCE_PROPS = /(color|background|border|boxShadow|font|padding|margin|borderRadius|opacity|transform)\s*:/;
 
 function appCounts() {
@@ -244,12 +264,16 @@ if (WRITE_BASELINE) {
     inline: counts.inline,
     colors: counts.colors,
     rawControls: counts.rawControls,
+    legacyClasses: legacyClassCounts(),
   };
   writeFileSync(BASELINE, JSON.stringify(payload, null, 2) + "\n");
   console.log(`OneGUI 护栏：基线已更新 → ${rel(BASELINE)}`);
-  console.log(`  内联样式 ${Object.values(counts.inline).reduce((a, b) => a + b, 0)} 处 / 字面色 ${Object.values(counts.colors).reduce((a, b) => a + b, 0)} 处 / 裸控件 ${Object.values(counts.rawControls).reduce((a, b) => a + b, 0)} 处`);
+  const legacy = legacyClassCounts();
+  console.log(`  内联样式 ${Object.values(counts.inline).reduce((a, b) => a + b, 0)} 处 / 字面色 ${Object.values(counts.colors).reduce((a, b) => a + b, 0)} 处 / 裸控件 ${Object.values(counts.rawControls).reduce((a, b) => a + b, 0)} 处 / 旧 UI 类名 ${Object.values(legacy).reduce((a, b) => a + b, 0)} 处`);
   process.exit(0);
 }
+
+compareBaseline("R7 旧 UI 类名", legacyClassCounts(), baseline.legacyClasses ?? {}, "旧 UI 类名（card/empty/section-head/…）");
 
 compareBaseline("R2 应用内联样式", counts.inline, baseline.inline ?? {}, "带外观属性的 style={{…}}");
 compareBaseline("R3 应用字面色值", counts.colors, baseline.colors ?? {}, "TSX 里的 #rgb/rgba()");

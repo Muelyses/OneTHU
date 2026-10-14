@@ -235,17 +235,6 @@ function ItemBody({ item, sizeHint, onFolderAdd }: { item: FreeItem; sizeHint: {
 
 export function FreeBoard(): ReactNode {
   const items = useFreeBoard();
-  /* 画布可用高度：卡片是绝对定位，撑不高 .freeboard，所以笔层要按
-     「最低一张卡的底边 + 一屏留白」显式铺满，否则下方扩展区画不了（用户点名）。 */
-  const boardContentExtent = (() => {
-    let bottom = 0;
-    for (const it of items) {
-      const r = live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
-      if (r.y + r.h > bottom) bottom = r.y + r.h;
-    }
-    /* +520：卡片下方留出可继续作画/摆放的空间（用户：底下扩展的空间也要能画） */
-    return bottom > 0 ? bottom + 520 : 0;
-  })();
   const { navigate } = useApp();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -263,6 +252,17 @@ export function FreeBoard(): ReactNode {
   /** 拖动/缩放的**进行时**覆盖（不落库，松手才 commit——localStorage 经不起每帧写） */
   const [live, setLive] = useState<{ id: string; rect: Rect } | null>(null);
   const liveRef = useRef(live);
+  /* 画布可用高度：卡片是绝对定位，撑不高 .freeboard，所以笔层要按
+     「最低一张卡的底边 + 一屏留白」显式铺满，否则下方扩展区画不了（用户点名）。 */
+  const boardContentExtent = (() => {
+    let bottom = 0;
+    for (const it of items) {
+      const r = live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
+      if (r.y + r.h > bottom) bottom = r.y + r.h;
+    }
+    /* +520：卡片下方留出可继续作画/摆放的空间（用户：底下扩展的空间也要能画） */
+    return bottom > 0 ? bottom + 520 : 0;
+  })();
   liveRef.current = live;
 
   const rectOf = (it: FreeItem): Rect =>

@@ -1,5 +1,4 @@
-import { Select } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * 图书馆页 —— 座位图（网格）+ 座位分布图 + 我的预约。
  * thu-info-lib library.ts 移植（seat.lib.tsinghua.edu.cn，roam("id") ef84f6d6…）：
@@ -10,13 +9,24 @@ import { Btn } from "@onethu/gui";
  * 我的预约 = user/index/book 表，可取消（menuDel delId → _method=delete）。
  * 座位区顶部 = 区域/楼层座位分布图（libraryMap/librarySeat 的
  * Public/home/images/web/area/<id>/{seat-free,floor}.jpg，带会话抓取内联）。
+ *
+ * 2026-10-14 OneGUI 换血：Section（三处分区头）· Field+Inline+Grow（筛选条；SearchSelect /
+ * CollectStar 原样复用，保留 .ss-row 给 .filter-dd 撤底边距）· LoadingBlock（骨架）·
+ * Banner（分布图报错 / 预约与取消结果，成功=success 失败=error 语义色）· 座位格 = Btn
+ * （可约 tonal success、不可约 tonal 中性 disabled，状态色走 success-soft/-line/success 与
+ * surface-3/content-2 令牌族；电源插座 = IconPlug warning，图例同排）· 分布图 Surface(radius-md)
+ * 收边 + 内层 Stack 让 <img> 块化撑满 + Text micro 说明 ·
+ * 我的预约 = Card flush + List divided + Row（取消两步行内确认，确认键改 error 语义）。
+ * 删 .map-error 私有 CSS；.skeleton/.field/.ss-row/.chip-blue/.t-red 共享类其他页仍在用，保留。
  */
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { LibBookRecord, Library, LibraryFloor, LibrarySeat, LibrarySection } from "@onethu/core";
 import { infoUrls, isAuthError } from "@onethu/core";
-import { Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
-import { SearchSelect } from "../../components/SearchSelect.jsx";
+import {
+  Banner, Btn, Card, EmptyState, Field, Grow, IconPlug, Inline, List, LoadingBlock, Row, Section,
+  Select, Stack, Surface, Tag, Text,
+} from "@onethu/gui";
 import { CollectStar } from "../../components/Collect.js";
+import { SearchSelect } from "../../components/SearchSelect.jsx";
 import { enc, noteAtomCache } from "../../state/atoms.js";
 import { cacheGet, cacheSet } from "../../state/cache.js";
 import { fetchImageByUrl, info, logLine, session } from "../../lib/clients.js";
@@ -79,51 +89,32 @@ function useAreaImage(url: string): [MapImage, () => void] {
   return [img, retry];
 }
 
+/** 一张分布图：报错 = Banner（可重试）、加载 = LoadingBlock、就绪 = Surface 框 + 图注。 */
 function MapFigure({ img, caption, onRetry }: { img: MapImage; caption: string; onRetry?: () => void }) {
   if (img.state === "error") {
     /* 抓取失败要看得见：过去静默隐藏导致「座位图凭空消失」无从判断（用户 2026-02 报） */
     return (
-      <div className="map-error" role="alert">
-        <span>
-          {caption}加载失败：{img.msg}
-        </span>
-        {onRetry ? (
-          <Btn variant="outline" onClick={onRetry}>
-            重试
-          </Btn>
-        ) : null}
-      </div>
+      <Banner
+        tone="error"
+        title={`${caption}加载失败：${img.msg}`}
+        action={onRetry ? <Btn variant="outline" size="sm" onClick={onRetry}>重试</Btn> : null}
+      />
     );
   }
   if (img.state === "loading") {
-    return (
-      <div
-        className="skeleton"
-        role="img"
-        aria-label={`${caption}（加载中）`}
-        style={{ width: "100%", height: 150, borderRadius: 10 }}
-      />
-    );
+    return <LoadingBlock rows={2} />;
   }
   return (
-    <figure style={{ margin: 0 }}>
-      <img
-        src={img.src}
-        alt={caption}
-        style={{
-          width: "100%",
-          height: "auto",
-          display: "block",
-          borderRadius: 8,
-          border: "1px solid var(--border-soft)",
-        }}
-      />
-      <figcaption
-        style={{ fontSize: 11, color: "var(--text-3)", marginTop: 4, textAlign: "center" }}
-      >
-        {caption}
-      </figcaption>
-    </figure>
+    <Stack gap={1}>
+      <Surface radius="md">
+        {/* Surface 是普通块：内层再坐一层 Stack 让 <img> 作为 flex 子项被块化
+            （display:block + 交叉轴 stretch 自动全宽），免一条宽高内联 */}
+        <Stack>
+          <img src={img.src} alt={caption} />
+        </Stack>
+      </Surface>
+      <Text slot="micro" tone="faint">{caption}</Text>
+    </Stack>
   );
 }
 
@@ -131,56 +122,14 @@ function MapFigure({ img, caption, onRetry }: { img: MapImage; caption: string; 
 const bySeatName = (a: LibrarySeat, b: LibrarySeat): number =>
   a.zhName.localeCompare(b.zhName, "zh-Hans-CN", { numeric: true });
 
-/** 图例色块 */
-function LegendSwatch({ usable }: { usable: boolean }) {
-  const style: CSSProperties = usable
-    ? { background: "var(--green-soft)", borderColor: "var(--green)" }
-    : { background: "var(--surface-3)", borderColor: "var(--border)" };
-  return (
-    <i
-      aria-hidden
-      style={{
-        display: "inline-block",
-        width: 10,
-        height: 10,
-        borderRadius: 3,
-        borderStyle: "solid",
-        borderWidth: 1,
-        ...style,
-      }}
-    />
-  );
-}
-
-/** 有电源座位右上角「电」角标（thu-info-app 插座状态的桌面化表达） */
-const POWER_BADGE: CSSProperties = {
-  position: "absolute",
-  top: 1,
-  right: 2,
-  fontSize: 8,
-  lineHeight: "10px",
-  fontWeight: 700,
-  color: "var(--amber)",
-};
-
-const SEAT_CELL: CSSProperties = {
-  position: "relative",
-  // R10：座位名完整展示——固定 58px 会截断长座位号（省略号），改最小宽自适应
-  minWidth: 58,
-  height: 44,
-  borderRadius: 8,
-  padding: 0,
-  fontSize: 11,
-  lineHeight: 1.1,
-  textAlign: "center",
-};
-
 function seatTip(s: LibrarySeat, usable: boolean): string {
   const state = s.statusName ?? (s.valid ? "空闲" : "不可约");
   return `${s.zhNameTrace || s.zhName} · ${state}${s.hasPower ? " · 有插座" : ""}${usable ? " · 点击预约" : ""}`;
 }
 
-/** 座位格：可约=按钮（点击进确认），不可约=灰块（含已约/维护等） */
+/** 座位格：可约 = tonal success 按钮（点击进确认），不可约 = tonal 中性 disabled 块。
+ *  一个控件家族吃下两种状态（高/描边/墨色全走令牌三件套），不再手写色板；
+ *  电源插座标记 = IconPlug（amber 走 warning 语义色）。 */
 function SeatCell({
   seat,
   busy,
@@ -191,54 +140,26 @@ function SeatCell({
   onPick: (s: LibrarySeat) => void;
 }) {
   const usable = seat.availability === "usable" && seat.valid;
-  const label = (
-    <span
-      style={{
-        display: "block",
-        padding: "0 6px",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {seat.zhName}
-    </span>
-  );
-  const badge = seat.hasPower ? <span aria-hidden style={POWER_BADGE}>电</span> : null;
+  const power = seat.hasPower ? <IconPlug size="sm" className="og-text--t-warning" /> : null;
   if (!usable) {
     return (
-      <div
-        title={seatTip(seat, false)}
-        style={{
-          ...SEAT_CELL,
-          border: "1px solid var(--border-soft)",
-          background: "var(--surface-3)",
-          color: "var(--text-3)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {badge}
-        {label}
-      </div>
+      <Btn variant="tonal" size="md" disabled titleAttr={seatTip(seat, false)} iconRight={power}>
+        {seat.zhName}
+      </Btn>
     );
   }
   return (
-    <button
-      type="button"
+    <Btn
+      variant="tonal"
+      tone="success"
+      size="md"
+      titleAttr={seatTip(seat, true)}
       disabled={busy}
+      iconRight={power}
       onClick={() => onPick(seat)}
-      title={seatTip(seat, true)}
-      style={{
-        ...SEAT_CELL,
-        border: "1px solid var(--green)",
-        background: "var(--green-soft)",
-        color: "var(--green)",
-        cursor: "pointer",
-      }}
     >
-      {badge}
-      {label}
-    </button>
+      {seat.zhName}
+    </Btn>
   );
 }
 
@@ -635,25 +556,35 @@ export function LibraryTab({
   const usableCount = gridSeats.filter((s) => s.availability === "usable" && s.valid).length;
 
   return (
-    <>
-      <SectionHead title="图书馆座位" aside="seat.lib.tsinghua.edu.cn · ISeating" />
+    <Stack gap={3}>
+      <Section title="图书馆座位" aside="seat.lib.tsinghua.edu.cn · ISeating" />
       {libState === "error" ? (
-        <ErrorNote
-          text={libError ?? ""}
-          onRetry={() => {
-            libRecover.current = 0;
-            void loadLibs();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                libRecover.current = 0;
+                void loadLibs();
+              }}
+            >
+              重试
+            </Btn>
+          }
+        >
+          {libError ?? ""}
+        </Banner>
       ) : null}
-      {libState === "loading" && !libs ? <SkeletonRows rows={2} /> : null}
+      {libState === "loading" && !libs ? <LoadingBlock rows={2} /> : null}
 
       {libs && libs.length > 0 ? (
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-          <div className="field" style={{ margin: 0, minWidth: 150 }}>
-            <label htmlFor="lib-lib">馆</label>
-            <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+        <Inline gap={2} wrap>
+          <Grow>
+            <Field label="馆">
+              <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={libId != null ? String(libId) : ""}
                   onChange={(v) => setLibId(Number(v) || null)}
@@ -664,19 +595,18 @@ export function LibraryTab({
                     disabled: !l.valid,
                   }))}
                 />
-              </div>
-              {libId != null ? (
-                <CollectStar
-                  atom={{ kind: "library", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "") }}
-                  title={libs?.find((l) => l.id === libId)?.zhName ?? "图书馆"}
-                />
-              ) : null}
-            </div>
-          </div>
-          <div className="field" style={{ margin: 0, minWidth: 170 }}>
-            <label htmlFor="lib-floor">楼层</label>
-            <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+                {libId != null ? (
+                  <CollectStar
+                    atom={{ kind: "library", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "") }}
+                    title={libs?.find((l) => l.id === libId)?.zhName ?? "图书馆"}
+                  />
+                ) : null}
+              </Inline>
+            </Field>
+          </Grow>
+          <Grow>
+            <Field label="楼层">
+              <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={floorId != null ? String(floorId) : ""}
                   onChange={(v) => setFloorId(Number(v) || null)}
@@ -688,19 +618,18 @@ export function LibraryTab({
                     disabled: !f.valid,
                   }))}
                 />
-              </div>
-              {floorId != null && libId != null ? (
-                <CollectStar
-                  atom={{ kind: "library-f", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "", floorId, floors?.find((f) => f.id === floorId)?.zhName ?? "") }}
-                  title={floors?.find((f) => f.id === floorId)?.zhName ?? "楼层"}
-                />
-              ) : null}
-            </div>
-          </div>
-          <div className="field" style={{ margin: 0, minWidth: 170 }}>
-            <label htmlFor="lib-section">区域</label>
-            <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+                {floorId != null && libId != null ? (
+                  <CollectStar
+                    atom={{ kind: "library-f", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "", floorId, floors?.find((f) => f.id === floorId)?.zhName ?? "") }}
+                    title={floors?.find((f) => f.id === floorId)?.zhName ?? "楼层"}
+                  />
+                ) : null}
+              </Inline>
+            </Field>
+          </Grow>
+          <Grow>
+            <Field label="区域">
+              <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={sectionId != null ? String(sectionId) : ""}
                   onChange={(v) => setSectionId(Number(v) || null)}
@@ -712,193 +641,216 @@ export function LibraryTab({
                     disabled: !sec.valid,
                   }))}
                 />
-              </div>
-              {sectionId != null && libId != null ? (
-                <CollectStar
-                  atom={{
-                    kind: "library-a",
-                    key: enc(
-                      libId,
-                      libs?.find((l) => l.id === libId)?.zhName ?? "",
-                      floorId ?? "",
-                      floors?.find((f) => f.id === floorId)?.zhName ?? "",
-                      sectionId,
-                      sections?.find((sec) => sec.id === sectionId)?.zhName ?? "",
-                    ),
-                  }}
-                  title={sections?.find((sec) => sec.id === sectionId)?.zhName ?? "区域"}
-                />
-              ) : null}
-            </div>
-          </div>
-          <div className="field" style={{ margin: 0 }}>
-            <label htmlFor="lib-date">日期</label>
-            <Select id="lib-date" value={dateChoice} onChange={(value) => setDateChoice(value === "1" ? 1 : 0)}><option value={0}>今天</option><option value={1}>明天</option></Select>
-          </div>
-        </div>
+                {sectionId != null && libId != null ? (
+                  <CollectStar
+                    atom={{
+                      kind: "library-a",
+                      key: enc(
+                        libId,
+                        libs?.find((l) => l.id === libId)?.zhName ?? "",
+                        floorId ?? "",
+                        floors?.find((f) => f.id === floorId)?.zhName ?? "",
+                        sectionId,
+                        sections?.find((sec) => sec.id === sectionId)?.zhName ?? "",
+                      ),
+                    }}
+                    title={sections?.find((sec) => sec.id === sectionId)?.zhName ?? "区域"}
+                  />
+                ) : null}
+              </Inline>
+            </Field>
+          </Grow>
+          <Field label="日期">
+            <Select
+              aria-label="日期"
+              value={dateChoice}
+              onChange={(value) => setDateChoice(value === "1" ? 1 : 0)}
+            >
+              <option value={0}>今天</option>
+              <option value={1}>明天</option>
+            </Select>
+          </Field>
+        </Inline>
       ) : null}
 
       {lib && floor && section ? (
-        <SectionHead
+        <Section
           title="座位"
           aside={`${lib.zhName} · ${floor.zhName} · ${section.zhName} · ${dateChoice === 0 ? "今天" : "明天"}`}
         />
       ) : null}
 
-      {/* 座位分布图（座位区顶部；多图纵向排列，宽度 100%；全失败整块隐藏） */}
+      {/* 座位分布图（座位区顶部；多图纵向排列；全失败整块隐藏） */}
       {seatMap.state !== "hidden" || floorMap.state !== "hidden" ? (
-        <Card style={{ marginTop: 12 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <Card>
+          <Stack gap={3}>
             {section && seatMap.state !== "hidden" ? (
               <MapFigure img={seatMap} onRetry={retrySeatMap} caption={`${section.zhName} · 座位分布`} />
             ) : null}
             {floor && floorMap.state !== "hidden" ? (
               <MapFigure img={floorMap} onRetry={retryFloorMap} caption={`${floor.zhName} · 楼层平面图`} />
             ) : null}
-          </div>
+          </Stack>
         </Card>
       ) : null}
 
-      {seatState === "loading" ? <SkeletonRows rows={4} /> : null}
+      {seatState === "loading" ? <LoadingBlock rows={4} /> : null}
       {seatState === "error" ? (
-        <ErrorNote
-          text={seatError ?? ""}
-          onRetry={() => {
-            // 座位区错误可能出在楼层/区域链路：链路断了从馆列表整链重载，否则仅重取座位
-            seatRecover.current = 0;
-            floorRecover.current = 0;
-            sectionRecover.current = 0;
-            if (sectionId !== null) setSeatTick((t) => t + 1);
-            else setLibTick((t) => t + 1);
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                // 座位区错误可能出在楼层/区域链路：链路断了从馆列表整链重载，否则仅重取座位
+                seatRecover.current = 0;
+                floorRecover.current = 0;
+                sectionRecover.current = 0;
+                if (sectionId !== null) setSeatTick((t) => t + 1);
+                else setLibTick((t) => t + 1);
+              }}
+            >
+              重试
+            </Btn>
+          }
+        >
+          {seatError ?? ""}
+        </Banner>
       ) : null}
       {seatState === "ready" && seatList.length === 0 ? (
         <Card>
-          <Empty text="该区域暂无座位数据。" />
+          <EmptyState title="该区域暂无座位数据。" />
         </Card>
       ) : null}
       {seatState === "ready" && seatList.length > 0 ? (
         <Card>
-          {/* 图例 */}
-          <div
-            style={{
-              display: "flex",
-              gap: 14,
-              flexWrap: "wrap",
-              alignItems: "center",
-              marginBottom: 10,
-              fontSize: 12,
-              color: "var(--text-2)",
-            }}
-          >
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-              <LegendSwatch usable /> 可约 {usableCount}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-              <LegendSwatch usable={false} /> 已约/不可约 {gridSeats.length - usableCount}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
-              <span aria-hidden style={{ fontSize: 10, fontWeight: 700, color: "var(--amber)" }}>
-                电
-              </span>
-              = 有电源插座
-            </span>
-            {seatList.length > SEAT_CAP ? (
-              <span style={{ color: "var(--text-3)" }}>
-                已显示前 {SEAT_CAP} 个（共 {seatList.length} 个）
-              </span>
-            ) : null}
-          </div>
-          {/* 座位网格：flex-wrap，窄窗口自动换行不横向溢出 */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {gridSeats.map((s) => (
-              <SeatCell key={s.id} seat={s} busy={busySeat !== null} onPick={pickSeat} />
-            ))}
-          </div>
+          <Stack gap={2}>
+            {/* 图例：状态=Tag 语义色；电源插座=IconPlug(warning) */}
+            <Inline gap={3} vAlign="center" wrap>
+              <Tag tone="success">可约 {usableCount}</Tag>
+              <Tag>已约/不可约 {gridSeats.length - usableCount}</Tag>
+              <Inline gap={1} vAlign="center">
+                <IconPlug size="sm" className="og-text--t-warning" title="有电源插座" />
+                <Text slot="label" tone="faint">= 有电源插座</Text>
+              </Inline>
+              {seatList.length > SEAT_CAP ? (
+                <Text slot="label" tone="faint">
+                  已显示前 {SEAT_CAP} 个（共 {seatList.length} 个）
+                </Text>
+              ) : null}
+            </Inline>
+            {/* 座位网格：flex-wrap，窄窗口自动换行不横向溢出 */}
+            <Inline gap={1} wrap>
+              {gridSeats.map((s) => (
+                <SeatCell key={s.id} seat={s} busy={busySeat !== null} onPick={pickSeat} />
+              ))}
+            </Inline>
+          </Stack>
         </Card>
       ) : null}
 
       {/* 点选座位后的确认条 */}
       {pendingSeat ? (
-        <Card style={{ marginTop: 12, padding: "12px 14px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>预约座位 {pendingSeat.zhName}</span>
-            <span className="chip chip-blue" style={{ height: 20 }}>
-              {dateChoice === 0 ? "今天" : "明天"}
-            </span>
-          </div>
-          {locTrace ? (
-            <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>位置：{locTrace}</div>
-          ) : null}
-          <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>须在预约开始后 30 分钟内完成签到</div>
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 10 }}>
-            <Btn variant="outline" onClick={() => setPendingSeat(null)}>取消
-            </Btn>
-            <Btn variant="solid" tone="brand" disabled={busySeat !== null} onClick={() => void book(pendingSeat)}>{busySeat !== null ? "预约中…" : "确认预约"}</Btn>
-          </div>
+        <Card>
+          <Stack gap={2}>
+            <Inline gap={2} vAlign="baseline" wrap>
+              <Text as="h3" slot="subtitle">预约座位 {pendingSeat.zhName}</Text>
+              <Tag tone="brand">{dateChoice === 0 ? "今天" : "明天"}</Tag>
+            </Inline>
+            {locTrace ? (
+              <Text slot="label" tone="quiet">位置：{locTrace}</Text>
+            ) : null}
+            <Text slot="label" tone="quiet">须在预约开始后 30 分钟内完成签到</Text>
+            <Inline gap={2} justify="end">
+              <Btn variant="outline" onClick={() => setPendingSeat(null)}>取消</Btn>
+              <Btn
+                variant="solid"
+                tone="brand"
+                disabled={busySeat !== null}
+                onClick={() => void book(pendingSeat)}
+              >
+                {busySeat !== null ? "预约中…" : "确认预约"}
+              </Btn>
+            </Inline>
+          </Stack>
         </Card>
       ) : null}
 
-      {bookError ? <ErrorNote text={bookError} /> : null}
+      {bookError ? <Banner tone="error">{bookError}</Banner> : null}
 
-      {action ? (
-        <Card style={{ marginTop: 12, padding: "12px 14px" }}>
-          <span className={action.ok ? "" : "t-red"} style={{ fontSize: 13 }}>
-            {action.text}
-          </span>
-        </Card>
-      ) : null}
+      {action ? <Banner tone={action.ok ? "success" : "error"}>{action.text}</Banner> : null}
 
-      <SectionHead
-        title="我的预约"
-        aside="座位预约记录"
-      />
-      {recState === "loading" ? <SkeletonRows rows={2} /> : null}
+      <Section title="我的预约" aside="座位预约记录" />
+      {recState === "loading" ? <LoadingBlock rows={2} /> : null}
       {recState === "error" ? (
-        <ErrorNote
-          text={recError ?? ""}
-          onRetry={() => {
-            recRecover.current = 0;
-            void loadRecords();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                recRecover.current = 0;
+                void loadRecords();
+              }}
+            >
+              重试
+            </Btn>
+          }
+        >
+          {recError ?? ""}
+        </Banner>
       ) : null}
       {recState === "ready" && (records ?? []).length === 0 ? (
         <Card>
-          <Empty text="暂无预约记录。" />
+          <EmptyState title="暂无预约记录。" />
         </Card>
       ) : null}
       {recState === "ready" && (records ?? []).length > 0 ? (
-        <Card className="list">
-          {(records ?? []).map((r, i) => (
-            <div className="row" key={`${r.id}-${i}`}>
-              <div className="row-main">
-                <div className="row-title">{r.pos || r.id || "预约"}</div>
-                <div className="row-sub">
-                  {r.time || "–"}
-                  {r.status ? ` · ${r.status}` : ""}
-                </div>
-              </div>
-              <div className="row-amount">
-                {r.delId ? (
-                  pendingCancel === (r.delId ?? r.id) ? (
-                    <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 12, color: "var(--text-2)" }}>确认取消该预约？</span>
-                      <Btn variant="solid" tone="brand" disabled={busyCancel !== null} onClick={() => void cancel(r)}>{busyCancel !== null ? "取消中…" : "确认取消"}</Btn>
-                      <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>算了
+        <Card flush>
+          <List divided>
+            {(records ?? []).map((r, i) => (
+              <Row
+                flush
+                key={`${r.id}-${i}`}
+                title={r.pos || r.id || "预约"}
+                sub={`${r.time || "–"}${r.status ? ` · ${r.status}` : ""}`}
+                trailing={
+                  r.delId ? (
+                    pendingCancel === (r.delId ?? r.id) ? (
+                      <Inline gap={2} vAlign="center">
+                        <Text slot="label" tone="quiet">确认取消该预约？</Text>
+                        <Btn
+                          variant="solid"
+                          tone="error"
+                          disabled={busyCancel !== null}
+                          onClick={() => void cancel(r)}
+                        >
+                          {busyCancel !== null ? "取消中…" : "确认取消"}
+                        </Btn>
+                        <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>
+                          算了
+                        </Btn>
+                      </Inline>
+                    ) : (
+                      <Btn
+                        variant="outline"
+                        disabled={busyCancel !== null}
+                        onClick={() => setPendingCancel(r.delId ?? r.id)}
+                      >
+                        取消预约
                       </Btn>
-                    </span>
-                  ) : (
-                    <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(r.delId ?? r.id)}>取消预约
-                    </Btn>
-                  )
-                ) : null}
-              </div>
-            </div>
-          ))}
+                    )
+                  ) : null
+                }
+              />
+            ))}
+          </List>
         </Card>
       ) : null}
-    </>
+    </Stack>
   );
 }

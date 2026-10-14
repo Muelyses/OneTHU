@@ -1525,13 +1525,11 @@ function DiagnosticsRow() {
     }
   };
   return (
-    <div className="setting-row">
-      <div>
-        <div className="setting-title">诊断摘要</div>
-        <div className="setting-desc">反馈问题时粘贴这段文字，不含学号等个人信息</div>
-      </div>
-      <Btn variant="outline" disabled={busy} onClick={() => void run()}>{busy ? "复制中…" : "复制摘要"}</Btn>
-    </div>
+    <SettingsRow
+      title="诊断摘要"
+      sub="反馈问题时粘贴这段文字，不含学号等个人信息"
+      control={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void run()}>{busy ? "复制中…" : "复制摘要"}</Btn>}
+    />
   );
 }
 

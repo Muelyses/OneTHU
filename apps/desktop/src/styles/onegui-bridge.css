@@ -37,9 +37,9 @@ html:root {
   --font-mono: var(--og-font-mono);
 
   /* ── 线 ── */
-  --border: var(--og-line-1);
+  --border: var(--og-line-2);
   --border-soft: var(--og-line-1);
-  --border-strong: var(--og-line-2);
+  --border-strong: var(--og-line-3);
   --outline: var(--og-line-2);
 
   /* ── 强调与状态 ── */

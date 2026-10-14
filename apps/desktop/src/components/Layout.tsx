@@ -56,6 +56,7 @@ import {
   Card as OGCard,
   EmptyState as OGEmptyState,
   LoadingBlock as OGLoadingBlock,
+  PageHead as OGPageHead,
   Section as OGSection,
   Switch as OGSwitch,
 } from "@onethu/gui";
@@ -523,7 +524,7 @@ export function PageHead({
   /* 把菜单同步给顶栏。**本 PageHead 的稳定 token**：页切换期间可能同时存在两代 PageHead，
      卸载时只允许清掉自己写进去的那份（见 pageChrome.clearPageChrome）。 */
   const chromeToken = useRef<object>({});
-  const headRef = useRef<HTMLElement | null>(null);
+  const headRef = useRef<HTMLDivElement | null>(null);
   /* 预览里的「页面」不算页面：添加组件抽屉用真实卡体当预览，像搜索页这类卡体自带 PageHead，
      会把抽屉里的空菜单写进全局 chrome、收起时再清空 → 顶栏「···」消失（霖 2026-10-11 现场）。
      这里把「自己是不是在预览里」记在 ref 上，同步与清理两处都据此跳过。 */
@@ -546,13 +547,10 @@ export function PageHead({
   const expanded = useExpanded();
   const dupOnTopbar = !expanded && typeof title === "string" && title === navLabel;
   return (
-    <header className="page-head" ref={headRef}>
-      <div>
-        {dupOnTopbar ? null : <h1>{title}</h1>}
-        {meta ? <div className="page-head-meta">{meta}</div> : null}
-      </div>
-      {actions ? <div className="page-head-actions">{actions}</div> : null}
-    </header>
+    <div ref={headRef}>
+      {/* 渲染体走 OneGUI：标题字阶、meta、动作位与其它页面同源（旧 .page-head 的类不再产出） */}
+      <OGPageHead title={dupOnTopbar ? undefined : title} meta={meta} actions={actions} />
+    </div>
   );
 }
 
@@ -587,15 +585,16 @@ export function slugOf(text: string): string {
 /** 给当前 DOM 里的设置行/分节打 id（幂等；路由变化时重跑）。
  *  设置行文字 = 标题 + 说明（搜索按这两个字段匹配，所以 id 也从标题出）。 */
 export function markSettingsRows(): void {
-  const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head"));
+  // 两族一起认：OneGUI 渲染 .og-section，未迁移页面还写着 .section-head
+  const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section > .og-section-titles, .og-section"));
   heads.forEach((h) => {
     const t = (h.textContent ?? "").trim();
     if (t && !h.dataset.setId) h.dataset.setId = "sec-" + slugOf(t);
   });
-  const rows = Array.from(document.querySelectorAll<HTMLElement>(".setting-row"));
+  const rows = Array.from(document.querySelectorAll<HTMLElement>(".setting-row, .og-settings-row"));
   rows.forEach((r) => {
     if (r.dataset.setId) return;
-    const title = (r.querySelector(".setting-title")?.textContent ?? "").trim();
+    const title = (r.querySelector(".setting-title, .og-settings-row-title")?.textContent ?? "").trim();
     if (title) r.dataset.setId = "row-" + slugOf(title);
   });
 }
@@ -605,7 +604,7 @@ export function markSettingsRows(): void {
 export function focusSettingsTarget(target: string): boolean {
   const want = target.trim();
   const byId = document.querySelector<HTMLElement>(`[data-set-id="row-${slugOf(want)}"],[data-set-id="sec-${slugOf(want)}"]`);
-  let hit = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head"))
+  let hit = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head,.og-settings-row,.og-section"))
     .find((el) => (el.textContent ?? "").includes(want));
   if (!hit) {
     const btn = Array.from(document.querySelectorAll<HTMLElement>(".explorer-settings-body .btn, .explorer-settings-body button"))

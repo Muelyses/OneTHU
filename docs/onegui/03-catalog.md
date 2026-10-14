@@ -107,8 +107,10 @@
 
 1. ✅ 库：令牌 → 管线 → 布局 → 文本 → 面/卡 → 按钮 → 行/列表 → 表单 → 浮层 → 页面模式 → 展示件 → 图标 → 画廊 → 护栏
 2. 🔄 壳层：`AppShell` 等外框件已入库（桌面竖栏 + 手机底部条已截图验收）；
-   `Layout.tsx` 的七个旧原语（Card/Empty/SectionHead/ErrorNote/SkeletonRows/Switch）已切成 OneGUI 适配层
-   —— 60/40/28/30/8 个调用点一刻之间改由 OneGUI 渲染。**还剩**：`Layout.tsx` 外框本体（竖栏/顶栏/标签条/抽屉/设置浮层/命令面板）换 AppShell。
+   `Layout.tsx` 的八个旧原语（Card/Empty/SectionHead/ErrorNote/SkeletonRows/Switch/PageHead）已切成 OneGUI 适配层
+   —— 60/40/28/30/8/31 个调用点一刻之间改由 OneGUI 渲染。
+   `markSettingsRows()` / `focusSettingsTarget()` 改成**两族一起认**（.setting-row/.section-head 与 .og-settings-row/.og-section），
+   设置搜索与直达的 UX 不受影响。**还剩**：`Layout.tsx` 外框本体（竖栏/顶栏/标签条/抽屉/设置浮层/命令面板）换 AppShell。
 3. ⏳ 攻坚面：清华云盘（cloud-*）、网络学堂（作业/通知/富文本壳）、设置页 + 全部弹层
 4. ⏳ 其余页面：`pages/` 全量，逐页删旧 CSS
 5. ⏳ 清场：删 `apps/desktop/src/styles/*`、删 `packages/ui`、旧风格护栏由 `onegui-guard` 取代、`design-language.md` 重写为 OneGUI 手册

@@ -694,7 +694,20 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     nav: {
       go: (page: string, params?: Record<string, unknown>) => {
         gate(perms, "nav", "nav.go");
-        if (!navGo(page, params)) throw new Error("导航桥未就绪（应用启动中）");
+        const want = params ?? {};
+        /* 白板带参（2026-10-15 OH 接线）：`board` + {boardId} → **先把那块板设成当前板**再开白板页。
+           白板页渲染的是「当前板」（BoardDoc.activeBoardId），所以只传 params 不切板 —— 以前 OH
+           说「打开 XX 白板」实际打开的还是上一块。这里与 `#/board/<板 id>` 深链（explorer 的
+           openBoardFromHash）和 ext.onePageOpen 走同一条链：setActiveBoard + openTab。 */
+        const bid = String(page ?? "") === "board" ? String(want.boardId ?? want.id ?? "") : "";
+        if (bid) {
+          const hit = allOnePages().find((b) => b.id === bid);
+          if (!hit) throw new Error(`没有这块白板：${bid}（先用 ext.onepage_list 拿板 id；列表页用 page=\"boards\"）`);
+          openOnePage(bid);
+          openTab("board", null, { title: hit.name });
+          return;
+        }
+        if (!navGo(page, want)) throw new Error("导航桥未就绪（应用启动中）");
       },
       /** 原子检索：静态注册表（功能页/今日组件/操作）+ 本机缓存（课程/作业/通知/在线服务…）。
        *  动态 import 与 normalizeBinding 同法，回避 facade↔atoms 的模块环。 */

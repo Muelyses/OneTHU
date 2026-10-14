@@ -137,6 +137,19 @@ function legacyClassCounts() {
   return out;
 }
 
+/** 旧样式表（apps/desktop/src/styles/*.css）总行数：只许下降 —— 换血完成时归零 */
+function legacyCssLines() {
+  const dir = join(APP, "styles");
+  let total = 0;
+  const per = {};
+  for (const f of walk(dir, [".css"])) {
+    const n = readFileSync(f, "utf8").split("\n").length;
+    per[rel(f)] = n;
+    total += n;
+  }
+  return { total, per };
+}
+
 const APPEARANCE_PROPS = /(color|background|border|boxShadow|font|padding|margin|borderRadius|opacity|transform)\s*:/;
 
 function appCounts() {
@@ -265,12 +278,27 @@ if (WRITE_BASELINE) {
     colors: counts.colors,
     rawControls: counts.rawControls,
     legacyClasses: legacyClassCounts(),
+    legacyCssLines: legacyCssLines().total,
+    legacyCssPerFile: legacyCssLines().per,
   };
   writeFileSync(BASELINE, JSON.stringify(payload, null, 2) + "\n");
   console.log(`OneGUI 护栏：基线已更新 → ${rel(BASELINE)}`);
   const legacy = legacyClassCounts();
+  console.log(`  旧样式表 ${legacyCssLines().total} 行`);
   console.log(`  内联样式 ${Object.values(counts.inline).reduce((a, b) => a + b, 0)} 处 / 字面色 ${Object.values(counts.colors).reduce((a, b) => a + b, 0)} 处 / 裸控件 ${Object.values(counts.rawControls).reduce((a, b) => a + b, 0)} 处 / 旧 UI 类名 ${Object.values(legacy).reduce((a, b) => a + b, 0)} 处`);
   process.exit(0);
+}
+
+{
+  const css = legacyCssLines();
+  const allowed = baseline.legacyCssLines ?? Number.POSITIVE_INFINITY;
+  if (css.total > allowed) {
+    failures.push(`R8 旧样式表行数：${css.total} 行（基线 ${allowed}）—— 换血只许把这个数往下压`);
+    const over = Object.entries(css.per).filter(([f, n]) => n > (baseline.legacyCssPerFile?.[f] ?? Number.POSITIVE_INFINITY));
+    for (const [f, n] of over.slice(0, 8)) notes.push(`   ${f}: ${n} 行（基线 ${baseline.legacyCssPerFile?.[f]}）`);
+  } else {
+    notes.push(`R8 旧样式表行数 ✓（${css.total} 行 / 基线 ${Number.isFinite(allowed) ? allowed : "未播种"} 行）`);
+  }
 }
 
 compareBaseline("R7 旧 UI 类名", legacyClassCounts(), baseline.legacyClasses ?? {}, "旧 UI 类名（card/empty/section-head/…）");

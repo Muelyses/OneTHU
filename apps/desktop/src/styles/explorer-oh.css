@@ -111,17 +111,7 @@
   padding: 10px 14px 8px;
   gap: 8px;
 }
-.ohx-searchbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--text-3);
-  flex: none;
-}
+
 .ohx-searchbar input {
   flex: 1;
   min-width: 0;
@@ -366,12 +356,7 @@
 }
 /* 面板底 / 搜索栏 / 预设 segment / 历史 chip */
 .ohx-searchpane,
-.ohx-searchbar {
-  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
-  backdrop-filter: var(--glass-panel-blur);
-  -webkit-backdrop-filter: var(--glass-panel-blur);
-  border-color: var(--glass-border);
-}
+
 .ohx-chip {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)), var(--glass-fill-regular);
   backdrop-filter: var(--glass-chip-blur);

@@ -522,7 +522,7 @@ export function SettingsPage() {
               删除全部用户收藏夹与折叠记录（默认一级入口不受影响，永远在左侧栏）。
               各功能仍在原来的页面，收藏夹只是跳转入口。
             </div>
-            {favMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "var(--text-2)" }}>{favMsg}</div> : null}
+            {favMsg ? <OGText slot="label" tone="quiet" as="span">{favMsg}</OGText> : null}
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
             <Btn variant="outline" onClick={() => {

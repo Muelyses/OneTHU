@@ -21,7 +21,7 @@ import { groupPluginNotifications } from "../state/notifyIds.js";
 import { runNotifyDoctor, type DoctorReport } from "../state/notifyDoctor.js";
 import { ensureNotifyRuntime } from "../state/notifySources.js";
 import type { NotifyPlanItem, NotifySettings } from "../state/notifyPlan.js";
-import { Select as OGSelect, SettingsRow, Switch as OGSwitch } from "@onethu/gui";
+import { Btn, Select as OGSelect, SettingsRow, Switch as OGSwitch, Text } from "@onethu/gui";
 
 /** 常用提前量（分钟）；0 = 不提醒课程 */
 const CLASS_LEADS: Array<[number, string]> = [
@@ -186,47 +186,49 @@ export function NotifySettingsSection(): ReactNode {
           <div className="setting-desc">该时段内不发送提醒，落在其中的提醒顺延至时段结束。</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <select className="input" style={{ width: 96 }} value={s.quietFrom} onChange={(e) => patch({ quietFrom: e.target.value })}>
-            {QUIET_FROM.map((v) => <option key={v} value={v}>{v}</option>)}
-          </select>
-          <span style={{ color: "var(--text-3)" }}>—</span>
-          <select className="input" style={{ width: 96 }} value={s.quietTo} onChange={(e) => patch({ quietTo: e.target.value })}>
-            {QUIET_TO.map((v) => <option key={v} value={v}>{v}</option>)}
-          </select>
+          <OGSelect size="sm" value={s.quietFrom} onChange={(v) => patch({ quietFrom: v })} options={QUIET_FROM.map((v) => ({ value: v, label: v }))} />
+          <Text slot="label" tone="faint">—</Text>
+          <OGSelect size="sm" value={s.quietTo} onChange={(v) => patch({ quietTo: v })} options={QUIET_TO.map((v) => ({ value: v, label: v }))} />
+
         </div>
       </div>
       </>
       ) : null}
 
-      <div className="setting-row">
-        <div>
-          <div className="setting-title">通知权限</div>
-          <div className="setting-desc" style={hint.level === "error" ? { color: "var(--red)" } : undefined}>
-            {status === null ? "检测中…" : hint.text}
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 8, flex: "none" }}>
-          <button className="btn" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>
-            发送测试通知
-          </button>
-          <button className="btn btn-ghost" disabled={busy} title="逐项检查授权、提醒排程与真实投递" onClick={() => void onDiagnose()}>
-            {busy ? "检查中…" : "诊断"}
-          </button>
-          {hint.action ? (
-            <button
-              className="btn btn-ghost"
-              title={`打开：${hint.action.label}`}
-              onClick={() => {
-                void openNotifySettings(hint.action!.kind).then((okOpen) => {
-                  if (!okOpen) setMsg("未能打开系统设置，请手动前往本应用的通知设置");
-                });
-              }}
-            >
-              {hint.action.label}
-            </button>
-          ) : null}
-        </div>
-      </div>
+      <SettingsRow
+        title="通知权限"
+        sub={
+          status === null
+            ? "检测中…"
+            : hint.level === "error"
+              ? <Text slot="label" tone="error">{hint.text}</Text>
+              : hint.text
+        }
+        control={
+          <>
+            <Btn variant="outline" size="sm" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>
+              发送测试通知
+            </Btn>
+            <Btn variant="ghost" size="sm" disabled={busy} titleAttr="逐项检查授权、提醒排程与真实投递" onClick={() => void onDiagnose()}>
+              {busy ? "检查中…" : "诊断"}
+            </Btn>
+            {hint.action ? (
+              <Btn
+                variant="ghost"
+                size="sm"
+                titleAttr={`打开：${hint.action.label}`}
+                onClick={() => {
+                  void openNotifySettings(hint.action!.kind).then((okOpen) => {
+                    if (!okOpen) setMsg("未能打开系统设置，请手动前往本应用的通知设置");
+                  });
+                }}
+              >
+                {hint.action.label}
+              </Btn>
+            ) : null}
+          </>
+        }
+      />
 
       {pluginNotifs.length > 0 ? (
       <div className="setting-row">

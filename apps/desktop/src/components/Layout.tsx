@@ -1,3 +1,4 @@
+import { IconBtn } from "@onethu/gui";
 /** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
  *  dev-explorer 革命（2026-10-12）：侧边栏、移动抽屉、五格底栏整体退役——
  *  顶栏 = 首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮；底栏三入口（标签页 | OH | OneGO）
@@ -154,12 +155,8 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
   const canDup = activeId !== HOME_TAB_ID;
   return (
     <div className="ex-rail-actions">
-      <button className="icon-btn" onClick={() => duplicateTab(activeId)} disabled={!canDup} aria-label="复制当前标签页（独立实例）" title="复制当前标签页">
-        <IconCopyTab width={16} height={16} />
-      </button>
-      <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
-        <IconSettings width={16} height={16} />
-      </button>
+      <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
+      <IconBtn label="设置" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("settings")} />
       <button
         className="icon-btn ex-rail-width"
         onClick={onToggleNarrow}
@@ -233,22 +230,13 @@ function TopBar(): ReactNode {
           <BrandLogo size={13} />
         </button>
       ) : layout === "h" ? (
-        <button
-          className="icon-btn"
-          onClick={() => duplicateTab(activeId)}
-          disabled={!canDup}
-          aria-label="复制当前标签页（独立实例）"
-        >
-          <IconCopyTab width={16} height={16} />
-        </button>
+        <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
       ) : null}
       {layout === "h" && !phone ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
       <ChromeMore />
-      <button className="icon-btn" onClick={() => openSettings("settings")} title="设置" aria-label="设置">
-        <IconSettings width={16} height={16} />
-      </button>
+      <IconBtn label="设置" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("settings")} />
     </header>
   );
 }

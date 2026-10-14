@@ -1,3 +1,4 @@
+import { TextArea } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -773,7 +774,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
           <select className={selSel} style={selStyle} value={yjsrem} onChange={(e) => setYjsrem(e.target.value)}><option value="">研院余量: 不限</option><option value="1">研院余量&gt;0</option></select>
         </div>
         <div style={{ marginTop: 6 }}>
-          <input className="input" style={{ width: "100%", height: 28, fontSize: 12 }} placeholder="选课文字说明搜索" value={xknote} onChange={(e) => setXknote(e.target.value)} />
+          <Input placeholder="选课文字说明搜索" value={xknote} onChange={(value) => setXknote(value)} />
         </div>
       </Card>
 
@@ -813,8 +814,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
                 else void wb.gotoPage(wb.searchPage + 1);
               }}>下一页</Btn>
             <span style={{ fontSize: 12, color: "var(--text-3)" }}>跳至</span>
-            <input className="input" style={{ width: 52, height: 24, fontSize: 12 }} value={goPage}
-              onChange={(e) => setGoPage(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && goJump()} />
+            <Input value={goPage} onChange={(value) => setGoPage(value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && goJump()} />
             <Btn variant="outline" disabled={busy || !goPage} onClick={goJump}>GO</Btn>
           </div>
         </>
@@ -1515,7 +1515,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       </div>
       {importOpen ? (
         <div style={{ marginTop: 6 }}>
-          <textarea className="input" style={{ width: "100%", height: 60, fontSize: 11 }} placeholder="粘贴导出的课表数据…" value={importText} onChange={(e) => setImportText(e.target.value)} />
+          <TextArea placeholder="粘贴导出的课表数据…" value={importText} onChange={(value) => setImportText(value)} />
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
             <Btn variant="outline" onClick={putImport}>确认导入到暂存区</Btn>
             <Btn variant="outline" onClick={() => setImportOpen(false)}>取消</Btn>

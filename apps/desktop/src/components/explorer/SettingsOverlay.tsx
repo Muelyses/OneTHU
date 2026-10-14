@@ -1,3 +1,4 @@
+import { IconBtn } from "@onethu/gui";
 /**
  * 设置浮层（dev-explorer）：个人设置 / 插件 / OneTHU Harness 三段合一。
  *
@@ -69,9 +70,7 @@ export function SettingsOverlay(): ReactNode {
               </button>
             ))}
           </div>
-          <button className="icon-btn settings-close" onClick={requestClose} aria-label="关闭设置" title="关闭">
-            <IconX width={16} height={16} />
-          </button>
+          <IconBtn label="关闭设置" icon={<IconX width={16} height={16} />} onClick={requestClose} />
         </div>
         <div className="explorer-settings-body">
           {entry === "settings" ? <SettingsPage /> : <PluginsPage />}

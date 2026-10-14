@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -630,14 +631,7 @@ export function VenueSportsTab({
               </option>
             ))}</Select>
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
-            <input
-              className="input"
-              style={{ width: 160 }}
-              value={twoFACode}
-              onChange={(e) => setTwoFACode(e.target.value)}
-              placeholder={twoFAType === "totp" ? "动态口令" : "验证码"}
-              inputMode={twoFAType === "totp" ? "text" : "numeric"}
-            />
+            <Input value={twoFACode} onChange={(value) => setTwoFACode(value)} placeholder={twoFAType === "totp" ? "动态口令" : "验证码"} inputMode={twoFAType === "totp" ? "text" : "numeric"} />
             {twoFAType && twoFAType !== "totp" ? (
               <Btn variant="ghost" onClick={() => void send2FA()} disabled={twoFABusy}>{twoFABusy ? "发送中…" : twoFASent ? "重新发送" : "发送验证码"}</Btn>
             ) : null}

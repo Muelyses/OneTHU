@@ -50,9 +50,10 @@ const isTextField = (tag, attrs, sf) => {
     const name = a.name?.getText(sf) ?? "";
     if (name === "ref" || name === "key") return null;
     if (name === "style") {
-      // 带 width/maxWidth 的输入框：宽度是布局语义，交给人工迁移（不许丢观感）
+      // 只容忍"纯宽度"的内联样式：转换时丢掉（OneGUI 输入默认整宽 = 统一口径）；
+      // 出现 flex/position/margin 这类参与排版的，整只跳过交人工
       const inline = a.initializer?.getText(sf) ?? "";
-      if (/width|maxWidth|flex/.test(inline)) return null;
+      if (/flex|position|margin|float|top|left|right|bottom/.test(inline)) return null;
     }
     if (!INPUT_OK.has(name)) return null;
   }
@@ -93,7 +94,7 @@ const buttonVariant = (cls) => {
   return { variant: "outline" };
 };
 
-let files = 0, count = 0, textCount = 0, btnCount = 0;
+let files = 0, count = 0, textCount = 0, btnCount = 0, iconBtnCount = 0;
 for (const file of walk(APP)) {
   const src = readFileSync(file, "utf8");
   const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -120,6 +121,35 @@ for (const file of walk(APP)) {
         }
         const children = node.children.map((c) => c.getText(sf)).join("");
         edits.push([node.getStart(sf), node.getEnd(), `<Btn ${kept.join(" ")}>${children}</Btn>`, "Btn"]);
+      }
+    }
+
+    // <button className="icon-btn…"> 单图标无文字钮 → IconBtn
+    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(sf) === "button") {
+      const attrs = node.openingElement.attributes.properties;
+      const cls = attrs.find((a) => a.name?.getText(sf) === "className");
+      const clsText = cls?.initializer?.getText(sf)?.replace(/["']/g, "") ?? "";
+      const tokens = clsText.split(/\s+/).filter(Boolean);
+      const isIconBtn = tokens.includes("icon-btn");
+      const labelAttr = attrs.find((a) => ["aria-label", "title"].includes(a.name?.getText(sf) ?? ""));
+      const labelText = labelAttr?.initializer?.getText(sf) ?? "";
+      const kids = node.children.map((c) => c.getText(sf)).join("").trim();
+      const okAttrs = attrs.every((a) => [
+        "className", "onClick", "disabled", "title", "aria-label", "aria-pressed", "aria-expanded",
+        "aria-haspopup", "role", "tabIndex", "type",
+      ].includes(a.name?.getText(sf) ?? ""));
+      if (isIconBtn && labelAttr && /^"|\{"/.test(labelText) && okAttrs && kids.startsWith("<") && !kids.includes("<span")) {
+        const extra = [];
+        for (const a of attrs) {
+          const name = a.name?.getText(sf) ?? "";
+          if (name === "className" || name === "title" || name === "aria-label" || name === "type") continue;
+          extra.push(a.getText(sf));
+        }
+        edits.push([
+          node.getStart(sf), node.getEnd(),
+          `<IconBtn label=${labelText} icon={${kids}}${extra.length ? " " + extra.join(" ") : ""} />`,
+          "IconBtn",
+        ]);
       }
     }
 
@@ -184,5 +214,6 @@ for (const file of walk(APP)) {
   count += edits.filter((e) => e[3] === "Select").length;
   textCount += edits.filter((e) => e[3] === "Input" || e[3] === "TextArea").length;
   btnCount += edits.filter((e) => e[3] === "Btn").length;
+  iconBtnCount = edits.filter((e) => e[3] === "IconBtn").length;
 }
-console.log(`${APPLY ? "已改写" : "可改写"}：<select> ${count}，<input>/<textarea> ${textCount}，<button.btn> ${btnCount} / ${files} 个文件`);
+console.log(`${APPLY ? "已改写" : "可改写"}：<select> ${count}，<input>/<textarea> ${textCount}，<button.btn> ${btnCount}，<button.icon-btn> ${iconBtnCount} / ${files} 个文件`);

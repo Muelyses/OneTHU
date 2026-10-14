@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { TextArea } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -579,13 +580,7 @@ export function SettingsPage() {
         </div>
         {importOpen ? (
           <div style={{ marginTop: 12 }}>
-            <textarea
-              className="input"
-              style={{ width: "100%", minHeight: 120, fontFamily: "var(--font-mono, monospace)", fontSize: 12 }}
-              placeholder={"粘贴收藏夹内容（另一台设备导出的）…"}
-              value={importText}
-              onChange={(e) => setImportText(e.target.value)}
-            />
+            <TextArea placeholder={"粘贴收藏夹内容（另一台设备导出的）…"} value={importText} onChange={(value) => setImportText(value)} />
             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
               <Btn variant="solid" tone="brand" disabled={!importText.trim()} onClick={() => {
                   const parsed = parseFavs(importText);
@@ -1383,7 +1378,7 @@ function ExtHwSection() {
             <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span className="setting-title" style={{ fontSize: 13 }}>只保留未来</span>
-                <input className="input" style={{ width: 80 }} inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value.replace(/[^0-9]/g, ""))} />
+                <Input inputMode="numeric" value={days} onChange={(value) => setDays(value.replace(/[^0-9]/g, ""))} />
                 <span className="setting-desc">天（已过期的仍显示）</span>
               </div>
 

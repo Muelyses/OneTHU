@@ -1,3 +1,4 @@
+import { IconBtn } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 首启导览 · 手机简版（dev-explorer 二轮 A8，2026-10-13）：
@@ -197,9 +198,7 @@ export function OnboardingTourMobile(): ReactNode {
             ))}
           </div>
           <span style={{ flex: 1 }} />
-          <button className="icon-btn" aria-label="关闭本次导览" title="只关这一次，不改偏好" onClick={() => setOpen(false)}>
-            <IconX width={14} height={14} />
-          </button>
+          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
         </div>
 
         {isLast ? <TourParticles /> : null}

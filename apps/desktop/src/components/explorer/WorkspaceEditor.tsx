@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 工作区编辑弹窗：名字 / 颜色 / logo / 内容（成员增删）。
@@ -77,7 +78,7 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
         style={{ background: "var(--dsw-alias-bg-base, #fff)", color: "var(--dsw-alias-label-primary, inherit)", borderRadius: 14, padding: 18, width: 340, maxHeight: "80vh", overflow: "auto", boxShadow: "0 12px 40px rgba(0,0,0,.25)" }}
       >
         <div style={{ fontWeight: 600, marginBottom: 12 }}>编辑工作区</div>
-        <input className="input" autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="工作区名字" style={{ width: "100%" }} />
+        <Input autoFocus value={name} onChange={(value) => setName(value)} placeholder="工作区名字" />
         <div style={small}>底板颜色</div>
         <div style={{ display: "flex", gap: 8 }}>
           {WORKSPACE_COLORS.map((c) => (

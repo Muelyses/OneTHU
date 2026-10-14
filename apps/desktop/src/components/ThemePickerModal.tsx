@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 「更改主题」二级菜单（设置 → 外观）。
@@ -158,13 +159,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
         </div>
 
         <div style={{ padding: "10px 16px 16px", overflowY: "auto", overflowX: "hidden", flex: 1, minHeight: 0, minWidth: 0 }}>
-          <input
-            className="input"
-            style={{ width: "100%" }}
-            placeholder="搜索主题名称 / 描述 / 标签"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <Input placeholder="搜索主题名称 / 描述 / 标签" value={query} onChange={(value) => setQuery(value)} />
           {msg ? <div className="plg-runmsg" style={{ marginTop: 8 }}>{msg}</div> : null}
 
           {secHead(

@@ -1,3 +1,4 @@
+import { IconBtn } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 今日（首页）—— 全量卡片化：
@@ -214,12 +215,8 @@ function HomeCard({
             </span>
             {editing ? (
             <div className="home-card-tools">
-              <button type="button" className="icon-btn tool-up" disabled={index === 0} title="上移" aria-label={"上移" + def.title} onClick={() => onMove(def.id, "up")}>
-                <IconChevron width={13} height={13} />
-              </button>
-              <button type="button" className="icon-btn tool-down" disabled={index === count - 1} title="下移" aria-label={"下移" + def.title} onClick={() => onMove(def.id, "down")}>
-                <IconChevron width={13} height={13} />
-              </button>
+              <IconBtn label="上移" icon={<IconChevron width={13} height={13} />} disabled={index === 0} onClick={() => onMove(def.id, "up")} />
+              <IconBtn label="下移" icon={<IconChevron width={13} height={13} />} disabled={index === count - 1} onClick={() => onMove(def.id, "down")} />
               {!portrait ? (
                 <>
                 <button type="button" className="icon-btn tool-left" title={item.col === "main" ? "已在主栏" : "移到主栏"} aria-label={"把" + def.title + "移到主栏"} onClick={() => onMove(def.id, "main")}>
@@ -277,12 +274,8 @@ function HomeCard({
 
         {editing ? (
           <div className="home-card-tools">
-            <button type="button" className="icon-btn tool-up" disabled={index === 0} title="上移" aria-label={"上移" + def.title} onClick={() => onMove(def.id, "up")}>
-              <IconChevron width={13} height={13} />
-            </button>
-            <button type="button" className="icon-btn tool-down" disabled={index === count - 1} title="下移" aria-label={"下移" + def.title} onClick={() => onMove(def.id, "down")}>
-              <IconChevron width={13} height={13} />
-            </button>
+            <IconBtn label="上移" icon={<IconChevron width={13} height={13} />} disabled={index === 0} onClick={() => onMove(def.id, "up")} />
+            <IconBtn label="下移" icon={<IconChevron width={13} height={13} />} disabled={index === count - 1} onClick={() => onMove(def.id, "down")} />
             {!portrait ? (
               <>
               <button type="button" className="icon-btn tool-left" title={item.col === "main" ? "已在主栏" : "移到主栏"} aria-label={"把" + def.title + "移到主栏"} onClick={() => onMove(def.id, "main")}>

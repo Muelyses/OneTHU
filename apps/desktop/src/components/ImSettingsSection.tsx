@@ -1,3 +1,4 @@
+import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 设置页「IM 通道」区块：飞书 bot 配置、连接状态、绑定码与微信通道预告。
@@ -330,25 +331,12 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
           </div>
           <div className="setting-row">
             <div style={{ flex: 1 }}>
-              <input
-                className="input"
-                placeholder="App ID（cli_ 开头）"
-                value={appId}
-                onChange={(e) => setAppId(e.target.value)}
-                style={{ width: "100%" }}
-              />
+              <Input placeholder="App ID（cli_ 开头）" value={appId} onChange={(value) => setAppId(value)} />
             </div>
           </div>
           <div className="setting-row">
             <div style={{ flex: 1 }}>
-              <input
-                className="input"
-                placeholder="App Secret"
-                type="password"
-                value={appSecret}
-                onChange={(e) => setAppSecret(e.target.value)}
-                style={{ width: "100%" }}
-              />
+              <Input placeholder="App Secret" type="password" value={appSecret} onChange={(value) => setAppSecret(value)} />
             </div>
             <Btn variant="solid" tone="brand" onClick={() => void saveCreds()}>保存并连接</Btn>
           </div>

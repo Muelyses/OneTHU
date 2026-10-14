@@ -1,3 +1,4 @@
+import { IconBtn } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * 桌面端首启导览 v3（2026-10-13）：以桌面现状（dev-explorer 外壳）为基线的全新导览。
@@ -278,9 +279,7 @@ export function OnboardingTourV3(): ReactNode {
             ))}
           </div>
           <span style={{ flex: 1 }} />
-          <button className="icon-btn" aria-label="关闭本次导览" title="只关闭这一次，不改偏好" onClick={() => setOpen(false)}>
-            <IconX width={14} height={14} />
-          </button>
+          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
         </div>
 
         <h3 style={H}>{doc.title}</h3>

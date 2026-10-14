@@ -1,3 +1,4 @@
+import { IconBtn } from "@onethu/gui";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -425,12 +426,8 @@ function OneItem({
 
   const tools = (
     <div className="home-card-tools">
-      <button type="button" className="icon-btn" title="上移" aria-label="上移" onClick={() => moveAtom(index, -1)}>
-        <IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />
-      </button>
-      <button type="button" className="icon-btn" title="下移" aria-label="下移" onClick={() => moveAtom(index, 1)}>
-        <IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />
-      </button>
+      <IconBtn label="上移" icon={<IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />} onClick={() => moveAtom(index, -1)} />
+      <IconBtn label="下移" icon={<IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />} onClick={() => moveAtom(index, 1)} />
       {/* 长卡上的「方」：今日 widget 件没有方卡形态，双形态收藏项（教室）才有 */}
       {!view.widget || view.tileLive ? (
         <button type="button" className="icon-btn" title="改为方卡" aria-label="改为方卡" onClick={() => favs.setVariant(folderId, index, true)}>
@@ -482,12 +479,8 @@ function OneItem({
         {editing ? (
           <>
             <div className="home-card-tools">
-              <button type="button" className="icon-btn" title="上移" aria-label="上移" onClick={() => moveAtom(index, -1)}>
-                <IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />
-              </button>
-              <button type="button" className="icon-btn" title="下移" aria-label="下移" onClick={() => moveAtom(index, 1)}>
-                <IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />
-              </button>
+              <IconBtn label="上移" icon={<IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />} onClick={() => moveAtom(index, -1)} />
+              <IconBtn label="下移" icon={<IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />} onClick={() => moveAtom(index, 1)} />
               {!view.widget || view.tileLive ? (
                 <button type="button" className="icon-btn" title="改为方卡" aria-label="改为方卡" onClick={() => favs.setVariant(folderId, index, true)}>
                   方

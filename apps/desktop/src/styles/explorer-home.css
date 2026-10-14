@@ -449,15 +449,16 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 }
 .sphere:hover { background: var(--hover, var(--surface-3)); color: var(--text-1); }
 .sphere-ball {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-pill);
-  /* 材质对齐强制刷新钮（用户点名）：surface 实底 + 1px 细描边；
-     笔画色由 --text-2 加深到 --text-1 —— 图标是 SVG（跟着 currentColor），
-     对比度引擎只管文字叶子、不管图标，所以浅笔画压浅玻璃就会"看不见"。 */
+  /* 六项全部来自控件基准（用户第三次点名「模仿强制刷新按钮」）：
+     尺寸·圆角·实底·描边·字色·投影 —— 与 .hard-refresh-fab 完全同源。
+     图标笔画走 --ctl-fg；对比度引擎现在也会兜 SVG（settleIcon）。 */
+  width: var(--ctl-size);
+  height: var(--ctl-size);
+  border-radius: var(--ctl-radius);
   border: var(--ctl-border);
   background: var(--ctl-bg);
   color: var(--ctl-fg);
+  box-shadow: var(--ctl-shadow);
   display: inline-flex;
   align-items: center;
   justify-content: center;

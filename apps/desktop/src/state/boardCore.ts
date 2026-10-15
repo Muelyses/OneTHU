@@ -383,7 +383,10 @@ export function purgeGridResidue(doc: BoardDoc): BoardDoc {
            （oh-wire 的不重叠守栏当场抓到三条反例：契约口径、只写 cell 的路、落库与预览一致）。
            所以：只补 `rect`（视觉）+ `manual`（别被自适应拟合改掉），**cell 原样保留**；
            用户一旦拖动/缩放，仍走 withRect 把两边同步回一致 —— 那一刻的"用户意图"才是权威。 */
-        return { ...it, rect: r, manual: true };
+        /* ⚠️ 不要置 manual：manual 的语义是"**用户**定过尺寸，别再按内容拟合"，
+           而这尺寸是我们按网格算的。置了它，条目就永远停在网格派生的高度上 ——
+           卡片内容一高就被切（用户截图实测「截断」正是这么来的）。留空 = 允许画布按内容拟合。 */
+        return { ...it, rect: r };
       });
       if (!cellsChanged) {
         cells = { ...b.cells };

@@ -88,11 +88,13 @@
    overflow:hidden，只有首页把它放开过 —— 于是 OnePage 的画布一旦比面板高，下半部分直接被裁掉
    且**滚不到**。这里与首页同款放开（手机档见下方 overflow:auto），滚动交给窗口/内容层。 */
 .explorer-panel.is-onepage-canvas {
-  /* 2026-10-15：改为**自持滚动**（此前基线的 overflow:hidden 会把比面板高的画布直接裁掉，
-     用户报「其他白板下半部分截断」；只放开成 visible 不足以保证可达 —— 面板才是稳定的滚动容器，
-     与手机档同款口径）。 */
+  /* 2026-10-15（用户截图实测「下半部分截断」，卡片底部是**被硬切的方角**）：
+     只有 `overflow:auto` 不够 —— 面板在 shell 网格里是 auto 行、会被内容**撑高**，
+     于是永远不溢出、也就永远不滚，超出视口的部分被更外层裁掉。这里给它**上界**（视口高），
+     auto 才真的生效：页头 + 画布一起在这个面板里滚。 */
   overflow: auto;
   overscroll-behavior: contain;
+  max-height: 100dvh;
 }
 
 /* 顶部钟与功能坞挂在 shell，不被 page-in 的 transform 或可滚动画布截成局部 fixed。 */
@@ -429,6 +431,12 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
    除外：整行入口撑满反而变形。父规则与预览侧（.widget-size-inner .wg-card）对齐。 */
 .free-item .wg-card { height: 100%; display: flex; flex-direction: column; }
 .free-item .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; }
+/* 卡体内部可滚（2026-10-15 补）：网格时代有 `.board-slot .home-card-body, … .list { flex:1 1 auto;
+   min-height:0; overflow:auto }`，随网格一起删掉了，只补了"直接子元素"那半 → 卡里的列表溢出却
+   无处可滚，被硬切（用户截图：卡片下半部分截断）。这里把卡体与其中的列表做成可滚区。 */
+.free-item .home-card-body,
+.free-item .home-card-body > .list,
+.free-item .wg-card .list { flex: 1 1 auto; min-height: 0; overflow: auto; }
 .free-item.is-penlocked { pointer-events: none; }
 .free-item img { -webkit-user-drag: none; }
 

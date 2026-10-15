@@ -87,7 +87,13 @@
 /* OnePage 同理（2026-10-15 用户点名「其他白板下半部分截断」）：.explorer-panel 的基线是
    overflow:hidden，只有首页把它放开过 —— 于是 OnePage 的画布一旦比面板高，下半部分直接被裁掉
    且**滚不到**。这里与首页同款放开（手机档见下方 overflow:auto），滚动交给窗口/内容层。 */
-.explorer-panel.is-onepage-canvas { overflow: visible; }
+.explorer-panel.is-onepage-canvas {
+  /* 2026-10-15：改为**自持滚动**（此前基线的 overflow:hidden 会把比面板高的画布直接裁掉，
+     用户报「其他白板下半部分截断」；只放开成 visible 不足以保证可达 —— 面板才是稳定的滚动容器，
+     与手机档同款口径）。 */
+  overflow: auto;
+  overscroll-behavior: contain;
+}
 
 /* 顶部钟与功能坞挂在 shell，不被 page-in 的 transform 或可滚动画布截成局部 fixed。 */
 .home-chrome-layer {

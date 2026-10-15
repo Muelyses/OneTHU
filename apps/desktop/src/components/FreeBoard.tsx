@@ -985,7 +985,33 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
  * 取代已退役的 pages/BoardPage.tsx —— 页面 id 仍是 `board`（深链 #/board/<板 id> 照旧），
  * 画布换成与首页同一块自由白板；「所有 OnePage」入口在页头菜单里（另一条通路是 OneGO）。
  */
+/** 临时几何探针（仅 dev，2026-10-15）：OnePage「下半部分截断」要靠真 app 的高度链定位 ——
+ *  合成环境量不出（上次就是被合成结果带偏）。取一次：从画布一路上溯到 html 的每个节点
+ *  各自的 clientHeight / scrollHeight / overflowY / 高度，加上最底部条目的位置。 */
+function useOnePageLayoutProbe(): void {
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const t = window.setTimeout(() => {
+      const canvas = document.querySelector<HTMLElement>(".freeboard.is-page") ?? document.querySelector<HTMLElement>(".freeboard");
+      if (!canvas) return;
+      const chain: string[] = [];
+      let el: HTMLElement | null = canvas;
+      while (el && el !== document.documentElement.parentElement) {
+        const cs = getComputedStyle(el);
+        chain.push(`${el.tagName.toLowerCase()}.${(el.className || "").toString().split(" ").slice(0, 2).join(".")}[h=${Math.round(el.getBoundingClientRect().height)} ch=${el.clientHeight} sh=${el.scrollHeight} oy=${cs.overflowY}]`);
+        el = el.parentElement;
+      }
+      const items = Array.from(document.querySelectorAll<HTMLElement>(".free-item"));
+      const maxBottom = items.reduce((m, it) => Math.max(m, it.getBoundingClientRect().bottom), 0);
+      const line = `[onepage-layout] win=${innerWidth}x${innerHeight} items=${items.length} maxItemBottom=${Math.round(maxBottom)} | ` + chain.join(" <- ");
+      void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
+    }, 900);
+    return () => window.clearTimeout(t);
+  }, []);
+}
+
 export function OnePageSurface(): ReactNode {
+  useOnePageLayoutProbe();
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   /* OneGO / 收藏星 / 星标在别处改了板文档 → 重读（否则刚新建的 OnePage 打不开） */
   useEffect(() => {

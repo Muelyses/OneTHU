@@ -1,4 +1,4 @@
-import { Input } from "@onethu/gui";
+import { Input, Row } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
  * OneGO 抽屉（dev-explorer）：从收藏夹升级来的「工作组织工具」。
@@ -119,18 +119,16 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         <b>我的 OnePage</b>
       </div>
       {/* 「首页」入口（2026-10-15 用户点名「点击首页回首页」）：系统板不是 OnePage，不能列成一块板，
-          但"回首页"这件事必须在这个列表里点得到 —— 它聚焦首页标签（顶栏 Logo 同一条路）。 */}
-      <button
-        type="button"
-        className="ex-row ex-row-clickable"
+          但"回首页"这件事必须在这个列表里点得到 —— 它聚焦首页标签（与顶栏 Logo 同一条路）。
+          用 GUI 的 Row（可点）而不是自写 <button>：仓库的裸控件棘轮只许降不许涨（R4）。 */}
+      <Row
+        title="首页"
+        sub="时钟 · 一级程序坞 · 自由画布"
         onClick={() => {
           focusTab(HOME_TAB_ID);
           onDone();
         }}
-      >
-        <span className="ex-row-icon"><FolderIcon name="fist" /></span>
-        <span className="ex-row-main">首页</span>
-      </button>
+      />
       <div className="ex-newrow">
         <Input placeholder="新 OnePage 名称" value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
             if (e.key === "Enter") create();

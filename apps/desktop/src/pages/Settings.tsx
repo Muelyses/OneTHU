@@ -436,7 +436,7 @@ export function SettingsPage() {
           title={sysSupported === false ? "系统日历同步" : syscal.enabled ? "系统日历同步 · 已开启" : "系统日历同步"}
           sub={
             sysSupported === false ? (
-              "当前平台暂不支持直写系统日历；可在「日程」页用「存入系统日历」导出 .ics 文件，再由系统日历导入。"
+              "本平台不支持直写系统日历；可在「日程」页导出 .ics 再导入。"
             ) : syscal.enabled ? (
               <>
                 日历「OneTHU 日程」· 上次同步 {syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString() : "—"} · {syscal.lastCount} 条。课表与日程变化后会自动更新（含提前 15 分钟的课程提醒）。
@@ -505,7 +505,7 @@ export function SettingsPage() {
       <SettingsList>
         <SettingsRow
           title="恢复默认首页布局"
-          sub="清除首页卡片的排列、折叠与隐藏记录，下次打开首页回到默认版式（主栏：日程与提醒 / 未提交作业 / 最近通知；侧栏：校园卡余额 / 今日预约 / 今日课程 / 订阅新闻；入口卡全部隐藏）。"
+          sub="清除首页卡片的排列、折叠与隐藏记录，回到默认版式。"
           control={<Btn variant="outline" size="sm" onClick={() => { clearHomeLayout(); setHomeResetAt(Date.now()); }}>{homeResetAt ? "已恢复默认" : "恢复默认布局"}</Btn>}
         />
       </SettingsList>
@@ -680,7 +680,7 @@ function DownloadSettings() {
           sub={
             <>
               {loading ? "正在读取…" : directory?.path || "下载位置读取失败，请重新选择文件夹或恢复默认。"}
-              <OGText slot="label" tone="faint">网络学堂附件与云盘文件将保存到这里，已下载的文件不会移动；单个文件也可以用「另存为」临时挑别处。</OGText>
+              <OGText slot="label" tone="faint">网络学堂附件与云盘文件存到这里；「另存为」可临时换地方。</OGText>
               {message ? <OGText slot="label" tone="quiet" as="span">{message}</OGText> : null}
             </>
           }
@@ -842,7 +842,7 @@ function AppearanceSection(): ReactNode {
       {/* 玻璃程度：全站玻璃面材浓度四档（clear/balanced/rich/deep → data-glass 覆盖块） */}
       <SettingsRow
         title="玻璃程度"
-        sub="清透更亮透，浓郁更深实；影响全站玻璃面材。"
+        sub="默认档是无玻璃的中性面；其余三档是三种玻璃取向。"
         control={
           <Segment
             size="sm"
@@ -888,7 +888,7 @@ function AppearanceSection(): ReactNode {
             size="lg"
             leading={<ThemeSwatch vars={{}} />}
             title="默认外观"
-            sub={<OGText slot="label" tone="quiet" clamp={2}>不套用任何主题，使用应用自带配色</OGText>}
+            children={<OGText slot="label" tone="quiet" clamp={2}>不套用任何主题，使用应用自带配色</OGText>}
             meta={snap.activeId ? null : <Tag tone="brand">使用中</Tag>}
             trailing={
               snap.activeId ? (
@@ -905,7 +905,7 @@ function AppearanceSection(): ReactNode {
                 size="lg"
                 leading={<ThemeSwatch vars={t.vars} />}
                 title={t.name}
-                sub={<OGText slot="label" tone="quiet" clamp={2}>{t.description ?? t.id}</OGText>}
+                children={<OGText slot="label" tone="quiet" clamp={2}>{t.description ?? t.id}</OGText>}
                 meta={<>{t.source === "plugin" ? <Tag>社区</Tag> : null}{on ? <Tag tone="brand">使用中</Tag> : null}</>}
                 trailing={on ? null : <Btn variant="solid" tone="brand" size="sm" onClick={() => activateTheme(t.id)}>应用</Btn>}
               />

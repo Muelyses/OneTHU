@@ -1,5 +1,7 @@
 /**
- * 玻璃程度（液态玻璃浓度四档）：clear 清透 / balanced 均衡（默认）/ rich 浓郁 / deep 极致。
+ * 玻璃程度（四档，名字按**实际观感**定，2026-10-15 用户实测校准）：
+ *   clear 透彻 / balanced 无（默认：不落属性 → 中性面，即无玻璃）/ rich 透光 / deep 均衡。
+ *   注意四档不是单调刻度：默认档是没有玻璃的中性面，另三档才是三种玻璃取向。
  *
  * 实现：档位写进 <html data-glass>，global.css 的玻璃令牌块按属性档静态覆盖
  * （Chromium 96 兼容——全部 rgba 死值，不运算）。默认档不写属性 = 走基座值。
@@ -12,10 +14,10 @@ const LEVELS: GlassLevel[] = ["clear", "balanced", "rich", "deep"];
 
 export function glassLevels(): Array<{ id: GlassLevel; label: string }> {
   return [
-    { id: "clear", label: "清透" },
-    { id: "balanced", label: "均衡" },
-    { id: "rich", label: "浓郁" },
-    { id: "deep", label: "极致" },
+    { id: "clear", label: "透彻" },
+    { id: "balanced", label: "无" },
+    { id: "rich", label: "透光" },
+    { id: "deep", label: "均衡" },
   ];
 }
 

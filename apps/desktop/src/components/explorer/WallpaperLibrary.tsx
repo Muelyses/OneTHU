@@ -153,9 +153,12 @@ export function WallpaperLibrary({
         ))}
       </div>
       {variant === "panel" ? (
-        <div className="wall-lib-hint">
-          已收 {doc.library.length}/{LIBRARY_MAX} 张；同步含库内图片与视频，恢复会覆盖本机
-        </div>
+        <>
+          <div className="wall-lib-hint">
+            已收 {doc.library.length}/{LIBRARY_MAX} 张；自收录的壁纸右上角有 ✕ 可删，内置渐变不可删
+          </div>
+          <div className="wall-lib-hint">同步含库内图片与视频，恢复会覆盖本机</div>
+        </>
       ) : null}
       {variant === "picker" ? (
         <Btn variant="outline" onClick={pickUpload}>

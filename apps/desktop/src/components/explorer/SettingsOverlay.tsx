@@ -70,7 +70,7 @@ export function SettingsOverlay(): ReactNode {
               </button>
             ))}
           </div>
-          <IconBtn label="关闭设置" icon={<IconX width={16} height={16} />} onClick={requestClose} />
+          <IconBtn label="关闭设置" size="sm" variant="outline" titleAttr="关闭设置（Esc）" icon={<IconX width={14} height={14} />} onClick={requestClose} />
         </div>
         <div className="explorer-settings-body">
           {entry === "settings" ? <SettingsPage /> : <PluginsPage />}

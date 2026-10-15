@@ -347,13 +347,15 @@ export async function importWallpaperFile(file: File): Promise<ImportResult> {
     if (!okType) return Promise.resolve({ ref: null, error: "动态壁纸只认 mp4 / webm" });
     if (file.size > VIDEO_MAX_BYTES) return Promise.resolve({ ref: null, error: "视频超过 12MB，请先剪短再试" });
     /* 存档落盘（local:<绝对路径>）：整串 base64 塞 localStorage 必爆 blob 上限，
-       渲染端对超大 dataURL 也常拒 —— 用户实测「动态壁纸坏 / 灰一大片」的根因。 */
+       渲染端对超大 dataURL 也常拒 —— 用户实测「动态壁纸坏 / 灰一大片」的根因。
+       2026-10-15 补刀：invoke 参数曾写成 data_base64（Tauri v2 要 camelCase），
+       命令必然失败 → 一路回落到 dataURL → 用户实测「小于 12MB 也说存不下、刷新就没了」。 */
     const buf = await file.arrayBuffer();
     const b64 = toB64(new Uint8Array(buf));
     const ext = file.type === "video/mp4" ? "mp4" : "webm";
     try {
       const { invoke } = await import("@tauri-apps/api/core");
-      const path = await invoke<string>("wallpaper_save", { name: `wp-${Date.now()}.${ext}`, data_base64: b64 });
+      const path = await invoke<string>("wallpaper_save", { name: `wp-${Date.now()}.${ext}`, dataBase64: b64 });
       return { ref: `local:${path}`, error: null };
     } catch {
       /* 非 Tauri/写盘失败：回落 dataURL（小视频可用，大视频仍会失败——但至少不比旧路差） */
@@ -388,7 +390,7 @@ export async function importWallpaperFile(file: File): Promise<ImportResult> {
           try {
             const { invoke } = await import("@tauri-apps/api/core");
             const b64 = toB64(new Uint8Array(await blob.arrayBuffer()));
-            const path = await invoke<string>("wallpaper_save", { name: `wp-${Date.now()}.jpg`, data_base64: b64 });
+            const path = await invoke<string>("wallpaper_save", { name: `wp-${Date.now()}.jpg`, dataBase64: b64 });
             resolve({ ref: `local:${path}`, error: null });
             return;
           } catch {

@@ -19,7 +19,9 @@ const ok = (cond, msg) => { if (!cond) fails.push(msg); };
    + 「安装主题」（跳市场自动筛主题）+「管理主题」（插件页启用/停用）+ 跟随系统昼夜。
    旧「更改主题 → 二级菜单」入口已被这套就地板取代，护栏随设计更新（2026-10-12 合流）。 */
 ok(/ThemePickerModal/.test(SETTINGS), "设置 → 外观 没有挂 ThemePickerModal");
-ok(/setting-title">主题</.test(SETTINGS), "设置 → 外观 缺少「主题」小节标题");
+/* 2026-10-15：小节标题由 .setting-title div 改为 SettingsRow（带「安装 / 管理」两个动作），
+   断言随设计更新——找「主题」这一行的 title 属性。 */
+ok(/title="主题"/.test(SETTINGS), "设置 → 外观 缺少「主题」小节");
 ok(/ThemeSwatch/.test(SETTINGS) && /activateTheme\(/.test(SETTINGS), "设置 → 外观 缺少主题板就地切换（色卡 + 应用）");
 ok(/安装主题/.test(SETTINGS) && /view: "market", category: "theme"/.test(SETTINGS), "设置 → 外观 缺少「安装主题」（市场 + 主题筛选）");
 ok(/管理主题/.test(SETTINGS) && /view: "mine", category: "theme"/.test(SETTINGS), "设置 → 外观 缺少「管理主题」（插件页启用/停用）");

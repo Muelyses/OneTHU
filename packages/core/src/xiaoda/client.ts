@@ -24,6 +24,8 @@ import { DEFAULT_USER_AGENT } from "../http.js";
 export const XIAODA_BASE = "https://www.xiaoda.tsinghua.edu.cn";
 const ITS_LOGIN_SVC = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/d982b795884e882abfa8ff3167aeb03e/0?/login.html";
 const CAS_CHECK = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/check";
+/** id SSO 确认页取票端点（id 会话活着时的第三形态，见 info/client.ts #idCheckSingle） */
+const CAS_CHECK_SINGLE = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/checkSingle";
 
 export type XiaodaFetch = (url: string, init?: RequestInit) => Promise<Response>;
 
@@ -161,6 +163,21 @@ function extractTicket(html: string, url: string): string {
   const scan = /[?&;]ticket=([A-Za-z0-9._~%+\-]{8,})/.exec(html)?.[1];
   if (scan) return decodeURIComponent(scan);
   return fromUrl(url);
+}
+
+/** 抠出页面里的隐藏字段（checkSingle 等确认页要原样回传，浏览器就是这么提交的） */
+function parseHiddenFields(html: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  const tagRe = /<input[^>]*>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = tagRe.exec(html))) {
+    const tag = m[0];
+    if (!/type=["']hidden["']/i.test(tag)) continue;
+    const name = /name=["']([^"']+)["']/i.exec(tag)?.[1];
+    if (!name) continue;
+    out[name] = /value=["']([^"']*)["']/i.exec(tag)?.[1] ?? "";
+  }
+  return out;
 }
 
 /** 出错时给一小段正文，便于定位服务端到底回了什么 */
@@ -303,6 +320,28 @@ export class XiaodaClient {
     this.log(
       `xiaoda login ① 表单 status=${form.status} len=${form.html.length} ticket=${ticket ? "yes" : "no"} auth=${authFlag} url=${form.url.slice(0, 120)}`,
     );
+    // ①b id SSO 确认页（<title>Title</title> + action=.../checkSingle + 无 sm2publicKey）：
+    //     id 会话活着时不再要密码，只 POST 指纹确认继续（与 info/client.ts #idCheckSingle 同款）。
+    //     2026-10-15 实测：应用内（会话活着）走的就是这一形态。
+    if (!ticket && /checkSingle/.test(form.html)) {
+      const formAction = /<form[^>]+action=["']([^"']+)["']/i.exec(form.html)?.[1] ?? "";
+      const csUrl = formAction ? new URL(formAction, "https://id.tsinghua.edu.cn/").toString() : CAS_CHECK_SINGLE;
+      const cs = await this.req("POST", csUrl, {
+        cookies: form.cookies,
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        data: {
+          ...parseHiddenFields(form.html),
+          i_rememberme: "on",
+          fingerPrint: fingerprint,
+          fingerGenPrint: finger3,
+        },
+      });
+      last = cs;
+      ticket = extractTicket(cs.html, cs.url);
+      this.log(
+        `xiaoda login ①b checkSingle 确认 status=${cs.status} ticket=${ticket ? "yes" : "no"} url=${cs.url.slice(0, 120)}`,
+      );
+    }
     if (!ticket) {
       const key = /id="sm2publicKey"[^>]*>\s*([0-9a-fA-F]{100,})\s*</.exec(form.html)?.[1] ?? "";
       this.log(`xiaoda login ① SM2 公钥=${key ? "yes" : "no"}`);

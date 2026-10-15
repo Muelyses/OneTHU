@@ -543,6 +543,23 @@ export function useThemes(): ThemeSnapshot {
   return useSyncExternalStore(subscribeThemes, snapshot);
 }
 
+/**
+ * 当前生效主题的强调色（**直取主题定义**，不经 DOM 级联）。
+ *
+ * 为什么不能读 CSS 变量：onegui-bridge.css 用 `html:root:not([data-og-skin])`（0,2,1）
+ * 把 --accent / --md-sys-color-secondary 全部重指成 `var(--og-accent…)`，压过主题注入的
+ * `:root[data-theme]`（0,2,0）——读任何一个都会读到「OG 的当前值」，也就是自己的输出：
+ * 自我吞噬，结果就是「换什么主题都是默认蓝」（2026-10-15 日志铁证：读到的 accent 恒为
+ * 库默认的业务蓝，与主题定义里的暖沙/紫罗兰等值无关）。
+ * 主题定义是唯一不经管线的真值来源。
+ */
+export function activeThemeAccent(): string {
+  const def = state.installed.find((t) => t.id === state.activeId);
+  if (!def) return "";
+  const v = def.vars as Record<string, string> | undefined;
+  return v?.["--accent"] ?? v?.["--primary"] ?? "";
+}
+
 /** 主题链路留痕：真机看不到控制台，/tmp/onethu-debug.log 是唯一现场 */
 function logTheme(msg: string): void {
   void import("@tauri-apps/api/core")

@@ -36,6 +36,13 @@ function schemeOf(root: HTMLElement): "light" | "dark" {
  * 换值判等防环：og.set 会改写 --og-accent，但 --md-sys-color-secondary 的写入方
  * 只有主题注入/取色/底色令牌，不会被采样值回写（ivory 无注入 = 底色蓝恒定）。 */
 let lastAccent = "";
+/** 当前主题的强调色（主题定义直取；模块未加载时回落空串） */
+let themeAccentRaw = "";
+let themeAccentOf = (): string => themeAccentRaw;
+void import("../state/theme.js").then((m) => {
+  themeAccentOf = () => m.activeThemeAccent();
+  syncAccent(); // 模块到位后立刻重采一次
+});
 
 function syncAccent(): void {
   const root = document.documentElement;
@@ -52,7 +59,10 @@ function syncAccent(): void {
     accent = getComputedStyle(root).getPropertyValue("--md-sys-color-secondary").trim();
     id = "dynamic";
   } else if (themeId && themeId !== "onethu.theme.ivory") {
-    accent = getComputedStyle(root).getPropertyValue("--accent").trim();
+    /* 从主题定义直取（不经 DOM）：桥把 --accent / --md-sys-color-secondary 都重指成
+       var(--og-accent…) 且特异度更高（0,2,1 > 0,2,0），读变量＝读自己的输出 → 永远默认蓝。 */
+    accent = themeAccentOf();
+    if (!accent) accent = getComputedStyle(root).getPropertyValue("--accent").trim();
     id = themeId;
   } else {
     return; // 象牙/空 = 库默认业务蓝，不喂

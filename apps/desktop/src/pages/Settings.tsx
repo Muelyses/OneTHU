@@ -888,7 +888,14 @@ function AppearanceSection(): ReactNode {
             size="lg"
             /* 整卡可点＝应用（用户实测：「换了和没换都是蓝色」——此前只有右侧小钮能点，
                点卡片本体毫无反应，看着就像主题不可用）。 */
-            onClick={snap.activeId ? () => deactivateTheme() : undefined}
+            onClick={
+              snap.activeId
+                ? () => {
+                    deactivateTheme();
+                    showToast("已回到默认外观");
+                  }
+                : undefined
+            }
             leading={<ThemeSwatch vars={{}} />}
             title="默认外观"
             children={<OGText slot="label" tone="quiet" clamp={2}>不套用任何主题，使用应用自带配色</OGText>}
@@ -906,12 +913,33 @@ function AppearanceSection(): ReactNode {
                 key={t.id}
                 selected={on}
                 size="lg"
-                onClick={on ? undefined : () => activateTheme(t.id)}
+                onClick={
+                  on
+                    ? undefined
+                    : () => {
+                        activateTheme(t.id);
+                        showToast("已应用「" + t.name + "」");
+                      }
+                }
                 leading={<ThemeSwatch vars={t.vars} />}
                 title={t.name}
                 children={<OGText slot="label" tone="quiet" clamp={2}>{t.description ?? t.id}</OGText>}
                 meta={<>{t.source === "plugin" ? <Tag>社区</Tag> : null}{on ? <Tag tone="brand">使用中</Tag> : null}</>}
-                trailing={on ? null : <Btn variant="solid" tone="brand" size="sm" onClick={() => activateTheme(t.id)}>应用</Btn>}
+                trailing={
+                  on ? null : (
+                    <Btn
+                      variant="solid"
+                      tone="brand"
+                      size="sm"
+                      onClick={() => {
+                        activateTheme(t.id);
+                        showToast("已应用「" + t.name + "」");
+                      }}
+                    >
+                      应用
+                    </Btn>
+                  )
+                }
               />
             );
           })}

@@ -60,6 +60,10 @@ function syncAccent(): void {
   if (!accent || accent === lastAccent) return;
   lastAccent = accent;
   og.set({ theme: { id, accent } }, { persist: false });
+  /* 留痕：这条一旦出现，说明主题色确实喂进了 OneGUI 管线（用户看不清时靠它判） */
+  void import("@tauri-apps/api/core")
+    .then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | [THEME] 喂给 OneGUI id=" + id + " accent=" + accent }))
+    .catch(() => undefined);
 }
 
 function syncFromLegacy(): void {

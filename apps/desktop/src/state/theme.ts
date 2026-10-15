@@ -543,6 +543,13 @@ export function useThemes(): ThemeSnapshot {
   return useSyncExternalStore(subscribeThemes, snapshot);
 }
 
+/** 主题链路留痕：真机看不到控制台，/tmp/onethu-debug.log 是唯一现场 */
+function logTheme(msg: string): void {
+  void import("@tauri-apps/api/core")
+    .then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | [THEME] " + msg }))
+    .catch(() => undefined);
+}
+
 export function activateTheme(id: string): boolean {
   const def = state.installed.find((t) => t.id === id);
   if (!def) return false;
@@ -564,17 +571,11 @@ export function activateTheme(id: string): boolean {
   try {
     applyTheme(def);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    try {
-      void import("@tauri-apps/api/core").then((m) =>
-        m.invoke("log_debug", { line: new Date().toISOString() + " | [THEME] applyTheme 失败：" + msg }),
-      );
-    } catch {
-      /* 非 Tauri 环境：忽略 */
-    }
+    logTheme("applyTheme 失败：" + (e instanceof Error ? e.message : String(e)));
   }
   persist();
   emit();
+  logTheme(`已应用 ${id}（注入 ${Object.keys(def.vars).length} 条，data-theme=${document.documentElement.dataset.theme ?? "未落"}`);
   return true;
 }
 

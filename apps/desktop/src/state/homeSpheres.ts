@@ -171,3 +171,5 @@ export function sphereEntry(id: string): SphereNavEntry | null {
 export function allSphereEntries(): SphereNavEntry[] {
   return [...NAV, ...pluginEntries()];
 }
+
+/* 首页几何诊断取数中（2026-10-15）：本文件一改会触发整页 reload，便于探针重跑。 */

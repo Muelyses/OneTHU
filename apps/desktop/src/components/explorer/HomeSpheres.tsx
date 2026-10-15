@@ -111,7 +111,7 @@ function useHomeLayoutProbe(): void {
         `panelFlex=${pick(".explorer-panel") ? getComputedStyle(pick(".explorer-panel")!).flex : "-"}`
           + (pick(".explorer-panel") ? " panelPos=" + getComputedStyle(pick(".explorer-panel")!).position : "")
           + (pick(".explorer-panel") ? " panelMinW=" + getComputedStyle(pick(".explorer-panel")!).minWidth : ""),
-        `outer=${box(document.body.firstElementChild)}`,
+        `outer=${box(document.body.firstElementChild as HTMLElement | null)}`,
         `outerCls="${document.body.firstElementChild?.className ?? "-"}"`,
         `outerDisp=${document.body.firstElementChild ? getComputedStyle(document.body.firstElementChild as HTMLElement).display : "-"}`
           + (document.body.firstElementChild ? " outerW=" + getComputedStyle(document.body.firstElementChild as HTMLElement).width : "")

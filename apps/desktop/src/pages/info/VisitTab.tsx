@@ -88,6 +88,13 @@ export function VisitTab() {
         adid: VISIT_REPORT_FLOW.adid,
       });
       setModel(m);
+      // 服务端预填值（preLoad 给的）优先：这几项官方页面也是预置好的，别让用户重挑一遍
+      setForm((f) => ({
+        ...f,
+        category: m.prefilled.mfield1 ?? f.category,
+        reason: m.prefilled.mfield16 ?? f.reason,
+        area: m.prefilled.mfield13 ?? f.area,
+      }));
       const wanted = [...m.fields, ...m.visitorFields].filter((f) => f.catalogId);
       const pairs = await Promise.all(
         wanted.map(async (f) => [f.key, await visitClient.catalogOptions(f.key, String(f.catalogId))] as const),

@@ -98,6 +98,8 @@ export interface VisitFormModel {
   visitorFields: VisitFormField[];
   /** 「本人确认」那一整句承诺（服务端下发原文，界面上原样展示） */
   confirmLabel: string;
+  /** 服务端预填的初值（preLoad 的 formData 里按变量分组的非空项；键是 mfield / sfield 编号） */
+  prefilled: Record<string, string>;
 }
 export interface VisitMenuItem {
   title: string;
@@ -272,6 +274,8 @@ export class VisitClient {
       "User-Agent": DEFAULT_USER_AGENT,
       "x-requested-with": "XMLHttpRequest",
       mlangge: "zh-CN",
+      // 平台要求：当前应用号（缺它时 form/load 直接回 code=500 "fail"，实测 2026-10-15）
+      matrixcurrentappid: VISIT_REPORT_FLOW.tenantId,
       ...(opts.headers ?? {}),
     };
     if (!opts.noAuth && this.token) headers.token = this.token;
@@ -429,11 +433,14 @@ export class VisitClient {
         matrix_form_tid: "",
       },
     });
-    const meta = typeof pre1 === "string" ? safeJson<{ ftid: string; publishedDate: number; frontParam: string }>(pre1) : null;
+    const meta = typeof pre1 === "string"
+      ? safeJson<{ ftid: string; publishedDate: number; frontParam: string; formData?: Record<string, Record<string, unknown>> }>(pre1)
+      : null;
     if (!meta?.ftid || !meta.publishedDate) throw new VisitApiError("表单预载没有返回模型标识");
     const raw = await this.req<string>(`/form/load/${formDid}_${meta.publishedDate}.json`, {
       query: { a: "" },
-      headers: meta.frontParam ? { frontParam: meta.frontParam } : {},
+      // frontParam 头必须是 JSON（官方前端是 JSON.stringify({ftid})）；传裸 ftid 服务端回 500 "fail"
+      headers: { frontParam: JSON.stringify({ ftid: meta.ftid }) },
     });
     const obj = typeof raw === "string" ? safeJson<Record<string, unknown>>(raw) : null;
     if (!obj) throw new VisitApiError("表单模型解析失败");
@@ -446,6 +453,7 @@ export class VisitClient {
       fields: norm.fields,
       visitorFields: norm.visitorFields,
       confirmLabel: norm.confirmLabel,
+      prefilled: flattenPrefilled(meta.formData),
     };
   }
 
@@ -555,6 +563,18 @@ export class VisitClient {
   }
 }
 
+/** preLoad 的 formData（按变量分组）→ 扁平 {字段key: 值}，只取非空标量 */
+export function flattenPrefilled(formData: Record<string, Record<string, unknown>> | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const group of Object.values(formData ?? {})) {
+    for (const [k, v] of Object.entries(group ?? {})) {
+      if (v === null || v === undefined || typeof v === "object") continue;
+      if (String(v).length) out[k] = String(v);
+    }
+  }
+  return out;
+}
+
 /** matrix 表单模型 → 归一化字段（视图层不直接碰原始 JSON） */
 export function normalizeFormModel(raw: Record<string, unknown>): {
   fields: VisitFormField[];
@@ -572,6 +592,8 @@ export function normalizeFormModel(raw: Record<string, unknown>): {
       const type = String(o.type ?? "");
       const key = String(o.key ?? "");
       if (type === "EditList") {
+        // 实测（2026-10-15）：明细表的列放在 columns 下（部分版本放 list），两条都要走
+        walk(o.columns, true);
         walk(o.list, true);
         continue;
       }

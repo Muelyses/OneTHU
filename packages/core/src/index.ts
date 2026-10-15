@@ -243,7 +243,7 @@ export {
 export {
   VisitClient, VisitApiError, VisitAuthRequiredError, VisitLoginError, VISIT_BASE, VISIT_API,
   VISIT_MOBILE_ENTRY, VISIT_ITS_SERVICE_ID, VISIT_REPORT_FLOW, VISIT_MY_LIST_FORM, VISIT_VISITOR_LIST_KEY,
-  visitTokenExpiresAt, normalizeFormModel, selectSourcePayload,
+  visitTokenExpiresAt, normalizeFormModel, selectSourcePayload, flattenPrefilled,
 } from "./visit/client.js";
 export type {
   VisitFetch, VisitUser, VisitSessionState, VisitOption, VisitFormField, VisitFormModel, VisitMenuItem,

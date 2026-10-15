@@ -23,7 +23,8 @@ export function buildVisitTestModel() {
         {
           type: "EditList",
           key: "appointmentsFamilyArea2EditList",
-          list: [
+          // 实测形状：列在 columns 下（不是 list）
+          columns: [
             { type: "input", key: "sfield1", title: "来访人姓名", required: false, readonly: false },
             { type: "input", key: "sfield2", title: "来访人身份证", required: true, readonly: false },
             { type: "input", key: "sfield3", title: "来访人手机号", required: true, readonly: false },

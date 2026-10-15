@@ -438,7 +438,10 @@
   gap: 12px;
   width: 100%;
 }
-.wall-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+/* 定位锚点：删除 ✕ / 全屏点 / 页码角标都是 absolute，必须由格子自己当锚——
+   少了这行，所有角标会一起逃到最近的有定位祖先（设置面板）的右上角堆着
+   （2026-10-15 用户实锤：「删除按钮在他妈那个右上角」）。 */
+.wall-cell { position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .wall-thumb-box { position: relative; border-radius: var(--r-md, 10px); overflow: hidden; }
 .wall-thumb {
   display: block;

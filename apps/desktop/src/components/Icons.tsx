@@ -364,6 +364,14 @@ export const IconSpark = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** 清小搭（校园 AI 学伴）：对话气泡 + 一颗四芒星——「会说话的学伴」（一级页球体/标签/原子图标共用） */
+export const IconXiaoda = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M10.4 5H4.9A1.9 1.9 0 0 0 3 6.9v5.6a1.9 1.9 0 0 0 1.9 1.9h.9v3.2l3.9-3.2h4.6a1.9 1.9 0 0 0 1.9-1.9V6.9A1.9 1.9 0 0 0 14.3 5z" />
+    <path d="M17.6 3.4l.85 2.35 2.35.85-2.35.85-.85 2.35-.85-2.35L14.4 6.6l2.35-.85z" />
+  </svg>
+);
+
 /** GitHub 标（品牌填充形，故单独覆盖 fill/stroke；16 号画布按 1.5 倍放到 24 网格） */
 export const IconGithub = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base({ fill: "currentColor", stroke: "none", ...p })}>

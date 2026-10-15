@@ -64,10 +64,12 @@ import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.
 import { setHwDefault, setHwReminder } from "../state/hwRemind.js";
 import * as geek from "../lib/geekBrowser.js";
 
-/** ext.tabOpen 允许打开的一级页（子页是 tab 内导航，不走新标签） */
+/** ext.tabOpen 允许打开的一级页（子页是 tab 内导航，不走新标签）。
+ *  清小搭（xiaoda，2026-10-15）：一级页里 OH 要开就得在这张表里 ⇒ 进坞/进搜索栏之外，
+ *  这是「OH 可调用」的那一环（ext_tab op=open 与其它走 tabOpen 的链路共用）。 */
 const TOP_PAGES = new Set([
   "today", "learn", "schedule", "trace", "otherinfo", "info", "life", "reserve", "zhjwxk", "thos",
-  "mail", "cloud", "gitlab", "thubook", "tasks", "services", "favs", "boards", "board",
+  "mail", "cloud", "gitlab", "thubook", "xiaoda", "tasks", "services", "favs", "boards", "board",
   "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
 ]);
 import {

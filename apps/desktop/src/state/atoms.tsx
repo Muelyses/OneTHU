@@ -15,7 +15,7 @@
  */
 import type { ReactNode } from "react";
 import { openThosInApp } from "../lib/thosOpen.js";
-import { IconBell, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconThos, IconToday, IconTrace, IconXk } from "../components/Icons.js";
+import { IconBell, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconThos, IconToday, IconTrace, IconXiaoda, IconXk } from "../components/Icons.js";
 import {
   AgendaWidget, CardBalanceWidget, HomeworkWidget, RecentNoticesWidget, SubsNewsWidget,
   TodayClassesWidget, TodayOverviewWidget, TodayResvWidget,
@@ -199,6 +199,10 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "cloud", title: "云盘", sub: "清华云盘 · 资料库 · 上传下载 · 分享", icon: IconCloud, group: "页面", page: "cloud" },
   { kind: "page", key: "gitlab", title: "GitLab", sub: "清华 GitLab · 项目 · Issue · 合并请求 · 流水线", icon: IconGitLab, group: "页面", page: "gitlab" },
   { kind: "page", key: "zhjwxk", title: "选课", sub: "选课系统 · 已选课程与候补队列（不可拆分的收藏项）", icon: IconXk, group: "页面", page: "zhjwxk" },
+  /* 清小搭（2026-10-15 用户点名「搜索栏注册可搜索」）：一级页只有进了页面原子，
+     搜索栏/命令面板/底栏检索条与 OH 的 open_page 才认得出它（否则只能靠注册表名字命中，
+     且 OH 按名打开会找不到）；顺带解锁页头星标收藏与「最近使用」回跳。 */
+  { kind: "page", key: "xiaoda", title: "清小搭", sub: "校园 AI 学伴 · 对话 · 历史 · 智能体 · 技能广场", icon: IconXiaoda, group: "页面", page: "xiaoda" },
   { kind: "page", key: "learn", title: "网络学堂", sub: "本学期课程总览", icon: IconLearn, group: "页面", page: "learn" },
   { kind: "page", key: "learn-assignments", title: "全部作业", sub: "网络学堂 · 作业列表", icon: IconPen, group: "页面", page: "learn-assignments" },
   { kind: "page", key: "learn-notices", title: "全部通知", sub: "网络学堂 · 课程通知", icon: IconBell, group: "页面", page: "learn-notices" },

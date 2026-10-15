@@ -41,7 +41,7 @@ import { createOnePageForAtom, onePagesWithAtom, openOnePage, removeOnePage } fr
 import type { Board } from "../../state/boardCore.js";
 import { useFavs } from "../../state/favs.js";
 import type { LearnNav, Page } from "../../state/app.js";
-import { FOLDER_ICONS, IconBook, IconCloud, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconOrb, IconPin, IconPlus, IconStar, IconX } from "../Icons.js";
+import { FOLDER_ICONS, IconBook, IconCloud, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconOrb, IconPin, IconPlus, IconStar, IconX, IconXiaoda } from "../Icons.js";
 import { BrandLogo } from "../Layout.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { useTabLayoutMode } from "../../state/tabLayout.js";
@@ -636,6 +636,7 @@ function pageGlyph(page: Page): (p: { width?: number; height?: number }) => Reac
   if (page === "mail") return IconMail;
   if (page === "cloud") return IconCloud;   // 云盘=云朵（此前一面旗子——图标对不上版）
   if (page === "gitlab") return IconGitLab;  // GitLab 狐狸厂牌（此前默认文件夹）
+  if (page === "xiaoda") return IconXiaoda;  // 清小搭（校园 AI 学伴；此前默认文件夹）
   if (page === "tasks") return IconFlag;
   if (page === "favs" || page === "folder") return IconPin;
   return IconFolder;

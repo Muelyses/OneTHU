@@ -6,8 +6,9 @@
  *   ② 时间下铺展的一级功能区（圆球 + 「更多功能」「详细功能」两个按钮）。
  * 两块都不可移动、不可删除，但各自可调不透明度（透明了以后能透出下面的自由组件）。
  *
- * 持久化只存「哪些球停靠、什么顺序 + 两块的不透明度」；球的图标/名字永远是
- * NAV 注册表的事实，这里不复制。旧的 loose（拖出球）随自由画布退役，字段不再写。
+ * 持久化只存「哪些球停靠、什么顺序 + 已自动补过哪些一级功能 + 两块的不透明度」；
+ * 球的图标/名字永远是 NAV 注册表的事实，这里不复制。旧的 loose（拖出球）随自由画布退役，
+ * 字段不再写。
  */
 import { createElement } from "react";
 import { NAV } from "../components/Layout.js";
@@ -53,18 +54,37 @@ export interface SpheresDoc {
   v: 1;
   /** 功能区停靠的球（NAV page id，顺序即展示顺序） */
   docked: string[];
+  /** 已经自动补过停靠的一级功能（AUTO_DOCK 的 id）：登记过就永不再回填，用户移除是最终态 */
+  added: string[];
   /** ①大时间 的不透明度 0.15..1 */
   timeOpacity: number;
   /** ②功能区 的不透明度 0.15..1 */
   dockOpacity: number;
 }
 
+/**
+ * 已发布的一级功能清单：**每新上线的**一个一级页在这里登记一次，老文档（没登记过的）
+ * 会一次性补停靠到坞尾；补过的 id 记进 doc.added，此后用户用「更多功能」的 × 移除
+ * 就不再回填。
+ *
+ * 2026-10-15 事故（清小搭首进坞断在这里）：`Layout.NAV` 没有这颗球 ⇒ 下面的 known
+ * 白名单（= NAV ∪ 插件页）也就没有 "xiaoda" ⇒ `sanitize` 每次读档都把持久化的它吃掉，
+ * 表现为「坞上有时看得到、一刷新/一改透明度就没了」。现在 NAV 侧补了球，这里也把
+ * xiaoda 登记进 AUTO_DOCK，修好同一件事的两半。
+ */
+const AUTO_DOCK: readonly string[] = ["xiaoda"];
+
 const KEY = "onethu.home.spheres.v3";
-/** 上一代键名：v2 → v3 一次性迁移用（2026-10-15 新增一级功能「清小搭」） */
-const PREV_KEY = "onethu.home.spheres.v2";
+/** 上一代键名：老文档 → 现行键名的一次性迁移（现行键名不变，补停靠靠 doc.added 判定） */
+const PREV_KEYS = ["onethu.home.spheres.v2", "onethu.home.spheres.v1"];
 
 const clampOp = (n: unknown): number =>
   typeof n === "number" && Number.isFinite(n) ? Math.min(1, Math.max(0.15, n)) : 1;
+
+/** 已知球白名单 = NAV 一级页 ∪ 插件功能页（插件页 pageKey 是 `plugin:…`） */
+function knownSphereIds(): Set<string> {
+  return new Set<string>([...NAV.map((n) => n.page as string), ...pluginTabsSnapshot().map((t) => t.pageKey)]);
+}
 
 function defaultDoc(): SpheresDoc {
   const first = NAV.slice(0, 8).map((n) => n.page as string);
@@ -72,25 +92,18 @@ function defaultDoc(): SpheresDoc {
   return {
     v: 1,
     docked: first.includes("xiaoda") ? first : [...first, "xiaoda"],
+    added: [...AUTO_DOCK],
     timeOpacity: 1,
     dockOpacity: 1,
   };
-}
-
-/** v2 → v3 迁移：老文档补停靠新一级功能（写回 v3；用户之后手动移除不会再被回填） */
-function migrateLegacy(doc: SpheresDoc): SpheresDoc {
-  const known = new Set<string>([...NAV.map((n) => n.page as string), ...pluginTabsSnapshot().map((t) => t.pageKey)]);
-  const add = ["xiaoda"].filter((id) => known.has(id) && !doc.docked.includes(id));
-  return add.length > 0 ? { ...doc, docked: [...doc.docked, ...add] } : doc;
 }
 
 function sanitize(raw: unknown): SpheresDoc {
   const base = defaultDoc();
   if (!raw || typeof raw !== "object") return base;
   const r = raw as Partial<SpheresDoc>;
-  /* 已知球 = NAV 一级页 ∪ 插件功能页（插件页 pageKey 是 `plugin:…`；不放进白名单，
-     插件页的停靠会在下次读取时被 sanitize 吃掉 —— 这正是"插件页进不了程序坞"的一环） */
-  const known = new Set<string>([...NAV.map((n) => n.page as string), ...pluginTabsSnapshot().map((t) => t.pageKey)]);
+  /* 不放进 known 白名单的球会在下次读取时被吃掉 —— 这正是"一级页进不了程序坞"的一环 */
+  const known = knownSphereIds();
   const docked = Array.isArray(r.docked)
     ? (r.docked.filter((x): x is string => typeof x === "string" && known.has(x)))
     : base.docked;
@@ -99,24 +112,53 @@ function sanitize(raw: unknown): SpheresDoc {
   return {
     v: 1,
     docked: norm.length > 0 ? Array.from(new Set(norm)) : base.docked,
+    added: Array.isArray(r.added) ? Array.from(new Set(r.added.filter((x): x is string => typeof x === "string"))) : [],
     timeOpacity: clampOp(r.timeOpacity),
     dockOpacity: clampOp(r.dockOpacity),
   };
 }
 
+/** 一次性补停靠：AUTO_DOCK 里还没登记、且此刻不在坞上的新一级功能，补到坞尾并记进 added */
+function fillAutoDock(doc: SpheresDoc): SpheresDoc {
+  const known = knownSphereIds();
+  const docked = [...doc.docked];
+  const added = new Set(doc.added);
+  let changed = false;
+  for (const id of AUTO_DOCK) {
+    if (added.has(id) || !known.has(id)) continue; // 补过 / 这版还没有该页 → 都不动
+    added.add(id);
+    if (!docked.includes(id)) docked.push(id);
+    changed = true;
+  }
+  return changed ? { ...doc, docked, added: [...added] } : doc;
+}
+
+/** 读档收敛结果落盘（幂等：内容没变就不写；存储满则下次再收敛） */
+function writeKey(doc: SpheresDoc, prev?: string): void {
+  try {
+    const json = JSON.stringify(doc);
+    if (json !== prev) localStorage.setItem(KEY, json);
+  } catch {
+    /* 存储满：纯偏好，静默 */
+  }
+}
+
+/** 读档收敛：白名单过滤 + 一次性补停靠 */
 function load(): SpheresDoc {
   try {
     const cur = localStorage.getItem(KEY);
-    if (cur) return sanitize(JSON.parse(cur));
-    const legacy = localStorage.getItem(PREV_KEY) ?? localStorage.getItem("onethu.home.spheres.v1");
-    if (legacy) {
-      const migrated = migrateLegacy(sanitize(JSON.parse(legacy)));
-      try {
-        localStorage.setItem(KEY, JSON.stringify(migrated)); // 迁移结果落盘（幂等；存储满则下次再迁）
-      } catch {
-        /* 存储满：纯偏好，静默 */
+    if (cur) {
+      const settled = fillAutoDock(sanitize(JSON.parse(cur)));
+      writeKey(settled, cur);
+      return settled;
+    }
+    for (const key of PREV_KEYS) {
+      const legacy = localStorage.getItem(key);
+      if (legacy) {
+        const settled = fillAutoDock(sanitize(JSON.parse(legacy)));
+        writeKey(settled); // 老键名收编到现行键名（幂等；存储满则下次再收敛）
+        return settled;
       }
-      return migrated;
     }
   } catch {
     /* 脏数据当没有 */

@@ -202,11 +202,6 @@ export function viewOf(key: string): BoardView {
   return v;
 }
 
-/** 这块板有没有存过视图（没有 = 首次打开，要主动适配一次内容，见 fitZoom）。 */
-export function hasView(key: string): boolean {
-  return readAll()[key] !== undefined;
-}
-
 export function setView(key: string, next: BoardView): void {
   const v: BoardView = { z: clampZoom(next.z) };
   const prev = snaps.get(key);

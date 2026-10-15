@@ -67,7 +67,6 @@ import {
   boxSize,
   contentRect,
   fitZoom,
-  hasView,
   stepZoom,
   subscribeView,
   toWorld,
@@ -338,8 +337,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   viewRef.current = view;
   /** 视口尺寸（屏幕 px）：缩放锚点与"回到内容"要用。 */
   const viewportRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-  /** 视口量到真尺寸了吗（隐藏标签页/未挂载是 0×0 —— 那种尺寸算不出视图，不许落盘）。 */
-  const [vpReady, setVpReady] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -448,7 +445,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     if (!el) return;
     const measure = (): void => {
       viewportRef.current = { w: el.clientWidth, h: el.clientHeight };
-      if (el.clientWidth > 2 && el.clientHeight > 2) setVpReady(true);
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -477,16 +473,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     el.style.minWidth = box.w + "px";
     el.style.minHeight = box.h + "px";
   }, [items, view.z]);
-
-  /* 首次打开一块板：无限画布里没有滚动条兜底，"内容在视口外"就等于"内容不见了"，
-     所以先**适配一次内容**再交给用户。已经记过视图的板不动它（"我上次看到哪，下次还看到哪"）。 */
-  const anchored = useRef(false);
-  useEffect(() => {
-    if (!vpReady || anchored.current) return;
-    anchored.current = true;
-    if (hasView(viewKey) || itemsRef.current.length === 0) return;
-    setBoardView(viewKey, { z: fitZoom(viewportRef.current, contentRect(itemsRef.current)) });
-  }, [vpReady, viewKey]);
 
   /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
      视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */

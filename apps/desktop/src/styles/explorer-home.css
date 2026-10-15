@@ -87,6 +87,14 @@
 /* OnePage 同理（2026-10-15 用户点名「其他白板下半部分截断」）：.explorer-panel 的基线是
    overflow:hidden，只有首页把它放开过 —— 于是 OnePage 的画布一旦比面板高，下半部分直接被裁掉
    且**滚不到**。这里与首页同款放开（手机档见下方 overflow:auto），滚动交给窗口/内容层。 */
+/* 兜底（2026-10-15）：面板的画布类由 JS 传（TabHost），一旦漏传就会吃到基线 overflow:hidden 把画布裁掉
+   —— 那次事故就是这么发生的。这里再加一条**不依赖传类**的判据：面板里装着 OnePage 画布内容时，
+   同样按"有界可滚"处理。 */
+.explorer-panel:has(> .explorer-content.is-onepage-canvas) {
+  overflow: auto;
+  overscroll-behavior: contain;
+  max-height: 100dvh;
+}
 .explorer-panel.is-onepage-canvas {
   /* 2026-10-15（用户截图实测「下半部分截断」，卡片底部是**被硬切的方角**）：
      只有 `overflow:auto` 不够 —— 面板在 shell 网格里是 auto 行、会被内容**撑高**，

@@ -991,7 +991,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 function useOnePageLayoutProbe(boardKey: string | null | undefined): void {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
-    const t = window.setTimeout(() => {
+    /* 定时上报（2026-10-15 临时）：fast-refresh 不重跑 mount effect、用户也不一定切板，
+       所以每 5s 报一次，保证我拿得到修后的真快照。取证完连同本探针一起删。 */
+    const tick = window.setInterval(() => {
       const canvas = document.querySelector<HTMLElement>(".freeboard.is-page") ?? document.querySelector<HTMLElement>(".freeboard");
       if (!canvas) return;
       const chain: string[] = [];
@@ -1006,13 +1008,22 @@ function useOnePageLayoutProbe(boardKey: string | null | undefined): void {
       const line = `[onepage-layout] win=${innerWidth}x${innerHeight} items=${items.length} maxItemBottom=${Math.round(maxBottom)} | ` + chain.join(" <- ");
       void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
     }, 900);
-    return () => window.clearTimeout(t);
+    const t = tick;
+    const iv = window.setInterval(() => {
+      const c = document.querySelector<HTMLElement>(".freeboard.is-page");
+      const pn = document.querySelector<HTMLElement>(".explorer-panel");
+      if (!c || !pn) return;
+      const cs = getComputedStyle(pn);
+      const line = `[onepage-layout] tick win=${innerWidth}x${innerHeight} panel[h=${Math.round(pn.getBoundingClientRect().height)} ch=${pn.clientHeight} sh=${pn.scrollHeight} oy=${cs.overflowY} maxH=${cs.maxHeight} cls="${pn.className}"] canvas[h=${Math.round(c.getBoundingClientRect().height)} sh=${c.scrollHeight}]`;
+      void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
+    }, 5000);
+    return () => { window.clearTimeout(t); window.clearInterval(iv); };
   }, [boardKey]);
 }
 
 export function OnePageSurface(): ReactNode {
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
-  useOnePageLayoutProbe(doc.activeBoardId); // 临时探针（仅 dev）：跟随当前板重新测量
+  useOnePageLayoutProbe(doc.activeBoardId); // 临时探针（仅 dev）：定时上报，见函数头注释
   /* OneGO / 收藏星 / 星标在别处改了板文档 → 重读（否则刚新建的 OnePage 打不开） */
   useEffect(() => {
     const on = (): void => setDoc(loadBoard());

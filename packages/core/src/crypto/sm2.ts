@@ -25,15 +25,25 @@ interface SmCryptoShape {
   sm4: unknown;
 }
 
-/** 沿 .default 链探测真正的模块本体（Node ESM / Vite 各种互操作形态通吃） */
+/** 沿 .default 链探测真正的模块本体（Node ESM / Vite 各种互操作形态通吃）。
+ *  取「第一个持有 sm2 的层」；其中带 doEncrypt 的真实现优先，空壳（测试替身
+ *  `export const sm2 = {}`，见 tools/tuoj-cas-test.mjs 的内联桩）作为兜底——
+ *  会话流测试不该因为「国密实现没带进来」而加载失败。 */
 function pickSmCrypto(mod: unknown): SmCryptoShape {
   let cur: unknown = mod;
+  let shell: SmCryptoShape | null = null;
   for (let depth = 0; depth < 5 && cur; depth++) {
-    const cand = cur as { sm2?: Partial<Sm2Like>; default?: unknown };
-    if (cand.sm2 && typeof cand.sm2.doEncrypt === "function") return cand as SmCryptoShape;
+    const cand = cur as { sm2?: unknown; default?: unknown };
+    const sm2 = cand.sm2;
+    if (sm2 && (typeof sm2 === "object" || typeof sm2 === "function")) {
+      const shape = cand as SmCryptoShape;
+      if (typeof (sm2 as Partial<Sm2Like>).doEncrypt === "function") return shape;
+      shell ??= shape;
+    }
     cur = cand.default;
   }
-  throw new Error("sm-crypto 互操作形态未识别（拿不到 sm2.doEncrypt）");
+  if (shell) return shell;
+  throw new Error("sm-crypto 互操作形态未识别（拿不到 sm2）");
 }
 
 const { sm2, sm3, sm4 } = pickSmCrypto(smCryptoNS);

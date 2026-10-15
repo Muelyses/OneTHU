@@ -84,7 +84,7 @@ export function XiaodaPage(): ReactNode {
       {phase === "boot" || phase === "logging" ? <LoadingBlock rows={4} /> : null}
       {phase === "error" ? (
         <EmptyState
-          title="登录失败"
+          title="登录失败，请点下方重试"
           hint={bootErr}
           action={
             <Btn variant="outline" onClick={boot}>
@@ -191,7 +191,7 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
         {msgs.length === 0 ? (
           <EmptyState
             title="开始对话"
-            hint="选好智能体直接发消息；对话端点只认广场（UAP）已注册的智能体，服务端错误会原文显示"
+            hint="选好智能体直接发消息；若提示不可用，请到「智能体」页换一个再试"
           />
         ) : (
           <List divided>
@@ -207,7 +207,7 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
         )}
       </SectionCard>
       {chatErr ? (
-        <Banner tone="error" title="对话失败">
+        <Banner tone="error" title="对话失败，可重发消息或换智能体重试">
           {chatErr}
         </Banner>
       ) : null}
@@ -273,9 +273,16 @@ function HistoryTab(): ReactNode {
   return (
     <SectionCard title="对话历史" sub={total ? `共 ${total} 条` : undefined}>
       {err ? (
-        <Banner tone="error" title="历史加载失败">
-          {err}
-        </Banner>
+        <Stack gap={3}>
+          <Banner tone="error" title="历史加载失败，请点重试">
+            {err}
+          </Banner>
+          <Inline gap={2}>
+            <Btn variant="outline" onClick={() => void load(1)}>
+              重试
+            </Btn>
+          </Inline>
+        </Stack>
       ) : null}
       {items === null && !err ? <LoadingBlock rows={5} /> : null}
       {items !== null && items.length === 0 && !err ? <EmptyState title="还没有对话记录" /> : null}
@@ -312,20 +319,32 @@ function HistoryTab(): ReactNode {
 function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
   const [groups, setGroups] = useState<XiaodaAgentGroup[] | null>(null);
   const [err, setErr] = useState("");
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
+    setErr("");
     xiaodaClient
       .builtinGroups()
       .then(setGroups)
-      .catch((e: unknown) => setErr(e instanceof Error ? e.message : String(e)));
-  }, []);
+      .catch((e: unknown) => {
+        setGroups(null);
+        setErr(e instanceof Error ? e.message : String(e));
+      });
+  }, [reload]);
 
   return (
     <Stack gap={6}>
       {err ? (
-        <Banner tone="error" title="智能体加载失败">
-          {err}
-        </Banner>
+        <Stack gap={3}>
+          <Banner tone="error" title="智能体加载失败，请点重试">
+            {err}
+          </Banner>
+          <Inline gap={2}>
+            <Btn variant="outline" onClick={() => setReload((n) => n + 1)}>
+              重试
+            </Btn>
+          </Inline>
+        </Stack>
       ) : null}
       {groups === null && !err ? <LoadingBlock rows={5} /> : null}
       {groups !== null && groups.length === 0 && !err ? <EmptyState title="暂无智能体分组" /> : null}
@@ -408,9 +427,16 @@ function SkillsTab(): ReactNode {
       ) : null}
       <SectionCard title="技能广场" sub={total ? `共 ${total} 个` : undefined}>
         {err ? (
-          <Banner tone="error" title="技能加载失败">
-            {err}
-          </Banner>
+          <Stack gap={3}>
+            <Banner tone="error" title="技能加载失败，请点重试">
+              {err}
+            </Banner>
+            <Inline gap={2}>
+              <Btn variant="outline" onClick={() => void load(1)}>
+                重试
+              </Btn>
+            </Inline>
+          </Stack>
         ) : null}
         {items.length === 0 && !err ? <LoadingBlock rows={5} /> : null}
         {items.length > 0 ? (

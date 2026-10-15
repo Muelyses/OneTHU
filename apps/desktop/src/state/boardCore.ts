@@ -462,6 +462,8 @@ export interface BoardPxItem {
   opacity?: number;
   /** 位置锁定（自由画布上=挡拖动/缩放；面板上的「钉」） */
   pinned?: boolean;
+  /** 用户手动定过尺寸（拖动/四角缩放写过 rect）——「按内容拟合」必须跳过它，否则会跟用户打架 */
+  manual?: boolean;
 }
 
 export function rectHit(a: BoardRect, b: BoardRect): boolean {
@@ -474,6 +476,7 @@ export function toPxItem(item: BoardItem): BoardPxItem {
   if (item.folded === true) out.folded = true;
   if (typeof item.opacity === "number") out.opacity = item.opacity;
   if (item.pinned === true) out.pinned = true;
+  if (item.manual === true) out.manual = true;
   return out;
 }
 
@@ -514,6 +517,20 @@ export function resizePx(items: readonly BoardItem[], id: string, rect: BoardRec
     const r = rectOf(it);
     const next = withRect(it, { ...r, ...rect }, cols);
     return next.rect && sameRect(next.rect, r) ? it : next;
+  });
+}
+
+/**
+ * **按内容拟合**（2026-10-15 补：旧白板有、新画布一直缺 —— 用户报「不稳定，很多时候还会截断」）：
+ * 只把高度长到需要值（只长不缩，避开抖动）。**不置 `manual`**（那是"用户定过尺寸"的语义，
+ * 拟合是程序行为，置了它下次内容再长就没人管了）、**不动 `cell`**（契约层坐标只由用户动作同步）。
+ */
+export function fitHeightPx(items: readonly BoardItem[], id: string, h: number): BoardItem[] | null {
+  return patchPx(items, id, (it) => {
+    const r = rectOf(it);
+    const want = Math.max(RECT_MIN_H, Math.round(h));
+    if (want <= r.h + 2) return it;
+    return { ...it, rect: { ...r, h: want } };
   });
 }
 
@@ -659,4 +676,4 @@ export function mergeLegacyPx(legacy: readonly BoardPxItem[], existing: readonly
   return out;
 }
 
-/* 取数触发点 v4（2026-10-15 临时）：改本文件会触发整页 reload —— 取证后随探针一起删。 */
+/* 取数触发点 v5（2026-10-15 临时）：改本文件会触发整页 reload —— 取证后随探针一起删。 */

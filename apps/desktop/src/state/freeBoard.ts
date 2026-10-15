@@ -15,32 +15,7 @@
  * （`plugins/facade.ts` 直接读写 `cell.{x,y,w,h}`），所以自由画布上摆过的东西，插件那边看到的
  * 坐标也是对的——两套坐标从此不会各说各话（这正是之前"两套数据不同源"的病根）。
  */
-import {
-  SYSTEM_BOARD_ID,
-  RECT_MIN_H,
-  RECT_MIN_W,
-  appendPx,
-  bringToFrontPx,
-  cellsOf,
-  foldPx,
-  mergeLegacyPx,
-  movePx,
-  opacityPx,
-  parseLegacyFreeBoard,
-  pinPx,
-  propsPx,
-  raiseAboveOverlappingPx,
-  removePx,
-  resizePx,
-  systemBoard,
-  toPxItems,
-  type BoardDoc,
-  type BoardItem,
-  type BoardPxItem,
-  type BoardRect,
-  type Orientation,
-  type WidgetSpec,
-} from "./boardCore.js";
+import { RECT_MIN_H, RECT_MIN_W, SYSTEM_BOARD_ID, appendPx, bringToFrontPx, cellsOf, fitHeightPx, foldPx, mergeLegacyPx, movePx, opacityPx, parseLegacyFreeBoard, pinPx, propsPx, raiseAboveOverlappingPx, removePx, resizePx, systemBoard, toPxItems, type BoardDoc, type BoardItem, type BoardPxItem, type BoardRect, type Orientation, type WidgetSpec } from "./boardCore.js";
 import { replaceCells } from "./boardEdit.js";
 import { BOARD_KEY, loadBoard, saveBoard } from "./board.js";
 import { notifyBoardsChanged } from "./onePage.js";
@@ -215,6 +190,10 @@ export function freeBoardOps(boardId: string = HOME_BOARD_ID, orientation: Orien
     },
     resize: (id: string, rect: BoardRect): void => {
       editPx(boardId, orientation, (items) => resizePx(items, id, rect));
+    },
+    /** 按内容拟合（只长高；与用户拖动区分：这条不置 manual） */
+    fitHeight: (id: string, h: number): void => {
+      editPx(boardId, orientation, (items) => fitHeightPx(items, id, h));
     },
     fold: (id: string, folded: boolean): void => {
       editPx(boardId, orientation, (items) => foldPx(items, id, folded));

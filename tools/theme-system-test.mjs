@@ -95,6 +95,14 @@ for (const t of themes) {
 T.deactivateTheme();
 assert.equal(themeStyle(), "", "回到基础令牌时必须清空注入样式");
 
+/* 桥的取色来源必须「直取主题定义」而不是读 DOM 变量：onegui-bridge.css 用
+   html:root:not([data-og-skin])（0,2,1）把 --accent / --md-sys-color-secondary 都重指成
+   var(--og-accent…)，压过主题注入层 :root[data-theme]（0,2,0）——读变量＝读自己的输出，
+   表现就是「换什么主题都是默认蓝」（2026-10-15 用户实测 + 无头 Chrome 级联复现）。 */
+const BRIDGE = readFileSync("apps/desktop/src/lib/oneguiBridge.ts", "utf8");
+assert.ok(/activeThemeAccent/.test(BRIDGE), "桥没有从主题定义直取强调色（会自我吞噬成默认蓝）");
+assert.ok(!/themeId && themeId !== "onethu\.theme\.ivory"\) \{\s*accent = getComputedStyle/.test(BRIDGE), "主题分支又在读 DOM 变量了");
+
 console.log(
   "主题×System 护栏：镜像表 " +
     Object.keys(COMPAT_TO_SYSTEM).length +

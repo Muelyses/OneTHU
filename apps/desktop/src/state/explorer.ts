@@ -90,7 +90,7 @@ const listeners = new Set<() => void>();
 const KNOWN_PAGES: ReadonlySet<string> = new Set([
   "homepage", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life",
   "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs",
-  "boards", "board",
+  "boards", "board", "xiaoda",
 ]);
 
 function loadStore(): ExplorerState {
@@ -227,6 +227,7 @@ const PAGE_TITLES: Partial<Record<Page, string>> = {
   tasks: "待办",
   services: "服务",
   favs: "收藏",
+  xiaoda: "清小搭",
 };
 
 /** 聚合页栏目的中文短名（tab 可深链到具体栏目：信息-新闻，但主题仍是信息） */

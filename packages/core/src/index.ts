@@ -202,6 +202,10 @@ export { VenueClient, VenueAuthRequiredError, VenueApiError, VENUE_BASE, fmtVenu
 export { md5hex, buildVenueSign, venueSignQuery, VENUE_APP_ID, VENUE_SIGN_KEY } from "./venue/sign.js";
 export type { VenueBuilding, VenueDevKind, VenueSameLevel, VenueScene, VenueSession, VenueSite, VenueRecord, VenueUser } from "./venue/types.js";
 
+/* 清小搭（xiaoda.tsinghua.edu.cn 校园 AI 学伴）—— ITS 直连完整登录 + token 头鉴权（实验性） */
+export { XiaodaClient, XiaodaApiError, XiaodaAuthRequiredError, XiaodaLoginError, XIAODA_BASE, xiaodaTokenExpiresAt } from "./xiaoda/client.js";
+export type { XiaodaUser, XiaodaAgentGroup, XiaodaAgentMember, XiaodaSkillCategory, XiaodaSkillItem, XiaodaSkillOverview, XiaodaConversation, XiaodaModel, XiaodaDadouBalance, XiaodaFetch } from "./xiaoda/client.js";
+
 /* 外部作业源（雨课堂 / TUOJ 系 / Tyche / DSA OJ）—— 只读拉取，凭据由宿主注入 */
 export * as exthw from "./exthw/index.js";
 export { createExternalSources, refreshExternalHomework, SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES, yuketangSendSmsCode, yuketangVerifyLogin, tuojLogin, tuojRoam, TuojCasError, isTuojNoCoursesError, TuojSessionError, isTuojSessionError, TUOJ_CLASSIC_BASE, dsaLogin, DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, DSA_BASE, tycheLogin, captureCookies, yuketangBuildCookie, yuketangQrStart, yuketangQrPoll, runYuketangQrLogin, yuketangCookieFromHeader, createYuketangSource, yktStudentLeafUrl, TycheSessionError, isTycheSessionError, YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } from "./exthw/index.js";

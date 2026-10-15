@@ -26,6 +26,7 @@ import { MailPage } from "../../pages/MailPage.js";
 import CloudPage from "../../pages/CloudPage.js";
 import GitLabPage from "../../pages/GitLabPage.js";
 import ThubookPage from "../../pages/ThubookPage.js";
+import { XiaodaPage } from "../../pages/xiaoda/XiaodaPage.js";
 import { TracePage } from "../../pages/Trace.js";
 import { SettingsPage } from "../../pages/Settings.js";
 import { PluginsPage } from "../../pages/Plugins.js";
@@ -117,6 +118,8 @@ export function renderPage(page: Page): ReactNode {
       return <GitLabPage />;
     case "thubook":
       return <ThubookPage />;
+    case "xiaoda":
+      return <XiaodaPage />;
     case "trace":
       return <TracePage />;
     case "otherinfo":

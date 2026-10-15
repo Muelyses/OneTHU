@@ -20,6 +20,7 @@ export type Page =
   | "cloud" // 清华云盘（Seafile Web API）
   | "gitlab" // 清华 GitLab（git.tsinghua.edu.cn REST API v4）
   | "thubook" // THUbook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
+  | "xiaoda" // 清小搭（校园 AI 学伴；实验性第三方复刻页，纯 OneGUI）
   | "folder" // 用户收藏夹页（navParams.folderId 指向具体收藏夹）
   | "tasks" // 待办聚合页（UI/UX 改造 §2.2 M1：作业+预约+考试+余额的"今天该管的事"）
   | "services" // 服务分组目录页（UI/UX 改造 §2.2 M1：底部导航「服务」直达）
@@ -138,7 +139,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "xiaoda", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /**
  * R20-B2：雨课堂作业原生详情页参数。

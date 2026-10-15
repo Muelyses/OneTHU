@@ -29,8 +29,10 @@ type AgentInfo = { id: string; name: string; group?: string; icon?: string };
 /** 平台默认助手 = 清小搭本体（路由缺省值，界面不展示编号） */
 const DEFAULT_AGENT_ID = "9999";
 const DEFAULT_AGENT_NAME = "清小搭";
-/** 页面脚注：诚实标注这是 OneTHU 的接入界面，不是学校原版页面 */
-const PAGE_NOTE = "清小搭由学校提供，回答仅供参考；本页是 OneTHU 的接入界面。";
+/** 页面脚注（用户指定口径 + 来源标注）：实验定位与能力边界必须写在对话框里。
+ *  拆两行是护栏要求（单条说明 ≤42 字），语义完整未删减。 */
+const PAGE_NOTE = "清小搭功能仅供实验与参考，无法取代 OneTHU Harness。";
+const PAGE_NOTE_2 = "它也无法调度 OH 功能；本页是 OneTHU 的接入界面。";
 
 const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
@@ -382,6 +384,9 @@ function ChatTab({
           </Inline>
           <Text slot="micro" tone="faint">
             {PAGE_NOTE}
+          </Text>
+          <Text slot="micro" tone="faint">
+            {PAGE_NOTE_2}
           </Text>
         </Stack>
       </Card>

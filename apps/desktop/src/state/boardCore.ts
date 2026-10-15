@@ -1,4 +1,5 @@
 import { ensureNoOverlap } from "./boardReflow.js";
+import { FIT_DEAD_ZONE } from "./boardFit.js";
 /**
  * 白板文档核心（纯逻辑 + 依赖注入，不依赖任何视图模块）。
  *
@@ -77,8 +78,11 @@ export interface BoardCell { x: number; y: number; w: number; h: number }
 export interface BoardRect { x: number; y: number; w: number; h: number }
 
 export interface BoardItem {
-  /** 用户手动设过尺寸：拟合（按内容自动调高矮）必须跳过它，否则退出编辑态就被改回去。 */
+  /** 用户手动设过尺寸：拟合（按内容自动调高矮）必须**让着它** —— 只补排版税级的缺口，别跟用户打架。 */
   manual?: boolean;
+  /** 这个高度是**程序按内容拟合**出来的：内容再变（课表回来、名单多一行）继续由拟合负责，
+      不受 `manual` 的缺口限制。用户一旦自己拖动/缩放（`withRect`）就交回控制权 —— 清掉它。 */
+  fitted?: boolean;
   id: string;
   spec: WidgetSpec;
   cell: BoardCell;
@@ -206,7 +210,9 @@ export function withRect(item: BoardItem, rect: BoardRect, cols: number = BOARD_
     w: Math.max(RECT_MIN_W, Math.round(rect.w)),
     h: Math.max(RECT_MIN_H, Math.round(rect.h)),
   };
-  return { ...item, rect: fixed, cell: cellFromRect(fixed, cols), manual: true };
+  /* 用户接管尺寸：记 `manual`，并**清掉 `fitted`** —— 拟合把高度当自己的责任，用户一动手就该交权，
+     否则下次内容变长又会自动撑开，跟用户的意图打架。 */
+  return { ...item, rect: fixed, cell: cellFromRect(fixed, cols), manual: true, fitted: undefined };
 }
 
 /** 由 px 矩形直接造一个板条目（迁移/新增共用；cell 同步派生，见 withRect 的坐标口径）。 */
@@ -381,7 +387,7 @@ export function purgeGridResidue(doc: BoardDoc): BoardDoc {
            而 cell 是插件/OH 的**契约层**（`ext.onePageAddItem` 写它、`ext.onePageItems` 读它，
            口径是"写什么读回什么"）。给视觉补 px 却改写契约坐标，会让插件下次读到自己没写过的格子
            （oh-wire 的不重叠守栏当场抓到三条反例：契约口径、只写 cell 的路、落库与预览一致）。
-           所以：只补 `rect`（视觉）+ `manual`（别被自适应拟合改掉），**cell 原样保留**；
+           所以：只补 `rect`（视觉），**cell 原样保留**、`manual` 也不置（见下）；
            用户一旦拖动/缩放，仍走 withRect 把两边同步回一致 —— 那一刻的"用户意图"才是权威。 */
         /* ⚠️ 不要置 manual：manual 的语义是"**用户**定过尺寸，别再按内容拟合"，
            而这尺寸是我们按网格算的。置了它，条目就永远停在网格派生的高度上 ——
@@ -462,8 +468,10 @@ export interface BoardPxItem {
   opacity?: number;
   /** 位置锁定（自由画布上=挡拖动/缩放；面板上的「钉」） */
   pinned?: boolean;
-  /** 用户手动定过尺寸（拖动/四角缩放写过 rect）——「按内容拟合」必须跳过它，否则会跟用户打架 */
+  /** 用户手动定过尺寸（拖动/四角缩放写过 rect）——「按内容拟合」必须**让着它**（只补排版税级的缺口） */
   manual?: boolean;
+  /** 高度由程序按内容拟合（见 BoardItem.fitted） */
+  fitted?: boolean;
 }
 
 export function rectHit(a: BoardRect, b: BoardRect): boolean {
@@ -477,6 +485,7 @@ export function toPxItem(item: BoardItem): BoardPxItem {
   if (typeof item.opacity === "number") out.opacity = item.opacity;
   if (item.pinned === true) out.pinned = true;
   if (item.manual === true) out.manual = true;
+  if (item.fitted === true) out.fitted = true;
   return out;
 }
 
@@ -523,14 +532,15 @@ export function resizePx(items: readonly BoardItem[], id: string, rect: BoardRec
 /**
  * **按内容拟合**（2026-10-15 补：旧白板有、新画布一直缺 —— 用户报「不稳定，很多时候还会截断」）：
  * 只把高度长到需要值（只长不缩，避开抖动）。**不置 `manual`**（那是"用户定过尺寸"的语义，
- * 拟合是程序行为，置了它下次内容再长就没人管了）、**不动 `cell`**（契约层坐标只由用户动作同步）。
+ * 拟合是程序行为，置了它下次内容再长就没人管了）、**置 `fitted`**（声明这份高度由拟合负责，
+ * 下一次内容再长还归它管，见 FitOpts）、**不动 `cell`**（契约层坐标只由用户动作同步）。
  */
 export function fitHeightPx(items: readonly BoardItem[], id: string, h: number): BoardItem[] | null {
   return patchPx(items, id, (it) => {
     const r = rectOf(it);
     const want = Math.max(RECT_MIN_H, Math.round(h));
-    if (want <= r.h + 2) return it;
-    return { ...it, rect: { ...r, h: want } };
+    if (want <= r.h + FIT_DEAD_ZONE) return it;
+    return { ...it, rect: { ...r, h: want }, fitted: true };
   });
 }
 
@@ -676,4 +686,3 @@ export function mergeLegacyPx(legacy: readonly BoardPxItem[], existing: readonly
   return out;
 }
 
-/* 取数触发点 v5（2026-10-15 临时）：改本文件会触发整页 reload —— 取证后随探针一起删。 */

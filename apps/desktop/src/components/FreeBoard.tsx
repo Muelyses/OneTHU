@@ -58,6 +58,7 @@ import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
 import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
 import { useLearnData } from "../state/data.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
+import { fitTarget } from "../state/boardFit.js";
 
 const DRAG_THRESHOLD = 4;
 /** 长按出菜单（与全站口径一致：ContextMenu 的 LONG_PRESS_MS 同为 500）。 */
@@ -360,40 +361,63 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     el.style.minHeight = bottom > base ? `${bottom}px` : "";
   }, [items]);
 
-  /* 按内容拟合 v2（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
-     第一版挂在 [items] 上：只在条目数组变化时量一次 —— 而**卡片内容是异步长的**（课表数据回来、
-     名单变长、换课表窗口），量早了就漏，于是"有时好有时坏"。改为用 **ResizeObserver 盯住每张卡**：
-     卡片内容一变就重新量，比盒高就长高。
-     口径：只长不缩（避免抖动/来回写盘）、差值 ≤2px 不动、folded 跳过（折叠态本来更小）、
-     写入口 `ops.fitHeight` 不置 manual（拟合是程序行为）也不动 cell（契约层只随用户动作同步）。 */
+  /* 按内容拟合 v3（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
+     量体目标 = 条目盒的**直接子元素**（CSS `.free-item > :first-child { overflow:auto }` 就是它，
+     card/custom 类外面还多套了一层 .wg-card，也就是它）——它的 scrollHeight 才是内容的自然高。
+     谁触发重量（两路都要，单靠一路必漏）：
+       ① ResizeObserver 盯住条目盒与卡体 —— 盖窗口缩放、面板显隐（隐藏面板 h=0，显出来那次会回调）、换档位；
+       ② MutationObserver 盯住画布子树 —— 盖"盒子没变、内容变了"：课表/名单/余额异步回来、列表多一行。
+          这一路是 「有时好有时坏」的真原因：ResizeObserver 只在**盒子尺寸**变化时回调，scrollHeight 变了
+          它不响，所以第一版只能靠挂载那一次量到静止态。
+     两路都用 rAF 合并，一秒内多次变化只量一次。口径：只长不缩（避免抖动与来回写盘）、差值 ≤2px 不动、
+     folded 跳过（折叠态本来更小，不该被撑开）、写入口 `ops.fitHeight` 不置 manual（拟合是程序行为，
+     不是用户动作）也不动 cell（契约层只随用户动作同步）。 */
   useLayoutEffect(() => {
     const host = hostRef.current;
     if (!host) return;
+    const cardOf = (el: HTMLElement): HTMLElement | null => {
+      const wg = el.querySelector<HTMLElement>(":scope > .wg-card");
+      if (wg) return wg;
+      const first = el.firstElementChild;
+      return first instanceof HTMLElement ? first : null;
+    };
     const fits = new Map<string, number>(); // 上一次拟合值，防同一数值反复写盘
     const measure = (): void => {
       for (const it of items) {
         if (it.folded) continue;
         const el = host.querySelector<HTMLElement>('[data-item-id="' + it.id + '"]');
-        const card = el?.querySelector<HTMLElement>(".wg-card");
+        const card = el && cardOf(el);
         if (!el || !card) continue;
-        const need = card.scrollHeight + 2; // 卡片内容自然高 + 自身 1px 描边
-        if (need <= it.h + 2) continue;
-        if (fits.get(it.id) === Math.round(need)) continue; // 已经为这个高度拟合过
-        /* 用户手动定过尺寸的条目：**不自动长高**（尊重用户），但要保证卡内可滚而不是硬切 ——
-           由 CSS 的 .free-item .wg-card > * { overflow:auto } 兜住。 */
-        if (it.manual) continue;
-        fits.set(it.id, Math.round(need));
-        ops.fitHeight(it.id, need);
+        const contentH = card.scrollHeight; // 内容的自然高（卡片自己就是滚动体，见 CSS）
+        const target = fitTarget(it.h, contentH, { manual: it.manual, fitted: it.fitted });
+        if (target === null) continue;
+        if (fits.get(it.id) === Math.round(target)) continue; // 已经为这个高度拟合过
+        fits.set(it.id, Math.round(target));
+        ops.fitHeight(it.id, target);
       }
     };
+    let raf = 0;
+    const schedule = (): void => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        measure();
+      });
+    };
     measure();
-    const ro = new ResizeObserver(() => measure());
+    const ro = new ResizeObserver(schedule);
     for (const el of host.querySelectorAll<HTMLElement>("[data-item-id]")) {
-      const card = el.querySelector<HTMLElement>(".wg-card");
-      if (card) ro.observe(card);
       ro.observe(el);
+      const card = cardOf(el);
+      if (card) ro.observe(card);
     }
-    return () => ro.disconnect();
+    const mo = new MutationObserver(schedule);
+    mo.observe(host, { childList: true, subtree: true, characterData: true });
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      ro.disconnect();
+      mo.disconnect();
+    };
   }, [items, ops]);
 
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
@@ -669,6 +693,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               data-item={it.spec.kind}
               data-size={plan.size.w + "x" + plan.size.h}
               data-manual={it.manual ? "1" : undefined}
+              data-fitted={it.fitted ? "1" : undefined}
               data-folded={it.folded ? "1" : undefined}
               className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
               style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
@@ -1044,7 +1069,7 @@ function useOnePageLayoutProbe(_boardKey: string | null | undefined): void {
         const inner = it.querySelector<HTMLElement>(".wg-card") ?? it.firstElementChild;
         const ish = inner ? inner.scrollHeight : 0;
         const ih = inner ? Math.round(inner.getBoundingClientRect().height) : 0;
-        const flags = (it.dataset.manual === "1" ? "M" : "") + (it.dataset.folded === "1" ? "F" : "");
+        const flags = (it.dataset.manual === "1" ? "M" : "") + (it.dataset.fitted === "1" ? "C" : "") + (it.dataset.folded === "1" ? "F" : "");
         return `${it.dataset.itemId ?? "?"}[${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)} card=${ih}/${ish}${flags ? " " + flags : ""}${ish > ih + 2 ? "!!CUT" : ""}]`;
       });
       const line = [

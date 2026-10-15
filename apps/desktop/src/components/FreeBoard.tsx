@@ -985,40 +985,38 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
  * 取代已退役的 pages/BoardPage.tsx —— 页面 id 仍是 `board`（深链 #/board/<板 id> 照旧），
  * 画布换成与首页同一块自由白板；「所有 OnePage」入口在页头菜单里（另一条通路是 OneGO）。
  */
-/** 临时几何探针（仅 dev，2026-10-15）：OnePage「下半部分截断」要靠真 app 的高度链定位 ——
- *  合成环境量不出（上次就是被合成结果带偏）。取一次：从画布一路上溯到 html 的每个节点
- *  各自的 clientHeight / scrollHeight / overflowY / 高度，加上最底部条目的位置。 */
-function useOnePageLayoutProbe(boardKey: string | null | undefined): void {
+/** 临时几何探针（仅 dev，2026-10-15，取证后删）：OnePage「截断」要看**真 app** 的逐层数字。
+ *  每 3s 报一条：视口/面板（高、scrollHeight、overflowY、maxHeight、类名）/画布（高、scrollHeight、
+ *  内联 minHeight）/最底部与最顶部条目（含负数）/画笔层 —— 拖完组件我就能立刻知道是哪一层在裁。 */
+function useOnePageLayoutProbe(_boardKey: string | null | undefined): void {
   useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    /* 定时上报（2026-10-15 临时）：fast-refresh 不重跑 mount effect、用户也不一定切板，
-       所以每 5s 报一次，保证我拿得到修后的真快照。取证完连同本探针一起删。 */
-    const tick = window.setInterval(() => {
-      const canvas = document.querySelector<HTMLElement>(".freeboard.is-page") ?? document.querySelector<HTMLElement>(".freeboard");
+    if (!import.meta.env.DEV) return; // 生产不跑
+    const report = (): void => {
+      const canvas = document.querySelector<HTMLElement>(".freeboard");
       if (!canvas) return;
-      const chain: string[] = [];
-      let el: HTMLElement | null = canvas;
-      while (el && el !== document.documentElement.parentElement) {
-        const cs = getComputedStyle(el);
-        chain.push(`${el.tagName.toLowerCase()}.${(el.className || "").toString().split(" ").slice(0, 2).join(".")}[h=${Math.round(el.getBoundingClientRect().height)} ch=${el.clientHeight} sh=${el.scrollHeight} oy=${cs.overflowY}]`);
-        el = el.parentElement;
-      }
-      const items = Array.from(document.querySelectorAll<HTMLElement>(".free-item"));
-      const maxBottom = items.reduce((m, it) => Math.max(m, it.getBoundingClientRect().bottom), 0);
-      const line = `[onepage-layout] win=${innerWidth}x${innerHeight} items=${items.length} maxItemBottom=${Math.round(maxBottom)} | ` + chain.join(" <- ");
+      const panel = document.querySelector<HTMLElement>(".explorer-panel");
+      const pen = canvas.querySelector<HTMLElement>(".board-pen");
+      const items = Array.from(canvas.querySelectorAll<HTMLElement>(".free-item"));
+      const rects = items.map((it) => {
+        const r = it.getBoundingClientRect();
+        return `${it.dataset.itemId ?? "?"}:${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.width)},${Math.round(r.height)}`;
+      });
+      const pcs = panel ? getComputedStyle(panel) : null;
+      const line = [
+        "[onepage-layout]",
+        `win=${innerWidth}x${innerHeight}`,
+        panel ? `panel[h=${Math.round(panel.getBoundingClientRect().height)} ch=${panel.clientHeight} sh=${panel.scrollHeight} oy=${pcs?.overflowY} maxH=${pcs?.maxHeight} top=${Math.round(panel.getBoundingClientRect().top)} cls="${panel.className}"]` : "panel=null",
+        `canvas[h=${Math.round(canvas.getBoundingClientRect().height)} sh=${canvas.scrollHeight} styleMinH="${canvas.style.minHeight || ""}"]`,
+        pen ? `pen[h=${Math.round(pen.getBoundingClientRect().height)} sh=${pen.scrollHeight}]` : "pen=null",
+        `items=${items.length}`,
+        `rects=[${rects.join(" ")}]`,
+      ].join(" ");
       void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
-    }, 900);
-    const t = tick;
-    const iv = window.setInterval(() => {
-      const c = document.querySelector<HTMLElement>(".freeboard.is-page");
-      const pn = document.querySelector<HTMLElement>(".explorer-panel");
-      if (!c || !pn) return;
-      const cs = getComputedStyle(pn);
-      const line = `[onepage-layout] tick win=${innerWidth}x${innerHeight} panel[h=${Math.round(pn.getBoundingClientRect().height)} ch=${pn.clientHeight} sh=${pn.scrollHeight} oy=${cs.overflowY} maxH=${cs.maxHeight} cls="${pn.className}"] canvas[h=${Math.round(c.getBoundingClientRect().height)} sh=${c.scrollHeight}]`;
-      void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
-    }, 5000);
-    return () => { window.clearTimeout(t); window.clearInterval(iv); };
-  }, [boardKey]);
+    };
+    const iv = window.setInterval(report, 3000);
+    report();
+    return () => window.clearInterval(iv);
+  }, []);
 }
 
 export function OnePageSurface(): ReactNode {

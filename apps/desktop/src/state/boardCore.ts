@@ -659,4 +659,4 @@ export function mergeLegacyPx(legacy: readonly BoardPxItem[], existing: readonly
   return out;
 }
 
-/* 取数触发点（2026-10-15 临时）：改本文件会触发整页 reload，让探针重挂 —— 取证后随探针一起删。 */
+/* 取数触发点 v2（2026-10-15 临时）：改本文件会触发整页 reload —— 取证后随探针一起删。 */

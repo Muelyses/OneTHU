@@ -1,34 +1,38 @@
 /**
- * 清小搭（xiaoda.tsinghua.edu.cn 校园 AI 学伴）实验性一级功能页 —— 纯 OneGUI 复刻试验田。
+ * 清小搭（xiaoda.tsinghua.edu.cn 校园 AI 学伴）一级功能页 —— 正式版（2026-10-15）。
  *
- * 复刻范围（简陋版，2026-10-15 实测打通，详见 scripts/xiaoda-probe.mts）：
- * - 聊天：POST /v1/chat/completions（OpenAI 兼容 SSE 流式）。该端点只认 UAP 路由
- *   已注册的智能体（model 须 "agent:<id>"）；默认助手 9999 与内置组成员不在其中时
- *   服务端错误原文透传——实验页的诚实行为，不粉饰。
- * - 对话：GET /api/conversation/create 取 convId → POST /api/chats/ 原生（soda）SSE 流
- *   （/v1/chat/completions 是广场/UAP 接入路由，正常聊天用不到，见 core/xiaoda/client.ts）
- * - 历史：GET /api/conversation/page（convId / query / createTime）。
- * - 智能体：GET /api/group/builtin/list（官方智能体分组与成员；选中即设为对话对象）。
- * - 技能：GET /api/skill/plaza/{overview,categories,list}。
- * 独立自治：自带 ITS 登录链与 token 生命周期（lib/xiaoda.ts），不与其他 OneTHU 功能联动。
- * 样式零旁路：全部 @onethu/gui 组件——无页面 CSS、无内联样式、无裸控件（OneGUI 契约）。
+ * 协议（全部实测定稿，详见 core/xiaoda/client.ts 与 scripts/xiaoda-roam-check.mts）：
+ *  - 对话：GET /api/conversation/create 取对话号 → POST /api/chats/ 原生 SSE 流（逐 token 上屏）；
+ *  - 续聊：GET /api/chats/list?convId=… 读回历史消息，沿用同一对话号即可继续；
+ *  - 历史：GET /api/conversation/page；智能体：GET /api/group/builtin/list；技能：GET /api/skill/plaza/*。
+ * 自带 ITS 登录链与登录状态生命周期（lib/xiaoda.ts），不与其他 OneTHU 功能联动。
+ * 样式零旁路：全部 @onethu/gui 组件 —— 无页面 CSS、无内联样式、无裸控件（OneGUI 契约）。
+ * 用户侧永不出现智能体编号（9999 / 18xxx 只是内部标识，界面一律用名字）。
  */
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Avatar, Banner, Btn, Card, Chip, DataList, EmptyState, Inline, List, LoadingBlock, Page,
-  Row, SectionCard, Select, Stack, StatTile, Tabs, Tag, TextArea,
+  Row, SectionCard, Select, Spinner, Stack, StatTile, Surface, Tabs, Text, TextArea,
 } from "@onethu/gui";
 import type {
-  XiaodaAgentGroup, XiaodaConversation, XiaodaModel, XiaodaSkillCategory, XiaodaSkillItem,
-  XiaodaSkillOverview, XiaodaUser,
+  XiaodaAgentGroup, XiaodaChatMessage, XiaodaConversation, XiaodaModel, XiaodaSkillCategory,
+  XiaodaSkillItem, XiaodaSkillOverview, XiaodaUser,
 } from "@onethu/core";
 import { xiaodaClient, xiaodaEnsureLogin } from "../../lib/xiaoda.js";
 
 type Tab = "chat" | "history" | "agents" | "skills";
-type ChatMsg = { role: "user" | "assistant"; content: string };
+/** 当前打开的对话（历史点开，或首次发送时新建） */
+type ActiveChat = { convId: string; agentId: string };
+/** 智能体名录条目（用户侧只认 name） */
+type AgentInfo = { id: string; name: string; group?: string; icon?: string };
 
-/** SPA 同款默认智能体（chat/:convId/:agentId? 路由缺省值） */
+/** 平台默认助手 = 清小搭本体（路由缺省值，界面不展示编号） */
 const DEFAULT_AGENT_ID = "9999";
+const DEFAULT_AGENT_NAME = "清小搭";
+/** 页面脚注：诚实标注这是 OneTHU 的接入界面，不是学校原版页面 */
+const PAGE_NOTE = "清小搭由学校提供，回答仅供参考；本页是 OneTHU 的接入界面。";
+
+const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 function fmtTime(v: string | number | undefined): string {
   if (v === undefined || v === null || v === "") return "";
@@ -38,12 +42,38 @@ function fmtTime(v: string | number | undefined): string {
   return String(v);
 }
 
+/** 智能体名录：id → 名字/图标（分组名只用于下拉里的区分） */
+function useAgentDirectory(): { agents: AgentInfo[]; infoOf: (id: string) => AgentInfo } {
+  const [groups, setGroups] = useState<XiaodaAgentGroup[] | null>(null);
+  useEffect(() => {
+    xiaodaClient
+      .builtinGroups()
+      .then(setGroups)
+      .catch(() => setGroups([]));
+  }, []);
+  const agents = useMemo<AgentInfo[]>(() => {
+    const all: AgentInfo[] = [{ id: DEFAULT_AGENT_ID, name: DEFAULT_AGENT_NAME }];
+    for (const g of groups ?? []) {
+      for (const m of g.members ?? []) all.push({ id: m.uniqueId, name: m.name, group: g.name, icon: m.icon });
+    }
+    return all;
+  }, [groups]);
+  const infoOf = useCallback(
+    (id: string): AgentInfo =>
+      agents.find((a) => a.id === id) ?? { id, name: id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME : "智能体" },
+    [agents],
+  );
+  return { agents, infoOf };
+}
+
 export function XiaodaPage(): ReactNode {
   const [phase, setPhase] = useState<"boot" | "logging" | "ready" | "error">("boot");
   const [bootErr, setBootErr] = useState("");
   const [me, setMe] = useState<XiaodaUser | null>(null);
   const [tab, setTab] = useState<Tab>("chat");
   const [agentId, setAgentId] = useState(DEFAULT_AGENT_ID);
+  const [active, setActive] = useState<ActiveChat | null>(null);
+  const { agents, infoOf } = useAgentDirectory();
 
   const boot = useCallback(() => {
     setPhase("logging");
@@ -54,17 +84,33 @@ export function XiaodaPage(): ReactNode {
         setPhase("ready");
       })
       .catch((e: unknown) => {
-        setBootErr(e instanceof Error ? e.message : String(e));
+        setBootErr(errText(e));
         setPhase("error");
       });
   }, []);
   useEffect(boot, [boot]);
 
+  /** 开一段新对话（换智能体也从这里走：新对话才换对象） */
+  const startNew = useCallback((nextAgent?: string) => {
+    setActive(null);
+    if (nextAgent) setAgentId(nextAgent);
+    setTab("chat");
+  }, []);
+
+  /** 接着历史继续聊：载入该对话的消息，沿用同一对话号 */
+  const openHistory = useCallback((c: XiaodaConversation) => {
+    const aid = c.agentId || DEFAULT_AGENT_ID;
+    setAgentId(aid);
+    setActive({ convId: c.convId, agentId: aid });
+    setTab("chat");
+  }, []);
+
+  const who = me ? (me.zjh ? `${me.name} · ${me.zjh}` : me.name) : "校园 AI 学伴";
+
   return (
     <Page
       title="清小搭"
-      sub={me ? `${me.name} · ${me.zjh}` : "校园 AI 学伴（实验性复刻）"}
-      meta={<Tag tone="warning">实验</Tag>}
+      sub={who}
       actions={
         <Btn size="sm" variant="outline" onClick={boot}>
           重新登录
@@ -75,7 +121,7 @@ export function XiaodaPage(): ReactNode {
           value={tab}
           onChange={(v) => setTab(v as Tab)}
           items={[
-            { id: "chat", label: "聊天" },
+            { id: "chat", label: "对话" },
             { id: "history", label: "历史" },
             { id: "agents", label: "智能体" },
             { id: "skills", label: "技能" },
@@ -97,16 +143,20 @@ export function XiaodaPage(): ReactNode {
       ) : null}
       {phase === "ready" ? (
         tab === "chat" ? (
-          <ChatTab me={me} agentId={agentId} onAgentId={setAgentId} />
-        ) : tab === "history" ? (
-          <HistoryTab />
-        ) : tab === "agents" ? (
-          <AgentsTab
-            onPick={(id) => {
-              setAgentId(id);
-              setTab("chat");
-            }}
+          <ChatTab
+            me={me}
+            agentId={agentId}
+            agents={agents}
+            infoOf={infoOf}
+            active={active}
+            onAgentId={setAgentId}
+            onActive={setActive}
+            onNew={startNew}
           />
+        ) : tab === "history" ? (
+          <HistoryTab infoOf={infoOf} onOpen={openHistory} />
+        ) : tab === "agents" ? (
+          <AgentsTab onPick={(id) => startNew(id)} />
         ) : (
           <SkillsTab />
         )
@@ -115,27 +165,36 @@ export function XiaodaPage(): ReactNode {
   );
 }
 
-/* ══════════ 聊天 ══════════ */
+/* ══════════ 对话 ══════════ */
 
-function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: string; onAgentId: (id: string) => void }): ReactNode {
-  const [msgs, setMsgs] = useState<ChatMsg[]>([]);
+function ChatTab({
+  me, agentId, agents, infoOf, active, onAgentId, onActive, onNew,
+}: {
+  me: XiaodaUser | null;
+  agentId: string;
+  agents: AgentInfo[];
+  infoOf: (id: string) => AgentInfo;
+  active: ActiveChat | null;
+  onAgentId: (id: string) => void;
+  onActive: (a: ActiveChat) => void;
+  onNew: () => void;
+}): ReactNode {
+  const [msgs, setMsgs] = useState<XiaodaChatMessage[]>([]);
+  const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [input, setInput] = useState("");
-  const [groups, setGroups] = useState<XiaodaAgentGroup[] | null>(null);
   const [models, setModels] = useState<XiaodaModel[]>([]);
   const [modelId, setModelId] = useState("");
   const [sending, setSending] = useState(false);
   const [chatErr, setChatErr] = useState("");
   const abortRef = useRef<AbortController | null>(null);
-  /** soda 会话号：首次发送时向后端申请，后续消息复用（服务端按 convId 记住上下文） */
   const convIdRef = useRef("");
   /** 本地停止标记：应用内 nativeFetch 忽略 signal，UI 侧用它兜住后续增量 */
   const stopRef = useRef(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  const who = infoOf(agentId);
 
   useEffect(() => {
-    xiaodaClient
-      .builtinGroups()
-      .then(setGroups)
-      .catch(() => undefined);
     xiaodaClient
       .customModels()
       .then((ms) => {
@@ -146,10 +205,42 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
       .catch(() => undefined);
   }, []);
 
+  /* 打开一段对话（含从历史进来）：读回消息，接着聊 */
+  useEffect(() => {
+    const cid = active?.convId ?? "";
+    convIdRef.current = cid;
+    stopRef.current = false;
+    setChatErr("");
+    if (!cid) {
+      setMsgs([]);
+      return;
+    }
+    setLoadingMsgs(true);
+    xiaodaClient
+      .conversationMessages(cid)
+      .then(setMsgs)
+      .catch((e: unknown) => setChatErr(errText(e)))
+      .finally(() => setLoadingMsgs(false));
+  }, [active?.convId]);
+
+  /* 新消息/新内容 → 落到最新处 */
+  const tail = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "nearest" });
+  }, [msgs.length, tail?.content, sending]);
+
   const send = useCallback(async () => {
     const q = input.trim();
     if (!q || sending) return;
-    setMsgs((prev) => [...prev, { role: "user", content: q }, { role: "assistant", content: "" }]);
+    const blank: XiaodaChatMessage = {
+      id: "", role: "assistant", content: "", thinkContent: "",
+      agentId, agentName: who.name, agentIcon: who.icon ?? "",
+    };
+    setMsgs((prev) => [
+      ...prev,
+      { ...blank, role: "user", agentName: me?.name ?? "我", agentIcon: "" },
+      blank,
+    ]);
     setInput("");
     setSending(true);
     setChatErr("");
@@ -157,12 +248,12 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
     const ac = new AbortController();
     abortRef.current = ac;
     try {
-      // ① 首次发送先建会话（GET /api/conversation/create → convId）
       if (!convIdRef.current) {
-        convIdRef.current = await xiaodaClient.createConversation();
-        if (!convIdRef.current) throw new Error("新建对话失败，请点发送重试");
+        const cid = await xiaodaClient.createConversation();
+        if (!cid) throw new Error("新建对话失败，请点发送重试");
+        convIdRef.current = cid;
+        onActive({ convId: cid, agentId });
       }
-      // ② 原生 soda 流：POST /api/chats/（逐 token 增量）
       await xiaodaClient.chatNative({
         agentId,
         query: q,
@@ -179,11 +270,14 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
           });
         },
         onMeta: (m) => {
-          if (m.convId) convIdRef.current = m.convId;
+          if (m.convId && m.convId !== convIdRef.current) {
+            convIdRef.current = m.convId;
+            onActive({ convId: m.convId, agentId });
+          }
         },
       });
     } catch (e) {
-      setChatErr(e instanceof Error ? e.message : String(e));
+      setChatErr(errText(e));
       setMsgs((prev) => {
         const next = [...prev];
         const last = next[next.length - 1];
@@ -194,7 +288,7 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
       setSending(false);
       abortRef.current = null;
     }
-  }, [input, sending, agentId, modelId]);
+  }, [input, sending, agentId, modelId, me?.name, onActive, who.icon, who.name]);
 
   const stop = useCallback(() => {
     stopRef.current = true;
@@ -202,47 +296,66 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
     if (convIdRef.current) void xiaodaClient.stopChat(convIdRef.current);
   }, []);
 
-  const newConv = useCallback(() => {
-    stopRef.current = true;
-    convIdRef.current = "";
-    setMsgs([]);
-    setChatErr("");
-  }, []);
-
-  const agentOptions = [
-    { value: DEFAULT_AGENT_ID, label: `默认助手（${DEFAULT_AGENT_ID}）` },
-    ...(groups ?? []).flatMap((g) =>
-      (g.members ?? []).map((m) => ({ value: m.uniqueId, label: `${g.name} · ${m.name}` })),
-    ),
-  ];
+  const agentOptions = agents.map((a) => ({ value: a.id, label: a.group ? `${a.group} · ${a.name}` : a.name }));
   const modelName = models.find((m) => String(m.id) === modelId)?.name ?? "";
 
   return (
-    <Stack gap={6}>
-      <SectionCard title="对话" sub={modelName ? `平台模型：${modelName}` : undefined}>
-        {msgs.length === 0 ? (
-          <EmptyState
-            title="开始对话"
-            hint="选好智能体直接发消息；若提示不可用，请到「智能体」页换一个再试"
-          />
-        ) : (
-          <List divided>
-            {msgs.map((m, i) => (
-              <Row
-                key={i}
-                leading={<Avatar name={m.role === "user" ? (me?.name ?? "我") : "清小搭"} />}
-                title={m.role === "user" ? (me?.name ?? "我") : `智能体 ${agentId}`}
-                sub={m.content || (sending && i === msgs.length - 1 ? "正在输入…" : "")}
-              />
-            ))}
-          </List>
-        )}
+    <Stack gap={5}>
+      <SectionCard
+        title={active ? "继续对话" : "新对话"}
+        sub={active ? `已接上此前的内容 · ${who.name}` : `${who.name}${modelName ? ` · ${modelName}` : ""}`}
+        aside={
+          <Inline gap={2}>
+            {active ? (
+              <Btn size="sm" variant="outline" onClick={onNew}>
+                新对话
+              </Btn>
+            ) : null}
+          </Inline>
+        }
+      >
+        <Stack gap={5}>
+          {loadingMsgs ? <LoadingBlock rows={3} /> : null}
+          {!loadingMsgs && msgs.length === 0 ? (
+            <EmptyState title="说点什么吧" hint="直接输入问题即可；换智能体请到「智能体」页挑一个" />
+          ) : null}
+          {msgs.map((m, i) => {
+            const isUser = m.role === "user";
+            const name = isUser ? (me?.name ?? "我") : (m.agentName || who.name);
+            const waiting = !isUser && !m.content && sending && i === msgs.length - 1;
+            return (
+              <Inline key={m.id || `m${i}`} gap={3} vAlign="start" justify={isUser ? "end" : "start"}>
+                {!isUser ? <Avatar name={name} src={m.agentIcon || who.icon} size="sm" /> : null}
+                <Surface level={isUser ? 2 : 1} pad="md" radius="2xl">
+                  <Stack gap={2}>
+                    <Text slot="micro" tone="faint">
+                      {name}
+                    </Text>
+                    {m.content ? <Text as="p">{m.content}</Text> : null}
+                    {waiting ? (
+                      <Inline gap={2}>
+                        <Spinner size="sm" />
+                        <Text slot="label" tone="faint">
+                          正在输入…
+                        </Text>
+                      </Inline>
+                    ) : null}
+                  </Stack>
+                </Surface>
+                {isUser ? <Avatar name={name} size="sm" /> : null}
+              </Inline>
+            );
+          })}
+          <div ref={bottomRef} />
+        </Stack>
       </SectionCard>
+
       {chatErr ? (
         <Banner tone="error" title="对话失败，可重发消息或换智能体重试">
           {chatErr}
         </Banner>
       ) : null}
+
       <Card title="发送">
         <Stack gap={3}>
           <Inline gap={2} wrap>
@@ -266,10 +379,10 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
                 停止
               </Btn>
             ) : null}
-            <Btn variant="outline" onClick={newConv} disabled={sending}>
-              新对话
-            </Btn>
           </Inline>
+          <Text slot="micro" tone="faint">
+            {PAGE_NOTE}
+          </Text>
         </Stack>
       </Card>
     </Stack>
@@ -278,7 +391,12 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
 
 /* ══════════ 历史 ══════════ */
 
-function HistoryTab(): ReactNode {
+function HistoryTab({
+  infoOf, onOpen,
+}: {
+  infoOf: (id: string) => AgentInfo;
+  onOpen: (c: XiaodaConversation) => void;
+}): ReactNode {
   const [items, setItems] = useState<XiaodaConversation[] | null>(null);
   const [err, setErr] = useState("");
   const [pageNum, setPageNum] = useState(1);
@@ -295,7 +413,7 @@ function HistoryTab(): ReactNode {
       setPageNum(page);
       setErr("");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(errText(e));
     } finally {
       setLoadingMore(false);
     }
@@ -306,7 +424,7 @@ function HistoryTab(): ReactNode {
   }, [load]);
 
   return (
-    <SectionCard title="对话历史" sub={total ? `共 ${total} 条` : undefined}>
+    <SectionCard title="对话历史" sub={total ? `共 ${total} 段，点「接着聊」可继续` : undefined}>
       {err ? (
         <Stack gap={3}>
           <Banner tone="error" title="历史加载失败，请点重试">
@@ -326,21 +444,30 @@ function HistoryTab(): ReactNode {
           <DataList
             items={items}
             keyOf={(c) => c.convId}
-            render={(c) => (
-              <Row
-                flush
-                title={(c.query.split("\n")[0] ?? "").slice(0, 48) || "（空对话）"}
-                sub={fmtTime(c.createTime)}
-                meta={c.isDeepResearch ? "深度研究" : undefined}
-              />
-            )}
+            render={(c) => {
+              const info = infoOf(c.agentId ?? DEFAULT_AGENT_ID);
+              return (
+                <Row
+                  flush
+                  leading={<Avatar name={info.name} src={info.icon} size="sm" />}
+                  title={(c.query.split("\n")[0] ?? "").slice(0, 40) || "（空对话）"}
+                  sub={[info.name, fmtTime(c.createTime)].filter(Boolean).join(" · ")}
+                  meta={c.isDeepResearch ? "深度研究" : undefined}
+                  trailing={
+                    <Btn size="sm" variant="outline" onClick={() => onOpen(c)}>
+                      接着聊
+                    </Btn>
+                  }
+                />
+              );
+            }}
           />
           {items.length < total ? (
             <Inline gap={2}>
               <Btn variant="outline" disabled={loadingMore} onClick={() => void load(pageNum + 1)}>
                 {loadingMore ? "加载中…" : "加载更多"}
               </Btn>
-              <Tag>{`${items.length} / ${total}`}</Tag>
+              <Text slot="label" tone="faint">{`${items.length} / ${total}`}</Text>
             </Inline>
           ) : null}
         </Stack>
@@ -363,7 +490,7 @@ function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
       .then(setGroups)
       .catch((e: unknown) => {
         setGroups(null);
-        setErr(e instanceof Error ? e.message : String(e));
+        setErr(errText(e));
       });
   }, [reload]);
 
@@ -394,7 +521,7 @@ function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
                 sub={(m.description ?? "").slice(0, 80)}
                 trailing={
                   <Btn size="sm" variant="outline" onClick={() => onPick(m.uniqueId)}>
-                    对话
+                    找它聊
                   </Btn>
                 }
               />
@@ -432,7 +559,7 @@ function SkillsTab(): ReactNode {
       setPageNum(page);
       setErr("");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      setErr(errText(e));
     } finally {
       setLoadingMore(false);
     }
@@ -494,7 +621,7 @@ function SkillsTab(): ReactNode {
                 <Btn variant="outline" disabled={loadingMore} onClick={() => void load(pageNum + 1)}>
                   {loadingMore ? "加载中…" : "加载更多"}
                 </Btn>
-                <Tag>{`${items.length} / ${total}`}</Tag>
+                <Text slot="label" tone="faint">{`${items.length} / ${total}`}</Text>
               </Inline>
             ) : null}
           </Stack>

@@ -204,7 +204,7 @@ export type { VenueBuilding, VenueDevKind, VenueSameLevel, VenueScene, VenueSess
 
 /* 清小搭（xiaoda.tsinghua.edu.cn 校园 AI 学伴）—— ITS 直连完整登录 + token 头鉴权（实验性） */
 export { XiaodaClient, XiaodaApiError, XiaodaAuthRequiredError, XiaodaLoginError, XIAODA_BASE, xiaodaTokenExpiresAt } from "./xiaoda/client.js";
-export type { XiaodaUser, XiaodaAgentGroup, XiaodaAgentMember, XiaodaSkillCategory, XiaodaSkillItem, XiaodaSkillOverview, XiaodaConversation, XiaodaModel, XiaodaDadouBalance, XiaodaFetch } from "./xiaoda/client.js";
+export type { XiaodaUser, XiaodaAgentGroup, XiaodaAgentMember, XiaodaSkillCategory, XiaodaSkillItem, XiaodaSkillOverview, XiaodaConversation, XiaodaChatMessage, XiaodaModel, XiaodaDadouBalance, XiaodaFetch } from "./xiaoda/client.js";
 
 /* 外部作业源（雨课堂 / TUOJ 系 / Tyche / DSA OJ）—— 只读拉取，凭据由宿主注入 */
 export * as exthw from "./exthw/index.js";

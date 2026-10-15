@@ -101,6 +101,17 @@ export interface XiaodaSkillOverview {
   downloadCount: number;
 }
 
+/** 对话内的一条消息（role：1=用户、2=AI —— soda 后端口径，2026-10-15 实测） */
+export interface XiaodaChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  thinkContent: string;
+  agentId: string;
+  agentName: string;
+  agentIcon: string;
+}
+
 export interface XiaodaConversation {
   convId: string;
   query: string;
@@ -436,6 +447,31 @@ export class XiaodaClient {
 
   async conversationPage(pageNum = 1, pageSize = 10): Promise<PageEnvelope<XiaodaConversation>> {
     return this.apiGet<PageEnvelope<XiaodaConversation>>("/api/conversation/page", { pageNum, pageSize });
+  }
+
+  /**
+   * 读某对话的历史消息（GET /api/chats/list?convId=…，按时间顺序返回）。
+   * 实测要点：**必须带 convId**，否则服务端回 "The system is busy"（那是缺参的伪装错误）。
+   * 用于「接着历史对话继续聊」：载入消息 → 沿用同一 convId 再 POST /api/chats/ 即可。
+   */
+  async conversationMessages(convId: string): Promise<XiaodaChatMessage[]> {
+    const list = await this.apiGet<unknown[]>("/api/chats/list", { convId });
+    const out: XiaodaChatMessage[] = [];
+    for (const raw of Array.isArray(list) ? list : []) {
+      const m = raw as Record<string, unknown>;
+      const av = (m.agentVO ?? {}) as Record<string, unknown>;
+      const str = (v: unknown): string => (typeof v === "string" ? v : "");
+      out.push({
+        id: String(m.id ?? ""),
+        role: m.role === 1 ? "user" : "assistant",
+        content: str(m.content),
+        thinkContent: str(m.thinkContent),
+        agentId: str(av.agentId),
+        agentName: str(av.name),
+        agentIcon: str(av.icon),
+      });
+    }
+    return out.filter((m) => m.content.trim() !== "" || m.thinkContent.trim() !== "");
   }
 
   async customModels(): Promise<XiaodaModel[]> {

@@ -104,6 +104,20 @@ function useHomeLayoutProbe(): void {
         `contentML=${content ? getComputedStyle(content).marginLeft : "-"}`,
         `contentCls="${content?.className ?? "-"}"`,
         `panel=${box(pick(".explorer-panel"))}`,
+        `shell=${box(pick(".explorer-shell"))}`,
+        `shellDisp=${pick(".explorer-shell") ? getComputedStyle(pick(".explorer-shell")!).display : "-"}`
+          + (pick(".explorer-shell") ? " shellW=" + getComputedStyle(pick(".explorer-shell")!).width : "")
+          + (pick(".explorer-shell") ? " shellFlex=" + getComputedStyle(pick(".explorer-shell")!).flex : ""),
+        `panelFlex=${pick(".explorer-panel") ? getComputedStyle(pick(".explorer-panel")!).flex : "-"}`
+          + (pick(".explorer-panel") ? " panelPos=" + getComputedStyle(pick(".explorer-panel")!).position : "")
+          + (pick(".explorer-panel") ? " panelMinW=" + getComputedStyle(pick(".explorer-panel")!).minWidth : ""),
+        `outer=${box(document.body.firstElementChild)}`,
+        `outerCls="${document.body.firstElementChild?.className ?? "-"}"`,
+        `outerDisp=${document.body.firstElementChild ? getComputedStyle(document.body.firstElementChild as HTMLElement).display : "-"}`
+          + (document.body.firstElementChild ? " outerW=" + getComputedStyle(document.body.firstElementChild as HTMLElement).width : "")
+          + (document.body.firstElementChild ? " outerFlex=" + getComputedStyle(document.body.firstElementChild as HTMLElement).flex : ""),
+        `bodyDisp=${getComputedStyle(document.body).display} bodyW=${getComputedStyle(document.body).width}`,
+        `rail=${box(pick(".ex-rail"))}`,
         `panelCls="${pick(".explorer-panel")?.className ?? "-"}"`,
         `panelW=${pick(".explorer-panel") ? getComputedStyle(pick(".explorer-panel")!).width : "-"}`,
         `panelDisp=${pick(".explorer-panel") ? getComputedStyle(pick(".explorer-panel")!).display : "-"}`,

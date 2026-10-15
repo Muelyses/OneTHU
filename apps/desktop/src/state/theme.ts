@@ -558,7 +558,21 @@ export function activateTheme(id: string): boolean {
     /* 隐私模式下 localStorage 不可用：取色注入仍被摘掉，本次会话行为正确 */
   }
   state.activeId = id;
-  applyTheme(def);
+  /* 注入失败也要落库 + 广播：否则「点了应用、状态仍是旧值、界面纹丝不动」，
+     而且现场不留任何痕迹（用户实测 2026-10-15；activeId 在存储里一直是 null）。
+     失败信息进调试日志（/tmp/onethu-debug.log），便于事后定位。 */
+  try {
+    applyTheme(def);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    try {
+      void import("@tauri-apps/api/core").then((m) =>
+        m.invoke("log_debug", { line: new Date().toISOString() + " | [THEME] applyTheme 失败：" + msg }),
+      );
+    } catch {
+      /* 非 Tauri 环境：忽略 */
+    }
+  }
   persist();
   emit();
   return true;

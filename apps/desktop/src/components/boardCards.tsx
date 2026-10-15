@@ -486,7 +486,8 @@ const ENTRY_REAL: Record<string, CardRenderer> = {
    文字走白板既有的「属性」抽屉编辑（editableProps 已声明）。 */
 
 const NOTE_TONES: Record<string, string> = {
-  yellow: "rgba(232, 196, 106, 0.24)",
+  /* 纸黄（用户点名「便笺变成纸黄色」）：原来是 24% 半透明琥珀，压在壁纸上几乎没有纸感 */
+  yellow: "rgba(246, 231, 168, 0.96)",
   pink: "rgba(226, 154, 166, 0.22)",
   blue: "rgba(122, 168, 220, 0.22)",
   green: "rgba(140, 196, 156, 0.22)",

@@ -886,6 +886,9 @@ function AppearanceSection(): ReactNode {
           <Row
             selected={!snap.activeId}
             size="lg"
+            /* 整卡可点＝应用（用户实测：「换了和没换都是蓝色」——此前只有右侧小钮能点，
+               点卡片本体毫无反应，看着就像主题不可用）。 */
+            onClick={snap.activeId ? () => deactivateTheme() : undefined}
             leading={<ThemeSwatch vars={{}} />}
             title="默认外观"
             children={<OGText slot="label" tone="quiet" clamp={2}>不套用任何主题，使用应用自带配色</OGText>}
@@ -903,6 +906,7 @@ function AppearanceSection(): ReactNode {
                 key={t.id}
                 selected={on}
                 size="lg"
+                onClick={on ? undefined : () => activateTheme(t.id)}
                 leading={<ThemeSwatch vars={t.vars} />}
                 title={t.name}
                 children={<OGText slot="label" tone="quiet" clamp={2}>{t.description ?? t.id}</OGText>}

@@ -64,12 +64,19 @@ const decls = (css) => {
   return out;
 };
 let checkedPairs = 0;
+/* 表面填充家族＝玻璃档独占（2026-10-14 大一统定案，theme.ts 的 SURFACE_FAMILY 会跳过它们）：
+   主题不再注入 bg/surface 五级，断言随设计更新——这些键不该出现在注入 CSS 里。 */
+const SURFACE_FAMILY = new Set(["--bg", "--bg-soft", "--surface", "--surface-2", "--surface-3"]);
 for (const t of themes) {
   T.activateTheme(t.id);
   const css = themeStyle();
   assert.ok(css.includes(':root[data-theme="' + t.id + '"]'), t.id + "：注入的选择器不对");
   const got = decls(css);
   for (const [k, v] of Object.entries(t.vars ?? {})) {
+    if (SURFACE_FAMILY.has(k)) {
+      assert.equal(got.get(k), undefined, t.id + "：" + k + " 属表面族，应由玻璃档独占，不该被主题注入");
+      continue;
+    }
     assert.equal(got.get(k), v, t.id + "：" + k + " 的 Compat 行没写进去");
     const sys = COMPAT_TO_SYSTEM[k];
     assert.equal(got.get(sys), v, t.id + "：" + k + " 没有镜像到 " + sys + "（System 组件将不跟随主题）");
@@ -79,6 +86,8 @@ for (const t of themes) {
   const overridden = new Set(Object.keys(t.vars ?? {}));
   for (const k of BUTTON_COMPAT) {
     if (!overridden.has(k)) continue;
+    /* 表面族由玻璃档独占（同 SURFACE_FAMILY 判定）：主题不注入 → 不看这条 */
+    if (SURFACE_FAMILY.has(k)) continue;
     const sys = COMPAT_TO_SYSTEM[k];
     assert.ok(got.has(sys), t.id + "：按钮读的 " + sys + " 没被主题改到");
   }

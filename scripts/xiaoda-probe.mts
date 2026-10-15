@@ -155,3 +155,105 @@ const chatRes = await fetch(`${XIAODA}/v1/chat/completions`, {
   body: JSON.stringify({ model: "xiaoda", stream: false, messages: [{ role: "user", content: "1+1=?" }] }),
 });
 console.log(`[xd] HTTP ${chatRes.status} → ${(await chatRes.text()).slice(0, 300)}`);
+
+console.log("\n[xd] ⑦ 业务端点枚举（新 token 直击）…");
+const eps = [
+  "/api/group/builtin/list",
+  "/api/group/agent/recommend",
+  "/api/agent/center/page",
+  "/api/namespace/list",
+  "/api/skill/plaza/categories",
+  "/api/skill/plaza/list",
+  "/api/skill/plaza/overview",
+  "/api/chats/list",
+  "/api/conversation/page",
+  "/api/conversation/get",
+  "/api/opencoze/customModel/list",
+];
+for (const ep of eps) {
+  const r = await req("GET", `${XIAODA}${ep}`, { headers: { token } });
+  console.log(`  ${ep} → HTTP ${r.status} ${r.html.slice(0, 260)}`);
+}
+
+console.log("\n[xd] ⑧ chat 请求体实测（agent id vs 模型名）…");
+async function tryChat(label: string, payload: unknown) {
+  const r = await fetch(`${XIAODA}/v1/chat/completions`, {
+    method: "POST",
+    headers: { "User-Agent": DEFAULT_USER_AGENT, token, "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const text = await r.text();
+  console.log(`  [${label}] HTTP ${r.status} → ${text.slice(0, 420)}`);
+}
+await tryChat("agent模型", { model: "agent:1888922258860593152", stream: false, messages: [{ role: "user", content: "一句话介绍你自己" }] });
+await tryChat("agent_id字段", { agent_id: "1888922258860593152", model: "GLM-5.3", stream: false, messages: [{ role: "user", content: "一句话介绍你自己" }] });
+await tryChat("裸模型名", { model: "GLM-5.3", stream: false, messages: [{ role: "user", content: "1+1=?" }] });
+
+console.log("\n[xd] ⑨ 默认智能体 9999 实测（UAP 路由）…");
+async function tryChat2(label: string, payload: unknown) {
+  const r = await fetch(`${XIAODA}/v1/chat/completions`, {
+    method: "POST",
+    headers: { "User-Agent": DEFAULT_USER_AGENT, token, "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const text = await r.text();
+  console.log(`  [${label}] HTTP ${r.status} → ${text.slice(0, 400)}`);
+  return r.status;
+}
+await tryChat2("agent:9999 非流式", { model: "agent:9999", stream: false, messages: [{ role: "user", content: "用一句话自我介绍" }] });
+const sse = await fetch(`${XIAODA}/v1/chat/completions`, {
+  method: "POST",
+  headers: { "User-Agent": DEFAULT_USER_AGENT, token, "Content-Type": "application/json" },
+  body: JSON.stringify({ model: "agent:9999", stream: true, messages: [{ role: "user", content: "1+1等于几？" }] }),
+});
+console.log(`  [agent:9999 流式] HTTP ${sse.status} content-type=${sse.headers.get("content-type")}`);
+if (sse.ok && sse.body) {
+  const rd = sse.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "";
+  let lines = 0;
+  while (lines < 14) {
+    const { done, value } = await rd.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const parts = buf.split("\n");
+    buf = parts.pop() ?? "";
+    for (const ln of parts) {
+      if (ln.trim()) { console.log(`    | ${ln.slice(0, 150)}`); lines++; }
+      if (lines >= 14) break;
+    }
+  }
+  rd.cancel().catch(() => undefined);
+}
+
+console.log("\n[xd] ⑩ 广场智能体查询 + conversation/create 实测…");
+async function jget(label: string, url: string) {
+  const r = await req("GET", url, { headers: { token } });
+  console.log(`  [${label}] HTTP ${r.status} → ${r.html.slice(0, 360)}`);
+  return r.html;
+}
+await jget("agent/query 裸", `${XIAODA}/api/namespace/agent/query`);
+await jget("agent/query ns", `${XIAODA}/api/namespace/agent/query?namespaceId=2020073574757318656`);
+await jget("agent/query page", `${XIAODA}/api/namespace/agent/query?pageNum=1&pageSize=8`);
+const createRes = await fetch(`${XIAODA}/api/conversation/create`, {
+  method: "POST",
+  headers: { "User-Agent": DEFAULT_USER_AGENT, token, "Content-Type": "application/json" },
+  body: JSON.stringify({ agentId: "9999", query: "你好" }),
+});
+console.log(`  [conversation/create] HTTP ${createRes.status} → ${(await createRes.text()).slice(0, 360)}`);
+await jget("chats/list 带参", `${XIAODA}/api/chats/list?agentId=9999&pageNum=1&pageSize=5`);
+
+console.log("\n[xd] ⑪ 字段形状全览…");
+async function dump(label: string, url: string) {
+  const r = await req("GET", url, { headers: { token } });
+  try {
+    const j = JSON.parse(r.html);
+    const d = j?.data;
+    const sample = Array.isArray(d?.dataList) ? d.dataList[0] : Array.isArray(d) ? d[0] : d;
+    console.log(`  [${label}] keys=${Object.keys(sample ?? {}).join(",")}`);
+    console.log(`    样本=${JSON.stringify(sample).slice(0, 500)}`);
+  } catch { console.log(`  [${label}] HTTP ${r.status} ${r.html.slice(0, 200)}`); }
+}
+await dump("会话", `${XIAODA}/api/conversation/page?pageNum=1&pageSize=2`);
+await dump("技能", `${XIAODA}/api/skill/plaza/list?pageNum=1&pageSize=2`);
+await dump("智能体组", `${XIAODA}/api/group/builtin/list`);

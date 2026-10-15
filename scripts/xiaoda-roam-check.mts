@@ -131,6 +131,28 @@ try {
   console.log(`\n④ 原生对话：❌ ${e instanceof Error ? e.message.slice(0, 200) : String(e)}`);
 }
 
+/* ⑤ 历史续聊 E2E：列历史 → 载入某对话的消息 → 沿用同一对话号再问一句 */
+try {
+  const page = await c2.conversationPage(1, 5);
+  const conv = (page.dataList ?? [])[0];
+  console.log(`⑤ 历史：${conv ? "✅ 最近 " + (page.dataList ?? []).length + " 段（共 " + (page.page?.totalCount ?? 0) + "）" : "❌ 无历史"}`);
+  if (conv) {
+    const msgs = await c2.conversationMessages(conv.convId);
+    const users = msgs.filter((m) => m.role === "user").length;
+    const ai = msgs.filter((m) => m.role === "assistant").length;
+    console.log(`   载入消息：${msgs.length} 条（我 ${users} / AI ${ai}）${msgs[0] ? " · 首条：" + msgs[0].content.slice(0, 24) : ""}`);
+    const cont = await c2.chatNative({
+      agentId: conv.agentId ?? "9999",
+      query: "接着上面的话，用五个字总结",
+      convId: conv.convId,
+      onDelta: () => undefined,
+    });
+    console.log(`   续聊：${cont.content ? "✅ 在旧对话里收到 " + cont.content.length + " 字：" + cont.content.slice(0, 40) : "❌ 无回复"}`);
+  }
+} catch (e) {
+  console.log(`⑤ 历史续聊：❌ ${e instanceof Error ? e.message.slice(0, 160) : String(e)}`);
+}
+
 /* ③ 关键断言：jar 里已有 id 会话 → 无凭据 login() 应直接出票（应用内形态） */
 const c3 = new XiaodaClient({ fetch: nativeLikeFetch, log: (l) => console.log("  [c3]", l) });
 try {

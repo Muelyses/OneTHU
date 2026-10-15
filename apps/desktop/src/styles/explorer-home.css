@@ -76,6 +76,9 @@
   /* 同首页：扣掉竖栏让位量，否则 OnePage 画布右侧被裁、固定元素右偏 */
   width: calc(100% - var(--ex-rail-w, 0px));
   max-width: none;
+  /* 画布页面：内容层是"视口的外框"，滚动/裁切都由画布自己管（见下面 .freeboard） */
+  overflow: hidden;
+  min-height: 0;
 }
 .home-free, .home-tab {
   position: relative;
@@ -83,25 +86,20 @@
   min-height: calc(100vh - 104px);
   min-height: calc(100dvh - 104px);
 }
-.explorer-panel.is-home-canvas { overflow: visible; }
+/* 首页画布同理：视口固定，内容在世界层里平移（不再是"画布从顶铺到底、靠面板滚"） */
 /* OnePage 同理（2026-10-15 用户点名「其他白板下半部分截断」）：.explorer-panel 的基线是
    overflow:hidden，只有首页把它放开过 —— 于是 OnePage 的画布一旦比面板高，下半部分直接被裁掉
    且**滚不到**。这里与首页同款放开（手机档见下方 overflow:auto），滚动交给窗口/内容层。 */
-/* 兜底（2026-10-15）：面板的画布类由 JS 传（TabHost），一旦漏传就会吃到基线 overflow:hidden 把画布裁掉
-   —— 那次事故就是这么发生的。这里再加一条**不依赖传类**的判据：面板里装着 OnePage 画布内容时，
-   同样按"有界可滚"处理。 */
-.explorer-panel:has(> .explorer-content.is-onepage-canvas) {
-  overflow: auto;
-  overscroll-behavior: contain;
-  max-height: 100dvh;
-}
-.explorer-panel.is-onepage-canvas {
-  /* 2026-10-15（用户截图实测「下半部分截断」，卡片底部是**被硬切的方角**）：
-     只有 `overflow:auto` 不够 —— 面板在 shell 网格里是 auto 行、会被内容**撑高**，
-     于是永远不溢出、也就永远不滚，超出视口的部分被更外层裁掉。这里给它**上界**（视口高），
-     auto 才真的生效：页头 + 画布一起在这个面板里滚。 */
-  overflow: auto;
-  overscroll-behavior: contain;
+/* 2026-10-15（用户拍板「像 iPad 无边记：无限大是与生俱来的」）：**画布页面不再滚**。
+   此前这一段的全部努力（放开 overflow、上面板高、max-height:100dvh）都是在跟"盒子"打架：
+   画布比盒子高 → 下半部分被裁 → 让面板滚 → 面板被内容撑高 → 又不滚 → 还是裁。
+   无限画布把"盒子"这个概念拿掉了：视口固定、内容在世界坐标里平移缩放，
+   面板只要**不许滚**（也不许被内容撑高），剩下的交给画布自己。 */
+.explorer-panel:has(> .explorer-content.is-onepage-canvas),
+.explorer-panel.is-onepage-canvas,
+.explorer-panel.is-home-canvas {
+  overflow: hidden;
+  overscroll-behavior: none;
   max-height: 100dvh;
 }
 
@@ -411,6 +409,58 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   inset: 0;
   min-height: 0;
   z-index: 1;
+  /* ── 无限画布：这一层是**视口**（2026-10-15 模型纠正）──
+     overflow:hidden 是视口的本分（世界层里的东西在视口外就是看不见，靠平移找回来），
+     它**不是**"边界"：条目坐标没有上界，往右下永远有地方，往左上也能平。
+     touch-action:none：手指/触控板的平移由画布自己算（否则被浏览器拿去滚页面）。 */
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+/* 世界层：条目与笔迹都在世界坐标里，这一层只承载 translate(x,y) + scale(z)。
+   变量由 TSX 写（--board-x/--board-y/--board-z），本行不写死任何几何。 */
+.freeboard-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform: translate3d(var(--board-x, 0px), var(--board-y, 0px), 0) scale(var(--board-z, 1));
+  transform-origin: 0 0;
+  will-change: transform;
+}
+/* 拖动/缩放条与四角把手在**屏幕空间**保持原大小：世界层放大了它们不该跟着变胖，
+   缩小了也不该小到点不中（无边记同款口径）。 */
+.freeboard-world .free-handle,
+.freeboard-world .free-toolbar {
+  transform: scale(calc(1 / var(--board-z, 1)));
+  transform-origin: 0 0;
+}
+.freeboard.is-panning { cursor: grabbing; }
+.freeboard { cursor: grab; }
+
+/* 画笔层在世界层里：给一块**固定的世界尺寸**（4000×4000），
+   于是笔迹从此锚在世界坐标上 —— 平移/缩放都跟着走，也不再需要"2400px 垫高"。 */
+.freeboard-world .board-pen {
+  inset: auto;
+  left: 0;
+  top: 0;
+  width: 4000px;
+  height: 4000px;
+}
+
+/* 缩放控件（OneGUI BtnGroup）：视口左下角，屏幕空间（不随世界层缩放）。
+   左下留白是这块画布唯一没被占用的角：右下是 ＋/画笔浮钮列、右上角是画笔色板、顶部是钟与坞。 */
+.board-zoombar {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 95;
+}
+.board-zoombar .og-btngroup {
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
 }
 
 /* OnePage 页面形态（2026-10-15）：画布进页面后不再铺满整屏——页头在上、画布按内容铺开，

@@ -385,6 +385,15 @@ export function IconPlus({ size, className, title }: IconGlyphProps): ReactNode 
   );
 }
 
+/** 缩小（画布缩放控件）：与 IconPlus 同一套 24 网格与描边，只有一横 */
+export function IconMinus({ size, className, title }: IconGlyphProps): ReactNode {
+  return (
+    <Icon size={size} className={className} title={title}>
+      <path d="M5 12h14" />
+    </Icon>
+  );
+}
+
 export function IconClock({ size, className, title }: IconGlyphProps): ReactNode {
   return (
     <Icon size={size} className={className} title={title}>

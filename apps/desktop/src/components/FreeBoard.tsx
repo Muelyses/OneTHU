@@ -19,8 +19,11 @@
  * 自定义 + 降级壳），渲染器 = 白板自足实现 + 各页面发布的卡体 + 活数据三层合并
  * （列表类组件因此在任何页面都能显示真实内容，而不是离开来源页就变空壳）。
  */
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-import { ActionSheet, Btn } from "@onethu/gui";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { ActionSheet, Btn, BtnGroup, IconBtn } from "@onethu/gui";
+/* 缩放控件用 OneGUI 的图标集（应用内那份 Icons.tsx 是待收编的旧集，新东西一律进库）——
+   名字与下面 ./Icons.js 的同名导入会撞，故加 Og 前缀。 */
+import { IconMinus as OgIconMinus, IconPlus as OgIconPlus } from "@onethu/gui";
 import { createPortal } from "react-dom";
 import {
   freeBoardOps,
@@ -59,6 +62,24 @@ import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
 import { useLearnData } from "../state/data.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
 import { fitTarget } from "../state/boardFit.js";
+import {
+  boardViewKey,
+  contentRect,
+  fitView,
+  hasView,
+  ZOOM_MAX,
+  ZOOM_MIN,
+  panBy,
+  stepZoom,
+  subscribeView,
+  viewOf as readBoardView,
+  worldDelta,
+  zoomAt,
+  zoomLabel,
+  setView as setBoardView,
+  toWorld,
+  type BoardView,
+} from "../state/boardView.js";
 
 const DRAG_THRESHOLD = 4;
 /** 长按出菜单（与全站口径一致：ContextMenu 的 LONG_PRESS_MS 同为 500）。 */
@@ -309,6 +330,15 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const defs = useMemo(() => allWidgetDefs(), []);
   const renderers = useRenderers();
   const hostRef = useRef<HTMLDivElement | null>(null);
+  /* ── 无限画布的视口（2026-10-15 模型纠正）──
+     画布自创建起就没有边界：内容在世界坐标里，这里只管"看哪一块"。视图按「板+朝向」记，
+     存在 onethu.boardview.v1（视图不是文档，见 state/boardView.ts 的口径）。 */
+  const viewKey = boardViewKey(boardId, orientation);
+  const view = useSyncExternalStore(subscribeView, () => readBoardView(viewKey), () => readBoardView(viewKey));
+  const viewRef = useRef<BoardView>(view);
+  viewRef.current = view;
+  /** 视口尺寸（屏幕 px）：缩放锚点与"回到内容"要用。 */
+  const viewportRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -349,17 +379,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   /* 从今日页「编辑白板布局」进来时直接开添加抽屉（自由画布没有编辑态，落地动作就是"加东西"）。 */
   useEffect(() => {
   }, [chrome]);
-
-  /* 画布高度跟着内容长：条目被拖到折叠线以下时外层滚动容器要能滚到它。
-     （绝对定位的孩子不撑父盒；首页的 .freeboard 是 inset:0 的整页画布，天然有这个问题。） */
-  useLayoutEffect(() => {
-    const el = hostRef.current;
-    if (!el) return;
-    const box = el.parentElement;
-    const bottom = items.reduce((m, it) => Math.max(m, it.y + it.h), 0) + 96;
-    const base = box ? box.clientHeight : 0;
-    el.style.minHeight = bottom > base ? `${bottom}px` : "";
-  }, [items]);
 
   /* 按内容拟合 v3（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
      量体目标 = 条目盒的**直接子元素**（CSS `.free-item > :first-child { overflow:auto }` 就是它，
@@ -419,6 +438,62 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       mo.disconnect();
     };
   }, [items, ops]);
+
+  /* 视口尺寸（缩放锚点用）+ 触控板手势。**必须原生非被动监听**：React 的 onWheel 挂在根上
+     且是被动的，preventDefault() 不生效，画布会一边缩放一边被外层滚。 */
+  useLayoutEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    const measure = (): void => {
+      viewportRef.current = { w: el.clientWidth, h: el.clientHeight };
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    const onWheel = (e: WheelEvent): void => {
+      const v = viewRef.current;
+      /* 触控板捏合 = ctrlKey（WKWebView/Chromium 同约定）；两指滑 = 平移。shift+滚轮 = 横向。 */
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        setBoardView(viewKey, zoomAt(v, v.z * Math.exp(-e.deltaY * 0.01), e.offsetX ?? 0, e.offsetY ?? 0));
+        return;
+      }
+      const dx = e.shiftKey ? e.deltaY : e.deltaX;
+      const dy = e.shiftKey ? 0 : e.deltaY;
+      if (dx === 0 && dy === 0) return;
+      e.preventDefault();
+      setBoardView(viewKey, panBy(v, -dx, -dy));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener("wheel", onWheel);
+    };
+  }, [viewKey]);
+
+  /* 首次打开一块板：无限画布里没有滚动条兜底，"内容在视口外"就等于"内容不见了"，
+     所以先**适配一次内容**再交给用户。已经记过视图的板不动它（"我上次看到哪，下次还看到哪"）。 */
+  const anchored = useRef(false);
+  useLayoutEffect(() => {
+    if (anchored.current) return;
+    anchored.current = true;
+    if (hasView(viewKey) || items.length === 0) return;
+    const el = hostRef.current;
+    const { w, h } = el ? { w: el.clientWidth, h: el.clientHeight } : viewportRef.current;
+    setBoardView(viewKey, fitView({ w, h }, contentRect(itemsRef.current)));
+  }, [viewKey, items]);
+
+  /* 缩放/重置：按钮与键盘共用的两个动作。
+     以**视口中心**为锚点（按钮在右下角，锚在按钮上会把内容甩出去）。 */
+  const zoomBy = useCallback((dir: number): void => {
+    const v = viewRef.current;
+    const { w, h } = viewportRef.current;
+    setBoardView(viewKey, zoomAt(v, stepZoom(v.z, dir), w / 2, h / 2));
+  }, [viewKey]);
+  const resetView = useCallback((): void => {
+    const { w, h } = viewportRef.current;
+    setBoardView(viewKey, fitView({ w, h }, contentRect(itemsRef.current)));
+  }, [viewKey]);
 
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
   useEffect(() => {
@@ -519,10 +594,13 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
     const m: string = mode; // string 别名：避免 TS 对字面量联合做过强收窄
     const onMove = (ev: PointerEvent): void => {
-      const dx = ev.clientX - sx;
-      const dy = ev.clientY - sy;
+      const raw = { x: ev.clientX - sx, y: ev.clientY - sy };
+      /* 手指走的是屏幕，条目活在世界上：位移要除以倍率（放大 2 倍时拖 100px = 世界 50px）。 */
+      const moved = worldDelta(viewRef.current.z, raw.x, raw.y);
+      const dx = moved.x;
+      const dy = moved.y;
       if (!armed) {
-        if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+        if (Math.hypot(raw.x, raw.y) < DRAG_THRESHOLD) return; // 阈值按**屏幕**位移判（手感与倍率无关）
         armed = true;
         if (timer !== null) window.clearTimeout(timer);
         if (longFired) menu.close();
@@ -602,9 +680,42 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     }
   };
 
+  /** 屏幕点 → **世界点**（落点、双击加便笺、右键加组件都用它，缩放/平移后仍然指得准）。 */
   const canvasPos = (clientX: number, clientY: number): { x: number; y: number } => {
     const r = hostRef.current?.getBoundingClientRect();
-    return r ? { x: clientX - r.left, y: clientY - r.top } : { x: 40, y: 300 };
+    if (!r) return { x: 40, y: 300 };
+    return toWorld(viewRef.current, clientX - r.left, clientY - r.top);
+  };
+
+  /** 空白处按住拖动 = **平移画布**（无限画布里这就是"滚动"）。
+      与"双击加便笺""右键加组件"不冲突：位移超过阈值才算拖；没动就什么也不做。
+      也不抢组件的拖动（组件自己 stopPropagation，且 e.target !== currentTarget 时直接返回）。 */
+  const beginPan = (e: React.PointerEvent): void => {
+    if (e.target !== e.currentTarget || e.button !== 0) return;
+    const sx = e.clientX;
+    const sy = e.clientY;
+    let armed = false;
+    const onMove = (ev: PointerEvent): void => {
+      const dx = ev.clientX - sx;
+      const dy = ev.clientY - sy;
+      if (!armed) {
+        if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+        armed = true;
+        hostRef.current?.classList.add("is-panning");
+      }
+      setBoardView(viewKey, panBy(viewRef.current, dx - (lastPan.x), dy - lastPan.y));
+      lastPan = { x: dx, y: dy };
+    };
+    let lastPan = { x: 0, y: 0 };
+    const onUp = (): void => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      hostRef.current?.classList.remove("is-panning");
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
   };
 
   /** 组件的「打开」语义（与旧白板页一致）：跳转页 / 原子入口。 */
@@ -663,8 +774,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         className={"freeboard" + (chrome ? " is-page" : "")}
         ref={hostRef}
         onPointerDown={(e) => {
-          /* 空白处按下 = 取消选中（组件自身会 stopPropagation） */
+          /* 空白处按下 = 取消选中（组件自身会 stopPropagation）+ 准备平移画布 */
           if (e.target === e.currentTarget) setSelected(null);
+          beginPan(e);
         }}
         onDoubleClick={(e) => {
           if (e.target !== e.currentTarget) return;
@@ -677,137 +789,158 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           setAddAt(canvasPos(e.clientX, e.clientY));
         }}
       >
-        {items.map((it) => {
-          const r = rectOf(it);
-          /* 档位排版钩子：CSS 是**无作用域**的 [data-size=...] 选择器（抽屉预览与画布同一条规则），
-             所以自由画布上的条目也要带上它——统计卡/入口行的分档排版才不会只在抽屉里生效。 */
-          const plan = planForItem(viewOf(it), defs);
-          const isSel = selected === it.id;
-          const isNote = it.spec.kind === "custom" && it.spec.id === "note";
-          const isText = it.spec.kind === "text";
-          const editingNow = editingId === it.id && (isNote || isText);
-          return (
-            <div
-              key={it.id}
-              data-item-id={it.id}
-              data-item={it.spec.kind}
-              data-size={plan.size.w + "x" + plan.size.h}
-              data-manual={it.manual ? "1" : undefined}
-              data-fitted={it.fitted ? "1" : undefined}
-              data-folded={it.folded ? "1" : undefined}
-              className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
-              style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
-              onPointerDown={(e) => {
-                if (penOn) return;
-                if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
-                beginPointer(e, it.id, "move");
-              }}
-              onDoubleClick={(e) => {
-                e.stopPropagation();
-                if (isNote || isText) {
+        <div
+          className="freeboard-world"
+          style={{ "--board-x": view.x + "px", "--board-y": view.y + "px", "--board-z": view.z } as CSSProperties}
+        >
+        {/* ── 世界层（2026-10-15 无限画布）──
+            条目与笔迹都活在**世界坐标**里，这一层只负责"看哪一块"：translate(x,y) + scale(z)。
+            把 contentRect 当边界是**反模型**的写法（那正是旧盒子模型的老路），这里只做变换。 */}
+
+          {items.map((it) => {
+            const r = rectOf(it);
+            /* 档位排版钩子：CSS 是**无作用域**的 [data-size=...] 选择器（抽屉预览与画布同一条规则），
+               所以自由画布上的条目也要带上它——统计卡/入口行的分档排版才不会只在抽屉里生效。 */
+            const plan = planForItem(viewOf(it), defs);
+            const isSel = selected === it.id;
+            const isNote = it.spec.kind === "custom" && it.spec.id === "note";
+            const isText = it.spec.kind === "text";
+            const editingNow = editingId === it.id && (isNote || isText);
+            return (
+              <div
+                key={it.id}
+                data-item-id={it.id}
+                data-item={it.spec.kind}
+                data-size={plan.size.w + "x" + plan.size.h}
+                data-manual={it.manual ? "1" : undefined}
+                data-fitted={it.fitted ? "1" : undefined}
+                data-folded={it.folded ? "1" : undefined}
+                className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
+                style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
+                onPointerDown={(e) => {
+                  if (penOn) return;
+                  if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
+                  beginPointer(e, it.id, "move");
+                }}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  if (isNote || isText) {
+                    setSelected(it.id);
+                    setEditingId(it.id);
+                  }
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (penOn) return;
                   setSelected(it.id);
-                  setEditingId(it.id);
-                }
-              }}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (penOn) return;
-                setSelected(it.id);
-                ops.bringToFront(it.id);
-                openItemMenu(it, e.clientX, e.clientY);
-              }}
-            >
-              {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
-              {it.folded ? (
-                <div className="free-folded" title="已折叠（浮条里可展开）">
-                  <span className="free-note-dot" aria-hidden="true" />
-                  <span>便笺</span>
-                </div>
-              ) : (
-              <>
-              {/* 便笺与文字：内容可就地编辑（双击进入） */}
-              {editingNow ? (
-                <textarea
-                  className="free-note-editor"
-                  autoFocus
-                  defaultValue={isNote
-                    ? (it.spec.kind === "custom" && typeof it.spec.props?.text === "string" ? it.spec.props.text : "")
-                    : (it.spec.kind === "text" ? it.spec.text : "")}
-                  onBlur={(e) => {
-                    const text = e.target.value;
-                    if (it.spec.kind === "custom") ops.props(it.id, { ...it.spec.props, text });
-                    else ops.props(it.id, { text });
-                    setEditingId(null);
-                  }}
-                />
-              ) : (
-                <ItemBody
-                  item={it}
-                  defs={defs}
-                  renderers={renderers}
-                  onOpen={onOpen}
-                  onFolderAdd={() => setFolderPicker({ itemId: it.id })}
-                  onProps={(props) => ops.props(it.id, props)}
-                />
-              )}
-              </>
-              )}
+                  ops.bringToFront(it.id);
+                  openItemMenu(it, e.clientX, e.clientY);
+                }}
+              >
+                {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
+                {it.folded ? (
+                  <div className="free-folded" title="已折叠（浮条里可展开）">
+                    <span className="free-note-dot" aria-hidden="true" />
+                    <span>便笺</span>
+                  </div>
+                ) : (
+                <>
+                {/* 便笺与文字：内容可就地编辑（双击进入） */}
+                {editingNow ? (
+                  <textarea
+                    className="free-note-editor"
+                    autoFocus
+                    defaultValue={isNote
+                      ? (it.spec.kind === "custom" && typeof it.spec.props?.text === "string" ? it.spec.props.text : "")
+                      : (it.spec.kind === "text" ? it.spec.text : "")}
+                    onBlur={(e) => {
+                      const text = e.target.value;
+                      if (it.spec.kind === "custom") ops.props(it.id, { ...it.spec.props, text });
+                      else ops.props(it.id, { text });
+                      setEditingId(null);
+                    }}
+                  />
+                ) : (
+                  <ItemBody
+                    item={it}
+                    defs={defs}
+                    renderers={renderers}
+                    onOpen={onOpen}
+                    onFolderAdd={() => setFolderPicker({ itemId: it.id })}
+                    onProps={(props) => ops.props(it.id, props)}
+                  />
+                )}
+                </>
+                )}
 
-              {/* 选中浮条：置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除 */}
-              {isSel && !penOn ? (
-                <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
-                  <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
-                  {isNote ? (
-                    <button
-                      type="button"
-                      title={it.folded ? "展开" : "折叠"}
-                      className="free-note-toggle"
-                      onClick={() => ops.fold(it.id, !it.folded)}
-                    >
-                      {it.folded ? " 展开" : "折叠"}
+                {/* 选中浮条：置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除 */}
+                {isSel && !penOn ? (
+                  <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
+                    <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
+                    {isNote ? (
+                      <button
+                        type="button"
+                        title={it.folded ? "展开" : "折叠"}
+                        className="free-note-toggle"
+                        onClick={() => ops.fold(it.id, !it.folded)}
+                      >
+                        {it.folded ? " 展开" : "折叠"}
+                      </button>
+                    ) : null}
+                    {[1, 0.75, 0.5, 0.3].map((v) => (
+                      <button
+                        key={v}
+                        type="button"
+                        title={`透明 ${Math.round(v * 100)}%`}
+                        className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
+                        onClick={() => ops.opacity(it.id, v)}
+                      >
+                        {Math.round(v * 100)}%
+                      </button>
+                    ))}
+                    <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>钉</button>
+                    <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
+                      <IconTrash width={13} height={13} />
                     </button>
-                  ) : null}
-                  {[1, 0.75, 0.5, 0.3].map((v) => (
-                    <button
-                      key={v}
-                      type="button"
-                      title={`透明 ${Math.round(v * 100)}%`}
-                      className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
-                      onClick={() => ops.opacity(it.id, v)}
-                    >
-                      {Math.round(v * 100)}%
-                    </button>
-                  ))}
-                  <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>钉</button>
-                  <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
-                    <IconTrash width={13} height={13} />
-                  </button>
-                </div>
-              ) : null}
+                  </div>
+                ) : null}
 
-              {/* 把手：四角 + 右/下（选中才出现；固定的组件不出把手） */}
-              {isSel && !penOn && !it.pinned
-                ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
-                    <span
-                      key={h}
-                      className={"free-handle fh-" + h}
-                      onPointerDown={(ev) => beginPointer(ev, it.id, h)}
-                    />
-                  ))
-                : null}
-            </div>
-          );
-        })}
+                {/* 把手：四角 + 右/下（选中才出现；固定的组件不出把手） */}
+                {isSel && !penOn && !it.pinned
+                  ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
+                      <span
+                        key={h}
+                        className={"free-handle fh-" + h}
+                        onPointerDown={(ev) => beginPointer(ev, it.id, h)}
+                      />
+                    ))
+                  : null}
+              </div>
+            );
+          })}
 
-        {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
-            笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。 */}
-        <BoardPenLayer
-          boardId={boardId}
-          orientation={orientation}
-          penOn={penOn}
-          color={penColor}
-        />
+          {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
+              笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。 */}
+          <BoardPenLayer
+            boardId={boardId}
+            orientation={orientation}
+            penOn={penOn}
+            color={penColor}
+          />
+        </div>
+
+        {/* 缩放控件（OneGUI 按钮族）：− / 百分比（点=重置视图）/ ＋。屏幕空间，不随世界层缩放。 */}
+        <div className="board-zoombar" onPointerDown={(e) => e.stopPropagation()}>
+          <BtnGroup>
+            <IconBtn label="缩小" icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
+            <Btn size="sm" variant="ghost" titleAttr="回到内容（适配窗口，最多 100%）" onClick={resetView}>
+              {zoomLabel(view.z)}
+            </Btn>
+            <IconBtn label="放大" icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
+          </BtnGroup>
+        </div>
+
 
         {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
         <div className="free-fab-col">

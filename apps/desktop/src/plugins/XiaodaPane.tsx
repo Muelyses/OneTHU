@@ -34,6 +34,8 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
   const stopRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  /** 内容滚动容器（把「发送」钉在窗底，消息区自己滚） */
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   /* 进窗即备好登录状态（与一级页共用 lib/xiaoda.ts 的同一份登录状态） */
   useEffect(() => {
@@ -128,7 +130,24 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
   }, []);
 
   return (
-    <Stack gap={4}>
+    /* 内容根沿用面板既有契约类 .ohx-searchpane（flex:1 + min-height:0 + 内边距/gap）：
+       不这样，面板顶置时的把手（flex order 10）会跟着短内容停在窗中间，内容也挤在左上角。
+       内层再套一个自己滚动的区，把「发送」一行钉在窗底。 */
+    <div className="ohx-searchpane">
+      <div
+        ref={scrollRef}
+        style={{
+          /* 与 OH 消息区（matMsgs）同一套布局契约：吃掉剩余高度、自己滚、touch 行为一致 */
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+          touchAction: "pan-y",
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--og-space-3)",
+        }}
+      >
       <Banner tone="warning" title="仅供实验与参考">
         {DISCLAIMER}
       </Banner>
@@ -175,6 +194,7 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
         );
       })}
       <div ref={bottomRef} />
+      </div>
       {err && phase === "ready" ? (
         <Banner tone="error" title="发送失败，可再发一次重试">
           {err}
@@ -190,6 +210,6 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
           </Btn>
         ) : null}
       </Inline>
-    </Stack>
+    </div>
   );
 }

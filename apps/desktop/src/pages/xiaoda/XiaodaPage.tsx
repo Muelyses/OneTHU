@@ -361,7 +361,13 @@ function ChatTab({
       <Card title="发送">
         <Stack gap={3}>
           <Inline gap={2} wrap>
-            <Select value={agentId} onChange={onAgentId} options={agentOptions} aria-label="对话智能体" />
+            <Select
+              value={agentId}
+              onChange={onAgentId}
+              options={agentOptions}
+              disabled={!!active}
+              aria-label="对话智能体"
+            />
             {models.length > 0 ? (
               <Select
                 value={modelId}
@@ -382,6 +388,11 @@ function ChatTab({
               </Btn>
             ) : null}
           </Inline>
+          {active ? (
+            <Text slot="micro" tone="faint">
+              对话一旦开始就不能再换智能体；要换请先点「新对话」。
+            </Text>
+          ) : null}
           <Text slot="micro" tone="faint">
             {PAGE_NOTE}
           </Text>

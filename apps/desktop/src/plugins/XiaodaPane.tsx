@@ -1,0 +1,195 @@
+/**
+ * 清小搭小窗（OH 胶囊三态之一：搜索 / OH / 清小搭）—— 2026-10-15。
+ *
+ * 定位与红线（用户 2026-10-15 口径）：
+ *  - **只开新的默认对话**：小窗里不提供历史浏览、不接续既有对话
+ *    （要接着聊请到一级功能页「清小搭」→ 历史 → 接着聊）；
+ *  - 窗内必须明确标注：清小搭功能仅供实验与参考，无法取代 OneTHU Harness 的作用，也无法调度 OH 功能；
+ *  - 与 OH 完全隔离：不读 Harness 会话、不注册工具、不写任何 OH 状态；输入口沿用胶囊（本窗只出发送钮）。
+ * 协议：GET /api/conversation/create → POST /api/chats/ 原生 SSE（core/xiaoda/client.ts）。
+ */
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Avatar, Banner, Btn, Inline, Spinner, Stack, Surface, Text } from "@onethu/gui";
+import type { XiaodaChatMessage } from "@onethu/core";
+import { xiaodaClient, xiaodaEnsureLogin } from "../lib/xiaoda.js";
+import {
+  dockInputSnapshot, registerXiaodaSubmit, setDockInputValue, subscribeDockInput,
+} from "./ChatDock.js";
+
+/** 平台默认助手（清小搭本体）；小窗不提供换智能体，故只有这一个 */
+const AGENT_ID = "9999";
+const AGENT_NAME = "清小搭";
+/** 窗内标注（用户指定口径，逐字照录） */
+const DISCLAIMER = "清小搭功能仅供实验与参考：无法取代 OneTHU Harness 的作用，也无法调度 OH 功能。";
+
+const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e));
+
+export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): ReactNode {
+  const [phase, setPhase] = useState<"boot" | "ready" | "error">("boot");
+  const [err, setErr] = useState("");
+  const [msgs, setMsgs] = useState<XiaodaChatMessage[]>([]);
+  const [sending, setSending] = useState(false);
+  const draft = useSyncExternalStore(subscribeDockInput, dockInputSnapshot, dockInputSnapshot);
+  const convIdRef = useRef("");
+  const stopRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  /* 进窗即备好登录状态（与一级页共用 lib/xiaoda.ts 的同一份登录状态） */
+  useEffect(() => {
+    let alive = true;
+    setPhase("boot");
+    xiaodaEnsureLogin()
+      .then(() => {
+        if (alive) setPhase("ready");
+      })
+      .catch((e: unknown) => {
+        if (!alive) return;
+        setErr(errText(e));
+        setPhase("error");
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const bubble = (partial: Partial<XiaodaChatMessage>): XiaodaChatMessage => ({
+    id: "", role: "assistant", content: "", thinkContent: "", agentId: AGENT_ID, agentName: AGENT_NAME, agentIcon: "",
+    ...partial,
+  });
+
+  const send = useCallback(
+    async (text: string) => {
+      const q = text.trim();
+      if (!q || sending) return;
+      if (phase !== "ready") {
+        onNotice?.(phase === "boot" ? "清小搭还在准备，稍等一下" : `清小搭暂时不可用：${err}`);
+        return;
+      }
+      setMsgs((prev) => [...prev, bubble({ role: "user", agentName: "我" }), bubble({})]);
+      setDockInputValue("");
+      setSending(true);
+      setErr("");
+      stopRef.current = false;
+      const ac = new AbortController();
+      abortRef.current = ac;
+      try {
+        /* 只开新对话：小窗内第一次发送时向后端申请对话号，之后沿用 */
+        if (!convIdRef.current) {
+          const cid = await xiaodaClient.createConversation();
+          if (!cid) throw new Error("新建对话失败，请再发一次重试");
+          convIdRef.current = cid;
+        }
+        await xiaodaClient.chatNative({
+          agentId: AGENT_ID,
+          query: q,
+          convId: convIdRef.current,
+          signal: ac.signal,
+          onDelta: (d) => {
+            if (stopRef.current) return;
+            setMsgs((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              if (last && last.role === "assistant") next[next.length - 1] = { ...last, content: last.content + d };
+              return next;
+            });
+          },
+        });
+      } catch (e) {
+        setErr(errText(e));
+        setMsgs((prev) => {
+          const next = [...prev];
+          const last = next[next.length - 1];
+          if (last && last.role === "assistant" && !last.content) next.pop();
+          return next;
+        });
+      } finally {
+        setSending(false);
+        abortRef.current = null;
+      }
+    },
+    [sending, phase, err, onNotice],
+  );
+
+  /* 胶囊输入框回车 → 交给本窗（与 OH 的发送互不干扰） */
+  useEffect(() => {
+    registerXiaodaSubmit((t) => void send(t));
+    return () => registerXiaodaSubmit(null);
+  }, [send]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "nearest" });
+  }, [msgs.length, sending]);
+
+  const stop = useCallback(() => {
+    stopRef.current = true;
+    abortRef.current?.abort();
+    if (convIdRef.current) void xiaodaClient.stopChat(convIdRef.current);
+  }, []);
+
+  return (
+    <Stack gap={4}>
+      <Banner tone="warning" title="仅供实验与参考">
+        {DISCLAIMER}
+      </Banner>
+      {phase === "boot" ? (
+        <Inline gap={2}>
+          <Spinner size="sm" />
+          <Text slot="label" tone="faint">
+            正在准备清小搭…
+          </Text>
+        </Inline>
+      ) : null}
+      {phase === "error" ? (
+        <Banner tone="error" title="清小搭暂时不可用，请稍后重试">
+          {err}
+        </Banner>
+      ) : null}
+      {phase === "ready" && msgs.length === 0 ? (
+        <Text slot="label" tone="quiet">
+          在下方胶囊里输入问题、回车即发。这里是新的默认对话，不接续别处的历史。
+        </Text>
+      ) : null}
+      {msgs.map((m, i) => {
+        const isUser = m.role === "user";
+        const name = isUser ? "我" : AGENT_NAME;
+        const waiting = !isUser && !m.content && sending && i === msgs.length - 1;
+        return (
+          <Inline key={m.id || `x${i}`} gap={3} vAlign="start" justify={isUser ? "end" : "start"}>
+            {!isUser ? <Avatar name={name} size="sm" /> : null}
+            <Surface level={isUser ? 2 : 1} pad="md" radius="2xl">
+              <Stack gap={2}>
+                {m.content ? <Text as="p">{m.content}</Text> : null}
+                {waiting ? (
+                  <Inline gap={2}>
+                    <Spinner size="sm" />
+                    <Text slot="label" tone="faint">
+                      正在输入…
+                    </Text>
+                  </Inline>
+                ) : null}
+              </Stack>
+            </Surface>
+            {isUser ? <Avatar name={name} size="sm" /> : null}
+          </Inline>
+        );
+      })}
+      <div ref={bottomRef} />
+      {err && phase === "ready" ? (
+        <Banner tone="error" title="发送失败，可再发一次重试">
+          {err}
+        </Banner>
+      ) : null}
+      <Inline gap={2}>
+        <Btn variant="solid" size="sm" disabled={phase !== "ready" || sending || !draft.trim()} onClick={() => void send(draft)}>
+          发送
+        </Btn>
+        {sending ? (
+          <Btn variant="outline" size="sm" onClick={stop}>
+            停止
+          </Btn>
+        ) : null}
+      </Inline>
+    </Stack>
+  );
+}

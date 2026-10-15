@@ -8,7 +8,7 @@
  * 发送目标（搜索 or OH）由 state/explorerPrefs.ts 的默认值 + 小窗内临时切换决定，
  * 这里不携带目标——那是 ChatDock 内部的事。
  */
-export type OhMode = "search" | "oh";
+export type OhMode = "search" | "oh" | "xiaoda";
 
 export type OhCommand =
   | { type: "panel"; mode: OhMode; presetQuery?: string }
@@ -27,7 +27,7 @@ function dispatch(cmd: OhCommand): void {
   for (const f of subs) f(cmd);
 }
 
-/** 打开 OH 小窗：mode=search 落搜索模式（可带预填词）；mode=oh 落对话 */
+/** 打开 OH 小窗：mode=search 落搜索；mode=oh 落 OH 对话；mode=xiaoda 落清小搭（只开新默认对话） */
 export function requestOhPanel(mode: OhMode = "search", presetQuery?: string): void {
   dispatch({ type: "panel", mode, presetQuery });
 }

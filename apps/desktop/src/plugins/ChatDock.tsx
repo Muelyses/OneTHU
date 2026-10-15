@@ -42,6 +42,7 @@ import { AttachActionsSheet, type AttachActionDone } from "../components/AttachA
 import { bytesToDataUrl, fileToBytes, formatSize, mimeFromName, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
 import { openImageViewer } from "../components/ImageViewer.js";
 import { HarnessMark } from "../components/HarnessMark.js";
+import { XiaodaPane } from "./XiaodaPane.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
@@ -457,7 +458,7 @@ function voiceHintOf(voice: DockVoice, cancelling: boolean, mode: OhMode): strin
   if (cancelling && voice !== "off") return "松开取消";
   if (voice === "arming") return "首次需弹窗允许";
   if (voice === "sending") return "正在发送…";
-  return mode === "search" ? "松手搜索" : "松手直发 OH";
+  return mode === "search" ? "松手搜索" : mode === "xiaoda" ? "松手直发清小搭" : "松手直发 OH";
 }
 
 /* 草稿通道：胶囊输入框是唯一编辑入口（面板内不再有第二个文本框），发送按钮读同一份 */
@@ -479,6 +480,11 @@ export function subscribeDockInput(f: () => void): () => void {
 }
 /** 组件内注册的提交动作（mode=oh：草稿作为消息直发） */
 let dockSubmitFn: ((text: string) => void) | null = null;
+/** 清小搭小窗自己的提交动作：mode=xiaoda 时胶囊回车交给它，与 OH 的发送完全隔离 */
+let xiaodaSubmitFn: ((text: string) => void) | null = null;
+export function registerXiaodaSubmit(f: ((text: string) => void) | null): void {
+  xiaodaSubmitFn = f;
+}
 export function dockSubmitInput(): void {
   const t = dockInputValue.trim();
   if (!t) return;
@@ -1631,6 +1637,12 @@ export function ChatDock(): ReactNode {
     dockSubmitFn = (t: string) => {
       /* 用户定案：胶囊是独立输入组件，文字送给谁由上方切换按钮（mode）决定 */
       if (mode === "search") return; /* 检索词经 live 镜像已实时生效，Enter 无事可做 */
+      if (mode === "xiaoda") {
+        /* 清小搭态：草稿交给清小搭小窗（它自己管对话号与流式上屏） */
+        setDockInputValue("");
+        xiaodaSubmitFn?.(t);
+        return;
+      }
       if (!pid) {
         setNotice("小OH 还没就绪（Harness 插件未加载）——对话需要完整桌面环境");
         return;
@@ -2368,6 +2380,20 @@ export function ChatDock(): ReactNode {
             <div className="ohx-modeswitch" role="tablist" aria-label="搜索或对话">
               <button role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</button>
               <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</button>
+              {/* 第三态：清小搭（2026-10-15 用户口径「搜索 / OH / 清小搭 三选一」）。务必追加在 OH 之后：
+                  OOSE 预览契约以 `.dock-panel [role='tab']` 的**第二个** tab 命中 OH，顺序不能动。 */}
+              {/* 用 OG Btn 出本体（不新增裸控件计数），但保留 role=tab —— OOSE 预览契约按
+                  `.dock-panel [role='tab']` 找页签，顺序仍是 搜索 / OH / 清小搭。 */}
+              <Btn
+                variant="ghost"
+                size="sm"
+                role="tab"
+                aria-selected={mode === "xiaoda"}
+                className={mode === "xiaoda" ? "is-active" : ""}
+                onClick={() => setMode("xiaoda")}
+              >
+                清小搭
+              </Btn>
             </div>
             <div className="dock-ops" style={matOps}>
               {/* 创造模式（2026-10-13）：图标+文字开关钮（用户拍板：不能只是一颗星，旁边要写字）。
@@ -2429,6 +2455,8 @@ export function ChatDock(): ReactNode {
               <p>当前窗口没有 Harness 进程（浏览器预览或插件未加载），对话历史在这里不可用，发送也不会生效。</p>
               <p>搜索模式不受影响，可正常使用。到桌面端（tauri 桌面版）打开同一入口即可看到主对话。</p>
             </div>
+          ) : mode === "xiaoda" ? (
+            <XiaodaPane onNotice={setNotice} />
           ) : mode === "search" ? (
             <OhSearchPane
               query={searchQuery}

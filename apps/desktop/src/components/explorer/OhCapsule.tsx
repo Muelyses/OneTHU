@@ -176,7 +176,7 @@ export function OhCapsule(): React.ReactNode {
         /* 展开态：真输入框——搜索态=检索词、对话态=消息草稿，与上方窗一个连续交互体。
            className="ohx-input" 挂回 OG Input 的壳上：Explorer-ui 契约的 .ohx-input 规则
            （去壳框/满宽）重新生效，同时 pointerDown 的 closest(".ohx-input") 守卫恢复可判 */
-        <Input className="ohx-input" autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={PLACEHOLDER} aria-label="搜索或问小OH" />
+        <Input className="ohx-input" autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={ui.mode === "search" ? PLACEHOLDER : ui.mode === "xiaoda" ? "问清小搭…" : "问小OH…"} aria-label={ui.mode === "xiaoda" ? "问清小搭" : "搜索或问小OH"} />
       ) : (
         <span className="ohx-capsule-ph">{idleText}</span>
       )}

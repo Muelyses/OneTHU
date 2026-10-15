@@ -59,18 +59,29 @@ export interface SpheresDoc {
   dockOpacity: number;
 }
 
-const KEY = "onethu.home.spheres.v2";
+const KEY = "onethu.home.spheres.v3";
+/** 上一代键名：v2 → v3 一次性迁移用（2026-10-15 新增一级功能「清小搭」） */
+const PREV_KEY = "onethu.home.spheres.v2";
 
 const clampOp = (n: unknown): number =>
   typeof n === "number" && Number.isFinite(n) ? Math.min(1, Math.max(0.15, n)) : 1;
 
 function defaultDoc(): SpheresDoc {
+  const first = NAV.slice(0, 8).map((n) => n.page as string);
+  /* 清小搭是一级功能，新装即长在坞上（已在头八个里就不重复加） */
   return {
     v: 1,
-    docked: NAV.slice(0, 8).map((n) => n.page),
+    docked: first.includes("xiaoda") ? first : [...first, "xiaoda"],
     timeOpacity: 1,
     dockOpacity: 1,
   };
+}
+
+/** v2 → v3 迁移：老文档补停靠新一级功能（写回 v3；用户之后手动移除不会再被回填） */
+function migrateLegacy(doc: SpheresDoc): SpheresDoc {
+  const known = new Set<string>([...NAV.map((n) => n.page as string), ...pluginTabsSnapshot().map((t) => t.pageKey)]);
+  const add = ["xiaoda"].filter((id) => known.has(id) && !doc.docked.includes(id));
+  return add.length > 0 ? { ...doc, docked: [...doc.docked, ...add] } : doc;
 }
 
 function sanitize(raw: unknown): SpheresDoc {
@@ -95,8 +106,18 @@ function sanitize(raw: unknown): SpheresDoc {
 
 function load(): SpheresDoc {
   try {
-    const raw = localStorage.getItem(KEY) ?? localStorage.getItem("onethu.home.spheres.v1");
-    if (raw) return sanitize(JSON.parse(raw));
+    const cur = localStorage.getItem(KEY);
+    if (cur) return sanitize(JSON.parse(cur));
+    const legacy = localStorage.getItem(PREV_KEY) ?? localStorage.getItem("onethu.home.spheres.v1");
+    if (legacy) {
+      const migrated = migrateLegacy(sanitize(JSON.parse(legacy)));
+      try {
+        localStorage.setItem(KEY, JSON.stringify(migrated)); // 迁移结果落盘（幂等；存储满则下次再迁）
+      } catch {
+        /* 存储满：纯偏好，静默 */
+      }
+      return migrated;
+    }
   } catch {
     /* 脏数据当没有 */
   }

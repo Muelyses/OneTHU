@@ -512,6 +512,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     setZoomRef.current(fitZoom(viewportRef.current, contentRect(itemsRef.current)));
   }, []);
 
+  useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释
+
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -740,7 +742,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       {chrome ? (
         <PageHead
           title={chrome.title}
-          meta="自由画布：拖动摆放、四角缩放，组件可以互相重叠盖住"
+          meta="无限画布：拖动摆放、四角缩放，组件可以互相重叠盖住；左下角 ± 缩放画布"
           menu={[
             { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
             { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
@@ -1176,22 +1178,22 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
  * 取代已退役的 pages/BoardPage.tsx —— 页面 id 仍是 `board`（深链 #/board/<板 id> 照旧），
  * 画布换成与首页同一块自由白板；「所有 OnePage」入口在页头菜单里（另一条通路是 OneGO）。
  */
-/** 临时几何探针（仅 dev，2026-10-15，取证后删）：OnePage「截断」要看**真 app** 的逐层数字。
- *  每 3s 报一条：视口/面板（高、scrollHeight、overflowY、maxHeight、类名）/画布（高、scrollHeight、
- *  内联 minHeight）/最底部与最顶部条目（含负数）/画笔层 —— 拖完组件我就能立刻知道是哪一层在裁。 */
-function useOnePageLayoutProbe(_boardKey: string | null | undefined): void {
+/** 临时几何探针（仅 dev，2026-10-15，取证后删）：无限画布的"不裁切"要看**真 app** 的数字。
+ *  每 3s 报一条（只在**自己这块画布可见**时）：面板/画布/盒子的最小尺寸、内容外接框、
+ *  世界层倍率、缩放条上的百分比、逐条目"盒子高 vs 卡体内容高"（!!CUT 即内容被切）。 */
+function useCanvasProbeImpl(_boardKey: string, hostRef: React.RefObject<HTMLDivElement | null>): void {
   useEffect(() => {
     if (!import.meta.env.DEV) return; // 生产不跑
     const report = (): void => {
-      /* 只看**可见**那个面板/画布：非活跃标签的面板是 display:none（高 0），此前探针全测到 0，
-         等于一条有效数据都没有（仓库里 ExplorerPreview 用的是同款选择器）。 */
-      const panel = document.querySelector<HTMLElement>(".explorer-panel:not([style*='display: none'])");
-      const canvas = panel?.querySelector<HTMLElement>(".freeboard") ?? null;
-      if (!panel || !canvas) return;
-      const pen = canvas.querySelector<HTMLElement>(".board-pen");
-      const items = Array.from(canvas.querySelectorAll<HTMLElement>(".free-item"));
+      const host = hostRef.current;
+      if (!host) return;
+      const panel = host.closest<HTMLElement>(".explorer-panel");
+      if (!panel || panel.getBoundingClientRect().height < 2) return; // 隐藏标签页：不报（每块画布各挂一条，只报可见的）
       const pcs = getComputedStyle(panel);
-      /* 每个条目报"盒子 h"与"卡体内容 sh"：sh > h 就是**内容被切**（含内部可滚与否）。 */
+      const cs = getComputedStyle(host);
+      const world = host.querySelector<HTMLElement>(".freeboard-world");
+      const bar = document.querySelector<HTMLElement>(".board-zoombar");
+      const items = Array.from(host.querySelectorAll<HTMLElement>(".free-item"));
       const rows = items.map((it) => {
         const r = it.getBoundingClientRect();
         const inner = it.querySelector<HTMLElement>(".wg-card") ?? it.firstElementChild;
@@ -1200,26 +1202,36 @@ function useOnePageLayoutProbe(_boardKey: string | null | undefined): void {
         const flags = (it.dataset.manual === "1" ? "M" : "") + (it.dataset.fitted === "1" ? "C" : "") + (it.dataset.folded === "1" ? "F" : "");
         return `${it.dataset.itemId ?? "?"}[${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)} card=${ih}/${ish}${flags ? " " + flags : ""}${ish > ih + 2 ? "!!CUT" : ""}]`;
       });
+      /* 不裁切不变量的**现场判据**：内容最右下角（含倍率）必须落在盒子里；
+         盒子比视口高 → 面板必须能滚到（sh > ch）。 */
+      const boxRight = items.reduce((m, it) => Math.max(m, it.offsetLeft + it.offsetWidth), 0);
+      const boxBottom = items.reduce((m, it) => Math.max(m, it.offsetTop + it.offsetHeight), 0);
+      const inner = host.querySelector<HTMLElement>(".freeboard-world") ?? host;
+      const maxRight = items.reduce((m, it) => Math.max(m, it.offsetLeft + it.offsetWidth), 0);
+      const maxBottom = items.reduce((m, it) => Math.max(m, it.offsetTop + it.offsetHeight), 0);
       const line = [
-        "[onepage-layout]",
+        "[canvas]",
+        `key=${_boardKey}`,
         `win=${innerWidth}x${innerHeight}`,
-        `panel[h=${Math.round(panel.getBoundingClientRect().height)} ch=${panel.clientHeight} sh=${panel.scrollHeight} oy=${pcs.overflowY} maxH=${pcs.maxHeight} top=${Math.round(panel.getBoundingClientRect().top)} cls="${panel.className}"]`,
-        `canvas[h=${Math.round(canvas.getBoundingClientRect().height)} sh=${canvas.scrollHeight} minH="${canvas.style.minHeight || ""}"]`,
-        pen ? `pen[h=${Math.round(pen.getBoundingClientRect().height)}]` : "pen=null",
+        `panel[h=${Math.round(panel.getBoundingClientRect().height)} ch=${panel.clientHeight} sh=${panel.scrollHeight} oy=${pcs.overflowY} cls="${panel.className}"]`,
+        `canvas[h=${Math.round(host.getBoundingClientRect().height)} w=${Math.round(host.getBoundingClientRect().width)} minH="${cs.minHeight}" minW="${cs.minWidth}" ov=${cs.overflow}]`,
+        `contentPlan=[${Math.round(maxRight)},${Math.round(maxBottom)}] boxOK=${maxRight <= host.clientWidth + 1 && maxBottom <= host.clientHeight + 1}`,
+        world ? `world="${world.style.getPropertyValue("--board-z")}"` : "world=null",
+        `zoom="${bar?.textContent?.trim() ?? "?"}" fab=${document.querySelectorAll(".free-fab").length}`,
         `items=${items.length}`,
         `boxes=[${rows.join(" ")}]`,
+        `ink=${inner === host ? "-" : boxRight + "x" + boxBottom}`,
       ].join(" ");
       void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
     };
     const iv = window.setInterval(report, 3000);
     report();
     return () => window.clearInterval(iv);
-  }, []);
+  }, [_boardKey, hostRef]);
 }
 
 export function OnePageSurface(): ReactNode {
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
-  useOnePageLayoutProbe(doc.activeBoardId); // 临时探针（仅 dev）：定时上报，见函数头注释
   /* OneGO / 收藏星 / 星标在别处改了板文档 → 重读（否则刚新建的 OnePage 打不开） */
   useEffect(() => {
     const on = (): void => setDoc(loadBoard());

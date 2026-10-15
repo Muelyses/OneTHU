@@ -31,7 +31,8 @@ export const ZOOM_STEPS: readonly number[] = [0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5,
 
 export const DEFAULT_VIEW: BoardView = { z: ZOOM_DEFAULT };
 
-/** 盒子四周的呼吸位（px，世界单位）：内容贴着边不好看，也留一点"还能往下拖"的余地。 */
+/* 取数触发点 v7（临时）：改本文件强制整页 reload —— 探针取证后与探针一起删。 */
+/** 盒子四周的呼吸位（px，世界单位）：内容贴着边不好看，也留一点余地。 */
 export const BOX_PAD = 96;
 
 export function clampZoom(z: number): number {

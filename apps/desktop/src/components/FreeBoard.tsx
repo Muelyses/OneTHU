@@ -992,24 +992,30 @@ function useOnePageLayoutProbe(_boardKey: string | null | undefined): void {
   useEffect(() => {
     if (!import.meta.env.DEV) return; // 生产不跑
     const report = (): void => {
-      const canvas = document.querySelector<HTMLElement>(".freeboard");
-      if (!canvas) return;
-      const panel = document.querySelector<HTMLElement>(".explorer-panel");
+      /* 只看**可见**那个面板/画布：非活跃标签的面板是 display:none（高 0），此前探针全测到 0，
+         等于一条有效数据都没有（仓库里 ExplorerPreview 用的是同款选择器）。 */
+      const panel = document.querySelector<HTMLElement>(".explorer-panel:not([style*='display: none'])");
+      const canvas = panel?.querySelector<HTMLElement>(".freeboard") ?? null;
+      if (!panel || !canvas) return;
       const pen = canvas.querySelector<HTMLElement>(".board-pen");
       const items = Array.from(canvas.querySelectorAll<HTMLElement>(".free-item"));
-      const rects = items.map((it) => {
+      const pcs = getComputedStyle(panel);
+      /* 每个条目报"盒子 h"与"卡体内容 sh"：sh > h 就是**内容被切**（含内部可滚与否）。 */
+      const rows = items.map((it) => {
         const r = it.getBoundingClientRect();
-        return `${it.dataset.itemId ?? "?"}:${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.width)},${Math.round(r.height)}`;
+        const inner = it.querySelector<HTMLElement>(".wg-card") ?? it.firstElementChild;
+        const ish = inner ? inner.scrollHeight : 0;
+        const ih = inner ? Math.round(inner.getBoundingClientRect().height) : 0;
+        return `${it.dataset.itemId ?? "?"}[${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)} card=${ih}/${ish}${ish > ih + 2 ? "!!CUT" : ""}]`;
       });
-      const pcs = panel ? getComputedStyle(panel) : null;
       const line = [
         "[onepage-layout]",
         `win=${innerWidth}x${innerHeight}`,
-        panel ? `panel[h=${Math.round(panel.getBoundingClientRect().height)} ch=${panel.clientHeight} sh=${panel.scrollHeight} oy=${pcs?.overflowY} maxH=${pcs?.maxHeight} top=${Math.round(panel.getBoundingClientRect().top)} cls="${panel.className}"]` : "panel=null",
-        `canvas[h=${Math.round(canvas.getBoundingClientRect().height)} sh=${canvas.scrollHeight} styleMinH="${canvas.style.minHeight || ""}"]`,
-        pen ? `pen[h=${Math.round(pen.getBoundingClientRect().height)} sh=${pen.scrollHeight}]` : "pen=null",
+        `panel[h=${Math.round(panel.getBoundingClientRect().height)} ch=${panel.clientHeight} sh=${panel.scrollHeight} oy=${pcs.overflowY} maxH=${pcs.maxHeight} top=${Math.round(panel.getBoundingClientRect().top)} cls="${panel.className}"]`,
+        `canvas[h=${Math.round(canvas.getBoundingClientRect().height)} sh=${canvas.scrollHeight} minH="${canvas.style.minHeight || ""}"]`,
+        pen ? `pen[h=${Math.round(pen.getBoundingClientRect().height)}]` : "pen=null",
         `items=${items.length}`,
-        `rects=[${rects.join(" ")}]`,
+        `boxes=[${rows.join(" ")}]`,
       ].join(" ");
       void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
     };

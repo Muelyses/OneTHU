@@ -63,13 +63,18 @@
    首页从固定双顶栏下沿铺到视口底；手机扣除顶栏、底部标签条、底栏与安全区。 */
 .explorer-shell > .explorer-content.is-home-canvas {
   --home-canvas-top: 104px;
-  width: 100%;
+  /* 宽度里扣掉竖栏让位量（2026-10-15）：竖版左栏下本元素有 margin-left，
+     若同时 width:100% 就会右侧溢出同样的量 —— 首页固定层是以 .home-tab 为参照
+     （inset:0 + margin-left:-ex-rail-w），内容一溢出，钟与坞整体右偏半个让位量。
+     --ex-rail-w 只在竖栏在场时定义，无竖栏时按 0 计（此时等价于原来的 100%）。 */
+  width: calc(100% - var(--ex-rail-w, 0px));
   max-width: none;
   min-height: 0;
   padding: 104px 0 0 !important;
 }
 .explorer-shell > .explorer-content.is-onepage-canvas {
-  width: 100%;
+  /* 同首页：扣掉竖栏让位量，否则 OnePage 画布右侧被裁、固定元素右偏 */
+  width: calc(100% - var(--ex-rail-w, 0px));
   max-width: none;
 }
 .home-free, .home-tab {

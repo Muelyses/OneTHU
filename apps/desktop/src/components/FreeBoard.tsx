@@ -360,24 +360,40 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     el.style.minHeight = bottom > base ? `${bottom}px` : "";
   }, [items]);
 
-  /* 按内容拟合（2026-10-15 补：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」）：
-     绝对定位的条目盒不会自己长高，而卡片内容会变（课程多一行、名单变长；模板按格位换算成 px 后
-     也可能比卡片自然高度少几像素）→ 盒比内容矮，卡片的底边/圆角就被硬切在那条线上。
-     这里对**没被用户手动定过尺寸**的条目（`manual` 为空：模板/程序创建的都算）量一次卡片的自然
-     内容高度，比盒子高就长高。口径：只长不缩（避开抖动与来回写盘）、差值 ≤2px 不动、folded 跳过
-     （折叠态本来更小，不该被撑开）；写入口是 `ops.fitHeight`（不置 manual、不动 cell）。 */
+  /* 按内容拟合 v2（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
+     第一版挂在 [items] 上：只在条目数组变化时量一次 —— 而**卡片内容是异步长的**（课表数据回来、
+     名单变长、换课表窗口），量早了就漏，于是"有时好有时坏"。改为用 **ResizeObserver 盯住每张卡**：
+     卡片内容一变就重新量，比盒高就长高。
+     口径：只长不缩（避免抖动/来回写盘）、差值 ≤2px 不动、folded 跳过（折叠态本来更小）、
+     写入口 `ops.fitHeight` 不置 manual（拟合是程序行为）也不动 cell（契约层只随用户动作同步）。 */
   useLayoutEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    for (const it of items) {
-      if (it.manual || it.folded) continue;
-      const el = host.querySelector<HTMLElement>('[data-item-id="' + it.id + '"]');
-      const card = el?.querySelector<HTMLElement>(".wg-card");
-      if (!el || !card) continue;
-      /* 卡片 scrollHeight = 内容自然高（含卡片自身内边距）；+2 补它自己的 1px 描边上下 */
-      const need = card.scrollHeight + 2;
-      if (need > it.h + 2) ops.fitHeight(it.id, need);
+    const fits = new Map<string, number>(); // 上一次拟合值，防同一数值反复写盘
+    const measure = (): void => {
+      for (const it of items) {
+        if (it.folded) continue;
+        const el = host.querySelector<HTMLElement>('[data-item-id="' + it.id + '"]');
+        const card = el?.querySelector<HTMLElement>(".wg-card");
+        if (!el || !card) continue;
+        const need = card.scrollHeight + 2; // 卡片内容自然高 + 自身 1px 描边
+        if (need <= it.h + 2) continue;
+        if (fits.get(it.id) === Math.round(need)) continue; // 已经为这个高度拟合过
+        /* 用户手动定过尺寸的条目：**不自动长高**（尊重用户），但要保证卡内可滚而不是硬切 ——
+           由 CSS 的 .free-item .wg-card > * { overflow:auto } 兜住。 */
+        if (it.manual) continue;
+        fits.set(it.id, Math.round(need));
+        ops.fitHeight(it.id, need);
+      }
+    };
+    measure();
+    const ro = new ResizeObserver(() => measure());
+    for (const el of host.querySelectorAll<HTMLElement>("[data-item-id]")) {
+      const card = el.querySelector<HTMLElement>(".wg-card");
+      if (card) ro.observe(card);
+      ro.observe(el);
     }
+    return () => ro.disconnect();
   }, [items, ops]);
 
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
@@ -652,6 +668,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               data-item-id={it.id}
               data-item={it.spec.kind}
               data-size={plan.size.w + "x" + plan.size.h}
+              data-manual={it.manual ? "1" : undefined}
+              data-folded={it.folded ? "1" : undefined}
               className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
               style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
               onPointerDown={(e) => {
@@ -1026,7 +1044,8 @@ function useOnePageLayoutProbe(_boardKey: string | null | undefined): void {
         const inner = it.querySelector<HTMLElement>(".wg-card") ?? it.firstElementChild;
         const ish = inner ? inner.scrollHeight : 0;
         const ih = inner ? Math.round(inner.getBoundingClientRect().height) : 0;
-        return `${it.dataset.itemId ?? "?"}[${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)} card=${ih}/${ish}${ish > ih + 2 ? "!!CUT" : ""}]`;
+        const flags = (it.dataset.manual === "1" ? "M" : "") + (it.dataset.folded === "1" ? "F" : "");
+        return `${it.dataset.itemId ?? "?"}[${Math.round(r.left)},${Math.round(r.top)} ${Math.round(r.width)}x${Math.round(r.height)} card=${ih}/${ish}${flags ? " " + flags : ""}${ish > ih + 2 ? "!!CUT" : ""}]`;
       });
       const line = [
         "[onepage-layout]",

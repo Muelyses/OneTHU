@@ -167,13 +167,13 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
             <Btn variant="ghost" onClick={() => setMsg("已恢复 " + restoreBuiltins() + " 个内置主题")}>恢复内置</Btn>,
           )}
           {installedThemes.length === 0 ? <div className="plg-hint">没有匹配的已安装主题。</div> : null}
-          <div style={{ display: "grid", gap: 8, gridTemplateColumns: "minmax(0, 1fr)" }}>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "minmax(0, 1fr)" }}>
             {/* 基础令牌不在 snap.themes 里（它不是 ThemeDef），所以单列一行，
                 否则切了主题就回不到默认外观了。 */}
             {hit(["默认外观"]) ? (
               <div
                 style={{
-                  display: "flex", alignItems: "center", gap: 10, padding: "8px 10px",
+                  display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
                   border: "1px solid " + (snap.activeId ? "var(--border)" : "var(--accent)"),
                   borderRadius: "var(--r-md)", background: snap.activeId ? "var(--surface)" : "var(--accent-soft)",
                 }}
@@ -184,7 +184,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                     <b>默认外观</b>
                     {snap.activeId ? null : <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span>}
                   </div>
-                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2 }}>不套用任何主题，使用应用自带配色</div>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 4 }}>不套用任何主题，使用应用自带配色</div>
                 </div>
                 {snap.activeId ? (
                   <Btn variant="solid" tone="brand" onClick={() => { deactivateTheme(); setMsg("已回到默认外观"); }}>应用</Btn>
@@ -197,7 +197,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                 <div
                   key={t.id}
                   style={{
-                    display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", minWidth: 0,
+                    display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", minWidth: 0,
                     border: "1px solid " + (on ? "var(--accent)" : "var(--border)"),
                     borderRadius: "var(--r-md)", background: on ? "var(--accent-soft)" : "var(--surface)",
                   }}
@@ -209,7 +209,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
                       {t.source === "plugin" ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>社区</span> : null}
                       {on ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span> : null}
                     </div>
-                    <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {t.description ?? t.id}
                     </div>
                   </div>
@@ -228,7 +228,7 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
           )}
           {!items && busy ? <div className="plg-hint">正在拉取主题市场…</div> : null}
           {items && !marketHits.length ? <div className="plg-hint">没有匹配的主题。</div> : null}
-          <div style={{ display: "grid", gap: 8, gridTemplateColumns: "minmax(0, 1fr)" }}>
+          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "minmax(0, 1fr)" }}>
             {marketHits.map((x) => {
               const has = hasInMarket(x);
               return (

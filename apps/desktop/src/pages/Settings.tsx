@@ -885,9 +885,10 @@ function AppearanceSection(): ReactNode {
         <List divided>
           <Row
             selected={!snap.activeId}
+            size="lg"
             leading={<ThemeSwatch vars={{}} />}
             title="默认外观"
-            sub="不套用任何主题，使用应用自带配色"
+            sub={<OGText slot="label" tone="quiet" clamp={2}>不套用任何主题，使用应用自带配色</OGText>}
             meta={snap.activeId ? null : <Tag tone="brand">使用中</Tag>}
             trailing={
               snap.activeId ? (
@@ -901,9 +902,10 @@ function AppearanceSection(): ReactNode {
               <Row
                 key={t.id}
                 selected={on}
+                size="lg"
                 leading={<ThemeSwatch vars={t.vars} />}
                 title={t.name}
-                sub={t.description ?? t.id}
+                sub={<OGText slot="label" tone="quiet" clamp={2}>{t.description ?? t.id}</OGText>}
                 meta={<>{t.source === "plugin" ? <Tag>社区</Tag> : null}{on ? <Tag tone="brand">使用中</Tag> : null}</>}
                 trailing={on ? null : <Btn variant="solid" tone="brand" size="sm" onClick={() => activateTheme(t.id)}>应用</Btn>}
               />

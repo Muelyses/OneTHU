@@ -46,7 +46,6 @@ import { resolveAtom } from "../state/atoms.js";
 import { atomRefFromKey } from "../state/favorites.js";
 import { useApp } from "../state/context.js";
 import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
-import { consumeEditOnOpen } from "../state/boardIntent.js";
 import { openOnePage } from "../state/onePage.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
 import { FolderIcon } from "./Icons.js";
@@ -348,7 +347,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
   /* 从今日页「编辑白板布局」进来时直接开添加抽屉（自由画布没有编辑态，落地动作就是"加东西"）。 */
   useEffect(() => {
-    if (chrome && consumeEditOnOpen()) setAddOpen(true);
   }, [chrome]);
 
   /* 画布高度跟着内容长：条目被拖到折叠线以下时外层滚动容器要能滚到它。
@@ -574,7 +572,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   );
 
   return (
-    <div className="freeboard-wrap">
+    <div className="freeboard-wrap" data-coach="home-canvas">
       {chrome ? (
         <PageHead
           title={chrome.title}
@@ -750,7 +748,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
         {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
         <div className="free-fab-col">
-          <button type="button" className="free-fab" title="添加组件" aria-label="添加组件" onClick={() => setAddAt({ x: 60, y: 300 })}>
+          <button type="button" className="free-fab" data-coach="home-add" title="添加组件" aria-label="添加组件" onClick={() => setAddAt({ x: 60, y: 300 })}>
             <IconPlus width={18} height={18} />
           </button>
           <button

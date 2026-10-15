@@ -59,7 +59,7 @@ const sources = read("apps/desktop/src/state/notifySources.ts");
 assert.ok(/collect: collectNotifyInputs/.test(sources) && sources.split("collect: collectNotifyInputs").length - 1 >= 2,
   "通知与小组件必须共用 collectNotifyInputs（过滤才能同时覆盖两者）");
 
-const today = read("apps/desktop/src/pages/Today.tsx");
+const today = read("apps/desktop/src/components/boardCards.tsx");
 assert.ok(/!h\.submitted && !ignored\.has\(h\.id\)/.test(today), "首页作业区必须剔除已忽略");
 
 const assigns = read("apps/desktop/src/pages/learn/AssignmentsPage.tsx");
@@ -73,7 +73,7 @@ assert.ok(/ignored: hw\.filter\(\(h\) => ignored\.has\(h\.id\)\)/.test(assigns),
  * DDL 全都还在算已忽略的作业。聚合点必须逐个点名，不能靠记得。 */
 const HW_AGGREGATORS = [
   "apps/desktop/src/pages/Learn.tsx",                  // 网络学堂首页：未交总数 + 每课未交数
-  "apps/desktop/src/pages/Today.tsx",                  // 今日页作业区
+  "apps/desktop/src/components/boardCards.tsx",        // 新首页（自由画布）里的作业卡片
   "apps/desktop/src/pages/learn/AssignmentsPage.tsx",  // 全部作业分组
   "apps/desktop/src/pages/learn/CourseDetailPage.tsx", // 各学科作业栏 + 计数
   "apps/desktop/src/components/HomeWidgets.tsx",       // 首页小组件：未交卡片与 DDL 行

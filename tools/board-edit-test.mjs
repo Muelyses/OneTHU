@@ -138,13 +138,13 @@ ok(/navigate\("board"\)/.test(listPage), "点击收藏夹没有进入白板页")
 ok(/所有 OnePage/.test(pageR) && /navigate\("boards"\)/.test(pageR), "白板面没有进入 OnePage 列表的入口");
 ok(/"boards"/.test(readFileSync("apps/desktop/src/state/app.tsx", "utf8")), "路由白名单里没有 boards（会静默回落到今日页）");
 /* ⑪ 进入即编辑的一次性意图（P2 UX） */
-const I = await import("../apps/desktop/src/state/boardIntent.ts");
-ok(I.consumeEditOnOpen() === false, "默认不应处于「进入即编辑」状态");
-I.requestEditOnOpen();
-ok(I.consumeEditOnOpen() === true, "置位后应能读到");
-ok(I.consumeEditOnOpen() === false, "消费一次即清空（否则下次进入又自动进编辑态）");
-ok(/requestEditOnOpen/.test(readFileSync("apps/desktop/src/pages/Today.tsx", "utf8")), "今日页菜单没有置「进入即编辑」标志");
-ok(/consumeEditOnOpen/.test(pageR), "自由画布没有消费「进入即编辑」标志（落到打开添加抽屉）");
+/* 2026-10-15：state/boardIntent.ts 已随旧「今日页」删除（那条一次性意图零生产者）——
+   这里不再 import 它（否则 ERR_MODULE_NOT_FOUND）；改为断言它确实已经不在源码里。 */
+ok(!readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8").includes("boardIntent"), "自由画布不该再挂着已删除的一次性编辑意图");
+/* 2026-10-15：旧「今日页」的「进入即编辑」菜单随页删除 —— 那条一次性意图（boardIntent）
+   已零生产者，连 state/boardIntent.ts 一起删了。这里改为断言它**确实不在**（防半吊子复活）：
+   新画布本来就是直接可拖可加，不需要"先点编辑再进来"这套。 */
+ok(!/requestEditOnOpen|consumeEditOnOpen/.test(pageR + readFileSync("apps/desktop/src/components/explorer/renderPage.tsx", "utf8")), "旧页的一次性编辑意图不该再出现在新首页/新页面上");
 /* ⑨ 把手只显示可调维度（霖 2026-10-10 口径）+ 空内容与缺渲染器的文案区分 */
 const widgetsSrc = readFileSync("apps/desktop/src/state/widgets.ts", "utf8");
 /* 基准瓦片高引入后，高度恢复可调（霖 2026-10-10 定） */

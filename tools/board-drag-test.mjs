@@ -112,7 +112,14 @@ const keptPx = B.parseBoard(mem.get(B.BOARD_KEY)).boards[0].cells.portrait;
 ok(keptPx[0].rect.x === 10 && keptPx[1].rect.x === 40 && keptPx[0].rect.y === 10, "写入口动了 rect —— 自由画布的摆位/重叠是特性，只能拆 cell");
 /* 重构报警：漏斗必须在持久化那两个函数里（挪走就会红） */
 const coreSrc = readFileSync("apps/desktop/src/state/boardCore.ts", "utf8");
-ok(/export function repairOverlaps/.test(coreSrc) && /const safe = repairOverlaps\(doc\)/.test(coreSrc) && /const safe = repairOverlaps\(parsed\)/.test(coreSrc), "写入口（saveBoard / loadBoard）没有再接重叠不变量");
+/* 漏斗必须在持久化那两个函数里（挪走就会红）。允许包一层前处理：2026-10-15 起
+   两个出口都写成 `repairOverlaps(purgeGridResidue(…))` —— 先清网格残留再拆 cell 重叠。 */
+ok(
+  /export function repairOverlaps/.test(coreSrc) &&
+    /const safe = repairOverlaps\(purgeGridResidue\(doc\)\)/.test(coreSrc) &&
+    /const safe = repairOverlaps\(purgeGridResidue\(parsed\)\)/.test(coreSrc),
+  "写入口（saveBoard / loadBoard）没有再接重叠不变量（期望 repairOverlaps(purgeGridResidue(…))）",
+);
 const docM = E.moveItem(docOf(tall), "b1", "portrait", "tall", { x: 0, y: 3 });
 const cellsM = docM.boards[0].cells.portrait.map((c) => c.id + "@" + c.cell.x + "," + c.cell.y).sort().join("|");
 const prevM = r1.map((c) => c.id + "@" + c.cell.x + "," + c.cell.y).sort().join("|");

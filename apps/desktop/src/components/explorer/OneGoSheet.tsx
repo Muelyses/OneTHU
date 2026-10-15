@@ -19,7 +19,7 @@ import { useDrawerRowsReorder } from "./TabDrawer.js";
 import { useAnchorPos } from "./TabDrawer.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { useFavs } from "../../state/favs.js";
-import { allOnePages, createOnePage, openOnePage, removeOnePage } from "../../state/onePage.js";
+import { createOnePage, openOnePage, removeOnePage, userOnePages } from "../../state/onePage.js";
 import type { Board } from "../../state/boardCore.js";
 import { resolveAtom } from "../../state/atoms.js";
 import type { LearnNav, Page } from "../../state/app.js";
@@ -83,7 +83,10 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
     window.addEventListener("onethu.boards.changed", on);
     return () => window.removeEventListener("onethu.boards.changed", on);
   }, []);
-  const boards = allOnePages();
+  /* 只列**用户的** OnePage（2026-10-15 用户实测）：系统板（「首页」）不是一块可打开的 OnePage，
+     把它列进来，点「首页」等于"把首页当白板打开"，看到的是旧板面而不是首页。首页另有入口：
+     顶栏 Logo、程序坞、以及本表下方的「功能目录在首页」。 */
+  const boards = userOnePages();
   void tick;
 
   const create = (): void => {
@@ -220,7 +223,7 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
 
 function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): ReactNode {
   const { navigate } = useApp();
-  const hits = allOnePages().filter((b) => b.name.toLowerCase().includes(q));
+  const hits = userOnePages().filter((b) => b.name.toLowerCase().includes(q));
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   const wsHits = wsSnap.workspaces.filter((w) => w.name.toLowerCase().includes(q));
   if (hits.length === 0 && wsHits.length === 0) return <div className="ex-empty-hint">没有匹配的 OnePage 或工作区。</div>;

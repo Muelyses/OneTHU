@@ -13,11 +13,15 @@ import { createPortal } from "react-dom";
 
 const KEY = "onethu.home.coach.v1";
 
-/** 锚点必须真的存在于「今日」页（护栏逐条核对 data-card / data-coach 的名字） */
+/**
+ * 锚点必须真的存在于**当前首页**（护栏逐条核对 data-coach / data-card 的名字）。
+ * 2026-10-15：首页换成自由画布后，旧的三个锚点（编辑模式 / 卡片折叠 / 为你推荐卡）随旧「今日页」
+ * 一起消失了 —— 导览会指空气。这里按新画布的实际交互重写，并在 FreeBoard / HomeSpheres 上补锚点。
+ */
 const TIPS: Array<{ target: string; text: string }> = [
-  { target: '[data-coach="home-edit"]', text: "点「编辑」可以给卡片换位置、把不用的收起来。" },
-  { target: '[data-coach="home-collapse"]', text: "标题行右侧的箭头能把卡片折叠，首页就短了。" },
-  { target: '[data-card="for-you"]', text: "这里会按你的习惯推荐功能；找不到的都在「服务」页，也能直接搜。" },
+  { target: '[data-coach="home-canvas"]', text: "卡片直接拖动就换位置，右下角 ➕ 加组件、双击空白建便笺。" },
+  { target: '[data-coach="home-add"]', text: "从这儿添加组件：内置组件、你的收藏、其它 OnePage 都在这。" },
+  { target: '[data-coach="home-dock"]', text: "一级功能坞在这里；找不到的功能都在「服务」页，也能直接搜。" },
 ];
 
 const GAP = 10;

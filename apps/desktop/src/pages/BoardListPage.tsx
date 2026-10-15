@@ -17,7 +17,9 @@ export function BoardListPage(): ReactNode {
   const menu = useContextMenu();
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   const [note, setNote] = useState<string | null>(null);
-  const rows = useMemo(() => boardSummary(doc), [doc]);
+  /* 系统板（「首页」）不是一块 OnePage：首页有自己的入口（顶栏 Logo / 程序坞）。列在这里的话，
+     点「首页」会被当成"把首页当白板打开"（用户实测原话：「点击首页回首页，你回的还是旧的一套」）。 */
+  const rows = useMemo(() => boardSummary(doc).filter((b) => b.kind !== "system"), [doc]);
 
   const say = (text: string): void => {
     setNote(text);

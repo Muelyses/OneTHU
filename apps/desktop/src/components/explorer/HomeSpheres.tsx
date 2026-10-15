@@ -1,4 +1,5 @@
 import { Chip } from "@onethu/gui";
+import { fmtMonthDayWeek } from "../../lib/dateText.js";
 /**
  * 首页固定层（2026-10-13 定稿）：居中大时间 + 时间下的一级功能区 + 两个功能按钮。
  *
@@ -38,15 +39,14 @@ function ChromeClock(): ReactNode {
   }, []);
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
-  const week = "日一二三四五六"[now.getDay()] ?? "";
   return (
     <div className="chrome-clock" aria-label="当前时间">
       <div className="chrome-clock-time">
         {hh}<span className="chrome-clock-colon">:</span>{mm}
       </div>
-      <div className="chrome-clock-date">
-        {now.getMonth() + 1} 月 {now.getDate()} 日 · 周{week}
-      </div>
+      {/* 日期走共享格式化（lib/dateText.ts）——此前这里手拼「{getMonth()+1} 月 …」，
+          正是仓库文案纪律要抓的裸拼月份；JSX 分片拼接躲过了扫描器，2026-10-15 换成函数调用。 */}
+      <div className="chrome-clock-date">{fmtMonthDayWeek(now)}</div>
     </div>
   );
 }
@@ -140,7 +140,7 @@ export function HomeChrome(): ReactNode {
             setOpacityMenu("dock");
           }}
         >
-          <div className="hs-dock-row">
+          <div className="hs-dock-row" data-coach="home-dock">
             {docked.map((entry) => (
               <DockSphere key={entry.page} entry={entry} onNavigate={() => go(entry)} />
             ))}

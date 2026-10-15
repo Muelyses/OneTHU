@@ -380,6 +380,12 @@ export interface OpenTabOptions {
  *   只有 forceNew（「复制」）才出第二个实例。
  */
 export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOptions): string {
+  /* 未知页面 id 一律回首页（2026-10-15）：历史存档/旧入口里可能还残留改名前的老 id，
+     与其开出一个 renderPage 渲染不出来的空标签，不如明确回首页。 */
+  if (!page.startsWith("plugin:") && !KNOWN_PAGES.has(page)) {
+    focusTab(HOME_TAB_ID);
+    return HOME_TAB_ID;
+  }
   if (page === "homepage") {
     focusTab(HOME_TAB_ID);
     return HOME_TAB_ID;

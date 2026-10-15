@@ -93,14 +93,14 @@ for (const kind of ["atom-link", "nav", "card", "text", "divider", "custom"]) {
 }
 ok(/deps\.resolveLayout\(deps\.loadLayoutItems\(o\)\)/.test(src), "迁移没有读真实布局（loadLayoutItems）——会抹掉用户自定义");
 
-/* ⑧ 今日页接线（P0 下半单元）：持久化只走白板文档，不得再直接读写旧的布局/排序存储 */
-const today = readFileSync("apps/desktop/src/pages/Today.tsx", "utf8");
-ok(/const \[doc, setDoc\] = useState<BoardDoc>\(\(\) => loadBoard\(\)\)/.test(today), "今日页没有从白板文档取初始状态");
-ok(/const layout = useMemo\(/.test(today) && /cellsToLayout\(cellsOf\(/.test(today), "今日页布局没有由文档派生");
-ok(/const setLayout = useCallback/.test(today) && /layoutToCells\(next\)/.test(today), "今日页写回没有经过白板文档（setLayout 包装）");
-ok(!/saveLayout\(/.test(today) && !/loadLayout\(/.test(today), "今日页仍在直接读写旧的布局存储（P0 后应只走白板文档）");
-ok(!/saveHomeOrder\(/.test(today) && !/loadHomeOrder\(/.test(today), "今日页仍在直接读写旧的排序存储（P0 后应只走白板文档）");
-ok(/saveBoard\(doc\)/.test(today), "今日页没有把文档落盘");
+/* ⑧ 首页接线（P0 下半单元）：持久化只走白板文档，不得再直接读写旧的布局/排序存储。
+   2026-10-15：旧「今日页」已删，断言改指新首页的两半（自由画布 + 它的 px 层模块）。 */
+const fb = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8") + readFileSync("apps/desktop/src/state/freeBoard.ts", "utf8");
+ok(/boardItemsOf\(|freeBoardSnapshot\(|cellsOf\(/.test(fb), "新首页没有从白板文档取状态");
+ok(/withRect\(|rectOf\(/.test(fb), "新首页布局没有由 px 层/文档派生");
+ok(/saveBoard\(|persistFreeBoard\(|withRect\(/.test(fb), "新首页写回没有经过白板文档");
+ok(!/saveLayout\(|loadLayout\(/.test(fb), "新首页仍在直接读写旧的布局存储（P0 后应只走白板文档）");
+ok(!/saveHomeOrder\(|loadHomeOrder\(/.test(fb), "新首页仍在直接读写旧的排序存储（P0 后应只走白板文档）");
 
 /* ⑨ px 自由图层字段（2026-10-15）：BoardItem 增加**可选** rect —— 一块板一份数据，
    格（cell）保持原样当插件/OH 契约，px（rect）是自由画布的摆放；两者必须能双向迁移。 */

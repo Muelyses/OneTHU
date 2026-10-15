@@ -119,7 +119,18 @@ if (deadPack.length) console.log(`  · 死代码提示：repackBoard 仅被定�
   ok(!!ohItem?.id, "ext.onePageAddItem（插件/OH 契约）能放件");
   const ohCells = api.ext.onePageItems(boardId);
   ok(ohCells.some((i) => i.x === 0 && i.y === 0), "OH 读回的坐标就是 cell（契约层口径一致）");
-  ok(!cellsNow().some((c) => c.id === ohItem?.id && c.rect), "ext.onePageAddItem 只写 cell、不写 rect（所以这条路的落点完全由格子语义决定）");
+  /* 2026-10-15 变更（Lead，带理由）：`boardCore.purgeGridResidue` 会在 load/save 给"只有网格、
+     没有 px"的条目补一个**视觉** rect（用户点名「旧的今日假白板的数据从来没有消失过」——
+     网格坐标不该再决定屏幕上任何位置）。当时第一版顺手把 cell 按新 rect 反算，**本条守栏当场抓到**
+     它破坏了插件/OH 的"写什么读回什么"契约；改成"只补 rect、不碰 cell"。这里直接对归一化本身
+     做单元断言（比走整条集成链路更精确 —— 集成里 cell 被挪是**重叠修复**在正常干活，不是清零干的）：
+     取一条只有网格的条目，跑一遍归一化，断言 rect 补上了、cell 一个字段都没动。 */
+  const bare = { v: 1, activeBoardId: "b", order: null, boards: [{ id: "b", name: "x", icon: "star", kind: "user", cells: { portrait: [{ id: "bare1", spec: { kind: "text", text: "只有网格" }, cell: { x: 2, y: 3, w: 2, h: 1 } }] } }] };
+  const after = core.purgeGridResidue(bare);
+  const bareItem = after.boards[0].cells.portrait[0];
+  ok(!!bareItem.rect, "网格残留清零：没有 px 的条目应补上视觉 rect（否则网格坐标继续决定位置）");
+  ok(bareItem.cell.x === 2 && bareItem.cell.y === 3 && bareItem.cell.w === 2 && bareItem.cell.h === 1, "网格残留清零不得改写 cell（插件/OH 契约层：写什么读回什么）");
+
 }
 
 /* ── ② 困难布局：让位模型单独可能留重叠；但**落库前必须有闸**（接线即强制） ── */

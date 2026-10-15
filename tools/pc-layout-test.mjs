@@ -9,7 +9,6 @@ import { readFileSync } from "node:fs";
 
 const CSS = readFileSync("apps/desktop/src/styles/global.css", "utf8");
 const read = (p) => readFileSync(p, "utf8");
-const TODAY = read("apps/desktop/src/pages/Today.tsx");
 const TASKS = read("apps/desktop/src/pages/TasksPage.tsx");
 const SCHED = read("apps/desktop/src/pages/Schedule.tsx");
 const SVC = read("apps/desktop/src/pages/ServicesPage.tsx");
@@ -18,9 +17,9 @@ const FP = read("apps/desktop/src/components/FilePreview.tsx");
 const fails = [];
 const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 
-/* 1 今日：expanded 分端 + 右栏卡 + 问候语缩进顶栏 */
-ok(TODAY.includes("useExpanded"), "今日页未按 expanded 分端");
-ok(CSS.includes(".next-class") && CSS.includes(".today-hero.is-slim"), "今日页缺右栏下一节课 / 缩顶栏样式");
+/* 1 首页：2026-10-15 起首页是自由画布，PC/手机分端由 CSS 档位承担（不再有 expanded 分支） */
+ok(/html\.is-phone \.explorer-panel\.is-home-canvas/.test(read("apps/desktop/src/styles/explorer-home.css")), "首页画布没有手机档样式（分端落空）");
+ok(CSS.includes(".next-class"), "首页缺右栏下一节课卡片样式");
 
 /* 2 待办：列表-详情双栏 */
 ok(/const wide = useExpanded\(\)/.test(TASKS), "待办页未按 expanded 分端");

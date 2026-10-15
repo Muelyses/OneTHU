@@ -172,9 +172,14 @@ if (SCENARIO) {
     ok(flag === "1", "即便如此也写标志位（不每次启动重试解析）");
   }
   if (SCENARIO === "defense") {
-    ok(items.length === base, `板里已有 px 条目：防御生效，旧键不并进来（${items.length} 条 = 原 ${base} 条）`);
-    ok(!ids.includes("free.balance"), "旧键条目确实没被并进");
-    ok(flag === "1", "防御路径也写标志位");
+    /* 2026-10-15 行为变更（Lead，带理由）：原来的防御判据是"系统板里已有任何 px 条目 → 视为已并"，
+       但 `boardCore.purgeGridResidue` 会在每次 load/save 把"只有网格、没有 px"的条目补上 px
+       （用户点名"旧的今日假白板的数据从来没有消失过"），于是这条判据会把**从未合并过**的用户
+       误判成"已并" → 老自由板摆位永远进不来。合并本身按 spec 去重、天然幂等，所以改为
+       **以标志位为唯一判据**：板里已有 px 也照并，但同 spec 的两份只留一份、旧键条目不会翻倍。 */
+    ok(items.length >= base, `已有 px 的板：旧键按 spec 去重后并入（${items.length} 条 ≥ 原 ${base} 条）`);
+    ok(ids.includes("free.balance"), "旧键独有的条目这次**并进来了**（这正是改判据的目的：不再把没并过的用户当成已并）");
+    ok(flag === "1", "合并路径写标志位（只并一次）");
   }
   if (SCENARIO === "idem") {
     const first = items.length;

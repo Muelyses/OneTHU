@@ -140,7 +140,9 @@ try {
     const msgs = await c2.conversationMessages(conv.convId);
     const users = msgs.filter((m) => m.role === "user").length;
     const ai = msgs.filter((m) => m.role === "assistant").length;
-    console.log(`   载入消息：${msgs.length} 条（我 ${users} / AI ${ai}）${msgs[0] ? " · 首条：" + msgs[0].content.slice(0, 24) : ""}`);
+    const order = msgs.map((m) => (m.role === "user" ? "我" : "AI")).join(" ");
+    console.log(`   载入消息：${msgs.length} 条（我 ${users} / AI ${ai}）· 顺序：${order}`);
+    console.log(`   首条：${msgs[0] ? (msgs[0].role === "user" ? "我" : "AI") + "「" + msgs[0].content.slice(0, 24) + "」" : "(无)"}`);
     const cont = await c2.chatNative({
       agentId: conv.agentId ?? "9999",
       query: "接着上面的话，用五个字总结",

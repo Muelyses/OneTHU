@@ -471,6 +471,9 @@ export class XiaodaClient {
         agentIcon: str(av.icon),
       });
     }
+    /* 服务端按 id **递减**返回（新的在前，2026-10-15 实测：同一轮的 AI 回答排在我的提问之前），
+       界面要的是时间正序，故按 id 升序重排——否则会显示成「它的回答在我的话上方」。 */
+    out.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
     return out.filter((m) => m.content.trim() !== "" || m.thinkContent.trim() !== "");
   }
 

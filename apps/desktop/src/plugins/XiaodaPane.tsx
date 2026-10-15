@@ -176,19 +176,24 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
         return (
           <Inline key={m.id || `x${i}`} gap={3} vAlign="start" justify={isUser ? "end" : "start"}>
             {!isUser ? <Avatar name={name} size="sm" /> : null}
-            <Surface level={isUser ? 2 : 1} pad="md" radius="2xl">
-              <Stack gap={2}>
-                {m.content ? <Text as="p">{m.content}</Text> : null}
-                {waiting ? (
-                  <Inline gap={2}>
-                    <Spinner size="sm" />
-                    <Text slot="label" tone="faint">
-                      正在输入…
-                    </Text>
-                  </Inline>
-                ) : null}
-              </Stack>
-            </Surface>
+            <Stack gap={2} align={isUser ? "end" : "start"}>
+              <Text slot="micro" tone="faint">
+                {name}
+              </Text>
+              <Surface level={isUser ? 3 : 2} pad="lg" radius="2xl">
+                <Stack gap={2}>
+                  {m.content ? <Text as="p">{m.content}</Text> : null}
+                  {waiting ? (
+                    <Inline gap={2}>
+                      <Spinner size="sm" />
+                      <Text slot="label" tone="faint">
+                        正在输入…
+                      </Text>
+                    </Inline>
+                  ) : null}
+                </Stack>
+              </Surface>
+            </Stack>
             {isUser ? <Avatar name={name} size="sm" /> : null}
           </Inline>
         );

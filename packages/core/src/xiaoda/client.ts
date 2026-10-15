@@ -128,6 +128,46 @@ interface PageEnvelope<T> {
   dataList?: T[];
 }
 
+/** cookie 串归并（同名覆盖；链内新发优先） */
+function mergeCookies(base: string, chain: Map<string, string>): string {
+  const pairs = new Map<string, string>();
+  for (const part of base.split("; ")) {
+    const i = part.indexOf("=");
+    if (i > 0) pairs.set(part.slice(0, i), part.slice(i + 1));
+  }
+  for (const [k, v] of chain) pairs.set(k, v);
+  return [...pairs].map(([k, v]) => `${k}=${v}`).join("; ");
+}
+
+/** 从响应体/终址里抠 ITS 漫游票（多形态兜底：严格锚点 → 任意锚点 → 全文扫 → 终址 query） */
+function extractTicket(html: string, url: string): string {
+  const fromUrl = (u: string): string => {
+    try {
+      return new URL(u).searchParams.get("ticket") ?? "";
+    } catch {
+      return "";
+    }
+  };
+  const strict = /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(html)?.[1];
+  if (strict) {
+    const t = fromUrl(strict) || decodeURIComponent((strict.split("ticket=").slice(-1)[0] ?? "").split("&")[0] ?? "");
+    if (t) return t;
+  }
+  const anyAnchor = /<a[^>]+href="([^"]+)"/i.exec(html)?.[1];
+  if (anyAnchor) {
+    const t = fromUrl(anyAnchor);
+    if (t) return t;
+  }
+  const scan = /[?&;]ticket=([A-Za-z0-9._~%+\-]{8,})/.exec(html)?.[1];
+  if (scan) return decodeURIComponent(scan);
+  return fromUrl(url);
+}
+
+/** 出错时给一小段正文，便于定位服务端到底回了什么 */
+function snippet(html: string, n = 160): string {
+  return html.replace(/\s+/g, " ").slice(0, n);
+}
+
 function safeJson(text: string): Record<string, unknown> {
   try {
     const j = JSON.parse(text);
@@ -211,8 +251,24 @@ export class XiaodaClient {
         headers["Content-Type"] = "application/x-www-form-urlencoded";
       }
       const res = await this.fetchLike(currentUrl, { method: m, body, headers, redirect: "manual" });
-      for (const sc of res.headers.getSetCookie?.() ?? []) {
-        const mm = /^([^=]+)=([^;]*)/.exec(sc);
+      // nativeFetch 自己跟跳（忽略 init.redirect），真实终址在 x-onethu-final-url 上——
+      // ITS 302 出票时票就在终址 query 里，不读它就会「票在眼前却看不见」
+      const finalUrl = res.headers.get("x-onethu-final-url") ?? currentUrl;
+      // Set-Cookie 双通道：标准 getSetCookie + nativeFetch 显式回传的 x-onethu-set-cookie（JSON 数组）
+      const setCookieLines: string[] = [...(res.headers.getSetCookie?.() ?? [])];
+      const jsonSetCookies = res.headers.get("x-onethu-set-cookie");
+      if (jsonSetCookies) {
+        try {
+          const arr: unknown = JSON.parse(jsonSetCookies);
+          if (Array.isArray(arr)) {
+            for (const c of arr) if (typeof c === "string") setCookieLines.push(c);
+          }
+        } catch {
+          /* 容忍非法 JSON */
+        }
+      }
+      for (const sc of setCookieLines) {
+        const mm = /^ *([^=;]+)=([^;]*)/.exec(sc);
         if (mm?.[1]) chain.set(mm[1].trim(), mm[2] ?? "");
       }
       if (res.status >= 300 && res.status < 400) {
@@ -226,57 +282,61 @@ export class XiaodaClient {
           continue;
         }
       }
-      return { url: currentUrl, html: await res.text(), cookies, status: res.status };
+      return { url: finalUrl, html: await res.text(), cookies: mergeCookies(cookies, chain), status: res.status };
     }
     throw new XiaodaApiError(0, "重定向超限（清小搭登录链）");
   }
 
-  /** ITS 直连完整登录（fresh 会话 + 受信指纹免 2FA）→ 换内部 JWT */
-  async login(username: string, password: string, fingerprint: string, finger3: string): Promise<XiaodaUser> {
+  /**
+   * 直连登录 / 会话漫游出票 → 换内部 JWT（两种形态都要吃下）：
+   *  - **已认证的 id 会话**（OneTHU 平时的状态）：「随要随发票」——请求 service 表单会直接
+   *    出票（302 链或成功页锚点），**没有 SM2 公钥、也不该再 POST 密码**；
+   *  - **未认证**：表单带 #sm2publicKey → POST check（受信指纹免 2FA）→ 锚点出票。
+   * 2026-10-15 应用内实测教训：旧实现只认第二条，于是在应用里（第一条）拿不到公钥就抛错，
+   * 而票其实已经给了——本次修掉；顺带用 x-onethu-final-url 读 nativeFetch 的跟跳终址。
+   */
+  async login(username?: string, password?: string, fingerprint = "", finger3 = ""): Promise<XiaodaUser> {
     const form = await this.req("GET", ITS_LOGIN_SVC);
-    const key = /id="sm2publicKey"[^>]*>\s*([0-9a-fA-F]{100,})\s*</.exec(form.html)?.[1] ?? "";
-    if (!key) throw new XiaodaLoginError("登录表单获取失败（未找到 SM2 公钥）");
-    const check = await this.req("POST", CAS_CHECK, {
-      cookies: form.cookies,
-      data: {
-        i_user: username,
-        i_pass: encryptPassword(password, key),
-        fingerPrint: fingerprint,
-        fingerGenPrint: finger3,
-        fingerGenPrint3: "",
-        i_captcha: "",
-      },
-    });
-    let ticket = "";
-    const anchor = /<a[^>]+href="([^"]+)"/i.exec(check.html)?.[1] ?? "";
-    if (anchor) {
-      const u = anchor.startsWith("http") ? anchor : new URL(anchor, check.url).toString();
-      try {
-        ticket = new URL(u).searchParams.get("ticket") ?? "";
-      } catch {
-        /* fallthrough */
-      }
-      if (!ticket) ticket = anchor.split("=").slice(-1)[0] ?? "";
-    }
+    const authFlag = /"authenticated"\s*:\s*(true|false)/.exec(form.html)?.[1] ?? "?";
+    let ticket = extractTicket(form.html, form.url);
+    let last: { html: string; url: string; status: number } = form;
+    this.log(
+      `xiaoda login ① 表单 status=${form.status} len=${form.html.length} ticket=${ticket ? "yes" : "no"} auth=${authFlag} url=${form.url.slice(0, 120)}`,
+    );
     if (!ticket) {
-      try {
-        ticket = new URL(check.url).searchParams.get("ticket") ?? "";
-      } catch {
-        /* fallthrough */
+      const key = /id="sm2publicKey"[^>]*>\s*([0-9a-fA-F]{100,})\s*</.exec(form.html)?.[1] ?? "";
+      this.log(`xiaoda login ① SM2 公钥=${key ? "yes" : "no"}`);
+      if (!key) throw new XiaodaLoginError(`登录页既无漫游票也无 SM2 公钥：${snippet(form.html)}`);
+      if (!password) {
+        throw new XiaodaLoginError("需要账号密码完成登录，但本机未记住密码（设置里勾选「记住密码」后重试）");
+      }
+      const check = await this.req("POST", CAS_CHECK, {
+        cookies: form.cookies,
+        data: {
+          i_user: username ?? "",
+          i_pass: encryptPassword(password, key),
+          fingerPrint: fingerprint,
+          fingerGenPrint: finger3,
+          fingerGenPrint3: "",
+          i_captcha: "",
+        },
+      });
+      last = check;
+      ticket = extractTicket(check.html, check.url);
+      this.log(`xiaoda login ② POST 校验 status=${check.status} ticket=${ticket ? "yes" : "no"} url=${check.url.slice(0, 120)}`);
+      if (!ticket && /二次认证|doubleauth|双因素/i.test(check.html) && !/登录成功|正在重定向/.test(check.html)) {
+        throw new XiaodaLoginError("触发了二次认证（受信指纹未生效）；请先在 OneTHU 主登录过一次 2FA 并信任本设备");
       }
     }
-    if (!ticket && /二次认证|doubleauth|双因素/i.test(check.html) && !/登录成功|正在重定向/.test(check.html)) {
-      throw new XiaodaLoginError("触发了二次认证（受信指纹未生效）；请先在 OneTHU 主登录过一次 2FA 并信任本设备");
-    }
-    if (!ticket) {
-      throw new XiaodaLoginError("登录未出票：" + check.html.slice(0, 160).replace(/\s+/g, " "));
-    }
+    if (!ticket) throw new XiaodaLoginError(`登录未出票：${snippet(last.html)}`);
     const ex = await this.req("GET", `${XIAODA_BASE}/api/token/login?ticket=${encodeURIComponent(ticket)}`);
     const j = safeJson(ex.html);
     const data = (j.data ?? {}) as Record<string, unknown>;
     const tok = typeof data.token === "string" ? data.token : "";
     if (j.code !== 0 || !tok) {
-      throw new XiaodaLoginError(`token 兑换失败：${typeof j.message === "string" ? j.message : ex.html.slice(0, 120)}`);
+      throw new XiaodaLoginError(
+        `token 兑换失败（HTTP ${ex.status}）：${typeof j.message === "string" ? j.message : snippet(ex.html)}`,
+      );
     }
     this.token = tok;
     this.user = {
@@ -284,7 +344,7 @@ export class XiaodaClient {
       name: typeof data.name === "string" ? data.name : "",
       zjh: typeof data.zjh === "string" ? data.zjh : "",
     };
-    this.log(`xiaoda login ok：${this.user.name}（${this.user.zjh}）token ${tok.length} chars`);
+    this.log(`xiaoda login ✅ ${this.user.name}（${this.user.zjh}）token ${tok.length} chars`);
     return this.user;
   }
 

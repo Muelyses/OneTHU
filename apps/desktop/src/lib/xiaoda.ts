@@ -49,13 +49,15 @@ export async function xiaodaEnsureLogin(): Promise<XiaodaUser> {
   }
   const { loadRemembered, currentFingerprint, session } = await import("./clients.js");
   const remembered = await loadRemembered();
-  if (!remembered) {
-    throw new XiaodaAuthRequiredError(
-      "本机未记住 OneTHU 密码，清小搭无法自动登录；请在设置里勾选「记住密码」后重试",
-    );
-  }
   const fingerprint = await currentFingerprint();
-  const user = await xiaodaClient.login(remembered.username, remembered.password, fingerprint, session.finger3 ?? "");
+  // 密码可能没有（未勾选「记住密码」）——先走「已认证 id 会话漫游出票」（不吃密码）；
+  // 只有真需要账号密码时（表单带 SM2 公钥）才报「未记住密码」的明确提示。
+  const user = await xiaodaClient.login(
+    remembered?.username,
+    remembered?.password,
+    fingerprint,
+    session.finger3 ?? "",
+  );
   try {
     globalThis.localStorage?.setItem(TOKEN_KEY, xiaodaClient.getToken());
   } catch {

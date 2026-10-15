@@ -172,4 +172,4 @@ export function allSphereEntries(): SphereNavEntry[] {
   return [...NAV, ...pluginEntries()];
 }
 
-/* 几何诊断取数中（2026-10-15，取完删）：本文件一改会触发整页 reload，便于探针重跑。 */
+/* 几何复测触发点（2026-10-15，取证后删）：本文件一改会触发整页 reload，便于探针重跑。 */

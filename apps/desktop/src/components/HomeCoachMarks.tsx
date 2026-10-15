@@ -19,7 +19,7 @@ const KEY = "onethu.home.coach.v1";
  * 一起消失了 —— 导览会指空气。这里按新画布的实际交互重写，并在 FreeBoard / HomeSpheres 上补锚点。
  */
 const TIPS: Array<{ target: string; text: string }> = [
-  { target: '[data-coach="home-canvas"]', text: "卡片直接拖动就换位置，右下角 ➕ 加组件、双击空白建便笺。画布无限大：往下滚就是往下看，左下角 ± 缩放。" },
+  { target: '[data-coach="home-canvas"]', text: "卡片拖动换位置，双击空白建便笺；画布无限大，左下角 ± 缩放。" },
   { target: '[data-coach="home-add"]', text: "从这儿添加组件：内置组件、你的收藏、其它 OnePage 都在这。" },
   { target: '[data-coach="home-dock"]', text: "一级功能坞在这里；找不到的功能都在「服务」页，也能直接搜。" },
 ];

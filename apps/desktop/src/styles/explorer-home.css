@@ -90,10 +90,13 @@
   z-index: 30;
   pointer-events: none;
 }
-/* 居中修正：.home-chrome-layer 挂在 .explorer-content 内，而后者为侧栏让位有 margin-left，
-   于是钟/功能坞的"中心"恒等于「内容区中心」（偏右 116px），而顶栏/标签条是整窗居中（用户实测偏右）。
-   这里把让位量抵掉，让本层回到整窗坐标系；--ex-rail-w 由 explorer-ui.css 提供，兜底 232px。 */
-.home-chrome-layer { margin-left: calc(0px - var(--ex-rail-w, 232px)); }
+/* 居中修正：.home-chrome-layer 挂在 .explorer-content 内，而**竖栏布局**下后者有 margin-left，
+   于是钟/功能坞的"中心"恒等于「内容区中心」，而顶栏/标签条是整窗居中。这里把让位量抵掉，
+   让本层回到整窗坐标系。--ex-rail-w 只在 `.tabs-vertical`（竖版左栏）时才由 explorer-ui.css 定义
+   （232 / 窄轨 56）——**兜底必须是 0**：竖栏退役后 Layout 会把 tabs-vertical 收回，内容区没有让位，
+   此时若兜 232 就会把整层连钟带坞**硬拽左移 232px**（2026-10-15 用户报「时钟和程序坞都向左漂移」
+   就是这个：规则本身 2026-10-14 就在，只是等竖栏一退役才显形）。 */
+.home-chrome-layer { margin-left: calc(0px - var(--ex-rail-w, 0px)); }
 .home-chrome-layer .chrome-block { position: absolute; left: 0; right: 0; }
 .home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top) + 24px); }
 .home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 148px); }

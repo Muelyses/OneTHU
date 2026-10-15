@@ -64,20 +64,19 @@ import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
 import { fitTarget } from "../state/boardFit.js";
 import {
   boardViewKey,
+  boxSize,
   contentRect,
-  fitView,
+  fitZoom,
   hasView,
-  ZOOM_MAX,
-  ZOOM_MIN,
-  panBy,
   stepZoom,
   subscribeView,
+  toWorld,
   viewOf as readBoardView,
   worldDelta,
-  zoomAt,
   zoomLabel,
+  ZOOM_MAX,
+  ZOOM_MIN,
   setView as setBoardView,
-  toWorld,
   type BoardView,
 } from "../state/boardView.js";
 
@@ -339,6 +338,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   viewRef.current = view;
   /** 视口尺寸（屏幕 px）：缩放锚点与"回到内容"要用。 */
   const viewportRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+  /** 视口量到真尺寸了吗（隐藏标签页/未挂载是 0×0 —— 那种尺寸算不出视图，不许落盘）。 */
+  const [vpReady, setVpReady] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -439,65 +440,88 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     };
   }, [items, ops]);
 
-  /* 视口尺寸（缩放锚点用）+ 触控板手势。**必须原生非被动监听**：React 的 onWheel 挂在根上
-     且是被动的，preventDefault() 不生效，画布会一边缩放一边被外层滚。 */
+  /* 视口尺寸（盒子/适配用）。**普通滚轮不抢**：滚动容器就是无限画布的"平移" ——
+     用户第二轮点名「出了内容框就被截断，我们要的是没有那个隐形的 frame」：
+     一旦画布接管滚动，"盒子外面"就又成了一个会切东西的地方。只有捏合/⌘+滚轮要拦。 */
   useLayoutEffect(() => {
     const el = hostRef.current;
     if (!el) return;
     const measure = (): void => {
       viewportRef.current = { w: el.clientWidth, h: el.clientHeight };
+      if (el.clientWidth > 2 && el.clientHeight > 2) setVpReady(true);
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
+    /* **必须原生非被动监听**：React 的 onWheel 挂在根上且是被动的，preventDefault() 不生效，
+       捏合会一边缩放一边把页面滚走。 */
     const onWheel = (e: WheelEvent): void => {
-      const v = viewRef.current;
-      /* 触控板捏合 = ctrlKey（WKWebView/Chromium 同约定）；两指滑 = 平移。shift+滚轮 = 横向。 */
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault();
-        setBoardView(viewKey, zoomAt(v, v.z * Math.exp(-e.deltaY * 0.01), e.offsetX ?? 0, e.offsetY ?? 0));
-        return;
-      }
-      const dx = e.shiftKey ? e.deltaY : e.deltaX;
-      const dy = e.shiftKey ? 0 : e.deltaY;
-      if (dx === 0 && dy === 0) return;
+      if (!e.ctrlKey && !e.metaKey) return; // 普通滚轮 / 两指滑 → 交给滚动容器
       e.preventDefault();
-      setBoardView(viewKey, panBy(v, -dx, -dy));
+      setZoomRef.current(viewRef.current.z * Math.exp(-e.deltaY * 0.01));
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       ro.disconnect();
       el.removeEventListener("wheel", onWheel);
     };
-  }, [viewKey]);
+  }, []);
+
+  /* 盒子尺寸 = **永远盖住内容**（2026-10-15「不裁切」不变量，唯一实现处见 state/boardView.boxSize）。
+     盒子跟着内容长、缩放一起算 —— 于是"内容落在盒子外面"在数学上不可能：
+     不需要任何截断补救，也不需要用户学"拖空白处平移"，滚动条自然顶上。 */
+  useLayoutEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    const box = boxSize(items, view.z, viewportRef.current);
+    el.style.minWidth = box.w + "px";
+    el.style.minHeight = box.h + "px";
+  }, [items, view.z]);
 
   /* 首次打开一块板：无限画布里没有滚动条兜底，"内容在视口外"就等于"内容不见了"，
      所以先**适配一次内容**再交给用户。已经记过视图的板不动它（"我上次看到哪，下次还看到哪"）。 */
   const anchored = useRef(false);
-  useLayoutEffect(() => {
-    if (anchored.current) return;
+  useEffect(() => {
+    if (!vpReady || anchored.current) return;
     anchored.current = true;
-    if (hasView(viewKey) || items.length === 0) return;
-    const el = hostRef.current;
-    const { w, h } = el ? { w: el.clientWidth, h: el.clientHeight } : viewportRef.current;
-    setBoardView(viewKey, fitView({ w, h }, contentRect(itemsRef.current)));
-  }, [viewKey, items]);
+    if (hasView(viewKey) || itemsRef.current.length === 0) return;
+    setBoardView(viewKey, { z: fitZoom(viewportRef.current, contentRect(itemsRef.current)) });
+  }, [vpReady, viewKey]);
 
-  /* 缩放/重置：按钮与键盘共用的两个动作。
-     以**视口中心**为锚点（按钮在右下角，锚在按钮上会把内容甩出去）。 */
-  const zoomBy = useCallback((dir: number): void => {
-    const v = viewRef.current;
-    const { w, h } = viewportRef.current;
-    setBoardView(viewKey, zoomAt(v, stepZoom(v.z, dir), w / 2, h / 2));
+  /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
+     视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */
+  const setZoom = useCallback((z: number): void => {
+    const before = viewRef.current.z;
+    const next = Math.min(ZOOM_MAX, Math.max(0.4, Number.isFinite(z) ? z : 1));
+    if (next === before) return;
+    setBoardView(viewKey, { z: next });
+    const scroller = hostRef.current?.closest<HTMLElement>(".explorer-content, .explorer-panel");
+    if (!scroller) return;
+    const ratio = next / (before > 0 ? before : 1);
+    const sl = scroller.scrollLeft;
+    const st = scroller.scrollTop;
+    requestAnimationFrame(() => {
+      scroller.scrollLeft = sl * ratio;
+      scroller.scrollTop = st * ratio;
+    });
   }, [viewKey]);
+  const setZoomRef = useRef(setZoom);
+  setZoomRef.current = setZoom;
+  const zoomBy = useCallback((dir: number): void => setZoomRef.current(stepZoom(viewRef.current.z, dir)), []);
   const resetView = useCallback((): void => {
-    const { w, h } = viewportRef.current;
-    setBoardView(viewKey, fitView({ w, h }, contentRect(itemsRef.current)));
-  }, [viewKey]);
+    setZoomRef.current(fitZoom(viewportRef.current, contentRect(itemsRef.current)));
+  }, []);
 
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      /* 画布缩放（无边记同款手感）：⌘0 回到内容、⌘= / ⌘- 缩放 */
+      if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === "0" || e.key === "=" || e.key === "+" || e.key === "-" || e.key === "_")) {
+        e.preventDefault();
+        if (e.key === "0") resetView();
+        else zoomBy(e.key === "=" || e.key === "+" ? 1 : -1);
+        return;
+      }
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement | null)?.isContentEditable) return;
       if (e.key === "Escape") {
@@ -684,38 +708,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const canvasPos = (clientX: number, clientY: number): { x: number; y: number } => {
     const r = hostRef.current?.getBoundingClientRect();
     if (!r) return { x: 40, y: 300 };
-    return toWorld(viewRef.current, clientX - r.left, clientY - r.top);
-  };
-
-  /** 空白处按住拖动 = **平移画布**（无限画布里这就是"滚动"）。
-      与"双击加便笺""右键加组件"不冲突：位移超过阈值才算拖；没动就什么也不做。
-      也不抢组件的拖动（组件自己 stopPropagation，且 e.target !== currentTarget 时直接返回）。 */
-  const beginPan = (e: React.PointerEvent): void => {
-    if (e.target !== e.currentTarget || e.button !== 0) return;
-    const sx = e.clientX;
-    const sy = e.clientY;
-    let armed = false;
-    const onMove = (ev: PointerEvent): void => {
-      const dx = ev.clientX - sx;
-      const dy = ev.clientY - sy;
-      if (!armed) {
-        if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-        armed = true;
-        hostRef.current?.classList.add("is-panning");
-      }
-      setBoardView(viewKey, panBy(viewRef.current, dx - (lastPan.x), dy - lastPan.y));
-      lastPan = { x: dx, y: dy };
-    };
-    let lastPan = { x: 0, y: 0 };
-    const onUp = (): void => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
-      hostRef.current?.classList.remove("is-panning");
-    };
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
+    return toWorld(viewRef.current.z, clientX - r.left, clientY - r.top);
   };
 
   /** 组件的「打开」语义（与旧白板页一致）：跳转页 / 原子入口。 */
@@ -774,9 +767,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         className={"freeboard" + (chrome ? " is-page" : "")}
         ref={hostRef}
         onPointerDown={(e) => {
-          /* 空白处按下 = 取消选中（组件自身会 stopPropagation）+ 准备平移画布 */
+          /* 空白处按下 = 取消选中（组件自身会 stopPropagation）。平移交给滚动，这里不抢手势。 */
           if (e.target === e.currentTarget) setSelected(null);
-          beginPan(e);
         }}
         onDoubleClick={(e) => {
           if (e.target !== e.currentTarget) return;
@@ -791,7 +783,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       >
         <div
           className="freeboard-world"
-          style={{ "--board-x": view.x + "px", "--board-y": view.y + "px", "--board-z": view.z } as CSSProperties}
+          style={{ "--board-z": view.z } as CSSProperties}
         >
         {/* ── 世界层（2026-10-15 无限画布）──
             条目与笔迹都活在**世界坐标**里，这一层只负责"看哪一块"：translate(x,y) + scale(z)。
@@ -920,15 +912,18 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             );
           })}
 
-          {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
-              笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。 */}
-          <BoardPenLayer
-            boardId={boardId}
-            orientation={orientation}
-            penOn={penOn}
-            color={penColor}
-          />
         </div>
+
+        {/* 画笔层：恒在最高层（组件盖不住）；开启时接管指针绘画。
+            笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。
+            **在世界层之外**：笔迹是"玻璃上的记号"，尺寸固定、与内容无关（2026-10-13 用户点名），
+            所以它不跟着缩放走 —— 归一化坐标（0..1000）也就永远稳定，不会因为改内容而拉伸重映射。 */}
+        <BoardPenLayer
+          boardId={boardId}
+          orientation={orientation}
+          penOn={penOn}
+          color={penColor}
+        />
 
         {/* 缩放控件（OneGUI 按钮族）：− / 百分比（点=重置视图）/ ＋。屏幕空间，不随世界层缩放。 */}
         <div className="board-zoombar" onPointerDown={(e) => e.stopPropagation()}>

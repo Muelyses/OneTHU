@@ -76,9 +76,9 @@
   /* 同首页：扣掉竖栏让位量，否则 OnePage 画布右侧被裁、固定元素右偏 */
   width: calc(100% - var(--ex-rail-w, 0px));
   max-width: none;
-  /* 画布页面：内容层是"视口的外框"，滚动/裁切都由画布自己管（见下面 .freeboard） */
-  overflow: hidden;
+  /* 画布盒子可以长到内容之外（横向也一样）：这一层要能跟着滚，不能被自己裁掉 */
   min-height: 0;
+  overflow: visible;
 }
 .home-free, .home-tab {
   position: relative;
@@ -90,16 +90,20 @@
 /* OnePage 同理（2026-10-15 用户点名「其他白板下半部分截断」）：.explorer-panel 的基线是
    overflow:hidden，只有首页把它放开过 —— 于是 OnePage 的画布一旦比面板高，下半部分直接被裁掉
    且**滚不到**。这里与首页同款放开（手机档见下方 overflow:auto），滚动交给窗口/内容层。 */
-/* 2026-10-15（用户拍板「像 iPad 无边记：无限大是与生俱来的」）：**画布页面不再滚**。
-   此前这一段的全部努力（放开 overflow、上面板高、max-height:100dvh）都是在跟"盒子"打架：
-   画布比盒子高 → 下半部分被裁 → 让面板滚 → 面板被内容撑高 → 又不滚 → 还是裁。
-   无限画布把"盒子"这个概念拿掉了：视口固定、内容在世界坐标里平移缩放，
-   面板只要**不许滚**（也不许被内容撑高），剩下的交给画布自己。 */
+/* ── 无限画布 = **不裁切的盒子**（2026-10-15，用户两轮点名后定稿）──
+   第一轮我做成"视口裁切 + 拖拽平移"，用户当场否掉：「你怎么还有那么明显一个内容框呢？
+   出了内容框就被截断，我们要的是没有那个隐形的 frame」。对 —— 只要画布是一个"固定大小的
+   盒子"、内容装在里面，那条**看不见的边**就还在，迟早切东西（这就是「截断」报了三次的根）。
+
+   定稿的规矩：**盒子的尺寸永远盖住内容**（`state/boardView.boxSize` 是唯一实现处，
+   跟着内容长、缩放一起算），所以"内容落在盒子外面"在数学上不存在；
+   而"平移"这件事**交给滚动**（文档流模型）：内容长到哪，滚动容器就能滚到哪。
+   下面这几条就是把滚动容器重新交给面板 —— 画布自己不再接管滚动。 */
 .explorer-panel:has(> .explorer-content.is-onepage-canvas),
 .explorer-panel.is-onepage-canvas,
 .explorer-panel.is-home-canvas {
-  overflow: hidden;
-  overscroll-behavior: none;
+  overflow: auto;
+  overscroll-behavior: contain;
   max-height: 100dvh;
 }
 
@@ -409,13 +413,13 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   inset: 0;
   min-height: 0;
   z-index: 1;
-  /* ── 无限画布：这一层是**视口**（2026-10-15 模型纠正）──
-     overflow:hidden 是视口的本分（世界层里的东西在视口外就是看不见，靠平移找回来），
-     它**不是**"边界"：条目坐标没有上界，往右下永远有地方，往左上也能平。
-     touch-action:none：手指/触控板的平移由画布自己算（否则被浏览器拿去滚页面）。 */
-  overflow: hidden;
-  touch-action: none;
-  overscroll-behavior: none;
+  /* ── 无限画布：**不裁切**（2026-10-15 定稿）──
+     `overflow: visible`：内容永远不该在这里被切。盒子的最小尺寸由 JS 按"盖住内容"算
+     （minWidth/minHeight，见 FreeBoard 的 box effect），所以它虽然是个盒子，
+     但**没有一条会切到内容的边** —— 这正是用户要的"没有那个隐形的 frame"。
+     滚动由外层面板承担（内容长到哪就滚到哪）。 */
+  overflow: visible;
+  overscroll-behavior: contain;
 }
 
 /* 世界层：条目与笔迹都在世界坐标里，这一层只承载 translate(x,y) + scale(z)。
@@ -426,7 +430,8 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   top: 0;
   width: 0;
   height: 0;
-  transform: translate3d(var(--board-x, 0px), var(--board-y, 0px), 0) scale(var(--board-z, 1));
+  /* 只有缩放：原点在内容左上角（0,0），"平移"由外层滚动承担（见文件头的模型说明） */
+  transform: scale(var(--board-z, 1));
   transform-origin: 0 0;
   will-change: transform;
 }
@@ -437,18 +442,7 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   transform: scale(calc(1 / var(--board-z, 1)));
   transform-origin: 0 0;
 }
-.freeboard.is-panning { cursor: grabbing; }
-.freeboard { cursor: grab; }
 
-/* 画笔层在世界层里：给一块**固定的世界尺寸**（4000×4000），
-   于是笔迹从此锚在世界坐标上 —— 平移/缩放都跟着走，也不再需要"2400px 垫高"。 */
-.freeboard-world .board-pen {
-  inset: auto;
-  left: 0;
-  top: 0;
-  width: 4000px;
-  height: 4000px;
-}
 
 /* 缩放控件（OneGUI BtnGroup）：视口左下角，屏幕空间（不随世界层缩放）。
    左下留白是这块画布唯一没被占用的角：右下是 ＋/画笔浮钮列、右上角是画笔色板、顶部是钟与坞。 */

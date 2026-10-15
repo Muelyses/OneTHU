@@ -686,3 +686,4 @@ export function mergeLegacyPx(legacy: readonly BoardPxItem[], existing: readonly
   return out;
 }
 
+/* 取数触发点 v11（临时）：boardCore 被大量非组件模块引用，改它必定整页 reload —— 取证后删。 */

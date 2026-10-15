@@ -335,8 +335,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const view = useSyncExternalStore(subscribeView, () => readBoardView(viewKey), () => readBoardView(viewKey));
   const viewRef = useRef<BoardView>(view);
   viewRef.current = view;
-  /** 视口尺寸（屏幕 px）：缩放锚点与"回到内容"要用。 */
-  const viewportRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+  /** 视口尺寸 = **滚动端口**（外层可滚容器）的可见尺寸。
+      ⚠️ 必须是端口而不是画布自己：画布盒子会跟着内容/倍率长，拿它当"视口"就是正反馈 ——
+      放大一次盒子变大、"视口"跟着变大、缩回去盒子再也不缩（真机实测：250% 回到 100% 后
+      minW 卡在 2704px，留一大片空滚）。端口尺寸只随窗口变，没有这条路。 */
+  const [port, setPort] = useState({ w: 0, h: 0 });
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -441,10 +444,12 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      用户第二轮点名「出了内容框就被截断，我们要的是没有那个隐形的 frame」：
      一旦画布接管滚动，"盒子外面"就又成了一个会切东西的地方。只有捏合/⌘+滚轮要拦。 */
   useLayoutEffect(() => {
-    const el = hostRef.current;
-    if (!el) return;
+    const host = hostRef.current;
+    if (!host) return;
+    const el = host.closest<HTMLElement>(".explorer-panel") ?? host.parentElement ?? host;
     const measure = (): void => {
-      viewportRef.current = { w: el.clientWidth, h: el.clientHeight };
+      const next = { w: el.clientWidth, h: el.clientHeight };
+      setPort((prev) => (prev.w === next.w && prev.h === next.h ? prev : next));
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -456,10 +461,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       e.preventDefault();
       setZoomRef.current(viewRef.current.z * Math.exp(-e.deltaY * 0.01));
     };
-    el.addEventListener("wheel", onWheel, { passive: false });
+    host.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       ro.disconnect();
-      el.removeEventListener("wheel", onWheel);
+      host.removeEventListener("wheel", onWheel);
     };
   }, []);
 
@@ -469,10 +474,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   useLayoutEffect(() => {
     const el = hostRef.current;
     if (!el) return;
-    const box = boxSize(items, view.z, viewportRef.current);
+    const box = boxSize(items, view.z, port);
     el.style.minWidth = box.w + "px";
     el.style.minHeight = box.h + "px";
-  }, [items, view.z]);
+  }, [items, view.z, port.w, port.h]);
 
   /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
      视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */
@@ -493,9 +498,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   }, [viewKey]);
   const setZoomRef = useRef(setZoom);
   setZoomRef.current = setZoom;
+  const portRef = useRef(port);
+  portRef.current = port;
   const zoomBy = useCallback((dir: number): void => setZoomRef.current(stepZoom(viewRef.current.z, dir)), []);
   const resetView = useCallback((): void => {
-    setZoomRef.current(fitZoom(viewportRef.current, contentRect(itemsRef.current)));
+    setZoomRef.current(fitZoom(portRef.current, contentRect(itemsRef.current)));
   }, []);
 
   useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释
@@ -1190,31 +1197,61 @@ function useCanvasProbeImpl(_boardKey: string, hostRef: React.RefObject<HTMLDivE
       });
       /* 不裁切不变量的**现场判据**：内容最右下角（含倍率）必须落在盒子里；
          盒子比视口高 → 面板必须能滚到（sh > ch）。 */
-      const boxRight = items.reduce((m, it) => Math.max(m, it.offsetLeft + it.offsetWidth), 0);
-      const boxBottom = items.reduce((m, it) => Math.max(m, it.offsetTop + it.offsetHeight), 0);
+      /* **视觉**外接框（getBoundingClientRect 含 transform）：不裁切说的是"屏幕上看到的
+         东西都在盒子里"，所以必须用量出来的 rect，不能用 offsetLeft（它看不见缩放）。 */
+      const hr = host.getBoundingClientRect();
+      const maxRight = items.reduce((m, it) => { const r = it.getBoundingClientRect(); return Math.max(m, r.right - hr.left); }, 0);
+      const maxBottom = items.reduce((m, it) => { const r = it.getBoundingClientRect(); return Math.max(m, r.bottom - hr.top); }, 0);
       const inner = host.querySelector<HTMLElement>(".freeboard-world") ?? host;
-      const maxRight = items.reduce((m, it) => Math.max(m, it.offsetLeft + it.offsetWidth), 0);
-      const maxBottom = items.reduce((m, it) => Math.max(m, it.offsetTop + it.offsetHeight), 0);
       const line = [
         "[canvas]",
         `key=${_boardKey}`,
         `win=${innerWidth}x${innerHeight}`,
         `panel[h=${Math.round(panel.getBoundingClientRect().height)} ch=${panel.clientHeight} sh=${panel.scrollHeight} oy=${pcs.overflowY} cls="${panel.className}"]`,
         `canvas[h=${Math.round(host.getBoundingClientRect().height)} w=${Math.round(host.getBoundingClientRect().width)} minH="${cs.minHeight}" minW="${cs.minWidth}" ov=${cs.overflow}]`,
-        `contentPlan=[${Math.round(maxRight)},${Math.round(maxBottom)}] boxOK=${maxRight <= host.clientWidth + 1 && maxBottom <= host.clientHeight + 1}`,
+        `contentVis=[${Math.round(maxRight)},${Math.round(maxBottom)}] box=${host.clientWidth}x${host.clientHeight} boxOK=${maxRight <= host.clientWidth + 1 && maxBottom <= host.clientHeight + 1}`,
         world ? `world="${world.style.getPropertyValue("--board-z")}"` : "world=null",
         `zoom="${bar?.textContent?.trim() ?? "?"}" fab=${document.querySelectorAll(".free-fab").length}`,
         `items=${items.length}`,
         `boxes=[${rows.join(" ")}]`,
-        `ink=${inner === host ? "-" : boxRight + "x" + boxBottom}`,
+        `worldLayer=${inner === host ? "-" : "yes"}`,
       ].join(" ");
       void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
     };
     const iv = window.setInterval(report, 3000);
     report();
+    /* 一次性**缩放自检**（仅 dev，取证后与探针一起删）：缩放这条路上我没法用鼠标点，
+       就在真 app 里走一遍真代码：50% → 量数字 → 还原 100%。
+       验的是：世界层真的缩放、盒子跟着重算（minH 变小）、内容仍在盒子里（boxOK）、
+       缩放条上的百分比跟着变。 */
+    if (!zoomSelfTested) {
+      zoomSelfTested = true;
+      const mark = (tag: string): void => {
+        const host = hostRef.current;
+        if (!host) return;
+        const cs = getComputedStyle(host);
+        const bar = document.querySelector<HTMLElement>(".board-zoombar");
+        const hr = host.getBoundingClientRect();
+        const maxRight = Array.from(host.querySelectorAll<HTMLElement>(".free-item")).reduce((m, it) => Math.max(m, it.getBoundingClientRect().right - hr.left), 0);
+        const maxBottom = Array.from(host.querySelectorAll<HTMLElement>(".free-item")).reduce((m, it) => Math.max(m, it.getBoundingClientRect().bottom - hr.top), 0);
+        const line = `[zoom-selftest] ${tag} z=${host.querySelector<HTMLElement>(".freeboard-world")?.style.getPropertyValue("--board-z") ?? "?"} label=${bar?.textContent?.trim() ?? "?"} minH="${cs.minHeight}" minW="${cs.minWidth}" vis=[${Math.round(maxRight)},${Math.round(maxBottom)}] box=${host.clientWidth}x${host.clientHeight} boxOK=${maxRight <= host.clientWidth + 1 && maxBottom <= host.clientHeight + 1}`;
+        void import("@tauri-apps/api/core").then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | " + line })).catch(() => undefined);
+      };
+      window.setTimeout(() => {
+        mark("before");
+        setBoardView(_boardKey, { z: 2.5 });
+        window.setTimeout(() => {
+          mark("at250");
+          setBoardView(_boardKey, { z: 1 });
+          window.setTimeout(() => mark("restored"), 600);
+        }, 700);
+      }, 2500);
+    }
     return () => window.clearInterval(iv);
   }, [_boardKey, hostRef]);
 }
+/** 自检只跑一次（模块级，跨重渲染） */
+let zoomSelfTested = false;
 
 export function OnePageSurface(): ReactNode {
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());

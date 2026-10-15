@@ -442,6 +442,110 @@ export class XiaodaClient {
     return this.apiGet<XiaodaModel[]>("/api/opencoze/customModel/list");
   }
 
+  /** 建会话（GET，data 即 convId）——原生对话的前置步骤 */
+  async createConversation(): Promise<string> {
+    const d = await this.apiGet<unknown>("/api/conversation/create");
+    return typeof d === "string" ? d : "";
+  }
+
+  /**
+   * **原生（soda）对话流** —— 清小搭「正常聊天」的真实协议（2026-10-15 抓包定稿）：
+   *   POST /api/chats/（**带尾斜杠**）+ text/event-stream
+   *   body = {generateType, convId, agentId, query, fileList, customModelId?}
+   *   头 = token / Content-Type / env:prod / lang:zh
+   * 每帧 data 是 JSON 信封 {code, message, data:{content, state, thinkState, convId?, title?, agentVO}}，
+   * content 为增量文本（逐 token，需累加）。
+   * 为什么不用 /v1/chat/completions：那是「智能体广场/UAP 接入」路由，只认广场已注册智能体，
+   * 9999 与内置组成员都会回「agent not registered in UAP route」——两码事。
+   */
+  async chatNative(opts: {
+    agentId: string;
+    query: string;
+    convId: string;
+    customModelId?: number;
+    generateType?: "normal" | "follow";
+    signal?: AbortSignal;
+    onDelta: (text: string) => void;
+    onMeta?: (meta: { convId?: string; title?: string; state?: number }) => void;
+  }): Promise<{ content: string; convId: string }> {
+    if (!this.token) throw new XiaodaAuthRequiredError("未登录（无 token）");
+    const body: Record<string, unknown> = {
+      generateType: opts.generateType ?? "normal",
+      convId: opts.convId,
+      agentId: opts.agentId,
+      query: opts.query,
+      fileList: [],
+    };
+    if (opts.customModelId !== undefined) body.customModelId = opts.customModelId;
+    const res = await this.fetchLike(`${XIAODA_BASE}/api/chats/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        env: "prod",
+        lang: "zh",
+        "User-Agent": DEFAULT_USER_AGENT,
+        token: this.token,
+      },
+      body: JSON.stringify(body),
+      signal: opts.signal,
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => "");
+      throw new XiaodaApiError(res.status, t.slice(0, 160) || `对话请求失败（HTTP ${res.status}）`);
+    }
+    const ct = res.headers.get("content-type") ?? "";
+    if (!ct.includes("event-stream")) {
+      const t = await res.text().catch(() => "");
+      throw new XiaodaApiError(0, `对话返回了非流式响应：${t.slice(0, 160)}`);
+    }
+    const reader = res.body?.getReader();
+    if (!reader) throw new XiaodaApiError(0, "对话流不可读");
+    const decoder = new TextDecoder();
+    let buf = "";
+    let full = "";
+    let convId = opts.convId;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split("\n");
+      buf = lines.pop() ?? "";
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (!line.startsWith("data:")) continue;
+        const payload = line.slice(5).trim();
+        if (!payload || payload === "[DONE]") continue;
+        const j = safeJson(payload);
+        const code = typeof j.code === "number" ? j.code : 0;
+        const msg = typeof j.message === "string" ? j.message : "";
+        if (code !== 0 && code !== 200) throw new XiaodaApiError(code, msg || "对话失败");
+        const data = (j.data ?? {}) as Record<string, unknown>;
+        const piece = typeof data.content === "string" ? data.content : "";
+        if (piece) {
+          full += piece;
+          opts.onDelta(piece);
+        }
+        const cid = typeof data.convId === "string" ? data.convId : undefined;
+        if (cid) convId = cid;
+        opts.onMeta?.({
+          convId: cid,
+          title: typeof data.title === "string" ? data.title : undefined,
+          state: typeof data.state === "number" ? data.state : undefined,
+        });
+      }
+    }
+    return { content: full, convId };
+  }
+
+  /** 停止生成（best-effort：参数形状以会话 id 为准，失败忽略——UI 侧另有本地停止） */
+  async stopChat(convId: string): Promise<void> {
+    try {
+      await this.apiGet<unknown>("/api/chats/stop", { convId });
+    } catch {
+      /* 忽略：本地停止已生效 */
+    }
+  }
+
   /** OpenAI 兼容对话（SSE 流式）；服务端错误原文透传（XiaodaApiError） */
   async chatStream(opts: {
     model: string;

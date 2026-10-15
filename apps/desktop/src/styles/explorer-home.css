@@ -84,6 +84,10 @@
   min-height: calc(100dvh - 104px);
 }
 .explorer-panel.is-home-canvas { overflow: visible; }
+/* OnePage 同理（2026-10-15 用户点名「其他白板下半部分截断」）：.explorer-panel 的基线是
+   overflow:hidden，只有首页把它放开过 —— 于是 OnePage 的画布一旦比面板高，下半部分直接被裁掉
+   且**滚不到**。这里与首页同款放开（手机档见下方 overflow:auto），滚动交给窗口/内容层。 */
+.explorer-panel.is-onepage-canvas { overflow: visible; }
 
 /* 顶部钟与功能坞挂在 shell，不被 page-in 的 transform 或可滚动画布截成局部 fixed。 */
 .home-chrome-layer {
@@ -117,6 +121,8 @@ html.is-phone .home-free, html.is-phone .home-tab {
   min-height: calc(100vh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - 52px - 12px);
   min-height: calc(100dvh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - 52px - 12px);
 }
+html.is-phone .explorer-panel.is-onepage-canvas { overflow: auto; }
+html.is-phone .explorer-panel.is-onepage-canvas::-webkit-scrollbar { display: none; }
 html.is-phone .explorer-panel.is-home-canvas {
   overflow: auto;
   overscroll-behavior: contain;

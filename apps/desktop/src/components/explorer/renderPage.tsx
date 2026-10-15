@@ -19,7 +19,7 @@ import { NoticesPage } from "../../pages/learn/NoticesPage.js";
 import { SearchPage } from "../../pages/learn/SearchPage.js";
 import { SemesterSelectionPage } from "../../pages/learn/SemesterSelectionPage.js";
 import { SchedulePage } from "../../pages/Schedule.js";
-import { TodayPage } from "../../pages/Today.js";
+import { HomeTab } from "./HomeTab.js";
 import { BoardListPage } from "../../pages/BoardListPage.js";
 import { OnePageSurface } from "../FreeBoard.js";
 import { MailPage } from "../../pages/MailPage.js";
@@ -94,8 +94,11 @@ function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
  *  这两个分支只为兜底——正常都会被 explorer 拦去设置浮层）。 */
 export function renderPage(page: Page): ReactNode {
   switch (page) {
-    case "today":
-      return <TodayPage />;
+    case "homepage":
+      /* 首页 = 与标签页首页同一块画布（2026-10-15 起 page id 就叫 home）。
+         旧 case "today" 渲染的 TodayPage 已随"今日页"一起删除 —— 那条路只会让人以为
+         还存在一张"今日页"，实际是旧的一套卡片页。 */
+      return <HomeTab />;
     /* 白板（PR 55 原子收藏升级）：收藏夹列表页 + 某一块白板 */
     case "boards":
       return <BoardListPage />;

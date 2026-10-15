@@ -27,7 +27,8 @@ import { NAV_REGISTRY } from "./navigation.js";
 export interface ExplorerTab {
   id: string;
   kind: "home" | "page";
-  /** kind=page 时有效；home 恒为 "today"（首页内容即今日页，组织模式原样移植） */
+  /** kind=page 时有效；home 恒为 "homepage"（页面 id 就叫 homepage，用户 2026-10-15 定名：
+   *  旧名 today 连同那张旧卡片页一起删干净了 —— 留着只会误导人以为还有"今日页"） */
   page: Page;
   params: LearnNav | null;
   /** 打开时定下的静态标题（完整路径由 state/tabTitles.ts 数据感知解析） */
@@ -85,6 +86,13 @@ function isSingletonPage(page: Page): boolean {
 let state: ExplorerState = loadStore();
 const listeners = new Set<() => void>();
 
+/** 已知的可导航一级页（深链白名单 + 存档校验共用一处；2026-10-15 抽出，原先两处各写一份） */
+const KNOWN_PAGES: ReadonlySet<string> = new Set([
+  "homepage", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life",
+  "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs",
+  "boards", "board",
+]);
+
 function loadStore(): ExplorerState {
   const fallback: ExplorerState = { tabs: [], activeId: HOME_TAB_ID, workspaces: [] };
   try {
@@ -94,10 +102,15 @@ function loadStore(): ExplorerState {
     const tabs = Array.isArray(p.tabs)
       ? p.tabs
           .filter((t): t is ExplorerTab => !!t && typeof t.id === "string" && typeof t.page === "string" && t.kind === "page")
-          /* 旧今日页退役（2026-10-13 用户「古老旧今日页阴魂不散」）：page=today 的 page 标签
-             是老版本时代持久化的残迹——首页已被 kind=home 的白板接管，恢复时丢弃，不再复活。 */
-          .filter((t) => t.page !== "today")
-          .map((t) => ({ ...t, workspaceId: typeof t.workspaceId === "string" ? t.workspaceId : null })) // 旧版本补字段
+          /* 存档只恢复到"认得的页面"（KNOWN_PAGES）：历史改名遗留的旧 page 值一律丢弃，
+             不复产一个渲染不出来的空标签。 */
+          .filter((t) => KNOWN_PAGES.has(t.page)) // 存档里的未知页 id（历史改名遗留）直接丢弃，不复产一个渲染不出来的空标签
+          .map((t) => ({
+            ...t,
+            workspaceId: typeof t.workspaceId === "string" ? t.workspaceId : null, // 旧版本补字段
+            /* 首页标签的存档值一律归一成 homepage，避免"看着有标签、判定页面的分支认不出它"。 */
+            page: t.kind === "home" ? "homepage" : t.page,
+          }))
           .slice(0, MAX_TABS)
       : [];
     return {
@@ -142,7 +155,7 @@ export function explorerSnapshot(): ExplorerState {
 /* ══════════ 查询 ══════════ */
 
 /** 首页标签页（模块级单例：getSnapshot 必须返回稳定引用，否则 useSyncExternalStore 死循环） */
-const HOME_TAB: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "today", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
+const HOME_TAB: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
 
 /** 全部标签页（home 恒在最前；home 是稳定单例，数组本身仅供渲染期使用） */
 export function allTabs(): ExplorerTab[] {
@@ -245,7 +258,7 @@ const ownHashes = new Set<string>();
 function writeHashFor(tab: ExplorerTab): void {
   const h =
     tab.kind === "home"
-      ? "#/today"
+      ? "#/homepage"
       : tab.page === "folder" && tab.params?.folderId
         ? `#/folder/${tab.params.folderId}`
         : tab.page === "board"
@@ -313,7 +326,7 @@ export function initExplorerHashBridge(): () => void {
     }
     if (openBoardFromHash(target)) return;
     const h = target.replace(/^#\/?/, "");
-    const known = (["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs", "boards", "board"] as const).includes(h as never);
+    const known = KNOWN_PAGES.has(h);
     if (h && known) openTab(h as Page);
   };
   addEventListener("hashchange", onHash);
@@ -329,8 +342,8 @@ export function openTabFromBootHash(): void {
   }
   if (openBoardFromHash(location.hash)) return;
   const h = location.hash.replace(/^#\/?/, "");
-  if (!h || h === "today") return;
-  const known = (["learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs", "boards", "board"] as const).includes(h as never);
+  if (!h || h === "homepage") return;
+  const known = KNOWN_PAGES.has(h);
   if (known) openTab(h as Page);
 }
 
@@ -361,13 +374,13 @@ export interface OpenTabOptions {
 
 /**
  * 打开标签页（入口级导航：首页目录/快捷入口/OneGO/搜索/悬浮球都用它）。
- * - page="today" → 聚焦首页（首页不可多开）；
+ * - page="homepage" → 聚焦首页（首页不可多开）；
  * - settings/plugins → 设置浮层（不是标签页）；
  * - **默认复用**：同实例已打开 → 聚焦它（用户拍板：不要无限新建一模一样的标签页）；
  *   只有 forceNew（「复制」）才出第二个实例。
  */
 export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOptions): string {
-  if (page === "today") {
+  if (page === "homepage") {
     focusTab(HOME_TAB_ID);
     return HOME_TAB_ID;
   }
@@ -446,8 +459,8 @@ export function closeOtherTabs(keepId: string): void {
 /** 标签页内导航（更新 page/params，标签身份不变——工作上下文保留）。
  *  只作用于该标签页自己的路由上下文（TabHost 的 Ctx 覆盖），互不串台。 */
 export function navigateInTab(id: string, page: Page, params?: LearnNav | null, title?: string): void {
-  if (page === "today") {
-    /* 「回今日」= 回首页：首页革命后 today 不再是可导航的 page——跳 HOME，不是把本标签
+  if (page === "homepage") {
+    /* 「回首页」= 聚焦首页标签：homepage 不是可多开的普通页——跳 HOME，不是把本标签
        改写成旧 TodayPage（用户实测重登后被历史还原成一个「古老旧今日页」）。 */
     focusTab(HOME_TAB_ID);
     return;

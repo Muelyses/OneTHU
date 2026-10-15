@@ -124,7 +124,7 @@ export interface Preset {
 }
 
 const ALL_PAGES = [
-  "today", "learn", "schedule", "trace", "mail", "cloud", "thubook",
+  "homepage", "learn", "schedule", "trace", "mail", "cloud", "thubook",
   "info", "life", "reserve", "thos", "otherinfo",
 ];
 const ALL_TABS = {
@@ -145,7 +145,7 @@ export const PRESETS: Preset[] = [
     id: "minimal",
     label: "极简",
     hint: "只留首页、网络学堂、信息、生活、在线服务",
-    pages: ["today", "learn", "info", "life", "thos"],
+    pages: ["homepage", "learn", "info", "life", "thos"],
     tabs: { info: ["report", "exams", "profile"], life: ["card", "dorm", "washer"] },
     cards: ["learn"],
   },
@@ -153,7 +153,7 @@ export const PRESETS: Preset[] = [
     id: "reserve",
     label: "预约狂人",
     hint: "日程、预约、场馆与宿舍设备为主",
-    pages: ["today", "schedule", "reserve", "life", "thos"],
+    pages: ["homepage", "schedule", "reserve", "life", "thos"],
     tabs: { info: ["calendar"], life: ["dorm", "washer", "hygiene", "card"] },
     cards: ["schedule", "life"],
   },
@@ -161,7 +161,7 @@ export const PRESETS: Preset[] = [
     id: "info",
     label: "信息大师",
     hint: "成绩、考试、学籍、新闻与网络学堂全在",
-    pages: ["today", "learn", "info", "schedule", "thos", "otherinfo"],
+    pages: ["homepage", "learn", "info", "schedule", "thos", "otherinfo"],
     tabs: { info: ALL_TABS.info, life: ["card", "network"] },
     cards: ["learn", "schedule", "extend"],
   },

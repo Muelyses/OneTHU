@@ -92,19 +92,21 @@ let legacyChecked = false;
 /**
  * 一次性把旧键的首页摆位并进系统板。
  *
- * 判据三条（都要满足才动手）：没并过（标志位）、板文档里没有任何 px 条目（防御）、
- * 旧键里真有东西。合并按 spec 去重——系统板里同 spec 的条目正是当年被 seed 复制过去的那批，
- * 两条都留就是双份；旧键里没有的（例如「收藏到首页」落下的原子）原样接在后面。
+ * 判据两条（都要满足才动手）：没并过（标志位）、旧键里真有东西。合并按 spec 去重——
+ * 系统板里同 spec 的条目正是当年被 seed 复制过去的那批，两条都留就是双份；旧键里没有的
+ * （例如「收藏到首页」落下的原子）原样接在后面。
+ *
+ * 2026-10-15 移除原第二条判据"板文档里没有任何 px 条目 → 否则视为已并"：
+ * boardCore.purgeGridResidue 会在**每次 load/save** 把"只有网格、没有 px"的条目补成 px 条目，
+ * 于是这条防御判据会把**从未合并过的**用户误判成"已并"→ 老自由板的摆位永远进不来（守栏实测
+ * 场景 dup/idem 全红）。合并本身按 spec 去重、天然幂等，所以以标志位为唯一判据是安全的：
+ * 隐私模式下标志位写失败最多重复合并一次，不会长长两份。
  */
 export function migrateLegacyHomeOnce(): boolean {
   if (readFlag(LEGACY_MERGED_KEY)) return false;
   const doc = loadBoard();
   const sys = systemBoard(doc);
   if (!sys) return false;
-  if (cellsOf(sys, "portrait").some((it) => it.rect)) {
-    writeFlag(LEGACY_MERGED_KEY);
-    return false;
-  }
   const legacy = parseLegacyFreeBoard(readRaw(LEGACY_KEY));
   writeFlag(LEGACY_MERGED_KEY);
   if (legacy.length === 0) return false;

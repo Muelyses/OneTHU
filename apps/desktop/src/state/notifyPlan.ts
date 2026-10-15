@@ -374,7 +374,7 @@ export function buildNotifyPlan(input: {
           eventsToday.length ? `${eventsToday.length} 个日程` : null,
           dues.length ? `${dues.length} 个截止` : null,
         ]),
-        page: i === 0 && key === nowDay ? "today" : "schedule",
+        page: i === 0 && key === nowDay ? "homepage" : "schedule",
         ...(q.shifted ? { shifted: true } : {}),
       }, end);
     }

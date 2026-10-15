@@ -210,7 +210,7 @@ export function TabHost(): ReactNode {
   useEffect(() => clearPress, [clearPress]);
 
   const all = useMemo(() => {
-    const home: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "today", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
+    const home: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
     return [home, ...st.tabs];
   }, [st.tabs]);
 

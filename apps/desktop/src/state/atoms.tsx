@@ -279,7 +279,7 @@ interface WidgetAtom {
 
 /** 点击标题跳回组件数据来源页（与今日页各卡点击行为同口径） */
 export const WIDGET_ATOMS: WidgetAtom[] = [
-  { kind: "widget", key: "today-overview", title: "今日概览", sub: "未交作业 · 截止 · 今日课程", icon: IconToday, group: "组件", body: () => <TodayOverviewWidget />, page: "today" },
+  { kind: "widget", key: "today-overview", title: "今日概览", sub: "未交作业 · 截止 · 今日课程", icon: IconToday, group: "组件", body: () => <TodayOverviewWidget />, page: "homepage" },
   { kind: "widget", key: "agenda", title: "日程与提醒", sub: "校历 · 学校重要事项倒计时", icon: IconCalendar, group: "组件", body: () => <AgendaWidget />, page: "schedule" },
   { kind: "widget", key: "homework", title: "未提交作业", sub: "截止升序 · 点击查看详情", icon: IconPen, group: "组件", body: () => <HomeworkWidget />, page: "learn-assignments" },
   { kind: "widget", key: "notices", title: "最近通知", sub: "最新课程通知", icon: IconBell, group: "组件", body: () => <RecentNoticesWidget />, page: "learn" },

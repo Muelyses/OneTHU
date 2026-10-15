@@ -1158,7 +1158,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       },
       /* ── 标签页 ── */
       tabList: (): Array<{ id: string; title: string; page: string }> => [
-        { id: "home", title: "首页", page: "today" },
+        { id: "home", title: "首页", page: "homepage" },
         ...explorerSnapshot().tabs.map((t) => ({ id: t.id, title: t.title, page: String(t.page) })),
       ],
       tabOpen: (page: string): { id: string } => {

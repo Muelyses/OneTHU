@@ -261,7 +261,7 @@ export function HomeworkRows({
               // R20-B2b：行点击统一走 openHomeworkRow 三态分流（雨课堂参数齐备 →
               // learn-ykt-detail 原生详情，全平台默认原生；其余外部源 → R20-A 通道；
               // 内部作业 → 站内详情）。今日页与收藏夹的作业卡都经此组件，单点收敛。
-              openHomeworkRow(h, { navigate, from: "today", courseName: courseName(h.courseId) });
+              openHomeworkRow(h, { navigate, from: "homepage", courseName: courseName(h.courseId) });
             }}
           >
             <div className="row-when">
@@ -317,7 +317,7 @@ export function NoticeRows({
         items.slice(0, 3).map((n, i) => (
           <RowClick
             key={i}
-            onClick={() => navigate("learn-notice-detail", { courseId: n.courseId, itemId: n.id, from: "today" })}
+            onClick={() => navigate("learn-notice-detail", { courseId: n.courseId, itemId: n.id, from: "homepage" })}
           >
             <div className="tl-time">{n.publishTime.slice(5, 10)}</div>
             <div className="tl-bar" style={{ background: "var(--border-strong)" }} />

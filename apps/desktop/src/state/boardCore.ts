@@ -347,6 +347,57 @@ export function repairOverlaps(doc: BoardDoc): BoardDoc {
   return touched ? { ...doc, boards } : doc;
 }
 
+/**
+ * 网格残留清零（2026-10-15 用户点名：「旧的今日假白板的数据从来没有消失过」）。
+ *
+ * 旧假白板（BoardPage 的四/八列网格）留下的 `cell` **不该再决定屏幕上任何位置**：
+ * 只要条目没有 px `rect`，就把它**落进自由层** —— 接在现有内容下方（左对齐、沿用网格派生的
+ * **尺寸**，只换位置），并顺手用 `withRect` 把 `cell` 按新 rect 反算回去。自此 `cell` 只是
+ * 「插件/OH 契约层的镜像」，不再是布局来源；网格坐标再深也只影响契约读数，不影响视觉。
+ *
+ * 同一次里把**系统板的旧名「今日」改成「首页」**：`defaultBoardDoc` 的默认名只对新文档生效，
+ * 老文档的 name 必须迁移（否则首页标题/OnePage 页头永远显示旧名）。
+ *
+ * 幂等：全部条目都有 rect 且名字已对 → 返回**同一引用**（调用方据此决定不写盘）。
+ */
+export function purgeGridResidue(doc: BoardDoc): BoardDoc {
+  let changed = false;
+  const boards: Board[] = doc.boards.map((b) => {
+    const renamed = b.kind === "system" && b.name === "今日";
+    let cells = b.cells;
+    let cellsChanged = false;
+    for (const o of Object.keys(b.cells) as Orientation[]) {
+      const list = b.cells[o] ?? [];
+      if (!list.some((it) => !it.rect)) continue; // 全都有 px：这一档不欠账
+      let bottom = 0;
+      for (const it of list) if (it.rect) bottom = Math.max(bottom, it.rect.y + it.rect.h);
+      let cursor = bottom > 0 ? bottom + TILE_GAP : 0;
+      const fixed = list.map((it) => {
+        if (it.rect) return it;
+        const size = rectFromCell(it.cell); // 网格只贡献"多大"，不再贡献"在哪"
+        const r: BoardRect = { x: BOARD_PAD, y: cursor, w: size.w, h: size.h };
+        cursor += size.h + TILE_GAP;
+        /* ⚠️ 这里**故意不用 withRect**：那条路会把 cell 按新 rect 反算，
+           而 cell 是插件/OH 的**契约层**（`ext.onePageAddItem` 写它、`ext.onePageItems` 读它，
+           口径是"写什么读回什么"）。给视觉补 px 却改写契约坐标，会让插件下次读到自己没写过的格子
+           （oh-wire 的不重叠守栏当场抓到三条反例：契约口径、只写 cell 的路、落库与预览一致）。
+           所以：只补 `rect`（视觉）+ `manual`（别被自适应拟合改掉），**cell 原样保留**；
+           用户一旦拖动/缩放，仍走 withRect 把两边同步回一致 —— 那一刻的"用户意图"才是权威。 */
+        return { ...it, rect: r, manual: true };
+      });
+      if (!cellsChanged) {
+        cells = { ...b.cells };
+        cellsChanged = true;
+      }
+      cells[o] = fixed;
+    }
+    if (!renamed && !cellsChanged) return b;
+    changed = true;
+    return renamed ? { ...b, name: "首页", cells } : { ...b, cells };
+  });
+  return changed ? { ...doc, boards } : doc;
+}
+
 function sameCell(a: BoardCell, b: BoardCell | undefined): boolean {
   return !!b && a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
 }
@@ -360,7 +411,7 @@ export function loadBoard(deps: BoardDeps): BoardDoc {
     saveBoard(fresh, deps);
     return fresh;
   }
-  const safe = repairOverlaps(parsed);
+  const safe = repairOverlaps(purgeGridResidue(parsed));
   if (safe !== parsed) saveBoard(safe, deps);
   return safe;
 }
@@ -368,7 +419,7 @@ export function loadBoard(deps: BoardDeps): BoardDoc {
 export function saveBoard(doc: BoardDoc, deps: BoardDeps): void {
   try {
     /* 唯一写入口：任何来源（页面 / 自由画布 / 插件 / OH / OneGO）都过这道不变量 */
-    const safe = repairOverlaps(doc);
+    const safe = repairOverlaps(purgeGridResidue(doc));
     (deps.storage ?? globalThis.localStorage)?.setItem(BOARD_KEY, JSON.stringify(safe));
     if (safe.order && typeof safe.order === "object") deps.saveOrder(safe.order);
   } catch {

@@ -301,7 +301,7 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
     title: `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`,
     updatedAt: now,
     titleAt: now,
-    target: "today",
+    target: "homepage",
     rows,
     footer,
     counts: { classes: classCount, ddls: ddlCount, events: eventCount, more, hadClass },
@@ -340,7 +340,7 @@ export function buildShortcutSnapshot(input: {
     label: String(input.label ?? ""),
     sub: input.sub ? String(input.sub) : undefined,
     icon: input.icon,
-    target: encodeWidgetTarget(input.target || "today", input.params ?? null),
+    target: encodeWidgetTarget(input.target || "homepage", input.params ?? null),
   };
 }
 
@@ -359,7 +359,7 @@ export function buildDetailSnapshot(input: {
     title: String(input.title || "详情"),
     updatedAt: input.now,
     titleAt: input.now,
-    target: encodeWidgetTarget(input.target || "today", input.params ?? null),
+    target: encodeWidgetTarget(input.target || "homepage", input.params ?? null),
     rows: input.rows.slice(0, Math.max(1, input.maxRows ?? WIDGET_MAX_ROWS)).map((r) => ({
       text: String(r.text ?? ""),
       sub: r.sub ? String(r.sub) : undefined,

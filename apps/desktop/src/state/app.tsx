@@ -6,7 +6,7 @@ import type { TwoFactorMethod } from "@onethu/core";
 
 /** 轻路由：一级页（含选课系统 zhjwxk）+ 网络学堂子页（learnX 移植） */
 export type Page =
-  | "today"
+  | "homepage"
   | "learn"
   | "schedule"
   | "trace" // 寻迹：今日日程地图（POI 标注 + ETA + 前往导航）
@@ -138,7 +138,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /**
  * R20-B2：雨课堂作业原生详情页参数。
@@ -308,7 +308,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
         setUser({ username });
         setStatus("ready");
-        navigate("today");
+        navigate("homepage");
       };
       try {
         const result = await clients.login(username, password, { remember });
@@ -351,7 +351,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setTwoFactor(null);
           setUser({ username: twoFactor.username });
           setStatus("ready");
-          navigate("today");
+          navigate("homepage");
           return;
         }
         const round2 = await clients.verify2FA(type, code, trust);
@@ -363,7 +363,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setTwoFactor(null);
         setUser({ username: twoFactor.username });
         setStatus("ready");
-        navigate("today");
+        navigate("homepage");
       } catch (err) {
         setError(explainNetworkError(err));
       }
@@ -383,7 +383,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setTwoFactor(null);
     setStatus("logged-out");
-    navigate("today");
+    navigate("homepage");
   }, [navigate]);
 
   const value = useMemo<AppState>(

@@ -84,7 +84,7 @@ const SearchLandingSelfcheck = __ONETHU_DEV__ ? lazy(() => import("./SearchLandi
 export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
   // 「今日」那一格已删（用户 2026-10-15 点名）：它就是首页自己（page id 仍叫 today），
   // 目录里再列一遍等于「首页 → 首页」；而且它是程序坞默认球的第一颗
-  //（homeSpheres 的 docked = NAV.slice(0,8)）。删掉后老用户持久化的 "today" 球
+  //（homeSpheres 的 docked = NAV.slice(0,8)）。删掉后老用户持久化的 "home" 球
   // 会被 sanitize 的 NAV 白名单自动过滤掉，不用写迁移。
   { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
   // R30：这一栏现在同时收纳网络学堂与雨课堂的课程，侧栏用中性的「课程」；

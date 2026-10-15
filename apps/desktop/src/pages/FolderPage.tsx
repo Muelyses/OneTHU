@@ -62,7 +62,7 @@ export function FolderPage() {
     if (!ok) return;
     favs.remove(rootId);
     setEditing(false);
-    navigate("today");
+    navigate("homepage");
   };
 
   const atomCount = folder.items.filter((it) => it.t === "a").length;

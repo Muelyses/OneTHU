@@ -118,6 +118,19 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
       <div className="ex-sec-head">
         <b>我的 OnePage</b>
       </div>
+      {/* 「首页」入口（2026-10-15 用户点名「点击首页回首页」）：系统板不是 OnePage，不能列成一块板，
+          但"回首页"这件事必须在这个列表里点得到 —— 它聚焦首页标签（顶栏 Logo 同一条路）。 */}
+      <button
+        type="button"
+        className="ex-row ex-row-clickable"
+        onClick={() => {
+          focusTab(HOME_TAB_ID);
+          onDone();
+        }}
+      >
+        <span className="ex-row-icon"><FolderIcon name="fist" /></span>
+        <span className="ex-row-main">首页</span>
+      </button>
       <div className="ex-newrow">
         <Input placeholder="新 OnePage 名称" value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
             if (e.key === "Enter") create();

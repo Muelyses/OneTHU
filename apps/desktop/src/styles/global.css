@@ -9,6 +9,13 @@
   grid-template-columns: var(--sidebar-w) 1fr;
   min-height: 100vh;
 }
+/* 侧栏退役后的单列兜底（2026-10-15，用户报「首页时钟和程序坞向左漂移」的根因）：
+   侧栏早已不在 DOM（Layout 只渲染 .shell > .explorer-panel），面板是 shell 里**唯一在流**的子项，
+   自动落到**第一轨**。OneGUI 桥把 --sidebar-w 接成 --og-ctl-rail-w（224px）之前，这条声明因变量
+   未定义整体失效、网格退化成单列 auto 被拉伸占满，所以看不出问题；接上之后第一轨变成真的 224px，
+   面板就被钉在 224px 宽里 —— 首页画布全是绝对定位子项（对 max-content 无贡献），于是内容区塌成
+   224px、居中的钟与坞被压到屏幕最左。这里在"没有侧栏元素"时收成单列（侧栏若回归则原样恢复两列）。 */
+.shell:not(:has(.sidebar)) { grid-template-columns: minmax(0, 1fr); }
 
 /* ---------- 侧栏 ---------- */
 

@@ -5,6 +5,8 @@
  * - 聊天：POST /v1/chat/completions（OpenAI 兼容 SSE 流式）。该端点只认 UAP 路由
  *   已注册的智能体（model 须 "agent:<id>"）；默认助手 9999 与内置组成员不在其中时
  *   服务端错误原文透传——实验页的诚实行为，不粉饰。
+ * - 对话：GET /api/conversation/create 取 convId → POST /api/chats/ 原生（soda）SSE 流
+ *   （/v1/chat/completions 是广场/UAP 接入路由，正常聊天用不到，见 core/xiaoda/client.ts）
  * - 历史：GET /api/conversation/page（convId / query / createTime）。
  * - 智能体：GET /api/group/builtin/list（官方智能体分组与成员；选中即设为对话对象）。
  * - 技能：GET /api/skill/plaza/{overview,categories,list}。
@@ -124,6 +126,10 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
   const [sending, setSending] = useState(false);
   const [chatErr, setChatErr] = useState("");
   const abortRef = useRef<AbortController | null>(null);
+  /** soda 会话号：首次发送时向后端申请，后续消息复用（服务端按 convId 记住上下文） */
+  const convIdRef = useRef("");
+  /** 本地停止标记：应用内 nativeFetch 忽略 signal，UI 侧用它兜住后续增量 */
+  const stopRef = useRef(false);
 
   useEffect(() => {
     xiaodaClient
@@ -143,25 +149,38 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
   const send = useCallback(async () => {
     const q = input.trim();
     if (!q || sending) return;
-    const history: ChatMsg[] = [...msgs, { role: "user", content: q }];
-    setMsgs([...history, { role: "assistant", content: "" }]);
+    setMsgs((prev) => [...prev, { role: "user", content: q }, { role: "assistant", content: "" }]);
     setInput("");
     setSending(true);
     setChatErr("");
+    stopRef.current = false;
     const ac = new AbortController();
     abortRef.current = ac;
     try {
-      await xiaodaClient.chatStream({
-        model: `agent:${agentId}`,
-        messages: history.map((m) => ({ role: m.role, content: m.content })),
+      // ① 首次发送先建会话（GET /api/conversation/create → convId）
+      if (!convIdRef.current) {
+        convIdRef.current = await xiaodaClient.createConversation();
+        if (!convIdRef.current) throw new Error("新建对话失败，请点发送重试");
+      }
+      // ② 原生 soda 流：POST /api/chats/（逐 token 增量）
+      await xiaodaClient.chatNative({
+        agentId,
+        query: q,
+        convId: convIdRef.current,
+        customModelId: modelId ? Number(modelId) : undefined,
         signal: ac.signal,
-        onDelta: (d) =>
+        onDelta: (d) => {
+          if (stopRef.current) return;
           setMsgs((prev) => {
             const next = [...prev];
             const last = next[next.length - 1];
             if (last && last.role === "assistant") next[next.length - 1] = { ...last, content: last.content + d };
             return next;
-          }),
+          });
+        },
+        onMeta: (m) => {
+          if (m.convId) convIdRef.current = m.convId;
+        },
       });
     } catch (e) {
       setChatErr(e instanceof Error ? e.message : String(e));
@@ -175,7 +194,20 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
       setSending(false);
       abortRef.current = null;
     }
-  }, [input, sending, msgs, agentId]);
+  }, [input, sending, agentId, modelId]);
+
+  const stop = useCallback(() => {
+    stopRef.current = true;
+    abortRef.current?.abort();
+    if (convIdRef.current) void xiaodaClient.stopChat(convIdRef.current);
+  }, []);
+
+  const newConv = useCallback(() => {
+    stopRef.current = true;
+    convIdRef.current = "";
+    setMsgs([]);
+    setChatErr("");
+  }, []);
 
   const agentOptions = [
     { value: DEFAULT_AGENT_ID, label: `默认助手（${DEFAULT_AGENT_ID}）` },
@@ -230,10 +262,13 @@ function ChatTab({ me, agentId, onAgentId }: { me: XiaodaUser | null; agentId: s
               发送
             </Btn>
             {sending ? (
-              <Btn variant="outline" onClick={() => abortRef.current?.abort()}>
+              <Btn variant="outline" onClick={stop}>
                 停止
               </Btn>
             ) : null}
+            <Btn variant="outline" onClick={newConv} disabled={sending}>
+              新对话
+            </Btn>
           </Inline>
         </Stack>
       </Card>

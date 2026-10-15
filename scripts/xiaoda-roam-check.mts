@@ -107,6 +107,30 @@ const c2 = new XiaodaClient({ fetch: nativeLikeFetch, log: (l) => console.log(" 
 const u2 = await c2.login(cred.username, password, sess.fingerprint ?? "", sess.finger3 ?? "");
 console.log(`② ${u2.name && c2.getToken() ? "✅" : "❌"} 登录成功 name=${u2.name} zjh=${u2.zjh} token=${c2.getToken().length} chars`);
 
+/* ③（已知负例留档）jar 里已有 id 会话 → 无凭据 login()：这个 service 仍返登录表单 */
+/* ④ soda 原生对话 E2E：建对话 → POST /api/chats/ 流式 → 收到增量文本 */
+const conv = await c2.createConversation();
+console.log(`④ 建对话：${conv ? "✅ convId=" + conv : "❌ 未返回会话号"}`);
+let got = "";
+const t0 = Date.now();
+try {
+  const out = await c2.chatNative({
+    agentId: "9999",
+    query: "用一句话介绍你自己",
+    convId: conv,
+    onDelta: (d) => {
+      got += d;
+      if (got.length <= 40) process.stdout.write(d);
+    },
+  });
+  console.log(
+    `\n④ 原生对话：${out.content ? "✅ 收到 " + out.content.length + " 字（" + (Date.now() - t0) + "ms）" : "❌ 无内容"}`,
+  );
+  console.log(`   回复全文：${out.content.slice(0, 120)}`);
+} catch (e) {
+  console.log(`\n④ 原生对话：❌ ${e instanceof Error ? e.message.slice(0, 200) : String(e)}`);
+}
+
 /* ③ 关键断言：jar 里已有 id 会话 → 无凭据 login() 应直接出票（应用内形态） */
 const c3 = new XiaodaClient({ fetch: nativeLikeFetch, log: (l) => console.log("  [c3]", l) });
 try {

@@ -90,7 +90,9 @@ export const NAV_REGISTRY: NavEntry[] = [
   { id: "info-exams", name: "考试安排", category: "学习", visibility: "group", page: "info", params: { infoTab: "exams" }, keywords: ["考试", "考场"], boostWindow: { from: "0101", to: "0131" }, note: "考试周可提升（P2 消费 boostWindow）" },
   { id: "info-evaluation", name: "教学评估", category: "学习", visibility: "buried", page: "info", params: { infoTab: "evaluation" }, keywords: ["评估", "评教", "问卷"], boostWindow: { from: "0601", to: "0630" }, note: "评估季同理" },
   { id: "zhjwxk", name: "选课", category: "学习", visibility: "group", page: "zhjwxk", keywords: ["选课", "退课", "候补"], boostWindow: { from: "0901", to: "0920" }, note: "选课季临时提升 group→今日推荐" },
-  { id: "xiaoda", name: "清小搭", category: "学习", visibility: "group", page: "xiaoda", keywords: ["清小搭", "AI 学伴", "智能体", "技能广场", "xiaoda"], note: "校园 AI 学伴实验页（聊天/历史/智能体/技能；纯 OneGUI 试验田）" },
+  /* 清小搭（2026-10-15）：一级页——首页程序坞第九颗球、搜索栏可搜、OH 可打开
+     （四处注册见 tools/xiaoda-entries-test.mjs）；note 是搜索结果的副标题，别再说「实验页」。 */
+  { id: "xiaoda", name: "清小搭", category: "学习", visibility: "group", page: "xiaoda", keywords: ["清小搭", "小搭", "AI 学伴", "智能体", "技能广场", "xiaoda"], note: "校园 AI 学伴：聊天 · 历史 · 智能体 · 技能广场" },
 
   /* —— 日程 —— */
   { id: "schedule", name: "课表", category: "日程", visibility: "core", page: "schedule", keywords: ["课表", "日程", "上课"], note: "今日页「下一节课」卡数据来源" },

@@ -172,4 +172,3 @@ export function allSphereEntries(): SphereNavEntry[] {
   return [...NAV, ...pluginEntries()];
 }
 
-/* 几何终测触发点（2026-10-15，取证后删）：本文件一改会触发整页 reload。 */

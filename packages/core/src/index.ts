@@ -238,5 +238,17 @@ export {
   PSEUDO_NAMES, GRADE_SCALE,
 } from "./privacy/desensitize.js";
 
+/* 临时来访人员报备（行在清华小程序 → visit.tsinghua.edu.cn/visitor/mobile）—— 统一身份直连登录 +
+ * 表单模型/字典读取 + 用户确认后提交（2026-10-15） */
+export {
+  VisitClient, VisitApiError, VisitAuthRequiredError, VisitLoginError, VISIT_BASE, VISIT_API,
+  VISIT_MOBILE_ENTRY, VISIT_ITS_SERVICE_ID, VISIT_REPORT_FLOW, VISIT_MY_LIST_FORM, VISIT_VISITOR_LIST_KEY,
+  visitTokenExpiresAt, normalizeFormModel, selectSourcePayload,
+} from "./visit/client.js";
+export type {
+  VisitFetch, VisitUser, VisitSessionState, VisitOption, VisitFormField, VisitFormModel, VisitMenuItem,
+  VisitReportRow, VisitVisitorInput, VisitReportDraft, VisitClientOptions,
+} from "./visit/client.js";
+
 // 二级课表格子 id 解析（a{session}_{day}，口径与 info app parseScript 一致）
 export { parseCellAnchor } from "./zhjwxk/anchor.js";

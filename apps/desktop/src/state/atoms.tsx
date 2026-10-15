@@ -233,6 +233,8 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "reserve-classroom", title: "空教室", sub: "预约页 · 自习空闲查询", icon: IconSearch, group: "页面", page: "reserve", params: { reserveTab: "classroom" } },
   { kind: "page", key: "reserve-sports", title: "体育预约", sub: "预约页 · 体育场馆时段预约", icon: IconSchedule, group: "页面", page: "reserve", params: { reserveTab: "sports" } },
   { kind: "page", key: "reserve-kongjian", title: "公共空间", sub: "预约页 · 宿舍公共空间预约", icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "kongjian" } },
+  /* 临时来访人员报备（2026-10-15）：key 与 navigation.ts 的 reserve-visit 同名（搜索点行两边必须同参数）。 */
+  { kind: "page", key: "reserve-visit", title: "临时来访人员报备", sub: "预约页 · 亲友来访报备与我的报备", icon: IconFlag, group: "页面", page: "reserve", params: { reserveTab: "visit" } },
 ];
 
 /**

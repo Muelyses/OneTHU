@@ -62,6 +62,7 @@ import { readVoicePrefs, setVoicePrefs } from "../state/voicePrefs.js";
 import { explorerPrefsSnapshot, setExplorerPrefs } from "../state/explorerPrefs.js";
 import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.js";
 import { setHwDefault, setHwReminder } from "../state/hwRemind.js";
+import { requestVisitDraft } from "../state/visitDraft.js";
 import * as geek from "../lib/geekBrowser.js";
 
 /** ext.tabOpen 允许打开的一级页（子页是 tab 内导航，不走新标签）。
@@ -458,7 +459,20 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     mail: { ...mailRead, ...mailWrite } as OnethuApi["mail"],
     cloud: { ...cloudRead, ...cloudWrite } as OnethuApi["cloud"],
     memory: { ...memoryReadNs, ...memoryWriteNs } as OnethuApi["memory"],
-    gitlab: { ...gitlabRead, ...gitlabWrite } as unknown as OnethuApi["gitlab"],
+    /** 临时来访人员报备（visit.tsinghua.edu.cn 的「亲友来访报备」）。
+   *  OH 只做**填草稿 + 打开**：提交是真实政务动作，永远由用户在页面上勾选确认后自己点。
+   *  WHY 不在这里直接提交：报备内容的真实性由申请人负责（学校须知原文），代提交会让人误以为
+   *  「系统替他背书」。与 venue.jump「预约在官方页面完成」同一条边界。 */
+  visit: {
+    fill: (patch_: unknown, opts?: { open?: boolean }): { ok: boolean; opened: boolean; filled: string[] } => {
+      gate(perms, "nav", "visit.fill");
+      const p = (patch_ ?? {}) as Record<string, unknown>;
+      requestVisitDraft(p as never);
+      const opened = opts?.open === false ? false : navGo("reserve", { reserveTab: "visit" });
+      return { ok: true, opened, filled: Object.keys(p) };
+    },
+  },
+  gitlab: { ...gitlabRead, ...gitlabWrite } as unknown as OnethuApi["gitlab"],
     session: {
       status: () => {
         gate(perms, "user:read", "session.status");

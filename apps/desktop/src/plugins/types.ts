@@ -436,6 +436,11 @@ export interface OnethuApi {
   /** 清华 GitLab（git.tsinghua.edu.cn）：项目、仓库文件、Issue、合并请求与流水线。
    *  id 为项目数字 id（`projects()` / `search()` 返回元素的 id），iid 为项目内编号
    *  （Issue 与合并请求各自计数，等于网页地址里的那个号）。 */
+  /** 临时来访人员报备（visit.tsinghua.edu.cn）：只填充「报备草稿」并把预约页切到该栏；
+   *  提交由用户在页面上确认后完成（不受人代劳）。 */
+  visit: {
+    fill(patch: Record<string, unknown>, opts?: { open?: boolean }): { ok: boolean; opened: boolean; filled: string[] };
+  };
   gitlab: {
     /** 我参与的项目（page 从 1 起，每页 50 条） */
     projects(page?: number): Promise<import("@onethu/info-lib").GitProject[]>;

@@ -21,9 +21,10 @@ import { LibRoomTab } from "./LibRoomTab.js";
 import { ClassroomTab } from "./ClassroomTab.js";
 import { VenueSportsTab } from "./VenueSportsTab.js";
 import { KongjianTab } from "./KongjianTab.js";
+import { VisitTab } from "./VisitTab.js";
 import { useTabDirection } from "../../lib/motion.js";
 
-export type ReserveTab = "library" | "libroom" | "classroom" | "sports" | "kongjian" | "more";
+export type ReserveTab = "library" | "libroom" | "classroom" | "sports" | "kongjian" | "visit" | "more";
 
 const TABS: Array<{ id: ReserveTab; label: string }> = [
   { id: "library", label: "图书馆座位" },
@@ -31,6 +32,7 @@ const TABS: Array<{ id: ReserveTab; label: string }> = [
   { id: "classroom", label: "空教室" },
   { id: "sports", label: "体育" },
   { id: "kongjian", label: "公共空间" },
+  { id: "visit", label: "来访报备" },
   { id: "more", label: "更多场馆" },
 ];
 
@@ -40,6 +42,7 @@ const TAB_IDS = TABS.map((t) => t.id);
 const PARAM_TO_TAB: Record<NonNullable<LearnNav["reserveTab"]>, ReserveTab> = {
   lib: "library",
   kongjian: "kongjian",
+  visit: "visit",
   room: "libroom",
   classroom: "classroom",
   sports: "sports",
@@ -100,6 +103,7 @@ export function ReservePage() {
       <div hidden={tab !== "classroom"} className={tab === "classroom" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("classroom") ? <ClassroomTab deepBuilding={navParams?.classroomBuilding} deepBuildingName={navParams?.classroomBuildingName} deepRoom={navParams?.classroomRoom} /> : null}</div>
       <div hidden={tab !== "sports"} className={tab === "sports" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("sports") ? <VenueSportsTab deepScene={navParams?.sportsScene} /> : null}</div>
       <div hidden={tab !== "kongjian"} className={tab === "kongjian" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("kongjian") ? <KongjianTab kongjianSpace={navParams?.kongjianSpace} kongjianRoom={navParams?.kongjianRoom} /> : null}</div>
+      <div hidden={tab !== "visit"} className={tab === "visit" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("visit") ? <VisitTab /> : null}</div>
       <div hidden={tab !== "more"} className={tab === "more" ? "tab-anim" : undefined} data-dir={tabDir}>
         {visited.has("more") ? (
           <Card>

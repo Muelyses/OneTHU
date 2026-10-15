@@ -116,6 +116,10 @@ export const NAV_REGISTRY: NavEntry[] = [
   { id: "reserve-classroom", name: "空教室", category: "预约", visibility: "group", page: "reserve", params: { reserveTab: "classroom" }, keywords: ["自习", "空教室", "教室"] },
   { id: "reserve-sports", name: "体育预约", category: "预约", visibility: "group", page: "reserve", params: { reserveTab: "sports" }, keywords: ["体育", "场馆", "健身房", "游泳"] },
   { id: "reserve-kongjian", name: "公共空间", category: "预约", visibility: "group", page: "reserve", params: { reserveTab: "kongjian" }, keywords: ["公共空间", "活动室"] },
+  /* 临时来访人员报备（2026-10-15）：官方出处 = 行在清华小程序「临时来访人员报备」→
+     visit.tsinghua.edu.cn 的「亲友来访报备」。id 必须与 atoms.tsx 的 PAGE_ATOMS key 同名
+     （否则搜索点了走页面原子、这里写的 params 被静默忽略，落回图书馆座位）。 */
+  { id: "reserve-visit", name: "临时来访人员报备", category: "预约", visibility: "group", page: "reserve", params: { reserveTab: "visit" }, keywords: ["临时来访", "亲友来访", "访客", "报备", "入校", "参观", "预约来访"], note: "亲友来访报备 · 我的报备 · 来访人登记" },
 
   /* —— 行政 —— */
   { id: "mail", name: "邮箱", category: "行政", visibility: "group", page: "mail", needBind: "mail", keywords: ["邮件", "邮箱", "收件"] },

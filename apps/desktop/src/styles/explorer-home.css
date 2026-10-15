@@ -438,7 +438,11 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
    子级那条 flex 是死规则——oh-wire 的对抗性验证反例②就是这么漏的）。入口按钮（.wg-entry）
    除外：整行入口撑满反而变形。父规则与预览侧（.widget-size-inner .wg-card）对齐。 */
 .free-item .wg-card { height: 100%; display: flex; flex-direction: column; }
-.free-item .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; }
+/* 卡体内部可滚（2026-10-15 通用化）：把组件拖矮后，条目盒会低于卡片内容的高度 ——
+   此时**卡体必须自己滚**，否则内容被硬切（用户截图：卡片底部方角硬切；先只覆盖了
+   .home-card-body/.list 那几种卡，而「下一节课」这类卡不在其中）。除整行入口（.wg-entry）外，
+   一律给"撑满 + 可滚"，任何卡片家族都自动适用。 */
+.free-item .wg-card > *:not(.wg-entry) { flex: 1 1 auto; min-height: 0; overflow: auto; }
 /* 卡体内部可滚（2026-10-15 补）：网格时代有 `.board-slot .home-card-body, … .list { flex:1 1 auto;
    min-height:0; overflow:auto }`，随网格一起删掉了，只补了"直接子元素"那半 → 卡里的列表溢出却
    无处可滚，被硬切（用户截图：卡片下半部分截断）。这里把卡体与其中的列表做成可滚区。 */

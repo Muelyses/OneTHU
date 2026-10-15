@@ -22,7 +22,12 @@ import { xiaodaClient, xiaodaEnsureLogin } from "../../lib/xiaoda.js";
 
 type Tab = "chat" | "history" | "agents" | "skills";
 /** 当前打开的对话（历史点开，或首次发送时新建） */
-type ActiveChat = { convId: string; agentId: string };
+type ActiveChat = {
+  convId: string;
+  agentId: string;
+  /** true = 从历史点开（需要向服务端拉消息）；新建的对话不重载，本地消息就是最新的 */
+  resumed?: boolean;
+};
 /** 智能体名录条目（用户侧只认 name） */
 type AgentInfo = { id: string; name: string; group?: string; icon?: string };
 
@@ -103,7 +108,7 @@ export function XiaodaPage(): ReactNode {
   const openHistory = useCallback((c: XiaodaConversation) => {
     const aid = c.agentId || DEFAULT_AGENT_ID;
     setAgentId(aid);
-    setActive({ convId: c.convId, agentId: aid });
+    setActive({ convId: c.convId, agentId: aid, resumed: true });
     setTab("chat");
   }, []);
 
@@ -193,6 +198,9 @@ function ChatTab({
   /** 本地停止标记：应用内 nativeFetch 忽略 signal，UI 侧用它兜住后续增量 */
   const stopRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  /** 本挂载内新建、且本地已持有消息的对话号：跳过服务端重载；
+      切换标签页会卸载本组件（msgs 随之丢失），重挂载后此 ref 为空 → 照常拉取，不会变空对话 */
+  const localConvRef = useRef("");
 
   const who = infoOf(agentId);
 
@@ -207,23 +215,27 @@ function ChatTab({
       .catch(() => undefined);
   }, []);
 
-  /* 打开一段对话（含从历史进来）：读回消息，接着聊 */
+  /* 打开一段对话（含从历史进来）：读回消息，接着聊。
+     注意：只有「从历史点开」才拉服务端消息——刚新建的对话直接重载的话，本地那两条
+     （我的话 + 回答）会被服务端顺序（开场白在前）覆盖，看起来就像我说的话掉到了回答下面。 */
   useEffect(() => {
     const cid = active?.convId ?? "";
     convIdRef.current = cid;
     stopRef.current = false;
     setChatErr("");
     if (!cid) {
+      localConvRef.current = "";
       setMsgs([]);
       return;
     }
+    if (!active?.resumed && localConvRef.current === cid) return;
     setLoadingMsgs(true);
     xiaodaClient
       .conversationMessages(cid)
       .then(setMsgs)
       .catch((e: unknown) => setChatErr(errText(e)))
       .finally(() => setLoadingMsgs(false));
-  }, [active?.convId]);
+  }, [active?.convId, active?.resumed]);
 
   /* 新消息/新内容 → 落到最新处 */
   const tail = msgs.length > 0 ? msgs[msgs.length - 1] : null;
@@ -240,7 +252,9 @@ function ChatTab({
     };
     setMsgs((prev) => [
       ...prev,
-      { ...blank, role: "user", agentName: me?.name ?? "我", agentIcon: "" },
+      /* 我这条必须带正文：早先只塞了空壳，靠服务端历史重载兜住（顺序又被它改乱），
+         关掉重载后就会显示成空气泡——两处一起修。 */
+      { ...blank, role: "user", content: q, agentName: me?.name ?? "我", agentIcon: "" },
       blank,
     ]);
     setInput("");
@@ -254,6 +268,7 @@ function ChatTab({
         const cid = await xiaodaClient.createConversation();
         if (!cid) throw new Error("新建对话失败，请点发送重试");
         convIdRef.current = cid;
+        localConvRef.current = cid; // 本挂载内新建：本地消息即最新，别让服务端顺序打乱它
         onActive({ convId: cid, agentId });
       }
       await xiaodaClient.chatNative({
@@ -274,6 +289,7 @@ function ChatTab({
         onMeta: (m) => {
           if (m.convId && m.convId !== convIdRef.current) {
             convIdRef.current = m.convId;
+            localConvRef.current = m.convId;
             onActive({ convId: m.convId, agentId });
           }
         },

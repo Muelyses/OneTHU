@@ -68,7 +68,7 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
         onNotice?.(phase === "boot" ? "清小搭还在准备，稍等一下" : `清小搭暂时不可用：${err}`);
         return;
       }
-      setMsgs((prev) => [...prev, bubble({ role: "user", agentName: "我" }), bubble({})]);
+      setMsgs((prev) => [...prev, bubble({ role: "user", content: q, agentName: "我" }), bubble({})]);
       setDockInputValue("");
       setSending(true);
       setErr("");

@@ -138,8 +138,8 @@ export function OhCapsule(): React.ReactNode {
   const onInputKeyDown = (e: ReactKeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter" && !e.nativeEvent.isComposing) {
       e.preventDefault();
-      if (ui.mode === "oh") dockSubmitInput(); // 对话态：胶囊里回车＝直发草稿
-      // 搜索态：命中即时在上方窗里，回车不抢跳（留给用户挑）
+      /* 对话态（OH / 清小搭）：胶囊里回车＝直发草稿；搜索态回车不抢跳（命中即时在窗里，留给用户挑） */
+      if (ui.mode !== "search") dockSubmitInput();
     } else if (e.key === "Escape") {
       e.preventDefault();
       requestOhPanel(ui.mode); // 已开且同模式 → ChatDock 收窗（缩回胶囊）

@@ -34,6 +34,7 @@ installTextContrast();
 installRipple();
 
 import { createRoot } from "react-dom/client";
+import { lazy, Suspense } from "react";
 import { activateInstalledPlugins, seedBuiltinHarness } from "./plugins/loader.js";
 import "@onethu/ui/tokens.css";
 import { installAuthWatchdog, installKeepalive } from "./lib/reload.js";
@@ -80,6 +81,18 @@ import { RootErrorBoundary } from "./components/RootErrorBoundary.js";
 import { TextPeekHost } from "./components/TextPeek.js";
 import { ImageViewerHost } from "./components/ImageViewer.js";
 
+/* 竖屏取景框（dev）：`?phone-frame=1` 时整页就是一块真手机视口（同源 iframe，登录态照旧）。
+   这条分支走在应用引导之前——取景框自己不需要会话/插件/取色，那些副作用留给 iframe 里的文档。 */
+const PHONE_FRAME = import.meta.env.DEV && new URLSearchParams(window.location.search).has("phone-frame");
+const PhoneFrame = import.meta.env.DEV ? lazy(() => import("./components/PhoneFrame.js")) : null;
+
+if (PHONE_FRAME && PhoneFrame) {
+  createRoot(document.getElementById("root")!).render(
+    <Suspense fallback={null}>
+      <PhoneFrame />
+    </Suspense>,
+  );
+} else {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {/* R24：根级错误边界——任何渲染期崩溃都变成可读卡片，不再整窗白屏 */}
@@ -94,6 +107,7 @@ createRoot(document.getElementById("root")!).render(
     </RootErrorBoundary>
   </StrictMode>,
 );
+}
 // 动态取色（§3.4）：上次开着就重开；取色不可用会自动降级到「清华紫」主题。
 // 放在 CSS 导入之后：注入的 <style> 需要插在令牌样式之后（且自身特异性更高，顺序无关紧要）。
 initDynamicColor();

@@ -153,6 +153,9 @@ export default function DevPanel() {
             <span style={{ flex: "1 1 auto" }} />
             <button style={S.btn} onClick={hide}>隐藏徽标</button>
             <button style={S.btn} onClick={() => setOpen(false)}>关闭</button>
+            {/* 竖屏取景框：整页换成一块真手机视口（同源 iframe，登录态照旧）。
+                窗口拖窄 ≠ 手机——比例/DPR/安全区都不对，这个入口才是看真机版式的地方。 */}
+            <button style={S.btn} onClick={() => { window.location.href = window.location.pathname + "?phone-frame=1"; }}>竖屏取景框</button>
           </div>
           <div style={S.row}><span style={S.key}>commit</span><span style={S.val}>{BUILD_COMMIT}</span></div>
           <div style={S.row}><span style={S.key}>构建时间</span><span style={S.val}>{buildTimeText()}</span></div>

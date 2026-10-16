@@ -132,12 +132,12 @@ html.is-phone .home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top)
 html.is-phone .home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 88px); }
 
 html.is-phone .explorer-shell > .explorer-content.is-home-canvas {
-  --home-canvas-top: 46px;
-  padding: 46px 0 calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px) !important;
+  --home-canvas-top: var(--explorer-top-h, 46px);
+  padding: var(--explorer-top-h, 46px) 0 calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px) !important;
 }
 html.is-phone .home-free, html.is-phone .home-tab {
-  min-height: calc(100vh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
-  min-height: calc(100dvh - 46px - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
+  min-height: calc(100vh - var(--explorer-top-h, 46px) - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
+  min-height: calc(100dvh - var(--explorer-top-h, 46px) - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
 }
 html.is-phone .explorer-panel.is-onepage-canvas { overflow: auto; }
 html.is-phone .explorer-panel.is-onepage-canvas::-webkit-scrollbar { display: none; }

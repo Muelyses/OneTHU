@@ -1,7 +1,7 @@
 /**
  * dev 视觉自检驱动（仅 dev 构建；正式版被 rollup 剥离）：
  * `?explorer-preview=<场景>` 挂载后程序化摆好 explorer 状态，供无头截图审样式。
- * 场景：home / otherinfo / tabs / drawer / onego / overlay(+?settings-tab=页签) / overlay-oh / search / ctxmenu
+ * 场景：home / otherinfo / page(+?page=&params=) / tabs / drawer / onego / overlay(+?settings-tab=页签) / overlay-oh / search / ctxmenu
  * 与 ?searchland=selfcheck 同一惯例：不进导航、不进产物。
  */
 import { useEffect, useState } from "react";
@@ -50,6 +50,18 @@ const SCENARIOS: Record<string, () => void> = {
       tabs[1]?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     }, 700);
   }, 350),
+  /** 任意内容页：`?explorer-preview=page&page=<pageId>&params=<json>`（竖屏巡检各页用） */
+  page: () => {
+    const q = new URLSearchParams(window.location.search);
+    const page = q.get("page") ?? "home";
+    let params: Record<string, unknown> | undefined;
+    try {
+      params = q.get("params") ? (JSON.parse(q.get("params")!) as Record<string, unknown>) : undefined;
+    } catch {
+      params = undefined;
+    }
+    window.setTimeout(() => openTab(page as never, params as never), 250);
+  },
   ctxmenu: () => {
     SCENARIOS.tabs!();
     window.setTimeout(() => {

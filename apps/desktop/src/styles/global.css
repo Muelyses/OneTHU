@@ -2666,7 +2666,11 @@ html.is-phone .input, html.is-phone .filter-select { height: 40px; font-size: va
 html.is-phone .chip { height: 24px; padding: 0 12px; font-size: var(--text-xs); }
 html.is-phone .seg-track button { height: 28px; font-size: var(--text-sm); }
 html.is-phone .segmented button { height: 32px; font-size: var(--text-sm); }
-html.is-phone .content { padding: 16px 16px calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap, 8px) + 12px); }
+/* 手机档内容区内边距：**顶让位必须清过固定顶栏**（--explorer-top-h），否则首屏第一个元素
+   被压在顶栏下面 = 上一轮「内容被截断」的最大来源（课表页的「第 5 周」、云盘页头都是这么没的）。 */
+html.is-phone .content {
+  padding: calc(var(--explorer-top-h, 46px) + 12px) 16px calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap, 8px) + 12px);
+}
 html.is-phone .card { padding: 12px 16px; }
 html.is-phone .home-entry-btn { padding: 16px; }
 html.is-phone .home-card-head { padding: 12px 16px; }

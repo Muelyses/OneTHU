@@ -7,6 +7,10 @@
 :root {
   /* 底栏高度口径：ui 侧与 oh 侧（胶囊/窗/FAB/island 抬高）都对齐这个变量 */
   --explorer-bar-h: 48px;
+  /* 顶栏高度口径（2026-10-16 收成单源）：顶栏本体、内容区顶让位、首页画布都读它。
+     此前 46 硬写在三处，而 global.css 的 `html.is-phone .content { padding: 16px }`
+     又把内容区顶让位盖成 16px —— 手机档每个页面首屏都被顶栏压掉 30px（用户口径「截断」）。 */
+  --explorer-top-h: 46px;
   /* 手机档「底栏以上还要让出多少」：2026-10-16 底部标签条退役后由 52px 降到一条呼吸缝。
      所有"底栏以上"的固定件（首页画布内边距 / OnePage 抽屉 / OH 生长窗 / 浮钮列）都引用它，
      别再各写 52 / 56 —— 那正是上一轮"内容被底栏吃掉"的来源。 */
@@ -34,7 +38,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 46px;
+  min-height: var(--explorer-top-h, 46px);
   padding: 0 10px;
   /* 材质 = global.css「壳层玻璃收口」那一处；此处只兜底一份，避免像本轮这样被删空 */
   background:
@@ -64,7 +68,7 @@
 
 /* ── 内容区：手机 = 顶栏 46px + 底栏 48px 占位；桌面媒体查询里另给 94px ── */
 .explorer-content {
-  padding-top: 46px;
+  padding-top: var(--explorer-top-h, 46px);
   padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 

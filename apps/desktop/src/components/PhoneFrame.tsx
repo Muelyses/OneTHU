@@ -42,10 +42,13 @@ const SCENES: Array<{ id: string; name: string; q: string }> = [
 ];
 
 export default function PhoneFrame() {
-  const [devId, setDevId] = useState("15pro");
-  const [land, setLand] = useState(false);
-  const [scene, setScene] = useState("real");
-  const [fit, setFit] = useState(true);
+  /* 初值可从 URL 预置：`?phone-frame=1&device=15pm&scene=page-cloud&land=1&fit=0`
+     —— 便于把"某个场景的手机形态"直接做成一个链接/截图。 */
+  const q0 = new URLSearchParams(window.location.search);
+  const [devId, setDevId] = useState(q0.get("device") ?? "15pro");
+  const [land, setLand] = useState(q0.get("land") === "1");
+  const [scene, setScene] = useState(q0.get("scene") ?? "real");
+  const [fit, setFit] = useState(q0.get("fit") !== "0");
   const [nonce, setNonce] = useState(0);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [box, setBox] = useState({ w: window.innerWidth, h: window.innerHeight });
@@ -106,6 +109,17 @@ export default function PhoneFrame() {
             key={`${dev.id}-${land}-${scene}-${nonce}`}
             title="手机视口"
             src={inner}
+            onLoad={(e) => {
+              /* 真机是**悬浮滚动条**（不占版心）；桌面 iframe 默认给经典滚动条，会把 393 挤成 383，
+                 看起来就像"右边被切了一条"。这里注一份样式把它按真机口径抹掉。 */
+              const doc = e.currentTarget.contentDocument;
+              if (!doc || doc.getElementById("phone-frame-sim")) return;
+              const st = doc.createElement("style");
+              st.id = "phone-frame-sim";
+              st.textContent =
+                "html{scrollbar-width:none}html::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}";
+              doc.head.appendChild(st);
+            }}
             style={{ width: vw, height: vh, border: 0, display: "block", background: "#fff" }}
           />
         </div>

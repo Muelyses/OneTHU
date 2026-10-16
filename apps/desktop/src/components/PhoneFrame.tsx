@@ -50,6 +50,9 @@ export default function PhoneFrame() {
   const [scene, setScene] = useState(q0.get("scene") ?? "real");
   const [fit, setFit] = useState(q0.get("fit") !== "0");
   const [nonce, setNonce] = useState(0);
+  /* Tauri 桥状态：取景框是 iframe，Tauri 只注入主 frame —— 应用侧的 lib/tauriBridge.ts 会从父窗口认领。
+     这里只是把结果**显示出来**，方便一眼确认"登录态/原生网络到底有没有接上"。 */
+  const [bridge, setBridge] = useState<"unknown" | "ok" | "miss" | "none">("unknown");
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [box, setBox] = useState({ w: window.innerWidth, h: window.innerHeight });
 
@@ -94,6 +97,13 @@ export default function PhoneFrame() {
         <button style={btn} onClick={() => setFit((v) => !v)}>{fit ? "实际大小" : "适应窗口"}</button>
         <button style={btn} onClick={() => setNonce((n) => n + 1)}>重载</button>
         <span style={{ flex: 1 }} />
+        <span style={{ color: bridge === "ok" ? "#7ee0a8" : bridge === "miss" ? "#ff9c8a" : "#8f9bb0" }}>
+          Tauri 桥：
+          {bridge === "ok" ? "已认领（会话/原生网络可用）"
+            : bridge === "miss" ? "认领失败——会退化成浏览器预览（没有登录态）"
+              : bridge === "none" ? "无（在浏览器里跑，本来就没有）"
+                : "检测中…"}
+        </span>
         <span style={{ opacity: 0.55 }}>同源 iframe：壁纸/主题/登录态与应用一致；DPR 与安全区不模拟</span>
         <button style={btn} onClick={() => { window.location.href = window.location.pathname; }}>返回应用</button>
       </div>
@@ -110,6 +120,11 @@ export default function PhoneFrame() {
             title="手机视口"
             src={inner}
             onLoad={(e) => {
+              const win = e.currentTarget.contentWindow;
+              let has = false;
+              try { has = !!win && "__TAURI_INTERNALS__" in win; } catch { has = false; }
+              const hostHas = "__TAURI_INTERNALS__" in window;
+              setBridge(has ? "ok" : hostHas ? "miss" : "none");
               /* 真机是**悬浮滚动条**（不占版心）；桌面 iframe 默认给经典滚动条，会把 393 挤成 383，
                  看起来就像"右边被切了一条"。这里注一份样式把它按真机口径抹掉。 */
               const doc = e.currentTarget.contentDocument;

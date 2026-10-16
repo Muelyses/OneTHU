@@ -1,3 +1,6 @@
+/* ⚠️ 必须第一条：认领父窗口的 Tauri 桥（竖屏取景框是同源 iframe，Tauri 只注入主 frame）。
+   放在最前，后面所有模块 import 时的 `"__TAURI_INTERNALS__" in window` 判定才是对的。 */
+import "./lib/tauriBridge.js";
 import { StrictMode } from "react";
 import { logLine } from "./lib/clients.js";
 import { isPhoneViewport, platformOf } from "./state/platform.js";

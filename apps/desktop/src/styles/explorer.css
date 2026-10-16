@@ -7,6 +7,10 @@
 :root {
   /* 底栏高度口径：ui 侧与 oh 侧（胶囊/窗/FAB/island 抬高）都对齐这个变量 */
   --explorer-bar-h: 48px;
+  /* 手机档「底栏以上还要让出多少」：2026-10-16 底部标签条退役后由 52px 降到一条呼吸缝。
+     所有"底栏以上"的固定件（首页画布内边距 / OnePage 抽屉 / OH 生长窗 / 浮钮列）都引用它，
+     别再各写 52 / 56 —— 那正是上一轮"内容被底栏吃掉"的来源。 */
+  --ex-phone-bar-gap: 8px;
 }
 
 /* ── 壳：旧 .shell 是给侧栏用的 grid 两列——革命后改纵向 flex ── */
@@ -75,7 +79,10 @@
 /* ══════════ 桌面/横屏（≥841px）：两行顶置（底栏上移第一行 / TopBar 其下第二行），
         两行全 fixed，滚动不消失。本文件里此口径只此一块，严禁残留第四块。 ══════════ */
 @media (min-width: 841px) {
-  .explorer-shell > .ex-bbar {
+  /* 2026-10-16：这一块是**桌面**形态（两行顶置），必须排除手机——横屏手机宽度到 844 会命中
+     这条 media query，于是底栏跳到屏幕顶上、顶栏反而在它下面（用户口径：手机横竖都保持
+     底栏在下 + 顶栏在上）。手机形态由 html.is-phone 定义（短边窄，横竖都算）。 */
+  html:not(.is-phone) .explorer-shell > .ex-bbar {
     position: fixed !important;
     top: 0 !important;
     bottom: auto !important;
@@ -88,10 +95,10 @@
     box-shadow: none;
     padding-bottom: 0;
   }
-  .explorer-topbar { top: 48px; }
-  .explorer-content { padding-top: 104px !important; padding-bottom: 28px; } /* 94+10：内容与标签栏留一拍呼吸空隙（用户实测「有点挤」） */
-  .hard-refresh-fab { bottom: 18px !important; }
-  .hard-refresh-fab.top-fab { bottom: 74px !important; }
+  html:not(.is-phone) .explorer-topbar { top: 48px; }
+  html:not(.is-phone) .explorer-content { padding-top: 104px !important; padding-bottom: 28px; } /* 94+10：内容与标签栏留一拍呼吸空隙（用户实测「有点挤」） */
+  html:not(.is-phone) .hard-refresh-fab { bottom: 18px !important; }
+  html:not(.is-phone) .hard-refresh-fab.top-fab { bottom: 74px !important; }
 }
 
 /* ── 设置浮层：高于任何标签页（手机全屏 / 桌面右侧推入） ── */
@@ -294,8 +301,7 @@
    子树整体翻色，两类主题 × 两类壁纸四种组合都可读。 */
 .explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="dark"] .ex-bbar,
-.explorer-shell[data-wallpaper-lum="dark"] .ex-rail,
-.explorer-shell[data-wallpaper-lum="dark"] .ex-mobile-strip {
+.explorer-shell[data-wallpaper-lum="dark"] .ex-rail {
   /* 栏体配方已收口 global.css（不在此重复 background） */
   /* 栏体 fill 是**浅色玻璃**（档位单源），与壁纸明暗无关 →
      文字必须用深色档，否则浅字压浅底（实测对比率 1.0，用户点名"字消失"）。
@@ -324,8 +330,7 @@
 }
 .explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
-.explorer-shell[data-wallpaper-lum="light"] .ex-rail,
-.explorer-shell[data-wallpaper-lum="light"] .ex-mobile-strip {
+.explorer-shell[data-wallpaper-lum="light"] .ex-rail {
   /* 栏体配方已收口 global.css（不在此重复 background） */
   color: #1c1f28;
   --text-1: #1c1f28;
@@ -540,15 +545,15 @@
 }
 .wall-lib-picker-card .wall-lib-grid::-webkit-scrollbar { display: none; }
 
-/* ═══ 手机档（html.is-phone）：底部标签条让位（条 44px 档 + 顶底呼吸）═══ */
+/* ═══ 手机档（html.is-phone）：底栏让位（2026-10-16 底部标签条退役 → 不再额外让 52px）═══ */
 html.is-phone .explorer-content {
-  padding-bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 52px + 12px);
+  padding-bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px);
 }
 html.is-phone .hard-refresh-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 68px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 8px) !important;
 }
 html.is-phone .hard-refresh-fab.top-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 124px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 64px) !important;
 }
 
 
@@ -594,3 +599,8 @@ html.is-phone .hard-refresh-fab.top-fab {
   --md-sys-color-on-surface: #f2f4f8;
   --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
 }
+
+
+/* 手机档：设置行说明给到三行（OneGUI 的 -webkit-line-clamp:2 在 390 宽下会把
+   「在应用内的窗口打开清华统一身份认证，自动填入账号密码…」这类说明切在半句） */
+html.is-phone .og-settings-row-sub { -webkit-line-clamp: 3; }

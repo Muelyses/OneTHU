@@ -2662,7 +2662,7 @@ html.is-phone .input, html.is-phone .filter-select { height: 40px; font-size: va
 html.is-phone .chip { height: 24px; padding: 0 12px; font-size: var(--text-xs); }
 html.is-phone .seg-track button { height: 28px; font-size: var(--text-sm); }
 html.is-phone .segmented button { height: 32px; font-size: var(--text-sm); }
-html.is-phone .content { padding: 16px 16px calc(92px + env(safe-area-inset-bottom, 0px)); }
+html.is-phone .content { padding: 16px 16px calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap, 8px) + 12px); }
 html.is-phone .card { padding: 12px 16px; }
 html.is-phone .home-entry-btn { padding: 16px; }
 html.is-phone .home-card-head { padding: 12px 16px; }
@@ -6227,7 +6227,6 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 .explorer-topbar,
 .ex-rail,
 .ex-bbar,
-.ex-mobile-strip,
 .hs-dock-row {
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),

@@ -359,8 +359,8 @@ html.is-phone .dock-panel {
   border-radius: 16px 16px 0 0;
 }
 
-/* 手机：OH/搜索窗从「底栏 + 底部标签条」的上缘长起来（不是被标签条盖在脑门下）——
-   底栏 48 + 标签条 52 + 呼吸 4，呼吸缝仍在（「弹一下」的语义不变）。 */
+/* 手机：OH/搜索窗从底栏上缘长起来（2026-10-16 标签条退役，只留呼吸缝 8+4）——
+   呼吸缝仍在（「弹一下」的语义不变）。 */
 html.is-phone .dock-panel.ohx-panel-grow {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 56px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 4px) !important;
 }

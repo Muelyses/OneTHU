@@ -372,6 +372,46 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const rectOf = (it: FreeItem): Rect =>
     live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
 
+  /* ── 手机竖屏：自由画布**叠成一列**（2026-10-16 用户口径「大量页面内容在竖屏下被截断」）──
+     条目活在桌面世界坐标里（实测这块板内容宽 1094px），390 宽的竖屏上大半在屏幕外、还互相压。
+     这里只改**渲染坐标**：按阅读顺序（先 y 后 x）从 0 起单列铺开，宽度吃满端口、高度沿用条目
+     自己存的高度，间距 12；**存下来的摆位一个字节不动**——横屏与桌面照旧是那块自由画布。
+     拖动/缩放/画笔在这个形态下没有意义（坐标被重排），一并关掉，见下面的 stack 守卫。 */
+  const phoneUi = useIsPhone();
+  const stack = phoneUi && orientation === "portrait";
+  /* 首页那块画布顶部压着固定层（时钟 + 一级坞，绝对定位）：单列堆叠必须**从它下面起**，
+     否则第一屏就是"卡片和时钟叠在一起"（截图里最刺眼的那条）。量坞的底边当起点，
+     坞换行/换档后用 ResizeObserver 跟一次。OnePage 没有这层，量不到就是 0。 */
+  const [stackTop, setStackTop] = useState(0);
+  useLayoutEffect(() => {
+    if (!stack) { setStackTop(0); return; }
+    const dock = document.querySelector<HTMLElement>(".home-chrome-layer .chrome-dock");
+    const host = hostRef.current;
+    const measure = (): void => {
+      if (!dock || !host || !dock.isConnected) return;
+      const d = dock.getBoundingClientRect(), h = host.getBoundingClientRect();
+      const next = Math.max(0, Math.round(d.bottom - h.top + 12));
+      setStackTop((prev) => (Math.abs(prev - next) > 2 ? next : prev));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (dock) ro.observe(dock);
+    return () => ro.disconnect();
+  }, [stack]);
+  const stackRects = useMemo(() => {
+    if (!stack) return null;
+    const w = Math.max(240, Math.round(port.w || (typeof window === "undefined" ? 360 : window.innerWidth)));
+    const ordered = [...items].sort((a, b) => (a.y - b.y) || (a.x - b.x));
+    const map = new Map<string, Rect>();
+    let y = stackTop;
+    for (const it of ordered) {
+      const h = Math.max(72, Math.round(it.h));
+      map.set(it.id, { x: 0, y, w, h });
+      y += h + 12;
+    }
+    return { map, box: { w, h: Math.max(0, y - 12) + 24 } };
+  }, [stack, items, port.w, stackTop]);
+
   const say = useCallback((text: string): void => {
     setNote(text);
     window.setTimeout(() => setNote(null), 1800);
@@ -474,10 +514,12 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   useLayoutEffect(() => {
     const el = hostRef.current;
     if (!el) return;
-    const box = boxSize(items, view.z, port);
+    /* 堆叠形态（手机竖屏）：盒子按**堆叠后**的几何算，否则 minWidth 仍是桌面内容的 1094px
+       —— 那正是"竖屏横向溢出"残留的那一条。 */
+    const box = stackRects ? stackRects.box : boxSize(items, view.z, port);
     el.style.minWidth = box.w + "px";
     el.style.minHeight = box.h + "px";
-  }, [items, view.z, port.w, port.h]);
+  }, [items, view.z, port.w, port.h, stackRects]);
 
   /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
      视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */
@@ -778,14 +820,14 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       >
         <div
           className="freeboard-world"
-          style={{ "--board-z": view.z } as CSSProperties}
+          style={{ "--board-z": stack ? 1 : view.z } as CSSProperties}
         >
         {/* ── 世界层（2026-10-15 无限画布）──
             条目与笔迹都活在**世界坐标**里，这一层只负责"看哪一块"：translate(x,y) + scale(z)。
             把 contentRect 当边界是**反模型**的写法（那正是旧盒子模型的老路），这里只做变换。 */}
 
           {items.map((it) => {
-            const r = rectOf(it);
+            const r = stackRects?.map.get(it.id) ?? rectOf(it);
             /* 档位排版钩子：CSS 是**无作用域**的 [data-size=...] 选择器（抽屉预览与画布同一条规则），
                所以自由画布上的条目也要带上它——统计卡/入口行的分档排版才不会只在抽屉里生效。 */
             const plan = planForItem(viewOf(it), defs);
@@ -805,7 +847,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
                 style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
                 onPointerDown={(e) => {
-                  if (penOn) return;
+                  if (penOn || stack) return;   // 堆叠形态：坐标被重排，拖动没有意义（点选仍可用）
                   if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
                   beginPointer(e, it.id, "move");
                 }}
@@ -894,7 +936,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 ) : null}
 
                 {/* 把手：四角 + 右/下（选中才出现；固定的组件不出把手） */}
-                {isSel && !penOn && !it.pinned
+                {isSel && !penOn && !it.pinned && !stack
                   ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
                       <span
                         key={h}
@@ -913,14 +955,18 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。
             **在世界层之外**：笔迹是"玻璃上的记号"，尺寸固定、与内容无关（2026-10-13 用户点名），
             所以它不跟着缩放走 —— 归一化坐标（0..1000）也就永远稳定，不会因为改内容而拉伸重映射。 */}
-        <BoardPenLayer
-          boardId={boardId}
-          orientation={orientation}
-          penOn={penOn}
-          color={penColor}
-        />
+        {stack ? null : (
+          <BoardPenLayer
+            boardId={boardId}
+            orientation={orientation}
+            penOn={penOn}
+            color={penColor}
+          />
+        )}
 
-        {/* 缩放控件（OneGUI 按钮族）：− / 百分比（点=重置视图）/ ＋。屏幕空间，不随世界层缩放。 */}
+        {/* 缩放控件（OneGUI 按钮族）：− / 百分比（点=重置视图）/ ＋。屏幕空间，不随世界层缩放。
+            手机竖屏是单列堆叠（没有世界缩放），整条不出现。 */}
+        {stack ? null : (
         <div className="board-zoombar" onPointerDown={(e) => e.stopPropagation()}>
           <BtnGroup>
             <IconBtn label="缩小" icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
@@ -930,6 +976,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             <IconBtn label="放大" icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
           </BtnGroup>
         </div>
+        )}
 
 
         {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
@@ -937,15 +984,17 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           <button type="button" className="free-fab" data-coach="home-add" title="添加组件" aria-label="添加组件" onClick={() => setAddAt({ x: 60, y: 300 })}>
             <IconPlus width={18} height={18} />
           </button>
-          <button
-            type="button"
-            className={"free-fab" + (penOn ? " is-on" : "")}
-            title={penOn ? "画笔：关" : "画笔：开（最高图层）"}
-            aria-pressed={penOn}
-            onClick={() => setPenOn((v) => !v)}
-          >
-            <IconPen width={18} height={18} />
-          </button>
+          {stack ? null : (
+            <button
+              type="button"
+              className={"free-fab" + (penOn ? " is-on" : "")}
+              title={penOn ? "画笔：关" : "画笔：开（最高图层）"}
+              aria-pressed={penOn}
+              onClick={() => setPenOn((v) => !v)}
+            >
+              <IconPen width={18} height={18} />
+            </button>
+          )}
           {penOn ? (
             <div className="free-pen-panel">
               <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(penColor) ? penColor : "#3a3f4a"} onChange={(e) => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />

@@ -326,7 +326,7 @@ function ShellPreview(): ReactNode {
         </AppShell>
       </div>
 
-      <Section title="整壳预览 · 手机（底部标签条）" hint="同一份 AppShell，platform=mobile" />
+      <Section title="整壳预览 · 手机（底栏 + 标签页抽屉）" hint="同一份 AppShell，platform=mobile" />
       <div className="og-preview-frame og-preview-frame--phone">
         <div className="og-phone-mock">
           <AppShell

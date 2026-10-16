@@ -807,59 +807,22 @@
 }
 .ex-row.is-active { color: var(--text-1); }
 
-/* ══════════ 手机端（html.is-phone）：底部可拖标签条 + seeking 抽屉 ══════════
-   口径（2026-10-13 手机端拍板）：is-phone = 触屏 + 非宽窗（与 html.is-phone 同源，
-   窄窗口的鼠标桌面不在此列）。竖栏在手机永不出现（TabRail 分流），标签条固定在
-   底栏上方；宽 839.98px 媒查老段（无触屏）保持原样不动。 */
+/* ══════════ 手机端（html.is-phone）：底栏 + seeking 抽屉 ══════════
+   口径（2026-10-16 用户拍板）：**短边窄就是手机形态**（不要求触屏，桌面拖窄窗也算）；
+   **横竖都没有标签条**——底部标签条整条退役，换标签只走底栏「标签页」抽屉；
+   顶栏只留一个圆形房子钮回首页。竖栏在手机永不出现（TabRail 分流）。 */
 
-/* ── 底部标签条：一条独立的玻璃横条（44px 触目标、拖拽排序与停留合并都可用） ── */
-html.is-phone .ex-mobile-strip {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px));
-  z-index: 79;
-  padding: 4px 8px 0;
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-menu-fill);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  backdrop-filter: var(--glass-menu-blur);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline);
-}
-/* 手势自己接管（TabStrip 的触屏分支：短触横滚 / 按住拖拽 / 长按菜单），原生平移关掉 */
-html.is-phone .ex-mobile-strip .ex-tabstrip { touch-action: none; }
-html.is-phone .ex-mobile-strip .ex-tabstrip::-webkit-scrollbar { display: none; }
-html.is-phone .ex-mobile-strip .ex-tab { height: 44px; min-width: 60px; max-width: 168px; border-radius: 12px; }
-html.is-phone .ex-mobile-strip .ex-tab-main { padding: 0 12px 0 8px; gap: 8px; }
-html.is-phone .ex-mobile-strip .ex-tab-title { font-size: 14px; }
-html.is-phone .ex-mobile-strip .ex-tab-close { width: 28px; height: 28px; margin-right: 4px; opacity: 1; }
-/* 命中区外扩：28px 视觉 + 外扩一圈 ≈ 44px 触目标 */
-html.is-phone .ex-mobile-strip .ex-tab-close::after { inset: -6px; }
-html.is-phone .ex-mobile-strip .ex-tab-add { width: 40px; height: 40px; border-radius: 12px; }
-html.is-phone .ex-mobile-strip .ex-ws-band { padding: 4px; border-radius: 12px; gap: 4px; }
-html.is-phone .ex-mobile-strip .ex-ws-head { padding: 4px 4px 4px 8px; gap: 4px; }
-html.is-phone .ex-mobile-strip .ex-ws-fold { padding: 4px 8px; }
-html.is-phone .ex-mobile-strip .ex-ws-close { width: 26px; height: 26px; }
-html.is-phone .ex-mobile-strip .ex-tab-glyph,
-html.is-phone .ex-mobile-strip .ex-tab-glyph svg { width: 16px; height: 16px; }
-
-/* 首页标签：只留 logo monogram（白底例外档：menu-fill 玻璃片），「首页」两字隐藏 */
-html.is-phone .ex-tab.is-home .ex-tab-title { display: none; }
-html.is-phone .ex-tab.is-home .ex-tab-main { padding-left: 12px; padding-right: 12px; }
-/* 顶栏的独立 logo 钮（手机顶栏不再有标签条，这里是首页恒在的入口） */
+/* 手机顶栏的**圆形首页钮**（房子）：2026-10-16 用户口径「只留一个圆形的首页按钮在顶部，
+   房子形状，不是 OneTHU 形状」——所以是正圆 + IconHome，不再放品牌 monogram。 */
 .ex-tb-home-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
-  padding: 0 12px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   border: 0;
-  border-radius: 12px;
+  border-radius: 999px;
   background: var(--glass-menu-fill);
   -webkit-backdrop-filter: var(--glass-menu-blur);
   backdrop-filter: var(--glass-menu-blur);
@@ -925,3 +888,38 @@ html.is-phone .ex-sheet.is-mob-full { box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.24
   box-shadow: inset 0 0 0 2px var(--dsw-alias-border-l2, #9ca3af);
   border-radius: 10px;
 }
+
+
+/* ══════════ 手机底栏（三入口 + 中央 OH 胶囊）══════════
+   2026-10-16 用户三条口径落在这里：
+   ① 「Oh 胶囊初始长度有点短，加长」——两侧入口在手机档收成纯图标（文字标签隐藏，aria 仍在），
+      腾出来的宽度全给中槽胶囊；再给胶囊一个最小长度兜底（长屏机不会又缩回一小颗）。
+   ② 「部分 UI 极其拥挤 / 矮胖」——底栏抬到 56px、触目标拉到 44px、图标 22px。
+   ③ 底部安全区自己吃，别让胶囊贴在 home indicator 上。 */
+html.is-phone .ex-bbar {
+  height: calc(var(--explorer-bar-h, 48px) + 8px);
+  padding: 0 8px calc(env(safe-area-inset-bottom, 0px));
+}
+html.is-phone .ex-bbar-btn {
+  height: 44px;
+  min-width: 44px;
+  padding: 0 10px;
+  gap: 0;
+  border-radius: 12px;
+}
+html.is-phone .ex-bbar-btn .ex-bbar-label { display: none; }
+html.is-phone .ex-bbar-icon svg { width: 22px; height: 22px; }
+html.is-phone .ex-bbar-badge { top: -4px; right: -8px; min-width: 16px; height: 16px; }
+html.is-phone .ex-bbar-center { padding: 0 8px; }
+html.is-phone .ex-bbar-center .ohx-capsule {
+  height: 40px;
+  min-width: min(260px, 100%);
+  padding: 0 16px;
+}
+
+
+/* 手机档触目标兜底（用户口径「部分 UI 极其拥挤不堪/矮胖」）：
+   抽屉里的 ⋯/↑/↓ 只有 24px、收藏页的星标 24×36 —— 视觉尺寸不动，只把**命中区**撑到 36–40。
+   只在本形态生效，桌面像素级不变。 */
+html.is-phone .ex-mini { width: 36px; height: 36px; }
+html.is-phone .collect-star { min-width: 40px; min-height: 40px; }

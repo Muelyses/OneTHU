@@ -25,7 +25,7 @@ import {
 import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconCopyTab, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconSidebarRail, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab, IconXiaoda } from "./Icons.js";
+import { IconHome, IconArrowUp, IconChevron, IconCopyTab, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconSidebarRail, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab, IconXiaoda } from "./Icons.js";
 import { ContextMenuLayer, useContextMenu } from "./ContextMenu.js";
 import {
   clearPageChrome, pageChromeSnapshot, readPageChrome, subscribePageChrome, syncPageChrome,
@@ -213,8 +213,8 @@ function TabRail(): ReactNode {
 
 function TopBar(): ReactNode {
   const layout = useTabLayoutMode();
-  /* 手机（A2）：顶栏只留 OneTHU logo monogram（白底例外档），「首页」两个字不出现；
-     标签条整体移到底部（MobileTabStrip），复制钮也不需要（长按菜单里有同动作）。 */
+  /* 手机（A2/A3，2026-10-16 改口径）：顶栏只留一个圆形首页钮（房子），复制钮不要；
+     **标签条彻底退役**——横竖都不渲染，换标签只走底栏「标签页」抽屉。 */
   const phone = useIsPhone();
   const [scrolled, setScrolled] = useState(false);
   const { activeId } = useExplorerState();
@@ -233,8 +233,10 @@ function TopBar(): ReactNode {
           Logo 钮退役——复制按钮成为顶栏最左；首页仍恒在（TabStrip 首位不可关） */}
       {/* 竖版：复制 / 设置移到左侧栏底部，顶栏只保留横版标签条 */}
       {phone ? (
-        <button className="ex-tb-home-mark" onClick={() => focusTab(HOME_TAB_ID)} aria-label="首页">
-          <BrandLogo size={13} />
+        /* 手机档（2026-10-16 用户口径）：顶部只留一个**圆形房子钮**回首页——
+           横竖都不再有标签条（换标签只走底栏「标签页」抽屉）。此前是 OneTHU monogram 玻璃片。 */
+        <button className="ex-tb-home-mark" onClick={() => focusTab(HOME_TAB_ID)} aria-label="首页" title="首页">
+          <IconHome width={19} height={19} />
         </button>
       ) : layout === "h" ? (
         <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
@@ -400,18 +402,6 @@ export function Slogan({ size = 13 }: { size?: number }) {
   );
 }
 
-/** 手机底部标签条（A3）：TabStrip 复用（顶栏不再渲染它），is-phone 才出现；
-     竖栏（TabRail）在手机永不出现（见 TabRail 分流）。 */
-function MobileTabStrip(): ReactNode {
-  const phone = useIsPhone();
-  if (!phone) return null;
-  return (
-    <div className="ex-mobile-strip" aria-label="底部标签条">
-      <TabStrip />
-    </div>
-  );
-}
-
 /** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
   const explorer = useExplorerState();
@@ -437,8 +427,6 @@ export function Shell({ children }: { children: ReactNode }) {
       <TabRail />
       <main className={"content explorer-content" + contentCanvasClass}>{children}</main>
       </ContextMenuLayer>
-      {/* 手机档（A3）：底部标签条——44px 触目标的玻璃横条，is-phone 才有 */}
-      <MobileTabStrip />
       <BottomBar />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />

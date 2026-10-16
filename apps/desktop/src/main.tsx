@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { logLine } from "./lib/clients.js";
-import { platformOf } from "./state/platform.js";
+import { isPhoneViewport, platformOf } from "./state/platform.js";
 // 渲染层崩溃捕获：白屏=未被记录的 JS 异常（webview 控制台/系统日志都拿不到），
 // 全局 error/unhandledrejection 直接落盘 /tmp/onethu-debug.log。
 function hookRenderError(kind: string, detail: string): void {
@@ -19,11 +19,10 @@ window.addEventListener("unhandledrejection", (e) => {
 if (__ONETHU_DEV__) {
   void import("./lib/devlog.js").then((m) => m.installDevLogBridge());
 }
-// 真机密度标记：触屏 + 窄窗 → html.is-phone（CSS 密度层挂此类，不依赖媒体查询细节）。
-// 宽度阈值取 state/platform.ts（§2.8.1 统一断点，此前这里散落 860）。
+// 真机密度标记：触屏 + 短边窄 → html.is-phone（CSS 密度层挂此类，不依赖媒体查询细节）。
+// 判定在 state/platform.ts 的 isPhoneViewport()（唯一来源，横竖都算手机；dev 可 ?phone=1 强制预览）。
 function markPhone(): void {
-  const touch = (navigator.maxTouchPoints ?? 0) > 0 || window.matchMedia("(pointer: coarse)").matches;
-  document.documentElement.classList.toggle("is-phone", touch && platformOf(window.innerWidth) !== "expanded");
+  document.documentElement.classList.toggle("is-phone", isPhoneViewport());
 }
 markPhone();
 window.addEventListener("resize", markPhone);
@@ -43,7 +42,7 @@ import { installAuthWatchdog, installKeepalive } from "./lib/reload.js";
 // 平台判定复用 state/platform.ts 的唯一断点（禁止组件各自 matchMedia）。
 // 密度随平台走：桌面 compact（与旧版刻度对齐——2026-10-14「卡片/按钮太大」）、手机 touch。
 installOneGUI({
-  platform: () => (platformOf(window.innerWidth) === "expanded" ? "desktop" : "mobile"),
+  platform: () => (isPhoneViewport() ? "mobile" : platformOf(window.innerWidth) === "expanded" ? "desktop" : "mobile"),
   densityByPlatform: { desktop: "compact", mobile: "touch" },
 });
 // 旧通道（主题明暗 / 玻璃档位）→ OneGUI 轴；用户现有选择立刻在 OneGUI 上生效

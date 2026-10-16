@@ -62,9 +62,13 @@ assert.ok(
   "卡片族共享填充必须来自 --glass-* 玻璃档",
 );
 
-/* Wallpaper contrast follows the theme's foreground token; don't reverse bare text by lum alone. */
-assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.ex-mobile-strip/);
-assert.match(explorerCss, /data-wallpaper-lum="light"\] \.ex-mobile-strip/);
+/* Wallpaper contrast follows the theme's foreground token; don't reverse bare text by lum alone.
+   2026-10-16：底部标签条（.ex-mobile-strip）退役——横竖都没有标签条、换标签只走标签页抽屉，
+   所以这两条断言改钉**还在的栏体**（底栏 / 顶栏），守的语义不变：明暗两档都得有分支。 */
+assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.ex-bbar/);
+assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.explorer-topbar/);
+assert.match(explorerCss, /data-wallpaper-lum="light"\] \.ex-bbar/);
+assert.match(explorerCss, /data-wallpaper-lum="light"\] \.explorer-topbar/);
 assert.doesNotMatch(explorerCss, /\.explorer-shell\[data-wallpaper-lum="dark"\] \.explorer-content h2/);
 assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.home-chrome-layer[\s\S]*?--text-1: #f2f4f8/);
 assert.match(explorerCss, /data-wallpaper-lum="light"\] \.home-chrome-layer[\s\S]*?--text-1: #1c1f28/);

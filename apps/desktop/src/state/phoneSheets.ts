@@ -7,14 +7,12 @@
  *    拖动结束时由 PhoneSheet 的把手写入，开抽屉时读上次档位。
  */
 import { useSyncExternalStore } from "react";
-import { platformOf } from "./platform.js";
+import { isPhoneViewport } from "./platform.js";
 
 /* ══════════ is-phone：触屏 + 非宽窗（与 main.tsx markPhone 一字不差） ══════════ */
 
 function computePhone(): boolean {
-  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
-  const touch = (navigator.maxTouchPoints ?? 0) > 0 || window.matchMedia?.("(pointer: coarse)").matches === true;
-  return !!touch && platformOf(window.innerWidth) !== "expanded";
+  return isPhoneViewport();   // 唯一来源：触屏 + 短边窄（横竖都算手机）
 }
 
 const listeners = new Set<() => void>();

@@ -16,6 +16,15 @@ function base(props: SVGProps<SVGSVGElement>) {
   };
 }
 
+/** 首页（房子）：手机顶栏那个圆形首页钮用它——用户 2026-10-16 点名「房子形状，不是 OneTHU 形状」 */
+export const IconHome = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M3.6 10.4 12 3.6l8.4 6.8" />
+    <path d="M5.8 9.4V20h12.4V9.4" />
+    <path d="M9.8 20v-5.2h4.4V20" />
+  </svg>
+);
+
 export const IconToday = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M3 6h18M3 12h18M3 18h11" />

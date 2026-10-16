@@ -41,7 +41,7 @@ const REPORT = String.raw`(() => {
     return el.tagName.toLowerCase() + (cls ? "." + cls : "") + (t ? " 「" + t + "」" : "");
   };
   const vw = innerWidth, vh = innerHeight;
-  const out = { vw, vh, phoneClass: document.documentElement.classList.contains("is-phone"), scheme: document.documentElement.dataset.scheme || "", issues: { overflowX: [], clippedText: [], tinyTargets: [], offscreen: [], fixedStack: [] } };
+  const out = { vw, vh, phoneClass: document.documentElement.classList.contains("is-phone"), scheme: document.documentElement.dataset.scheme || "", issues: { overflowX: [], clippedText: [], tinyTargets: [], offscreen: [], textOverlap: [] } };
   const all = [...document.querySelectorAll("body *")];
   for (const el of all) {
     const cs = getComputedStyle(el);
@@ -70,7 +70,49 @@ const REPORT = String.raw`(() => {
       out.issues.offscreen.push({ el: label(el), rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] });
     }
   }
-  // ⑤ 顶/底栏与内容的几何关系：内容和固定栏有没有互相压
+  // ⑤ 文字互相压（真「重叠」）：两个**流内**的文字叶子矩形相交超过小者的 30%。
+  //    固定/绝对定位的元素（FAB、徽标、浮层）天然压内容，不算——那些单独看。
+  /* 只看"真的看得见、又没被别的层盖住"的流内文字叶子 —— 否则浮层与隐藏层会刷一堆假互压
+     （设置浮层盖住首页、隐藏的登录层都是这么进来的）。 */
+  const hidden = (el) => {
+    if (typeof el.checkVisibility === "function") {
+      return !el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true, contentVisibilityAuto: true });
+    }
+    const cs2 = getComputedStyle(el);
+    return cs2.display === "none" || cs2.visibility === "hidden" || parseFloat(cs2.opacity || "1") < 0.05;
+  };
+  const occluded = (el, r) => {
+    const x = Math.min(innerWidth - 1, Math.max(1, r.left + r.width / 2));
+    const y = Math.min(innerHeight - 1, Math.max(1, r.top + r.height / 2));
+    const hit = document.elementFromPoint(x, y);
+    if (!hit) return true;
+    return !(hit === el || el.contains(hit) || hit.contains(el));
+  };
+  const leaves = all.filter((el) => {
+    const cs2 = getComputedStyle(el);
+    if (cs2.position === "fixed" || cs2.position === "absolute") return false;
+    if (hidden(el)) return false;
+    if (!(el.textContent || "").trim()) return false;
+    return ![...el.children].some((c) => (c.textContent || "").trim());
+  }).filter((el) => !occluded(el, R(el))).slice(0, 500);
+  const boxes = leaves.map((el) => ({ el, r: R(el) })).filter((x) => x.r.width > 2 && x.r.height > 2);
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i].r, b = boxes[j].r;
+      const ix = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      const iy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (ix <= 1 || iy <= 1) continue;
+      const inter = ix * iy;
+      const small = Math.min(a.width * a.height, b.width * b.height);
+      if (inter / small < 0.3) continue;
+      if (boxes[i].el.contains(boxes[j].el) || boxes[j].el.contains(boxes[i].el)) continue;
+      out.issues.textOverlap.push({ a: label(boxes[i].el), b: label(boxes[j].el), ratio: Math.round((inter / small) * 100) });
+      if (out.issues.textOverlap.length > 24) break;
+    }
+    if (out.issues.textOverlap.length > 24) break;
+  }
+
+  // ⑥ 顶/底栏与内容的几何关系：内容和固定栏有没有互相压
   const bars = [...document.querySelectorAll(".explorer-topbar, .ex-mobile-strip, .ex-bbar, .ex-tb-home-mark, .ex-rail")].map((el) => {
     const r = R(el); const cs = getComputedStyle(el);
     return { el: label(el), pos: cs.position, rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)], display: cs.display };
@@ -132,11 +174,12 @@ try {
   console.log(`\n=== ${tag} ${vw}x${vh}@${DPR}x is-phone=${rep.phoneClass} 手机条=${rep.strips.mobileStrip} 顶栏标签条=${rep.strips.tabstrip} docScrollW=${rep.docScrollW} ===`);
   console.log(`栏体：` + rep.bars.map((b) => `${b.el}[${b.pos}]${b.rect.join(",")}`).join("  "));
   console.log(`内容内边距：${JSON.stringify(rep.contentPad)}`);
-  console.log(`横向溢出=${i.overflowX.length}  文字截断=${i.clippedText.length}  触目标过小=${i.tinyTargets.length}  跑出视口=${i.offscreen.length}   产物 ${OUT}/${tag}.png|.json`);
+  console.log(`横向溢出=${i.overflowX.length}  文字截断=${i.clippedText.length}  文字互压=${i.textOverlap.length}  触目标过小=${i.tinyTargets.length}  跑出视口=${i.offscreen.length}   产物 ${OUT}/${tag}.png|.json`);
+  for (const x of i.textOverlap.slice(0, 6)) console.log(`  互压 ${x.ratio}%  ${x.a}  ×  ${x.b}`);
   for (const x of i.overflowX.slice(0, 8)) console.log(`  溢出 ${x.el} rect=${x.rect} scrollW=${x.scrollW}`);
   for (const x of i.clippedText.slice(0, 10)) console.log(`  截断 ${x.el} clientH=${x.clientH} scrollH=${x.scrollH} rect=${x.rect}`);
   for (const x of i.tinyTargets.slice(0, 8)) console.log(`  小目标 ${x.el} rect=${x.rect}`);
-  process.exitCode = (i.overflowX.length || i.clippedText.length) ? 1 : 0;
+  process.exitCode = (i.overflowX.length || i.clippedText.length || i.textOverlap.length) ? 1 : 0;
 } finally {
   try { ws?.close(); } catch {}
   chrome.kill("SIGKILL");

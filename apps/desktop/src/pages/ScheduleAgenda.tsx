@@ -162,7 +162,7 @@ export function ScheduleAgenda({
     <>
       {/* 月历（导航统一在页面工具栏，这里只有格子本体） */}
       <Card style={{ padding: 12, marginBottom: 10 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center" }}>
+        <div className="sched-cal" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center" }}>
           {WEEK_SHORT.map((w) => (
             <div key={w} style={{ fontSize: 11, color: "var(--text-3, #999)", padding: "2px 0" }}>{w}</div>
           ))}

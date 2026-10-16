@@ -964,5 +964,8 @@ html.is-phone .sched-tools::-webkit-scrollbar { display: none; }
 html.is-phone .sched-tools > * { flex: none; }
 html.is-phone .sched-tools > .og-spacer { flex: 1 1 12px; min-width: 12px; }
 
-/* 课表日历格：手机档抬到 40px 高（原来 37×36，触目标偏小；列宽 50 足够） */
+/* 课表日历格：手机档抬到 40px 高（原来 37×36，触目标偏小；列宽 50 足够）。
+   列表模式的月历是**行内样式**的原生 button（ScheduleAgenda），所以 min-height 不带 !important
+   也能生效——内联只写了 padding，不管高度。 */
 html.is-phone .sched-cal .og-btn { min-height: 40px; height: 40px; padding: 0; }
+html.is-phone .sched-cal button { min-height: 40px; }

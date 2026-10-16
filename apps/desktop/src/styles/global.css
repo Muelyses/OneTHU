@@ -2088,9 +2088,13 @@ select.input:focus {
     min-width: 0;
     max-width: 100%;
   }
-  /* 一切网格 → 自流式响应列（课表 7 列、场地网格、统计网格全部自适应） */
-  .content [class*="grid"],
-  .content [class*="cards"] {
+  /* 一切网格 → 自流式响应列（课表 7 列、场地网格、统计网格全部自适应）
+     2026-10-16：**手机档除外**。这条 !important 是"窄桌面兜底"时代的产物，它会把 OneGUI
+     的手机单列（[data-og-platform=mobile] .og-grid { minmax(0,1fr) }）整条盖掉 ——
+     实测服务目录在 390 宽下被切成两列 173px 的巨型空盒、标题全截断（用户口径
+     「巨大的按钮 / 截断的内容」）。样式管线给手机的是单列，这条兜底只留给桌面窄窗。 */
+  html:not(.is-phone) .content [class*="grid"],
+  html:not(.is-phone) .content [class*="cards"] {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 158px), 1fr)) !important;
   }
   /* 媒体与嵌入永不超宽 */

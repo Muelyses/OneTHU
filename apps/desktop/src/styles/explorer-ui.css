@@ -923,3 +923,25 @@ html.is-phone .ex-bbar-center .ohx-capsule {
    只在本形态生效，桌面像素级不变。 */
 html.is-phone .ex-mini { width: 36px; height: 36px; }
 html.is-phone .collect-star { min-width: 40px; min-height: 40px; }
+
+
+/* 手机档浮钮收号：62px（OneGUI 桥的 ctl-h-lg + 20）在 390 宽屏幕上过大，
+   两个圆钮还会压住卡片。48px 仍是稳的触目标（HIG 44）。选择器加到 (0,3,1) 才压得住
+   onegui-bridge.css 的 html:root :is(...)（(0,2,1)）。 */
+html:root.is-phone :is(.free-fab, .hard-refresh-fab, .top-fab, .board-fab) {
+  height: 48px;
+  min-width: 48px;
+  padding: 0;
+}
+
+
+/* 手机档：**分类芯片行**改横向滚动一条 —— 390 宽下 14 个分类原本折成 5 行、吃掉半屏
+   （用户口径「极其拥挤不堪」）。只认"整行都是芯片"的那种 og-inline，别把普通行也卷进去。 */
+html.is-phone .og-inline--wrap:has(> .og-chip) {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+html.is-phone .og-inline--wrap:has(> .og-chip)::-webkit-scrollbar { display: none; }

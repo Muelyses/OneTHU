@@ -894,3 +894,11 @@ html.is-phone .onepage-sheet-body {
 }
 /* 玻璃卡内的页头/头部行若自带平涂底会打断折射面——去掉，让玻璃透底 */
 .home-card:not(.is-editing) .home-card-head { background: transparent; }
+
+
+/* 手机档：程序坞收紧 —— 390 宽下 15 个入口折成三行、整块 221px 高（竖屏最大的一框）。
+   只收"行高"：球心 36 → 32、名字 12 → 11、内外边距各让 4px，命中区仍 ≥ 44（.sphere 整块可点）。 */
+html.is-phone .hs-dock-row { padding: 8px 8px; gap: 0 8px; }
+html.is-phone .sphere { padding: 4px 4px; }
+html.is-phone .sphere-ball { width: 32px; height: 32px; }
+html.is-phone .sphere-name { font-size: var(--text-xs); }

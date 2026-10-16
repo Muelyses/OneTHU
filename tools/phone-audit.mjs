@@ -112,7 +112,8 @@ try {
   };
   await send("Page.enable");
   await send("Emulation.setDeviceMetricsOverride", { width: vw, height: vh, deviceScaleFactor: DPR, mobile: true, screenWidth: vw, screenHeight: vh });
-  await send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
+  /* 默认按真机（触摸仿真）；--desk 关掉触摸，验「桌面拖窄窗也进手机形态」这条 */
+  if (!process.argv.includes("--desk")) await send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
   if (seedArg) {
     const seed = JSON.parse(readFileSync(seedArg.slice("--seed=".length), "utf8"));
     await send("Page.addScriptToEvaluateOnNewDocument", { source: `(() => { const s = ${JSON.stringify(seed)}; for (const k of Object.keys(s)) { try { localStorage.setItem(k, s[k]); } catch (e) {} } })();` });

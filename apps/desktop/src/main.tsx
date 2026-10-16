@@ -86,6 +86,20 @@ import { ImageViewerHost } from "./components/ImageViewer.js";
 const PHONE_FRAME = import.meta.env.DEV && new URLSearchParams(window.location.search).has("phone-frame");
 const PhoneFrame = import.meta.env.DEV ? lazy(() => import("./components/PhoneFrame.js")) : null;
 
+/* 取景框的键盘入口（dev）：**不依赖 __ONETHU_DEV__**。
+   那个 dev 徽标要构建时 `ONETHU_DEV=1` 才有（vite.config 的 DEV_BUILD），日常 dev server 不带它，
+   于是"根本没有 dev 按钮"。Cmd/Ctrl+Shift+P 直接切换：进 = 加 ?phone-frame=1 重载，再按一次退出。
+   （Cmd+K 是命令面板、Cmd+±/0 是画布缩放，都不冲突。） */
+if (import.meta.env.DEV) {
+  window.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "p") {
+      e.preventDefault();
+      const has = new URLSearchParams(window.location.search).has("phone-frame");
+      window.location.href = window.location.pathname + (has ? "" : "?phone-frame=1");
+    }
+  });
+}
+
 if (PHONE_FRAME && PhoneFrame) {
   createRoot(document.getElementById("root")!).render(
     <Suspense fallback={null}>

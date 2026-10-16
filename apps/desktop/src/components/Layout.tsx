@@ -683,7 +683,16 @@ function ChromeMore() {
   if (!chrome.hasMenu) return null;
   const openMenu = (): void => {
     const r = moreRef.current?.getBoundingClientRect();
-    const items = readPageChrome().menu;
+    /* dev 追加一条取景框入口（复制一份数组，别改共享的页面菜单）——
+       它是除 Cmd+Shift+P 之外的第二条路：不依赖 ONETHU_DEV 徽标 */
+    const items = [...readPageChrome().menu];
+    if (import.meta.env.DEV) {
+      items.push({
+        key: "dev-phone-frame",
+        label: "竖屏取景框（dev）",
+        onSelect: () => { window.location.href = window.location.pathname + "?phone-frame=1"; },
+      });
+    }
     ctx.open({ x: r ? r.right - r.width / 2 : window.innerWidth - 24, y: r ? r.bottom : 48, items });
   };
   return (

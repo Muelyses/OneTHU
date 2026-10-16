@@ -14,6 +14,7 @@
  *   node tools/contrast-audit.mjs "http://127.0.0.1:5180/?explorer-preview=overlay" 设置面板
  *   node tools/contrast-audit.mjs ... 标签 --dark            # 先切成深色套再量
  *   node tools/contrast-audit.mjs ... 标签 --seed=seed.json  # 先注入 localStorage 再开页
+ *   node tools/contrast-audit.mjs ... 标签 --wait=20000       # 静置 20s 再量（视频壁纸漂移路径）
  *   #   seed.json = {"键":"值"}，用来复现「用户的壁纸/主题/玻璃档」；见文件尾部说明
  *
  * 输出：控制台清单（按对比率升序）+ /tmp/contrast-audit/<标签>.png / .json
@@ -37,6 +38,8 @@ const tag = process.argv[3] ?? "run";
 const dark = process.argv.includes("--dark");
 const light = process.argv.includes("--light");
 const seedArg = process.argv.find((a) => a.startsWith("--seed="));
+const waitArg = process.argv.find((a) => a.startsWith("--wait="));
+const WAIT_MS = waitArg ? Number(waitArg.slice("--wait=".length)) : 3500;   // 开页后静置多久再量（视频壁纸建议 --wait=20000）
 if (!url) {
   console.error('用法：node tools/contrast-audit.mjs "<url>" <标签> [--dark|--light] [--seed=文件.json]');
   process.exit(2);
@@ -199,7 +202,7 @@ try {
   const loaded = new Promise((res) => { const t = setTimeout(res, 12000); listeners.push((m) => { if (m.method === "Page.loadEventFired") { clearTimeout(t); res(); } }); });
   await send("Page.navigate", { url });
   await loaded;
-  await sleep(3500);
+  await sleep(WAIT_MS);
   if (dark || light) { await evaluate(`document.documentElement.dataset.scheme='${dark ? "dark" : "light"}'`); await sleep(1800); }
   const dom = await evaluate(COLLECT);
   const shot = await send("Page.captureScreenshot", { format: "png", fromSurface: true });

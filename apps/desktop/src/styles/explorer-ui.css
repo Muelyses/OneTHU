@@ -945,3 +945,24 @@ html.is-phone .og-inline--wrap:has(> .og-chip) {
   padding-bottom: 4px;
 }
 html.is-phone .og-inline--wrap:has(> .og-chip)::-webkit-scrollbar { display: none; }
+
+
+/* ══════════ 手机档：课表工具栏「按钮墙」改横向滚动条 ══════════
+   课表页三行工具栏（视图/同步/新建 · 日历/步进/学期周跳 · 日历快跳）在 390 宽下折成 6 行、
+   吃掉首屏约 500px（用户口径「极其拥挤不堪」）。按钮本身是标准 42px 不该缩，
+   所以改成**每行一条横滑**：高度从 6 行降到 3 行，控件尺寸与触目标都不动，滑一下就到。
+   桌面完全不受影响（类名只在手机档生效）。 */
+html.is-phone .sched-tools {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+html.is-phone .sched-tools::-webkit-scrollbar { display: none; }
+html.is-phone .sched-tools > * { flex: none; }
+html.is-phone .sched-tools > .og-spacer { flex: 1 1 12px; min-width: 12px; }
+
+/* 课表日历格：手机档抬到 40px 高（原来 37×36，触目标偏小；列宽 50 足够） */
+html.is-phone .sched-cal .og-btn { min-height: 40px; height: 40px; padding: 0; }

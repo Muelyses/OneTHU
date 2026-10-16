@@ -779,7 +779,7 @@ export function SchedulePage() {
       />
 
       {/* 视图与动作（两视图共用）：切换 | 状态 | 同步 / 系统日历 / 上云 / 新建 */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
+      <div className="sched-tools" style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
         {([["timetable", "时间轴"], ["agenda", "列表"]] as const).map(([m, lbl]) => (
           <Chip key={m} size="sm" selected={mode === m} onClick={() => pickMode(m)}>
             {lbl}
@@ -823,7 +823,7 @@ export function SchedulePage() {
       ) : null}
 
       {/* 导航（两视图共用）：日历快跳 + 窗口步进 + 今天 ‖ 学期周跳转 */}
-      <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: calOpen ? 8 : 10 }}>
+      <div className="sched-tools" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: calOpen ? 8 : 10 }}>
         <Btn variant="outline" onClick={() => setCalOpen((v) => !v)} titleAttr="打开日历，快速跳到任意年月"><IconSchedule width={14} height={14} />{label}</Btn>
         <Btn variant="outline" onClick={() => setAnchor(stepAnchor(-1))} titleAttr={mode === "timetable" ? "上一周" : "上个月"}>‹</Btn>
         <Btn variant="outline" onClick={() => setAnchor(stepAnchor(1))} titleAttr={mode === "timetable" ? "下一周" : "下个月"}>›</Btn>
@@ -856,7 +856,7 @@ export function SchedulePage() {
       {calOpen ? (
         <Card style={{ marginBottom: 10 }}>
           <Stack gap={2}>
-            <Inline gap={2} wrap>
+            <Inline gap={2} wrap className="sched-tools">
               <Btn variant="ghost" size="sm" titleAttr="上一年" onClick={() => calShift(-12)}>«</Btn>
               <Btn variant="ghost" size="sm" titleAttr="上一月" onClick={() => calShift(-1)}>‹</Btn>
               <div style={{ minWidth: 120, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>
@@ -867,7 +867,7 @@ export function SchedulePage() {
               <Spacer />
               <Btn variant="ghost" size="sm" onClick={() => setCalView(new Date(new Date().getFullYear(), new Date().getMonth(), 1))}>本月</Btn>
             </Inline>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center" }}>
+            <div className="sched-cal" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center" }}>
               {DAY_NAMES.map((n) => (
                 <div key={n}>
                   <Text slot="micro" tone="faint">{n[1] ?? n}</Text>

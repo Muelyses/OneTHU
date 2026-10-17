@@ -57,18 +57,23 @@ try {
   await p.getByRole('button', { name: '生成口令' }).click();
   await p.waitForTimeout(600);
   const code = await p.locator('.vault-share-code').innerText();
-  check(/^ONV1\.[A-Za-z0-9_-]+\.[0-9a-f]{8}$/.test(code.trim()), 'share code has ONV1.body.checksum shape');
+  check(/^ONV2\.[A-Za-z0-9_-]+\.[0-9a-f]{32}$/.test(code.trim()), 'share code has ONV2.body.sha256 shape');
   const decoded = await p.evaluate(async (c) => {
     /* codec 是纯函数；直接按 Vite 原路径 import 不影响应用状态。 */
     const m = await import('/src/state/vaultShare.ts');
-    return { ok: m.decodeShare(c), bad: m.decodeShare(c.slice(0, -1) + (c.endsWith('0') ? '1' : '0')) };
+    const ok = await m.decodeShareAsync(c);
+    const bad = await m.decodeShareAsync(c.slice(0, -1) + (c.endsWith('0') ? '1' : '0'));
+    const v1 = m.encodeShare({ v: 1, kind: 'vault-share', issuedAt: Date.now(), name: '旧版口令', items: [] });
+    const oldOk = await m.decodeShareAsync(v1);
+    return { ok, bad, oldOk };
   }, code.trim());
-  check(decoded.ok.ok && decoded.ok.payload?.name === '我的暂存箱', 'code decodes with box name');
+  check(decoded.ok.ok && decoded.ok.payload?.name === '我的暂存箱', 'ONV2 code decodes with box name');
+  check(decoded.oldOk.ok, 'ONV1 codes remain backward-compatible');
   check(!decoded.bad.ok, 'tampered code is rejected');
   const expired = await p.evaluate(async () => {
     const m = await import('/src/state/vaultShare.ts');
     const code = m.encodeShare({ v: 1, kind: 'vault-share', issuedAt: Date.now() - 1000, expiresAt: Date.now() - 1, name: '过期口令', items: [] });
-    return m.decodeShare(code);
+    return m.decodeShareAsync(code);
   });
   check(!expired.ok && /过期/.test(expired.reason ?? ''), 'expired code is rejected with reason');
   check(readFileSync('apps/desktop/src/components/Collect.tsx', 'utf8').includes('data-vault-catch'), 'CollectStar is a global vault drag source');

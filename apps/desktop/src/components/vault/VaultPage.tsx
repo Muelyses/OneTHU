@@ -16,7 +16,7 @@ import {
   activeVault, addToVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
   setActiveVault, subscribeVault, VAULT_TYPE_LABEL, vaultSnapshot, type VaultItem,
 } from "../../state/vault.js";
-import { decodeShare, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
+import { decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
@@ -66,7 +66,8 @@ export function VaultPage(): ReactNode {
   useEffect(() => {
     const last = activeVault().lastShareCode ?? "";
     setCode(last);
-    setShareInfo(last ? decodeShare(last).payload ?? null : null);
+    setShareInfo(null);
+    if (last) void decodeShareAsync(last).then((d) => setShareInfo(d.payload ?? null));
   }, [box.id]);
   useEffect(() => { void installVaultCloudAdapter().then((ok) => { setCloudReady(ok); setCloudChecked(true); }); }, []);
 

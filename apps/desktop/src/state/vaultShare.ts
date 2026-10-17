@@ -11,6 +11,7 @@ import type { VaultBox, VaultCatch, VaultItem } from "./vault.js";
 import { markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
 
 export const SHARE_PREFIX = "ONV1";
+export const SHARE_PREFIX_V2 = "ONV2";
 
 /* 体积/字段上限：口令是不可信输入（可能被伪造/截断），解码时按此净化后再进暂存箱。 */
 const MAX_CODE_CHARS = 96 * 1024;
@@ -102,10 +103,58 @@ export function encodeShare(payload: VaultSharePayload): string {
   return `${SHARE_PREFIX}.${body}.${checksum(json)}`;
 }
 
+async function sha256Hex(text: string): Promise<string> {
+  if (!globalThis.crypto?.subtle) throw new Error("当前环境没有 WebCrypto，无法生成口令摘要");
+  const bytes = utf8Bytes(text);
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  const digest = await crypto.subtle.digest("SHA-256", copy.buffer);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** ONV2：SHA-256 截断摘要（防截断/篡改；仍不是签名，云盘分享才是权限边界）。 */
+export async function encodeShareV2(payload: VaultSharePayload): Promise<string> {
+  const json = JSON.stringify(payload);
+  const body = toBase64Url(utf8Bytes(json));
+  const sum = (await sha256Hex(json)).slice(0, 32);
+  return `${SHARE_PREFIX_V2}.${body}.${sum}`;
+}
+
 export interface DecodeResult {
   ok: boolean;
   payload?: VaultSharePayload;
   reason?: string;
+}
+
+/** 共享的 payload 校验/净化（v1/v2 同口径）。 */
+function validatePayload(p: VaultSharePayload): DecodeResult {
+  if (p?.v !== 1 || p.kind !== "vault-share" || typeof p.name !== "string") return { ok: false, reason: "口令版本或结构不受支持" };
+  if (p.expiresAt && Date.now() > p.expiresAt) return { ok: false, reason: "口令已过期；请让分享者重新生成" };
+  if (p.items !== undefined) {
+    if (!Array.isArray(p.items) || p.items.length > MAX_ITEMS) return { ok: false, reason: "口令清单超过上限（300 项）" };
+    const items = p.items.map(sanitizeCatch).filter((x): x is VaultCatch => x !== null);
+    p.items = items;
+    p.name = p.name.slice(0, MAX_TITLE) || "分享的暂存箱";
+  }
+  return { ok: true, payload: p };
+}
+
+/** 异步解码：ONV2 用 SHA-256 校验；ONV1 兼容旧口令。 */
+export async function decodeShareAsync(code: string): Promise<DecodeResult> {
+  const raw = String(code ?? "").trim();
+  if (!raw.startsWith(SHARE_PREFIX_V2 + ".")) return decodeShare(raw);
+  if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: "口令过大（超过 96KB），不是本应用的正常口径" };
+  const parts = raw.split(".");
+  if (parts.length !== 3) return { ok: false, reason: "口令格式不完整" };
+  let json: string;
+  try { json = new TextDecoder().decode(fromBase64Url(parts[1]!)); } catch { return { ok: false, reason: "口令内容损坏（base64 解码失败）" }; }
+  try {
+    const sum = (await sha256Hex(json)).slice(0, 32);
+    if (sum !== parts[2]) return { ok: false, reason: "口令校验失败（可能被篡改或复制不完整）" };
+    return validatePayload(JSON.parse(json) as VaultSharePayload);
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : "口令校验失败" };
+  }
 }
 
 export function decodeShare(code: string): DecodeResult {
@@ -122,16 +171,7 @@ export function decodeShare(code: string): DecodeResult {
   }
   if (checksum(json) !== sum) return { ok: false, reason: "口令校验失败（可能复制不完整）" };
   try {
-    const p = JSON.parse(json) as VaultSharePayload;
-    if (p?.v !== 1 || p.kind !== "vault-share" || typeof p.name !== "string") return { ok: false, reason: "口令版本或结构不受支持" };
-    if (p.expiresAt && Date.now() > p.expiresAt) return { ok: false, reason: "口令已过期；请让分享者重新生成" };
-    if (p.items !== undefined) {
-      if (!Array.isArray(p.items) || p.items.length > MAX_ITEMS) return { ok: false, reason: "口令清单超过上限（300 项）" };
-      const items = p.items.map(sanitizeCatch).filter((x): x is VaultCatch => x !== null);
-      p.items = items;
-      p.name = p.name.slice(0, MAX_TITLE) || "分享的暂存箱";
-    }
-    return { ok: true, payload: p };
+    return validatePayload(JSON.parse(json) as VaultSharePayload);
   } catch {
     return { ok: false, reason: "口令内容不是合法 JSON" };
   }
@@ -213,14 +253,14 @@ export async function mintShareCode(box: VaultBox, from?: string): Promise<{ cod
     const cloud = await adapter.upload(payload);
     final = { ...payload, items: undefined, cloud };
   }
-  const code = encodeShare(final);
+  const code = await encodeShareV2(final);
   markVaultShared(box.id, code);
   return { code, payload: final };
 }
 
 /** 解析并把口令内容导入为**当前暂存箱**（未收录内容即时消失）。 */
 export async function importShareCodeAsCurrent(code: string): Promise<{ ok: boolean; imported?: number; reason?: string }> {
-  const dec = decodeShare(code);
+  const dec = await decodeShareAsync(code);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   let payload = dec.payload;
   if (!payload.items && payload.cloud) {

@@ -205,3 +205,11 @@
 - 暂存箱条目入场（m-rise）、落点出现（m-pop），都走既有运动令牌并尊重 reduced-motion。
 - 口令/碰一碰口令支持二维码展示（NFC 接入前的扫码兜底；扫码器尚未实现）。
 - 回归 vault 29/29、org 8/8、namecard 7/7；guard/build/docs 通过。
+
+
+### 12.4 ONV2 口令（2026-10-18）
+
+- 新生成口令升级 `ONV2.<base64url>.<sha256 前 32 hex>`；`decodeShareAsync` 同时兼容 ONV1 旧口令。
+- 分享/碰一碰链路统一走 ONV2；云分享仍只编码云盘引用，不塞清单。
+- vault 回归 30/30（ONV2 形状、ONV1 向后兼容、篡改/过期拒绝）。
+- 仍未做：云盘分享清单的文件引用计数 GC、真实清华云盘 live 冒烟。

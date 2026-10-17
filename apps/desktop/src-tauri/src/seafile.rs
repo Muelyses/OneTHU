@@ -452,6 +452,40 @@ fn share_token_of(link: &str) -> Option<String> {
     if tok.is_empty() { None } else { Some(tok.to_string()) }
 }
 
+/// 把文件夹以账号级权限共享给某个云盘用户（双向好友通道）。
+/// 实名路径：PUT /api2/repos/{repo_id}/dir/shared_items/?p=/dir，
+/// 表单 share_type=user&username=email&permission=rw；实测 owner 会被拒绝，需对方真实账号。
+#[tauri::command]
+pub async fn seafile_share_folder_to_user(
+    token: String,
+    repo_id: String,
+    path: String,
+    email: String,
+    permission: String,
+) -> Result<(), String> {
+    let p = if path.starts_with('/') { path } else { format!("/{path}") };
+    let email = email.trim();
+    if email.is_empty() || !email.contains('@') {
+        return Err("云盘邮箱不合法".into());
+    }
+    let perm = match permission.trim() {
+        "r" | "rw" | "admin" => permission.trim().to_string(),
+        _ => "rw".to_string(),
+    };
+    check(
+        client()?
+            .put(format!("{BASE}/api2/repos/{repo_id}/dir/shared_items/"))
+            .bearer_auth(token)
+            .query(&[("p", p.as_str())])
+            .form(&[("share_type", "user"), ("username", email), ("permission", perm.as_str())])
+            .send()
+            .await
+            .map_err(|e| e.to_string())?,
+    )
+    .await?;
+    Ok(())
+}
+
 /// 删除分享链接（分享生命周期；过期/撤销后的清理入口）。
 #[tauri::command]
 pub async fn seafile_share_delete(token: String, share_token: String) -> Result<(), String> {
@@ -945,6 +979,29 @@ mod tests {
         let cleanup = seafile_delete(t.clone(), repo.id.clone(), dir.clone(), "dir".into()).await;
         cleanup.expect("清理测试目录");
         result.expect("live share read 失败");
+    }
+
+    /// 账号级文件夹共享：把 /Vault 分享给 owner 自己应被服务端拒绝，验证命令与 API 接线。
+    #[tokio::test]
+    #[ignore]
+    async fn live_share_folder_to_user_owner_rejected() {
+        let t = token();
+        let me = seafile_account(t.clone()).await.expect("账号信息").email;
+        let repos = seafile_repos(t.clone()).await.expect("列库");
+        let repo = repos.iter().find(|r| r.name == "OneTHU").expect("需要 OneTHU 库");
+        let err = seafile_share_folder_to_user(
+            t.clone(),
+            repo.id.clone(),
+            "/Vault".into(),
+            me,
+            "rw".into(),
+        )
+        .await
+        .expect_err("分享给 owner 应失败");
+        assert!(
+            err.to_lowercase().contains("owner") || err.contains("共享"),
+            "未预期的错误：{err}"
+        );
     }
 
     #[tokio::test]

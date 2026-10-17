@@ -5,8 +5,8 @@
  */
 import { useSyncExternalStore } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { getSeafileToken, ensureSeafileLoaded } from "./seafile.js";
-import { cardsSnapshot } from "./nameCard.js";
+import { getSeafileToken, ensureSeafileLoaded, seafileShareFolderToUser } from "./seafile.js";
+import { cardsSnapshot, setContactShare } from "./nameCard.js";
 import { bytesToBase64 } from "../lib/imageSave.js";
 
 export interface FriendMessage {
@@ -80,6 +80,27 @@ async function ensureShared(contactId: string): Promise<{ repoId: string; path: 
   const contact = cardsSnapshot().contacts.find((c) => c.id === contactId);
   if (!contact?.shared) throw new Error("还没有共享云盘：先在联系人上创建共享云盘");
   return { repoId: contact.shared.repoId, path: contact.shared.path };
+}
+
+/**
+ * 把共享文件夹以读写权限共享给联系人的云盘邮箱（双向通道前提）。
+ * 需要对方名片里填了 cloudEmail；成功后记录 sharedWith，好友可从自己的「共享给我的」库直接写文件。
+ */
+export async function openBidirectionalShare(contactId: string): Promise<{ ok: boolean; reason?: string }> {
+  try {
+    await ensureSeafileLoaded();
+    if (!getSeafileToken()) throw new Error("清华云盘未连接");
+    const contact = cardsSnapshot().contacts.find((c) => c.id === contactId);
+    if (!contact?.shared) throw new Error("先创建好友共享云盘");
+    const email = ((contact.card as { cloudEmail?: string }).cloudEmail ?? "").trim();
+    if (!email || !email.includes("@")) throw new Error("对方名片没有云盘邮箱：请对方编辑名片填写后再试");
+    if (contact.shared.sharedWith?.email === email) return { ok: true };
+    await seafileShareFolderToUser(contact.shared.repoId, contact.shared.path, email, "rw");
+    setContactShare(contactId, { ...contact.shared, sharedWith: { email, permission: "rw", at: Date.now() } });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : String(e) };
+  }
 }
 
 /** 留言：本地记账；有共享云盘时同步写一份 txt，对方通过共享链接可读。 */

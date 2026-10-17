@@ -16,7 +16,7 @@ import {
   savePersonalCard, setContactShare, upsertOrgCard, useCards,
 } from "../state/nameCard.js";
 import { prepareAndShareFolder } from "../lib/cloudFolder.js";
-import { sendFriendFile, sendFriendText, useFriendMessages } from "../state/friendChannel.js";
+import { openBidirectionalShare, sendFriendFile, sendFriendText, useFriendMessages } from "../state/friendChannel.js";
 import { stageFromPicker } from "../lib/fileChannel.js";
 
 defineSearchRows([
@@ -45,6 +45,7 @@ export function NameCardSection(): ReactNode {
       { key: "website", label: "个人网址", default: p.website },
       { key: "social", label: "社交媒体", default: p.social },
       { key: "phone", label: "手机号", default: p.phone },
+      { key: "cloudEmail", label: "清华云盘邮箱（好友双向共享用，可空）", default: p.cloudEmail ?? "" },
       { key: "bio", label: "个人简介（≤120 字，碰一碰要短）", kind: "textarea", default: p.bio },
     ]);
     if (f) savePersonalCard(f);
@@ -88,7 +89,8 @@ export function NameCardSection(): ReactNode {
       const share = await prepareAndShareFolder(`/Friends/${contactId}`, `${name} 与我的共享云盘`);
       setContactShare(contactId, { repoId: share.repoId, path: share.path, shareUrl: share.shareUrl, shareToken: share.shareToken, expiresAt: share.expiresAt, createdAt: Date.now() });
       await navigator.clipboard.writeText(share.shareUrl).catch(() => undefined);
-      showToast("共享云盘已创建：链接已复制，发给好友即可加入");
+      const twoWay = await openBidirectionalShare(contactId);
+      showToast(twoWay.ok ? "共享云盘已创建，并已开通好友双向写入" : "共享云盘已创建：链接已复制；对方填云盘邮箱后可开通双向");
     } catch (e) {
       showToast(`共享云盘创建失败：${e instanceof Error ? e.message : String(e)}`);
     } finally {
@@ -154,7 +156,7 @@ export function NameCardSection(): ReactNode {
             <Text slot="label">{p.name || "还没设置名字"}</Text>
             <Text slot="micro" tone="faint">{p.bio || "个人简介会出现在名片和碰一碰里"}</Text>
             {p.website || p.social || p.phone ? (
-              <Text slot="micro" tone="faint">{[p.website, p.social, p.phone].filter(Boolean).join(" · ")}</Text>
+              <Text slot="micro" tone="faint">{[p.website, p.social, p.phone, p.cloudEmail].filter(Boolean).join(" · ")}</Text>
             ) : null}
           </div>
         </div>
@@ -208,6 +210,9 @@ export function NameCardSection(): ReactNode {
                     ) : (
                       <Btn variant="ghost" size="sm" disabled={sharingId === c.id} onClick={() => void shareCloud(c.id, c.name)}>{sharingId === c.id ? "创建中…" : "共享云盘"}</Btn>
                     )}
+                    {c.shared && !c.shared.sharedWith && (c.card as { cloudEmail?: string }).cloudEmail ? (
+                      <Btn variant="ghost" size="sm" onClick={() => void openBidirectionalShare(c.id).then((r) => showToast(r.ok ? "已开通双向写入" : `开通失败：${r.reason}`))}>开通双向</Btn>
+                    ) : null}
                     <Btn variant="ghost" size="sm" onClick={() => setChannelId(channelId === c.id ? null : c.id)}>通道</Btn>
                     <Btn variant="ghost" size="sm" tone="error" onClick={() => removeContact(c.id)}>删除</Btn>
                   </span>

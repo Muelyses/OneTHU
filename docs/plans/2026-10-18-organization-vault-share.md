@@ -394,3 +394,14 @@
 
 - 新增 `docs/audit/2026-10-18-vault-share-verification.md`：自动化回归、真实云盘 live、
   仍待真机/第二账号验证的事项分开列清，作为 goal 完成口径。
+
+
+### 12.27 好友双向共享 API 接线（2026-10-18）
+
+- 新增 `seafile_share_folder_to_user`（PUT `/api2/repos/{id}/dir/shared_items/?p=...`，
+  share_type=user/username/permission），Rust 注册、TS `seafileShareFolderToUser`。
+- 名片新增可空「清华云盘邮箱」；好友共享云盘创建后若对方有邮箱，自动开通 rw 双向权限，
+  或联系人行点「开通双向」；`ContactCard.shared.sharedWith` 记录。
+- live 验证：分享给 owner 自己被服务端拒绝（命令/API 接线正确，`live_share_folder_to_user_owner_rejected`
+  1 passed）；成功路径需第二真实账号，尚未验证。
+- namecard 7/7、friend channel 6/6、vault 39/39、mobile 13/13；guard/docs/build 通过。

@@ -16,6 +16,8 @@ export interface PersonalCard {
   website: string;
   social: string;
   phone: string;
+  /** 清华云盘邮箱（用于好友共享云盘的双向账号共享；可空） */
+  cloudEmail?: string;
   bio: string;
   updatedAt: number;
 }
@@ -36,6 +38,8 @@ export interface FriendShare {
   shareToken?: string;
   expiresAt?: number;
   createdAt: number;
+  /** 已把该文件夹以读写权限共享给好友账号（双向通道前提） */
+  sharedWith?: { email: string; permission: string; at: number };
 }
 
 export type ContactCard = {
@@ -115,6 +119,7 @@ export function savePersonalCard(patch: Partial<PersonalCard>): PersonalCard {
     website: clamp(patch.website ?? cur.website, CARD_LIMITS.website),
     social: clamp(patch.social ?? cur.social, CARD_LIMITS.social),
     phone: clamp(patch.phone ?? cur.phone, CARD_LIMITS.phone),
+    cloudEmail: clamp(patch.cloudEmail ?? cur.cloudEmail ?? "", 120).trim(),
     bio: clamp(patch.bio ?? cur.bio, CARD_LIMITS.bio),
     updatedAt: Date.now(),
   };

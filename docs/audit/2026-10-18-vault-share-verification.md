@@ -34,7 +34,9 @@ live 关键结论：
 ## 仍待验证（不能声称完成）
 
 1. **NFC 真机双机**：Android ReaderMode 接收 + HCE NDEF 发送代码已落地；无设备，AID 路由/默认应用/分块读取未验证。
-2. **双向好友通道**：公开分享链接只读；账号级文件夹共享 API（`/api2/repos/{id}/dir/shared_items/`）尚未接 UI，也未用第二账号验证。
+2. **双向好友通道**：已接 `/api2/repos/{id}/dir/shared_items/`（`seafile_share_folder_to_user`），
+   名片可填云盘邮箱、共享云盘创建后自动/手动开通 rw；live 已验证 owner 拒绝路径，
+   **成功路径仍需第二真实账号验证**（对方账号能否看到并写入）。
 3. **扫码**：BarcodeDetector 无头下识别不到高密度 ONTOUCH1 截图；已加放大兜底与超时，真机相机/截图未验证。
 4. **手机全量 UI**：真机上的拖拽/动画/无障碍/低端机性能未验收；`mobile_exit` 已补但真机返回键未验证。
 5. **组织真实协作**：成员邀请/云空间链接已通；成员账号加入、权限、GitLab 组织空间未验证。

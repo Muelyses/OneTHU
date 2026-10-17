@@ -44,11 +44,12 @@ try {
   await inputs.nth(1).fill('https://example.com/zhangsan');
   await inputs.nth(2).fill('@zhangsan');
   await inputs.nth(3).fill('13800000000');
+  await inputs.nth(4).fill('2025013332@tsinghua.edu.cn');
   await p.locator('.plg-form-modal textarea').fill('这是简介'.repeat(40));
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(500);
   const card = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.cards.v1')).personal);
-  check(card.name === '张三' && card.website === 'https://example.com/zhangsan' && card.phone === '13800000000', 'personal card fields saved');
+  check(card.name === '张三' && card.website === 'https://example.com/zhangsan' && card.phone === '13800000000' && card.cloudEmail === '2025013332@tsinghua.edu.cn', 'personal card fields saved (incl. cloud email)');
   check(Array.from(card.bio).length === 120, 'bio is clamped to 120 chars for NFC length');
 
   await p.getByRole('button', { name: '放进暂存箱' }).first().click();

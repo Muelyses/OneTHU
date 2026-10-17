@@ -162,6 +162,13 @@ export async function seafileShareRead(link: string, name?: string): Promise<str
   return invoke<string>("seafile_share_read", { link, name: name ?? null });
 }
 
+/** 文件夹共享给云盘账号（双向通道）：permission="r"|"rw"|"admin"。 */
+export async function seafileShareFolderToUser(repoId: string, path: string, email: string, permission = "rw"): Promise<void> {
+  const token = getSeafileToken();
+  if (!token) throw new Error("清华云盘未连接");
+  await invoke("seafile_share_folder_to_user", { token, repoId, path, email, permission });
+}
+
 export async function seafileSearch(repoId: string, query: string): Promise<SeafileEntry[]> {
   if (!cfg) throw new Error("云盘未配置");
   return invoke<SeafileEntry[]>("seafile_search", { token: cfg.token, repoId, query });

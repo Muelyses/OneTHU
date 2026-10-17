@@ -36,7 +36,7 @@ export async function decodeQrFile(file: File): Promise<string | null> {
       canvas.height = h;
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "white";
         ctx.fillRect(0, 0, w, h);
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(bitmap, 0, 0, w, h);

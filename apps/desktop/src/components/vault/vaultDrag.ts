@@ -179,13 +179,42 @@ export function installVaultDragSources(): () => void {
   const onDown = (e: PointerEvent): void => {
     if (e.button !== undefined && e.button !== 0) return;
     if (dragState.active) return;
-    const el = (e.target as Element | null)?.closest<HTMLElement>("[data-vault-catch]");
-    if (!el) return;
-    const raw = el.getAttribute("data-vault-catch");
-    if (!raw) return;
-    let cat: VaultCatch;
-    try { cat = JSON.parse(raw) as VaultCatch; } catch { return; }
-    if (!cat?.title) return;
+    const target = e.target as Element | null;
+    let el = target?.closest<HTMLElement>("[data-vault-catch]") ?? null;
+    let cat: VaultCatch | null = null;
+    if (el) {
+      const raw = el.getAttribute("data-vault-catch");
+      if (raw) {
+        try { cat = JSON.parse(raw) as VaultCatch; } catch { cat = null; }
+      }
+    }
+    /* 兜底：设置行没有逐条挂 data-vault-catch（SettingsRow 不转发属性），
+       但 markSettingsRows 已打 data-set-id；长按即可收进暂存箱，标题用于以后反查。 */
+    if (!cat) {
+      const row = target?.closest<HTMLElement>('[data-set-id^="row-"]') ?? null;
+      if (row) {
+        const title = (row.querySelector<HTMLElement>(".og-settings-row-title,.setting-title")?.textContent ?? "").trim();
+        if (title) {
+          el = row;
+          cat = { type: "payload", title, sub: "设置项", payload: { settingTitle: title }, source: "设置" };
+        }
+      }
+    }
+    /* 兜底：旧协议 data-ctx-atom（全局长按菜单的前身）。 */
+    if (!cat) {
+      const atomEl = target?.closest<HTMLElement>("[data-ctx-atom]") ?? null;
+      const raw = atomEl?.getAttribute("data-ctx-atom");
+      if (atomEl && raw) {
+        try {
+          const a = JSON.parse(raw) as { kind?: string; key?: string; title?: string };
+          if (a?.kind && a?.key) {
+            el = atomEl;
+            cat = { type: "atom", title: a.title || a.kind, atom: { kind: a.kind, key: a.key }, source: "页面元素" };
+          }
+        } catch { /* ignore */ }
+      }
+    }
+    if (!el || !cat?.title) return;
     clear();
     pending = { cat, el, x: e.clientX, y: e.clientY, pointerId: e.pointerId, timer: null, armed: false };
     if (e.pointerType === "mouse") {

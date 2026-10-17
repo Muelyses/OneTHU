@@ -119,6 +119,24 @@ try {
     return d.boxes.find((b) => b.id === d.activeId).items.length;
   });
   check(n2 === fileState.n, 'same file content is deduped by hash (not by name)');
+
+  /* 桌面 OS 文件拖入：全屏提示层 + 松手入箱（合成 DataTransfer） */
+  const osDrop = await p.evaluate(async () => {
+    const dt = new DataTransfer();
+    dt.items.add(new File(['dropped from desktop'], 'os-drop.txt', { type: 'text/plain' }));
+    const ev = (type) => new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: dt });
+    document.dispatchEvent(ev('dragenter'));
+    await new Promise((r) => setTimeout(r, 120));
+    const overlay = Boolean(document.querySelector('.vault-file-overlay'));
+    document.dispatchEvent(ev('dragover'));
+    document.dispatchEvent(ev('drop'));
+    await new Promise((r) => setTimeout(r, 900));
+    const items = JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items);
+    const hit = items.find((i) => i.title === 'os-drop.txt');
+    return { overlay, found: Boolean(hit), hash: hit?.file?.hash };
+  });
+  check(osDrop.overlay, 'dragging OS files shows vault drop overlay');
+  check(osDrop.found && /^[0-9a-f]{64}$/.test(osDrop.hash ?? ''), 'dropped OS file is hashed and stored in vault');
   /* 碰一碰组合：暂存箱口令 + 个人名片一起编码；接收端可导入 */
   await p.evaluate(() => localStorage.setItem('onethu.cards.v1', JSON.stringify({
     v: 1,
@@ -139,6 +157,26 @@ try {
   }, touchCode.trim());
   check(touch.ok && touch.hasVault && touch.hasCard, 'touch code carries vault share code + personal card');
   check(touch.imported.ok && touch.imported.vault === true, 'touch code can be imported by receiver');
+
+  /* 设置行兜底：SettingsRow 没有逐条 data-vault-catch，长按/拖动靠 data-set-id 识别 */
+  await p.getByRole('button', { name: '设置' }).first().click();
+  await p.waitForTimeout(500);
+  const settingRow = p.locator('.og-settings-row[data-set-id^="row-"]:visible').first();
+  check(await settingRow.count() === 1, 'settings rows carry stable data-set-id');
+  const settingTitle = (await settingRow.innerText()).split('\n')[0].trim();
+  const sbox = await settingRow.boundingBox();
+  const beforeSettings = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items).length);
+  await p.mouse.move(sbox.x + sbox.width / 2, sbox.y + 24);
+  await p.mouse.down();
+  await p.mouse.move(sbox.x + sbox.width / 2 + 20, sbox.y + 50, { steps: 5 });
+  await p.waitForTimeout(250);
+  const sdrop = await p.locator('[data-vault-drop]').boundingBox();
+  await p.mouse.move(sdrop.x + sdrop.width / 2, sdrop.y + sdrop.height / 2, { steps: 10 });
+  await p.mouse.up();
+  await p.waitForTimeout(600);
+  await p.keyboard.press('Escape');
+  const afterSettings = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items));
+  check(afterSettings.length === beforeSettings + 1 && afterSettings.some((i) => i.title === settingTitle), 'setting row drags into vault via data-set-id fallback');
 
   check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
 

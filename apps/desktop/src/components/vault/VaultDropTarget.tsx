@@ -2,13 +2,15 @@
  * 常驻「暂存箱」拖放目标：只在拖动开始时出现，避免遮挡底栏/OH 胶囊。
  * 桌面：右下悬浮；手机：底部居中（贴底抽屉之上）。
  */
-import { useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Btn } from "@onethu/gui";
 import { IconIn } from "../Icons.js";
 import { useApp } from "../../state/context.js";
 import { useIsPhone } from "../../state/phoneSheets.js";
-import { activeVault, vaultSnapshot, subscribeVault } from "../../state/vault.js";
+import { activeVault, addToVault, vaultSnapshot, subscribeVault } from "../../state/vault.js";
+import { stageFromFiles } from "../../lib/fileChannel.js";
+import { showToast } from "../../state/toast.js";
 import {
   installVaultDragSources, subscribeVaultDrag, vaultDragSnapshot,
 } from "./vaultDrag.js";
@@ -18,8 +20,52 @@ export function VaultDropTarget(): ReactNode {
   const vault = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
   const isPhone = useIsPhone();
   const { navigate } = useApp();
+  const [fileDrag, setFileDrag] = useState(false);
   useEffect(() => installVaultDragSources(), []);
+  useEffect(() => {
+    const hasFiles = (e: DragEvent): boolean => Array.from(e.dataTransfer?.types ?? []).includes("Files");
+    const onEnter = (e: DragEvent): void => { if (hasFiles(e)) { e.preventDefault(); setFileDrag(true); } };
+    const onOver = (e: DragEvent): void => { if (hasFiles(e)) { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = "copy"; } };
+    const onLeave = (e: DragEvent): void => { if (!e.relatedTarget) setFileDrag(false); };
+    const onDrop = (e: DragEvent): void => {
+      if (!hasFiles(e)) return;
+      e.preventDefault();
+      setFileDrag(false);
+      const files = Array.from(e.dataTransfer?.files ?? []);
+      if (files.length === 0) return;
+      void stageFromFiles(files).then((staged) => {
+        let ok = 0;
+        for (const f of staged) {
+          const r = addToVault({ type: "file", title: f.name, sub: `${f.size} B · ${f.mime}`, file: { name: f.name, size: f.size, mime: f.mime, hash: f.sha256, cloudPath: null, stagedPath: f.localPath }, source: "文件拖入" });
+          if (r.ok) ok++;
+        }
+        showToast(ok ? `已收进暂存箱：${ok} 个文件` : "这些文件已在暂存箱里（按内容指纹去重）");
+      }).catch((err) => showToast(`文件读取失败：${err instanceof Error ? err.message : String(err)}`));
+    };
+    document.addEventListener("dragenter", onEnter);
+    document.addEventListener("dragover", onOver);
+    document.addEventListener("dragleave", onLeave);
+    document.addEventListener("drop", onDrop);
+    return () => {
+      document.removeEventListener("dragenter", onEnter);
+      document.removeEventListener("dragover", onOver);
+      document.removeEventListener("dragleave", onLeave);
+      document.removeEventListener("drop", onDrop);
+    };
+  }, []);
   const box = activeVault();
+  if (fileDrag) {
+    return createPortal(
+      <div className="vault-file-overlay">
+        <div className="vault-file-overlay-box">
+          <IconIn width={28} height={28} />
+          <span>松手收进「{box.name}」</span>
+          <span className="vault-file-overlay-sub">文件会先算内容指纹，同内容自动去重</span>
+        </div>
+      </div>,
+      document.body,
+    );
+  }
   if (!drag.active) {
     /* 手机常驻入口：不挤底栏三槽，浮在底栏上方；桌面不显示（有 OneGO/侧栏入口）。 */
     if (!isPhone) return null;

@@ -45,11 +45,12 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
       else env.toast(r.reason === "duplicate" ? "通讯录里已经有这张名片了" : "这是你自己的名片，已在「我的名片」里");
       return true;
     }
-    const routeId = (it.payload as { routeId?: string } | undefined)?.routeId;
+    const pmeta = it.payload as { routeId?: string; settingTitle?: string } | undefined;
+    const routeId = pmeta?.routeId ?? pmeta?.settingTitle;
     if (routeId) {
       void (async () => {
         const { allSearchRows, goSearchRow } = await import("./searchRows.js");
-        const row = allSearchRows().find((r) => r.id === routeId);
+        const row = allSearchRows().find((r) => r.id === routeId || r.title === routeId);
         if (row) goSearchRow(row);
         else env.toast("这条设置项在当前版本里找不到了");
       })();

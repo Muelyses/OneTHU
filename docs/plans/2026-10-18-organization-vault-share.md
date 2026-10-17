@@ -291,3 +291,12 @@
 - 通讯录联系人增加「通道」：查看留言、留言、传文件、关闭；消息显示是否已写入共享云盘。
 - `tools/friend-channel-browser-test.mjs` 6/6（打开通道、本机留言、提示、列表）。
 - 限制：公开分享链接只读，真正的双向通道需要清华云盘账号级共享 API（尚未接入）。
+
+
+### 12.14 设置行兜底 + 桌面文件拖入（2026-10-18）
+
+- vaultDrag 增加两级识别兜底：`[data-set-id^="row-"]` 设置行（标题 → payload；点开时按标题
+  反查检索行）与旧 `data-ctx-atom`；设置行无需逐条挂 data-vault-catch 也能拖入暂存箱。
+- VaultDropTarget 增加 OS Files 拖入：全屏提示层、松手 stage + SHA-256 + 去重入箱；
+  无其他文件落地点的页面可直接拖文件进应用。
+- vault 回归 34/34（设置行拖动、OS 文件拖入/哈希）；guard/build 通过。

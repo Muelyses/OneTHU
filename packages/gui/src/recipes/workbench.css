@@ -510,3 +510,9 @@ html:root .vault-drop { animation: m-pop var(--dur-2) var(--ease-spring) both; }
   .name-card, .vault-qr { animation: none; }
   .vault-nfc-reading { animation: none; }
 }
+
+/* 桌面 OS 文件拖入：全屏提示层，只在检测到 Files 拖动时出现。 */
+html:root .vault-file-overlay { position: fixed; inset: 0; z-index: var(--og-z-overlay); display: flex; align-items: center; justify-content: center; background: var(--og-scrim); pointer-events: none; }
+.vault-file-overlay-box { display: grid; justify-items: center; gap: var(--og-space-2); padding: var(--og-space-8); border: 1px dashed var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); animation: m-spring-in var(--dur-3) var(--ease-spring) both; }
+.vault-file-overlay-sub { font-size: var(--og-text-micro); color: var(--og-content-2); }
+@media (prefers-reduced-motion: reduce) { .vault-file-overlay-box { animation: none; } }

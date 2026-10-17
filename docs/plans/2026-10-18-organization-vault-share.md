@@ -363,3 +363,12 @@
 - `cloud-ui-live-test` 增加「撤销云分享」按钮点击：share ref 标记 revokedAt、匿名分享链接拒绝、
   分享目录在云盘被递归删除（403/404 视为已删）。
 - 结果 11/11 通过；清理临时目录/分享链接。
+
+
+### 12.23 动效护栏转绿 + 页面方向恢复（2026-10-18）
+
+- 修复 TabHost 丢失 `useNavDirection`/`data-dir`：进二级页/返回顶层重新有方向，`.page-anim` 转场生效。
+- motion-test 从红转绿（142 断言）：正确处理 MD3 变量时长/缓动、OneGUI Modal 单源动效、
+  已删/已迁移的旧类断言（折叠组、nav-indicator、日程 inline 退场等），并更新 Ripple 护栏为“由
+  Ripple.tsx 安装”。
+- vault 39/39、mobile 13/13 回归通过。

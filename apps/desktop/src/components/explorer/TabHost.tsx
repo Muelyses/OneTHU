@@ -34,6 +34,7 @@ import {
   wallpaperSnapshot,
 } from "../../state/wallpaper.js";
 import { WallpaperLibrary } from "./WallpaperLibrary.js";
+import { useNavDirection } from "../../lib/motion.js";
 
 /* ══════════ tab 局部路由上下文 ══════════ */
 
@@ -207,6 +208,8 @@ export function TabHost(): ReactNode {
   const st = useExplorerState();
   const activeId = st.activeId;
   const mounted = useMountedTabs(activeId, st.tabs);
+  const activePage = st.tabs.find((t) => t.id === activeId)?.page ?? "";
+  const navDir = useNavDirection(activePage, isSubPage);
   // Flowing pages share the window scroller, but each tab keeps its own place.
   const scrollPositions = useRef(new Map<string, { x: number; y: number }>());
   const scrollingTab = useRef(activeId);
@@ -302,7 +305,7 @@ export function TabHost(): ReactNode {
             onPointerCancel={clearPress}
           >
             {/* 页内导航时重挂这一层（保留 .page-anim 转场）；切标签页不动这一层 */}
-            <div className="page-anim" key={t.page} data-page={t.page} data-level={isSubPage(t.page) ? "sub" : undefined}>
+            <div className="page-anim" key={t.page} data-page={t.page} data-dir={active ? navDir : undefined} data-level={isSubPage(t.page) ? "sub" : undefined}>
               <TabScope tab={t}>
                 {t.kind === "home" ? (
                   <HomeTab />

@@ -825,6 +825,15 @@ export function McpBody(): ReactNode {
       if (i > 0) env[pair.slice(0, i)] = pair.slice(i + 1);
     }
     const entry: McpServerEntry = { name: f.name?.trim() ?? "", command: f.command?.trim() ?? "", args: parseSpaceList(f.args ?? ""), env };
+    if (!entry.name) {
+      showToast("MCP 服务器名称不能为空：工具全名是 mcp_<名称>_<工具>，没有名称就没法调用。");
+      return;
+    }
+    /* 同名 server → 工具前缀 mcp_<name>_ 撞车：模型侧会出现两个同名函数，调用必错。 */
+    if (list.some((x, i) => i !== idx && x.name.trim() === entry.name)) {
+      showToast(`已有同名 MCP 服务器「${entry.name}」：工具前缀 mcp_${entry.name}_ 会撞车，请换个名称。`);
+      return;
+    }
     const next = list.slice();
     if (idx === -1) next.push(entry);
     else next[idx] = entry;
@@ -847,9 +856,13 @@ export function McpBody(): ReactNode {
       <Text as="p" slot="micro" tone="faint">
         只暴露无需确认的工具（要二次确认的写操作不上墙），仅本机回环、不跨机；改完发一条消息或重开 OH 生效。
       </Text>
-      <Text as="p" slot="micro" tone="faint">
-        下面是**反向**的：让 OH 去连别人的 MCP 服务器 ——
-      </Text>
+      {/* 反向（OH → 外部 MCP）的检索锚点：设置检索/OH ui_navigate 落到「连接外部 MCP 服务器」这一行 */}
+      <div data-set-id="row-连接外部-MCP-服务器">
+        <Text as="h4" slot="subtitle" weight="semibold">连接外部 MCP 服务器</Text>
+        <Text as="p" slot="micro" tone="faint">
+          下面是**反向**的：让 OH 去连别人的 MCP 服务器 ——
+        </Text>
+      </div>
       {list.length === 0 ? (
         <Text as="p" slot="micro" tone="faint">尚未添加。点「添加 MCP 服务器」开始。</Text>
       ) : (

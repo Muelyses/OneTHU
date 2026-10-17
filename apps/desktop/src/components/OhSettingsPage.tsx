@@ -53,6 +53,8 @@ defineSearchRows([
      控件本体在 pages/Plugins.tsx 的 McpSwitchRow（这是「OH 是插件页子页」的既有事实），
      行注册放这里 = OH 家族唯一注册点；target 传行标题，markSettingsRows 会把它打成 row-<slug>。 */
   { id: "oh-mcp-server", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "OH MCP 服务器", aliases: ["MCP 服务器", "本机 MCP", "8787", "外部客户端"], desc: "让本机其它助手连上 OneTHU（默认关闭）" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "OH MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "OH MCP 服务器", fallbackTarget: "模型MCP日志", waitMs: 2000 }); } },
+  /* 反向（OH 当客户端去连别人的 MCP）：管理列表在高级档的「连接外部 MCP 服务器」行。 */
+  { id: "oh-mcp-client", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "连接外部 MCP 服务器", aliases: ["MCP 客户端", "外部 MCP", "添加 MCP 服务器", "MCP 服务器列表", "filesystem MCP", "stdio MCP"], desc: "让 OH 调用外部 MCP server 的工具（增删改在插件页高级档）" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "连接外部 MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "连接外部 MCP 服务器", fallbackTarget: "模型MCP日志", waitMs: 2200 }); } },
 ]);
 
 /* task-22：OH 行级直达的**本地快捷**（三段式的 ②+③）：切档 + 滚到行（找不到行时落档位根）。+

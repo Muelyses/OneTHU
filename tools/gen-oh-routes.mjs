@@ -41,4 +41,4 @@ const table = rows.map((r) => {
 writeFileSync(OUT, JSON.stringify(table, null, 2) + "\n", "utf8");
 const by = (k) => table.filter((x) => x.kind === k).length;
 console.log(`routes.json 生成：${table.length} 行（设置 ${by("settings")} / 插件 ${by("plugins")} / OH ${by("oh")}）→ ${OUT}`);
-if (SEARCH_ROW_FILES.length !== 8) throw new Error("SEARCH_ROW_FILES 清单变了？同步 coverage/landing 护栏");
+if (SEARCH_ROW_FILES.length !== 9) throw new Error("SEARCH_ROW_FILES 清单变了？同步 coverage/landing 护栏");

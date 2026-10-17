@@ -153,6 +153,13 @@ html:root :is(.hs-more-head, .ex-sheet-head) { font-size: var(--og-text-title); 
 /* Paper surfaces remain readable with wallpaper and with glass opacity enabled. */
 html:root .has-shell-wallpaper .workbench-intro { padding: var(--og-space-5); border-radius: var(--og-radius-card); background: var(--og-menu-fill); }
 html:root .has-shell-wallpaper .workbench-board-head { padding: var(--og-space-4); border-radius: var(--og-radius-card); background: var(--og-menu-fill); margin-bottom: var(--og-space-4); }
+/* The 首页 title plate is a surface like the topbar/cards: on the glass skin it must
+   transmit the wallpaper + tint instead of staying an opaque white sheet. */
+html:root[data-og-skin="glass"] .has-shell-wallpaper .workbench-board-head {
+  background: var(--og-fill-surface);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+  backdrop-filter: var(--og-surface-blur);
+}
 
 html:root.is-phone .workbench-wordmark { display: none; }
 html:root.is-phone #ex-bbar-tabs-btn > .ex-bbar-label { display: inline; }
@@ -342,14 +349,9 @@ html:root .free-item .hw-card { background: var(--og-surface-2); border: 1px sol
 html:root .free-item .wg-card:has(> .homework-carousel-widget) { display: flex; flex-direction: column; }
 html:root .free-item .wg-card > .homework-carousel-widget { flex: 1; }
 html:root .home-free .freeboard { margin-bottom: var(--og-board-tool-clearance); }
-html:root .freeboard-wrap:not(.is-layout-editing) .freeboard { background-image: none; }
-html:root .is-layout-editing .free-item { outline: 1px dashed var(--og-line-2); outline-offset: 3px; }
-html:root .free-item > .free-drag-handle { position: absolute; top: 0; left: 0; width: 100%; height: 28px; min-height: 0; padding: 0 var(--og-space-3); border: 0; border-radius: var(--og-radius-card) var(--og-radius-card) 0 0; background: var(--og-surface-4); color: var(--og-content-2); display: flex; align-items: center; gap: var(--og-space-2); font-size: var(--og-text-label); cursor: grab; touch-action: none; z-index: 3; overflow: hidden; }
-.free-drag-handle > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-html:root .free-item.is-live > .free-drag-handle { cursor: grabbing; }
+html:root .freeboard-wrap .freeboard { background-image: none; }
 html:root .free-item.is-selected { z-index: 100; }
 html:root .free-toolbar { top: 30px; bottom: auto; left: var(--og-space-2); right: var(--og-space-2); width: max-content; max-width: calc(100% - 16px); flex-wrap: wrap; z-index: 5; background: var(--og-surface-overlay); border: 1px solid var(--og-line-2); box-shadow: var(--og-elev-menu); }
-html:root .is-layout-editing .free-handle { opacity: 1; touch-action: none; z-index: 6; }
 html:root .board-viewport-tools { position: fixed; z-index: var(--og-z-board-tools); bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--og-space-1); padding: var(--og-space-2); max-width: calc(100vw - 24px); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); }
 .board-tool-divider { align-self: stretch; width: 1px; background: var(--og-line-2); margin: var(--og-space-1); }
 html:root .board-viewport-tools .free-pen-panel { position: absolute; bottom: calc(100% + 12px); right: 0; background: var(--og-surface-overlay); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-control); padding: var(--og-space-2); display: flex; width: max-content; }
@@ -375,10 +377,40 @@ html:root .fh-sw { left: calc(-1 * var(--og-space-3)); bottom: calc(-1 * var(--o
 html:root .fh-se { right: calc(-1 * var(--og-space-3)); left: auto; bottom: calc(-1 * var(--og-space-3)); top: auto; cursor: nwse-resize; }
 html:root .fh-e { right: calc(-1 * var(--og-space-3)); left: auto; top: calc(50% - var(--og-space-3)); cursor: ew-resize; }
 html:root .fh-s { bottom: calc(-1 * var(--og-space-3)); top: auto; left: calc(50% - var(--og-space-3)); cursor: ns-resize; }
-html:root .is-layout-editing .free-item > :is(.wg-card, .wg-title, .free-note, .free-note-editor) { padding-top: var(--og-space-8); }
 
 html:root .free-toolbar button { width: auto; min-width: var(--og-space-7); padding-inline: var(--og-space-2); white-space: nowrap; flex: none; }
 html:root .free-item .wg-card > .workbench-widget-title { flex: 0 0 auto; }
 /* Editing sheets must cover persistent navigation; their confirm action stays clickable. */
 html:root .add-drawer-mask { z-index: var(--og-z-overlay); background: var(--og-scrim); opacity: 1; }
 html:root .add-drawer { z-index: var(--og-z-modal); background: var(--og-fill-overlay); color: var(--og-content-1); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+
+/* The canvas fits the viewport at 100%; only deliberate zoom creates a wider world. */
+html:root .free-item.is-selected .free-handle { opacity: 1; touch-action: none; }
+html:root .free-item.is-selected > .free-handle { padding: 0; }
+html:root.is-phone .board-viewport-tools { gap: 0; padding: var(--og-space-1); }
+html:root.is-phone .board-viewport-tools .og-iconbtn { flex-shrink: 0; }
+html:root[data-og-skin="glass"] :is(.free-item:not(.is-note):not([data-widget="text"]), .og-surface:not(.og-surface--plain), .explorer-topbar, .ex-bbar, .ex-rail, .board-viewport-tools, .settings-panel, .dock-panel) { box-shadow: var(--og-material-shadow); }
+html:root[data-og-skin="glass"] .free-item .og-surface { box-shadow: none; }
+html:root[data-og-skin="glass"] .free-item[data-widget="text"] { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+html:root.is-phone .board-viewport-tools { flex-wrap: wrap; justify-content: center; width: max-content; }
+
+/* Capsule press feedback is shared by pointer and keyboard activation. */
+html:root .ex-bbar-center .ohx-capsule { transition: transform 140ms ease, background var(--og-dur-2), border-color var(--og-dur-2); }
+html:root .ex-bbar-center .ohx-capsule.is-press:not(.is-hold) { transform: scale(.97); }
+html:root .ex-bbar-center .ohx-capsule.is-rebound { animation: og-capsule-rebound 360ms cubic-bezier(.22,1,.36,1); }
+@keyframes og-capsule-rebound { 0% { transform: scale(.97); } 45% { transform: scale(1.015); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  html:root .ex-bbar-center .ohx-capsule { transition: none; }
+  html:root .ex-bbar-center .ohx-capsule.is-press:not(.is-hold) { transform: none; }
+  html:root .ex-bbar-center .ohx-capsule.is-rebound { animation: none; }
+}
+html:root[data-og-motion="reduced"] .ex-bbar-center .ohx-capsule { transition: none; animation: none; transform: none; }
+/* Canvas panels grow in document flow. They must chain wheel/touch scrolling
+   to the document when their own scroll range is exhausted (often zero). */
+html:root .explorer-panel:is(.is-home-canvas, .is-onepage-canvas),
+html:root .freeboard { overscroll-behavior: auto; }
+
+/* Add-widget picker (right-click blank and the ＋ button share it): the search field
+   keeps its control height and the preview grid owns the remaining scroll area. */
+html:root .add-overview > .og-input { flex: 0 0 auto; }
+html:root .add-overview .add-grid { flex: 1 1 auto; min-height: 0; }

@@ -95,6 +95,8 @@
   --og-fill-surface: var(--og-surface-1);
   --og-fill-overlay: var(--og-surface-overlay);
   --og-fill-chip: var(--og-surface-3);
+  --og-material-rim: transparent;
+  --og-material-shadow: var(--og-elev-1);
   --og-surface-tint: none;
   --og-surface-blur: none;
   --og-overlay-tint: none;

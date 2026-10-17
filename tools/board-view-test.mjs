@@ -99,7 +99,7 @@ console.log("④ 接线：画布不裁切、盒子撑起来、控件走 OneGUI")
   const src = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
   const css = readFileSync("apps/desktop/src/styles/explorer-home.css", "utf8");
   ok(/freeboard-world/.test(src), "画布里有世界层（.freeboard-world）");
-  ok(/boxSize\(items, view\.z/.test(src), "盒子尺寸由 boxSize 算（不裁切不变量的唯一实现处）");
+  ok(/boxSize\(items, displayScale/.test(src), "盒子尺寸由 boxSize 算（不裁切不变量的唯一实现处）");
   ok(!/fitZoom\(viewportRef/.test(src) || !/首次打开/.test(src), "不再有首次打开自动适配：盒子永远盖住内容 → 内容都够得着，把高板缩成 40% 反而吓人");
   ok(/el\.style\.minWidth = box\.w/.test(src) && /el\.style\.minHeight = box\.h/.test(src), "盒子的最小尺寸真的写进 DOM（宽高都要，横向也别切）");
   ok(!/el\.style\.minHeight = bottom/.test(src), "删掉旧模型「画布高度跟着内容底边长」");

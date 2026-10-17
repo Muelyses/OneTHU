@@ -13,7 +13,7 @@
     "./onethu.css": "./src/recipes/onethu.css"
   },
   "scripts": {
-    "build": "echo nothing to build (source-only package)",
+    "build": "echo 'nothing to build (source-only package)'",
     "typecheck": "echo covered by @onethu/desktop tsc"
   },
   "peerDependencies": {

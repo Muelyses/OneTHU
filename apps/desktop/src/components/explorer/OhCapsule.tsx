@@ -22,7 +22,7 @@ import { Badge, Grow, Input } from "@onethu/gui";
  *  - 按住上划 >110px → 松手发 requestOhPanel("oh")：ChatDock 视语音中的面板命令为取消；
  *  - 展开态点击输入框本体不触发手势（打字、选词不误关窗）。
  */
-import { useRef, useState, useSyncExternalStore, type ReactNode, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { HarnessMark } from "../HarnessMark.js";
 import { useOnePageStar } from "../Collect.js";
 import { atomRefOfTab, StarGlyph } from "./TabStrip.js";
@@ -56,6 +56,17 @@ export function OhCapsule(): React.ReactNode {
   const smartText = islandText && islandText !== ISLAND_DEFAULT_TEXT ? islandText : null;
   const idleText = smartText ?? PLACEHOLDER;
   const [pressing, setPressing] = useState(false);
+  const [rebounding, setRebounding] = useState(false);
+  const reboundTimer = useRef<number | null>(null);
+  const bounce = (): void => {
+    if (reboundTimer.current != null) window.clearTimeout(reboundTimer.current);
+    setRebounding(true);
+    reboundTimer.current = window.setTimeout(() => setRebounding(false), 360);
+  };
+  useEffect(() => () => {
+    if (reboundTimer.current != null) window.clearTimeout(reboundTimer.current);
+    if (holdTimer.current != null) window.clearTimeout(holdTimer.current);
+  }, []);
   const [held, setHeld] = useState(false); // 已跨过阈值（收音中，手还按着）
   const holdTimer = useRef<number | null>(null);
   const startY = useRef<number | null>(null);
@@ -78,6 +89,7 @@ export function OhCapsule(): React.ReactNode {
     if (isOpen && (e.target as HTMLElement).closest(".ohx-input")) return;
     startY.current = e.clientY;
     pulled.current = false;
+    setRebounding(false);
     setPressing(true);
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -103,6 +115,7 @@ export function OhCapsule(): React.ReactNode {
     const hadTimer = holdTimer.current != null;
     reset();
     if (hadTimer) {
+      bounce();
       // 未到阈值＝单击：按默认动作开窗；已开着且就在目标模式时 ChatDock 会收起（再点一下=收）
       requestOhPanel(prefs.capsuleTap);
       return;
@@ -131,6 +144,8 @@ export function OhCapsule(): React.ReactNode {
     if (e.target instanceof HTMLInputElement) return; // 输入框自己的键盘事件不归手势
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
+      if (e.repeat) return;
+      bounce();
       requestOhPanel(prefs.capsuleTap);
     }
   };
@@ -152,6 +167,7 @@ export function OhCapsule(): React.ReactNode {
       className={
         "ohx-capsule" +
         (pressing ? " is-press" : "") +
+        (rebounding ? " is-rebound" : "") +
         (held || voiceOn ? " is-hold is-voice" : "") +
         (isOpen ? " is-open" : "")
       }

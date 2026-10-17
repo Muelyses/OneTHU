@@ -45,7 +45,7 @@ function hwTags(h: Homework): Array<{ text: string; cls: string }> {
 /** 卡片纵向位移（px）：0=居中；±1=上/下露出（STEP > 半卡高，保下方卡露出标题区）；拖拽时叠加 dragDelta 实时跟手 */
 const STEP_DEFAULT = 170;
 
-export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onPick, onFront }: { items: Homework[]; courseNameOf: (id: string) => string; courseLabelOf: (h: Homework) => string; semesterId?: string; onPick?: (h: Homework) => void; onFront?: (h: Homework) => void }): ReactNode {
+export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onPick, onFront, captureWheel = true }: { items: Homework[]; courseNameOf: (id: string) => string; courseLabelOf: (h: Homework) => string; semesterId?: string; onPick?: (h: Homework) => void; onFront?: (h: Homework) => void; captureWheel?: boolean }): ReactNode {
   const { navigate } = useApp();
   // 位置真值放 ref，setPos 只做渲染镜像：逐帧补间时避免闭包读旧值
   const posRef = useRef(0);
@@ -147,7 +147,7 @@ export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onP
   // 结果「滚轮翻卡」会同时带动外层滚动。卡流自己吃掉滚轮，一格一项。
   const wheelRef = useRef<(e: WheelEvent) => void>(() => undefined);
   wheelRef.current = (e: WheelEvent): void => {
-    if (n === 0) return;
+    if (!captureWheel || n === 0 || e.ctrlKey || e.metaKey) return;
     const now = performance.now();
     e.preventDefault();
     if (now < wheelLock.current) return; // 补间窗口内不再叠加

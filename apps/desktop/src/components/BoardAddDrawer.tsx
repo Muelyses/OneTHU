@@ -1,4 +1,4 @@
-import { Btn } from "@onethu/gui";
+import { Btn, SearchField } from "@onethu/gui";
 /**
  * 添加组件抽屉（霖 2026-10-11 重做；尺寸档位版）。
  *
@@ -50,10 +50,19 @@ function WidgetPreview({ def, renderer, scale }: { def: WidgetDef; renderer?: Wi
   );
 }
 
+/** 目录之外的特殊组件（文件夹 / OnePage 钉板），与目录组件同屏同搜索。 */
+export interface BoardAddExtra {
+  id: string;
+  title: string;
+  description: string;
+  pick: () => void;
+}
+
 export function BoardAddDrawer({
   open,
   defs,
   renderers,
+  extras = [],
   mode = "add",
   target = null,
   onAdd,
@@ -63,6 +72,8 @@ export function BoardAddDrawer({
   open: boolean;
   defs: readonly WidgetDef[];
   renderers: Record<string, WidgetRenderer>;
+  /** 目录外的特殊组件（文件夹 / OnePage 入口）：同一张网格、同一个搜索框。 */
+  extras?: readonly BoardAddExtra[];
   /** add = 添加组件；resize = 「改变大小」复用本抽屉。 */
   mode?: "add" | "resize";
   /** resize 模式的目标：组件目录 id 与它当前的尺寸（据此自动选中档位）。 */
@@ -74,6 +85,8 @@ export function BoardAddDrawer({
   const [shown, setShown] = useState(open);
   const [leaving, setLeaving] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  /** 组件搜索（右键空白与「＋」共用本抽屉，一视同仁）。 */
+  const [query, setQuery] = useState("");
   /** 展开态选中的档位下标（滑动或点选都会更新）。 */
   const [tierIndex, setTierIndex] = useState(0);
   const [dragY, setDragY] = useState(0);
@@ -90,6 +103,7 @@ export function BoardAddDrawer({
   const headRef = useRef<HTMLDivElement | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const collapse = (): void => {
     const head = headRef.current;
     const box = boxRef.current;
@@ -113,7 +127,21 @@ export function BoardAddDrawer({
       return;
     }
     setExpanded(null);
+    setQuery("");
   }, [open, mode, targetId, targetW, targetH, defs]);
+
+  /* 预览卡里「网络学堂搜索」的 autoFocus 输入框会在挂载瞬间把网格滚到它那里
+     （然后才被上面的失焦兜住）——打开总览时把滚动位置拨回顶部。 */
+  useEffect(() => {
+    if (!open || mode !== "add") return;
+    const reset = (): void => { if (gridRef.current) gridRef.current.scrollTop = 0; };
+    const raf = requestAnimationFrame(reset);
+    const t = window.setTimeout(reset, 180);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(t);
+    };
+  }, [open, mode]);
 
   /* 返回分层：先登记总览（底层），再登记展开态（上层）——后登记的在上，返回先命中它。
      resize 模式没有总览：整层返回都直接收回抽屉，否则会退到一张无关的组件网格。 */
@@ -260,6 +288,11 @@ export function BoardAddDrawer({
   const def = expanded ? defs.find((d) => d.id === expanded) ?? null : null;
   const tiers = def ? sizeTiersOf(def) : [];
   const chosen = tierAt(tiers, tierIndex);
+  /* 目录组件与特殊组件同一套搜索：标题 / id / 说明都能命中。 */
+  const q = query.trim().toLowerCase();
+  const matches = (s: string): boolean => !q || s.toLowerCase().includes(q);
+  const shownDefs = defs.filter((d) => matches(d.title + " " + d.id + " " + d.description));
+  const shownExtras = extras.filter((x) => matches(x.title + " " + x.description));
   /** 确认（添加 / 修改大小）：指针路径与 click 路径共用，400ms 内只生效一次。 */
   const activate = (fromPointer: boolean): void => {
     if (!def || firedRef.current) return;
@@ -348,7 +381,7 @@ export function BoardAddDrawer({
                 <div className="add-detail-preview">
                   <WidgetPreview def={def} renderer={renderers[def.id]} scale={1} />
                 </div>
-                <span className="add-detail-hint">这个组件保留自由调整大小，添加后可在编辑态拖动四边把手。</span>
+                <span className="add-detail-hint">这个组件保留自由调整大小；添加后选中它，拖动角点调整。</span>
               </div>
             )}
           </div>
@@ -383,8 +416,9 @@ export function BoardAddDrawer({
             <span className="add-overview-title">添加组件</span>
             <Btn variant="outline" onClick={onClose}>关闭</Btn>
           </div>
-          <div className="add-grid">
-            {defs.map((d) => (
+          <SearchField value={query} onChange={setQuery} placeholder="搜索组件" aria-label="搜索组件" />
+          <div className="add-grid" ref={gridRef}>
+            {shownDefs.map((d) => (
               <button
                 key={d.id}
                 type="button"
@@ -406,6 +440,16 @@ export function BoardAddDrawer({
               </button>
             ))}
           </div>
+          {shownExtras.length ? (
+            <div className="free-add-list">
+              {shownExtras.map((x) => (
+                <Btn key={x.id} variant="ghost" size="sm" className="hs-detail-row" data-widget-option={x.id} titleAttr={x.description} onClick={x.pick}>
+                  {x.title}
+                </Btn>
+              ))}
+            </div>
+          ) : null}
+          {!shownDefs.length && !shownExtras.length ? <div className="hs-op-hint">没有找到组件</div> : null}
         </div>
       )}
       </div>

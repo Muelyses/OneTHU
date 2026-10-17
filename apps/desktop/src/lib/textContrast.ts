@@ -34,6 +34,7 @@
  *  I. 变更点**定向扫描**：全树扫会被 NODE_BUDGET 截断，后追加的大面板（设置页那一整块）
  *     在 4000 节点之后 → 整块没人管。改成按 MutationObserver 的 addedNodes 扫对应子树。
  */
+import { renderedColor } from "./textContrastColor.js";
 import { builtinCss, displayRef, subscribeWallpaper, wallpaperSnapshot } from "../state/wallpaper.js";
 
 /** Canvas APIs need a resolved color; CSS roles remain the single palette source. */
@@ -256,7 +257,7 @@ function wallRgb(rect: DOMRect): Rgb {
   );
 }
 
-const rgbaOne = /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)/;
+
 
 function parseLayers(el: HTMLElement): Array<{ a: number; rgb: Rgb }> {
   const layers: Array<{ a: number; rgb: Rgb }> = [];
@@ -269,7 +270,7 @@ function parseLayers(el: HTMLElement): Array<{ a: number; rgb: Rgb }> {
     collect(cs.backgroundColor);
     const bi = cs.backgroundImage;
     if (bi && bi !== "none") {
-      for (const m of bi.matchAll(/rgba?\([^)]*\)/g)) collect(m[0]);
+      for (const m of bi.matchAll(/(?:rgba?|color)\([^)]*\)/g)) collect(m[0]);
       // hex 停靠点此前被整片漏掉（gel token 的 tint 渐变里就有）
       for (const m of bi.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) collect(m[0]);
     }
@@ -277,23 +278,8 @@ function parseLayers(el: HTMLElement): Array<{ a: number; rgb: Rgb }> {
   }
   return layers;
   function collect(raw: string): void {
-    if (!raw || raw === "none" || raw === "transparent") return;
-    if (/^#[0-9a-fA-F]{3,8}$/.test(raw)) {
-      const hex = raw.slice(1);
-      const full = hex.length <= 4 ? hex.split("").map((c) => c + c).join("") : hex;
-      const a = full.length >= 8 ? parseInt(full.slice(6, 8), 16) / 255 : 1;
-      if (!a) return;
-      layers.push({
-        a,
-        rgb: [parseInt(full.slice(0, 2), 16), parseInt(full.slice(2, 4), 16), parseInt(full.slice(4, 6), 16)],
-      });
-      return;
-    }
-    const m = rgbaOne.exec(raw);
-    if (!m) return;
-    const a = m[4] != null ? Number(m[4]) : 1;
-    if (!a) return;
-    layers.push({ a, rgb: [Number(m[1]), Number(m[2]), Number(m[3])] });
+    const parsed = renderedColor(raw);
+    if (parsed && parsed.a > 0) layers.push(parsed);
   }
 }
 
@@ -330,8 +316,7 @@ function hasOwnText(el: HTMLElement): boolean {
 }
 
 function colorRgb(raw: string): Rgb | null {
-  const m = (raw.match(/[\d.]+/g) ?? []).map(Number);
-  return m.length >= 3 ? [m[0] as number, m[1] as number, m[2] as number] : null;
+  return renderedColor(raw)?.rgb ?? null;
 }
 
 function inViewport(rect: DOMRect): boolean {
@@ -409,6 +394,12 @@ function settleIcon(el: HTMLElement, mode: Mode = "first"): void {
 }
 
 function settleTarget(el: HTMLElement, mode: Mode): void {
+  // These controls own an atomic foreground/background pair for each state.
+  // Locking an inactive label's ink would override its selected state's CSS.
+  if (el.closest(".og-segment, .segmented, .og-btn--solid, .btn-primary")) {
+    clearLock(el);
+    return;
+  }
   if (isIconHost(el)) settleIcon(el, mode);
   else settle(el, mode);
 }
@@ -563,9 +554,10 @@ export function installTextContrast(): void {
     childList: true,
     subtree: true,
     attributes: true,                       // 只管环境属性，不监听 style（否则自触发死循环）
-    attributeFilter: ["data-scheme", "data-glass", "data-theme", "data-wallpaper-lum"],
+    attributeFilter: ["data-scheme", "data-glass", "data-theme", "data-wallpaper-lum", "data-og-skin", "data-og-skin-level", "data-og-scheme", "data-dynamic"],
   });
   window.addEventListener("resize", () => reapplyAll());
+  window.addEventListener("onethu:dynamic-palette", reapplyAll);
   // 视频壁纸的挂载/起播可能晚于引擎：下一拍 paintVideoFrame 会成功，drift 自然补上
   window.setInterval(driftTick, VIDEO_TICK_MS);
   scanNew();

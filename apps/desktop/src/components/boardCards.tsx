@@ -526,7 +526,7 @@ function HomeworkCard(): ReactNode {
   return (
     <div className="homework-carousel-widget">
       {!dataReady ? <div className="wg-card-empty">正在同步待办…</div> : rows.length ? (
-        <HwCarousel items={rows} courseNameOf={courseName}
+        <HwCarousel captureWheel={false} items={rows} courseNameOf={courseName}
           courseLabelOf={h => hwCourseLabel(h, names, extHwSourceName)} semesterId={data?.semester.id} />
       ) : (
         <div className="homework-clear"><span>✓</span><strong>今天，轻一点。</strong><p>暂时没有待完成的作业</p></div>

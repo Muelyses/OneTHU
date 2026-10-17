@@ -95,7 +95,7 @@ const pageR = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8");
 /* ⑧ 添加组件面板（P2 入口：页面是 .tsx → 静态判定） */
 const pageA = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8");
 const drawerSrc = readFileSync("apps/desktop/src/components/BoardAddDrawer.tsx", "utf8");
-ok(/defs\.map\(\(d\) =>/.test(drawerSrc), "抽屉总览没有遍历组件目录（等于自造一份清单）");
+ok(/(?:defs|shownDefs)\.map\(\(d\) =>/.test(drawerSrc), "抽屉总览没有遍历组件目录（等于自造一份清单）");
 ok(/add-detail-desc">\{def\.description\}/.test(drawerSrc), "展开态没有展示组件描述（用户不知道加的是什么）");
 ok(/data-widget-option=\{d\.id\}/.test(drawerSrc), "抽屉卡片缺少稳定的测试标记");
 /* ⑨ 多收藏夹操作（P2 §7.9） */

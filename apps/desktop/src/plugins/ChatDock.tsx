@@ -2408,6 +2408,7 @@ export function ChatDock(): ReactNode {
               </Btn>
             </div>
             <div className="dock-ops" style={matOps}>
+              {mode === "oh" ? <>
               {/* 创造模式（2026-10-13）：图标+文字开关钮（用户拍板：不能只是一颗星，旁边要写字）。
                   开=OG brand tone 描边点亮；引擎下轮对话收到 creativeMode=true，系统提示词追加「主动创造」段 */}
               <Btn
@@ -2449,6 +2450,7 @@ export function ChatDock(): ReactNode {
                   onContextMenu={(e) => { e.preventDefault(); openVoiceSettings(); }}
                 />
               ) : null}
+              </> : null}
               <IconBtn label="收起" variant="outline" size="sm" titleAttr="收起" icon={<IconX />} onClick={toggle} />
             </div>
           </div>

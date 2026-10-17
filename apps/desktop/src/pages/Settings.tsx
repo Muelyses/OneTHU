@@ -923,9 +923,7 @@ function AppearanceSection(): ReactNode {
           <SettingsRow title="白天主题" control={<Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
           <SettingsRow title="黑夜主题" control={<Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
         </>
-      ) : (
-        <OGText slot="label" tone="faint">想昼夜自动切换就打开上面的开关；单独换主题点上面的「主题」。</OGText>
-      )}
+      ) : null}
       <SettingsRow
         title="跟随系统取色"
         sub={

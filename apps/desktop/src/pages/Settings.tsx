@@ -19,6 +19,7 @@ import { ExtHwSettingsSection } from "../components/ExtHwSettingsSection.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
+import { NameCardSection } from "../components/NameCardSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { showToast } from "../state/toast.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -401,6 +402,9 @@ export function SettingsPage() {
         />
       </SettingsList>
 
+
+      <SectionHead title="我的 OneTHU 名片" />
+      <NameCardSection />
 
       <SectionHead title="云同步" />
       <Card>

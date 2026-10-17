@@ -480,3 +480,13 @@ html.is-phone .vault-dock { display: inline-flex; }
 html.is-phone .vault-dock .og-btn { box-shadow: var(--og-elev-menu); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); }
 .vault-dock-label { font-size: var(--og-text-micro); color: var(--og-content-2); }
 .vault-dock-count { min-width: var(--og-space-4); padding: 0 var(--og-space-1); border-radius: var(--og-radius-full); background: var(--og-fill-chip); color: var(--og-content-1); font-size: var(--og-text-micro); text-align: center; }
+
+/* 我的 OneTHU 名片：头像 + 资料 + 组织/通讯录列表（只用令牌，不写私有 chrome）。 */
+.name-card { display: grid; gap: var(--og-space-3); }
+.name-card-head { display: flex; align-items: center; gap: var(--og-space-3); }
+.name-card-avatar { width: var(--og-space-10); height: var(--og-space-10); flex: none; border-radius: var(--og-radius-full); object-fit: cover; background: var(--og-surface-2); }
+.name-card-avatar-empty { display: inline-flex; align-items: center; justify-content: center; color: var(--og-content-2); font-size: var(--og-text-title); }
+.name-card-id { display: grid; gap: var(--og-space-1); min-width: 0; }
+.name-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-1); }
+.name-card-actions .og-btn { padding-inline: var(--og-space-2); }
+.name-card-contacts { display: grid; gap: var(--og-space-2); }

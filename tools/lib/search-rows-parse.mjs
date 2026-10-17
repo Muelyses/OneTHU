@@ -15,6 +15,7 @@ export const SEARCH_ROW_FILES = [
   "apps/desktop/src/components/OverlaySettingsSection.tsx",
   "apps/desktop/src/components/ImSettingsSection.tsx",
   "apps/desktop/src/components/WidgetSettingsSection.tsx",
+  "apps/desktop/src/components/NameCardSection.tsx",
   "apps/desktop/src/pages/Settings.tsx",
   "apps/desktop/src/pages/Plugins.tsx",
 ];

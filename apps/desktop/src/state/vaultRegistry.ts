@@ -6,6 +6,7 @@
  */
 import type { VaultItem } from "./vault.js";
 import { resolveAtom } from "./atoms.js";
+import { addContact } from "./nameCard.js";
 
 export interface VaultOpenEnv {
   navigate: (page: string, params?: Record<string, unknown>) => void;
@@ -37,6 +38,13 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
     return true;
   }
   if (it.type === "payload") {
+    const p = it.payload as { kind?: string; card?: Record<string, unknown>; org?: boolean } | undefined;
+    if (p?.kind === "namecard" && p.card) {
+      const r = addContact(p.org ? "organization" : "personal", p.card as never, it.sub ?? "");
+      if (r.ok) env.toast("名片已加入通讯录");
+      else env.toast(r.reason === "duplicate" ? "通讯录里已经有这张名片了" : "这是你自己的名片，已在「我的名片」里");
+      return true;
+    }
     const routeId = (it.payload as { routeId?: string } | undefined)?.routeId;
     if (routeId) {
       void (async () => {

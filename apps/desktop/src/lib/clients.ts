@@ -646,6 +646,13 @@ export async function logout(): Promise<void> {
   // 体育系统 token 与会话解耦但跟随登出清空（防串账号）
   const { venueLogout } = await import("./venue.js");
   venueLogout();
+  // 云盘 token 跟随登出清空：共享设备换账号后不能继续读写上一个账号的云盘（强制云盘口径）。
+  try {
+    const { clearSeafileToken } = await import("../state/seafile.js");
+    await clearSeafileToken();
+  } catch {
+    /* 云盘未初始化/已清空 */
+  }
   // R10：图书馆静态 token 同步清空（防串账号/防旧 token 撞新会话）
   info.resetStaticSessionCaches();
   // lib 链登出（webvpn LOGOUT + 共享 jar 清空）

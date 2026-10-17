@@ -23,7 +23,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useApp } from "../state/context.js";
 import { openExternal } from "./info/openExternal.js";
 import {
-  ensureSeafileLoaded, clearSeafileToken, getSeafileToken,
+  ensureSeafileLoaded, getSeafileToken,
   refreshSeafileAccount, refreshRepos, useSeafile, useSeafileDir,
   seafileDownload, seafileShare, seafileSearch, refreshDir,
   type SeafileEntry, type SeafileRepo,
@@ -611,16 +611,7 @@ export default function CloudPage(): ReactNode {
           </Btn>
           <Btn variant="outline" disabled={busy} icon={<IconRefresh size="sm" />} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}>刷新
           </Btn>
-          <Btn variant="outline" icon={<IconExternal size="sm" />} onClick={async () => {
-              const ok = await confirmDanger(
-                "断开清华云盘？\n\n⚠️ 几乎所有高级与智能功能都依赖云盘，断开后将失去：\n· 跨设备记忆与主对话同步（AI 记忆只留本机）\n· IM 附件转存云盘（微信/飞书收文件仅可查看）\n· 云盘页浏览/下载与文件归档\n· 记忆库与对话历史的多端漫游\n\n确定要断开吗？（随时可在云盘页一键重连）",
-                { title: "断开云盘", confirmText: "确认断开" },
-              );
-              if (!ok) return;
-              await clearSeafileToken();
-              showToast("已断开云盘（记忆/附件转为本地模式，随时可重连）");
-            }}>断开
-          </Btn>
+          <Text as="span" slot="micro" tone="faint">云盘为必需组件，本版本起不再提供断开入口</Text>
         </Inline>
       </Inline>
       {account && (

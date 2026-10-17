@@ -58,6 +58,7 @@ export function VaultPage(): ReactNode {
   const [busy, setBusy] = useState(false);
   const [fileHot, setFileHot] = useState(false);
   const [cloudReady, setCloudReady] = useState(false);
+  const [cloudChecked, setCloudChecked] = useState(false);
   const [shareInfo, setShareInfo] = useState<VaultSharePayload | null>(null);
   const [touchCode, setTouchCode] = useState("");
 
@@ -66,7 +67,7 @@ export function VaultPage(): ReactNode {
     setCode(last);
     setShareInfo(last ? decodeShare(last).payload ?? null : null);
   }, [box.id]);
-  useEffect(() => { void installVaultCloudAdapter().then(setCloudReady); }, []);
+  useEffect(() => { void installVaultCloudAdapter().then((ok) => { setCloudReady(ok); setCloudChecked(true); }); }, []);
 
   const addStaged = useCallback((files: StagedFile[]): void => {
     let ok = 0;
@@ -171,6 +172,15 @@ export function VaultPage(): ReactNode {
   return (
     <>
       <PageHead title="暂存箱" meta="任何东西都能先放这里：长按/拖动元素进来，或从搜索结果拖入" />
+      {cloudChecked && !cloudReady ? (
+        <Card>
+          <div className="vault-actions">
+            <Text slot="label">本版本要求连接清华云盘</Text>
+            <Btn variant="solid" tone="brand" size="sm" onClick={() => navigate("cloud")}>去连接云盘</Btn>
+          </div>
+          <Text slot="micro" tone="faint">文件与分享口令依赖云盘；未连接时暂存箱只保留本地引用，云分享不可用。</Text>
+        </Card>
+      ) : null}
       <Card>
         <div className="vault-toolbar">
           <Segment

@@ -179,3 +179,11 @@
   写入 board-item 引用；`tools/board-edit-test.mjs` 增加护栏。
 - 仍未做：真实 NFC 原生（HCE+Reader）、通讯录好友共享云盘、组织云盘空间/GitLab 组织创建、
   名片/NFC/暂存箱动画、手机统一手势竞技场、ONV2/引用计数 GC。
+
+
+### 12.1 强制云盘第一批（2026-10-18）
+
+- 云盘页移除「断开」入口，明确「云盘为必需组件」；不再提供断连按钮。
+- 登出时清空云盘 token（`lib/clients.ts logout` 动态导入 `clearSeafileToken`），防共享设备换账号串数据。
+- 暂存箱未连接云盘时显示「本版本要求连接清华云盘」横幅 + 去连接入口；本地引用仍可读，云分享不可用。
+- 回归：vault 29/29、namecard 7/7、org 8/8；guard/docs 通过。

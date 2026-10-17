@@ -445,7 +445,8 @@ pub async fn seafile_share(
 
 /// 从分享链接里取出 share token（形如 https://cloud.tsinghua.edu.cn/d/<token>/）。
 fn share_token_of(link: &str) -> Option<String> {
-    let i = link.find("/d/")?;
+    /* 目录分享是 /d/<token>/，单文件分享是 /f/<token>/；两者 token 用法相同。 */
+    let i = link.find("/d/").or_else(|| link.find("/f/"))?;
     let rest = &link[i + 3..];
     let tok = rest.split(['/', '?']).next().unwrap_or("").trim();
     if tok.is_empty() { None } else { Some(tok.to_string()) }
@@ -470,45 +471,78 @@ pub async fn seafile_share_delete(token: String, share_token: String) -> Result<
     Ok(())
 }
 
-/// 匿名读取一个分享链接根目录下的清单文件（暂存箱口令的接收端通道）。
-/// 只读取根目录第一个文件；返回 UTF-8 文本（manifest.json）。
-#[tauri::command]
-pub async fn seafile_share_read(link: String, name: Option<String>) -> Result<String, String> {
-    let token = share_token_of(&link).ok_or_else(|| "不是有效的云盘分享链接（缺少 /d/<token>/）".to_string())?;
-    let v: Value = check(
-        client()?
-            .get(format!("{BASE}/api/v2.1/share-links/{token}/dirents/"))
-            .query(&[("path", "/")])
+/// 文件分享没有文件夹目录：直接取 /d/<token>/files/?p=/&dl=1 的内容。
+async fn read_share_single_file(http: &reqwest::Client, token: &str) -> Result<String, String> {
+    let bytes = check(
+        http.get(format!("{BASE}/d/{token}/files/"))
+            .query(&[("p", "/"), ("dl", "1")])
             .send()
             .await
             .map_err(|e| e.to_string())?,
     )
     .await?
-    .json()
+    .bytes()
     .await
     .map_err(|e| e.to_string())?;
-    let entries = v.get("data").and_then(|x| x.as_array()).or_else(|| v.as_array());
+    String::from_utf8(bytes.to_vec()).map_err(|_| "分享内容不是 UTF-8 文本（不是清单文件）".to_string())
+}
+
+/// 匿名读取一个分享链接根目录下的清单文件（暂存箱口令的接收端通道）。
+/// 只读取根目录第一个文件；返回 UTF-8 文本（manifest.json）。
+#[tauri::command]
+pub async fn seafile_share_read(link: String, name: Option<String>) -> Result<String, String> {
+    let token = share_token_of(&link).ok_or_else(|| "不是有效的云盘分享链接（缺少 /d/<token>/）".to_string())?;
+    let http = client()?;
+    /* 文件夹分享：匿名 dirents；文件分享会返回 400 "not a folder share link"，
+       此时按单文件分享直接读 p=/（实测 2026-10-18：清华云盘目录分享可用，
+       文件分享只支持 /d/<token>/files/?p=/&dl=1）。 */
+    let resp = check(
+        http.get(format!("{BASE}/api/v2.1/share-links/{token}/dirents/"))
+            .query(&[("path", "/")])
+            .send()
+            .await
+            .map_err(|e| e.to_string())?,
+    )
+    .await;
+    let v: Value = match resp {
+        Ok(resp) => resp.json().await.map_err(|e| e.to_string())?,
+        Err(e) if e.to_lowercase().contains("not a folder") => {
+            return read_share_single_file(&http, &token).await;
+        }
+        Err(e) => return Err(e),
+    };
+    /* 实测（2026-10-18）：目录分享的匿名 dirents 返回 {"dirent_list":[{file_name,is_dir,file_path}]}，
+       旧代码只看 data/name/type 会找不到文件；同时兼容文件分享可能返回的 data/name/type 形状。 */
+    let entries = v
+        .get("dirent_list")
+        .and_then(|x| x.as_array())
+        .or_else(|| v.get("data").and_then(|x| x.as_array()))
+        .or_else(|| v.as_array());
     let want = name.unwrap_or_default();
+    fn file_name_of(e: &Value) -> Option<&str> {
+        e.get("file_name")
+            .and_then(|n| n.as_str())
+            .or_else(|| e.get("name").and_then(|n| n.as_str()))
+    }
+    fn is_file(e: &Value) -> bool {
+        if let Some(is_dir) = e.get("is_dir").and_then(|d| d.as_bool()) {
+            return !is_dir;
+        }
+        e.get("type").and_then(|t| t.as_str()) == Some("file")
+            || e.get("kind").and_then(|t| t.as_str()) == Some("file")
+    }
     let name = entries
         .and_then(|a| {
             a.iter().find(|e| {
-                let is_file = e.get("type").and_then(|t| t.as_str()) == Some("file")
-                    || e.get("kind").and_then(|t| t.as_str()) == Some("file");
-                let file_name = e.get("name").and_then(|n| n.as_str()).unwrap_or("");
-                is_file && (want.is_empty() || file_name == want)
+                let nm = file_name_of(e).unwrap_or("");
+                is_file(e) && (want.is_empty() || nm == want)
             })
         })
-        .or_else(|| {
-            entries.and_then(|a| a.iter().find(|e| {
-                e.get("type").and_then(|t| t.as_str()) == Some("file")
-                    || e.get("kind").and_then(|t| t.as_str()) == Some("file")
-            }))
-        })
-        .and_then(|e| e.get("name").and_then(|n| n.as_str()))
+        .or_else(|| entries.and_then(|a| a.iter().find(|e| is_file(e))))
+        .and_then(file_name_of)
         .ok_or_else(|| "分享里没有文件（可能已被撤销或过期）".to_string())?;
     let bytes = check(
-        client()?
-            .get(format!("{BASE}/d/{token}/files/"))
+        http.get(format!("{BASE}/d/{token}/files/"))
             .query(&[("p", format!("/{name}")), ("dl", "1".to_string())])
             .send()
             .await
@@ -878,6 +912,39 @@ mod tests {
             println!("  - {}（{}）mtime={} size={}", r.name, r.id, r.mtime, r.size);
         }
         assert!(!repos.is_empty(), "至少应有一个库（个人云盘）");
+    }
+
+    /// 实测目录分享能被匿名读取；文件分享走 direct fallback 也能读。
+    #[tokio::test]
+    #[ignore]
+    async fn live_share_read_dir_and_file() {
+        let t = token();
+        let repos = seafile_repos(t.clone()).await.expect("列库");
+        let repo = repos.iter().find(|r| r.name == "OneTHU").expect("需要 OneTHU 库");
+        let dir = format!("/onethu-live-share-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+        let manifest = r#"{"v":1,"kind":"vault-share","name":"rust live","items":[]}"#;
+        let tmp_dir = std::env::temp_dir().join(format!("onethu-manifest-{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        std::fs::create_dir_all(&tmp_dir).expect("建临时目录");
+        let tmp = tmp_dir.join("manifest.json");
+        std::fs::write(&tmp, manifest).expect("写临时 manifest");
+        let result: Result<(), String> = async {
+            seafile_mkdir(t.clone(), repo.id.clone(), dir.clone()).await?;
+            seafile_upload(t.clone(), repo.id.clone(), dir.clone(), tmp.to_string_lossy().into_owned(), true).await?;
+            let share = seafile_share(t.clone(), repo.id.clone(), dir.clone(), 1, String::new()).await?;
+            let read = seafile_share_read(share.link.clone(), Some("manifest.json".into())).await?;
+            assert_eq!(read, manifest, "目录分享匿名读取内容不一致");
+            seafile_share_delete(t.clone(), share.token.clone()).await?;
+            /* 文件分享：dirents 会 400，direct p=/ 兜底应能读 */
+            let file_share = seafile_share(t.clone(), repo.id.clone(), format!("{dir}/manifest.json"), 1, String::new()).await?;
+            let single = seafile_share_read(file_share.link.clone(), None).await?;
+            assert_eq!(single, manifest, "文件分享 direct 兜底内容不一致");
+            seafile_share_delete(t.clone(), file_share.token).await?;
+            Ok(())
+        }.await;
+        let _ = std::fs::remove_dir_all(&tmp_dir);
+        let cleanup = seafile_delete(t.clone(), repo.id.clone(), dir.clone(), "dir".into()).await;
+        cleanup.expect("清理测试目录");
+        result.expect("live share read 失败");
     }
 
     #[tokio::test]

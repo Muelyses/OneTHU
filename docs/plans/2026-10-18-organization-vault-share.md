@@ -333,3 +333,14 @@
 
 - 原子类暂存箱条目增加「放进首页」：调用 addAtomToHome 写回首页白板，保留暂存箱副本。
 - vault 回归 39/39（放进首页后 localStorage 白板含该 atom）。
+
+
+### 12.20 真实清华云盘 live 验证与修正（2026-10-18）
+
+- 用真实 token 跑通 `tools/cloud-smoke-live.mjs`（11 步）：目录分享、匿名 dirent_list、
+  匿名下载、撤销后拒绝、单文件分享 direct 读取、清理。
+- Rust `seafile_share_read` 按实测修正：匿名目录响应是 `dirent_list` 且字段
+  `file_name/is_dir`；单文件分享链接是 `/f/<token>/`，dirents 400，改走 direct 文件通道。
+- 新增 `seafile::tests::live_share_read_dir_and_file`（ignored，需 TSINGHUA_SEAFILE_TOKEN），
+  实测目录分享与文件分享直读均通过。
+- 研究文档 §实测补充 记录 API 形状；下一轮可跑 App UI 端到端云冒烟。

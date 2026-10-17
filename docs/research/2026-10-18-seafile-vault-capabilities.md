@@ -103,3 +103,22 @@ Rust 最小新增：`file_sha256`、流式上传（进度/取消）、`share_lin
 3. 口令升级 `ONV2`：sha256 摘要、过期、白名单/长度上限、只带云盘引用；`ONV1` 兼容读。
 4. 强制云盘单独批次：移除断开、阻塞式连接、账号切换清 token、迁移提示。
 5. 课程/文字分享按第 7/8 节口径实现，先做「只分享引用」。
+
+
+## 实测补充（2026-10-18 01:2x，真实清华云盘账号）
+
+用真实 token 在 `OneTHU` 资料库跑 live 冒烟（脚本 `tools/cloud-smoke-live.mjs`，Rust 侧
+`seafile::tests::live_share_read_dir_and_file`）：
+
+| 项 | 结果 |
+|---|---|
+| 目录分享 `POST /api/v2.1/share-links/ {path: dir}` | ✅ 成功，链接 `https://cloud.tsinghua.edu.cn/d/<token>/` |
+| 匿名列目录 `/api/v2.1/share-links/<token>/dirents/?path=/` | ✅ 200，形状是 **`{"dirent_list":[{file_size,is_dir,file_name,file_path,...}]}`**（不是 `data`/`name`/`type`） |
+| 匿名下载 `/d/<token>/files/?p=/manifest.json&dl=1` | ✅ 内容一致 |
+| 撤销分享后匿名访问 | ✅ 拒绝 |
+| 单文件分享 | 链接是 **`/f/<token>/`**；`dirents` 返回 400 `not a folder share link`；`/d/<token>/files/?p=/&dl=1` 可直接取文件（Rust `seafile_share_read` 已兼容 /f token + direct fallback） |
+| 目录递归删除 | ✅ `DELETE /api2/repos/<repo>/dir/?p=...` |
+
+**结论修正**：清华实例允许目录分享，vaultCloud 首选目录分享路径可用；文件分享仅作为
+目录分享被策略拒绝时的降级，且读取必须走 direct 单文件通道。`seafile_share_read` 已按实测
+`dirent_list` + `/f/` + direct fallback 修正。真机/真实云盘 API 层已验证，App 端到端仍需跑一次 UI 冒烟。

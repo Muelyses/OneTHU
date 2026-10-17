@@ -843,11 +843,12 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 key={it.id}
                 data-item-id={it.id}
                 data-item={it.spec.kind}
+                data-note-tone={isNote && it.spec.kind === "custom" ? String(it.spec.props?.tone ?? "yellow") : undefined}
                 data-size={plan.size.w + "x" + plan.size.h}
                 data-manual={it.manual ? "1" : undefined}
                 data-fitted={it.fitted ? "1" : undefined}
                 data-folded={it.folded ? "1" : undefined}
-                className={"free-item" + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
+                className={"free-item" + (isNote ? " is-note" : "") + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
                 style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
                 onPointerDown={(e) => {
                   if (penOn || stack) return;   // 堆叠形态：坐标被重排，拖动没有意义（点选仍可用）
@@ -882,6 +883,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 {editingNow ? (
                   <textarea
                     className="free-note-editor"
+                    aria-label={isNote ? "便笺内容" : "文字内容"}
+                    onChange={(e) => ops.props(it.id, { text: e.currentTarget.value })}
                     autoFocus
                     defaultValue={isNote
                       ? (it.spec.kind === "custom" && typeof it.spec.props?.text === "string" ? it.spec.props.text : "")

@@ -239,6 +239,14 @@ ok(freshRects.every((a, i) => freshRects.every((b, j) => i === j || a.x + a.w <=
 const preserved = B.defaultBoardDoc({ ...freshDeps, loadLayoutItems: () => PORTRAIT });
 ok(preserved.boards[0].cells.portrait.every(x => !x.rect), "旧布局必须走原迁移通道，不能套新板排版");
 
+/* A note saved by the former outer-props path must remain recoverable. */
+const brokenSavedNote = { id: "note-legacy", spec: { kind: "custom", id: "note", props: { tone: "yellow", text: "older" } }, props: { text: "saved draft", extra: true }, cell: { x: 0, y: 0, w: 2, h: 2 } };
+ok(B.toPxItem(brokenSavedNote).spec.props.text === "saved draft", "旧便笺的外层 props 必须在渲染时恢复，不能丢掉已写内容");
+const editedNote = B.propsPx([brokenSavedNote], "note-legacy", { text: "new draft" });
+ok(editedNote[0].spec.props.text === "new draft" && editedNote[0].spec.props.tone === "yellow", "便笺更新写入 canonical spec.props 并保留纸色");
+ok(B.toPxItem(editedNote[0]).spec.props.text === "new draft", "便笺写回后可立即渲染");
+ok(brokenSavedNote.spec.props.text === "older", "便笺更新不得原地改旧数据");
+
 if (fails.length) {
   console.error("白板文档护栏（P0）：不通过");
   for (const f of fails) console.error("  ✗ " + f);

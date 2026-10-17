@@ -490,7 +490,9 @@ export function rectHit(a: BoardRect, b: BoardRect): boolean {
 
 export function toPxItem(item: BoardItem): BoardPxItem {
   const r = rectOf(item);
-  const out: BoardPxItem = { id: item.id, spec: item.spec, x: r.x, y: r.y, w: r.w, h: r.h };
+  const spec = item.spec.kind === "custom" && item.props
+    ? { ...item.spec, props: { ...item.spec.props, ...item.props } } : item.spec;
+  const out: BoardPxItem = { id: item.id, spec, x: r.x, y: r.y, w: r.w, h: r.h };
   if (item.folded === true) out.folded = true;
   if (typeof item.opacity === "number") out.opacity = item.opacity;
   if (item.pinned === true) out.pinned = true;
@@ -571,7 +573,9 @@ export function opacityPx(items: readonly BoardItem[], id: string, opacity: numb
  */
 export function propsPx(items: readonly BoardItem[], id: string, props: Record<string, unknown> | undefined): BoardItem[] | null {
   return patchPx(items, id, (it) => {
-    const spec: WidgetSpec = it.spec.kind === "text" && typeof props?.text === "string" ? { ...it.spec, text: props.text } : it.spec;
+    const spec: WidgetSpec = it.spec.kind === "custom"
+      ? { ...it.spec, props: { ...it.spec.props, ...it.props, ...props } }
+      : it.spec.kind === "text" && typeof props?.text === "string" ? { ...it.spec, text: props.text } : it.spec;
     return { ...it, spec, props: { ...it.props, ...props } };
   });
 }

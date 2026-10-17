@@ -271,3 +271,27 @@ html:root .hs-dock-sphere .sphere-name { white-space: normal; overflow-wrap: any
 html:root .og-settings-row-control > .og-inline { flex-wrap: wrap; min-width: 0; max-width: 100%; }
 
 html:root .ex-sheet-head > .og-btn { margin-left: auto; flex-shrink: 0; }
+
+/* Rail slots must fit even before hover: 56px contains a 44px icon lane. */
+html:root .ex-rail { padding-inline: var(--og-space-1); }
+html:root.tabs-vertical.rail-narrow .ex-rail .ex-tab-main { flex: 1 1 auto !important; width: 100% !important; }
+html:root.tabs-vertical.rail-narrow .ex-rail:hover,
+html:root.tabs-vertical.rail-narrow .ex-rail:focus-within { z-index: var(--og-z-rail); }
+
+/* Both segment implementations use the same track and active pair. */
+html:root .segmented { background: var(--og-segment-track); border: 1px solid var(--og-segment-line); padding: var(--og-space-1); border-radius: var(--og-radius-control); }
+html:root .segmented button { border-radius: var(--og-radius-sm); }
+html:root .segmented button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); box-shadow: none; }
+html:root .seg-track button { position: relative; z-index: 1; }
+html:root .seg-track button.is-active { background: transparent; }
+html:root .seg-track .seg-pill { height: auto; top: var(--og-space-1); bottom: var(--og-space-1); background: var(--og-segment-active); border-radius: var(--og-radius-sm); border: 0; padding: 0; min-height: 0; }
+
+/* Note paper is opaque and keeps dark ink in either application scheme. */
+html:root .free-item.is-note { background: var(--og-note-paper); border-color: color-mix(in srgb, var(--og-note-ink) 18%, var(--og-note-paper)); }
+html:root :is(.free-item.is-note[data-note-tone="pink"], .free-note[data-tone="pink"]) { --og-note-paper: var(--og-note-pink); }
+html:root :is(.free-item.is-note[data-note-tone="blue"], .free-note[data-tone="blue"]) { --og-note-paper: var(--og-note-blue); }
+html:root :is(.free-item.is-note[data-note-tone="green"], .free-note[data-tone="green"]) { --og-note-paper: var(--og-note-green); }
+html:root .free-note { background: var(--og-note-paper); border: 0; color: var(--og-note-ink); }
+html:root :is(.free-note-text, .free-note-editor, .is-note .free-folded) { color: var(--og-note-ink); }
+html:root .free-note-hint { color: var(--og-note-quiet); }
+html:root .free-note-dot { background: var(--og-note-quiet); }

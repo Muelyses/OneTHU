@@ -11,9 +11,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
  *   开放时间、最短/最长时长与当日未过期约束的房间；从筛选结果点「预约」
  *   会自动带入该时段
  * - 选时段（开始/结束 5 分钟粒度、min/max 时长与占用约束，libRoomPerformBook 同算法；
- *   开始时刻可点时段格直接改选，改开始后结束回落到首个合法值，与 lib 同语义；
+ *   点列表时段立即打开确认窗口，自动带入合法起止时间；确认窗只保留精确微调，
+ *   不重复展示全天时段表；
  *   lib 为开始/结束双轮单选连续区间，不支持多选离散时段，此处保持一致）
- *   → 提交预约（ic-web/reserve POST JSON，sysKind=1 等字段为 lib 源码字面值）
+ *   → 确认后提交预约（ic-web/reserve POST JSON，sysKind=1 等字段为 lib 源码字面值）
  * - 我的预约（未来 6 天 resvInfo 列表）+ 取消（POST /reserve/delete {uuid}，
  *   行内确认后调用并即时刷新）
  * - 成员：仅以本人 accNo 提交（minUser>1 的多人房间给出说明，成员搜索端点已在
@@ -45,6 +46,7 @@ import {
   Inline,
   List,
   LoadingBlock,
+  Modal,
   Row,
   Section,
   Segment,
@@ -61,6 +63,7 @@ import { explainNetworkError } from "../../lib/transport.js";
 import { openExternal } from "./openExternal.js";
 import { useApp } from "../../state/context.js";
 import { softRecover } from "../../lib/reload.js";
+import { showToast } from "../../state/toast.js";
 
 /* 研讨间「未绑定邮箱」引导条（2026-09 用户反馈：新生首次使用必须在 cab.lib
  * 原网站绑定邮箱，否则会话建立/userInfo 校验恒败，只报错会让用户干等）。
@@ -328,18 +331,14 @@ const SLOT_TONE: Record<SlotState, OGBToneAlias> = {
 };
 type OGBToneAlias = "default" | "quiet" | "brand" | "error" | "warning" | "success" | "info";
 
-/** 三态时段格 = Btn tonal 轻量化网格（座位格判例同款）：默认只读（房间列表）；
- *  传 selectedBeg+onPickFree 即为预约面板的可点改选模式（点任一绿格改选开始时刻，
- *  selected 高亮当前开始；红/灰格 disabled 不可点）。 */
+/** 列表绿格直接打开确认窗；红/灰格不可选。 */
 function SlotGrid({
   slots,
   res,
-  selectedBeg,
   onPickFree,
 }: {
   slots: RoomSlot[];
   res: LibRoomRes;
-  selectedBeg?: string;
   onPickFree?: (slot: RoomSlot) => void;
 }) {
   if (slots.length === 0) return null;
@@ -348,7 +347,6 @@ function SlotGrid({
       {slots.map((sl) => {
         const label = SLOT_STATE_LABEL[sl.state];
         const interactive = onPickFree !== undefined && sl.state === "free";
-        const selected = selectedBeg !== undefined && interactive && sl.start === selectedBeg;
         const tip = `${sl.start}~${sl.end} · ${label}${
           sl.state === "occupied" ? usageAt(res, toMin(sl.start), toMin(sl.end)) : ""
         }${interactive ? " · 点击选此开始时刻" : ""}`;
@@ -359,7 +357,6 @@ function SlotGrid({
             tone={SLOT_TONE[sl.state]}
             size="sm"
             disabled={!interactive}
-            selected={selected || undefined}
             titleAttr={tip}
             onClick={interactive ? () => onPickFree!(sl) : undefined}
           >
@@ -374,8 +371,6 @@ function SlotGrid({
 interface BookTarget {
   res: LibRoomRes;
   day: DayChoice;
-  preferredBeg?: string;
-  preferredEnd?: string;
 }
 
 export function LibRoomTab({
@@ -554,26 +549,13 @@ export function LibRoomTab({
     };
   }, [kindId, day, status, userId, resTick]);
 
-  /* 预约面板：目标/日期变化时重置时段选择 */
   const begins = useMemo(() => (target ? validBegins(target.res, target.day.iso) : []), [target]);
-  useEffect(() => {
-    const preferred = target?.preferredBeg;
-    setBeg(preferred && begins.some((p) => p.start === preferred) ? preferred : (begins[0]?.start ?? ""));
-    setEnd("");
-  }, [begins, target?.preferredBeg]);
-  const ends = useMemo(
-    () => (target && beg ? validEnds(target.res, begins, beg) : []),
-    [target, begins, beg],
-  );
-  useEffect(() => {
-    const preferred = target?.preferredEnd;
-    setEnd(preferred && ends.some((p) => p.start === preferred) ? preferred : (ends[0]?.start ?? ""));
-  }, [ends, target?.preferredEnd]);
-  /* 预约面板逐格三态（红/灰禁点，绿格点击改选开始时刻） */
-  const targetSlots = useMemo(
-    () => (target ? roomSlots(target.res, target.day.iso) : []),
-    [target],
-  );
+  const ends = useMemo(() => (target && beg ? validEnds(target.res, begins, beg) : []), [target, begins, beg]);
+  const chooseStart = (value: string): void => {
+    setBookError(null);
+    setBeg(value);
+    setEnd(target ? validEnds(target.res, begins, value)[0]?.start ?? "" : "");
+  };
 
   const filterComplete = filterBeg !== "" && filterEnd !== "";
   const filterValid = filterComplete && filterBeg < filterEnd;
@@ -585,17 +567,20 @@ export function LibRoomTab({
     [resources, filterValid, day.iso, filterBeg, filterEnd],
   );
 
-  const pickRoom = (res: LibRoomRes, preferredBeg?: string): void => {
+  const pickRoom = (res: LibRoomRes, preferredBeg?: string, preferredEnd?: string): void => {
     setBookError(null);
     setPendingEmail(null);
     setNotice(null);
-    setTarget({
-      res,
-      day,
-      /* 点列表上某个绿格发起：优先用被点的那格当开始时刻；否则用全局时间筛选 */
-      preferredBeg: preferredBeg ?? (filterValid ? filterBeg : undefined),
-      preferredEnd: filterValid ? filterEnd : undefined,
-    });
+    const requestedBeg = preferredBeg ?? (filterValid ? filterBeg : undefined);
+    const requestedEnd = preferredEnd ?? (filterValid ? filterEnd : undefined);
+    const starts = validBegins(res, day.iso);
+    const begin = starts.find((p) => p.start === requestedBeg)?.start
+      ?? starts.find((p) => requestedBeg && p.start >= requestedBeg && p.start < (requestedEnd ?? "24:00"))?.start
+      ?? starts[0]?.start ?? "";
+    const finishes = validEnds(res, starts, begin);
+    setBeg(begin);
+    setEnd(finishes.find((p) => p.start === requestedEnd)?.start ?? finishes[0]?.start ?? "");
+    setTarget({ res, day });
   };
 
   const doBook = useCallback(
@@ -619,7 +604,9 @@ export function LibRoomTab({
         await info.bookLibRoom(userId, t.res, `${t.day.iso} ${begin}:00`, `${t.day.iso} ${finish}:00`, [
           accNo,
         ]);
-        setNotice({ ok: true, text: `${t.res.roomName} ${t.day.iso} ${begin}~${finish} 预约成功，请留意图书馆邮件通知` });
+        const message = `${t.res.roomName} ${t.day.iso} ${begin}~${finish} 预约成功，请留意图书馆邮件通知`;
+        setNotice({ ok: true, text: message });
+        showToast(message);
         setTarget(null);
         void loadRecords();
         setResTick((n) => n + 1);
@@ -689,7 +676,7 @@ export function LibRoomTab({
   };
 
   const canSubmit =
-    target !== null && beg !== "" && end !== "" && !busy && target.res.minUser <= 1;
+    target !== null && !busy && isRoomFreeForRange(target.res, target.day.iso, beg, end);
 
   const dayOptions = days.map((d) => ({
     value: String(d.offset),
@@ -860,7 +847,7 @@ export function LibRoomTab({
                     <SlotGrid
                       slots={roomSlots(r, day.iso)}
                       res={r}
-                      onPickFree={(sl) => pickRoom(r, sl.start)}
+                      onPickFree={(sl) => pickRoom(r, sl.start, sl.end)}
                     />
                   </Row>
                 ))}
@@ -872,38 +859,37 @@ export function LibRoomTab({
 
       {/* 选房后的预约面板 */}
       {target ? (
-        <Card>
-          <Stack gap={2}>
+        <Modal
+          open={target !== null}
+          onClose={() => { if (!busy) setTarget(null); }}
+          title={`预约 ${target.res.roomName}`}
+          size="md"
+          maskClose={!busy}
+          closeButton={!busy}
+          foot={<>
+            <Btn variant="outline" disabled={busy} onClick={() => setTarget(null)}>取消</Btn>
+            <Btn variant="solid" tone="brand" disabled={!canSubmit} onClick={() => {
+              if (target && beg && end) void doBook(target, beg, end);
+            }}>{busy ? "提交中…" : "提交预约"}</Btn>
+          </>}
+        >
+          <Stack gap={3}>
             <Inline gap={2} vAlign="baseline" wrap>
               <Text as="h3" slot="subtitle">
-                预约 {target.res.roomName} · {target.day.iso}
+                {target.day.iso}
               </Text>
               {target.res.maxUser > 1 ? (
                 <Tag tone="neutral">{target.res.minUser}~{target.res.maxUser} 人</Tag>
               ) : null}
               <Tag tone="brand">{target.day.label}</Tag>
             </Inline>
-            {/* 三态时段格：点任一「可约」格即改选开始时刻（可反复改选），
-                改开始后结束时刻自动回落到该开始的首个合法值（lib 同语义） */}
-            <SlotGrid
-              slots={targetSlots}
-              res={target.res}
-              selectedBeg={beg}
-              onPickFree={(sl) => {
-                setBookError(null);
-                setNotice(null);
-                setBeg(sl.start);
-              }}
-            />
-            <Text slot="micro" tone="faint">
-              点「可约」格改选开始时刻；结束时刻在下方选择器微调（须满足单次 {target.res.minMinute}~{target.res.maxMinute} 分钟）。
-            </Text>
+            <Banner tone="info">已选择 {target.day.label} {beg || "–"}~{end || "–"}。确认后提交，可在下方微调时间。</Banner>
             <Inline gap={2} wrap vAlign="end">
               {/* 两个时段选择并排各占半行（Grow），不再各霸一行 */}
               <Grow><Field label="开始">
                 <SearchSelect
                   value={beg}
-                  onChange={setBeg}
+                  onChange={chooseStart}
                   placeholder={begins.length === 0 ? "无可约时段" : "开始"}
                   disabled={begins.length === 0}
                   options={begins.map((b) => ({ value: b.start, label: b.start }))}
@@ -918,42 +904,23 @@ export function LibRoomTab({
                   options={ends.map((p2) => ({ value: p2.start, label: p2.start }))}
                 />
               </Field></Grow>
-              <Btn
-                variant="solid"
-                tone="brand"
-                disabled={!canSubmit}
-                onClick={() => {
-                  if (target && beg && end) void doBook(target, beg, end);
-                }}
-              >
-                {busy ? "提交中…" : "提交预约"}
-              </Btn>
-              <Btn variant="outline" onClick={() => setTarget(null)}>取消</Btn>
             </Inline>
             <Text slot="label" tone="quiet">
-              成员：本人（accNo {info.getLibRoomAccNo() ?? "–"}）。
+              成员：本人。
               {target.res.minUser > 1
                 ? ` 该房间标称需 ${target.res.minUser}~${target.res.maxUser} 人成组：应用会先以仅本人提交，馆方若拒绝会给出原话，届时请到研讨间系统网页端添加成员。`
                 : ` 单次可约 ${target.res.minMinute}~${target.res.maxMinute} 分钟，5 分钟粒度。`}
             </Text>
+            {bookError ? <Banner tone="error">{bookError}</Banner> : null}
+            {pendingEmail ? (
+              <Banner tone="warning" action={<Btn variant="solid" disabled={busy} onClick={() => void confirmEmailAndRetry()}>确认并重试</Btn>}>
+                绑定邮箱 {pendingEmail} 并重试预约？
+              </Banner>
+            ) : null}
           </Stack>
-        </Card>
+        </Modal>
       ) : null}
 
-      {pendingEmail ? (
-        <Card>
-          <Inline gap={2} wrap vAlign="center">
-            <Text slot="body" weight="medium">绑定邮箱 {pendingEmail} 并重试预约？</Text>
-            <Spacer />
-            <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void confirmEmailAndRetry()}>
-              确认并重试
-            </Btn>
-            <Btn variant="outline" onClick={() => setPendingEmail(null)}>取消</Btn>
-          </Inline>
-        </Card>
-      ) : null}
-
-      {bookError ? <Banner tone="error">{bookError}</Banner> : null}
       {notice ? <Banner tone={notice.ok ? "success" : "error"}>{notice.text}</Banner> : null}
 
       <Section title="我的预约" hint="研讨间预约记录（未来 6 天）" />

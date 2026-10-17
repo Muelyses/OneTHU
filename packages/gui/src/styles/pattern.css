@@ -311,7 +311,8 @@
   gap: var(--og-space-1);
   padding: var(--og-geo-xs);
   border-radius: var(--og-radius-md);
-  background: var(--og-surface-3);
+  background: var(--og-segment-track);
+  border: 1px solid var(--og-segment-line);
   min-width: 0;
   /* 硬性不越右边缘：条目 nowrap 不收缩，容器再窄也只在自己内部滚动（隐藏滚动条），
      决不允许把整条轨道顶出父容器（GitLab 状态筛选实测） */
@@ -346,7 +347,7 @@
   transition: color var(--og-dur-1) var(--og-ease-standard);
 }
 
-.og-segment-item.is-active { color: var(--og-content-1); }
+.og-segment-item.is-active { color: var(--og-segment-active-ink); }
 .og-segment-item[disabled] { opacity: var(--og-disabled-opacity); pointer-events: none; }
 
 .og-segment-indicator {
@@ -356,7 +357,7 @@
   height: calc(100% - var(--og-geo-xs) * 2);
   width: 0;
   border-radius: var(--og-radius-md);
-  background: var(--og-surface-1);
+  background: var(--og-segment-active);
   box-shadow: var(--og-elev-1);
   transition:
     left var(--og-dur-2) var(--og-ease-standard),

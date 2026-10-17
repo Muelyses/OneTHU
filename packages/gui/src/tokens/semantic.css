@@ -55,6 +55,17 @@
   --og-composer-fill: var(--og-surface-3);
   --og-card-fill: var(--og-surface-1);
   --og-menu-fill: var(--og-surface-overlay);
+  --og-segment-track: var(--og-surface-4);
+  --og-segment-line: var(--og-line-2);
+  --og-segment-active: var(--og-action);
+  --og-segment-active-ink: var(--og-action-on);
+  --og-note-yellow: var(--og-ref-paper-yellow);
+  --og-note-pink: var(--og-ref-paper-pink);
+  --og-note-blue: var(--og-ref-paper-blue);
+  --og-note-green: var(--og-ref-paper-green);
+  --og-note-paper: var(--og-note-yellow);
+  --og-note-ink: var(--og-ref-neutral-900);
+  --og-note-quiet: var(--og-ref-neutral-700);
   --og-selection-fill: var(--og-surface-4);
   --og-selection-ink: var(--og-content-1);
   --og-hover: var(--og-ref-light-hover);
@@ -96,6 +107,10 @@
 }
 
 [data-og-scheme="dark"] {
+  --og-segment-track: var(--og-surface-4);
+  --og-segment-line: var(--og-line-2);
+  --og-segment-active: var(--og-action);
+  --og-segment-active-ink: var(--og-action-on);
   --og-surface-0: var(--og-ref-neutral-950);
   --og-surface-1: var(--og-ref-neutral-900);
   --og-surface-2: var(--og-ref-dark-surface-2);

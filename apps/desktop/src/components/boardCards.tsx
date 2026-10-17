@@ -485,22 +485,16 @@ const ENTRY_REAL: Record<string, CardRenderer> = {
    props：text（内容）、tone（纸色）、folded（收起=只留标题条）。收起/展开就地切换，
    文字走白板既有的「属性」抽屉编辑（editableProps 已声明）。 */
 
-const NOTE_TONES: Record<string, string> = {
-  /* 纸黄（用户点名「便笺变成纸黄色」）：原来是 24% 半透明琥珀，压在壁纸上几乎没有纸感 */
-  yellow: "rgba(246, 231, 168, 0.96)",
-  pink: "rgba(226, 154, 166, 0.22)",
-  blue: "rgba(122, 168, 220, 0.22)",
-  green: "rgba(140, 196, 156, 0.22)",
-};
+const NOTE_TONES = new Set(["yellow", "pink", "blue", "green"]);
 
 function NoteCard(props?: Record<string, unknown>): ReactNode {
   /* 纯展示（2026-10-13）：折叠归自由白板的浮条管，本体不再自己吞 click——
      此前残留的「点一下折叠」会在拖动/点选时乱触发，便笺看起来像被割成两块。
      类名用 free-note-*：global.css 里旧白板的 .board-note 是个 fixed toast，同名会互相污染。 */
   const text = typeof props?.text === "string" && props.text.trim() ? props.text : "双击便笺写内容";
-  const tone = typeof props?.tone === "string" && NOTE_TONES[props.tone] ? props.tone : "yellow";
+  const tone = typeof props?.tone === "string" && NOTE_TONES.has(props.tone) ? props.tone : "yellow";
   return (
-    <div className="free-note" data-tone={tone} style={{ background: NOTE_TONES[tone] }}>
+    <div className="free-note" data-tone={tone}>
       <div className="free-note-strip">
         <span className="free-note-dot" aria-hidden="true" />
         <span className="free-note-hint">便笺</span>

@@ -42,6 +42,11 @@ for(const [name,tokens] of Object.entries({light,dark})){
  const color=k=>{const c=parseColor(resolve(k));assert.ok(c,`${name} ${k} is not a color`);return c;};
  const check=(fg,bg)=>{const background=over(color(bg),color("--og-surface-1"));const ratio=contrast(over(color(fg),background),background);assert.ok(ratio>=4.5,`${name} ${fg} on ${bg}: ${ratio.toFixed(2)} <4.5`);pairs++;};
  check('--og-action-on','--og-action');
+ check('--og-segment-active-ink','--og-segment-active');
+ for(const paper of ['yellow','pink','blue','green']) {
+  check('--og-note-ink',`--og-note-${paper}`);
+  check('--og-note-quiet',`--og-note-${paper}`);
+ }
  for(const bg of ['--og-surface-0','--og-surface-1','--og-surface-overlay'])
   for(const fg of ['--og-content-1','--og-content-2','--og-content-3'])check(fg,bg);
  for(const tone of ['error','warning','success','info'])check(`--og-${tone}`,`--og-${tone}-soft`);

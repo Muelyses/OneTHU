@@ -52,6 +52,15 @@ try {
   const count = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes[0].items.length);
   check(count === 1, 'dragged object lands in vault');
   check(await p.getByText('宿舍电费').count() >= 1, 'vault shows dragged item title');
+  await p.getByRole('button', { name: '放进首页' }).first().click();
+  await p.waitForTimeout(500);
+  const onHome = await p.evaluate(() => (localStorage.getItem('onethu.board.v1') ?? '').includes('life-electricity'));
+  check(onHome, 'vault atom can be put onto the homepage board');
+  await p.evaluate(async () => {
+    const url = performance.getEntriesByType('resource').map((r) => r.name).find((u) => new URL(u).pathname.endsWith('/src/state/explorer.ts'));
+    const m = await import(url); m.explorerNavigate('vault');
+  });
+  await p.waitForTimeout(700);
 
   /* 口令生成 + 校验 */
   await p.getByRole('button', { name: '生成口令' }).click();

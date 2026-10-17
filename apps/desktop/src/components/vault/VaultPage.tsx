@@ -25,6 +25,7 @@ import { acceptOrgInvite } from "../../state/org.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
+import { addAtomToHome } from "../../state/onePage.js";
 import { fileRefOf, stageFromFiles, stageFromPicker, type StagedFile } from "../../lib/fileChannel.js";
 
 function sizeText(n?: number): string {
@@ -48,7 +49,17 @@ function ItemRow({ it, onRemove, onOpen }: { it: VaultItem; onRemove: () => void
         title={it.title}
         sub={itemSub(it)}
         onClick={onOpen}
-        trailing={<Btn variant="ghost" size="sm" onClick={onRemove}>移除</Btn>}
+        trailing={
+          <span className="vault-actions">
+            {it.atom ? (
+              <Btn variant="ghost" size="sm" onClick={() => {
+                const r = addAtomToHome(`${it.atom!.kind}|${it.atom!.key}`);
+                showToast(r.added ? "已放进首页" : r.reason === "duplicate" ? "首页已经有这一项了" : "放进首页失败");
+              }}>放进首页</Btn>
+            ) : null}
+            <Btn variant="ghost" size="sm" onClick={onRemove}>移除</Btn>
+          </span>
+        }
       />
     </div>
   );

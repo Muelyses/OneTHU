@@ -327,3 +327,9 @@
 
 - decodeQrFile 加 8s 超时（部分 WebView 的 BarcodeDetector.detect 可能不 resolve）；
 - 组织邀请口令显示二维码（200），成员可直接扫；org 回归 9/9。
+
+
+### 12.19 暂存箱回到首页（2026-10-18）
+
+- 原子类暂存箱条目增加「放进首页」：调用 addAtomToHome 写回首页白板，保留暂存箱副本。
+- vault 回归 39/39（放进首页后 localStorage 白板含该 atom）。

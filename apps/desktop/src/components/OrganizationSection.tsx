@@ -9,8 +9,9 @@ import { openFormModal } from "../lib/formModal.js";
 import { confirmOk } from "../lib/confirm.js";
 import { showToast } from "../state/toast.js";
 import {
-  acceptOrgInvite, addOrgMember, createOrg, deleteOrg, orgInviteCode, useOrgs,
+  acceptOrgInvite, addOrgMember, createOrg, deleteOrg, orgInviteCode, setOrgShare, useOrgs,
 } from "../state/org.js";
+import { prepareAndShareFolder } from "../lib/cloudFolder.js";
 
 defineSearchRows([
   {
@@ -28,6 +29,7 @@ defineSearchRows([
 export function OrganizationSection(): ReactNode {
   const doc = useOrgs();
   const [invite, setInvite] = useState<{ org: string; code: string } | null>(null);
+  const [sharing, setSharing] = useState<string | null>(null);
 
   const create = useCallback(async (): Promise<void> => {
     const f = await openFormModal("新建组织", [
@@ -58,6 +60,20 @@ export function OrganizationSection(): ReactNode {
     showToast(r.ok ? "已加入组织（本地成员清单）" : r.reason ?? "邀请口令无法识别");
   }, []);
 
+  const shareSpace = useCallback(async (id: string, name: string): Promise<void> => {
+    setSharing(id);
+    try {
+      const share = await prepareAndShareFolder(`/Orgs/${id}`, `${name} 的组织共享空间`);
+      setOrgShare(id, { repoId: share.repoId, path: share.path, shareUrl: share.shareUrl, shareToken: share.shareToken, expiresAt: share.expiresAt, createdAt: Date.now() });
+      await navigator.clipboard.writeText(share.shareUrl).catch(() => undefined);
+      showToast("组织共享空间已创建：链接已复制，发给成员即可加入");
+    } catch (e) {
+      showToast(`组织共享空间创建失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setSharing(null);
+    }
+  }, []);
+
   const addMember = useCallback(async (id: string): Promise<void> => {
     const f = await openFormModal("添加成员", [{ key: "name", label: "成员名字", required: true }]);
     if (!f?.name) return;
@@ -84,6 +100,11 @@ export function OrganizationSection(): ReactNode {
                 sub={`${o.members.length} 名成员${o.brief ? " · " + o.brief : ""}${o.joinUrl ? " · 已设加入方式" : ""}`}
                 trailing={
                   <span className="name-card-actions">
+                    {o.shared?.shareUrl ? (
+                      <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(o.shared!.shareUrl).then(() => showToast("共享空间链接已复制")).catch(() => showToast("复制失败，请手动复制"))}>复制空间链接</Btn>
+                    ) : (
+                      <Btn variant="ghost" size="sm" disabled={sharing === o.id} onClick={() => void shareSpace(o.id, o.name)}>{sharing === o.id ? "创建中…" : "共享空间"}</Btn>
+                    )}
                     <Btn variant="ghost" size="sm" onClick={() => inviteOrg(o.id, o.name)}>邀请</Btn>
                     <Btn variant="ghost" size="sm" onClick={() => void addMember(o.id)}>加成员</Btn>
                     <Btn variant="ghost" size="sm" tone="error" onClick={() => void confirmOk(`删除组织「${o.name}」？成员清单会一起删除（云盘资料不动）。`).then((ok) => { if (ok) deleteOrg(o.id); })}>删除</Btn>

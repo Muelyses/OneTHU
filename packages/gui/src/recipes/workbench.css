@@ -490,3 +490,14 @@ html.is-phone .vault-dock .og-btn { box-shadow: var(--og-elev-menu); border: 1px
 .name-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-1); }
 .name-card-actions .og-btn { padding-inline: var(--og-space-2); }
 .name-card-contacts { display: grid; gap: var(--og-space-2); }
+
+/* 暂存箱动画：条目入场 / 落点出现（只动 transform/opacity；减弱动效全关）。 */
+.vault-item-in { animation: m-rise var(--dur-3) var(--ease-out) both; }
+html:root .vault-drop { animation: m-pop var(--dur-2) var(--ease-spring) both; }
+@media (prefers-reduced-motion: reduce) {
+  .vault-item-in { animation: none; }
+  html:root .vault-drop { animation: none; }
+}
+
+/* 口令二维码：NFC 接入前给手机互相扫的兜底（纯展示，不发起扫描）。 */
+.vault-qr { display: flex; justify-content: center; padding: var(--og-space-2); border-radius: var(--og-radius-md); background: var(--og-surface-overlay); }

@@ -28,6 +28,8 @@ export interface Org {
   /** 云盘落点（后续由 orgCloud 填） */
   cloudRepoId: string;
   cloudPath: string;
+  /** 已创建的组织共享空间（云盘目录 + 分享链接） */
+  shared?: { repoId: string; path: string; shareUrl: string; shareToken: string; expiresAt: number; createdAt: number };
   members: OrgMember[];
   /** 最近一次生成的邀请口令（仅提示） */
   lastInviteCode?: string;
@@ -127,6 +129,11 @@ export function addOrgMember(id: string, name: string, role: OrgRole = "member")
   };
   commit();
   return { ok: true };
+}
+
+export function setOrgShare(id: string, shared: NonNullable<Org["shared"]>): void {
+  doc = { ...doc, orgs: doc.orgs.map((o) => (o.id === id ? { ...o, shared, cloudRepoId: shared.repoId, cloudPath: shared.path, updatedAt: Date.now() } : o)) };
+  commit();
 }
 
 export function removeOrgMember(id: string, memberId: string): void {

@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Btn, Card, List, Row, Segment, Text } from "@onethu/gui";
+import { QRCodeSVG } from "qrcode.react";
 import { Empty, PageHead } from "../Layout.js";
 import { useApp } from "../../state/context.js";
 import { openFormModal } from "../../lib/formModal.js";
@@ -37,7 +38,7 @@ function itemSub(it: VaultItem): string {
 /** 一条清单项也可再次拖走（换成另一个箱子/以后拖去白板）。 */
 function ItemRow({ it, onRemove, onOpen }: { it: VaultItem; onRemove: () => void; onOpen: () => void }): ReactNode {
   return (
-    <div data-vault-catch={vaultCatchAttr({ type: it.type, title: it.title, sub: it.sub, atom: it.atom, text: it.text, file: it.file, board: it.board, payload: it.payload, source: it.source })}>
+    <div className="vault-item-in" data-vault-catch={vaultCatchAttr({ type: it.type, title: it.title, sub: it.sub, atom: it.atom, text: it.text, file: it.file, board: it.board, payload: it.payload, source: it.source })}>
       <Row
         flush
         title={it.title}
@@ -203,6 +204,7 @@ export function VaultPage(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">把这段口令发给好友，或在另一台 OneTHU 里「导入口令」：</Text>
             <code className="vault-share-code">{code}</code>
+            <div className="vault-qr"><QRCodeSVG value={code} size={148} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(code).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setCode("")}>收起</Btn>
@@ -235,6 +237,7 @@ export function VaultPage(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">碰一碰 / 组合口令（NFC 接入前用这段口令或二维码代替）：</Text>
             <code className="vault-share-code">{touchCode}</code>
+            <div className="vault-qr"><QRCodeSVG value={touchCode} size={148} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(touchCode).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setTouchCode("")}>收起</Btn>

@@ -388,3 +388,9 @@
   8s 超时不再无限转圈。二维码展示尺寸提到 300（390 手机宽度内）。
 - Chromium 无头对高密度 ONTOUCH1 截图仍识别不到，自动回归未纳入；真机相机/截图待验证。
 - mobile_exit 命令四方位（前端/Kotlin/default 权限/命令 permission）已有护栏 4/4。
+
+
+### 12.26 验证矩阵文档（2026-10-18）
+
+- 新增 `docs/audit/2026-10-18-vault-share-verification.md`：自动化回归、真实云盘 live、
+  仍待真机/第二账号验证的事项分开列清，作为 goal 完成口径。

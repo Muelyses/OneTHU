@@ -28,6 +28,7 @@ import { CollectStar } from "../../components/Collect.js";
 import { enc } from "../../state/atoms.js";
 import { fmtRemindOffset, REMIND_MAX, REMIND_MIN, REMIND_PRESETS, setHwReminder, useHwDefault, useHwReminder } from "../../state/hwRemind.js";
 import { extHwSourceName, isExternalNoticeId } from "../../state/exthw.js";
+import { vaultCatchAttr } from "../../components/vault/vaultDrag.js";
 
 /* ---------- 深链学期挂钩 ----------
  * 深链（小OH navigate / 收藏原子）可能带 semesterId：courseId 是学期作用域的，
@@ -421,6 +422,7 @@ export function HomeworkRow({
   return (
     <div
       className={`row row-click${isIgnored ? " is-hw-ignored" : ""}`}
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: h.title, sub: courseName ?? h.courseName ?? "课程", atom: { kind: "assignment", key: enc(h.courseId, h.id, h.title, courseName ?? "", sem ?? "") }, source: "网络学堂" })}
       style={isIgnored ? { ...style, opacity: 0.55 } : style}
       role="button"
       tabIndex={0}
@@ -487,6 +489,7 @@ export function NoticeRow({
   return (
     <div
       className="row row-click"
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: n.title, sub: (courseName ?? "课程") + " · " + n.publisher, atom: { kind: "notice", key: enc(n.courseId, n.id, n.title, courseName ?? "", sem ?? "") }, source: "网络学堂" })}
       style={style}
       role="button"
       tabIndex={0}
@@ -524,6 +527,7 @@ export function FileRow({ f, courseName, from, style, sem }: RowProps & { f: Cou
   return (
     <div
       className="row row-click"
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: f.title, sub: (courseName ?? "课程") + " · 课程文件", atom: { kind: "file", key: enc(f.courseId, f.id, f.title, courseName ?? "", sem ?? "") }, source: "网络学堂" })}
       style={style}
       role="button"
       tabIndex={0}

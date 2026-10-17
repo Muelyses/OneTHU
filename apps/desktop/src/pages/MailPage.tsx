@@ -15,6 +15,7 @@ import { IconMail, IconRefresh, IconPen, IconChevron } from "../components/Icons
 import { CollectStar } from "../components/Collect.js";
 import { showToast } from "../state/toast.js";
 import { useExitHold, useSegPill } from "../lib/motion.js";
+import { vaultCatchAttr } from "../components/vault/vaultDrag.js";
 
 /** 邮件时间：今天 14:05 / 昨天 / 9月5日 / 2025年12月3日 */
 function fmtMailDate(ms: number): string {
@@ -47,6 +48,7 @@ function Row({ h, folder, active, onClick }: { h: MailHead; folder: string; acti
   return (
     <div
       className={`mail-row${active ? " active" : ""}${h.seen ? "" : " unread"}`}
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: h.subject, sub: senderName(h.from), atom: { kind: "mail", key: `${folder}#${h.uid}` }, source: "邮箱" })}
       role="button"
       tabIndex={0}
       onClick={onClick}

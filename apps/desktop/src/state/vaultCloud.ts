@@ -12,6 +12,9 @@ import { bytesToBase64 } from "../lib/imageSave.js";
 import {
   registerVaultCloudAdapter, type VaultCloudAdapter, type VaultCloudRef, type VaultSharePayload,
 } from "./vaultShare.js";
+import {
+  expiredShareRefs, markShareRevoked, rememberShare, shareRefsSnapshot, unreferencedFilesOf, type ShareFileRef,
+} from "./shareRefs.js";
 
 interface Repo { id: string; name: string }
 interface ShareOut { link: string; token: string }
@@ -56,6 +59,7 @@ const adapter: VaultCloudAdapter = {
     /* 文件条目先上传到分享目录（同一目录一起分享）；清单里只留相对路径。 */
     const cloud = JSON.parse(JSON.stringify(payload)) as VaultSharePayload;
     const filesDir = `${dir}/files`;
+    const shareFiles: ShareFileRef[] = [];
     let filesReady = false;
     for (const it of cloud.items ?? []) {
       const f = it.file;
@@ -67,6 +71,7 @@ const adapter: VaultCloudAdapter = {
       const safe = (f.hash ? f.hash.slice(0, 8) + "-" : "") + f.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
       await invoke("seafile_upload", { token, repoId, parentDir: filesDir, localPath: f.stagedPath, replace: true });
       f.cloudPath = `files/${safe}`;
+      if (f.hash) shareFiles.push({ hash: f.hash, path: `files/${safe}` });
     }
     const manifest = JSON.stringify(cloud);
     const localPath = await writeTemp(`onethu-vault-${id}.json`, manifest);
@@ -76,6 +81,7 @@ const adapter: VaultCloudAdapter = {
     try {
       const share = await invoke<ShareOut>("seafile_share", { token, repoId, path: dir, expireDays: EXPIRE_DAYS, password: "" });
       const expiresAt = Date.now() + EXPIRE_DAYS * 24 * 3600 * 1000;
+      rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path, manifestName: "manifest.json", files: shareFiles, expiresAt });
       return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
     } catch {
       /* 目录分享被云盘策略拒绝：退化为分享清单文件（文件条目不可直接下载） */
@@ -85,6 +91,7 @@ const adapter: VaultCloudAdapter = {
       token, repoId, path, expireDays: EXPIRE_DAYS, password: "",
     });
     const expiresAt = Date.now() + EXPIRE_DAYS * 24 * 3600 * 1000;
+    rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path: dir, manifestName: "manifest.json", files: shareFiles, expiresAt });
     return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
   },
 
@@ -99,9 +106,36 @@ const adapter: VaultCloudAdapter = {
   async revoke(ref: VaultCloudRef): Promise<void> {
     const st = ref.shareToken?.trim();
     if (!st) throw new Error("没有可撤销的分享 token");
+    const record = shareRefsSnapshot().refs.find((r) => r.shareUrl === ref.shareUrl || r.shareToken === st);
     await seafileShareDelete(st);
+    if (!record) return;
+    markShareRevoked(record.id);
+    /* 只删除其他有效分享没引用的文件；失败不阻塞撤销（下次启动再清）。 */
+    const token = getSeafileToken();
+    if (!token) return;
+    const dir = /\/manifest\.json$/.test(record.path) ? record.path.replace(/\/manifest\.json$/, "") : record.path;
+    for (const f of unreferencedFilesOf(record.id)) {
+      const full = f.path.startsWith("/") ? f.path : `${dir}/${f.path}`;
+      await invoke("seafile_delete", { token, repoId: record.repoId, path: full, kind: "file" }).catch(() => undefined);
+    }
   },
 };
+
+/** 启动时清理过期分享：先撤链接，再删无引用文件（尽力而为；失败留给下次）。 */
+export async function cleanupExpiredVaultShares(): Promise<number> {
+  const expired = expiredShareRefs();
+  if (expired.length === 0) return 0;
+  let n = 0;
+  for (const r of expired) {
+    try {
+      await adapter.revoke({ provider: "seafile", repoId: r.repoId, path: r.path, manifestName: r.manifestName, shareUrl: r.shareUrl, shareToken: r.shareToken, expiresAt: r.expiresAt });
+      n++;
+    } catch {
+      /* 网络/权限问题：保留待下次 */
+    }
+  }
+  return n;
+}
 
 let installed = false;
 
@@ -115,6 +149,7 @@ export async function installVaultCloudAdapter(): Promise<boolean> {
   }
   if (!installed) registerVaultCloudAdapter(adapter);
   installed = true;
+  void cleanupExpiredVaultShares().catch(() => undefined);
   return true;
 }
 

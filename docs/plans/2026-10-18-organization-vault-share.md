@@ -233,3 +233,12 @@
   `nfc_read_tag` 包装命令；`lib/nfc.ts` + 暂存箱「NFC 接收」按钮：读到 ONTOUCH1/ONV 直接导入。
   桌面端恒不可用；**发送端 HCE 服务**与真机验证仍待做。
 - 构建：cargo check / typecheck / Vite build / guard / docs 通过；vault 30/30。
+
+
+### 12.7 分享引用账本与过期清理（2026-10-18）
+
+- `state/shareRefs.ts`：记录每条云分享引用的文件（hash + 云盘路径），同 shareUrl 去重更新；
+  提供有效/过期分享、撤销、无引用文件计算、hash 是否仍被引用。
+- vaultCloud 上传时自动记账；撤销时先撤分享链接，再只删无其他有效引用的文件；
+  启动时 `cleanupExpiredVaultShares()` 清理过期分享（失败留待下次）。
+- `tools/share-refs-test.mjs` 8/8；目录清理（空文件夹/清单）与真实云盘 live 冒烟仍待做。

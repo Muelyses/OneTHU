@@ -45,7 +45,7 @@ import { activeBoard, loadBoard } from "../../state/board.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../../plugins/tabs.js";
 import {
   FOLDER_ICONS, IconBook, IconCalendar, IconCard, IconCloud, IconExternal, IconFlag, IconFolder,
-  IconGitLab, IconHome, IconInfo, IconLearn, IconMail, IconOrb, IconPen, IconPin, IconPlus,
+  IconGitLab, IconHome, IconIn, IconInfo, IconLearn, IconMail, IconOrb, IconPen, IconPin, IconPlus,
   IconSchedule, IconSettings, IconSpark, IconStar, IconTabsCards, IconThos, IconTrace, IconX,
   IconXiaoda, IconXk,
 } from "../Icons.js";
@@ -657,6 +657,7 @@ function pageGlyph(page: Page): (p: { width?: number; height?: number }) => Reac
     case "services": return IconSpark;
     case "boards": return IconTabsCards;
     case "settings": return IconSettings;
+    case "vault": return IconIn;
     default: return IconFolder;
   }
 }

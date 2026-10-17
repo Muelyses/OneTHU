@@ -21,6 +21,7 @@ import { SemesterSelectionPage } from "../../pages/learn/SemesterSelectionPage.j
 import { SchedulePage } from "../../pages/Schedule.js";
 import { HomeTab } from "./HomeTab.js";
 import { BoardListPage } from "../../pages/BoardListPage.js";
+import { VaultPage } from "../vault/VaultPage.js";
 import { OnePageSurface } from "../FreeBoard.js";
 import { MailPage } from "../../pages/MailPage.js";
 import CloudPage from "../../pages/CloudPage.js";
@@ -103,6 +104,8 @@ export function renderPage(page: Page): ReactNode {
     /* 白板（PR 55 原子收藏升级）：收藏夹列表页 + 某一块白板 */
     case "boards":
       return <BoardListPage />;
+    case "vault":
+      return <VaultPage />;
     case "board":
       /* 一块 OnePage = 一块自由白板（与首页同一画布）；页面 id 与深链 #/board/<板 id> 不变 */
       return <OnePageSurface />;

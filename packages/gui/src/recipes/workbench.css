@@ -443,3 +443,29 @@ html:root .add-drawer.is-detail.is-tall { height: var(--sheet-h, 86dvh); }
 /* Plugin tab glyphs (page-declared SVG) align with the built-in 14px tab icons. */
 html:root .ex-tab-plugin-glyph { display: inline-flex; align-items: center; justify-content: center; width: var(--og-icon-sm); height: var(--og-icon-sm); }
 html:root .ex-tab-plugin-glyph svg { width: 100%; height: 100%; }
+
+/* ══════════ 暂存箱（Phase 1：混合对象 + 拖入 + 口令） ══════════ */
+/* 只用 OneGUI 令牌：新 UI 不再长私有 chrome。 */
+.vault-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--og-space-3); margin-bottom: var(--og-space-4); }
+.vault-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-2); }
+.vault-share { display: grid; gap: var(--og-space-2); margin: var(--og-space-3) 0; padding: var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); }
+.vault-share-code { display: block; font-family: var(--og-font-mono); font-size: var(--og-text-micro); line-height: var(--og-text-micro-lh); color: var(--og-content-1); overflow-wrap: anywhere; user-select: all; }
+.vault-footer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--og-space-2); margin-top: var(--og-space-3); }
+html:root .vault-drag-ghost { position: fixed; left: 0; top: 0; z-index: var(--og-z-modal); display: flex; align-items: center; gap: var(--og-space-2); max-width: 60vw; padding: var(--og-space-2) var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); color: var(--og-content-1); pointer-events: none; will-change: transform; }
+.vault-drag-ghost-type { flex: none; padding: 0 var(--og-space-2); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); font-size: var(--og-text-micro); color: var(--og-content-2); }
+.vault-drag-ghost-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--og-text-label); }
+html:root .vault-drop { position: fixed; left: 50%; bottom: calc(var(--og-space-8) + env(safe-area-inset-bottom)); z-index: var(--og-z-modal); display: flex; align-items: center; gap: var(--og-space-2); padding: var(--og-space-2) var(--og-space-4); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); color: var(--og-content-1); transform: translateX(-50%); transition: transform .16s ease-out, border-color .16s ease-out; }
+html:root .vault-drop.is-hover { border-color: var(--og-focus-color); transform: translateX(-50%) scale(1.06); }
+.vault-drop-icon { display: inline-flex; align-items: center; justify-content: center; color: var(--og-content-2); }
+.vault-drop-main { display: grid; min-width: 0; }
+.vault-drop-title { max-width: 54vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--og-text-label); }
+.vault-drop-sub { font-size: var(--og-text-micro); color: var(--og-content-2); }
+body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
+@media (max-width: 839.98px) {
+  html:root .vault-drop { bottom: calc(var(--og-space-10) + env(safe-area-inset-bottom)); }
+  .vault-toolbar { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root .vault-drop { transition: none; }
+  html:root .vault-drop.is-hover { transform: translateX(-50%); }
+}

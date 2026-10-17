@@ -77,6 +77,7 @@ export interface NavEntry {
 
 export const NAV_REGISTRY: NavEntry[] = [
   /* —— 学习 —— */
+  { id: "vault", name: "暂存箱", category: "行政", visibility: "group", page: "vault", keywords: ["暂存箱", "收纳", "收集", "暂存", "分享口令", "箱子"], note: "任何元素先收进来，再整理/分享" },
   { id: "learn", name: "网络学堂", category: "学习", visibility: "group", page: "learn", keywords: ["课程", "学堂", "文件", "讨论区"], note: "本学期课程总览" },
   { id: "learn-assignments", name: "全部作业", category: "学习", visibility: "core", page: "learn-assignments", keywords: ["作业", "DDL", "截止"], note: "网络学堂与外部作业源合并视图（待办 tab 直达页）" },
   { id: "learn-notices", name: "全部通知", category: "学习", visibility: "group", page: "learn-notices", keywords: ["通知", "课程通知"] },

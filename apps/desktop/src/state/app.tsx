@@ -42,7 +42,8 @@ export type Page =
   | "learn-ykt-course" // R25：雨课堂课程内容页（该课全部内容；navParams.extCourseId 缺省取最近打开的课程）
   /* 白板（霖的原子收藏升级）：boards = 收藏夹列表页，board = 某一块白板 */
   | "boards"
-  | "board";
+  | "board"
+  | "vault"; // 暂存箱（万物皆可收纳；Phase 1：混合对象清单 + 分享口令）
 
 /** 返回目标：页内返回键（BackButton）与顶栏返回键共用同一条数据 */
 export interface BackTarget {
@@ -139,7 +140,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "xiaoda", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "xiaoda", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board", "vault"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /**
  * R20-B2：雨课堂作业原生详情页参数。

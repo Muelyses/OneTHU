@@ -98,3 +98,20 @@
 - 口令可跨账号导入；过期/撤销后本地校验即清理分享文件夹；无引用文件才删。
 - 名片可编辑、可选择性分享；碰一碰能选三种内容的任意组合；通讯录可存组织/好友名片。
 - 好友通道能直接放文件/作业/口令/留言；云盘断开路径被移除且 UI 说明清楚。
+
+
+## 9. 进度（2026-10-18 Phase 1：暂存箱地基）
+
+已落地（提交见 git log）：
+- `state/vault.ts`：多暂存箱、混合对象清单（atom/text/file/board-item/payload）、去重、持久化、订阅、文件 hash 索引。
+- `state/vaultShare.ts`：`ONV1.<base64url>.<checksum>` 口令编码/校验/解码；云盘适配器接口（未注册时 inline，注册后只编码云盘引用）；导入为当前暂存箱；撤销接口。
+- `components/vault/vaultDrag.ts`：全局 `data-vault-catch` 拖动识别（鼠标 6px / 触屏 320ms 长按）、ghost、`[data-vault-drop]` 命中、吸入动画、点击吞掉、重复检测。
+- `VaultPage`：箱子切换/新建/重命名/清空/删除、清单展示/移除、生成/复制/导入口令；页面路由 `vault`（Page/TOP_PAGES/KNOWN_PAGES/renderPage/nav registry/PAGE_ATOMS/TabStrip icon）。
+- 搜索结果（CommandPalette）已接入 `data-vault-catch`；OneGO 增加「暂存箱」入口。
+- 回归：`tools/vault-browser-test.mjs` 12 条断言（路由、拖入、去重、口令形状/校验/篡改拒绝、导入替换）。
+- CSS 走 `packages/gui/src/recipes/workbench.css` 令牌；桌面/手机 bottom 位置、reduced-motion 已处理。
+
+明确未做（后续阶段）：
+- 云盘适配器实现（上传清单/分享文件夹/权限/撤销/引用计数）；当前 inline 口令适合小箱子。
+- 除搜索结果外的拖拽来源（白板卡片、邮件/新闻/课程/文件/文字选取等）与手势冲突仲裁；文件/文字/课程共享方略待调研报告。
+- 名片、组织、NFC、通讯录、强制云盘。

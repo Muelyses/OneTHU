@@ -15,7 +15,7 @@
  */
 import type { ReactNode } from "react";
 import { openThosInApp } from "../lib/thosOpen.js";
-import { IconBell, IconBook, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconPen, IconPin, IconRefresh, IconSchedule, IconSearch, IconSpark, IconTabsCards, IconThos, IconToday, IconTrace, IconXiaoda, IconXk } from "../components/Icons.js";
+import { IconBell, IconBook, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconIn, IconInfo, IconLearn, IconMail, IconPen, IconPin, IconRefresh, IconSchedule, IconSearch, IconSpark, IconTabsCards, IconThos, IconToday, IconTrace, IconXiaoda, IconXk } from "../components/Icons.js";
 import {
   AgendaWidget, CardBalanceWidget, HomeworkWidget, RecentNoticesWidget, SubsNewsWidget,
   TodayClassesWidget, TodayOverviewWidget, TodayResvWidget,
@@ -203,6 +203,7 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "favs", title: "收藏", sub: "收藏夹首页", icon: IconPin, group: "页面", page: "favs" },
   { kind: "page", key: "boards", title: "所有 OnePage", sub: "白板列表 · 改名 / 换图标 / 排序", icon: IconTabsCards, group: "页面", page: "boards" },
   { kind: "page", key: "board", title: "OnePage", sub: "当前白板（具体某块用 navigate board + boardId）", icon: IconTabsCards, group: "页面", page: "board" },
+  { kind: "page", key: "vault", title: "暂存箱", sub: "万物皆可收纳 · 混合清单 · 分享口令", icon: IconIn, group: "页面", page: "vault" },
   { kind: "page", key: "folder", title: "收藏夹页", sub: "旧收藏夹（folderId 定位）", icon: IconFolder, group: "页面", page: "folder" },
   { kind: "page", key: "info-root", title: "信息", sub: "信息门户聚合页", icon: IconInfo, group: "页面", page: "info" },
   { kind: "page", key: "life-root", title: "生活", sub: "生活聚合页", icon: IconToday, group: "页面", page: "life" },

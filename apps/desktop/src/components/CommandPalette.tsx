@@ -19,6 +19,7 @@ import { showToast } from "../state/toast.js";
 import { ohAsk } from "../plugins/ChatDock.js";
 import { closePalette, togglePalette, usePaletteOpen } from "../state/palette.js";
 import { useApp } from "../state/context.js";
+import { vaultCatchAttr } from "./vault/vaultDrag.js";
 
 /** 快捷键提示要跟当前平台一致：Mac 显示 ⌘K，其它（含 Windows）显示 Ctrl K */
 export function shortcutLabel(): string {
@@ -208,6 +209,13 @@ export function CommandPalette(): ReactNode {
               <button
                 key={row.key}
                 data-pal-row={i}
+                data-vault-catch={
+                  row.kind === "atom"
+                    ? vaultCatchAttr({ type: "atom", title: row.title, sub: row.sub, atom: { kind: row.atomKind, key: row.atomKey }, source: "搜索结果" })
+                    : row.kind === "entry"
+                      ? vaultCatchAttr({ type: "atom", title: row.entry.name, sub: row.entry.note ?? row.entry.category, atom: { kind: "page", key: row.entry.id }, source: "功能目录" })
+                      : undefined
+                }
                 className={"pal-row" + (i === active ? " is-active" : "")}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => runRow(row)}

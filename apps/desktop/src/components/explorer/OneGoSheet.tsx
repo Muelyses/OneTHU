@@ -185,6 +185,11 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         sub="列表里改名 / 换图标 / 排序 / 删除"
         onClick={() => { navigate("boards"); onDone(); }}
       />
+      <Row
+        title="暂存箱"
+        sub="先把任意元素收进来，再整理或生成分享口令"
+        onClick={() => { navigate("vault"); onDone(); }}
+      />
       <div className="ex-hint-line">OnePage 是一张白板：长按组件换位，右下角进编辑与添加。</div>
     </section>
   );

@@ -43,6 +43,7 @@ import { ShellWallpaperLayer } from "./explorer/WallpaperVideo.js";
 import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
+import { VaultDropTarget } from "./vault/VaultDropTarget.js";
 import { useTabLayoutMode } from "../state/tabLayout.js";
 
 /* ══ OneGUI 适配层 ═════════════════════════════════════════════════════════
@@ -434,6 +435,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <ContextMenuHost />
       <WorkspaceEditorHost />
       <FolderIconPickerHost />
+      <VaultDropTarget />
       {/* 命令面板：⌘/Ctrl+K 或顶栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
       <CommandPalette />
       {/* 设置浮层（个人设置 / 插件 / OneTHU Harness）：不是标签页，高于任何标签页 */}

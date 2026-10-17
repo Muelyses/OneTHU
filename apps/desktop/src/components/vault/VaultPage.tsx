@@ -17,6 +17,7 @@ import {
 } from "../../state/vault.js";
 import { decodeShare, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
+import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
 import { fileRefOf, stageFromFiles, stageFromPicker, type StagedFile } from "../../lib/fileChannel.js";
@@ -58,6 +59,7 @@ export function VaultPage(): ReactNode {
   const [fileHot, setFileHot] = useState(false);
   const [cloudReady, setCloudReady] = useState(false);
   const [shareInfo, setShareInfo] = useState<VaultSharePayload | null>(null);
+  const [touchCode, setTouchCode] = useState("");
 
   useEffect(() => {
     const last = activeVault().lastShareCode ?? "";
@@ -93,6 +95,48 @@ export function VaultPage(): ReactNode {
     const f = await openFormModal("重命名暂存箱", [{ key: "name", label: "名字", required: true, default: box.name }]);
     if (f?.name) renameVault(box.id, f.name);
   }, [box.id, box.name]);
+
+  const makeTouch = useCallback(async (): Promise<void> => {
+    const orgs = orgOptions();
+    const f = await openFormModal("碰一碰 / 组合分享", [
+      { key: "vault", label: "带上当前暂存箱", kind: "select", options: [{ value: "yes", label: "是" }, { value: "no", label: "否" }] },
+      { key: "personal", label: "带上我的个人名片", kind: "select", options: [{ value: "yes", label: "是" }, { value: "no", label: "否" }] },
+      {
+        key: "org", label: "带上组织名片", kind: "select",
+        options: [{ value: "", label: "不带" }, ...orgs.map((o) => ({ value: o.id, label: o.name }))],
+      },
+    ]);
+    if (!f) return;
+    setBusy(true);
+    try {
+      const r = await buildTouchCode({
+        withVault: f.vault !== "no",
+        withPersonal: f.personal !== "no",
+        withOrgId: f.org || undefined,
+      });
+      setTouchCode(r.code);
+      try { await navigator.clipboard.writeText(r.code); showToast("碰一碰口令已生成并复制（NFC 接入前用口令/二维码代替）"); }
+      catch { showToast("碰一碰口令已生成：复制下方文本"); }
+    } catch (e) {
+      showToast(`组合分享生成失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
+  const receiveTouch = useCallback(async (): Promise<void> => {
+    const f = await openFormModal("接收碰一碰", [{ key: "code", label: "碰一碰口令（ONTOUCH1.…）", kind: "textarea", required: true }]);
+    if (!f?.code) return;
+    setBusy(true);
+    try {
+      const r = await importTouchCode(f.code);
+      if (!r.ok) { showToast(r.reason ?? "口令无法导入"); return; }
+      const parts = [r.vault ? "暂存箱" : "", r.contact ? "名片" : "", r.org ? "组织" : ""].filter(Boolean).join(" / ");
+      showToast(`已接收：${parts}`);
+    } finally {
+      setBusy(false);
+    }
+  }, []);
 
   const importCode = useCallback(async (): Promise<void> => {
     const f = await openFormModal("导入分享口令", [
@@ -139,6 +183,8 @@ export function VaultPage(): ReactNode {
             <Btn variant="ghost" onClick={() => void rename()}>重命名</Btn>
             <Btn variant="ghost" onClick={() => void importCode()} disabled={busy}>导入口令</Btn>
             <Btn variant="outline" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
+            <Btn variant="ghost" onClick={() => void makeTouch()} disabled={busy}>碰一碰组合</Btn>
+            <Btn variant="ghost" onClick={() => void receiveTouch()} disabled={busy}>收碰一碰</Btn>
             <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0}>生成口令</Btn>
             <Text slot="micro" tone="faint">{cloudReady ? "云分享" : "本地口令"}</Text>
           </div>
@@ -175,6 +221,16 @@ export function VaultPage(): ReactNode {
           <Text slot="label">把文件拖到这里，或点「添加文件」</Text>
           <Text slot="micro" tone="faint">文件只入库引用与内容指纹；同一份文件重复拖入会自动去重。</Text>
         </div>
+        {touchCode ? (
+          <div className="vault-share">
+            <Text slot="micro" tone="faint">碰一碰 / 组合口令（NFC 接入前用这段口令或二维码代替）：</Text>
+            <code className="vault-share-code">{touchCode}</code>
+            <div className="vault-actions">
+              <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(touchCode).catch(() => undefined)}>复制</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => setTouchCode("")}>收起</Btn>
+            </div>
+          </div>
+        ) : null}
         <Text slot="micro" tone="faint">
           提示：搜索结果/首页元素支持长按（手机）或直接拖动（桌面）收进来；文件本体通过清华云盘保存（下一步接入）。
         </Text>

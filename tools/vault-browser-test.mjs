@@ -115,6 +115,27 @@ try {
   });
   check(n2 === fileState.n, 'same file content is deduped by hash (not by name)');
   /* 手机 390：长按（touch pointer）应启动拖动并出现落点，取消后回弹 */
+  /* 碰一碰组合：暂存箱口令 + 个人名片一起编码；接收端可导入 */
+  await p.evaluate(() => localStorage.setItem('onethu.cards.v1', JSON.stringify({
+    v: 1,
+    personal: { name: '碰一碰测试', avatar: '', website: '', social: '', phone: '13800000000', bio: '一句话', updatedAt: Date.now() },
+    orgs: [], contacts: [],
+  })));
+  await p.getByRole('button', { name: '碰一碰组合' }).click();
+  await p.waitForSelector('.plg-form-modal');
+  await p.getByRole('button', { name: '提交' }).click();
+  await p.waitForTimeout(800);
+  const touchCode = await p.locator('.vault-share-code').filter({ hasText: 'ONTOUCH1' }).innerText();
+  check(touchCode.trim().startsWith('ONTOUCH1.'), 'touch combo generates ONTOUCH1 code');
+  const touch = await p.evaluate(async (c) => {
+    const m = await import('/src/state/touch.ts');
+    const dec = m.decodeTouch(c);
+    const r = await m.importTouchCode(c);
+    return { ok: dec.ok, hasVault: Boolean(dec.payload?.vaultCode), hasCard: Boolean(dec.payload?.personal), imported: r };
+  }, touchCode.trim());
+  check(touch.ok && touch.hasVault && touch.hasCard, 'touch code carries vault share code + personal card');
+  check(touch.imported.ok && touch.imported.vault === true, 'touch code can be imported by receiver');
+
   check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
   await p.setViewportSize({ width: 390, height: 844 });
   await p.waitForTimeout(600);

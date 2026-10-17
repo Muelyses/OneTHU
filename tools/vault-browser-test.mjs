@@ -190,6 +190,24 @@ try {
   });
   check(applied.theme && applied.applied === 'onethu.theme.violet', 'theme payload applies the theme');
 
+  /* 选中文字快捷键：文字没有可拖 DOM，用 ⌘/Ctrl+Shift+S 收纳 */
+  const textDrop = await p.evaluate(async () => {
+    const el = document.createElement('p');
+    el.id = 'vault-selection-probe';
+    el.textContent = '这是一段要被收进暂存箱的文字';
+    document.body.appendChild(el);
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    const sel = getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+    return sel.toString();
+  });
+  await p.keyboard.press('Control+Shift+S');
+  await p.waitForTimeout(500);
+  const textItems = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items));
+  check(textDrop.length > 0 && textItems.some((i) => i.type === 'text' && i.text?.includes('收进暂存箱的文字')), 'selected text can be captured with Ctrl/Cmd+Shift+S');
+
   check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
 
   await p.setViewportSize({ width: 390, height: 844 });

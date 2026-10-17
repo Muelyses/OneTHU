@@ -333,7 +333,8 @@ export function VaultPage(): ReactNode {
           </div>
         ) : null}
         <Text slot="micro" tone="faint">
-          提示：搜索结果/首页元素支持长按（手机）或直接拖动（桌面）收进来；文件本体通过清华云盘保存（下一步接入）。
+          提示：搜索结果/首页元素支持长按（手机）或直接拖动（桌面）收进来；选中文字按 ⌘/Ctrl+Shift+S 收纳；
+          文件本体通过清华云盘保存。
         </Text>
       </Card>
 

@@ -314,3 +314,10 @@
 - 插件卡挂 data-vault-catch（payload.kind=plugin）；主题选择挂 themeId；壁纸挂 ref。
 - vaultRegistry 打开插件引用 → 打开插件页；主题/壁纸直接应用。
 - vault 回归 37/37（增加插件/主题来源静态断言）；guard/build 通过。
+
+
+### 12.17 选中文字收纳（2026-10-18）
+
+- 选中文字按 ⌘/Ctrl+Shift+S 收进暂存箱（文字没有可拖 DOM，提供快捷入口）；正文 ≤4000 字，
+  标题取前 40 字，来源标「选中文字」。
+- VaultPage 提示补充该快捷键；vault 回归 38/38（真实选区 → 快捷键 → 入箱）。

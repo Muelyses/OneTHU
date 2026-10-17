@@ -117,7 +117,7 @@ export function CommandPalette(): ReactNode {
     /* 设置行级命中：直达该行（页签 + 分节/行高亮），复用既有请求机制 */
     if (row.kind === "row") {
       const res = goSearchRow(row.row);
-      navigate(row.row.tab === "OneTHU Harness" || row.row.tab === "插件" ? "plugins" : "settings");
+      /* 入口态由 goSearchRow 决定；这里再 navigate("plugins") 会把 OH 行打回插件页。 */
       /* 条件隐藏行 / 无独立控件的行：落到分节根后**明说**一句，不冒充行级命中 */
       if (res.note) showToast(res.note);
       return;

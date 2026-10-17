@@ -91,7 +91,17 @@ const KNOWN_PAGES: ReadonlySet<string> = new Set([
   "homepage", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life",
   "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs",
   "boards", "board", "xiaoda",
+  /* 网络学堂子页/详情页：OH 的 navigate 描述一直宣称支持这些页面，但以前不在白名单里，
+     首页标签下 navigate 会被 openTab 判"未知页"直接回首页 → OH 假报成功。 */
+  "learn-course", "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
+  "learn-assignment-detail", "learn-notice-detail", "learn-forum-thread", "learn-file-detail",
+  "learn-ykt-detail", "learn-ykt-course",
 ]);
+
+/** 是否是可导航页（插件动态 tab 也算）；供插件门面与 OH 共用，别再手写第二份白名单。 */
+export function isKnownPage(page: string): boolean {
+  return page.startsWith("plugin:") || KNOWN_PAGES.has(page);
+}
 
 function loadStore(): ExplorerState {
   const fallback: ExplorerState = { tabs: [], activeId: HOME_TAB_ID, workspaces: [] };
@@ -383,7 +393,7 @@ export interface OpenTabOptions {
 export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOptions): string {
   /* 未知页面 id 一律回首页（2026-10-15）：历史存档/旧入口里可能还残留改名前的老 id，
      与其开出一个 renderPage 渲染不出来的空标签，不如明确回首页。 */
-  if (!page.startsWith("plugin:") && !KNOWN_PAGES.has(page)) {
+  if (!isKnownPage(page)) {
     focusTab(HOME_TAB_ID);
     return HOME_TAB_ID;
   }
@@ -427,22 +437,23 @@ export function duplicateTab(id: string): string {
   return openTab(tab.page, tab.params, { title: tab.title, forceNew: true });
 }
 
-export function focusTab(id: string): void {
+export function focusTab(id: string): boolean {
   const tab = getTab(id);
-  if (!tab) return;
+  if (!tab) return false;
   if (state.activeId === id) {
     writeHashFor(tab); // hash 可能被外部改过，对齐
-    return;
+    return true;
   }
   const tabs = state.tabs.map((t) => (t.id === id ? { ...t, lastActiveAt: Date.now() } : t));
   setState({ ...state, tabs, activeId: id });
   writeHashFor(tab);
+  return true;
 }
 
-export function closeTab(id: string): void {
-  if (id === HOME_TAB_ID) return; // 首页不可关
+export function closeTab(id: string): boolean {
+  if (id === HOME_TAB_ID) return false; // 首页不可关
   const idx = state.tabs.findIndex((t) => t.id === id);
-  if (idx < 0) return;
+  if (idx < 0) return false;
   const tabs = state.tabs.filter((t) => t.id !== id);
   let activeId = state.activeId;
   if (activeId === id) {
@@ -452,6 +463,7 @@ export function closeTab(id: string): void {
   setState({ ...state, tabs, activeId });
   const at = getTab(activeId);
   if (at) writeHashFor(at);
+  return true;
 }
 
 /** 关闭其他（首页除外） */

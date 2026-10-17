@@ -352,17 +352,21 @@ export interface OnethuApi {
     toolList(): Array<{ id: string; name: string; description: string }>;
     toolRun(id: string): Promise<{ ok: boolean; error?: string }>;
     toolDelete(id: string): void;
-    flowCreate(name: string, trigger: unknown, steps: unknown): void;
-    flowList(): Array<{ id: string; name: string; trigger: unknown; lastRun?: number; lastOk?: boolean }>;
+    flowCreate(name: string, trigger: unknown, steps: unknown): { id: string };
+    flowList(): Array<{ id: string; name: string; trigger: unknown; enabled: boolean; lastRun?: number; lastOk?: boolean; lastError?: string }>;
     flowRun(id: string): Promise<{ ok: boolean; error?: string }>;
+    /** 改名字 / 触发方式 / 步骤 / 启停（OH 的 ext_flow_update；UI 启停开关同一条） */
+    flowUpdate(id: string, patch: { name?: string; trigger?: unknown; steps?: unknown; enabled?: boolean }): { ok: boolean };
+    flowSetEnabled(id: string, on: boolean): { ok: boolean };
     flowDelete(id: string): void;
     widgetCreate(name: string, html: string, x?: number, y?: number): { id: string };
     widgetList(): Array<{ id: string; name: string; createdAt: number }>;
     widgetDelete(id: string): void;
     onePageCreate(name: string, icon?: string): { id: string };
-    onePageList(): Array<{ id: string; name: string; kind: string }>;
+    onePageList(): Array<{ id: string; name: string; kind: string; icon: string }>;
     onePageDelete(id: string): { ok: boolean; reason?: string };
     onePageRename(id: string, name: string): void;
+    onePageSetIcon(id: string, icon: string): { ok: boolean };
     onePageOpen(id: string): void;
     onePageItems(boardId: string): Array<{ id: string; kind: string; text?: string; x: number; y: number; w: number; h: number }>;
     onePageAddItem(boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }>;
@@ -394,15 +398,18 @@ export interface OnethuApi {
     };
     workspaceList(): Array<{ id: string; name: string; live: boolean; tabs: number }>;
     workspaceCreate(name: string, tabIds?: unknown): { id: string };
-    workspaceOpen(id: string): void;
-    workspaceClose(id: string): void;
-    workspaceDissolve(id: string): void;
-    workspaceDelete(id: string): void;
+    workspaceOpen(id: string): boolean;
+    /** 收起活板（只折叠，不关标签/不删定义） */
+    workspaceCollapse(id: string): boolean;
+    /** 真正关闭活板（关成员标签 + 移除定义；破坏性） */
+    workspaceClose(id: string): boolean;
+    workspaceDissolve(id: string): boolean;
+    workspaceDelete(id: string): boolean;
     tabList(): Array<{ id: string; title: string; page: string }>;
     tabOpen(page: string): { id: string };
-    tabClose(id: string): void;
+    tabClose(id: string): boolean;
     tabDuplicate(id: string): { id: string };
-    tabFocus(id: string): void;
+    tabFocus(id: string): boolean;
     wallpaperSet(scope: string, ref: string | null): void;
     wallpaperGet(): { global: string | null };
     voiceSet(patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };
@@ -550,7 +557,7 @@ export interface OnethuApi {
   };
   nav: {
     /** 应用内跳转（page 见接口指南「页面路由」；params 如 { reserveTab: "room" }） */
-    go(page: string, params?: Record<string, unknown>): void;
+    go(page: string, params?: Record<string, unknown>): boolean;
     /** 按关键词检索全应用可跳转原子（功能页面 / 今日组件 / 本机已见过的课程·作业·通知·
      *  在线服务等）。只查静态注册表 + 本机缓存，**绝不发起校园请求**；
      *  与 nav.openAtom 配对即「一句话直达」。需 nav 权限 */

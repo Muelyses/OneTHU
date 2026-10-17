@@ -686,6 +686,14 @@ export function TabStrip(): ReactNode {
   /* 插件页图标由插件注册时提供；OnePage 标签用当前打开的板自己的 icon。 */
   const pluginTabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
   const pluginIcons = useMemo(() => new Map(pluginTabs.map((t) => [t.pageKey, t.iconSvg ?? ""] as const)), [pluginTabs]);
+  /* OnePage 改名/换图标只发 boards.changed，不动 explorer store——不订阅的话标签标题与图标
+     会停在旧值（改完 icon 在标签栏看不见）。 */
+  const [boardsTick, setBoardsTick] = useState(0);
+  useEffect(() => {
+    const on = (): void => setBoardsTick((t) => t + 1);
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
   const boardIcon = useMemo(() => {
     if (!tabs.some((t) => t.page === "board")) return undefined;
     try {
@@ -693,7 +701,8 @@ export function TabStrip(): ReactNode {
     } catch {
       return undefined;
     }
-  }, [tabs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabs, boardsTick]);
   /* ① 横向滚动进度条（Layout 旧 SegmentedOverflow 的 indi/thumb 同款）：
      放不下（scrollWidth > clientWidth）才渲染，scrollLeft 比例驱动 thumb 宽/位；
      resize（ResizeObserver）+ scroll 双监听，开关标签后 tabs.length 变化再补一拍。 */

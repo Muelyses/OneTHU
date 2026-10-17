@@ -110,7 +110,7 @@ ok(api.ext.onePageAddAtom({ boardId: landingBoard }, "course:oh-wire-1").reason 
 const toHome = api.ext.onePageAddAtom({ to: "home" }, "course:oh-wire-2");
 const homeBoard = onePage.allOnePages().find((b) => b.id === toHome.boardId);
 ok(toHome.ok === true && homeBoard?.kind === "system", "不给 boardId = 落首页（系统板）");
-ok(onePage.onePagesWithAtom("course:oh-wire-2").length === 1, "首页上确实躺着那颗原子（可查回）");
+ok(onePage.onePagesWithAtom("course|oh-wire-2").length === 1, "首页上确实躺着那颗原子（可查回；: 已归一成 |）");
 ok(api.ext.onePageAddAtom({ boardId: "board.不存在" }, "course:oh-wire-3").reason === "no-board", "目标板不存在 → reason=no-board");
 
 /* ⑥ 一级页名单副本：ext.tabOpen 对白板两页放行（漏了会被拦成「不认识的页面」） */

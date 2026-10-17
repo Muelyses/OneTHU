@@ -19,7 +19,7 @@ import { useDrawerRowsReorder } from "./TabDrawer.js";
 import { useAnchorPos } from "./TabDrawer.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { useFavs } from "../../state/favs.js";
-import { createOnePage, openOnePage, removeOnePage, userOnePages } from "../../state/onePage.js";
+import { createOnePage, openOnePage, removeOnePage, renameOnePage, userOnePages } from "../../state/onePage.js";
 import type { Board } from "../../state/boardCore.js";
 import { resolveAtom } from "../../state/atoms.js";
 import type { LearnNav, Page } from "../../state/app.js";
@@ -32,11 +32,14 @@ import {
   activateUserTheme,
   deleteFlow,
   deleteTheme,
+  runFlowNow,
+  setFlowEnabled,
   subscribeUserExt,
   userExtSnapshot,
 } from "../../state/userext.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { openWorkspaceEditor } from "./WorkspaceEditor.js";
+import { openFormModal } from "../../lib/formModal.js";
 
 /* ══════════ 抽屉开合 store（palette.ts 同款） ══════════ */
 
@@ -75,6 +78,7 @@ export function useOneGoSheetOpen(): boolean {
 /* ══════════ 我的收藏（OnePage）分段 ══════════ */
 
 function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
+  const { navigate } = useApp();
   const [name, setName] = useState("");
   const [tick, setTick] = useState(0);
   /* OnePage = 白板（2026-10-13 定案）：列出 BoardDoc.boards；点击 = 设为当前板并打开白板页 */
@@ -113,6 +117,23 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
     });
   };
 
+  const rename = async (b: Board): Promise<void> => {
+    const f = await openFormModal("重命名 OnePage", [
+      { key: "name", label: "名字", required: true, default: b.name },
+    ]);
+    if (!f) return;
+    renameOnePage(b.id, f.name ?? b.name);
+  };
+
+  const rowMenu = (b: Board, x: number, y: number): void => {
+    openContextMenu(x, y, [
+      { label: "重命名…", onSelect: () => void rename(b) },
+      { label: "改图标…", onSelect: () => openFolderIconPicker(b.id) },
+      { label: "设为当前 OnePage", onSelect: () => { openOnePage(b.id); showToast(`当前 OnePage：${b.name}`); } },
+      { label: "删除…", danger: true, sepBefore: true, onSelect: () => remove(b) },
+    ]);
+  };
+
   return (
     <section aria-label="我的 OnePage">
       <div className="ex-sec-head">
@@ -141,20 +162,29 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         <div className="ex-row-list">
           {boards.map((b) => (
             <div key={b.id} className="ex-row-wrap">
-              <button className="ex-row ex-row-clickable" onClick={() => openBoard(b)}>
+              <button
+                className="ex-row ex-row-clickable"
+                onClick={() => openBoard(b)}
+                onContextMenu={(e) => { e.preventDefault(); rowMenu(b, e.clientX, e.clientY); }}
+              >
                 <span className="ex-row-icon"><FolderIcon name={b.icon ?? "fist"} /></span>
                 <span className="ex-row-main">
                   <span className="ex-row-title">{b.name}</span>
-                  <span className="ex-row-sub">{b.kind === "system" ? "系统板（今日）" : "白板"}</span>
+                  <span className="ex-row-sub">{b.kind === "system" ? "系统板" : "OnePage"}</span>
                 </span>
               </button>
               {b.kind === "system" ? null : (
-                <Btn variant="ghost" onClick={() => remove(b)}>删除</Btn>
+                <Btn variant="ghost" onClick={(e) => rowMenu(b, e.clientX, e.clientY)}>⋯</Btn>
               )}
             </div>
           ))}
         </div>
       )}
+      <Row
+        title="所有 OnePage"
+        sub="列表里改名 / 换图标 / 排序 / 删除"
+        onClick={() => { navigate("boards"); onDone(); }}
+      />
       <div className="ex-hint-line">OnePage 是一张白板：长按组件换位，右下角进编辑与添加。</div>
     </section>
   );
@@ -171,10 +201,13 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
   const flows = userExtSnapshot().flows;
   const themes = userExtSnapshot().themes;
   const activeTheme = userExtSnapshot().activeThemeId;
-  const run = (id: string): void => {
-    /* 运行走 OH：OneFlow 的步骤经插件门面执行；此处只负责手动点火入口的可见性 */
-    void id;
-    showToast("在 OH 对话里说「运行 XX」即可执行（步骤走门面权限）");
+  const run = (id: string, name: string): void => {
+    showToast(`正在运行「${name}」…`);
+    void runFlowNow(id).then((r) => {
+      if (r.ok) showToast(`「${name}」运行完成`);
+      else showToast(`「${name}」失败：${r.error ?? "未知错误"}`);
+      setTick((t) => t + 1);
+    });
   };
   return (
     <section aria-label="OneFlow">
@@ -187,17 +220,23 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
         <div className="ex-row-list">
           {flows.map((f) => (
             <div key={f.id} className="ex-row-wrap">
-              <button className="ex-row ex-row-clickable" onClick={() => run(f.id)}>
+              <button className="ex-row ex-row-clickable" onClick={() => run(f.id, f.name)}>
                 <span className="ex-row-icon"><FolderIcon name="fist" /></span>
                 <span className="ex-row-main">
                   <span className="ex-row-title">{f.name}</span>
                   <span className="ex-row-sub">
+                    {f.enabled === false ? "已停用 · " : ""}
                     {f.trigger.kind === "manual" ? "手动" : f.trigger.kind === "cron" ? "每 " + f.trigger.everyMinutes + " 分钟" : "事件"} ·{" "}
-                    {f.lastRun ? (f.lastOk ? "上次正常" : "上次失败 · 在 OH 对话里重试并查看原因") : "未运行过"}
+                    {f.lastRun ? (f.lastOk ? "上次正常" : "上次失败，点这一行重试" + (f.lastError ? "：" + f.lastError : "")) : "未运行过"}
                   </span>
                 </span>
               </button>
-              <Btn variant="ghost" onClick={() => { deleteFlow(f.id); }}>删除</Btn>
+              <Btn variant="ghost" onClick={() => { setFlowEnabled(f.id, f.enabled === false); }}>{f.enabled === false ? "启用" : "停用"}</Btn>
+              <Btn variant="ghost" onClick={() => {
+                void confirmOk(`删除 OneFlow「${f.name}」？步骤与运行记录会一起删除。`).then((ok) => {
+                  if (ok) { deleteFlow(f.id); showToast(`已删除「${f.name}」`); }
+                });
+              }}>删除</Btn>
             </div>
           ))}
         </div>

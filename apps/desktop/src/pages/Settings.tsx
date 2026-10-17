@@ -93,6 +93,9 @@ const SETTINGS_TAB_OF: Record<string, string> = {
   云同步: "数据与同步", 外部作业源: "数据与同步",
   首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
   工作空间: "外观与布局", /* dev-explorer：缺键会让工作空间分节在所有页签恒显（用户实测「其他 设置多了个不动的分节/触发不一致」） */
+  /* OneGUI Section 的 textContent 含 hint（「搜索与胶囊底栏胶囊…」），下面按最长前缀匹配 */
+  搜索与胶囊: "外观与布局",
+  极客模式: "桌面小组件",
   通知: "通知与提醒",
   /* 2026-10-11 重构：桌面小组件独立成栏；语音合成/悬浮球迁到 OH 页；插件改成独立入口 */
   桌面小组件: "桌面小组件",
@@ -104,10 +107,19 @@ const SETTINGS_TAB_OF: Record<string, string> = {
 /* ── task-19：设置页各分节的设置行注册（声明式；与页签一一对应）── */
 defineSearchRows([
   { id: "set-theme-board", tab: "外观与布局", section: "主题", title: "主题", aliases: ["换主题", "配色", "主题板", "暗色", "夜间"], desc: "只列已启用主题，点「应用」切换" , breadcrumb: ["设置", "外观与布局", "主题", "主题"] },
-  { id: "set-theme-install", tab: "外观与布局", section: "主题", title: "安装主题", aliases: ["主题市场", "装主题"], desc: "打开插件市场的主题筛选" , breadcrumb: ["设置", "外观与布局", "主题", "安装主题"] },
-  { id: "set-theme-manage", tab: "外观与布局", section: "主题", title: "管理主题", aliases: ["启用主题", "停用主题"], desc: "主题插件的启用 / 停用" , breadcrumb: ["设置", "外观与布局", "主题", "管理主题"] },
+  { id: "set-theme-install", tab: "外观与布局", section: "主题", title: "安装主题", aliases: ["主题市场", "装主题"], desc: "打开插件市场的主题筛选" , breadcrumb: ["设置", "外观与布局", "主题", "安装主题"], go: () => requestPluginsView({ view: "market", category: "theme" }) },
+  { id: "set-theme-manage", tab: "外观与布局", section: "主题", title: "管理主题", aliases: ["启用主题", "停用主题"], desc: "主题插件的启用 / 停用" , breadcrumb: ["设置", "外观与布局", "主题", "管理主题"], go: () => requestPluginsView({ view: "mine", category: "theme" }) },
   { id: "set-theme-follow", tab: "外观与布局", section: "主题", title: "跟随系统昼夜", aliases: ["昼夜", "白天主题", "黑夜主题", "自动切换"], desc: "亮色用白天主题，深色用黑夜主题" , breadcrumb: ["设置", "外观与布局", "主题", "跟随系统昼夜"] },
-  { id: "set-appearance", tab: "外观与布局", section: "外观", title: "外观", aliases: ["密度", "字号", "圆角"], desc: "密度、字号、圆角等外观项" , breadcrumb: ["设置", "外观与布局", "外观", "外观"] },
+  { id: "set-appearance", tab: "外观与布局", section: "外观", title: "外观", aliases: ["密度", "字号", "圆角", "主题色"], desc: "主题、标签栏、玻璃程度、取色等外观项" , breadcrumb: ["设置", "外观与布局", "外观", "外观"] },
+  { id: "set-wallpaper", tab: "外观与布局", section: "外观", title: "壁纸", aliases: ["墙纸", "背景", "背景图", "动态壁纸", "上传壁纸", "壁纸库"], desc: "全窗壁纸库、上传与动态壁纸声音" , breadcrumb: ["设置", "外观与布局", "外观", "壁纸"] },
+  { id: "set-wallpaper-sound", tab: "外观与布局", section: "外观", title: "动态壁纸声音", aliases: ["视频壁纸声音", "壁纸静音"], desc: "视频壁纸有声时是否放开声音" , breadcrumb: ["设置", "外观与布局", "外观", "动态壁纸声音"] },
+  { id: "set-tabbar-style", tab: "外观与布局", section: "外观", title: "标签栏样式", aliases: ["标签栏", "竖栏", "横栏", "标签栏默认"], desc: "横版顶部标签 / 竖版左侧标签" , breadcrumb: ["设置", "外观与布局", "外观", "标签栏样式"] },
+  { id: "set-glass-level", tab: "外观与布局", section: "外观", title: "玻璃程度", aliases: ["玻璃", "材质", "毛玻璃", "透明", "透彻", "玻璃质感"], desc: "全站玻璃面材浓度四档" , breadcrumb: ["设置", "外观与布局", "外观", "玻璃程度"] },
+  { id: "set-dyn-color", tab: "外观与布局", section: "外观", title: "跟随系统取色", aliases: ["动态取色", "壁纸取色", "系统取色", "动态颜色"], desc: "用壁纸颜色重算全站配色" , breadcrumb: ["设置", "外观与布局", "外观", "跟随系统取色"] },
+  { id: "set-capsule-tap", tab: "外观与布局", section: "工作空间", title: "点击胶囊默认打开", aliases: ["胶囊", "胶囊默认动作", "搜索与胶囊", "底栏胶囊"], desc: "点胶囊默认进搜索还是 OH 对话" , breadcrumb: ["设置", "外观与布局", "工作空间", "点击胶囊默认打开"] },
+  { id: "set-search-history", tab: "外观与布局", section: "工作空间", title: "最近搜索记录", aliases: ["搜索历史", "清空搜索记录"], desc: "保留最近 10 条搜索记录，可清空" , breadcrumb: ["设置", "外观与布局", "工作空间", "最近搜索记录"] },
+  { id: "set-geek", tab: "桌面小组件", section: "极客模式", title: "极客模式（浏览器探索）", aliases: ["极客", "探索浏览器", "playwright", "浏览器自动化"], desc: "浏览器探索开关、环境下载与启动方式" , breadcrumb: ["设置", "桌面小组件", "极客模式", "极客模式（浏览器探索）"] },
+  { id: "set-geek-download", tab: "桌面小组件", section: "极客模式", title: "探索浏览器环境", aliases: ["playwright 下载", "下载浏览器", "浏览器环境"], desc: "一键下载/检查 Playwright 浏览器与独立 profile" , breadcrumb: ["设置", "桌面小组件", "极客模式", "探索浏览器环境"], landOn: { section: "极客模式", note: "下载/检查在「极客模式（浏览器探索）」行下方的环境卡里；已带到「极客模式」分节。" } },
   { id: "set-home-layout", tab: "外观与布局", section: "首页布局", title: "首页布局", aliases: ["首页", "卡片顺序"], desc: "首页卡片显隐与排序" , breadcrumb: ["设置", "外观与布局", "首页布局", "首页布局"] },
   { id: "set-favs", tab: "外观与布局", section: "收藏夹", title: "收藏夹", aliases: ["收藏", "导入收藏", "导出收藏"], desc: "收藏夹管理与导入导出" , breadcrumb: ["设置", "外观与布局", "收藏夹", "收藏夹"] },
   { id: "set-cloud", tab: "数据与同步", section: "云同步", title: "云同步", aliases: ["同步", "云盘同步", "备份"], desc: "云盘同步与恢复" , breadcrumb: ["设置", "数据与同步", "云同步", "云同步"] },
@@ -201,7 +213,11 @@ export function SettingsPage() {
     const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
     for (const head of heads) {
       const title = (head.textContent ?? "").trim();
-      const group = SETTINGS_TAB_OF[title] ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+      /* 精确优先；OneGUI 的 .og-section textContent = 标题 + hint，按最长已注册前缀兜底。 */
+      const prefix = Object.keys(SETTINGS_TAB_OF)
+        .filter((k) => title.startsWith(k))
+        .sort((a, b) => b.length - a.length)[0];
+      const group = SETTINGS_TAB_OF[title] ?? (prefix ? SETTINGS_TAB_OF[prefix] : null) ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
       if (!group) continue;
       const show = group === tab;
       /* show/hide 两支都必须走兄弟收拢：只收拢 hide 支时，先前隐藏轮留下的
@@ -612,6 +628,7 @@ export function SettingsPage() {
       <Card>
         <WidgetSettingsSection />
       </Card>
+      <SectionHead title="极客模式" />
       <GeekSection />
       {/* 2026-10-11（用户纠正）：OH **不是设置页的二级**，而是**插件页的二级子页面**
           （基础设置 / 高级配置）——分节与页签都已从这里移除，见 pages/Plugins.tsx 的 OH 入口。 */}
@@ -780,11 +797,11 @@ function DiagnosticsRow() {
 function WallpaperSection(): ReactNode {
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   return (
-    <div className="wall-section">
+    <div className="wall-section" data-set-id="row-壁纸">
       <div className="setting-title">壁纸</div>
       <div className="setting-desc">全窗共用一张：画在壳层底，面板与栏体透出它。</div>
       <WallpaperLibrary variant="panel" />
-      <div className="wall-sound-row">
+      <div className="wall-sound-row" data-set-id="row-动态壁纸声音">
         <div>
           <div className="setting-title">动态壁纸声音</div>
           <div className="setting-desc">默认静音；视频壁纸有声时才需手势放开（浏览器自动播放策略）。</div>

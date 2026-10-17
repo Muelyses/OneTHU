@@ -50,7 +50,8 @@ function applyJump(msg: JumpMsg): void {
   const row = allSearchRows().find((r) => r.id === msg.id);
   if (!row) return;
   const res = goSearchRow(row);
-  openSettings(familyOf(row) === "plugins" ? "plugins" : "settings");
+  /* 入口态由 goSearchRow 决定（OH 行 = entry "oh"）。这里再 openSettings(family) 会把
+     OH 行全部打回「插件」段——2026-10-17 实测 22 个 OH 行全部不可达的根因。 */
   recordSearchJump({ query: msg.query, page: familyOf(row) === "plugins" ? "plugins" : "settings", params: null, title: row.title });
   if (res.note) showToast(res.note); // 条件隐藏行落到分节根时明说（本地路径同样走这里，统一反馈）
 }

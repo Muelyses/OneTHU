@@ -150,11 +150,29 @@ defineSearchRows([
     },
   },
   {
-    id: "plg-mine-market", tab: "插件", section: "我的插件", title: "我的插件 / 插件市场", aliases: ["插件列表", "插件市场"], desc: "插件页两个视图切换" , breadcrumb: ["插件", "我的插件", "我的插件 / 插件市场"], displayRoot: "插件",
+    id: "plg-mine-market", tab: "插件", section: "我的插件", title: "我的插件 / 插件市场", aliases: ["插件列表", "插件市场", "视图切换"], desc: "在「我的插件」与「插件市场」两个视图间切换" , breadcrumb: ["插件", "我的插件", "我的插件 / 插件市场"], displayRoot: "插件",
     go: () => {
-      requestPluginsView({ view: "mine" });
-      requestPluginsFocus({ target: "视图切换", fallbackTarget: "我的插件" });
+      /* desc 说“切换”，之前却恒切 mine（点它没反应）；按当前视图取反。 */
+      const next = lastPluginsView === "mine" ? "market" : "mine";
+      requestPluginsView({ view: next });
+      requestPluginsFocus({ target: "视图切换", fallbackTarget: next === "mine" ? "我的插件" : "插件市场" });
     },
+  },
+  {
+    id: "plg-market-search", tab: "插件", section: "插件市场", title: "插件市场搜索", aliases: ["搜插件", "插件搜索", "市场搜索框"], desc: "在插件市场里按名字/说明搜索" , breadcrumb: ["插件", "插件市场", "插件市场搜索"], displayRoot: "插件",
+    go: () => {
+      requestPluginsView({ view: "market" });
+      requestPluginsFocus({ target: "插件市场搜索", fallbackTarget: "插件市场", note: "搜索框在插件市场顶部，已带到市场视图。" });
+    },
+    landOn: { section: "插件市场", note: "搜索框在插件市场顶部；已带到市场视图，直接在顶部输入即可。" },
+  },
+  {
+    id: "plg-market-cat", tab: "插件", section: "插件市场", title: "插件分类筛选", aliases: ["全部", "主题", "通用", "插件分类"], desc: "插件市场的「全部 / 主题 / 通用」筛选" , breadcrumb: ["插件", "插件市场", "插件分类筛选"], displayRoot: "插件",
+    go: () => {
+      requestPluginsView({ view: "market" });
+      requestPluginsFocus({ target: "插件分类筛选", fallbackTarget: "插件市场", note: "分类筛选在插件市场列表上方，已带到市场视图。" });
+    },
+    landOn: { section: "插件市场", note: "分类筛选按钮在插件市场列表上方；已带到市场视图。" },
   },
   {
     id: "plg-install", tab: "插件", section: "我的插件", title: "安装插件", aliases: ["装插件", "从仓库安装"], desc: "从仓库 / 市场安装插件" , breadcrumb: ["插件", "我的插件", "安装插件"], displayRoot: "插件",
@@ -826,7 +844,7 @@ export function McpBody(): ReactNode {
     }
     const entry: McpServerEntry = { name: f.name?.trim() ?? "", command: f.command?.trim() ?? "", args: parseSpaceList(f.args ?? ""), env };
     if (!entry.name) {
-      showToast("MCP 服务器名称不能为空：工具全名是 mcp_<名称>_<工具>，没有名称就没法调用。");
+      showToast("MCP 名称不能为空：填个名字再保存。");
       return;
     }
     /* 同名 server → 工具前缀 mcp_<name>_ 撞车：模型侧会出现两个同名函数，调用必错。 */

@@ -2,21 +2,34 @@ import { Btn } from "@onethu/gui";
 /**
  * OnePage 列表页（P2，方案 §7.9；2026-10-13 起话语从「收藏夹」切换为 OnePage）：多块白板的入口。
  *
- * 每项长按/右键菜单：作为今日页 / 上移 / 下移 / 删除（标红）；系统板不可删。
- * 点击一项 = 把它设为当前主页并进入白板页（v1 的「进入某个收藏夹」就这样表达）。
+ * 每项长按/右键菜单：重命名 / 改图标 / 设为当前 OnePage / 上移 / 下移 / 删除（标红）；系统板不可删。
+ * 点击一项 = 把它设为当前板并进入白板页。
+ *
+ * ⚠️ 2026-10-17 数据丢失修复：这里以前拿挂载时的 doc 快照改完整文档再 saveBoard()，
+ * 会覆盖 OneGO / OH / 收藏其他入口刚新建或改名的板。现在一律走 mutateBoards（读最新 doc →
+ * 改 → 存 → 广播），并订阅 onethu.boards.changed 保持列表实时。
  */
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Card, Empty, PageHead } from "../components/Layout.js";
 import { useContextMenu, type CtxItem } from "../components/ContextMenu.js";
-import { loadBoard, saveBoard, type BoardDoc } from "../state/board.js";
-import { boardSummary, createBoard, deleteBoard, moveBoard, setActiveBoard } from "../state/boardOps.js";
+import { loadBoard, type BoardDoc } from "../state/board.js";
+import { boardSummary, createBoard, deleteBoard, moveBoard, renameBoard, setActiveBoard } from "../state/boardOps.js";
+import { mutateBoards } from "../state/onePage.js";
 import { useApp } from "../state/context.js";
+import { openFormModal } from "../lib/formModal.js";
+import { openFolderIconPicker } from "../components/explorer/FolderIconPicker.js";
 
 export function BoardListPage(): ReactNode {
   const { navigate } = useApp();
   const menu = useContextMenu();
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   const [note, setNote] = useState<string | null>(null);
+  /* 其他入口（OneGO/OH/收藏）改板后，这份列表不能停在旧快照上。 */
+  useEffect(() => {
+    const on = (): void => setDoc(loadBoard());
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
   /* 系统板（「首页」）不是一块 OnePage：首页有自己的入口（顶栏 Logo / 程序坞）。列在这里的话，
      点「首页」会被当成"把首页当白板打开"（用户实测原话：「点击首页回首页，你回的还是旧的一套」）。 */
   const rows = useMemo(() => boardSummary(doc).filter((b) => b.kind !== "system"), [doc]);
@@ -25,20 +38,32 @@ export function BoardListPage(): ReactNode {
     setNote(text);
     window.setTimeout(() => setNote(null), 1800);
   };
-  const apply = useCallback((next: BoardDoc): void => {
-    setDoc(next);
-    saveBoard(next);
-  }, []);
 
-  const openMenu = (id: string, name: string, x: number, y: number, isSystem: boolean): void => {
+  const rename = async (id: string, name: string): Promise<void> => {
+    const f = await openFormModal("重命名 OnePage", [{ key: "name", label: "名字", required: true, default: name }]);
+    if (!f) return;
+    mutateBoards((d) => renameBoard(d, id, f.name ?? name));
+    say("已重命名：" + (f.name ?? name));
+  };
+
+  const openMenu = (id: string, name: string, x: number, y: number): void => {
     const items: CtxItem[] = [
-      { key: "as-today", label: "作为今日页", onSelect: () => { apply(setActiveBoard(doc, id)); say("已设为今日页：" + name); } },
-      { key: "up", label: "上移", onSelect: () => apply(moveBoard(doc, id, "up")) },
-      { key: "down", label: "下移", onSelect: () => apply(moveBoard(doc, id, "down")) },
-      { key: "remove", label: "删除", danger: true, disabled: isSystem, onSelect: () => {
-        const r = deleteBoard(doc, id);
-        if (r.reason) say(r.reason === "system-board" ? "系统板不能删除" : "至少保留一块 OnePage");
-        else { apply(r.doc); say("已删除：" + name); }
+      { key: "rename", label: "重命名…", onSelect: () => void rename(id, name) },
+      { key: "icon", label: "改图标…", onSelect: () => openFolderIconPicker(id) },
+      { key: "current", label: "设为当前 OnePage", onSelect: () => { mutateBoards((d) => setActiveBoard(d, id)); say("当前 OnePage：" + name); } },
+      { key: "up", label: "上移", onSelect: () => mutateBoards((d) => moveBoard(d, id, "up")) },
+      { key: "down", label: "下移", onSelect: () => mutateBoards((d) => moveBoard(d, id, "down")) },
+      { key: "remove", label: "删除", danger: true, onSelect: () => {
+        const reason = mutateBoards((d) => {
+          const r = deleteBoard(d, id);
+          if (r.reason) {
+            say(r.reason === "system-board" ? "系统板不能删除" : r.reason === "last-board" ? "至少保留一块 OnePage" : "没有这块 OnePage");
+            return null;
+          }
+          say("已删除：" + name);
+          return r.doc;
+        });
+        void reason;
       } },
     ];
     menu.open({ x, y, title: name, items });
@@ -59,12 +84,12 @@ export function BoardListPage(): ReactNode {
               type="button"
               className={"board-list-row" + (b.active ? " is-active" : "")}
               data-board-id={b.id}
-              onClick={() => { apply(setActiveBoard(doc, b.id)); navigate("board"); }}
-              onContextMenu={(e) => { e.preventDefault(); openMenu(b.id, b.name, e.clientX, e.clientY, b.kind === "system"); }}
+              onClick={() => { mutateBoards((d) => setActiveBoard(d, b.id)); navigate("board"); }}
+              onContextMenu={(e) => { e.preventDefault(); openMenu(b.id, b.name, e.clientX, e.clientY); }}
             >
               <span className="board-list-name">{b.name}</span>
               <span className="board-list-meta">
-                {b.kind === "system" ? "系统板" : "自定义"} · {b.count} 个组件{b.active ? " · 当前今日页" : ""}
+                {b.kind === "system" ? "系统板" : "OnePage"} · {b.count} 个组件{b.active ? " · 当前 OnePage" : ""}
               </span>
             </button>
           ))}
@@ -72,10 +97,18 @@ export function BoardListPage(): ReactNode {
       )}
       <div className="board-list-actions">
         <Btn variant="outline" onClick={() => {
-            const r = createBoard(doc, "新 OnePage " + String(rows.length));
-            apply(r.doc);
-            say("已新建：" + r.board.name);
-          }}>新建收藏夹
+            let created = "";
+            mutateBoards((d) => {
+              const r = createBoard(d, "新 OnePage " + String(rows.length + 1));
+              created = r.board.id;
+              return r.doc;
+            });
+            if (created) {
+              say("已新建并打开");
+              mutateBoards((d) => setActiveBoard(d, created));
+              navigate("board");
+            }
+          }}>新建 OnePage
         </Btn>
       </div>
 

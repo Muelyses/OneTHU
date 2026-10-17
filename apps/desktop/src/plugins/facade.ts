@@ -31,7 +31,10 @@ import {
   runTool as runToolSteps,
   sanitizeUserHtml,
   setPhoneWidget,
+  registerFlowExecutor,
+  setFlowEnabled,
   startScheduler,
+  updateFlow,
   upsertFlow,
   upsertTool,
   deleteWidget,
@@ -47,13 +50,14 @@ import {
   allOnePages, createOnePage, mutateBoards, notifyBoardsChanged,
   openOnePage, removeOnePage, renameOnePage,
 } from "../state/onePage.js";
-import { SYSTEM_BOARD_ID } from "../state/boardCore.js";
+import { SYSTEM_BOARD_ID, rectFromCell } from "../state/boardCore.js";
+import { renameBoard } from "../state/boardOps.js";
 import {
   allSphereEntries, dockSphere, sphereEntry, spheresSnapshot, undockSphere,
 } from "../state/homeSpheres.js";
 import {
   closeLiveWorkspace, closeTab, createLiveWorkspace, deleteWorkspace, dissolveWorkspace,
-  duplicateTab, explorerSnapshot, focusTab, openTab, openWorkspace, saveWorkspace,
+  duplicateTab, explorerSnapshot, focusTab, isKnownPage, openTab, openWorkspace, patchLiveWorkspace, saveWorkspace,
 } from "../state/explorer.js";
 import {
   setGlobalWallpaper, wallpaperSnapshot, BUILTIN_WALLPAPERS,
@@ -69,7 +73,7 @@ import * as geek from "../lib/geekBrowser.js";
  *  清小搭（xiaoda，2026-10-15）：一级页里 OH 要开就得在这张表里 ⇒ 进坞/进搜索栏之外，
  *  这是「OH 可调用」的那一环（ext_tab op=open 与其它走 tabOpen 的链路共用）。 */
 const TOP_PAGES = new Set([
-  "today", "learn", "schedule", "trace", "otherinfo", "info", "life", "reserve", "zhjwxk", "thos",
+  "homepage", "learn", "schedule", "trace", "otherinfo", "info", "life", "reserve", "zhjwxk", "thos",
   "mail", "cloud", "gitlab", "thubook", "xiaoda", "tasks", "services", "favs", "boards", "board",
   "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
 ]);
@@ -715,20 +719,24 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     nav: {
       go: (page: string, params?: Record<string, unknown>) => {
         gate(perms, "nav", "nav.go");
+        /* 旧文档/提示词里的 "today" 是 homepage 的别名（app.tsx 早就没有 today 页了）。
+           不映射会在非首页标签里 navigateInTab("today") → 渲染兜底成 LearnPage。 */
+        const pageId = String(page ?? "") === "today" ? "homepage" : page;
         const want = params ?? {};
         /* 白板带参（2026-10-15 OH 接线）：`board` + {boardId} → **先把那块板设成当前板**再开白板页。
            白板页渲染的是「当前板」（BoardDoc.activeBoardId），所以只传 params 不切板 —— 以前 OH
            说「打开 XX 白板」实际打开的还是上一块。这里与 `#/board/<板 id>` 深链（explorer 的
            openBoardFromHash）和 ext.onePageOpen 走同一条链：setActiveBoard + openTab。 */
-        const bid = String(page ?? "") === "board" ? String(want.boardId ?? want.id ?? "") : "";
+        const bid = String(pageId ?? "") === "board" ? String(want.boardId ?? want.id ?? "") : "";
         if (bid) {
           const hit = allOnePages().find((b) => b.id === bid);
           if (!hit) throw new Error(`没有这块白板：${bid}（先用 ext.onepage_list 拿板 id；列表页用 page=\"boards\"）`);
           openOnePage(bid);
           openTab("board", null, { title: hit.name });
-          return;
+          return true;
         }
-        if (!navGo(page, want)) throw new Error("导航桥未就绪（应用启动中）");
+        if (!navGo(pageId, want)) throw new Error("导航桥未就绪（应用启动中）");
+        return true;
       },
       /** 原子检索：静态注册表（功能页/今日组件/操作）+ 本机缓存（课程/作业/通知/在线服务…）。
        *  动态 import 与 normalizeBinding 同法，回避 facade↔atoms 的模块环。 */
@@ -805,8 +813,10 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const { resolveAtom } = await import("../state/atoms.js");
         const view = resolveAtom({ kind, key });
         if (!view) return false;
-        view.open((page, params) => navGo(page, params as Record<string, unknown> | undefined));
-        return true;
+        /* 以前无条件 true：页面导航桥没就绪/页面 id 不认时 OH 照旧回"已打开"。改成如实返回。 */
+        let ok = false;
+        view.open((page, params) => { ok = navGo(page, params as Record<string, unknown> | undefined); });
+        return ok;
       },
     },
     services: {
@@ -923,24 +933,46 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         userExtSnapshot().tools.map((t) => ({ id: t.id, name: t.name, description: t.description })),
       toolRun: (id: string): Promise<{ ok: boolean; error?: string }> => runToolSteps(id, execTool),
       toolDelete: (id: string): void => deleteTool(id),
-      flowCreate: (name: string, trigger: unknown, steps: unknown): void => {
+      flowCreate: (name: string, trigger: unknown, steps: unknown): { id: string } => {
         gate(perms, "ui", "ext.flowCreate");
-        upsertFlow({
-          id: "fl." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
-          name: String(name),
-          trigger: trigger as import("../state/userext.js").FlowTrigger,
-          steps: Array.isArray(steps) ? (steps as ExtStep[]) : [],
-        });
-        startScheduler(execTool, {
-          onDeadline: () => window.dispatchEvent(new Event("onethu.hw.deadline")),
-          onGrades: () => window.dispatchEvent(new Event("onethu.grades.update")),
-          onStart: () => undefined,
-        });
+        const trg = trigger as import("../state/userext.js").FlowTrigger;
+        if (!trg || (trg.kind !== "manual" && trg.kind !== "cron" && trg.kind !== "event")) {
+          throw new Error("trigger 必须是 {kind:manual} / {kind:cron,everyMinutes} / {kind:event,event}");
+        }
+        const list = Array.isArray(steps) ? (steps as ExtStep[]) : [];
+        if (!list.length) throw new Error("OneFlow 至少要有 1 个步骤");
+        const id = "fl." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        upsertFlow({ id, name: String(name), trigger: trg, steps: list });
+        return { id };
       },
-      flowList: (): Array<{ id: string; name: string; trigger: unknown; lastRun?: number; lastOk?: boolean }> =>
-        userExtSnapshot().flows.map((f) => ({ id: f.id, name: f.name, trigger: f.trigger, lastRun: f.lastRun, lastOk: f.lastOk })),
-      flowRun: (id: string): Promise<{ ok: boolean; error?: string }> => runFlowSteps(id, execTool),
-      flowDelete: (id: string): void => deleteFlow(id),
+      flowList: (): Array<{ id: string; name: string; trigger: unknown; enabled: boolean; lastRun?: number; lastOk?: boolean; lastError?: string }> =>
+        userExtSnapshot().flows.map((f) => ({ id: f.id, name: f.name, trigger: f.trigger, enabled: f.enabled !== false, lastRun: f.lastRun, lastOk: f.lastOk, lastError: f.lastError })),
+      flowRun: (id: string): Promise<{ ok: boolean; error?: string }> => {
+        gate(perms, "ui", "ext.flowRun");
+        return runFlowSteps(id, execTool);
+      },
+      flowUpdate: (id: string, patch: { name?: string; trigger?: unknown; steps?: unknown; enabled?: boolean }): { ok: boolean } => {
+        gate(perms, "ui", "ext.flowUpdate");
+        const p: { name?: string; trigger?: import("../state/userext.js").FlowTrigger; steps?: ExtStep[]; enabled?: boolean } = {};
+        if (typeof patch?.name === "string") p.name = patch.name;
+        if (patch?.trigger) p.trigger = patch.trigger as import("../state/userext.js").FlowTrigger;
+        if (Array.isArray(patch?.steps)) p.steps = patch.steps as ExtStep[];
+        if (typeof patch?.enabled === "boolean") p.enabled = patch.enabled;
+        const ok = updateFlow(String(id), p);
+        if (!ok) throw new Error("没有这个 OneFlow");
+        return { ok };
+      },
+      flowSetEnabled: (id: string, on: boolean): { ok: boolean } => {
+        gate(perms, "ui", "ext.flowSetEnabled");
+        const ok = setFlowEnabled(String(id), Boolean(on));
+        if (!ok) throw new Error("没有这个 OneFlow");
+        return { ok };
+      },
+      flowDelete: (id: string): void => {
+        gate(perms, "ui", "ext.flowDelete");
+        if (!userExtSnapshot().flows.some((f) => f.id === String(id))) throw new Error("没有这个 OneFlow（id 来自 ext_flow_list）");
+        deleteFlow(String(id));
+      },
       widgetCreate: (name: string, html: string, x?: number, y?: number): { id: string } => {
         gate(perms, "ui", "ext.widgetCreate");
         const uid = "uw." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -979,8 +1011,8 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const id = createOnePage(String(name), icon ? String(icon) : "star");
         return { id };
       },
-      onePageList: (): Array<{ id: string; name: string; kind: string }> =>
-        allOnePages().map((b) => ({ id: b.id, name: b.name, kind: b.kind })),
+      onePageList: (): Array<{ id: string; name: string; kind: string; icon: string }> =>
+        allOnePages().map((b) => ({ id: b.id, name: b.name, kind: b.kind, icon: b.icon })),
       onePageAddItem: async (boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }> => {
         gate(perms, "ui", "ext.onePageAdd");
         const spec = await buildSpec(kind, payload);
@@ -1038,6 +1070,15 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (!String(name ?? "").trim()) throw new Error("需要一个新名字");
         renameOnePage(String(id), String(name));
       },
+      /** 换 OnePage 图标（TabStrip/OneGO/列表页都读 Board.icon；图标键来自 FOLDER_ICONS） */
+      onePageSetIcon: (id: string, icon: string): { ok: boolean } => {
+        gate(perms, "ui", "ext.onePageSetIcon");
+        const b = allOnePages().find((x) => x.id === String(id));
+        if (!b) throw new Error("没找到这块 OnePage");
+        if (!String(icon ?? "").trim()) throw new Error("需要一个图标键");
+        mutateBoards((doc) => renameBoard(doc, b.id, b.name, String(icon)));
+        return { ok: true };
+      },
       onePageOpen: (id: string): void => {
         gate(perms, "ui", "ext.onePageOpen");
         openOnePage(String(id));
@@ -1047,16 +1088,33 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "ui", "ext.onePageMoveItem");
         const nx = Math.max(0, Math.trunc(Number(x) || 0));
         const ny = Math.max(0, Math.trunc(Number(y) || 0));
+        let found = false;
         const moved = mutateBoards((doc) => {
-          const boards = doc.boards.map((b) => {
-            if (b.id !== String(boardId)) return b;
-            const portrait = (b.cells.portrait ?? []).map((it) => (it.id === String(itemId) ? { ...it, cell: { ...it.cell, x: nx, y: ny } } : it));
-            if (portrait === (b.cells.portrait ?? [])) return b;
-            return { ...b, cells: { ...b.cells, portrait } };
-          });
-          return boards === doc.boards ? null : { ...doc, boards };
+          const board = doc.boards.find((b) => b.id === String(boardId));
+          if (!board) return null;
+          /* 白板渲染以 px rect 为准（rectOf 优先 item.rect，saveBoard 会给无 rect 的条目补 rect）；
+             只改 cell 用户看不到任何变化。移动必须 withRect 同一套：cell 派生 + rect 落地。
+             两个朝向都有这个条目时一起挪（同一个 x/y 语义）。 */
+          const cells: typeof board.cells = { ...board.cells };
+          for (const o of ["portrait", "landscape"] as const) {
+            const items = cells[o];
+            if (!items) continue;
+            let hit = false;
+            const next = items.map((it) => {
+              if (it.id !== String(itemId)) return it;
+              hit = true;
+              const cell = { ...it.cell, x: nx, y: ny };
+              const rect = rectFromCell(cell);
+              return { ...it, cell, rect, manual: true, fitted: undefined };
+            });
+            if (hit) {
+              cells[o] = next;
+              found = true;
+            }
+          }
+          return found ? { ...doc, boards: doc.boards.map((b) => (b.id === board.id ? { ...b, cells } : b)) } : null;
         });
-        if (!moved) throw new Error("没找到这块板或这个组件（id 对照 ext_onepage_list 的板与组件 id）");
+        if (!moved || !found) throw new Error("没找到这块板或这个组件（id 对照 ext_onepage_list 的板与组件 id）");
       },
       onePageRemoveItem: (boardId: string, itemId: string): void => {
         gate(perms, "ui", "ext.onePageRemoveItem");
@@ -1096,8 +1154,16 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         atomKey: string,
       ): { ok: boolean; boardId: string; added?: string; reason?: string } => {
         gate(perms, "ui", "ext.onePageAddAtom");
-        const key = String(atomKey ?? "").trim();
-        if (!key) throw new Error("atomKey 不能为空：原子引用形如 course:123 / thos:xxx（可从 list_favorite_kinds 或 nav.searchAtoms 拿）");
+        /* 存储格式唯一：kind|key。旧工具文案写 kind:key，OH 会照抄成永久失效的 ref——
+           这里把首个 ':' 归一成 '|'，并拒绝解析不了的引用。 */
+        let key = String(atomKey ?? "").trim();
+        if (!key) throw new Error("atomKey 不能为空：原子引用形如 kind|key（也接受 kind:key）");
+        if (!key.includes("|")) {
+          const i = key.indexOf(":");
+          if (i > 0) key = key.slice(0, i) + "|" + key.slice(i + 1);
+        }
+        const ref = atomRefFromKey(key);
+        if (!ref || !ref.kind || !ref.key) throw new Error("atomKey 形如 kind|key（如 course|123）；可从 list_favorite_kinds 或 nav.searchAtoms 拿");
         const want = String(target?.boardId ?? "").trim();
         /* 不带 boardId = 落首页（首页画的就是系统板）；带 boardId = 落那块 OnePage */
         const r = want ? addAtomToBoard(want, key) : addAtomToHome(key);
@@ -1156,21 +1222,41 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (!id) id = createLiveWorkspace({ name: String(name ?? ""), color: "#5b8def", icon: "fist" }, []);
         return { id };
       },
-      workspaceOpen: (id: string): void => {
+      workspaceOpen: (id: string): boolean => {
         gate(perms, "ui", "ext.workspaceOpen");
+        if (!explorerSnapshot().workspaces.some((x) => x.id === String(id))) return false;
         openWorkspace(String(id));
+        return true;
       },
-      workspaceClose: (id: string): void => {
+      /** 收起活板：只折叠（不关成员标签、不删定义）——OH「把工作区收起来」的语义。 */
+      workspaceCollapse: (id: string): boolean => {
+        gate(perms, "ui", "ext.workspaceCollapse");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
+        patchLiveWorkspace(String(id), { collapsed: true });
+        return true;
+      },
+      /** 真正的关闭活板：关成员标签并移除定义（破坏性，UI 大关闭按钮同义）。 */
+      workspaceClose: (id: string): boolean => {
         gate(perms, "ui", "ext.workspaceClose");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
         closeLiveWorkspace(String(id));
+        return true;
       },
-      workspaceDissolve: (id: string): void => {
+      workspaceDissolve: (id: string): boolean => {
         gate(perms, "ui", "ext.workspaceDissolve");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
         dissolveWorkspace(String(id));
+        return true;
       },
-      workspaceDelete: (id: string): void => {
+      workspaceDelete: (id: string): boolean => {
         gate(perms, "ui", "ext.workspaceDelete");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
         deleteWorkspace(String(id));
+        return true;
       },
       /* ── 标签页 ── */
       tabList: (): Array<{ id: string; title: string; page: string }> => [
@@ -1179,21 +1265,24 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       ],
       tabOpen: (page: string): { id: string } => {
         gate(perms, "ui", "ext.tabOpen");
-        const top = String(page ?? "").trim();
-        if (!TOP_PAGES.has(top)) throw new Error("不认识的页面，可用：" + [...TOP_PAGES].join(" / "));
+        const top = String(page ?? "").trim() === "today" ? "homepage" : String(page ?? "").trim();
+        /* 白名单只留一处真源（explorer.KNOWN_PAGES）；子页/详情页也是合法打开目标。 */
+        if (!isKnownPage(top)) throw new Error("不认识的页面，可用：" + [...TOP_PAGES].join(" / "));
         return { id: openTab(top as import("../state/app.js").Page) };
       },
-      tabClose: (id: string): void => {
+      tabClose: (id: string): boolean => {
         gate(perms, "ui", "ext.tabClose");
-        closeTab(String(id));
+        return closeTab(String(id));
       },
       tabDuplicate: (id: string): { id: string } => {
         gate(perms, "ui", "ext.tabDuplicate");
-        return { id: duplicateTab(String(id)) };
+        const id2 = duplicateTab(String(id));
+        if (!id2) throw new Error("这个标签不能复制（首页或标签不存在）");
+        return { id: id2 };
       },
-      tabFocus: (id: string): void => {
+      tabFocus: (id: string): boolean => {
         gate(perms, "ui", "ext.tabFocus");
-        focusTab(String(id));
+        return focusTab(String(id));
       },
       /* ── 低风险设置 ── */
       /* 壁纸只剩全屏一档（2026-10-14 定案）：scope 只认 "global"，其它值报错说清 */
@@ -1774,19 +1863,22 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   /* 用户主题监听挂一次（模块级幂等在函数内用 started 守卫） */
   startUserThemeWatch();
   /** 用户扩展执行器：步骤里 "ns.method" 调用插件门面自身（单对象参数） */
-  const execTool = (tool: string, args: Record<string, unknown>): Promise<unknown> => {
+  const execTool = (tool: string, args: Record<string, unknown> | unknown[]): Promise<unknown> => {
     const dot = tool.indexOf(".");
-    if (dot <= 0) return Promise.reject(new Error("工具名需要 ns.method 形式"));
-    const nsObj = (api as unknown as Record<string, Record<string, ((a: unknown) => unknown) | undefined>>)[tool.slice(0, dot)];
+    if (dot <= 0) return Promise.reject(new Error("工具名需要 ns.method 形式（如 nav.go / ext.onePageAddAtom）"));
+    const nsObj = (api as unknown as Record<string, Record<string, ((...a: unknown[]) => unknown) | undefined>>)[tool.slice(0, dot)];
     const fn = nsObj?.[tool.slice(dot + 1)];
     if (typeof fn !== "function") return Promise.reject(new Error("没有这个方法：" + tool));
-    return Promise.resolve(fn(args));
+    /* 数组=位置参数（推荐，能调多参方法）；对象=单参数（老步骤兼容） */
+    const payload = Array.isArray(args) ? args : [args];
+    return Promise.resolve(fn(...payload));
   };
-  startScheduler(execTool, {
-    onDeadline: () => window.dispatchEvent(new Event("onethu.hw.deadline")),
-    onGrades: () => window.dispatchEvent(new Event("onethu.grades.update")),
-    onStart: () => undefined,
-  });
+  /* OneFlow 执行器只由 harness 注册：谁先 build 谁注册会让步骤用错插件的权限/门面。
+     调度器同理只由 harness 起一次（startScheduler 内部 started 幂等）。 */
+  if (pluginId === "onethu.harness") {
+    registerFlowExecutor(execTool);
+    startScheduler(execTool);
+  }
   return api;
 }
 

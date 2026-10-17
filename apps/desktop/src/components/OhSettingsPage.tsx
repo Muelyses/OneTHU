@@ -44,6 +44,7 @@ const tierListeners = new Set<() => void>();
    两处都命中不了 → 落地点名存实亡（用户侧表现=搜到点了没反应）。档位根改用按钮文本
    「高级配置」（focusSettingsTarget 的第三条：动作按钮文本，在 .explorer-settings-body 内）。 */
 defineSearchRows([
+  { id: "oh-root", tab: "OneTHU Harness", section: "入口", title: "OneTHU Harness / 小OH 设置", aliases: ["小OH", "OH 设置", "OH", "Harness", "助手设置"], desc: "OH 的基础设置与高级配置入口" , breadcrumb: ["插件", "OneTHU Harness", "入口", "OneTHU Harness / 小OH 设置"], displayRoot: "设置" },
   { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置", go: () => goOhRow("MadModel 免费档", "basic") },
   { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("OH 模型 / 多模态开关", "basic") },
   { id: "oh-contextmode", tab: "OneTHU Harness", section: "模型与多模态", title: "上下文记忆模式", aliases: ["上下文", "记忆", "压缩", "历史", "要点", "压缩内容制"], desc: "历史超长自动收成要点清单，重要内容不再丢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "上下文记忆模式"], displayRoot: "设置", go: () => goOhRow("上下文记忆模式", "basic") },
@@ -227,10 +228,16 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
   const [tier, setTier] = useState<"basic" | "advanced">("basic");
 
   // 页面外请求切档（如对话坞长按朗读图标 → 插件页 → OH → 基础设置）
-  useEffect(() => subscribeOhTier(() => {
-    const want = takeTier();
-    if (want) setTier(want);
-  }), []);
+  useEffect(() => {
+    /* 首次挂载先取一次：请求往往发生在组件挂载之前（goEntry("oh") → requestOhTier），
+       只订阅不取 = 高级档行从搜索/OH 深链首次进入永远停在基础档。 */
+    const first = takeTier();
+    if (first) setTier(first);
+    return subscribeOhTier(() => {
+      const want = takeTier();
+      if (want) setTier(want);
+    });
+  }, []);
 
   return (
     <>

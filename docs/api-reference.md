@@ -637,7 +637,7 @@ const reply = (await res.json()).choices[0].message.content;
 
 | page | 页面 | params |
 |---|---|---|
-| `today` | 今日首页 | — |
+| `homepage` | 首页（白板画布 + 程序坞；旧别名 `today` 仍兼容） | — |
 | `learn` | 网络学堂 | — |
 | `schedule` | 日程 | — |
 | `info` | 信息聚合 | `infoTab`：`report` / `exams` / `news` / `calendar` / `profile` / `courseinfo` 等；`infoNewsId` 直达新闻 |
@@ -652,10 +652,32 @@ const reply = (await res.json()).choices[0].message.content;
 | `learn-forum-thread` | 讨论区话题 | `courseId`、`itemId`（话题）、`bqid`（板块） |
 | `learn-ykt-detail` | 雨课堂作业原生详情（只读，见 external-homework.md） | `ykt`：`{ leafTypeId, classroomId, externalUrl?, title?, deadline?, courseName?, kind? }` |
 | `trace` / `otherinfo` / `thos` / `mail` / `cloud` / `thubook` / `folder` | 寻迹 / 其他 Info 应用 / 在线服务 / 邮箱 / 云盘 / THUBook / 收藏夹 | `folder` 需 `folderId` |
+| `boards` / `board` | 所有 OnePage 列表 / 当前 OnePage 白板 | `board` 可带 `boardId` 打开指定板 |
 | `gitlab` | 清华 GitLab | `gitlabProject`（项目数字 id）、`gitlabTab`（`code` / `issues` / `mrs` / `pipelines`）、`gitlabKind`（`issue` / `mr`）与 `gitlabIid`（打开该项目内的某条 Issue 或合并请求） |
 
 插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向
 该路由。插件未安装、已停用或未注册该页签时，页面显示降级提示而非空白。
+
+## 20.1 `ext`：用户扩展层（OnePage / OneFlow / 用户工具）
+
+OH 自我进化层，全部落 `state/userext.ts` / `state/onePage.ts`，改完即生效。
+
+| 方法 | 说明 |
+|---|---|
+| `ext.flowCreate(name, trigger, steps)` | 建 OneFlow；`trigger` = `{kind:"manual"}` / `{kind:"cron",everyMinutes}` / `{kind:"event",event:"hw-deadline"\|"grades-update"\|"notice"\|"app-start"}`；返回 `{id}` |
+| `ext.flowList()` | 全部 OneFlow（id/name/trigger/enabled/lastRun/lastOk/lastError） |
+| `ext.flowUpdate(id, patch)` | 改 name / trigger / steps / enabled（暂停定时与事件触发） |
+| `ext.flowSetEnabled(id, on)` | 启停定时/事件触发（手动运行不受影响） |
+| `ext.flowRun(id)` | 立即运行（返回 `{ok,error?}`；失败原因写进 `lastError`） |
+| `ext.flowDelete(id)` | 删除（先请用户确认；不存在会报错） |
+| `ext.onePageCreate(name, icon?)` / `ext.onePageList()` | 建/列 OnePage（列表含 icon） |
+| `ext.onePageRename(id,name)` / `ext.onePageSetIcon(id,icon)` / `ext.onePageOpen(id)` / `ext.onePageDelete(id)` | 改名 / 换图标 / 打开 / 删除 |
+| `ext.onePageItems(boardId)` / `ext.onePageAddItem(...)` / `ext.onePageMoveItem(...)` / `ext.onePageRemoveItem(...)` | 组件清单 / 添加 / 移动 / 摘除（move 同时写 rect，白板渲染以 rect 为准） |
+| `ext.onePageAddAtom(target, atomKey)` | 收藏落点：不传 boardId = 首页；`atomKey` 为 `kind\|key`（兼容 `kind:key`） |
+
+**steps 契约**：`{tool:"ns.method", args:[…]} `，`tool` 是插件门面方法（如 `nav.go`、`ext.onePageAddAtom`），
+`args` 数组按位置参数展开（推荐），单参数方法可传对象；`from` 只配对象参数。
+定时/事件流程由调度器驱动（30s 对表；事件源只在数据真的变化时广播），步骤执行走插件门面权限。
 
 ## 21. 原子（`{kind, key}`）：收藏与「一句话直达」的共同引用
 

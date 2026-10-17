@@ -15,7 +15,7 @@
  */
 import type { ReactNode } from "react";
 import { openThosInApp } from "../lib/thosOpen.js";
-import { IconBell, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconThos, IconToday, IconTrace, IconXiaoda, IconXk } from "../components/Icons.js";
+import { IconBell, IconBook, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconPen, IconPin, IconRefresh, IconSchedule, IconSearch, IconSpark, IconTabsCards, IconThos, IconToday, IconTrace, IconXiaoda, IconXk } from "../components/Icons.js";
 import {
   AgendaWidget, CardBalanceWidget, HomeworkWidget, RecentNoticesWidget, SubsNewsWidget,
   TodayClassesWidget, TodayOverviewWidget, TodayResvWidget,
@@ -192,6 +192,21 @@ interface StaticAtom {
 
 /** 全部二级页面入口（=旧 homeCards entry 全集 + 课程信息栏 + 学堂一级） */
 export const PAGE_ATOMS: StaticAtom[] = [
+  /* 一级页兜底原子（2026-10-17）：以前只有部分一级页进了注册表，OH 的 open_page
+     搜「THUBook / 在线服务 / 白板」全是空的；这里补全所有可导航一级入口。 */
+  { kind: "page", key: "homepage", title: "首页", sub: "时钟 · 程序坞 · 自由画布", icon: IconToday, group: "页面", page: "homepage" },
+  { kind: "page", key: "thubook", title: "THUBook", sub: "清华手册 · 新生指南与专题", icon: IconBook, group: "页面", page: "thubook" },
+  { kind: "page", key: "thos", title: "在线服务", sub: "学校服务大厅 · 事项直达", icon: IconThos, group: "页面", page: "thos" },
+  { kind: "page", key: "otherinfo", title: "其他 Info 应用", sub: "门户原始应用导航", icon: IconExternal, group: "页面", page: "otherinfo" },
+  { kind: "page", key: "tasks", title: "待办", sub: "作业 · 预约 · 考试 · 余额聚合", icon: IconCheck, group: "页面", page: "tasks" },
+  { kind: "page", key: "services", title: "服务", sub: "服务分组目录", icon: IconSpark, group: "页面", page: "services" },
+  { kind: "page", key: "favs", title: "收藏", sub: "收藏夹首页", icon: IconPin, group: "页面", page: "favs" },
+  { kind: "page", key: "boards", title: "所有 OnePage", sub: "白板列表 · 改名 / 换图标 / 排序", icon: IconTabsCards, group: "页面", page: "boards" },
+  { kind: "page", key: "board", title: "OnePage", sub: "当前白板（具体某块用 navigate board + boardId）", icon: IconTabsCards, group: "页面", page: "board" },
+  { kind: "page", key: "folder", title: "收藏夹页", sub: "旧收藏夹（folderId 定位）", icon: IconFolder, group: "页面", page: "folder" },
+  { kind: "page", key: "info-root", title: "信息", sub: "信息门户聚合页", icon: IconInfo, group: "页面", page: "info" },
+  { kind: "page", key: "life-root", title: "生活", sub: "生活聚合页", icon: IconToday, group: "页面", page: "life" },
+  { kind: "page", key: "reserve-root", title: "预约", sub: "预约聚合页", icon: IconCalendar, group: "页面", page: "reserve" },
   { kind: "page", key: "schedule", title: "日程", sub: "时间轴与日程列表 · 云同步", icon: IconSchedule, group: "页面", page: "schedule" },
   { kind: "page", key: "trace", title: "寻迹", sub: "今日日程地图 · 紧迫度标注 · 一键前往", icon: IconTrace, group: "页面", page: "trace" },
   { kind: "page", key: "mail", title: "邮箱", sub: "收件箱 · 已发送 · 读信 · 全箱搜索", icon: IconMail, group: "页面", page: "mail" },

@@ -379,6 +379,22 @@ async function fetchLearnBundleFresh(): Promise<LearnBundle> {
   return loadLearnBundle(semester.id);
 }
 
+/* OneFlow 事件源：只在**数据真的变化**时广播，不能每次静默刷新都发
+   （否则「作业截止 / 通知」流程每 30 分钟无条件跑一遍）。
+   首次加载只建基线：启动本身由 app-start 事件负责。 */
+let lastLearnFlowSig: { hw: string; notice: string } | null = null;
+function emitLearnFlowEvents(d: LearnBundle): void {
+  const hw = d.homework
+    .map((h) => `${h.id}:${h.deadline}:${h.submitted ? 1 : 0}:${h.graded ? 1 : 0}:${String(h.grade ?? "")}`)
+    .join("|");
+  const notice = d.notifications.map((n) => `${n.id}:${n.hasRead ? 1 : 0}`).join("|");
+  const prev = lastLearnFlowSig;
+  lastLearnFlowSig = { hw, notice };
+  if (!prev) return;
+  if (prev.hw !== hw) window.dispatchEvent(new Event("onethu.hw.deadline"));
+  if (prev.notice !== notice) window.dispatchEvent(new Event("onethu.notice.update"));
+}
+
 function adoptLearnBundle(key: string, d: LearnBundle): void {
   cache = {
     key,
@@ -388,6 +404,7 @@ function adoptLearnBundle(key: string, d: LearnBundle): void {
     data: d,
   };
   notifyLearnData();
+  emitLearnFlowEvents(d);
 }
 
 /** 后台静默刷新当前学期 learn 数据（失败返回 null，绝不打扰用户） */
@@ -397,9 +414,6 @@ export function refreshLearnDataSilently(): Promise<LearnBundle | null> {
     const key = selectedSemester ?? "current";
     try {
       adoptLearnBundle(key, await fetchLearnBundleFresh());
-      /* OneFlow 事件源：作业/成绩数据每次成功刷新都广播（OH 的事件触发 OneFlow 听这个） */
-      window.dispatchEvent(new Event("onethu.grades.update"));
-      window.dispatchEvent(new Event("onethu.hw.deadline"));
       return cache?.data ?? null;
     } catch (err) {
       if (err instanceof Error && err.name === "AuthRequiredError") {
@@ -2206,6 +2220,10 @@ export function seedPreviewData(): () => void {
   return () => { for (const f of undo.reverse()) f(); };
 }
 
+/* 成绩变化事件：useReport 每次真的拿到一份新成绩单时比对签名（首次加载只建基线）。
+   OH 的 grades-update 流程因此只在成绩变化时跑，不再跟着 learn 刷新空转。 */
+let lastReportSig: string | null = null;
+
 export function useReport() {
   const { status } = useApp();
   const [data, setData] = useState<ReportRow[] | null>(() => cacheGet<ReportRow[]>(REPORT_KEY)?.data ?? null);
@@ -2218,7 +2236,12 @@ export function useReport() {
       setError(null);
     }
     try {
-      setData(await cacheFetch(REPORT_KEY, () => info.getReport()));
+      const rows = await cacheFetch(REPORT_KEY, () => info.getReport());
+      const sig = JSON.stringify(rows);
+      const prev = lastReportSig;
+      lastReportSig = sig;
+      setData(rows);
+      if (prev !== null && prev !== sig) window.dispatchEvent(new Event("onethu.grades.update"));
       setState("ready");
     } catch (err) {
       logPageError("REPORT", err);

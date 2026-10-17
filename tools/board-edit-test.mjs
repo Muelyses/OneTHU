@@ -128,12 +128,12 @@ ok(O.renameBoard(d0, "b2", "  ").boards[1].name === "我的板", "空名字不�
 /* ⑩ 收藏夹列表页接线（页面是 .tsx → 静态判定） */
 const listPage = readFileSync("apps/desktop/src/pages/BoardListPage.tsx", "utf8");
 ok(/boardSummary\(doc\)/.test(listPage), "列表页没有用纯逻辑生成摘要（数量/当前项会不可靠）");
-ok(/label: "作为今日页"/.test(listPage), "长按菜单缺「作为今日页」");
+ok(/label: "设为当前 OnePage"/.test(listPage), "长按菜单缺「设为当前 OnePage」");
 ok(/label: "上移"/.test(listPage) && /label: "下移"/.test(listPage), "长按菜单缺上移/下移");
 ok(/label: "删除", danger: true/.test(listPage), "删除项没有走危险色（需求原文要求标红）");
-ok(/disabled: isSystem/.test(listPage), "系统板的删除项没有禁用");
-ok(/moveBoard\(doc, id, "up"\)/.test(listPage) && /moveBoard\(doc, id, "down"\)/.test(listPage), "上下移没有走纯逻辑");
-ok(/createBoard\(doc,/.test(listPage), "新建收藏夹没有走纯逻辑");
+ok(/filter\(\(b\) => b\.kind !== "system"\)/.test(listPage), "系统板没有从 OnePage 列表里排除（会被当成可删白板）");
+ok(/moveBoard\(d, id, "up"\)/.test(listPage) && /moveBoard\(d, id, "down"\)/.test(listPage), "上下移没有走纯逻辑");
+ok(/createBoard\(d,/.test(listPage), "新建 OnePage 没有走纯逻辑");
 ok(/navigate\("board"\)/.test(listPage), "点击收藏夹没有进入白板页");
 ok(/所有 OnePage/.test(pageR) && /navigate\("boards"\)/.test(pageR), "白板面没有进入 OnePage 列表的入口");
 ok(/"boards"/.test(readFileSync("apps/desktop/src/state/app.tsx", "utf8")), "路由白名单里没有 boards（会静默回落到今日页）");

@@ -15,8 +15,9 @@
 import { createPortal } from "react-dom";
 
 export interface ExtStep {
-  tool: string; // "ns.method"
-  args?: Record<string, unknown>;
+  tool: string; // "ns.method"（插件门面的方法，不是 OH 工具名）
+  /** 数组 = 按位置参数展开（推荐）；对象 = 单参数（老的 from 注入口径） */
+  args?: Record<string, unknown> | unknown[];
   /** 参数注入：{ 目标参数名: "$1.结果路径" } —— $N = 第 N 步（1 起）的 JSON 结果 */
   from?: Record<string, string>;
 }
@@ -56,8 +57,12 @@ export interface UserFlow {
   trigger: FlowTrigger;
   steps: ExtStep[];
   createdAt: number;
+  /** 停用后定时/事件不再触发；手动 run 仍可跑（默认启用，旧存档无此键 = 启用）。 */
+  enabled?: boolean;
   lastRun?: number;
   lastOk?: boolean;
+  /** 上次失败的原因（第几步、什么错，截断）；UI 与 ext_flow_list 都要能读。 */
+  lastError?: string;
 }
 
 /** 手机桌面小组件的自定义内容（OH 自进化：把任意行文放到手机桌面） */
@@ -119,7 +124,7 @@ function load(): UserExtDoc {
         return {
           v: 1,
           tools: p.tools,
-          flows: p.flows,
+          flows: p.flows.map((f) => ({ ...f, enabled: f.enabled !== false })),
           widgets: Array.isArray(p.widgets) ? p.widgets : [],
           themes: Array.isArray(p.themes) ? p.themes : [],
           activeThemeId: typeof p.activeThemeId === "string" ? p.activeThemeId : null,
@@ -213,7 +218,7 @@ export function deleteTool(id: string): void {
 
 export function upsertFlow(f: Omit<UserFlow, "createdAt"> & { createdAt?: number }): void {
   const i = doc.flows.findIndex((x) => x.id === f.id);
-  const next: UserFlow = { ...f, createdAt: f.createdAt ?? Date.now() };
+  const next: UserFlow = { ...f, enabled: f.enabled !== false, createdAt: f.createdAt ?? Date.now() };
   if (i >= 0) doc.flows[i] = next;
   else doc.flows.push(next);
   commit();
@@ -222,6 +227,31 @@ export function upsertFlow(f: Omit<UserFlow, "createdAt"> & { createdAt?: number
 export function deleteFlow(id: string): void {
   doc.flows = doc.flows.filter((x) => x.id !== id);
   commit();
+}
+
+/** 修改一条 OneFlow（名字/触发/步骤/启停）；OH 的 ext_flow_update 与 UI 共用。 */
+export function updateFlow(
+  id: string,
+  patch: Partial<Pick<UserFlow, "name" | "trigger" | "steps" | "enabled">>,
+): boolean {
+  const i = doc.flows.findIndex((x) => x.id === id);
+  if (i < 0) return false;
+  const cur = doc.flows[i];
+  if (!cur) return false;
+  const next: UserFlow = {
+    ...cur,
+    ...patch,
+    name: typeof patch.name === "string" && patch.name.trim() ? patch.name.trim() : cur.name,
+  };
+  if (next.trigger.kind === "cron") next.trigger.everyMinutes = Math.max(1, Math.round(Number(next.trigger.everyMinutes) || 30));
+  doc.flows[i] = next;
+  commit();
+  return true;
+}
+
+/** 启停一条 OneFlow（定时/事件触发器只在启用时跑；手动 run 不受影响）。 */
+export function setFlowEnabled(id: string, on: boolean): boolean {
+  return updateFlow(id, { enabled: on });
 }
 
 /** 手机小组件自定义内容：rows 为空 = 清除（原生回落插件内容） */
@@ -258,11 +288,12 @@ export function mcpServerEnabled(): boolean {
   return doc.mcpServer;
 }
 
-export function touchFlow(id: string, ok: boolean): void {
+export function touchFlow(id: string, ok: boolean, error?: string): void {
   const f = doc.flows.find((x) => x.id === id);
   if (!f) return;
   f.lastRun = Date.now();
   f.lastOk = ok;
+  f.lastError = ok ? undefined : String(error ?? "未知错误").slice(0, 400);
   commit();
 }
 
@@ -285,7 +316,7 @@ function pick(stepResults: unknown[], path: string): unknown {
   return cur;
 }
 
-export type ExtExecutor = (tool: string, args: Record<string, unknown>) => Promise<unknown>;
+export type ExtExecutor = (tool: string, args: Record<string, unknown> | unknown[]) => Promise<unknown>;
 
 /** 执行一个步骤序列（executor 由调用方注入=插件门面的 call） */
 export async function runSteps(
@@ -296,9 +327,16 @@ export async function runSteps(
   for (let i = 0; i < steps.length; i++) {
     const st = steps[i];
     if (!st) continue;
-    const args: Record<string, unknown> = { ...(st.args ?? {}) };
-    for (const [k, tmpl] of Object.entries(st.from ?? {})) {
-      args[k] = pick(results, tmpl);
+    const posArgs = Array.isArray(st.args);
+    const args: Record<string, unknown> | unknown[] = posArgs
+      ? [...(st.args as unknown[])]
+      : { ...((st.args as Record<string, unknown> | undefined) ?? {}) };
+    if (!posArgs) {
+      for (const [k, tmpl] of Object.entries(st.from ?? {})) {
+        (args as Record<string, unknown>)[k] = pick(results, tmpl);
+      }
+    } else if (st.from && Object.keys(st.from).length > 0) {
+      return { ok: false, done: i, results, error: `第 ${i + 1} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）` };
     }
     try {
       results.push(await exec(st.tool, args));
@@ -320,46 +358,60 @@ export async function runFlow(id: string, exec: ExtExecutor): Promise<{ ok: bool
   const f = doc.flows.find((x) => x.id === id);
   if (!f) return { ok: false, error: "没有这个 OneFlow" };
   const r = await runSteps(f.steps, exec);
-  touchFlow(id, r.ok);
+  touchFlow(id, r.ok, r.error);
   return { ok: r.ok, error: r.error };
+}
+
+/* 执行器由插件门面在 harness 构建时注册（OneGO 手动运行 / 调度器共用）。 */
+let flowExecutor: ExtExecutor | null = null;
+export function registerFlowExecutor(exec: ExtExecutor): void {
+  flowExecutor = exec;
+}
+
+/** OneGO 手动运行入口：真的执行步骤（不再只弹「去对话里说」）。 */
+export async function runFlowNow(id: string): Promise<{ ok: boolean; error?: string }> {
+  if (!flowExecutor) return { ok: false, error: "执行器还没就绪（等插件加载完成再试）" };
+  return runFlow(id, flowExecutor);
 }
 
 /* ---- 节拍器：cron 类 OneFlow 与事件类 OneFlow 的常驻驱动（应用内单实例） ---- */
 let started = false;
 const lastCron = new Map<string, number>();
+let appStartFired = false;
 
-export function startScheduler(
-  exec: ExtExecutor,
-  events: { onDeadline: () => void; onGrades: () => void; onStart: () => void },
-): void {
+/** 启动调度器：cron 每 30s 对表；事件监听挂在 window 上（data.ts/useReport 负责发真实变更）。 */
+export function startScheduler(exec: ExtExecutor): void {
   if (started) return;
   started = true;
   const fire = async (f: UserFlow): Promise<void> => {
-    const r = await runFlow(f.id, exec);
-    touchFlow(f.id, r.ok);
+    await runFlow(f.id, exec);
   };
   const tick = (): void => {
     const now = Date.now();
     for (const f of doc.flows) {
+      if (f.enabled === false) continue;
       if (f.trigger.kind === "cron") {
         const ms = Math.max(1, f.trigger.everyMinutes) * 60000;
-        const last = lastCron.get(f.id) ?? 0;
+        /* 用持久化的 lastRun 初始化：重启后不会把「刚跑过」的 cron 立刻再补一遍。 */
+        const last = lastCron.get(f.id) ?? f.lastRun ?? 0;
         if (now - last >= ms) {
           lastCron.set(f.id, now);
           void fire(f);
         }
+      } else if (f.trigger.kind === "event" && f.trigger.event === "app-start" && !appStartFired) {
+        void fire(f);
       }
     }
+    appStartFired = true;
   };
   setInterval(tick, 30000);
   setTimeout(tick, 4000);
-  events.onStart();
-  window.addEventListener("onethu.hw.deadline", () => {
-    for (const f of doc.flows.filter((x) => x.trigger.kind === "event" && x.trigger.event === "hw-deadline")) void fire(f);
-  });
-  window.addEventListener("onethu.grades.update", () => {
-    for (const f of doc.flows.filter((x) => x.trigger.kind === "event" && x.trigger.event === "grades-update")) void fire(f);
-  });
+  const onEvent = (event: "hw-deadline" | "grades-update" | "notice"): void => {
+    for (const f of doc.flows.filter((x) => x.enabled !== false && x.trigger.kind === "event" && x.trigger.event === event)) void fire(f);
+  };
+  window.addEventListener("onethu.hw.deadline", () => onEvent("hw-deadline"));
+  window.addEventListener("onethu.grades.update", () => onEvent("grades-update"));
+  window.addEventListener("onethu.notice.update", () => onEvent("notice"));
 }
 
 /* ---- 用户生成主题：运行时 CSS 变量注入（不走插件市场管线；OH/用户直接创建） ---- */

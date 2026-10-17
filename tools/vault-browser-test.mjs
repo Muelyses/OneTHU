@@ -78,6 +78,8 @@ try {
   check(!expired.ok && /过期/.test(expired.reason ?? ''), 'expired code is rejected with reason');
   check(readFileSync('apps/desktop/src/components/Collect.tsx', 'utf8').includes('data-vault-catch'), 'CollectStar is a global vault drag source');
   check(readFileSync('apps/desktop/src/plugins/ChatDock.tsx', 'utf8').includes('data-vault-catch'), 'OH search hits are vault drag sources');
+  check(readFileSync('apps/desktop/src/pages/Plugins.tsx', 'utf8').includes('data-vault-catch'), 'plugin cards are vault drag sources');
+  check(readFileSync('apps/desktop/src/components/ThemePickerModal.tsx', 'utf8').includes('data-vault-catch'), 'theme choices are vault drag sources');
 
   /* 导入为当前暂存箱（走真实 UI：新建箱 → 导入口令 → 提交） */
   await p.getByRole('button', { name: '新建', exact: true }).click();

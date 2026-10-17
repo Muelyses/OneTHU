@@ -307,3 +307,10 @@
 - ThemeChoice 增加 themeId 与 data-vault-catch；WallCell 增加壁纸 payload（builtin/local ref）。
 - vaultRegistry 支持 payload.kind=theme/wallpaper：点开暂存箱条目直接应用主题/壁纸；
   vault 回归 35/35（主题 payload 实际改写 data-theme）。
+
+
+### 12.16 插件/主题对象补齐（2026-10-18）
+
+- 插件卡挂 data-vault-catch（payload.kind=plugin）；主题选择挂 themeId；壁纸挂 ref。
+- vaultRegistry 打开插件引用 → 打开插件页；主题/壁纸直接应用。
+- vault 回归 37/37（增加插件/主题来源静态断言）；guard/build 通过。

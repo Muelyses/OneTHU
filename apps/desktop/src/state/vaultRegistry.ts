@@ -45,7 +45,12 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
       else env.toast(r.reason === "duplicate" ? "通讯录里已经有这张名片了" : "这是你自己的名片，已在「我的名片」里");
       return true;
     }
-    const pmeta = it.payload as { routeId?: string; settingTitle?: string; kind?: string; themeId?: string; ref?: string } | undefined;
+    const pmeta = it.payload as { routeId?: string; settingTitle?: string; kind?: string; themeId?: string; ref?: string; pluginId?: string } | undefined;
+    if (pmeta?.kind === "plugin") {
+      env.navigate("plugins");
+      env.toast("已打开插件页；插件引用保留在暂存箱");
+      return true;
+    }
     if (pmeta?.kind === "theme") {
       void (async () => {
         const m = await import("./theme.js");

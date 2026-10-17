@@ -568,6 +568,7 @@ function PluginCard({
   const checkLine = repoCheck.msg ?? checkMsg ?? null;
 
   return (
+    <div data-vault-catch={JSON.stringify({ type: "payload", title: m.name, sub: "插件 · v" + m.version, payload: { kind: "plugin", pluginId: m.id }, source: "插件" })}>
     <Card>
       <Stack gap={2} fill>
         {/* 卡头：针脚 + 名称/徽标/状态 */}
@@ -736,6 +737,7 @@ function PluginCard({
         {runMsg && cmds.length === 0 ? <Text as="p" slot="micro" mono tone="quiet">{runMsg}</Text> : null}
       </Stack>
     </Card>
+    </div>
   );
 }
 

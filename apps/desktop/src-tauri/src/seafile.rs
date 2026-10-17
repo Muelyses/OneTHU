@@ -443,6 +443,75 @@ pub async fn seafile_share(
     })
 }
 
+/// 从分享链接里取出 share token（形如 https://cloud.tsinghua.edu.cn/d/<token>/）。
+fn share_token_of(link: &str) -> Option<String> {
+    let i = link.find("/d/")?;
+    let rest = &link[i + 3..];
+    let tok = rest.split(['/', '?']).next().unwrap_or("").trim();
+    if tok.is_empty() { None } else { Some(tok.to_string()) }
+}
+
+/// 删除分享链接（分享生命周期；过期/撤销后的清理入口）。
+#[tauri::command]
+pub async fn seafile_share_delete(token: String, share_token: String) -> Result<(), String> {
+    let t = share_token.trim();
+    if t.is_empty() {
+        return Err("分享 token 为空".into());
+    }
+    check(
+        client()?
+            .delete(format!("{BASE}/api/v2.1/share-links/{t}/"))
+            .bearer_auth(token)
+            .send()
+            .await
+            .map_err(|e| e.to_string())?,
+    )
+    .await?;
+    Ok(())
+}
+
+/// 匿名读取一个分享链接根目录下的清单文件（暂存箱口令的接收端通道）。
+/// 只读取根目录第一个文件；返回 UTF-8 文本（manifest.json）。
+#[tauri::command]
+pub async fn seafile_share_read(link: String) -> Result<String, String> {
+    let token = share_token_of(&link).ok_or_else(|| "不是有效的云盘分享链接（缺少 /d/<token>/）".to_string())?;
+    let v: Value = check(
+        client()?
+            .get(format!("{BASE}/api/v2.1/share-links/{token}/dirents/"))
+            .query(&[("path", "/")])
+            .send()
+            .await
+            .map_err(|e| e.to_string())?,
+    )
+    .await?
+    .json()
+    .await
+    .map_err(|e| e.to_string())?;
+    let entries = v.get("data").and_then(|x| x.as_array()).or_else(|| v.as_array());
+    let name = entries
+        .and_then(|a| {
+            a.iter().find(|e| {
+                e.get("type").and_then(|t| t.as_str()) == Some("file")
+                    || e.get("kind").and_then(|t| t.as_str()) == Some("file")
+            })
+        })
+        .and_then(|e| e.get("name").and_then(|n| n.as_str()))
+        .ok_or_else(|| "分享里没有文件（可能已被撤销或过期）".to_string())?;
+    let bytes = check(
+        client()?
+            .get(format!("{BASE}/d/{token}/files/"))
+            .query(&[("p", format!("/{name}")), ("dl", "1".to_string())])
+            .send()
+            .await
+            .map_err(|e| e.to_string())?,
+    )
+    .await?
+    .bytes()
+    .await
+    .map_err(|e| e.to_string())?;
+    String::from_utf8(bytes.to_vec()).map_err(|_| "分享清单不是 UTF-8 文本".to_string())
+}
+
 /// 库内搜索（seahub 新版：必须带 repo_id；返回 data=[{path,size,mtime(ISO),type}]）
 #[tauri::command]
 pub async fn seafile_search(token: String, repo_id: String, query: String) -> Result<Vec<SeafileEntry>, String> {

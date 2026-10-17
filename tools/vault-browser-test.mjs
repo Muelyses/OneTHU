@@ -114,6 +114,58 @@ try {
     return d.boxes.find((b) => b.id === d.activeId).items.length;
   });
   check(n2 === fileState.n, 'same file content is deduped by hash (not by name)');
+  /* 手机 390：长按（touch pointer）应启动拖动并出现落点，取消后回弹 */
+  check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
+  await p.setViewportSize({ width: 390, height: 844 });
+  await p.waitForTimeout(600);
+  check(await p.locator('.vault-dock').isVisible(), 'phone shows persistent vault dock (outside bottom bar grid)');
+  const started = await p.evaluate(async () => {
+    const el = document.querySelector('[data-vault-catch]');
+    if (!el) return { ok: false, reason: 'no-source' };
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    const ev = (type, cx, cy, extra = {}) => new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, buttons: type === 'pointerup' ? 0 : 1, clientX: cx, clientY: cy, ...extra });
+    el.dispatchEvent(ev('pointerdown', x, y));
+    await new Promise((r2) => setTimeout(r2, 400));
+    window.dispatchEvent(ev('pointermove', x + 36, y + 70));
+    await new Promise((r2) => setTimeout(r2, 260));
+    const drop = document.querySelector('[data-vault-drop]');
+    const rect = drop?.getBoundingClientRect();
+    const ok = Boolean(drop);
+    window.dispatchEvent(ev('pointercancel', x + 36, y + 70));
+    await new Promise((r2) => setTimeout(r2, 120));
+    return { ok, bottom: rect?.bottom ?? 0, vh: window.innerHeight, cleared: !document.querySelector('[data-vault-drop]') };
+  });
+  check(started.ok, 'mobile long-press starts vault drag and shows drop target');
+  check(started.cleared, 'pointercancel dismisses the drop target');
+  check(started.bottom > 0 && started.bottom < started.vh, 'mobile drop target stays inside viewport');
+  /* 云盘适配器：云分享只编码引用，接收端通过 adapter.resolve 读回 */
+  const cloud = await p.evaluate(async () => {
+    const vs = await import('/src/state/vaultShare.ts');
+    const v = await import('/src/state/vault.ts');
+    let uploaded = null;
+    let revoked = false;
+    vs.registerVaultCloudAdapter({
+      async upload(p) {
+        uploaded = p;
+        return { provider: 'seafile', repoId: 'repo.test', path: '/Vault/shares/test/manifest.json', shareUrl: 'https://cloud.tsinghua.edu.cn/d/testtoken/', shareToken: 'testtoken', expiresAt: Date.now() + 3600_000 };
+      },
+      async resolve() { return uploaded; },
+      async revoke() { revoked = true; },
+    });
+    v.createVault('云端测试箱');
+    v.addToVault({ type: 'text', title: '云端对象', text: 'hello cloud' });
+    const minted = await vs.mintShareCode(v.activeVault());
+    const imported = await vs.importShareCodeAsCurrent(minted.code);
+    const active = v.activeVault();
+    const rv = await vs.revokeShare(minted.payload);
+    vs.registerVaultCloudAdapter(null);
+    return { cloud: minted.payload.cloud, inline: minted.payload.items, imported: imported.ok, n: active.items.length, title: active.items[0]?.title, rv, revoked };
+  });
+  check(cloud.cloud?.shareUrl?.includes('/d/testtoken/') && cloud.inline === undefined, 'cloud share code encodes a cloud ref, not the manifest');
+  check(cloud.imported && cloud.n === 1 && cloud.title === '云端对象', 'cloud ref resolves back into current vault via adapter');
+  check(cloud.rv && cloud.revoked, 'share revocation goes through the adapter');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
   console.log(checks + ' vault assertions passed');
 } finally {

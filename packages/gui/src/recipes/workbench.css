@@ -473,3 +473,10 @@ body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
 /* 暂存箱文件落区：桌面可拖入 OS 文件；不占视觉焦点。 */
 .vault-file-drop { display: grid; gap: var(--og-space-1); margin-top: var(--og-space-3); padding: var(--og-space-4); border: 1px dashed var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out); }
 .vault-file-drop.is-hot { border-color: var(--og-focus-color); background: var(--og-surface-3); }
+
+/* 手机常驻暂存箱入口：在底栏之上、sheet/OH 面板之下；不占底栏三槽。 */
+html:root .vault-dock { position: fixed; right: calc(var(--og-space-4) + env(safe-area-inset-right)); bottom: calc(var(--og-space-10) + env(safe-area-inset-bottom)); z-index: var(--og-z-drawer); display: none; }
+html.is-phone .vault-dock { display: inline-flex; }
+html.is-phone .vault-dock .og-btn { box-shadow: var(--og-elev-menu); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); }
+.vault-dock-label { font-size: var(--og-text-micro); color: var(--og-content-2); }
+.vault-dock-count { min-width: var(--og-space-4); padding: 0 var(--og-space-1); border-radius: var(--og-radius-full); background: var(--og-fill-chip); color: var(--og-content-1); font-size: var(--og-text-micro); text-align: center; }

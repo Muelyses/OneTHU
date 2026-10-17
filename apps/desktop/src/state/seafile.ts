@@ -151,6 +151,17 @@ export async function seafileShare(repoId: string, path: string, expireDays: num
   return r.link;
 }
 
+/** 删除分享链接（云盘侧撤销；token 来自 seafile_share 返回的 token，或从链接反查）。 */
+export async function seafileShareDelete(shareToken: string): Promise<void> {
+  if (!cfg) throw new Error("云盘未配置");
+  await invoke("seafile_share_delete", { token: cfg.token, shareToken });
+}
+
+/** 匿名读取分享链接根目录的清单文件（接收端无需登录；只返回 UTF-8 文本）。 */
+export async function seafileShareRead(link: string): Promise<string> {
+  return invoke<string>("seafile_share_read", { link });
+}
+
 export async function seafileSearch(repoId: string, query: string): Promise<SeafileEntry[]> {
   if (!cfg) throw new Error("云盘未配置");
   return invoke<SeafileEntry[]>("seafile_search", { token: cfg.token, repoId, query });

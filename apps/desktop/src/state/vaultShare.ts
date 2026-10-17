@@ -27,6 +27,8 @@ export interface VaultCloudRef {
   path: string;
   /** 分享链接（用户可手动打开，非必需） */
   shareUrl?: string;
+  /** 分享 token（撤销时用；云盘适配器填） */
+  shareToken?: string;
   /** 过期时间（epoch ms；0/缺省 = 不过期） */
   expiresAt?: number;
 }

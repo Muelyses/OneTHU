@@ -15,7 +15,8 @@ import {
   activeVault, addToVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
   setActiveVault, subscribeVault, VAULT_TYPE_LABEL, vaultSnapshot, type VaultItem,
 } from "../../state/vault.js";
-import { importShareCodeAsCurrent, mintShareCode } from "../../state/vaultShare.js";
+import { decodeShare, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
+import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
 import { fileRefOf, stageFromFiles, stageFromPicker, type StagedFile } from "../../lib/fileChannel.js";
@@ -55,8 +56,15 @@ export function VaultPage(): ReactNode {
   const [code, setCode] = useState<string>(box.lastShareCode ?? "");
   const [busy, setBusy] = useState(false);
   const [fileHot, setFileHot] = useState(false);
+  const [cloudReady, setCloudReady] = useState(false);
+  const [shareInfo, setShareInfo] = useState<VaultSharePayload | null>(null);
 
-  useEffect(() => { setCode(activeVault().lastShareCode ?? ""); }, [box.id]);
+  useEffect(() => {
+    const last = activeVault().lastShareCode ?? "";
+    setCode(last);
+    setShareInfo(last ? decodeShare(last).payload ?? null : null);
+  }, [box.id]);
+  useEffect(() => { void installVaultCloudAdapter().then(setCloudReady); }, []);
 
   const addStaged = useCallback((files: StagedFile[]): void => {
     let ok = 0;
@@ -106,6 +114,7 @@ export function VaultPage(): ReactNode {
     try {
       const r = await mintShareCode(box);
       setCode(r.code);
+      setShareInfo(r.payload);
       try { await navigator.clipboard.writeText(r.code); showToast("口令已生成并复制"); }
       catch { showToast("口令已生成：复制下方文本发送给好友"); }
     } catch (e) {
@@ -131,6 +140,7 @@ export function VaultPage(): ReactNode {
             <Btn variant="ghost" onClick={() => void importCode()} disabled={busy}>导入口令</Btn>
             <Btn variant="outline" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
             <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0}>生成口令</Btn>
+            <Text slot="micro" tone="faint">{cloudReady ? "云分享" : "本地口令"}</Text>
           </div>
         </div>
         {code ? (
@@ -140,6 +150,14 @@ export function VaultPage(): ReactNode {
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(code).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setCode("")}>收起</Btn>
+              {shareInfo?.cloud?.shareToken ? (
+                <Btn variant="ghost" size="sm" tone="error" onClick={() => {
+                  void revokeShare(shareInfo).then((ok) => {
+                    if (ok) { setCode(""); setShareInfo(null); showToast("云分享已撤销"); }
+                    else showToast("撤销没有完成：请到云盘确认权限");
+                  }).catch((e) => showToast(`撤销失败：${e instanceof Error ? e.message : String(e)}`));
+                }}>撤销云分享</Btn>
+              ) : null}
             </div>
           </div>
         ) : null}

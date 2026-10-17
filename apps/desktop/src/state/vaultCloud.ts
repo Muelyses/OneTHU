@@ -114,9 +114,15 @@ const adapter: VaultCloudAdapter = {
     const token = getSeafileToken();
     if (!token) return;
     const dir = /\/manifest\.json$/.test(record.path) ? record.path.replace(/\/manifest\.json$/, "") : record.path;
-    for (const f of unreferencedFilesOf(record.id)) {
-      const full = f.path.startsWith("/") ? f.path : `${dir}/${f.path}`;
-      await invoke("seafile_delete", { token, repoId: record.repoId, path: full, kind: "file" }).catch(() => undefined);
+    /* 暂存箱分享目录是内部目录（每分享独立），撤销后整目录删；失败再退化为逐文件清理。 */
+    const removed = await invoke("seafile_delete", { token, repoId: record.repoId, path: dir, kind: "dir" })
+      .then(() => true)
+      .catch(() => false);
+    if (!removed) {
+      for (const f of unreferencedFilesOf(record.id)) {
+        const full = f.path.startsWith("/") ? f.path : `${dir}/${f.path}`;
+        await invoke("seafile_delete", { token, repoId: record.repoId, path: full, kind: "file" }).catch(() => undefined);
+      }
     }
   },
 };

@@ -344,3 +344,15 @@
 - 新增 `seafile::tests::live_share_read_dir_and_file`（ignored，需 TSINGHUA_SEAFILE_TOKEN），
   实测目录分享与文件分享直读均通过。
 - 研究文档 §实测补充 记录 API 形状；下一轮可跑 App UI 端到端云冒烟。
+
+
+### 12.21 App 层真实云盘 UI 端到端（2026-10-18）
+
+- 新增 `tools/cloud-ui-live-test.mjs`：浏览器里用本地 Tauri 命令桥接真实云盘，走 UI「生成口令」→
+  第二上下文「导入口令」→ 校验云端目录含 manifest + files、导入文件 ref、撤销分享；9/9 通过。
+- 修出两个真实 bug：
+  ① `payloadFromVault` 之前把 `stagedPath` 剥掉，云适配器根本拿不到本地文件 → 改为仅云适配器
+     上传时携带，上传后立刻删除，绝不进清单/inline 口令；
+  ② 清单临时文件名不是 `manifest.json` → 改为 `write_temp_file("manifest.json")`，目录分享可直读。
+- 实测确认：文件条目上传到 `<分享目录>/files/`，第二上下文导入保留 `files/...` 云路径；
+  分享撤销后清理目录。

@@ -71,10 +71,11 @@ const adapter: VaultCloudAdapter = {
       const safe = (f.hash ? f.hash.slice(0, 8) + "-" : "") + f.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
       await invoke("seafile_upload", { token, repoId, parentDir: filesDir, localPath: f.stagedPath, replace: true });
       f.cloudPath = `files/${safe}`;
+      delete f.stagedPath; /* 本机私有路径绝不进清单 */
       if (f.hash) shareFiles.push({ hash: f.hash, path: `files/${safe}` });
     }
     const manifest = JSON.stringify(cloud);
-    const localPath = await writeTemp(`onethu-vault-${id}.json`, manifest);
+    const localPath = await writeTemp("manifest.json", manifest);
     const manifestPath = `${dir}/manifest.json`;
     await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
     let path = dir;

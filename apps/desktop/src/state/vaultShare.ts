@@ -220,19 +220,21 @@ function sanitizeCatch(raw: unknown): VaultCatch | null {
 }
 
 /** 从一个箱子生成清单 payload（items 只含引用/摘要，不含文件字节）。 */
-export function payloadFromVault(box: VaultBox, from = "OneTHU 用户"): VaultSharePayload {
+export function payloadFromVault(box: VaultBox, from = "OneTHU 用户", includeStaged = false): VaultSharePayload {
   return {
     v: 1,
     kind: "vault-share",
     issuedAt: Date.now(),
     name: box.name,
-    items: box.items.map(stripItem),
+    items: box.items.map((it) => stripItem(it, includeStaged)),
     from,
   };
 }
 
-/** 去掉本地 id/时间（导入方重新生成；口令稳定、可跨版本）。 */
-function stripItem(it: VaultItem): VaultCatch {
+/** 去掉本地 id/时间（导入方重新生成；口令稳定、可跨版本）。
+ *  includeStaged 只给云适配器上传用：stagedPath 由适配器读完文件后必须再次剥掉，
+ *  绝不能写进清单或 inline 口令（本机私有路径）。 */
+function stripItem(it: VaultItem, includeStaged: boolean): VaultCatch {
   return {
     type: it.type,
     title: it.title,
@@ -240,7 +242,12 @@ function stripItem(it: VaultItem): VaultCatch {
     ...(it.atom ? { atom: it.atom } : {}),
     ...(it.text ? { text: it.text } : {}),
     /* cloudPath 是发送者的私有云盘路径，跨账号无意义/有泄露风险：分享清单不带它。 */
-    ...(it.file ? { file: { name: it.file.name, size: it.file.size, mime: it.file.mime, hash: it.file.hash, cloudPath: null } } : {}),
+    ...(it.file ? {
+      file: {
+        name: it.file.name, size: it.file.size, mime: it.file.mime, hash: it.file.hash, cloudPath: null,
+        ...(includeStaged && it.file.stagedPath ? { stagedPath: it.file.stagedPath } : {}),
+      },
+    } : {}),
     ...(it.board ? { board: it.board } : {}),
     ...(it.payload !== undefined ? { payload: it.payload } : {}),
     ...(it.source ? { source: it.source } : {}),
@@ -249,7 +256,7 @@ function stripItem(it: VaultItem): VaultCatch {
 
 /** 生成口令：有云盘适配器时上传清单并只编码引用；否则 inline（离线/未接云盘）。 */
 export async function mintShareCode(box: VaultBox, from?: string): Promise<{ code: string; payload: VaultSharePayload }> {
-  const payload = payloadFromVault(box, from);
+  const payload = payloadFromVault(box, from, Boolean(adapter));
   let final = payload;
   if (adapter) {
     const cloud = await adapter.upload(payload);

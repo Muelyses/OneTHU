@@ -122,3 +122,12 @@ Rust 最小新增：`file_sha256`、流式上传（进度/取消）、`share_lin
 **结论修正**：清华实例允许目录分享，vaultCloud 首选目录分享路径可用；文件分享仅作为
 目录分享被策略拒绝时的降级，且读取必须走 direct 单文件通道。`seafile_share_read` 已按实测
 `dirent_list` + `/f/` + direct fallback 修正。真机/真实云盘 API 层已验证，App 端到端仍需跑一次 UI 冒烟。
+
+
+### App 层 live UI 追加（同日）
+
+`tools/cloud-ui-live-test.mjs` 在浏览器里桥接真实云盘命令，跑 UI 生成/导入：
+- 发现并修复：`payloadFromVault` 剥掉 `stagedPath` → 云适配器拿不到文件；现仅上传期携带、上传后删除。
+- 发现并修复：清单临时文件名不是 `manifest.json`；现在目录根就是 manifest.json。
+- 结果：云端目录含 `files/` 与 `manifest.json`；第二上下文导入文件 ref 保留 `files/...`；
+  撤销分享并清理目录，9/9 断言通过。

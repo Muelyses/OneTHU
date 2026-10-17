@@ -9,7 +9,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-const roots = ["apps/desktop/src/styles", "packages/ui/src"];
+const roots = ["apps/desktop/src/styles", "packages/ui/src", "packages/gui/src"];
 const fails = [];
 const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 

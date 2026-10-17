@@ -31,23 +31,11 @@
   max-width: 176px;
   min-width: 96px; /* 多 tab 到挤压区间即溢出 → 滚动条逻辑成立（用户预期「一多就滚」） */
   height: 28px;
-  border-radius: 8px;
-  color: var(--text-2);
   flex: 0 0 auto;
   transition: background var(--dur-1, 0.12s) var(--ease-out, ease), color var(--dur-1, 0.12s) var(--ease-out, ease);
 }
-.ex-tab:hover { background: var(--glass-tint, var(--hover, rgba(0, 0, 0, 0.05))); }
 /* 选中标签 = 液态玻璃选中框（v4.3，2026-10-13 用户点名「选中框不要固定亮色」）：
    主题色 tint 渐变 + chip blur + rim 顶光，随主题/壁纸变色——不再是 secondary-container 死粉饼 */
-.ex-tab.is-active {
-  background: linear-gradient(180deg,
-    color-mix(in srgb, var(--md-sys-color-primary) 15%, transparent),
-    color-mix(in srgb, var(--md-sys-color-primary) 7%, transparent));
-  backdrop-filter: var(--glass-chip-blur);
-  -webkit-backdrop-filter: var(--glass-chip-blur);
-  box-shadow: inset 0 1px 0 var(--glass-rim-top), inset 0 0 0 1px var(--glass-rim-hairline);
-  color: var(--text-1);
-}
 .ex-tab-main {
   display: inline-flex;
   align-items: center;
@@ -62,14 +50,13 @@
   font: inherit;
 }
 .ex-tab.is-home .ex-tab-main { padding-left: 8px; }
-.ex-tab.is-home svg { color: var(--accent); flex: none; }
+.ex-tab.is-home svg { flex: none; }
 .ex-tab-title {
   font-size: 12.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.ex-tab.is-home .ex-tab-title { font-weight: 600; }
 .ex-tab-close {
   position: relative;
   display: inline-flex;
@@ -107,14 +94,9 @@
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: 0;
-  border-radius: 8px;
-  background: none;
-  color: var(--text-3);
   cursor: pointer;
   flex: 0 0 auto;
 }
-.ex-tab-add:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); color: var(--text-1); }
 
 /* ── 底栏三入口 BottomBar（全平台恒显示） ── */
 .ex-bbar {
@@ -128,11 +110,6 @@
   align-items: center;
   height: var(--explorer-bar-h, 48px);
   padding: 0 10px;
-  background: color-mix(in srgb, var(--md-sys-color-surface-container-lowest, var(--surface, #fff)) 90%, transparent);
-  -webkit-backdrop-filter: var(--glass-card-blur);
-  backdrop-filter: var(--glass-card-blur);
-  border-top: 1px solid var(--border);
-  box-shadow: 0 -1px 0 color-mix(in srgb, var(--text-1) 3%, transparent);
 }
 .ex-bbar-btn {
   position: relative;
@@ -193,7 +170,6 @@
   position: fixed;
   inset: 0;
   z-index: 1290;
-  background: rgba(0, 0, 0, 0.18);
   animation: m-fade var(--dur-2, 0.2s) var(--ease-out, ease) both;
 }
 .ex-sheet-mask.is-closing { animation: m-fade-out var(--dur-2, 0.2s) ease both; }
@@ -206,11 +182,6 @@
   flex-direction: column;
   width: min(470px, 46vw);
   max-height: min(74vh, 680px);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
-  color: var(--text-1);
-  box-shadow: var(--md-sys-elevation-2, 0 18px 50px rgba(0, 0, 0, 0.24));
   animation: m-spring-in var(--dur-3, 0.3s) var(--ease-out, ease) both;
   overflow: hidden;
 }
@@ -220,10 +191,8 @@
   align-items: center;
   gap: 8px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--border);
   flex: none;
 }
-.ex-sheet-head b { font-size: 14px; }
 .ex-sheet-head .btn { margin-left: auto; }
 .ex-sheet-body {
   flex: 1;
@@ -239,7 +208,6 @@
   display: flex;
   justify-content: center;
   padding: 7px 14px;
-  border-top: 1px solid var(--border);
   flex: none;
 }
 .ex-seg-row { padding: 10px 14px 0; flex: none; }
@@ -287,11 +255,6 @@
   min-width: 17px;
   height: 15px;
   padding: 0 4px;
-  border-radius: 999px;
-  background: var(--md-sys-color-surface-container-highest, var(--surface-3, rgba(0, 0, 0, 0.06)));
-  color: var(--text-3);
-  font-size: 10px;
-  font-weight: 600;
   line-height: 15px;
   text-align: center;
 }
@@ -303,11 +266,8 @@
   align-items: center;
   gap: 6px;
   padding: 6px 8px;
-  border-radius: 9px;
   transition: background var(--dur-1, 0.12s) var(--ease-out, ease);
 }
-.ex-row:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); }
-.ex-row.is-active { background: var(--accent-soft); }
 .ex-row-clickable {
   width: 100%;
   border: 0;
@@ -325,16 +285,11 @@
   gap: 1px;
 }
 .ex-row-title {
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .ex-row-sub {
-  font-size: 11px;
-  color: var(--text-3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -353,15 +308,9 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  border: 0;
-  border-radius: 7px;
-  background: none;
-  color: var(--text-3);
-  font-size: 13px;
   line-height: 1;
   cursor: pointer;
 }
-.ex-mini:hover { background: color-mix(in srgb, var(--text-1) 8%, transparent); color: var(--text-1); }
 
 /* ── 输入 / 新建行 / 提示 ── */
 
@@ -436,15 +385,12 @@
     font-size: 10.5px;
   }
   .ex-bbar-label { line-height: 1.1; }
-  .ex-sheet-mask { background: rgba(0, 0, 0, 0.42); }
   .ex-sheet {
     left: 0;
     right: 0;
     bottom: 0;
     width: auto;
     max-height: 78vh;
-    border: 0;
-    border-radius: 16px 16px 0 0;
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
@@ -495,7 +441,6 @@
   bottom: auto;
   right: auto;
   max-height: min(70vh, 620px);
-  border-radius: 12px;
   transform-origin: top left;
   animation: ex-slide-down var(--dur-2, 0.2s) var(--ease-out, ease) both;
 }
@@ -506,7 +451,7 @@
 
 /* 标签拖动改顺序：被拖标签半透明；拖拽中全局保持抓手 */
 /* 被拖标签必须定位才能压住邻居（z-index 对非定位元素无效）；底色不透明，避免文字透出重叠 */
-.ex-tab.is-dragging { position: relative; z-index: 6; opacity: 1; background: var(--dsw-alias-bg-layer-1, #fff); box-shadow: 0 6px 16px rgba(0,0,0,.18); border-radius: 8px; }
+.ex-tab.is-dragging { position: relative; z-index: 6; opacity: 1; }
 .ex-tab.is-dragging .ex-tab-main { cursor: grabbing; }
 
 /* 首页钉死在标签栏最左：横向滚动时不随滑动条移动 */
@@ -517,13 +462,6 @@
   position: sticky;
   left: 0;
   z-index: 2;
-  background: var(--glass-menu-fill);
-  backdrop-filter: var(--glass-menu-blur);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline);
 }
 
 /* 工作区底板：标签在底色板上，板前写名字；颜色由 --ws-color 注入 */
@@ -535,7 +473,6 @@
 .ex-ws-close:hover { opacity: 1; background: color-mix(in srgb, var(--ws-color, #888) 22%, transparent); }
 
 /* 组合意图灰框：标签停留满 600ms 后，底下的标签被灰框括住（松手即建 / 加入工作区） */
-.ex-tab[data-ws-frame="1"] { box-shadow: inset 0 0 0 2px var(--dsw-alias-border-l2, #9ca3af); border-radius: 8px; }
 
 /* ══ 工作区底板：整组拖动时浮起；底板自身需要定位，层级才压得住邻居 ══ */
 .ex-ws-band { position: relative; }
@@ -559,7 +496,7 @@
 .ex-rail { transition: width 0.18s ease; }
 .tabs-vertical.rail-narrow .ex-rail { width: 56px; }
 .tabs-vertical.rail-narrow .explorer-content { margin-left: 56px; --ex-rail-w: 56px; }
-.tabs-vertical.rail-narrow .ex-rail:hover { width: 232px; z-index: 50; box-shadow: 6px 0 24px rgba(0, 0, 0, 0.14); }
+.tabs-vertical.rail-narrow .ex-rail:hover { width: 232px; z-index: 50; }
 .tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab-title,
 .tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab-close,
 .tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-ws-name,
@@ -749,33 +686,11 @@
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical::-webkit-scrollbar { display: none; }
 
 /* ══════════ 液态玻璃 v4：底栏 = 面板级玻璃 ═══════════ */
-.ex-bbar {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-fill-regular);
-  backdrop-filter: var(--glass-card-blur);
-  -webkit-backdrop-filter: var(--glass-card-blur);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-}
 .ex-row:hover,
 .hs-detail-row:hover,
 .picker-row:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }
 
 /* ══════════ 液态玻璃 v4.1：标签抽屉 / OneGO = menu tier ═══════════ */
-.ex-sheet {
-  background: var(--glass-menu-fill);
-  backdrop-filter: var(--glass-menu-blur);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  border-color: var(--glass-border);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline);
-}
 
 /* ══════════ 液态玻璃 v4.1→v4.3：竖栏材质已并入收口规则 ═══════════
    2026-10-14：本块原手写 material（fill-regular + tint + clear blur + rim）与 global.css 的
@@ -783,14 +698,8 @@
    浅色两者同值看不出，**深色下 fill-regular 是 30,30,36 近黑、收口用 card-fill-2 是白**，
    于是竖栏比顶栏暗一截、还少一层 --glass-shadow。现只保留竖栏独有的右边线，材质交给收口规则。
    （下面 hover 那条仍保留：它防的是「窄栏展开翻白」的特异性之争，与本块无关。） */
-.ex-rail {
-  border-right: 1px solid var(--glass-border);
-}
 /* hover 展开只抬阴影不换底（2026-10-14）：此前换成 --glass-fill(浅色=0.52 白)，
    亮度档玻璃(特异性 0,3,0)输给本规则(0,4,0)，有壁纸时展开那片翻白。 */
-.tabs-vertical.rail-narrow .ex-rail:hover {
-  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.14), inset 0 1px 0 var(--glass-rim-top), inset 0 0 0 1px var(--glass-rim-hairline);
-}
 
 /* ═══ 液态玻璃 v4.3 收尾（explorer-ui 域）：「选中框」统一 ═══
    底栏开关态 / 行选中态：accent-soft 平涂 → 主题 tint 渐变玻璃 + chip blur + rim 顶光，
@@ -805,7 +714,6 @@
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
   color: var(--text-1);
 }
-.ex-row.is-active { color: var(--text-1); }
 
 /* ══════════ 手机端（html.is-phone）：底栏 + seeking 抽屉 ══════════
    口径（2026-10-16 用户拍板）：**短边窄就是手机形态**（不要求触屏，桌面拖窄窗也算）；
@@ -862,16 +770,12 @@ html.is-phone .ex-sheet.is-mob-full {
   bottom: 0;
   width: auto;
   max-height: none;
-  border: 0;
-  border-radius: 16px 16px 0 0;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 html.is-phone .ex-sheet.is-mob-half { height: 60vh; }
 html.is-phone .ex-sheet.is-mob-full { height: 94vh; }
 /* 拖动中的高度由内联样式接管；这里只保证动画不跟拖打架 */
 html.is-phone .ex-sheet.is-mob-drag { animation: none; transition: none; }
-html.is-phone .ex-sheet.is-mob-half,
-html.is-phone .ex-sheet.is-mob-full { box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.24); }
 
 /* ══════════ 行级拖拽（抽屉内，电脑端与手机共用）：浮起行 + 停留合并灰框 ══════════ */
 .ex-row.is-lift-row,

@@ -72,7 +72,7 @@ const SPACES = ["--og-space-0", "--og-space-1", "--og-space-2", "--og-space-3", 
 const TONES = ["default", "quiet", "brand", "error", "warning", "success", "info"] as const;
 
 /** 各族的默认解析面（算强调色对比率时当参考底；与 semantic.css 的初值保持一致） */
-const REF_SURFACE: Record<OGScheme, string> = { light: "#ffffff", dark: "#141922" };
+const REF_SURFACE: Record<OGScheme, string> = { light: "#ffffff", dark: "#292927" };
 
 export interface StorageLike {
   getItem(key: string): string | null;
@@ -101,11 +101,8 @@ const DEFAULT_AXES: OGAxes = {
   density: "comfortable",
   motion: "full",
   platform: "desktop",
-  /* 默认主题 = 业务蓝（tokens.css 的 --md-sys-color-secondary 同值）：
-     库内置的 brand-40（清华紫）是画廊/皮肤演示用品牌，主应用"象牙·默认"的强调色
-     是业务蓝——纯桥不喂 theme 轴时，OG 全线会停在库默认紫上（2026-10-14 用户点名#1）。
-     主题三态由宿主桥喂：dynamic→调色板值、theme→主题 accent、象牙/空→保持此默认。 */
-  theme: { id: "app-base", accent: "#4176e6" },
+  // Neutral is scheme-aware in CSS. User theme accents remain an independent axis.
+  theme: null,
 };
 
 export class StyleDirector {
@@ -265,7 +262,7 @@ export class StyleDirector {
     const resolved = this.resolvedAccent();
     const style = root.style;
     if (!resolved) {
-      for (const t of ["--og-accent", "--og-accent-strong", "--og-accent-soft", "--og-accent-soft-line", "--og-accent-on", "--og-accent-quiet", "--og-ring"]) {
+      for (const t of ["--og-accent", "--og-accent-strong", "--og-accent-soft", "--og-accent-soft-line", "--og-accent-on", "--og-accent-quiet", "--og-ring", "--og-selected", "--og-accent-inverse"]) {
         style.removeProperty(t);
       }
       return;
@@ -351,15 +348,15 @@ export function resolveScopeDecl(key: ScopeToken, value: string): string | null 
        原来 alias 家族 --og-c-surface-1 没有任何组件读它，scope 登记后零视觉效果。 */
     case "surface": {
       const target = value.startsWith("surface-") ? SURFACES.find((s) => s === `--og-${value}`) : byIndex(SURFACES, value);
-      return target ? `--og-${key}:var(${target});` : null;
+      return target && target !== `--og-${key}` ? `--og-${key}:var(${target});` : null;
     }
     case "content": {
       const target = value.startsWith("content-") ? CONTENTS.find((s) => s === `--og-${value}`) : byIndex(CONTENTS, value);
-      return target ? `--og-${key}:var(${target});` : null;
+      return target && target !== `--og-${key}` ? `--og-${key}:var(${target});` : null;
     }
     case "line": {
       const target = value.startsWith("line-") ? LINES.find((s) => s === `--og-${value}`) : byIndex(LINES, value);
-      return target ? `--og-${key}:var(${target});` : null;
+      return target && target !== `--og-${key}` ? `--og-${key}:var(${target});` : null;
     }
     case "radius": {
       const target = value.startsWith("radius-") ? RADII.find((s) => s === `--og-${value}`) : RADII.find((s) => s === `--og-radius-${value}`);

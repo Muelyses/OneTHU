@@ -64,3 +64,11 @@
 | G4 库内零旁路 | `packages/gui/src/**` 里不允许字面色值/px（白名单：`tokens/*.css`、`styles/base.css` 注释豁免、`skins/*.css`） |
 | G5 令牌引用存在 | CSS 里引用的 `--og-*` 必须有定义 |
 | G6 组件目录 | `src/index.ts` 导出的组件必须各有一次画廊登记（gallery 矩阵覆盖） |
+
+## exp 单源补充（2026-10-17）
+
+- OneGUI CSS 中的颜色字面值只允许出现在 `tokens/reference.css`，包括 semantic / structure / skins / recipes；R9 强制检查。
+- 主要动作使用 action 角色，用户主题使用 accent 角色；两者不得互相覆盖。
+- scope 将同名角色映射到自身时不生成声明，继承根值；禁止形成 CSS 自引用。
+- `recipes/onethu.css` 是库提供的宿主适配接口。应用可使用其中公开的槽位类（例如设备取景框），不得在应用中重新声明其外观。
+- 旧 G1/G2/G3 的全零目标仍是迁移终态；当前 R2/R3/R4/R7/R8 为棘轮，不能把“未新增”表述成“全部已归零”。

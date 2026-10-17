@@ -1,0 +1,104 @@
+{
+ "vw": 390,
+ "vh": 844,
+ "phoneClass": true,
+ "scheme": "",
+ "issues": {
+  "overflowX": [],
+  "clippedText": [],
+  "tinyTargets": [
+   {
+    "el": "button 「刚刚」",
+    "rect": [
+     347,
+     1093,
+     26,
+     36
+    ]
+   }
+  ],
+  "offscreen": [
+   {
+    "el": "div.free-item 「10:19」",
+    "rect": [
+     0,
+     887,
+     390,
+     88
+    ]
+   },
+   {
+    "el": "div.free-item 「10 月 17 日周六」",
+    "rect": [
+     0,
+     987,
+     390,
+     88
+    ]
+   },
+   {
+    "el": "div.free-item 「14°雨体感 14°湿度 96%刚刚」",
+    "rect": [
+     0,
+     1087,
+     390,
+     88
+    ]
+   },
+   {
+    "el": "div.free-item 「课表加载中…」",
+    "rect": [
+     0,
+     1187,
+     390,
+     88
+    ]
+   }
+  ],
+  "textOverlap": []
+ },
+ "bars": [
+  {
+   "el": "header.explorer-topbar",
+   "pos": "fixed",
+   "rect": [
+    0,
+    0,
+    390,
+    46
+   ],
+   "display": "flex"
+  },
+  {
+   "el": "button.ex-tb-home-mark",
+   "pos": "static",
+   "rect": [
+    10,
+    3,
+    40,
+    40
+   ],
+   "display": "flex"
+  },
+  {
+   "el": "nav.ex-bbar 「标签页(OH)搜索或问小OHOneG」",
+   "pos": "fixed",
+   "rect": [
+    0,
+    788,
+    390,
+    56
+   ],
+   "display": "grid"
+  }
+ ],
+ "contentPad": {
+  "padTop": "46px",
+  "padBottom": "68px"
+ },
+ "docScrollW": 390,
+ "strips": {
+  "mobileStrip": false,
+  "tabstrip": false
+ }
+}

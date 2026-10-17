@@ -514,7 +514,7 @@ function Catalog(): ReactNode {
 export function OneGUIGallery(): ReactNode {
   const axes = useAxes();
   const director = useOneGUI();
-  const [themeIdx, setThemeIdx] = useState(0);
+  const [themeIdx, setThemeIdx] = useState(-1);
 
   // URL 轴覆盖（截图/验收用）：?onegui-gallery&skin=glass&scheme=dark&density=touch&level=rich
   useEffect(() => {

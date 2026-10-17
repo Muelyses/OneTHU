@@ -69,9 +69,9 @@ import "./styles/motion.css";
 // 旧样式表在换血期间仍在，逐页迁移完成后整批删除（见 docs/onegui/00-plan.md §5）。
 import "@onethu/gui/gui.css";
 import { installOneGUI } from "@onethu/gui";
-// 过渡桥（TEMP）：旧令牌名 → OneGUI 语义令牌 + 旧明暗/玻璃通道 → OneGUI 轴。
-// 目的：未迁页面也立刻长成 OneGUI 的样子；迁完一页删一页，最后连这份桥一起删。
-import "./styles/onegui-bridge.css";
+// OneTHU 宿主配方归库：兼容别名与壳层外观只有这一处来源。
+// 设置适配器继续将现有明暗/材质/主题通道接到 OneGUI 六轴。
+import "@onethu/gui/onethu.css";
 import { installOneGUIBridge } from "./lib/oneguiBridge.js";
 import { installScrollReveal } from "./lib/motion.js";
 import { installTextContrast } from "./lib/textContrast.js";

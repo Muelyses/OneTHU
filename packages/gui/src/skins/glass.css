@@ -1,127 +1,34 @@
-/* ════════════════════════════════════════════════════════════════════════════
- * OneGUI · 皮肤 glass（收编旧玻璃体系）
- *
- * 皮肤 = 同一组语义名的另一套取值。玻璃不是"另一套组件"，而是：
- *   面  → 半透明填充（+ 色调渐变、+ 背景模糊、+ 白色 rim）
- *   弹层→ 更实一档的半透明 + 更大模糊
- *   芯片→ 最透一档
- * 组件代码一个字都不用改：它们引用的还是 --og-surface-* / --og-line-*。
- *
- * 档位（浓淡）是玻璃皮肤自己的选项，落在 data-og-skin-level 上：clear / base / rich / deep。
- * 旧 glass-levels.css 的四档 + 家族 alpha 严格相等的规则在这里继续成立。
- * ══════════════════════════════════════════════════════════════════════════ */
-
-/* ── 默认 = base（均衡档）：一档不写 data-og-skin-level 也必须是它 ── */
-[data-og-skin="glass"],
-[data-og-skin="glass"][data-og-skin-level="base"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.44);
-  --og-fill-overlay: rgba(255, 255, 255, 0.82);
-  --og-fill-chip: rgba(255, 255, 255, 0.3);
-  --og-blur-1: 20px;
-  --og-saturate: 160%;
-}
-
-[data-og-skin="glass"][data-og-skin-level="clear"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.3);
-  --og-fill-overlay: rgba(255, 255, 255, 0.72);
-  --og-fill-chip: rgba(255, 255, 255, 0.24);
-  --og-blur-1: 14px;
-  --og-saturate: 150%;
-}
-
-[data-og-skin="glass"][data-og-skin-level="rich"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.6);
-  --og-fill-overlay: rgba(255, 255, 255, 0.92);
-  --og-fill-chip: rgba(255, 255, 255, 0.36);
-  --og-blur-1: 24px;
-  --og-saturate: 165%;
-}
-
-[data-og-skin="glass"][data-og-skin-level="deep"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.74);
-  --og-fill-overlay: rgba(255, 255, 255, 0.96);
-  --og-fill-chip: rgba(255, 255, 255, 0.44);
-  --og-blur-1: 28px;
-  --og-saturate: 170%;
-}
-
-/* ── 亮色：玻璃把面换成半透明白，层次灰保留（不熨成纯白，否则档位之间看不出差） ── */
+/* OneGUI material: translucent paper, one formula for all four levels.
+ * Controls keep their own opaque input/action roles. No white rims or gradients.
+ */
 [data-og-skin="glass"] {
-  --og-surface-0: transparent;              /* 画布交给壁纸层 */
-  --og-surface-1: var(--og-fill-surface);
-  --og-surface-2: color-mix(in srgb, var(--og-fill-surface) 88%, rgb(246, 247, 249));
-  --og-surface-3: color-mix(in srgb, var(--og-fill-chip) 70%, rgb(240, 240, 242));
-  --og-surface-4: color-mix(in srgb, var(--og-fill-chip) 100%, rgb(234, 236, 240));
-  --og-surface-overlay: var(--og-fill-overlay);
-  --og-surface-inverse: rgba(24, 28, 36, 0.88);
-
-  /* 线：亮色档不用白 rim 做描边——半透明白压在浅色壁纸/浅玻璃上等于隐形
-     （2026-10-14 用户点名「不放鼠标看都看不清」）。玻璃的镜面感走 surface-tint 渐变，
-     描边本身用中性黑 hairline，浅深壁纸都可见。 */
-  --og-line-1: rgba(16, 20, 28, 0.16);
-  --og-line-2: rgba(16, 20, 28, 0.22);
-  --og-line-3: rgba(16, 20, 28, 0.32);
-
-  --og-surface-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
-  --og-surface-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
-  --og-overlay-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.06));
-  --og-overlay-blur: blur(calc(var(--og-blur-1) + 6px)) saturate(var(--og-saturate));
-  --og-chip-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
-  --og-chip-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
-
-  --og-hover: rgba(255, 255, 255, 0.34);
-  --og-press: rgba(255, 255, 255, 0.46);
-  --og-scrim: rgba(10, 12, 16, 0.34);
+  --og-material-opacity: 88%;
+  --og-material-overlay-opacity: 97%;
+  --og-blur-1: 24px;
+  --og-saturate: 100%;
+  --og-fill-surface: color-mix(in srgb, var(--og-canvas) var(--og-material-opacity), transparent);
+  --og-fill-overlay: color-mix(in srgb, var(--og-menu-fill) var(--og-material-overlay-opacity), transparent);
+  --og-fill-chip: var(--og-composer-fill);
+  --og-card-fill: var(--og-fill-surface);
+  --og-surface-tint: none;
+  --og-overlay-tint: none;
+  --og-chip-tint: none;
+  --og-surface-blur: blur(var(--og-blur-1));
+  --og-overlay-blur: blur(var(--og-blur-1));
+  --og-chip-blur: none;
 }
-
-/* ── 暗色：同样是白系半透明（把壁纸"提亮"），不是压黑 —— 压黑会让玻璃变成灰板 ── */
-[data-og-skin="glass"][data-og-scheme="dark"],
-[data-og-skin="glass"][data-og-scheme="dark"][data-og-skin-level="base"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.1);
-  --og-fill-overlay: rgba(30, 34, 42, 0.86);
-  --og-fill-chip: rgba(255, 255, 255, 0.08);
-  --og-blur-1: 22px;
+[data-og-skin="glass"][data-og-skin-level="clear"] {
+  --og-material-opacity: 80%;
+  --og-material-overlay-opacity: 94%;
+  --og-blur-1: 20px;
 }
-
-[data-og-skin="glass"][data-og-scheme="dark"][data-og-skin-level="clear"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.06);
-  --og-fill-overlay: rgba(30, 34, 42, 0.8);
-  --og-fill-chip: rgba(255, 255, 255, 0.05);
-  --og-blur-1: 16px;
+[data-og-skin="glass"][data-og-skin-level="rich"] {
+  --og-material-opacity: 93%;
+  --og-material-overlay-opacity: 98%;
+  --og-blur-1: 28px;
 }
-
-[data-og-skin="glass"][data-og-scheme="dark"][data-og-skin-level="rich"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.14);
-  --og-fill-overlay: rgba(30, 34, 42, 0.9);
-  --og-fill-chip: rgba(255, 255, 255, 0.11);
-  --og-blur-1: 26px;
-}
-
-[data-og-skin="glass"][data-og-scheme="dark"][data-og-skin-level="deep"] {
-  --og-fill-surface: rgba(255, 255, 255, 0.2);
-  --og-fill-overlay: rgba(30, 34, 42, 0.94);
-  --og-fill-chip: rgba(255, 255, 255, 0.15);
-  --og-blur-1: 30px;
-}
-
-[data-og-skin="glass"][data-og-scheme="dark"] {
-  --og-surface-0: transparent;
-  --og-surface-1: var(--og-fill-surface);
-  --og-surface-2: color-mix(in srgb, var(--og-fill-surface) 80%, rgb(30, 34, 42));
-  --og-surface-3: color-mix(in srgb, var(--og-fill-chip) 60%, rgb(34, 39, 48));
-  --og-surface-4: color-mix(in srgb, var(--og-fill-chip) 100%, rgb(40, 46, 56));
-  --og-surface-overlay: var(--og-fill-overlay);
-  --og-surface-inverse: rgba(238, 241, 245, 0.9);
-
-  --og-line-1: rgba(255, 255, 255, 0.18);
-  --og-line-2: rgba(255, 255, 255, 0.24);
-  --og-line-3: rgba(255, 255, 255, 0.34);
-
-  --og-surface-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-  --og-overlay-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
-  --og-chip-tint: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
-
-  --og-hover: rgba(255, 255, 255, 0.08);
-  --og-press: rgba(255, 255, 255, 0.13);
-  --og-scrim: rgba(0, 0, 0, 0.5);
+[data-og-skin="glass"][data-og-skin-level="deep"] {
+  --og-material-opacity: 97%;
+  --og-material-overlay-opacity: 99%;
+  --og-blur-1: 32px;
 }

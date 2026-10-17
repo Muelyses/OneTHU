@@ -45,3 +45,13 @@ import { OneGUIProvider, Btn, Card, Row, SettingsList } from "@onethu/gui";
 | `gallery/` | 组件画廊（组件 × 皮肤 × 明暗 × 密度的验收矩阵） |
 
 设计总纲见 `docs/onegui/00-plan.md`，组件目录见 `docs/onegui/03-catalog.md`。
+
+## exp 视觉体系（2026-10-17）
+
+参考色值只有 `src/tokens/reference.css` 一处。语义角色、结构刻度、材质公式、组件和宿主配方逐层消费，任何层不得再定义字面颜色。`pnpm guard:onegui` 包含调色板单源、scope、主题往返与语义对比度验证。
+
+主操作读取 `--og-action / --og-action-on`，与主题强调色 `--og-accent-*` 分离。默认外观跟随明暗反转黑白动作；主题只改变强调标识。玻璃的四档仅改变材质透明度，输入与设置保持实面。
+
+OneTHU 宿主在 `gui.css` 后导入 `@onethu/gui/onethu.css`。该文件拥有兼容别名与壳层配方，应用只保留布局和行为。`og-device-*` 是该配方公开的开发取景框槽位，不允许应用另写同名样式。
+
+详细角色、验收和迁移余量见 `docs/onegui/20-exp-system.md`。

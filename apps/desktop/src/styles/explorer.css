@@ -41,21 +41,7 @@
   min-height: var(--explorer-top-h, 46px);
   padding: 0 10px;
   /* 材质 = global.css「壳层玻璃收口」那一处；此处只兜底一份，避免像本轮这样被删空 */
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-card-fill-2);
-  backdrop-filter: var(--lg-blur-clear);
-  -webkit-backdrop-filter: var(--lg-blur-clear);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-  border-bottom: 1px solid var(--border);
   transition: box-shadow var(--dur-2, 0.2s) var(--ease-out, ease);
-}
-.explorer-topbar.is-scrolled {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 .tb-home {
   white-space: nowrap;
@@ -94,9 +80,6 @@
     right: 0 !important;
     height: 48px !important;
     z-index: 61;
-    border-top: 0;
-    border-bottom: 1px solid var(--border);
-    box-shadow: none;
     padding-bottom: 0;
   }
   html:not(.is-phone) .explorer-topbar { top: 48px; }
@@ -110,7 +93,6 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.32);
   display: flex;
   justify-content: flex-end;
   animation: m-fade var(--dur-2, 0.2s) var(--ease-out, ease) both;
@@ -121,14 +103,12 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
   animation: m-slide-right var(--dur-3, 0.3s) var(--ease-ios, ease) both;
-  box-shadow: -18px 0 48px rgba(0, 0, 0, 0.2);
 }
 .settings-panel.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
 @media (min-width: 841px) {
   /* 用户截屏「挤挤挤」：560/46vw 装全宽版心设计的页面必叠字——加宽到 680/54vw */
-  .settings-panel { width: min(680px, 54vw); border-left: 1px solid var(--border); }
+  .settings-panel { width: min(680px, 54vw); }
 }
 .settings-head {
   position: relative;
@@ -136,7 +116,6 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
   flex: none;
 }
 .settings-seg { position: absolute; left: 50%; transform: translateX(-50%); }
@@ -157,23 +136,11 @@
   gap: 5px;
   height: 28px;
   padding: 0 11px;
-  border-radius: var(--r-pill, 999px);
-  border: 1px solid var(--md-sys-color-outline-variant, var(--border));
-  background: transparent;
-  font-size: var(--text-xs, 12px);
-  color: var(--text-2);
   white-space: nowrap;
   cursor: pointer;
   transition: border-color var(--dur-2) ease, color var(--dur-2) ease, background var(--dur-2) ease;
 }
-.settings-seg-item:hover { color: var(--text-1); border-color: var(--text-3); }
-.settings-seg-item.is-active {
-  background: var(--md-sys-color-primary, var(--primary));
-  border-color: var(--md-sys-color-primary, var(--primary));
-  color: var(--md-sys-color-on-primary, var(--on-primary));
-}
 .settings-close { margin-left: auto; }
-.settings-seg-item.is-active:hover { background: var(--md-sys-color-primary, var(--primary)); }
 .explorer-settings-body {
   flex: 1;
   overflow-y: auto;
@@ -237,14 +204,7 @@
    （tint 渐变 + fill + blur + rim，一条规则管全站），这里只保留各自差异项。 */
 
 /* 标签 = 安静态（用户定稿：标签栏不用玻璃 chip）——激活=淡主题色填充 */
-.ex-tab { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 /* 悬停走随明暗主题的 --glass-tint（旧写法 fallback 写死白 0.4，深色模式下成刺眼白块） */
-.ex-tab:hover { background: var(--glass-tint); }
-.ex-tab.is-active,
-.ex-tab.is-home {
-  background: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);
-  box-shadow: none;
-}
 
 /* 右键菜单 = menu tier */
 .explorer-ctxmenu,
@@ -259,16 +219,6 @@
 }
 
 /* ══════════ 液态玻璃 v4.1：设置浮层 = menu tier ═══════════ */
-.settings-panel {
-  background: var(--glass-menu-fill);
-  backdrop-filter: var(--glass-menu-blur);
-  -webkit-backdrop-filter: var(--glass-menu-blur);
-  border-color: var(--glass-border);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline);
-}
 
 /* ═══ 液态玻璃 v4.2 收尾（explorer 域：悬停小提示条 = menu tier 微浮层） ═══ */
 .ex-tip {
@@ -310,94 +260,16 @@
   /* 栏体 fill 是**浅色玻璃**（档位单源），与壁纸明暗无关 →
      文字必须用深色档，否则浅字压浅底（实测对比率 1.0，用户点名"字消失"）。
      原先这里写 #f2f4f8 是 ink 深底时代的残留。 */
-  color: #1c1f28;
-  --text-1: #1c1f28;
-  --text-2: rgba(28, 31, 40, 0.78);
-  --text-3: rgba(28, 31, 40, 0.55);
-  --md-sys-color-on-surface: #1c1f28;
-  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
-  --md-sys-color-outline: rgba(28, 31, 40, 0.4);
-  --md-sys-color-outline-variant: rgba(28, 31, 40, 0.16);
-  --dsw-alias-label-primary: #1c1f28;
-  --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
-  --dsw-alias-bg-layer-2: rgba(28, 31, 40, 0.14);
-  --md-sys-color-primary: #1c1f28;
-  --hover: rgba(28, 31, 40, 0.07);
-  --glass-tint: rgba(28, 31, 40, 0.08);
-  --glass-border: rgba(28, 31, 40, 0.12);
-  --glass-rim-top: rgba(255, 255, 255, 0.72);
-  --glass-rim-hairline: rgba(28, 31, 40, 0.08);
-  --border: rgba(28, 31, 40, 0.16);
-  --border-soft: rgba(28, 31, 40, 0.1);
-  --border-strong: rgba(28, 31, 40, 0.26);
-  --dsw-alias-border-l1: rgba(28, 31, 40, 0.14);
 }
 .explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
 .explorer-shell[data-wallpaper-lum="light"] .ex-rail {
   /* 栏体配方已收口 global.css（不在此重复 background） */
-  color: #1c1f28;
-  --text-1: #1c1f28;
-  --text-2: rgba(28, 31, 40, 0.78);
-  --text-3: rgba(28, 31, 40, 0.55);
-  --md-sys-color-on-surface: #1c1f28;
-  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
-  --md-sys-color-outline: rgba(28, 31, 40, 0.4);
-  --md-sys-color-outline-variant: rgba(28, 31, 40, 0.16);
-  --dsw-alias-label-primary: #1c1f28;
-  --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
-  --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.1);
-  --dsw-alias-bg-layer-2: rgba(28, 31, 40, 0.14);
-  --md-sys-color-primary: #1c1f28;
-  --hover: rgba(28, 31, 40, 0.07);
-  --glass-tint: rgba(28, 31, 40, 0.08);
-  --glass-border: rgba(28, 31, 40, 0.12);
-  --glass-rim-top: rgba(255, 255, 255, 0.72);
-  --glass-rim-hairline: rgba(28, 31, 40, 0.08);
-  --border: rgba(28, 31, 40, 0.16);
-  --border-soft: rgba(28, 31, 40, 0.1);
-  --border-strong: rgba(28, 31, 40, 0.26);
-  --dsw-alias-border-l1: rgba(28, 31, 40, 0.14);
-  --dsw-alias-bg-layer-1: rgba(28, 31, 40, 0.08);
 }
 
 /* 首页固定钟/功能坞在 shell 层，不继承栏体本身的背景；只映射文字与其玻璃件令牌。 */
 .explorer-shell[data-wallpaper-lum="dark"] .home-chrome-layer {
-  color: #f2f4f8;
-  --text-1: #f2f4f8;
-  --text-2: rgba(242, 244, 248, 0.8);
-  --text-3: rgba(242, 244, 248, 0.62);
-  --md-sys-color-on-surface: #f2f4f8;
-  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
-  --dsw-alias-label-primary: #f2f4f8;
-  --dsw-alias-label-secondary: rgba(242, 244, 248, 0.8);
-  --md-sys-color-primary: #f2f4f8;
   /* 引用档位令牌，不写死 —— 此前写死 .44 导致程序坞在 clear/rich/deep 档下不跟档（用户点名的「独树一帜」第二根因） */
-  --glass-fill: var(--glass-card-fill-2);
-  --glass-fill-regular: var(--glass-card-fill-2);
-  --border: rgba(255, 255, 255, 0.16);
-  --hover: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-rim-top: rgba(255, 255, 255, 0.34);
-  --glass-rim-hairline: rgba(255, 255, 255, 0.12);
-}
-.explorer-shell[data-wallpaper-lum="light"] .home-chrome-layer {
-  color: #1c1f28;
-  --text-1: #1c1f28;
-  --text-2: rgba(28, 31, 40, 0.78);
-  --text-3: rgba(28, 31, 40, 0.62);
-  --md-sys-color-on-surface: #1c1f28;
-  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
-  --dsw-alias-label-primary: #1c1f28;
-  --dsw-alias-label-secondary: rgba(28, 31, 40, 0.8);
-  --md-sys-color-primary: #1c1f28;
-  --glass-fill: var(--glass-card-fill-2);
-  --glass-fill-regular: var(--glass-card-fill-2);
-  --border: rgba(28, 31, 40, 0.16);
-  --hover: rgba(28, 31, 40, 0.07);
-  --glass-border: rgba(28, 31, 40, 0.12);
-  --glass-rim-top: rgba(255, 255, 255, 0.72);
-  --glass-rim-hairline: rgba(28, 31, 40, 0.08);
 }
 
 /* ── 面板基础形态（per-tab 壁纸的亮度档/视频层/has-wallpaper 分支已随功能删除）── */
@@ -566,22 +438,6 @@ html.is-phone .hard-refresh-fab.top-fab {
    玻璃卡（.free-item/.home-card）内部**回归主题字色**——卡体有自己的玻璃填充，
    字色跟着卡底走而不跟壁纸走（浅主题的卡上永远是深字、深主题是浅字），
    避免「canvas 档翻白字进了卡、卡底又是浅玻璃」的倒挂。 */
-.explorer-shell[data-wallpaper-lum="dark"] .explorer-content {
-  color: #f2f4f8;
-  --text-1: #f2f4f8;
-  --text-2: rgba(242, 244, 248, 0.8);
-  --text-3: rgba(242, 244, 248, 0.62);
-  --md-sys-color-on-surface: #f2f4f8;
-  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
-}
-.explorer-shell[data-wallpaper-lum="light"] .explorer-content {
-  color: #1c1f28;
-  --text-1: #1c1f28;
-  --text-2: rgba(28, 31, 40, 0.78);
-  --text-3: rgba(28, 31, 40, 0.55);
-  --md-sys-color-on-surface: #1c1f28;
-  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
-}
 /* 卡内回归主题：按 color-scheme 两套写死基础档值（与 chrome 层分支同一组色） */
 :root:not([data-scheme="dark"]) .explorer-content .free-item,
 :root:not([data-scheme="dark"]) .explorer-content .home-card,
@@ -620,12 +476,6 @@ html.is-phone .og-settings-row-sub { -webkit-line-clamp: 3; }
    ④ 设置行：OneGUI 是 flex 横排 + control flex:0 0 auto，窄屏下主列被压成一字一行
       （实测「恢复默认收藏夹」竖成七个字、三个按钮挤成巨型块）。手机档改可换行 +
       主列给 60% 底线：小控件（开关/分段）仍在右，宽控件（多按钮）自己落到下一行。 */
-html.is-phone .settings-mask { background: var(--og-scrim); }
-html.is-phone .settings-panel {
-  background-color: var(--og-fill-overlay);
-  -webkit-backdrop-filter: blur(32px) saturate(1.35);
-  backdrop-filter: blur(32px) saturate(1.35);
-}
 html.is-phone .settings-head { flex-wrap: wrap; padding: 8px 12px; }
 html.is-phone .settings-seg {
   position: static;

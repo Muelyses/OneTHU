@@ -10,7 +10,8 @@
  * 入口：`?phone-frame=1`（dev 构建；DevPanel 里也有一个按钮直接跳过来）。
  * 已知差异：DPR 用宿主屏幕的（Mac 2x，真机 3x）；安全区不模拟（真机底部会多一条 home 指示条）。
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { Btn, Select, Text } from "@onethu/gui";
 
 interface Device {
   id: string;
@@ -77,44 +78,32 @@ export default function PhoneFrame() {
   const inner = `/?${sceneQ ? sceneQ + "&" : ""}__phone_frame=1${nonce ? `&_r=${nonce}` : ""}`;
 
   return (
-    <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 9000, display: "flex", flexDirection: "column",
-        alignItems: "center", background: "#14161c", color: "#cfd6e4",
-        font: "13px/1.5 -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif",
-      }}
-    >
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, padding: "10px 14px", width: "100%", boxSizing: "border-box", borderBottom: "1px solid #2a2f3a" }}>
-        <strong style={{ color: "#eef2f8" }}>竖屏取景框</strong>
-        <span style={{ opacity: 0.6 }}>{vw}×{vh}{land ? "（横屏）" : "（竖屏）"} · 缩放 {Math.round(scale * 100)}%</span>
-        <select value={devId} onChange={(e) => setDevId(e.target.value)} style={sel}>
+    <div className="og-device-studio">
+      <div className="og-device-toolbar">
+        <Text weight="semibold">竖屏取景框</Text>
+        <span className="og-device-hint">{vw}×{vh}{land ? "（横屏）" : "（竖屏）"} · 缩放 {Math.round(scale * 100)}%</span>
+        <Select value={devId} onChange={setDevId} aria-label="设备">
           {DEVICES.map((d) => <option key={d.id} value={d.id}>{d.name} · {d.w}×{d.h}</option>)}
-        </select>
-        <button style={btn} onClick={() => setLand((v) => !v)}>{land ? "切竖屏" : "切横屏"}</button>
-        <select value={scene} onChange={(e) => setScene(e.target.value)} style={sel}>
+        </Select>
+        <Btn variant="outline" size="sm" onClick={() => setLand((v) => !v)}>{land ? "切竖屏" : "切横屏"}</Btn>
+        <Select value={scene} onChange={setScene} aria-label="场景">
           {SCENES.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-        </select>
-        <button style={btn} onClick={() => setFit((v) => !v)}>{fit ? "实际大小" : "适应窗口"}</button>
-        <button style={btn} onClick={() => setNonce((n) => n + 1)}>重载</button>
+        </Select>
+        <Btn variant="outline" size="sm" onClick={() => setFit((v) => !v)}>{fit ? "实际大小" : "适应窗口"}</Btn>
+        <Btn variant="outline" size="sm" onClick={() => setNonce((n) => n + 1)}>重载</Btn>
         <span style={{ flex: 1 }} />
-        <span style={{ color: bridge === "ok" ? "#7ee0a8" : bridge === "miss" ? "#ff9c8a" : "#8f9bb0" }}>
+        <Text slot="label" tone={bridge === "ok" ? "success" : bridge === "miss" ? "error" : "quiet"}>
           Tauri 桥：
-          {bridge === "ok" ? "已认领（会话/原生网络可用）"
+          {bridge === "ok" ? "已认领（登录状态与原生网络可用）"
             : bridge === "miss" ? "认领失败——会退化成浏览器预览（没有登录态）"
               : bridge === "none" ? "无（在浏览器里跑，本来就没有）"
                 : "检测中…"}
-        </span>
-        <span style={{ opacity: 0.55 }}>同源 iframe：壁纸/主题/登录态与应用一致；DPR 与安全区不模拟</span>
-        <button style={btn} onClick={() => { window.location.href = window.location.pathname; }}>返回应用</button>
+        </Text>
+        <span className="og-device-hint">同源 iframe：壁纸/主题/登录态与应用一致；DPR 与安全区不模拟</span>
+        <Btn variant="outline" size="sm" onClick={() => { window.location.href = window.location.pathname; }}>返回应用</Btn>
       </div>
-      <div ref={wrapRef} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", width: "100%" }}>
-        <div
-          style={{
-            width: vw, height: vh, flex: "none", transform: `scale(${scale})`,
-            borderRadius: 44, border: "10px solid #0b0d12", background: "#000",
-            boxShadow: "0 24px 80px rgba(0,0,0,.55), inset 0 0 0 1px #333a46", overflow: "hidden", position: "relative",
-          }}
-        >
+      <div ref={wrapRef} className="og-device-stage">
+        <div className="og-device-frame" style={{ "--og-device-w": `${vw}px`, "--og-device-h": `${vh}px`, "--og-device-scale": scale } as CSSProperties}>
           <iframe
             key={`${dev.id}-${land}-${scene}-${nonce}`}
             title="手机视口"
@@ -135,16 +124,10 @@ export default function PhoneFrame() {
                 "html{scrollbar-width:none}html::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}";
               doc.head.appendChild(st);
             }}
-            style={{ width: vw, height: vh, border: 0, display: "block", background: "#fff" }}
+            className="og-device-viewport"
           />
         </div>
       </div>
     </div>
   );
 }
-
-const btn: React.CSSProperties = {
-  height: 30, padding: "0 10px", borderRadius: 8, border: "1px solid #39404d",
-  background: "#1e222b", color: "#dfe6f2", cursor: "pointer", font: "inherit",
-};
-const sel: React.CSSProperties = { ...btn, padding: "0 6px" };

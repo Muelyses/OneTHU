@@ -36,6 +36,11 @@
  */
 import { builtinCss, displayRef, subscribeWallpaper, wallpaperSnapshot } from "../state/wallpaper.js";
 
+/** Canvas APIs need a resolved color; CSS roles remain the single palette source. */
+function renderColor(role: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(role).trim();
+}
+
 const CELL = 8;              // 壁纸离屏网格（px）
 const TILE = 96;             // 瓦片颜色缓存粒度
 const NODE_BUDGET = 4000;    // 单轮新增叶子预算
@@ -122,14 +127,13 @@ function rebuildWall(force = false): void {
   c.height = Math.max(1, Math.ceil(H / CELL));
   const ctx = c.getContext("2d", { willReadFrequently: true });
   if (!ctx) { wall = null; return; }
-  const dark = document.documentElement.dataset.scheme === "dark";
-  ctx.fillStyle = dark ? "#151517" : "#fcfdff";
+  ctx.fillStyle = renderColor("--og-canvas");
   ctx.fillRect(0, 0, c.width, c.height);
   if (!ref) { wall = c; return; }
   if (kind === "video") {
     // 视频没解码出来时的兜底色：视频壁纸下面永远是深色幕，按最坏情况（暗）兜，
     // 一旦拿到真实帧立刻重采（driftTick 会在下一拍补上）。
-    ctx.fillStyle = dark ? "#151517" : "#2c2e36";
+    ctx.fillStyle = renderColor("--og-video-fallback");
     ctx.fillRect(0, 0, c.width, c.height);
     wall = c;
     paintVideoFrame();
@@ -146,7 +150,7 @@ function rebuildWall(force = false): void {
     const len = (Math.abs(c.width * dx) + Math.abs(c.height * dy)) / 2;
     const g = ctx.createLinearGradient(cx - dx * len, cy - dy * len, cx + dx * len, cy + dy * len);
     if (stops.length === 0) {
-      ctx.fillStyle = dark ? "#151517" : "#fcfdff";
+      ctx.fillStyle = renderColor("--og-canvas");
     } else {
       for (const st of stops) g.addColorStop(Math.min(1, Math.max(0, st.at)), st.color);
       ctx.fillStyle = g;
@@ -186,9 +190,8 @@ function paintVideoFrame(): boolean {
     }
     ctx.getImageData(0, 0, 1, 1);   // 探一次：跨域视频会把画布标脏，读回即抛
   } catch {
-    const dark = document.documentElement.dataset.scheme === "dark";
     ctx.globalAlpha = 1;
-    ctx.fillStyle = dark ? "#151517" : "#2c2e36";
+    ctx.fillStyle = renderColor("--og-video-fallback");
     ctx.fillRect(0, 0, wall.width, wall.height);
     tileCache.clear();
     return false;   // 退回兜底色，但别让 getImageData 每次都抛（那会让整台引擎静默失效）
@@ -316,8 +319,8 @@ function compositeLum(el: HTMLElement): number {
   return Math.round(Math.min(1, Math.max(0, lum(c))) * 20) / 20;
 }
 
-const WANT_DARK = "rgba(255, 255, 255, 0.95)";
-const WANT_LIGHT = "rgba(20, 22, 28, 0.94)";
+const WANT_DARK = "var(--og-contrast-ink-light)";
+const WANT_LIGHT = "var(--og-contrast-ink-dark)";
 
 function hasOwnText(el: HTMLElement): boolean {
   for (const n of Array.from(el.childNodes)) {

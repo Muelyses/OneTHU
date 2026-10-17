@@ -38,10 +38,10 @@
 .og-input {
   --og-c-input-h: var(--og-ctl-h-md);
   --og-c-input-pad-x: var(--og-ctl-pad-x-md);
-  --og-c-input-fill: var(--og-surface-1);
+  --og-c-input-fill: var(--og-input-fill);
   --og-c-input-line: var(--og-line-2);
   --og-c-input-ink: var(--og-content-1);
-  --og-c-input-radius: var(--og-radius-md);
+  --og-c-input-radius: var(--og-radius-control);
 
   display: flex;
   align-items: center;
@@ -421,3 +421,6 @@ textarea.og-input-el {
   flex-wrap: wrap;
   gap: var(--og-space-4);
 }
+
+/* The shell owns the focus ring; the native child must never draw a second face. */
+.og-input-el:focus-visible { outline: none; box-shadow: none; }

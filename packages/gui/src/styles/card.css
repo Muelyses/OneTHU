@@ -6,10 +6,10 @@
  * ══════════════════════════════════════════════════════════════════════════ */
 
 .og-surface {
-  --og-c-surface-fill: var(--og-surface-1);
+  --og-c-surface-fill: var(--og-card-fill);
   --og-c-surface-line: var(--og-line-1);
   --og-c-surface-elev: var(--og-elev-0);
-  --og-c-surface-radius: var(--og-radius-lg);
+  --og-c-surface-radius: var(--og-radius-card);
   --og-c-surface-pad: var(--og-space-0);
   --og-c-surface-tint: var(--og-surface-tint);
   --og-c-surface-blur: var(--og-surface-blur);
@@ -25,7 +25,7 @@
 }
 
 /* 面阶：0 = 画布上的正面，1/2 = 卡内嵌套，3 = 井/次级块 */
-.og-surface--l0 { --og-c-surface-fill: var(--og-surface-1); }
+.og-surface--l0 { --og-c-surface-fill: var(--og-card-fill); }
 .og-surface--l1 { --og-c-surface-fill: var(--og-surface-2); --og-c-surface-line: transparent; }
 .og-surface--l2 { --og-c-surface-fill: var(--og-surface-3); --og-c-surface-line: transparent; }
 .og-surface--l3 { --og-c-surface-fill: var(--og-surface-4); --og-c-surface-line: transparent; }
@@ -38,7 +38,7 @@
 
 /* 浮层：菜单/弹窗专用面（更实、更高） */
 .og-surface--overlay {
-  --og-c-surface-fill: var(--og-surface-overlay);
+  --og-c-surface-fill: var(--og-fill-overlay);
   --og-c-surface-line: var(--og-line-1);
   --og-c-surface-tint: var(--og-overlay-tint);
   --og-c-surface-blur: var(--og-overlay-blur);
@@ -59,7 +59,7 @@
 .og-surface--r-none { --og-c-surface-radius: 0px; }
 .og-surface--r-sm { --og-c-surface-radius: var(--og-radius-sm); }
 .og-surface--r-md { --og-c-surface-radius: var(--og-radius-md); }
-.og-surface--r-lg { --og-c-surface-radius: var(--og-radius-lg); }
+.og-surface--r-lg { --og-c-surface-radius: var(--og-radius-card); }
 .og-surface--r-xl { --og-c-surface-radius: var(--og-radius-xl); }
 .og-surface--r-2xl { --og-c-surface-radius: var(--og-radius-2xl); }
 
@@ -97,7 +97,7 @@
 }
 
 .og-surface--interactive:active {
-  transform: scale(0.995);
+  background-color: var(--og-press);
 }
 
 .og-surface.is-selected {

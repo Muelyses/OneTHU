@@ -115,6 +115,18 @@ function checkGuiPurity() {
   }
 }
 
+/* R9: even skins and semantic layers cannot introduce a second palette. */
+function checkPaletteOwnership() {
+  const offenders = [];
+  for (const f of walk(join(GUI, "src"), [".css"])) {
+    if (rel(f).endsWith("tokens/reference.css")) continue;
+    const css = stripComments(readFileSync(f, "utf8"));
+    if (/#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/.test(css)) offenders.push(rel(f));
+  }
+  if (offenders.length) failures.push("R9 调色板单源：颜色字面值只能在 tokens/reference.css：" + offenders.join(", "));
+  else notes.push("R9 调色板单源 ✓（语义/结构/材质/组件/宿主配方零字面色）");
+}
+
 /* ── R2/R3：应用侧内联样式与字面色值（棘轮） ────────────────────────── */
 
 /** 已有 OneGUI 替代品的旧类名族：应用侧出现次数只许下降（迁一页掉一批） */
@@ -260,6 +272,7 @@ function checkGallery() {
 /* ── 主流程 ─────────────────────────────────────────────────────────── */
 
 checkGuiPurity();
+checkPaletteOwnership();
 checkTokenRefs();
 checkGallery();
 
@@ -312,7 +325,7 @@ compareBaseline("R4 应用裸控件", counts.rawControls, baseline.rawControls ?
 console.log("OneGUI 护栏（唯一风格裁判）：");
 for (const n of notes) console.log("  " + n);
 if (failures.length === 0) {
-  console.log("  ✓ 全部通过 —— 界面只来自 @onethu/gui，没有旁路样式");
+  console.log("  ✓ 专项护栏通过 —— 库与宿主配方符合单源契约；应用存量受棘轮约束");
   process.exit(0);
 }
 console.log("");

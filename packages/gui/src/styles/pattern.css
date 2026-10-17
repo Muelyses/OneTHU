@@ -235,7 +235,7 @@
   min-width: var(--og-space-4);
   height: var(--og-space-4);
   padding: 0 var(--og-space-1);
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
   background: var(--og-surface-4);
   color: var(--og-content-2);
   font-size: var(--og-text-micro);
@@ -251,7 +251,7 @@
   bottom: 0;
   width: 0;
   height: var(--og-geo-xs);
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
   background: var(--og-accent);
   transition:
     left var(--og-dur-2) var(--og-ease-standard),
@@ -267,7 +267,7 @@
   border-radius: var(--og-radius-md);
 }
 
-.og-tabs--pill .og-tabs-indicator { background: var(--og-accent-soft); }
+.og-tabs--pill .og-tabs-indicator { background: var(--og-selection-fill); }
 .og-tabs--soft .og-tabs-indicator { background: var(--og-surface-4); }
 
 /* ── 纵向标签（左栏导轨） ── */
@@ -285,7 +285,7 @@
   min-height: var(--og-ctl-h-md);
   padding: 0 var(--og-space-3);
   border: 0;
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
   background: transparent;
   color: var(--og-content-2);
   font-family: inherit;
@@ -297,7 +297,7 @@
 }
 
 .og-vtab:hover { background: var(--og-hover); color: var(--og-content-1); }
-.og-vtab.is-active { background: var(--og-accent-soft); color: var(--og-accent-quiet); }
+.og-vtab.is-active { background: var(--og-selection-fill); color: var(--og-selection-ink); font-weight: var(--og-weight-medium); }
 
 /* ── 分段控件 ── */
 .og-segment {
@@ -306,7 +306,7 @@
   align-items: center;
   gap: var(--og-space-1);
   padding: var(--og-geo-xs);
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
   background: var(--og-surface-3);
   min-width: 0;
   /* 硬性不越右边缘：条目 nowrap 不收缩，容器再窄也只在自己内部滚动（隐藏滚动条），
@@ -328,10 +328,10 @@
   align-items: center;
   justify-content: center;
   gap: var(--og-space-1);
-  height: calc(var(--og-ctl-h-sm) - var(--og-geo-xs) * 2);
+  height: var(--og-ctl-h-sm);
   padding: 0 var(--og-space-3);
   border: 0;
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
   background: transparent;
   color: var(--og-content-2);
   font-family: inherit;
@@ -351,7 +351,7 @@
   left: 0;
   height: calc(100% - var(--og-geo-xs) * 2);
   width: 0;
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
   background: var(--og-surface-1);
   box-shadow: var(--og-elev-1);
   transition:
@@ -407,10 +407,10 @@
   flex: 0 0 auto;
   width: var(--og-icon-xl);
   height: var(--og-icon-xl);
-  border-radius: var(--og-radius-full);
+  border-radius: var(--og-radius-md);
 }
 
 .og-loading-lines { flex: 1 1 auto; display: flex; flex-direction: column; gap: var(--og-space-1); }
-.og-loading-line { height: var(--og-space-2); border-radius: var(--og-radius-full); }
+.og-loading-line { height: var(--og-space-2); border-radius: var(--og-radius-md); }
 .og-loading-line--short { width: 40%; }
 .og-loading-line--mid { width: 68%; }

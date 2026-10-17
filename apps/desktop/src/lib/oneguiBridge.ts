@@ -24,17 +24,9 @@ function schemeOf(root: HTMLElement): "light" | "dark" {
   return root.dataset.scheme === "dark" ? "dark" : "light";
 }
 
-/* ── 主题强调色 → OneGUI accent 轴（2026-10-14 用户点名#1 修复）─────────────
- * 旧桥只喂了 skin/scheme，**从不喂 theme 轴** → OG 全组件的强调色永远停在
- * 库默认（--og-ref-brand-40 = 清华紫）——换什么主题、开不开动态取色都没用。
- *
- * 单一来源选 **System 层的 --md-sys-color-secondary**（tokens.css 的业务蓝）：
- *   ① 默认（象牙/无主题）= tokens.css 的业务蓝（tokens.css 同值，常量在库 DEFAULT_AXES）—— 修「默认也一片紫」；
- *   ② 主题生效时 = theme.ts 注入 --primary 镜像（COMPAT_TO_SYSTEM）——各主题自己的色；
- *   ③ 动态取色时 = 取色调色板的 System 角色 —— 跟随壁纸。
- * 其它候选都要走各自特例，只有这一条对三条通路都是"当前生效值"。
- * 换值判等防环：og.set 会改写 --og-accent，但 --md-sys-color-secondary 的写入方
- * 只有主题注入/取色/底色令牌，不会被采样值回写（ivory 无注入 = 底色蓝恒定）。 */
+/* User themes provide an accent; primary actions and surfaces stay in OneGUI.
+ * Read installed themes directly, and dynamic colors from the existing producer.
+ * The default palette is scheme-aware CSS and must clear the previous theme. */
 let lastAccent = "";
 /** 当前主题的强调色（主题定义直取；模块未加载时回落空串） */
 let themeAccentRaw = "";
@@ -48,7 +40,7 @@ function syncAccent(): void {
   const root = document.documentElement;
   const themeId = root.dataset.theme ?? "";
   const dynamicOn = root.dataset.dynamic === "on";
-  /* 采样三态（判等防环）——象牙/空基座不采样不喂：库默认已是业务蓝（见 director DEFAULT_AXES），
+  /* 采样三态（判等防环）——默认外观由 OneGUI 语义层提供，
      本桥把 md-secondary 指回了 --og-accent-quiet，残采样=自吸（默认紫当初就是这一步烧进去的）。
      - 动态取色：html:root[data-dynamic=on] (0,2,1) 压过本桥 (0,1,1)，System secondary=调色板真值；
      - 主题：:root[data-theme] (0,2,0) 同压，--accent=主题强调色；
@@ -65,10 +57,13 @@ function syncAccent(): void {
     if (!accent) accent = getComputedStyle(root).getPropertyValue("--accent").trim();
     id = themeId;
   } else {
-    return; // 象牙/空 = 库默认业务蓝，不喂
+    // Returning to default must clear the previous theme's runtime overrides.
+    lastAccent = "";
+    og.set({ theme: null }, { persist: false });
+    return;
   }
-  if (!accent || accent === lastAccent) return;
-  lastAccent = accent;
+  if (!accent || `${id}:${accent}` === lastAccent) return;
+  lastAccent = `${id}:${accent}`;
   og.set({ theme: { id, accent } }, { persist: false });
   /* 留痕：这条一旦出现，说明主题色确实喂进了 OneGUI 管线（用户看不清时靠它判） */
   void import("@tauri-apps/api/core")

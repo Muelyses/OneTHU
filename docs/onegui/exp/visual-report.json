@@ -1,0 +1,465 @@
+[
+  {
+    "tag": "home-light",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "light",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#212120",
+      "--og-surface-0": "#ffffff",
+      "--og-action": "#212120",
+      "--og-action-on": "#ffffff",
+      "--og-content-3": "#6b6b65"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgb(33, 33, 32) rgb(33, 33, 32) rgba(33, 33, 32, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.22)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(28, 31, 40)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  },
+  {
+    "tag": "home-dark",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "dark",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#f3f3f0",
+      "--og-surface-0": "#212120",
+      "--og-action": "#f3f3f0",
+      "--og-action-on": "#212120",
+      "--og-content-3": "#a1a19a"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(27, 27, 26)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgb(243, 243, 240) rgb(243, 243, 240) rgba(255, 255, 248, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.23)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(41, 41, 39)",
+        "color": "rgb(242, 244, 248)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  },
+  {
+    "tag": "settings-light",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "light",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#212120",
+      "--og-surface-0": "#ffffff",
+      "--og-action": "#212120",
+      "--og-action-on": "#ffffff",
+      "--og-content-3": "#6b6b65"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgb(33, 33, 32) rgb(33, 33, 32) rgba(33, 33, 32, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgb(33, 33, 32) rgb(33, 33, 32) rgb(33, 33, 32) rgba(33, 33, 32, 0.12)",
+        "radius": "0px"
+      },
+      ".ohx-capsule": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.22)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(28, 31, 40)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": {
+        "bg": "rgb(33, 33, 32)",
+        "color": "rgb(255, 255, 255)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "10px"
+      }
+    }
+  },
+  {
+    "tag": "search-dark",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "dark",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#f3f3f0",
+      "--og-surface-0": "#212120",
+      "--og-action": "#f3f3f0",
+      "--og-action-on": "#212120",
+      "--og-content-3": "#a1a19a"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(27, 27, 26)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgb(243, 243, 240) rgb(243, 243, 240) rgba(255, 255, 248, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.42)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(41, 41, 39)",
+        "color": "rgb(242, 244, 248)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  },
+  {
+    "tag": "phone-home",
+    "errors": [],
+    "width": 393,
+    "scrollWidth": 393,
+    "scheme": "light",
+    "phone": true,
+    "tokens": {
+      "--og-content-1": "#212120",
+      "--og-surface-0": "#ffffff",
+      "--og-action": "#212120",
+      "--og-action-on": "#ffffff",
+      "--og-content-3": "#6b6b65"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgb(33, 33, 32) rgb(33, 33, 32) rgba(33, 33, 32, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.22)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(28, 31, 40)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  },
+  {
+    "tag": "phone-settings-dark",
+    "errors": [],
+    "width": 393,
+    "scrollWidth": 393,
+    "scheme": "dark",
+    "phone": true,
+    "tokens": {
+      "--og-content-1": "#f3f3f0",
+      "--og-surface-0": "#212120",
+      "--og-action": "#f3f3f0",
+      "--og-action-on": "#212120",
+      "--og-content-3": "#a1a19a"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(27, 27, 26)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgb(243, 243, 240) rgb(243, 243, 240) rgba(255, 255, 248, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": {
+        "bg": "rgb(44, 44, 42)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgb(243, 243, 240) rgb(243, 243, 240) rgb(243, 243, 240) rgba(255, 255, 248, 0.12)",
+        "radius": "0px"
+      },
+      ".ohx-capsule": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.23)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "color(srgb 0.129412 0.129412 0.12549 / 0.97)",
+        "color": "rgb(242, 244, 248)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": {
+        "bg": "rgb(243, 243, 240)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "10px"
+      }
+    }
+  },
+  {
+    "tag": "gallery-light",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "light",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#212120",
+      "--og-surface-0": "#ffffff",
+      "--og-action": "#212120",
+      "--og-action-on": "#ffffff",
+      "--og-content-3": "#6b6b65"
+    },
+    "samples": {
+      ".explorer-topbar": null,
+      ".settings-panel": null,
+      ".ohx-capsule": null,
+      ".free-item": null,
+      ".sphere-ball": null,
+      ".og-btn--solid": {
+        "bg": "rgb(33, 33, 32)",
+        "color": "rgb(255, 255, 255)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "10px"
+      }
+    }
+  },
+  {
+    "tag": "gallery-dark",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "dark",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#f3f3f0",
+      "--og-surface-0": "#212120",
+      "--og-action": "#f3f3f0",
+      "--og-action-on": "#212120",
+      "--og-content-3": "#a1a19a"
+    },
+    "samples": {
+      ".explorer-topbar": null,
+      ".settings-panel": null,
+      ".ohx-capsule": null,
+      ".free-item": null,
+      ".sphere-ball": null,
+      ".og-btn--solid": {
+        "bg": "rgb(243, 243, 240)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "10px"
+      }
+    }
+  },
+  {
+    "tag": "drawer-light",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "light",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#212120",
+      "--og-surface-0": "#ffffff",
+      "--og-action": "#212120",
+      "--og-action-on": "#ffffff",
+      "--og-content-3": "#6b6b65"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgb(33, 33, 32) rgb(33, 33, 32) rgba(33, 33, 32, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.22)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(28, 31, 40)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  },
+  {
+    "tag": "menu-dark",
+    "errors": [],
+    "width": 1440,
+    "scrollWidth": 1430,
+    "scheme": "dark",
+    "phone": false,
+    "tokens": {
+      "--og-content-1": "#f3f3f0",
+      "--og-surface-0": "#212120",
+      "--og-action": "#f3f3f0",
+      "--og-action-on": "#212120",
+      "--og-content-3": "#a1a19a"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(27, 27, 26)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgb(243, 243, 240) rgb(243, 243, 240) rgba(255, 255, 248, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.23)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(41, 41, 39)",
+        "color": "rgb(242, 244, 248)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(48, 48, 46)",
+        "color": "rgb(243, 243, 240)",
+        "border": "rgba(255, 255, 248, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  },
+  {
+    "tag": "phone-landscape",
+    "errors": [],
+    "width": 852,
+    "scrollWidth": 842,
+    "scheme": "light",
+    "phone": true,
+    "tokens": {
+      "--og-content-1": "#212120",
+      "--og-surface-0": "#ffffff",
+      "--og-action": "#212120",
+      "--og-action-on": "#ffffff",
+      "--og-content-3": "#6b6b65"
+    },
+    "samples": {
+      ".explorer-topbar": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgb(33, 33, 32) rgb(33, 33, 32) rgba(33, 33, 32, 0.12)",
+        "radius": "0px"
+      },
+      ".settings-panel": null,
+      ".ohx-capsule": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.22)",
+        "radius": "24px"
+      },
+      ".free-item": {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(28, 31, 40)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "18px"
+      },
+      ".sphere-ball": {
+        "bg": "rgb(247, 247, 245)",
+        "color": "rgb(33, 33, 32)",
+        "border": "rgba(33, 33, 32, 0.12)",
+        "radius": "14px"
+      },
+      ".og-btn--solid": null
+    }
+  }
+]

@@ -62,7 +62,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "象牙 · 默认",
     version: "1.0.0",
     author: "OneTHU",
-    description: "中性蓝灰阶 + 业务蓝强调：tokens.css 原样，无覆盖。",
+    description: "OneGUI 默认外观：中性面阶、黑白主要动作与清晰文字层级。",
     vars: {},
     source: "builtin",
   },
@@ -71,7 +71,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "紫水晶",
     version: "1.1.0",
     author: "OneTHU",
-    description: "紫罗兰主按钮 + 雾紫晕染的纸面。",
+    description: "紫罗兰强调色，用于链接、选中与状态标识。",
     vars: {
       "--primary": "#6d28d9",
       "--primary-hover": "#5b21b6",
@@ -98,7 +98,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "清华紫",
     version: "1.0.0",
     author: "OneTHU",
-    description: "校色紫：紫底白字主按钮 + 藕紫纸面，链接与激活同色（MD3 tonal palette 派生）。",
+    description: "清华校色紫，用于链接、选中与状态标识。",
     vars: {
       // 品牌族：primary tone 40 / 悬停 tone 30（加深一档，紫底白字变浅会掉对比度）
       "--primary": "#90399c",
@@ -134,7 +134,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "青瓷",
     version: "1.1.0",
     author: "OneTHU",
-    description: "青绿主按钮 + 瓷面水色的冷调。",
+    description: "青绿强调色，用于链接、选中与状态标识。",
     vars: {
       "--primary": "#0f766e",
       "--primary-hover": "#115e59",
@@ -159,7 +159,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "暖沙",
     version: "1.0.0",
     author: "OneTHU",
-    description: "沙金强调、暖纸底色，黄昏质感的纸面。",
+    description: "沙金强调色，用于链接、选中与状态标识。",
     vars: {
       "--accent": "#c2740a",
       "--accent-soft": "#fbf1e0",
@@ -178,7 +178,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "墨蓝夜航",
     version: "1.1.0",
     author: "OneTHU",
-    description: "海军蓝主按钮 + 冷雾蓝灰阶：夜航仪表盘。",
+    description: "海军蓝强调色，用于链接、选中与状态标识。",
     vars: {
       "--primary": "#1e3a8a",
       "--primary-hover": "#1e40af",
@@ -204,7 +204,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     version: "1.0.1",
     author: "OneTHU",
     dark: true,
-    description: "深夜工作台：墨蓝黑纸面 + 亮钢蓝强调，昼夜调度的黑夜档。",
+    description: "深色工作台与钢蓝强调色，可用于昼夜调度。",
     vars: {
       "--bg": "#0e1117",
       "--bg-soft": "#12161f",

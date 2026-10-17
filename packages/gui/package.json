@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./gui.css": "./src/gui.css",
     "./pipeline": "./src/pipeline/director.ts",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./onethu.css": "./src/recipes/onethu.css"
   },
   "scripts": {
     "build": "echo nothing to build (source-only package)",

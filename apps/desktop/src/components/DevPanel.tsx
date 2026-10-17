@@ -7,6 +7,7 @@
  * 样式全部内联：dev 代码不往正式版的 CSS 里留任何选择器。
  */
 import { useEffect, useState, type CSSProperties } from "react";
+import { Btn } from "@onethu/gui";
 import { invoke } from "@tauri-apps/api/core";
 import { isAndroidNavigator, isWindowsNavigator } from "../lib/androidHost.js";
 import { APP_VERSION, BUILD_COMMIT, BUILD_TIME } from "../lib/buildinfo.js";
@@ -19,34 +20,34 @@ const S: Record<string, CSSProperties> = {
     position: "fixed", top: 6, right: 8, zIndex: 9000,
     display: "inline-flex", alignItems: "center", gap: 6,
     padding: "2px 8px", borderRadius: 999,
-    background: "rgba(22,24,29,0.88)", color: "#8ef0b0",
-    border: "1px solid rgba(142,240,176,0.35)",
+    background: "var(--og-fill-overlay)", color: "var(--og-success)",
+    border: "1px solid var(--og-line-2)",
     font: "11px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
     cursor: "pointer", userSelect: "none", backdropFilter: "blur(4px)",
   },
   panel: {
     position: "fixed", top: 30, right: 8, zIndex: 9001,
     width: "min(560px, 94vw)", maxHeight: "76vh", overflow: "auto",
-    background: "#16181d", color: "#e6e8ec",
-    border: "1px solid #3a3f4b", borderRadius: 10,
-    boxShadow: "0 18px 48px rgba(0,0,0,0.45)",
+    background: "var(--og-menu-fill)", color: "var(--og-content-1)",
+    border: "1px solid var(--og-line-2)", borderRadius: 10,
+    boxShadow: "var(--og-elev-menu)",
     font: "12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
     padding: 12,
   },
-  row: { display: "flex", gap: 8, alignItems: "baseline", borderBottom: "1px solid #23262e", padding: "3px 0" },
-  key: { color: "#8b93a3", flex: "0 0 76px" },
-  val: { color: "#e6e8ec", wordBreak: "break-all", flex: "1 1 auto" },
+  row: { display: "flex", gap: 8, alignItems: "baseline", borderBottom: "1px solid var(--og-line-1)", padding: "3px 0" },
+  key: { color: "var(--og-content-3)", flex: "0 0 76px" },
+  val: { color: "var(--og-content-1)", wordBreak: "break-all", flex: "1 1 auto" },
   bar: { display: "flex", gap: 6, flexWrap: "wrap", margin: "10px 0 8px" },
   btn: {
-    background: "#232733", color: "#e6e8ec", border: "1px solid #3a3f4b",
+    background: "var(--og-surface-3)", color: "var(--og-content-1)", border: "1px solid var(--og-line-2)",
     borderRadius: 6, padding: "3px 10px", cursor: "pointer", font: "inherit",
   },
   log: {
-    background: "#0f1115", border: "1px solid #23262e", borderRadius: 6,
+    background: "var(--og-surface-3)", border: "1px solid var(--og-line-1)", borderRadius: 6,
     padding: 8, maxHeight: "38vh", overflow: "auto", whiteSpace: "pre-wrap", wordBreak: "break-all",
   },
   line: { display: "flex", gap: 6 },
-  note: { color: "#ffd479", marginTop: 6, minHeight: 16 },
+  note: { color: "var(--og-warning)", marginTop: 6, minHeight: 16 },
 };
 
 function hostName(): string {
@@ -63,9 +64,9 @@ function buildTimeText(): string {
 }
 
 function levelColor(level: string): string {
-  if (level === "error") return "#ff8a8a";
-  if (level === "warn") return "#ffd479";
-  return "#9fb3c8";
+  if (level === "error") return "var(--og-error)";
+  if (level === "warn") return "var(--og-warning)";
+  return "var(--og-content-2)";
 }
 
 export default function DevPanel() {
@@ -142,20 +143,20 @@ export default function DevPanel() {
 
   return (
     <>
-      <button style={S.badge} onClick={() => setOpen(!open)} title={"dev 构建 " + buildTimeText()}>
+      <Btn className="og-dev-badge" size="sm" variant="outline" onClick={() => setOpen(!open)} titleAttr={"dev 构建 " + buildTimeText()}>
         dev · {BUILD_COMMIT}
-      </button>
+      </Btn>
       {open ? (
         <div style={S.panel}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-            <strong style={{ color: "#8ef0b0" }}>OneTHU dev</strong>
-            <span style={{ color: "#8b93a3" }}>v{APP_VERSION}</span>
+            <strong style={{ color: "var(--og-success)" }}>OneTHU dev</strong>
+            <span style={{ color: "var(--og-content-3)" }}>v{APP_VERSION}</span>
             <span style={{ flex: "1 1 auto" }} />
-            <button style={S.btn} onClick={hide}>隐藏徽标</button>
-            <button style={S.btn} onClick={() => setOpen(false)}>关闭</button>
+            <Btn variant="outline" size="sm" onClick={hide}>隐藏徽标</Btn>
+            <Btn variant="outline" size="sm" onClick={() => setOpen(false)}>关闭</Btn>
             {/* 竖屏取景框：整页换成一块真手机视口（同源 iframe，登录态照旧）。
                 窗口拖窄 ≠ 手机——比例/DPR/安全区都不对，这个入口才是看真机版式的地方。 */}
-            <button style={S.btn} onClick={() => { window.location.href = window.location.pathname + "?phone-frame=1"; }}>竖屏取景框</button>
+            <Btn variant="outline" size="sm" onClick={() => { window.location.href = window.location.pathname + "?phone-frame=1"; }}>竖屏取景框</Btn>
           </div>
           <div style={S.row}><span style={S.key}>commit</span><span style={S.val}>{BUILD_COMMIT}</span></div>
           <div style={S.row}><span style={S.key}>构建时间</span><span style={S.val}>{buildTimeText()}</span></div>
@@ -165,15 +166,15 @@ export default function DevPanel() {
             <span style={S.val}>{window.innerWidth}x{window.innerHeight} · dpr {window.devicePixelRatio}</span>
           </div>
           <div style={S.bar}>
-            <button style={S.btn} disabled={busy} onClick={() => void exportLog()}>{busy ? "导出中…" : "导出运行日志"}</button>
-            <button style={S.btn} onClick={() => void copy(devLogText(), "前端日志")}>复制前端日志</button>
-            <button style={S.btn} onClick={() => void copy(diagnostics(), "诊断信息")}>复制诊断信息</button>
-            <button style={S.btn} onClick={() => { clearDevLog(); setLogs([]); setNote("已清空前端日志缓冲"); }}>清空</button>
+            <Btn variant="outline" size="sm" disabled={busy} onClick={() => void exportLog()}>{busy ? "导出中…" : "导出运行日志"}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => void copy(devLogText(), "前端日志")}>复制前端日志</Btn>
+            <Btn variant="outline" size="sm" onClick={() => void copy(diagnostics(), "诊断信息")}>复制诊断信息</Btn>
+            <Btn variant="outline" size="sm" onClick={() => { clearDevLog(); setLogs([]); setNote("已清空前端日志缓冲"); }}>清空</Btn>
           </div>
           <div style={S.note}>{note}</div>
-          <div style={{ color: "#8b93a3", margin: "6px 0 4px" }}>前端日志（{logs.length} 条，最新在下；已同步进 onethu-debug.log）</div>
+          <div style={{ color: "var(--og-content-3)", margin: "6px 0 4px" }}>前端日志（{logs.length} 条，最新在下；已同步进 onethu-debug.log）</div>
           <div style={S.log}>
-            {logs.length === 0 ? <div style={{ color: "#5f6673" }}>（暂无）</div> : null}
+            {logs.length === 0 ? <div style={{ color: "var(--og-content-disabled)" }}>（暂无）</div> : null}
             {logs.map((e, i) => (
               <div style={S.line} key={String(e.t) + "-" + i}>
                 <span style={{ color: levelColor(e.level), flex: "0 0 44px" }}>{e.level}</span>

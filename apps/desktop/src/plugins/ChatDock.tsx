@@ -74,7 +74,7 @@ const PANEL_SLIDE_MS = 420;
 
 /** 面板壳材质 = .og-panel 浮层同款取值（overlay 面 + 顶沿光 + 强线 + 投影；scope 已把 line-1 抬到 line-2） */
 const DOCK_PANEL_MAT: CSSProperties = {
-  background: "var(--og-surface-overlay)",
+  background: "var(--og-fill-overlay)",
   backgroundImage: "var(--og-overlay-tint)", // 玻璃的顶沿光（旧内描边上沿高光同位，属 OG 浮层族七件套）
   border: "1px solid var(--og-line-1)", // oh.dock scope: line-1→line-2（浮体边，等旧 70% inset 环）
   boxShadow: "var(--og-elev-menu)",
@@ -174,14 +174,12 @@ const matBubbleUser = (phone: boolean): CSSProperties => ({
   whiteSpace: "pre-wrap",
   overflowWrap: "break-word",
   color: "var(--og-content-1)",
-  background: phone
-    ? "linear-gradient(180deg, color-mix(in srgb, var(--og-accent-soft) 76%, transparent), color-mix(in srgb, var(--og-accent-soft) 58%, transparent))"
-    : "color-mix(in srgb, var(--og-accent-soft) 62%, transparent)",
+  background: "var(--og-composer-fill)",
   border: "0",
   WebkitBackdropFilter: phone ? "none" : "var(--og-surface-blur)",
   backdropFilter: phone ? "none" : "var(--og-surface-blur)",
   borderRadius: "var(--og-radius-xl) var(--og-radius-xl) var(--og-radius-sm) var(--og-radius-xl)",
-  boxShadow: "inset 0 0 0 1px var(--og-accent-soft-line), var(--og-elev-2)",
+  boxShadow: "none",
   transition: `opacity var(--og-dur-2) var(--og-ease-spring), transform var(--og-dur-2) var(--og-ease-spring)`,
 });
 
@@ -189,15 +187,13 @@ const matBubbleUser = (phone: boolean): CSSProperties => ({
  *  结构不变：壳只出玻璃材质，正文 padding/字阶挂内层 .dock-msg（类名保留做排印锚点）。 */
 const matBubbleOh = (phone: boolean): CSSProperties => ({
   alignSelf: "flex-start",
-  background: phone
-    ? "linear-gradient(180deg, color-mix(in srgb, var(--og-surface-2) 80%, transparent), color-mix(in srgb, var(--og-surface-2) 60%, transparent))"
-    : "color-mix(in srgb, var(--og-surface-2) 62%, transparent)",
+  background: "transparent",
   border: "0",
   WebkitBackdropFilter: phone ? "none" : "var(--og-surface-blur)",
   backdropFilter: phone ? "none" : "var(--og-surface-blur)",
   borderRadius: "var(--og-radius-xl) var(--og-radius-xl) var(--og-radius-xl) var(--og-radius-sm)",
   color: "var(--og-content-1)",
-  boxShadow: "inset 0 0 0 1px var(--og-line-1), var(--og-elev-2)",
+  boxShadow: "none",
   transition: `opacity var(--og-dur-2) var(--og-ease-spring), transform var(--og-dur-2) var(--og-ease-spring)`,
 });
 /** 内层正文容器（旧 .dock-msg 在 OH 气泡里的 padding/字阶/形态；背景由壳出） */
@@ -310,7 +306,7 @@ const matHistorySheet = (settled: boolean): CSSProperties => ({
   position: "absolute",
   inset: "44px 0 64px 0",
   zIndex: 1,
-  background: "var(--og-surface-overlay)",
+  background: "var(--og-fill-overlay)",
   backgroundImage: "var(--og-overlay-tint)",
   border: "1px solid var(--og-line-1)",
   borderRadius: "var(--og-radius-lg)",

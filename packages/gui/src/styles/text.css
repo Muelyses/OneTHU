@@ -12,14 +12,14 @@
   font-size: var(--og-text-display);
   line-height: var(--og-text-display-lh);
   font-weight: var(--og-weight-bold);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--og-tracking-title);
 }
 
 .og-text--title {
   font-size: var(--og-text-title);
   line-height: var(--og-text-title-lh);
   font-weight: var(--og-weight-semibold);
-  letter-spacing: -0.005em;
+  letter-spacing: var(--og-tracking-title);
 }
 
 .og-text--subtitle {

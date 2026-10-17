@@ -1273,7 +1273,7 @@ function useCanvasProbeImpl(_boardKey: string, hostRef: React.RefObject<HTMLDivE
        就在真 app 里走一遍真代码：50% → 量数字 → 还原 100%。
        验的是：世界层真的缩放、盒子跟着重算（minH 变小）、内容仍在盒子里（boxOK）、
        缩放条上的百分比跟着变。 */
-    if (!zoomSelfTested) {
+    if (!zoomSelfTested && new URLSearchParams(window.location.search).has("board-zoom-selftest")) {
       zoomSelfTested = true;
       const mark = (tag: string): void => {
         const host = hostRef.current;

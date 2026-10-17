@@ -1546,8 +1546,6 @@ select.input:focus {
 }
 
 /* 展开的 bespoke 卡：标题行下加分隔线（折叠/入口卡不需要） */
-.home-card:not(.is-collapsed):not(.home-entry) .home-card-head {
-}
 
 /* 标题按钮（bespoke）：整行可点 = 折叠/展开 */
 .home-card-title {
@@ -5726,7 +5724,7 @@ html.is-phone .card-warn-label { width: auto; }
    只用类名压不住，圆点会被纵向拉成 6×36 的椭圆（霖 2026-10-11 现场：
    「圆点指示全被纵向拉伸成了离心率极大的椭圆形」）。这里用属性选择器把优先级抬到 (0,3,1)。 */
 .widget-size-dots[data-size-dots] button.widget-size-dot { min-width: 0; min-height: 0; }
- * 卡体渲染器也能拿到第二个参数（当前档位尺寸），需要换结构（而不是只改样式）时用它。 */
+/* 卡体渲染器也能拿到第二个参数（当前档位尺寸），需要换结构（而不是只改样式）时用它。 */
 /* 示例骨架的几种样子（按组件类型） */
 .add-preview-sample.is-divider { justify-content: center; }
 .add-preview-sample-divider { height: 1px; background: var(--border); }
@@ -6087,18 +6085,6 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
 /* rim 三件套（一条 box-shadow 表达，全部玻璃面共用）。
    注意：只上「件」（.free-item 等），不上「板」——.freeboard 是首页整页画布，
    给它上 rim 会变成围住整个首页的雷霆大框（2026-10-13 用户点名删除），画布必须无框。 */
-.free-item {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-card-fill-2);
-  backdrop-filter: var(--glass-panel-blur);
-  -webkit-backdrop-filter: var(--glass-panel-blur);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-}
 
 /* ---- 主/危险按钮 = chip tier + 主题色 tint 渐变 ---- */
 .btn {
@@ -6238,21 +6224,6 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
    是「同一屏上几种质感」的结构性根因。这里给出统一配方作为单一来源。
    注意：本块在 explorer*.css 之前，后续文件里同特异度的手写 material 会盖过它（历史上 .ex-rail 就这么脱队过，
    深色模式下竖栏因此比顶栏暗）。新增栏体若发现脱队，先查是不是又被某文件手写的 material 盖掉。 */
-.explorer-topbar,
-.ex-rail,
-.ex-bbar,
-.hs-dock-row {
-  background:
-    linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
-    var(--glass-card-fill-2);
-  backdrop-filter: var(--lg-blur-clear);
-  -webkit-backdrop-filter: var(--lg-blur-clear);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-rim-top),
-    inset 0 0 0 1px var(--glass-rim-hairline),
-    inset 0 -1px 0 var(--glass-rim-bottom);
-}
 
 /* ── 玻璃只算一层（2026-10-14 统一收口，从 explorer.css 归并进单一玻璃源）──
    玻璃卡（free-item/home-card/card）内部的次级卡与直达 widget 卡（.hw-card/.balance-strip

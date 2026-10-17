@@ -242,3 +242,10 @@
 - vaultCloud 上传时自动记账；撤销时先撤分享链接，再只删无其他有效引用的文件；
   启动时 `cleanupExpiredVaultShares()` 清理过期分享（失败留待下次）。
 - `tools/share-refs-test.mjs` 8/8；目录清理（空文件夹/清单）与真实云盘 live 冒烟仍待做。
+
+
+### 12.8 名片/NFC 动效（2026-10-18）
+
+- 名片区 `m-spring-in` 入场、二维码 `m-pop`、NFC 读取时按钮 `m-breathe` 呼吸；全部尊重
+  reduced-motion，只动 transform/opacity。
+- 下一步：NFC HCE 发送端（Android HostApduService + NDEF AID）与真机双机验证。

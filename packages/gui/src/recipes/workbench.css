@@ -501,3 +501,12 @@ html:root .vault-drop { animation: m-pop var(--dur-2) var(--ease-spring) both; }
 
 /* 口令二维码：NFC 接入前给手机互相扫的兜底（纯展示，不发起扫描）。 */
 .vault-qr { display: flex; justify-content: center; padding: var(--og-space-2); border-radius: var(--og-radius-md); background: var(--og-surface-overlay); }
+
+/* 名片/碰一碰动效：名片入场、NFC 贴近呼吸、二维码出现（只动 transform/opacity）。 */
+.name-card { animation: m-spring-in var(--dur-3) var(--ease-spring) both; }
+.vault-qr { animation: m-pop var(--dur-2) var(--ease-spring) both; }
+.vault-nfc-reading { animation: m-breathe 1.2s var(--ease-in-out) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .name-card, .vault-qr { animation: none; }
+  .vault-nfc-reading { animation: none; }
+}

@@ -187,3 +187,12 @@
 - 登出时清空云盘 token（`lib/clients.ts logout` 动态导入 `clearSeafileToken`），防共享设备换账号串数据。
 - 暂存箱未连接云盘时显示「本版本要求连接清华云盘」横幅 + 去连接入口；本地引用仍可读，云分享不可用。
 - 回归：vault 29/29、namecard 7/7、org 8/8；guard/docs 通过。
+
+
+### 12.2 好友共享云盘（2026-10-18）
+
+- `lib/cloudFolder.ts`：确保资料库 `OneTHU`、建目录、上传 README、分享目录；目录分享被策略
+  拒绝时退化为分享 README 文件。组织空间后续复用。
+- 通讯录联系人新增 `shared` 字段；`NameCardSection` 每位联系人可「共享云盘」（建
+  `/Friends/<contactId>/` 并复制链接）或「复制链接」；没有云盘 token 时明确报错。
+- 待 live 验证：清华实例目录分享是否放行；好友加入后双方文件/口令投递 UI 尚未做。

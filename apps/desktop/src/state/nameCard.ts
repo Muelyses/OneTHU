@@ -28,7 +28,26 @@ export interface OrgCard {
   updatedAt: number;
 }
 
-export type ContactCard = { id: string; kind: "personal" | "organization"; name: string; note: string; card: PersonalCard | OrgCard; addedAt: number };
+export interface FriendShare {
+  repoId: string;
+  path: string;
+  /** 云盘分享链接（好友加入后双方共享该文件夹） */
+  shareUrl?: string;
+  shareToken?: string;
+  expiresAt?: number;
+  createdAt: number;
+}
+
+export type ContactCard = {
+  id: string;
+  kind: "personal" | "organization";
+  name: string;
+  note: string;
+  card: PersonalCard | OrgCard;
+  addedAt: number;
+  /** 与这位好友的共享云盘（创建后写入；以后放文件/作业/口令） */
+  shared?: FriendShare;
+};
 
 export interface CardDoc {
   v: 1;
@@ -140,6 +159,11 @@ export function addContact(kind: ContactCard["kind"], card: PersonalCard | OrgCa
 
 export function removeContact(id: string): void {
   doc = { ...doc, contacts: doc.contacts.filter((c) => c.id !== id) };
+  commit();
+}
+
+export function setContactShare(id: string, shared: FriendShare): void {
+  doc = { ...doc, contacts: doc.contacts.map((c) => (c.id === id ? { ...c, shared } : c)) };
   commit();
 }
 

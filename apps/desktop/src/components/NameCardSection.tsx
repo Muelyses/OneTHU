@@ -13,8 +13,9 @@ import { bytesToBase64 } from "../lib/imageSave.js";
 import { addToVault, vaultSnapshot } from "../state/vault.js";
 import {
   CARD_LIMITS, addContact, orgCardCatch, personalCardCatch, removeContact, removeOrgCard,
-  savePersonalCard, upsertOrgCard, useCards,
+  savePersonalCard, setContactShare, upsertOrgCard, useCards,
 } from "../state/nameCard.js";
+import { prepareAndShareFolder } from "../lib/cloudFolder.js";
 
 defineSearchRows([
   {
@@ -33,6 +34,7 @@ export function NameCardSection(): ReactNode {
   const doc = useCards();
   const p = doc.personal;
   const [busy, setBusy] = useState(false);
+  const [sharingId, setSharingId] = useState<string | null>(null);
 
   const edit = useCallback(async (): Promise<void> => {
     const f = await openFormModal("编辑我的名片", [
@@ -75,6 +77,20 @@ export function NameCardSection(): ReactNode {
       { key: "joinUrl", label: "加入方式 / 邀请链接" },
     ]);
     if (f?.name) { upsertOrgCard({ name: f.name, brief: f.brief, joinUrl: f.joinUrl }); showToast("组织名片已保存"); }
+  }, []);
+
+  const shareCloud = useCallback(async (contactId: string, name: string): Promise<void> => {
+    setSharingId(contactId);
+    try {
+      const share = await prepareAndShareFolder(`/Friends/${contactId}`, `${name} 与我的共享云盘`);
+      setContactShare(contactId, { repoId: share.repoId, path: share.path, shareUrl: share.shareUrl, shareToken: share.shareToken, expiresAt: share.expiresAt, createdAt: Date.now() });
+      await navigator.clipboard.writeText(share.shareUrl).catch(() => undefined);
+      showToast("共享云盘已创建：链接已复制，发给好友即可加入");
+    } catch (e) {
+      showToast(`共享云盘创建失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setSharingId(null);
+    }
   }, []);
 
   const importContacts = useCallback((): void => {
@@ -155,8 +171,17 @@ export function NameCardSection(): ReactNode {
                 key={c.id}
                 flush
                 title={c.name}
-                sub={(c.kind === "organization" ? "组织" : "个人") + (c.note ? " · " + c.note : "")}
-                trailing={<Btn variant="ghost" size="sm" tone="error" onClick={() => removeContact(c.id)}>删除</Btn>}
+                sub={(c.kind === "organization" ? "组织" : "个人") + (c.note ? " · " + c.note : "") + (c.shared?.shareUrl ? " · 已建共享云盘" : "")}
+                trailing={
+                  <span className="name-card-actions">
+                    {c.shared?.shareUrl ? (
+                      <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(c.shared!.shareUrl!).then(() => showToast("共享链接已复制")).catch(() => showToast("复制失败，请手动复制"))}>复制链接</Btn>
+                    ) : (
+                      <Btn variant="ghost" size="sm" disabled={sharingId === c.id} onClick={() => void shareCloud(c.id, c.name)}>{sharingId === c.id ? "创建中…" : "共享云盘"}</Btn>
+                    )}
+                    <Btn variant="ghost" size="sm" tone="error" onClick={() => removeContact(c.id)}>删除</Btn>
+                  </span>
+                }
               />
             ))}
           </List>

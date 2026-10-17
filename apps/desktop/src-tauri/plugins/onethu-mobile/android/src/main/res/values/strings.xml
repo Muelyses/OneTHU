@@ -13,4 +13,6 @@
     <string name="onethu_widget_slot1_label">OneTHU 插件小组件 1</string>
     <string name="onethu_widget_slot2_label">OneTHU 插件小组件 2</string>
     <string name="onethu_widget_slot3_label">OneTHU 插件小组件 3</string>
+    <string name="onethu_nfc_hce_desc">OneTHU 碰一碰传递口令</string>
+    <string name="onethu_nfc_hce_aid_desc">OneTHU 碰一碰</string>
 </resources>

@@ -1863,6 +1863,18 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
     }
 
     @Command
+    fun nfcShareText(invoke: Invoke) {
+        val args = invoke.parseArgs(NfcShareArgs::class.java)
+        val text = args.text.trim()
+        if (text.isEmpty()) {
+            invoke.reject("没有可分享的碰一碰内容")
+            return
+        }
+        NfcHceService.payload = text
+        invoke.resolve(JSObject().put("ok", true))
+    }
+
+    @Command
     fun nfcReadTag(invoke: Invoke) {
         val adapter = NfcAdapter.getDefaultAdapter(activity)
         if (adapter == null) {
@@ -1976,4 +1988,9 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.reject(e.message ?: "拉起系统安装页失败，请重试")
         }
     }
+}
+
+@InvokeArg
+class NfcShareArgs {
+    var text: String = ""
 }

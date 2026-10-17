@@ -18,7 +18,7 @@ import {
 } from "../../state/vault.js";
 import { decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
-import { nfcReadText, nfcStatus } from "../../lib/nfc.js";
+import { nfcReadText, nfcShareText, nfcStatus } from "../../lib/nfc.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
@@ -144,6 +144,20 @@ export function VaultPage(): ReactNode {
       setBusy(false);
     }
   }, []);
+
+  const shareNfc = useCallback(async (): Promise<void> => {
+    const payloadText = touchCode || code;
+    if (!payloadText) { showToast("先生成碰一碰/分享口令，再用 NFC 发送"); return; }
+    setBusy(true);
+    try {
+      await nfcShareText(payloadText);
+      showToast("NFC 发送已就绪：让对方手机贴近本机（双方 NFC 开启）");
+    } catch (e) {
+      showToast(`NFC 发送失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, [touchCode, code]);
 
   const readNfc = useCallback(async (): Promise<void> => {
     setBusy(true);
@@ -272,6 +286,7 @@ export function VaultPage(): ReactNode {
             <div className="vault-qr"><QRCodeSVG value={touchCode} size={148} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(touchCode).catch(() => undefined)}>复制</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => void shareNfc()} disabled={!nfc.available || !nfc.enabled}>NFC 发送</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setTouchCode("")}>收起</Btn>
             </div>
           </div>

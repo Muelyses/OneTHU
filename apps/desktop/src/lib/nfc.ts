@@ -23,3 +23,8 @@ export async function nfcStatus(): Promise<NfcStatus> {
 export async function nfcReadText(): Promise<string> {
   return invoke<string>("nfc_read_tag");
 }
+
+/** 把一段文本放进 HCE 发送端；对方手机用 NFC 接收端贴近读取。 */
+export async function nfcShareText(text: string): Promise<void> {
+  await invoke("nfc_share_text", { text });
+}

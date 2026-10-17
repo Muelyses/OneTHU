@@ -249,3 +249,14 @@
 - 名片区 `m-spring-in` 入场、二维码 `m-pop`、NFC 读取时按钮 `m-breathe` 呼吸；全部尊重
   reduced-motion，只动 transform/opacity。
 - 下一步：NFC HCE 发送端（Android HostApduService + NDEF AID）与真机双机验证。
+
+
+### 12.9 NFC HCE 发送端（2026-10-18）
+
+- Android `NfcHceService`：NDEF tag application AID `D2760000850101` 的最小只读实现
+  （SELECT AID / SELECT CC(E103)/NDEF(E104) / READ BINARY，NLEN + NDEF 文本消息）；
+  `res/xml/nfc_apdu_service.xml` + manifest service 声明；插件命令 `nfcShareText` 设置载荷。
+- Rust `nfc_share_text`（mobile 插件 / desktop 不支持）；`lib/nfc.ts`；暂存箱碰一碰口令区
+  增加「NFC 发送」按钮（Android 且 NFC 开启才可用）。
+- 尚缺：HCE 协议真机双机联调（AID 路由/默认付款应用选择、NDEF 分块读取兼容性）、
+  发送后自动关闭、HCE 生命周期与前台服务限制。cargo check/typecheck/vault 30/30 通过。

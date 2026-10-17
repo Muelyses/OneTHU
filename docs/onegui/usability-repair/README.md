@@ -31,7 +31,7 @@
 
 - 空白右键与底部工具栏「添加组件」现在打开**同一个** `BoardAddDrawer`：两列缩略图预览 + 搜索框（标题 / id / 说明都可搜）+ 文件夹与 OnePage 钉板入口（与目录组件同屏同搜索）。右键记住落点，新组件落在右键处；「＋」落在内容下方。
 - 打开总览时把预览网格滚回顶部：预览里的「网络学堂搜索」带 autoFocus 输入框，挂载瞬间会把网格滚到它那里（随后才被失焦兜住）。
-- 顺手修掉根目录 `pnpm build` 的既有失败：`packages/gui` 的 `echo nothing to build (source-only package)` 未引号，`sh` 报语法错误，导致全仓生产构建一直中断（dev3 同样存在，不是本轮 UI 改动引入）。
+- 一并修掉根目录 `pnpm build` 的既有失败：`packages/gui` 的 `echo nothing to build (source-only package)` 未引号，`sh` 报语法错误，导致全仓生产构建一直中断（dev3 同样存在，不是本轮 UI 改动引入）。
 
 ## 五、验证
 

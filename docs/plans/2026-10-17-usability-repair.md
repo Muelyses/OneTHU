@@ -16,7 +16,7 @@
 - 壁纸下首页标题板跟随玻璃材质（`--og-fill-surface` + `--og-surface-blur`），不再是一块不透明白板。
 - 移除“编辑布局”模式：删除拖拽把手、编辑布局/完成按钮、相关提示文案与 `is-layout-editing` 样式；桌面直接拖动，手机堆叠点选 + 浮条调整。
 - 空白右键与「＋」统一为同一个组件选择器（BoardAddDrawer）：缩略图网格 + 搜索框 + 文件夹/OnePage 特殊项；右键记住落点。
-- 顺手修复根目录 `pnpm build`（packages/gui build 脚本未加引号导致 sh 语法错误，dev3 同样存在）。
+- 一并修复根目录 `pnpm build`（packages/gui build 脚本未加引号导致 sh 语法错误，dev3 同样存在）。
 
 ## 第三轮反馈（23:03）
 

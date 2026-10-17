@@ -147,3 +147,22 @@
 - OH 搜索窗（设置行/功能/原子）与命令面板设置行接入拖拽；共享 `vaultRegistry` 负责「点条目打开/失效提示」。
 - 口令解码加体积/条目/字段白名单与过期校验；分享清单不再携带发送者私有 `cloudPath`。
 - 已知限制：`CollectStar` 拖动与自身点击的竞技场尚未统一（先依赖 6px/320ms 阈值）；文件/文字/白板卡片/日程/主题/壁纸/设置行（非搜索）仍待接。
+
+
+## 11. 进度（2026-10-18 第 2-3 阶段：文件通道 / 云分享 / 名片）
+
+- **Phase 2.1 文件通道**：`lib/fileChannel.ts` 统一 stage（文件选择/File[] → 字节 → SHA-256 →
+  `write_temp_file` 暂存），暂存箱文件条目按 hash 去重；VaultPage 支持「添加文件」与拖放落区。
+- **Phase 2.2 云盘适配**：Rust 新增 `seafile_share_delete`（撤销）与 `seafile_share_read`
+  （匿名读分享 manifest）；`state/vaultCloud.ts` 实现资料库 `OneTHU` / `/Vault/shares/<id>/`
+  独立目录、清单上传、7 天分享、接收端读回、撤销；有 token 才注册，否则 inline。
+  VaultPage 显示「云分享/本地口令」与「撤销云分享」。
+- **Phase 3 名片地基**：`state/nameCard.ts` + `NameCardSection`：个人名片（头像/网址/社交/
+  手机号/简介 120 字）、组织名片、通讯录；名片作为 payload 进暂存箱，点开即收进通讯录
+  （自名片/重复去重）；routes.json 62 行。
+- **手机**：常驻暂存箱入口（底栏之上独立层，显示数量）已上线；390 宽长按拖动/落点回归通过。
+- **测试**：`vault-browser-test.mjs` 26/26（含云引用/撤销、手机 dock/长按、hash 去重）；
+  `namecard-browser-test.mjs` 7/7；typecheck/build/guard:onegui/docs 通过。
+
+仍未做：ONV2 摘要、分享文件夹/文件引用计数 GC、真实清华云盘 live 冒烟、组织成员/邀请流程、
+通讯录好友共享云盘、Android ACTION_SEND/NFC（HCE+Reader）、名片/NFC 动画、手机统一手势竞技场。

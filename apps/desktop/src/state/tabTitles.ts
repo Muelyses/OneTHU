@@ -18,6 +18,7 @@ import { getLearnSnapshot } from "./data.js";
 import { loadFavs } from "./favorites.js";
 import { getMailHead } from "./mail.js";
 import { seafileRepoName } from "./seafile.js";
+import { loadBoard } from "./board.js";
 
 export interface TabTitle {
   /** 短标签（TabStrip 上显示；通常是实体名/末段） */
@@ -108,6 +109,17 @@ export function resolveTabTitle(page: Page, params: LearnNav | null): TabTitle {
       const name = y?.title ?? "雨课堂作业";
       const course = y?.courseName ?? "雨课堂";
       return { label: name, full: `${course} › ${name}` };
+    }
+    case "board": {
+      /* OnePage 有自己的名字与 icon：标签页显示当前打开的那块板，而不是写死的「白板」。 */
+      try {
+        const doc = loadBoard();
+        const b = doc.boards.find((x) => x.id === doc.activeBoardId) ?? null;
+        if (b?.name) return { label: b.name, full: `OnePage › ${b.name}` };
+      } catch {
+        /* 读不到就落静态兜底 */
+      }
+      return { label: "OnePage", full: "OnePage" };
     }
     case "folder": {
       const chain = params?.folderId ? folderChain(params.folderId) : null;

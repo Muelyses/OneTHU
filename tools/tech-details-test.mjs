@@ -41,13 +41,13 @@ assert.ok(/<span>\{text\}<\/span>/.test(src), "不是技术串时要整句照常
 // ④ 覆盖面
 assert.ok(/<ErrorLine text=\{text\} \/>/.test(layout), "ErrorNote 必须走拆分渲染（所有页面的错误态都经过它）");
 const humanHttp = [...thubook.matchAll(/暂时打不开，请稍后再试：HTTP/g)].length;
-assert.equal(humanHttp, 2, "Thubook 两处 HTTP 报错都要写成「人话：HTTP <码>」，现在 " + humanHttp + " 处");
+assert.equal(humanHttp, 2, "THUBook 两处 HTTP 报错都要写成「人话：HTTP <码>」，现在 " + humanHttp + " 处");
 const httpMentions = [...thubook.matchAll(/HTTP/g)].length;
-assert.equal(httpMentions, humanHttp, "Thubook 里还有裸 HTTP 状态码没包上人话（" + httpMentions + " 处 HTTP / " + humanHttp + " 处带人话）");
+assert.equal(httpMentions, humanHttp, "THUBook 里还有裸 HTTP 状态码没包上人话（" + httpMentions + " 处 HTTP / " + humanHttp + " 处带人话）");
 const settingsUses = [...settings.matchAll(/<ErrorLine /g)].length;
 assert.ok(settingsUses >= 5, "设置页用拆分渲染的地方太少（" + settingsUses + " 处）");
 
 console.log(
   "技术细节护栏：原生 details + 可复制 ✓ / 分类器 5 个技术串与 4 句人话分类正确 ✓ / " +
-  "ErrorNote 总闸已接 ✓ / Thubook 2 处报错可拆分 ✓ / 设置页 " + settingsUses + " 处 ✓",
+  "ErrorNote 总闸已接 ✓ / THUBook 2 处报错可拆分 ✓ / 设置页 " + settingsUses + " 处 ✓",
 );

@@ -129,7 +129,7 @@ export const NAV_REGISTRY: NavEntry[] = [
   { id: "info-profile", name: "个人信息", category: "行政", visibility: "group", page: "info", params: { infoTab: "profile" }, keywords: ["学籍", "个人信息"] },
   { id: "info-fitness", name: "体测成绩", category: "行政", visibility: "group", page: "info", params: { infoTab: "fitness" }, keywords: ["体测", "体质"] },
   { id: "info-news", name: "新闻", category: "行政", visibility: "group", page: "info", params: { infoTab: "news" }, keywords: ["新闻", "通知", "订阅"], note: "今日取前 3 条" },
-  { id: "thubook", name: "Thubook", category: "行政", visibility: "group", page: "thubook", keywords: ["手册", "清华手册"] },
+  { id: "thubook", name: "THUBook", category: "行政", visibility: "group", page: "thubook", keywords: ["手册", "清华手册"] },
   { id: "otherinfo", name: "其他 Info 应用", category: "行政", visibility: "buried", page: "otherinfo", keywords: ["门户", "应用", "目录"] },
 
   /* —— 高级能力（标准模式不可见，功能完整保留） —— */

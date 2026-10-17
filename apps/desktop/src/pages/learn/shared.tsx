@@ -252,7 +252,7 @@ export function RichContent({ html, fallback = "暂无内容。" }: { html?: str
     return <div className="empty">{fallback}</div>;
   }
   // 学堂正文里也带行内颜色（通知/作业正文由服务端渲染）→ 深色主题下同样会黑字，
-  // 与 THUbook 同源处理：剥掉颜色声明，正文继承主题令牌（htmlTheme.stripInlineColors）
+  // 与 THUBook 同源处理：剥掉颜色声明，正文继承主题令牌（htmlTheme.stripInlineColors）
   return <div className="rich" ref={ref} dangerouslySetInnerHTML={{ __html: stripInlineColors(html ?? "") }} />;
 }
 

@@ -8,7 +8,7 @@ import { Btn } from "@onethu/gui";
  * resolveTabTitle —— tab 上显示实体级短标签（label），完整路径（full）挂 title
  * 属性 hover 可见；数据快照就绪后由 useTabTitleTick 的 15s 节拍升级为实体名。
  */
-import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { createPortal, flushSync } from "react-dom";
 import {
   activeTab,
@@ -40,8 +40,15 @@ import { atomKeyOf, type AtomRef } from "../../state/favorites.js";
 import { createOnePageForAtom, onePagesWithAtom, openOnePage, removeOnePage } from "../../state/onePage.js";
 import type { Board } from "../../state/boardCore.js";
 import { useFavs } from "../../state/favs.js";
-import type { LearnNav, Page } from "../../state/app.js";
-import { FOLDER_ICONS, IconBook, IconCloud, IconFlag, IconFolder, IconGitLab, IconHome, IconInfo, IconLearn, IconMail, IconOrb, IconPin, IconPlus, IconStar, IconX, IconXiaoda } from "../Icons.js";
+import { topLevelPage, type LearnNav, type Page } from "../../state/app.js";
+import { activeBoard, loadBoard } from "../../state/board.js";
+import { pluginTabsSnapshot, subscribePluginTabs } from "../../plugins/tabs.js";
+import {
+  FOLDER_ICONS, IconBook, IconCalendar, IconCard, IconCloud, IconExternal, IconFlag, IconFolder,
+  IconGitLab, IconHome, IconInfo, IconLearn, IconMail, IconOrb, IconPen, IconPin, IconPlus,
+  IconSchedule, IconSettings, IconSpark, IconStar, IconTabsCards, IconThos, IconTrace, IconX,
+  IconXiaoda, IconXk,
+} from "../Icons.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { useTabLayoutMode } from "../../state/tabLayout.js";
 import { useIsPhone } from "../../state/phoneSheets.js";
@@ -627,30 +634,66 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
   );
 }
 
-/** 页面类型 → 标签前的页面图标（按前缀分组，够用即可） */
+/** 页面类型 → 标签图标：与一级功能区（NAV）同一套图标；OnePage 另用板自己的 icon。 */
 function pageGlyph(page: Page): (p: { width?: number; height?: number }) => ReactNode {
-  if (page.startsWith("learn")) return IconLearn;
-  if (page === "thubook") return IconBook;
-  if (page === "info" || page === "otherinfo" || page === "thos" || page === "life") return IconInfo;
-  if (page === "mail") return IconMail;
-  if (page === "cloud") return IconCloud;   // 云盘=云朵（此前一面旗子——图标对不上版）
-  if (page === "gitlab") return IconGitLab;  // GitLab 狐狸厂牌（此前默认文件夹）
-  if (page === "xiaoda") return IconXiaoda;  // 清小搭（校园 AI 学伴；此前默认文件夹）
-  if (page === "tasks") return IconFlag;
-  if (page === "favs" || page === "folder") return IconPin;
-  return IconFolder;
+  switch (topLevelPage(page)) {
+    case "tasks": return IconPen;
+    case "learn": return IconLearn;
+    case "schedule": return IconSchedule;
+    case "trace": return IconTrace;
+    case "mail": return IconMail;
+    case "cloud": return IconCloud;
+    case "gitlab": return IconGitLab;
+    case "thubook": return IconBook;
+    case "xiaoda": return IconXiaoda;
+    case "info": return IconInfo;
+    case "life": return IconCard;
+    case "reserve": return IconCalendar;
+    case "zhjwxk": return IconXk;
+    case "thos": return IconThos;
+    case "otherinfo": return IconExternal;
+    case "folder":
+    case "favs": return IconPin;
+    case "services": return IconSpark;
+    case "boards": return IconTabsCards;
+    case "settings": return IconSettings;
+    default: return IconFolder;
+  }
 }
 
-/** 标签前的 logo：已收藏为 OnePage 用星，否则用页面图标 */
-function TabGlyph({ page, star }: { page: Page; star?: { icon?: string } | undefined }): ReactNode {
+/** 标签前的 logo：OnePage 用板自己的 icon，插件页用自己的 iconSvg，其余用一级功能区图标。 */
+function TabGlyph({ page, star, boardIcon, pluginIcon }: {
+  page: Page;
+  star?: { icon?: string } | undefined;
+  boardIcon?: string | undefined;
+  pluginIcon?: string | undefined;
+}): ReactNode {
+  if (pluginIcon) {
+    return <span className="ex-tab-glyph ex-tab-plugin-glyph" aria-hidden="true" dangerouslySetInnerHTML={{ __html: pluginIcon }} />;
+  }
   const key = star ? (star.icon ?? "fist") : "";
-  const G = star ? FOLDER_ICONS[key] ?? IconStar : pageGlyph(page);
+  const G = key
+    ? (FOLDER_ICONS[key] ?? IconStar)
+    : page === "board"
+      ? (FOLDER_ICONS[boardIcon ?? ""] ?? IconFolder)
+      : pageGlyph(page);
   return <span className={"ex-tab-glyph" + (key === "fist" ? " is-fist" : "")} aria-hidden="true"><G width={14} height={14} /></span>;
 }
 
 export function TabStrip(): ReactNode {
   useTabTitleTick(); // 15s 节拍：数据快照晚于开 tab 时，实体名自动升级
   const { tabs, activeId } = useExplorerTabs();
+  /* 插件页图标由插件注册时提供；OnePage 标签用当前打开的板自己的 icon。 */
+  const pluginTabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
+  const pluginIcons = useMemo(() => new Map(pluginTabs.map((t) => [t.pageKey, t.iconSvg ?? ""] as const)), [pluginTabs]);
+  const boardIcon = useMemo(() => {
+    if (!tabs.some((t) => t.page === "board")) return undefined;
+    try {
+      return activeBoard(loadBoard())?.icon;
+    } catch {
+      return undefined;
+    }
+  }, [tabs]);
   /* ① 横向滚动进度条（Layout 旧 SegmentedOverflow 的 indi/thumb 同款）：
      放不下（scrollWidth > clientWidth）才渲染，scrollLeft 比例驱动 thumb 宽/位；
      resize（ResizeObserver）+ scroll 双监听，开关标签后 tabs.length 变化再补一拍。 */
@@ -1022,7 +1065,7 @@ export function TabStrip(): ReactNode {
             onContextMenu={isHome ? undefined : (e) => openTabMenu(e, t)}
           >
             <button className="ex-tab-main" onClick={() => focusTab(t.id)}>
-              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><IconHome width={14} height={14} /></span> : <TabGlyph page={t.page} star={glyphOf(t)} />}
+              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><IconHome width={14} height={14} /></span> : <TabGlyph page={t.page} star={glyphOf(t)} boardIcon={boardIcon} pluginIcon={pluginIcons.get(t.page)} />}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (

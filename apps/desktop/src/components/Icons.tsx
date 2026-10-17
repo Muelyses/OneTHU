@@ -319,6 +319,8 @@ export const FOLDER_ICONS: Record<string, (p: SVGProps<SVGSVGElement>) => ReactE
   file: IconFile,
   search: IconSearch,
   info: IconInfo,
+  book: IconBook,
+  orb: (p) => <IconOrb {...p} />,
   card: IconCard,
   refresh: IconRefresh,
   external: IconExternal,

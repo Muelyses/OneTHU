@@ -6,7 +6,7 @@ import { Card, PageHead } from "../components/Layout.js";
 import { universalFetch } from "../lib/transport.js";
 import { ErrorLine } from "../components/Details.js";
 
-/** THUbook（thubook.help，VuePress 2 预渲染静态站）内嵌阅读器。
+/** THUBook（thubook.help，VuePress 2 预渲染静态站）内嵌阅读器。
  *  目录 = 抓各分组页预渲染侧边栏（带汉字标题，sitemap 只有拼音文件名）；
  *  正文 = <main> 提取（剔除 icon/svg 壳层、图片补全域名+限高）；
  *  x-frame-options: DENY → 不能 iframe。 */
@@ -220,7 +220,7 @@ export default function ThubookPage(): ReactNode {
 
   return (
     <>
-      <PageHead title="THUbook" meta="清华手册 · thubook.help" />
+      <PageHead title="THUBook" meta="清华手册 · thubook.help" />
       <style>{BODY_STYLE}</style>
       <div className="thubook-shell" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 10, height: "calc(100vh - 150px)" }}>
         <Card className="thubook-toc" style={{ overflowY: "auto", padding: 10 }}>

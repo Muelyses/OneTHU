@@ -34,7 +34,7 @@ const PAGES = [
   ["网络学堂", "?explorer-preview=page&page=learn"],
   ["信息", "?explorer-preview=page&page=info"],
   ["小搭", "?explorer-preview=page&page=xiaoda"],
-  ["THUbook", "?explorer-preview=page&page=thubook"],
+  ["THUBook", "?explorer-preview=page&page=thubook"],
   ["服务", "?explorer-preview=page&page=services"],
   ["收藏夹", "?explorer-preview=page&page=favs"],
   ["OnePage", "?explorer-preview=page&page=boards"],

@@ -635,7 +635,7 @@ export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
   // R20-C2：kfformula 公式先转 TeX 文本再 sanitize（sanitize 会剥 data-* 属性丢公式）
   let body = convertKfformulaToTex(opts.html ?? "");
   body = sanitizeForInlineDoc(body);
-  // 暗底主题：先剥掉官方正文里写死的颜色（上游 1861e4e 引入、与 THUbook 同源），
+  // 暗底主题：先剥掉官方正文里写死的颜色（上游 1861e4e 引入、与 THUBook 同源），
   // 由主题档样式接管配色——按解析出的底色亮度判定（isDarkBgColor），非明暗二元
   if (opts.theme && yktDocIsDark(opts.theme) && opts.stripColors) body = opts.stripColors(body);
   const hasEnc = needsEncryptedFont(body);

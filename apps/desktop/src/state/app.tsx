@@ -19,7 +19,7 @@ export type Page =
   | "mail" // 邮箱（IMAP 收 / SMTP 发，复用云日历凭据）
   | "cloud" // 清华云盘（Seafile Web API）
   | "gitlab" // 清华 GitLab（git.tsinghua.edu.cn REST API v4）
-  | "thubook" // THUbook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
+  | "thubook" // THUBook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
   | "xiaoda" // 清小搭（校园 AI 学伴；实验性第三方复刻页，纯 OneGUI）
   | "folder" // 用户收藏夹页（navParams.folderId 指向具体收藏夹）
   | "tasks" // 待办聚合页（UI/UX 改造 §2.2 M1：作业+预约+考试+余额的"今天该管的事"）

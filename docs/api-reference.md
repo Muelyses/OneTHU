@@ -651,7 +651,7 @@ const reply = (await res.json()).choices[0].message.content;
 | `learn-assignment-detail` / `learn-notice-detail` / `learn-file-detail` | 作业 / 通知 / 文件只读详情 | `courseId`、`itemId` |
 | `learn-forum-thread` | 讨论区话题 | `courseId`、`itemId`（话题）、`bqid`（板块） |
 | `learn-ykt-detail` | 雨课堂作业原生详情（只读，见 external-homework.md） | `ykt`：`{ leafTypeId, classroomId, externalUrl?, title?, deadline?, courseName?, kind? }` |
-| `trace` / `otherinfo` / `thos` / `mail` / `cloud` / `thubook` / `folder` | 寻迹 / 其他 Info 应用 / 在线服务 / 邮箱 / 云盘 / THUbook / 收藏夹 | `folder` 需 `folderId` |
+| `trace` / `otherinfo` / `thos` / `mail` / `cloud` / `thubook` / `folder` | 寻迹 / 其他 Info 应用 / 在线服务 / 邮箱 / 云盘 / THUBook / 收藏夹 | `folder` 需 `folderId` |
 | `gitlab` | 清华 GitLab | `gitlabProject`（项目数字 id）、`gitlabTab`（`code` / `issues` / `mrs` / `pipelines`）、`gitlabKind`（`issue` / `mr`）与 `gitlabIid`（打开该项目内的某条 Issue 或合并请求） |
 
 插件页签的 pageKey 由 `plugin:<插件id>:<页签id>` 构成，插件注册的收藏原子深链即指向

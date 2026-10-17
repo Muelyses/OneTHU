@@ -354,7 +354,13 @@ html:root .free-item.is-selected { z-index: 100; }
 html:root .free-toolbar { top: 30px; bottom: auto; left: var(--og-space-2); right: var(--og-space-2); width: max-content; max-width: calc(100% - 16px); flex-wrap: wrap; z-index: 5; background: var(--og-surface-overlay); border: 1px solid var(--og-line-2); box-shadow: var(--og-elev-menu); }
 html:root .board-viewport-tools { position: fixed; z-index: var(--og-z-board-tools); bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--og-space-1); padding: var(--og-space-2); max-width: calc(100vw - 24px); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); }
 .board-tool-divider { align-self: stretch; width: 1px; background: var(--og-line-2); margin: var(--og-space-1); }
-html:root .board-viewport-tools .free-pen-panel { position: absolute; bottom: calc(100% + 12px); right: 0; background: var(--og-surface-overlay); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-control); padding: var(--og-space-2); display: flex; width: max-content; }
+html:root .board-viewport-tools .free-pen-panel { position: absolute; bottom: calc(100% + var(--og-space-3)); right: 0; z-index: 1; display: flex; align-items: center; gap: var(--og-space-2); width: max-content; padding: var(--og-space-2) var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-toolbar { position: static; top: auto; right: auto; display: flex; align-items: center; gap: var(--og-space-2); padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+html:root .board-viewport-tools .free-pen-panel .board-pen-swatch { width: var(--og-space-6); height: var(--og-space-6); border: 2px solid var(--og-line-2); border-radius: var(--og-radius-full); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-swatch.is-on { border-color: var(--og-content-1); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-act { padding: var(--og-space-1) var(--og-space-2); border-radius: var(--og-radius-sm); color: var(--og-content-2); font-size: var(--og-text-label); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-act:hover:not(:disabled) { background: var(--og-hover); color: var(--og-content-1); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-act:disabled { color: var(--og-content-3); }
 html:root .workbench-board-head { position: relative; z-index: var(--og-z-sticky); }
 html:root.is-phone .board-viewport-tools { bottom: calc(var(--og-board-mobile-tool-bottom) + env(safe-area-inset-bottom)); }
 html:root.is-phone .home-services-widget { grid-template-columns: minmax(0, 1fr); }
@@ -411,6 +417,18 @@ html:root .explorer-panel:is(.is-home-canvas, .is-onepage-canvas),
 html:root .freeboard { overscroll-behavior: auto; }
 
 /* Add-widget picker (right-click blank and the ＋ button share it): the search field
-   keeps its control height and the preview grid owns the remaining scroll area. */
+   keeps its control height, sections scroll inside one pane, and the sheet is draggable. */
 html:root .add-overview > .og-input { flex: 0 0 auto; }
-html:root .add-overview .add-grid { flex: 1 1 auto; min-height: 0; }
+html:root .add-overview .add-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--og-space-3); padding-bottom: var(--og-space-2); }
+html:root .add-overview .add-scroll .add-grid { flex: none; min-height: 0; overflow: visible; }
+html:root .add-overview .add-section { display: flex; flex-direction: column; gap: var(--og-space-2); }
+html:root .add-overview .add-section-title { color: var(--og-content-2); font-size: var(--og-text-label); font-weight: var(--og-weight-medium); padding: 0 var(--og-space-1); }
+html:root .add-overview .free-add-list { max-height: none; overflow: visible; }
+html:root .add-drawer { height: var(--sheet-h, 50vh); }
+html:root .add-drawer.is-detail { height: var(--sheet-h, 60vh); }
+html:root .add-drawer.is-tall { height: var(--sheet-h, 86dvh); }
+html:root .add-drawer.is-detail.is-tall { height: var(--sheet-h, 86dvh); }
+
+/* Plugin tab glyphs (page-declared SVG) align with the built-in 14px tab icons. */
+html:root .ex-tab-plugin-glyph { display: inline-flex; align-items: center; justify-content: center; width: var(--og-icon-sm); height: var(--og-icon-sm); }
+html:root .ex-tab-plugin-glyph svg { width: 100%; height: 100%; }

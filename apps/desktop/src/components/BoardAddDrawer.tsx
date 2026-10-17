@@ -31,6 +31,8 @@ import { haptic } from "../lib/haptics.js";
 const CLOSE_MS = 200;
 /** 下滑关闭阈值：超过抽屉高度的 1/4 或速度够快就关。 */
 const DRAG_CLOSE_PX = 96;
+/** 常用组：与旧「右键添加」列表一致（便笺在最前，用户点名不能丢）。 */
+const QUICK_IDS = ["custom:note", "text-title", "text-label", "divider"] as const;
 
 /** 单张预览（总览卡片与自由控制组件的展开态用它）。 */
 function WidgetPreview({ def, renderer, scale }: { def: WidgetDef; renderer?: WidgetRenderer; scale: number }): ReactNode {
@@ -90,7 +92,9 @@ export function BoardAddDrawer({
   /** 展开态选中的档位下标（滑动或点选都会更新）。 */
   const [tierIndex, setTierIndex] = useState(0);
   const [dragY, setDragY] = useState(0);
-  const dragRef = useRef<{ y: number } | null>(null);
+  /** 抽屉拉开到高位（拖过一半高度）后保持；再往下拖可以收回半高或关掉。 */
+  const [tall, setTall] = useState(false);
+  const dragRef = useRef<{ y: number; h: number; dy: number } | null>(null);
   /** 确认键的按下点（判定"滑动结束在按钮上"）与一次性闸门（指针路径与 click 路径只生效一次）。 */
   const pressRef = useRef<{ x: number; y: number; id: number } | null>(null);
   const firedRef = useRef(false);
@@ -166,6 +170,7 @@ export function BoardAddDrawer({
     /* 关：先播退场再摘节点（否则会"啪"地消失）。 */
     setExpanded(null);
     setLeaving(true);
+    setTall(false);
     const t = window.setTimeout(() => {
       setShown(false);
       setLeaving(false);
@@ -293,6 +298,11 @@ export function BoardAddDrawer({
   const matches = (s: string): boolean => !q || s.toLowerCase().includes(q);
   const shownDefs = defs.filter((d) => matches(d.title + " " + d.id + " " + d.description));
   const shownExtras = extras.filter((x) => matches(x.title + " " + x.description));
+  /* 常用按 QUICK_IDS 的顺序排（便笺第一——用户点名不能丢），其余保留目录顺序。 */
+  const quickDefs = QUICK_IDS
+    .map((id) => shownDefs.find((d) => d.id === id))
+    .filter((d): d is WidgetDef => Boolean(d));
+  const restDefs = shownDefs.filter((d) => !(QUICK_IDS as readonly string[]).includes(d.id));
   /** 确认（添加 / 修改大小）：指针路径与 click 路径共用，400ms 内只生效一次。 */
   const activate = (fromPointer: boolean): void => {
     if (!def || firedRef.current) return;
@@ -307,24 +317,53 @@ export function BoardAddDrawer({
   };
 
   const onHandleDown = (e: React.PointerEvent): void => {
-    dragRef.current = { y: e.clientY };
+    const h = drawerRef.current?.getBoundingClientRect().height ?? 0;
+    dragRef.current = { y: e.clientY, h, dy: 0 };
     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* 有窗口监听兜底 */ }
   };
   const onHandleMove = (e: React.PointerEvent): void => {
     const d = dragRef.current;
     if (!d) return;
-    setDragY(Math.max(0, e.clientY - d.y));
+    const dy = e.clientY - d.y;
+    d.dy = dy;
+    /* 往下拖先跟手（超过阈值就关），往上拖把抽屉拉高——不再只有“往下拖会关”一条方向。 */
+    setDragY(Math.max(0, dy));
+    const next = Math.max(260, Math.min(Math.round(window.innerHeight * 0.92), Math.round(d.h - dy)));
+    drawerRef.current?.style.setProperty("--sheet-h", next + "px");
+    setTall(next > window.innerHeight * 0.62);
   };
   const onHandleUp = (): void => {
-    const moved = dragY;
+    const d = dragRef.current;
     dragRef.current = null;
-    if (moved > DRAG_CLOSE_PX) {
-      setDragY(0);
+    const dy = d?.dy ?? 0;
+    drawerRef.current?.style.removeProperty("--sheet-h");
+    setDragY(0);
+    if (dy > DRAG_CLOSE_PX) {
+      setTall(false);
       onClose();
-    } else {
-      setDragY(0);
     }
   };
+
+  /** 一张组件缩略图卡：点击展开档位，展开时从卡片位置飞过去。 */
+  const renderCard = (d: WidgetDef): ReactNode => (
+    <button
+      key={d.id}
+      type="button"
+      className="add-card"
+      data-widget-option={d.id}
+      onClick={(e) => {
+        const card = e.currentTarget as HTMLElement;
+        const name = card.querySelector(".add-card-name");
+        const box = card.querySelector(".add-preview-box");
+        if (name && box) flyRef.current = { name: name.getBoundingClientRect(), box: box.getBoundingClientRect() };
+        setTierIndex(tierIndexOf(d, d.defaultSize));
+        setExpanded(d.id);
+      }}
+    >
+      <span className="add-card-name">{d.title}</span>
+      <WidgetPreview def={d} renderer={renderers[d.id]} scale={0.5} />
+    </button>
+  );
 
   /* portal 到 body：外壳里若有 transform/will-change 祖先，`position: fixed` 会退化成相对该祖先定位，
      页面一滚抽屉就跟着滚（霖 2026-10-11：上滑时"页面跟着动 + 抽屉多移一截"）。 */
@@ -336,7 +375,7 @@ export function BoardAddDrawer({
       {/* 遮罩：点抽屉外收回；编辑抽屉和确认按钮高于常驻导航，避免手机底栏拦住提交。 */}
       <div className="add-drawer-mask" data-add-mask="1" onClick={onClose} />
     <div
-      className={"add-drawer" + (leaving ? " is-out" : "") + (def ? " is-detail" : "")}
+      className={"add-drawer" + (leaving ? " is-out" : "") + (def ? " is-detail" : "") + (tall ? " is-tall" : "")}
       role="dialog"
       aria-label={mode === "resize" ? "改变大小" : "添加组件"}
       data-add-drawer="1"
@@ -417,39 +456,33 @@ export function BoardAddDrawer({
             <Btn variant="outline" onClick={onClose}>关闭</Btn>
           </div>
           <SearchField value={query} onChange={setQuery} placeholder="搜索组件" aria-label="搜索组件" />
-          <div className="add-grid" ref={gridRef}>
-            {shownDefs.map((d) => (
-              <button
-                key={d.id}
-                type="button"
-                className="add-card"
-                data-widget-option={d.id}
-                onClick={(e) => {
-                  /* 记下起点：卡片左上角的名称 + 卡身预览，展开时从它们飞过去。 */
-                  const card = e.currentTarget as HTMLElement;
-                  const name = card.querySelector(".add-card-name");
-                  const box = card.querySelector(".add-preview-box");
-                  if (name && box) flyRef.current = { name: name.getBoundingClientRect(), box: box.getBoundingClientRect() };
-                  /* 展开时默认落在推荐档位（用户滑动可改）。 */
-                  setTierIndex(tierIndexOf(d, d.defaultSize));
-                  setExpanded(d.id);
-                }}
-              >
-                <span className="add-card-name">{d.title}</span>
-                <WidgetPreview def={d} renderer={renderers[d.id]} scale={0.5} />
-              </button>
-            ))}
+          <div className="add-scroll" ref={gridRef}>
+            {quickDefs.length ? (
+              <section className="add-section" data-add-section="quick">
+                <div className="add-section-title">常用</div>
+                <div className="add-grid">{quickDefs.map(renderCard)}</div>
+              </section>
+            ) : null}
+            {shownExtras.length ? (
+              <section className="add-section" data-add-section="onepage">
+                <div className="add-section-title">OnePage 与组合</div>
+                <div className="free-add-list">
+                  {shownExtras.map((x) => (
+                    <Btn key={x.id} variant="ghost" size="sm" className="hs-detail-row" data-widget-option={x.id} titleAttr={x.description} onClick={x.pick}>
+                      {x.title}
+                    </Btn>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+            {restDefs.length ? (
+              <section className="add-section" data-add-section="all">
+                <div className="add-section-title">全部组件</div>
+                <div className="add-grid">{restDefs.map(renderCard)}</div>
+              </section>
+            ) : null}
+            {!shownDefs.length && !shownExtras.length ? <div className="hs-op-hint">没有找到组件</div> : null}
           </div>
-          {shownExtras.length ? (
-            <div className="free-add-list">
-              {shownExtras.map((x) => (
-                <Btn key={x.id} variant="ghost" size="sm" className="hs-detail-row" data-widget-option={x.id} titleAttr={x.description} onClick={x.pick}>
-                  {x.title}
-                </Btn>
-              ))}
-            </div>
-          ) : null}
-          {!shownDefs.length && !shownExtras.length ? <div className="hs-op-hint">没有找到组件</div> : null}
         </div>
       )}
       </div>

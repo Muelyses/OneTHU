@@ -37,7 +37,7 @@
 
 - `pnpm --filter @onethu/desktop typecheck` 通过；`pnpm build`（全仓）通过。
 - `pnpm guard:onegui` 通过（含 46 组语义色对比度；裸控件 243 → 236，未新增样式违规）。
-- `node tools/usability-browser-test.mjs`：**41 条浏览器断言通过，0 运行时错误**。覆盖：首页标题、编辑布局模式已移除、100% 适配、直接拖动/选中拉角/刷新持久、选中失焦（页头/画布空白）、右键与＋同一选择器且可搜索/可添加、待办滚轮交还页面、设置文案删除、真实壁纸下 clear 材质透光+模糊、对比度引擎读 `color(srgb …)`、标题板走玻璃材质、OH 三模式的创造/会话按钮可见性、胶囊指针/键盘回弹、900/390/320 三档无横向溢出、手机堆叠点选与浮条增高。
+- `node tools/usability-browser-test.mjs`：**50 条浏览器断言通过，0 运行时错误**。覆盖：首页标题、编辑布局模式已移除、100% 适配、直接拖动/选中拉角/刷新持久、选中失焦（页头/画布空白）、右键与＋同一选择器且分段齐全（常用含便笺第一 / OnePage 与组合 / 全部组件）可搜索、抽屉把手可上拉展开、笔色板三色+选中、待办滚轮交还页面、设置文案删除、真实壁纸下 clear 材质透光+模糊、对比度引擎读 `color(srgb …)`、标题板走玻璃材质、OH 三模式的创造/会话按钮可见性、胶囊指针/键盘回弹、标签图标映射与 OnePage 标签名/图标、900/390/320 三档无横向溢出、手机堆叠点选与浮条增高。
 - `node tools/theme-home-browser-test.mjs`：**80 条断言通过**（已改为直接拖动/选中拉角；手机点选后浮条重排）。
 - `tools/theme-home-model-test.mjs`：79 条主题注入/迁移断言通过。
 - 白板 model / size / fit / drag / edit / templates / legacy-merge / overlap-invariant / nav-bridge / deeplink / view 11 个护栏全部通过（`board-edit-test` 的抽屉遍历断言同步接受搜索后的 `shownDefs`）。
@@ -49,8 +49,8 @@
 ## 六、证据
 
 - [首页](home.png) · [壁纸 + 玻璃（含 首页 标题板）](glass.png) · [900](home-900.png) · [手机 390](home-390.png) · [320](home-320.png)
-- [统一的组件选择器（搜索 + 缩略图）](add-picker.png) · [手机堆叠选中浮条](phone-selected.png)
-- [浏览器断言报告](report.json)（41 checks / 0 errors）
+- [统一的组件选择器（分段 + 搜索 + 缩略图）](add-picker.png) · [笔色板](pen-palette.png) · [标签图标 / OnePage 名字](tabs.png) · [手机堆叠选中浮条](phone-selected.png)
+- [浏览器断言报告](report.json)（50 checks / 0 errors）
 
 ## 七、重跑
 
@@ -64,3 +64,14 @@ node tools/theme-home-browser-test.mjs
 node --import ./tools/ts-resolve-register.mjs tools/theme-home-model-test.mjs
 # 浏览器测试需要 Vite 在 5180（pnpm dev）
 ```
+
+## 八、第三轮反馈（2026-10-17 23:03）
+
+1. **组件选择器不许丢东西**：右键空白与「＋」的同一个抽屉恢复旧列表的分段——**常用**（便笺第一、大标题文字、文字标签、分隔线）、**OnePage 与组合**（文件夹 + 全部非系统 OnePage）、**全部组件**；搜索框跨段过滤。抽屉不再只有一张扁平网格，便笺 / OnePage 都不会被“整合”掉。
+2. **抽屉把手能拖了**：抓手支持向上拉高（最高 86dvh，松手吸到高位）、向下拉回半高；继续往下拖超过阈值关闭。此前只允许向下拖且到阈值才关，往上拖完全不动。
+3. **画笔墨色板**：去掉孤立的小 native color input，复用原三色板（墨黑 / 朱红 / 蓝）+ 撤销 / 清空，浮在底部工具条上方；间距与圆点尺寸走 OneGUI 令牌，不再挤成一团。
+4. **标签页图标与名字**：
+   - 页面标签图标改为与一级功能区（NAV）同一套：待办/课程/日程/寻迹/邮箱/云盘/GitLab/THUBook/清小搭/信息/生活/预约/选课/在线服务/其他 Info/OnePage 列表等，不再一律掉到文件夹图标。
+   - OnePage 标签显示**那块板自己的名字**（原来写死「白板」）与 **板自己的 icon**；`FOLDER_ICONS` 补上 book / orb，选中这两种 icon 的 OnePage 不再退化成文件夹。
+   - 插件标签使用插件注册的 `iconSvg`；`ex-tab-plugin-glyph` 统一到 16px 令牌尺寸。
+5. **THUbook → THUBook**：所有 UI 文案、导航名、页面标题、工具描述、文档与测试标签统一为 **THUBook**（文件/页面 id `ThubookPage` / `thubook` 保持不变）；OH Harness 子模块里的工具描述与 UA 也同步改名（子模块提交 `595e88c`）。

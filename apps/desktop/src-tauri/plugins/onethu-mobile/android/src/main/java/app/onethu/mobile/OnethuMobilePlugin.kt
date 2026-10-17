@@ -124,7 +124,7 @@ class OpenWebModalArgs {
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
     /** 应用当前是否深色主题（2026-09-20）：true 时对 WebView 开启「算法暗化」——
-     *  官方页（THUbook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
+     *  官方页（THUBook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
     var dark: Boolean = false
     /** Cookie 归属域（如 https://webvpn.tsinghua.edu.cn/）。空 = 用 url 的 origin。
      *  2026-09-20：此前硬编码成 pro.yuketang.cn，非雨课堂的官方页（在线服务/THOS）种不进去。 */

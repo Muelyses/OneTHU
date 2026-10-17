@@ -109,7 +109,7 @@
 | 在线服务 / THOS 服务大厅（含进行中/待办任务、**亲友入校报备**） | `info/ThosPage.tsx` | group（行政组；报备假期前置顶——P2 时间敏感项） |
 | 其他 Info 应用导航（门户应用目录，点击走系统浏览器） | `pages/OtherInfoPage.tsx` + `lib/infoApps.ts` | buried |
 | 个人信息 / 体测（`ProfileTab` `FitnessTab`，InfoPage tab；卫生成绩在 LifePage） | group（我的/行政） |
-| Thubook（`ThubookPage.tsx`） | group |
+| THUBook（`ThubookPage.tsx`） | group |
 
 **高级能力（标准模式不可见）**
 | 功能 | 分级 |
@@ -567,9 +567,9 @@ B3c 余项（勿丢）：
       才折进「详情」——HTTP 状态码 / TypeError / URL / fetch failed；"网络不通""未读满 5 个"这类人话不误判，
       否则等于把用户唯一看得懂的那行也拿走了）。
 - [x] 覆盖面：`ErrorNote`（所有页面错误态的总闸）改走拆分渲染，一处改动全网受益；
-      Thubook 两处 `HTTP <码>` 改成「人话：HTTP <码>」；设置页 5 处 `失败：<原始串>` 改用拆分器。
+      THUBook 两处 `HTTP <码>` 改成「人话：HTTP <码>」；设置页 5 处 `失败：<原始串>` 改用拆分器。
 - [x] 护栏 `tools/tech-details-test.mjs` 会**真跑一遍分类器**（5 个技术串 + 4 句人话），
-      并守住 Thubook 不再出现裸 HTTP 状态码（按 HTTP 出现次数与带人话的次数必须相等来判）。
+      并守住 THUBook 不再出现裸 HTTP 状态码（按 HTTP 出现次数与带人话的次数必须相等来判）。
 - [x] 全量文案改写产出对照表，归档 `docs/ui-copy-audit.md` 续篇，双人审定。
       · 2026-02 审定后同批落地：词表扩展与全部改写一次提交，扫描命中从 63 处（术语 42 / 语气 21）清到 0，另人工清出扫描范围外的 7 处用户可见文案；「原子」按你的定名统一改「收藏项」（只动文案，收藏行为不变）；语气按你的意见从「口语」收敛为「书面语但亲民」。
 

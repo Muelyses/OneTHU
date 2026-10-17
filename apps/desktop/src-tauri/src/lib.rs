@@ -4015,7 +4015,7 @@ async fn open_web_modal(app: tauri::AppHandle, url: String, dark: Option<bool>) 
     let _: serde_json::Value = handle
         .run_mobile_plugin_async(
             "openWebModal",
-            // dark：应用当前是否深色主题 → Kotlin 侧开「算法暗化」，让官方页（THUbook/
+            // dark：应用当前是否深色主题 → Kotlin 侧开「算法暗化」，让官方页（THUBook/
             // 在线服务）自带的黑字在深色下变白（2026-09-20 用户实录：字看不见）
             serde_json::json!({ "url": url, "dark": dark.unwrap_or(false) }),
         )

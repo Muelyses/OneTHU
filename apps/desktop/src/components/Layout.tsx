@@ -95,7 +95,7 @@ export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactN
   { page: "mail", label: "邮箱", icon: IconMail },
   { page: "cloud", label: "云盘", icon: IconCloud },
   { page: "gitlab", label: "GitLab", icon: IconGitLab },
-  { page: "thubook", label: "THUbook", icon: IconBook },
+  { page: "thubook", label: "THUBook", icon: IconBook },
   /* 清小搭（2026-10-15 用户点名「加入一级功能区程序坞」）：一级页，排在 thubook 之后——
      前八颗（程序坞默认球 = NAV.slice(0,8)）一颗不动，它作为第九颗出现在坞上；
      它是 homeSpheres 白名单（known）的一员，否则 sanitize 会把持久化的这颗球吃掉。 */

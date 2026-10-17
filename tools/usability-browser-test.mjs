@@ -43,15 +43,31 @@ try {
  const drawer=p.locator('.add-drawer');const pickerSearch=drawer.getByPlaceholder('搜索组件');
  const optionCount=await drawer.locator('.add-grid .add-card').count();
  check(await pickerSearch.count()===1,'right-click blank opens unified picker with search');
+ check((await drawer.locator('.add-section-title').allInnerTexts()).join('|')==='常用|OnePage 与组合|全部组件','picker keeps all sections');
+ check((await drawer.locator('[data-add-section="quick"] .add-card-name').first().innerText())==='便笺','note stays first in quick section');
+ check(await drawer.locator('[data-add-section="onepage"]').count()===1,'onePage and folder section kept');
  await pickerSearch.fill('分隔线');await p.waitForTimeout(150);
  check(await drawer.locator('.add-grid .add-card').count()===1&&await drawer.locator('[data-widget-option]').count()===1,'picker search filters widgets');
  const cardsBefore=await p.locator('.free-item').count();
  await drawer.locator('.add-grid .add-card').first().click();await p.waitForTimeout(150);
  await drawer.locator('[data-add-confirm]').click();await p.waitForTimeout(350);
  check(await p.locator('.free-item').count()===cardsBefore+1,'picker adds the chosen widget');
- await p.locator('.board-viewport-tools').getByRole('button',{name:'添加组件'}).click();await p.waitForSelector('.add-drawer[data-add-drawer]');
+ await p.locator('.board-viewport-tools').getByRole('button',{name:'添加组件'}).click();await p.waitForSelector('.add-drawer[data-add-drawer]');await p.waitForTimeout(500);
  check(await p.locator('.add-drawer').getByPlaceholder('搜索组件').count()===1&&await p.locator('.add-drawer').locator('.add-grid .add-card').count()===optionCount,'plus button opens the same picker');
+ const drawerEl=p.locator('.add-drawer');const h0=await drawerEl.evaluate(e=>e.getBoundingClientRect().height);
+ const grip=await p.locator('.add-drawer-grip').boundingBox();
+ await p.mouse.move(grip.x+grip.width/2,grip.y+4);await p.mouse.down();await p.mouse.move(grip.x+grip.width/2,grip.y-160,{steps:10});await p.mouse.up();await p.waitForTimeout(200);
+ const h1=await drawerEl.evaluate(e=>({h:e.getBoundingClientRect().height,tall:e.classList.contains('is-tall')}));
+ check(h1.h>h0+40&&h1.tall,'drawer grip expands the sheet');
+ await p.screenshot({path:`${out}/add-picker.png`});
  await p.locator('.add-drawer').getByRole('button',{name:'关闭'}).click();await p.waitForTimeout(250);
+ // Pen palette: three ink colors + undo/clear, floating above the tool bar.
+ await tools.getByRole('button',{name:'开启画笔'}).click();await p.waitForTimeout(250);
+ check(await p.locator('.free-pen-panel .board-pen-swatch').count()===3,'pen palette has three ink colors');
+ await p.locator('.free-pen-panel .board-pen-swatch').nth(1).click();await p.waitForTimeout(100);
+ check(await p.locator('.free-pen-panel .board-pen-swatch').nth(1).getAttribute('aria-pressed')==='true','pen palette selects ink color');
+ await p.screenshot({path:`${out}/pen-palette.png`});
+ await tools.getByRole('button',{name:'关闭画笔'}).click();await p.waitForTimeout(150);
  const carousel=p.locator('.free-item[data-widget="homework"] .hw-carousel');await carousel.scrollIntoViewIfNeeded();const cr=await carousel.boundingBox();await p.mouse.move(cr.x+cr.width/2,cr.y+50);
  let scroll=await p.evaluate(()=>window.scrollY);await p.mouse.wheel(0,300);await p.waitForTimeout(300);console.log('SCROLL',scroll,await p.evaluate(()=>({window:scrollY,nodes:[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&getComputedStyle(e).overflowY.match(/auto|scroll/)).map(e=>({cls:e.className,top:e.scrollTop,h:e.clientHeight,total:e.scrollHeight}))})));check(await p.evaluate(()=>window.scrollY)>scroll,'wheel over homework scrolls home down');
  scroll=await p.evaluate(()=>window.scrollY);await p.mouse.wheel(0,-250);await p.waitForTimeout(300);check(await p.evaluate(()=>window.scrollY)<scroll,'wheel scrolls home up');
@@ -70,6 +86,22 @@ try {
  for(const [name,show] of [['OH',true],['清小搭',false],['搜索',false]]){await p.locator('.ohx-modeswitch').getByRole('tab',{name,exact:true}).click();check((await p.locator('.dock-ops').getByRole('button',{name:'创造模式',exact:true}).count()>0)===show,'creative only OH '+name);check((await p.locator('.dock-ops').getByRole('button',{name:'新会话',exact:true}).count()>0)===show,'session actions only OH '+name);}
  await p.locator('.dock-ops').getByRole('button',{name:'收起',exact:true}).click();const capsule=p.locator('.ohx-capsule');const cb=await capsule.boundingBox();await p.mouse.move(cb.x+30,cb.y+cb.height/2);await p.mouse.down();await p.waitForTimeout(180);check(await capsule.evaluate(e=>getComputedStyle(e).transform)!=='none','capsule press scales');await p.mouse.up();check(await capsule.evaluate(e=>getComputedStyle(e).animationName)==='og-capsule-rebound','capsule release rebounds');await p.waitForTimeout(400);
  await p.locator('.dock-ops').getByRole('button',{name:'收起',exact:true}).click();await capsule.focus();await p.keyboard.press('Enter');check(await capsule.evaluate(e=>getComputedStyle(e).animationName)==='og-capsule-rebound','keyboard bounce');
+ // Tab glyphs follow 一级功能区 icons; OnePage tab shows its own name and icon.
+ await p.evaluate(()=>{
+   const key='onethu.board.v1';const doc=JSON.parse(localStorage.getItem(key));
+   doc.boards=doc.boards.filter(b=>b.id!=='board.test');
+   doc.boards.push({id:'board.test',name:'考研资料',icon:'book',kind:'user',cells:{portrait:[],landscape:[]}});
+   doc.activeBoardId='board.test';localStorage.setItem(key,JSON.stringify(doc));
+ });
+ await call(p,'/src/state/onePage.ts','openOnePage',['board.test']);
+ for(const page of ['tasks','mail','cloud','schedule','info','thubook','board'])await call(p,'/src/state/explorer.ts','openTab',[page,null,{}]);
+ await p.waitForTimeout(500);
+ const tabMap=await p.evaluate(()=>Object.fromEntries([...document.querySelectorAll('.ex-tab')].map(e=>[e.querySelector('.ex-tab-title')?.textContent,e.querySelector('.ex-tab-glyph')?.innerHTML])));
+ check(tabMap['考研资料']!==undefined,'board tab shows the OnePage name');
+ check(tabMap['考研资料']===tabMap['THUBook'],'board tab uses its OnePage icon');
+ const infoTitle=Object.keys(tabMap).find((k)=>k.startsWith('信息'));
+ check(tabMap['待办']!==tabMap['邮箱']&&tabMap['课表']!==tabMap['邮箱']&&!!infoTitle&&tabMap[infoTitle]!==tabMap['邮箱'],'page tabs use distinct nav icons');
+ await p.screenshot({path:`${out}/tabs.png`});
  await p.close();
  for(const width of [900,390,320]){const m=await browser.newPage({viewport:{width,height:844},hasTouch:width<840,isMobile:width<840});await setup(m);await go(m,'home');const t=m.locator('.board-viewport-tools');check(await m.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'no page width overflow '+width);
  if(width<840){check(await m.locator('.free-item').evaluateAll(es=>es.every(e=>e.getBoundingClientRect().right<=innerWidth)),'stacked cards fit width '+width);const clockTime=m.locator('[data-item-id="home.clock"] .chrome-clock-time');await clockTime.scrollIntoViewIfNeeded();await clockTime.tap();await m.waitForTimeout(180);check(await m.locator('.free-item.is-selected').count()===1,'tap selects stacked card '+width);const old=(await board(m)).find(i=>i.id==='home.clock').rect;const toolbar=m.locator('.free-toolbar');await toolbar.getByRole('button',{name:'增高',exact:true}).click();await m.waitForTimeout(180);check((await board(m)).find(i=>i.id==='home.clock').rect.h>old.h,'phone toolbar resizes '+width);}

@@ -56,7 +56,7 @@ import { FolderIcon } from "./Icons.js";
 import { Card, Empty, NAV, PageHead } from "./Layout.js";
 import { PEN_COLORS, penKeyOf, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes } from "../state/boardPen.js";
 import { sanitizeUserHtml, widgetById as userWidgetById } from "../state/userext.js";
-import { BOARD_CANVAS_H, BoardPenLayer } from "./BoardPenLayer.js";
+import { BOARD_CANVAS_H, BoardPenLayer, BoardPenToolbar } from "./BoardPenLayer.js";
 import { useContextMenu, type CtxItem } from "./ContextMenu.js";
 import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
 import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
@@ -1013,11 +1013,17 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             <IconBtn label="放大" icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
             <IconBtn label={penOn ? "关闭画笔" : "开启画笔"} icon={<IconPen />} aria-pressed={penOn} onClick={() => {setPenOn(v => !v); setSelected(null);}} />
           </>}
-          {penOn ? <div className="free-pen-panel">
-            <input type="color" value={penColor} onChange={e => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />
-            <Btn variant="ghost" onClick={() => undoStroke(penKey)} disabled={!penStrokes.length}>撤销</Btn>
-            <Btn variant="ghost" onClick={() => clearStrokes(penKey)} disabled={!penStrokes.length}>清空</Btn>
-          </div> : null}
+          {penOn ? (
+            <div className="free-pen-panel">
+              <BoardPenToolbar
+                color={penColor}
+                onColor={setPenColor}
+                onUndo={() => undoStroke(penKey)}
+                onClear={() => clearStrokes(penKey)}
+                canUndo={penStrokes.length > 0}
+              />
+            </div>
+          ) : null}
         </div>, document.body) : null}
 
       </div>
@@ -1114,7 +1120,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               setAddAt(null);
             },
           },
-          ...loadBoard().boards.filter((b) => b.kind === "user").map((b) => ({
+          ...loadBoard().boards.filter((b) => b.kind !== "system").map((b) => ({
             id: "extra-onepage-" + b.id,
             title: b.name,
             description: "把这块 OnePage 钉到画布上（点击即打开）",

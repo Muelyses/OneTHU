@@ -85,3 +85,10 @@
 2. 做 `lib/catch/`：`types` + `extract`（data-vault-catch/data-ctx-atom/data-set-id/data-item-id/选区/文件）+ `gesture`（400ms/8px 竞技场、边缘滚动、取消回弹）+ `registry`。
 3. 逐步接 6 个高价值面：首页卡片、OH 搜索结果、邮件、网络学堂行、设置行、文件；菜单兜底同步上线。
 4. 暂存箱 dock/sheet（复用 `useSheetDrag`）与名片/NFC 动效放到 P2/P3。
+
+## 进展（2026-10-18 深夜）
+
+- ✅ 动效护栏 motion-test 已转绿（142 断言）；TabHost 恢复 `useNavDirection`/`data-dir`，页面转场方向回来。
+- ✅ 手势阈值统一第一刀：`lib/gestureArena.ts`（400ms/8px/6px + 单所有者），暂存箱拖动已接入。
+- ✅ NFC 接收端 ReaderMode + 发送端 HCE 代码已落地（真机双机验证仍缺）。
+- ⏳ `mobile_exit` 仍缺；旧手势面（白板/标签条/胶囊）尚未全部接入 gestureArena。

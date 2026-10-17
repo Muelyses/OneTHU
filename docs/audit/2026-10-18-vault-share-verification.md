@@ -31,6 +31,13 @@ live 关键结论：
 - 单文件分享链接 `/f/<token>/`，`dirents` 400，需 direct `/d/<token>/files/?p=/&dl=1`；
 - 撤销后链接拒绝、目录可递归删除。
 
+## Android 构建/模拟器（2026-10-18）
+
+- Kotlin 插件 + app 实编译 `BUILD SUCCESSFUL`；debug APK 打包成功。
+- 模拟器 `onethu-demo` 安装、冷启动进入登录页；返回键退出、无崩溃。
+- 运行手册：`docs/audit/2026-10-18-android-build-runbook.md`。
+- 模拟器无 NFC、未登录，NFC/暂存箱/云端 UI 仍待真机/真实账号。
+
 ## 仍待验证（不能声称完成）
 
 1. **NFC 真机双机**：Android ReaderMode 接收 + HCE NDEF 发送代码已落地；无设备，AID 路由/默认应用/分块读取未验证。

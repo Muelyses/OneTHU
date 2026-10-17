@@ -414,3 +414,11 @@
 - 修正后 `:tauri-plugin-onethu-mobile:compileDebugKotlin` 与 `:app:compileArmDebugKotlin`
   均 BUILD SUCCESSFUL，证明 HCE/ReaderMode/mobile_exit 代码至少能过 Kotlin 编译。
 - 真机/模拟器运行与双机 NFC 仍未验证。
+
+
+### 12.29 Android 实编译 + 模拟器冷启动（2026-10-18）
+
+- 用 NDK 27 + Gradle 实际编译：Kotlin 插件/app 均 BUILD SUCCESSFUL；debug APK 打包成功。
+- 模拟器 `onethu-demo` 安装并冷启动成功，进入登录页；返回键退出进程无崩溃。
+- 关键环境：必须显式导出 NDK linker/CC（详见 `docs/audit/2026-10-18-android-build-runbook.md`）。
+- 模拟器无 NFC，真机双机 NFC 与登录后功能仍未验证。

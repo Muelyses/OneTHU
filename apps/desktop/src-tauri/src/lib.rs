@@ -3361,7 +3361,7 @@ async fn nfc_share_text(app: tauri::AppHandle, text: String) -> Result<(), Strin
             .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
             .0
             .clone();
-        handle
+        let _: serde_json::Value = handle
             .run_mobile_plugin_async("nfcShareText", serde_json::json!({ "text": text }))
             .await
             .map_err(|e| e.to_string())?;

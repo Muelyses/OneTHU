@@ -68,6 +68,9 @@ try {
  check(await p.locator('.free-pen-panel .board-pen-swatch').nth(1).getAttribute('aria-pressed')==='true','pen palette selects ink color');
  await p.screenshot({path:`${out}/pen-palette.png`});
  await tools.getByRole('button',{name:'关闭画笔'}).click();await p.waitForTimeout(150);
+ // A note must exist before the wallpaper/glass section to prove its paper follows the material.
+ await p.mouse.dblclick(blank.x,blank.y);await p.waitForTimeout(300);
+ const note=p.locator('.free-item.is-note');check(await note.count()===1,'double-click blank creates a note');
  const carousel=p.locator('.free-item[data-widget="homework"] .hw-carousel');await carousel.scrollIntoViewIfNeeded();const cr=await carousel.boundingBox();await p.mouse.move(cr.x+cr.width/2,cr.y+50);
  let scroll=await p.evaluate(()=>window.scrollY);await p.mouse.wheel(0,300);await p.waitForTimeout(300);console.log('SCROLL',scroll,await p.evaluate(()=>({window:scrollY,nodes:[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&getComputedStyle(e).overflowY.match(/auto|scroll/)).map(e=>({cls:e.className,top:e.scrollTop,h:e.clientHeight,total:e.scrollHeight}))})));check(await p.evaluate(()=>window.scrollY)>scroll,'wheel over homework scrolls home down');
  scroll=await p.evaluate(()=>window.scrollY);await p.mouse.wheel(0,-250);await p.waitForTimeout(300);check(await p.evaluate(()=>window.scrollY)<scroll,'wheel scrolls home up');
@@ -81,6 +84,8 @@ try {
  // The 首页 title plate is a surface: it must use the same glass material as the topbar/cards.
  const plate=await p.locator('.workbench-board-head').evaluate(e=>{const c=getComputedStyle(e);return{bg:c.backgroundColor,blur:c.backdropFilter};});
  check(plate.bg.includes('0.3')&&plate.blur.includes('blur')&&plate.blur.includes('saturate'),'home title plate follows glass material');
+ const noteGlass=await note.evaluate(e=>{const c=getComputedStyle(e);return{bg:c.backgroundColor,bf:c.backdropFilter,inner:getComputedStyle(e.querySelector('.free-note')).backgroundColor};});
+ check(noteGlass.bg.includes('/ 0.3')&&noteGlass.bf.includes('blur')&&noteGlass.inner==='rgba(0, 0, 0, 0)','note paper follows glass material');
  await p.screenshot({path:`${out}/glass.png`});results.push({material,probe,plate});
  await go(p,'search');check(await p.locator('.dock-ops').getByRole('button',{name:'创造模式',exact:true}).count()===0,'search excludes creative');
  for(const [name,show] of [['OH',true],['清小搭',false],['搜索',false]]){await p.locator('.ohx-modeswitch').getByRole('tab',{name,exact:true}).click();check((await p.locator('.dock-ops').getByRole('button',{name:'创造模式',exact:true}).count()>0)===show,'creative only OH '+name);check((await p.locator('.dock-ops').getByRole('button',{name:'新会话',exact:true}).count()>0)===show,'session actions only OH '+name);}

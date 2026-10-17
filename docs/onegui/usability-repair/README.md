@@ -37,7 +37,7 @@
 
 - `pnpm --filter @onethu/desktop typecheck` 通过；`pnpm build`（全仓）通过。
 - `pnpm guard:onegui` 通过（含 46 组语义色对比度；裸控件 243 → 236，未新增样式违规）。
-- `node tools/usability-browser-test.mjs`：**50 条浏览器断言通过，0 运行时错误**。覆盖：首页标题、编辑布局模式已移除、100% 适配、直接拖动/选中拉角/刷新持久、选中失焦（页头/画布空白）、右键与＋同一选择器且分段齐全（常用含便笺第一 / OnePage 与组合 / 全部组件）可搜索、抽屉把手可上拉展开、笔色板三色+选中、待办滚轮交还页面、设置文案删除、真实壁纸下 clear 材质透光+模糊、对比度引擎读 `color(srgb …)`、标题板走玻璃材质、OH 三模式的创造/会话按钮可见性、胶囊指针/键盘回弹、标签图标映射与 OnePage 标签名/图标、900/390/320 三档无横向溢出、手机堆叠点选与浮条增高。
+- `node tools/usability-browser-test.mjs`：**52 条浏览器断言通过，0 运行时错误**。覆盖：首页标题、编辑布局模式已移除、100% 适配、直接拖动/选中拉角/刷新持久、选中失焦（页头/画布空白）、右键与＋同一选择器且分段齐全（常用含便笺第一 / OnePage 与组合 / 全部组件）可搜索、抽屉把手可上拉展开、笔色板三色+选中、便笺纸跟随玻璃材质、待办滚轮交还页面、设置文案删除、真实壁纸下 clear 材质透光+模糊、对比度引擎读 `color(srgb …)`、标题板走玻璃材质、OH 三模式的创造/会话按钮可见性、胶囊指针/键盘回弹、标签图标映射与 OnePage 标签名/图标、900/390/320 三档无横向溢出、手机堆叠点选与浮条增高。
 - `node tools/theme-home-browser-test.mjs`：**80 条断言通过**（已改为直接拖动/选中拉角；手机点选后浮条重排）。
 - `tools/theme-home-model-test.mjs`：79 条主题注入/迁移断言通过。
 - 白板 model / size / fit / drag / edit / templates / legacy-merge / overlap-invariant / nav-bridge / deeplink / view 11 个护栏全部通过（`board-edit-test` 的抽屉遍历断言同步接受搜索后的 `shownDefs`）。
@@ -49,8 +49,8 @@
 ## 六、证据
 
 - [首页](home.png) · [壁纸 + 玻璃（含 首页 标题板）](glass.png) · [900](home-900.png) · [手机 390](home-390.png) · [320](home-320.png)
-- [统一的组件选择器（分段 + 搜索 + 缩略图）](add-picker.png) · [笔色板](pen-palette.png) · [标签图标 / OnePage 名字](tabs.png) · [手机堆叠选中浮条](phone-selected.png)
-- [浏览器断言报告](report.json)（50 checks / 0 errors）
+- [统一的组件选择器（分段 + 搜索 + 缩略图）](add-picker.png) · [笔色板](pen-palette.png) · [标签图标 / OnePage 名字](tabs.png) · [便笺玻璃（亮色）](note-glass.png) · [便笺玻璃（深色）](note-glass-dark.png) · [手机堆叠选中浮条](phone-selected.png)
+- [浏览器断言报告](report.json)（52 checks / 0 errors）
 
 ## 七、重跑
 
@@ -75,3 +75,13 @@ node --import ./tools/ts-resolve-register.mjs tools/theme-home-model-test.mjs
    - OnePage 标签显示**那块板自己的名字**（原来写死「白板」）与 **板自己的 icon**；`FOLDER_ICONS` 补上 book / orb，选中这两种 icon 的 OnePage 不再退化成文件夹。
    - 插件标签使用插件注册的 `iconSvg`；`ex-tab-plugin-glyph` 统一到 16px 令牌尺寸。
 5. **THUbook → THUBook**：所有 UI 文案、导航名、页面标题、工具描述、文档与测试标签统一为 **THUBook**（文件/页面 id `ThubookPage` / `thubook` 保持不变）；OH Harness 子模块里的工具描述与 UA 也同步改名（子模块提交 `595e88c`）。
+
+## 九、便笺跟随玻璃材质（2026-10-17 23:41）
+
+便笺此前是唯一被玻璃皮肤显式排除的常驻面（`:not(.is-note)`），永远是不透光纸色。现在纸色也走材质轴：
+
+- 玻璃皮肤下 `.free-item.is-note` 的底色 = `color-mix(in srgb, var(--og-note-paper) var(--og-note-opacity), transparent)`，`--og-note-opacity` 直接取当前材质档（clear 30% / rich 60% / deep 74%，深色 `data-og-scheme=dark` 用 6%/14%/20%），并叠加 `backdrop-filter: var(--og-note-blur)`（与卡片同一档 blur + saturate）与材质阴影；内层 `.free-note` 透明，避免双重实底。
+- 纸色（黄/粉/蓝/绿）仍按便笺自身 tone 变化，但变成透光的有色玻璃；默认皮肤仍是实色纸，行为不变。
+- `prefers-reduced-transparency: reduce` 时便笺回实色纸、关闭 blur（`--og-note-opacity: 100%`）。
+- 文字/图标仍由 textContrast 引擎按实际合成底色取字色：亮色下深墨、深色主题下自动转白（实测 probe：dark 下 ink 切到 rgba(255,255,255,.95)）。
+- 回归：`usability-browser-test` 新增 2 条断言（双击空白建便笺、便笺纸透明度=材质档 + blur + 内层透明），总数 52。

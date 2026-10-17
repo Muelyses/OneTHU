@@ -4,6 +4,9 @@
  */
 [data-og-skin="glass"] {
   --og-material-opacity: 44%;
+  /* 便笺纸也走材质轴：同档透光 + 背景模糊（文字/图标仍由对比度引擎兜底）。 */
+  --og-note-opacity: var(--og-material-opacity);
+  --og-note-blur: var(--og-surface-blur);
   --og-material-overlay-opacity: 74%;
   --og-blur-1: 20px;
   --og-saturate: 155%;

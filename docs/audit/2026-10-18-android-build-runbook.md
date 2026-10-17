@@ -53,7 +53,7 @@ $ADB exec-out screencap -p > /tmp/onethu-emulator.png
 
 - Kotlin 编译：`BUILD SUCCESSFUL`（插件 + app）。
 - debug APK：`BUILD SUCCESSFUL`，universal APK 277MB。
-- 模拟器安装成功，`MainActivity` 冷启动成功，进入登录页（截图见本机 `/tmp/emulator-app2.png`）。
+- 模拟器安装成功，`MainActivity` 冷启动成功，进入登录页（截图 `docs/assets/android-emulator-login-2026-10-18.png`）。
 - 登录页按系统返回键 → App 进程退出、回桌面；无 `FATAL EXCEPTION`。
 - 模拟器没有 NFC 硬件，**无法验证 ReaderMode/HCE**；也未登录，无法验证暂存箱/云端 UI。
 

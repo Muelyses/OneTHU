@@ -119,7 +119,6 @@ try {
     return d.boxes.find((b) => b.id === d.activeId).items.length;
   });
   check(n2 === fileState.n, 'same file content is deduped by hash (not by name)');
-  /* 手机 390：长按（touch pointer）应启动拖动并出现落点，取消后回弹 */
   /* 碰一碰组合：暂存箱口令 + 个人名片一起编码；接收端可导入 */
   await p.evaluate(() => localStorage.setItem('onethu.cards.v1', JSON.stringify({
     v: 1,
@@ -142,6 +141,7 @@ try {
   check(touch.imported.ok && touch.imported.vault === true, 'touch code can be imported by receiver');
 
   check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
+
   await p.setViewportSize({ width: 390, height: 844 });
   await p.waitForTimeout(600);
   check(await p.locator('.vault-dock').isVisible(), 'phone shows persistent vault dock (outside bottom bar grid)');

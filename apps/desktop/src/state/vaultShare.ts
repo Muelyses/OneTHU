@@ -286,3 +286,13 @@ export async function revokeShare(payload: VaultSharePayload): Promise<boolean> 
   await adapter.revoke(payload.cloud);
   return true;
 }
+
+/** 是否允许无云盘时生成 inline 口令：正式用户必须连云盘；预览/开发模式保留本地调试能力。 */
+export function allowInlineShare(): boolean {
+  try {
+    if (new URLSearchParams(location.search).has("explorer-preview")) return true;
+    return localStorage.getItem("onethu.dev.inlineShare") === "1";
+  } catch {
+    return false;
+  }
+}

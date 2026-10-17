@@ -16,7 +16,7 @@ import {
   activeVault, addToVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
   setActiveVault, subscribeVault, VAULT_TYPE_LABEL, vaultSnapshot, type VaultItem,
 } from "../../state/vault.js";
-import { decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
+import { allowInlineShare, decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { nfcReadText, nfcShareText, nfcStatus } from "../../lib/nfc.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
@@ -104,6 +104,10 @@ export function VaultPage(): ReactNode {
   }, [box.id, box.name]);
 
   const makeTouch = useCallback(async (): Promise<void> => {
+    if (!cloudReady && !allowInlineShare()) {
+      showToast("本版本要求先连接清华云盘，再生成碰一碰口令");
+      return;
+    }
     const orgs = orgOptions();
     const f = await openFormModal("碰一碰 / 组合分享", [
       { key: "vault", label: "带上当前暂存箱", kind: "select", options: [{ value: "yes", label: "是" }, { value: "no", label: "否" }] },
@@ -200,6 +204,10 @@ export function VaultPage(): ReactNode {
   }, []);
 
   const share = useCallback(async (): Promise<void> => {
+    if (!cloudReady && !allowInlineShare()) {
+      showToast("本版本要求先连接清华云盘，再生成分享口令");
+      return;
+    }
     setBusy(true);
     try {
       const r = await mintShareCode(box);
@@ -242,7 +250,7 @@ export function VaultPage(): ReactNode {
             <Btn variant="ghost" onClick={() => void receiveTouch()} disabled={busy}>收碰一碰</Btn>
             <Btn className={nfcReading ? "vault-nfc-reading" : undefined} variant="ghost" onClick={() => void readNfc()} disabled={busy || !nfc.available} titleAttr={nfc.available ? (nfc.enabled ? "贴一下 NFC 标签或对方手机" : "NFC 未开启：到系统设置打开") : "NFC 仅 Android 手机可用"}>{nfcReading ? "贴近中…" : "NFC 接收"}</Btn>
             <Text slot="micro" tone="faint">{nfc.available ? (nfc.enabled ? "NFC 可用" : "NFC 未开启") : "NFC 仅手机端"}</Text>
-            <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0}>生成口令</Btn>
+            <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0} titleAttr={cloudReady ? "生成云分享口令" : "先连接清华云盘"}>生成口令</Btn>
             <Text slot="micro" tone="faint">{cloudReady ? "云分享" : "本地口令"}</Text>
           </div>
         </div>

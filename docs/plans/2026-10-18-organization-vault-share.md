@@ -380,3 +380,11 @@
   现补 `mobileExit`（finishAffinity）、默认权限 `allow-mobile-exit`、命令 permission 文件。
 - 新增 `tools/mobile-nav-test.mjs` 4/4：前端命令 / Kotlin finish / default 权限 / 命令 permission 四方一致。
 - 真机返回键验证仍待做（无设备）。
+
+
+### 12.25 扫码识别放大兜底（2026-10-18）
+
+- decodeQrFile 先原图识别，失败后 2x 放大（≤2048px）+ 白底再识别；仍识别不到就返回空，
+  8s 超时不再无限转圈。二维码展示尺寸提到 300（390 手机宽度内）。
+- Chromium 无头对高密度 ONTOUCH1 截图仍识别不到，自动回归未纳入；真机相机/截图待验证。
+- mobile_exit 命令四方位（前端/Kotlin/default 权限/命令 permission）已有护栏 4/4。

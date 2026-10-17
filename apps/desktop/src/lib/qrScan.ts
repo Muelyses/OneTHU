@@ -17,13 +17,34 @@ export async function decodeQrFile(file: File): Promise<string | null> {
   const bitmap = await createImageBitmap(file);
   try {
     const detector = new Ctor({ formats: ["qr_code"] });
-    /* 某些 WebView 的 detect 可能长时间不 resolve；UI 不能无限转圈。 */
-    const codes = await Promise.race([
-      detector.detect(bitmap),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
-    ]);
-    if (codes === null) throw new Error("二维码识别超时：换一张更清晰、留白更多的图再试");
-    return codes[0]?.rawValue ?? null;
+    const detect = async (source: ImageBitmapSource): Promise<string | null> => {
+      const codes = await Promise.race([
+        detector.detect(source),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+      ]);
+      return codes === null ? null : (codes[0]?.rawValue ?? null);
+    };
+    const direct = await detect(bitmap);
+    if (direct) return direct;
+    /* 截图/多屏截图里的二维码常太小：2 倍放大 + 白底再识别一次。 */
+    if (typeof document !== "undefined") {
+      const scale = 2;
+      const w = Math.min(2048, bitmap.width * scale);
+      const h = Math.min(2048, bitmap.height * scale);
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(bitmap, 0, 0, w, h);
+        const up = await detect(canvas);
+        if (up) return up;
+      }
+    }
+    return null;
   } finally {
     bitmap.close();
   }

@@ -302,7 +302,7 @@ export function VaultPage(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">把这段口令发给好友，或在另一台 OneTHU 里「导入口令」：</Text>
             <code className="vault-share-code">{code}</code>
-            <div className="vault-qr"><QRCodeSVG value={code} size={240} /></div>
+            <div className="vault-qr"><QRCodeSVG value={code} size={300} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(code).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setCode("")}>收起</Btn>
@@ -335,7 +335,7 @@ export function VaultPage(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">碰一碰 / 组合口令（NFC 接入前用这段口令或二维码代替）：</Text>
             <code className="vault-share-code">{touchCode}</code>
-            <div className="vault-qr"><QRCodeSVG value={touchCode} size={240} /></div>
+            <div className="vault-qr"><QRCodeSVG value={touchCode} size={300} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(touchCode).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => void shareNfc()} disabled={!nfc.available || !nfc.enabled}>NFC 发送</Btn>

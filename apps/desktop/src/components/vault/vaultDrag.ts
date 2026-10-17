@@ -8,6 +8,7 @@
  * 拖动中在 body 上挂一个跟随指针的 ghost，并显示 [data-vault-drop] 目标；
  * 松手时命中目标 → addToVault + 吸入动画；未命中 → 回弹消失。
  */
+import { GESTURE, claimGesture, releaseGesture } from "../../lib/gestureArena.js";
 import { addToVault, type VaultCatch } from "../../state/vault.js";
 import { showToast } from "../../state/toast.js";
 
@@ -100,6 +101,7 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
     ghost = null;
   }
   const wasHover = Boolean(target);
+  releaseGesture("vault-drag");
   setDrag({ active: false, hover: false, title: "" });
   if (!commit || !cat) return;
   if (!wasHover) {
@@ -144,6 +146,7 @@ export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): 
   ghost.append(badge, title);
   document.body.appendChild(ghost);
   document.body.classList.add(BODY_CLASS);
+  claimGesture("vault-drag");
   setDrag({ active: true, hover: false, title: cat.title });
   paint(x, y);
   window.addEventListener("pointermove", onMove, { capture: true });
@@ -188,15 +191,15 @@ export function installVaultDragSources(): () => void {
     if (e.pointerType === "mouse") {
       /* 鼠标：移动阈值触发，不拦截点击本身 */
     } else {
-      pending.timer = window.setTimeout(arm, 320);
+      pending.timer = window.setTimeout(arm, GESTURE.longPressMs);
     }
   };
   const onPointerMove = (e: PointerEvent): void => {
     if (!pending || e.pointerId !== pending.pointerId) return;
     if (pending.armed) return;
     const dist = Math.hypot(e.clientX - pending.x, e.clientY - pending.y);
-    if (e.pointerType === "mouse" && dist > 6) arm();
-    else if (dist > 10) clear(); // 手指先滑动 = 页面滚动，不拖
+    if (e.pointerType === "mouse" && dist > GESTURE.mouseSlop) arm();
+    else if (dist > GESTURE.longPressSlop) clear(); // 手指先滑动 = 页面滚动，不拖
   };
   const onUp = (): void => clear();
   document.addEventListener("pointerdown", onDown, true);

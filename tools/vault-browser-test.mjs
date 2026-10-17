@@ -153,7 +153,7 @@ try {
     const y = r.top + r.height / 2;
     const ev = (type, cx, cy, extra = {}) => new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, buttons: type === 'pointerup' ? 0 : 1, clientX: cx, clientY: cy, ...extra });
     el.dispatchEvent(ev('pointerdown', x, y));
-    await new Promise((r2) => setTimeout(r2, 400));
+    await new Promise((r2) => setTimeout(r2, 520));
     window.dispatchEvent(ev('pointermove', x + 36, y + 70));
     await new Promise((r2) => setTimeout(r2, 260));
     const drop = document.querySelector('[data-vault-drop]');

@@ -18,6 +18,7 @@ import {
 } from "../../state/vault.js";
 import { decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
+import { nfcReadText, nfcStatus } from "../../lib/nfc.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
@@ -60,6 +61,7 @@ export function VaultPage(): ReactNode {
   const [fileHot, setFileHot] = useState(false);
   const [cloudReady, setCloudReady] = useState(false);
   const [cloudChecked, setCloudChecked] = useState(false);
+  const [nfc, setNfc] = useState<{ available: boolean; enabled: boolean }>({ available: false, enabled: false });
   const [shareInfo, setShareInfo] = useState<VaultSharePayload | null>(null);
   const [touchCode, setTouchCode] = useState("");
 
@@ -70,6 +72,7 @@ export function VaultPage(): ReactNode {
     if (last) void decodeShareAsync(last).then((d) => setShareInfo(d.payload ?? null));
   }, [box.id]);
   useEffect(() => { void installVaultCloudAdapter().then((ok) => { setCloudReady(ok); setCloudChecked(true); }); }, []);
+  useEffect(() => { void nfcStatus().then((s) => setNfc({ available: s.available, enabled: s.enabled })); }, []);
 
   const addStaged = useCallback((files: StagedFile[]): void => {
     let ok = 0;
@@ -141,6 +144,29 @@ export function VaultPage(): ReactNode {
     }
   }, []);
 
+  const readNfc = useCallback(async (): Promise<void> => {
+    setBusy(true);
+    try {
+      const text = (await nfcReadText()).trim();
+      if (!text) { showToast("NFC 没有读到内容"); return; }
+      if (text.startsWith("ONTOUCH1.")) {
+        const r = await importTouchCode(text);
+        showToast(r.ok ? "碰一碰内容已接收" : r.reason ?? "碰一碰口令无法导入");
+        return;
+      }
+      if (text.startsWith("ONV1.") || text.startsWith("ONV2.")) {
+        const r = await importShareCodeAsCurrent(text);
+        showToast(r.ok ? `已导入 ${r.imported ?? 0} 项` : r.reason ?? "口令无法导入");
+        return;
+      }
+      showToast("这张 NFC 不是 OneTHU 口令");
+    } catch (e) {
+      showToast(`NFC 读取失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, []);
+
   const importCode = useCallback(async (): Promise<void> => {
     const f = await openFormModal("导入分享口令", [
       { key: "code", label: "口令（ONV1.…）", kind: "textarea", required: true },
@@ -197,6 +223,8 @@ export function VaultPage(): ReactNode {
             <Btn variant="outline" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
             <Btn variant="ghost" onClick={() => void makeTouch()} disabled={busy}>碰一碰组合</Btn>
             <Btn variant="ghost" onClick={() => void receiveTouch()} disabled={busy}>收碰一碰</Btn>
+            <Btn variant="ghost" onClick={() => void readNfc()} disabled={busy || !nfc.available} titleAttr={nfc.available ? (nfc.enabled ? "贴一下 NFC 标签或对方手机" : "NFC 未开启：到系统设置打开") : "NFC 仅 Android 手机可用"}>NFC 接收</Btn>
+            <Text slot="micro" tone="faint">{nfc.available ? (nfc.enabled ? "NFC 可用" : "NFC 未开启") : "NFC 仅手机端"}</Text>
             <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0}>生成口令</Btn>
             <Text slot="micro" tone="faint">{cloudReady ? "云分享" : "本地口令"}</Text>
           </div>

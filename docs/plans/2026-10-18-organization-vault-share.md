@@ -221,3 +221,15 @@
 - `vaultCloud.upload`：文件条目先按 hash 前缀上传到 `/Vault/shares/<id>/files/`，清单写相对路径；
   优先分享整个目录（接收端既拿清单也拿文件），目录分享被拒时退化为分享 manifest 文件。
 - 接收端 `resolve` 按 manifestName 读清单；`cargo check`/typecheck 通过，真实云盘目录分享仍待 live。
+
+
+### 12.6 手势竞技场 + NFC 接收（2026-10-18）
+
+- `lib/gestureArena.ts`：统一通用长按阈值 400ms / 手抖 8px / 鼠标 6px，单所有者 claim/release；
+  暂存箱拖动已改用该阈值；`tools/gesture-arena-test.mjs` 9/9。旧面（白板 500ms、标签条 300ms、
+  胶囊 450ms）仍各自为政，后续批次逐个接入。
+- NFC 接收（Android）：`onethu-mobile` Kotlin 增加 `nfcAvailable`/`nfcReadTag`（ReaderMode，
+  10s 超时，NDEF 文本/URI 解析），manifest 加 NFC 权限/feature；Rust 增 `nfc_available`/
+  `nfc_read_tag` 包装命令；`lib/nfc.ts` + 暂存箱「NFC 接收」按钮：读到 ONTOUCH1/ONV 直接导入。
+  桌面端恒不可用；**发送端 HCE 服务**与真机验证仍待做。
+- 构建：cargo check / typecheck / Vite build / guard / docs 通过；vault 30/30。

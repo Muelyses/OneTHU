@@ -26,6 +26,11 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.nfc.Ndef
+import android.nfc.NdefRecord
+import android.nfc.NfcAdapter
+import android.nfc.Tag
+import java.nio.charset.StandardCharsets
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Handler
@@ -1843,6 +1848,78 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         } catch (e: Exception) {
             invoke.reject(e.message ?: "读取系统取色失败")
         }
+    }
+
+    /* ── 碰一碰（NFC ReaderMode）──
+     * 只读标签/对方 HCE 模拟的 NDEF 文本；读取完自动关 ReaderMode。
+     * 发送端 HCE 服务后续批次接入；当前先把「接收」跑通。 */
+    @Command
+    fun nfcAvailable(invoke: Invoke) {
+        val adapter = NfcAdapter.getDefaultAdapter(activity)
+        val ret = JSObject()
+        ret.put("available", adapter != null)
+        ret.put("enabled", adapter?.isEnabled == true)
+        invoke.resolve(ret)
+    }
+
+    @Command
+    fun nfcReadTag(invoke: Invoke) {
+        val adapter = NfcAdapter.getDefaultAdapter(activity)
+        if (adapter == null) {
+            invoke.reject("这台设备没有 NFC")
+            return
+        }
+        if (!adapter.isEnabled) {
+            invoke.reject("NFC 未开启：到系统设置里打开 NFC 再碰")
+            return
+        }
+        val handler = Handler(Looper.getMainLooper())
+        var done = false
+        val flags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or
+            NfcAdapter.FLAG_READER_NFC_F or NfcAdapter.FLAG_READER_NFC_V or
+            NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+        val timeout = Runnable {
+            if (done) return@Runnable
+            done = true
+            try { adapter.disableReaderMode(activity) } catch (_: Exception) {}
+            invoke.reject("超时：10 秒内没有读到 NFC 内容")
+        }
+        val callback = NfcAdapter.ReaderCallback { tag: Tag ->
+            if (done) return@ReaderCallback
+            done = true
+            handler.post {
+                try { adapter.disableReaderMode(activity) } catch (_: Exception) {}
+                try {
+                    val text = ndefTextOf(tag)
+                    if (text.isNullOrBlank()) invoke.reject("这个 NFC 标签没有可读文本（需要 NDEF 文本/URI）")
+                    else invoke.resolve(JSObject().put("text", text))
+                } catch (e: Exception) {
+                    invoke.reject(e.message ?: "读取 NFC 标签失败")
+                }
+            }
+        }
+        adapter.enableReaderMode(activity, callback, flags, null)
+        handler.postDelayed(timeout, 10_000)
+    }
+
+    private fun ndefTextOf(tag: Tag): String? {
+        val ndef = Ndef.get(tag) ?: return null
+        val msg = ndef.cachedNdefMessage ?: ndef.ndefMessage ?: return null
+        for (rec in msg.records) {
+            if (rec.tnf == NdefRecord.TNF_WELL_KNOWN && rec.type.contentEquals(NdefRecord.RTD_TEXT)) {
+                val payload = rec.payload
+                if (payload.isEmpty()) continue
+                val status = payload[0].toInt() and 0xFF
+                val langLen = status and 0x3F
+                val start = 1 + langLen
+                if (start > payload.size) continue
+                return String(payload, start, payload.size - start, StandardCharsets.UTF_8)
+            }
+            if (rec.tnf == NdefRecord.TNF_ABSOLUTE_URI || rec.tnf == NdefRecord.TNF_WELL_KNOWN && rec.type.contentEquals(NdefRecord.RTD_URI)) {
+                return String(rec.payload, StandardCharsets.UTF_8)
+            }
+        }
+        return null
     }
 
     /* ── 检查更新：把下载好的安装包交给系统安装页 ──

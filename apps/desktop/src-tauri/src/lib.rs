@@ -3331,6 +3331,49 @@ async fn open_cloud_token_window(
     Ok("opened".into())
 }
 
+/// 碰一碰：NFC 能力探测（Android 走 onethu-mobile 插件；桌面恒不可用）。
+#[tauri::command]
+async fn nfc_available(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    #[cfg(mobile)]
+    {
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        return handle
+            .run_mobile_plugin_async("nfcAvailable", serde_json::json!({}))
+            .await
+            .map_err(|e| e.to_string());
+    }
+    #[cfg(desktop)]
+    {
+        let _ = &app;
+        Ok(serde_json::json!({ "available": false, "enabled": false, "reason": "desktop" }))
+    }
+}
+
+/// 碰一碰：读取一张 NFC 标签/对方 HCE 的 NDEF 文本（Android；桌面报不支持）。
+#[tauri::command]
+async fn nfc_read_tag(app: tauri::AppHandle) -> Result<String, String> {
+    #[cfg(mobile)]
+    {
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        let r: serde_json::Value = handle
+            .run_mobile_plugin_async("nfcReadTag", serde_json::json!({}))
+            .await
+            .map_err(|e| e.to_string())?;
+        return Ok(r.get("text").and_then(|v| v.as_str()).unwrap_or("").to_string());
+    }
+    #[cfg(desktop)]
+    {
+        let _ = &app;
+        Err("桌面端没有 NFC：请用手机碰一碰，或复制口令/扫码".into())
+    }
+}
+
 #[cfg(mobile)]
 #[tauri::command]
 fn open_eid_window(_app: tauri::AppHandle, _username: String, _password: String) -> Result<String, String> {
@@ -4606,7 +4649,7 @@ tauri::Builder::default()
             im_media::im_peek_text,
             im_media::im_stat_file,
             im_media::im_write_text_file,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,dynamic_color,
-            open_external,onethu_open_path,onethu_reveal_path,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,widget_pin,ui_apply_insets,save_image_to_gallery,ui_set_bar_theme,ui_haptic_tick,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,notify_post,notify_dismiss,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,open_cloud_token_window,cloud_webvpn_profile,venue_sso_set,venue_open_portal,
+            open_external,onethu_open_path,nfc_available,nfc_read_tag,onethu_reveal_path,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,widget_pin,ui_apply_insets,save_image_to_gallery,ui_set_bar_theme,ui_haptic_tick,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,notify_post,notify_dismiss,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,open_cloud_token_window,cloud_webvpn_profile,venue_sso_set,venue_open_portal,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())

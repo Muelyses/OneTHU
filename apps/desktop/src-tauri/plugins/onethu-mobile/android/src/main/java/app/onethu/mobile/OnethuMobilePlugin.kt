@@ -1850,6 +1850,13 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         }
     }
 
+    /** 根级返回键退出：finish 当前 Activity（Tauri core app exit 在本项目 ACL 下被拒）。 */
+    @Command
+    fun mobileExit(invoke: Invoke) {
+        invoke.resolve()
+        activity.runOnUiThread { activity.finishAffinity() }
+    }
+
     /* ── 碰一碰（NFC ReaderMode）──
      * 只读标签/对方 HCE 模拟的 NDEF 文本；读取完自动关 ReaderMode。
      * 发送端 HCE 服务后续批次接入；当前先把「接收」跑通。 */

@@ -7,4 +7,5 @@ OneTHU Android 系统桥：
 """
 permissions = [
   "allow-mobile-supported",
+  "allow-mobile-exit",
 ]

@@ -372,3 +372,11 @@
   已删/已迁移的旧类断言（折叠组、nav-indicator、日程 inline 退场等），并更新 Ripple 护栏为“由
   Ripple.tsx 安装”。
 - vault 39/39、mobile 13/13 回归通过。
+
+
+### 12.24 手机根级返回退出补齐（2026-10-18）
+
+- `navStack` 一直调用 `plugin:onethu-mobile|mobile_exit`，但 Kotlin 未实现、ACL 未授权；
+  现补 `mobileExit`（finishAffinity）、默认权限 `allow-mobile-exit`、命令 permission 文件。
+- 新增 `tools/mobile-nav-test.mjs` 4/4：前端命令 / Kotlin finish / default 权限 / 命令 permission 四方一致。
+- 真机返回键验证仍待做（无设备）。

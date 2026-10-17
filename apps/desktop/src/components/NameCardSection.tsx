@@ -16,6 +16,8 @@ import {
   savePersonalCard, setContactShare, upsertOrgCard, useCards,
 } from "../state/nameCard.js";
 import { prepareAndShareFolder } from "../lib/cloudFolder.js";
+import { sendFriendFile, sendFriendText, useFriendMessages } from "../state/friendChannel.js";
+import { stageFromPicker } from "../lib/fileChannel.js";
 
 defineSearchRows([
   {
@@ -35,6 +37,7 @@ export function NameCardSection(): ReactNode {
   const p = doc.personal;
   const [busy, setBusy] = useState(false);
   const [sharingId, setSharingId] = useState<string | null>(null);
+  const [channelId, setChannelId] = useState<string | null>(null);
 
   const edit = useCallback(async (): Promise<void> => {
     const f = await openFormModal("编辑我的名片", [
@@ -92,6 +95,32 @@ export function NameCardSection(): ReactNode {
       setSharingId(null);
     }
   }, []);
+
+  const channelMessages = useFriendMessages(channelId ?? "");
+
+  const sendMessage = useCallback(async (): Promise<void> => {
+    if (!channelId) return;
+    const f = await openFormModal("给好友留言", [{ key: "text", label: "留言（同步写进共享云盘）", kind: "textarea", required: true }]);
+    if (!f?.text) return;
+    const r = await sendFriendText(channelId, f.text);
+    showToast(r.ok ? "留言已写入共享云盘" : `留言只留在本机：${r.reason}`);
+  }, [channelId]);
+
+  const sendFile = useCallback(async (): Promise<void> => {
+    if (!channelId) return;
+    try {
+      const staged = await stageFromPicker(true);
+      let ok = 0;
+      for (const f of staged) {
+        const r = await sendFriendFile(channelId, { name: f.name, localPath: f.localPath, size: f.size });
+        if (r.ok) ok++;
+        else showToast(`「${f.name}」上传失败：${r.reason}`);
+      }
+      if (ok) showToast(`已把 ${ok} 个文件放进共享云盘`);
+    } catch (e) {
+      showToast(`文件选择失败：${e instanceof Error ? e.message : String(e)}`);
+    }
+  }, [channelId]);
 
   const importContacts = useCallback((): void => {
     let ok = 0;
@@ -179,6 +208,7 @@ export function NameCardSection(): ReactNode {
                     ) : (
                       <Btn variant="ghost" size="sm" disabled={sharingId === c.id} onClick={() => void shareCloud(c.id, c.name)}>{sharingId === c.id ? "创建中…" : "共享云盘"}</Btn>
                     )}
+                    <Btn variant="ghost" size="sm" onClick={() => setChannelId(channelId === c.id ? null : c.id)}>通道</Btn>
                     <Btn variant="ghost" size="sm" tone="error" onClick={() => removeContact(c.id)}>删除</Btn>
                   </span>
                 }
@@ -186,6 +216,25 @@ export function NameCardSection(): ReactNode {
             ))}
           </List>
         )}
+        {channelId ? (
+          <div className="vault-share">
+            <Text slot="label">好友通道</Text>
+            {channelMessages.length === 0 ? (
+              <Text slot="micro" tone="faint">还没有留言。留言/文件会写进你们的共享云盘；对方通过共享链接查看。</Text>
+            ) : (
+              <List divided>
+                {channelMessages.map((m) => (
+                  <Row key={m.id} flush title={m.kind === "file" ? "文件：" + m.text : m.text} sub={m.cloudPath ? "已写入共享云盘" : "仅本机"} />
+                ))}
+              </List>
+            )}
+            <div className="name-card-actions">
+              <Btn variant="solid" tone="brand" size="sm" onClick={() => void sendMessage()}>留言</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => void sendFile()}>传文件</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => setChannelId(null)}>关闭通道</Btn>
+            </div>
+          </div>
+        ) : null}
       </div>
     </Card>
   );

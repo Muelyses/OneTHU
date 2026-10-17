@@ -26,7 +26,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
-import android.nfc.Ndef
+import android.nfc.tech.Ndef
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.nfc.Tag

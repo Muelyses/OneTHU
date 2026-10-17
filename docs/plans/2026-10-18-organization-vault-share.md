@@ -405,3 +405,12 @@
 - live 验证：分享给 owner 自己被服务端拒绝（命令/API 接线正确，`live_share_folder_to_user_owner_rejected`
   1 passed）；成功路径需第二真实账号，尚未验证。
 - namecard 7/7、friend channel 6/6、vault 39/39、mobile 13/13；guard/docs/build 通过。
+
+
+### 12.28 Android Kotlin 真编译修正（2026-10-18）
+
+- 用现有 Android Gradle 工程实际编译 Kotlin，发现 NFC 读取引用了错误包
+  `android.nfc.Ndef`（不存在）；正确类是 `android.nfc.tech.Ndef`。
+- 修正后 `:tauri-plugin-onethu-mobile:compileDebugKotlin` 与 `:app:compileArmDebugKotlin`
+  均 BUILD SUCCESSFUL，证明 HCE/ReaderMode/mobile_exit 代码至少能过 Kotlin 编译。
+- 真机/模拟器运行与双机 NFC 仍未验证。

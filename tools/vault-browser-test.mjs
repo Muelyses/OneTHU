@@ -4,6 +4,7 @@
  * ③ 同对象去重；④ 口令可生成、可解码校验、篡改会拒绝；⑤ 口令可导入为当前暂存箱。
  */
 import { chromium } from 'playwright';
+import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
@@ -24,7 +25,7 @@ try {
   });
   await p.goto(base + '/?explorer-preview=page&page=vault', { waitUntil: 'domcontentloaded' });
   await p.waitForSelector('.explorer-shell');
-  await p.waitForTimeout(800);
+  await p.waitForTimeout(1500);
   check(await p.getByRole('heading', { name: '暂存箱', exact: true }).count() === 1, 'vault page route works');
   check(await p.evaluate(() => !document.body.innerText.includes('页面不存在')), 'no fallback page text');
 
@@ -64,6 +65,14 @@ try {
   }, code.trim());
   check(decoded.ok.ok && decoded.ok.payload?.name === '我的暂存箱', 'code decodes with box name');
   check(!decoded.bad.ok, 'tampered code is rejected');
+  const expired = await p.evaluate(async () => {
+    const m = await import('/src/state/vaultShare.ts');
+    const code = m.encodeShare({ v: 1, kind: 'vault-share', issuedAt: Date.now() - 1000, expiresAt: Date.now() - 1, name: '过期口令', items: [] });
+    return m.decodeShare(code);
+  });
+  check(!expired.ok && /过期/.test(expired.reason ?? ''), 'expired code is rejected with reason');
+  check(readFileSync('apps/desktop/src/components/Collect.tsx', 'utf8').includes('data-vault-catch'), 'CollectStar is a global vault drag source');
+  check(readFileSync('apps/desktop/src/plugins/ChatDock.tsx', 'utf8').includes('data-vault-catch'), 'OH search hits are vault drag sources');
 
   /* 导入为当前暂存箱（走真实 UI：新建箱 → 导入口令 → 提交） */
   await p.getByRole('button', { name: '新建', exact: true }).click();

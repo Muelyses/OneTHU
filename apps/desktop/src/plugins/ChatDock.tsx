@@ -57,6 +57,7 @@ import "../styles/explorer-oh.css"; // dev-explorer：胶囊/搜索模式样式�
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { isPhoneNow } from "../state/phoneSheets.js";
 import { openExternal } from "../pages/info/openExternal.js";
+import { vaultCatchAttr } from "../components/vault/vaultDrag.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -981,6 +982,7 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
             <button
               key={"row:" + x.row.id}
               className="ohx-hit"
+              data-vault-catch={vaultCatchAttr({ type: "payload", title: x.row.title, sub: "设置项", payload: { routeId: x.row.id }, source: "OH 搜索" })}
               onClick={() => {
                 jumpSearchRow(x.row, q);
                 onClose(); // 设置浮层接棒，小窗收掉
@@ -992,14 +994,14 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
             </button>
           ))}
           {result.entries.map((en) => (
-            <button key={"n:" + en.id} className="ohx-hit" onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, q); onClose(); }}>
+            <button key={"n:" + en.id} className="ohx-hit" data-vault-catch={vaultCatchAttr({ type: "atom", title: en.name, sub: en.note ?? en.category, atom: { kind: "page", key: en.id }, source: "OH 搜索" })} onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, q); onClose(); }}>
               <span className="ohx-hit-name">{en.name}</span>
               <span className="ohx-hit-sub">{en.note ?? en.category}</span>
               <span className="ohx-hit-tag">功能</span>
             </button>
           ))}
           {result.atoms.map((a) => (
-            <button key={"a:" + a.kind + "|" + a.key} className="ohx-hit" onClick={() => { jumpAtom(a.kind, a.key, a.title, q); onClose(); }}>
+            <button key={"a:" + a.kind + "|" + a.key} className="ohx-hit" data-vault-catch={vaultCatchAttr({ type: "atom", title: a.title, sub: a.sub, atom: { kind: a.kind, key: a.key }, source: "OH 搜索" })} onClick={() => { jumpAtom(a.kind, a.key, a.title, q); onClose(); }}>
               <span className="ohx-hit-name">{a.title}</span>
               <span className="ohx-hit-sub">{(a.group ? a.group + " · " : "") + (a.sub ?? "相关内容")}</span>
               <span className="ohx-hit-tag">页面</span>

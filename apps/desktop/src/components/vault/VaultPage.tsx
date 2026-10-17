@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Btn, Card, List, Row, Segment, Text } from "@onethu/gui";
 import { Empty, PageHead } from "../Layout.js";
+import { useApp } from "../../state/context.js";
 import { openFormModal } from "../../lib/formModal.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { showToast } from "../../state/toast.js";
@@ -16,6 +17,7 @@ import {
 } from "../../state/vault.js";
 import { importShareCodeAsCurrent, mintShareCode } from "../../state/vaultShare.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
+import { openVaultItem } from "../../state/vaultRegistry.js";
 
 function itemSub(it: VaultItem): string {
   const type = VAULT_TYPE_LABEL[it.type] ?? it.type;
@@ -24,13 +26,14 @@ function itemSub(it: VaultItem): string {
 }
 
 /** 一条清单项也可再次拖走（换成另一个箱子/以后拖去白板）。 */
-function ItemRow({ it, onRemove }: { it: VaultItem; onRemove: () => void }): ReactNode {
+function ItemRow({ it, onRemove, onOpen }: { it: VaultItem; onRemove: () => void; onOpen: () => void }): ReactNode {
   return (
     <div data-vault-catch={vaultCatchAttr({ type: it.type, title: it.title, sub: it.sub, atom: it.atom, text: it.text, file: it.file, board: it.board, payload: it.payload, source: it.source })}>
       <Row
         flush
         title={it.title}
         sub={itemSub(it)}
+        onClick={onOpen}
         trailing={<Btn variant="ghost" size="sm" onClick={onRemove}>移除</Btn>}
       />
     </div>
@@ -39,6 +42,7 @@ function ItemRow({ it, onRemove }: { it: VaultItem; onRemove: () => void }): Rea
 
 export function VaultPage(): ReactNode {
   useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
+  const { navigate } = useApp();
   const box = activeVault();
   const all = vaultSnapshot().boxes;
   const [code, setCode] = useState<string>(box.lastShareCode ?? "");
@@ -118,7 +122,12 @@ export function VaultPage(): ReactNode {
         ) : (
           <List divided>
             {box.items.map((it) => (
-              <ItemRow key={it.id} it={it} onRemove={() => removeFromVault(box.id, it.id)} />
+              <ItemRow
+                key={it.id}
+                it={it}
+                onOpen={() => openVaultItem(it, { navigate: (page, params) => navigate(page as never, params as never), toast: showToast })}
+                onRemove={() => removeFromVault(box.id, it.id)}
+              />
             ))}
           </List>
         )}

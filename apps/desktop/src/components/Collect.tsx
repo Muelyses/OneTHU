@@ -30,6 +30,7 @@ export function CollectStar({ atom, title }: { atom: AtomRef; title?: string }) 
     <>
       <button
         type="button"
+        data-vault-catch={JSON.stringify({ type: "atom", title: name, sub: full || undefined, atom, source: "页面元素" })}
         className={"collect-star" + (lit ? " is-on" : "")}
         aria-label={(lit ? "已收藏，点击取消" : "收藏到…") + (title ? "：" + title : "")}
         title={lit ? "已收藏 · 点击取消" : "收藏到…（首页 / 已有 OnePage / 新建）"}

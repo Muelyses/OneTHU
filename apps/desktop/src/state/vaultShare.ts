@@ -12,6 +12,14 @@ import { markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
 
 export const SHARE_PREFIX = "ONV1";
 
+/* 体积/字段上限：口令是不可信输入（可能被伪造/截断），解码时按此净化后再进暂存箱。 */
+const MAX_CODE_CHARS = 96 * 1024;
+const MAX_ITEMS = 300;
+const MAX_TITLE = 160;
+const MAX_SUB = 240;
+const MAX_TEXT = 4096;
+const MAX_PAYLOAD_CHARS = 4096;
+
 export interface VaultCloudRef {
   provider: "seafile";
   /** 云盘仓库 id / 共享路径（由适配层填） */
@@ -32,6 +40,8 @@ export interface VaultSharePayload {
   /** 清单内联（小箱子）或云盘引用二选一；云盘存在时 items 可省略。 */
   items?: VaultCatch[];
   cloud?: VaultCloudRef;
+  /** 过期时间（epoch ms；缺省 = 不过期；decode 会拒绝过期口令） */
+  expiresAt?: number;
   /** 发送者显示名（可选，不包含敏感信息） */
   from?: string;
 }
@@ -98,6 +108,7 @@ export interface DecodeResult {
 
 export function decodeShare(code: string): DecodeResult {
   const raw = String(code ?? "").trim();
+  if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: "口令过大（超过 96KB），不是本应用的正常口径" };
   const parts = raw.split(".");
   if (parts.length !== 3 || parts[0] !== SHARE_PREFIX) return { ok: false, reason: "不是 OneTHU 分享口令（应以 ONV1. 开头）" };
   const [, body, sum] = parts;
@@ -111,10 +122,57 @@ export function decodeShare(code: string): DecodeResult {
   try {
     const p = JSON.parse(json) as VaultSharePayload;
     if (p?.v !== 1 || p.kind !== "vault-share" || typeof p.name !== "string") return { ok: false, reason: "口令版本或结构不受支持" };
+    if (p.expiresAt && Date.now() > p.expiresAt) return { ok: false, reason: "口令已过期；请让分享者重新生成" };
+    if (p.items !== undefined) {
+      if (!Array.isArray(p.items) || p.items.length > MAX_ITEMS) return { ok: false, reason: "口令清单超过上限（300 项）" };
+      const items = p.items.map(sanitizeCatch).filter((x): x is VaultCatch => x !== null);
+      p.items = items;
+      p.name = p.name.slice(0, MAX_TITLE) || "分享的暂存箱";
+    }
     return { ok: true, payload: p };
   } catch {
     return { ok: false, reason: "口令内容不是合法 JSON" };
   }
+}
+
+/** 对不可信口令里的条目做白名单/长度净化；不认识的类型直接丢弃。 */
+function sanitizeCatch(raw: unknown): VaultCatch | null {
+  if (!raw || typeof raw !== "object") return null;
+  const x = raw as Record<string, unknown>;
+  const type = x.type;
+  if (type !== "atom" && type !== "text" && type !== "file" && type !== "board-item" && type !== "payload") return null;
+  const title = String(x.title ?? "").slice(0, MAX_TITLE);
+  if (!title) return null;
+  const out: VaultCatch = { type, title } as VaultCatch;
+  if (typeof x.sub === "string") out.sub = x.sub.slice(0, MAX_SUB);
+  if (typeof x.source === "string") out.source = x.source.slice(0, MAX_SUB);
+  if (x.atom && typeof x.atom === "object") {
+    const a = x.atom as Record<string, unknown>;
+    if (typeof a.kind === "string" && typeof a.key === "string" && a.kind.length <= 80 && a.key.length <= 2000) out.atom = { kind: a.kind, key: a.key };
+  }
+  if (typeof x.text === "string") out.text = x.text.slice(0, MAX_TEXT);
+  if (x.file && typeof x.file === "object") {
+    const f = x.file as Record<string, unknown>;
+    if (typeof f.name === "string") {
+      out.file = {
+        name: f.name.slice(0, 240),
+        ...(typeof f.size === "number" ? { size: f.size } : {}),
+        ...(typeof f.mime === "string" ? { mime: f.mime.slice(0, 120) } : {}),
+        ...(typeof f.hash === "string" ? { hash: f.hash.slice(0, 64) } : {}),
+        cloudPath: null,
+      };
+    }
+  }
+  if (x.board && typeof x.board === "object") {
+    const b = x.board as Record<string, unknown>;
+    if (typeof b.boardId === "string" && typeof b.itemId === "string") out.board = { boardId: b.boardId.slice(0, 120), itemId: b.itemId.slice(0, 120) };
+  }
+  if (x.payload !== undefined) {
+    try {
+      if (JSON.stringify(x.payload).length <= MAX_PAYLOAD_CHARS) out.payload = x.payload;
+    } catch { /* 不可序列化就丢掉 */ }
+  }
+  return out;
 }
 
 /** 从一个箱子生成清单 payload（items 只含引用/摘要，不含文件字节）。 */
@@ -137,7 +195,8 @@ function stripItem(it: VaultItem): VaultCatch {
     ...(it.sub ? { sub: it.sub } : {}),
     ...(it.atom ? { atom: it.atom } : {}),
     ...(it.text ? { text: it.text } : {}),
-    ...(it.file ? { file: { name: it.file.name, size: it.file.size, mime: it.file.mime, hash: it.file.hash, cloudPath: it.file.cloudPath ?? null } } : {}),
+    /* cloudPath 是发送者的私有云盘路径，跨账号无意义/有泄露风险：分享清单不带它。 */
+    ...(it.file ? { file: { name: it.file.name, size: it.file.size, mime: it.file.mime, hash: it.file.hash, cloudPath: null } } : {}),
     ...(it.board ? { board: it.board } : {}),
     ...(it.payload !== undefined ? { payload: it.payload } : {}),
     ...(it.source ? { source: it.source } : {}),

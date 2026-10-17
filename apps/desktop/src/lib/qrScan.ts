@@ -17,7 +17,12 @@ export async function decodeQrFile(file: File): Promise<string | null> {
   const bitmap = await createImageBitmap(file);
   try {
     const detector = new Ctor({ formats: ["qr_code"] });
-    const codes = await detector.detect(bitmap);
+    /* 某些 WebView 的 detect 可能长时间不 resolve；UI 不能无限转圈。 */
+    const codes = await Promise.race([
+      detector.detect(bitmap),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+    ]);
+    if (codes === null) throw new Error("二维码识别超时：换一张更清晰、留白更多的图再试");
     return codes[0]?.rawValue ?? null;
   } finally {
     bitmap.close();

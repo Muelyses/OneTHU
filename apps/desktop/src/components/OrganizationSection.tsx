@@ -4,6 +4,7 @@
  */
 import { useCallback, useState, type ReactNode } from "react";
 import { Btn, Card, List, Row, Text } from "@onethu/gui";
+import { QRCodeSVG } from "qrcode.react";
 import { defineSearchRows } from "../state/searchRows.js";
 import { openFormModal } from "../lib/formModal.js";
 import { confirmOk } from "../lib/confirm.js";
@@ -118,6 +119,7 @@ export function OrganizationSection(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">「{invite.org}」的邀请口令（对方在 设置→账号→我的组织 里接受）：</Text>
             <code className="vault-share-code">{invite.code}</code>
+            <div className="vault-qr"><QRCodeSVG value={invite.code} size={200} /></div>
             <div className="name-card-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(invite.code).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setInvite(null)}>收起</Btn>

@@ -40,6 +40,7 @@ try {
   await p.getByRole('button', { name: '邀请', exact: true }).first().click(); await p.waitForTimeout(500);
   const code = await p.locator('.vault-share-code').innerText();
   check(/^ONORG1\.[A-Za-z0-9_-]+\.[0-9a-f]{8}$/.test(code.trim()), 'org invite code has ONORG1.body.checksum shape');
+  check(await p.locator('.vault-qr svg').count() >= 1, 'org invite shows a scannable QR');
   const decoded = await p.evaluate(async (c) => { const m = await import('/src/state/org.ts'); return m.decodeOrgInvite(c); }, code.trim());
   check(decoded.ok && decoded.payload?.name === '开源小组', 'invite code decodes');
   const model = await p.evaluate(async (c) => {

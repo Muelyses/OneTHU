@@ -45,7 +45,24 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
       else env.toast(r.reason === "duplicate" ? "通讯录里已经有这张名片了" : "这是你自己的名片，已在「我的名片」里");
       return true;
     }
-    const pmeta = it.payload as { routeId?: string; settingTitle?: string } | undefined;
+    const pmeta = it.payload as { routeId?: string; settingTitle?: string; kind?: string; themeId?: string; ref?: string } | undefined;
+    if (pmeta?.kind === "theme") {
+      void (async () => {
+        const m = await import("./theme.js");
+        if (pmeta.themeId) m.activateTheme(pmeta.themeId);
+        else m.deactivateTheme();
+      })();
+      env.toast("主题已应用");
+      return true;
+    }
+    if (pmeta?.kind === "wallpaper" && pmeta.ref) {
+      void (async () => {
+        const m = await import("./wallpaper.js");
+        m.setGlobalWallpaper(pmeta.ref ?? null);
+      })();
+      env.toast("壁纸已应用");
+      return true;
+    }
     const routeId = pmeta?.routeId ?? pmeta?.settingTitle;
     if (routeId) {
       void (async () => {

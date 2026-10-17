@@ -52,6 +52,7 @@ function WallCell({ entry, variant }: { entry: LibraryEntry; variant: "panel" | 
       <button
         type="button"
         className={"wall-thumb" + (fullActive ? " is-page-active" : "")}
+        data-vault-catch={JSON.stringify({ type: "payload", title: entry.name, sub: entry.builtin ? "内置壁纸" : "我的壁纸", payload: { kind: "wallpaper", ref: entry.ref }, source: "壁纸" })}
         onClick={apply}
         title={entry.name}
       >

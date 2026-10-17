@@ -178,6 +178,16 @@ try {
   const afterSettings = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items));
   check(afterSettings.length === beforeSettings + 1 && afterSettings.some((i) => i.title === settingTitle), 'setting row drags into vault via data-set-id fallback');
 
+  /* 主题/壁纸 payload：打开条目应真的应用 */
+  const applied = await p.evaluate(async () => {
+    const reg = await import('/src/state/vaultRegistry.ts');
+    const env = { navigate: () => undefined, toast: () => undefined };
+    const theme = reg.openVaultItem({ id: 'vi.t', type: 'payload', title: '主题', payload: { kind: 'theme', themeId: 'onethu.theme.violet' }, addedAt: 1 }, env);
+    await new Promise((r) => setTimeout(r, 120));
+    return { theme, applied: document.documentElement.dataset.theme ?? null };
+  });
+  check(applied.theme && applied.applied === 'onethu.theme.violet', 'theme payload applies the theme');
+
   check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
 
   await p.setViewportSize({ width: 390, height: 844 });

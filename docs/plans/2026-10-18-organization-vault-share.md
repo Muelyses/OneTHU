@@ -300,3 +300,10 @@
 - VaultDropTarget 增加 OS Files 拖入：全屏提示层、松手 stage + SHA-256 + 去重入箱；
   无其他文件落地点的页面可直接拖文件进应用。
 - vault 回归 34/34（设置行拖动、OS 文件拖入/哈希）；guard/build 通过。
+
+
+### 12.15 主题/壁纸也能收纳（2026-10-18）
+
+- ThemeChoice 增加 themeId 与 data-vault-catch；WallCell 增加壁纸 payload（builtin/local ref）。
+- vaultRegistry 支持 payload.kind=theme/wallpaper：点开暂存箱条目直接应用主题/壁纸；
+  vault 回归 35/35（主题 payload 实际改写 data-theme）。

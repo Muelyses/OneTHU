@@ -38,10 +38,15 @@ export function ThemeSwatch({ vars }: { vars: Record<string, string> }): ReactNo
   } as React.CSSProperties}><i /><i /><i /></span>;
 }
 
-export function ThemeChoice({ name, description, vars = {}, selected, onSelect, extra }: {
+export function ThemeChoice({ name, description, vars = {}, selected, onSelect, extra, themeId }: {
   name: string; description?: string; vars?: Record<string, string>; selected: boolean; onSelect: () => void; extra?: ReactNode;
+  /** 主题 id（进暂存箱/分享用；缺省时仍可看不可再应用） */
+  themeId?: string;
 }): ReactNode {
-  return <div className={"theme-choice" + (selected ? " is-selected" : "")}>
+  return <div
+    className={"theme-choice" + (selected ? " is-selected" : "")}
+    data-vault-catch={themeId ? JSON.stringify({ type: "payload", title: name, sub: description, payload: { kind: "theme", themeId }, source: "主题" }) : undefined}
+  >
     <Btn variant="ghost" className="theme-choice-main" aria-pressed={selected} onClick={onSelect}>
       <ThemeSwatch vars={vars} />
       <span className="theme-choice-copy"><strong>{name}</strong><span>{description}</span></span>
@@ -176,8 +181,8 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
           )}
           {installedThemes.length === 0 ? <div className="plg-hint">没有匹配的已安装主题。</div> : null}
           <div className="theme-choice-grid">
-            {hit(["石墨", "默认"]) ? <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} /> : null}
-            {installedThemes.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }}
+            {hit(["石墨", "默认"]) ? <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} themeId="onethu.theme.ivory" /> : null}
+            {installedThemes.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }} themeId={t.id}
               extra={ownerOf(t) ? <Btn variant="ghost" onClick={() => void delTheme(t)}>卸载</Btn> : undefined} />)}
           </div>
 

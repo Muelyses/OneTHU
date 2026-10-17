@@ -930,8 +930,8 @@ function AppearanceSection(): ReactNode {
           只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。
           2026-10-14：手写选中框（内联边框+底色）→ List/Row 的 selected 状态层 + Tag 胶囊。 */}
       <div className="theme-choice-grid">
-        <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} />
-        {visibleThemeDefs.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); showToast("已应用「" + t.name + "」"); }} />)}
+        <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} themeId="onethu.theme.ivory" />
+        {visibleThemeDefs.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); showToast("已应用「" + t.name + "」"); }} themeId={t.id} />)}
       </div>
       <SettingsRow
         title="跟随系统昼夜"

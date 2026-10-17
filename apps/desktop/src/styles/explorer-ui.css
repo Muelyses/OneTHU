@@ -34,8 +34,6 @@
   flex: 0 0 auto;
   transition: background var(--dur-1, 0.12s) var(--ease-out, ease), color var(--dur-1, 0.12s) var(--ease-out, ease);
 }
-/* 选中标签 = 液态玻璃选中框（v4.3，2026-10-13 用户点名「选中框不要固定亮色」）：
-   主题色 tint 渐变 + chip blur + rim 顶光，随主题/壁纸变色——不再是 secondary-container 死粉饼 */
 .ex-tab-main {
   display: inline-flex;
   align-items: center;
@@ -455,9 +453,6 @@
 .ex-tab.is-dragging .ex-tab-main { cursor: grabbing; }
 
 /* 首页钉死在标签栏最左：横向滚动时不随滑动条移动 */
-/* 首页标签（OneTHU Logo 壳）＝ menu tier 玻璃选中框（v4.3 用户点名）：
-   sticky 遮罩语义保留（盖住滚过的标签），但材质换液态玻璃——
-   menu-fill 55% + blur 22 让 Logo 片随主题/壁纸变，不再是永远白的 dsw-alias 底 */
 .ex-tabstrip .ex-tab.is-home {
   position: sticky;
   left: 0;
@@ -479,8 +474,6 @@
 .ex-ws-band[data-ws-dragging="1"] { z-index: 6; box-shadow: 0 6px 16px rgba(0,0,0,.18); background: linear-gradient(color-mix(in srgb, var(--ws-color, #888) 14%, transparent), color-mix(in srgb, var(--ws-color, #888) 14%, transparent)), var(--dsw-alias-bg-layer-1, #fff); }
 
 /* ══ 竖版标签栏：左侧栏，标签竖排，工作区底板竖向包住组内标签 ══ */
-/* 背景一律走液态玻璃档（explorer-ui.css v4 ex-rail 块，L794 起）——这里只留布局，
-   不再给不透明白兜底（有壁纸灯-暗两档玻璃在管；无壁纸时也保持同一玻璃语言不翻白） */
 .ex-rail { position: fixed; top: var(--explorer-bar-h, 48px); left: 0; bottom: 0; width: 232px; overflow: hidden; padding: 8px 6px; z-index: 55; display: flex; flex-direction: column; }
 .ex-rail .ex-tabstrip-wrap, .ex-rail .explorer-tabstrip-wrap { height: 100%; }
 .ex-tabstrip.is-vertical { flex-direction: column; align-items: stretch; overflow-x: hidden; overflow-y: auto; height: 100%; width: 100%; }
@@ -684,26 +677,11 @@
 .tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph.is-fist svg * { stroke-width: 6; }
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical { scrollbar-width: none; }
 .tabs-vertical.rail-narrow .ex-tabstrip.is-vertical::-webkit-scrollbar { display: none; }
-
-/* ══════════ 液态玻璃 v4：底栏 = 面板级玻璃 ═══════════ */
 .ex-row:hover,
 .hs-detail-row:hover,
 .picker-row:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }
-
-/* ══════════ 液态玻璃 v4.1：标签抽屉 / OneGO = menu tier ═══════════ */
-
-/* ══════════ 液态玻璃 v4.1→v4.3：竖栏材质已并入收口规则 ═══════════
-   2026-10-14：本块原手写 material（fill-regular + tint + clear blur + rim）与 global.css 的
-   「壳层玻璃收口」同特异度 (0,1,0)，而本文件在 global.css 之后注入 → 本块必胜 → 竖栏脱队：
-   浅色两者同值看不出，**深色下 fill-regular 是 30,30,36 近黑、收口用 card-fill-2 是白**，
-   于是竖栏比顶栏暗一截、还少一层 --glass-shadow。现只保留竖栏独有的右边线，材质交给收口规则。
-   （下面 hover 那条仍保留：它防的是「窄栏展开翻白」的特异性之争，与本块无关。） */
 /* hover 展开只抬阴影不换底（2026-10-14）：此前换成 --glass-fill(浅色=0.52 白)，
    亮度档玻璃(特异性 0,3,0)输给本规则(0,4,0)，有壁纸时展开那片翻白。 */
-
-/* ═══ 液态玻璃 v4.3 收尾（explorer-ui 域）：「选中框」统一 ═══
-   底栏开关态 / 行选中态：accent-soft 平涂 → 主题 tint 渐变玻璃 + chip blur + rim 顶光，
-   与顶部 .ex-tab.is-active 同一材质语言；悬停行维持平 tint（预算外成群件不加 blur）。 */
 .ex-row.is-active,
 .ex-bbar-btn.is-open {
   background: linear-gradient(180deg,
@@ -793,7 +771,6 @@ html.is-phone .ex-sheet.is-mob-drag { animation: none; transition: none; }
   border-radius: 10px;
 }
 
-
 /* ══════════ 手机底栏（三入口 + 中央 OH 胶囊）══════════
    2026-10-16 用户三条口径落在这里：
    ① 「Oh 胶囊初始长度有点短，加长」——两侧入口在手机档收成纯图标（文字标签隐藏，aria 仍在），
@@ -821,13 +798,11 @@ html.is-phone .ex-bbar-center .ohx-capsule {
   padding: 0 16px;
 }
 
-
 /* 手机档触目标兜底（用户口径「部分 UI 极其拥挤不堪/矮胖」）：
    抽屉里的 ⋯/↑/↓ 只有 24px、收藏页的星标 24×36 —— 视觉尺寸不动，只把**命中区**撑到 36–40。
    只在本形态生效，桌面像素级不变。 */
 html.is-phone .ex-mini { width: 36px; height: 36px; }
 html.is-phone .collect-star { min-width: 40px; min-height: 40px; }
-
 
 /* 手机档浮钮收号：62px（OneGUI 桥的 ctl-h-lg + 20）在 390 宽屏幕上过大，
    两个圆钮还会压住卡片。48px 仍是稳的触目标（HIG 44）。选择器加到 (0,3,1) 才压得住
@@ -837,7 +812,6 @@ html:root.is-phone :is(.free-fab, .hard-refresh-fab, .top-fab, .board-fab) {
   min-width: 48px;
   padding: 0;
 }
-
 
 /* 手机档：**分类芯片行**改横向滚动一条 —— 390 宽下 14 个分类原本折成 5 行、吃掉半屏
    （用户口径「极其拥挤不堪」）。只认"整行都是芯片"的那种 og-inline，别把普通行也卷进去。 */
@@ -849,7 +823,6 @@ html.is-phone .og-inline--wrap:has(> .og-chip) {
   padding-bottom: 4px;
 }
 html.is-phone .og-inline--wrap:has(> .og-chip)::-webkit-scrollbar { display: none; }
-
 
 /* ══════════ 手机档：课表工具栏「按钮墙」改横向滚动条 ══════════
    课表页三行工具栏（视图/同步/新建 · 日历/步进/学期周跳 · 日历快跳）在 390 宽下折成 6 行、

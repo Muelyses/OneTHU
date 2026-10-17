@@ -3,7 +3,7 @@
  * Action is deliberately independent of the user's accent/theme.
  */
 :root {
-  --og-surface-0: var(--og-ref-neutral-0);
+  --og-surface-0: var(--og-ref-neutral-50);
   --og-surface-1: var(--og-ref-neutral-0);
   --og-surface-2: var(--og-ref-neutral-25);
   --og-surface-3: var(--og-ref-neutral-50);
@@ -44,10 +44,13 @@
 
   /* Product roles. Components and the host recipe share these exact names. */
   --og-canvas: var(--og-surface-0);
+  --og-workbench-paper: var(--og-fill-surface);
+  --og-workbench-well: var(--og-surface-3);
+  --og-workbench-grid-ink: var(--og-line-1);
   --og-contrast-ink-light: var(--og-ref-contrast-ink-light);
   --og-contrast-ink-dark: var(--og-ref-contrast-ink-dark);
   --og-video-fallback: var(--og-ref-video-fallback);
-  --og-chrome: var(--og-surface-3);
+  --og-chrome: var(--og-surface-1);
   --og-input-fill: var(--og-surface-1);
   --og-composer-fill: var(--og-surface-3);
   --og-card-fill: var(--og-surface-1);

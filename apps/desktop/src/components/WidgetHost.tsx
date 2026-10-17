@@ -81,6 +81,8 @@ export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): 
      ② 根本没有注入渲染器（白板页尚未接上该卡）→ 说「内容由原页面提供」，这是降级而非空。 */
   return (
     <div className="wg-card">
+      {custom && item.spec.kind === "custom" && ["classes", "homework", "notices"].includes(item.spec.id) && plan.size.h >= 2
+        ? <div className="workbench-widget-title">{plan.title}</div> : null}
       {custom ? (
         custom(item.spec.kind === "custom" ? item.spec.props : undefined, plan.size) ?? (
           <div className="wg-card-shell">

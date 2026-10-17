@@ -26,6 +26,7 @@ export function BottomBar(): ReactNode {
           {count > 0 ? <i className="ex-bbar-badge" aria-hidden="true">{count > 99 ? "99+" : count}</i> : null}
         </span>
         <span className="ex-bbar-label">标签页</span>
+        <span className="workbench-wordmark" aria-hidden="true">OneTHU<span> / 工作台</span></span>
       </button>
       <div className="ex-bbar-center">
         <OhCapsule />

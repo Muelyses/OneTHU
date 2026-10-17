@@ -228,6 +228,17 @@ ok(!merged.find((x) => x.id === "it.custom.ab12").rect, "网格条目（收藏�
 const collide = B.mergeLegacyPx([{ id: "same", spec: { kind: "divider" }, x: 1, y: 1, w: 200, h: 100 }], [{ id: "same", spec: { kind: "custom", id: "folder" }, cell: { x: 0, y: 0, w: 1, h: 1 } }]);
 ok(new Set(collide.map((x) => x.id)).size === collide.length, "并入时 id 撞车没有改名（后一条会被 React/查找逻辑吃掉）");
 
+/* Workbench starter is only for new installations; migration must keep authored rectangles. */
+const freshDeps = { ...deps, loadLayoutItems: () => null, resolveLayout: () =>
+  Array.from({ length: 9 }, (_, i) => ({ id: "starter." + i, col: "main", collapsed: false })) };
+const freshBoard = B.defaultBoardDoc(freshDeps).boards[0];
+const freshRects = freshBoard.cells.portrait.map(x => x.rect);
+ok(freshRects.every(r => r && r.w >= 320 && r.h >= 160), "新板卡片必须有可读尺寸");
+ok(Math.max(...freshRects.map(r => r.x + r.w)) <= 1120, "新板三列不得超出版心");
+ok(freshRects.every((a, i) => freshRects.every((b, j) => i === j || a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y)), "新板初始卡片不重叠");
+const preserved = B.defaultBoardDoc({ ...freshDeps, loadLayoutItems: () => PORTRAIT });
+ok(preserved.boards[0].cells.portrait.every(x => !x.rect), "旧布局必须走原迁移通道，不能套新板排版");
+
 if (fails.length) {
   console.error("白板文档护栏（P0）：不通过");
   for (const f of fails) console.error("  ✗ " + f);

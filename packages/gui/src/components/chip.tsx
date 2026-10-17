@@ -60,14 +60,22 @@ export function Chip({ tone = "neutral", size = "md", icon, onClick, selected, d
     onClick ? "og-chip--interactive og-interactive" : "",
     className,
   );
+  const label = <>
+    {icon ? <span className="og-chip-icon" aria-hidden="true">{icon}</span> : null}
+    <span className="og-chip-label">{children}</span>
+  </>;
+  // Interactive chips are real buttons: keyboard, focus and disabled behavior
+  // come from the browser. Removable chips use sibling buttons, never nesting.
+  if (onClick && !onRemove) return (
+    <button type="button" {...scopeProps(scope)} className={cls} onClick={onClick} disabled={disabled} aria-pressed={selected}>
+      {label}
+    </button>
+  );
   return (
-    <span {...scopeProps(scope)} className={cls} onClick={disabled ? undefined : onClick} aria-disabled={disabled || undefined}>
-      {icon ? <span className="og-chip-icon" aria-hidden="true">{icon}</span> : null}
-      <span className="og-chip-label">{children}</span>
+    <span {...scopeProps(scope)} className={cls} aria-disabled={disabled || undefined}>
+      {onClick ? <button type="button" className="og-chip-main og-interactive" onClick={onClick} disabled={disabled} aria-pressed={selected}>{label}</button> : label}
       {onRemove ? (
-        <button type="button" className="og-chip-x" aria-label="移除" onClick={(e) => { e.stopPropagation(); onRemove(); }}>
-          ×
-        </button>
+        <button type="button" className="og-chip-x" aria-label="移除" disabled={disabled} onClick={(e) => { e.stopPropagation(); onRemove(); }}>×</button>
       ) : null}
     </span>
   );

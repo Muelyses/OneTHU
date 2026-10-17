@@ -21,7 +21,7 @@ import { HomeCoachMarks } from "../HomeCoachMarks.js";
 export function HomeTab(): ReactNode {
   return (
     <div className="home-tab home-free">
-      {/* 时钟与一级坞 = 画布的一部分（2026-10-14 拍板）：挂进滚动容器随内容滚动；z 30 压住卡片 */}
+      {/* Workbench 页头与服务区在文档流中；自由层从其后起，原有世界坐标不变 */}
       <HomeChrome />
       {/* 首次进入的首页导览标记（原先只挂在旧「今日页」上；白板接管首页后它一度整个丢了，
           2026-10-15 随旧页删除一并搬回新首页 —— onboarding-v3 守栏要的就是它在这里） */}

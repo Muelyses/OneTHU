@@ -379,25 +379,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      拖动/缩放/画笔在这个形态下没有意义（坐标被重排），一并关掉，见下面的 stack 守卫。 */
   const phoneUi = useIsPhone();
   const stack = phoneUi && orientation === "portrait";
-  /* 首页那块画布顶部压着固定层（时钟 + 一级坞，绝对定位）：单列堆叠必须**从它下面起**，
-     否则第一屏就是"卡片和时钟叠在一起"（截图里最刺眼的那条）。量坞的底边当起点，
-     坞换行/换档后用 ResizeObserver 跟一次。OnePage 没有这层，量不到就是 0。 */
-  const [stackTop, setStackTop] = useState(0);
-  useLayoutEffect(() => {
-    if (!stack) { setStackTop(0); return; }
-    const dock = document.querySelector<HTMLElement>(".home-chrome-layer .chrome-dock");
-    const host = hostRef.current;
-    const measure = (): void => {
-      if (!dock || !host || !dock.isConnected) return;
-      const d = dock.getBoundingClientRect(), h = host.getBoundingClientRect();
-      const next = Math.max(0, Math.round(d.bottom - h.top + 12));
-      setStackTop((prev) => (Math.abs(prev - next) > 2 ? next : prev));
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (dock) ro.observe(dock);
-    return () => ro.disconnect();
-  }, [stack]);
+  // Home chrome is in document flow; the canvas origin starts below its own toolbar.
+  const stackTop = 0;
   const stackRects = useMemo(() => {
     if (!stack) return null;
     const w = Math.max(240, Math.round(port.w || (typeof window === "undefined" ? 360 : window.innerWidth)));
@@ -488,7 +471,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     if (!host) return;
     const el = host.closest<HTMLElement>(".explorer-panel") ?? host.parentElement ?? host;
     const measure = (): void => {
-      const next = { w: el.clientWidth, h: el.clientHeight };
+      const hostLeft = host.getBoundingClientRect().left - el.getBoundingClientRect().left;
+      const next = { w: Math.max(240, el.clientWidth - Math.max(0, hostLeft) * 2), h: el.clientHeight };
       setPort((prev) => (prev.w === next.w && prev.h === next.h ? prev : next));
     };
     measure();
@@ -786,7 +770,15 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
           ]}
         />
-      ) : null}
+      ) : (
+        <div className="workbench-board-head">
+          <div><h2>我的白板</h2><span>{stack ? "你的课程、消息与灵感" : "自由摆放，让工作台成为你的样子"}</span></div>
+          <div className="workbench-board-actions">
+            <Btn variant="ghost" onClick={() => setTplOpen(true)}>模板</Btn>
+            <Btn variant="solid" onClick={() => setAddOpen(true)}>＋ 添加组件</Btn>
+          </div>
+        </div>
+      )}
       {chrome && items.length === 0 ? (
         <Card>
           <Empty text="这块白板还是空的。可以从模板开始，或从「＋」添加一个组件。" />

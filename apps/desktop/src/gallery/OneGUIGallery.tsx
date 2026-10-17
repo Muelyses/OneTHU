@@ -400,11 +400,11 @@ function Catalog(): ReactNode {
 
       <Group title="Text · 六档字阶" hint="display / title / subtitle / body / label / micro">
         <Stack gap={1}>
-          <Text slot="display">显示 26</Text>
-          <Text slot="title">标题 20</Text>
+          <Text slot="display">显示 36</Text>
+          <Text slot="title">标题 24</Text>
           <Text slot="subtitle">小标题 16</Text>
-          <Text slot="body">正文 14 —— 每档一个语义位，不新增第六档。</Text>
-          <Text slot="label">标签 12</Text>
+          <Text slot="body">正文 14 —— 每档一个语义位。</Text>
+          <Text slot="label">标签 13</Text>
           <Text slot="micro">微标 11</Text>
           <Inline gap={3} wrap>
             <Text tone="quiet">次文 content-2</Text>

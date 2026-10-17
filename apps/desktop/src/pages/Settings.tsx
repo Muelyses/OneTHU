@@ -12,7 +12,7 @@ import { getGlassLevel, glassLevels, setGlassLevel, subscribeGlassLevel, type Gl
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
-import { Card, PageHead, SectionHead, SegmentedOverflow, Switch } from "../components/Layout.js";
+import { Card, PageHead, SectionHead, Switch } from "../components/Layout.js";
 import { setTabLayoutDefault, useTabLayoutDefault } from "../state/tabLayout.js";
 import { SoftwareUpdateSection } from "../components/SoftwareUpdateSection.js";
 import { ExtHwSettingsSection } from "../components/ExtHwSettingsSection.js";
@@ -26,7 +26,7 @@ import { clearRemembered, loadRemembered, session, isTauri } from "../lib/client
 import { clearHomeLayout } from "../lib/homeCards.js";
 import { useFavs } from "../state/favs.js";
 import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
-import { LevelBox, focusSettingsTarget } from "../components/Layout.js";
+import { focusSettingsTarget } from "../components/Layout.js";
 import { ExplorerPrefsSection } from "../components/ExplorerPrefsSection.js";
 import { ThemeSwatch } from "../components/ThemePickerModal.js";
 import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, subscribeSettingsConsume } from "../state/settingsMode.js";
@@ -132,7 +132,6 @@ export function SettingsPage() {
   /** 当前二级页签（默认第一个栏目） */
   const [tab, setTab] = useState<string>(SETTINGS_TAB_ORDER[0] ?? "账号");
   /** 手机端判定：插件入口在「我的」页里也要有一份（与桌面侧栏同款框） */
-  const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   const settingsTabLayout: TabLayout = loadTabLayout("settings", SETTINGS_TAB_ORDER);
   const settingsTabHidden = settingsTabLayout.hidden;
   const [manageOpen, setManageOpen] = useState(false);
@@ -219,6 +218,15 @@ export function SettingsPage() {
     }
   }, [tab, tabLayout.hidden.join(",")]);
 
+  // Keep the selected category fully visible in the horizontal phone strip.
+  useEffect(() => {
+    const row = document.querySelector<HTMLElement>(".workbench-settings-tabs");
+    const active = row?.querySelector<HTMLElement>("[aria-selected=true]");
+    if (!row || !active || row.scrollWidth <= row.clientWidth) return;
+    const r = row.getBoundingClientRect(), a = active.getBoundingClientRect();
+    row.scrollLeft += a.left - r.left - (r.width - a.width) / 2;
+  }, [tab]);
+
   const { user, logout, navigate } = useApp();
   const favs = useFavs();
   const [favMsg, setFavMsg] = useState<string | null>(null);
@@ -266,7 +274,7 @@ export function SettingsPage() {
   };
 
   return (
-    <>
+    <div className="workbench-settings">
       <PageHead
         title="设置"
         actions={
@@ -282,25 +290,38 @@ export function SettingsPage() {
         }
       />
 
-      {/* ① 手机端「我的」页顶部：**三格齐全**（设置 | 插件 | OneTHU Harness），与插件页/子页同一个组件 */}
-      {isPhone ? <LevelBox /> : null}
 
-      <SegmentedOverflow ariaLabel="设置栏目" style={{ marginBottom: 14 }}>
+      <div className="workbench-settings-layout">
+      <nav className="workbench-settings-nav" aria-label="设置栏目">
+      <div className="workbench-settings-tabs" role="tablist" aria-label="设置栏目" onKeyDown={event => {
+        if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]"));
+        const index = tabs.indexOf(event.target as HTMLButtonElement);
+        if (index < 0) return;
+        event.preventDefault();
+        const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1
+          : (index + (["ArrowUp", "ArrowLeft"].includes(event.key) ? -1 : 1) + tabs.length) % tabs.length;
+        tabs[next]?.focus(); tabs[next]?.click();
+      }}>
         {settingsTabLayout.order
           .filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t))
           .map((t) => (
-            <button
+            <Btn
               key={t}
               role="tab"
               aria-selected={tab === t}
+              aria-controls="workbench-settings-panel"
+              tabIndex={tab === t ? 0 : -1}
               className={tab === t ? "is-active" : ""}
               onClick={() => setTab(t)}
             >
               {t}
-            </button>
+            </Btn>
           ))}
-      </SegmentedOverflow>
-
+      </div>
+      </nav>
+      <div className="workbench-settings-content" id="workbench-settings-panel" role="tabpanel" aria-label={tab}>
+      <div className="workbench-settings-title"><h2>{tab}</h2><p>按你的习惯，调整 OneTHU。</p></div>
       <SectionHead title="帮助" />
       <Card>
         <HelpSection />
@@ -606,6 +627,8 @@ export function SettingsPage() {
           }
         />
       </Card>
+      </div>
+      </div>
       <TabManageModal
         open={manageOpen}
         onClose={() => setManageOpen(false)}
@@ -616,7 +639,7 @@ export function SettingsPage() {
         onReset={() => applyTabLayout({ order: SETTINGS_TAB_ORDER, hidden: [] })}
       />
 
-    </>
+    </div>
   );
 }
 

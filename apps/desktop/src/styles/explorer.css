@@ -193,12 +193,7 @@
   background: transparent;
 }
 
-/* ══════════ 液态玻璃 v4：环境光斑 + 玻璃栏体 + 安静标签 ═══════════
-   「玻璃的质感来自透出什么东西」——壳层铺环境光斑网格（紫/粉/青，随深浅色调档），
-   玻璃栏体/组件才有东西可折射；平色背景上玻璃只能是灰盒子（此前不像的真正原因）。 */
-
 /* 环境光已上移到 body（base.css，全局 everywhere）：壳层不再重复铺 */
-
 
 /* 顶栏/侧栏 = 面板级玻璃。配方本体已由 global.css 的「玻璃收口」规则统一提供
    （tint 渐变 + fill + blur + rim，一条规则管全站），这里只保留各自差异项。 */
@@ -217,10 +212,6 @@
     inset 0 1px 0 var(--glass-rim-top),
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
-
-/* ══════════ 液态玻璃 v4.1：设置浮层 = menu tier ═══════════ */
-
-/* ═══ 液态玻璃 v4.2 收尾（explorer 域：悬停小提示条 = menu tier 微浮层） ═══ */
 .ex-tip {
   background: var(--glass-menu-fill);
   backdrop-filter: var(--glass-menu-blur);
@@ -268,9 +259,6 @@
 }
 
 /* 首页固定钟/功能坞在 shell 层，不继承栏体本身的背景；只映射文字与其玻璃件令牌。 */
-.explorer-shell[data-wallpaper-lum="dark"] .home-chrome-layer {
-  /* 引用档位令牌，不写死 —— 此前写死 .44 导致程序坞在 clear/rich/deep 档下不跟档（用户点名的「独树一帜」第二根因） */
-}
 
 /* ── 面板基础形态（per-tab 壁纸的亮度档/视频层/has-wallpaper 分支已随功能删除）── */
 .explorer-panel { position: relative; overflow: hidden; }
@@ -432,7 +420,6 @@ html.is-phone .hard-refresh-fab.top-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 64px) !important;
 }
 
-
 /* ══════════ 内容区裸文本随壁纸明暗自适应（2026-10-14 扩全域：标题/表头全部在内）══════════
    挂在 .explorer-content（首页 + 所有内容页）：亮壁纸→深字、暗壁纸→白字，与 chrome 层同一套符文；
    玻璃卡（.free-item/.home-card）内部**回归主题字色**——卡体有自己的玻璃填充，
@@ -460,11 +447,9 @@ html.is-phone .hard-refresh-fab.top-fab {
   --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
 }
 
-
 /* 手机档：设置行说明给到三行（OneGUI 的 -webkit-line-clamp:2 在 390 宽下会把
    「在应用内的窗口打开清华统一身份认证，自动填入账号密码…」这类说明切在半句） */
 html.is-phone .og-settings-row-sub { -webkit-line-clamp: 3; }
-
 
 /* ══════════ 手机档：设置浮层（用户口径「重叠 / 巨大按钮 / 截断的内容」）══════════
    ① 面要实：桌面是右侧推入的抽屉，"深"玻璃档（alpha .2~.3）叠在窄栏上还看得过去；

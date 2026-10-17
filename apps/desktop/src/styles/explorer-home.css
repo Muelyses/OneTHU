@@ -97,30 +97,6 @@
   max-height: 100dvh;
 }
 
-/* 顶部钟与功能坞挂在 shell，不被 page-in 的 transform 或可滚动画布截成局部 fixed。 */
-.home-chrome-layer {
-  --home-canvas-top: 104px;
-  --home-clock-size: 72px;
-  /* 画布的一部分（2026-10-14 拍板）：absolute 铺满滚动容器，随内容滚动——不再 fixed 铆钉 */
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  pointer-events: none;
-}
-/* 居中修正：.home-chrome-layer 挂在 .explorer-content 内，而**竖栏布局**下后者有 margin-left，
-   于是钟/功能坞的"中心"恒等于「内容区中心」，而顶栏/标签条是整窗居中。这里把让位量抵掉，
-   让本层回到整窗坐标系。--ex-rail-w 只在 `.tabs-vertical`（竖版左栏）时才由 explorer-ui.css 定义
-   （232 / 窄轨 56）——**兜底必须是 0**：竖栏退役后 Layout 会把 tabs-vertical 收回，内容区没有让位，
-   此时若兜 232 就会把整层连钟带坞**硬拽左移 232px**（2026-10-15 用户报「时钟和程序坞都向左漂移」
-   就是这个：规则本身 2026-10-14 就在，只是等竖栏一退役才显形）。 */
-.home-chrome-layer { margin-left: calc(0px - var(--ex-rail-w, 0px)); }
-.home-chrome-layer .chrome-block { position: absolute; left: 0; right: 0; }
-.home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top) + 24px); }
-.home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 148px); }
-html.is-phone .home-chrome-layer { --home-canvas-top: 46px; }
-html.is-phone .home-chrome-layer .chrome-time { top: calc(var(--home-canvas-top) + 16px); }
-html.is-phone .home-chrome-layer .chrome-dock { top: calc(var(--home-canvas-top) + 88px); }
-
 html.is-phone .explorer-shell > .explorer-content.is-home-canvas {
   --home-canvas-top: var(--explorer-top-h, 46px);
   padding: var(--explorer-top-h, 46px) 0 calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px) !important;
@@ -139,51 +115,10 @@ html.is-phone .explorer-panel.is-home-canvas {
 html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none; }
 
 /* 固定层容器：绝对定位浮在画布上，不拦截空白区指针 */
-.chrome-block {
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-  user-select: none;
-}
-.chrome-time { top: 24px; }
-.chrome-dock { top: 148px; gap: 12px; }
 
 /* 大时间 */
-.chrome-clock { pointer-events: auto; text-align: center; }
 /* 展示级时间字号由 shell 级 .home-chrome-layer 提供，不走正文五档字阶。 */
-.chrome-clock-time {
-  line-height: 1.05;
-}
-.chrome-clock-colon { animation: chrome-blink 2s step-end infinite; color: var(--text-3); }
 @keyframes chrome-blink { 50% { opacity: 0.25; } }
-.chrome-clock-date { margin-top: 4px; }
-
-/* 功能区 = 玻璃坞（menu-fill 半张 + blur 22 + rim 三件套）：大时间下的液态玻璃条 */
-.hs-dock-row {
-  pointer-events: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 12px;
-  max-width: min(720px, 100%);
-  padding: 12px 16px;
-  /* 档位令牌填充 + 与栏体同一条 blur 令牌（此前该处只有 tint+fill、无 blur，是「程序坞独树一帜」的根因之一） */
-  /* 用户定稿：不要边框不要投影——磨砂透背景本身就是材质 */
-}
-.hs-dock-sphere { padding: 4px; cursor: pointer; }
-/* 球体改走控件基准（2026-10-14 用户点名「模仿强制刷新按钮」，此前的「球体玻璃化」被撤）：
-   本块特异度 (0,2,0) 高于 .sphere-ball (0,1,0)，会把基准的实底/描边/投影全部盖掉成
-   tint 渐变 + chip blur + rim —— 这正是「还是没模仿到」的原因。现在只补基准缺的投影。 */
-.hs-dock-actions {
-  pointer-events: auto;
-  display: flex;
-  gap: 8px;
-}
 .hs-dock-btn {
   display: inline-flex;
   align-items: center;
@@ -199,7 +134,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   transition: color 120ms ease, border-color 120ms ease;
 }
 .hs-dock-btn:hover { color: var(--text-1); border-color: var(--accent-border, var(--border)); }
-
 
 /* 更多功能 / 详细功能 居中小窗（复用 hs-more 体系） */
 .hs-more-mask {
@@ -400,7 +334,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   transform: scale(calc(1 / var(--board-z, 1)));
   transform-origin: 0 0;
 }
-
 
 /* 缩放控件（OneGUI BtnGroup）：视口左下角，屏幕空间（不随世界层缩放）。
    左下留白是这块画布唯一没被占用的角：右下是 ＋/画笔浮钮列、右上角是画笔色板、顶部是钟与坞。 */
@@ -637,8 +570,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   font-size: var(--text-xs);
   color: var(--text-2);
 }
-
-/* ══════════ 液态玻璃 v4：固定层与浮钮 = chip tier ═══════════ */
 .hs-logo,
 .hs-dock-btn,
 .hs-detail-btn,
@@ -719,15 +650,6 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
   box-shadow: inset 0 1px 0 var(--glass-rim-top);
 }
 
-/* ═══ 液态玻璃 v4.3：首页一级服务坞 = 真·液态玻璃（用户点名：不是奇怪的白底磨砂） ═══
-   fill-regular 实感填充 + tint 渐变叠层 + menu blur + rim 三件套；「不要边框」的定稿
-   升级为「要玻璃 rim」——rim 不是边框，是玻璃的顶光/发丝线。 */
-.hs-dock-row {
-  /* 与栏体同源：card-fill-2（档位令牌）+ 同一条 blur 令牌 + rim 三件套 —— 不再自成一份配方 */
-}
-
-/* ═══ 液态玻璃 v4.3 收尾（explorer-home 域）：首页浮件全进玻璃 ═══ */
-
 /* 假搜索胶囊 / 续听 chip = chip tier（.board-fab/.free-fab 已改走控件基准，从本组摘除） */
 .home-searchbar,
 
@@ -754,16 +676,8 @@ html.is-phone .explorer-panel.is-home-canvas::-webkit-scrollbar { display: none;
 /* ═══ 手机档（html.is-phone）：首页固定层整体缩小一档（用户拍板）═══
    只改手机：时间字号/坞球/按钮/间距显著缩小；桌面值（--home-clock-size: 72px 等）不动。
    坞顶点 = 上 16px + 时间 44 × 1.05 + 日期一档 + 间距 ≈ 88px。 */
-html.is-phone .home-chrome-layer { --home-clock-size: 44px; --home-chrome-h: 188px; }
-html.is-phone .chrome-clock-date { margin-top: 4px; }
-html.is-phone .home-chrome-layer .chrome-dock { gap: 8px; }
-html.is-phone .hs-dock-row { padding: 8px; gap: 4px 8px; }
-html.is-phone .hs-dock-sphere { padding: 4px; gap: 4px; }
 html.is-phone .hs-dock-sphere .sphere-ball,
 html.is-phone .hs-more-cell .sphere-ball { width: 36px; height: 36px; }
-html.is-phone .hs-dock-sphere .sphere-ball svg { width: 16px; height: 16px; }
-html.is-phone .hs-dock-sphere .sphere-name { max-width: 64px; }
-html.is-phone .hs-dock-actions { gap: 8px; }
 html.is-phone .hs-dock-btn { height: 28px; padding: 0 8px; gap: 4px; }
 
 /* ═══ 手机档：OnePage（BoardPage）= 底部抽屉（A6，从半屏起可拉满，同抽屉手柄） ═══ */
@@ -798,11 +712,6 @@ html.is-phone .onepage-sheet-body {
   overscroll-behavior: contain;
   padding: 0 12px 24px;
 }
-
-/* ══════════ 组件液态玻璃（2026-10-14 用户点名）══════════
-   首页/OnePage 卡片从 surface 平涂升级为面板级玻璃三件套（tint 渐变 + fill-regular
-   + card blur + rim），与栏体同一材质语言；编辑虚线态不动。深浅主题令牌自动换肤。
-   覆盖 global.css 的 .home-card 平涂（本文件在其之后加载，同权重后到地胜出）。 */
 .home-card:not(.is-editing) {
   background:
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom)),
@@ -819,9 +728,7 @@ html.is-phone .onepage-sheet-body {
 /* 玻璃卡内的页头/头部行若自带平涂底会打断折射面——去掉，让玻璃透底 */
 .home-card:not(.is-editing) .home-card-head { background: transparent; }
 
-
 /* 手机档：程序坞收紧 —— 390 宽下 15 个入口折成三行、整块 221px 高（竖屏最大的一框）。
    只收"行高"：球心 36 → 32、名字 12 → 11、内外边距各让 4px，命中区仍 ≥ 44（.sphere 整块可点）。 */
-html.is-phone .hs-dock-row { padding: 8px 8px; gap: 0 8px; }
 html.is-phone .sphere { padding: 4px 4px; }
 html.is-phone .sphere-ball { width: 32px; height: 32px; }

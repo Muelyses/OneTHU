@@ -62,7 +62,7 @@
   max-height: 100%;
   overflow: hidden;
   color: var(--og-content-1);
-  border-radius: var(--og-radius-xl);
+  border-radius: var(--og-radius-card);
   box-shadow: var(--og-elev-3);
   animation: og-pop-in var(--og-dur-2) var(--og-ease-decelerate) both;
 }
@@ -87,7 +87,7 @@
   flex: 0 0 auto;
   align-items: center;
   gap: var(--og-space-3);
-  padding: var(--og-space-4) var(--og-space-5);
+  padding: var(--og-space-5) var(--og-space-6);
   border-bottom: 1px solid var(--og-line-1);
 }
 
@@ -120,7 +120,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: var(--og-space-2);
-  padding: var(--og-space-4) var(--og-space-5);
+  padding: var(--og-space-5) var(--og-space-6);
   border-top: 1px solid var(--og-line-1);
 }
 

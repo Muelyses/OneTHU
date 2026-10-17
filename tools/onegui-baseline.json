@@ -148,7 +148,6 @@
     "apps/desktop/src/components/explorer/BottomBar.tsx": 2,
     "apps/desktop/src/components/explorer/ContextMenu.tsx": 1,
     "apps/desktop/src/components/explorer/FolderIconPicker.tsx": 1,
-    "apps/desktop/src/components/explorer/HomeSpheres.tsx": 9,
     "apps/desktop/src/components/explorer/OhCapsule.tsx": 1,
     "apps/desktop/src/components/explorer/OneGoSheet.tsx": 6,
     "apps/desktop/src/components/explorer/SettingsOverlay.tsx": 1,
@@ -171,7 +170,6 @@
     "apps/desktop/src/pages/Schedule.tsx": 3,
     "apps/desktop/src/pages/ScheduleAgenda.tsx": 2,
     "apps/desktop/src/pages/ServicesPage.tsx": 6,
-    "apps/desktop/src/pages/Settings.tsx": 1,
     "apps/desktop/src/pages/TasksPage.tsx": 15,
     "apps/desktop/src/pages/ThubookPage.tsx": 2,
     "apps/desktop/src/pages/Trace.tsx": 3,
@@ -198,7 +196,7 @@
     "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx": 1,
     "apps/desktop/src/pages/learn/YktCoursePage.tsx": 2,
     "apps/desktop/src/pages/learn/shared.tsx": 3,
-    "apps/desktop/src/plugins/ChatDock.tsx": 10,
+    "apps/desktop/src/plugins/ChatDock.tsx": 8,
     "apps/desktop/src/state/seafileAuto.ts": 1
   },
   "legacyClasses": {
@@ -225,12 +223,12 @@
     "apps/desktop/src/pages/learn/SearchPage.tsx": 1,
     "apps/desktop/src/pages/learn/shared.tsx": 3
   },
-  "legacyCssLines": 9959,
+  "legacyCssLines": 9811,
   "legacyCssPerFile": {
-    "apps/desktop/src/styles/explorer-home.css": 828,
-    "apps/desktop/src/styles/explorer-oh.css": 333,
-    "apps/desktop/src/styles/explorer-ui.css": 876,
-    "apps/desktop/src/styles/explorer.css": 495,
+    "apps/desktop/src/styles/explorer-home.css": 735,
+    "apps/desktop/src/styles/explorer-oh.css": 320,
+    "apps/desktop/src/styles/explorer-ui.css": 849,
+    "apps/desktop/src/styles/explorer.css": 480,
     "apps/desktop/src/styles/glass-levels.css": 113,
     "apps/desktop/src/styles/global.css": 6427,
     "apps/desktop/src/styles/motion.css": 887

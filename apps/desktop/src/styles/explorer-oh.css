@@ -111,10 +111,6 @@
 }
 .ohx-hit-tag {
   flex: none;
-  font-size: 10.5px;
-  color: var(--text-3);
-  border: 1px solid var(--border);
-  border-radius: 999px;
   padding: 2px 7px;
 }
 
@@ -230,12 +226,6 @@
 }
 .ohx-star:hover { background: var(--hover); color: var(--text-1); }
 .ohx-star.is-lit { color: var(--amber); }
-
-/* ══════════ 液态玻璃 v4 实验层：随 OneGUI 换血退役 ═══════════
-   胶囊的玻璃 tint/rim/扫光：中性皮肤下按 OneGUI 过渡桥裁定「白镜面 hover 高光属玻璃皮肤
-   专属，中性基准不留」，且白长条定案（explorer-ui.css bbar 契约）本就压过这些实验层，
-   原块删除——材质由 OneGUI 令牌与皮肤链出，胶囊不再私自持有玻璃叠加。 */
-/* ═══ 液态玻璃 v4.2 收尾（explorer-oh 域） ═══ */
 /* 偏好分节的分段壳：分段族不加 blur，只上 tint + rim */
 .dock-oh-missing {
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
@@ -247,9 +237,6 @@
     inset 0 1px 0 var(--glass-rim-top),
     inset 0 0 0 1px var(--glass-rim-hairline);
 }
-
-/* ═══ 液态玻璃 v4.3 收尾（explorer-oh 域）：胶囊部分随 OneGUI 换血退役 ═══
-   白胶囊的玻璃叠层已删（见 v4 注释；bbar 契约出白长条材质），此处只留搜索面板/历史 chip。 */
 /* 面板底 / 搜索栏 / 预设 segment / 历史 chip */
 .ohx-searchpane,
 

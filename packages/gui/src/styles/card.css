@@ -8,7 +8,7 @@
 .og-surface {
   --og-c-surface-fill: var(--og-card-fill);
   --og-c-surface-line: var(--og-line-1);
-  --og-c-surface-elev: var(--og-elev-0);
+  --og-c-surface-elev: var(--og-elev-1);
   --og-c-surface-radius: var(--og-radius-card);
   --og-c-surface-pad: var(--og-space-0);
   --og-c-surface-tint: var(--og-surface-tint);

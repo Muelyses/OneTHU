@@ -2374,8 +2374,8 @@ export function ChatDock(): ReactNode {
                 收到 OH —— 这组_raw-tablist 结构（explorer-oh.css 契约样式）保持原样。
                  */}
             <div className="ohx-modeswitch" role="tablist" aria-label="搜索或对话">
-              <button role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</button>
-              <button role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</button>
+              <Btn size="sm" role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</Btn>
+              <Btn size="sm" role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</Btn>
               {/* 第三态：清小搭（2026-10-15 用户口径「搜索 / OH / 清小搭 三选一」）。务必追加在 OH 之后：
                   OOSE 预览契约以 `.dock-panel [role='tab']` 的**第二个** tab 命中 OH，顺序不能动。 */}
               {/* 用 OG Btn 出本体（不新增裸控件计数），但保留 role=tab —— OOSE 预览契约按

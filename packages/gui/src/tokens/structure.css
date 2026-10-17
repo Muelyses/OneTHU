@@ -40,10 +40,10 @@
   --og-weight-bold: 700;
 
   /* ── 字阶：六档，一档一语义（显示/标题/小标题/正文/标签/微标） ── */
-  --og-text-display: 28px;
-  --og-text-display-lh: 36px;
-  --og-text-title: 20px;
-  --og-text-title-lh: 28px;
+  --og-text-display: 36px;
+  --og-text-display-lh: 44px;
+  --og-text-title: 24px;
+  --og-text-title-lh: 32px;
   --og-text-subtitle: 16px;
   --og-text-subtitle-lh: 22px;
   --og-text-body: 14px;
@@ -55,7 +55,7 @@
 
   /* ── 控件：三档高度 + 内边距（按钮/输入/下拉/分段器共用同一把尺） ── */
   --og-ctl-h-sm: 30px;
-  --og-ctl-h-md: 36px;
+  --og-ctl-h-md: 40px;
   --og-ctl-h-lg: 44px;
   --og-ctl-pad-x-sm: 10px;
   --og-ctl-pad-x-md: 14px;
@@ -64,10 +64,10 @@
   /* ── 行与容器 ── */
   --og-row-h: 44px;
   --og-row-pad-x: var(--og-space-3);
-  --og-card-pad: var(--og-space-4);
+  --og-card-pad: var(--og-space-5);
   --og-section-gap: var(--og-space-5);
   --og-page-max: 1160px;
-  --og-page-pad-x: var(--og-space-5);
+  --og-page-pad-x: var(--og-space-7);
 
   /* ── 精细几何：组件内部的光学微调（不是布局网格 —— 布局一律用 --og-space-*） ── */
   --og-geo-hairline: 1px;
@@ -165,17 +165,30 @@
   --og-z-tooltip: 11040;
 
   /* Product geometry: shared by shell, composer and legacy adapters. */
-  --og-radius-control: var(--og-radius-md);
-  --og-radius-card: var(--og-radius-xl);
+  --og-radius-control: var(--og-radius-lg);
+  --og-radius-card: var(--og-radius-2xl);
   --og-radius-menu: var(--og-radius-lg);
   --og-radius-composer: var(--og-radius-2xl);
-  --og-clock-size: 64px;
+  --og-clock-size: 72px;
   --og-device-w: 393px;
   --og-device-h: 852px;
   --og-device-scale: 1;
   --og-device-radius: 44px;
   --og-device-bezel: 10px;
-  --og-tracking-title: -.025em;
+  --og-tracking-title: -.035em;
+  /* Workbench geometry: page hierarchy and chrome share one scale. */
+  --og-workbench-max: 1120px;
+  --og-workbench-gutter: 40px;
+  --og-workbench-hero: 44px;
+  --og-workbench-hero-lh: 1.2;
+  --og-workbench-header-h: 60px;
+  --og-workbench-tabs-h: 44px;
+  --og-workbench-settings-w: 1040px;
+  --og-workbench-settings-nav: 180px;
+  --og-workbench-service-h: 80px;
+  --og-workbench-clock: 72px;
+  --og-workbench-grid: 24px;
+  --og-workbench-canvas-min: 400px;
 
   /* ── 安全区：手机端由平台轴接管（桌面恒 0） ── */
   --og-safe-top: 0px;
@@ -187,15 +200,15 @@
 /* ── 密度轴：同一套刻度，三档取值。组件不写断点，只读这几个令牌 ── */
 [data-og-density="comfortable"] {
   --og-ctl-h-sm: 30px;
-  --og-ctl-h-md: 36px;
+  --og-ctl-h-md: 40px;
   --og-ctl-h-lg: 44px;
   --og-row-h: 44px;
   --og-card-pad: var(--og-space-4);
 }
 
 [data-og-density="compact"] {
-  --og-ctl-h-sm: 28px;
-  --og-ctl-h-md: 32px;
+  --og-ctl-h-sm: 30px;
+  --og-ctl-h-md: 36px;
   --og-ctl-h-lg: 36px;
   --og-ctl-pad-x-md: 12px;
   --og-row-h: 38px;
@@ -249,4 +262,13 @@
   --og-safe-left: env(safe-area-inset-left, 0px);
   --og-safe-right: env(safe-area-inset-right, 0px);
   --og-page-max: 100%;
+}
+
+[data-og-platform="mobile"] {
+  --og-workbench-gutter: 16px;
+  --og-workbench-hero: 28px;
+  --og-workbench-clock: 36px;
+  --og-workbench-header-h: 64px;
+  --og-workbench-tabs-h: 52px;
+  --og-workbench-service-h: 64px;
 }

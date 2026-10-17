@@ -315,6 +315,16 @@ export function buildSystemBoard(deps: BoardDeps): Board {
 
 export function defaultBoardDoc(deps: BoardDeps): BoardDoc {
   const board = buildSystemBoard(deps);
+  // A fresh workspace starts as a readable three-column composition. Legacy layouts
+  // have their own migration path; never overwrite their authored positions.
+  if (deps.loadLayoutItems("portrait") == null && deps.loadLayoutItems("landscape") == null) {
+    for (const orientation of ["portrait", "landscape"] as const) {
+      board.cells[orientation] = (board.cells[orientation] ?? []).map((item, index) => ({
+        ...item,
+        rect: { x: (index % 3) * 376, y: Math.floor(index / 3) * 188, w: 360, h: 172 },
+      }));
+    }
+  }
   return { v: 1, boards: [board], activeBoardId: board.id, order: deps.loadOrder() };
 }
 

@@ -473,7 +473,7 @@ pub async fn seafile_share_delete(token: String, share_token: String) -> Result<
 /// 匿名读取一个分享链接根目录下的清单文件（暂存箱口令的接收端通道）。
 /// 只读取根目录第一个文件；返回 UTF-8 文本（manifest.json）。
 #[tauri::command]
-pub async fn seafile_share_read(link: String) -> Result<String, String> {
+pub async fn seafile_share_read(link: String, name: Option<String>) -> Result<String, String> {
     let token = share_token_of(&link).ok_or_else(|| "不是有效的云盘分享链接（缺少 /d/<token>/）".to_string())?;
     let v: Value = check(
         client()?
@@ -488,12 +488,21 @@ pub async fn seafile_share_read(link: String) -> Result<String, String> {
     .await
     .map_err(|e| e.to_string())?;
     let entries = v.get("data").and_then(|x| x.as_array()).or_else(|| v.as_array());
+    let want = name.unwrap_or_default();
     let name = entries
         .and_then(|a| {
             a.iter().find(|e| {
+                let is_file = e.get("type").and_then(|t| t.as_str()) == Some("file")
+                    || e.get("kind").and_then(|t| t.as_str()) == Some("file");
+                let file_name = e.get("name").and_then(|n| n.as_str()).unwrap_or("");
+                is_file && (want.is_empty() || file_name == want)
+            })
+        })
+        .or_else(|| {
+            entries.and_then(|a| a.iter().find(|e| {
                 e.get("type").and_then(|t| t.as_str()) == Some("file")
                     || e.get("kind").and_then(|t| t.as_str()) == Some("file")
-            })
+            }))
         })
         .and_then(|e| e.get("name").and_then(|n| n.as_str()))
         .ok_or_else(|| "分享里没有文件（可能已被撤销或过期）".to_string())?;

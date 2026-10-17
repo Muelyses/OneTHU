@@ -53,20 +53,44 @@ const adapter: VaultCloudAdapter = {
     const id = shareId();
     const dir = `${ROOT}/${id}`;
     await invoke("seafile_mkdir", { token, repoId, path: dir });
-    const manifest = JSON.stringify(payload);
+    /* 文件条目先上传到分享目录（同一目录一起分享）；清单里只留相对路径。 */
+    const cloud = JSON.parse(JSON.stringify(payload)) as VaultSharePayload;
+    const filesDir = `${dir}/files`;
+    let filesReady = false;
+    for (const it of cloud.items ?? []) {
+      const f = it.file;
+      if (!f?.stagedPath) continue;
+      if (!filesReady) {
+        await invoke("seafile_mkdir", { token, repoId, path: filesDir });
+        filesReady = true;
+      }
+      const safe = (f.hash ? f.hash.slice(0, 8) + "-" : "") + f.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
+      await invoke("seafile_upload", { token, repoId, parentDir: filesDir, localPath: f.stagedPath, replace: true });
+      f.cloudPath = `files/${safe}`;
+    }
+    const manifest = JSON.stringify(cloud);
     const localPath = await writeTemp(`onethu-vault-${id}.json`, manifest);
-    const path = `${dir}/manifest.json`;
+    const manifestPath = `${dir}/manifest.json`;
     await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
+    let path = dir;
+    try {
+      const share = await invoke<ShareOut>("seafile_share", { token, repoId, path: dir, expireDays: EXPIRE_DAYS, password: "" });
+      const expiresAt = Date.now() + EXPIRE_DAYS * 24 * 3600 * 1000;
+      return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
+    } catch {
+      /* 目录分享被云盘策略拒绝：退化为分享清单文件（文件条目不可直接下载） */
+      path = manifestPath;
+    }
     const share = await invoke<ShareOut>("seafile_share", {
       token, repoId, path, expireDays: EXPIRE_DAYS, password: "",
     });
     const expiresAt = Date.now() + EXPIRE_DAYS * 24 * 3600 * 1000;
-    return { provider: "seafile", repoId, path, shareUrl: share.link, shareToken: share.token, expiresAt };
+    return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
   },
 
   async resolve(ref: VaultCloudRef): Promise<VaultSharePayload> {
     if (!ref.shareUrl) throw new Error("这条云分享口令没有分享链接");
-    const text = await seafileShareRead(ref.shareUrl);
+    const text = await seafileShareRead(ref.shareUrl, ref.manifestName ?? "manifest.json");
     const p = JSON.parse(text) as VaultSharePayload;
     if (p?.kind !== "vault-share" || p.v !== 1) throw new Error("云盘清单格式不受支持");
     return p;

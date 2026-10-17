@@ -213,3 +213,11 @@
 - 分享/碰一碰链路统一走 ONV2；云分享仍只编码云盘引用，不塞清单。
 - vault 回归 30/30（ONV2 形状、ONV1 向后兼容、篡改/过期拒绝）。
 - 仍未做：云盘分享清单的文件引用计数 GC、真实清华云盘 live 冒烟。
+
+
+### 12.5 云分享带文件（2026-10-18）
+
+- Rust `seafile_share_read` 支持指定清单文件名；`VaultCloudRef.manifestName`。
+- `vaultCloud.upload`：文件条目先按 hash 前缀上传到 `/Vault/shares/<id>/files/`，清单写相对路径；
+  优先分享整个目录（接收端既拿清单也拿文件），目录分享被拒时退化为分享 manifest 文件。
+- 接收端 `resolve` 按 manifestName 读清单；`cargo check`/typecheck 通过，真实云盘目录分享仍待 live。

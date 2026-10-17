@@ -30,6 +30,8 @@ export interface VaultCloudRef {
   shareUrl?: string;
   /** 分享 token（撤销时用；云盘适配器填） */
   shareToken?: string;
+  /** 分享根目录里的清单文件名（目录分享时读取；缺省 manifest.json） */
+  manifestName?: string;
   /** 过期时间（epoch ms；0/缺省 = 不过期） */
   expiresAt?: number;
 }

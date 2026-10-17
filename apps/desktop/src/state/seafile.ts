@@ -158,8 +158,8 @@ export async function seafileShareDelete(shareToken: string): Promise<void> {
 }
 
 /** 匿名读取分享链接根目录的清单文件（接收端无需登录；只返回 UTF-8 文本）。 */
-export async function seafileShareRead(link: string): Promise<string> {
-  return invoke<string>("seafile_share_read", { link });
+export async function seafileShareRead(link: string, name?: string): Promise<string> {
+  return invoke<string>("seafile_share_read", { link, name: name ?? null });
 }
 
 export async function seafileSearch(repoId: string, query: string): Promise<SeafileEntry[]> {

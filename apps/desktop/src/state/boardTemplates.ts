@@ -4,7 +4,8 @@
  * 方案：docs/原子收藏-可行性与实现方案.md §5.3（起步模板）。
  * 高度按**瓦片**估算；套用后白板的「一次性拟合」会把装不下的项再撑高，因此这里取保守值即可。
  */
-import { BOARD_COLS, type BoardItem, type WidgetSpec } from "./boardCore.js";
+import { homeStarterItems, BOARD_COLS, type BoardItem, type WidgetSpec } from "./boardCore.js";
+import { ensureNoOverlap } from "./boardReflow.js";
 
 export interface TemplateItem {
   spec: WidgetSpec;
@@ -23,6 +24,7 @@ const MAIN = 3;
 
 /** 三套起步排版：今日速览 / 学习 / 极简。 */
 export const BOARD_TEMPLATES: readonly BoardTemplate[] = [
+  {id: "tpl-home", name: "默认首页", description: "时钟、问候语、一级功能区与今日四件套。", items: homeStarterItems().map(it => ({spec: it.spec, cell: it.cell}))},
   {
     id: "tpl-today",
     name: "今日速览",
@@ -64,6 +66,7 @@ export function templateById(id: string): BoardTemplate | null {
 
 /** 把模板展开成条目：主列/侧栏各自按 h 紧凑排布（模板只写列与高，y 在这里算）。 */
 export function templateItems(tpl: BoardTemplate, now = Date.now()): BoardItem[] {
+  if (tpl.id === "tpl-home") return ensureNoOverlap(homeStarterItems().map((it, i) => ({...it, id: `tpl-home.${now}.${i}`})));
   const cursor: Record<string, number> = { main: 0, rail: 0 };
   return tpl.items.map((it, i) => {
     const key = it.cell.x >= MAIN ? "rail" : "main";

@@ -101,6 +101,7 @@ export function applyDynamicColor(palette: DynamicPalette): void {
   document.documentElement.dataset.dynamic = "on";
   // 亮/暗两套角色都在上面注入了，选哪一套看 data-scheme——取色期间按系统亮暗走。
   syncScheme();
+  window.dispatchEvent(new Event("onethu:dynamic-palette"));
 }
 
 export function clearDynamicColor(): void {

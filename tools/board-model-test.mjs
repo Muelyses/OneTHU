@@ -233,11 +233,12 @@ const freshDeps = { ...deps, loadLayoutItems: () => null, resolveLayout: () =>
   Array.from({ length: 9 }, (_, i) => ({ id: "starter." + i, col: "main", collapsed: false })) };
 const freshBoard = B.defaultBoardDoc(freshDeps).boards[0];
 const freshRects = freshBoard.cells.portrait.map(x => x.rect);
-ok(freshRects.every(r => r && r.w >= 320 && r.h >= 160), "新板卡片必须有可读尺寸");
-ok(Math.max(...freshRects.map(r => r.x + r.w)) <= 1120, "新板三列不得超出版心");
+ok(freshRects.every(r => r && r.w >= 280 && r.h >= 132), "新板卡片必须有可读尺寸");
+ok(Math.max(...freshRects.map(r => r.x + r.w)) <= 1120, "新首页不得超出版心");
 ok(freshRects.every((a, i) => freshRects.every((b, j) => i === j || a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y)), "新板初始卡片不重叠");
-const preserved = B.defaultBoardDoc({ ...freshDeps, loadLayoutItems: () => PORTRAIT });
-ok(preserved.boards[0].cells.portrait.every(x => !x.rect), "旧布局必须走原迁移通道，不能套新板排版");
+const preserved = B.defaultBoardDoc({ ...deps, loadLayoutItems: () => PORTRAIT });
+ok(preserved.boards[0].cells.portrait.some(x => x.id === "today.homework" && x.collapsed), "旧布局保留原卡片和折叠状态");
+ok(preserved.homeLayoutVersion === 2, "旧布局补齐可编辑 chrome 并记录迁移版本");
 
 /* A note saved by the former outer-props path must remain recoverable. */
 const brokenSavedNote = { id: "note-legacy", spec: { kind: "custom", id: "note", props: { tone: "yellow", text: "older" } }, props: { text: "saved draft", extra: true }, cell: { x: 0, y: 0, w: 2, h: 2 } };

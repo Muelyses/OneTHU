@@ -16,7 +16,7 @@ export {
   resolveAxes,
 } from "./pipeline/director.js";
 export type {
-  OGAxes, OGTheme, OGSkin, OGScheme, OGSchemePref, OGDensity, OGMotion, OGPlatform, OGScopeSpec, ScopeToken, StorageLike,
+  ThemeRole, OGAxes, OGTheme, OGSkin, OGScheme, OGSchemePref, OGDensity, OGMotion, OGPlatform, OGScopeSpec, ScopeToken, StorageLike,
 } from "./pipeline/director.js";
 export { OneGUIProvider, Scope, useAxes, useOneGUI, useScheme, useScopeSpec } from "./pipeline/react.js";
 
@@ -82,3 +82,5 @@ export type {
 export * from "./components/icons.js";
 export { Icon, Chip, Tag, Badge } from "./components/chip.js";
 export type { IconProps, IconSize, ChipProps, BadgeProps } from "./components/chip.js";
+
+export { themeFromVars } from "./pipeline/theme.js";

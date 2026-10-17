@@ -1,3 +1,7 @@
+import { HomeClockWidget, HomeServicesWidget } from "./explorer/HomeSpheres.js";
+import { HwCarousel, pendingHomework } from "./HomeworkCarousel.js";
+import { hwCourseLabel } from "../lib/hwCourse.js";
+import { extHwSourceName } from "../state/exthw.js";
 import { Btn } from "@onethu/gui";
 /**
  * 白板侧的可独立渲染注册表（霖 2026-10-11）。
@@ -511,20 +515,25 @@ function NoteCard(props?: Record<string, unknown>): ReactNode {
 
 function HomeworkCard(): ReactNode {
   const { navigate } = useApp();
-  const { data, state } = useCampusData();
+  const { data, state } = useLearnData();
   const ext = useExternalHomework();
   const ignored = useIgnoredHw();
   const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
-  const rows = useMemo(
-    () =>
-      [...(data?.homework ?? []), ...extHw]
-        .filter((h) => !h.submitted && !ignored.has(h.id))
-        .sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, extHw, ignored],
-  );
+  const rows = useMemo(() => pendingHomework([...(data?.homework ?? []), ...extHw], ignored), [data, extHw, ignored]);
   const dataReady = !(state === "loading" && !data);
+  const names = useMemo(() => new Map((data?.courses ?? []).map(c => [c.id, c.name])), [data]);
   const courseName = (courseId: string): string => data?.courses.find((c) => c.id === courseId)?.name ?? "课程";
-  return <HomeworkRows loading={!dataReady} rows={rows} courseName={courseName} navigate={navigate} />;
+  return (
+    <div className="homework-carousel-widget">
+      {!dataReady ? <div className="wg-card-empty">正在同步待办…</div> : rows.length ? (
+        <HwCarousel items={rows} courseNameOf={courseName}
+          courseLabelOf={h => hwCourseLabel(h, names, extHwSourceName)} semesterId={data?.semester.id} />
+      ) : (
+        <div className="homework-clear"><span>✓</span><strong>今天，轻一点。</strong><p>暂时没有待完成的作业</p></div>
+      )}
+      <Btn variant="ghost" onClick={() => navigate("tasks")}>查看全部待办 →</Btn>
+    </div>
+  );
 }
 
 function ClassesCard(): ReactNode {
@@ -692,7 +701,8 @@ export const BOARD_CARD_RENDERERS: Record<string, CardRenderer> = {
   [cardRendererKey("homework")]: () => <HomeworkCard />,
   [cardRendererKey("classes")]: () => <ClassesCard />,
   [cardRendererKey("notices")]: () => <NoticesCard />,
-  [cardRendererKey("clock")]: (_props, size) => <ClockCard size={size} />,
+  [cardRendererKey("clock")]: () => <HomeClockWidget />,
+  [cardRendererKey("services")]: () => <HomeServicesWidget />,
   [cardRendererKey("date")]: (_props, size) => <DateCard size={size} />,
   [cardRendererKey("weather")]: (_props, size) => <WeatherCard size={size} />,
   /* 余额速览：自足实现 + 两档排版（4×1 并排 / 4×2 上下两行）。 */

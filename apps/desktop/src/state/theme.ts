@@ -42,6 +42,7 @@ export interface ThemeDef {
 export interface ThemeSnapshot {
   themes: ThemeDef[];
   activeId: string | null;
+  effectiveId: string | null;
   /** 当前主题的 logo SVG（无则 null → 用默认 BrandLogo） */
   logoSvg: string | null;
   /** 被删除的内置 id（恢复按钮可见性依据） */
@@ -59,8 +60,8 @@ export interface ThemeSnapshot {
 const BUILTIN_THEMES: ThemeDef[] = [
   {
     id: "onethu.theme.ivory",
-    name: "象牙 · 默认",
-    version: "1.0.0",
+    name: "石墨 · 默认",
+    version: "2.0.0",
     author: "OneTHU",
     description: "OneGUI 默认外观：中性面阶、黑白主要动作与清晰文字层级。",
     vars: {},
@@ -71,7 +72,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "紫水晶",
     version: "1.1.0",
     author: "OneTHU",
-    description: "紫罗兰强调色，用于链接、选中与状态标识。",
+    description: "紫罗兰纸面、深紫文字与紫色强调。",
     vars: {
       "--primary": "#6d28d9",
       "--primary-hover": "#5b21b6",
@@ -98,7 +99,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "清华紫",
     version: "1.0.0",
     author: "OneTHU",
-    description: "清华校色紫，用于链接、选中与状态标识。",
+    description: "清华紫强调、淡紫面阶与清晰墨色。",
     vars: {
       // 品牌族：primary tone 40 / 悬停 tone 30（加深一档，紫底白字变浅会掉对比度）
       "--primary": "#90399c",
@@ -134,7 +135,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "青瓷",
     version: "1.1.0",
     author: "OneTHU",
-    description: "青绿强调色，用于链接、选中与状态标识。",
+    description: "青绿强调与清凉的浅绿纸面。",
     vars: {
       "--primary": "#0f766e",
       "--primary-hover": "#115e59",
@@ -157,9 +158,9 @@ const BUILTIN_THEMES: ThemeDef[] = [
   {
     id: "onethu.theme.warmsand",
     name: "暖沙",
-    version: "1.0.0",
+    version: "1.1.0",
     author: "OneTHU",
-    description: "沙金强调色，用于链接、选中与状态标识。",
+    description: "温暖米色纸面、棕色文字与沙金强调。",
     vars: {
       "--accent": "#c2740a",
       "--accent-soft": "#fbf1e0",
@@ -178,7 +179,7 @@ const BUILTIN_THEMES: ThemeDef[] = [
     name: "墨蓝夜航",
     version: "1.1.0",
     author: "OneTHU",
-    description: "海军蓝强调色，用于链接、选中与状态标识。",
+    description: "海军蓝强调与冷调浅蓝面阶。",
     vars: {
       "--primary": "#1e3a8a",
       "--primary-hover": "#1e40af",
@@ -261,16 +262,7 @@ const STYLE_ID = "onethu-theme-style";
  * 这张表是 tokens.css Compat 层的逆映射，必须逐条一致：由
  * tools/theme-system-test.mjs 从 tokens.css 反解并核对（任何漂移直接红）。
  */
-/**
- * 表面填充家族（bg/surface 五级）= 玻璃档（glass-levels.css 的 md-sys 同名令牌）**独占监管**：
- * 主题不得再注入这几条（2026-10-14 大一统定案）——主题注入的是实色，后置注入层里稳压
- * 玻璃令牌，正是「巨量 UI 还是白的」、且玻璃档位（clear/rich/deep）调不动卡面的总根因。
- * 主题仍然保留色调/文字/边框/主色/强调色的表达权（那是主题的个性所在）。
- */
-const SURFACE_FAMILY = new Set([
-  "--bg", "--bg-soft", "--surface", "--surface-2", "--surface-3",
-]);
-
+/** Legacy aliases are mirrored for components still using System roles. */
 export const COMPAT_TO_SYSTEM: Record<string, string> = {
   "--bg": "--md-sys-color-surface",
   "--bg-soft": "--md-sys-color-surface-container-low",
@@ -389,7 +381,7 @@ function bootstrap(): void {
   state.installed = state.installed.map((t) => {
     const fresh = shipped.get(t.id);
     if (!fresh || t.source === "plugin") return t;
-    if (t.version !== fresh.version || varsDiffer(t.vars, fresh.vars)) {
+    if (t.version !== fresh.version || t.name !== fresh.name || t.description !== fresh.description || varsDiffer(t.vars, fresh.vars)) {
       upgraded = true;
       return fresh;
     }
@@ -460,7 +452,6 @@ function applyTheme(def: ThemeDef | null): void {
   const varLines: string[] = [];
   for (const [k, v] of Object.entries(def.vars)) {
     if (!/^--[\w-]+$/.test(k)) continue;
-    if (SURFACE_FAMILY.has(k)) continue; // 表面填充家族 = 玻璃档独占，主题不再覆盖
     varLines.push(`${k}: ${v};`);
     const sys = COMPAT_TO_SYSTEM[k];
     // 镜像到 System 角色：迁移到 System 层的组件（按钮/chip/FAB…）才能跟着主题变色
@@ -524,6 +515,7 @@ function snapshot(): ThemeSnapshot {
   snapCache ??= {
     themes: [...state.installed],
     activeId: state.activeId,
+    effectiveId: effectiveTheme()?.id ?? null,
     logoSvg,
     deletedBuiltins: [...state.deletedBuiltins],
     followSystem: state.followSystem,
@@ -582,6 +574,7 @@ export function activateTheme(id: string): boolean {
     /* 隐私模式下 localStorage 不可用：取色注入仍被摘掉，本次会话行为正确 */
   }
   state.activeId = id;
+  state.followSystem = false;
   /* 注入失败也要落库 + 广播：否则「点了应用、状态仍是旧值、界面纹丝不动」，
      而且现场不留任何痕迹（用户实测 2026-10-15；activeId 在存储里一直是 null）。
      失败信息进调试日志（/tmp/onethu-debug.log），便于事后定位。 */
@@ -620,7 +613,13 @@ export function reapplyActiveTheme(): void {
 }
 
 export function deactivateTheme(): void {
+  if (document.documentElement.dataset.dynamic === "on") {
+    try { localStorage.setItem("onethu.dynamicColor", "0"); } catch { /* Private storage: clear the current injection anyway. */ }
+    document.getElementById("onethu-dynamic-color")?.remove();
+    delete document.documentElement.dataset.dynamic;
+  }
   state.activeId = null;
+  state.followSystem = false;
   applyTheme(null);
   persist();
   emit();
@@ -735,4 +734,10 @@ export function currentThemeIsDark(): boolean {
   } catch {
     return false;
   }
+}
+
+/** Effective definition includes scheduled day/night selection, never CSS bridge output. */
+export function effectiveTheme(): ThemeDef | null {
+  const id = state.followSystem ? (systemDark ? state.nightThemeId : state.dayThemeId) ?? state.activeId : state.activeId;
+  return state.installed.find(t => t.id === id) ?? null;
 }

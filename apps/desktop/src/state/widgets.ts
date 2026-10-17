@@ -80,6 +80,7 @@ export const SIZE_PLANS: Record<string, SizePlan> = {
  * 要求：用户读得懂、并讲清它需要什么上下文（多数卡片需要登录）。
  */
 export const CARD_DESCRIPTIONS: Record<string, string> = {
+  services: "首页一级功能区，可自选服务入口，也可移动、调整大小或删除。",
   clock: "本地时间，每秒走字；大一号的档位会带上日期与星期。不需要登录。",
   date: "今天的日期与星期；宽档位会带上年份。不需要登录。",
   weather: "清华园实时天气与未来三天预报，开放数据半小时一更。不需要登录。",
@@ -126,7 +127,7 @@ export const CARD_DESCRIPTIONS: Record<string, string> = {
  * 其余卡片走挡位控制。
  */
 function isFreeSizeCard(def: HomeCardDef): boolean {
-  return def.kind === "entry" || LIST_WIDGET_IDS.includes("custom:" + String(def.id));
+  return def.id === "services" || def.kind === "entry" || LIST_WIDGET_IDS.includes("custom:" + String(def.id));
 }
 
 /** 便笺（白板随手写字；可收起）。放应用侧而非 PRESET：widgetMeta 的 preset 列表
@@ -158,7 +159,7 @@ export function cardWidgetDefs(): WidgetDef[] {
       spec: { kind: "custom", id },
       title: def.title,
       description: CARD_DESCRIPTIONS[id] ?? "",
-      defaultSize: free ? { w, h: 1 } : { ...plan.def },
+      defaultSize: id === "services" ? { w: 4, h: 3 } : id === "homework" ? { w: 4, h: 4 } : free ? { w, h: 2 } : { ...plan.def },
       sizeRange: rangeFor(def),
       sizeControl: free ? "free" : "tiers",
       sizeTiers: free ? undefined : plan.tiers,

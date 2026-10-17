@@ -60,8 +60,8 @@ export interface WidgetDef {
 export const PRESET_WIDGETS: WidgetDef[] = [
   {
     id: "text-title",
-    spec: { kind: "text", text: "标题", variant: "title" },
-    title: "文字标题",
+    spec: { kind: "text", text: "把今天，安排好。", variant: "title" },
+    title: "大标题文字",
     description: "一段标题文字，用来给自己的白板分区。不需要任何上下文。",
     defaultSize: { w: 2, h: 1 },
     sizeRange: { minW: 1, minH: 1, maxW: BOARD_UNITS, maxH: 2 },

@@ -1,0 +1,10 @@
+{
+  "checks": 34,
+  "results": [
+    "竖栏收起与展开、标签页命名",
+    "desktop 便笺保存与恢复、Segment、研讨间选时/确认",
+    "phone 便笺保存与恢复、Segment、研讨间选时/确认"
+  ],
+  "errors": [],
+  "roomRequests": "mocked; no real reservations sent"
+}

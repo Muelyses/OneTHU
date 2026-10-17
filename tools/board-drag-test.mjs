@@ -117,7 +117,7 @@ const coreSrc = readFileSync("apps/desktop/src/state/boardCore.ts", "utf8");
 ok(
   /export function repairOverlaps/.test(coreSrc) &&
     /const safe = repairOverlaps\(purgeGridResidue\(doc\)\)/.test(coreSrc) &&
-    /const safe = repairOverlaps\(purgeGridResidue\(parsed\)\)/.test(coreSrc),
+    /const safe = repairOverlaps\(migrateHomeCanvas\(purgeGridResidue\(parsed\)\)\)/.test(coreSrc),
   "写入口（saveBoard / loadBoard）没有再接重叠不变量（期望 repairOverlaps(purgeGridResidue(…))）",
 );
 const docM = E.moveItem(docOf(tall), "b1", "portrait", "tall", { x: 0, y: 3 });

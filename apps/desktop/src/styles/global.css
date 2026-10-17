@@ -6180,20 +6180,8 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
    注意：本块在 explorer*.css 之前，后续文件里同特异度的手写 material 会盖过它（历史上 .ex-rail 就这么脱队过，
    深色模式下竖栏因此比顶栏暗）。新增栏体若发现脱队，先查是不是又被某文件手写的 material 盖掉。 */
 
-/* ── 玻璃只算一层（2026-10-14 统一收口，从 explorer.css 归并进单一玻璃源）──
-   玻璃卡（free-item/home-card/card）内部的次级卡与直达 widget 卡（.hw-card/.balance-strip
-   等）一律透明——0.72×0.66 的旧嵌套实测把卡糊成纸白；材质由最外层玻璃板一层提供。
-   最后那条兜底刷杀 free-item 内类名含 card/sheet/panel/plate 的杂盒与内联白底。 */
-.explorer-shell .free-item :is(.card, .hw-card, .wg-card, .home-card, .stat-card, .next-class, .lab-runs, .balance-card, .balance-strip, .balance-cell),
-.explorer-shell :is(.card, .stat-card, .home-card) :is(.card, .stat-card, .home-card, .hw-card):not(.is-editing),
-.explorer-shell .home-chrome-layer :is(.card, .hw-card, .wg-card, .stat-card, .balance-card),
-.explorer-shell .free-item :is([class*="card"], [class*="sheet"], [class*="panel"], [class*="plate"], [style*="background"]) {
-  background: transparent !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
+/* Nested material policy is owned by OneGUI recipes. Broad class-name/inline-style
+   overrides used to erase task cards, note paper and theme previews here. */
 
 /* ═══════════════════ 液态玻璃 v4.2 收尾（点名遗漏 + 全量扫描补课） ═══════════════════
    三档材质沿用既有口径；原规则一律不动（card-layers 等护栏读的是首个规则块），这里后置覆盖：

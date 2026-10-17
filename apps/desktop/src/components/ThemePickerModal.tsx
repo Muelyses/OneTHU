@@ -22,7 +22,7 @@ import { installedPlugins, subscribe, uninstallPlugin } from "../plugins/loader.
 import { confirmOk } from "../lib/confirm.js";
 
 const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "var(--og-scrim)", zIndex: 1000, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: 0 };
-const panelStyle: React.CSSProperties = { animation: "m-sheet-up 260ms var(--md-sys-motion-easing-emphasized-decelerate, ease-out) both", width: "100%", minWidth: 0, overflow: "hidden", maxWidth: "100%", maxHeight: "92dvh", display: "flex", flexDirection: "column", background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0", paddingBottom: "env(safe-area-inset-bottom)", boxShadow: "var(--og-elev-menu)" };
+const panelStyle: React.CSSProperties = { animation: "m-sheet-up 260ms var(--md-sys-motion-easing-emphasized-decelerate, ease-out) both", width: "100%", minWidth: 0, overflow: "hidden", maxWidth: "100%", maxHeight: "92dvh", display: "flex", flexDirection: "column", background: "var(--og-fill-overlay)", color: "var(--og-content-1)", borderRadius: "var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0", paddingBottom: "env(safe-area-inset-bottom)", boxShadow: "var(--og-elev-menu)" };
 const maskOut: React.CSSProperties = { animation: "m-fade-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
 const panelOut: React.CSSProperties = { animation: "m-pop-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
 const maskStylePc: React.CSSProperties = { ...maskStyle, background: "color-mix(in srgb, var(--og-scrim) 40%, transparent)", alignItems: "center", justifyContent: "flex-end", padding: 0 };
@@ -31,15 +31,23 @@ const panelStylePc: React.CSSProperties = { ...panelStyle, animation: "m-slide-r
 /** 主题色卡：从 vars 抽 accent / accent-soft / bg 三色出预览（缺省回退令牌默认）。
  *  只显示名字看不出样式，所以每一行都带这块色卡。 */
 export function ThemeSwatch({ vars }: { vars: Record<string, string> }): ReactNode {
-  const accent = vars["--accent"] ?? "var(--og-accent)";
-  const soft = vars["--accent-soft"] ?? "var(--og-accent-soft)";
-  const bg = vars["--bg"] ?? "var(--og-surface-1)";
-  return (
-    <span className="theme-swatch" style={{ background: soft, display: "inline-flex", gap: 3, padding: 3, borderRadius: 8, flex: "none" }}>
-      <i style={{ width: 18, height: 18, borderRadius: 5, background: accent }} />
-      <i style={{ width: 18, height: 18, borderRadius: 5, background: bg, boxShadow: "inset 0 0 0 1px var(--og-line-1)" }} />
-    </span>
-  );
+  return <span className="theme-swatch" aria-hidden="true" style={{
+    "--theme-preview-accent": vars["--og-accent"] ?? vars["--accent"] ?? "var(--og-ref-neutral-950)",
+    "--theme-preview-paper": vars["--og-surface-1"] ?? vars["--surface"] ?? vars["--bg"] ?? "var(--og-ref-neutral-0)",
+    "--theme-preview-canvas": vars["--og-surface-0"] ?? vars["--bg"] ?? "var(--og-ref-neutral-50)",
+  } as React.CSSProperties}><i /><i /><i /></span>;
+}
+
+export function ThemeChoice({ name, description, vars = {}, selected, onSelect, extra }: {
+  name: string; description?: string; vars?: Record<string, string>; selected: boolean; onSelect: () => void; extra?: ReactNode;
+}): ReactNode {
+  return <div className={"theme-choice" + (selected ? " is-selected" : "")}>
+    <Btn variant="ghost" className="theme-choice-main" aria-pressed={selected} onClick={onSelect}>
+      <ThemeSwatch vars={vars} />
+      <span className="theme-choice-copy"><strong>{name}</strong><span>{description}</span></span>
+      <span className="theme-choice-status">{selected ? "使用中 ✓" : "应用"}</span>
+    </Btn>{extra}
+  </div>;
 }
 
 export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: () => void }): ReactNode {
@@ -167,59 +175,10 @@ export function ThemePickerModal({ open, onClose }: { open: boolean; onClose: ()
             <Btn variant="ghost" onClick={() => setMsg("已恢复 " + restoreBuiltins() + " 个内置主题")}>恢复内置</Btn>,
           )}
           {installedThemes.length === 0 ? <div className="plg-hint">没有匹配的已安装主题。</div> : null}
-          <div style={{ display: "grid", gap: 12, gridTemplateColumns: "minmax(0, 1fr)" }}>
-            {/* 基础令牌不在 snap.themes 里（它不是 ThemeDef），所以单列一行，
-                否则切了主题就回不到默认外观了。 */}
-            {hit(["默认外观"]) ? (
-              <div
-                style={{
-                  display: "flex", alignItems: "center", gap: 12, padding: "12px 14px",
-                  border: "1px solid " + (snap.activeId ? "var(--border)" : "var(--accent)"),
-                  borderRadius: "var(--r-md)", background: snap.activeId ? "var(--surface)" : "var(--accent-soft)",
-                }}
-              >
-                <ThemeSwatch vars={{}} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                    <b>默认外观</b>
-                    {snap.activeId ? null : <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span>}
-                  </div>
-                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 4 }}>不套用任何主题，使用应用自带配色</div>
-                </div>
-                {snap.activeId ? (
-                  <Btn variant="solid" tone="brand" onClick={() => { deactivateTheme(); setMsg("已回到默认外观"); }}>应用</Btn>
-                ) : null}
-              </div>
-            ) : null}
-            {installedThemes.map((t) => {
-              const on = snap.activeId === t.id;
-              return (
-                <div
-                  key={t.id}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", minWidth: 0,
-                    border: "1px solid " + (on ? "var(--accent)" : "var(--border)"),
-                    borderRadius: "var(--r-md)", background: on ? "var(--accent-soft)" : "var(--surface)",
-                  }}
-                >
-                  <ThemeSwatch vars={t.vars} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                      <b title={t.name} style={{ minWidth: 0, maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</b>
-                      {t.source === "plugin" ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>社区</span> : null}
-                      {on ? <span className="chip" style={{ height: 16, fontSize: 9.5, padding: "0 6px" }}>使用中</span> : null}
-                    </div>
-                    <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {t.description ?? t.id}
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", gap: 4, flex: "none" }}>
-                    {on ? null : <Btn variant="solid" tone="brand" onClick={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }}>应用</Btn>}
-                    {ownerOf(t) ? <Btn variant="ghost" titleAttr="删除主题并卸载来源插件" onClick={() => void delTheme(t)}>卸载</Btn> : null}
-                  </div>
-                </div>
-              );
-            })}
+          <div className="theme-choice-grid">
+            {hit(["石墨", "默认"]) ? <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} /> : null}
+            {installedThemes.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); setMsg("已应用「" + t.name + "」"); }}
+              extra={ownerOf(t) ? <Btn variant="ghost" onClick={() => void delTheme(t)}>卸载</Btn> : undefined} />)}
           </div>
 
           {secHead(

@@ -106,6 +106,7 @@ export interface Board {
 }
 
 export interface BoardDoc {
+  homeLayoutVersion?: number;
   v: 1;
   boards: Board[];
   activeBoardId: string;
@@ -315,17 +316,42 @@ export function buildSystemBoard(deps: BoardDeps): Board {
 
 export function defaultBoardDoc(deps: BoardDeps): BoardDoc {
   const board = buildSystemBoard(deps);
-  // A fresh workspace starts as a readable three-column composition. Legacy layouts
-  // have their own migration path; never overwrite their authored positions.
-  if (deps.loadLayoutItems("portrait") == null && deps.loadLayoutItems("landscape") == null) {
-    for (const orientation of ["portrait", "landscape"] as const) {
-      board.cells[orientation] = (board.cells[orientation] ?? []).map((item, index) => ({
-        ...item,
-        rect: { x: (index % 3) * 376, y: Math.floor(index / 3) * 188, w: 360, h: 172 },
-      }));
+  const fresh = deps.loadLayoutItems("portrait") == null && deps.loadLayoutItems("landscape") == null;
+  if (fresh) for (const o of ["portrait", "landscape"] as const) board.cells[o] = homeStarterItems();
+  const doc: BoardDoc = { v: 1, boards: [board], activeBoardId: board.id, order: deps.loadOrder(), homeLayoutVersion: fresh ? 2 : undefined };
+  return migrateHomeCanvas(doc);
+}
+
+/** Stable IDs and explicit revision make deletion permanent after the one-time migration. */
+export function homeStarterItems(): BoardItem[] {
+  return [
+    pxBoardItem("home.clock", {kind: "custom", id: "clock"}, {x: 0, y: 0, w: 280, h: 132}),
+    pxBoardItem("home.greeting", {kind: "text", text: "把今天，安排好。", variant: "title"}, {x: 304, y: 0, w: 800, h: 132}),
+    pxBoardItem("home.services", {kind: "custom", id: "services"}, {x: 0, y: 156, w: 1104, h: 196}),
+    pxBoardItem("home.tasks", {kind: "custom", id: "homework"}, {x: 0, y: 376, w: 540, h: 356}),
+    pxBoardItem("home.classes", {kind: "custom", id: "classes"}, {x: 564, y: 376, w: 540, h: 356}),
+    pxBoardItem("home.news", {kind: "custom", id: "news"}, {x: 0, y: 756, w: 540, h: 248}),
+    pxBoardItem("home.balance", {kind: "custom", id: "cardEntry"}, {x: 564, y: 756, w: 540, h: 248}),
+  ];
+}
+
+export function migrateHomeCanvas(doc: BoardDoc): BoardDoc {
+  if ((doc.homeLayoutVersion ?? 0) >= 2) return doc;
+  return {...doc, homeLayoutVersion: 2, boards: doc.boards.map(board => {
+    if (board.id !== SYSTEM_BOARD_ID) return board;
+    const cells = {...board.cells};
+    for (const o of Object.keys(cells) as Orientation[]) {
+      const items = cells[o] ?? [];
+      // Previously chrome was outside the document. Make room without losing any authored cards.
+      const head = homeStarterItems().slice(0, 3).filter(seed => !items.some(it => it.spec.kind === "custom" && seed.spec.kind === "custom" && it.spec.id === seed.spec.id));
+      const shifted = items.map(it => {
+        const r = rectOf(it);
+        return {...it, rect: {...r, y: r.y + 376}, cell: cellFromRect({...r, y: r.y + 376})};
+      });
+      cells[o] = [...head, ...shifted];
     }
-  }
-  return { v: 1, boards: [board], activeBoardId: board.id, order: deps.loadOrder() };
+    return {...board, cells};
+  })};
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -430,7 +456,7 @@ export function loadBoard(deps: BoardDeps): BoardDoc {
     saveBoard(fresh, deps);
     return fresh;
   }
-  const safe = repairOverlaps(purgeGridResidue(parsed));
+  const safe = repairOverlaps(migrateHomeCanvas(purgeGridResidue(parsed)));
   if (safe !== parsed) saveBoard(safe, deps);
   return safe;
 }

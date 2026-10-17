@@ -30,6 +30,7 @@ import {
 
 /** 首页卡片 id（注册表唯一键，localStorage 里也用它） */
 export type HomeCardId =
+  | "services"
   | "clock" | "date" | "weather"
   | "balance-strip"
   | "today-overview"
@@ -103,12 +104,13 @@ export const HOME_CARD_META: HomeCardDef[] = [
      已自定义过顺序的用户仍按自己存的顺序走）。 */
   /* —— 环境/时钟三件套（2026-10-13，霖：首页要有时间、日期、天气）——默认可见，
      老布局按「注册表新卡追加」规则自动补进侧栏末尾；卡体复用白板的自足实现（boardCards.tsx）。 */
+  { id: "services", title: "一级功能区", kind: "bespoke", icon: IconStar, defaultCol: "main", defaultOrder: -2, defaultHidden: true },
   { id: "clock", title: "时钟", kind: "bespoke", icon: IconSchedule, defaultCol: "rail", defaultOrder: 3.4 },
   { id: "date", title: "日期", kind: "bespoke", icon: IconCalendar, defaultCol: "rail", defaultOrder: 3.5 },
   { id: "weather", title: "天气", kind: "bespoke", icon: IconSun, defaultCol: "rail", defaultOrder: 3.6 },
   { id: "balance-strip", title: "余额速览", kind: "bespoke", icon: IconCard, defaultCol: "main", defaultOrder: 5.5, shellFree: true, aside: "校园卡 · 电费" },
   { id: "classes", title: "今日课程", kind: "bespoke", icon: IconToday, defaultCol: "main", defaultOrder: 1, aside: "点击打开课表" },
-  { id: "homework", title: "未提交作业", kind: "bespoke", icon: IconPen, defaultCol: "main", defaultOrder: 2 },
+  { id: "homework", title: "今日待办", kind: "bespoke", icon: IconPen, defaultCol: "main", defaultOrder: 2 },
   { id: "notices", title: "最近通知", kind: "bespoke", icon: IconBell, defaultCol: "main", defaultOrder: 3, aside: "点击查看详情" },
   { id: "for-you", title: "猜你喜欢", kind: "bespoke", icon: IconStar, defaultCol: "main", defaultOrder: 4, aside: "按使用习惯推荐" },
   /* —— 默认收起的展示卡（「添加卡片」可找回） —— */
@@ -119,7 +121,7 @@ export const HOME_CARD_META: HomeCardDef[] = [
   { id: "next-class", title: "下一节课", kind: "bespoke", icon: IconToday, defaultCol: "rail", defaultOrder: 6.5, aside: "今天最近的一节" },
   { id: "cardEntry", title: "校园卡余额", kind: "bespoke", icon: IconCard, defaultCol: "rail", defaultOrder: 7, defaultHidden: true, aside: "点击进入生活页" },
   { id: "resv", title: "今日预约", kind: "bespoke", icon: IconSchedule, defaultCol: "rail", defaultOrder: 8, defaultHidden: true, aside: "座位 · 研讨间 · 点击管理" },
-  { id: "news", title: "订阅新闻", kind: "bespoke", icon: IconExternal, defaultCol: "rail", defaultOrder: 9, defaultHidden: true },
+  { id: "news", title: "最新新闻", kind: "bespoke", icon: IconExternal, defaultCol: "rail", defaultOrder: 9, defaultHidden: true },
 
   /* —— entry：一键入口卡（默认全部隐藏；除选课二级菜单外所有二级菜单都做入口，
         选课一级菜单本身也是入口，故无 learn 一级入口） —— */

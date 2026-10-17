@@ -5,16 +5,15 @@
 import { Btn, Chip, IconBtn, Modal } from "@onethu/gui";
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { fmtMonthDayWeek } from "../../lib/dateText.js";
-import { allSphereEntries, dockSphere, setDockOpacity, setTimeOpacity, sphereEntry, spheresSnapshot, subscribeSpheres, undockSphere } from "../../state/homeSpheres.js";
+import { allSphereEntries, dockSphere, sphereEntry, spheresSnapshot, subscribeSpheres, undockSphere } from "../../state/homeSpheres.js";
 import { byCategory, NAV_CATEGORIES, pluginCatalogEntries } from "../../state/navigation.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../../plugins/tabs.js";
 import { openTab } from "../../state/explorer.js";
 import { IconChevron, IconMore, IconPlus, IconX } from "../Icons.js";
 
-const OPACITY_STEPS = [1, 0.75, 0.5, 0.3] as const;
 type Entry = NonNullable<ReturnType<typeof sphereEntry>>;
 
-function ChromeClock(): ReactNode {
+export function HomeClockWidget(): ReactNode {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
   return <div className="chrome-clock" aria-label="当前时间">
@@ -31,12 +30,11 @@ function ServiceEntry({ entry, onNavigate }: { entry: Entry; onNavigate: () => v
   </Btn>;
 }
 
-export function HomeChrome(): ReactNode {
+export function HomeServicesWidget(): ReactNode {
   const doc = useSyncExternalStore(subscribeSpheres, spheresSnapshot, spheresSnapshot);
   const pluginTabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
   const [moreOpen, setMoreOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
-  const [opacityMenu, setOpacityMenu] = useState<"time" | "dock" | null>(null);
   const docked = doc.docked.map(sphereEntry).filter((e): e is Entry => e !== null);
   const dockedSet = new Set(doc.docked);
   const go = (entry: { page: import("../../state/app.js").Page; label: string }): void => {
@@ -46,20 +44,10 @@ export function HomeChrome(): ReactNode {
     ...NAV_CATEGORIES.map(name => ({ name, entries: byCategory(name) })),
     { name: "插件", entries: pluginCatalogEntries(pluginTabs) },
   ].filter(group => group.entries.length > 0);
-  const currentOpacity = opacityMenu === "time" ? doc.timeOpacity : doc.dockOpacity;
 
   return <>
-    <div className="home-chrome-layer">
-      <div className="workbench-intro">
-        <span className="workbench-eyebrow">OneTHU / 校园工作台</span>
-        <h1 className="workbench-title">把今天，安排好。</h1>
-        <p className="workbench-description">常用服务随手可达，重要的事留在白板上。</p>
-      </div>
-      <div className="chrome-block chrome-time" style={{ opacity: doc.timeOpacity }} onContextMenu={e => { e.preventDefault(); setOpacityMenu("time"); }}>
-        <ChromeClock />
-      </div>
-      <div className="chrome-block chrome-dock" style={{ opacity: doc.dockOpacity }} onContextMenu={e => { e.preventDefault(); setOpacityMenu("dock"); }}>
-        <div className="workbench-section-label">常用服务</div>
+      <div className="home-services-widget" style={{ opacity: doc.dockOpacity }}>
+        <div className="workbench-section-label">一级功能区</div>
         <div className="hs-dock-row" data-coach="home-dock">
           {docked.map(entry => <ServiceEntry key={entry.page} entry={entry} onNavigate={() => go(entry)} />)}
         </div>
@@ -68,9 +56,8 @@ export function HomeChrome(): ReactNode {
           <Chip size="sm" selected={detailOpen} onClick={() => setDetailOpen(true)}>详细功能</Chip>
         </div>
       </div>
-    </div>
 
-    <Modal open={moreOpen} onClose={() => setMoreOpen(false)} title="常用服务" aria-label="更多功能" size="lg" foot="点击服务直接打开；用右上角的加减按钮调整首页入口。">
+    <Modal open={moreOpen} onClose={() => setMoreOpen(false)} title="一级功能区" aria-label="更多功能" size="lg" foot="点击服务直接打开；用右上角的加减按钮调整首页入口。">
       <div className="workbench-service-library">
         {allSphereEntries().map(entry => {
           const inHome = dockedSet.has(entry.page);
@@ -92,12 +79,6 @@ export function HomeChrome(): ReactNode {
             <span>{entry.name}</span>{entry.note ? <small>{entry.note}</small> : null}
           </Btn>)}
         </section>)}
-      </div>
-    </Modal>
-    <Modal open={opacityMenu !== null} onClose={() => setOpacityMenu(null)} title={(opacityMenu === "time" ? "时间" : "常用服务") + " · 不透明度"} size="sm">
-      <div className="workbench-opacity">
-        {OPACITY_STEPS.map(value => <Btn key={value} variant={Math.abs(currentOpacity - value) < .01 ? "solid" : "outline"} aria-pressed={Math.abs(currentOpacity - value) < .01}
-          onClick={() => { (opacityMenu === "time" ? setTimeOpacity : setDockOpacity)(value); setOpacityMenu(null); }}>{Math.round(value * 100)}%</Btn>)}
       </div>
     </Modal>
   </>;

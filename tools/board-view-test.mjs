@@ -103,10 +103,10 @@ console.log("④ 接线：画布不裁切、盒子撑起来、控件走 OneGUI")
   ok(!/fitZoom\(viewportRef/.test(src) || !/首次打开/.test(src), "不再有首次打开自动适配：盒子永远盖住内容 → 内容都够得着，把高板缩成 40% 反而吓人");
   ok(/el\.style\.minWidth = box\.w/.test(src) && /el\.style\.minHeight = box\.h/.test(src), "盒子的最小尺寸真的写进 DOM（宽高都要，横向也别切）");
   ok(!/el\.style\.minHeight = bottom/.test(src), "删掉旧模型「画布高度跟着内容底边长」");
-  ok(!/BOARD_CANVAS_H/.test(src), "画布不再有固定 2400px 垫层");
+  ok(/needsPenCanvas \? BOARD_CANVAS_H : 0/.test(src), "仅有笔迹或正在绘画时保留笔迹的归一化画布");
   ok(!/beginPan|is-panning/.test(src), "没有空白拖动平移那套（用户否掉的第一版：它会把内容拖到盒子外面）");
   ok(/if \(!e\.ctrlKey && !e\.metaKey\) return;/.test(src), "滚轮处理器先放走没有修饰键的滚动（捏合/⌘ 才拦）");
-  const wheelBody = src.slice(src.indexOf("const onWheel"), src.indexOf("el.addEventListener(\"wheel\""));
+  const wheelBody = src.slice(src.indexOf("const onWheel"), src.indexOf("host.addEventListener(\"wheel\""));
   ok((wheelBody.match(/preventDefault\(\)/g) ?? []).length === 1, "滚轮处理器里只有一处 preventDefault，且在修饰键守卫之后（普通滚动绝不被吞）");
 
   ok(/\.freeboard \{[\s\S]{0,900}overflow: visible/.test(css), "画布 overflow:visible —— 这里绝不裁切内容");

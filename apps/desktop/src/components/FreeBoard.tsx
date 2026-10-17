@@ -6,8 +6,8 @@
  * OnePage = 用户板（OnePageSurface 传 activeBoardId）——**首页与 OnePage 从此是同一块画布**，
  * 「假白板」（4/8 列网格 + 编辑态）那条线整体退役。
  *
- * 交互（**常态即所即**，没有编辑模式）：
- *   - 拖动：按住组件直接拖（4px 阈值区分点击），鼠标触屏同管线；固定的组件拖动被挡；
+ * 交互（浏览内容；进入编辑布局后摆放组件）：
+ *   - 拖动：编辑布局时按住顶部把手拖（4px 阈值），鼠标触屏同管线；固定的组件拖动被挡；
  *   - 缩放：选中后四角 + 右/下把手，自由拉（下限 120×64）；
  *   - 点选：浮出迷你条（置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除），Delete 删、Esc 取消、方向键微调；
  *   - 图层：选中/拖动即浮到与自己重叠的那簇之上；数组序 = 图层序，后放的在上；
@@ -48,6 +48,7 @@ import { cardRenderers, subscribeTodayCards } from "../state/todayCards.js";
 import { resolveAtom } from "../state/atoms.js";
 import { atomRefFromKey } from "../state/favorites.js";
 import { useApp } from "../state/context.js";
+import { homeStarterItems } from "../state/boardCore.js";
 import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
 import { openOnePage } from "../state/onePage.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
@@ -311,7 +312,7 @@ function TemplateItemPicker({ item, onPick, onClose }: {
 
 /**
  * 自由画布。`chrome` 给了就同时渲染页头（标题 + 页面菜单）——那是 OnePage 页面的形态；
- * 首页不传（首页的固定层由 HomeChrome 负责，画布是满幅的）。
+ * 首页不传（所有首页内容都属于这块画布）。
  */
 export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTATION, chrome }: {
   boardId?: string;
@@ -340,6 +341,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       放大一次盒子变大、"视口"跟着变大、缩回去盒子再也不缩（真机实测：250% 回到 100% 后
       minW 卡在 2704px，留一大片空滚）。端口尺寸只随窗口变，没有这条路。 */
   const [port, setPort] = useState({ w: 0, h: 0 });
+  const [layoutEditing, setLayoutEditing] = useState(false);
+  const [toolsVisible, setToolsVisible] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -359,6 +362,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   /** 一次性提示（「详情」与添加失败的原因）。 */
   const [note, setNote] = useState<string | null>(null);
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
+  useLayoutEffect(() => {
+    const raf = requestAnimationFrame(() => setToolsVisible(!!hostRef.current?.getClientRects().length));
+    return () => cancelAnimationFrame(raf);
+  }, [wsSnap.activeId, boardId]);
   /* 笔迹变化要跟着重渲染（快照本身不用取：下面按笔键直接读） */
   useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const penKey = penKeyOf(boardId, orientation);
@@ -380,7 +387,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const phoneUi = useIsPhone();
   const stack = phoneUi && orientation === "portrait";
   const needsPenCanvas = !stack && (penOn || penStrokes.length > 0);
-  // Home chrome is in document flow; the canvas origin starts below its own toolbar.
+  // Both layouts share stored world geometry; phone browsing projects a reading order.
   const stackTop = 0;
   const stackRects = useMemo(() => {
     if (!stack) return null;
@@ -389,21 +396,25 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const map = new Map<string, Rect>();
     let y = stackTop;
     for (const it of ordered) {
-      const h = Math.max(72, Math.round(it.h));
+      const h = Math.max(72, Math.round(it.spec.kind === "custom" && it.spec.id === "services" ? Math.max(340, it.h) : it.h));
       map.set(it.id, { x: 0, y, w, h });
       y += h + 12;
     }
     return { map, box: { w, h: Math.max(0, y - 12) + 24 } };
   }, [stack, items, port.w, stackTop]);
 
+  const fittedInitialView = useRef<string | null>(null);
+  useEffect(() => {
+    if (stack || port.w <= 0 || fittedInitialView.current === viewKey || !hostRef.current?.getClientRects().length) return;
+    fittedInitialView.current = viewKey;
+    const bounds = contentRect(items);
+    if (bounds && items.every(it => it.id.startsWith("home.")) && view.z === 1 && bounds.x + bounds.w > port.w) setBoardView(viewKey, {z: Math.max(ZOOM_MIN, Math.min(1, port.w / (bounds.x + bounds.w + 8)))});
+  }, [stack, port.w, viewKey, items, view.z]);
+
   const say = useCallback((text: string): void => {
     setNote(text);
     window.setTimeout(() => setNote(null), 1800);
   }, []);
-
-  /* 从今日页「编辑白板布局」进来时直接开添加抽屉（自由画布没有编辑态，落地动作就是"加东西"）。 */
-  useEffect(() => {
-  }, [chrome]);
 
   /* 按内容拟合 v3（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
      量体目标 = 条目盒的**直接子元素**（CSS `.free-item > :first-child { overflow:auto }` 就是它，
@@ -418,17 +429,17 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      不是用户动作）也不动 cell（契约层只随用户动作同步）。 */
   useLayoutEffect(() => {
     const host = hostRef.current;
-    if (!host) return;
+    if (!host || layoutEditing) return;
     const cardOf = (el: HTMLElement): HTMLElement | null => {
       const wg = el.querySelector<HTMLElement>(":scope > .wg-card");
       if (wg) return wg;
-      const first = el.firstElementChild;
+      const first = el.querySelector(":scope > :not(.free-drag-handle):not(.free-toolbar):not(.free-handle)");
       return first instanceof HTMLElement ? first : null;
     };
     const fits = new Map<string, number>(); // 上一次拟合值，防同一数值反复写盘
     const measure = (): void => {
       for (const it of items) {
-        if (it.folded) continue;
+        if (it.folded || (it.spec.kind === "custom" && it.spec.id === "homework")) continue;
         const el = host.querySelector<HTMLElement>('[data-item-id="' + it.id + '"]');
         const card = el && cardOf(el);
         if (!el || !card) continue;
@@ -462,7 +473,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       ro.disconnect();
       mo.disconnect();
     };
-  }, [items, ops]);
+  }, [layoutEditing, items, ops]);
 
   /* 视口尺寸（盒子/适配用）。**普通滚轮不抢**：滚动容器就是无限画布的"平移" ——
      用户第二轮点名「出了内容框就被截断，我们要的是没有那个隐形的 frame」：
@@ -523,15 +534,13 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const next = Math.min(ZOOM_MAX, Math.max(0.4, Number.isFinite(z) ? z : 1));
     if (next === before) return;
     setBoardView(viewKey, { z: next });
-    const scroller = hostRef.current?.closest<HTMLElement>(".explorer-content, .explorer-panel");
-    if (!scroller) return;
+    const host = hostRef.current;
+    if (!host) return;
+    const r = host.getBoundingClientRect();
+    const anchorX = Math.max(0, Math.min(r.width, window.innerWidth / 2 - r.left));
+    const anchorY = Math.max(0, window.innerHeight / 2 - r.top);
     const ratio = next / (before > 0 ? before : 1);
-    const sl = scroller.scrollLeft;
-    const st = scroller.scrollTop;
-    requestAnimationFrame(() => {
-      scroller.scrollLeft = sl * ratio;
-      scroller.scrollTop = st * ratio;
-    });
+    requestAnimationFrame(() => window.scrollBy({left: anchorX * (ratio - 1), top: anchorY * (ratio - 1), behavior: "instant"}));
   }, [viewKey]);
   const setZoomRef = useRef(setZoom);
   setZoomRef.current = setZoom;
@@ -547,6 +556,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      if (!hostRef.current?.getClientRects().length) return;
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement | null)?.isContentEditable) return;
       /* 画布缩放（无边记同款手感）：⌘0 回到内容、⌘= / ⌘- 缩放 */
       if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === "0" || e.key === "=" || e.key === "+" || e.key === "-" || e.key === "_")) {
         e.preventDefault();
@@ -554,14 +566,13 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         else zoomBy(e.key === "=" || e.key === "+" ? 1 : -1);
         return;
       }
-      const tag = (e.target as HTMLElement | null)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement | null)?.isContentEditable) return;
+
       if (e.key === "Escape") {
         setSelected(null);
         setEditingId(null);
         return;
       }
-      if (!selected) return;
+      if (!selected || !layoutEditing) return;
       if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
         ops.remove(selected);
@@ -569,18 +580,19 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         return;
       }
       const it = itemsRef.current.find((x) => x.id === selected);
-      if (!it) return;
+      if (!it || it.pinned) return;
       const delta: Record<string, [number, number]> = {
         ArrowLeft: [-8, 0], ArrowRight: [8, 0], ArrowUp: [0, -8], ArrowDown: [0, 8],
       };
       const d = delta[e.key];
       if (!d) return;
       e.preventDefault();
-      ops.move(selected, it.x + d[0], it.y + d[1]);
+      if (e.shiftKey) ops.resize(selected, {x: it.x, y: it.y, w: Math.max(MIN_W, it.w + d[0]), h: Math.max(MIN_H, it.h + d[1])});
+      else ops.move(selected, it.x + d[0], it.y + d[1]);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, ops]);
+  }, [selected, ops, layoutEditing]);
 
   /** 条目右键 / 长按菜单（旧白板页的 openItemMenu，2026-10-15 搬到自由画布）。 */
   const openItemMenu = useCallback((item: FreeItem, x: number, y: number): void => {
@@ -616,7 +628,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     id: string,
     mode: "move" | "se" | "ne" | "sw" | "nw" | "e" | "s",
   ): void => {
-    if (penOn) return; // 画笔开启时组件不可拖（画笔最高层）
+    if (penOn || !layoutEditing || e.button !== 0) return;
+    e.preventDefault();
     const it = itemsRef.current.find((x) => x.id === id);
     if (!it) return;
     e.stopPropagation();
@@ -671,9 +684,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       } else {
         let { x, y, w, h } = orig;
         const west = m === "nw" || m === "sw" || m === "w";
-        const north = m === "nw" || m === "n";
-        if (m === "se" || m === "e" || west) w = orig.w + (west ? -dx : dx);
-        if (m === "se" || m === "s" || north) h = orig.h + (north ? -dy : dy);
+        const north = m === "nw" || m === "ne" || m === "n";
+        if (m === "se" || m === "ne" || m === "e" || west) w = orig.w + (west ? -dx : dx);
+        if (m === "se" || m === "sw" || m === "s" || north) h = orig.h + (north ? -dy : dy);
         w = Math.max(MIN_W, w);
         h = Math.max(MIN_H, h);
         if (west) x = orig.x + orig.w - w;
@@ -724,7 +737,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
   const applyTemplate = (tpl: BoardTemplate): void => {
     /* 模板给的是格单位排版，落到自由画布上要映成 px（rectFromCell 同一套换算）。 */
-    const next: BoardItem[] = templateItems(tpl).map((it) => {
+    const next: BoardItem[] = tpl.id === "tpl-home" ? homeStarterItems() : templateItems(tpl).map((it) => {
       const rect = rectFromCell(it.cell);
       return { id: it.id, spec: it.spec, cell: it.cell, rect, manual: true };
     });
@@ -768,11 +781,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   );
 
   return (
-    <div className="freeboard-wrap" data-coach="home-canvas">
+    <div className={"freeboard-wrap" + (layoutEditing ? " is-layout-editing" : "")} data-coach="home-canvas">
       {chrome ? (
         <PageHead
           title={chrome.title}
-          meta="无限画布：拖动摆放、四角缩放，组件可以互相重叠盖住；左下角 ± 缩放画布"
+          meta="编辑布局后拖动把手摆放；底部工具栏可调整画布比例"
           menu={[
             { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
             { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
@@ -783,10 +796,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         />
       ) : (
         <div className="workbench-board-head">
-          <div><h2>我的白板</h2><span>{stack ? "你的课程、消息与灵感" : "自由摆放，让工作台成为你的样子"}</span></div>
+          <div><h2>我的白板</h2><span>{stack ? "你的课程、消息与灵感" : layoutEditing ? "拖动顶部把手移动，角点调整尺寸；方向键微调" : "编辑布局，摆放你的组件"}</span></div>
           <div className="workbench-board-actions">
             <Btn variant="ghost" onClick={() => setTplOpen(true)}>模板</Btn>
-            <Btn variant="solid" onClick={() => setAddOpen(true)}>＋ 添加组件</Btn>
+            <Btn variant="outline" aria-pressed={layoutEditing} onClick={() => { setLayoutEditing(v => !v); setSelected(null); }}>{layoutEditing ? "完成布局" : "编辑布局"}</Btn>
           </div>
         </div>
       )}
@@ -842,6 +855,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               <div
                 key={it.id}
                 data-item-id={it.id}
+                data-widget={it.spec.kind === "custom" ? it.spec.id : it.spec.kind}
                 data-item={it.spec.kind}
                 data-note-tone={isNote && it.spec.kind === "custom" ? String(it.spec.props?.tone ?? "yellow") : undefined}
                 data-size={plan.size.w + "x" + plan.size.h}
@@ -851,10 +865,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 className={"free-item" + (isNote ? " is-note" : "") + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
                 style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
                 onPointerDown={(e) => {
-                  if (penOn || stack) return;   // 堆叠形态：坐标被重排，拖动没有意义（点选仍可用）
-                  if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, textarea, input, button.free-note-toggle")) return;
-                  beginPointer(e, it.id, "move");
+                  if (!layoutEditing || penOn) return;
+                  if ((e.target as HTMLElement).closest(".free-handle, .free-toolbar, .free-drag-handle, textarea, input")) return;
+                  e.stopPropagation(); setSelected(it.id);
                 }}
+                onClickCapture={e => { if (layoutEditing && !editingNow && !(e.target as HTMLElement).closest(".free-toolbar, .free-drag-handle, .free-handle")) { e.stopPropagation(); e.preventDefault(); setSelected(it.id); } }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   if (isNote || isText) {
@@ -871,6 +886,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                   openItemMenu(it, e.clientX, e.clientY);
                 }}
               >
+                {layoutEditing && !penOn ? <button type="button" className="free-drag-handle" aria-label={"移动 " + plan.title} disabled={it.pinned || stack} onPointerDown={e => { if (!stack) beginPointer(e, it.id, "move"); }}>⠿ <span>{plan.title}</span></button> : null}
                 {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
                 {it.folded ? (
                   <div className="free-folded" title="已折叠（浮条里可展开）">
@@ -910,8 +926,19 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 )}
 
                 {/* 选中浮条：置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除 */}
-                {isSel && !penOn ? (
+                {isSel && layoutEditing && !penOn ? (
                   <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
+                    {stack ? <>
+                      {[-1, 1].map(dir => <button key={dir} type="button" title={dir < 0 ? "上移" : "下移"} onClick={() => {
+                        const sorted = [...itemsRef.current].sort((a, b) => a.y - b.y || a.x - b.x);
+                        const at = sorted.findIndex(x => x.id === it.id); const other = sorted[at + dir];
+                        if (!other || it.pinned || other.pinned) return;
+                        ops.move(it.id, other.x, other.y); ops.move(other.id, it.x, it.y);
+                      }}>{dir < 0 ? "↑" : "↓"}</button>)}
+                      <Btn variant="ghost" titleAttr="增加高度" onClick={() => ops.resize(it.id, {x: it.x, y: it.y, w: it.w, h: it.h + 48})}>增高</Btn>
+                      <Btn variant="ghost" titleAttr="减小高度" onClick={() => ops.resize(it.id, {x: it.x, y: it.y, w: it.w, h: Math.max(MIN_H, it.h - 48)})}>减高</Btn>
+                    </> : null}
+                    {isNote || isText ? <button type="button" title="编辑文字" onClick={() => setEditingId(it.id)}>编辑文字</button> : null}
                     <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
                     {isNote ? (
                       <button
@@ -923,18 +950,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                         {it.folded ? " 展开" : "折叠"}
                       </button>
                     ) : null}
-                    {[1, 0.75, 0.5, 0.3].map((v) => (
-                      <button
-                        key={v}
-                        type="button"
-                        title={`透明 ${Math.round(v * 100)}%`}
-                        className={"free-op" + ((it.opacity ?? 1) === v ? " is-on" : "")}
-                        onClick={() => ops.opacity(it.id, v)}
-                      >
-                        {Math.round(v * 100)}%
-                      </button>
-                    ))}
-                    <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>钉</button>
+                    <button type="button" title="切换不透明度" onClick={() => {
+                      const steps = [1, .75, .5, .3]; const at = steps.indexOf(it.opacity ?? 1);
+                      ops.opacity(it.id, steps[(at + 1) % steps.length] ?? 1);
+                    }}>{Math.round((it.opacity ?? 1) * 100)}%</button>
+                    <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>{it.pinned ? "解锁" : "固定"}</button>
                     <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
                       <IconTrash width={13} height={13} />
                     </button>
@@ -942,10 +962,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 ) : null}
 
                 {/* 把手：四角 + 右/下（选中才出现；固定的组件不出把手） */}
-                {isSel && !penOn && !it.pinned && !stack
+                {isSel && layoutEditing && !penOn && !it.pinned && !stack
                   ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
                       <span
                         key={h}
+                        role="button" aria-label={"调整大小 " + h}
                         className={"free-handle fh-" + h}
                         onPointerDown={(ev) => beginPointer(ev, it.id, h)}
                       />
@@ -970,45 +991,23 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {/* 缩放控件（OneGUI 按钮族）：− / 百分比（点=重置视图）/ ＋。屏幕空间，不随世界层缩放。
-            手机竖屏是单列堆叠（没有世界缩放），整条不出现。 */}
-        {stack ? null : (
-        <div className="board-zoombar" onPointerDown={(e) => e.stopPropagation()}>
-          <BtnGroup>
+        {toolsVisible ? createPortal(<div className="board-viewport-tools" role="toolbar" aria-label="白板工具">
+          <Btn variant={layoutEditing ? "solid" : "ghost"} aria-pressed={layoutEditing} onClick={() => {setLayoutEditing(v => !v); setSelected(null); setPenOn(false);}}>{layoutEditing ? "完成" : "编辑布局"}</Btn>
+          <IconBtn label="添加组件" data-coach="home-add" icon={<IconPlus />} onClick={() => setAddOpen(true)} />
+          {stack ? null : <>
+            <span className="board-tool-divider" />
             <IconBtn label="缩小" icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
-            <Btn size="sm" variant="ghost" titleAttr="回到内容（适配窗口，最多 100%）" onClick={resetView}>
-              {zoomLabel(view.z)}
-            </Btn>
+            <Btn size="sm" variant="ghost" titleAttr="适配窗口" onClick={resetView}>{zoomLabel(view.z)}</Btn>
             <IconBtn label="放大" icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
-          </BtnGroup>
-        </div>
-        )}
+            <IconBtn label={penOn ? "关闭画笔" : "开启画笔"} icon={<IconPen />} aria-pressed={penOn} onClick={() => {setPenOn(v => !v); setLayoutEditing(false); setSelected(null);}} />
+          </>}
+          {penOn ? <div className="free-pen-panel">
+            <input type="color" value={penColor} onChange={e => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />
+            <Btn variant="ghost" onClick={() => undoStroke(penKey)} disabled={!penStrokes.length}>撤销</Btn>
+            <Btn variant="ghost" onClick={() => clearStrokes(penKey)} disabled={!penStrokes.length}>清空</Btn>
+          </div> : null}
+        </div>, document.body) : null}
 
-
-        {/* 浮动按钮列：添加 / 画笔（含 RGB 色板与撤销清空） */}
-        <div className="free-fab-col">
-          <button type="button" className="free-fab" data-coach="home-add" title="添加组件" aria-label="添加组件" onClick={() => setAddAt({ x: 60, y: 300 })}>
-            <IconPlus width={18} height={18} />
-          </button>
-          {stack ? null : (
-            <button
-              type="button"
-              className={"free-fab" + (penOn ? " is-on" : "")}
-              title={penOn ? "画笔：关" : "画笔：开（最高图层）"}
-              aria-pressed={penOn}
-              onClick={() => setPenOn((v) => !v)}
-            >
-              <IconPen width={18} height={18} />
-            </button>
-          )}
-          {penOn ? (
-            <div className="free-pen-panel">
-              <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(penColor) ? penColor : "#3a3f4a"} onChange={(e) => setPenColor(e.target.value)} aria-label="画笔颜色（RGB）" />
-              <button type="button" onClick={() => undoStroke(penKey)} disabled={penStrokes.length === 0}>撤销</button>
-              <button type="button" onClick={() => clearStrokes(penKey)} disabled={penStrokes.length === 0}>清空</button>
-            </div>
-          ) : null}
-        </div>
       </div>
 
       {/* 添加组件菜单（居中；右键空白时记住落点） */}

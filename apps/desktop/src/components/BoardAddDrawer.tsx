@@ -300,7 +300,7 @@ export function BoardAddDrawer({
        预览不再现爬数据、也不会把真实数字当示例展示（详见 components/PreviewData.tsx）。 */
     <PreviewDataProvider>
     <>
-      {/* 遮罩：点抽屉上方空白直接收回；层级在底栏（60）之下，不会压暗导航栏。 */}
+      {/* 遮罩：点抽屉外收回；编辑抽屉和确认按钮高于常驻导航，避免手机底栏拦住提交。 */}
       <div className="add-drawer-mask" data-add-mask="1" onClick={onClose} />
     <div
       className={"add-drawer" + (leaving ? " is-out" : "") + (def ? " is-detail" : "")}

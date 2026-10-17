@@ -28,7 +28,7 @@ import { useFavs } from "../state/favs.js";
 import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useThemes } from "../state/theme.js";
 import { focusSettingsTarget } from "../components/Layout.js";
 import { ExplorerPrefsSection } from "../components/ExplorerPrefsSection.js";
-import { ThemeSwatch } from "../components/ThemePickerModal.js";
+import { ThemeChoice } from "../components/ThemePickerModal.js";
 import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, subscribeSettingsConsume } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
 import { requestPluginsView } from "./Plugins.js";
@@ -840,7 +840,7 @@ function AppearanceSection(): ReactNode {
   const visibleThemeDefs = snap.themes.filter(
     (t) => !t.owner || enabledThemeOwners.has(t.owner) || enabledThemeOwners.has(t.id),
   );
-  const themes = [{ id: "", name: "默认外观" }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
+  const themes = [{ id: "", name: "石墨 · 默认" }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
   return (
     <Stack gap={4}>
       {/* 标签栏默认样式：横版（顶部一排）｜竖版（左侧栏）；标签栏上的切换钮可随时改，这里定的是默认值。
@@ -881,7 +881,7 @@ function AppearanceSection(): ReactNode {
         title="主题"
         sub={
           <>
-            当前：{themes.find((th) => (snap.activeId ?? "") === th.id)?.name ?? "默认外观"}
+            当前：{themes.find((th) => (snap.effectiveId ?? "") === th.id)?.name ?? "默认外观"}
             {dyn ? " · 系统取色生效中，换主题后会自动关闭" : ""}
             {"　启用 / 停用主题在「插件」页里。"}
           </>
@@ -904,70 +904,10 @@ function AppearanceSection(): ReactNode {
       {/* ③ 主题板**恢复成原来那套**（用户给的旧图样式：色卡 + 名称 + 使用中/社区胶囊 + 应用按钮），
           只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。
           2026-10-14：手写选中框（内联边框+底色）→ List/Row 的 selected 状态层 + Tag 胶囊。 */}
-      <Card className="list">
-        <List divided>
-          <Row
-            selected={!snap.activeId}
-            size="lg"
-            /* 整卡可点＝应用（用户实测：「换了和没换都是蓝色」——此前只有右侧小钮能点，
-               点卡片本体毫无反应，看着就像主题不可用）。 */
-            onClick={
-              snap.activeId
-                ? () => {
-                    deactivateTheme();
-                    showToast("已回到默认外观");
-                  }
-                : undefined
-            }
-            leading={<ThemeSwatch vars={{}} />}
-            title="默认外观"
-            children={<OGText slot="label" tone="quiet" clamp={2}>不套用任何主题，使用应用自带配色</OGText>}
-            meta={snap.activeId ? null : <Tag tone="brand">使用中</Tag>}
-            trailing={
-              snap.activeId ? (
-                <Btn variant="solid" tone="brand" size="sm" onClick={() => deactivateTheme()}>应用</Btn>
-              ) : null
-            }
-          />
-          {visibleThemeDefs.map((t) => {
-            const on = snap.activeId === t.id;
-            return (
-              <Row
-                key={t.id}
-                selected={on}
-                size="lg"
-                onClick={
-                  on
-                    ? undefined
-                    : () => {
-                        activateTheme(t.id);
-                        showToast("已应用「" + t.name + "」");
-                      }
-                }
-                leading={<ThemeSwatch vars={t.vars} />}
-                title={t.name}
-                children={<OGText slot="label" tone="quiet" clamp={2}>{t.description ?? t.id}</OGText>}
-                meta={<>{t.source === "plugin" ? <Tag>社区</Tag> : null}{on ? <Tag tone="brand">使用中</Tag> : null}</>}
-                trailing={
-                  on ? null : (
-                    <Btn
-                      variant="solid"
-                      tone="brand"
-                      size="sm"
-                      onClick={() => {
-                        activateTheme(t.id);
-                        showToast("已应用「" + t.name + "」");
-                      }}
-                    >
-                      应用
-                    </Btn>
-                  )
-                }
-              />
-            );
-          })}
-        </List>
-      </Card>
+      <div className="theme-choice-grid">
+        <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} />
+        {visibleThemeDefs.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); showToast("已应用「" + t.name + "」"); }} />)}
+      </div>
       <SettingsRow
         title="跟随系统昼夜"
         sub={

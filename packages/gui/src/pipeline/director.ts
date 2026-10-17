@@ -20,11 +20,18 @@ export type OGMotion = "full" | "reduced";
 export type OGPlatform = "desktop" | "mobile";
 export type OGSurfaceLevel = 0 | 1 | 2 | 3 | 4;
 
-/** 主题只提供"强调色"，其余人造色由管线算 —— 主题作者不需要也不允许碰面/字/线 */
+/** Palette roles are applied and removed as one transaction; materials remain a separate axis. */
+export const THEME_ROLES = [
+  "surface-0", "surface-1", "surface-2", "surface-3", "surface-4", "surface-overlay",
+  "content-1", "content-2", "content-3", "line-1", "line-2", "line-3", "font-ui", "font-mono",
+  "radius-sm", "radius-md", "radius-lg", "radius-xl", "radius-2xl",
+] as const;
+export type ThemeRole = typeof THEME_ROLES[number];
 export interface OGTheme {
   id: string;
   name?: string;
   accent: string;
+  roles?: Partial<Record<ThemeRole, string>>;
   accentStrong?: string;
   accentOn?: string;
   scheme?: OGScheme;
@@ -251,6 +258,12 @@ export class StyleDirector {
     root.dataset.ogDensity = a.density;
     root.dataset.ogMotion = a.motion;
     root.dataset.ogPlatform = a.platform;
+    const theme = typeof a.theme === "object" ? a.theme : null;
+    for (const role of THEME_ROLES) {
+      const value = theme?.roles?.[role];
+      if (value && !/[;{}]/.test(value) && !value.includes(`var(--og-${role})`)) root.style.setProperty(`--og-${role}`, value);
+      else root.style.removeProperty(`--og-${role}`);
+    }
     this.#applyAccent(root, scheme);
     this.#renderScopes();
     this.#renderSkins();
@@ -268,7 +281,7 @@ export class StyleDirector {
       return;
     }
     const { accent, theme } = resolved;
-    const base = parseColor(REF_SURFACE[scheme]) ?? { r: 255, g: 255, b: 255, a: 1 };
+    const base = parseColor(theme?.roles?.["surface-1"] ?? REF_SURFACE[scheme]) ?? { r: 255, g: 255, b: 255, a: 1 };
     const white: Rgba = { r: 255, g: 255, b: 255, a: 1 };
     const black: Rgba = { r: 0, g: 0, b: 0, a: 1 };
 
@@ -449,9 +462,14 @@ export function resolveAxes(axes: Partial<OGAxes>, scheme: OGScheme): Record<str
     "data-og-motion": merged.motion,
     "data-og-platform": merged.platform,
   };
+  const theme = typeof merged.theme === "object" ? merged.theme : null;
+  for (const role of THEME_ROLES) {
+    const value = theme?.roles?.[role];
+    if (value && !/[;{}]/.test(value) && !value.includes(`var(--og-${role})`)) out[`--og-${role}`] = value;
+  }
   const accent = typeof merged.theme === "string" ? parseColor(merged.theme) : merged.theme ? parseColor(merged.theme.accent) : null;
   if (accent) {
-    const base = parseColor(REF_SURFACE[scheme]) ?? { r: 255, g: 255, b: 255, a: 1 };
+    const base = parseColor(theme?.roles?.["surface-1"] ?? REF_SURFACE[scheme]) ?? { r: 255, g: 255, b: 255, a: 1 };
     out["--og-accent"] = toCss({ ...accent, a: 1 });
     out["--og-accent-soft"] = toCss(scheme === "light" ? mix(accent, base, 0.88) : { ...accent, a: 0.15 });
     out["--og-accent-on"] = toCss(bestOn(accent).color);

@@ -344,13 +344,14 @@
   font-weight: var(--og-weight-medium);
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--og-dur-1) var(--og-ease-standard);
+  transition: none;
 }
 
-.og-segment-item.is-active { color: var(--og-segment-active-ink); }
+.og-segment-item.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); }
 .og-segment-item[disabled] { opacity: var(--og-disabled-opacity); pointer-events: none; }
 
 .og-segment-indicator {
+  visibility: hidden;
   position: absolute;
   top: var(--og-geo-xs);
   left: 0;

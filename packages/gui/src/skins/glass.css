@@ -6,7 +6,7 @@
   --og-material-overlay-opacity: 97%;
   --og-blur-1: 24px;
   --og-saturate: 100%;
-  --og-fill-surface: color-mix(in srgb, var(--og-canvas) var(--og-material-opacity), transparent);
+  --og-fill-surface: color-mix(in srgb, var(--og-surface-1) var(--og-material-opacity), transparent);
   --og-fill-overlay: color-mix(in srgb, var(--og-menu-fill) var(--og-material-overlay-opacity), transparent);
   --og-fill-chip: var(--og-composer-fill);
   --og-card-fill: var(--og-fill-surface);

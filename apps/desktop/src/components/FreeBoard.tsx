@@ -51,6 +51,7 @@ import { useApp } from "../state/context.js";
 import { homeStarterItems } from "../state/boardCore.js";
 import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
 import { openOnePage } from "../state/onePage.js";
+import { addToVault } from "../state/vault.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
 import { FolderIcon } from "./Icons.js";
 import { Card, Empty, NAV, PageHead } from "./Layout.js";
@@ -636,10 +637,24 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     }
     list.push({ key: "pin", label: item.pinned ? "取消固定" : "固定", onSelect: () => ops.pin(item.id) });
     list.push({ key: "front", label: "置顶", onSelect: () => ops.raise(item.id) });
+    list.push({
+      key: "vault",
+      label: "收进暂存箱",
+      onSelect: () => {
+        const r = addToVault({
+          type: "board-item",
+          title: plan.title || def?.title || "白板组件",
+          sub: def?.description,
+          board: { boardId, itemId: item.id },
+          source: "白板",
+        });
+        say(r.ok ? "已收进暂存箱" : r.reason === "duplicate" ? "暂存箱里已经有这个组件了" : "暂存箱暂时不可用");
+      },
+    });
     list.push({ key: "info", label: "详情", onSelect: () => say(def ? def.description : "这个组件已经不在组件目录里了。") });
     list.push({ key: "remove", label: "删除", danger: true, onSelect: () => { ops.remove(item.id); setSelected(null); } });
     menu.open({ x, y, title: plan.title, items: list });
-  }, [defs, menu, ops, say, phoneUi]);
+  }, [boardId, defs, menu, ops, say, phoneUi]);
 
   /** 拖动/缩放共用指针管线：按下 → 窗口 move（直接写 live）→ up 落库；长按不动则出菜单。 */
   const beginPointer = (

@@ -212,7 +212,12 @@ const layoutSrc = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8")
    改为检查白板两页确实登记进了 Page 联合（页面集是 dev3 的，白板是后加的）。 */
 void layoutSrc;
 const appPageSrc = readFileSync("apps/desktop/src/state/app.tsx", "utf8");
-ok(/\| "boards"/.test(appPageSrc) && /\| "board";/.test(appPageSrc), "白板两页没有登记进 dev3 的 Page 联合");
+ok(/\| "boards"/.test(appPageSrc) && /\| "board"/.test(appPageSrc), "白板两页没有登记进 dev3 的 Page 联合");
+/* 暂存箱：白板卡片的长按菜单必须有「收进暂存箱」（手机 stack 下卡片不能直接拖时的兜底）。 */
+{
+  const free = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8");
+  ok(/label: "收进暂存箱"/.test(free) && /addToVault\s*\(/.test(free), "白板卡片长按菜单缺「收进暂存箱」");
+}
 /* ㉞ 尺寸档位（霖 2026-10-11 定稿）：取消自由控制、改为逐组件的挡位控制
    ① 纯逻辑：挡位吸附 / 自由夹取 / 显式档位落库；
    ② 抽屉：展开态是横向滑动的档位列表，滑到哪档就加哪档；resize 模式复用同一抽屉；

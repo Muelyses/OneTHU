@@ -223,14 +223,14 @@
     "apps/desktop/src/pages/learn/SearchPage.tsx": 1,
     "apps/desktop/src/pages/learn/shared.tsx": 3
   },
-  "legacyCssLines": 9811,
+  "legacyCssLines": 9765,
   "legacyCssPerFile": {
     "apps/desktop/src/styles/explorer-home.css": 735,
-    "apps/desktop/src/styles/explorer-oh.css": 320,
+    "apps/desktop/src/styles/explorer-oh.css": 319,
     "apps/desktop/src/styles/explorer-ui.css": 849,
     "apps/desktop/src/styles/explorer.css": 480,
     "apps/desktop/src/styles/glass-levels.css": 113,
-    "apps/desktop/src/styles/global.css": 6427,
+    "apps/desktop/src/styles/global.css": 6382,
     "apps/desktop/src/styles/motion.css": 887
   }
 }

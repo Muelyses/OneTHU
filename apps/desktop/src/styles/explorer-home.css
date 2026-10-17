@@ -94,7 +94,7 @@
 .explorer-panel.is-home-canvas {
   overflow: auto;
   overscroll-behavior: contain;
-  max-height: 100dvh;
+  max-height: none;
 }
 
 html.is-phone .explorer-shell > .explorer-content.is-home-canvas {

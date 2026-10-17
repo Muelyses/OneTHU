@@ -4821,32 +4821,6 @@ section > .svc-label { margin-top: 14px; }
 /* §3.5 B1：卡片型按钮同样走统一模型——按压用共享状态层，悬停不再改色值本体（手册 §5） */
 .task-stat { position: relative; }
 .tasks-body { touch-action: pan-y; }
-/* 待办页（移动端）：把整页锁成一屏高，卡片流吃掉剩余高度——
-   底部按「OH 悬浮岛带」预留（岛底距屏底 80 + 岛高 46 = 126，留到 140），
-   不再用「100dvh - 固定魔数」去猜：岛顶会随视口高度/系统栏浮动，猜必然有偏差
-   （实测同一台机两次测量差 16px，一次正好压住通知条）。 */
-@media (max-width: 839.98px) {
-  /* 选择器要压过 html.is-phone .content（0,2,1）那条 92px 预留，否则本规则失效 */
-  html.is-phone .content:has(.tasks-body),
-  .shell .content:has(.tasks-body) {
-    box-sizing: border-box;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: auto; /* 正常一屏放得下；只有极端小屏才滚 */
-    /* OH 岛带：岛底距屏底 80（含安全区）+ 岛高 46 + 16 间隙 = 142（再叠安全区） */
-    padding-bottom: calc(142px + env(safe-area-inset-bottom, 0px));
-  }
-  /* 路由动画包一层 .page-anim（flex: 0 1 auto），高度就断在这里，必须让它也撑开 */
-  .content:has(.tasks-body) > .page-anim { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  /* 非宽屏时 .tasks-body 是 block，pane 的 flex:1 不生效 → 这里显式做 flex 列，把高度传下去 */
-  .content:has(.tasks-body) .tasks-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-  .content:has(.tasks-body) .tasks-pane:not(.is-hidden) { display: flex; flex-direction: column; flex: 1; min-height: 0; }
-  .content:has(.tasks-body) .tasks-learn { flex: 1; min-height: 0; }
-  .content:has(.tasks-body) .tasks-flow-wrap { flex: 1; min-height: 230px; max-height: 470px; display: flex; }
-  .content:has(.tasks-body) .hw-carousel-row { flex: 1; min-width: 0; }
-  .content:has(.tasks-body) .hw-carousel { height: auto; }
-}
 /* 宽屏（≥1080px）：学习 / 生活 双栏同显，两条 pane 同时可见 */
 .tasks-body.is-wide {
   display: grid;
@@ -5025,27 +4999,8 @@ section > .svc-label { margin-top: 14px; }
 .sidebar.is-collapsed .sidebar-foot { flex-direction: column; align-items: center; gap: 6px; }
 .sidebar.is-collapsed .foot-badge { font-size: 0; padding: 0; }
 
-/* ============================================================
-   §2.8.2 expanded 档：待办页锁一屏高，两栏各自内部滚动。
-   此前详情内容一长就把整页顶出去（页面长度不再由设计决定），
-   现在页面高度固定，长内容在右栏/左栏内部滚。
-   ============================================================ */
-@media (min-width: 840px) {
-  html.is-phone .content:has(.tasks-body),
-  .shell .content:has(.tasks-body) {
-    box-sizing: border-box;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    /* OH 岛带：桌面岛底距 18 + 岛高 46 + 间隙 = 92（再叠安全区） */
-    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
-  }
-  .content:has(.tasks-body) > .page-anim { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  .content:has(.tasks-body) .tasks-body { flex: 1; min-height: 0; }
-  .tasks-body.is-wide .tasks-pane { overflow: auto; overscroll-behavior: contain; }
-}
-
+/* Explorer owns page scrolling. A mounted background task tab must never lock
+   the outer content height or hide the lower half of another page. */
 /* ============================================================
    日程页（课表网格 / 当日列表）：窄档底部按「OH 悬浮岛带」多留一段空白。
    对话坞浮件是 fixed 且横向居中：窄档浮件底距屏底 80（语音链保留段锚点公式，

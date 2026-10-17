@@ -1531,7 +1531,7 @@ export function ChatDock(): ReactNode {
 
   /* dev-explorer 二轮：面板从胶囊顶边「长出来」——量可见胶囊的 rect（left/width），
      bottom 由 explorer-ui.css 契约变量给出；resize/转窗/布局落定后重量。 */
-  const [capsuleRect, setCapsuleRect] = useState<{ left: number; width: number; bottom: number; topdock: boolean } | null>(null);
+  const [capsuleRect, setCapsuleRect] = useState<{ left: number; width: number; bottom: number; topdock: boolean; maxHeight: number; bottomInset: number } | null>(null);
   /* 锚端判定 ref：面板 top 锚（顶置桌面形态、把手在底部）时拖拽方向反向（拖拽回调读） */
   const topdockRef = useRef(false);
   topdockRef.current = !!capsuleRect?.topdock;
@@ -1548,26 +1548,44 @@ export function ChatDock(): ReactNode {
       if (r.width > 0) {
         /* 手机（A5）：不再与胶囊等宽——满水平轴半屏抽屉，左右各留 6px 缝（「弹一下」的语义照旧）；
            底栏在底（topdock=false），把手仍在顶部，高度可拉满。 */
+        const viewport = window.visualViewport;
+        const viewportTop = viewport?.offsetTop ?? 0;
+        const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight);
         if (isPhoneNow()) {
           const gap = 6;
-          setCapsuleRect({ left: gap, width: Math.max(window.innerWidth - gap * 2, 0), bottom: r.bottom, topdock: false });
+          const barTop = el.closest(".ex-bbar")?.getBoundingClientRect().top ?? r.top;
+          const bottomEdge = Math.min(barTop - gap, viewportBottom - gap);
+          setCapsuleRect({
+            left: gap, width: Math.max(window.innerWidth - gap * 2, 0), bottom: r.bottom, topdock: false,
+            bottomInset: window.innerHeight - bottomEdge,
+            maxHeight: Math.max(0, bottomEdge - viewportTop - gap),
+          });
           return;
         }
         /* 顶置判定：胶囊所在 ex-bbar 在视口上半部 = 两行顶置桌面形态（窗朝下生长）；
            手机底栏（bottom 形态）在同页签里 y≈vh-48，判定天然分叉 */
         const bar = el.closest(".ex-bbar");
         const inTopbar = !!bar && bar.getBoundingClientRect().top < window.innerHeight / 2;
-        setCapsuleRect({ left: r.left, width: r.width, bottom: r.bottom, topdock: inTopbar });
+        const bottomEdge = Math.min(r.top - 4, viewportBottom - 8);
+        setCapsuleRect({
+          left: r.left, width: r.width, bottom: r.bottom, topdock: inTopbar,
+          bottomInset: window.innerHeight - bottomEdge,
+          maxHeight: Math.max(0, inTopbar ? viewportBottom - r.bottom - 12 : bottomEdge - viewportTop - 8),
+        });
       }
     };
     measure();
     const t1 = window.setTimeout(measure, 60); // 底栏/顶栏布局动画落定后补量
     const t2 = window.setTimeout(measure, 260);
     window.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("resize", measure);
+    window.visualViewport?.addEventListener("scroll", measure);
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("resize", measure);
+      window.visualViewport?.removeEventListener("scroll", measure);
     };
   }, [open, closing, mode]);
 
@@ -2196,8 +2214,8 @@ export function ChatDock(): ReactNode {
     const vh = window.innerHeight;
     /* 手机（A5）：可拉满高——区间放宽到 0.35 ⟷ 0.94（桌面维持 0.3 ⟷ 0.8） */
     const phoneH = isPhoneNow();
-    const lo = vh * (phoneH ? 0.35 : DOCK_H_MIN_RATIO);
-    const hi = vh * (phoneH ? 0.94 : DOCK_H_MAX_RATIO);
+    const hi = Math.min(vh * (phoneH ? 0.94 : DOCK_H_MAX_RATIO), capsuleRect?.maxHeight ?? vh);
+    const lo = Math.min(hi, vh * (phoneH ? 0.35 : DOCK_H_MIN_RATIO));
     /* 顶置形态（top 锚、把手在底部）：向下拽=变长（h=h0+dy）；底部形态（bottom 锚、把手在顶部）：
        向上拽=变长（h=h0−dy，原语义）。 */
     const topdock = topdockRef.current;
@@ -2338,13 +2356,11 @@ export function ChatDock(): ReactNode {
               ? capsuleRect.topdock
                 ? /* 顶置底栏（桌面/横屏）：窗从胶囊**底边向下**生长，朝上会出屏 */
                   { left: capsuleRect.left, width: capsuleRect.width, bottom: "auto", top: capsuleRect.bottom + 4 }
-                : { left: capsuleRect.left, width: capsuleRect.width, bottom: "calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 4px)" }
+                : { left: capsuleRect.left, width: capsuleRect.width, bottom: capsuleRect.bottomInset }
               : (phone ? PANEL_GEO_FALLBACK_PHONE : PANEL_GEO_FALLBACK)),
-            ...(panelH != null
-            ? { height: `${panelH}px`, minHeight: 0 }
-            : phone
-              ? { height: "60vh", minHeight: 0 } /* 手机默认半屏（A5），把手上拉可到 0.94 */
-              : null),
+            height: panelH != null ? `${panelH}px` : phone ? "60dvh" : "62dvh",
+            minHeight: 0,
+            maxHeight: capsuleRect?.maxHeight ?? "calc(100dvh - 80px)",
             /* 过场相位：in=首帧 from 值 → base；out=离场。grow 路径的 ohx-grow/ohx-shrink 契约动画照旧承担 */
             ...panelMat(phone, !!capsuleRect, closing ? "out" : panelSettled ? "base" : "in"),
           }}

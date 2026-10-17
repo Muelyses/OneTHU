@@ -11,7 +11,7 @@
  * - **右键（桌面）/长按（手机）任意页面空白处** → 「在新标签页打开此页」（forceNew
  *   复制当前所在的一/二/三级页，新 tab 仍是一级面板形态）。
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Ctx, useApp } from "../../state/context.js";
 import type { AppState, LearnNav, Page } from "../../state/app.js";
@@ -110,6 +110,21 @@ function TabContextMenu({
   /** 打开壁纸库选择器（菜单关、选择器接着开，同一坐标）：壁纸只有全屏一档 */
   onPick: () => void;
 }): ReactNode {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [placement, setPlacement] = useState({ left: pos.x, top: pos.y });
+  useLayoutEffect(() => {
+    const place = (): void => {
+      const rect = menuRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setPlacement({
+        left: Math.max(8, Math.min(pos.x, window.innerWidth - rect.width - 8)),
+        top: Math.max(8, Math.min(pos.y, window.innerHeight - rect.height - 8)),
+      });
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [pos.x, pos.y]);
   const isHome = pos.tabId === HOME_TAB_ID;
   /* 壁纸入口：换壁纸走壁纸库选择器（上传/内置渐变/删除都在库里）；清除则回落无壁纸。
      「画布化定案」：壁纸只有全屏一档——右键菜单的「本页」三件套已删（2026-10-14）。 */
@@ -136,7 +151,7 @@ function TabContextMenu({
         onClick={onClose}
         onContextMenu={(e) => { e.preventDefault(); onClose(); }}
       />
-      <div className="explorer-ctxmenu" style={{ left: pos.x, top: pos.y }} role="menu">
+      <div ref={menuRef} className="explorer-ctxmenu" style={placement} role="menu">
         {items.map((it) => (
           <button
             key={it.label}
@@ -192,6 +207,25 @@ export function TabHost(): ReactNode {
   const st = useExplorerState();
   const activeId = st.activeId;
   const mounted = useMountedTabs(activeId, st.tabs);
+  // Flowing pages share the window scroller, but each tab keeps its own place.
+  const scrollPositions = useRef(new Map<string, { x: number; y: number }>());
+  const scrollingTab = useRef(activeId);
+  useEffect(() => {
+    const save = (): void => {
+      scrollPositions.current.set(scrollingTab.current, { x: window.scrollX, y: window.scrollY });
+    };
+    window.addEventListener("scroll", save, { passive: true });
+    return () => window.removeEventListener("scroll", save);
+  }, []);
+  useLayoutEffect(() => {
+    scrollingTab.current = activeId;
+    const pos = scrollPositions.current.get(activeId);
+    const restore = (): void => window.scrollTo({ left: pos?.x ?? 0, top: pos?.y ?? 0, behavior: "instant" });
+    restore();
+    const frame = requestAnimationFrame(restore);
+    return () => cancelAnimationFrame(frame);
+  }, [activeId]);
+
   const [menu, setMenu] = useState<MenuPos | null>(null);
   /* 壁纸库选择卡（右键菜单「换壁纸 · 从库选」）：菜单关、选择卡接着开——坐标沿用发起菜单的 pos */
   const [picker, setPicker] = useState<{ x: number; y: number } | null>(null);

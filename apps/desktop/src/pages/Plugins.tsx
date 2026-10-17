@@ -27,7 +27,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSyncExternalStore, useEffect, useRef, useState, type ReactNode } from "react";
 import { confirmOk } from "../lib/confirm.js";
-import { Card as LayoutCard, LevelBox, PageHead, focusSettingsTarget, goEntry, useEntry } from "../components/Layout.js";
+import { Card as LayoutCard, PageHead, focusSettingsTarget, goEntry, useEntry } from "../components/Layout.js";
 import { requestPluginsFocus, subscribePluginsFocus, takePluginsFocus, type PluginsFocusSpec } from "../state/pluginsFocus.js";
 import { showToast } from "../state/toast.js";
 import { useApp } from "../state/context.js";
@@ -291,10 +291,6 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
       offFocus();
     };
   }, []);
-  const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
-  /* ① 用户拍板：三个并列（设置 / 插件 / OneTHU Harness），**用共享组件 LevelBox**——
-     任何页面同一个容器、同高、三格齐全；每页自己的大标题照旧保留（框是框、标题是标题）。 */
-  const dualEntry = isPhone ? <LevelBox /> : null;
   /** ⑤「安装插件」按层级归位：放页头右侧，不再挤在类别筛选那一行里 */
   const installBtn = (
     <Btn variant="ghost" data-set-id="row-安装插件" onClick={() => setInstOpen((o) => !o)}>
@@ -325,8 +321,6 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
           title="OneTHU Harness"
           meta={<span>基础设置 / 高级配置</span>}
         />
-                {/* 子页也带三格框（第三格高亮由子状态推导，不再传死 active） */}
-        {isPhone ? <LevelBox /> : null}
         <LayoutCard>
           <OhSettingsPage advancedPanels={ohAdvancedPanels} />
         </LayoutCard>
@@ -336,7 +330,6 @@ export function PluginsPage({ embedded = false }: { embedded?: boolean } = {}): 
 
   return (
     <Stack gap={3}>
-      {dualEntry}
       {embedded ? (
         <Inline gap={2} wrap>{viewSwitch}{installBtn}</Inline>
       ) : (

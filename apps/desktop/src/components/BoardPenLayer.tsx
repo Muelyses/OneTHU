@@ -17,7 +17,7 @@ import {
 } from "../state/boardPen.js";
 
 /** 画笔画布固定高度（与卡片位置/数量完全无关；卡片再往下拖也不会改变它） */
-const BOARD_CANVAS_H = 2400;
+export const BOARD_CANVAS_H = 2400;
 
 export function BoardPenLayer({
   boardId,
@@ -109,7 +109,7 @@ export function BoardPenLayer({
       /* 画布尺寸**固定**，与内容无关（用户点名）：
          曾经用「最下面那张卡的底边」推算高度，结果拖一下卡片画布就变长/变短，
          笔迹的归一化坐标被一起拉伸重映射 —— 画布不是内容的一部分，它是一块固定的地。 */
-      style={{ minHeight: BOARD_CANVAS_H + "px" }}
+      style={{ height: BOARD_CANVAS_H + "px" }}
       aria-hidden="true"
     >
       {all.map((s) => (

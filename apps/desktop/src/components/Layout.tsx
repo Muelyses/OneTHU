@@ -503,7 +503,6 @@ export function PageHead({
    *  与 actions 的分工是「页面级操作 vs 工具栏」。 */
   menu?: PageMenuItem[];
 }) {
-  const { page } = useApp();
   /* 把菜单同步给顶栏。**本 PageHead 的稳定 token**：页切换期间可能同时存在两代 PageHead，
      卸载时只允许清掉自己写进去的那份（见 pageChrome.clearPageChrome）。 */
   const chromeToken = useRef<object>({});
@@ -523,16 +522,10 @@ export function PageHead({
     if (inPreviewRef.current) return;
     clearPageChrome(chromeToken.current);
   }, []);
-  const pluginNav = usePluginNavEntries();
-  // 窄屏顶栏已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
-  const navLabel = [...NAV, ...pluginNav].find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
-  // 统一断点读取（§2.8.1）：此前各组件自写 matchMedia，改断点必漏
-  const expanded = useExpanded();
-  const dupOnTopbar = !expanded && typeof title === "string" && title === navLabel;
   return (
     <div ref={headRef}>
       {/* 渲染体走 OneGUI：标题字阶、meta、动作位与其它页面同源（旧 .page-head 的类不再产出） */}
-      <OGPageHead title={dupOnTopbar ? undefined : title} meta={meta} actions={actions} />
+      <OGPageHead title={title} meta={meta} actions={actions} />
     </div>
   );
 }

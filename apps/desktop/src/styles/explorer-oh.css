@@ -314,6 +314,5 @@ html.is-phone .dock-panel {
 
 /* 手机：OH/搜索窗从底栏上缘长起来（2026-10-16 标签条退役，只留呼吸缝 8+4）——
    呼吸缝仍在（「弹一下」的语义不变）。 */
-html.is-phone .dock-panel.ohx-panel-grow {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 4px) !important;
-}
+/* Grow panels measure the actual bar and visual viewport in ChatDock. No CSS
+   bottom override: it would defeat the keyboard/orientation viewport clamp. */

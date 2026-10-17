@@ -221,3 +221,53 @@ html:root .workbench-settings-tabs { overflow: auto; scrollbar-width: none; }
 html:root .ohx-modeswitch { padding: var(--og-space-1); border: 0; border-radius: var(--og-radius-control); background: var(--og-workbench-well); }
 html:root .ohx-modeswitch > .og-btn { padding-inline: var(--og-space-3); border-radius: var(--og-radius-sm); }
 html:root .ohx-modeswitch > .og-btn.is-active { background: var(--og-surface-1); color: var(--og-content-1); box-shadow: var(--og-elev-1); }
+
+/* Layout containment: long pages grow; only explicit list/panel bodies scroll. */
+html:root .explorer-panel:not(.is-home-canvas):not(.is-onepage-canvas) { overflow: visible; }
+html:root .explorer-settings-body { min-width: 0; min-height: 0; }
+html:root .workbench-plugin-settings { padding: var(--og-space-6); }
+html:root .settings-seg { position: static; transform: none; min-width: 0; }
+html:root .settings-seg-item { flex-shrink: 0; }
+html:root .settings-head > .og-iconbtn { flex-shrink: 0; }
+html:root .workbench-board-head { flex-wrap: wrap; }
+html:root .workbench-board-actions { flex-wrap: wrap; }
+html:root .free-fab-col { right: var(--og-space-3); bottom: calc(var(--og-space-10) * 2 + var(--og-space-3)); }
+html:root.is-phone .free-fab-col { bottom: calc(var(--og-workbench-header-h) + var(--og-safe-bottom) + var(--og-space-10) * 2 + var(--og-space-3)); }
+html:root .ex-sheet-body > * { flex-shrink: 0; }
+html:root .ex-sheet-body { min-width: 0; }
+html:root .og-settings-row-control > :is(input, select, textarea, .og-input, .og-select) { max-width: 100%; min-width: 0; }
+html:root.is-phone .workbench-plugin-settings { padding: var(--og-space-4); }
+html:root.is-phone .home-chrome-layer { grid-template-columns: minmax(0, 1fr) auto; }
+html:root.is-phone .workbench-intro { grid-column: 1; padding-right: 0; }
+html:root.is-phone .home-chrome-layer .chrome-time { position: static; align-self: start; }
+
+/* OH actions and mode tabs are separate rows; their touch targets cannot overlap. */
+html:root .dock-head { display: grid !important; grid-template-columns: auto minmax(0, 1fr); flex-shrink: 0; }
+html:root .dock-head .ohx-modeswitch { position: static; transform: none; margin: 0; justify-self: end; max-width: 100%; }
+html:root .dock-head .dock-ops { grid-column: 1 / -1; flex-wrap: wrap !important; }
+html:root .dock-handle, html:root .dock-input-row { flex-shrink: 0; }
+html:root .dock-oh-missing { flex: 1; min-height: 0; overflow: auto; margin: var(--og-space-4); }
+html:root .ohx-hit { flex-shrink: 0; flex-wrap: wrap; }
+html:root .ohx-hit-sub { white-space: normal; overflow-wrap: anywhere; flex-basis: 100%; order: 1; }
+html:root .ohx-hit-tag { margin-left: auto; }
+html:root .ohx-history { max-height: 40%; overflow: auto; }
+html:root.is-phone .ex-sheet { padding: var(--og-space-3); min-height: min(var(--og-workbench-sheet-min), calc(100dvh - var(--og-safe-top))); }
+html:root.is-phone .ex-sheet-head { flex-wrap: wrap; padding: var(--og-space-2); }
+html:root.is-phone .ex-sheet-head .ex-sec-head-note { display: none; }
+html:root.is-phone .ex-sheet.is-mob-half { height: min(60dvh, calc(100dvh - var(--og-safe-top))); }
+html:root.is-phone .ex-sheet.is-mob-full { height: calc(100dvh - var(--og-safe-top)); }
+html:root.is-phone .onepage-sheet { max-height: calc(100dvh - var(--og-workbench-header-h) - var(--og-safe-top) - var(--og-safe-bottom) - var(--og-space-3)); }
+
+html:root .explorer-ctxmenu { max-width: calc(100vw - var(--og-space-4) * 2); max-height: calc(100dvh - var(--og-space-4) * 2); overflow: auto; }
+html:root .settings-panel { min-height: 0; max-height: 100%; }
+
+/* A full-height phone sheet cannot overshoot above the viewport on entry. */
+html:root.is-phone .ex-sheet { animation-name: m-sheet-up; }
+html:root.is-phone .ex-sheet.is-mob-drag { animation: none; }
+html:root.is-phone .ex-sheet.is-closing { animation-name: m-sheet-down; }
+
+html:root .hs-dock-sphere .og-btn-label { min-width: 0; max-width: 100%; }
+html:root .hs-dock-sphere .sphere-name { white-space: normal; overflow-wrap: anywhere; line-height: var(--og-text-label-lh); }
+html:root .og-settings-row-control > .og-inline { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+
+html:root .ex-sheet-head > .og-btn { margin-left: auto; flex-shrink: 0; }

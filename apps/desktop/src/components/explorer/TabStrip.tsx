@@ -41,8 +41,7 @@ import { createOnePageForAtom, onePagesWithAtom, openOnePage, removeOnePage } fr
 import type { Board } from "../../state/boardCore.js";
 import { useFavs } from "../../state/favs.js";
 import type { LearnNav, Page } from "../../state/app.js";
-import { FOLDER_ICONS, IconBook, IconCloud, IconFlag, IconFolder, IconGitLab, IconInfo, IconLearn, IconMail, IconOrb, IconPin, IconPlus, IconStar, IconX, IconXiaoda } from "../Icons.js";
-import { BrandLogo } from "../Layout.js";
+import { FOLDER_ICONS, IconBook, IconCloud, IconFlag, IconFolder, IconGitLab, IconHome, IconInfo, IconLearn, IconMail, IconOrb, IconPin, IconPlus, IconStar, IconX, IconXiaoda } from "../Icons.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { useTabLayoutMode } from "../../state/tabLayout.js";
 import { useIsPhone } from "../../state/phoneSheets.js";
@@ -1023,7 +1022,7 @@ export function TabStrip(): ReactNode {
             onContextMenu={isHome ? undefined : (e) => openTabMenu(e, t)}
           >
             <button className="ex-tab-main" onClick={() => focusTab(t.id)}>
-              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><BrandLogo size={12} /></span> : <TabGlyph page={t.page} star={glyphOf(t)} />}
+              {isHome ? <span className="ex-tab-glyph" aria-hidden="true"><IconHome width={14} height={14} /></span> : <TabGlyph page={t.page} star={glyphOf(t)} />}
               <span className="ex-tab-title">{label}</span>
             </button>
             {isHome ? null : (

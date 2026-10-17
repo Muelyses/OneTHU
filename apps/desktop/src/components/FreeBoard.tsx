@@ -55,7 +55,7 @@ import { FolderIcon } from "./Icons.js";
 import { Card, Empty, NAV, PageHead } from "./Layout.js";
 import { PEN_COLORS, penKeyOf, penSnapshot, strokesOf, subscribePen, undoStroke, clearStrokes } from "../state/boardPen.js";
 import { sanitizeUserHtml, widgetById as userWidgetById } from "../state/userext.js";
-import { BoardPenLayer } from "./BoardPenLayer.js";
+import { BOARD_CANVAS_H, BoardPenLayer } from "./BoardPenLayer.js";
 import { useContextMenu, type CtxItem } from "./ContextMenu.js";
 import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
 import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
@@ -379,6 +379,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      拖动/缩放/画笔在这个形态下没有意义（坐标被重排），一并关掉，见下面的 stack 守卫。 */
   const phoneUi = useIsPhone();
   const stack = phoneUi && orientation === "portrait";
+  const needsPenCanvas = !stack && (penOn || penStrokes.length > 0);
   // Home chrome is in document flow; the canvas origin starts below its own toolbar.
   const stackTop = 0;
   const stackRects = useMemo(() => {
@@ -471,13 +472,22 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     if (!host) return;
     const el = host.closest<HTMLElement>(".explorer-panel") ?? host.parentElement ?? host;
     const measure = (): void => {
-      const hostLeft = host.getBoundingClientRect().left - el.getBoundingClientRect().left;
-      const next = { w: Math.max(240, el.clientWidth - Math.max(0, hostLeft) * 2), h: el.clientHeight };
+      if (!el.getClientRects().length) return; // hidden tabs retain their last usable viewport
+      const hostRect = host.getBoundingClientRect();
+      const parentRect = el.getBoundingClientRect();
+      const hostLeft = hostRect.left - parentRect.left;
+      // The flowing panel grows with the canvas. Feeding its height back into
+      // boxSize would add the home header on every ResizeObserver callback.
+      const next = {
+        w: Math.max(240, el.clientWidth - Math.max(0, hostLeft) * 2),
+        h: Math.max(0, window.innerHeight - Math.max(0, hostRect.top - parentRect.top)),
+      };
       setPort((prev) => (prev.w === next.w && prev.h === next.h ? prev : next));
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
+    window.addEventListener("resize", measure);
     /* **必须原生非被动监听**：React 的 onWheel 挂在根上且是被动的，preventDefault() 不生效，
        捏合会一边缩放一边把页面滚走。 */
     const onWheel = (e: WheelEvent): void => {
@@ -488,6 +498,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     host.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       ro.disconnect();
+      window.removeEventListener("resize", measure);
       host.removeEventListener("wheel", onWheel);
     };
   }, []);
@@ -500,10 +511,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     if (!el) return;
     /* 堆叠形态（手机竖屏）：盒子按**堆叠后**的几何算，否则 minWidth 仍是桌面内容的 1094px
        —— 那正是"竖屏横向溢出"残留的那一条。 */
-    const box = stackRects ? stackRects.box : boxSize(items, view.z, port);
+    const box = stackRects ? stackRects.box : boxSize(items, view.z, { ...port, h: Math.max(port.h, needsPenCanvas ? BOARD_CANVAS_H : 0) });
     el.style.minWidth = box.w + "px";
     el.style.minHeight = box.h + "px";
-  }, [items, view.z, port.w, port.h, stackRects]);
+  }, [items, view.z, port.w, port.h, stackRects, needsPenCanvas]);
 
   /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
      视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */
@@ -947,14 +958,14 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             笔迹按「板 id + 朝向」分键（penKeyOf），所以每块 OnePage 各画各的。
             **在世界层之外**：笔迹是"玻璃上的记号"，尺寸固定、与内容无关（2026-10-13 用户点名），
             所以它不跟着缩放走 —— 归一化坐标（0..1000）也就永远稳定，不会因为改内容而拉伸重映射。 */}
-        {stack ? null : (
+        {needsPenCanvas ? (
           <BoardPenLayer
             boardId={boardId}
             orientation={orientation}
             penOn={penOn}
             color={penColor}
           />
-        )}
+        ) : null}
 
         {/* 缩放控件（OneGUI 按钮族）：− / 百分比（点=重置视图）/ ＋。屏幕空间，不随世界层缩放。
             手机竖屏是单列堆叠（没有世界缩放），整条不出现。 */}

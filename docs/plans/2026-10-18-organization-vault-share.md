@@ -274,3 +274,11 @@
   `?explorer-preview` 或 `onethu.dev.inlineShare=1` 保留本地调试能力。导入不拦。
 - 新增 `tools/mobile-vault-browser-test.mjs` 13/13：390 暂存箱/dock/二维码/设置名片组织无横向
   溢出；320 设置仍可用；与 vault 30/30 一起覆盖手机主路径。
+
+
+### 12.12 扫码接收脚手架（2026-10-18）
+
+- `lib/qrScan.ts`：BarcodeDetector 识别图片二维码（不做实时相机预览）；暂存箱「扫码接收」按钮
+  选图 → 识别 → 走同一 receiveText 分支（ONTOUCH1/ONV1/ONV2/ONORG1）。
+- 二维码展示尺寸从 148 提到 240，便于手机互扫；**端到端识别/真机相机流程尚未验证**，
+  Chromium 无头下截图识别测试不稳定，未纳入回归。

@@ -19,6 +19,9 @@ import {
 import { allowInlineShare, decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { nfcReadText, nfcShareText, nfcStatus } from "../../lib/nfc.js";
+import { decodeQrFile, qrScanSupported } from "../../lib/qrScan.js";
+import { fileToBytes, pickFile } from "../../lib/attach.js";
+import { acceptOrgInvite } from "../../state/org.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
@@ -163,30 +166,59 @@ export function VaultPage(): ReactNode {
     }
   }, [touchCode, code]);
 
+  const receiveText = useCallback(async (text: string): Promise<void> => {
+    const t = text.trim();
+    if (t.startsWith("ONTOUCH1.")) {
+      const r = await importTouchCode(t);
+      showToast(r.ok ? "碰一碰内容已接收" : r.reason ?? "碰一碰口令无法导入");
+      return;
+    }
+    if (t.startsWith("ONV1.") || t.startsWith("ONV2.")) {
+      const r = await importShareCodeAsCurrent(t);
+      showToast(r.ok ? `已导入 ${r.imported ?? 0} 项` : r.reason ?? "口令无法导入");
+      return;
+    }
+    if (t.startsWith("ONORG1.")) {
+      const r = acceptOrgInvite(t);
+      showToast(r.ok ? "已加入组织（本地成员清单）" : r.reason ?? "组织邀请无法识别");
+      return;
+    }
+    showToast("这不是 OneTHU 的分享/碰一碰/组织口令");
+  }, []);
+
+  const scanQr = useCallback(async (): Promise<void> => {
+    try {
+      if (!qrScanSupported()) { showToast("当前环境不支持二维码识别"); return; }
+      const f = await pickFile();
+      if (!f) return;
+      if (!f.mime.startsWith("image/")) { showToast("请选择一张二维码图片"); return; }
+      setBusy(true);
+      const bytes = await fileToBytes(f, 8 * 1024 * 1024);
+      const img = new File([bytes], f.name, { type: f.mime });
+      const text = await decodeQrFile(img);
+      if (!text) { showToast("图片里没有识别到二维码"); return; }
+      await receiveText(text);
+    } catch (e) {
+      showToast(`扫码失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, [receiveText]);
+
   const readNfc = useCallback(async (): Promise<void> => {
     setBusy(true);
     setNfcReading(true);
     try {
       const text = (await nfcReadText()).trim();
       if (!text) { showToast("NFC 没有读到内容"); return; }
-      if (text.startsWith("ONTOUCH1.")) {
-        const r = await importTouchCode(text);
-        showToast(r.ok ? "碰一碰内容已接收" : r.reason ?? "碰一碰口令无法导入");
-        return;
-      }
-      if (text.startsWith("ONV1.") || text.startsWith("ONV2.")) {
-        const r = await importShareCodeAsCurrent(text);
-        showToast(r.ok ? `已导入 ${r.imported ?? 0} 项` : r.reason ?? "口令无法导入");
-        return;
-      }
-      showToast("这张 NFC 不是 OneTHU 口令");
+      await receiveText(text);
     } catch (e) {
       showToast(`NFC 读取失败：${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setBusy(false);
       setNfcReading(false);
     }
-  }, []);
+  }, [receiveText]);
 
   const importCode = useCallback(async (): Promise<void> => {
     const f = await openFormModal("导入分享口令", [
@@ -248,6 +280,7 @@ export function VaultPage(): ReactNode {
             <Btn variant="outline" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
             <Btn variant="ghost" onClick={() => void makeTouch()} disabled={busy}>碰一碰组合</Btn>
             <Btn variant="ghost" onClick={() => void receiveTouch()} disabled={busy}>收碰一碰</Btn>
+            <Btn variant="ghost" onClick={() => void scanQr()} disabled={busy}>扫码接收</Btn>
             <Btn className={nfcReading ? "vault-nfc-reading" : undefined} variant="ghost" onClick={() => void readNfc()} disabled={busy || !nfc.available} titleAttr={nfc.available ? (nfc.enabled ? "贴一下 NFC 标签或对方手机" : "NFC 未开启：到系统设置打开") : "NFC 仅 Android 手机可用"}>{nfcReading ? "贴近中…" : "NFC 接收"}</Btn>
             <Text slot="micro" tone="faint">{nfc.available ? (nfc.enabled ? "NFC 可用" : "NFC 未开启") : "NFC 仅手机端"}</Text>
             <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0} titleAttr={cloudReady ? "生成云分享口令" : "先连接清华云盘"}>生成口令</Btn>
@@ -258,7 +291,7 @@ export function VaultPage(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">把这段口令发给好友，或在另一台 OneTHU 里「导入口令」：</Text>
             <code className="vault-share-code">{code}</code>
-            <div className="vault-qr"><QRCodeSVG value={code} size={148} /></div>
+            <div className="vault-qr"><QRCodeSVG value={code} size={240} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(code).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => setCode("")}>收起</Btn>
@@ -291,7 +324,7 @@ export function VaultPage(): ReactNode {
           <div className="vault-share">
             <Text slot="micro" tone="faint">碰一碰 / 组合口令（NFC 接入前用这段口令或二维码代替）：</Text>
             <code className="vault-share-code">{touchCode}</code>
-            <div className="vault-qr"><QRCodeSVG value={touchCode} size={148} /></div>
+            <div className="vault-qr"><QRCodeSVG value={touchCode} size={240} /></div>
             <div className="vault-actions">
               <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(touchCode).catch(() => undefined)}>复制</Btn>
               <Btn variant="ghost" size="sm" onClick={() => void shareNfc()} disabled={!nfc.available || !nfc.enabled}>NFC 发送</Btn>

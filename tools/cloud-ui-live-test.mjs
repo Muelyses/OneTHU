@@ -241,10 +241,18 @@ try {
   ok(imported.length >= 1 && imported.some((i) => i.text === 'cloud payload'), 'second context imports cloud manifest');
   ok(imported.some((i) => i.type === 'file' && i.file?.name === 'ui-share.txt' && /^files\//.test(i.file?.cloudPath ?? '')), 'imported file keeps cloud path');
 
-  /* 撤销分享链接；临时目录在 finally 里删 */
+  /* 通过 UI 撤销云分享：应删除分享链接并递归清理目录 */
+  await p.getByRole('button', { name: '撤销云分享' }).click();
+  await p.waitForTimeout(2500);
+  const revoked = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.shareRefs.v1') || '{"refs":[]}').refs[0]?.revokedAt ?? 0);
+  ok(revoked > 0, 'UI revoke marks share ref revoked');
   if (ref?.shareToken) {
-    const del = await api(`${BASE_CLOUD}/api/v2.1/share-links/${ref.shareToken}/`, { method: 'DELETE', headers: AUTH });
-    ok(del.ok, 'share link revoked on live cloud');
+    const denied = await api(`${BASE_CLOUD}/api/v2.1/share-links/${ref.shareToken}/dirents/?path=/`);
+    ok(!denied.ok, 'revoked share link is denied on live cloud');
+  }
+  if (liveDir) {
+    const gone = await api(`${BASE_CLOUD}/api2/repos/${repo.id}/dir/?p=${encodeURIComponent(liveDir)}`);
+    ok([403, 404].includes(gone.status), 'UI revoke deletes the live share directory');
   }
   ok(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
   console.log(checks + ' live cloud UI assertions passed');

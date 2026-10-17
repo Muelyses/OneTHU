@@ -12,12 +12,19 @@ import { openFormModal } from "../../lib/formModal.js";
 import { confirmOk } from "../../lib/confirm.js";
 import { showToast } from "../../state/toast.js";
 import {
-  activeVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
+  activeVault, addToVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
   setActiveVault, subscribeVault, VAULT_TYPE_LABEL, vaultSnapshot, type VaultItem,
 } from "../../state/vault.js";
 import { importShareCodeAsCurrent, mintShareCode } from "../../state/vaultShare.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
+import { fileRefOf, stageFromFiles, stageFromPicker, type StagedFile } from "../../lib/fileChannel.js";
+
+function sizeText(n?: number): string {
+  if (!n || n <= 0) return "文件";
+  if (n >= 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + " MB";
+  return Math.max(1, Math.round(n / 1024)) + " KB";
+}
 
 function itemSub(it: VaultItem): string {
   const type = VAULT_TYPE_LABEL[it.type] ?? it.type;
@@ -47,8 +54,32 @@ export function VaultPage(): ReactNode {
   const all = vaultSnapshot().boxes;
   const [code, setCode] = useState<string>(box.lastShareCode ?? "");
   const [busy, setBusy] = useState(false);
+  const [fileHot, setFileHot] = useState(false);
 
   useEffect(() => { setCode(activeVault().lastShareCode ?? ""); }, [box.id]);
+
+  const addStaged = useCallback((files: StagedFile[]): void => {
+    let ok = 0;
+    let dup = 0;
+    for (const f of files) {
+      const r = addToVault({ type: "file", title: f.name, sub: `${sizeText(f.size)} · ${f.mime}`, file: fileRefOf(f), source: "文件" });
+      if (r.ok) ok++;
+      else if (r.reason === "duplicate") dup++;
+    }
+    if (ok) showToast(`已收进暂存箱：${ok} 个文件`);
+    else if (dup) showToast("这些文件已经在暂存箱里了（按内容指纹去重）");
+  }, []);
+
+  const pickFilesToVault = useCallback(async (): Promise<void> => {
+    setBusy(true);
+    try {
+      addStaged(await stageFromPicker(true));
+    } catch (e) {
+      showToast(`文件读取失败：${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, [addStaged]);
 
   const rename = useCallback(async (): Promise<void> => {
     const f = await openFormModal("重命名暂存箱", [{ key: "name", label: "名字", required: true, default: box.name }]);
@@ -98,6 +129,7 @@ export function VaultPage(): ReactNode {
             <Btn variant="outline" onClick={() => { const b = createVault(); showToast(`已新建「${b.name}」`); }}>新建</Btn>
             <Btn variant="ghost" onClick={() => void rename()}>重命名</Btn>
             <Btn variant="ghost" onClick={() => void importCode()} disabled={busy}>导入口令</Btn>
+            <Btn variant="outline" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
             <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0}>生成口令</Btn>
           </div>
         </div>
@@ -111,6 +143,20 @@ export function VaultPage(): ReactNode {
             </div>
           </div>
         ) : null}
+        <div
+          className={"vault-file-drop" + (fileHot ? " is-hot" : "")}
+          onDragOver={(e) => { e.preventDefault(); setFileHot(true); }}
+          onDragLeave={() => setFileHot(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setFileHot(false);
+            const files = Array.from(e.dataTransfer.files ?? []);
+            if (files.length > 0) void stageFromFiles(files).then(addStaged).catch((err) => showToast(`文件读取失败：${err instanceof Error ? err.message : String(err)}`));
+          }}
+        >
+          <Text slot="label">把文件拖到这里，或点「添加文件」</Text>
+          <Text slot="micro" tone="faint">文件只入库引用与内容指纹；同一份文件重复拖入会自动去重。</Text>
+        </div>
         <Text slot="micro" tone="faint">
           提示：搜索结果/首页元素支持长按（手机）或直接拖动（桌面）收进来；文件本体通过清华云盘保存（下一步接入）。
         </Text>

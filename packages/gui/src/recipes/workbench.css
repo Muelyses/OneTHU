@@ -469,3 +469,7 @@ body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
   html:root .vault-drop { transition: none; }
   html:root .vault-drop.is-hover { transform: translateX(-50%); }
 }
+
+/* 暂存箱文件落区：桌面可拖入 OS 文件；不占视觉焦点。 */
+.vault-file-drop { display: grid; gap: var(--og-space-1); margin-top: var(--og-space-3); padding: var(--og-space-4); border: 1px dashed var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out); }
+.vault-file-drop.is-hot { border-color: var(--og-focus-color); background: var(--og-surface-3); }

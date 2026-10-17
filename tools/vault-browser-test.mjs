@@ -89,6 +89,31 @@ try {
   });
   check(imported.n === 1 && imported.title === '宿舍电费', 'import replaces current vault with shared items');
   check(imported.name !== '我的暂存箱', 'import targets active vault, not origin box');
+
+  /* 文件通道：选择文件 → SHA-256 → 入箱；同内容再次入箱按 hash 去重 */
+  const chooser = p.waitForEvent('filechooser');
+  await p.getByRole('button', { name: '添加文件' }).click();
+  const fc = await chooser;
+  await fc.setFiles({ name: 'vault-note.txt', mimeType: 'text/plain', buffer: Buffer.from('hello oneTHU vault') });
+  await p.waitForTimeout(900);
+  const fileState = await p.evaluate(() => {
+    const d = JSON.parse(localStorage.getItem('onethu.vaults.v1'));
+    const box = d.boxes.find((b) => b.id === d.activeId);
+    const item = box.items.find((x) => x.type === 'file');
+    return { n: box.items.length, name: item?.file?.name, hash: item?.file?.hash, size: item?.file?.size };
+  });
+  check(fileState.name === 'vault-note.txt' && /^[0-9a-f]{64}$/.test(fileState.hash ?? ''), 'picked file staged with SHA-256 fingerprint');
+  check(fileState.size === Buffer.byteLength('hello oneTHU vault'), 'staged file keeps byte size');
+  const chooser2 = p.waitForEvent('filechooser');
+  await p.getByRole('button', { name: '添加文件' }).click();
+  const fc2 = await chooser2;
+  await fc2.setFiles({ name: 'same-content.txt', mimeType: 'text/plain', buffer: Buffer.from('hello oneTHU vault') });
+  await p.waitForTimeout(700);
+  const n2 = await p.evaluate(() => {
+    const d = JSON.parse(localStorage.getItem('onethu.vaults.v1'));
+    return d.boxes.find((b) => b.id === d.activeId).items.length;
+  });
+  check(n2 === fileState.n, 'same file content is deduped by hash (not by name)');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
   console.log(checks + ' vault assertions passed');
 } finally {

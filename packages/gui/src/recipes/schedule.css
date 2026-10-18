@@ -55,18 +55,10 @@ html:root.is-schedule-page .schedule-workspace {
   flex-direction: column;
   min-height: 0;
   width: 100%;
-  /* 底部浮件（OneShot 快捷胶囊 / 底栏）占掉的带高：画布主动让出来，
-     所以课表永远是"到边到角"的，而最后一节课不会被浮件压住。
-     页面在 JS 侧读这个变量决定事件轴的比例（见 Schedule.tsx 的 availH）。 */
-  --og-c-schedule-bottom-reserve: var(--og-shortcut-clearance);
-}
-html:root.is-phone .schedule-workspace {
-  /* 手机：OneShot 胶囊坐在底栏之上（bottom = 底栏高 + gap，自身 40 高） */
-  --og-c-schedule-bottom-reserve: calc(var(--og-workbench-header-h) + var(--og-space-5) + var(--og-space-8));
-}
-/* 手机横屏这类"高只有 ~390"的极端档：浮件带压缩，宁可让出少一点也要铺满 */
-@media (max-height: 480px) {
-  .schedule-workspace { --og-c-schedule-bottom-reserve: var(--og-space-8); }
+  /* 用户口径：「铺满」＝到边到角，不接受底下再留一条空带。
+     所以事件轴一路画到窗口底边，OneShot 快捷胶囊/底栏只是浮在它上面；
+     浮钮自己往上躲到胶囊之上（见 .schedule-dock）。 */
+  --og-c-schedule-bottom-reserve: 0;
 }
 /* 页头只留页级 chrome 同步（0 高度）；全部高度给事件区 */
 html:root.is-schedule-page .schedule-workspace > * { flex: none; }
@@ -90,10 +82,9 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
   border: 0;
   border-radius: 0;
   background: var(--og-surface-1);
-  /* 底部浮件带（OneShot 胶囊 / 底栏）在滚动区内让出来：画布按
-     clientHeight − 表头 − 这段内边距 定比例（见 Schedule.tsx 的 availH），
-     于是整周正好铺满、不滚动、最后一节课也不会被浮件压住。 */
-  padding-bottom: var(--og-c-schedule-bottom-reserve, var(--og-shortcut-clearance));
+  /* 到边到角：画布高度 = clientHeight − 表头（见 Schedule.tsx 的 availH），
+     整周正好铺满、不滚动；浮件浮在上面，不再从课表里"挖"一条空带。 */
+  padding-bottom: var(--og-c-schedule-bottom-reserve, 0);
 }
 /* 列表视图（保留项）：同样吃满事件区，自己滚动 */
 .schedule-scroll {
@@ -211,25 +202,30 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
 
 /* ── 3. 悬浮通知：错误/结果不占高度，不挤事件区 ── */
 .schedule-floats {
+  /* 通知不占高度，也不能压住吸顶的星期表头：停在左下角、限宽一行内 */
   position: absolute;
-  top: var(--og-space-2);
-  left: var(--og-space-2);
-  right: calc(var(--og-space-10) + var(--og-space-7));
+  left: var(--og-space-3);
+  bottom: calc(var(--og-space-10) + var(--og-space-6));
+  max-width: min(46ch, 62vw);
   z-index: var(--og-z-drawer);
   display: flex;
   flex-direction: column;
   gap: var(--og-space-1);
   pointer-events: none;
 }
+html:root.is-phone .schedule-floats { left: var(--og-space-2); bottom: calc(var(--og-workbench-header-h) + var(--og-space-8)); max-width: 74vw; }
 .schedule-floats > * { pointer-events: auto; }
 
 /* ── 4. 唯一常驻控件：悬浮小圆钮（点开设置浮层） ── */
 .schedule-dock {
   position: absolute;
   right: var(--og-space-3);
-  /* 正好落在浮件带之上：不压住 OneShot 胶囊，也不盖住周日表头 */
-  bottom: calc(var(--og-c-schedule-bottom-reserve) + var(--og-space-1));
+  /* 浮钮躲到 OneShot 胶囊之上：课表铺满到窗口底边，但控件不会被胶囊压住 */
+  bottom: var(--og-space-10);
   z-index: var(--og-z-board-tools);
+}
+html:root.is-phone .schedule-dock {
+  bottom: calc(var(--og-workbench-header-h) + var(--og-space-10) + var(--og-space-3));
 }
 
 /* ── 5. 设置浮层：周切换 / 视图 / 筛选 / 学期周 / 同步导出 / 新建 / 收藏 ── */

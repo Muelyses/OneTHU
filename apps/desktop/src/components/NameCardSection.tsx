@@ -229,8 +229,11 @@ export function OrgCardsSection(): ReactNode {
   const doc = useCards();
   const [openId, setOpenId] = useState<string | null>(null);
   const openOrg = doc.orgs.find((o) => o.id === openId) ?? null;
+  /* 关闭动画期间还要画上一张卡：内容先留在 ref 里，等 Modal 退场完再自然换掉 */
   const shownRef = useRef<OrgCard | null>(null);
-  if (openOrg) shownRef.current = openOrg;
+  useEffect(() => {
+    if (openOrg) shownRef.current = openOrg;
+  }, [openOrg]);
   const shown = openOrg ?? shownRef.current;
 
   const addOrg = useCallback(async (): Promise<void> => {
@@ -364,7 +367,9 @@ export function ContactCabinet(): ReactNode {
 
   const focused = doc.contacts.find((c) => c.id === focusedId) ?? null;
   const shownRef = useRef<ContactCard | null>(null);
-  if (focused) shownRef.current = focused;
+  useEffect(() => {
+    if (focused) shownRef.current = focused;
+  }, [focused]);
   const shown = focused ?? shownRef.current;
   const channelMessages = useFriendMessages(channelId ?? "");
 

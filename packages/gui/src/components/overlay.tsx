@@ -168,6 +168,14 @@ function useFloating(opts: FloatingOptions): { ref: RefObject<HTMLDivElement | n
     compute();
   }, [open, compute, dep]);
 
+  /* 入场相位：open 变 true 的第一次渲染里，浮层节点还没挂（useExitPhase 的 mounted 下一拍才 true），
+     上面那次 layout effect 量不到 ref → 落位永远为空、浮层跑到文档末尾。
+     节点出现后再补算一次；setPlacement 对同值幂等，不会自激。 */
+  useLayoutEffect(() => {
+    if (!open || placement) return;
+    compute();
+  });
+
   useEffect(() => {
     if (!open) return;
     const onMove = (): void => compute();

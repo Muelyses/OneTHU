@@ -49,8 +49,8 @@ html[data-og-scheme="dark"] .identity-card {
   background-image:
     radial-gradient(120% 85% at 8% -12%, var(--og-c-identity-sheen), transparent 58%),
     repeating-radial-gradient(circle at 92% 118%,
-      transparent 0 calc(var(--og-space-2) - var(--og-geo-hairline)),
-      color-mix(in srgb, var(--og-content-1) 4%, transparent) calc(var(--og-space-2) - var(--og-geo-hairline)) var(--og-space-2)),
+      transparent 0 calc(var(--og-space-3) - var(--og-geo-hairline)),
+      color-mix(in srgb, var(--og-content-1) 2.4%, transparent) calc(var(--og-space-3) - var(--og-geo-hairline)) var(--og-space-3)),
     repeating-linear-gradient(90deg,
       transparent 0 calc(var(--og-space-1) * 0.5),
       var(--og-c-identity-ink) calc(var(--og-space-1) * 0.5) calc(var(--og-space-1) * 0.75)),
@@ -58,6 +58,22 @@ html[data-og-scheme="dark"] .identity-card {
       transparent 0 calc(var(--og-space-1) * 0.75),
       color-mix(in srgb, var(--og-content-1) 2.4%, transparent) calc(var(--og-space-1) * 0.75) var(--og-space-1)),
     linear-gradient(132deg, var(--og-surface-1) 0%, var(--og-surface-2) 54%, var(--og-surface-3) 100%);
+}
+
+/* 压印水印：卡片中间的防伪大字（名字首字），只做材质，不承载信息 */
+.identity-card-watermark {
+  position: absolute;
+  z-index: -1;
+  right: var(--og-space-4);
+  bottom: calc(var(--og-space-6) + var(--og-space-2));
+  font-size: calc(var(--og-space-10) * 2);
+  font-weight: var(--og-weight-bold);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: color-mix(in srgb, var(--og-content-1) 6%, transparent);
+  transform: rotate(-8deg);
+  pointer-events: none;
+  user-select: none;
 }
 
 /* 品牌行 */
@@ -381,6 +397,7 @@ html:root .contact-star.is-selected .og-icon { fill: currentColor; }
 html:root.is-phone .contact-deck {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 0;
   padding: var(--og-space-2) var(--og-space-1) var(--og-space-4);
 }
@@ -392,6 +409,18 @@ html:root.is-phone .contact-slot:first-child { margin-top: 0; }
 html:root.is-phone .contact-slot:nth-child(3n + 2) { --og-c-contact-tilt: 1.1deg; }
 html:root.is-phone .contact-slot:nth-child(3n) { --og-c-contact-tilt: -0.6deg; }
 html:root.is-phone .contact-slot.is-mine { --og-c-contact-tilt: 1deg; }
+/* 手机：星标别在卡片内右上角（堆叠时不会被上一张压住），卡片右上角的类型字让位 */
+html:root.is-phone .contact-star {
+  top: var(--og-space-2);
+  right: var(--og-space-2);
+}
+html:root.is-phone .identity-card-kind { display: none; }
+/* 手机：带说明的区块头允许换行，标题不被右侧按钮挤成两行 */
+html:root.is-phone .org-cards-head {
+  flex-wrap: wrap;
+  align-items: center;
+}
+html:root.is-phone .org-cards-head .og-section-titles { flex-wrap: wrap; }
 html:root.is-phone .contact-detail-modal { width: 100%; }
 html:root.is-phone .contact-detail-modal .og-panel-body { padding: var(--og-space-4); }
 

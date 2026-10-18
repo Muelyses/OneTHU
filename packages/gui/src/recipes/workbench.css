@@ -647,3 +647,6 @@ html:root[data-og-motion="reduced"] :is(.vault-sheet,.vault-sheet-mask) { animat
 html:root.is-phone .settings-seg { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
 html:root.is-phone .settings-seg .settings-seg-item { flex:1 1 0; min-width:0; justify-content:center; white-space:nowrap; }
 @media(prefers-reduced-motion:reduce) { .oneshot-button { transition:none; } }
+/* Content pages scroll clear of the fixed shortcut dock (desktop + phone). */
+html:root:not(.is-phone) .explorer-panel { padding-bottom:var(--og-shortcut-clearance); }
+html:root.is-phone .explorer-panel { padding-bottom:var(--og-mobile-content-clearance); }

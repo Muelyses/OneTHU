@@ -31,6 +31,9 @@ export function IdentityCard({
   return (
     <article className={`identity-card identity-card--${variant}${organization ? " is-organization" : ""}`}>
       <span className="identity-card-stock" aria-hidden="true" />
+      <span className="identity-card-watermark" aria-hidden="true">
+        {Array.from(name)[0]}
+      </span>
       <div className="identity-card-top">
         <span className="identity-card-brand">OneTHU</span>
         <span className="identity-card-kind">{organization ? "ORGANIZATION" : "PERSONAL CARD"}</span>

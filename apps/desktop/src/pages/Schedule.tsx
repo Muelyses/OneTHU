@@ -29,7 +29,7 @@ import {
  * UI：OneGUI（Modal/Popover/Chip/Checkbox/Field/Text/Surface/Divider/Banner），
  * 内联样式只保留几何定位、网格线令牌与课块数据色（lib/courseColor 口径）。
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { openTab, useExplorerState } from "../state/explorer.js";
 import { openHomeworkRow } from "../lib/homeworkEntry.js";
 import type { Homework } from "@onethu/core";
@@ -71,16 +71,17 @@ const END_TIME = ["", "08:45", "09:35", "10:35", "11:25", "12:15", "14:15", "15:
 const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
 const BEGIN_MIN = BEGIN_TIME.map(toMin);
 const END_MIN = END_TIME.map(toMin);
-/** 24 小时全轴 */
-const PX_PER_MIN = 0.52;
 /** 时段下拉选项：起点 00–23、终点 01–24（整点；分钟级留待后续需要再放开） */
 const WIN_FROM_OPTS = Array.from({ length: 24 }, (_, h) => h * 60);
 const WIN_TO_OPTS = Array.from({ length: 24 }, (_, i) => (i + 1) * 60);
 
 /** 显示区间（分钟）：**可被用户设置覆盖**（state/scheduleWindow.ts）。
- *  默认全天＝保持既有观感；y() 每次调用读当前值，因此所有调用点自动跟随。 */
+ *  比例不是常量：整周课表要**整屏铺满**，所以每渲染帧按可用高度算出 px/分钟
+ *  （see fitAxis）。y() 每次调用读当前值，因此所有调用点自动跟随。 */
 let AXIS_BEGIN = 0;
 let AXIS_END = 24 * 60;
+/** 每 1 分钟折几像素：fitAxis 按可用高度与显示区间计算，保证一屏放下一整天 */
+let PX_PER_MIN = 0.52;
 const y = (min: number) => (min - AXIS_BEGIN) * PX_PER_MIN;
 /** "HH:MM" → 距 0:00 分钟（非法/缺省返回 null） */
 const hmToMin = (t?: string): number | null => {
@@ -261,6 +262,41 @@ function layout(entries: GridEntry[]): Placed[] {
     clusterMaxEnd = AXIS_BEGIN;
   }
   return placed;
+}
+
+/**
+ * 「整屏铺满」的坐标轴：把显示时段**收紧到真正有内容的区间**（前后各留 30 分钟、
+ * 至少 6 小时），再按可用高度定比例 —— 于是整周课表一屏放完：不滚动、不出现上下
+ * 空带，也不用把 00:00–07:00 这种没课的时段铺出来（用户点名「你没见过课表软件吗」）。
+ * 用户若自己选了更窄的时段，那个时段就是硬边界；只在极矮视口（<240px）才允许滚动。
+ */
+function fitAxis(
+  entries: GridEntry[],
+  win: { from: number; to: number },
+  availH: number,
+): { from: number; to: number; pmm: number } {
+  let lo = Number.POSITIVE_INFINITY;
+  let hi = Number.NEGATIVE_INFINITY;
+  for (const e of entries) {
+    const b = beginMinOf(e);
+    const t = endMinOf(e);
+    if (Number.isFinite(b)) lo = Math.min(lo, b);
+    if (Number.isFinite(t)) hi = Math.max(hi, t);
+  }
+  const hasData = Number.isFinite(lo) && Number.isFinite(hi) && hi > lo;
+  const PAD = 30;
+  const MIN_SPAN = 6 * 60;
+  // 有内容 → 收紧到内容；空周 → 固定看 08:00–22:00（空课表该有的样子）
+  let from = hasData ? Math.max(win.from, Math.floor((lo - PAD) / 60) * 60) : Math.max(win.from, 8 * 60);
+  let to = hasData ? Math.min(win.to, Math.ceil((hi + PAD) / 60) * 60) : Math.min(win.to, 22 * 60);
+  if (to - from < MIN_SPAN) {
+    from = Math.max(win.from, Math.min(from, Math.round((from + to) / 2 - MIN_SPAN / 2)));
+    to = Math.min(win.to, from + MIN_SPAN);
+    from = Math.max(win.from, to - MIN_SPAN);
+  }
+  // 首帧量不到高度（availH=0）时才用兜底值；量到就严格铺满，不滚动
+  const h = availH > 0 ? availH : 240;
+  return { from, to, pmm: h / (to - from) };
 }
 
 /* ---------- 学期检测 ---------- */
@@ -534,14 +570,49 @@ export function SchedulePage() {
     return { entries: clustered, allDayChips: chips };
   }, [viewWindow, windowRows, campus.data, cal.cloudEvents, cal.localEvents, extHw.items]);
 
-  const placed = useMemo(() => layout(entries), [entries]);
+  /* ── 铺满：可用高度 → 坐标轴（先定轴，layout/裁剪/渲染都跟着走） ── */
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const headRef = useRef<HTMLDivElement | null>(null);
+  /** 事件画布可用高度（= 时间表可视高 − 吸顶表头高），0 = 尚未量到（首帧） */
+  const [availH, setAvailH] = useState(0);
+  useLayoutEffect(() => {
+    if (mode !== "timetable") return undefined;
+    const host = scrollRef.current;
+    if (!host) return undefined;
+    const measure = (): void => {
+      const headH = headRef.current?.offsetHeight ?? 0;
+      // 底部浮件带（OneShot 胶囊 / 底栏）＝滚动区自身的下内边距（计算值就是 px，能直接读）
+      const reserve = Number.parseFloat(getComputedStyle(host).paddingBottom) || 0;
+      const next = Math.max(host.clientHeight - headH - reserve - 1, 0);
+      setAvailH((prev) => (Math.abs(prev - next) >= 2 ? next : prev));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(host);
+    if (headRef.current) ro.observe(headRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [mode, allDayChips.length, panelOpen]);
+
+  /** 收紧后的显示区间 + 每分钟像素：整周课表一屏放完（见 fitAxis） */
+  const axis = useMemo(() => fitAxis(entries, win, availH), [entries, win, availH]);
+  AXIS_BEGIN = axis.from;
+  AXIS_END = axis.to;
+  PX_PER_MIN = axis.pmm;
+  /** 画布高度：正好填满可用高度（不滚动、不留白） */
+  const canvasH = Math.max(1, Math.floor((axis.to - axis.from) * axis.pmm));
+
+  const placed = useMemo(() => layout(entries), [entries, axis.from, axis.to]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* 落在展示时段内的块 + 它们的「行号」。placed 是按天（列）再按时间排的，直接用数组序号
      会变成竖直按列扫；入场应该按行（同一时间带跨天同时出现）、时间从早到晚自上而下。
      行号 = 该块起始时刻在所有不同起始时刻里的序号。 */
   const visiblePlaced = useMemo(
     () => placed.filter((p) => p.endMin > AXIS_BEGIN && p.beginMin < AXIS_END),
-    [placed],
+    [placed, axis.from, axis.to], // eslint-disable-line react-hooks/exhaustive-deps
   );
   const blockRows = useMemo(() => {
     const keys = Array.from(new Set(visiblePlaced.map((p) => Math.max(p.beginMin, AXIS_BEGIN)))).sort((a, b) => a - b);
@@ -563,28 +634,14 @@ export function SchedulePage() {
     return ymdOf(w) === ymdOf(weekStart);
   }, [weekStart]);
   const todayIdx = useMemo(() => (new Date().getDay() + 6) % 7, []);
-  // 展示时段（用户可选，默认全天）：直接改轴区间，所有 y() 调用随之生效
-  AXIS_BEGIN = win.from;
-  AXIS_END = win.to;
-  const canvasH = y(AXIS_END) + 12;
 
-  /** 半小时刻度序列（跟随显示区间；起点对齐到 30 分钟刻度） */
+  /** 半小时刻度序列（跟随收紧后的轴；起点对齐到 30 分钟刻度） */
   const halfHours = useMemo(() => {
     const out: number[] = [];
-    const start = Math.ceil(win.from / 30) * 30;
-    for (let m = start; m <= win.to; m += 30) out.push(m);
+    const start = Math.ceil(axis.from / 30) * 30;
+    for (let m = start; m <= axis.to; m += 30) out.push(m);
     return out;
-  }, [win.from, win.to]);
-
-  /** 24h 轴自动定位：当前时刻（当前周）或 6:30 */
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el || mode !== "timetable") return;
-    const nowMin = new Date().getHours() * 60 + new Date().getMinutes();
-    const target = inCurrentWeek ? Math.max(nowMin - 45, win.from) : Math.max(6 * 60 + 30, win.from);
-    el.scrollTop = Math.max(0, y(Math.min(target, win.to)) - 8);
-  }, [mode, weekStart, inCurrentWeek]);
+  }, [axis.from, axis.to]);
 
   /* ---------- 筛选器：自绘（无原生日期控件） ---------- */
   const clampAnchor = (d: Date): Date => (d < MIN_ANCHOR ? MIN_ANCHOR : d > MAX_ANCHOR ? MAX_ANCHOR : d);
@@ -774,9 +831,10 @@ export function SchedulePage() {
    *   · 课程 → 网络学堂该课程（learn-course）新标签；
    *   · 寻迹 → trace 新标签，带 traceTarget（该课/该地点的寻路）。
    *  作业不再提供"查看原网页"出口：站内有作业详情页的一律进站内。 */
-  const gotoDetail = (d: GridEntry, trace = false, defaultTab = false): void => {
-    const newTab = (page: Parameters<typeof openTab>[0], params?: Parameters<typeof openTab>[1], title?: string, forceNew = true): void => {
-      openTab(page, params, { title, forceNew });
+  const gotoDetail = (d: GridEntry, trace = false): void => {
+    /** 统一出口：标题来自条目本身，forceNew 恒真（绝不顶掉当前日程标签） */
+    const newTab = (page: Parameters<typeof openTab>[0], params?: Parameters<typeof openTab>[1], title?: string): void => {
+      openTab(page, params, { title, forceNew: true });
     };
     setDetail(null); // 动作一律先关弹层，避免两个浮层叠着
     if (trace) {
@@ -797,8 +855,8 @@ export function SchedulePage() {
       return;
     }
     // 找不到对应课程（校外课/二级课表等）：仍开一个课程页新标签，不让按钮点了没反应
-    setMsg(`未找到「${d.courseName}」对应的网络学堂课程，已在课程页打开，可在其中查找。`);
-    newTab("learn", null, "课程", defaultTab);
+    setMsg(`未找到「${d.courseName}」对应的网络学堂课程，已打开课程页，可在其中查找。`);
+    newTab("learn", null, "课程");
   };
   return (
     <section className="schedule-workspace">
@@ -832,21 +890,8 @@ export function SchedulePage() {
             />
           </div>
         ) : (
-          <div className="schedule-timeline" ref={scrollRef}>
-            {/* 表头：**一周 7 列**（吸顶）；今天整列高亮 */}
-            <div className="schedule-day-head">
-              <div className="schedule-head-gutter" />
-              <div className="schedule-day-strip">
-                {DAY_NAMES.map((name, i) => (
-                  <div key={name} className={"schedule-day-cell" + (inCurrentWeek && i === todayIdx ? " is-today" : "")}>
-                    {name}
-                    <small>{dayDates[i]}</small>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 全天日程芯片（不进 24h 轴） */}
+          <>
+            {/* 全天日程芯片（不进事件轴；有时才出现，占一行） */}
             {allDayChips.length > 0 ? (
               <div className="schedule-chip-row">
                 {allDayChips.slice(0, 8).map((c, i) => (
@@ -862,10 +907,25 @@ export function SchedulePage() {
               </div>
             ) : null}
 
+            <div className="schedule-timeline" ref={scrollRef}>
+            {/* 表头：**一周 7 列**（吸顶）；今天整列高亮 */}
+            <div className="schedule-day-head" ref={headRef}>
+              <div className="schedule-head-gutter" />
+              <div className="schedule-day-strip">
+                {DAY_NAMES.map((name, i) => (
+                  <div key={name} className={"schedule-day-cell" + (inCurrentWeek && i === todayIdx ? " is-today" : "")}>
+                    {name}
+                    <small>{dayDates[i]}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="schedule-body">
               {/* 时间刻度列（跟随显示时段） */}
               <div className="schedule-gutter" style={{ height: canvasH }}>
-                {halfHours.filter((m) => m % 60 === 0).map((m) => (
+                {/* 极矮视口（手机横屏）一行只有十几像素：刻度隔一小时标一次，避免叠字 */}
+                {halfHours.filter((m) => m % (60 * (axis.pmm * 60 < 26 ? 2 : 1)) === 0).map((m) => (
                   <div key={m} className="schedule-gutter-label" style={{ top: Math.max(0, y(m) - 6) }}>
                     {m === AXIS_END ? "24:00" : hhmm(m)}
                   </div>
@@ -917,9 +977,9 @@ export function SchedulePage() {
                   // 跨区间的事件按边界裁切（区间外不画，避免负 top 溢出画布）
                   const drawBegin = Math.max(p.beginMin, AXIS_BEGIN);
                   const drawEnd = Math.min(p.endMin, AXIS_END);
-                  const top = y(drawBegin) + 2;
-                  const height = Math.max((drawEnd - drawBegin) * PX_PER_MIN - 5, 24);
-                  const compact = height < 44;
+                  const top = y(drawBegin) + 1;
+                  const height = Math.max((drawEnd - drawBegin) * PX_PER_MIN - 3, 16);
+                  const compact = height < 34;
                   // 入场错峰：按「行」（时间带）递延——同一时刻跨天的块同时出现，从早到晚自上而下
                   const delay = Math.min(blockRows.get(Math.max(p.beginMin, AXIS_BEGIN)) ?? 0, 16) * 13;
                   return (
@@ -968,7 +1028,8 @@ export function SchedulePage() {
                 })}
               </div>
             </div>
-          </div>
+            </div>
+          </>
         )}
 
         {/* 唯一常驻控件：一颗悬浮小圆钮，点开 = 全部设置（周切换/视图/筛选/同步/新建/收藏） */}

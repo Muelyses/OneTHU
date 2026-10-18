@@ -2,7 +2,7 @@
  * 常驻「暂存箱」拖放目标：只在拖动开始时出现，避免遮挡底栏/OH 胶囊。
  * 桌面：右下悬浮；手机：底部居中（贴底抽屉之上）。
  */
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Btn } from "@onethu/gui";
 import { IconIn } from "../Icons.js";
@@ -79,34 +79,24 @@ export function VaultDropTarget(): ReactNode {
       document.body,
     );
   }
-  if (!drag.active) {
-    /* 手机常驻入口：不挤底栏三槽，浮在底栏上方；桌面不显示（有 OneGO/侧栏入口）。 */
-    if (!isPhone) return null;
-    const count = box.items.length;
-    return createPortal(
-      <div className="vault-dock" aria-label={`暂存箱${count ? `，${count} 项` : ""}`}>
-        <Btn variant="ghost" size="sm" onClick={() => navigate("vault")} titleAttr="暂存箱：先把东西收进来">
-          <IconIn width={18} height={18} />
-          <span className="vault-dock-label">暂存箱</span>
-          {count > 0 ? <span className="vault-dock-count">{count > 99 ? "99+" : count}</span> : null}
-        </Btn>
-      </div>,
-      document.body,
-    );
-  }
-  return createPortal(
-    <div
-      className={"vault-drop" + (drag.hover ? " is-hover" : "")}
-      data-vault-drop
-      role="status"
-      aria-label="松手放入暂存箱"
-    >
-      <span className="vault-drop-icon" aria-hidden="true"><IconIn width={18} height={18} /></span>
-      <span className="vault-drop-main">
-        <span className="vault-drop-title">放进「{box.name}」</span>
-        <span className="vault-drop-sub">{drag.hover ? "松手收纳" : "拖到这里"}</span>
-      </span>
-    </div>,
-    document.body,
-  );
+  return !isPhone ? createPortal(<div className="vault-desktop-anchor"><VaultButton /></div>,document.body) : null;
+}
+
+export function VaultButton():ReactNode {
+  const drag=useSyncExternalStore(subscribeVaultDrag,vaultDragSnapshot,vaultDragSnapshot);
+  const doc=useSyncExternalStore(subscribeVault,vaultSnapshot,vaultSnapshot);
+  const box=doc.boxes.find(b=>b.id===doc.activeId)??doc.boxes[0]!;
+  const {navigate}=useApp();const [open,setOpen]=useState(false);
+  const items=box.items;
+  useEffect(()=>{if(!open)return;const key=(e:KeyboardEvent)=>{if(e.key==='Escape')setOpen(false);};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[open]);
+  return <div className={"vault-anchor"+(drag.active?" is-transfer":"")+(drag.target==='vault'?" is-hover":"")}>
+    <Btn className="vault-box-button" variant="solid" data-vault-drop aria-label={`暂存箱，${items.length} 项`} aria-expanded={open||drag.active} titleAttr="暂存箱 · 长按内容后拖到这里" onClick={()=>setOpen(v=>!v)}><IconIn width={20} height={20}/><span>{items.length||''}</span></Btn>
+    {open||drag.active?<div className="vault-radar" role="region" aria-label="暂存箱雷达">
+      <span className="vault-radar-scan" aria-hidden="true"/>
+      <div className="vault-radar-heading">{drag.active?'存入暂存箱':box.name}<small>{items.length} 项</small></div>
+      <div className="vault-orbits">{items.map((item,i)=><span key={item.id} className="vault-orbit" style={{'--orbit-angle':`${i*360/Math.max(1,items.length)}deg`,'--orbit-radius':`${76+(i%3)*24}px`} as CSSProperties}><span title={item.title}>{item.title.slice(0,8)}</span></span>)}</div>
+      {!drag.active?<><div className="vault-radar-list">{items.length?items.map(item=><Btn key={item.id} size="sm" data-vault-catch={JSON.stringify(item)} onClick={()=>{navigate('vault');setOpen(false);}}>{item.title}</Btn>):<p>长按内容，再拖到箱子里</p>}</div><Btn variant="solid" size="sm" onClick={()=>{navigate('vault');setOpen(false);}}>打开暂存箱</Btn><Btn size="sm" onClick={()=>setOpen(false)}>收起</Btn></>:<span className="vault-radar-hint">{drag.target==='vault'?'松手收纳':'拖到箱子上松手'}</span>}
+    </div>:null}
+    {drag.active?createPortal(<div className="transfer-oh-hint">{drag.target==='oh'?'松手发给小OH':'发给小OH'}</div>,document.body):null}
+  </div>;
 }

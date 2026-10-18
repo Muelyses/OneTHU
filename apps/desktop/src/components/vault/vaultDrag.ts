@@ -2,20 +2,22 @@
  * 全局「拖入暂存箱」交互层（Phase 1）。
  *
  * 任何元素只要带 `data-vault-catch`（JSON: VaultCatch）就能被拖：
- * - 鼠标：按下后移动 >6px 启动；
- * - 触屏：长按 320ms 启动（避免和滚动/点击冲突），启动后 pointermove 阻止默认滚动。
+ * - 鼠标与触屏：按住 400ms 拾取，先移动则交给排序/滚动；
+ * - 触屏：长按 400ms 启动（避免和滚动/点击冲突），启动后 pointermove 阻止默认滚动。
  *
  * 拖动中在 body 上挂一个跟随指针的 ghost，并显示 [data-vault-drop] 目标；
  * 松手时命中目标 → addToVault + 吸入动画；未命中 → 回弹消失。
  */
 import { GESTURE, claimGesture, releaseGesture } from "../../lib/gestureArena.js";
 import { addToVault, type VaultCatch } from "../../state/vault.js";
+import { ohAsk } from "../../plugins/ChatDock.js";
 import { showToast } from "../../state/toast.js";
 
 export interface VaultDragState {
   active: boolean;
   hover: boolean;
   title: string;
+  target?: "vault" | "oh";
 }
 
 let dragState: VaultDragState = { active: false, hover: false, title: "" };
@@ -52,11 +54,11 @@ function dropTargetRect(el: HTMLElement): DOMRect {
 }
 
 function hitDrop(x: number, y: number): HTMLElement | null {
-  const el = document.querySelector<HTMLElement>("[data-vault-drop]");
-  if (!el) return null;
-  const r = dropTargetRect(el);
-  const pad = 28;
-  return x >= r.left - pad && x <= r.right + pad && y >= r.top - pad && y <= r.bottom + pad ? el : null;
+  for (const el of document.querySelectorAll<HTMLElement>("[data-vault-drop], [data-oh-drop]")) {
+    const r = dropTargetRect(el);
+    if (r.width && r.height && x >= r.left-20 && x <= r.right+20 && y >= r.top-20 && y <= r.bottom+20) return el;
+  }
+  return null;
 }
 
 function paint(x: number, y: number): void {
@@ -67,7 +69,7 @@ function paint(x: number, y: number): void {
     targetEl?.classList.remove(HOVER_CLASS);
     targetEl = hit;
     targetEl?.classList.add(HOVER_CLASS);
-    setDrag({ hover: Boolean(targetEl) });
+    setDrag({ hover: Boolean(targetEl), target: targetEl?.hasAttribute("data-oh-drop") ? "oh" : targetEl ? "vault" : undefined });
   }
 }
 
@@ -108,6 +110,10 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
     showToast("没放进暂存箱：拖到「暂存箱」目标上再松手");
     return;
   }
+  if (target?.hasAttribute("data-oh-drop")) {
+    ohAsk(`请帮我处理这个来自 OneTHU 的内容：${cat.title}\n${JSON.stringify({type:cat.type,atom:cat.atom,board:cat.board,text:cat.text,summary:cat.sub,payload:cat.payload})}`);
+    return;
+  }
   const r = addToVault(cat);
   if (r.ok) showToast(`已收进暂存箱：${cat.title}`);
   else if (r.reason === "duplicate") showToast(`暂存箱里已经有「${cat.title}」了`);
@@ -130,7 +136,7 @@ let pendingCat: VaultCatch | null = null;
 
 /** 从一次 pointer 位置启动拖动（供内部/测试调用；任意元素走 data-vault-catch 自动接线）。 */
 export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): void {
-  if (dragState.active) return;
+  if (dragState.active || !claimGesture("vault-drag")) return;
   pointerId = id;
   startX = x;
   startY = y;
@@ -146,7 +152,6 @@ export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): 
   ghost.append(badge, title);
   document.body.appendChild(ghost);
   document.body.classList.add(BODY_CLASS);
-  claimGesture("vault-drag");
   setDrag({ active: true, hover: false, title: cat.title });
   paint(x, y);
   window.addEventListener("pointermove", onMove, { capture: true });
@@ -173,7 +178,8 @@ export function installVaultDragSources(): () => void {
     const el = pending.el;
     const swallow = (ev: Event): void => { ev.stopPropagation(); ev.preventDefault(); };
     el.addEventListener("click", swallow, { capture: true, once: true });
-    window.setTimeout(() => el.removeEventListener("click", swallow, true), 600);
+    const finish = (): void => { window.setTimeout(() => el.removeEventListener("click", swallow, true), 80); };
+    window.addEventListener("pointerup", finish, {once:true});
   };
 
   const onDown = (e: PointerEvent): void => {
@@ -214,23 +220,22 @@ export function installVaultDragSources(): () => void {
         } catch { /* ignore */ }
       }
     }
-    if (!el || !cat?.title) return;
+    if (!el || !cat?.title || target?.closest("input, textarea, select, [contenteditable=true], .free-toolbar, .free-handle, .free-drag-handle")) return;
     clear();
     pending = { cat, el, x: e.clientX, y: e.clientY, pointerId: e.pointerId, timer: null, armed: false };
-    if (e.pointerType === "mouse") {
-      /* 鼠标：移动阈值触发，不拦截点击本身 */
-    } else {
-      pending.timer = window.setTimeout(arm, GESTURE.longPressMs);
-    }
+    pending.timer = window.setTimeout(arm, GESTURE.longPressMs);
   };
   const onPointerMove = (e: PointerEvent): void => {
     if (!pending || e.pointerId !== pending.pointerId) return;
     if (pending.armed) return;
     const dist = Math.hypot(e.clientX - pending.x, e.clientY - pending.y);
-    if (e.pointerType === "mouse" && dist > GESTURE.mouseSlop) arm();
-    else if (dist > GESTURE.longPressSlop) clear(); // 手指先滑动 = 页面滚动，不拖
+    if (dist > GESTURE.longPressSlop) clear(); // 手指先滑动 = 页面滚动，不拖
   };
   const onUp = (): void => clear();
+  const lockTouch = (e: TouchEvent): void => {if (dragState.active && e.cancelable) e.preventDefault();};
+  const escape = (e: KeyboardEvent): void => {if(e.key === "Escape"){clear();if(dragState.active)endDrag(false,startX,startY,null);}};
+  document.addEventListener("touchmove",lockTouch,{passive:false});
+  window.addEventListener("keydown",escape);
   document.addEventListener("pointerdown", onDown, true);
   document.addEventListener("pointermove", onPointerMove, true);
   document.addEventListener("pointerup", onUp, true);
@@ -241,6 +246,9 @@ export function installVaultDragSources(): () => void {
     document.removeEventListener("pointermove", onPointerMove, true);
     document.removeEventListener("pointerup", onUp, true);
     document.removeEventListener("pointercancel", onUp, true);
+    document.removeEventListener("touchmove",lockTouch);
+    window.removeEventListener("keydown",escape);
+    if(dragState.active)endDrag(false,startX,startY,null);
     moveHooked = false;
   };
 }

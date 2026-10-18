@@ -72,7 +72,7 @@ export interface SpheresDoc {
  * 表现为「坞上有时看得到、一刷新/一改透明度就没了」。现在 NAV 侧补了球，这里也把
  * xiaoda 登记进 AUTO_DOCK，修好同一件事的两半。
  */
-const AUTO_DOCK: readonly string[] = ["xiaoda"];
+const AUTO_DOCK: readonly string[] = ["xiaoda", "contacts"];
 
 const KEY = "onethu.home.spheres.v3";
 /** 上一代键名：老文档 → 现行键名的一次性迁移（现行键名不变，补停靠靠 doc.added 判定） */
@@ -91,7 +91,7 @@ function defaultDoc(): SpheresDoc {
   /* 清小搭是一级功能，新装即长在坞上（已在头八个里就不重复加） */
   return {
     v: 1,
-    docked: first.includes("xiaoda") ? first : [...first, "xiaoda"],
+    docked: Array.from(new Set([...first, "xiaoda", "contacts"])),
     added: [...AUTO_DOCK],
     timeOpacity: 1,
     dockOpacity: 1,

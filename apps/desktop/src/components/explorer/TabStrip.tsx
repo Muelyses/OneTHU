@@ -657,6 +657,7 @@ function pageGlyph(page: Page): (p: { width?: number; height?: number }) => Reac
     case "services": return IconSpark;
     case "boards": return IconTabsCards;
     case "settings": return IconSettings;
+    case "contacts": return IconIn;
     case "vault": return IconIn;
     default: return IconFolder;
   }

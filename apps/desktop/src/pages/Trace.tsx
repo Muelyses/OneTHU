@@ -85,7 +85,7 @@ function urgencyOf(ev: TraceEvent, etaSec: number | null, now: number): Urgency 
 /* ───────── 页面 ───────── */
 
 export function TracePage(): React.ReactNode {
-  const { status } = useApp();
+  const { status, navParams } = useApp();
   const campus = useCampusData();
   const cal = useCloudCal();
 
@@ -210,6 +210,8 @@ export function TracePage(): React.ReactNode {
     const today = ymd(new Date());
     const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
     const dayEnd = dayStart.getTime() + 86_400_000 - 1;
+    const target=navParams?.traceTarget;
+    if(target?.location){const start=new Date(`${target.date??today}T${target.startTime??'08:00'}:00`).getTime();return [{title:target.title,location:target.location,startMs:start,endMs:new Date(`${target.date??today}T${target.endTime??'09:00'}:00`).getTime(),kind:'course' as const}];}
     const out: TraceEvent[] = [];
     const sched = (campus.data?.schedule ?? []) as ScheduleEntry[];
     for (const e of sched) {
@@ -239,7 +241,7 @@ export function TracePage(): React.ReactNode {
       }
     }
     return out.sort((a, b) => a.startMs - b.startMs);
-  }, [campus.data?.schedule, cal.cloudEvents, cal.localEvents]);
+  }, [campus.data?.schedule, cal.cloudEvents, cal.localEvents,navParams?.traceTarget]);
 
   /* ── 地点解析 + ETA（origin/mode/事件变化时重算） ── */
   useEffect(() => {

@@ -19,6 +19,7 @@ import { ExtHwSettingsSection } from "../components/ExtHwSettingsSection.js";
 import { TabManageModal } from "../components/TabManageModal.js";
 import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
+import { OneShotSettings } from "../components/explorer/OneShot.js";
 import { NameCardSection } from "../components/NameCardSection.js";
 import { OrganizationSection } from "../components/OrganizationSection.js";
 import { invoke } from "@tauri-apps/api/core";
@@ -93,7 +94,7 @@ function jumpToSection(titles: string[]): void {
 const SETTINGS_TAB_OF: Record<string, string> = {
   关于: "关于", 账户: "账号", 账号与绑定: "账号", 安全: "账号",
   云同步: "数据与同步", 外部作业源: "数据与同步",
-  首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
+  OneShot: "外观与布局", 首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
   工作空间: "外观与布局", /* dev-explorer：缺键会让工作空间分节在所有页签恒显（用户实测「其他 设置多了个不动的分节/触发不一致」） */
   /* OneGUI Section 的 textContent 含 hint（「搜索与胶囊底栏胶囊…」），下面按最长前缀匹配 */
   搜索与胶囊: "外观与布局",
@@ -404,8 +405,6 @@ export function SettingsPage() {
       </SettingsList>
 
 
-      <SectionHead title="我的 OneTHU 名片" />
-      <NameCardSection />
 
       <SectionHead title="我的组织" />
       <OrganizationSection />
@@ -546,6 +545,8 @@ export function SettingsPage() {
 
       <DownloadSettings />
 
+      <SectionHead title="OneShot" />
+      <OneShotSettings />
       <SectionHead title="首页布局" />
       <SettingsList>
         <SettingsRow

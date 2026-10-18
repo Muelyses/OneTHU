@@ -43,7 +43,9 @@ import { ShellWallpaperLayer } from "./explorer/WallpaperVideo.js";
 import { ContextMenuHost } from "./explorer/ContextMenu.js";
 import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
-import { VaultDropTarget } from "./vault/VaultDropTarget.js";
+import { OneShot } from "./explorer/OneShot.js";
+import { OneGoBar } from "./explorer/OneGoBar.js";
+import { VaultDropTarget, VaultButton } from "./vault/VaultDropTarget.js";
 import { useTabLayoutMode } from "../state/tabLayout.js";
 
 /* ══ OneGUI 适配层 ═════════════════════════════════════════════════════════
@@ -93,6 +95,7 @@ export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactN
   { page: "learn", label: "课程", icon: IconLearn },
   { page: "schedule", label: "日程", icon: IconSchedule },
   { page: "trace", label: "寻迹", icon: IconTrace },
+  { page: "contacts", label: "通讯录", icon: IconMail },
   { page: "mail", label: "邮箱", icon: IconMail },
   { page: "cloud", label: "云盘", icon: IconCloud },
   { page: "gitlab", label: "GitLab", icon: IconGitLab },
@@ -164,7 +167,7 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
   return (
     <div className="ex-rail-actions">
       <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
-      <IconBtn label="设置" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("settings")} />
+      <IconBtn label="我的" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("profile")} />
       <button
         className="icon-btn ex-rail-width"
         onClick={onToggleNarrow}
@@ -242,11 +245,12 @@ function TopBar(): ReactNode {
       ) : layout === "h" ? (
         <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
       ) : null}
+      {phone ? <VaultButton /> : null}
       {layout === "h" && !phone ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
       <ChromeMore />
-      <IconBtn label="设置" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("settings")} />
+      <IconBtn label="我的" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("profile")} />
     </header>
   );
 }
@@ -429,6 +433,8 @@ export function Shell({ children }: { children: ReactNode }) {
       <main className={"content explorer-content" + contentCanvasClass}>{children}</main>
       </ContextMenuLayer>
       <BottomBar />
+      <OneGoBar />
+      <OneShot />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />
       <OneGoSheet />
@@ -626,6 +632,7 @@ export function LevelBox(): ReactNode {
   const [boxRef, narrow] = useNarrowBox(300);
   /* 窄栏：只渲染图标（title/aria-label 承载全名），**禁止文字换行**；宽栏：文字完整不截断 */
   const cells: Array<{ id: Entry; label: string; icon: ReactNode }> = [
+    { id: "profile", label: "我的名片", icon: <IconSettings /> },
     { id: "settings", label: "设置", icon: <IconSettings /> },
     { id: "plugins", label: "插件", icon: <IconPlug /> },
     { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },

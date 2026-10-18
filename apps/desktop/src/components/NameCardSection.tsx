@@ -2,8 +2,9 @@
  * 设置页「我的 OneTHU 名片」：个人名片编辑、组织名片、通讯录。
  * 数据在 state/nameCard.ts；进暂存箱/分享口令/以后 NFC 碰一碰都复用同一 payload。
  */
+import { IdentityCard } from "./IdentityCard.js";
 import { useCallback, useState, type ReactNode } from "react";
-import { Btn, Card, List, Row, Text } from "@onethu/gui";
+import { Btn, Card, List, Row, Text, Modal, Input, Segment } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import { openFormModal } from "../lib/formModal.js";
 import { confirmOk } from "../lib/confirm.js";
@@ -32,7 +33,10 @@ defineSearchRows([
   },
 ]);
 
-export function NameCardSection(): ReactNode {
+export function NameCardSection({view="all"}:{view?:"all"|"personal"|"contacts"}): ReactNode {
+  const [focused,setFocused]=useState<string|null>(null);
+  const [query,setQuery]=useState("");
+  const [filter,setFilter]=useState("all");
   const doc = useCards();
   const p = doc.personal;
   const [busy, setBusy] = useState(false);
@@ -141,25 +145,12 @@ export function NameCardSection(): ReactNode {
   }, []);
 
   const orgs = doc.orgs;
-  const contacts = doc.contacts;
+  const contacts = doc.contacts.filter(c=>(filter==="all"||c.kind===filter)&&`${c.name} ${c.note}`.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <Card>
-      <div className="name-card">
-        <div className="name-card-head">
-          {p.avatar ? (
-            <img className="name-card-avatar" src={p.avatar} alt="我的头像" />
-          ) : (
-            <span className="name-card-avatar name-card-avatar-empty" aria-hidden="true">{(p.name || "我").slice(0, 1)}</span>
-          )}
-          <div className="name-card-id">
-            <Text slot="label">{p.name || "还没设置名字"}</Text>
-            <Text slot="micro" tone="faint">{p.bio || "个人简介会出现在名片和碰一碰里"}</Text>
-            {p.website || p.social || p.phone ? (
-              <Text slot="micro" tone="faint">{[p.website, p.social, p.phone, p.cloudEmail].filter(Boolean).join(" · ")}</Text>
-            ) : null}
-          </div>
-        </div>
+      {view!=="contacts"?<div className="name-card">
+        <IdentityCard card={p}/>
         <div className="name-card-actions">
           <Btn variant="solid" tone="brand" size="sm" onClick={() => void edit()}>编辑资料</Btn>
           <Btn variant="ghost" size="sm" onClick={() => void pickAvatar()} disabled={busy}>换头像</Btn>
@@ -167,9 +158,9 @@ export function NameCardSection(): ReactNode {
           <Btn variant="ghost" size="sm" onClick={() => void addOrg()}>新建组织名片</Btn>
           <Btn variant="ghost" size="sm" onClick={importContacts}>从暂存箱收名片</Btn>
         </div>
-      </div>
-
-      {orgs.length > 0 ? (
+      </div>:null}
+      {view==="contacts"?<div className="contact-tools"><Input placeholder="搜索好友或组织" value={query} onChange={setQuery}/><Segment value={filter} onChange={setFilter} options={[{value:"all",label:"全部"},{value:"personal",label:"好友"},{value:"organization",label:"组织"}]}/><Btn onClick={importContacts}>从暂存箱收名片</Btn><Btn onClick={()=>void addOrg()}>新建组织名片</Btn></div>:null}
+      {view!=="personal" && orgs.length > 0 ? (
         <List divided>
           {orgs.map((o) => (
             <Row
@@ -191,13 +182,19 @@ export function NameCardSection(): ReactNode {
         </List>
       ) : null}
 
-      <div className="name-card-contacts">
+      {view!=="personal"?<div className="name-card-contacts">
         <Text slot="label">通讯录{contacts.length ? `（${contacts.length}）` : ""}</Text>
         {contacts.length === 0 ? (
           <Text slot="micro" tone="faint">还没有联系人。收下别人的名片（暂存箱/口令/碰一碰）后会出现在这里。</Text>
         ) : (
+          <div className="contact-deck">
+            {contacts.map(c=><Btn key={c.id} className="contact-card-pick" aria-label={`打开${c.name}的名片`} data-vault-catch={JSON.stringify({type:"payload",title:c.name,payload:{kind:"namecard",card:c.card,org:c.kind==="organization"}})} onClick={()=>setFocused(c.id)}><IdentityCard card={c.card} organization={c.kind==="organization"}/></Btn>)}
+          </div>
+        )}
+        <Modal open={!!focused} onClose={()=>{setFocused(null);setChannelId(null);}} title="联系人名片" size="md">
+          {contacts.filter(c=>c.id===focused).map(c=><IdentityCard key={c.id} card={c.card} organization={c.kind==="organization"}/>)}
           <List divided>
-            {contacts.map((c) => (
+            {contacts.filter(c=>c.id===focused).map((c) => (
               <Row
                 key={c.id}
                 flush
@@ -214,13 +211,12 @@ export function NameCardSection(): ReactNode {
                       <Btn variant="ghost" size="sm" onClick={() => void openBidirectionalShare(c.id).then((r) => showToast(r.ok ? "已开通双向写入" : `开通失败：${r.reason}`))}>开通双向</Btn>
                     ) : null}
                     <Btn variant="ghost" size="sm" onClick={() => setChannelId(channelId === c.id ? null : c.id)}>通道</Btn>
-                    <Btn variant="ghost" size="sm" tone="error" onClick={() => removeContact(c.id)}>删除</Btn>
+                    <Btn variant="ghost" size="sm" tone="error" onClick={() => {removeContact(c.id);setFocused(null);setChannelId(null);}}>删除</Btn>
                   </span>
                 }
               />
             ))}
           </List>
-        )}
         {channelId ? (
           <div className="vault-share">
             <Text slot="label">好友通道</Text>
@@ -240,7 +236,8 @@ export function NameCardSection(): ReactNode {
             </div>
           </div>
         ) : null}
-      </div>
+        </Modal>
+      </div>:null}
     </Card>
   );
 }

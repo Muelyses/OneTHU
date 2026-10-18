@@ -27,6 +27,11 @@ export interface BtnProps extends OneBase {
   onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLElement>) => void;
+  draggable?: boolean;
+  onDragStart?: (e: React.DragEvent<HTMLElement>) => void;
+  onDragOver?: (e: React.DragEvent<HTMLElement>) => void;
+  onDragEnd?: (e: React.DragEvent<HTMLElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLElement>) => void;
   tabIndex?: number;
   autoFocus?: boolean;
   /** 状态语义（可访问性）：下拉/展开/按下三态与 role 都透传 */

@@ -29,6 +29,9 @@ import {
  * 内联样式只保留几何定位、网格线令牌与课块数据色（lib/courseColor 口径）。
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { openTab } from "../state/explorer.js";
+import { openHomeworkRow } from "../lib/homeworkEntry.js";
+import type { Homework } from "@onethu/core";
 import { PageAtomStar } from "../components/Collect.js";
 import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
@@ -105,6 +108,8 @@ interface GridEntry {
   /** 来源（课程缺省=palette；考试/云/本/作业DDL/重叠簇固定色） */
   src?: "exam" | "cloud" | "local" | "hw" | "cluster";
   /** 作业 DDL 元数据（src==="hw"） */
+  homework?: Homework;
+  courseId?: string;
   hwMeta?: { submitted: boolean; source?: string; externalUrl?: string; ext: boolean };
   /** 重叠簇内的原始条目（src==="cluster"，详情弹层列表展开） */
   clusterItems?: GridEntry[];
@@ -315,12 +320,11 @@ export function SchedulePage() {
   // compact/medium（手机竖屏、横屏、平板竖屏）落「列表」——周网格横向滚动在手机上是
   // 已知的糟糕体验。用户手动切过之后就不再自动跟随（其选择保留）。
   const tier = usePlatformLayout();
-  const [mode, setMode] = useState<"timetable" | "agenda">(tier === "expanded" ? "timetable" : "agenda");
-  const modeTouched = useRef(false);
-  useEffect(() => {
-    if (modeTouched.current) return;
-    setMode(tier === "expanded" ? "timetable" : "agenda");
-  }, [tier]);
+  const [mode, setMode] = useState<"timetable" | "agenda">("timetable");
+  const [dayIndex,setDayIndex]=useState((new Date().getDay()+6)%7);
+  const dayOnly=tier!=="expanded";
+  const columns=dayOnly?1:7;
+  const modeTouched=useRef(false);
   const pickMode = (m: "timetable" | "agenda"): void => {
     modeTouched.current = true;
     setMode(m);
@@ -503,6 +507,7 @@ export function SchedulePage() {
         startTime: hmOf(b),
         endTime: hmOf(d),
         src: "hw",
+        homework: h,
         hwMeta: {
           submitted: !!h.submitted,
           source: h.source,
@@ -753,8 +758,15 @@ export function SchedulePage() {
       ? `${weekStart.getMonth() + 1}月${weekStart.getDate()}日 – ${new Date(weekStart.getTime() + 6 * 86_400_000).getDate()}日`
       : `${anchor.getFullYear()} 年 ${anchor.getMonth() + 1} 月`;
 
+  const gotoDetail=(d:GridEntry,trace=false):void=>{
+    if(trace){openTab("trace",{traceTarget:{title:d.courseName,location:d.location??"",date:d.date,startTime:d.startTime,endTime:d.endTime}},{title:`寻迹 · ${d.courseName}`,forceNew:true});setDetail(null);return;}
+    if(d.homework){openHomeworkRow(d.homework,{navigate:(page,params)=>openTab(page,params,{title:d.courseName,forceNew:true}),from:"schedule"});setDetail(null);return;}
+    const course=campus.data?.courses.find(c=>c.id===d.courseId||c.name===d.courseName);
+    if(course){openTab("learn-course",{courseId:course.id},{title:course.name,forceNew:true});setDetail(null);}
+    else {openTab("learn",null,{title:"课程",forceNew:true});setMsg(`未找到「${d.courseName}」对应的网络学堂课程，可在课程页查找。`);setDetail(null);}
+  };
   return (
-    <>
+    <section className="schedule-workspace">
       <PageHead
         title="日程"
         meta={
@@ -813,8 +825,9 @@ export function SchedulePage() {
         <Text slot="label" tone="faint">
           {canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置"}
         </Text>
-        <Btn variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing}><IconRefresh width={14} height={14} />{cal.syncing ? "同步中…" : "同步"}</Btn>
+        <details className="schedule-sync-menu"><summary>同步与导出</summary><div>        <Btn variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing}><IconRefresh width={14} height={14} />{cal.syncing ? "同步中…" : "同步"}</Btn>
         <Btn variant="outline" onClick={() => void onSystemCal()} disabled={busy}>{sysNative === false ? "导出 .ics" : "同步到系统日历"}</Btn>
+</div></details>
         <Btn variant="solid" tone="brand" onClick={() => setDraft(emptyDraft(defaultDraftDate, canCloud))}>＋ 添加日程
         </Btn>
       </div>
@@ -932,13 +945,14 @@ export function SchedulePage() {
               ))}
             </div>
           ) : null}
-          <div ref={scrollRef} style={{ maxHeight: 640, overflowY: "auto" }}>
-            <Card style={{ padding: 14, overflowX: "auto" }}>
+          {dayOnly?<div className="schedule-week-picker">{DAY_NAMES.map((name,i)=><Btn key={name} selected={dayIndex===i} onClick={()=>setDayIndex(i)}>{name}<small>{dayDates[i]}</small></Btn>)}</div>:null}
+          <div className="schedule-timeline" ref={scrollRef}>
+            <Card className="schedule-timeline-paper">
                 <div style={{ minWidth: 0 }}>
                   {/* 表头：星期 + 日期（今天高亮）——tt-head/is-today 是课表与选课预览共享的表头类 */}
-                  <div style={{ display: "flex", marginBottom: 10, alignItems: "flex-end" }}>
+                  <div className="schedule-day-head" style={{ display: "flex", marginBottom: 10, alignItems: "flex-end" }}>
                     <div style={{ width: 34, flexShrink: 0 }} />
-                    {DAY_NAMES.map((name, i) => (
+                    {DAY_NAMES.map((name, i) => dayOnly && i!==dayIndex ? null : (
                       <div
                         key={name}
                         className={"tt-head" + (inCurrentWeek && i === todayIdx ? " is-today" : "")}
@@ -976,13 +990,13 @@ export function SchedulePage() {
                         </div>
                       ) : null}
                       {/* 列背景（今天微底色）——网格线/底色走判例同款令牌 */}
-                      {DAY_NAMES.map((_, day) => (
+                      {DAY_NAMES.map((_, day) => dayOnly && day!==dayIndex ? null : (
                         <div
                           key={`col-${day}`}
                           style={{
                             position: "absolute",
-                            left: `${(day * 100) / 7}%`,
-                            width: `${100 / 7}%`,
+                            left: `${dayOnly?0:(day * 100) / columns}%`,
+                            width: `${100 / columns}%`,
                             top: 0,
                             height: canvasH,
                             borderLeft: day === 0 ? "none" : "1px solid var(--og-line-1)",
@@ -1004,7 +1018,7 @@ export function SchedulePage() {
                         />
                       ))}
                       {/* 当前时刻红线（当前周）：线走 --og-error 状态令牌；圆点 = Badge dot */}
-                      {inCurrentWeek
+                      {inCurrentWeek && (!dayOnly || dayIndex===todayIdx)
                         ? (() => {
                             const nm = new Date().getHours() * 60 + new Date().getMinutes();
                             if (nm > AXIS_END) return null;
@@ -1012,8 +1026,8 @@ export function SchedulePage() {
                               <div
                                 style={{
                                   position: "absolute",
-                                  left: `${(todayIdx * 100) / 7}%`,
-                                  width: `${100 / 7}%`,
+                                  left: `${dayOnly?0:(todayIdx * 100) / columns}%`,
+                                  width: `${100 / columns}%`,
                                   top: y(nm),
                                   borderTop: "2px solid var(--og-error)",
                                   zIndex: 5,
@@ -1027,10 +1041,10 @@ export function SchedulePage() {
                           })()
                         : null}
                       {/* 事件块（可点击） */}
-                      {visiblePlaced.map((p, i) => {
+                      {visiblePlaced.filter(p=>!dayOnly||p.day===dayIndex).map((p, i) => {
                         const laneW = 100 / p.lanes;
-                        const leftPct = ((p.day * 100) + p.lane * laneW) / 7;
-                        const widthPct = laneW / 7;
+                        const leftPct = (((dayOnly?0:p.day) * 100) + p.lane * laneW) / columns;
+                        const widthPct = laneW / columns;
                         // 跨区间的事件按边界裁切（区间外不画，避免负 top 溢出画布）
                         const drawBegin = Math.max(p.beginMin, AXIS_BEGIN);
                         const drawEnd = Math.min(p.endMin, AXIS_END);
@@ -1111,6 +1125,7 @@ export function SchedulePage() {
           <Modal open onClose={() => setDetail(null)} title={title} size="md" closeButton={false}
             foot={
               <Inline gap={2} justify="end">
+                {!d.clusterItems && d.src!=="hw"?<><Btn variant="solid" onClick={()=>gotoDetail(d)}>前往</Btn><Btn variant="outline" disabled={!d.location} onClick={()=>gotoDetail(d,true)}>寻迹</Btn></>:null}
                 <Btn variant="outline" onClick={() => setDetail(null)}>关闭</Btn>
               </Inline>
             }
@@ -1164,11 +1179,7 @@ export function SchedulePage() {
                     </Text>
                   </Inline>
                 ))}
-                {d.hwMeta?.externalUrl ? (
-                  <Inline>
-                    <Btn variant="outline" onClick={() => void openUrl(d.hwMeta?.externalUrl ?? "")}>打开官方页面</Btn>
-                  </Inline>
-                ) : null}
+                {d.homework?<Btn variant="solid" onClick={()=>gotoDetail(d)}>前往</Btn>:null}
               </Stack>
             ) : (
               <Stack gap={2}>
@@ -1266,6 +1277,6 @@ export function SchedulePage() {
           </Modal>
         );
       })()}
-    </>
+    </section>
   );
 }

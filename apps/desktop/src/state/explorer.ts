@@ -58,7 +58,7 @@ export const WORKSPACE_COLORS = ["#5b8def", "#22c55e", "#f59e0b", "#f25a5a", "#a
 export const WORKSPACE_ICONS = ["folder", "star", "pin", "book", "flag", "orb", "learn", "info"] as const;
 
 /** 设置浮层入口（高于任何标签页；Entry 语义与旧 Layout 一致） */
-export type OverlayEntry = "settings" | "plugins" | "oh";
+export type OverlayEntry = "profile" | "settings" | "plugins" | "oh";
 
 interface ExplorerState {
   /** 不含 home（home 隐式恒在，渲染时拼在最前） */
@@ -90,7 +90,7 @@ const listeners = new Set<() => void>();
 const KNOWN_PAGES: ReadonlySet<string> = new Set([
   "homepage", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life",
   "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs",
-  "boards", "board", "vault", "xiaoda",
+  "boards", "board", "vault", "contacts", "xiaoda",
   /* 网络学堂子页/详情页：OH 的 navigate 描述一直宣称支持这些页面，但以前不在白名单里，
      首页标签下 navigate 会被 openTab 判"未知页"直接回首页 → OH 假报成功。 */
   "learn-course", "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",

@@ -39,6 +39,10 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
   }
   if (it.type === "payload") {
     const p = it.payload as { kind?: string; card?: Record<string, unknown>; org?: boolean } | undefined;
+    if (p?.kind === "quick-entry") {
+      void import("./quickAccess.js").then(m=>m.openQuickEntry((it.payload as {entry:import("./quickAccess.js").QuickEntry}).entry));
+      return true;
+    }
     if (p?.kind === "namecard" && p.card) {
       const r = addContact(p.org ? "organization" : "personal", p.card as never, it.sub ?? "");
       if (r.ok) env.toast("名片已加入通讯录");

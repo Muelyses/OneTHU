@@ -76,6 +76,7 @@ export interface NavEntry {
 /* ══════════ 注册表（§1.2 全量清单；入口映射在 M1 PR 中逐条勾选核对） ══════════ */
 
 export const NAV_REGISTRY: NavEntry[] = [
+  {id:"contacts",name:"通讯录",category:"行政",visibility:"core",page:"contacts",keywords:["好友","通讯录","组织","名片"],note:"名片 · 好友 · 组织"},
   /* —— 学习 —— */
   { id: "vault", name: "暂存箱", category: "行政", visibility: "group", page: "vault", keywords: ["暂存箱", "收纳", "收集", "暂存", "分享口令", "箱子"], note: "任何元素先收进来，再整理/分享" },
   { id: "learn", name: "网络学堂", category: "学习", visibility: "group", page: "learn", keywords: ["课程", "学堂", "文件", "讨论区"], note: "本学期课程总览" },

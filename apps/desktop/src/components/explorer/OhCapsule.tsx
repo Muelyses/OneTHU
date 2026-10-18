@@ -164,6 +164,7 @@ export function OhCapsule(): React.ReactNode {
   return (
     <button
       data-og-scope="oh.capsule"
+      data-oh-drop
       className={
         "ohx-capsule" +
         (pressing ? " is-press" : "") +

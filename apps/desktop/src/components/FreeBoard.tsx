@@ -51,6 +51,7 @@ import { useApp } from "../state/context.js";
 import { homeStarterItems } from "../state/boardCore.js";
 import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
 import { openOnePage } from "../state/onePage.js";
+import { gestureOwner } from "../lib/gestureArena.js";
 import { addToVault } from "../state/vault.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
 import { FolderIcon } from "./Icons.js";
@@ -690,6 +691,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     }
     /* 长按不动 = 出快捷菜单（与全站长按口径一致）；一旦位移超过阈值就收回菜单并转成拖动。 */
     timer = window.setTimeout(() => {
+      if (gestureOwner() === "vault-drag") return;
       longFired = true;
       openItemMenu(it, sx, sy);
     }, LONG_PRESS_MS);
@@ -698,6 +700,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
     const m: string = mode; // string 别名：避免 TS 对字面量联合做过强收窄
     const onMove = (ev: PointerEvent): void => {
+      if (gestureOwner() === "vault-drag") return;
       const raw = { x: ev.clientX - sx, y: ev.clientY - sy };
       /* 手指走的是屏幕，条目活在世界上：位移要除以倍率（放大 2 倍时拖 100px = 世界 50px）。 */
       const moved = worldDelta(scaleRef.current, raw.x, raw.y);
@@ -882,6 +885,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               <div
                 key={it.id}
                 data-item-id={it.id}
+                data-vault-catch={JSON.stringify({type:"board-item",title:plan.title,board:{boardId,itemId:it.id},source:"白板"})}
                 data-widget={it.spec.kind === "custom" ? it.spec.id : it.spec.kind}
                 data-item={it.spec.kind}
                 data-note-tone={isNote && it.spec.kind === "custom" ? String(it.spec.props?.tone ?? "yellow") : undefined}

@@ -12,6 +12,7 @@ import { useExitPhase } from "../../lib/useExitPhase.js";
 import { useExpanded } from "../../state/usePlatformLayout.js";
 import { closeSettings, openSettings, useOverlayEntry, type OverlayEntry } from "../../state/explorer.js";
 import { markSettingsRows } from "../Layout.js";
+import { NameCardSection } from "../NameCardSection.js";
 import { SettingsPage } from "../../pages/Settings.js";
 import { PluginsPage } from "../../pages/Plugins.js";
 import { IconSettings, IconX } from "../Icons.js";
@@ -19,6 +20,7 @@ import { HarnessMark } from "../HarnessMark.js";
 import { IconPlug } from "../Icons.js";
 
 const SEGMENTS: Array<{ id: OverlayEntry; label: string; icon: ReactNode }> = [
+  { id: "profile", label: "我的名片", icon: <IconSettings width={14} height={14} /> },
   { id: "settings", label: "个人设置", icon: <IconSettings width={14} height={14} /> },
   { id: "plugins", label: "插件", icon: <IconPlug width={14} height={14} /> },
   { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={12} /> },
@@ -54,7 +56,7 @@ export function SettingsOverlay(): ReactNode {
 
   return createPortal(
     <div className={mask} onClick={requestClose}>
-      <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="设置">
+      <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="我的">
         <div className="settings-head">
           <span className="workbench-settings-brand">OneTHU</span>
           <div className="settings-seg" role="tablist" aria-label="设置分段">
@@ -74,7 +76,7 @@ export function SettingsOverlay(): ReactNode {
           <IconBtn label="关闭设置" size="sm" variant="outline" titleAttr="关闭设置（Esc）" icon={<IconX width={14} height={14} />} onClick={requestClose} />
         </div>
         <div className={"explorer-settings-body" + (entry === "settings" ? "" : " workbench-plugin-settings")}>
-          {entry === "settings" ? <SettingsPage /> : <PluginsPage />}
+          {entry === "profile" ? <NameCardSection view="personal" /> : entry === "settings" ? <SettingsPage /> : <PluginsPage />}
         </div>
       </div>
     </div>,

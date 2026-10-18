@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Btn, Card, List, Row, Segment, Text } from "@onethu/gui";
+import { ExchangeFeedback, type ExchangeState } from "../ExchangeFeedback.js";
 import { QRCodeSVG } from "qrcode.react";
 import { Empty, PageHead } from "../Layout.js";
 import { useApp } from "../../state/context.js";
@@ -71,6 +72,7 @@ export function VaultPage(): ReactNode {
   const box = activeVault();
   const all = vaultSnapshot().boxes;
   const [code, setCode] = useState<string>(box.lastShareCode ?? "");
+  const [exchange,setExchange]=useState<ExchangeState|null>(null);
   const [busy, setBusy] = useState(false);
   const [fileHot, setFileHot] = useState(false);
   const [cloudReady, setCloudReady] = useState(false);
@@ -157,6 +159,7 @@ export function VaultPage(): ReactNode {
       const r = await importTouchCode(f.code);
       if (!r.ok) { showToast(r.reason ?? "口令无法导入"); return; }
       const parts = [r.vault ? "暂存箱" : "", r.contact ? "名片" : "", r.org ? "组织" : ""].filter(Boolean).join(" / ");
+      setExchange({phase:"success",message:`已收到 ${parts}`});
       showToast(`已接收：${parts}`);
     } finally {
       setBusy(false);
@@ -169,6 +172,7 @@ export function VaultPage(): ReactNode {
     setBusy(true);
     try {
       await nfcShareText(payloadText);
+      setExchange({phase:"ready",message:"发送已就绪，请让对方贴近手机；此处尚未收到对方确认"});
       showToast("NFC 发送已就绪：让对方手机贴近本机（双方 NFC 开启）");
     } catch (e) {
       showToast(`NFC 发送失败：${e instanceof Error ? e.message : String(e)}`);
@@ -179,21 +183,26 @@ export function VaultPage(): ReactNode {
 
   const receiveText = useCallback(async (text: string): Promise<void> => {
     const t = text.trim();
+    const result=(ok:boolean,message:string):void=>setExchange({phase:ok?"success":"error",message});
     if (t.startsWith("ONTOUCH1.")) {
       const r = await importTouchCode(t);
+      result(r.ok,r.ok?"名片与内容已放入你的 OneTHU":r.reason??"口令无法导入");
       showToast(r.ok ? "碰一碰内容已接收" : r.reason ?? "碰一碰口令无法导入");
       return;
     }
     if (t.startsWith("ONV1.") || t.startsWith("ONV2.")) {
       const r = await importShareCodeAsCurrent(t);
+      result(r.ok,r.ok?`已收到 ${r.imported??0} 项内容`:r.reason??"口令无法导入");
       showToast(r.ok ? `已导入 ${r.imported ?? 0} 项` : r.reason ?? "口令无法导入");
       return;
     }
     if (t.startsWith("ONORG1.")) {
       const r = acceptOrgInvite(t);
+      result(r.ok,r.ok?"组织名片已加入":r.reason??"邀请无法识别");
       showToast(r.ok ? "已加入组织（本地成员清单）" : r.reason ?? "组织邀请无法识别");
       return;
     }
+    result(false,"这不是有效的 OneTHU 口令");
     showToast("这不是 OneTHU 的分享/碰一碰/组织口令");
   }, []);
 
@@ -204,12 +213,14 @@ export function VaultPage(): ReactNode {
       if (!f) return;
       if (!f.mime.startsWith("image/")) { showToast("请选择一张二维码图片"); return; }
       setBusy(true);
+      setExchange({phase:"reading",message:"正在识别二维码…"});
       const bytes = await fileToBytes(f, 8 * 1024 * 1024);
       const img = new File([bytes], f.name, { type: f.mime });
       const text = await decodeQrFile(img);
-      if (!text) { showToast("图片里没有识别到二维码"); return; }
+      if (!text) { setExchange({phase:"error",message:"图片里没有识别到二维码"}); showToast("图片里没有识别到二维码"); return; }
       await receiveText(text);
     } catch (e) {
+      setExchange({phase:"error",message:"扫码失败，请换一张清晰的二维码图片"});
       showToast(`扫码失败：${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setBusy(false);
@@ -219,11 +230,13 @@ export function VaultPage(): ReactNode {
   const readNfc = useCallback(async (): Promise<void> => {
     setBusy(true);
     setNfcReading(true);
+    setExchange({phase:"reading",message:"将两部手机背面靠近，正在等待内容…"});
     try {
       const text = (await nfcReadText()).trim();
-      if (!text) { showToast("NFC 没有读到内容"); return; }
+      if (!text) { setExchange({phase:"error",message:"没有读到内容，请重新靠近"}); showToast("NFC 没有读到内容"); return; }
       await receiveText(text);
     } catch (e) {
+      setExchange({phase:"error",message:"读取失败，请重试或使用二维码"});
       showToast(`NFC 读取失败：${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setBusy(false);
@@ -267,6 +280,7 @@ export function VaultPage(): ReactNode {
 
   return (
     <>
+      <ExchangeFeedback state={exchange} onClose={()=>setExchange(null)}/>
       <PageHead title="暂存箱" meta="任何东西都能先放这里：长按/拖动元素进来，或从搜索结果拖入" />
       {cloudChecked && !cloudReady ? (
         <Card>

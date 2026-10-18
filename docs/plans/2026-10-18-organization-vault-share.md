@@ -422,3 +422,14 @@
 - 模拟器 `onethu-demo` 安装并冷启动成功，进入登录页；返回键退出进程无崩溃。
 - 关键环境：必须显式导出 NDK linker/CC（详见 `docs/audit/2026-10-18-android-build-runbook.md`）。
 - 模拟器无 NFC，真机双机 NFC 与登录后功能仍未验证。
+
+
+### 12.30 手机实机（模拟器）验收 + 内盘清理（2026-10-18）
+
+- Android 工程曾软链到内盘 `/Users/st/onethu-android`，构建/模拟器把内盘写爆；已删除并改软链到
+  SSD `/Volumes/OneTHUBuild/onethu-android`，runbook 记录空间纪律。
+- 模拟器成功恢复登录态并进入首页/暂存箱：真实作业数据、手机底栏、暂存箱 UI 均可见；
+  暂存箱 dock 原被底栏裁掉并与刷新球重叠，CSS 已改为 2*space10 右偏、3*space10 上移。
+- 实机路径发现真实 bug：`share`/`makeTouch` useCallback 缺 `cloudReady` 依赖 → 云盘已连仍被
+  「先连接云盘」拦截；已修并加护栏（vault 40/40）。
+- 因清理内盘重建了 Android 工程，手机端云分享复测未完成；真机 NFC 仍未验证。

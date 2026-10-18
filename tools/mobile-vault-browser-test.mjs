@@ -38,6 +38,9 @@ try {
   await call('/src/state/explorer.ts', 'explorerNavigate', ['vault']);
   await p.waitForTimeout(700);
   check(await p.locator('.vault-dock').isVisible(), '390 vault dock visible');
+  const dockBox = await p.locator('.vault-dock').boundingBox();
+  const vp = p.viewportSize();
+  check(dockBox && dockBox.y + dockBox.height <= vp.height - 70, '390 vault dock floats above the bottom bar');
   const overflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow <= 1, '390 vault page has no horizontal overflow');
   const buttons = await p.locator('.vault-actions button').count();

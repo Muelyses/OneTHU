@@ -147,7 +147,7 @@ export function VaultPage(): ReactNode {
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [cloudReady]);
 
   const receiveTouch = useCallback(async (): Promise<void> => {
     const f = await openFormModal("接收碰一碰", [{ key: "code", label: "碰一碰口令（ONTOUCH1.…）", kind: "textarea", required: true }]);
@@ -263,7 +263,7 @@ export function VaultPage(): ReactNode {
     } finally {
       setBusy(false);
     }
-  }, [box]);
+  }, [box, cloudReady]);
 
   return (
     <>

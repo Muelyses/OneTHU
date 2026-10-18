@@ -5,7 +5,7 @@
 - Android SDK/NDK：`/Volumes/OneTHUBuild/oh-android-sdk`（NDK 27.1.12297006）
 - JDK：17（`/usr/libexec/java_home -v 17`）
 - AVD：`onethu-demo`（android-35 google_apis arm64-v8a）
-- Gradle 工程：`apps/desktop/src-tauri/gen/android`
+- Gradle 工程：`apps/desktop/src-tauri/gen/android`（**软链到 `/Volumes/OneTHUBuild/onethu-android`**；Android 工程/构建缓存必须在 SSD，禁止再放内盘）
 
 > 关键：`tauri android build` 默认不注入 NDK 的 linker/CC，Rust 会误用宿主 `cc` 链接 Android
 > 目标。必须显式导出以下环境变量（本 runbook 已实测）：
@@ -56,6 +56,13 @@ $ADB exec-out screencap -p > /tmp/onethu-emulator.png
 - 模拟器安装成功，`MainActivity` 冷启动成功，进入登录页（截图 `docs/assets/android-emulator-login-2026-10-18.png`）。
 - 登录页按系统返回键 → App 进程退出、回桌面；无 `FATAL EXCEPTION`。
 - 模拟器没有 NFC 硬件，**无法验证 ReaderMode/HCE**；也未登录，无法验证暂存箱/云端 UI。
+
+## 内盘空间纪律（2026-10-18 教训）
+
+- Tauri/Gradle 构建曾把 Android 工程放在 `/Users/st/onethu-android`（内盘），加上模拟器 AVD，
+  一度把内盘写到只剩几百 MB；已删除并改软链到 `/Volumes/OneTHUBuild/onethu-android`。
+- 以后构建前确认 `apps/desktop/src-tauri/gen/android` 软链指向外置 SSD；模拟器 AVD 也应在 SSD。
+- 不要在 `~/` 下新建 Android/Gradle 工程目录。
 
 ## 已知限制
 

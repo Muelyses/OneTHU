@@ -89,6 +89,8 @@ try {
   check(readFileSync('apps/desktop/src/plugins/ChatDock.tsx', 'utf8').includes('data-vault-catch'), 'OH search hits are vault drag sources');
   check(readFileSync('apps/desktop/src/pages/Plugins.tsx', 'utf8').includes('data-vault-catch'), 'plugin cards are vault drag sources');
   check(readFileSync('apps/desktop/src/components/ThemePickerModal.tsx', 'utf8').includes('data-vault-catch'), 'theme choices are vault drag sources');
+  const vaultPageSrc = readFileSync('apps/desktop/src/components/vault/VaultPage.tsx', 'utf8');
+  check(/const makeTouch = useCallback[\s\S]*?\}, \[cloudReady\]\)/.test(vaultPageSrc) && /const share = useCallback[\s\S]*?\}, \[box, cloudReady\]\)/.test(vaultPageSrc), 'share/touch callbacks depend on cloudReady (no stale gate)');
 
   /* 导入为当前暂存箱（走真实 UI：新建箱 → 导入口令 → 提交） */
   await p.getByRole('button', { name: '新建', exact: true }).click();

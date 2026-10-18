@@ -475,7 +475,9 @@ body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
 .vault-file-drop.is-hot { border-color: var(--og-focus-color); background: var(--og-surface-3); }
 
 /* 手机常驻暂存箱入口：在底栏之上、sheet/OH 面板之下；不占底栏三槽。 */
-html:root .vault-dock { position: fixed; right: calc(var(--og-space-4) + env(safe-area-inset-right)); bottom: calc(var(--og-space-10) + env(safe-area-inset-bottom)); z-index: var(--og-z-drawer); display: none; }
+/* 手机常驻入口：浮在底栏/FAB 上方，避开右下刷新列（否则会被底栏裁掉、与刷新球重叠）。
+   right = 2*space10 + space2 ≈ 72px，bottom = 3*space10 ≈ 96px。 */
+html:root .vault-dock { position: fixed; right: calc(var(--og-space-10) * 2 + var(--og-space-2) + env(safe-area-inset-right)); bottom: calc(var(--og-space-10) * 3 + env(safe-area-inset-bottom)); z-index: var(--og-z-drawer); display: none; }
 html.is-phone .vault-dock { display: inline-flex; }
 html.is-phone .vault-dock .og-btn { box-shadow: var(--og-elev-menu); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); }
 .vault-dock-label { font-size: var(--og-text-micro); color: var(--og-content-2); }

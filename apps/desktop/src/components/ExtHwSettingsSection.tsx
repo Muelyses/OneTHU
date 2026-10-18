@@ -702,7 +702,7 @@ export function ExtHwSettingsSection(): ReactNode {
                     <Btn variant="solid" tone="brand" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>{busy === "tyche-login" ? "登录中…" : "登录"}</Btn>
                   </div>
                   {/* R21-A：记住密码 → 会话失效时用存档账密静默自动重登一次（同源 ≥10min、每进程 ≤3 次） */}
-                  <Checkbox checked={tycheRemember} onChange={(v) => setTycheRemember(v)} label="记住密码（会话失效后自动重新登录）" />
+                  <Checkbox checked={tycheRemember} onChange={(v) => setTycheRemember(v)} label="记住密码（登录状态失效后自动登录）" />
                   <OGText as="div" slot="label" tone="faint">
                     {tycheRemember
                       ? "密码以密文存在本机，不上传、不进日志；退出登录即清除。"

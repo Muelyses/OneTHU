@@ -174,7 +174,7 @@ function usePersonalActions() {
   const toVault = useCallback((): void => {
     const r = addToVault(personalCardCatch());
     if (r.ok) showToast("名片已放进暂存箱");
-    else showToast(r.reason === "duplicate" ? "暂存箱里已经有这张名片了" : "暂存箱暂时不可用");
+    else showToast(r.reason === "duplicate" ? "暂存箱里已经有这张名片了" : "暂存箱暂时不可用，稍后再试");
   }, []);
 
   return { personal: p, edit, pickAvatar, toVault, busy, cloudEmail };
@@ -250,7 +250,7 @@ export function OrgCardsSection(): ReactNode {
 
   const stageOrg = useCallback((org: OrgCard): void => {
     const r = addToVault(orgCardCatch(org));
-    showToast(r.ok ? "组织名片已放进暂存箱" : r.reason === "duplicate" ? "暂存箱里已有了" : "暂存箱暂时不可用");
+    showToast(r.ok ? "组织名片已放进暂存箱" : r.reason === "duplicate" ? "暂存箱里已有了" : "暂存箱暂时不可用，稍后再试");
   }, []);
 
   const copyJoin = useCallback((org: OrgCard): void => {
@@ -543,7 +543,7 @@ export function ContactCabinet(): ReactNode {
           hint={
             filterActive
               ? "换个关键词或切回「全部」；星标好友会排在卡片夹最前面。"
-              : "名片夹里现在只有你自己的名片；别人的名片（暂存箱 / 分享口令 / 碰一碰）收进来后会排在这里。"
+              : "现在只有你自己的名片；别人的名片收进来后会排在这里。"
           }
           action={
             <Inline gap={2} wrap>
@@ -619,7 +619,7 @@ export function ContactCabinet(): ReactNode {
               <Inline gap={2} wrap>
                 <Btn size="sm" variant="solid" tone="brand" icon={<IconIn size="sm" />} onClick={() => {
                   const r = addToVault(contactCatch(shown));
-                  showToast(r.ok ? "名片已放进暂存箱" : r.reason === "duplicate" ? "暂存箱里已经有这张名片了" : "暂存箱暂时不可用");
+                  showToast(r.ok ? "名片已放进暂存箱" : r.reason === "duplicate" ? "暂存箱里已经有这张名片了" : "暂存箱暂时不可用，稍后再试");
                 }}>
                   放进暂存箱
                 </Btn>

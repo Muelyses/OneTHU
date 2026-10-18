@@ -29,4 +29,8 @@
 
 ## 验证
 
-见 `docs/onegui/navigation-rebuild/README.md`（截图与断言清单）。
+见 `docs/onegui/navigation-rebuild/README.md`（截图、断言清单与护栏对比）。摘要：
+
+- typecheck / production build / `node tools/onegui-guard.mjs` 通过。
+- 浏览器验收：导航 22 项、通讯录 52 项、日程 18 项断言全绿（真实鼠标与触屏事件）。
+- 全量 `pnpm guard`：本轮把文案护栏从 14 处清零，修掉白板长按回归，按新口径对齐课表/底栏护栏；其余红项在接手基线 `70995a68` 上本来就红（逐项对比见 README 表格）。

@@ -649,7 +649,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           board: { boardId, itemId: item.id },
           source: "白板",
         });
-        say(r.ok ? "已收进暂存箱" : r.reason === "duplicate" ? "暂存箱里已经有这个组件了" : "暂存箱暂时不可用");
+        say(r.ok ? "已收进暂存箱" : r.reason === "duplicate" ? "暂存箱里已经有这个组件了" : "暂存箱暂时不可用，稍后再试");
       },
     });
     list.push({ key: "info", label: "详情", onSelect: () => say(def ? def.description : "这个组件已经不在组件目录里了。") });

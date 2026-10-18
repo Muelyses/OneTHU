@@ -39,7 +39,7 @@ const SCENES: Array<{ id: string; name: string; q: string }> = [
   { id: "page-cloud", name: "云盘", q: "explorer-preview=page&page=cloud" },
   { id: "page-tasks", name: "待办/任务", q: "explorer-preview=page&page=tasks" },
   { id: "page-vault", name: "暂存箱", q: "explorer-preview=page&page=vault" },
-  { id: "namecard", name: "我的名片/组织", q: "explorer-preview=settings-tab&settings-tab=账号" },
+  { id: "namecard", name: "我的名片/组织", q: "explorer-preview=settings-tab" },
   { id: "search", name: "搜索面板", q: "explorer-preview=search" },
   { id: "onego", name: "OneGO!", q: "explorer-preview=onego" },
 ];

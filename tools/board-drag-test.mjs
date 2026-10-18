@@ -51,7 +51,9 @@ ok(B.resizePx(list, "b", { x: 300, y: 40, w: 200, h: 120 }) === null, "resizePx 
 
 /* ③ 长按 / 右键出菜单（两路必须同一个菜单，否则手机上没入口） */
 ok(/LONG_PRESS_MS = 500/.test(page), "长按阈值与全站口径不一致（ContextMenu 是 500）");
-ok(/window\.setTimeout\(\(\) => \{\s*longFired = true;\s*openItemMenu\(it, sx, sy\);/.test(page), "长按没有出快捷菜单");
+/* 2026-10-18：长按回调里先让位给暂存箱拖拽（gestureOwner === "vault-drag" 直接返回），
+   但「长按 → 同一个 openItemMenu」这条不变量不变。 */
+ok(/window\.setTimeout\(\(\) => \{[\s\S]{0,160}longFired = true;[\s\S]{0,80}openItemMenu\(it, sx, sy\);/.test(page), "长按没有出快捷菜单");
 ok(/if \(longFired\) menu\.close\(\);/.test(page), "位移超过阈值后没有收回长按菜单（会边拖边挂着菜单）");
 ok(/onContextMenu=\{\(e\) => \{[\s\S]{0,400}openItemMenu\(it, e\.clientX, e\.clientY\)/.test(page), "右键没有走同一个条目菜单");
 

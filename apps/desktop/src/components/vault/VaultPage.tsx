@@ -55,7 +55,7 @@ function ItemRow({ it, onRemove, onOpen }: { it: VaultItem; onRemove: () => void
             {it.atom ? (
               <Btn variant="ghost" size="sm" onClick={() => {
                 const r = addAtomToHome(`${it.atom!.kind}|${it.atom!.key}`);
-                showToast(r.added ? "已放进首页" : r.reason === "duplicate" ? "首页已经有这一项了" : "放进首页失败");
+                showToast(r.added ? "已放进首页" : r.reason === "duplicate" ? "首页已经有这一项了" : "放进首页失败，稍后再试");
               }}>放进首页</Btn>
             ) : null}
             <Btn variant="ghost" size="sm" onClick={onRemove}>移除</Btn>
@@ -288,7 +288,7 @@ export function VaultPage(): ReactNode {
             <Text slot="label">本版本要求连接清华云盘</Text>
             <Btn variant="solid" tone="brand" size="sm" onClick={() => navigate("cloud")}>去连接云盘</Btn>
           </div>
-          <Text slot="micro" tone="faint">文件与分享口令依赖云盘；未连接时暂存箱只保留本地引用，云分享不可用。</Text>
+          <Text slot="micro" tone="faint">文件与分享口令依赖云盘；未连接时只保留本地引用，请先到「云盘」页连接。</Text>
         </Card>
       ) : null}
       <Card>

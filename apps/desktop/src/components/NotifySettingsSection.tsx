@@ -142,7 +142,7 @@ export function NotifySettingsSection(): ReactNode {
     <>
       <SettingsRow
         title="提醒"
-        sub="把课程、日程与作业 DDL 推到系统通知，另有每日早报。打开后可细调下面的提前量与静默时段。"
+        sub="课程、日程与作业 DDL 推到系统通知，可细调提前量与静默时段。"
         control={<OGSwitch checked={s.enabled} onChange={(v) => patch({ enabled: v })} aria-label="提醒总开关" />}
       />
 
@@ -163,7 +163,7 @@ export function NotifySettingsSection(): ReactNode {
 
       <SettingsRow
         title="作业 DDL 提醒"
-        sub="提前量沿用网络学堂首页的「DDL 提醒」设置（全局默认 + 单作业覆盖）。与课程不同：静默时段内顺手延会错过截止时，改在静默开始前发出。"
+        sub="沿用网络学堂的「DDL 提醒」设置；静默时段内会提前到静默开始前发出。"
         control={<OGSwitch checked={s.ddl} onChange={(v) => patch({ ddl: v })} aria-label="作业 DDL 提醒" />}
       />
 

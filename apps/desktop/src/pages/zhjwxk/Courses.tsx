@@ -1499,7 +1499,7 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       {wb.volState === "loading" ? <Text slot="label" tone="faint">志愿数据同步中…</Text>
         : wb.volState === "error" ? (
           <Inline gap={2}>
-            <Text slot="label" tone="faint">志愿数据同步失败</Text>
+            <Text slot="label" tone="faint">志愿数据同步失败，可点右侧重试</Text>
             <Btn variant="outline" size="sm" onClick={() => void wb.refreshVol(wb.stageCart.map((st) => ({ code: st.code, seq: st.seq || "0", department: "" })), true)}>重试</Btn>
           </Inline>
         ) : wb.volLastSync ? (

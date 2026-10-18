@@ -86,7 +86,7 @@ function optionsFor(f: any, live: Record<string, string>): Array<{ value: string
 /** 消息 → Banner 语气（安装/拉取的结果语义色，判例 3c73347c 成败同屏分色） */
 function msgTone(msg: string): "success" | "error" | "info" {
   if (msg.startsWith("已安装") || msg.includes("已是最新")) return "success";
-  if (msg.startsWith("失败") || msg.includes("失败")) return "error";
+  if (msg.startsWith("失败，请稍后重试") || msg.includes("失败，请稍后重试")) return "error";
   return "info";
 }
 
@@ -683,7 +683,7 @@ function PluginCard({
         })()}
 
         {checkLine ? (
-          <Text as="p" slot="micro" tone={(checkLine.startsWith("失败") || checkLine.includes("失败")) ? "error" : "quiet"}>
+          <Text as="p" slot="micro" tone={(checkLine.startsWith("失败，请稍后重试") || checkLine.includes("失败，请稍后重试")) ? "error" : "quiet"}>
             {checkLine}
           </Text>
         ) : null}

@@ -421,7 +421,7 @@ export function AttachActionsSheet({
           <Stack gap={3}>
             {!sfReady ? <Text slot="label" as="div" tone="faint">正在读云盘配置…</Text> : null}
             {sfReady && !sf.configured ? (
-              <Banner tone="warning" title="云盘还没连接：到「云盘」页连上清华云盘后才能转存（这条通道不做静默降级）。" />
+              <Banner tone="warning" title="云盘还没连接，请先到「云盘」页连接清华云盘再转存。" />
             ) : null}
             <Stack gap={1}>
               <Text slot="label" tone="faint">资料库（不替你猜库）</Text>
@@ -529,7 +529,7 @@ export function AttachActionsSheet({
               <Stack gap={3}>
                 <Banner
                   tone="warning"
-                  title="雨课堂没有可用的附件提交通道：本面板**不会**替你在雨课堂提交，只会把你带到官方作答页，由你在页面里把附件随作答一起交上去（页面自带雨课堂的截止/次数校验）。"
+                  title="雨课堂没有附件提交通道：本面板不会替你提交，只会打开官方作答页。的截止/次数校验）。"
                 />
                 {yktItems.length === 0 ? (
                   <Text slot="label" as="div" tone="faint">

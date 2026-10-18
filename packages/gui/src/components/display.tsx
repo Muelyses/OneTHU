@@ -181,7 +181,7 @@ export function AccordionItem({ id, title, sub, trailing, children, open = false
           <svg className="og-icon og-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round"><path d="M9 5l7 7-7 7" /></svg>
         </span>
       </button>
-      <div className="og-accordion-body">
+      <div className="og-accordion-body" inert={!open} aria-hidden={!open}>
         <div>
           <div className="og-accordion-content">{children}</div>
         </div>

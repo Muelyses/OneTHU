@@ -15,6 +15,7 @@
   --og-c-surface-blur: var(--og-surface-blur);
 
   position: relative;
+  padding: var(--og-c-surface-pad);
   background-color: var(--og-c-surface-fill);
   background-image: var(--og-c-surface-tint);
   border: 1px solid var(--og-c-surface-line);
@@ -111,9 +112,7 @@
 }
 
 /* ── 卡片：带内边距与头部/底部槽的面 ── */
-.og-card {
-  padding: var(--og-c-surface-pad);
-}
+.og-card { padding: 0; }
 
 .og-card--flush {
   --og-c-surface-pad: var(--og-space-0);

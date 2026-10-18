@@ -163,6 +163,7 @@
   --og-board-mobile-tool-bottom: 76px;
   --og-z-overlay: 11000;
   --og-z-modal: 11010;
+  --og-z-confirm: 12500;
   --og-z-menu: 11020;
   --og-z-toast: 11030;
   --og-z-tooltip: 11040;
@@ -282,7 +283,9 @@
   --og-vault-chip-w: 64px;
   --og-mobile-tools-gap: 76px;
   --og-refresh-bottom: 80px;
-  --og-navigation-clearance: 92px;
+  --og-navigation-clearance: 36px;
+  --og-rail-full-width: 232px;
+  --og-rail-narrow-width: 56px;
   --og-vault-orbit-r: 132px;
   --og-shortcut-clearance: 100px;
   --og-board-tools-bottom: 120px;

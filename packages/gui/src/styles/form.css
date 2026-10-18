@@ -424,3 +424,5 @@ textarea.og-input-el {
 
 /* The shell owns the focus ring; the native child must never draw a second face. */
 .og-input-el:focus-visible { outline: none; box-shadow: none; }
+
+html:root .og-input .og-input-el:is(:focus, :focus-visible) { outline: none; box-shadow: none; background: transparent; border: 0; }

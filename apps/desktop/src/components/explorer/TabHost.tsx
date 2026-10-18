@@ -284,7 +284,7 @@ export function TabHost(): ReactNode {
               2026-10-15 用户报「其他白板下半部分截断」，真因就是这里只写了 home 那一支：面板拿不到类，
               于是吃到基线 `.explorer-panel { overflow: hidden }`，比面板高的画布被直接裁掉（真 app 探针实测：
               panel[h=529 sh=2456 oy=hidden]）。口径与 Layout 的 contentCanvasClass 保持一致。 */
-            className={"explorer-panel" + (t.kind === "home" ? " is-home-canvas" : t.page === "board" ? " is-onepage-canvas" : "")}
+            className={"explorer-panel" + (t.page === "homepage" ? " is-home-canvas" : t.page === "board" ? " is-onepage-canvas" : "")}
             data-tab-id={t.id}
             data-tab-page={t.page}
             style={active ? undefined : { display: "none" }}

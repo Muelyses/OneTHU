@@ -12,7 +12,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Avatar, Banner, Btn, Card, Chip, DataList, EmptyState, Inline, List, LoadingBlock, Page,
-  Row, SectionCard, Select, Spinner, Stack, StatTile, Surface, Tabs, Text, TextArea,
+  Row, SectionCard, Select, Spinner, Stack, StatTile, Surface, Tabs, Text, TextArea, Modal,
 } from "@onethu/gui";
 import type {
   XiaodaAgentGroup, XiaodaChatMessage, XiaodaConversation, XiaodaModel, XiaodaSkillCategory,
@@ -574,6 +574,7 @@ function SkillsTab(): ReactNode {
   const [overview, setOverview] = useState<XiaodaSkillOverview | null>(null);
   const [cats, setCats] = useState<XiaodaSkillCategory[]>([]);
   const [items, setItems] = useState<XiaodaSkillItem[]>([]);
+  const [selectedSkill, setSelectedSkill] = useState<XiaodaSkillItem | null>(null);
   const [pageNum, setPageNum] = useState(1);
   const [total, setTotal] = useState(0);
   const [err, setErr] = useState("");
@@ -622,6 +623,13 @@ function SkillsTab(): ReactNode {
           </Inline>
         </Card>
       ) : null}
+      <Modal open={!!selectedSkill} onClose={() => setSelectedSkill(null)} title={selectedSkill?.name ?? "技能详情"}>
+        {selectedSkill ? <Stack gap={4}>
+          <Inline gap={3}><Avatar name={selectedSkill.name} src={selectedSkill.icon} /><Text>{selectedSkill.authorName || "清小搭社区"}</Text></Inline>
+          <Text>{selectedSkill.description || "暂时没有介绍"}</Text>
+          <Text tone="faint">{`${selectedSkill.categoryName || "未分类"} · ${selectedSkill.downloadCount ?? 0} 次下载`}</Text>
+        </Stack> : null}
+      </Modal>
       <SectionCard title="技能广场" sub={total ? `共 ${total} 个` : undefined}>
         {err ? (
           <Stack gap={3}>
@@ -646,6 +654,7 @@ function SkillsTab(): ReactNode {
                   flush
                   leading={<Avatar name={s.name} src={s.icon} />}
                   title={s.name}
+                  onClick={() => setSelectedSkill(s)}
                   sub={(s.description ?? "").slice(0, 64)}
                   meta={`${s.downloadCount ?? 0} 次下载 · ${s.authorName ?? ""}`}
                 />

@@ -597,8 +597,7 @@ export function ExtHwSettingsSection(): ReactNode {
         >        {msg && msgArea === "oj" ? (
           <div role="status"><OGText as="div" slot="label" tone="faint">{msg}</OGText></div>
         ) : null}
-        {ojOpen ? (
-          <div className="exthw-oj-body">
+        <div className="exthw-oj-body">
             {/* TUOJ（AI 版）：主路径 = 清华统一认证漫游；账号密码收进「更多」 */}
             <OjSourceRow
               name={SOURCE_NAMES.tuoj}
@@ -742,7 +741,6 @@ export function ExtHwSettingsSection(): ReactNode {
               ) : null}
             </OjSourceRow>
           </div>
-        ) : null}
         </AccordionItem>
       </Card>
 

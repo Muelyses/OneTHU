@@ -420,3 +420,13 @@
 .og-loading-line { height: var(--og-space-2); border-radius: var(--og-radius-md); }
 .og-loading-line--short { width: 40%; }
 .og-loading-line--mid { width: 68%; }
+
+/* Content stays above the moving selected surface. */
+.og-tab { z-index: 1; }
+.og-tabs-indicator { z-index: 0; }
+.og-segment-overflow { display: inline-flex; flex-direction: column; min-width: 0; max-width: 100%; vertical-align: middle; }
+.og-segment-overflow--block { display: flex; width: 100%; }
+.og-segment-scroll { display: none; position: relative; height: var(--og-space-2); margin: var(--og-space-2) var(--og-space-1); background: var(--og-line-1); border-radius: var(--og-radius-full); touch-action: none; cursor: pointer; }
+.og-segment-scroll[data-overflow] { display: block; }
+.og-segment-scroll > span { position: absolute; top: 0; bottom: 0; border-radius: inherit; background: var(--og-content-3); cursor: grab; }
+.og-segment-scroll:active > span { cursor: grabbing; background: var(--og-content-1); }

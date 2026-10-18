@@ -315,9 +315,13 @@ export function SegmentedOverflow({
     if (!el) return;
     const ro = new ResizeObserver(() => update());
     ro.observe(el);
+    for (const child of el.children) ro.observe(child);
+    const mo = new MutationObserver(update);
+    mo.observe(el, { childList: true, subtree: true, characterData: true });
     el.addEventListener("scroll", update, { passive: true });
     return () => {
       ro.disconnect();
+      mo.disconnect();
       el.removeEventListener("scroll", update);
     };
   }, [update]);
@@ -376,7 +380,7 @@ export function SegmentedOverflow({
         onPointerMove={(e) => {
           const d = dragThumb.current;
           if (!d) return;
-          const el = e.currentTarget;
+          const el = rowRef.current;
           const indi = indiRef.current;
           const thumb = thumbRef.current;
           if (!el || !indi || !thumb) return;
@@ -733,7 +737,7 @@ export function Card({
   children: ReactNode;
 }) {
   // 旧约定：className 里带 "list" 表示"内容自己贴边"（行自带内边距）→ 贴边卡
-  const flush = /(^|\s)list(\s|$)/.test(className);
+  const flush = /(^|\s)(list|stat-click|course-card)(\s|$)/.test(className);
   const rest = className.replace(/(^|\s)list(\s|$)/g, " ").trim();
   const card = (
     <OGCard flush={flush} className={rest || undefined}>

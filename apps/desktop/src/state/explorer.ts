@@ -83,7 +83,6 @@ function isSingletonPage(page: Page): boolean {
 }
 /* ══════════ 模块级 store ══════════ */
 
-let state: ExplorerState = loadStore();
 const listeners = new Set<() => void>();
 
 /** 已知的可导航一级页（深链白名单 + 存档校验共用一处；2026-10-15 抽出，原先两处各写一份） */
@@ -97,6 +96,9 @@ const KNOWN_PAGES: ReadonlySet<string> = new Set([
   "learn-assignment-detail", "learn-notice-detail", "learn-forum-thread", "learn-file-detail",
   "learn-ykt-detail", "learn-ykt-course",
 ]);
+
+// Initialize after the whitelist: loadStore validates restored tabs against it.
+let state: ExplorerState = loadStore();
 
 /** 是否是可导航页（插件动态 tab 也算）；供插件门面与 OH 共用，别再手写第二份白名单。 */
 export function isKnownPage(page: string): boolean {
@@ -252,6 +254,7 @@ const TAB_SUFFIX: Record<string, Record<string, string>> = {
 
 export function titleOf(page: Page, params?: LearnNav | null, fallback?: string): string {
   if (fallback) return fallback;
+  if (page === "homepage") return "首页";
   const header = PAGE_HEADER[page];
   if (header) {
     const suffixes = TAB_SUFFIX[page] ?? {};
@@ -397,7 +400,7 @@ export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOpti
     focusTab(HOME_TAB_ID);
     return HOME_TAB_ID;
   }
-  if (page === "homepage") {
+  if (page === "homepage" && !opts?.forceNew) {
     focusTab(HOME_TAB_ID);
     return HOME_TAB_ID;
   }

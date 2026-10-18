@@ -526,10 +526,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     if (!el) return;
     /* 堆叠形态（手机竖屏）：盒子按**堆叠后**的几何算，否则 minWidth 仍是桌面内容的 1094px
        —— 那正是"竖屏横向溢出"残留的那一条。 */
-    const box = stackRects ? stackRects.box : boxSize(items, displayScale, { ...port, h: Math.max(port.h, needsPenCanvas ? BOARD_CANVAS_H : 0) }, 0);
+    const box = stackRects ? stackRects.box : boxSize(items.map(it => live?.id === it.id ? { ...it, ...live.rect } : it), displayScale, { ...port, h: Math.max(port.h, needsPenCanvas ? BOARD_CANVAS_H : 0) }, 0);
     el.style.minWidth = box.w + "px";
     el.style.minHeight = box.h + "px";
-  }, [items, displayScale, port.w, port.h, stackRects, needsPenCanvas]);
+  }, [items, live, displayScale, port.w, port.h, stackRects, needsPenCanvas]);
 
   /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
      视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */
@@ -859,6 +859,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         onContextMenu={(e) => {
           if ((e.target as HTMLElement).closest(".free-item")) return;
           e.preventDefault();
+          e.stopPropagation();
           /* 右键空白与「＋」同一个组件选择器（缩略图 + 搜索）；右键记住落点。 */
           setAddAt(canvasPos(e.clientX, e.clientY));
           setAddOpen(true);
@@ -1024,13 +1025,13 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         ) : null}
 
         {toolsVisible ? createPortal(<div className="board-viewport-tools" role="toolbar" aria-label="白板工具">
-          <IconBtn label="添加组件" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }} />
+          <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>组件</Btn>
           {stack ? null : <>
             <span className="board-tool-divider" />
             <IconBtn label="缩小" icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
             <Btn size="sm" variant="ghost" titleAttr="恢复适合当前窗口的 100%" onClick={resetView}>{zoomLabel(view.z)}</Btn>
             <IconBtn label="放大" icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
-            <IconBtn label={penOn ? "关闭画笔" : "开启画笔"} icon={<IconPen />} aria-pressed={penOn} onClick={() => {setPenOn(v => !v); setSelected(null);}} />
+            <Btn size="sm" icon={<IconPen />} selected={penOn} aria-pressed={penOn} onClick={() => {setPenOn(v => !v); setSelected(null);}}>画笔</Btn>
           </>}
           {penOn ? (
             <div className="free-pen-panel">

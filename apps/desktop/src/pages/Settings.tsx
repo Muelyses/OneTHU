@@ -21,7 +21,6 @@ import { NotifySettingsSection } from "../components/NotifySettingsSection.js";
 import { WidgetSettingsSection } from "../components/WidgetSettingsSection.js";
 import { OneShotSettings } from "../components/explorer/OneShot.js";
 import { NameCardSection } from "../components/NameCardSection.js";
-import { OrganizationSection } from "../components/OrganizationSection.js";
 import { invoke } from "@tauri-apps/api/core";
 import { showToast } from "../state/toast.js";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -406,8 +405,7 @@ export function SettingsPage() {
 
 
 
-      <SectionHead title="我的组织" />
-      <OrganizationSection />
+
 
       <SectionHead title="云同步" />
       <Card>

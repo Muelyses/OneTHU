@@ -41,7 +41,7 @@ let inflight: Promise<string> | null = null;
 const VERIFY_TTL_MS = 10 * 60_000;
 
 /** 是否处于 madmodel 免费档语义（显式 custom 或「未显式但已填 key」则免打扰） */
-function madmodelActive(): boolean {
+export function madmodelActive(): boolean {
   const s = getPlugin(HARNESS_ID)?.settings ?? {};
   const provider = String(s.provider ?? "");
   if (provider === "custom") return false;
@@ -408,7 +408,7 @@ export async function preflightMadModel(): Promise<string | null> {
         void logLine("[MADMODEL] 服务端已不认当前 token，转入续签").catch(() => undefined);
         if (nextAt && Date.now() < nextAt) return freeTierHint("续签退避中，稍后自动重试");
         try {
-          await ensureMadModelToken();
+          await ensureMadModelToken(true);
           return null;
         } catch (e) {
           const why = e instanceof Error ? e.message : String(e);

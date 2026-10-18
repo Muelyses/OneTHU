@@ -21,7 +21,7 @@ import { VoiceSettingsSection } from "./VoiceSettingsSection.js";
 import { OverlaySettingsSection } from "./OverlaySettingsSection.js";
 import { ImSettingsSection } from "./ImSettingsSection.js";
 import { isAndroidNavigator } from "../lib/androidHost.js";
-import { forceRemint, preflightMadModel } from "../state/madmodel.js";
+import { forceRemint, preflightMadModel, madmodelActive } from "../state/madmodel.js";
 
 const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined);
 
@@ -144,13 +144,16 @@ function SubHead({ children, id }: { children: ReactNode; id?: string }): ReactN
 /** MadModel 免费档：状态 + 一键重新签（token 逻辑全在 state/madmodel.ts，这里只调用） */
 function MadModelRow(): ReactNode {
   const [warn, setWarn] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   useEffect(() => {
     let alive = true;
+    setChecking(true);
     void preflightMadModel().then((w) => {
       if (alive) setWarn(w);
-    });
+    }).catch((e) => { if (alive) setWarn(String(e)); })
+      .finally(() => { if (alive) setChecking(false); });
     return () => {
       alive = false;
     };
@@ -158,7 +161,7 @@ function MadModelRow(): ReactNode {
   return (
     <SettingsRow
       title="MadModel 免费档"
-      sub={busy ? "正在重新签…" : warn ? warn : "免费额度可用；额度不足或过期时点右侧重新签一次。"}
+      sub={busy ? "正在重新签…" : checking ? "正在检查免费模型连接…" : !madmodelActive() ? "当前使用自费 API；切换模型源后检查免费档。" : warn ? warn : "免费模型连接已就绪；剩余额度以服务端返回为准。"}
       control={
         <Btn variant="outline" size="sm" disabled={busy} onClick={() => {
             setBusy(true);

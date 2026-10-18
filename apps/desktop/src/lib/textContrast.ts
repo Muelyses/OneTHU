@@ -45,7 +45,7 @@ function renderColor(role: string): string {
 const CELL = 8;              // 壁纸离屏网格（px）
 const TILE = 96;             // 瓦片颜色缓存粒度
 const NODE_BUDGET = 4000;    // 单轮新增叶子预算
-const MIN_CONTRAST = 3.0;
+const MIN_CONTRAST = 4.5;
 const VIDEO_TICK_MS = 1500;  // 视频壁纸重采样节拍
 const VIDEO_VEIL = 0.2;      // 与 .wall-video-veil 同值
 
@@ -275,6 +275,9 @@ function parseLayers(el: HTMLElement): Array<{ a: number; rgb: Rgb }> {
       for (const m of bi.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) collect(m[0]);
     }
     if (p.classList.contains("wall-video-veil")) collect("rgba(0, 0, 0, 0.2)");
+    // The sampled wallpaper sits above body/html. Their opaque canvas is BEHIND
+    // that image, so compositing it again would erase the wallpaper sample.
+    if (p.classList.contains("explorer-shell")) break;
   }
   return layers;
   function collect(raw: string): void {
@@ -396,7 +399,7 @@ function settleIcon(el: HTMLElement, mode: Mode = "first"): void {
 function settleTarget(el: HTMLElement, mode: Mode): void {
   // These controls own an atomic foreground/background pair for each state.
   // Locking an inactive label's ink would override its selected state's CSS.
-  if (el.closest(".og-segment, .segmented, .og-btn--solid, .btn-primary")) {
+  if (el.closest(".og-segment, .segmented, .og-tabs, .ex-tab, .og-btn--solid, .btn-primary")) {
     clearLock(el);
     return;
   }

@@ -66,7 +66,7 @@ export function PageHead({ title, sub, meta, actions, onBack, scope, className }
       ) : null}
       <div className="og-pagehead-main">
         <div className="og-pagehead-topic">
-          {typeof title === "string" ? <Text slot="display" as="h1" truncate>{title}</Text> : title}
+          {typeof title === "string" ? <Text slot="title" as="h1">{title}</Text> : title}
         </div>
         {sub || meta ? (
           <div className="og-pagehead-sub">
@@ -359,12 +359,64 @@ export interface SegmentProps {
   className?: string;
 }
 
+/** Persistent, draggable scroll affordance; rendered only when choices overflow. */
+function SegmentScrollIndicator({ scrollRef, count }: { scrollRef: React.RefObject<HTMLDivElement | null>; count: number }): ReactNode {
+  const track = useRef<HTMLDivElement>(null);
+  const thumb = useRef<HTMLSpanElement>(null);
+  const drag = useRef<{ x: number; scroll: number } | null>(null);
+  const [overflowing, setOverflowing] = useState(false);
+  const update = useCallback(() => {
+    const el = scrollRef.current, bar = track.current, handle = thumb.current;
+    if (!el || !bar || !handle) return;
+    const overflow = el.scrollWidth - el.clientWidth;
+    setOverflowing(overflow > 2);
+    const width = Math.min(bar.clientWidth, Math.max(32, bar.clientWidth * el.clientWidth / Math.max(1, el.scrollWidth)));
+    handle.style.width = `${width}px`;
+    handle.style.left = `${Math.max(0, el.scrollLeft) / Math.max(1, overflow) * (bar.clientWidth - width)}px`;
+    bar.setAttribute("aria-valuenow", String(Math.round(el.scrollLeft)));
+    bar.setAttribute("aria-valuemax", String(Math.max(0, overflow)));
+  }, [scrollRef]);
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(update);
+    ro.observe(el); if (track.current) ro.observe(track.current);
+    Array.from(el.children).forEach(child => ro.observe(child));
+    el.addEventListener("scroll", update, { passive: true }); update();
+    return () => { ro.disconnect(); el.removeEventListener("scroll", update); };
+  }, [update, count]);
+  return <div ref={track} className="og-segment-scroll" data-overflow={overflowing || undefined}
+    role="scrollbar" aria-label="滚动选项" aria-orientation="horizontal" aria-valuemin={0} tabIndex={overflowing ? 0 : -1}
+    onKeyDown={e => {
+      const el = scrollRef.current; if (!el) return;
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+      e.preventDefault();
+      el.scrollLeft = e.key === "Home" ? 0 : e.key === "End" ? el.scrollWidth : el.scrollLeft + (e.key === "ArrowRight" ? 80 : -80);
+    }}
+    onPointerDown={e => {
+      const el = scrollRef.current, bar = track.current, handle = thumb.current;
+      if (!el || !bar || !handle || e.button !== 0) return;
+      e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId);
+      if (e.target !== handle) el.scrollLeft = (e.clientX - bar.getBoundingClientRect().left - handle.clientWidth / 2) / Math.max(1, bar.clientWidth - handle.clientWidth) * (el.scrollWidth - el.clientWidth);
+      drag.current = { x: e.clientX, scroll: el.scrollLeft };
+    }}
+    onPointerMove={e => {
+      const el = scrollRef.current, bar = track.current, handle = thumb.current, d = drag.current;
+      if (!el || !bar || !handle || !d) return;
+      el.scrollLeft = d.scroll + (e.clientX - d.x) * (el.scrollWidth - el.clientWidth) / Math.max(1, bar.clientWidth - handle.clientWidth);
+    }} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
+    <span ref={thumb} data-og-dynamic="indicator" />
+  </div>;
+}
+
 export function Segment({ options, value, onChange, size = "md", block, scope, className }: SegmentProps): ReactNode {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeEl, setActiveEl] = useState<HTMLElement | null>(null);
   const indicatorRef = useRef<HTMLSpanElement | null>(null);
   useIndicator(indicatorRef, activeEl, [value, options.length]);
   return (
-    <div
+    <div className={cx("og-segment-overflow", block ? "og-segment-overflow--block" : "")}>
+    <div ref={scrollRef}
       {...scopeProps(scope)}
       className={cx("og-segment", block ? "og-segment--block" : "", size !== "md" ? `og-segment--${size}` : "", className)}
       role="radiogroup"
@@ -392,6 +444,8 @@ export function Segment({ options, value, onChange, size = "md", block, scope, c
         </button>
       ))}
       <span ref={indicatorRef} data-og-dynamic="indicator" className="og-segment-indicator" aria-hidden="true" />
+    </div>
+    <SegmentScrollIndicator scrollRef={scrollRef} count={options.length} />
     </div>
   );
 }

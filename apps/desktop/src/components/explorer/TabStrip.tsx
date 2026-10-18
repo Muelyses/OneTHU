@@ -1107,7 +1107,7 @@ export function TabStrip(): ReactNode {
         className="ex-tab-add"
         title="新标签页（回首页）"
         aria-label="新标签页"
-        onClick={() => focusTab(HOME_TAB_ID)}
+        onClick={() => openTab("homepage", null, { forceNew: true })}
       >
         <IconPlus width={14} height={14} />
       </button>

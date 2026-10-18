@@ -152,6 +152,11 @@ export function unbindRustApi(id: string): void {
 }
 
 export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000): Promise<unknown> {
+  if (id === "onethu.harness" && method === "run" && (params as { command?: string } | null)?.command === "chat") {
+    const { preflightMadModel } = await import("../state/madmodel.js");
+    const warning = await preflightMadModel();
+    if (warning) return { type: "chat", ok: false, error: warning };
+  }
   if (embeddedIds.has(id)) {
     return invoke("harness_call", { pluginId: id, method, params, timeoutMs });
   }

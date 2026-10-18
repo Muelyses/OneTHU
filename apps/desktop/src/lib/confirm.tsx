@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -145,7 +146,7 @@ function PromptHost(): React.ReactNode {
     if (t) answerPrompt(t);
   };
   return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-confirm)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div className="confirm-card" style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-lg)", padding: "18px 18px 14px", maxWidth: 380, width: "100%" }}>
         <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{cur.title}</div>
         <Input autoFocus placeholder={cur.placeholder} value={val} onChange={(value) => setVal(value)} onKeyDown={(e) => {
@@ -167,12 +168,10 @@ function subscribe(l: () => void): () => void {
 }
 
 export function ConfirmHost(): React.ReactNode {
-  return (
-    <>
+  return createPortal(<>
       <ConfirmBody />
       <PromptHost />
-    </>
-  );
+    </>, document.body);
 }
 
 function ConfirmBody(): React.ReactNode {
@@ -186,7 +185,7 @@ function ConfirmBody(): React.ReactNode {
   };
   if (cur.danger) {
     return (
-      <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-confirm)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
         <div className="confirm-card" style={{ ...glass, borderRadius: 20, padding: "26px 26px 20px", maxWidth: 440, width: "100%", textAlign: "center" }}>
           <div style={{ fontSize: 46, lineHeight: 1, marginBottom: 14 }}>⚠️</div>
           <div style={{ fontSize: 17, fontWeight: 700, color: "var(--og-error)", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
@@ -200,7 +199,7 @@ function ConfirmBody(): React.ReactNode {
     );
   }
   return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-confirm)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div className="confirm-card" style={{ ...glass, borderRadius: "var(--og-radius-lg)", padding: "18px 18px 14px", maxWidth: 420, width: "100%" }}>
         {cur.title ? <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{cur.title}</div> : null}
         <div style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{cur.msg}</div>

@@ -30,7 +30,7 @@ import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
 import remarkGfm from "remark-gfm";
 import {
-  AccordionItem, Banner, Btn, Chip, IconBtn, Row, Spinner, Text,
+  AccordionItem, Banner, Btn, Chip, IconBtn, Row, Spinner, Text, TextArea,
 } from "@onethu/gui";
 import "./dockScope.js"; // OH 对话坞专属档位登记（scope: oh.dock，dockScope.ts，受 OneGUI StyleDirector 调度）
 import { callRust, notifyRust } from "./rust.js";
@@ -2513,6 +2513,16 @@ export function ChatDock(): ReactNode {
               search 态整行收起（无可发之物）。 */}
           {mode === "oh" ? (
           <div className="dock-input-row" ref={rowRef}>
+            <div className="dock-composer">
+              <TextArea aria-label="给小OH发消息" placeholder="给小OH发消息…" rows={2} value={draft}
+                onChange={setDockInputValue} onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault();
+                    if (!busy && draft.trim()) { void send(draft); setDockInputValue(""); }
+                  }
+                }} />
+              <Btn variant="solid" disabled={busy || !draft.trim()} onClick={() => { void send(draft); setDockInputValue(""); }}>发送</Btn>
+            </div>
             {/* dev-explorer：语音/输入全在下方胶囊（唯一输入组件），这里只剩附件三入口+发送/打断；
                 旧「长按这里也能说话」空白是冗余，用户拍板删除 */}
             <div className="dock-attach">

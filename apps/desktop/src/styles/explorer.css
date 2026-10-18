@@ -74,7 +74,7 @@
      底栏在下 + 顶栏在上）。手机形态由 html.is-phone 定义（短边窄，横竖都算）。 */
   html:not(.is-phone) .explorer-shell > .ex-bbar {
     position: fixed !important;
-    top: 0 !important;
+    top: var(--og-workbench-tabs-h);
     bottom: auto !important;
     left: 0 !important;
     right: 0 !important;

@@ -37,7 +37,7 @@
   font-family: inherit;
   font-size: var(--og-text-body);
   font-weight: var(--og-c-btn-weight);
-  line-height: 1;
+  line-height: var(--og-text-label-lh);
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;

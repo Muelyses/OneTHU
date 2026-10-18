@@ -74,7 +74,7 @@ export function LoginPage() {
             <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
             记住密码（本机保存，重启后自动登录）
           </label>
-          <Btn variant="solid" tone="brand" block disabled={busy || !username || !password}>{busy ? "正在登录统一认证…" : "登录"}</Btn>
+          <Btn type="submit" variant="solid" tone="brand" block disabled={busy || !username || !password}>{busy ? "正在登录统一认证…" : "登录"}</Btn>
         </form>
 
         <div className="login-foot">
@@ -175,7 +175,7 @@ export function TwoFactorPage() {
             <Btn variant="ghost" onClick={backToLogin}>
               返回登录
             </Btn>
-            <Btn variant="solid" tone="brand" block disabled={!selected} onClick={() => setStage("code")}>下一步
+            <Btn type="submit" variant="solid" tone="brand" block disabled={!selected} onClick={() => setStage("code")}>下一步
             </Btn>
           </div>
         </div>
@@ -218,7 +218,7 @@ export function TwoFactorPage() {
             {!isTotp ? (
               <Btn variant="outline" onClick={() => void onSend()} disabled={sending || !selected}>{sending ? "发送中…" : sent ? "重新发送" : "发送验证码"}</Btn>
             ) : null}
-            <Btn variant="solid" tone="brand" block disabled={busy || submitting || (!isTotp && !sent) || !code.trim()}>{busy || submitting ? "校验中…" : "验证并登录"}</Btn>
+            <Btn type="submit" variant="solid" tone="brand" block disabled={busy || submitting || (!isTotp && !sent) || !code.trim()}>{busy || submitting ? "校验中…" : "验证并登录"}</Btn>
           </div>
         </form>
 

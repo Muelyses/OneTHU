@@ -64,19 +64,16 @@ const decls = (css) => {
   return out;
 };
 let checkedPairs = 0;
-/* 表面填充家族＝玻璃档独占（2026-10-14 大一统定案，theme.ts 的 SURFACE_FAMILY 会跳过它们）：
-   主题不再注入 bg/surface 五级，断言随设计更新——这些键不该出现在注入 CSS 里。 */
-const SURFACE_FAMILY = new Set(["--bg", "--bg-soft", "--surface", "--surface-2", "--surface-3"]);
+/* 2026-10-18：f8cd1025「统一主题调色板」之后，主题**重新拥有**表面填充族
+   （--bg/--bg-soft/--surface… 与 System 角色成对注入；theme.ts 里已无 SURFACE_FAMILY 跳过逻辑）。
+   此前那条"表面族由玻璃档独占"的断言是上一轮定案，测试没跟着改 → 一直红。
+   现在全部键一律要求成对注入，反而更严。 */
 for (const t of themes) {
   T.activateTheme(t.id);
   const css = themeStyle();
   assert.ok(css.includes(':root[data-theme="' + t.id + '"]'), t.id + "：注入的选择器不对");
   const got = decls(css);
   for (const [k, v] of Object.entries(t.vars ?? {})) {
-    if (SURFACE_FAMILY.has(k)) {
-      assert.equal(got.get(k), undefined, t.id + "：" + k + " 属表面族，应由玻璃档独占，不该被主题注入");
-      continue;
-    }
     assert.equal(got.get(k), v, t.id + "：" + k + " 的 Compat 行没写进去");
     const sys = COMPAT_TO_SYSTEM[k];
     assert.equal(got.get(sys), v, t.id + "：" + k + " 没有镜像到 " + sys + "（System 组件将不跟随主题）");
@@ -86,8 +83,6 @@ for (const t of themes) {
   const overridden = new Set(Object.keys(t.vars ?? {}));
   for (const k of BUTTON_COMPAT) {
     if (!overridden.has(k)) continue;
-    /* 表面族由玻璃档独占（同 SURFACE_FAMILY 判定）：主题不注入 → 不看这条 */
-    if (SURFACE_FAMILY.has(k)) continue;
     const sys = COMPAT_TO_SYSTEM[k];
     assert.ok(got.has(sys), t.id + "：按钮读的 " + sys + " 没被主题改到");
   }
@@ -100,8 +95,10 @@ assert.equal(themeStyle(), "", "回到基础令牌时必须清空注入样式");
    var(--og-accent…)，压过主题注入层 :root[data-theme]（0,2,0）——读变量＝读自己的输出，
    表现就是「换什么主题都是默认蓝」（2026-10-15 用户实测 + 无头 Chrome 级联复现）。 */
 const BRIDGE = readFileSync("apps/desktop/src/lib/oneguiBridge.ts", "utf8");
-assert.ok(/activeThemeAccent/.test(BRIDGE), "桥没有从主题定义直取强调色（会自我吞噬成默认蓝）");
-assert.ok(!/themeId && themeId !== "onethu\.theme\.ivory"\) \{\s*accent = getComputedStyle/.test(BRIDGE), "主题分支又在读 DOM 变量了");
+/* 2026-10-18：f8cd1025 把桥改成 themeFromVars(def.id, def.vars, …) —— 直取主题定义不变，
+   只是不再经 activeThemeAccent()。断言跟着实现走，口径仍是"不许从 DOM 变量取色"。 */
+assert.ok(/themeFromVars\(\s*def\.id\s*,\s*def\.vars/.test(BRIDGE), "桥没有从主题定义直取强调色（会自我吞噬成默认蓝）");
+assert.ok(!/getComputedStyle\([^)]*\)\.getPropertyValue\("--accent"\)/.test(BRIDGE), "主题分支又在读 DOM 变量了");
 
 console.log(
   "主题×System 护栏：镜像表 " +

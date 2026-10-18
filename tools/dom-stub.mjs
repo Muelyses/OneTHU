@@ -38,6 +38,9 @@ globalThis.document = {
   removeEventListener() {},
 };
 globalThis.window = globalThis;
+/* 事件总线替身：组件侧会 `window.dispatchEvent(new Event("onethu:dynamic-palette"))`
+   通知桥重算（真浏览器有，node 没有）。只记名字、不需要真的送达。 */
+globalThis.dispatchEvent = () => true;
 globalThis.localStorage = {
   getItem: (k) => (store.has(k) ? store.get(k) : null),
   setItem: (k, v) => void store.set(k, String(v)),

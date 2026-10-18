@@ -96,7 +96,10 @@ ok(
 ok(/overflow: hidden/.test(block(MOTION, ".md-ripple-layer {")), "涟漪层自己负责裁剪，不动宿主 overflow");
 /* FAB 同款模型（B1 范围含 FAB） */
 const fab = block(CSS, ".hard-refresh-fab {");
-ok(fab.includes("background: var(--md-sys-color-surface-container-lowest)"), "FAB 底色应走令牌");
+/* 2026-10-18：FAB 已并入浮钮的玻璃配方（tint 渐变叠在 --ctl-bg 上），不再是一层实底。
+   这里断言的仍是"底色不许写死颜色"，兼容两种实现。 */
+const fabBg = (fab.match(/background:\s*([^;]+);/) || [])[1] || "";
+ok(/var\(--(md-sys-color|ctl-)[a-z0-9-]+\)/.test(fabBg), "FAB 底色应走令牌（当前：" + fabBg.trim().slice(0, 60) + "）");
 ok(block(CSS, ".hard-refresh-fab::after").includes("var(--md-sys-color-state-hover)"), "FAB 应共用状态层");
 ok(!/\.hard-refresh-fab:active\s*{[^}]*transform/.test(CSS), "FAB 按压不该再各写缩放");
 ok(RIPPLE.includes(".hard-refresh-fab"), "FAB 应接入涟漪");

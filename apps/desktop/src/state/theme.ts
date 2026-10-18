@@ -482,8 +482,20 @@ function applyTheme(def: ThemeDef | null): void {
   syncSystemBars(!!def.dark);
 }
 
+/** 取色开关偏好是否开着（theme.ts 不 import dynamicColor，避免循环依赖，只读同一个键） */
+function dynamicPrefOn(): boolean {
+  try {
+    return localStorage.getItem("onethu.dynamicColor") === "1";
+  } catch {
+    return false;
+  }
+}
+
 /** 应用当前应生效的主题：跟随系统时按系统暗/亮取日夜两档，否则手动单选 */
 function applyActive(): void {
+  /* 取色期间主题让位（含降级档）：否则系统亮暗一变，昼夜调度就把降级主题偷偷压回来，
+     用户看到「开关开着、主题却按昼夜乱跳」。关掉取色时 pref 先归 0，再走 reapply。 */
+  if (dynamicPrefOn()) return;
   const id = state.followSystem
     ? (systemDark ? state.nightThemeId : state.dayThemeId) ?? state.activeId
     : state.activeId;
@@ -610,6 +622,30 @@ export function setDayNightTheme(dayId: string | null, nightId: string | null): 
 /** 重新应用"当前应当生效"的主题（取色退场后调用：把昼夜调度/手动单选的状态接回来） */
 export function reapplyActiveTheme(): void {
   applyActive();
+}
+
+/** 取色开关的降级档（清华紫）：视觉与 activeId 都切到它（设置页要显示"当前挂着清华紫"），
+ *  但**不动 followSystem**——原来的 activateTheme 会顺手关掉跟随昼夜，于是「关掉取色后
+ *  主题不自己回来」（dynamic-flow-test 3b；oneGUI 重排把 activateTheme 改成会关调度后回归）。 */
+export function setFallbackTheme(id: string): boolean {
+  const def = state.installed.find((t) => t.id === id);
+  if (!def) return false;
+  state.activeId = id;
+  applyTheme(def);
+  persist();
+  emit();
+  return true;
+}
+
+/** 只摘掉"当前应用的主题"（data-theme）并清掉手动选择，**不动昼夜调度**。
+ *  取色开关进出时用：取色期间主题必须让位（否则半套配色），但 followSystem 与日夜两档
+ *  不能被清掉——`deactivateTheme` 会顺手关掉跟随昼夜，于是"关掉取色后主题不自己回来"
+ *  （dynamic-flow-test 3b 断言的正是这条，oneGUI 重排后回归）。 */
+export function detachAppliedTheme(): void {
+  state.activeId = null;
+  applyTheme(null);
+  persist();
+  emit();
 }
 
 export function deactivateTheme(): void {

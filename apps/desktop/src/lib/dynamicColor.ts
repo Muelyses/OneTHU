@@ -15,7 +15,8 @@ import { dynamicPlan, paletteUsable } from "./dynamicPlan.js";
 import {
   activateTheme,
   activeThemeId,
-  deactivateTheme,
+  setFallbackTheme,
+  detachAppliedTheme,
   hasTheme,
   reapplyActiveTheme,
 } from "../state/theme.js";
@@ -131,12 +132,16 @@ export async function enableDynamicColor(): Promise<void> {
   /* 主题必须让位：主题注入的 :root[data-theme] 块（特异度 0,2,0）自己声明了 --accent/--bg 这些
      兼容变量，而取色只改 System 角色——两者并存会得到"半套取色"（面跟随壁纸、强调色还是主题的）。
      真机验证时就是这样：--md-sys-color-surface 变了，--accent 还是凝夜的蓝。 */
-  deactivateTheme();
+  /* 用 detachAppliedTheme 而不是 deactivateTheme：后者会顺手把 followSystem 关掉，
+     跟随昼夜的用户一旦开关取色，调度就被永久清空（关掉取色后主题不回来）。 */
+  detachAppliedTheme();
   if (plan.mode === "palette" && palette) {
     applyDynamicColor(palette);
   } else {
     clearDynamicColor();
-    activateTheme(DYNAMIC_FALLBACK_THEME);
+    /* 视觉应用降级主题，但**不改用户选择**：activateTheme 会把 activeId 占成清华紫、
+       还会把跟随昼夜关掉，关掉开关后就回不到用户原来的调度（用户实录「要手动再选一次」）。 */
+    setFallbackTheme(DYNAMIC_FALLBACK_THEME);
   }
   writePref(true);
 }
@@ -155,7 +160,7 @@ export function disableDynamicColor(): void {
      早期版本只在 id 非空时恢复，于是"基础令牌 + 取色降级到清华紫"这条路上，
      activeId 被降级主题占住，关掉开关就停在清华紫不动（用户看到的"要手动再选一次才刷新"）。 */
   if (prev.activeId && hasTheme(prev.activeId)) activateTheme(prev.activeId);
-  else deactivateTheme();
+  else detachAppliedTheme();
   // 跟随昼夜生效时把调度接回来；也兜住 applyTheme 的任何早退
   reapplyActiveTheme();
 }

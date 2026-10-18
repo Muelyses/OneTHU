@@ -1,25 +1,38 @@
 /**
- * 常驻「暂存箱」拖放目标：只在拖动开始时出现，避免遮挡底栏/OH 胶囊。
- * 桌面：右下悬浮；手机：底部居中（贴底抽屉之上）。
+ * 常驻「暂存箱」入口 + 半圆雷达。
+ *
+ * - 桌面：收藏栏正下方居中；手机：顶栏「首页」按钮旁（默认就是最黑的箱子）。
+ * - 点一下箱子展开雷达：半圆刻度盘 + 扫描光束，箱内条目沿弧环绕缓慢摆动；
+ *   拖到箱子上松手 = 收进来，拖到底部/顶部的 OH 胶囊 = 发给小OH。
+ * - 长按任意带 `data-vault-catch` 的内容自动展开雷达并成为投递目标（vaultDrag.ts 驱动）。
  */
-import { useEffect, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Btn } from "@onethu/gui";
 import { IconIn } from "../Icons.js";
 import { useApp } from "../../state/context.js";
 import { useIsPhone } from "../../state/phoneSheets.js";
-import { activeVault, addToVault, vaultSnapshot, subscribeVault } from "../../state/vault.js";
+import { activeVault, addToVault, subscribeVault, vaultSnapshot, type VaultItem } from "../../state/vault.js";
+import { openVaultItem } from "../../state/vaultRegistry.js";
 import { stageFromFiles } from "../../lib/fileChannel.js";
 import { showToast } from "../../state/toast.js";
-import {
-  installVaultDragSources, subscribeVaultDrag, vaultDragSnapshot,
-} from "./vaultDrag.js";
+import { installVaultDragSources, subscribeVaultDrag, vaultDragSnapshot } from "./vaultDrag.js";
+
+/** 雷达上最多铺几枚条目；再多就用「+N」收口。 */
+const RADAR_SLOTS = 5;
+
+/** 把条目均匀铺在半圆弧上（正下方 = 0°，范围 ±70°），返回单位向量。 */
+function arcSlots(n: number): Array<{ x: number; y: number }> {
+  const span = n <= 1 ? 0 : 116;
+  return Array.from({ length: n }, (_, i) => {
+    const deg = n <= 1 ? 0 : -span / 2 + (span * i) / (n - 1);
+    const rad = (deg * Math.PI) / 180;
+    return { x: Math.sin(rad), y: Math.cos(rad) };
+  });
+}
 
 export function VaultDropTarget(): ReactNode {
-  const drag = useSyncExternalStore(subscribeVaultDrag, vaultDragSnapshot, vaultDragSnapshot);
-  const vault = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
   const isPhone = useIsPhone();
-  const { navigate } = useApp();
   const [fileDrag, setFileDrag] = useState(false);
   useEffect(() => installVaultDragSources(), []);
   useEffect(() => {
@@ -79,24 +92,136 @@ export function VaultDropTarget(): ReactNode {
       document.body,
     );
   }
-  return !isPhone ? createPortal(<div className="vault-desktop-anchor"><VaultButton /></div>,document.body) : null;
+  return !isPhone ? createPortal(<div className="vault-desktop-anchor"><VaultButton /></div>, document.body) : null;
 }
 
-export function VaultButton():ReactNode {
-  const drag=useSyncExternalStore(subscribeVaultDrag,vaultDragSnapshot,vaultDragSnapshot);
-  const doc=useSyncExternalStore(subscribeVault,vaultSnapshot,vaultSnapshot);
-  const box=doc.boxes.find(b=>b.id===doc.activeId)??doc.boxes[0]!;
-  const {navigate}=useApp();const [open,setOpen]=useState(false);
-  const items=box.items;
-  useEffect(()=>{if(!open)return;const key=(e:KeyboardEvent)=>{if(e.key==='Escape')setOpen(false);};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[open]);
-  return <div className={"vault-anchor"+(drag.active?" is-transfer":"")+(drag.target==='vault'?" is-hover":"")}>
-    <Btn className="vault-box-button" variant="solid" data-vault-drop aria-label={`暂存箱，${items.length} 项`} aria-expanded={open||drag.active} titleAttr="暂存箱 · 长按内容后拖到这里" onClick={()=>setOpen(v=>!v)}><IconIn width={20} height={20}/><span>{items.length||''}</span></Btn>
-    {open||drag.active?<div className="vault-radar" role="region" aria-label="暂存箱雷达">
-      <span className="vault-radar-scan" aria-hidden="true"/>
-      <div className="vault-radar-heading">{drag.active?'存入暂存箱':box.name}<small>{items.length} 项</small></div>
-      <div className="vault-orbits">{items.map((item,i)=><span key={item.id} className="vault-orbit" style={{'--orbit-angle':`${i*360/Math.max(1,items.length)}deg`,'--orbit-radius':`${76+(i%3)*24}px`} as CSSProperties}><span title={item.title}>{item.title.slice(0,8)}</span></span>)}</div>
-      {!drag.active?<><div className="vault-radar-list">{items.length?items.map(item=><Btn key={item.id} size="sm" data-vault-catch={JSON.stringify(item)} onClick={()=>{navigate('vault');setOpen(false);}}>{item.title}</Btn>):<p>长按内容，再拖到箱子里</p>}</div><Btn variant="solid" size="sm" onClick={()=>{navigate('vault');setOpen(false);}}>打开暂存箱</Btn><Btn size="sm" onClick={()=>setOpen(false)}>收起</Btn></>:<span className="vault-radar-hint">{drag.target==='vault'?'松手收纳':'拖到箱子上松手'}</span>}
-    </div>:null}
-    {drag.active?createPortal(<div className="transfer-oh-hint">{drag.target==='oh'?'松手发给小OH':'发给小OH'}</div>,document.body):null}
-  </div>;
+/** 「发给小OH」提示：跟着 OH 胶囊走，胶囊在下半屏就冒在上方，否则冒在下方。 */
+function TransferHint({ target }: { target?: "vault" | "oh" }): ReactNode {
+  const [spot, setSpot] = useState<{ left: number; top: number; below: boolean } | null>(null);
+  useLayoutEffect(() => {
+    const measure = (): void => {
+      const el = document.querySelector<HTMLElement>("[data-oh-drop]");
+      if (!el) { setSpot(null); return; }
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) { setSpot(null); return; }
+      const low = r.top + r.height / 2 > window.innerHeight / 2;
+      setSpot({ left: r.left + r.width / 2, top: low ? r.top - 10 : r.bottom + 10, below: !low });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+  if (!spot) return null;
+  return createPortal(
+    <div
+      className={"transfer-oh-hint" + (spot.below ? " is-below" : "") + (target === "oh" ? " is-active" : "")}
+      style={{ left: spot.left, top: spot.top }}
+      role="status"
+    >
+      {target === "oh" ? "松手发给小OH" : "发给小OH"}
+    </div>,
+    document.body,
+  );
+}
+
+export function VaultButton(): ReactNode {
+  const drag = useSyncExternalStore(subscribeVaultDrag, vaultDragSnapshot, vaultDragSnapshot);
+  const doc = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
+  const box = doc.boxes.find((b) => b.id === doc.activeId) ?? doc.boxes[0]!;
+  const items = box.items;
+  const { navigate } = useApp();
+  const phone = useIsPhone();
+  const [pinned, setPinned] = useState(false);
+  const open = pinned || drag.active;
+  const visible = items.slice(0, RADAR_SLOTS);
+  const extra = items.length - visible.length;
+  const slots = arcSlots(visible.length + (extra > 0 ? 1 : 0));
+
+  const openVaultPage = (): void => { setPinned(false); navigate("vault"); };
+  const openItem = (it: VaultItem): void => {
+    setPinned(false);
+    openVaultItem(it, {
+      navigate: (page, params) => navigate(page as never, params as never),
+      toast: showToast,
+    });
+  };
+
+  useEffect(() => {
+    if (!pinned) return;
+    const onKey = (e: KeyboardEvent): void => { if (e.key === "Escape") setPinned(false); };
+    const onDown = (e: PointerEvent): void => {
+      const el = e.target as Element | null;
+      if (!el?.closest(".vault-anchor, .vault-radar")) setPinned(false);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onDown, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onDown, true);
+    };
+  }, [pinned]);
+
+  const panel = open ? (
+    <div
+      className={"vault-radar" + (drag.active ? " is-transfer" : "") + (drag.target === "vault" ? " is-hover" : "") + (phone ? " is-floating" : "")}
+      role="region"
+      aria-label={`暂存箱雷达：${box.name}，共 ${items.length} 项`}
+    >
+      <div className="vault-radar-disc">
+        <span className="vault-radar-plane" aria-hidden="true">
+          <span className="vault-radar-band" />
+          <span className="vault-radar-sweep" />
+          <span className="vault-radar-ticks" />
+        </span>
+        <div className="vault-radar-field">
+          {visible.map((it, i) => (
+            <span key={it.id} className="vault-chip-slot" style={{ "--vx": slots[i]!.x, "--vy": slots[i]!.y } as CSSProperties}>
+              <Btn className="vault-chip" size="sm" titleAttr={it.title} aria-label={`打开暂存项：${it.title}`} onClick={() => openItem(it)}>
+                {it.title}
+              </Btn>
+            </span>
+          ))}
+          {extra > 0 ? (
+            <span className="vault-chip-slot" style={{ "--vx": slots[slots.length - 1]!.x, "--vy": slots[slots.length - 1]!.y } as CSSProperties}>
+              <Btn className="vault-chip" size="sm" aria-label={`还有 ${extra} 项，打开暂存箱`} onClick={openVaultPage}>
+                +{extra}
+              </Btn>
+            </span>
+          ) : null}
+        </div>
+        <div className="vault-radar-center">
+          <b>{drag.active ? (drag.target === "vault" ? "松手放入" : "拖到箱子上") : items.length ? `${items.length} 项` : "箱子是空的"}</b>
+          <small>{drag.active ? "箱子收起来 · OH 直接处理" : items.length ? box.name : "长按任意内容，拖进来"}</small>
+        </div>
+        {drag.active ? <span className="vault-drop-pad" data-vault-drop aria-hidden="true" /> : null}
+      </div>
+      <div className="vault-radar-foot">
+        <span className="vault-radar-meta"><span className="vault-radar-hint-line">{items.length ? "点条目直接打开" : "长按任意内容，拖进来"}</span></span>
+        <Btn size="sm" variant="ghost" onClick={openVaultPage}>打开展示柜</Btn>
+      </div>
+    </div>
+  ) : null;
+
+  return (
+    <>
+      <div className={"vault-anchor" + (drag.active ? " is-transfer" : "") + (drag.target === "vault" ? " is-hover" : "")}>
+        <Btn
+          className="vault-box-button"
+          variant="solid"
+          data-vault-drop
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-label={`暂存箱，${items.length} 项`}
+          titleAttr="暂存箱 · 点开雷达，长按内容可拖进来"
+          onClick={() => setPinned((v) => !v)}
+        >
+          <IconIn width={20} height={20} />
+          <span>{items.length || ""}</span>
+        </Btn>
+        {phone ? null : panel}
+      </div>
+      {phone && panel ? createPortal(panel, document.body) : null}
+      {drag.active ? <TransferHint target={drag.target} /> : null}
+    </>
+  );
 }

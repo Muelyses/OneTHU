@@ -547,78 +547,54 @@ html:root.is-phone .oneshot-button { height:var(--og-space-8); font-size:var(--o
 html:root.is-phone .oneshot-button svg { width:var(--og-space-4); height:var(--og-space-4); }
 html:root.is-phone .explorer-shell > .explorer-content { padding-bottom:var(--og-mobile-content-clearance) !important; }
 html:root.is-phone .board-viewport-tools { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + env(safe-area-inset-bottom)); max-height:42dvh; right:calc(var(--og-space-1) * 1.25); }
-html:root.is-phone .hard-refresh-fab { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + env(safe-area-inset-bottom)); right:calc(var(--og-space-10) - 6px); }
+html:root.is-phone .hard-refresh-fab { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + var(--og-space-8) + env(safe-area-inset-bottom)); right:calc(var(--og-space-10) - 6px); }
 html:root.is-phone .top-fab { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-top-gap) + env(safe-area-inset-bottom)); right:calc(var(--og-space-10) - 6px); }
-/* Permanent vault anchor, expanded radar, and paired transfer destinations. */
+/* Permanent vault anchor, half-disc radar, and paired transfer destinations. */
 .vault-desktop-anchor { position:fixed; top:calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h) + var(--og-ctl-h-lg)); left:50%; transform:translateX(-50%); z-index:var(--og-z-rail); }
 .vault-anchor { position:relative; flex:none; color:var(--og-content-1); }
-html:root .vault-box-button { min-width:var(--og-space-8); height:var(--og-text-display); border-radius:var(--og-space-3); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-1); padding-inline:var(--og-ctl-pad-x-sm); }
-.vault-box-button .og-btn-label { display:flex; gap:calc(var(--og-space-1) * 1.25); align-items:center; }
+html:root .vault-box-button { min-width:var(--og-space-8); height:var(--og-text-display); gap:calc(var(--og-space-1) * 1.5); border-radius:var(--og-space-3); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-1); padding-inline:var(--og-ctl-pad-x-sm); transition:transform var(--og-dur-2) var(--og-ease-spring), box-shadow var(--og-dur-2) var(--og-ease-standard); }
+.vault-box-button .og-btn-label { display:inline-flex; align-items:center; gap:calc(var(--og-space-1) * 1.25); font-variant-numeric:tabular-nums; }
 .vault-anchor.is-transfer { z-index:var(--og-z-menu); }
-.vault-radar { position:absolute; top:calc(100% + var(--og-space-2)); left:50%; transform:translateX(-50%); width:min(var(--og-vault-radar-width),calc(100vw - var(--og-space-6))); min-height:var(--og-bookmark-max); text-align:center; border-radius:0 0 var(--og-vault-radar-radius) var(--og-vault-radar-radius); border:1px solid var(--og-line-2); padding:var(--og-space-4) var(--og-space-5) var(--og-ctl-h-sm); background:var(--og-fill-overlay); backdrop-filter:var(--og-overlay-blur); box-shadow:var(--og-elev-menu); overflow:hidden; animation:transfer-reveal 220ms ease-out; }
-.vault-radar-heading { position:relative; z-index:2; font-size:var(--og-text-label); font-weight:var(--og-weight-semibold); display:flex; justify-content:center; gap:var(--og-space-2); }
-.vault-radar-heading small { color:var(--og-content-3); }
-.vault-radar-scan { position:absolute; width:var(--og-vault-radar-diameter); height:var(--og-vault-radar-diameter); top:-140px; left:calc(50% - var(--og-vault-orbit-center)); border:1px solid var(--og-line-2); border-radius:50%; background:conic-gradient(from 0deg,transparent 70%,color-mix(in srgb,var(--og-accent) 25%,transparent)); animation:vault-orbit-turn 6s linear infinite; }
-.vault-orbits { position:relative; height:var(--og-vault-orbit-height); margin-top:var(--og-space-2); pointer-events:none; }
-.vault-orbit { position:absolute; left:50%; top:0; transform:rotate(var(--orbit-angle)); animation:vault-orbit-turn 18s linear infinite; animation-delay:calc(var(--orbit-angle) / 360deg * -18s); }
-.vault-orbit > span { display:block; transform:translateX(var(--orbit-radius)); max-width:var(--og-vault-orbit-label); padding:var(--og-space-1) calc(var(--og-space-3) / 2); border:1px solid var(--og-line-2); border-radius:var(--og-radius-sm); background:var(--og-surface-1); font-size:var(--og-text-micro); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.vault-radar-list { position:relative; max-height:var(--og-vault-list-height); overflow:auto; margin-bottom:var(--og-space-3); display:flex; flex-direction:column; }
-.vault-radar-hint { font-size:var(--og-text-micro); color:var(--og-content-2); }
-.vault-anchor.is-hover .vault-box-button { outline:calc(var(--og-space-1) * .75) solid var(--og-focus-color); transform:scale(1.12); }
+.vault-anchor.is-transfer .vault-box-button, .vault-anchor.is-hover .vault-box-button { transform:scale(1.08); box-shadow:var(--og-elev-2),0 0 0 calc(var(--og-space-1) * .5) color-mix(in srgb,var(--og-focus-color) 45%,transparent); }
+/* Half-disc instrument: glass dial, sweeping beam, tick ring, slowly orbiting chips. */
+.vault-radar { position:absolute; top:calc(100% + var(--og-space-3)); left:50%; transform:translateX(-50%); width:min(var(--og-vault-radar-w),calc(100vw - var(--og-space-6))); z-index:var(--og-z-menu); display:grid; gap:var(--og-space-2); padding:var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); background:var(--og-fill-overlay); backdrop-filter:var(--og-overlay-blur); box-shadow:var(--og-elev-menu); color:var(--og-content-1); animation:transfer-reveal var(--og-dur-3) var(--og-ease-spring); transition:border-color var(--og-dur-2) var(--og-ease-standard), box-shadow var(--og-dur-2) var(--og-ease-standard); }
+.vault-radar.is-floating { position:fixed; top:calc(var(--explorer-bar-h) + var(--og-space-2)); }
+.vault-radar.is-transfer { border-color:var(--og-focus-color); }
+.vault-radar.is-hover { box-shadow:var(--og-elev-menu),0 0 0 calc(var(--og-space-1) * .5) var(--og-focus-color); }
+.vault-radar-disc { position:relative; width:min(100%,var(--og-vault-radar-disc)); height:calc(var(--og-vault-radar-disc) / 2); margin-inline:auto; overflow:hidden; color:var(--og-content-1); mask-image:linear-gradient(to bottom,transparent 0,currentColor var(--og-space-5)); }
+.vault-radar-plane { position:absolute; left:0; top:calc(var(--og-vault-radar-disc) / -2); width:100%; height:var(--og-vault-radar-disc); border-radius:50%; }
+.vault-radar-band { position:absolute; inset:0; border-radius:50%; border:calc(var(--og-space-7) - 2px) solid color-mix(in srgb,var(--og-content-1) 6%,transparent); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--og-content-1) 8%,transparent); }
+.vault-radar-sweep { position:absolute; inset:0; border-radius:50%; color:var(--og-content-1); background:conic-gradient(from 0deg at 50% 50%,transparent 0deg 150deg,color-mix(in srgb,var(--og-content-1) 34%,transparent) 176deg,transparent 200deg,transparent 330deg,color-mix(in srgb,var(--og-content-1) 34%,transparent) 356deg,transparent 380deg); mask-image:radial-gradient(circle at 50% 50%,transparent 0 calc(var(--og-vault-radar-disc) / 2 - 26px),currentColor calc(var(--og-vault-radar-disc) / 2 - 26px) calc(var(--og-vault-radar-disc) / 2 - 2px),transparent calc(var(--og-vault-radar-disc) / 2 - 2px)); animation:vault-sweep 7s linear infinite; }
+.vault-radar-ticks { position:absolute; inset:0; border-radius:50%; color:var(--og-content-1); background:repeating-conic-gradient(from 90deg at 50% 50%,var(--og-line-2) 0 .5deg,transparent .5deg 15deg); mask-image:radial-gradient(circle at 50% 50%,transparent 0 calc(var(--og-vault-radar-disc) / 2 - 26px),currentColor calc(var(--og-vault-radar-disc) / 2 - 26px) calc(var(--og-vault-radar-disc) / 2 - 3px),transparent calc(var(--og-vault-radar-disc) / 2 - 3px)); }
+.vault-radar-field { position:absolute; inset:0; transform-origin:50% 0; animation:vault-sway 16s ease-in-out infinite alternate; }
+.vault-chip-slot { position:absolute; left:calc(50% + var(--vx) * var(--og-vault-orbit-r)); top:calc(var(--vy) * var(--og-vault-orbit-r)); translate:-50% -50%; animation:vault-sway-rev 16s ease-in-out infinite alternate; }
+html:root .vault-chip.og-btn { height:calc(var(--og-space-6) + 1px); max-width:var(--og-vault-chip-w); padding-inline:calc(var(--og-space-2) + 1px); border:1px solid var(--og-line-2); border-radius:var(--og-radius-full); background:var(--og-surface-1); color:var(--og-content-1); box-shadow:var(--og-elev-1); font-size:var(--og-text-micro); transition:transform var(--og-dur-2) var(--og-ease-spring), border-color var(--og-dur-2) var(--og-ease-standard); }
+html:root .vault-chip.og-btn:hover,html:root .vault-chip.og-btn:focus-visible { border-color:var(--og-focus-color); translate:0 calc(var(--og-space-1) * -1); }
+.vault-chip .og-btn-label { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.vault-radar-center { position:absolute; left:50%; top:26%; translate:-50% 0; display:grid; justify-items:center; gap:calc(var(--og-space-1) * .5); width:62%; text-align:center; pointer-events:none; }
+.vault-radar-center b { font-size:var(--og-text-label); font-weight:var(--og-weight-semibold); }
+.vault-radar-center small { font-size:var(--og-text-micro); color:var(--og-content-3); }
+.vault-radar.is-transfer .vault-radar-field,.vault-radar.is-transfer .vault-radar-foot { opacity:.45; }
+.vault-radar-foot { display:flex; align-items:center; justify-content:space-between; gap:var(--og-space-2); padding-top:var(--og-space-2); border-top:1px solid var(--og-line-1); }
+.vault-radar-meta { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--og-text-label); color:var(--og-content-2); }
+.vault-radar-meta b { color:var(--og-content-1); font-weight:var(--og-weight-semibold); font-variant-numeric:tabular-nums; }
+.vault-radar-hint-line { color:var(--og-content-3); }
+.vault-drop-pad { position:absolute; inset:0; border-radius:var(--og-radius-card); }
+.transfer-oh-hint { position:fixed; z-index:var(--og-z-tooltip); transform:translate(-50%,-100%); padding:calc(var(--og-space-1) * 1.5) var(--og-space-4); border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); font-size:var(--og-text-label); white-space:nowrap; pointer-events:none; animation:transfer-reveal var(--og-dur-2) var(--og-ease-standard); }
+.transfer-oh-hint.is-below { transform:translate(-50%,0); }
+.transfer-oh-hint.is-active { background:var(--og-focus-color); }
 body.is-vault-dragging .vault-desktop-anchor,body.is-vault-dragging .explorer-topbar,body.is-vault-dragging .ex-bbar { z-index:var(--og-z-menu); }
-body.is-vault-dragging .ohx-capsule { outline:calc(var(--og-space-1) / 2) solid var(--og-focus-color); animation:transfer-breathe 900ms ease-in-out infinite; }
-body.is-vault-dragging .ohx-capsule.is-vault-drop-hover { outline-width:var(--og-space-1); }
-.transfer-oh-hint { position:fixed; top:calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h) - calc(var(--og-space-1) / 2)); left:50%; transform:translateX(-50%); z-index:var(--og-z-tooltip); background:var(--og-action); color:var(--og-action-on); border-radius:var(--og-radius-full); padding:calc(var(--og-space-3) / 2) var(--og-radius-xl); pointer-events:none; font-size:var(--og-text-label); }
-html:root.is-phone .transfer-oh-hint { top:auto; bottom:calc(var(--explorer-bar-h) + var(--og-space-2) + env(safe-area-inset-bottom)); }
-html:root.is-phone .vault-radar { left:-40px; transform:none; }
-html:root.is-phone .vault-anchor { margin-left:0; }
+body.is-vault-dragging .ohx-capsule { box-shadow:0 0 0 calc(var(--og-space-1) * .5) color-mix(in srgb,var(--og-focus-color) 40%,transparent),var(--og-elev-2); animation:transfer-breathe 1.6s ease-in-out infinite; }
+body.is-vault-dragging .ohx-capsule.is-vault-drop-hover { box-shadow:0 0 0 var(--og-space-1) var(--og-focus-color),var(--og-elev-3); animation:none; }
 html:root[data-og-skin="glass"] .onego-bookmarks { background:var(--og-fill-surface); backdrop-filter:var(--og-surface-blur); }
-@keyframes vault-orbit-turn { to { rotate:360deg; } }
+html:root .oneshot-button:hover:not(:disabled) { background:var(--og-action-hover,var(--og-action)); translate:0 calc(var(--og-space-1) * -.5); }
+html:root .oneshot-button:active:not(:disabled) { translate:0 0; }
+@keyframes vault-sweep { to { rotate:360deg; } }
+@keyframes vault-sway { from { rotate:-7deg; } to { rotate:7deg; } }
+@keyframes vault-sway-rev { from { rotate:7deg; } to { rotate:-7deg; } }
 @keyframes transfer-reveal { from { opacity:0; translate:0 -8px; } to { opacity:1; translate:0 0; } }
-@keyframes transfer-breathe { 50% { box-shadow:0 0 0 calc(var(--og-space-2) - 1px) color-mix(in srgb,var(--og-focus-color) 22%,transparent); } }
-/* Tangible, wallet-proportioned cards. Content is data, stock and emboss are shared material. */
-.identity-card { position:relative; isolation:isolate; aspect-ratio:1.586; width:100%; max-width:var(--og-identity-card-max); margin:auto; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; text-align:left; border-radius:var(--og-radius-xl); padding:clamp(var(--og-radius-xl),3vw,var(--og-space-7)); color:var(--og-content-1); background:var(--og-surface-1); border:1px solid var(--og-line-2); box-shadow:var(--og-elev-3),inset 0 1px 0 var(--og-contrast-ink-light); }
-.identity-card-stock { position:absolute; inset:0; z-index:-1; background:repeating-linear-gradient(115deg,transparent 0px,transparent calc(var(--og-space-1) * .75),color-mix(in srgb,var(--og-content-1) 3%,transparent) var(--og-space-1)),linear-gradient(130deg,var(--og-surface-1),var(--og-surface-3)); }
-.identity-card header { display:flex; justify-content:space-between; align-items:center; font-weight:var(--og-weight-bold); letter-spacing:.08em; }
-.identity-card header small { font-size:var(--og-ctl-pad-x-sm); font-weight:var(--og-weight-medium); color:var(--og-content-3); }
-.identity-card-person { display:flex; align-items:center; gap:var(--og-radius-xl); min-width:0; margin-block:var(--og-space-4); }
-.identity-card-person > div { min-width:0; }
-.identity-card-person h2 { margin:0 0 var(--og-space-2); font-size:clamp(var(--og-text-body-lh),3vw,calc(var(--og-space-7) + 2px)); letter-spacing:-.04em; overflow-wrap:anywhere; }
-.identity-card-person p { margin:0; font-size:var(--og-text-label); color:var(--og-content-2); white-space:normal; overflow-wrap:anywhere; }
-.identity-card-person img,.identity-monogram { width:calc(var(--og-space-10) - 6px); height:calc(var(--og-space-10) - 6px); flex:none; object-fit:cover; border-radius:var(--og-ctl-pad-x-md); }
-.identity-monogram { display:grid; place-items:center; background:var(--og-action); color:var(--og-action-on); font-size:calc(var(--og-space-7) - var(--og-space-1)); }
-.identity-card footer { display:flex; align-items:end; justify-content:space-between; gap:var(--og-space-3); font-size:var(--og-text-micro); overflow-wrap:anywhere; white-space:normal; }
-.identity-seal { flex:none; font-size:var(--og-radius-xl); letter-spacing:.1em; color:var(--og-content-3); border:calc(var(--og-space-1) / 2) solid var(--og-line-2); border-radius:50%; padding:var(--og-ctl-pad-x-sm) calc(var(--og-space-3) / 2); transform:rotate(-12deg); }
-.identity-card.is-organization .identity-card-stock { background:linear-gradient(145deg,var(--og-surface-4),var(--og-surface-1)); }
-.contacts-page { max-width:var(--og-contacts-page-max); margin:auto; }
-.contact-tools { display:flex; flex-wrap:wrap; gap:var(--og-space-3); margin-block:var(--og-space-6); }
-.contact-deck { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--og-contact-card-min)),1fr)); align-items:start; gap:calc(var(--og-space-7) - var(--og-space-1)); padding:calc(var(--og-space-6) + 2px) var(--og-ctl-pad-x-sm); }
-html:root .contact-card-pick { display:block; height:auto; min-width:0; padding:0; background:none; border:0; box-shadow:none; transition:transform 220ms ease; transform:rotate(-2deg); }
-.contact-card-pick:nth-child(even) { transform:rotate(2deg); }
-html:root .contact-card-pick:hover,html:root .contact-card-pick:focus-visible { transform:translateY(-10px) rotate(0); }
-.contact-card-pick .og-btn-label { display:block; width:100%; white-space:normal; }
-.contact-card-pick .identity-card { box-shadow:var(--og-elev-2),var(--og-space-1) calc(var(--og-space-3) / 2) 0 var(--og-surface-3),calc(var(--og-space-3) / 2) calc(var(--og-space-2) - 1px) 0 var(--og-line-2); }
-html:root .settings-seg { flex-wrap:wrap; }
-html:root.is-phone .settings-head { flex-wrap:wrap; }
-html:root.is-phone .settings-head .workbench-settings-brand { display:none; }
-html:root.is-phone .settings-seg { flex:1; gap:0; }
-html:root.is-phone .settings-seg-item { padding-inline:calc(var(--og-space-3) / 2); font-size:var(--og-text-micro); }
-@media(prefers-reduced-motion:reduce) { .vault-orbit,.vault-radar-scan,.vault-radar,body.is-vault-dragging .ohx-capsule { animation:none; } html:root .contact-card-pick { transition:none; } }
-/* The timetable owns the page; auxiliary tools remain available in disclosures. */
-html:root .explorer-panel:has(.schedule-workspace) { max-width:none; padding-inline:var(--og-space-5); }
-.schedule-workspace { width:100%; display:flex; flex-direction:column; min-height:calc(100dvh - var(--og-schedule-page-offset)); }
-.schedule-timeline { flex:1; min-height:var(--og-schedule-min-height); height:calc(100dvh - var(--og-schedule-timeline-offset)); overflow:auto; border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); background:var(--og-surface-1); overscroll-behavior:contain; }
-html:root .schedule-timeline-paper { border:0; box-shadow:none; padding:0 var(--og-space-3) var(--og-space-4) 0; border-radius:0; }
-.schedule-day-head { position:sticky; top:0; z-index:8; padding-block:var(--og-space-4); background:var(--og-surface-1); border-bottom:1px solid var(--og-line-2); }
-.schedule-sync-menu { position:relative; font-size:var(--og-text-label); }
-.schedule-sync-menu summary { cursor:pointer; padding:var(--og-space-2) var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-control); }
-.schedule-sync-menu > div { position:absolute; top:100%; right:0; z-index:12; display:flex; flex-direction:column; min-width:var(--og-schedule-sync-width); padding:var(--og-space-3); background:var(--og-menu-fill); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); box-shadow:var(--og-elev-menu); }
-.schedule-week-picker { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:calc(var(--og-space-1) / 2); padding-block:var(--og-space-2); }
-.schedule-week-picker .og-btn { min-width:0; padding-inline:0; height:calc(var(--og-space-9) + 2px); }
-.schedule-week-picker .og-btn-label { display:flex; flex-direction:column; gap:calc(var(--og-space-1) * .75); }
-.schedule-week-picker small { font-size:var(--og-text-micro); }
-html:root.is-phone .explorer-panel:has(.schedule-workspace) { padding-inline:var(--og-space-2); }
-html:root.is-phone .schedule-timeline { height:calc(100dvh - var(--og-schedule-mobile-offset)); min-height:var(--og-schedule-min-mobile); }
+@keyframes transfer-breathe { 50% { box-shadow:0 0 0 calc(var(--og-space-2) - 1px) color-mix(in srgb,var(--og-focus-color) 22%,transparent),var(--og-elev-2); } }
+@media(prefers-reduced-motion:reduce) { .vault-radar-field,.vault-chip-slot,.vault-radar-sweep,.vault-radar,body.is-vault-dragging .ohx-capsule,.transfer-oh-hint { animation:none; } }
 .exchange-feedback { text-align:center; padding:var(--og-space-6); }
 .exchange-feedback p { min-height:var(--og-ctl-h-lg); line-height:1.6; color:var(--og-content-2); }
 .exchange-stage { position:relative; height:var(--og-exchange-stage-height); display:grid; place-items:center; }
@@ -636,4 +612,7 @@ html:root.is-phone .schedule-timeline { height:calc(100dvh - var(--og-schedule-m
 @keyframes exchange-float { 50% { transform:translateY(-10px) rotate(4deg); } }
 @keyframes exchange-check { from { stroke-dashoffset:100; transform:scale(.7); } to { stroke-dashoffset:0; transform:scale(1); } }
 @media(prefers-reduced-motion:reduce) { .exchange-stage > i,.exchange-card,.exchange-stage svg { animation:none; } }
-html:root[data-og-motion="reduced"] :is(.exchange-stage > i,.exchange-card,.exchange-stage svg,.vault-orbit,.vault-radar-scan,.vault-radar,.ohx-capsule) { animation:none; }
+html:root[data-og-motion="reduced"] :is(.exchange-stage > i,.exchange-card,.exchange-stage svg,.vault-radar-field,.vault-chip-slot,.vault-radar-sweep,.vault-radar,.ohx-capsule,.transfer-oh-hint) { animation:none; }
+/* Bottom shortcut dock owns its clearance; canvas pages must scroll clear of it. */
+html:root:not(.is-phone) .explorer-shell > .explorer-content.is-home-canvas { padding-bottom:calc(var(--og-shortcut-clearance) + var(--og-space-4)) !important; }
+html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-bottom:var(--og-mobile-content-clearance) !important; }

@@ -1,0 +1,16 @@
+/* 日程：全宽时间表主视图与辅助工具收纳。 */
+/* The timetable owns the page; auxiliary tools remain available in disclosures. */
+html:root .explorer-panel:has(.schedule-workspace) { max-width:none; padding-inline:var(--og-space-5); }
+.schedule-workspace { width:100%; display:flex; flex-direction:column; min-height:calc(100dvh - var(--og-schedule-page-offset)); }
+.schedule-timeline { flex:1; min-height:var(--og-schedule-min-height); height:calc(100dvh - var(--og-schedule-timeline-offset)); overflow:auto; border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); background:var(--og-surface-1); overscroll-behavior:contain; }
+html:root .schedule-timeline-paper { border:0; box-shadow:none; padding:0 var(--og-space-3) var(--og-space-4) 0; border-radius:0; }
+.schedule-day-head { position:sticky; top:0; z-index:8; padding-block:var(--og-space-4); background:var(--og-surface-1); border-bottom:1px solid var(--og-line-2); }
+.schedule-sync-menu { position:relative; font-size:var(--og-text-label); }
+.schedule-sync-menu summary { cursor:pointer; padding:var(--og-space-2) var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-control); }
+.schedule-sync-menu > div { position:absolute; top:100%; right:0; z-index:12; display:flex; flex-direction:column; min-width:var(--og-schedule-sync-width); padding:var(--og-space-3); background:var(--og-menu-fill); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); box-shadow:var(--og-elev-menu); }
+.schedule-week-picker { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:calc(var(--og-space-1) / 2); padding-block:var(--og-space-2); }
+.schedule-week-picker .og-btn { min-width:0; padding-inline:0; height:calc(var(--og-space-9) + 2px); }
+.schedule-week-picker .og-btn-label { display:flex; flex-direction:column; gap:calc(var(--og-space-1) * .75); }
+.schedule-week-picker small { font-size:var(--og-text-micro); }
+html:root.is-phone .explorer-panel:has(.schedule-workspace) { padding-inline:var(--og-space-2); }
+html:root.is-phone .schedule-timeline { height:calc(100dvh - var(--og-schedule-mobile-offset)); min-height:var(--og-schedule-min-mobile); }

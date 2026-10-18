@@ -1,0 +1,29 @@
+/* 通讯录与拟物名片：卡片比例、纸面层次、堆叠与弹出。 */
+/* Tangible, wallet-proportioned cards. Content is data, stock and emboss are shared material. */
+.identity-card { position:relative; isolation:isolate; aspect-ratio:1.586; width:100%; max-width:var(--og-identity-card-max); margin:auto; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; text-align:left; border-radius:var(--og-radius-xl); padding:clamp(var(--og-radius-xl),3vw,var(--og-space-7)); color:var(--og-content-1); background:var(--og-surface-1); border:1px solid var(--og-line-2); box-shadow:var(--og-elev-3),inset 0 1px 0 var(--og-contrast-ink-light); }
+.identity-card-stock { position:absolute; inset:0; z-index:-1; background:repeating-linear-gradient(115deg,transparent 0px,transparent calc(var(--og-space-1) * .75),color-mix(in srgb,var(--og-content-1) 3%,transparent) var(--og-space-1)),linear-gradient(130deg,var(--og-surface-1),var(--og-surface-3)); }
+.identity-card header { display:flex; justify-content:space-between; align-items:center; font-weight:var(--og-weight-bold); letter-spacing:.08em; }
+.identity-card header small { font-size:var(--og-ctl-pad-x-sm); font-weight:var(--og-weight-medium); color:var(--og-content-3); }
+.identity-card-person { display:flex; align-items:center; gap:var(--og-radius-xl); min-width:0; margin-block:var(--og-space-4); }
+.identity-card-person > div { min-width:0; }
+.identity-card-person h2 { margin:0 0 var(--og-space-2); font-size:clamp(var(--og-text-body-lh),3vw,calc(var(--og-space-7) + 2px)); letter-spacing:-.04em; overflow-wrap:anywhere; }
+.identity-card-person p { margin:0; font-size:var(--og-text-label); color:var(--og-content-2); white-space:normal; overflow-wrap:anywhere; }
+.identity-card-person img,.identity-monogram { width:calc(var(--og-space-10) - 6px); height:calc(var(--og-space-10) - 6px); flex:none; object-fit:cover; border-radius:var(--og-ctl-pad-x-md); }
+.identity-monogram { display:grid; place-items:center; background:var(--og-action); color:var(--og-action-on); font-size:calc(var(--og-space-7) - var(--og-space-1)); }
+.identity-card footer { display:flex; align-items:end; justify-content:space-between; gap:var(--og-space-3); font-size:var(--og-text-micro); overflow-wrap:anywhere; white-space:normal; }
+.identity-seal { flex:none; font-size:var(--og-radius-xl); letter-spacing:.1em; color:var(--og-content-3); border:calc(var(--og-space-1) / 2) solid var(--og-line-2); border-radius:50%; padding:var(--og-ctl-pad-x-sm) calc(var(--og-space-3) / 2); transform:rotate(-12deg); }
+.identity-card.is-organization .identity-card-stock { background:linear-gradient(145deg,var(--og-surface-4),var(--og-surface-1)); }
+.contacts-page { max-width:var(--og-contacts-page-max); margin:auto; }
+.contact-tools { display:flex; flex-wrap:wrap; gap:var(--og-space-3); margin-block:var(--og-space-6); }
+.contact-deck { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--og-contact-card-min)),1fr)); align-items:start; gap:calc(var(--og-space-7) - var(--og-space-1)); padding:calc(var(--og-space-6) + 2px) var(--og-ctl-pad-x-sm); }
+html:root .contact-card-pick { display:block; height:auto; min-width:0; padding:0; background:none; border:0; box-shadow:none; transition:transform 220ms ease; transform:rotate(-2deg); }
+.contact-card-pick:nth-child(even) { transform:rotate(2deg); }
+html:root .contact-card-pick:hover,html:root .contact-card-pick:focus-visible { transform:translateY(-10px) rotate(0); }
+.contact-card-pick .og-btn-label { display:block; width:100%; white-space:normal; }
+.contact-card-pick .identity-card { box-shadow:var(--og-elev-2),var(--og-space-1) calc(var(--og-space-3) / 2) 0 var(--og-surface-3),calc(var(--og-space-3) / 2) calc(var(--og-space-2) - 1px) 0 var(--og-line-2); }
+html:root .settings-seg { flex-wrap:wrap; }
+html:root.is-phone .settings-head { flex-wrap:wrap; }
+html:root.is-phone .settings-head .workbench-settings-brand { display:none; }
+html:root.is-phone .settings-seg { flex:1; gap:0; }
+html:root.is-phone .settings-seg-item { padding-inline:calc(var(--og-space-3) / 2); font-size:var(--og-text-micro); }
+@media(prefers-reduced-motion:reduce) { html:root .contact-card-pick { transition:none; } }

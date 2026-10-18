@@ -279,30 +279,27 @@
 
 /* Navigation, card exchange and timeline composition dimensions. */
 :root {
-  --og-vault-orbit-label: 74px;
+  --og-vault-chip-w: 64px;
   --og-mobile-tools-gap: 76px;
   --og-refresh-bottom: 80px;
   --og-navigation-clearance: 92px;
+  --og-vault-orbit-r: 132px;
   --og-shortcut-clearance: 100px;
-  --og-vault-orbit-height: 106px;
   --og-board-tools-bottom: 120px;
   --og-mobile-top-gap: 126px;
   --og-exchange-check-size: 130px;
   --og-top-button-bottom: 132px;
-  --og-vault-orbit-center: 140px;
-  --og-vault-list-height: 150px;
   --og-exchange-card-width: 160px;
-  --og-vault-radar-radius: 170px;
   --og-mobile-content-clearance: 180px;
   --og-bookmark-max: 184px;
   --og-schedule-sync-width: 230px;
   --og-exchange-stage-height: 240px;
+  --og-vault-radar-disc: 296px;
   --og-bookmark-menu-width: 260px;
-  --og-vault-radar-diameter: 280px;
   --og-schedule-page-offset: 290px;
   --og-schedule-min-mobile: 300px;
   --og-contact-card-min: 320px;
-  --og-vault-radar-width: 330px;
+  --og-vault-radar-w: 320px;
   --og-schedule-min-height: 360px;
   --og-schedule-timeline-offset: 370px;
   --og-schedule-mobile-offset: 390px;

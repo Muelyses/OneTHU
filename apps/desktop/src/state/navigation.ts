@@ -97,6 +97,8 @@ export const NAV_REGISTRY: NavEntry[] = [
   { id: "xiaoda", name: "清小搭", category: "学习", visibility: "group", page: "xiaoda", keywords: ["清小搭", "小搭", "AI 学伴", "智能体", "技能广场", "xiaoda"], note: "校园 AI 学伴：聊天 · 历史 · 智能体 · 技能广场" },
 
   /* —— 日程 —— */
+  { id: "tasks", name: "待办", category: "日程", visibility: "core", page: "tasks", keywords: ["待办", "任务", "提醒", "作业截止"], note: "全部待办与提醒" },
+  { id: "life", name: "生活", category: "生活", visibility: "core", page: "life", keywords: ["生活", "校园卡", "电费", "洗衣机", "宿舍"], note: "生活服务总览" },
   { id: "schedule", name: "课表", category: "日程", visibility: "core", page: "schedule", keywords: ["课表", "日程", "上课"], note: "今日页「下一节课」卡数据来源" },
   { id: "trace", name: "寻迹", category: "日程", visibility: "group", page: "trace", keywords: ["地图", "导航", "前往"] },
   { id: "info-calendar", name: "校历", category: "日程", visibility: "group", page: "info", params: { infoTab: "calendar" }, keywords: ["校历", "学期安排", "放假"] },

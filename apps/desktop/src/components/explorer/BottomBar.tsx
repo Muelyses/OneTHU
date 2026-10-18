@@ -9,7 +9,8 @@ import { IconTabsCards } from "../../components/Icons.js";
 import type { ReactNode } from "react";
 import { useIsPhone } from "../../state/phoneSheets.js";
 import { openSettings } from "../../state/explorer.js";
-import { IconFist, IconSettings } from "../Icons.js";
+import { IconUser } from "@onethu/gui";
+import { IconFist } from "../Icons.js";
 import { OhCapsule } from "./OhCapsule.js";
 import { openOneGoSheet, useOneGoSheetOpen } from "./OneGoSheet.js";
 import { openTabDrawer, useTabDrawerOpen } from "./TabDrawer.js";
@@ -36,7 +37,7 @@ export function BottomBar(): ReactNode {
       </div>
       <button id="ex-bbar-onego-btn" className={"ex-bbar-btn" + (onegoOpen ? " is-open" : "")} onClick={() => phone ? openOneGoSheet() : openSettings("profile")} aria-expanded={phone ? onegoOpen : undefined} aria-label={phone ? "OneGO!" : "我的"}>
         <span className="ex-bbar-icon">
-          {phone ? <IconFist width={20} height={20} /> : <IconSettings width={20} height={20} />}
+          {phone ? <IconFist width={20} height={20} /> : <IconUser />}
         </span>
         <span className="ex-bbar-label">{phone ? "OneGO!" : "我的"}</span>
       </button>

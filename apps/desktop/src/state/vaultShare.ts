@@ -8,7 +8,7 @@
  * 优先云盘上传并只把引用写进口令。
  */
 import type { VaultBox, VaultCatch, VaultItem } from "./vault.js";
-import { markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
+import { createVault, markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
 
 export const SHARE_PREFIX = "ONV1";
 export const SHARE_PREFIX_V2 = "ONV2";
@@ -263,12 +263,14 @@ export async function mintShareCode(box: VaultBox, from?: string): Promise<{ cod
     final = { ...payload, items: undefined, cloud };
   }
   const code = await encodeShareV2(final);
-  markVaultShared(box.id, code);
+  // 上传期间箱子可能已被编辑：旧快照的口令不能冒充当前内容。
+  const current = vaultSnapshot().boxes.find(b => b.id === box.id);
+  if (current && current.items === box.items && current.name === box.name) markVaultShared(box.id, code);
   return { code, payload: final };
 }
 
-/** 解析并把口令内容导入为**当前暂存箱**（未收录内容即时消失）。 */
-export async function importShareCodeAsCurrent(code: string): Promise<{ ok: boolean; imported?: number; reason?: string }> {
+/** 解析后导入：旧入口默认替换当前箱；直接交换传 new，完整保留已有箱子。 */
+export async function importShareCodeAsCurrent(code: string, target: "current" | "new" = "current"): Promise<{ ok: boolean; imported?: number; reason?: string }> {
   const dec = await decodeShareAsync(code);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   let payload = dec.payload;
@@ -281,7 +283,7 @@ export async function importShareCodeAsCurrent(code: string): Promise<{ ok: bool
     }
   }
   const items = payload.items ?? [];
-  const box = vaultSnapshot().boxes.find((b) => b.id === vaultSnapshot().activeId);
+  const box = target === "new" ? createVault(payload.name || "收到的暂存箱") : vaultSnapshot().boxes.find((b) => b.id === vaultSnapshot().activeId);
   if (!box) return { ok: false, reason: "当前没有暂存箱" };
   replaceVaultItems(box.id, items);
   return { ok: true, imported: items.length };

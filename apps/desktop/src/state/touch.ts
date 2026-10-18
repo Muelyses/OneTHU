@@ -108,8 +108,8 @@ export interface TouchImportResult {
   org?: boolean;
 }
 
-/** 接收方：暂存箱替换为当前箱；名片进通讯录；组织邀请合并成员。 */
-export async function importTouchCode(code: string, myName = "我"): Promise<TouchImportResult> {
+/** 接收方：暂存箱按 vaultTarget 落库；名片进通讯录；组织邀请合并成员。 */
+export async function importTouchCode(code: string, myName = "我", vaultTarget: "current" | "new" = "current"): Promise<TouchImportResult> {
   const dec = decodeTouch(code);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   const p = dec.payload;
@@ -117,7 +117,7 @@ export async function importTouchCode(code: string, myName = "我"): Promise<Tou
   let contact = false;
   let org = false;
   if (p.vaultCode) {
-    const r = await importShareCodeAsCurrent(p.vaultCode);
+    const r = await importShareCodeAsCurrent(p.vaultCode, vaultTarget);
     if (!r.ok) return { ok: false, reason: r.reason ?? "暂存箱口令无法导入" };
     vault = true;
   }

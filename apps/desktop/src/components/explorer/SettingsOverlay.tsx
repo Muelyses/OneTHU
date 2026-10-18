@@ -1,4 +1,4 @@
-import { IconBtn } from "@onethu/gui";
+import { IconBtn, IconUser } from "@onethu/gui";
 /**
  * 设置浮层（dev-explorer）：个人设置 / 插件 / OneTHU Harness 三段合一。
  *
@@ -20,7 +20,7 @@ import { HarnessMark } from "../HarnessMark.js";
 import { IconPlug } from "../Icons.js";
 
 const SEGMENTS: Array<{ id: OverlayEntry; label: string; icon: ReactNode }> = [
-  { id: "profile", label: "我的名片", icon: <IconSettings width={14} height={14} /> },
+  { id: "profile", label: "我的名片", icon: <IconUser size="sm" /> },
   { id: "settings", label: "个人设置", icon: <IconSettings width={14} height={14} /> },
   { id: "plugins", label: "插件", icon: <IconPlug width={14} height={14} /> },
   { id: "oh", label: "Harness", icon: <HarnessMark size={12} /> },

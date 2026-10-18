@@ -16,6 +16,9 @@
  * 类名：schedule-* 是宿主页唯一外观出处（应用侧零 CSS 文件，契约 G1）。
  * ══════════════════════════════════════════════════════════════════════════ */
 
+/* 根滚动条的预留槽也属于日程视口，避免右侧留下一条空边。 */
+html:root.is-schedule-page { scrollbar-gutter: auto; }
+
 /* ── 1. 高度链：只有日程页把面板钉成"视口减应用壳"的定高容器 ── */
 html:root.is-schedule-page .explorer-shell {
   height: 100dvh;
@@ -31,9 +34,11 @@ html:root.is-schedule-page .explorer-shell > .explorer-content {
      这种规则束缚」）：课表自己贴着窗口四周画，不再吃壳层那套"内容留白 + 导航净空"
      的通用内边距；顶部只留真实 chrome（桌面 = 底栏上移的第一行 + 标签条；手机 = 标签条），
      底部与左右一律归课表本身，浮件让位由 --og-c-schedule-bottom-reserve 在页面内处理。 */
+  max-width: none;
   padding-inline: 0 !important;
   padding-bottom: 0 !important;
 }
+html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content { padding-top: var(--explorer-top-h) !important; }
 html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) {
   display: flex;
   flex: 1 1 0;
@@ -41,7 +46,7 @@ html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) {
   width: 100%;
   max-width: none;
   overflow: hidden;
-  padding-inline: 0;
+  padding: 0;
 }
 html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) > .page-anim {
   display: flex;
@@ -157,7 +162,7 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
 
 /* 课块：位置/尺寸由页面按分钟算成百分比（几何），外观全部在这里。
    底色是数据色（一课一色，lib/courseColor 判例豁免），由页面经
-   --og-c-schedule-block 传入；块上文字走 --og-content-on-accent。 */
+   --og-c-schedule-block 传入；块上文字固定纯白，data-tx="keep" 明确不参加壁纸文字自动取色。 */
 .schedule-block {
   position: absolute;
   z-index: var(--og-z-sticky);
@@ -165,7 +170,7 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
   border-radius: var(--og-radius-xs);
   padding: var(--og-space-1) calc(var(--og-space-1) * 1.25);
   background: var(--og-c-schedule-block, var(--og-accent-soft));
-  color: var(--og-content-on-accent);
+  color: var(--og-schedule-block-ink);
   box-shadow: var(--og-elev-1);
   cursor: pointer;
   /* 入场：错峰延迟由页面按"时间行"给（--og-c-schedule-delay），只动 transform/opacity */
@@ -178,7 +183,8 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
   box-shadow: var(--og-elev-2);
 }
 .schedule-block.is-compact { padding: 0 var(--og-space-1); }
-.schedule-block.is-done { opacity: var(--og-disabled-opacity); }
+.schedule-block.is-done { background: color-mix(in srgb, var(--og-c-schedule-block) 60%, var(--og-surface-1)); }
+.schedule-block :is(.schedule-block-title, .schedule-block-sub, .og-text) { color: inherit; }
 .schedule-block-title {
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -188,8 +194,8 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
   font-weight: 700;
   line-height: 1.3;
 }
-/* 副行只用透明度分层（不是颜色值）：契约只禁字面色值与字面 px */
-.schedule-block-sub { opacity: .9; line-height: 1.35; margin-top: calc(var(--og-space-1) / 2); }
+/* 副行依靠字号与间距分层，保持与标题一样的纯白。 */
+.schedule-block-sub { line-height: 1.35; margin-top: calc(var(--og-space-1) / 2); }
 .schedule-empty {
   position: absolute;
   inset: 0;

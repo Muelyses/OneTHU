@@ -7,6 +7,8 @@
  * - 名片夹：搜索 / 全部·好友·组织 筛选 / 星标 / 卡片堆叠 / 点击弹出大卡；
  * - 组织名片：建卡、进暂存箱、复制加入方式；组织成员与邀请口令在 OrganizationSection。
  */
+import { personalNfcCode, personalShareCode } from "../lib/contentExchange.js";
+import { useNfcExchange } from "../lib/useNfcExchange.js";
 import { IdentityCard } from "./IdentityCard.js";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
@@ -188,6 +190,11 @@ function cloudEmailText(email: string): string {
 
 function PersonalCardBlock(): ReactNode {
   const { personal, edit, pickAvatar, toVault, busy, cloudEmail } = usePersonalActions();
+  const nfc = useNfcExchange();
+  const copyCard = async (): Promise<void> => {
+    try { await navigator.clipboard.writeText(personalShareCode(personal)); showToast("个人名片口令已复制"); }
+    catch (e) { showToast(e instanceof Error ? e.message : "复制失败，请重试"); }
+  };
   return (
     <div className="identity-panel">
       <div className="identity-panel-show">
@@ -203,7 +210,15 @@ function PersonalCardBlock(): ReactNode {
             放进暂存箱
           </Btn>
         </Inline>
+        <div className="identity-panel-exchange">
+          <Inline gap={2} wrap>
+            <Btn variant="solid" disabled={!nfc.available || nfc.busy} onClick={() => void nfc.send(() => personalNfcCode(personal))}>NFC 分享个人名片</Btn>
+            <Btn variant="outline" onClick={() => void copyCard()}>复制名片口令</Btn>
+          </Inline>
+          <Text slot="micro" tone="faint">{nfc.hint}</Text>
+        </div>
       </div>
+      {nfc.feedback}
       <Card className="identity-panel-meta">
         <Section title="名片信息" hint="碰一碰 / 分享口令都用这一张" />
         <KeyValue

@@ -138,7 +138,7 @@ export function createVault(name = "新暂存箱"): VaultBox {
 export function renameVault(id: string, name: string): void {
   const next = name.trim();
   if (!next) return;
-  doc = { ...doc, boxes: doc.boxes.map((b) => (b.id === id ? { ...b, name: next } : b)) };
+  doc = { ...doc, boxes: doc.boxes.map((b) => (b.id === id ? { ...b, name: next, updatedAt: Date.now(), lastShareCode: undefined } : b)) };
   commit();
 }
 
@@ -174,7 +174,7 @@ export function addToVault(c: VaultCatch, boxId?: string): { ok: boolean; reason
   const item = itemFromCatch(c);
   doc = {
     ...doc,
-    boxes: doc.boxes.map((b) => (b.id === box.id ? { ...b, items: [item, ...b.items], updatedAt: Date.now() } : b)),
+    boxes: doc.boxes.map((b) => (b.id === box.id ? { ...b, items: [item, ...b.items], updatedAt: Date.now(), lastShareCode: undefined } : b)),
   };
   commit();
   return { ok: true, item };
@@ -183,7 +183,7 @@ export function addToVault(c: VaultCatch, boxId?: string): { ok: boolean; reason
 export function removeFromVault(boxId: string, itemId: string): void {
   doc = {
     ...doc,
-    boxes: doc.boxes.map((b) => (b.id === boxId ? { ...b, items: b.items.filter((x) => x.id !== itemId), updatedAt: Date.now() } : b)),
+    boxes: doc.boxes.map((b) => (b.id === boxId ? { ...b, items: b.items.filter((x) => x.id !== itemId), updatedAt: Date.now(), lastShareCode: undefined } : b)),
   };
   commit();
 }
@@ -191,7 +191,7 @@ export function removeFromVault(boxId: string, itemId: string): void {
 export function clearVault(boxId: string): void {
   doc = {
     ...doc,
-    boxes: doc.boxes.map((b) => (b.id === boxId ? { ...b, items: [], updatedAt: Date.now() } : b)),
+    boxes: doc.boxes.map((b) => (b.id === boxId ? { ...b, items: [], updatedAt: Date.now(), lastShareCode: undefined } : b)),
   };
   commit();
 }
@@ -201,7 +201,7 @@ export function replaceVaultItems(boxId: string, catches: VaultCatch[]): void {
   const items = catches.map(itemFromCatch);
   doc = {
     ...doc,
-    boxes: doc.boxes.map((b) => (b.id === boxId ? { ...b, items, updatedAt: Date.now() } : b)),
+    boxes: doc.boxes.map((b) => (b.id === boxId ? { ...b, items, updatedAt: Date.now(), lastShareCode: undefined } : b)),
   };
   commit();
 }

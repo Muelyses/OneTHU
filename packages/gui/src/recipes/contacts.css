@@ -243,6 +243,8 @@ html[data-og-scheme="dark"] .identity-card {
   min-width: 0;
 }
 .identity-panel-actions { justify-content: center; }
+.identity-panel-exchange { display: grid; gap: var(--og-space-2); width: 100%; text-align: center; }
+.identity-panel-exchange > .og-inline { justify-content: center; }
 .identity-panel-meta { min-width: 0; }
 .identity-panel-meta .og-card-body {
   display: grid;

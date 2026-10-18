@@ -17,6 +17,7 @@
   --og-content-inverse: var(--og-ref-neutral-0);
   --og-content-inverse-2: var(--og-ref-light-content-inverse-2);
   --og-content-on-accent: var(--og-ref-ink-0);
+  --og-schedule-block-ink: var(--og-ref-neutral-0);
   --og-content-on-soft: var(--og-content-1);
 
   --og-line-1: var(--og-ref-light-line-1);
@@ -141,6 +142,7 @@
   --og-accent-on: var(--og-action-on);
   --og-accent-quiet: var(--og-content-1);
   --og-content-on-accent: var(--og-ref-ink-0);
+  --og-schedule-block-ink: var(--og-ref-neutral-0);
   --og-chrome: var(--og-ref-dark-chrome);
   --og-hover: var(--og-ref-dark-hover);
   --og-press: var(--og-ref-dark-press);

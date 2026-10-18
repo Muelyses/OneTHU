@@ -565,6 +565,10 @@ html:root .vault-box-button { min-width:var(--og-space-8); height:var(--og-text-
 /* Half-disc instrument: glass dial, sweeping beam, tick ring, slowly orbiting chips. */
 .vault-radar { position:absolute; top:calc(100% + var(--og-space-3)); left:50%; transform:translateX(-50%); width:min(var(--og-vault-radar-w),calc(100vw - var(--og-space-6))); z-index:var(--og-z-menu); display:grid; gap:var(--og-space-2); padding:var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); background:var(--og-fill-overlay); backdrop-filter:var(--og-overlay-blur); box-shadow:var(--og-elev-menu); color:var(--og-content-1); animation:transfer-reveal var(--og-dur-3) var(--og-ease-spring); transition:border-color var(--og-dur-2) var(--og-ease-standard), box-shadow var(--og-dur-2) var(--og-ease-standard); }
 .vault-radar.is-floating { position:fixed; top:calc(var(--explorer-bar-h) + var(--og-space-2)); }
+.vault-radar { max-height: calc(100dvh - var(--og-workbench-header-h) - var(--og-workbench-tabs-h) - var(--og-ctl-h-lg) - var(--og-space-10)); overflow-y: auto; }
+.vault-radar.is-floating { max-height: calc(100dvh - var(--explorer-bar-h) - var(--og-space-6)); }
+.vault-radar-exchange { display: grid; gap: var(--og-space-2); }
+.vault-radar-nfc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--og-space-2); }
 .vault-radar.is-transfer { border-color:var(--og-focus-color); }
 .vault-radar.is-hover { box-shadow:var(--og-elev-menu),0 0 0 calc(var(--og-space-1) * .5) var(--og-focus-color); }
 .vault-radar-disc { position:relative; width:min(100%,var(--og-vault-radar-disc)); height:calc(var(--og-vault-radar-disc) / 2); margin-inline:auto; overflow:hidden; color:var(--og-content-1); mask-image:linear-gradient(to bottom,transparent 0,currentColor var(--og-space-5)); }

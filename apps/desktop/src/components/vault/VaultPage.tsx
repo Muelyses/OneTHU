@@ -22,7 +22,7 @@ import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { nfcReadText, nfcShareText, nfcStatus } from "../../lib/nfc.js";
 import { decodeQrFile, qrScanSupported } from "../../lib/qrScan.js";
 import { fileToBytes, pickFile } from "../../lib/attach.js";
-import { acceptOrgInvite } from "../../state/org.js";
+import { receiveExchangeCode } from "../../lib/contentExchange.js";
 import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
@@ -87,7 +87,7 @@ export function VaultPage(): ReactNode {
     setCode(last);
     setShareInfo(null);
     if (last) void decodeShareAsync(last).then((d) => setShareInfo(d.payload ?? null));
-  }, [box.id]);
+  }, [box.id, box.lastShareCode]);
   useEffect(() => { void installVaultCloudAdapter().then((ok) => { setCloudReady(ok); setCloudChecked(true); }); }, []);
   useEffect(() => { void nfcStatus().then((s) => setNfc({ available: s.available, enabled: s.enabled })); }, []);
 
@@ -182,28 +182,15 @@ export function VaultPage(): ReactNode {
   }, [touchCode, code]);
 
   const receiveText = useCallback(async (text: string): Promise<void> => {
-    const t = text.trim();
-    const result=(ok:boolean,message:string):void=>setExchange({phase:ok?"success":"error",message});
-    if (t.startsWith("ONTOUCH1.")) {
-      const r = await importTouchCode(t);
-      result(r.ok,r.ok?"名片与内容已放入你的 OneTHU":r.reason??"口令无法导入");
-      showToast(r.ok ? "碰一碰内容已接收" : r.reason ?? "碰一碰口令无法导入");
-      return;
+    try {
+      const message = await receiveExchangeCode(text);
+      setExchange({ phase: "success", message });
+      showToast(message);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      setExchange({ phase: "error", message });
+      showToast(message);
     }
-    if (t.startsWith("ONV1.") || t.startsWith("ONV2.")) {
-      const r = await importShareCodeAsCurrent(t);
-      result(r.ok,r.ok?`已收到 ${r.imported??0} 项内容`:r.reason??"口令无法导入");
-      showToast(r.ok ? `已导入 ${r.imported ?? 0} 项` : r.reason ?? "口令无法导入");
-      return;
-    }
-    if (t.startsWith("ONORG1.")) {
-      const r = acceptOrgInvite(t);
-      result(r.ok,r.ok?"组织名片已加入":r.reason??"邀请无法识别");
-      showToast(r.ok ? "已加入组织（本地成员清单）" : r.reason ?? "组织邀请无法识别");
-      return;
-    }
-    result(false,"这不是有效的 OneTHU 口令");
-    showToast("这不是 OneTHU 的分享/碰一碰/组织口令");
   }, []);
 
   const scanQr = useCallback(async (): Promise<void> => {

@@ -44,6 +44,11 @@ export function IconSchedule({ size, className, title }: IconGlyphProps): ReactN
   );
 }
 
+/** 我的：头像轮廓，避免将个人中心误认成设置。 */
+export function IconUser({ size, className, title }: IconGlyphProps): ReactNode {
+  return <Icon size={size} className={className} title={title}><circle cx="12" cy="8" r="4" /><path d="M4 21v-2a8 8 0 0 1 16 0v2" /></Icon>;
+}
+
 export function IconSettings({ size, className, title }: IconGlyphProps): ReactNode {
   return (
     <Icon size={size} className={className} title={title}>
@@ -544,6 +549,7 @@ export const ICONS: Record<string, (props: IconGlyphProps) => ReactNode> = {
   IconLearn,
   IconSchedule,
   IconSettings,
+  IconUser,
   IconRefresh,
   IconLogout,
   IconFile,

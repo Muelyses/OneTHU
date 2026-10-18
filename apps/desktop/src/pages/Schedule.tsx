@@ -926,8 +926,8 @@ export function SchedulePage() {
               <div className="schedule-gutter" style={{ height: canvasH }}>
                 {/* 极矮视口（手机横屏）一行只有十几像素：刻度隔一小时标一次，避免叠字 */}
                 {halfHours.filter((m) => m % (60 * (axis.pmm * 60 < 26 ? 2 : 1)) === 0).map((m) => (
-                  <div key={m} className="schedule-gutter-label" style={{ top: Math.max(0, y(m) - 6) }}>
-                    {m === AXIS_END ? "24:00" : hhmm(m)}
+                  <div key={m} className="schedule-gutter-label" style={{ top: Math.max(0, Math.min(y(m) - 6, canvasH - 16)) }}>
+                    {hhmm(m)}
                   </div>
                 ))}
               </div>
@@ -985,6 +985,7 @@ export function SchedulePage() {
                   return (
                     <div
                       key={`b-${ymdOf(weekStart)}-${i}`}
+                      data-tx="keep"
                       className={
                         "schedule-block"
                         + (compact ? " is-compact" : "")

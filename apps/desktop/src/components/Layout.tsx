@@ -1,4 +1,4 @@
-import { IconBtn } from "@onethu/gui";
+import { IconBtn, IconUser } from "@onethu/gui";
 /** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
  *  dev-explorer 革命（2026-10-12）：侧边栏、移动抽屉、五格底栏整体退役——
  *  顶栏 = 首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮；底栏三入口（标签页 | OH | OneGO）
@@ -168,7 +168,7 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
   return (
     <div className="ex-rail-actions">
       <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
-      <IconBtn label="我的" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("profile")} />
+      <IconBtn label="我的" icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
       <button
         className="icon-btn ex-rail-width"
         onClick={onToggleNarrow}
@@ -251,7 +251,7 @@ function TopBar(): ReactNode {
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
       <ChromeMore />
-      <IconBtn label="我的" icon={<IconSettings width={16} height={16} />} onClick={() => openSettings("profile")} />
+      <IconBtn label="我的" icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
     </header>
   );
 }
@@ -539,7 +539,7 @@ export function PageHead({
   return (
     <div ref={headRef}>
       {/* 渲染体走 OneGUI：标题字阶、meta、动作位与其它页面同源（旧 .page-head 的类不再产出） */}
-      <OGPageHead title={title} meta={meta} actions={actions} />
+      {title != null || meta != null || actions != null ? <OGPageHead title={title} meta={meta} actions={actions} /> : null}
     </div>
   );
 }
@@ -638,7 +638,7 @@ export function LevelBox(): ReactNode {
   const [boxRef, narrow] = useNarrowBox(300);
   /* 窄栏：只渲染图标（title/aria-label 承载全名），**禁止文字换行**；宽栏：文字完整不截断 */
   const cells: Array<{ id: Entry; label: string; icon: ReactNode }> = [
-    { id: "profile", label: "我的名片", icon: <IconSettings /> },
+    { id: "profile", label: "我的名片", icon: <IconUser /> },
     { id: "settings", label: "设置", icon: <IconSettings /> },
     { id: "plugins", label: "插件", icon: <IconPlug /> },
     { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },

@@ -299,16 +299,24 @@ export function VaultPage(): ReactNode {
             options={all.map((b) => ({ value: b.id, label: `${b.name}（${b.items.length}）` }))}
           />
           <div className="vault-actions">
-            <Btn variant="outline" onClick={() => { const b = createVault(); showToast(`已新建「${b.name}」`); }}>新建</Btn>
-            <Btn variant="ghost" onClick={() => void rename()}>重命名</Btn>
-            <Btn variant="ghost" onClick={() => void importCode()} disabled={busy}>导入口令</Btn>
-            <Btn variant="outline" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
-            <Btn variant="ghost" onClick={() => void makeTouch()} disabled={busy}>碰一碰组合</Btn>
-            <Btn variant="ghost" onClick={() => void receiveTouch()} disabled={busy}>收碰一碰</Btn>
-            <Btn variant="ghost" onClick={() => void scanQr()} disabled={busy}>扫码接收</Btn>
-            <Btn className={nfcReading ? "vault-nfc-reading" : undefined} variant="ghost" onClick={() => void readNfc()} disabled={busy || !nfc.available} titleAttr={nfc.available ? (nfc.enabled ? "贴一下 NFC 标签或对方手机" : "NFC 未开启：到系统设置打开") : "NFC 仅 Android 手机可用"}>{nfcReading ? "贴近中…" : "NFC 接收"}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => { const b = createVault(); showToast(`已新建「${b.name}」`); }}>新建</Btn>
+            <Btn variant="ghost" size="sm" onClick={() => void rename()}>重命名</Btn>
+          </div>
+        </div>
+        <div className="vault-action-groups">
+          <div className="vault-action-row">
+            <span className="vault-action-label">收进来</span>
+            <Btn variant="outline" size="sm" onClick={() => void pickFilesToVault()} disabled={busy}>添加文件</Btn>
+            <Btn variant="ghost" size="sm" onClick={() => void importCode()} disabled={busy}>导入口令</Btn>
+            <Btn variant="ghost" size="sm" onClick={() => void scanQr()} disabled={busy}>扫码接收</Btn>
+            <Btn className={nfcReading ? "vault-nfc-reading" : undefined} variant="ghost" size="sm" onClick={() => void readNfc()} disabled={busy || !nfc.available} titleAttr={nfc.available ? (nfc.enabled ? "贴一下 NFC 标签或对方手机" : "NFC 未开启：到系统设置打开") : "NFC 仅 Android 手机可用"}>{nfcReading ? "贴近中…" : "NFC 接收"}</Btn>
+            <Btn variant="ghost" size="sm" onClick={() => void receiveTouch()} disabled={busy}>收碰一碰</Btn>
             <Text slot="micro" tone="faint">{nfc.available ? (nfc.enabled ? "NFC 可用" : "NFC 未开启") : "NFC 仅手机端"}</Text>
-            <Btn variant="solid" tone="brand" onClick={() => void share()} disabled={busy || box.items.length === 0} titleAttr={cloudReady ? "生成云分享口令" : "先连接清华云盘"}>生成口令</Btn>
+          </div>
+          <div className="vault-action-row">
+            <span className="vault-action-label">发出去</span>
+            <Btn variant="ghost" size="sm" onClick={() => void makeTouch()} disabled={busy}>碰一碰组合</Btn>
+            <Btn variant="solid" tone="brand" size="sm" onClick={() => void share()} disabled={busy || box.items.length === 0} titleAttr={cloudReady ? "生成云分享口令" : "先连接清华云盘"}>生成口令</Btn>
             <Text slot="micro" tone="faint">{cloudReady ? "云分享" : "本地口令"}</Text>
           </div>
         </div>

@@ -44,6 +44,8 @@ const BODY_CLASS = "is-vault-dragging";
 
 let ghost: HTMLDivElement | null = null;
 let targetEl: HTMLElement | null = null;
+/** 拾取后必须掐断浏览器原生 HTML5 拖拽：否则 pointercancel 会中断我们的投递。 */
+const blockNativeDrag = (e: DragEvent): void => { e.preventDefault(); };
 let pointerId = -1;
 let startX = 0;
 let startY = 0;
@@ -85,6 +87,7 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
   window.removeEventListener("pointermove", onMove, true);
   window.removeEventListener("pointerup", onUp, true);
   window.removeEventListener("pointercancel", onCancel, true);
+  document.removeEventListener("dragstart", blockNativeDrag, true);
   document.body.classList.remove(BODY_CLASS);
   targetEl?.classList.remove(HOVER_CLASS);
   targetEl = null;
@@ -157,6 +160,7 @@ export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): 
   window.addEventListener("pointermove", onMove, { capture: true });
   window.addEventListener("pointerup", onUp, { capture: true });
   window.addEventListener("pointercancel", onCancel, { capture: true });
+  document.addEventListener("dragstart", blockNativeDrag, true);
   moveHooked = true;
 }
 

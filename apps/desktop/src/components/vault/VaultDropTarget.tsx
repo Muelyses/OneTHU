@@ -14,6 +14,7 @@ import { useApp } from "../../state/context.js";
 import { useIsPhone } from "../../state/phoneSheets.js";
 import { activeVault, addToVault, subscribeVault, vaultSnapshot, type VaultItem } from "../../state/vault.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
+import { openVaultSheet } from "./VaultSheet.js";
 import { stageFromFiles } from "../../lib/fileChannel.js";
 import { showToast } from "../../state/toast.js";
 import { installVaultDragSources, subscribeVaultDrag, vaultDragSnapshot } from "./vaultDrag.js";
@@ -137,7 +138,7 @@ export function VaultButton(): ReactNode {
   const extra = items.length - visible.length;
   const slots = arcSlots(visible.length + (extra > 0 ? 1 : 0));
 
-  const openVaultPage = (): void => { setPinned(false); navigate("vault"); };
+  const openVaultPage = (): void => { setPinned(false); openVaultSheet(); };
   const openItem = (it: VaultItem): void => {
     setPinned(false);
     openVaultItem(it, {

@@ -1,16 +1,277 @@
-/* 日程：全宽时间表主视图与辅助工具收纳。 */
-/* The timetable owns the page; auxiliary tools remain available in disclosures. */
-html:root .explorer-panel:has(.schedule-workspace) { max-width:none; padding-inline:var(--og-space-5); }
-.schedule-workspace { width:100%; display:flex; flex-direction:column; min-height:calc(100dvh - var(--og-schedule-page-offset)); }
-.schedule-timeline { flex:1; min-height:var(--og-schedule-min-height); height:calc(100dvh - var(--og-schedule-timeline-offset)); overflow:auto; border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); background:var(--og-surface-1); overscroll-behavior:contain; }
-html:root .schedule-timeline-paper { border:0; box-shadow:none; padding:0 var(--og-space-3) var(--og-space-4) 0; border-radius:0; }
-.schedule-day-head { position:sticky; top:0; z-index:8; padding-block:var(--og-space-4); background:var(--og-surface-1); border-bottom:1px solid var(--og-line-2); }
-.schedule-sync-menu { position:relative; font-size:var(--og-text-label); }
-.schedule-sync-menu summary { cursor:pointer; padding:var(--og-space-2) var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-control); }
-.schedule-sync-menu > div { position:absolute; top:100%; right:0; z-index:12; display:flex; flex-direction:column; min-width:var(--og-schedule-sync-width); padding:var(--og-space-3); background:var(--og-menu-fill); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); box-shadow:var(--og-elev-menu); }
-.schedule-week-picker { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:calc(var(--og-space-1) / 2); padding-block:var(--og-space-2); }
-.schedule-week-picker .og-btn { min-width:0; padding-inline:0; height:calc(var(--og-space-9) + 2px); }
-.schedule-week-picker .og-btn-label { display:flex; flex-direction:column; gap:calc(var(--og-space-1) * .75); }
-.schedule-week-picker small { font-size:var(--og-text-micro); }
-html:root.is-phone .explorer-panel:has(.schedule-workspace) { padding-inline:var(--og-space-2); }
-html:root.is-phone .schedule-timeline { height:calc(100dvh - var(--og-schedule-mobile-offset)); min-height:var(--og-schedule-min-mobile); }
+/* ════════════════════════════════════════════════════════════════════════════
+ * 日程 · 全宽时间表主视图
+ *
+ * 用户验收（2026-10-18）：「日程应该是直接铺满屏幕的时间轴表」，同时同步、筛选、
+ * 跳转、增删改、导出、系统日历、列表视图一个都不能少。桌面看一周，手机默认看当天
+ * 并可直接切周内日期；作业「前往」开新标签，课程给「前往 / 寻迹」。
+ *
+ * 布局做法：
+ *   ① 本页在场时把 explorer 祖先链收成「定高 flex 列」（高度 = 视口减应用壳），
+ *      时间表吃掉全部剩余高度并**自己滚动** —— 表头吸顶、当前时刻线随轴走；
+ *      不再有包住时间表的滚动小盒子，屏幕上也不会出现上下大片空白。
+ *   ② 辅助功能（显示时段 / 同步 / 系统日历 / 学期周跳转）收进工具栏的「更多」
+ *      披露区，日历快跳走 Popover，不再常驻在时间表上方挤压高度。
+ *   ③ 手机上时间表自身滚动区内多留一段内边距，让最后一节课能滚到 OneShot 快捷
+ *      胶囊与底栏之上（不覆盖别人的 CSS，只在本页滚动区内留白）。
+ *
+ * 高度链靠 html.is-schedule-page 驱动（由 Schedule.tsx 在"本页是当前标签页"时挂到
+ * documentElement）：规范禁止嵌套 :has()，而写死像素偏移一换顶栏高度就错位。
+ * 类名：schedule-* / sched-* 是宿主页唯一外观出处（应用侧零 CSS 文件，契约 G1）。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. 高度链：只有日程页把面板钉成"视口减应用壳"的定高容器 ── */
+html:root.is-schedule-page .explorer-shell {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+html:root.is-schedule-page .explorer-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  padding-inline: var(--og-space-5);
+}
+html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) > .page-anim {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+html:root.is-schedule-page .schedule-workspace {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  gap: var(--og-space-2);
+  /* 极矮视口（手机横屏 390 高）时整页可滚一段，绝不裁掉工具栏或时间表 */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* 页头/工具栏只占自身高度；只有事件区参与伸缩 */
+html:root.is-schedule-page .schedule-workspace > * { flex: none; }
+html:root.is-schedule-page .schedule-workspace > .schedule-timeline { flex: 1 1 0; }
+
+/* ── 2. 工具栏（一行主结构 + 更多披露区） ── */
+.schedule-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  flex-wrap: wrap;
+}
+.schedule-bar-spacer { flex: 1 1 auto; min-width: var(--og-space-2); }
+.schedule-bar-label {
+  min-width: var(--og-schedule-sync-width);
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.schedule-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--og-space-2) var(--og-space-4);
+  padding: var(--og-space-3);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-card);
+  background: var(--og-surface-2);
+  animation: schedule-more-in var(--og-dur-2) var(--og-ease-standard) both;
+}
+.schedule-more-field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--og-space-1) / 2);
+  min-width: 0;
+}
+.schedule-more-chips { display: flex; flex-wrap: wrap; gap: var(--og-space-1); }
+.schedule-native-field { width: 100%; }
+
+/* ── 3. 日历快跳（Popover 内容：七列月历） ── */
+.schedule-cal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-2);
+  min-width: calc(var(--og-schedule-sync-width) + var(--og-space-10));
+}
+.schedule-cal-head { display: flex; align-items: center; gap: var(--og-space-1); }
+.schedule-cal-title {
+  flex: 1 1 auto;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.schedule-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: calc(var(--og-space-1) / 2);
+  text-align: center;
+}
+.schedule-cal-grid .og-btn { min-width: 0; padding-inline: 0; }
+
+/* ── 4. 全天芯片行 / 手机周内切换 ── */
+.schedule-chip-row { display: flex; flex-wrap: wrap; gap: var(--og-space-1); }
+.schedule-week-picker {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: calc(var(--og-space-1) / 2);
+}
+.schedule-week-picker .og-btn {
+  min-width: 0;
+  padding-inline: 0;
+  height: calc(var(--og-space-9) + var(--og-space-1));
+}
+.schedule-week-picker .og-btn-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--og-space-1) / 3);
+  font-size: var(--og-text-label);
+}
+.schedule-week-picker small { font-size: var(--og-text-micro); opacity: .8; }
+
+/* ── 5. 时间表本体：页内全宽、占满剩余高度、自己滚动 ── */
+.schedule-timeline {
+  position: relative;
+  min-height: var(--og-schedule-min-height);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-card);
+  background: var(--og-surface-1);
+  /* OneShot 快捷胶囊浮在屏幕底部：滚动区末尾留一段，最后一节课能滚到它上面 */
+  padding-bottom: var(--og-space-10);
+  scroll-padding-top: var(--og-space-7);
+}
+.schedule-day-head {
+  position: sticky;
+  top: 0;
+  z-index: var(--og-z-header);
+  padding-block: var(--og-space-3) var(--og-space-2);
+  background: var(--og-surface-1);
+  border-bottom: 1px solid var(--og-line-2);
+}
+.schedule-day-head,
+.schedule-body { display: flex; }
+.schedule-head-gutter,
+.schedule-gutter { flex: none; width: var(--og-space-7); }
+
+/* 表头与画布同一套分栏：桌面一周，手机单日 */
+.schedule-day-strip { display: flex; flex: 1 1 auto; min-width: 0; }
+.schedule-day-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-size: var(--og-text-label);
+  font-weight: 600;
+  color: var(--og-content-2);
+  font-variant-numeric: tabular-nums;
+}
+.schedule-day-cell small {
+  display: block;
+  font-size: var(--og-text-micro);
+  font-weight: 400;
+  color: var(--og-content-3);
+  line-height: var(--og-text-micro-lh);
+}
+.schedule-day-cell.is-today { color: var(--og-accent-strong); }
+.schedule-day-cell.is-today small { color: var(--og-accent-strong); }
+
+.schedule-gutter { position: relative; }
+.schedule-gutter-label {
+  position: absolute;
+  right: var(--og-space-1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--og-content-3);
+  font-size: var(--og-text-micro);
+  line-height: var(--og-text-micro-lh);
+}
+.schedule-canvas { position: relative; flex: 1 1 auto; min-width: 0; }
+
+/* 列底色 / 网格线 / 当前时刻线 */
+.schedule-col { position: absolute; top: 0; height: 100%; }
+.schedule-col.is-today { background: color-mix(in srgb, var(--og-accent) 6%, transparent); }
+.schedule-grid-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--og-line-1); }
+.schedule-grid-line.is-hour { border-top-color: var(--og-line-2); }
+.schedule-now {
+  position: absolute;
+  z-index: var(--og-z-rail);
+  border-top: calc(var(--og-space-1) / 2) solid var(--og-error);
+}
+.schedule-now-dot { position: absolute; left: calc(var(--og-space-1) * -1); top: calc(var(--og-space-1) * -1); }
+
+/* 课块：位置/尺寸由页面按分钟算成百分比（几何），外观全部在这里 */
+.schedule-block {
+  position: absolute;
+  z-index: var(--og-z-sticky);
+  overflow: hidden;
+  border-radius: var(--og-radius-xs);
+  padding: var(--og-space-1) calc(var(--og-space-1) * 1.25);
+  background: var(--og-c-schedule-block, var(--og-accent-soft));
+  color: var(--og-content-on-accent);
+  box-shadow: var(--og-elev-1);
+  cursor: pointer;
+  /* 入场：错峰延迟由页面按"时间行"给（--og-c-schedule-delay），只动 transform/opacity */
+  animation: schedule-block-in var(--og-dur-3) var(--og-ease-spring) backwards;
+  animation-delay: var(--og-c-schedule-delay, 0ms);
+  transition: transform var(--og-dur-1) var(--og-ease-standard), box-shadow var(--og-dur-1) var(--og-ease-standard);
+}
+.schedule-block:hover {
+  transform: translate3d(0, calc(var(--og-space-1) / -4), 0);
+  box-shadow: var(--og-elev-2);
+}
+.schedule-block.is-compact { padding: 0 var(--og-space-1); }
+.schedule-block.is-done { opacity: var(--og-disabled-opacity); }
+.schedule-block-title {
+  font-size: var(--og-text-micro);
+  font-weight: 700;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 副行只用透明度分层（不是颜色值）：契约只禁字面色值与字面 px */
+.schedule-block-sub { opacity: .9; line-height: 1.35; margin-top: calc(var(--og-space-1) / 2); }
+.schedule-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: var(--og-z-rail);
+}
+
+/* ── 6. 详情弹层的信息层次 ── */
+.schedule-facts { display: flex; flex-direction: column; gap: var(--og-space-1); }
+.schedule-detail-foot { display: flex; flex-direction: column; gap: var(--og-space-2); }
+
+/* ── 7. 动效：只动 transform / opacity；减弱动态效果整段不播（含错峰延迟） ── */
+@keyframes schedule-block-in {
+  from { opacity: 0; transform: translate3d(0, var(--og-space-2), 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes schedule-more-in {
+  from { opacity: 0; transform: translate3d(0, calc(var(--og-space-2) * -1), 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .schedule-block,
+  .schedule-more { animation: none; }
+  .schedule-block:hover { transform: none; }
+}
+
+/* ── 8. 手机：页内边距收窄、滚动区给 OneShot 与底栏让位 ── */
+html:root.is-phone .explorer-panel:has(.schedule-workspace) { padding-inline: var(--og-space-2); }
+html:root.is-phone .schedule-timeline {
+  min-height: var(--og-schedule-min-mobile);
+  padding-bottom: var(--og-navigation-clearance);
+}
+html:root.is-phone .schedule-day-head { padding-block: var(--og-space-2) var(--og-space-1); }
+html:root.is-phone .schedule-bar-label { min-width: 0; }

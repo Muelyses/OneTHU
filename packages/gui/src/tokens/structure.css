@@ -300,6 +300,8 @@
   --og-schedule-min-mobile: 300px;
   --og-contact-card-min: 320px;
   --og-vault-radar-w: 320px;
+  --og-vault-sheet-w: 560px;
+  --og-vault-sheet-h: 460px;
   --og-schedule-min-height: 360px;
   --og-schedule-timeline-offset: 370px;
   --og-schedule-mobile-offset: 390px;

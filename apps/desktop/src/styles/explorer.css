@@ -414,10 +414,10 @@ html.is-phone .explorer-content {
   padding-bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px);
 }
 html.is-phone .hard-refresh-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 8px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 72px) !important;
 }
 html.is-phone .hard-refresh-fab.top-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 64px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 136px) !important;
 }
 
 /* ══════════ 内容区裸文本随壁纸明暗自适应（2026-10-14 扩全域：标题/表头全部在内）══════════

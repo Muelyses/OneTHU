@@ -163,8 +163,10 @@ html:root[data-og-skin="glass"] .has-shell-wallpaper .workbench-board-head {
 
 html:root.is-phone .workbench-wordmark { display: none; }
 html:root.is-phone #ex-bbar-tabs-btn > .ex-bbar-label { display: inline; }
-html:root.is-phone .explorer-topbar { padding-inline: var(--og-space-4); }
-html:root.is-phone .explorer-topbar::after { content: 'OneTHU'; position: absolute; left: 50%; transform: translateX(-50%); font-size: var(--og-text-subtitle); font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); pointer-events: none; }
+html:root.is-phone .explorer-topbar { padding-inline: var(--og-space-4); justify-content:space-between; }
+/* 用户口径 2026-10-18：手机顶栏不再放品牌字，暂存箱按钮绝对居中。 */
+html:root.is-phone .explorer-topbar .vault-anchor { position:absolute; left:50%; top:50%; translate:-50% -50%; }
+html:root.is-phone .explorer-topbar .tb-spring { display:none; }
 html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-top: var(--og-workbench-tabs-h) !important; }
 html:root.is-phone .home-tab.home-free { padding-top: var(--og-space-6); gap: var(--og-space-6); }
 html:root.is-phone .home-chrome-layer { gap: var(--og-space-5) var(--og-space-2); }
@@ -448,6 +450,9 @@ html:root .ex-tab-plugin-glyph svg { width: 100%; height: 100%; }
 /* 只用 OneGUI 令牌：新 UI 不再长私有 chrome。 */
 .vault-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--og-space-3); margin-bottom: var(--og-space-4); }
 .vault-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-2); }
+.vault-action-groups { display: grid; gap: var(--og-space-2); margin-bottom: var(--og-space-3); }
+.vault-action-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-2); }
+.vault-action-label { flex: none; min-width:var(--og-space-10); font-size:var(--og-text-micro); font-weight:var(--og-weight-semibold); color:var(--og-content-3); letter-spacing:.06em; }
 .vault-share { display: grid; gap: var(--og-space-2); margin: var(--og-space-3) 0; padding: var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); }
 .vault-share-code { display: block; font-family: var(--og-font-mono); font-size: var(--og-text-micro); line-height: var(--og-text-micro-lh); color: var(--og-content-1); overflow-wrap: anywhere; user-select: all; }
 .vault-footer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--og-space-2); margin-top: var(--og-space-3); }
@@ -616,3 +621,25 @@ html:root[data-og-motion="reduced"] :is(.exchange-stage > i,.exchange-card,.exch
 /* Bottom shortcut dock owns its clearance; canvas pages must scroll clear of it. */
 html:root:not(.is-phone) .explorer-shell > .explorer-content.is-home-canvas { padding-bottom:calc(var(--og-shortcut-clearance) + var(--og-space-4)) !important; }
 html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-bottom:var(--og-mobile-content-clearance) !important; }
+
+/* Vault bottom sheet: the full expansion of the box stays on the page. */
+.vault-sheet-mask { position:fixed; inset:0; z-index:var(--og-z-modal); display:flex; align-items:flex-end; justify-content:center; background:var(--og-scrim); animation:vault-sheet-fade var(--og-dur-2) var(--og-ease-standard); }
+.vault-sheet-mask.is-closing { animation:vault-sheet-fade-out var(--og-dur-2) var(--og-ease-standard) forwards; }
+.vault-sheet { display:flex; flex-direction:column; width:min(var(--og-vault-sheet-w),calc(100vw - var(--og-space-4))); max-height:min(var(--og-vault-sheet-h),72dvh); margin-bottom:calc(var(--og-space-3) + env(safe-area-inset-bottom)); border:1px solid var(--og-line-2); border-radius:var(--og-radius-2xl); background:var(--og-fill-overlay); backdrop-filter:var(--og-overlay-blur); box-shadow:var(--og-elev-menu); color:var(--og-content-1); overflow:hidden; animation:vault-sheet-rise var(--og-dur-3) var(--og-ease-spring); }
+.vault-sheet.is-closing { animation:vault-sheet-drop var(--og-dur-2) var(--og-ease-standard) forwards; }
+.vault-sheet-head { display:flex; align-items:center; gap:var(--og-space-3); padding:var(--og-space-4) var(--og-space-4) var(--og-space-3); border-bottom:1px solid var(--og-line-1); }
+.vault-sheet-mark { display:grid; place-items:center; width:var(--og-space-8); height:var(--og-space-8); flex:none; border-radius:var(--og-radius-sm); background:var(--og-action); color:var(--og-action-on); }
+.vault-sheet-title { display:grid; gap:calc(var(--og-space-1) * .5); min-width:0; }
+.vault-sheet-title b { font-size:var(--og-text-title); font-weight:var(--og-weight-semibold); }
+.vault-sheet-title small { font-size:var(--og-text-micro); color:var(--og-content-3); }
+.vault-sheet-tools { display:flex; align-items:center; gap:var(--og-space-2); margin-left:auto; }
+.vault-sheet-body { flex:1; min-height:0; overflow:auto; padding:var(--og-space-2) var(--og-space-2) var(--og-space-3); }
+.vault-sheet-body .og-list { border:0; background:transparent; box-shadow:none; }
+.vault-sheet-empty { display:grid; justify-items:center; gap:var(--og-space-2); padding:var(--og-space-8) var(--og-space-5); text-align:center; color:var(--og-content-2); }
+.vault-sheet-foot { padding:var(--og-space-2) var(--og-space-4) var(--og-space-3); border-top:1px solid var(--og-line-1); }
+@keyframes vault-sheet-rise { from { translate:0 var(--og-space-8); opacity:0; } to { translate:0 0; opacity:1; } }
+@keyframes vault-sheet-drop { to { translate:0 var(--og-space-8); opacity:0; } }
+@keyframes vault-sheet-fade { from { opacity:0; } to { opacity:1; } }
+@keyframes vault-sheet-fade-out { to { opacity:0; } }
+@media(prefers-reduced-motion:reduce) { .vault-sheet,.vault-sheet-mask,.vault-sheet-mask.is-closing,.vault-sheet.is-closing { animation:none; } }
+html:root[data-og-motion="reduced"] :is(.vault-sheet,.vault-sheet-mask) { animation:none; }

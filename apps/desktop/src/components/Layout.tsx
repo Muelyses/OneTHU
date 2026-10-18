@@ -46,6 +46,7 @@ import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
 import { OneShot } from "./explorer/OneShot.js";
 import { OneGoBar } from "./explorer/OneGoBar.js";
 import { VaultDropTarget, VaultButton } from "./vault/VaultDropTarget.js";
+import { VaultSheetHost } from "./vault/VaultSheet.js";
 import { useTabLayoutMode } from "../state/tabLayout.js";
 
 /* ══ OneGUI 适配层 ═════════════════════════════════════════════════════════
@@ -435,6 +436,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <BottomBar />
       <OneGoBar />
       <OneShot />
+      <VaultSheetHost />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />
       <OneGoSheet />

@@ -476,6 +476,8 @@ export function ContactCabinet(): ReactNode {
   }, []);
 
   const filterActive = query.trim() !== "" || onlyStarred || filter !== "all";
+  /* 筛选/搜索/只看星标时，自己的名片让位给搜索结果 */
+  const showMine = !filterActive;
 
   return (
     <div className="contact-cabinet">
@@ -507,16 +509,18 @@ export function ContactCabinet(): ReactNode {
       </div>
 
       <div className="contact-deck">
-        <div className="contact-slot is-mine">
-          <Btn
-            className="contact-card-pick"
-            aria-label="打开我的名片"
-            data-vault-catch={JSON.stringify(personalCardCatch())}
-            onClick={() => setSelfOpen(true)}
-          >
-            <IdentityCard card={personal} variant="hero" />
-          </Btn>
-        </div>
+        {showMine ? (
+          <div className="contact-slot is-mine">
+            <Btn
+              className="contact-card-pick"
+              aria-label="打开我的名片"
+              data-vault-catch={JSON.stringify(personalCardCatch())}
+              onClick={() => setSelfOpen(true)}
+            >
+              <IdentityCard card={personal} variant="hero" />
+            </Btn>
+          </div>
+        ) : null}
         {list.map((c) => (
           <div className="contact-slot" key={c.id}>
             <Btn

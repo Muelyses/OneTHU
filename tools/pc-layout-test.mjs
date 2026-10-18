@@ -25,9 +25,10 @@ ok(CSS.includes(".next-class"), "首页缺右栏下一节课卡片样式");
 ok(/const wide = useExpanded\(\)/.test(TASKS), "待办页未按 expanded 分端");
 ok(CSS.includes(".tasks-body.is-wide"), "待办页缺双栏样式");
 
-/* 3 课表：compact 默认列表、PC 默认周视图 */
-ok(/tier === "expanded" \? "timetable" : "agenda"/.test(SCHED), "课表默认模式未按 tier 分流");
-
+/* 3 课表：2026-10-18 用户口径改为「时间轴恒以周为单位、铺满」——桌面/手机/横屏都是周视图，
+   不再按 tier 默认落列表（列表仍作为视图切换项保留）。护栏改钉周语义与周切换入口。 */
+ok(/const \[mode, setMode\] = useState<"timetable" \| "agenda">\("timetable"\)/.test(SCHED), "课表默认模式未统一为周视图");
+ok(/WEEK_COLUMNS/.test(SCHED) && /weekStart/.test(SCHED), "课表缺少以周为单位的时间轴");
 /* 4 服务：PC 访问重定向到分组首个功能 */
 ok(/重定向到分组首个功能/.test(SVC), "服务页缺 PC 重定向");
 

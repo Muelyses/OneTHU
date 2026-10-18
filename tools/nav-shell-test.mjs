@@ -62,7 +62,9 @@ ok(!/bottom-nav-indicator/.test(CSS) && !/bottom-nav-indicator/.test(LAYOUT), "�
    nav 语义、两个抽屉入口的 aria-expanded/aria-label，胶囊运动常量仍归 motion.ts 管。 */
 const BBAR = readFileSync("apps/desktop/src/components/explorer/BottomBar.tsx", "utf8");
 ok(/<nav className="ex-bbar" aria-label=/.test(BBAR), "explorer 底栏缺 nav 语义（aria-label）");
-ok(/aria-expanded={drawerOpen}/.test(BBAR) && /aria-expanded={onegoOpen}/.test(BBAR), "explorer 底栏抽屉入口缺 aria-expanded");
+/* 2026-10-18：桌面这颗按钮是「我的」→ 设置浮层（OneGO 收藏栏上移到地址栏下方），
+   只有手机才是 OneGO 抽屉，所以 aria-expanded 只在该平台有意义。 */
+ok(/aria-expanded={drawerOpen}/.test(BBAR) && /aria-expanded={phone \? onegoOpen : undefined}/.test(BBAR), "explorer 底栏抽屉入口缺 aria-expanded");
 ok(/aria-label=/.test(BBAR) && /标签页/.test(BBAR) && /OneGO!/.test(BBAR), "explorer 底栏入口缺可读名称");
 const hook = MOTION_TS ? /export function useBottomNavPill[\s\S]*$/.exec(MOTION_TS) : null;
 if (hook) {

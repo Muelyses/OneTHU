@@ -2464,7 +2464,7 @@ select.input:focus {
 .slot-cell:disabled { cursor: not-allowed; }
 .slot-cell.taken { background: var(--surface-3, rgba(0, 0, 0, 0.05)); color: var(--text-3, #999); }
 .slot-cell.occ { background: var(--red-soft, rgba(239, 68, 68, 0.1)); color: var(--red, #dc2626); cursor: not-allowed; }
-.slot-cell.picked { background: var(--accent, #16a34a); color: var(--md-sys-color-on-primary); outline: 2px solid var(--accent); outline-offset: 2px; } /* 外圈：选中难发现（用户点名），并回旧样式表行数 */
+.slot-cell.picked { background: var(--accent, #16a34a); color: var(--md-sys-color-on-primary); box-shadow: 0 0 0 2px var(--accent); } /* 外圈：选中难发现（用户点名），并回旧样式表行数 */
 .slot-cell.picked small { opacity: 0.92; }
 
 /* ===== 移动端卡片密度：今日入口卡 / 今日home卡 / 网络学堂课程卡（≤840 竖屏带） ===== */
@@ -4784,12 +4784,19 @@ section > .svc-label { margin-top: 14px; }
 .hw-card-act:hover { color: var(--red); }
 .hw-card-foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
 .hw-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+/* 状态小胶囊：与 .chip / OG Chip 同一套几何（用户反馈「胶囊型按钮的样式不统一」——
+   原来是两套：.chip 24 高 / 12px 内边距，.task-tag 2px 8px + 11px 字，并排放一眼就看出不等高）。
+   高度刻意用 4pt 间距令牌而不是 chip 档位令牌：档位在 touch 密度下会抬到 40px，
+   这两个是**行内状态签**，不该跟着点按目标一起长。 */
 .task-tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--r-pill);
-  font-size: 11px;
-  line-height: 1.6;
+  display: inline-flex;
+  align-items: center;
+  height: var(--og-space-6);
+  padding: 0 var(--og-space-3);
+  border-radius: var(--og-radius-full);
+  font-size: var(--og-text-label);
+  font-weight: var(--og-weight-medium);
+  line-height: 1;
   background: var(--surface-3);
   color: var(--text-2);
 }

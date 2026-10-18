@@ -671,6 +671,17 @@ html:root .seg-indi { height: var(--og-space-2); margin-block: var(--og-space-2)
 html:root .board-viewport-tools .og-btn-label { overflow: visible; }
 /* Only the outer widget owns a material; no nested opaque card hides its glass. */
 html:root .free-item :is(.wg-card, .og-card, .home-card) { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+/* 组件卡体溢出时**静默滚动**：可滚但不出滚动条（用户反馈「不需要 slider 的地方出现滑动条，
+   主页组件重灾区」——时钟卡内容只溢出 2px 也画了一根拇指；卡片本来就能拖动改尺寸，
+   滚动条只是噪声）。滚动能力保留：拖矮卡片后内容仍可用滚轮/触控看到。 */
+html:root .free-item > :first-child,
+html:root .free-item > .wg-card,
+html:root .free-item .wg-card > *:not(.wg-entry),
+html:root .free-item :is(.home-card-body, .home-card-body > .list, .wg-card .list) { scrollbar-width: none; }
+html:root .free-item > :first-child::-webkit-scrollbar,
+html:root .free-item > .wg-card::-webkit-scrollbar,
+html:root .free-item .wg-card > *:not(.wg-entry)::-webkit-scrollbar,
+html:root .free-item :is(.home-card-body, .home-card-body > .list, .wg-card .list)::-webkit-scrollbar { width: 0; height: 0; }
 html:root .free-item[data-widget="clock"] > .wg-card { overflow: hidden; }
 /* Opacity animation with forwards fill creates a permanent backdrop root. */
 html:root :is(.settings-mask, .og-scrim, .ex-sheet-mask):not(.is-closing) { animation-fill-mode: backwards; }

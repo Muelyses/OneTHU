@@ -58,9 +58,15 @@
   padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
-/* 硬刷新 FAB 给底栏让位 */
+/* 硬刷新 FAB 给底栏让位。
+   手机档还要再让开白板工具栏：工具栏已改成带文字的竖排（组件/画笔各占一行，宽约 80px），
+   和同处右下的 FAB 横向重叠（用户反馈「右侧工具栏图标意义不明」修好后暴露出来的遮挡）。
+   让位量 = 工具栏一列的高度（--og-space-9）+ 一拍间隙。 */
 .hard-refresh-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px) !important;
+}
+html:root.is-phone .hard-refresh-fab:not(.top-fab) {
+  bottom: calc(var(--explorer-bar-h, 48px) + var(--og-mobile-tools-gap, 76px) + var(--og-space-9) + var(--og-space-2) + env(safe-area-inset-bottom, 0px)) !important;
 }
 .hard-refresh-fab.top-fab {
   bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px) !important;

@@ -91,6 +91,11 @@ let dirVersion = 0;
 let busy = false;
 let lastError: string | null = null;
 
+/** 账号快照（含 email/配额）：云盘账号已加载过就能同步读到，供名片自动识别本人邮箱。 */
+export function getSeafileAccount(): SeafileAccount | null {
+  return account;
+}
+
 /** 账号信息（含配额）——进页刷新一次 */
 export async function refreshSeafileAccount(): Promise<void> {
   if (!cfg) return;

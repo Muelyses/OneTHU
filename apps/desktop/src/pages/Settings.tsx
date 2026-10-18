@@ -545,8 +545,6 @@ export function SettingsPage() {
 
       <DownloadSettings />
 
-      <SectionHead title="OneShot" />
-      <OneShotSettings />
       <SectionHead title="首页布局" />
       <SettingsList>
         <SettingsRow
@@ -629,6 +627,10 @@ export function SettingsPage() {
       <Card>
         <WallpaperSection />
       </Card>
+      <SectionHead title="OneShot 快捷入口" />
+      <SettingsList>
+        <OneShotSettings />
+      </SettingsList>
       <SectionHead title="通知" />
       <Card>
         <NotifySettingsSection />

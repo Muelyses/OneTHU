@@ -6,6 +6,9 @@
  * - 组织名片 = 组织邀请的具体化形式（名称、简介、加入方式），以后接 GitLab/云盘。
  * - 全部本地持久化；分享/碰一碰是显式动作，手机号默认随名片显式发出（用户自己填的）。
  */
+import { getSeafileAccount } from "./seafile.js";
+import { getCampusSnapshot } from "./data.js";
+import { getCloudCalEmail } from "./cloudCal.js";
 import { useSyncExternalStore } from "react";
 import type { VaultCatch } from "./vault.js";
 
@@ -109,6 +112,21 @@ export function useCards(): CardDoc {
 
 function clamp(s: string, n: number): string {
   return Array.from(String(s ?? "").trim()).slice(0, n).join("");
+}
+
+/**
+ * 本人清华云盘邮箱：应用已经能自动拿到，不该再让用户手填。
+ * 顺序：名片里已保存的 → 云盘账号（seafile_account.email）→ 校园数据里的 info 邮箱 → 已配置的 CalDAV 邮箱。
+ */
+export function resolveCloudEmail(): string {
+  const saved = (doc.personal.cloudEmail ?? "").trim();
+  if (saved) return saved;
+  const seafile = getSeafileAccount()?.email?.trim();
+  if (seafile) return seafile;
+  const campus = getCampusSnapshot()?.user?.email?.trim();
+  if (campus) return campus;
+  const cal = (getCloudCalEmail() ?? "").trim();
+  return cal;
 }
 
 export function savePersonalCard(patch: Partial<PersonalCard>): PersonalCard {

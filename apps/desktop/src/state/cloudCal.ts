@@ -126,6 +126,11 @@ async function ensureLoaded(): Promise<void> {
   if (cloudEvents.length > 0 || localEvents.length > 0) emitChange();
 }
 
+/** 已配置的 CalDAV / 邮箱地址（同步可读，未配置为 null）。 */
+export function getCloudCalEmail(): string | null {
+  return cfg?.email ?? null;
+}
+
 /** 配置就绪（邮件 tab 复用同一凭据：email + authCode） */
 export async function ensureCloudCalLoaded(): Promise<void> {
   await ensureLoaded();

@@ -8,13 +8,14 @@
  * - 组织名片：建卡、进暂存箱、复制加入方式；组织成员与邀请口令在 OrganizationSection。
  */
 import { IdentityCard } from "./IdentityCard.js";
-import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Btn, Card, Chip, EmptyState, IconBtn, IconCamera, IconCloud, IconFile, IconIn, IconMail, IconPen,
   IconPlus, IconStar, IconTrash, Inline, KeyValue, List, Modal, Row, SearchField, Section, Segment,
   Stack, Text,
 } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
+import { getCampusSnapshot, subscribeCampusData } from "../state/data.js";
 import { goEntry } from "./Layout.js";
 import { openFormModal } from "../lib/formModal.js";
 import { confirmOk } from "../lib/confirm.js";
@@ -88,11 +89,35 @@ function contactCatch(c: ContactCard): VaultCatch {
   };
 }
 
+/**
+ * 本人清华云盘邮箱：校园数据（统一认证后的只读缓存）里本来就有，不再让用户手填。
+ * 只读快照 + 广播订阅 —— 不发起任何请求；未登录 / 无缓存时返回空串，调用方降级显示。
+ */
+function useCampusEmail(): string {
+  const read = (): string => (getCampusSnapshot()?.user?.email ?? "").trim();
+  const [email, setEmail] = useState(read);
+  useEffect(() => {
+    const sync = (): void => setEmail(read());
+    sync();
+    return subscribeCampusData(sync);
+  }, []);
+  return email;
+}
+
+/** 云盘邮箱只自动补一次（整个会话）：用户自己清空后不再覆盖。 */
+let autoCloudEmailFilled = false;
+
 /** 我的名片：编辑资料 / 换头像 / 放进暂存箱（浮层与通讯录共用）。 */
 function usePersonalActions() {
   const doc = useCards();
   const p = doc.personal;
   const [busy, setBusy] = useState(false);
+  const campusEmail = useCampusEmail();
+  useEffect(() => {
+    if (autoCloudEmailFilled || !campusEmail) return;
+    autoCloudEmailFilled = true;
+    if (!p.cloudEmail) savePersonalCard({ cloudEmail: campusEmail });
+  }, [campusEmail, p.cloudEmail]);
 
   const edit = useCallback(async (): Promise<void> => {
     const f = await openFormModal("编辑我的名片", [
@@ -100,11 +125,16 @@ function usePersonalActions() {
       { key: "website", label: "个人网址", default: p.website },
       { key: "social", label: "社交媒体", default: p.social },
       { key: "phone", label: "手机号", default: p.phone },
-      { key: "cloudEmail", label: "清华云盘邮箱（好友双向共享用，可空）", default: p.cloudEmail ?? "" },
+      {
+        key: "cloudEmail",
+        label: "清华云盘邮箱（已自动获取，可修改）",
+        placeholder: "留空则使用登录账号的清华云盘邮箱",
+        default: p.cloudEmail || campusEmail || "",
+      },
       { key: "bio", label: "个人简介（≤120 字，碰一碰要短）", kind: "textarea", default: p.bio },
     ]);
     if (f) savePersonalCard(f);
-  }, [p]);
+  }, [p, campusEmail]);
 
   const pickAvatar = useCallback(async (): Promise<void> => {
     setBusy(true);
@@ -129,13 +159,18 @@ function usePersonalActions() {
     else showToast(r.reason === "duplicate" ? "暂存箱里已经有这张名片了" : "暂存箱暂时不可用");
   }, []);
 
-  return { personal: p, edit, pickAvatar, toVault, busy };
+  return { personal: p, edit, pickAvatar, toVault, busy, campusEmail };
 }
 
 /* ══════════════ 我的名片 ══════════════ */
 
+function cloudEmailText(personal: PersonalCard, campusEmail: string): string {
+  if (personal.cloudEmail) return personal.cloudEmail;
+  return campusEmail ? `${campusEmail}（登录账号）` : "登录后自动获取";
+}
+
 function PersonalCardBlock(): ReactNode {
-  const { personal, edit, pickAvatar, toVault, busy } = usePersonalActions();
+  const { personal, edit, pickAvatar, toVault, busy, campusEmail } = usePersonalActions();
   return (
     <div className="identity-panel">
       <div className="identity-panel-show">
@@ -160,7 +195,7 @@ function PersonalCardBlock(): ReactNode {
             { k: "个人网址", v: personal.website || "未填写" },
             { k: "社交媒体", v: personal.social || "未填写" },
             { k: "手机号", v: personal.phone || "未填写" },
-            { k: "清华云盘邮箱", v: personal.cloudEmail || "未填写（填了才能和好友双向共享）" },
+            { k: "清华云盘邮箱", v: cloudEmailText(personal, campusEmail) },
           ]}
         />
         <Text slot="micro" tone="faint">
@@ -381,7 +416,7 @@ export function ContactCabinet(): ReactNode {
     }
   }, [channelId]);
 
-  const { personal, edit, pickAvatar, toVault, busy } = usePersonalActions();
+  const { personal, edit, pickAvatar, toVault, busy, campusEmail } = usePersonalActions();
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -508,6 +543,7 @@ export function ContactCabinet(): ReactNode {
                 { k: "名字", v: personal.name || "未填写" },
                 { k: "简介", v: personal.bio || "未填写" },
                 { k: "联系方式", v: [personal.website, personal.social, personal.phone].filter(Boolean).join(" · ") || "未填写" },
+                { k: "清华云盘邮箱", v: cloudEmailText(personal, campusEmail) },
               ]}
             />
             <Inline gap={2} wrap>

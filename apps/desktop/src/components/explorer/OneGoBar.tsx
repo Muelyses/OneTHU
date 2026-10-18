@@ -11,7 +11,7 @@ import {openFormModal} from '../../lib/formModal.js';
 import {confirmOk} from '../../lib/confirm.js';
 import {addToVault,type VaultCatch} from '../../state/vault.js';
 import {showToast} from '../../state/toast.js';
-import {IconChevron,IconFist} from '../Icons.js';
+import {IconFist,IconTriangleDown} from '../Icons.js';
 import {QuickIcon} from './OneShot.js';
 export function quickCatch(e:QuickEntry):VaultCatch{return {type:'payload',title:e.title,sub:e.kind==='board'?'OnePage':'工作区',payload:{kind:'quick-entry',entry:e},source:'OneGO'};}
 export function OneGoBar(){
@@ -30,7 +30,7 @@ export function OneGoBar(){
  return <nav className="onego-bookmarks" aria-label="OneGO 收藏栏">
  <Btn className="onego-manager" variant="solid" size="sm" icon={<IconFist width={16} height={16}/>} onClick={openOneGoSheet}>OneGO!</Btn>
  <div className="onego-bookmark-track" ref={ref}>{saved.slice(0,limit).map(e=>item(e))}{saved.length===0?<span className="onego-bookmark-empty">收藏的 OnePage 和工作区会放在这里</span>:null}</div>
- {saved.length>limit?<IconBtn size="sm" label="更多收藏" aria-expanded={overflow} icon={<IconChevron width={14} height={14}/>} onClick={()=>setOverflow(v=>!v)}/>:null}
+ {saved.length>limit?<IconBtn size="sm" label="更多收藏" aria-expanded={overflow} icon={<IconTriangleDown width={12} height={12}/>} onClick={()=>setOverflow(v=>!v)}/>:null}
  <div ref={measure} className="onego-bookmark-measure" aria-hidden="true" inert>{saved.map(e=>item(e,true))}</div>
  {overflow?<div className="onego-bookmark-overflow" aria-label="更多收藏">{saved.slice(limit).map(e=>item(e))}</div>:null}
  </nav>;

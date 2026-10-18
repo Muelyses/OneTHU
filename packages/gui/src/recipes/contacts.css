@@ -1,29 +1,427 @@
-/* 通讯录与拟物名片：卡片比例、纸面层次、堆叠与弹出。 */
-/* Tangible, wallet-proportioned cards. Content is data, stock and emboss are shared material. */
-.identity-card { position:relative; isolation:isolate; aspect-ratio:1.586; width:100%; max-width:var(--og-identity-card-max); margin:auto; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; text-align:left; border-radius:var(--og-radius-xl); padding:clamp(var(--og-radius-xl),3vw,var(--og-space-7)); color:var(--og-content-1); background:var(--og-surface-1); border:1px solid var(--og-line-2); box-shadow:var(--og-elev-3),inset 0 1px 0 var(--og-contrast-ink-light); }
-.identity-card-stock { position:absolute; inset:0; z-index:-1; background:repeating-linear-gradient(115deg,transparent 0px,transparent calc(var(--og-space-1) * .75),color-mix(in srgb,var(--og-content-1) 3%,transparent) var(--og-space-1)),linear-gradient(130deg,var(--og-surface-1),var(--og-surface-3)); }
-.identity-card header { display:flex; justify-content:space-between; align-items:center; font-weight:var(--og-weight-bold); letter-spacing:.08em; }
-.identity-card header small { font-size:var(--og-ctl-pad-x-sm); font-weight:var(--og-weight-medium); color:var(--og-content-3); }
-.identity-card-person { display:flex; align-items:center; gap:var(--og-radius-xl); min-width:0; margin-block:var(--og-space-4); }
-.identity-card-person > div { min-width:0; }
-.identity-card-person h2 { margin:0 0 var(--og-space-2); font-size:clamp(var(--og-text-body-lh),3vw,calc(var(--og-space-7) + 2px)); letter-spacing:-.04em; overflow-wrap:anywhere; }
-.identity-card-person p { margin:0; font-size:var(--og-text-label); color:var(--og-content-2); white-space:normal; overflow-wrap:anywhere; }
-.identity-card-person img,.identity-monogram { width:calc(var(--og-space-10) - 6px); height:calc(var(--og-space-10) - 6px); flex:none; object-fit:cover; border-radius:var(--og-ctl-pad-x-md); }
-.identity-monogram { display:grid; place-items:center; background:var(--og-action); color:var(--og-action-on); font-size:calc(var(--og-space-7) - var(--og-space-1)); }
-.identity-card footer { display:flex; align-items:end; justify-content:space-between; gap:var(--og-space-3); font-size:var(--og-text-micro); overflow-wrap:anywhere; white-space:normal; }
-.identity-seal { flex:none; font-size:var(--og-radius-xl); letter-spacing:.1em; color:var(--og-content-3); border:calc(var(--og-space-1) / 2) solid var(--og-line-2); border-radius:50%; padding:var(--og-ctl-pad-x-sm) calc(var(--og-space-3) / 2); transform:rotate(-12deg); }
-.identity-card.is-organization .identity-card-stock { background:linear-gradient(145deg,var(--og-surface-4),var(--og-surface-1)); }
-.contacts-page { max-width:var(--og-contacts-page-max); margin:auto; }
-.contact-tools { display:flex; flex-wrap:wrap; gap:var(--og-space-3); margin-block:var(--og-space-6); }
-.contact-deck { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--og-contact-card-min)),1fr)); align-items:start; gap:calc(var(--og-space-7) - var(--og-space-1)); padding:calc(var(--og-space-6) + 2px) var(--og-ctl-pad-x-sm); }
-html:root .contact-card-pick { display:block; height:auto; min-width:0; padding:0; background:none; border:0; box-shadow:none; transition:transform 220ms ease; transform:rotate(-2deg); }
-.contact-card-pick:nth-child(even) { transform:rotate(2deg); }
-html:root .contact-card-pick:hover,html:root .contact-card-pick:focus-visible { transform:translateY(-10px) rotate(0); }
-.contact-card-pick .og-btn-label { display:block; width:100%; white-space:normal; }
-.contact-card-pick .identity-card { box-shadow:var(--og-elev-2),var(--og-space-1) calc(var(--og-space-3) / 2) 0 var(--og-surface-3),calc(var(--og-space-3) / 2) calc(var(--og-space-2) - 1px) 0 var(--og-line-2); }
-html:root .settings-seg { flex-wrap:wrap; }
-html:root.is-phone .settings-head { flex-wrap:wrap; }
-html:root.is-phone .settings-head .workbench-settings-brand { display:none; }
-html:root.is-phone .settings-seg { flex:1; gap:0; }
-html:root.is-phone .settings-seg-item { padding-inline:calc(var(--og-space-3) / 2); font-size:var(--og-text-micro); }
-@media(prefers-reduced-motion:reduce) { html:root .contact-card-pick { transition:none; } }
+/* 通讯录与拟物名片：卡片比例、纸面层次、堆叠与弹出。
+ *
+ * 硬约束（docs/onegui/10-contract.md + exp 单源补充）：
+ * - 颜色只用 --og-* 语义/结构令牌（含 color-mix 派生），本文件零字面色；
+ * - 尺寸走 --og-space-* / --og-geo-* / 结构令牌，媒体查询断点除外；
+ * - 动效只动 transform / opacity / box-shadow，时长与曲线全走 --og-dur-* / --og-ease-*，
+ *   因此全局 [data-og-motion="reduced"] 与 prefers-reduced-motion 会自动降级；
+ * - 名片比例 1.586 : 1（真实银行卡），纸纹/压印/钢印都由令牌派生，深浅主题同源。
+ */
+
+/* ══ 名片纸卡：真实银行卡比例 1.586 : 1 ═══════════════════════════════════ */
+.identity-card {
+  --og-c-identity-pad: clamp(var(--og-space-3), 3.2vw, var(--og-space-5));
+  --og-c-identity-name: clamp(var(--og-text-subtitle), 4.4vw, var(--og-text-title));
+  --og-c-identity-ink: color-mix(in srgb, var(--og-content-1) 3%, transparent);
+  /* 纸面受光：亮色主题的纸是米白的，深色主题只给一点点光泽，避免糊掉文字对比 */
+  --og-c-identity-sheen: color-mix(in srgb, var(--og-contrast-ink-light) 55%, transparent);
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--og-space-2);
+  aspect-ratio: 1.586;
+  width: 100%;
+  max-width: var(--og-identity-card-max);
+  margin-inline: auto;
+  overflow: hidden;
+  padding: var(--og-c-identity-pad);
+  text-align: left;
+  color: var(--og-content-1);
+  background: var(--og-surface-1);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-xl);
+  /* 压印：外投影 + 顶部一道高光边（真实卡片的厚纸边） */
+  box-shadow: var(--og-elev-2), inset 0 var(--og-geo-hairline) 0 var(--og-contrast-ink-light);
+}
+
+html[data-og-scheme="dark"] .identity-card {
+  --og-c-identity-sheen: color-mix(in srgb, var(--og-contrast-ink-light) 9%, transparent);
+}
+
+/* 纸料：防盗底纹（同心圆）+ 横纵纸纹 + 斜向面阶渐变 */
+.identity-card-stock {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--og-surface-1);
+  background-image:
+    radial-gradient(120% 85% at 8% -12%, var(--og-c-identity-sheen), transparent 58%),
+    repeating-radial-gradient(circle at 92% 118%,
+      transparent 0 calc(var(--og-space-2) - var(--og-geo-hairline)),
+      color-mix(in srgb, var(--og-content-1) 4%, transparent) calc(var(--og-space-2) - var(--og-geo-hairline)) var(--og-space-2)),
+    repeating-linear-gradient(90deg,
+      transparent 0 calc(var(--og-space-1) * 0.5),
+      var(--og-c-identity-ink) calc(var(--og-space-1) * 0.5) calc(var(--og-space-1) * 0.75)),
+    repeating-linear-gradient(0deg,
+      transparent 0 calc(var(--og-space-1) * 0.75),
+      color-mix(in srgb, var(--og-content-1) 2.4%, transparent) calc(var(--og-space-1) * 0.75) var(--og-space-1)),
+    linear-gradient(132deg, var(--og-surface-1) 0%, var(--og-surface-2) 54%, var(--og-surface-3) 100%);
+}
+
+/* 品牌行 */
+.identity-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--og-space-2);
+  min-width: 0;
+}
+.identity-card-brand {
+  font-size: var(--og-text-label);
+  font-weight: var(--og-weight-bold);
+  letter-spacing: 0.14em;
+  color: var(--og-content-1);
+}
+.identity-card-kind {
+  flex: none;
+  font-size: var(--og-text-micro);
+  font-weight: var(--og-weight-medium);
+  letter-spacing: 0.16em;
+  color: var(--og-content-3);
+}
+
+/* 芯片 + 人像：中间行吸收剩余高度 */
+.identity-card-middle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--og-space-2);
+  min-height: 0;
+}
+.identity-card-chip {
+  position: relative;
+  flex: none;
+  width: calc(var(--og-space-6) + var(--og-space-2));
+  height: calc(var(--og-space-4) + var(--og-space-1));
+  border: var(--og-geo-hairline) solid var(--og-line-2);
+  border-radius: var(--og-radius-xs);
+  background: linear-gradient(128deg, var(--og-surface-2), var(--og-surface-1) 46%, var(--og-surface-3));
+  box-shadow: inset 0 var(--og-geo-hairline) 0 var(--og-contrast-ink-light);
+}
+.identity-card-chip::before,
+.identity-card-chip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--og-geo-hairline);
+  background: color-mix(in srgb, var(--og-line-3) 75%, transparent);
+}
+.identity-card-chip::before { top: calc(50% - var(--og-geo-xs)); }
+.identity-card-chip::after { bottom: calc(50% - var(--og-geo-xs)); }
+
+.identity-card-person {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-3);
+  min-width: 0;
+}
+.identity-card-avatar,
+.identity-monogram {
+  width: calc(var(--og-space-8) + var(--og-space-1));
+  height: calc(var(--og-space-8) + var(--og-space-1));
+  flex: none;
+  border-radius: var(--og-radius-md);
+  object-fit: cover;
+  box-shadow: 0 var(--og-geo-hairline) 0 var(--og-contrast-ink-light);
+}
+.identity-monogram {
+  display: grid;
+  place-items: center;
+  background: var(--og-action);
+  color: var(--og-action-on);
+  font-size: var(--og-text-title);
+  font-weight: var(--og-weight-semibold);
+}
+.identity-card-id {
+  display: grid;
+  gap: calc(var(--og-space-1) / 2);
+  min-width: 0;
+}
+.identity-card-name {
+  font-size: var(--og-c-identity-name);
+  line-height: var(--og-text-title-lh);
+  font-weight: var(--og-weight-semibold);
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  /* 压印字：阴影取纸色，亮色纸上是凸起，深色纸上是刻入 */
+  text-shadow: 0 var(--og-geo-hairline) 0 color-mix(in srgb, var(--og-surface-1) 80%, transparent);
+}
+.identity-card-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-2);
+  overflow-wrap: anywhere;
+}
+
+/* 联系行 + 钢印 */
+.identity-card-bottom {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--og-space-2);
+  min-width: 0;
+}
+.identity-card-details {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--og-text-micro);
+  line-height: var(--og-text-micro-lh);
+  color: var(--og-content-3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.identity-seal {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--og-space-7);
+  height: var(--og-space-7);
+  border: calc(var(--og-space-1) / 2) solid color-mix(in srgb, var(--og-content-3) 55%, transparent);
+  border-radius: 50%;
+  color: var(--og-content-3);
+  font-size: var(--og-text-micro);
+  font-weight: var(--og-weight-semibold);
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-indent: 0.1em;
+  transform: rotate(-12deg);
+  box-shadow: inset 0 0 0 var(--og-geo-hairline) color-mix(in srgb, var(--og-content-3) 20%, transparent);
+}
+
+/* 组织名片：深一档的纸料 + 强调色描边 */
+.identity-card.is-organization {
+  border-color: var(--og-accent-soft-line);
+}
+.identity-card.is-organization .identity-card-stock {
+  background-image:
+    radial-gradient(120% 85% at 8% -12%, var(--og-c-identity-sheen), transparent 58%),
+    repeating-linear-gradient(90deg,
+      transparent 0 calc(var(--og-space-1) * 0.5),
+      var(--og-c-identity-ink) calc(var(--og-space-1) * 0.5) calc(var(--og-space-1) * 0.75)),
+    linear-gradient(146deg, var(--og-surface-2) 0%, var(--og-surface-3) 58%, var(--og-surface-4) 100%);
+}
+
+/* 三档：卡片夹里的实物 / 我的名片 / 弹出的大卡 */
+.identity-card--deck { max-width: none; }
+.identity-card--hero { max-width: var(--og-identity-card-max); }
+.identity-card--detail { max-width: 100%; }
+
+/* ══ 我的名片面板（我的 → 我的名片） ═════════════════════════════════════ */
+.identity-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--og-space-10) * 5)), 1fr));
+  align-items: start;
+  gap: var(--og-space-5);
+}
+.identity-panel-show {
+  display: grid;
+  gap: var(--og-space-4);
+  justify-items: center;
+  min-width: 0;
+}
+.identity-panel-actions { justify-content: center; }
+.identity-panel-meta { min-width: 0; }
+.identity-panel-meta .og-card-body {
+  display: grid;
+  gap: var(--og-space-3);
+}
+
+/* ══ 通讯录页与名片夹 ════════════════════════════════════════════════════ */
+.contacts-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-5);
+  width: 100%;
+  max-width: var(--og-contacts-page-max);
+  margin-inline: auto;
+}
+.contacts-tabs { display: flex; }
+.contacts-orgs { display: grid; gap: var(--og-space-3); }
+
+.contact-cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-4);
+  min-width: 0;
+}
+
+.contact-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--og-space-3);
+}
+.contact-toolbar .contact-search {
+  flex: 1 1 var(--og-ctl-form-narrow);
+  min-width: 0;
+}
+
+/* 卡片夹：桌面多列网格 */
+.contact-deck {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--og-contact-card-min)), 1fr));
+  align-items: start;
+  gap: calc(var(--og-space-6) + var(--og-space-3));
+  padding: var(--og-space-2) var(--og-space-2) var(--og-space-3);
+}
+
+/* 每张卡都是落在桌面上的实物：轻微歪斜 + 层叠投影 */
+.contact-slot {
+  --og-c-contact-tilt: -1.1deg;
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  transform: rotate(var(--og-c-contact-tilt));
+  transition: transform var(--og-dur-3) var(--og-ease-spring);
+}
+.contact-slot:nth-child(3n + 2) { --og-c-contact-tilt: 0.8deg; }
+.contact-slot:nth-child(3n) { --og-c-contact-tilt: -0.3deg; }
+.contact-slot.is-mine { --og-c-contact-tilt: 1.2deg; }
+
+@media (hover: hover) {
+  .contact-slot:hover,
+  .contact-slot:focus-within {
+    z-index: 2;
+    transform: rotate(0deg) translateY(calc(var(--og-space-2) * -1));
+  }
+  html:root .contact-card-pick:hover .identity-card {
+    box-shadow:
+      var(--og-elev-3),
+      calc(var(--og-space-1) * 1.5) var(--og-space-3) 0 var(--og-surface-2),
+      var(--og-space-3) var(--og-space-6) 0 var(--og-surface-3);
+  }
+}
+
+/* 卡片按钮：只是卡片的拾取器，本身不画底 */
+html:root .contact-card-pick {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--og-radius-xl);
+  background: none;
+  color: inherit;
+  white-space: normal;
+  text-align: left;
+}
+html:root .contact-card-pick::after { display: none; }
+html:root .contact-card-pick:focus-visible { box-shadow: var(--og-ring); }
+html:root .contact-card-pick .og-btn-label {
+  display: block;
+  width: 100%;
+  white-space: normal;
+}
+html:root .contact-card-pick .identity-card {
+  box-shadow:
+    var(--og-elev-2),
+    var(--og-space-1) var(--og-space-2) 0 var(--og-surface-2),
+    calc(var(--og-space-2) + var(--og-space-1)) var(--og-space-4) 0 var(--og-surface-3);
+  transition: box-shadow var(--og-dur-2) var(--og-ease-standard);
+}
+
+/* 星标：别在卡片角上的图钉（兄弟节点，绝不嵌进按钮里） */
+html:root .contact-star {
+  position: absolute;
+  top: calc(var(--og-space-1) * -1.5);
+  right: calc(var(--og-space-1) * -1.5);
+  z-index: 3;
+  color: var(--og-content-3);
+  background: var(--og-surface-1);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-full);
+  box-shadow: var(--og-elev-1);
+}
+html:root .contact-star.is-selected {
+  color: var(--og-content-1);
+  background: var(--og-accent-soft);
+  border-color: var(--og-accent-soft-line);
+}
+html:root .contact-star.is-selected .og-icon { fill: currentColor; }
+
+/* ══ 弹出的大卡 ═════════════════════════════════════════════════════════ */
+.contact-detail {
+  display: grid;
+  gap: var(--og-space-5);
+  min-width: 0;
+}
+.contact-detail-stage {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.contact-detail-stage .identity-card {
+  max-width: 100%;
+  animation: og-contact-card-in var(--og-dur-3) var(--og-ease-spring) both;
+}
+@keyframes og-contact-card-in {
+  from { opacity: 0; transform: translateY(var(--og-space-3)) rotate(-1.4deg) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.contact-channel {
+  display: grid;
+  gap: var(--og-space-3);
+  padding: var(--og-space-3);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-md);
+  background: var(--og-surface-2);
+}
+
+/* ══ 手机：一列卡片堆叠（略倾斜 + 层叠阴影 + 点击弹出全屏大卡） ═════════ */
+html:root.is-phone .contact-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: var(--og-space-2) var(--og-space-1) var(--og-space-4);
+}
+html:root.is-phone .contact-slot {
+  --og-c-contact-tilt: -1.4deg;
+  margin-top: calc(var(--og-space-6) * -1);
+}
+html:root.is-phone .contact-slot:first-child { margin-top: 0; }
+html:root.is-phone .contact-slot:nth-child(3n + 2) { --og-c-contact-tilt: 1.1deg; }
+html:root.is-phone .contact-slot:nth-child(3n) { --og-c-contact-tilt: -0.6deg; }
+html:root.is-phone .contact-slot.is-mine { --og-c-contact-tilt: 1deg; }
+html:root.is-phone .contact-detail-modal { width: 100%; }
+html:root.is-phone .contact-detail-modal .og-panel-body { padding: var(--og-space-4); }
+
+/* 我的 → 我的名片：设置浮层的翻页段（四栏）在手机上收紧 */
+html:root .settings-seg { flex-wrap: wrap; }
+html:root.is-phone .settings-head { flex-wrap: wrap; }
+html:root.is-phone .settings-head .workbench-settings-brand { display: none; }
+html:root.is-phone .settings-seg { flex: 1; gap: 0; }
+html:root.is-phone .settings-seg-item { padding-inline: calc(var(--og-space-3) / 2); font-size: var(--og-text-micro); }
+
+/* ══ 减少动态效果：倾斜/上浮/入场都不做位移，只保留状态 ═════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .contact-slot,
+  .contact-detail-stage .identity-card,
+  html:root .contact-card-pick .identity-card {
+    transition: none;
+    animation: none;
+  }
+  .contact-slot:hover,
+  .contact-slot:focus-within {
+    transform: rotate(var(--og-c-contact-tilt));
+  }
+}
+html[data-og-motion="reduced"] .contact-slot,
+html[data-og-motion="reduced"] .contact-detail-stage .identity-card,
+html[data-og-motion="reduced"] .contact-card-pick .identity-card {
+  transition: none;
+  animation: none;
+}
+html[data-og-motion="reduced"] .contact-slot:hover,
+html[data-og-motion="reduced"] .contact-slot:focus-within {
+  transform: rotate(var(--og-c-contact-tilt));
+}

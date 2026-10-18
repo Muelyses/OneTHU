@@ -399,6 +399,7 @@ export function ContactCabinet(): ReactNode {
         className={round ? "contact-star" : undefined}
         label={`${starred.has(c.id) ? "取消星标：" : "星标："}${c.name}`}
         selected={starred.has(c.id)}
+        size="sm"
         icon={<IconStar size="sm" />}
         onClick={(e) => {
           e.stopPropagation();

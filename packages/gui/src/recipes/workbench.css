@@ -643,3 +643,7 @@ html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-
 @keyframes vault-sheet-fade-out { to { opacity:0; } }
 @media(prefers-reduced-motion:reduce) { .vault-sheet,.vault-sheet-mask,.vault-sheet-mask.is-closing,.vault-sheet.is-closing { animation:none; } }
 html:root[data-og-motion="reduced"] :is(.vault-sheet,.vault-sheet-mask) { animation:none; }
+/* 「我的」四栏在手机上保持一行：等宽、不换行、必要时横向滚动。 */
+html:root.is-phone .settings-seg { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+html:root.is-phone .settings-seg .settings-seg-item { flex:1 1 0; min-width:0; justify-content:center; white-space:nowrap; }
+@media(prefers-reduced-motion:reduce) { .oneshot-button { transition:none; } }

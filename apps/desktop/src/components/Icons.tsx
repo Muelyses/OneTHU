@@ -150,6 +150,13 @@ export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+/** 填充小三角：用于「放不下时」的溢出菜单触发器（浏览器收藏栏语义）。 */
+export const IconTriangleDown = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)} fill="currentColor" stroke="none">
+    <path d="M6.5 9.5h11l-5.5 6z" />
+  </svg>
+);
+
 export const IconChevron = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="m9 5 7 7-7 7" />

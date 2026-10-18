@@ -23,7 +23,7 @@ const SEGMENTS: Array<{ id: OverlayEntry; label: string; icon: ReactNode }> = [
   { id: "profile", label: "我的名片", icon: <IconSettings width={14} height={14} /> },
   { id: "settings", label: "个人设置", icon: <IconSettings width={14} height={14} /> },
   { id: "plugins", label: "插件", icon: <IconPlug width={14} height={14} /> },
-  { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={12} /> },
+  { id: "oh", label: "Harness", icon: <HarnessMark size={12} /> },
 ];
 
 export function SettingsOverlay(): ReactNode {

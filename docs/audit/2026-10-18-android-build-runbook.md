@@ -68,3 +68,14 @@ $ADB exec-out screencap -p > /tmp/onethu-emulator.png
 
 - `tauri android build` 未自动设置 NDK linker，需按上面 env 导出；可考虑后续加脚本封装。
 - 生成的 `gen/schemas/*-schema.json` 会随权限/命令变化更新，需随提交。
+
+
+## 电脑上预览手机端
+
+- 开发模式入口：`http://127.0.0.1:5180/?phone-frame=1`
+- 可选参数：`device=15pro|15pm|se|pixel8|mini`、`land=1`、`fit=0`、
+  `scene=page-vault|namecard|settings|page-cloud|...`
+- 示例：
+  - 暂存箱：`/?phone-frame=1&scene=page-vault`
+  - 名片/组织：`/?phone-frame=1&scene=namecard`
+- 注意：DPR 用宿主屏幕、安全区不模拟；免登录预览场景会出现引导浮层，点「不再提示」即可。

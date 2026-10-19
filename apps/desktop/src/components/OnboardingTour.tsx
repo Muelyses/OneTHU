@@ -19,7 +19,7 @@ export const FULL_LESSONS:Lesson[]=[
  {id:"nfc",title:"碰一碰：名片与内容接力",lead:"有 NFC 可贴近传送口令，没有也能用口令。",steps:["两台设备分别选 NFC 传送与接收。","看到成功反馈再分开。","失败请手动改用口令或二维码。"],page:"vault",action:"查看设备支持"},
  {id:"organization",title:"组织：人、文件、项目一处管",lead:"建组织后成员共享云盘与 GitLab 项目。",steps:["邀请成员时可用口令，并设有效期。","组织里共享资料库、建项目、发公告。","组织名片与个人名片分开管理。"],page:"contacts",action:"打开组织"},
  {id:"onego",title:"OneGO!：全局入口与自动化",lead:"搜索、快捷指令、工作区和 OneFlow 都在这里。",steps:["⌘/Ctrl+K 唤出搜索，直跳页面或内容。","OneFlow 把一串操作固化成步骤。","可按需触发：手动、定时或事件。"],page:"homepage",action:"打开 OneGO!"},
- {id:"plugin",title:"插件与 OH：把能力装进来",lead:"装插件扩展组件、主题与 MCP 工具。",steps:["插件页安装管理，给 OH 配模型源。","自制内容可发布为 OnePage 或组件。","OH 支持语音、多模态与 IM 接入。"],page:"homepage",action:"看看插件页"},
+ {id:"plugin",title:"插件与 OH：把能力装进来",lead:"装插件扩展组件、主题与 MCP 工具。",steps:["插件页安装管理，给 OH 配模型源。","悬浮球默认关闭，可在 OH 设置里开启。","自制内容可发布为 OnePage 或组件。","OH 支持语音、多模态与 IM 接入。"],page:"homepage",action:"看看插件页"},
  {id:"customize",title:"外观与工作台：全都可调",lead:"主题、壁纸、密度和入口排布都能改。",steps:["设置→外观与布局：主题、壁纸、字号。","小组件、Dock、标签栏、OneShot 可调。","改坏可恢复默认布局，不动数据。"],page:"homepage",action:"打开外观设置"},
  {id:"campus",title:"校园服务：完整模式的聚合",lead:"学习、生活、预约、云盘、GitLab 全聚合。",steps:["学习：作业/通知/文件/成绩/讨论。","生活：校园卡、电费网费、洗衣、场馆。","云盘、邮箱、GitLab、寻迹都在这一层。"],page:"homepage",action:"去学习页"},
  {id:"data",title:"数据与同步：跨设备继续",lead:"日程、暂存箱和组织资料都能跨设备带走。",steps:["日程支持云日历与系统日历同步。","口令与 NFC 让内容跨设备接力。","切换模式不清数据，设置里可导出。"],page:"vault",action:"查看数据设置"},

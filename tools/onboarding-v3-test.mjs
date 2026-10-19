@@ -43,6 +43,7 @@ for (const t of [
 ]) {
   assert.ok(tour.includes(t), "完整模式缺一课：" + t);
 }
+assert.ok(tour.includes("悬浮球默认关闭，可在 OH 设置里开启。"), "完整模式导览缺少「悬浮球默认关闭、可手动开启」提示");
 for (const t of ["首页，只关心今天", "五个功能，固定在手边"]) assert.ok(tour.includes(t), "极简模式缺一课：" + t);
 for (const t of ["首页，只关心今天", "更多功能：所有基础功能都在这里", "四个入口，随你安排"]) assert.ok(tour.includes(t), "实用模式缺一课：" + t);
 /* 开场模式口径（用户 2026-10-19 给定原话） */

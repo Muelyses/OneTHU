@@ -86,12 +86,27 @@ try {
   await p.waitForTimeout(800);
   await p.locator('.contact-toolbar').first().waitFor();
   const toolbar = await p.locator('.contact-toolbar button').allTextContents();
-  check(toolbar.includes('粘贴名片口令') && toolbar.includes('扫码收名片') && toolbar.includes('从暂存箱收名片'), 'contacts toolbar offers 粘贴/扫码/从暂存箱 收名片');
+  /* 收名片入口收成一个「接收名片」，工具条不再三颗按钮并排（用户 2026-10-19「太拥挤」） */
+  check(toolbar.includes('接收名片') && !toolbar.includes('粘贴名片口令') && toolbar.length <= 8, 'contacts toolbar keeps a single 接收名片 entry');
+  await p.locator('.contact-toolbar').getByRole('button', { name: '接收名片' }).click();
+  const recvPanel = p.getByRole('dialog', { name: '接收名片' });
+  await recvPanel.waitFor();
+  check(
+    await recvPanel.getByRole('button', { name: '粘贴口令' }).count() === 1
+    && await recvPanel.getByRole('button', { name: '识别二维码' }).count() === 1
+    && await recvPanel.getByRole('button', { name: '从暂存箱收' }).count() === 1,
+    'receive panel offers 粘贴/扫码/从暂存箱 三选',
+  );
+  await recvPanel.getByRole('button', { name: '粘贴口令' }).click();
+  /* 名片夹要能看到自己创建的组织（用户 2026-10-19 点名「为什么名片夹里没有自己创建的组织」） */
+  await call('/src/state/org.ts', 'createOrg', [{ name: '测试组织' }]);
+  await p.waitForTimeout(600);
+  check(await p.getByText('组织名片', { exact: true }).count() >= 1, 'contacts card deck shows 组织名片 section');
+  check(await p.getByText('测试组织', { exact: false }).count() >= 1, 'own organization card appears in 名片夹');
   const friendCode = await call('/src/lib/contentExchange.ts', 'personalShareCode', [
     { name: '外部朋友', avatar: '', website: '', social: '', phone: '', bio: '走廊认识的', cloudEmail: '' },
   ]);
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(friendCode), 'fake friend card code is a short code: ' + friendCode);
-  await p.getByRole('button', { name: '粘贴名片口令' }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.locator('.plg-form-modal textarea').fill(friendCode);
   await p.getByRole('button', { name: '提交' }).click();

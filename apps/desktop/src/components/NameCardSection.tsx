@@ -372,6 +372,8 @@ export function ContactCabinet(): ReactNode {
   const [onlyStarred, setOnlyStarred] = useState(false);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [selfOpen, setSelfOpen] = useState(false);
+  /** 「接收名片」小面板：粘贴口令 / 扫码 / 从暂存箱收 —— 三个收名片入口收成一个按钮，工具条不拥挤。 */
+  const [recvOpen, setRecvOpen] = useState(false);
   const [channelId, setChannelId] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
 
@@ -514,11 +516,7 @@ export function ContactCabinet(): ReactNode {
           <Chip icon={<IconStar size="sm" />} selected={onlyStarred} onClick={() => setOnlyStarred((v) => !v)}>
             星标
           </Chip>
-          <Btn variant="outline" icon={<IconIn size="sm" />} onClick={() => void receive.paste()}>粘贴名片口令</Btn>
-          <Btn variant="ghost" onClick={() => void receive.scan()}>扫码收名片</Btn>
-          <Btn variant="outline" icon={<IconIn size="sm" />} onClick={importContacts}>
-            从暂存箱收名片
-          </Btn>
+          <Btn variant="outline" icon={<IconIn size="sm" />} onClick={() => setRecvOpen(true)}>接收名片</Btn>
         </Inline>
       </div>
 
@@ -561,8 +559,8 @@ export function ContactCabinet(): ReactNode {
           }
           action={
             <Inline gap={2} wrap>
-              <Btn variant="solid" tone="brand" icon={<IconIn size="sm" />} onClick={importContacts}>
-                从暂存箱收名片
+              <Btn variant="solid" tone="brand" icon={<IconIn size="sm" />} onClick={() => setRecvOpen(true)}>
+                接收名片
               </Btn>
               {filterActive ? (
                 <Btn variant="ghost" onClick={() => { setQuery(""); setOnlyStarred(false); setFilter("all"); }}>
@@ -573,6 +571,17 @@ export function ContactCabinet(): ReactNode {
           }
         />
       ) : null}
+
+      <Modal open={recvOpen} onClose={() => setRecvOpen(false)} title="接收名片" size="sm">
+        <Stack gap={3}>
+          <Text slot="micro" tone="faint">对方给的名片口令粘进来，或识别分享二维码；暂存箱里已有的名片也能一次收进来。</Text>
+          <Inline gap={2} wrap>
+            <Btn variant="solid" tone="brand" disabled={receive.busy} onClick={() => { setRecvOpen(false); void receive.paste(); }}>粘贴口令</Btn>
+            <Btn variant="outline" disabled={receive.busy} onClick={() => { setRecvOpen(false); void receive.scan(); }}>识别二维码</Btn>
+            <Btn variant="ghost" onClick={() => { setRecvOpen(false); importContacts(); }}>从暂存箱收</Btn>
+          </Inline>
+        </Stack>
+      </Modal>
 
       {/* 我的名片大卡 */}
       <Modal open={selfOpen} onClose={() => setSelfOpen(false)} title="我的名片" className="contact-detail-modal" size="md">
@@ -732,8 +741,11 @@ export function NameCardSection({ view = "all" }: { view?: "all" | "personal" | 
   return (
     <Stack gap={6}>
       {view === "all" ? <PersonalCardBlock /> : null}
+      {/* 名片夹（通讯录页）也要有自己的组织名片：自己建的组织就在这儿出现，
+          「我的组织」页签只做成员/项目/公告管理（2026-10-19 修复：之前只有 view=all 才挂，导致名片夹看不到自己的组织）。
+          放在好友牌堆**前面**：组织名片是最常被点开/分享的一类，别让它被空的牌堆挤到视口外。 */}
+      {view === "all" || view === "contacts" ? <OrgCardsSection /> : null}
       <ContactCabinet />
-      {view === "all" ? <OrgCardsSection /> : null}
     </Stack>
   );
 }

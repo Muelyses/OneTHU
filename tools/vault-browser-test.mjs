@@ -38,15 +38,20 @@ try {
   await input.fill('电费');
   await p.waitForTimeout(450);
   const row = p.locator('.pal-row').first();
-  check((await row.getAttribute('data-vault-catch'))?.includes('"type":"atom"'), 'search row is a vault drag source');
+  const catchAttr = (await row.getAttribute('data-vault-catch')) ?? '';
+  check(catchAttr.includes('"type":"atom"'), 'search row is a vault drag source');
+  /* 搜索排序可能变（行级命中/注册表优先级），断言跟随拖到的那一条，不写死「宿舍电费」 */
+  const dragged = JSON.parse(catchAttr);
   const box = await row.boundingBox();
   await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await p.mouse.down();
   await p.waitForTimeout(520); /* 长按 400ms 才拾取；先移动超过 8px 会被当成滚动 */
   await p.mouse.move(box.x + box.width / 2 + 24, box.y + box.height / 2 + 24, { steps: 6 });
   await p.waitForTimeout(250);
-  check(await p.locator('[data-vault-drop]').count() === 1, 'drop target appears while dragging');
-  const drop = await p.locator('[data-vault-drop]').boundingBox();
+  check(await p.locator('[data-vault-drop]').count() >= 1, 'drop target appears while dragging');
+  /* 2026-10-19：雷达里的「松手放入」大板与锚点按钮都带 data-vault-drop —— 落点取大板 */
+  const dropPad = p.locator('.vault-drop-pad');
+  const drop = await (await dropPad.count() ? dropPad : p.locator('[data-vault-drop]').first()).boundingBox();
   await p.mouse.move(drop.x + drop.width / 2, drop.y + drop.height / 2, { steps: 10 });
   await p.waitForTimeout(250);
   await p.mouse.up();
@@ -54,11 +59,12 @@ try {
   await p.keyboard.press('Escape');
   const count = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes[0].items.length);
   check(count === 1, 'dragged object lands in vault');
-  check(await p.getByText('宿舍电费').count() >= 1, 'vault shows dragged item title');
+  check(await p.getByText(dragged.title, { exact: false }).count() >= 1, 'vault shows dragged item title: ' + dragged.title);
   await p.getByRole('button', { name: '放进首页' }).first().click();
   await p.waitForTimeout(500);
-  const onHome = await p.evaluate(() => (localStorage.getItem('onethu.board.v1') ?? '').includes('life-electricity'));
-  check(onHome, 'vault atom can be put onto the homepage board');
+  const atomKey = `${dragged.atom?.kind}|${dragged.atom?.key}`;
+  const onHome = await p.evaluate((k) => (localStorage.getItem('onethu.board.v1') ?? '').includes(k), atomKey);
+  check(onHome, 'vault atom can be put onto the homepage board: ' + atomKey);
   await p.evaluate(async () => {
     const url = performance.getEntriesByType('resource').map((r) => r.name).find((u) => new URL(u).pathname.endsWith('/src/state/explorer.ts'));
     const m = await import(url); m.explorerNavigate('vault');
@@ -66,7 +72,7 @@ try {
   await p.waitForTimeout(700);
 
   /* 口令生成 + 校验 */
-  await p.getByRole('button', { name: '生成口令' }).click();
+  await p.getByRole('button', { name: '分享口令', exact: true }).click();
   await p.waitForTimeout(600);
   const code = await p.locator('.vault-share-code').innerText();
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(code.trim()), 'share code is a fixed-length short code: ' + code.trim());
@@ -93,12 +99,16 @@ try {
   check(readFileSync('apps/desktop/src/pages/Plugins.tsx', 'utf8').includes('data-vault-catch'), 'plugin cards are vault drag sources');
   check(readFileSync('apps/desktop/src/components/ThemePickerModal.tsx', 'utf8').includes('data-vault-catch'), 'theme choices are vault drag sources');
   const vaultPageSrc = readFileSync('apps/desktop/src/components/vault/VaultPage.tsx', 'utf8');
-  check(/const makeTouch = useCallback[\s\S]*?\}, \[cloudReady\]\)/.test(vaultPageSrc) && /const share = useCallback[\s\S]*?\}, \[box, cloudReady\]\)/.test(vaultPageSrc), 'share/touch callbacks depend on cloudReady (no stale gate)');
+  /* 分享逻辑已收进 VaultExchangeActions → shareCodeForBox（联网闸门在 shareCodeForBox 内部），
+     页面里只剩组合分享的 makeTouch 需要依赖 cloudReady。 */
+  check(/const makeTouch = useCallback[\s\S]*?\}, \[cloudReady\]\)/.test(vaultPageSrc), 'touch callback depends on cloudReady (no stale gate)');
+  check(readFileSync('apps/desktop/src/state/vaultShare.ts', 'utf8').includes('export async function shareCodeForBox'), 'share goes through shareCodeForBox (cloud gate inside)');
 
   /* 导入为当前暂存箱（走真实 UI：新建箱 → 导入口令 → 提交） */
   await p.getByRole('button', { name: '新建', exact: true }).click();
   await p.waitForTimeout(350);
-  await p.getByRole('button', { name: '导入口令' }).click();
+  await p.getByRole('button', { name: '接收', exact: true }).click();
+  await p.getByRole('dialog', { name: '接收内容' }).getByRole('button', { name: '粘贴口令' }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.locator('.plg-form-modal textarea').fill(code.trim());
   await p.getByRole('button', { name: '提交' }).click();
@@ -108,7 +118,7 @@ try {
     const active = d.boxes.find((b) => b.id === d.activeId);
     return { n: active.items.length, title: active.items[0]?.title, name: active.name };
   });
-  check(imported.n === 1 && imported.title === '宿舍电费', 'import replaces current vault with shared items');
+  check(imported.n === 1 && imported.title === dragged.title, 'import replaces current vault with shared items');
   check(imported.name !== '我的暂存箱', 'import targets active vault, not origin box');
 
   /* 文件通道：选择文件 → SHA-256 → 入箱；同内容再次入箱按 hash 去重 */
@@ -159,7 +169,8 @@ try {
     personal: { name: '碰一碰测试', avatar: '', website: '', social: '', phone: '13800000000', bio: '一句话', updatedAt: Date.now() },
     orgs: [], contacts: [],
   })));
-  await p.getByRole('button', { name: '碰一碰组合' }).click();
+  await p.locator('.vault-combination summary').click();
+  await p.getByRole('button', { name: '选择组合内容' }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(800);
@@ -188,7 +199,8 @@ try {
   await p.waitForTimeout(520); /* 同上：长按拾取 */
   await p.mouse.move(sbox.x + sbox.width / 2 + 20, sbox.y + 50, { steps: 5 });
   await p.waitForTimeout(250);
-  const sdrop = await p.locator('[data-vault-drop]').boundingBox();
+  const sPad = p.locator('.vault-drop-pad');
+  const sdrop = await (await sPad.count() ? sPad : p.locator('[data-vault-drop]').first()).boundingBox();
   await p.mouse.move(sdrop.x + sdrop.width / 2, sdrop.y + sdrop.height / 2, { steps: 10 });
   await p.mouse.up();
   await p.waitForTimeout(600);

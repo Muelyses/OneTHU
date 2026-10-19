@@ -54,9 +54,20 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
         case 'seafile_share_folder_to_user': {
           const email = String(args?.email ?? '');
           if (!email.includes('@')) throw new Error('云盘邮箱不合法');
-          cloud.sharedTo.push({ repoId: String(args?.repoId ?? ''), path: String(args?.path ?? ''), email, permission: String(args?.permission ?? 'rw') });
+          const item = { repoId: String(args?.repoId ?? ''), path: String(args?.path ?? ''), email, permission: String(args?.permission ?? 'rw') };
+          /* 去重：同库同路径同邮箱重复共享只留一条（真实云盘是幂等的） */
+          const hit = cloud.sharedTo.findIndex((x) => x.repoId === item.repoId && x.path === item.path && x.email === item.email);
+          if (hit >= 0) cloud.sharedTo[hit] = item;
+          else cloud.sharedTo.push(item);
           save();
           return null;
+        }
+        case 'seafile_read_bytes': {
+          const repo = cloud.fs[String(args?.repoId ?? '')] ?? {};
+          const text = repo[String(args?.path ?? '')];
+          if (text === undefined) throw new Error('分享里没有这个文件');
+          const b64 = (() => { const bytes = new TextEncoder().encode(text); let bin = ''; for (const b of bytes) bin += String.fromCharCode(b); return btoa(bin); })();
+          return b64;
         }
         case 'seafile_dir': {
           const repo = cloud.fs[String(args?.repoId ?? '')] ?? {};

@@ -58,6 +58,8 @@ export interface Org {
   libraries?: OrgLibrary[];
   /** 关联/创建的 GitLab 仓库 */
   gitlabRepos?: OrgRepo[];
+  /** 组织的 GitLab 组织（群组）：成员按邮箱邀请进来，仓库建在它下面 */
+  gitlabGroup?: { id: number; name: string; path: string; webUrl: string };
   projects?: OrgProject[];
   announcements?: OrgAnnouncement[];
   /** 最近一次生成的邀请口令（含口令名/限定邮箱） */
@@ -254,6 +256,10 @@ export function linkOrgGitlab(id: string, repo: Omit<OrgRepo, "addedAt">): { ok:
     gitlabRepos: [...(o.gitlabRepos ?? []), { ...repo, addedAt: Date.now() }],
   }));
   return { ok: true };
+}
+
+export function setOrgGitlabGroup(id: string, group: NonNullable<Org["gitlabGroup"]>): void {
+  changeOrg(id, (o) => ({ ...o, gitlabGroup: group }));
 }
 
 export function unlinkOrgGitlab(id: string, gitlabId: number): void {

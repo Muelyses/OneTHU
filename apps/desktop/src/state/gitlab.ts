@@ -206,17 +206,63 @@ export async function gitlabProjectByPath(path: string): Promise<GitRepoRef> {
   return toRepoRef(p);
 }
 
-/** 新建 GitLab 仓库（建在当前账号命名空间下）。 */
+/** 新建 GitLab 仓库（默认建在当前账号命名空间下；带 namespaceId 时建在该 GitLab 组织下）。 */
 export async function gitlabCreateProject(input: {
   name: string;
   path?: string;
   description?: string;
   visibility?: "private" | "internal" | "public";
+  namespaceId?: number;
 }): Promise<GitRepoRef> {
   await requireSession();
-  const p = await helper.createGitProject(input);
+  const p = await helper.createGitProject({
+    name: input.name,
+    ...(input.path ? { path: input.path } : {}),
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.visibility ? { visibility: input.visibility } : {}),
+    ...(input.namespaceId ? { namespace_id: input.namespaceId } : {}),
+  });
   invalidateGitlab("recent:");
   return toRepoRef(p);
+}
+
+/** 组织页用：GitLab 组织（群组）引用。 */
+export interface GitGroupRef { id: number; name: string; path: string; webUrl: string }
+
+/** 新建 GitLab 组织（群组）。 */
+export async function gitlabCreateGroup(input: {
+  name: string;
+  path: string;
+  description?: string;
+  visibility?: "private" | "internal" | "public";
+}): Promise<GitGroupRef> {
+  await requireSession();
+  const g = await helper.createGitGroup(input);
+  return { id: g.id, name: g.name, path: g.full_path ?? g.path, webUrl: g.web_url };
+}
+
+/** 把 GitLab 用户加进组织（群组）：30 developer / 20 reporter。 */
+export async function gitlabAddGroupMember(groupId: number, userId: number, accessLevel = 30): Promise<void> {
+  await requireSession();
+  await helper.addGitGroupMember(groupId, userId, accessLevel);
+}
+
+/** 按邮箱/用户名搜 GitLab 用户（组织成员邮箱 → 账号关联）。 */
+export async function gitlabSearchUsers(query: string): Promise<Array<{ id: number; username: string; name: string; email: string }>> {
+  await requireSession();
+  const list = await helper.searchGitUsers(String(query ?? "").trim());
+  return list.map((u) => ({
+    id: u.id,
+    username: u.username,
+    name: u.name,
+    email: String(u.email ?? u.public_email ?? "").toLowerCase(),
+  }));
+}
+
+/** 把 GitLab 用户加入仓库：30 = developer（读写），20 = reporter（只读）。 */
+export async function gitlabAddProjectMember(projectId: number, userId: number, accessLevel = 30): Promise<void> {
+  await requireSession();
+  await helper.addGitProjectMember(projectId, userId, accessLevel);
 }
 
 export async function gitlabBranches(id: number): Promise<GitBranch[]> {

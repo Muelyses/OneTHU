@@ -204,7 +204,6 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "boards", title: "所有 OnePage", sub: "白板列表 · 改名 / 换图标 / 排序", icon: IconTabsCards, group: "页面", page: "boards" },
   { kind: "page", key: "board", title: "OnePage", sub: "当前白板（具体某块用 navigate board + boardId）", icon: IconTabsCards, group: "页面", page: "board" },
   { kind: "page", key: "contacts", title: "通讯录", sub: "名片 · 好友 · 组织", icon: IconIn, group: "页面", page: "contacts" },
-  { kind: "page", key: "org", title: "组织", sub: "成员邮箱 · 资料库 · GitLab", icon: IconIn, group: "页面", page: "org" },
   { kind: "page", key: "vault", title: "暂存箱", sub: "万物皆可收纳 · 混合清单 · 分享口令", icon: IconIn, group: "页面", page: "vault" },
   { kind: "page", key: "folder", title: "收藏夹页", sub: "旧收藏夹（folderId 定位）", icon: IconFolder, group: "页面", page: "folder" },
   { kind: "page", key: "info-root", title: "信息", sub: "信息门户聚合页", icon: IconInfo, group: "页面", page: "info" },

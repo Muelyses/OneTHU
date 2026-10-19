@@ -113,6 +113,9 @@ try {
   check(org.libraries.length === 1 && /资料库/.test(org.libraries[0].name), 'org library (cloud repo) created and linked');
   const repoIds = await p.evaluate(() => window.__cloud.repos.map((r) => r.id));
   check(repoIds.includes(org.libraries[0].repoId), 'library points at a real cloud repo, not a folder inside the org');
+  /* 新建资料库后自动共享给全体有邮箱成员（不用再点按钮） */
+  const autoShared = await p.evaluate((repoId) => window.__cloud.sharedTo.filter((s) => s.repoId === repoId).map((s) => s.email).sort(), org.libraries[0].repoId);
+  check(autoShared.includes('lisi@mails.tsinghua.edu.cn') && autoShared.includes('tester@mails.tsinghua.edu.cn'), 'new library is auto-shared to member emails: ' + autoShared.join(','));
   await p.getByRole('button', { name: '共享给成员', exact: true }).click();
   await p.waitForSelector('.confirm-card');
   await p.getByRole('button', { name: '确定', exact: true }).click();
@@ -122,10 +125,22 @@ try {
   check(shared.length >= 1 && shared.every((s) => s.repoId && s.path === '/' && s.email.includes('@')), 'library shared to cloud accounts by email (root of the repo)');
   check((org.libraries[0].sharedWith ?? []).includes('lisi@mails.tsinghua.edu.cn'), 'member email recorded as shared');
 
+  /* 组织云盘文件：资料库内联列出 + 文件预览（不跳云盘页） */
+  await p.evaluate((repoId) => { window.__cloud.fs[repoId] = { '/README.md': '# 组织资料\n欢迎加入开源小组' }; }, org.libraries[0].repoId);
+  await p.getByRole('button', { name: '预览文件', exact: true }).click();
+  await p.getByText('README.md', { exact: true }).waitFor({ timeout: 8000 });
+  check(true, 'org library files are listed inline on the org page');
+  await p.getByRole('button', { name: '预览', exact: true }).first().click();
+  await p.getByText('欢迎加入开源小组', { exact: false }).waitFor({ timeout: 8000 });
+  check(true, 'cloud file text preview renders inline (no cloud page detour)');
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(400);
+
   /* GitLab 页签：无会话时入口仍在（真实创建/关联需要 GitLab 登录，测试里只验 UI 骨架） */
   await p.getByRole('radio', { name: 'GitLab', exact: true }).click();
   await p.waitForTimeout(300);
-  check(await p.getByRole('button', { name: '新建仓库', exact: true }).count() === 1, 'gitlab tab offers creating a repo');
+  /* 新建仓库的按钮现在会先建 GitLab 组织（群组）——按语义匹配两种文案 */
+  check(await p.getByRole('button', { name: /GitLab 组织与仓库|在组织下新建仓库/ }).count() === 1, 'gitlab tab offers creating a GitLab org + repo');
   check(await p.getByRole('button', { name: '关联已有仓库', exact: true }).count() === 1, 'gitlab tab offers linking an existing repo');
 
   /* 删除组织：回通讯录，本机记录清空（云盘资料库不动） */

@@ -136,6 +136,48 @@ export async function refreshDir(repoId: string, path: string): Promise<void> {
   await openDir(repoId, path, true);
 }
 
+export interface SeafilePreview {
+  kind: "text" | "image" | "binary" | "too-big";
+  text?: string;
+  dataUrl?: string;
+  size?: number;
+  reason?: string;
+}
+
+const IMAGE_EXT = new Set(["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "ico"]);
+const TEXT_EXT = new Set(["txt", "md", "markdown", "json", "csv", "tsv", "yml", "yaml", "toml", "ini", "log", "sh", "py", "js", "ts", "tsx", "jsx", "c", "h", "cpp", "hpp", "java", "go", "rs", "html", "css", "xml", "tex", "bib", "srt", "ipynb"]);
+
+/** 组织页内联预览：小文件读进内存（不落盘），文本/图片直接显示，其余给下载。 */
+export async function seafilePreview(repoId: string, path: string, maxBytes = 512 * 1024): Promise<SeafilePreview> {
+  if (!cfg) throw new Error("清华云盘未连接：先到云盘页登录");
+  const ext = (path.split(".").pop() ?? "").toLowerCase();
+  let b64: string;
+  try {
+    b64 = await invoke<string>("seafile_read_bytes", { token: cfg.token, repoId, path, maxBytes });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/文件过大/.test(msg)) return { kind: "too-big", reason: msg };
+    throw e;
+  }
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  if (IMAGE_EXT.has(ext)) {
+    const mime = ext === "svg" ? "image/svg+xml" : ext === "jpg" || ext === "jpeg" ? "image/jpeg" : "image/" + ext;
+    return { kind: "image", dataUrl: `data:${mime};base64,${b64}`, size: bytes.length };
+  }
+  let text = "";
+  try {
+    text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    return { kind: "binary", size: bytes.length };
+  }
+  /* 无明显文本扩展名时按可打印比例猜一把（PDF/zip 之类会解出乱码）。 */
+  const printable = [...text.slice(0, 2000)].filter((ch) => ch === "\n" || ch === "\r" || ch === "\t" || ch >= " ").length;
+  if (!TEXT_EXT.has(ext) && printable < Math.min(text.length, 2000) * 0.9) return { kind: "binary", size: bytes.length };
+  return { kind: "text", text: text.slice(0, 200_000), size: bytes.length };
+}
+
 export async function seafileDownload(repoId: string, path: string): Promise<string> {
   if (!cfg) throw new Error("云盘未配置");
   const local = await invoke<string>("seafile_download", { token: cfg.token, repoId, path });

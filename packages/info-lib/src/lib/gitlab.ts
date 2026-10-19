@@ -219,10 +219,10 @@ export const getProjectByPath = async (
         MOCK_PROJECT_DETAIL,
     );
 
-/** 新建项目（默认建在当前账号命名空间下）。 */
+/** 新建项目（默认建在当前账号命名空间下；带 namespace_id 时建在该群组/组织下）。 */
 export const createProject = async (
     helper: InfoHelper,
-    input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"},
+    input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"; namespace_id?: number},
 ): Promise<ProjectDetail> =>
     roamingWrapperWithMocks(
         helper,
@@ -233,6 +233,33 @@ export const createProject = async (
         },
         MOCK_PROJECT_DETAIL,
     );
+
+/** 组织化的 GitLab 群组（组织页里叫「GitLab 组织」）。 */
+export interface GitGroupBrief {
+    id: number;
+    name: string;
+    path: string;
+    full_path: string;
+    web_url: string;
+}
+
+/** 新建 GitLab 群组（组织）。 */
+export const createGroup = async (
+    helper: InfoHelper,
+    input: {name: string; path: string; description?: string; visibility?: "private" | "internal" | "public"},
+): Promise<GitGroupBrief> =>
+    roamingWrapper(helper, "gitlab", "", async () => fetchGitLabWrite("/groups", "POST", input));
+
+/** 把 GitLab 用户加进群组：30 = developer，20 = reporter。 */
+export const addGroupMember = async (
+    helper: InfoHelper,
+    groupId: number,
+    userId: number,
+    accessLevel = 30,
+): Promise<void> =>
+    roamingWrapper(helper, "gitlab", "", async () => {
+        await fetchGitLabWrite(`/groups/${groupId}/members`, "POST", {user_id: userId, access_level: accessLevel});
+    });
 
 export const getProjectTree = async (
     helper: InfoHelper,
@@ -317,6 +344,31 @@ export const getRequestCounts = async (
 /** 当前登录用户（个人项目、Issue 归属等展示用） */
 export const getCurrentUser = async (helper: InfoHelper): Promise<User> =>
     roamingWrapper(helper, "gitlab", "", async () => fetchGitLab("/user"));
+
+/** 搜到的 GitLab 用户（组织成员邮箱 ↔ GitLab 账号关联用；email 是否可见取决于对方隐私设置）。 */
+export interface GitUserBrief {
+    id: number;
+    username: string;
+    name: string;
+    email?: string | null;
+    public_email?: string | null;
+}
+
+/** 按关键字（邮箱/用户名/姓名）搜 GitLab 用户。 */
+export const searchUsers = async (helper: InfoHelper, search: string): Promise<GitUserBrief[]> =>
+    roamingWrapper(helper, "gitlab", "", async () =>
+        fetchGitLab("/users", {search, per_page: 20}));
+
+/** 把 GitLab 用户加入项目：30 = developer（读写），20 = reporter（只读）。 */
+export const addProjectMember = async (
+    helper: InfoHelper,
+    id: number,
+    userId: number,
+    accessLevel = 30,
+): Promise<void> =>
+    roamingWrapper(helper, "gitlab", "", async () => {
+        await fetchGitLabWrite(`/projects/${id}/members`, "POST", {user_id: userId, access_level: accessLevel});
+    });
 
 export const getProjectIssues = async (
     helper: InfoHelper,

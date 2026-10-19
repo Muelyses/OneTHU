@@ -118,6 +118,9 @@ function loadStore(): ExplorerState {
           /* 存档只恢复到"认得的页面"（KNOWN_PAGES）：历史改名遗留的旧 page 值一律丢弃，
              不复产一个渲染不出来的空标签。 */
           .filter((t) => KNOWN_PAGES.has(t.page)) // 存档里的未知页 id（历史改名遗留）直接丢弃，不复产一个渲染不出来的空标签
+          /* 组织页是「某个组织」的页面：没有 orgId 的裸 org 标签（早期入口遗留）不恢复，
+             否则会得到一个看起来莫名其妙、点不进任何组织的空组织页。 */
+          .filter((t) => t.page !== "org" || Boolean((t.params as { orgId?: string } | null)?.orgId))
           .map((t) => ({
             ...t,
             workspaceId: typeof t.workspaceId === "string" ? t.workspaceId : null, // 旧版本补字段

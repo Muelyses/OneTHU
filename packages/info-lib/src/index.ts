@@ -115,6 +115,9 @@ import {
     getJobTrace,
     getMergeRequestChanges,
     getMergeRequestNotes,
+    addGroupMember,
+    addProjectMember,
+    createGroup,
     getNamespaces,
     getPersonalProjects,
     getPipelineJobs,
@@ -137,6 +140,7 @@ import {
     renderMarkdown,
     resolveDiscussion,
     searchProjects,
+    searchUsers,
     setIssueState,
     setMergeRequestState,
     updateDiscussionNote,
@@ -1051,6 +1055,21 @@ export class InfoHelper {
     /** 新建 GitLab 仓库（建在当前账号命名空间下）。 */
     public createGitProject = async (input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"}) =>
         createProject(this, input);
+
+    /** 搜 GitLab 用户（组织成员邮箱 → 账号关联用）。 */
+    public searchGitUsers = async (search: string) => searchUsers(this, search);
+
+    /** 把 GitLab 用户加入项目（30 developer / 20 reporter）。 */
+    public addGitProjectMember = async (id: number, userId: number, accessLevel = 30) =>
+        addProjectMember(this, id, userId, accessLevel);
+
+    /** 新建 GitLab 组织（群组）。 */
+    public createGitGroup = async (input: {name: string; path: string; description?: string; visibility?: "private" | "internal" | "public"}) =>
+        createGroup(this, input);
+
+    /** 把 GitLab 用户加进组织（群组）。 */
+    public addGitGroupMember = async (groupId: number, userId: number, accessLevel = 30) =>
+        addGroupMember(this, groupId, userId, accessLevel);
 
     public getGitProjectTree = async (
         id: number,

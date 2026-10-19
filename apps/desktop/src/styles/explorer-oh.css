@@ -312,6 +312,14 @@ html.is-phone .dock-panel {
   border-radius: 16px 16px 0 0;
 }
 
+/* 矮视口（横屏手机 844×390 这类）：面板被胶囊夹到 ~230px，而面板头 + 输入区本身就要
+   270px+，正文被挤成一条、overflow:hidden 又把超出的部分直接裁掉（2026-10-19 实测
+   landscape 溢出 127px）。放开成可滚，至少每一段都能滚到。
+   内联样式里写了 overflow:hidden，所以这里必须 !important。 */
+@media (max-height: 520px) {
+  .dock-panel { overflow-y: auto !important; }
+}
+
 /* 手机：OH/搜索窗从底栏上缘长起来（2026-10-16 标签条退役，只留呼吸缝 8+4）——
    呼吸缝仍在（「弹一下」的语义不变）。 */
 /* Grow panels measure the actual bar and visual viewport in ChatDock. No CSS

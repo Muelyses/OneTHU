@@ -30,7 +30,7 @@ export function setExperienceMode(next: ExperienceMode): void {
   emit();
 }
 /** 简洁壳（极简/实用）允许的一级页：完整模式专属页 + 寻迹（地图/导航）都不进来。 */
-export const compactPageAllowed = (page: string): boolean => !["board", "vault", "contacts", "plugins", "xiaoda", "trace"].includes(page);
+export const compactPageAllowed = (page: string): boolean => !["board", "vault", "contacts", "org", "plugins", "xiaoda", "trace"].includes(page);
 export function navigateSimple(page: Page, params?: LearnNav | null): void {
   if (!compactPageAllowed(page)) return;
   route = { page, params: params ?? null };

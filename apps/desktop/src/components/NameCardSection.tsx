@@ -1,4 +1,4 @@
-import { useOrgs, orgIdentityCard, createOrg } from "../state/org.js";
+import { useOrgs, orgIdentityCard } from "../state/org.js";
 import { openTab } from "../state/explorer.js";
 /**
  * 通讯录与名片：我的名片、名片夹（好友 / 组织）、组织名片。
@@ -32,7 +32,7 @@ import { pickFile, fileToBytes } from "../lib/attach.js";
 import { bytesToBase64 } from "../lib/imageSave.js";
 import { addToVault, vaultSnapshot, type VaultCatch } from "../state/vault.js";
 import {
-  CARD_LIMITS, addContact, orgCardCatch, personalCardCatch, removeContact, removeOrgCard,
+  CARD_LIMITS, addContact, orgCardCatch, personalCardCatch, removeContact,
   resolveCloudEmail, savePersonalCard, setContactShare, upsertOrgCard, useCards,
   type ContactCard, type OrgCard, type PersonalCard,
 } from "../state/nameCard.js";
@@ -251,78 +251,6 @@ function PersonalCardBlock(): ReactNode {
 
 /* ══════════════ 组织名片 ══════════════ */
 
-/** 组织名片详情弹层：名片夹牌堆与「组织名片」区共用同一份（避免两套逻辑分叉）。 */
-export function OrgCardDetailModal({ org, onClose }: { org: OrgCard | null; onClose: () => void }): ReactNode {
-  const organizations = useOrgs();
-  /* 关闭动画期间还要画上一张卡：内容先留在 ref 里，等 Modal 退场完再自然换掉 */
-  const shownRef = useRef<OrgCard | null>(null);
-  useEffect(() => {
-    if (org) shownRef.current = org;
-  }, [org]);
-  const shown = org ?? shownRef.current;
-  const stageOrg = useCallback((o: OrgCard): void => {
-    const r = addToVault(orgCardCatch(o));
-    showToast(r.ok ? "组织名片已放进暂存箱" : r.reason === "duplicate" ? "暂存箱里已有了" : "暂存箱暂时不可用，稍后再试");
-  }, []);
-  const copyJoin = useCallback((o: OrgCard): void => {
-    if (!o.joinUrl) return;
-    void navigator.clipboard.writeText(o.joinUrl).then(
-      () => showToast("加入方式已复制"),
-      () => showToast("复制失败，请手动复制"),
-    );
-  }, []);
-  return (
-    <Modal open={Boolean(org)} onClose={onClose} title="组织名片" className="contact-detail-modal" size="md">
-      {shown ? (
-        <div className="contact-detail">
-          <div className="contact-detail-stage">
-            <IdentityCard card={shown} organization variant="detail" />
-          </div>
-          <Stack gap={4}>
-            <KeyValue
-              rows={[
-                { k: "组织", v: shown.name },
-                { k: "简介", v: shown.brief || "未填写" },
-                { k: "加入方式", v: shown.joinUrl || "未填写" },
-              ]}
-            />
-            <Inline gap={2} wrap>
-              <Btn size="sm" variant="solid" tone="brand" icon={<IconIn size="sm" />} onClick={() => stageOrg(shown)}>
-                放进暂存箱
-              </Btn>
-              <Btn size="sm" variant="ghost" disabled={!shown.joinUrl} onClick={() => copyJoin(shown)}>
-                复制加入方式
-              </Btn>
-              {organizations.orgs.some((o) => o.id === shown.id) ? (
-                <Btn size="sm" variant="ghost" onClick={() => { onClose(); openTab("contacts", { section: "orgs" }); }}>
-                  管理组织
-                </Btn>
-              ) : (
-                <Btn
-                  size="sm"
-                  variant="ghost"
-                  tone="error"
-                  icon={<IconTrash size="sm" />}
-                  onClick={() => {
-                    void confirmOk(`删除组织名片「${shown.name}」？`).then((ok) => {
-                      if (!ok) return;
-                      removeOrgCard(shown.id);
-                      onClose();
-                      showToast("组织名片已删除");
-                    });
-                  }}
-                >
-                  删除
-                </Btn>
-              )}
-            </Inline>
-          </Stack>
-        </div>
-      ) : null}
-    </Modal>
-  );
-}
-
 /** 自己创建的组织 + 历史独立组织名片（并集，新组织优先）。 */
 export function myOrgCards(legacy: OrgCard[], organizations: ReturnType<typeof useOrgs>): OrgCard[] {
   return [...organizations.orgs.map(orgIdentityCard), ...legacy.filter((c) => !organizations.orgs.some((o) => o.id === c.id))];
@@ -332,8 +260,6 @@ export function OrgCardsSection(): ReactNode {
   const legacy = useCards();
   const organizations = useOrgs();
   const orgs = myOrgCards(legacy.orgs, organizations);
-  const [openId, setOpenId] = useState<string | null>(null);
-  const openOrg = orgs.find((o) => o.id === openId) ?? null;
   return (
     <div className="org-cards">
       <Section
@@ -354,9 +280,9 @@ export function OrgCardsSection(): ReactNode {
             <div className="contact-slot" key={o.id}>
               <Btn
                 className="contact-card-pick"
-                aria-label={`打开${o.name}的组织名片`}
+                aria-label={`打开${o.name}的组织主页`}
                 data-vault-catch={JSON.stringify(orgCardCatch(o))}
-                onClick={() => setOpenId(o.id)}
+                onClick={() => openTab("org", { orgId: o.id }, { title: o.name })}
               >
                 <IdentityCard card={o} organization />
               </Btn>
@@ -364,7 +290,6 @@ export function OrgCardsSection(): ReactNode {
           ))}
         </div>
       )}
-      <OrgCardDetailModal org={openOrg} onClose={() => setOpenId(null)} />
     </div>
   );
 }
@@ -376,7 +301,6 @@ export function ContactCabinet(): ReactNode {
   const organizations = useOrgs();
   /** 名片夹同一个牌堆里还有自己的组织名片（2026-10-19 用户点名「应该和其他名片夹在一起」）。 */
   const myOrgs = myOrgCards(doc.orgs, organizations);
-  const [openOrgId, setOpenOrgId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ContactFilter>("all");
   const [starred, setStarred] = useState<ReadonlySet<string>>(() => new Set(readStars()));
@@ -551,9 +475,9 @@ export function ContactCabinet(): ReactNode {
               <div className="contact-slot" key={o.id}>
                 <Btn
                   className="contact-card-pick"
-                  aria-label={`打开${o.name}的组织名片`}
+                  aria-label={`打开${o.name}的组织主页`}
                   data-vault-catch={JSON.stringify(orgCardCatch(o))}
-                  onClick={() => setOpenOrgId(o.id)}
+                  onClick={() => openTab("org", { orgId: o.id }, { title: o.name })}
                 >
                   <IdentityCard card={o} organization />
                 </Btn>
@@ -610,8 +534,6 @@ export function ContactCabinet(): ReactNode {
         </Stack>
       </Modal>
 
-      {/* 自己的组织名片大卡：和牌堆同一份详情组件 */}
-      <OrgCardDetailModal org={myOrgs.find((o) => o.id === openOrgId) ?? null} onClose={() => setOpenOrgId(null)} />
       {/* 我的名片大卡 */}
       <Modal open={selfOpen} onClose={() => setSelfOpen(false)} title="我的名片" className="contact-detail-modal" size="md">
         <div className="contact-detail">

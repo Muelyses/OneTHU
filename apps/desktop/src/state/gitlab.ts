@@ -192,6 +192,33 @@ export async function gitlabProject(id: number): Promise<GitProjectDetail> {
   return helper.getGitProjectDetail(id);
 }
 
+/** 组织关联用的小投影：只留 id/名称/完整路径/网页地址。 */
+export interface GitRepoRef { id: number; name: string; path: string; webUrl: string }
+
+function toRepoRef(p: { id: number; name: string; path_with_namespace: string; web_url: string }): GitRepoRef {
+  return { id: p.id, name: p.name, path: p.path_with_namespace, webUrl: p.web_url };
+}
+
+/** 按 group/project 完整路径找仓库（关联已有 GitLab 仓库）。 */
+export async function gitlabProjectByPath(path: string): Promise<GitRepoRef> {
+  await requireSession();
+  const p = await helper.getGitProjectByPath(String(path ?? "").trim());
+  return toRepoRef(p);
+}
+
+/** 新建 GitLab 仓库（建在当前账号命名空间下）。 */
+export async function gitlabCreateProject(input: {
+  name: string;
+  path?: string;
+  description?: string;
+  visibility?: "private" | "internal" | "public";
+}): Promise<GitRepoRef> {
+  await requireSession();
+  const p = await helper.createGitProject(input);
+  invalidateGitlab("recent:");
+  return toRepoRef(p);
+}
+
 export async function gitlabBranches(id: number): Promise<GitBranch[]> {
   await requireSession();
   const branches = await helper.getGitProjectBranches(id);

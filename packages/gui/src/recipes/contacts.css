@@ -263,6 +263,19 @@ html[data-og-scheme="dark"] .identity-card {
 .contacts-tabs { display: flex; }
 .contacts-orgs { display: grid; gap: var(--og-space-3); }
 
+/* ══ 组织主页（page=org）：完整页面，不是卡片/弹层 ═════════════════════════ */
+.org-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-5);
+  width: 100%;
+  max-width: var(--og-contacts-page-max);
+  margin-inline: auto;
+}
+.org-tabs { display: flex; }
+.org-page .vault-share-code { display: block; overflow-x: auto; white-space: nowrap; }
+.org-page .og-list .og-row { align-items: center; }
+
 .contact-cabinet {
   display: flex;
   flex-direction: column;

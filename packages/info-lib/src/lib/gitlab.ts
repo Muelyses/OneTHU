@@ -204,6 +204,36 @@ export const getProjectDetail = async (
         MOCK_PROJECT_DETAIL,
     );
 
+/** 按完整路径（group/project）取项目：关联已有 GitLab 仓库用。 */
+export const getProjectByPath = async (
+    helper: InfoHelper,
+    path: string,
+): Promise<ProjectDetail> =>
+    roamingWrapperWithMocks(
+        helper,
+        "gitlab",
+        "",
+        async () => {
+            return await fetchGitLab(`/projects/${encodeURIComponent(path)}`);
+        },
+        MOCK_PROJECT_DETAIL,
+    );
+
+/** 新建项目（默认建在当前账号命名空间下）。 */
+export const createProject = async (
+    helper: InfoHelper,
+    input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"},
+): Promise<ProjectDetail> =>
+    roamingWrapperWithMocks(
+        helper,
+        "gitlab",
+        "",
+        async () => {
+            return await fetchGitLabWrite("/projects", "POST", input);
+        },
+        MOCK_PROJECT_DETAIL,
+    );
+
 export const getProjectTree = async (
     helper: InfoHelper,
     id: number,

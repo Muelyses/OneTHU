@@ -90,7 +90,7 @@ const listeners = new Set<() => void>();
 const KNOWN_PAGES: ReadonlySet<string> = new Set([
   "homepage", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life",
   "reserve", "zhjwxk", "thos", "otherinfo", "gitlab", "folder", "tasks", "services", "favs",
-  "boards", "board", "vault", "contacts", "xiaoda",
+  "boards", "board", "vault", "contacts", "org", "xiaoda",
   /* 网络学堂子页/详情页：OH 的 navigate 描述一直宣称支持这些页面，但以前不在白名单里，
      首页标签下 navigate 会被 openTab 判"未知页"直接回首页 → OH 假报成功。 */
   "learn-course", "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
@@ -241,6 +241,7 @@ const PAGE_TITLES: Partial<Record<Page, string>> = {
   services: "服务",
   favs: "收藏",
   xiaoda: "清小搭",
+  org: "组织",
 };
 
 /** 聚合页栏目的中文短名（tab 可深链到具体栏目：信息-新闻，但主题仍是信息） */

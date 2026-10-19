@@ -92,13 +92,13 @@ try {
   await call('/src/state/org.ts', 'createOrg', [{ name: '测试组织' }]);
   await p.waitForTimeout(600);
   check(await p.locator('.contact-deck .contact-slot').count() >= 2, 'own organization card shares the 名片夹 deck');
-  check(await p.getByRole('button', { name: '打开测试组织的组织名片' }).count() === 1, 'own organization card appears in 名片夹 deck');
-  await p.getByRole('button', { name: '打开测试组织的组织名片' }).click();
-  const orgPanel = p.getByRole('dialog', { name: '组织名片' });
-  await orgPanel.waitFor();
-  check(await orgPanel.getByRole('button', { name: '管理组织' }).count() === 1, 'org card detail offers 管理组织');
-  await p.keyboard.press('Escape');
-  await p.waitForTimeout(300);
+  check(await p.getByRole('button', { name: '打开测试组织的组织主页' }).count() === 1, 'own organization card appears in 名片夹 deck');
+  /* 组织卡现在直接进组织完整页面（不再弹卡片详情） */
+  await p.getByRole('button', { name: '打开测试组织的组织主页' }).click();
+  await p.getByRole('heading', { name: '测试组织', exact: true }).waitFor({ timeout: 10000 });
+  check(await p.getByRole('radio', { name: '资料库', exact: true }).count() === 1, 'org card opens the full organization page');
+  await call('/src/state/explorer.ts', 'explorerNavigate', ['contacts']);
+  await p.waitForTimeout(800);
   await p.locator('.contact-toolbar').getByRole('button', { name: '接收名片' }).click();
   const recvPanel = p.getByRole('dialog', { name: '接收名片' });
   await recvPanel.waitFor();

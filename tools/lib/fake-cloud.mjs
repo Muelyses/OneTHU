@@ -23,10 +23,14 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
       temps: {},
       seq: saved?.seq ?? 0,
       rejectDirShare: false,
+      /* 组织页用：资料库（repo）台账、当前账号邮箱、按邮箱共享记录 */
+      repos: saved?.repos ?? [{ id: 'repo-one', name: 'OneTHU' }],
+      email: saved?.email ?? 'tester@mails.tsinghua.edu.cn',
+      sharedTo: saved?.sharedTo ?? [],
     };
     window.__cloud = cloud;
     const save = () => {
-      try { localStorage.setItem(KEY, JSON.stringify({ fs: cloud.fs, shares: cloud.shares, seq: cloud.seq })); } catch { /* 忽略配额 */ }
+      try { localStorage.setItem(KEY, JSON.stringify({ fs: cloud.fs, shares: cloud.shares, seq: cloud.seq, repos: cloud.repos, email: cloud.email, sharedTo: cloud.sharedTo })); } catch { /* 忽略配额 */ }
     };
     const REPO = 'repo-one';
     const hex = (n) => Array.from({ length: n }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
@@ -36,8 +40,40 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
     };
     window.__cloudInvoke = async (cmd, args) => {
       switch (cmd) {
-        case 'seafile_repos': return [{ id: REPO, name: 'OneTHU', mtime: 0, size: 0 }];
-        case 'seafile_create_repo': return { id: REPO };
+        case 'seafile_repos': return cloud.repos.map((r) => ({ ...r, mtime: 0, size: 0 }));
+        case 'seafile_account': return { name: '测试用户', email: cloud.email, usage: 0, total: 1024 * 1024 };
+        case 'seafile_create_repo': {
+          const name = String(args?.name ?? '').trim() || '未命名资料库';
+          const hit = cloud.repos.find((r) => r.name === name);
+          if (hit) return { id: hit.id };
+          const repo = { id: 'repo-' + hex(8), name };
+          cloud.repos.push(repo);
+          save();
+          return { id: repo.id };
+        }
+        case 'seafile_share_folder_to_user': {
+          const email = String(args?.email ?? '');
+          if (!email.includes('@')) throw new Error('云盘邮箱不合法');
+          cloud.sharedTo.push({ repoId: String(args?.repoId ?? ''), path: String(args?.path ?? ''), email, permission: String(args?.permission ?? 'rw') });
+          save();
+          return null;
+        }
+        case 'seafile_dir': {
+          const repo = cloud.fs[String(args?.repoId ?? '')] ?? {};
+          const base = String(args?.path ?? '/').replace(/\/$/, '') || '';
+          const prefix = (base === '' ? '/' : base + '/').replace(/^\/+/, '/');
+          const seen = new Map();
+          for (const key of Object.keys(repo)) {
+            if (!key.startsWith(prefix)) continue;
+            const rest = key.slice(prefix.length);
+            if (!rest) continue;
+            const [head, ...tail] = rest.split('/');
+            if (!head) continue;
+            const kind = tail.length ? 'dir' : 'file';
+            if (!seen.has(head)) seen.set(head, { name: head, kind, size: kind === 'file' ? repo[key].length : 0 });
+          }
+          return Array.from(seen.values()).sort((a, b) => (a.kind === b.kind ? a.name.localeCompare(b.name) : a.kind === 'dir' ? -1 : 1));
+        }
         case 'seafile_mkdir': return null;
         case 'write_temp_file': {
           /* 与 Rust write_temp_file 同口径：只取 basename，落 onethu-tmp 目录——

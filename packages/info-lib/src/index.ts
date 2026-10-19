@@ -119,6 +119,7 @@ import {
     getPersonalProjects,
     getPipelineJobs,
     getProjectBranches,
+    getProjectByPath,
     getProjectDetail,
     getProjectFileBlob,
     getProjectIssue,
@@ -130,6 +131,7 @@ import {
     getRecentProjects,
     getRequestCounts,
     getStarredProjects,
+    createProject,
     mergeMergeRequest,
     removeAward,
     renderMarkdown,
@@ -1042,6 +1044,13 @@ export class InfoHelper {
     public getGitStarredProjects = async (page: number) => getStarredProjects(this, page);
 
     public getGitProjectDetail = async (id: number) => getProjectDetail(this, id);
+
+    /** 按完整路径取仓库（group/project）；关联已有 GitLab 仓库用。 */
+    public getGitProjectByPath = async (path: string) => getProjectByPath(this, path);
+
+    /** 新建 GitLab 仓库（建在当前账号命名空间下）。 */
+    public createGitProject = async (input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"}) =>
+        createProject(this, input);
 
     public getGitProjectTree = async (
         id: number,

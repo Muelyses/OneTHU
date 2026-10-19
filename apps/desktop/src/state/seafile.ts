@@ -174,6 +174,40 @@ export async function seafileShareFolderToUser(repoId: string, path: string, ema
   await invoke("seafile_share_folder_to_user", { token, repoId, path, email, permission });
 }
 
+/* ── 组织资料库（资料库 = repo，不是文件夹） ── */
+
+/** 新建一个资料库（repo）并返回 repoId；同名已存在时直接复用。 */
+export async function seafileCreateRepo(name: string): Promise<string> {
+  await ensureSeafileLoaded();
+  const token = getSeafileToken();
+  if (!token) throw new Error("清华云盘未连接：先到云盘页粘贴 token");
+  const wanted = String(name ?? "").trim().slice(0, 80) || "组织资料库";
+  let list = await invoke<SeafileRepo[]>("seafile_repos", { token });
+  const hit = list.find((r) => r.name === wanted);
+  if (hit) return hit.id;
+  await invoke("seafile_create_repo", { token, name: wanted });
+  list = await invoke<SeafileRepo[]>("seafile_repos", { token });
+  const made = list.find((r) => r.name === wanted);
+  if (!made) throw new Error("云盘没有返回新建的资料库");
+  await refreshRepos();
+  return made.id;
+}
+
+/** 把整个资料库（根目录）共享给云盘账号邮箱；permission="r"|"rw"|"admin"。 */
+export async function seafileShareRepoToUser(repoId: string, email: string, permission = "rw"): Promise<void> {
+  const token = getSeafileToken();
+  if (!token) throw new Error("清华云盘未连接");
+  await invoke("seafile_share_folder_to_user", { token, repoId, path: "/", email, permission });
+}
+
+/** 生成资料库的公开分享链接（根目录）。 */
+export async function seafileShareRepo(repoId: string, expireDays = 7): Promise<{ shareUrl: string; shareToken: string }> {
+  const token = getSeafileToken();
+  if (!token) throw new Error("清华云盘未连接");
+  const share = await invoke<{ link: string; token: string }>("seafile_share", { token, repoId, path: "/", expireDays, password: "" });
+  return { shareUrl: share.link, shareToken: share.token };
+}
+
 export async function seafileSearch(repoId: string, query: string): Promise<SeafileEntry[]> {
   if (!cfg) throw new Error("云盘未配置");
   return invoke<SeafileEntry[]>("seafile_search", { token: cfg.token, repoId, query });

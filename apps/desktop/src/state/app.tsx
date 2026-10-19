@@ -44,6 +44,7 @@ export type Page =
   | "boards"
   | "board"
   | "contacts"
+  | "org" // 组织主页（成员邮箱 / 资料库 / GitLab 仓库；navParams.orgId）
   | "vault"; // 暂存箱（万物皆可收纳；Phase 1：混合对象清单 + 分享口令）
 
 /** 返回目标：页内返回键（BackButton）与顶栏返回键共用同一条数据 */
@@ -57,6 +58,8 @@ export interface BackTarget {
 export interface LearnNav {
   /** 通讯录内的组织直达入口。 */
   section?: "cards" | "friends" | "orgs";
+  /** 组织主页：org id（page=org 时必带） */
+  orgId?: string;
   traceTarget?: {title:string;location:string;date?:string;startTime?:string;endTime?:string};
   courseId?: string;
   itemId?: string;
@@ -144,7 +147,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "xiaoda", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board", "vault", "contacts"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "xiaoda", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board", "vault", "contacts", "org"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /**
  * R20-B2：雨课堂作业原生详情页参数。

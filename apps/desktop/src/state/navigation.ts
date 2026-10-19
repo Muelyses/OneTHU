@@ -77,6 +77,7 @@ export interface NavEntry {
 
 export const NAV_REGISTRY: NavEntry[] = [
   {id:"contacts",name:"通讯录",category:"行政",visibility:"core",page:"contacts",keywords:["好友","通讯录","组织","名片"],note:"名片 · 好友 · 组织"},
+  {id:"org",name:"组织",category:"行政",visibility:"buried",page:"org",keywords:["组织","成员","资料库","GitLab 仓库","邀请"],note:"成员邮箱 · 云盘资料库 · GitLab 仓库"},
   /* —— 学习 —— */
   { id: "vault", name: "暂存箱", category: "行政", visibility: "group", page: "vault", keywords: ["暂存箱", "收纳", "收集", "暂存", "分享口令", "箱子"], note: "任何元素先收进来，再整理/分享" },
   { id: "learn", name: "网络学堂", category: "学习", visibility: "group", page: "learn", keywords: ["课程", "学堂", "文件", "讨论区"], note: "本学期课程总览" },

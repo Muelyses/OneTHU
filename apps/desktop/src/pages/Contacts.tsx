@@ -43,7 +43,7 @@ export function ContactsPage() {
 
           <div className="contacts-orgs">
             <Text slot="label" tone="faint">
-              成员、文件、项目与公告集中管理；组织自带名片。
+              成员按邮箱加入，资料库共享到邮箱，GitLab 仓库挂到组织上；组织自带名片。
             </Text>
             <OrganizationSection />
           </div>

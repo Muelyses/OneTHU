@@ -1,11 +1,12 @@
 /**
- * 轻量组织（Phase 4 地基）：组织、成员、邀请口令。
+ * 组织：成员（真实邮箱）、共享资料库（清华云盘资料库/libraries）、GitLab 仓库、项目、公告。
  *
- * 口径（计划 §1/§6）：
- * - 不自建后端：组织首先是一个可分享的名片 + 成员清单；资源落在清华云盘/GitLab，路径后续由
- *   vaultCloud/orgCloud 填（cloudRepoId/cloudPath）。
- * - 邀请口令是「组织名片」的编码封装（ONORG1），接收方可先加入本地成员清单，再按 joinUrl
- *   去云盘/GitLab 加入真正的共享空间。
+ * 口径（2026-10-19 重构）：
+ * - 不自建后端：组织是「本地组织架构 + 云端真实资源」的组合。成员以清华云盘邮箱为准
+ *   （资料库共享走 seafile_share_folder_to_user），GitLab 仓库只存 id/path 引用。
+ * - 组织主页是完整页面（pages/Organization.tsx）：概览 / 成员 / 资料库 / GitLab / 项目 / 公告。
+ * - 邀请口令是组织资料的编码封装（ONORG1），可带口令名与限定接收邮箱；接收方过邮箱校验后
+ *   加入本地成员清单，再按 joinUrl 去云盘/GitLab 加入真正的共享空间。
  */
 import { useSyncExternalStore } from "react";
 import { checksum } from "./vaultShare.js";
@@ -15,8 +16,28 @@ export type OrgRole = "owner" | "member" | "guest";
 export interface OrgMember {
   id: string;
   name: string;
+  /** 清华云盘/统一认证邮箱：组织成员靠邮箱关联真实资源（空 = 历史成员，待补） */
+  email: string;
   role: OrgRole;
   joinedAt: number;
+}
+
+/** 组织关联的清华云盘「资料库」（repo，不是文件夹）。 */
+export interface OrgLibrary {
+  repoId: string;
+  name: string;
+  /** 已共享给哪些成员邮箱（小写，成功共享后记） */
+  sharedWith?: string[];
+  addedAt: number;
+}
+
+/** 组织关联的 GitLab 仓库（只存引用，不镜像内容）。 */
+export interface OrgRepo {
+  id: number;
+  name: string;
+  path: string;
+  webUrl?: string;
+  addedAt: number;
 }
 
 export interface OrgProject { id: string; name: string; description: string; status: "planned" | "active" | "done"; owner: string; updatedAt: number }
@@ -33,10 +54,15 @@ export interface Org {
   /** 已创建的组织共享空间（云盘目录 + 分享链接） */
   shared?: { repoId: string; path: string; shareUrl: string; shareToken: string; expiresAt: number; createdAt: number };
   members: OrgMember[];
+  /** 关联的云盘资料库（组织资料真正落地的地方） */
+  libraries?: OrgLibrary[];
+  /** 关联/创建的 GitLab 仓库 */
+  gitlabRepos?: OrgRepo[];
   projects?: OrgProject[];
   announcements?: OrgAnnouncement[];
-  /** 最近一次生成的邀请口令（仅提示） */
+  /** 最近一次生成的邀请口令（含口令名/限定邮箱） */
   lastInviteCode?: string;
+  invite?: { code: string; label?: string; allowEmail?: string; issuedAt: number };
   createdAt: number;
   updatedAt: number;
 }
@@ -58,7 +84,16 @@ function load(): OrgDoc {
     if (!raw) return { v: 1, orgs: [] };
     const p = JSON.parse(raw) as Partial<OrgDoc>;
     if (p?.v !== 1 || !Array.isArray(p.orgs)) return { v: 1, orgs: [] };
-    return { v: 1, orgs: p.orgs.filter((o): o is Org => !!o && typeof o.id === "string" && Array.isArray(o.members)) };
+    /* 旧存档升级：成员补 email 字段、资料库/GitLab/邀请元数据补默认值（只加不改，不丢历史）。 */
+    const orgs = p.orgs
+      .filter((o): o is Org => !!o && typeof o.id === "string" && Array.isArray(o.members))
+      .map((o): Org => ({
+        ...o,
+        members: o.members.map((m) => ({ ...m, email: typeof m.email === "string" ? m.email : "" })),
+        libraries: Array.isArray(o.libraries) ? o.libraries : [],
+        gitlabRepos: Array.isArray(o.gitlabRepos) ? o.gitlabRepos : [],
+      }));
+    return { v: 1, orgs };
   } catch {
     return { v: 1, orgs: [] };
   }
@@ -82,7 +117,13 @@ export function useOrgs(): OrgDoc {
   return useSyncExternalStore(subscribeOrgs, orgSnapshot, orgSnapshot);
 }
 
-export function createOrg(input: { name: string; brief?: string; joinUrl?: string; ownerName?: string }): Org {
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export function normalizeOrgEmail(email: string): string {
+  return String(email ?? "").trim().toLowerCase().slice(0, 120);
+}
+
+export function createOrg(input: { name: string; brief?: string; joinUrl?: string; ownerName?: string; ownerEmail?: string }): Org {
   const now = Date.now();
   const org: Org = {
     id: newId("org."),
@@ -91,7 +132,15 @@ export function createOrg(input: { name: string; brief?: string; joinUrl?: strin
     joinUrl: String(input.joinUrl ?? "").trim().slice(0, 300),
     cloudRepoId: "",
     cloudPath: "",
-    members: [{ id: newId("mem."), name: String(input.ownerName ?? "我").slice(0, 40), role: "owner", joinedAt: now }],
+    libraries: [],
+    gitlabRepos: [],
+    members: [{
+      id: newId("mem."),
+      name: String(input.ownerName ?? "我").slice(0, 40),
+      email: normalizeOrgEmail(input.ownerEmail ?? ""),
+      role: "owner",
+      joinedAt: now,
+    }],
     createdAt: now,
     updatedAt: now,
   };
@@ -121,18 +170,94 @@ export function deleteOrg(id: string): void {
   commit();
 }
 
-export function addOrgMember(id: string, name: string, role: OrgRole = "member"): { ok: boolean; reason?: "duplicate" | "no-org" } {
+export function addOrgMember(
+  id: string,
+  name: string,
+  email = "",
+  role: OrgRole = "member",
+): { ok: boolean; reason?: "duplicate" | "no-org" | "bad-email" } {
   const org = doc.orgs.find((o) => o.id === id);
   if (!org) return { ok: false, reason: "no-org" };
   const n = String(name ?? "").trim().slice(0, 40);
-  if (!n) return { ok: false, reason: "no-org" };
-  if (org.members.some((m) => m.name === n)) return { ok: false, reason: "duplicate" };
+  if (!n) return { ok: false, reason: "bad-email" };
+  const mail = normalizeOrgEmail(email);
+  if (mail && !EMAIL_RE.test(mail)) return { ok: false, reason: "bad-email" };
+  if (org.members.some((m) => (mail ? m.email === mail : m.name === n))) return { ok: false, reason: "duplicate" };
   doc = {
     ...doc,
-    orgs: doc.orgs.map((o) => (o.id === id ? { ...o, members: [...o.members, { id: newId("mem."), name: n, role, joinedAt: Date.now() }], updatedAt: Date.now() } : o)),
+    orgs: doc.orgs.map((o) => (o.id === id ? { ...o, members: [...o.members, { id: newId("mem."), name: n, email: mail, role, joinedAt: Date.now() }], updatedAt: Date.now() } : o)),
   };
   commit();
   return { ok: true };
+}
+
+/** 改成员邮箱/名字（邮箱是组织资源关联键，改它 = 以后资料库共享发给新邮箱）。 */
+export function updateOrgMember(
+  id: string,
+  memberId: string,
+  patch: { name?: string; email?: string },
+): { ok: boolean; reason?: "duplicate" | "no-org" | "bad-email" } {
+  const org = doc.orgs.find((o) => o.id === id);
+  const member = org?.members.find((m) => m.id === memberId);
+  if (!org || !member) return { ok: false, reason: "no-org" };
+  const name = patch.name !== undefined ? String(patch.name).trim().slice(0, 40) : member.name;
+  if (!name) return { ok: false, reason: "bad-email" };
+  const email = patch.email !== undefined ? normalizeOrgEmail(patch.email) : member.email;
+  if (email && !EMAIL_RE.test(email)) return { ok: false, reason: "bad-email" };
+  if (email && org.members.some((m) => m.id !== memberId && m.email === email)) return { ok: false, reason: "duplicate" };
+  doc = {
+    ...doc,
+    orgs: doc.orgs.map((o) => (o.id === id
+      ? { ...o, members: o.members.map((m) => (m.id === memberId ? { ...m, name, email } : m)), updatedAt: Date.now() }
+      : o)),
+  };
+  commit();
+  return { ok: true };
+}
+
+/* ── 资料库（清华云盘 repo）与 GitLab 仓库 ── */
+
+export function addOrgLibrary(id: string, lib: { repoId: string; name: string }): { ok: boolean; reason?: "duplicate" | "no-org" } {
+  const org = doc.orgs.find((o) => o.id === id);
+  if (!org) return { ok: false, reason: "no-org" };
+  const repoId = String(lib.repoId ?? "").trim();
+  if (!repoId) return { ok: false, reason: "no-org" };
+  if ((org.libraries ?? []).some((l) => l.repoId === repoId)) return { ok: false, reason: "duplicate" };
+  changeOrg(id, (o) => ({
+    ...o,
+    libraries: [...(o.libraries ?? []), { repoId, name: String(lib.name ?? "").trim().slice(0, 120) || repoId, addedAt: Date.now() }],
+  }));
+  return { ok: true };
+}
+
+export function removeOrgLibrary(id: string, repoId: string): void {
+  changeOrg(id, (o) => ({ ...o, libraries: (o.libraries ?? []).filter((l) => l.repoId !== repoId) }));
+}
+
+/** 记录某资料库已经共享给哪些成员邮箱（共享动作由 UI 调云盘 API 成功后回写）。 */
+export function markOrgLibraryShared(id: string, repoId: string, emails: string[]): void {
+  const norm = Array.from(new Set(emails.map(normalizeOrgEmail).filter(Boolean)));
+  changeOrg(id, (o) => ({
+    ...o,
+    libraries: (o.libraries ?? []).map((l) => (l.repoId === repoId
+      ? { ...l, sharedWith: Array.from(new Set([...(l.sharedWith ?? []), ...norm])) }
+      : l)),
+  }));
+}
+
+export function linkOrgGitlab(id: string, repo: Omit<OrgRepo, "addedAt">): { ok: boolean; reason?: "duplicate" | "no-org" } {
+  const org = doc.orgs.find((o) => o.id === id);
+  if (!org) return { ok: false, reason: "no-org" };
+  if ((org.gitlabRepos ?? []).some((r) => r.id === repo.id)) return { ok: false, reason: "duplicate" };
+  changeOrg(id, (o) => ({
+    ...o,
+    gitlabRepos: [...(o.gitlabRepos ?? []), { ...repo, addedAt: Date.now() }],
+  }));
+  return { ok: true };
+}
+
+export function unlinkOrgGitlab(id: string, gitlabId: number): void {
+  changeOrg(id, (o) => ({ ...o, gitlabRepos: (o.gitlabRepos ?? []).filter((r) => r.id !== gitlabId) }));
 }
 
 export function setOrgShare(id: string, shared: NonNullable<Org["shared"]>): void {
@@ -164,6 +289,10 @@ interface OrgInvitePayload {
   joinUrl: string;
   inviter: string;
   issuedAt: number;
+  /** 邀请口令名（发送方自己起的名字） */
+  label?: string;
+  /** 限定接收邮箱：只有这个清华云盘账号能接受邀请 */
+  allowEmail?: string;
 }
 
 function toB64Url(bytes: Uint8Array): string {
@@ -179,17 +308,30 @@ function fromB64Url(s: string): Uint8Array {
   return out;
 }
 
-export async function orgInviteCode(org: Org, inviter = "我"): Promise<string> {
+export async function orgInviteCode(org: Org, inviter = "我", meta?: { label?: string; allowEmail?: string }): Promise<string> {
+  const label = String(meta?.label ?? "").trim().slice(0, 60);
+  const allowEmail = normalizeOrgEmail(meta?.allowEmail ?? "");
   const payload: OrgInvitePayload = {
     v: 1, kind: "org-invite", orgId: org.id, name: org.name, brief: org.brief, joinUrl: org.joinUrl,
     inviter, issuedAt: Date.now(),
+    ...(label ? { label } : {}),
+    ...(allowEmail ? { allowEmail } : {}),
   };
   const json = JSON.stringify(payload);
   /* 内容键不含 issuedAt：同一个组织重复点「邀请」复用旧短码，不重复上传。
-   *  稳定分享位按组织 id 分：组织资料改了就地更新同一个目录，口令不变。 */
-  const contentKey = JSON.stringify([org.id, org.name, org.brief, org.joinUrl, inviter]);
+   *  稳定分享位按组织 id 分：组织资料改了就地更新同一个目录，口令不变；
+   *  改口令名/限定邮箱也走这里 —— 短码不换，manifest 内容就地更新。 */
+  const contentKey = JSON.stringify([org.id, org.name, org.brief, org.joinUrl, inviter, label, allowEmail]);
   const code = await (await import("./cloudExchange.js")).publishExchangeCode(`${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`, contentKey, `org:${org.id}`);
-  doc = { ...doc, orgs: doc.orgs.map((o) => (o.id === org.id ? { ...o, lastInviteCode: code, updatedAt: Date.now() } : o)) };
+  doc = {
+    ...doc,
+    orgs: doc.orgs.map((o) => (o.id === org.id ? {
+      ...o,
+      lastInviteCode: code,
+      invite: { code, issuedAt: Date.now(), ...(label ? { label } : {}), ...(allowEmail ? { allowEmail } : {}) },
+      updatedAt: Date.now(),
+    } : o)),
+  };
   commit();
   return code;
 }
@@ -204,11 +346,36 @@ export function decodeOrgInvite(code: string): { ok: boolean; payload?: OrgInvit
   try {
     const p = JSON.parse(json) as OrgInvitePayload;
     if (p?.v !== 1 || p.kind !== "org-invite") return { ok: false, reason: "口令版本不受支持" };
+    /* 不可信输入：口令名截断，限定邮箱只接受像邮箱的值。 */
+    if (p.label !== undefined) {
+      const label = typeof p.label === "string" ? p.label.trim().slice(0, 60) : "";
+      if (label) p.label = label; else delete p.label;
+    }
+    if (p.allowEmail !== undefined) {
+      const email = typeof p.allowEmail === "string" ? normalizeOrgEmail(p.allowEmail) : "";
+      if (email && EMAIL_RE.test(email)) p.allowEmail = email; else delete p.allowEmail;
+    }
     return { ok: true, payload: p };
   } catch { return { ok: false, reason: "口令内容不是合法 JSON" }; }
 }
 
 /** 接受邀请：创建/合并本地组织，加入者为 member（不重复同名成员）。 */
+/** 当前清华云盘账号邮箱（组织成员/资料库共享的身份锚点；未连接云盘返回空串）。 */
+export async function currentOrgEmail(): Promise<string> {
+  const seafile = await import("./seafile.js");
+  await seafile.ensureSeafileLoaded();
+  let account = seafile.getSeafileAccount();
+  if (!account) {
+    try {
+      await seafile.refreshSeafileAccount();
+    } catch {
+      /* 未连接：返回空 */
+    }
+    account = seafile.getSeafileAccount();
+  }
+  return normalizeOrgEmail(account?.email ?? "");
+}
+
 export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ ok: boolean; orgId?: string; reason?: string }> {
   let resolved: string;
   try { resolved = await (await import("./cloudExchange.js")).resolveExchangeCode(code); }
@@ -216,10 +383,14 @@ export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ o
   const dec = decodeOrgInvite(resolved);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   const p = dec.payload;
+  /* 限定邮箱：组织邀请也能只让某个云盘账号接受。 */
+  const email = await currentOrgEmail();
+  const denied = await (await import("./vaultShare.js")).shareAccessReason(p.allowEmail);
+  if (denied) return { ok: false, reason: denied };
   const exist = doc.orgs.find((o) => o.name === p.name && o.joinUrl === p.joinUrl);
-  const org = exist ?? createOrg({ name: p.name, brief: p.brief, joinUrl: p.joinUrl, ownerName: p.inviter || "邀请人" });
-  if (!org.members.some((m) => m.name === String(myName))) {
-    addOrgMember(org.id, String(myName), "member");
+  const org = exist ?? createOrg({ name: p.name, brief: p.brief, joinUrl: p.joinUrl, ownerName: p.inviter || "邀请人", ownerEmail: "" });
+  if (!org.members.some((m) => (email ? m.email === email : m.name === String(myName)))) {
+    addOrgMember(org.id, String(myName), email, "member");
   }
   return { ok: true, orgId: org.id };
 }

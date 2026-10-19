@@ -22,6 +22,7 @@ import { SchedulePage } from "../../pages/Schedule.js";
 import { HomeTab } from "./HomeTab.js";
 import { BoardListPage } from "../../pages/BoardListPage.js";
 import { ContactsPage } from "../../pages/Contacts.js";
+import { OrganizationPage } from "../../pages/Organization.js";
 import { VaultPage } from "../vault/VaultPage.js";
 import { OnePageSurface } from "../FreeBoard.js";
 import { MailPage } from "../../pages/MailPage.js";
@@ -106,6 +107,7 @@ export function renderPage(page: Page): ReactNode {
     case "boards":
       return <BoardListPage />;
     case "contacts": return <ContactsPage />;
+    case "org": return <OrganizationPage />;
     case "vault":
       return <VaultPage />;
     case "board":

@@ -94,6 +94,9 @@ try {
     return m.decodeShareAsync(code);
   });
   check(!expired.ok && /过期/.test(expired.reason ?? ''), 'expired code is rejected with reason');
+  /* 分享口令现在是弹层（旧版是页面内联区）：拿完码先关掉，否则遮罩会挡住后续点击 */
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(400);
   check(readFileSync('apps/desktop/src/components/Collect.tsx', 'utf8').includes('data-vault-catch'), 'CollectStar is a global vault drag source');
   check(readFileSync('apps/desktop/src/plugins/ChatDock.tsx', 'utf8').includes('data-vault-catch'), 'OH search hits are vault drag sources');
   check(readFileSync('apps/desktop/src/pages/Plugins.tsx', 'utf8').includes('data-vault-catch'), 'plugin cards are vault drag sources');
@@ -104,22 +107,27 @@ try {
   check(/const makeTouch = useCallback[\s\S]*?\}, \[cloudReady\]\)/.test(vaultPageSrc), 'touch callback depends on cloudReady (no stale gate)');
   check(readFileSync('apps/desktop/src/state/vaultShare.ts', 'utf8').includes('export async function shareCodeForBox'), 'share goes through shareCodeForBox (cloud gate inside)');
 
-  /* 导入为当前暂存箱（走真实 UI：新建箱 → 导入口令 → 提交） */
-  await p.getByRole('button', { name: '新建', exact: true }).click();
-  await p.waitForTimeout(350);
+  /* 收口令（走真实 UI：接收 → 粘贴口令 → 提交）。统一接入口现在**总是开一个新箱子**放收到的内容，
+     不覆盖当前箱子 —— 断言按新口径：箱子 +1、新箱里有内容、原箱不动。 */
+  const boxesBefore = await p.evaluate(() => {
+    const d = JSON.parse(localStorage.getItem('onethu.vaults.v1'));
+    return { count: d.boxes.length, active: d.activeId };
+  });
   await p.getByRole('button', { name: '接收', exact: true }).click();
   await p.getByRole('dialog', { name: '接收内容' }).getByRole('button', { name: '粘贴口令' }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.locator('.plg-form-modal textarea').fill(code.trim());
   await p.getByRole('button', { name: '提交' }).click();
-  await p.waitForTimeout(700);
-  const imported = await p.evaluate(() => {
+  await p.waitForTimeout(900);
+  const imported = await p.evaluate((prev) => {
     const d = JSON.parse(localStorage.getItem('onethu.vaults.v1'));
     const active = d.boxes.find((b) => b.id === d.activeId);
-    return { n: active.items.length, title: active.items[0]?.title, name: active.name };
-  });
-  check(imported.n === 1 && imported.title === dragged.title, 'import replaces current vault with shared items');
-  check(imported.name !== '我的暂存箱', 'import targets active vault, not origin box');
+    const before = d.boxes.find((b) => b.id === prev.active);
+    return { count: d.boxes.length, n: active.items.length, title: active.items[0]?.title, name: active.name, beforeCount: before?.items.length };
+  }, boxesBefore);
+  check(imported.count === boxesBefore.count + 1 && imported.n === 1 && imported.title === dragged.title, 'receive opens a new box with shared items');
+  check(imported.name === '我的暂存箱', 'new box keeps the shared box name');
+  check(imported.beforeCount === 1, 'current box is untouched by receive');
 
   /* 文件通道：选择文件 → SHA-256 → 入箱；同内容再次入箱按 hash 去重 */
   const chooser = p.waitForEvent('filechooser');
@@ -164,11 +172,14 @@ try {
   check(osDrop.overlay, 'dragging OS files shows vault drop overlay');
   check(osDrop.found && /^[0-9a-f]{64}$/.test(osDrop.hash ?? ''), 'dropped OS file is hashed and stored in vault');
   /* 碰一碰组合：暂存箱口令 + 个人名片一起编码；接收端可导入 */
-  await p.evaluate(() => localStorage.setItem('onethu.cards.v1', JSON.stringify({
-    v: 1,
-    personal: { name: '碰一碰测试', avatar: '', website: '', social: '', phone: '13800000000', bio: '一句话', updatedAt: Date.now() },
-    orgs: [], contacts: [],
-  })));
+  /* 走 store 的 API 写，内存快照才会同步（直接写 localStorage 不会更新已加载的 cardsSnapshot，
+     组合分享就带不上个人名片 —— 这正是本断言此前红的原因）。 */
+  await p.evaluate(async () => {
+    const url = performance.getEntriesByType('resource').map((r) => r.name).find((u) => new URL(u).pathname.endsWith('/src/state/nameCard.ts'));
+    const m = await import(url);
+    m.savePersonalCard({ name: '碰一碰测试', avatar: '', website: '', social: '', phone: '13800000000', bio: '一句话' });
+  });
+  await p.waitForTimeout(200);
   await p.locator('.vault-combination summary').click();
   await p.getByRole('button', { name: '选择组合内容' }).click();
   await p.waitForSelector('.plg-form-modal');
@@ -187,8 +198,13 @@ try {
   check(touch.imported.ok && touch.imported.vault === true, 'touch code can be imported by receiver');
 
   /* 设置行兜底：SettingsRow 没有逐条 data-vault-catch，长按/拖动靠 data-set-id 识别 */
-  await p.getByRole('button', { name: '设置' }).first().click();
-  await p.waitForTimeout(500);
+  /* 设置入口现在在「我的」里（顶层不再有齿轮按钮），测试直接开设置浮层更稳 */
+  await p.evaluate(async () => {
+    const url = performance.getEntriesByType('resource').map((r) => r.name).find((u) => new URL(u).pathname.endsWith('/src/state/explorer.ts'));
+    const m = await import(url);
+    m.openSettings('settings');
+  });
+  await p.waitForTimeout(700);
   const settingRow = p.locator('.og-settings-row[data-set-id^="row-"]:visible').first();
   check(await settingRow.count() === 1, 'settings rows carry stable data-set-id');
   const settingTitle = (await settingRow.innerText()).split('\n')[0].trim();
@@ -236,11 +252,12 @@ try {
   const textItems = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items));
   check(textDrop.length > 0 && textItems.some((i) => i.type === 'text' && i.text?.includes('收进暂存箱的文字')), 'selected text can be captured with Ctrl/Cmd+Shift+S');
 
-  check(await p.locator('.vault-dock').count() === 0, 'desktop hides the floating vault dock');
+  /* .vault-dock 已随底栏改版退役：桌面是顶部居中的浮层锚点，手机是常驻锚点 */
+  check(await p.locator('.vault-desktop-anchor [data-vault-drop]').count() === 1, 'desktop shows floating vault anchor');
 
   await p.setViewportSize({ width: 390, height: 844 });
-  await p.waitForTimeout(600);
-  check(await p.locator('.vault-dock').isVisible(), 'phone shows persistent vault dock (outside bottom bar grid)');
+  await p.waitForTimeout(800);
+  check(await p.locator('.vault-anchor [data-vault-drop]').first().isVisible(), 'phone shows persistent vault anchor (outside bottom bar grid)');
   const started = await p.evaluate(async () => {
     const el = document.querySelector('[data-vault-catch]');
     if (!el) return { ok: false, reason: 'no-source' };
@@ -252,12 +269,13 @@ try {
     await new Promise((r2) => setTimeout(r2, 520));
     window.dispatchEvent(ev('pointermove', x + 36, y + 70));
     await new Promise((r2) => setTimeout(r2, 260));
-    const drop = document.querySelector('[data-vault-drop]');
+    /* 锚点按钮恒带 data-vault-drop，「拖到哪儿」的大板是 .vault-drop-pad；收手后看大板还在不在 */
+    const drop = document.querySelector('.vault-drop-pad') ?? document.querySelector('[data-vault-drop]');
     const rect = drop?.getBoundingClientRect();
-    const ok = Boolean(drop);
+    const ok = Boolean(document.querySelector('.vault-drop-pad'));
     window.dispatchEvent(ev('pointercancel', x + 36, y + 70));
-    await new Promise((r2) => setTimeout(r2, 120));
-    return { ok, bottom: rect?.bottom ?? 0, vh: window.innerHeight, cleared: !document.querySelector('[data-vault-drop]') };
+    await new Promise((r2) => setTimeout(r2, 160));
+    return { ok, bottom: rect?.bottom ?? 0, vh: window.innerHeight, cleared: !document.querySelector('.vault-drop-pad') };
   });
   check(started.ok, 'mobile long-press starts vault drag and shows drop target');
   check(started.cleared, 'pointercancel dismisses the drop target');
@@ -268,10 +286,18 @@ try {
     const v = await import('/src/state/vault.ts');
     let uploaded = null;
     let revoked = false;
+    /* 2026-10-19：口令统一走云短码——mock 适配器必须真的把清单写进假云盘并分享，
+       否则 decodeShareAsync 读不到 manifest（以前 mock 返回假链接即可，口径已变）。 */
+    const MANIFEST = '/Vault/shares/test/manifest.json';
     vs.registerVaultCloudAdapter({
       async upload(p) {
         uploaded = p;
-        return { provider: 'seafile', repoId: 'repo.test', path: '/Vault/shares/test/manifest.json', shareUrl: 'https://cloud.tsinghua.edu.cn/d/testtoken/', shareToken: 'testtoken', expiresAt: Date.now() + 3600_000 };
+        const json = JSON.stringify(p);
+        const b64 = btoa(unescape(encodeURIComponent(json)));
+        await window.__cloudInvoke('write_temp_file', { name: 'manifest.json', dataBase64: b64 });
+        await window.__cloudInvoke('seafile_upload', { repoId: 'repo-one', parentDir: '/Vault/shares/test', localPath: '/tmp/onethu-tmp/manifest.json' });
+        const share = await window.__cloudInvoke('seafile_share', { path: MANIFEST, expireDays: 1 });
+        return { provider: 'seafile', repoId: 'repo-one', path: MANIFEST, shareUrl: share.link, shareToken: share.token, expiresAt: 0 };
       },
       async resolve() { return uploaded; },
       async revoke() { revoked = true; },
@@ -285,7 +311,7 @@ try {
     vs.registerVaultCloudAdapter(null);
     return { cloud: minted.payload.cloud, inline: minted.payload.items, imported: imported.ok, n: active.items.length, title: active.items[0]?.title, rv, revoked };
   });
-  check(cloud.cloud?.shareUrl?.includes('/d/testtoken/') && cloud.inline === undefined, 'cloud share code encodes a cloud ref, not the manifest');
+  check(/\/d\/[0-9a-f]{20}\//.test(cloud.cloud?.shareUrl ?? '') && cloud.inline === undefined, 'cloud share code encodes a cloud ref, not the manifest');
   check(cloud.imported && cloud.n === 1 && cloud.title === '云端对象', 'cloud ref resolves back into current vault via adapter');
   check(cloud.rv && cloud.revoked, 'share revocation goes through the adapter');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));

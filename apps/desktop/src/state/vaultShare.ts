@@ -7,6 +7,7 @@
  * 清华云盘分享文件夹里的 manifest）。适配层没注册时走 inline；注册后 mintShareCode
  * 优先云盘上传并只把引用写进口令。
  */
+import { isShortCode, shortCodeForLink } from "../lib/shortCode.js";
 import type { VaultBox, VaultCatch, VaultItem } from "./vault.js";
 import { createVault, markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
 
@@ -144,6 +145,10 @@ function validatePayload(p: VaultSharePayload): DecodeResult {
 /** 异步解码：ONV2 用 SHA-256 校验；ONV1 兼容旧口令。 */
 export async function decodeShareAsync(code: string): Promise<DecodeResult> {
   const raw = String(code ?? "").trim();
+  if (isShortCode(raw)) {
+    try { return decodeShareAsync(await (await import("./cloudExchange.js")).resolveExchangeCode(raw)); }
+    catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
+  }
   if (!raw.startsWith(SHARE_PREFIX_V2 + ".")) return decodeShare(raw);
   if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: "口令过大（超过 96KB），不是本应用的正常口径" };
   const parts = raw.split(".");
@@ -256,13 +261,15 @@ function stripItem(it: VaultItem, includeStaged: boolean): VaultCatch {
 
 /** 生成口令：有云盘适配器时上传清单并只编码引用；否则 inline（离线/未接云盘）。 */
 export async function mintShareCode(box: VaultBox, from?: string): Promise<{ code: string; payload: VaultSharePayload }> {
-  const payload = payloadFromVault(box, from, Boolean(adapter));
+  if (!adapter) throw new Error("请先连接清华云盘，再生成分享口令");
+  const payload = payloadFromVault(box, from, true);
   let final = payload;
   if (adapter) {
     const cloud = await adapter.upload(payload);
     final = { ...payload, items: undefined, cloud };
   }
-  const code = await encodeShareV2(final);
+  if (!final.cloud?.shareUrl) throw new Error("云盘没有返回分享链接");
+  const code = shortCodeForLink(final.cloud.shareUrl);
   // 上传期间箱子可能已被编辑：旧快照的口令不能冒充当前内容。
   const current = vaultSnapshot().boxes.find(b => b.id === box.id);
   if (current && current.items === box.items && current.name === box.name) markVaultShared(box.id, code);
@@ -275,9 +282,17 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   let payload = dec.payload;
   if (!payload.items && payload.cloud) {
-    if (!adapter) return { ok: false, reason: "这条口令需要连接清华云盘才能读取" };
     try {
-      payload = await adapter.resolve(payload.cloud);
+      if (adapter) payload = await adapter.resolve(payload.cloud);
+      else {
+        if (!payload.cloud.shareUrl) return { ok: false, reason: "分享缺少读取链接" };
+        const text = await (await import("./seafile.js")).seafileShareRead(payload.cloud.shareUrl, payload.cloud.manifestName);
+        if (text.length > 2 * 1024 * 1024) throw new Error("分享内容超过支持的大小");
+        payload = JSON.parse(text) as VaultSharePayload;
+      }
+      const checked = validatePayload(payload);
+      if (!checked.ok || !checked.payload?.items) return { ok: false, reason: checked.reason || "分享里没有可接收的内容" };
+      payload = checked.payload;
     } catch (e) {
       return { ok: false, reason: `云盘读取失败：${e instanceof Error ? e.message : String(e)}` };
     }
@@ -299,8 +314,7 @@ export async function revokeShare(payload: VaultSharePayload): Promise<boolean> 
 /** 是否允许无云盘时生成 inline 口令：正式用户必须连云盘；预览/开发模式保留本地调试能力。 */
 export function allowInlineShare(): boolean {
   try {
-    if (new URLSearchParams(location.search).has("explorer-preview")) return true;
-    return localStorage.getItem("onethu.dev.inlineShare") === "1";
+    return false;
   } catch {
     return false;
   }

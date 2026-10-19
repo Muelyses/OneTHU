@@ -5,6 +5,7 @@
  * 拖动相关类在 packages/gui/src/recipes/workbench.css，唯一交互层是 vaultDrag.ts。
  */
 import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { isShortCode } from "../../lib/shortCode.js";
 import { Btn, Card, List, Row, Segment, Text } from "@onethu/gui";
 import { ExchangeFeedback, type ExchangeState } from "../ExchangeFeedback.js";
 import { QRCodeSVG } from "qrcode.react";
@@ -17,7 +18,7 @@ import {
   activeVault, addToVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
   setActiveVault, subscribeVault, VAULT_TYPE_LABEL, vaultSnapshot, type VaultItem,
 } from "../../state/vault.js";
-import { allowInlineShare, decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
+import { decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { nfcReadText, nfcShareText, nfcStatus } from "../../lib/nfc.js";
 import { decodeQrFile, qrScanSupported } from "../../lib/qrScan.js";
@@ -71,7 +72,7 @@ export function VaultPage(): ReactNode {
   const { navigate } = useApp();
   const box = activeVault();
   const all = vaultSnapshot().boxes;
-  const [code, setCode] = useState<string>(box.lastShareCode ?? "");
+  const [code, setCode] = useState<string>(box.lastShareCode && isShortCode(box.lastShareCode) ? box.lastShareCode : "");
   const [exchange,setExchange]=useState<ExchangeState|null>(null);
   const [busy, setBusy] = useState(false);
   const [fileHot, setFileHot] = useState(false);
@@ -83,7 +84,8 @@ export function VaultPage(): ReactNode {
   const [touchCode, setTouchCode] = useState("");
 
   useEffect(() => {
-    const last = activeVault().lastShareCode ?? "";
+    const saved = activeVault().lastShareCode;
+    const last = saved && isShortCode(saved) ? saved : "";
     setCode(last);
     setShareInfo(null);
     if (last) void decodeShareAsync(last).then((d) => setShareInfo(d.payload ?? null));
@@ -120,7 +122,7 @@ export function VaultPage(): ReactNode {
   }, [box.id, box.name]);
 
   const makeTouch = useCallback(async (): Promise<void> => {
-    if (!cloudReady && !allowInlineShare()) {
+    if (!cloudReady) {
       showToast("本版本要求先连接清华云盘，再生成碰一碰口令");
       return;
     }
@@ -142,7 +144,7 @@ export function VaultPage(): ReactNode {
         withOrgId: f.org || undefined,
       });
       setTouchCode(r.code);
-      try { await navigator.clipboard.writeText(r.code); showToast("碰一碰口令已生成并复制（NFC 接入前用口令/二维码代替）"); }
+      try { await navigator.clipboard.writeText(r.code); showToast("碰一碰口令已生成并复制"); }
       catch { showToast("碰一碰口令已生成：复制下方文本"); }
     } catch (e) {
       showToast(`组合分享生成失败：${e instanceof Error ? e.message : String(e)}`);
@@ -152,7 +154,7 @@ export function VaultPage(): ReactNode {
   }, [cloudReady]);
 
   const receiveTouch = useCallback(async (): Promise<void> => {
-    const f = await openFormModal("接收碰一碰", [{ key: "code", label: "碰一碰口令（ONTOUCH1.…）", kind: "textarea", required: true }]);
+    const f = await openFormModal("接收碰一碰", [{ key: "code", label: "碰一碰口令（ON-…，兼容旧口令）", kind: "textarea", required: true }]);
     if (!f?.code) return;
     setBusy(true);
     try {
@@ -233,7 +235,7 @@ export function VaultPage(): ReactNode {
 
   const importCode = useCallback(async (): Promise<void> => {
     const f = await openFormModal("导入分享口令", [
-      { key: "code", label: "口令（ONV1.…）", kind: "textarea", required: true },
+      { key: "code", label: "口令（ON-…，兼容旧口令）", kind: "textarea", required: true },
     ]);
     if (!f?.code) return;
     setBusy(true);
@@ -247,7 +249,7 @@ export function VaultPage(): ReactNode {
   }, []);
 
   const share = useCallback(async (): Promise<void> => {
-    if (!cloudReady && !allowInlineShare()) {
+    if (!cloudReady) {
       showToast("本版本要求先连接清华云盘，再生成分享口令");
       return;
     }
@@ -304,7 +306,7 @@ export function VaultPage(): ReactNode {
             <span className="vault-action-label">发出去</span>
             <Btn variant="ghost" size="sm" onClick={() => void makeTouch()} disabled={busy}>碰一碰组合</Btn>
             <Btn variant="solid" tone="brand" size="sm" onClick={() => void share()} disabled={busy || box.items.length === 0} titleAttr={cloudReady ? "生成云分享口令" : "先连接清华云盘"}>生成口令</Btn>
-            <Text slot="micro" tone="faint">{cloudReady ? "云分享" : "本地口令"}</Text>
+            <Text slot="micro" tone="faint">{cloudReady ? "短口令 · 接收时联网" : "先连接清华云盘"}</Text>
           </div>
         </div>
         {code ? (
@@ -342,7 +344,7 @@ export function VaultPage(): ReactNode {
         </div>
         {touchCode ? (
           <div className="vault-share">
-            <Text slot="micro" tone="faint">碰一碰 / 组合口令（NFC 接入前用这段口令或二维码代替）：</Text>
+            <Text slot="micro" tone="faint">碰一碰 / 组合短口令（NFC 与二维码通用，接收时联网）：</Text>
             <code className="vault-share-code">{touchCode}</code>
             <div className="vault-qr"><QRCodeSVG value={touchCode} size={300} /></div>
             <div className="vault-actions">

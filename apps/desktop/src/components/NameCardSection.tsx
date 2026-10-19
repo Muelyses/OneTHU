@@ -191,9 +191,13 @@ function cloudEmailText(email: string): string {
 function PersonalCardBlock(): ReactNode {
   const { personal, edit, pickAvatar, toVault, busy, cloudEmail } = usePersonalActions();
   const nfc = useNfcExchange();
+  const [copying, setCopying] = useState(false);
   const copyCard = async (): Promise<void> => {
-    try { await navigator.clipboard.writeText(personalShareCode(personal)); showToast("个人名片口令已复制"); }
+    if (copying) return;
+    setCopying(true);
+    try { await navigator.clipboard.writeText(await personalShareCode(personal)); showToast("个人名片口令已复制"); }
     catch (e) { showToast(e instanceof Error ? e.message : "复制失败，请重试"); }
+    finally { setCopying(false); }
   };
   return (
     <div className="identity-panel">
@@ -212,8 +216,8 @@ function PersonalCardBlock(): ReactNode {
         </Inline>
         <div className="identity-panel-exchange">
           <Inline gap={2} wrap>
-            <Btn variant="solid" disabled={!nfc.available || nfc.busy} onClick={() => void nfc.send(() => personalNfcCode(personal))}>NFC 分享个人名片</Btn>
-            <Btn variant="outline" onClick={() => void copyCard()}>复制名片口令</Btn>
+            <Btn variant="solid" disabled={!nfc.available || nfc.busy || copying} onClick={() => void nfc.send(() => personalNfcCode(personal))}>NFC 分享个人名片</Btn>
+            <Btn variant="outline" disabled={copying || nfc.busy} onClick={() => void copyCard()}>{copying ? "正在生成短口令…" : "复制名片口令"}</Btn>
           </Inline>
           <Text slot="micro" tone="faint">{nfc.hint}</Text>
         </div>

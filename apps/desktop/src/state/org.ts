@@ -172,13 +172,13 @@ function fromB64Url(s: string): Uint8Array {
   return out;
 }
 
-export function orgInviteCode(org: Org, inviter = "我"): string {
+export async function orgInviteCode(org: Org, inviter = "我"): Promise<string> {
   const payload: OrgInvitePayload = {
     v: 1, kind: "org-invite", orgId: org.id, name: org.name, brief: org.brief, joinUrl: org.joinUrl,
     inviter, issuedAt: Date.now(),
   };
   const json = JSON.stringify(payload);
-  const code = `${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`;
+  const code = await (await import("./cloudExchange.js")).publishExchangeCode(`${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`);
   doc = { ...doc, orgs: doc.orgs.map((o) => (o.id === org.id ? { ...o, lastInviteCode: code, updatedAt: Date.now() } : o)) };
   commit();
   return code;
@@ -199,8 +199,11 @@ export function decodeOrgInvite(code: string): { ok: boolean; payload?: OrgInvit
 }
 
 /** 接受邀请：创建/合并本地组织，加入者为 member（不重复同名成员）。 */
-export function acceptOrgInvite(code: string, myName = "我"): { ok: boolean; orgId?: string; reason?: string } {
-  const dec = decodeOrgInvite(code);
+export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ ok: boolean; orgId?: string; reason?: string }> {
+  let resolved: string;
+  try { resolved = await (await import("./cloudExchange.js")).resolveExchangeCode(code); }
+  catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
+  const dec = decodeOrgInvite(resolved);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   const p = dec.payload;
   const exist = doc.orgs.find((o) => o.name === p.name && o.joinUrl === p.joinUrl);

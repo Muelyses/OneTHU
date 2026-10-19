@@ -43,21 +43,25 @@ export function OrganizationSection(): ReactNode {
     showToast(`已创建「${org.name}」`);
   }, []);
 
-  const inviteOrg = useCallback((id: string, name: string): void => {
+  const inviteOrg = useCallback(async (id: string, name: string): Promise<void> => {
     const org = doc.orgs.find((o) => o.id === id);
     if (!org) return;
-    const code = orgInviteCode(org);
-    setInvite({ org: name, code });
-    void navigator.clipboard.writeText(code).then(() => showToast("组织邀请口令已复制")).catch(() => showToast("邀请口令已生成：复制下方文本"));
+    setSharing(id);
+    try {
+      const code = await orgInviteCode(org);
+      setInvite({ org: name, code });
+      await navigator.clipboard.writeText(code).then(() => showToast("组织邀请口令已复制")).catch(() => showToast("邀请口令已生成：复制下方文本"));
+    } catch (e) { showToast(e instanceof Error ? e.message : "生成邀请失败，请重试"); }
+    finally { setSharing(null); }
   }, [doc.orgs]);
 
   const join = useCallback(async (): Promise<void> => {
     const f = await openFormModal("加入组织", [
-      { key: "code", label: "组织邀请口令（ONORG1.…）", kind: "textarea", required: true },
+      { key: "code", label: "组织邀请口令（ON-…，兼容旧口令）", kind: "textarea", required: true },
       { key: "name", label: "你在这个组织里的名字", default: "我" },
     ]);
     if (!f?.code) return;
-    const r = acceptOrgInvite(f.code, f.name || "我");
+    const r = await acceptOrgInvite(f.code, f.name || "我");
     showToast(r.ok ? "已加入组织（本地成员清单）" : r.reason ?? "邀请口令无法识别");
   }, []);
 
@@ -106,7 +110,7 @@ export function OrganizationSection(): ReactNode {
                     ) : (
                       <Btn variant="ghost" size="sm" disabled={sharing === o.id} onClick={() => void shareSpace(o.id, o.name)}>{sharing === o.id ? "创建中…" : "共享空间"}</Btn>
                     )}
-                    <Btn variant="ghost" size="sm" onClick={() => inviteOrg(o.id, o.name)}>邀请</Btn>
+                    <Btn variant="ghost" size="sm" disabled={sharing === o.id} onClick={() => void inviteOrg(o.id, o.name)}>邀请</Btn>
                     <Btn variant="ghost" size="sm" onClick={() => void addMember(o.id)}>加成员</Btn>
                     <Btn variant="ghost" size="sm" tone="error" onClick={() => void confirmOk(`删除组织「${o.name}」？成员清单会一起删除（云盘资料不动）。`).then((ok) => { if (ok) deleteOrg(o.id); })}>删除</Btn>
                   </span>

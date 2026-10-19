@@ -3,6 +3,7 @@
  * 发出者可选：当前暂存箱口令 + 个人名片 + 组织名片（邀请）三者任意组合；
  * 后两者较长时统一编码进一个 ONTOUCH1 口令。NFC 落地后 NDEF 只带这个短口令。
  */
+import { publishExchangeCode, resolveExchangeCode } from "./cloudExchange.js";
 import { addContact, type OrgCard, type PersonalCard } from "./nameCard.js";
 import { acceptOrgInvite } from "./org.js";
 import { importShareCodeAsCurrent, mintShareCode, checksum } from "./vaultShare.js";
@@ -97,7 +98,7 @@ export async function buildTouchCode(opts: TouchOptions): Promise<{ code: string
       }
     }
   }
-  return { code: encodeTouch(payload), payload };
+  return { code: await publishExchangeCode(encodeTouch(payload)), payload };
 }
 
 export interface TouchImportResult {
@@ -110,7 +111,10 @@ export interface TouchImportResult {
 
 /** 接收方：暂存箱按 vaultTarget 落库；名片进通讯录；组织邀请合并成员。 */
 export async function importTouchCode(code: string, myName = "我", vaultTarget: "current" | "new" = "current"): Promise<TouchImportResult> {
-  const dec = decodeTouch(code);
+  let resolved: string;
+  try { resolved = await resolveExchangeCode(code); }
+  catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
+  const dec = decodeTouch(resolved);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   const p = dec.payload;
   let vault = false;
@@ -126,7 +130,7 @@ export async function importTouchCode(code: string, myName = "我", vaultTarget:
     if (r.ok) contact = true;
   }
   if (p.orgCode && p.orgName) {
-    const r = acceptOrgInvite(p.orgCode, myName);
+    const r = await acceptOrgInvite(p.orgCode, myName);
     if (r.ok) org = true;
   }
   if (!vault && !contact && !org) return { ok: false, reason: "这个碰一碰口令里没有可导入的内容" };

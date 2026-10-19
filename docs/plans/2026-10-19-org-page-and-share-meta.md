@@ -70,3 +70,45 @@
 - GitLab 的新建/关联需要 GitLab 会话（测试环境未登录，只验 UI 骨架）。
 - 云盘资料库共享需要云盘 token；未连接时页面给「去连接云盘」入口。
 - 口令「有效期」目前仍按生成时 7 天（台账可看），改有效期未做（要重新生成）。
+
+## 五、2026-10-19 续：自动共享 / GitLab 组织 / 页内预览 / 口令有效期与删除
+
+### 自动共享（用户：「自动分享给成员 云盘 和 gitlab 呢」）
+- 新建/关联资料库 → 自动把资料库（repo 根目录）按成员邮箱共享（`seafile_share_folder_to_user`），
+  已共享过的不重复发；成员页仍有「同步云盘与 GitLab 权限」一键全量同步。
+- 新建/关联 GitLab 仓库、新增成员/改邮箱 → 自动按邮箱搜 GitLab 用户
+  （`GET /users?search=`）并加进 GitLab 组织与仓库（30 developer / 20 reporter），
+  已是成员（409/400）按成功算；搜不到的邮箱提示手动加。
+
+### 创建组织仓库 = 创建 GitLab 组织（用户：「不是创建仓库，而是直接创建一个 gitlab org
+自动关联/邀请所有用户」）
+- `Org.gitlabGroup`（id/name/path/webUrl）。「建 GitLab 组织与仓库」先 `POST /groups`
+  建组织（名称取组织名、path 自动 slug），邀请全体成员进组织，再把仓库建在该组织
+  命名空间下（`namespace_id`）；之后是「在组织下新建仓库」。
+- info-lib 新增 `createGroup` / `addGroupMember` / `searchUsers` / `addProjectMember`。
+
+### 页内预览（用户：「也可以直接预览组织云盘文件和组织项目」）
+- 资料库卡片「预览文件」：内联文件树（`openDir`，可进文件夹/刷新）+
+  文件预览弹层：文本直接渲染、图片 data URL、其他/超大给「下载到本机」
+  （`seafile_read_bytes`，内存读取不落盘）。
+- GitLab 仓库卡片「预览项目」：内联项目详情（描述/默认分支/可见性/star/
+  未关闭 Issue/最近活动）；两卡都补「浏览器打开」。
+
+### 入口收口（用户反馈「点上去莫名其妙的组织页面，啥也点不进去」）
+- 删除「组织」独立搜索原子与功能目录注册项：组织页必须带 orgId 从组织卡片/列表进入；
+- 载入标签页时丢弃无 orgId 的裸 org 标签；带 orgId 但组织已不存在时显示
+  「找不到这个组织」明确出口；独立落地页补「用邀请口令加入」。
+
+### 组织邀请口令：有效期可改、可删除（用户：「组织口令应该也可以改有效期！可以删除！」）
+- `publishExchangeCode(code, contentKey, slot, {expireDays, forceNew})`；
+  `uploadExchangeManifest(code, expireDays)` 不再硬编码 7 天（0 = 不过期）。
+- 云盘分享过期时间创建时定死：改有效期时撤销旧分享（`revokeShareSlot` 删分享 + 清槽位
+  + 清内容缓存）再重建，短码随之更新；有效期不变（2h 容差）继续复用同一条短码。
+- 组织页邀请表单加有效期（1/7/30 天、不过期），概览显示到期时间，
+  「删除口令」= 撤销云盘分享 + 清本地 invite/lastInviteCode。
+
+### 测试
+- org 28 条（新增：新库自动共享邮箱、云盘文件内联预览、改有效期换新码、删除口令
+  清记录且云盘 share 数 -1），namecard 14、experience、mobile-vault、feedback 等全绿；
+  `pnpm guard` 全绿。
+- 截图：`org-page-*`、`org-lib-preview-list/text.png`。

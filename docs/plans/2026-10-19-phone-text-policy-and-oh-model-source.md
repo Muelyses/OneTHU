@@ -63,3 +63,18 @@
 - 截图：`identity-actions-desktop/phone.png`、`mode-control-collapsed/expanded-*.png`、
   `settings-phone-nav.png`、`phone-org-kv-stacked.png`、`phone-cloud-head-stacked.png`、
   `oh-model-source-full/simple/practical.png`。
+
+## 手机白板：自由摆放（仅完整模式）
+
+用户：「手机上也要允许白板拖动和改变大小，而不是现在这个样子只能上下调整（仅限完整模式）」。
+
+- 手机竖屏默认仍是**阅读顺序**（单列堆叠，保留原有阅读体验）；
+- 完整模式白板头部新增「自由摆放 / 阅读顺序」切换（`onethu.board.phoneCanvas.v1` 持久化）：
+  切到自由摆放 = 回到真画布（世界坐标 + 缩放），条目可直接拖动、选中后拉四角/边把手缩放；
+  自动把缩放调到 200%，并提示「拖动卡片，点选后拉角点调大小」；
+- 仅完整模式出现：极简/实用模式根本不渲染白板，不会出现该开关；
+- CSS：`.freeboard-wrap.phone-canvas .free-item { touch-action: none }`，
+  避免垂直拖拽被页面滚动抢走；阅读顺序仍保留 `pan-y` 可正常滚动。
+- 回归 `tools/phone-board-browser-test.mjs` 14 条：默认阅读顺序、切自由摆放、拖动改位置、
+  拉把手改尺寸、切回阅读顺序、简单/实用模式无可见白板。
+  截图：`phone-board-stack.png` / `phone-board-free.png`。

@@ -54,4 +54,11 @@ assert.ok(/学校 MadModel/.test(sourceCard) && /自己的 API/.test(sourceCard)
 assert.ok(!/OhModelSourceCard/.test(read("apps/desktop/src/pages/Settings.tsx")), "完整模式设置不应再挂模型源卡片（续签/模型都在 OH 高级配置里调）");
 assert.ok(/OhModelSourceCard/.test(read("apps/desktop/src/components/SimpleSettings.tsx")), "极简/实用模式设置未挂模型源卡片");
 
+/* 手机白板：完整模式可切自由摆放（拖动/缩放），默认阅读顺序 */
+const freeBoard = read("apps/desktop/src/components/FreeBoard.tsx");
+const wbCss = read("packages/gui/src/recipes/workbench.css");
+assert.ok(/onethu\.board\.phoneCanvas\.v1/.test(freeBoard), "手机白板自由摆放开关未持久化");
+assert.ok(/const stack = phoneUi && orientation === "portrait" && !penOn && !phoneCanvas;/.test(freeBoard), "手机白板 stack 条件未接入自由摆放");
+assert.ok(/phone-canvas/.test(freeBoard) && /freeboard-wrap\.phone-canvas \.free-item \{ touch-action: none; \}/.test(wbCss), "手机自由摆放缺少 touch-action 规则");
+
 console.log("✓ 手机策略 + OH 限额卡静态守卫通过");

@@ -1303,7 +1303,15 @@ select.input:focus {
   /* 卡内右上角操作（如电费刷新）的定位上下文：否则 absolute 飞到视口角上 */
   position: relative;
 }
-.card-hero-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.card-hero-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  /* 手机 / 窄白板组件里：余额行 + 刷新/充值两个按钮放不下就换行，避免「爆栏」把按钮裁掉 */
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
 .card-hero-amount {
   font-size: 26px;
   line-height: 32px;

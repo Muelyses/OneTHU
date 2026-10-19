@@ -384,6 +384,11 @@ html:root.is-phone .home-services-widget > .hs-dock-actions { grid-column: 1; gr
 html:root.is-phone .home-services-widget .hs-dock-row { grid-row: 3; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 html:root .free-item { touch-action: pan-y; }
+/* 手机「自由摆放」：条目就是可拖拽对象，垂直手势不能再交给页面滚动（否则只能横拖）。
+   阅读顺序（默认）仍保留 pan-y，列表可以正常上下滚。 */
+html:root.is-phone .freeboard-wrap.phone-canvas .free-item { touch-action: none; }
+html:root.is-phone .freeboard-wrap.phone-canvas .free-item.is-selected { cursor: grab; }
+html:root.is-phone .freeboard-wrap.phone-canvas .free-item.is-selected:active { cursor: grabbing; }
 html:root .free-item > .wg-card { flex: 1 1 auto; min-height: 0; padding: var(--og-space-3); overflow: auto; }
 html:root.is-phone .free-item .chrome-clock-date { display: block; }
 html:root.is-phone .free-item .chrome-clock-time { font-size: var(--og-workbench-clock); line-height: 1.12; letter-spacing: -.06em; }

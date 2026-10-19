@@ -345,6 +345,25 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const [port, setPort] = useState({ w: 0, h: 0 });
   const compact = useIsSimpleLike();
   const [toolsVisible, setToolsVisible] = useState(false);
+  /* 手机竖屏默认阅读顺序（堆叠）；打开「自由摆放」切回真画布，可拖动/缩放（仅完整模式：compact 下不出现）。 */
+  const PHONE_CANVAS_KEY = "onethu.board.phoneCanvas.v1";
+  const [phoneCanvas, setPhoneCanvas] = useState<boolean>(() => {
+    try { return localStorage.getItem(PHONE_CANVAS_KEY) === "1"; } catch { return false; }
+  });
+  const togglePhoneCanvas = useCallback((): void => {
+    setPhoneCanvas((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(PHONE_CANVAS_KEY, next ? "1" : "0"); } catch { /* 配额满：仅本次生效 */ }
+      if (next) {
+        setZoom(2);
+        window.setTimeout(() => sayRef.current("自由摆放：拖动卡片，点选后拉角点调大小"), 30);
+      } else {
+        sayRef.current("已回到阅读顺序");
+      }
+      return next;
+    });
+  }, []);
+  const sayRef = useRef<(text: string) => void>(() => undefined);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -387,7 +406,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      自己存的高度，间距 12；**存下来的摆位一个字节不动**——横屏与桌面照旧是那块自由画布。
      桌面与手机共用同一块世界坐标；手机竖屏只是把渲染排成阅读顺序，选中后在浮条里上下移/增减高。 */
   const phoneUi = useIsPhone();
-  const stack = phoneUi && orientation === "portrait" && !penOn;
+  const stack = phoneUi && orientation === "portrait" && !penOn && !phoneCanvas;
   const needsPenCanvas = !stack && (penOn || penStrokes.length > 0);
   // Both layouts share stored world geometry; phone browsing projects a reading order.
   const stackTop = 0;
@@ -421,6 +440,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     setNote(text);
     window.setTimeout(() => setNote(null), 1800);
   }, []);
+
+  sayRef.current = say;
 
   /* 按内容拟合 v3（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
      量体目标 = 条目盒的**直接子元素**（CSS `.free-item > :first-child { overflow:auto }` 就是它，
@@ -812,7 +833,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   );
 
   return (
-    <div className="freeboard-wrap" data-coach="home-canvas">
+    <div className={"freeboard-wrap" + (phoneCanvas && phoneUi ? " phone-canvas" : "")} data-coach="home-canvas">
       {chrome ? (
         <PageHead
           title={chrome.title}
@@ -820,6 +841,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           menu={[
             { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
             { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
+            ...(phoneUi && orientation === "portrait" && !compact
+              ? [{ key: "phone-canvas", label: phoneCanvas ? "阅读顺序" : "自由摆放", onSelect: togglePhoneCanvas }]
+              : []),
             { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
             /* 「所有 OnePage」：删掉旧白板页之后，这里是列表页在 UI 里的入口（另一条通路是 OneGO） */
             { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
@@ -827,8 +851,16 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         />
       ) : (
         <div className="workbench-board-head">
-          <div><h2>首页</h2><span>{stack ? "你的课程、消息与灵感" : "拖动卡片摆放，选中后拖动边角调整大小"}</span></div>
+          <div>
+            <h2>首页</h2>
+            <span>{stack ? "阅读顺序：点右侧「自由摆放」可拖动、缩放" : "拖动卡片摆放，选中后拖动边角调整大小"}</span>
+          </div>
           <div className="workbench-board-actions">
+            {phoneUi && orientation === "portrait" && !compact ? (
+              <Btn variant="outline" size="sm" aria-pressed={phoneCanvas} onClick={togglePhoneCanvas}>
+                {phoneCanvas ? "阅读顺序" : "自由摆放"}
+              </Btn>
+            ) : null}
             <Btn variant="ghost" onClick={() => setTplOpen(true)}>模板</Btn>
           </div>
         </div>

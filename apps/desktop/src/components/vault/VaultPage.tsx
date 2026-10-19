@@ -1,4 +1,5 @@
 import { VaultExchangeActions } from "./VaultExchangeActions.js";
+import { IssuedSharesCard } from "./IssuedSharesCard.js";
 /**
  * OneTHU 暂存箱页面（Phase 1）：混合对象清单 + 口令生成/导入 + 拖放收纳。
  *
@@ -212,6 +213,8 @@ export function VaultPage(): ReactNode {
           文件本体通过清华云盘保存。
         </Text>
       </Card>
+
+      <IssuedSharesCard />
 
       <Card>
         {box.items.length === 0 ? (

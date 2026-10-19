@@ -11,6 +11,7 @@
 import { isShortCode, shortCodeForLink } from "../lib/shortCode.js";
 import type { VaultBox, VaultCatch, VaultItem } from "./vault.js";
 import { createVault, markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
+import { recordIssuedShare } from "./vaultShareLog.js";
 
 export const SHARE_PREFIX = "ONV1";
 export const SHARE_PREFIX_V2 = "ONV2";
@@ -271,6 +272,7 @@ export async function mintShareCode(box: VaultBox, from?: string): Promise<{ cod
   // 上传期间箱子可能已被编辑：旧快照的口令不能冒充当前内容。
   const current = vaultSnapshot().boxes.find(b => b.id === box.id);
   if (current && current.items === box.items && current.name === box.name) markVaultShared(box.id, code);
+  recordIssuedShare(box, code, final);
   return { code, payload: final };
 }
 
@@ -279,7 +281,9 @@ export async function mintShareCode(box: VaultBox, from?: string): Promise<{ cod
 export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; payload: VaultSharePayload }> {
   if (box.lastShareCode && isShortCode(box.lastShareCode)) {
     const dec = await decodeShareAsync(box.lastShareCode);
-    return { code: box.lastShareCode, payload: dec.payload ?? payloadFromVault(box) };
+    const payload = dec.payload ?? payloadFromVault(box);
+    recordIssuedShare(box, box.lastShareCode, payload);
+    return { code: box.lastShareCode, payload };
   }
   if (box.lastShareCode) {
     const old = await decodeShareAsync(box.lastShareCode);

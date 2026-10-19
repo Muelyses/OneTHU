@@ -12,7 +12,11 @@ import assert from "node:assert/strict";
 
 const help = readFileSync("apps/desktop/src/components/HelpSection.tsx", "utf8");
 const coach = readFileSync("apps/desktop/src/components/HomeCoachMarks.tsx", "utf8");
-const today = readFileSync("apps/desktop/src/pages/Today.tsx", "utf8");
+/* 2026-10-15 首页换自由画布：旧「今日页」Today.tsx 已删，锚点搬到 FreeBoard / HomeSpheres，
+   导览组件仍挂 HomeTab（本护栏按新结构解析）。 */
+const freeboard = readFileSync("apps/desktop/src/components/FreeBoard.tsx", "utf8");
+const homeTab = readFileSync("apps/desktop/src/components/explorer/HomeTab.tsx", "utf8");
+const homeSpheres = readFileSync("apps/desktop/src/components/explorer/HomeSpheres.tsx", "utf8");
 const settings = readFileSync("apps/desktop/src/pages/Settings.tsx", "utf8");
 const nav = readFileSync("apps/desktop/src/state/navigation.ts", "utf8");
 const mode = readFileSync("apps/desktop/src/state/settingsMode.ts", "utf8");
@@ -45,10 +49,15 @@ assert.ok(/const KEY = "onethu\.home\.coach\.v1"/.test(coach), "引导要有一�
 assert.ok(/localStorage\.setItem\(KEY, "done"\)/.test(coach), "看过/关掉必须落盘，不能每次进来都弹");
 assert.ok(/不再提示/.test(coach), "引导必须能一次关掉");
 assert.ok(/if \(!el\) \{[\s\S]{0,80}setIdx/.test(coach), "目标不存在时要跳过这条，而不是指错地方");
-assert.ok(/data-coach="home-edit"/.test(today), "首页「编辑」按钮上没有引导锚点");
-assert.ok(/data-coach="home-collapse"/.test(today), "卡片折叠控件上没有引导锚点");
-assert.ok(/data-card=\{def\.id\}/.test(today), "卡片外壳没暴露 id，引导指不到具体卡片");
-assert.ok(/<HomeCoachMarks \/>/.test(today), "首页没有挂上引导组件");
+for (const [src, anchor, where] of [
+  [freeboard, "home-canvas", "首页画布"],
+  [freeboard, "home-add", "添加组件按钮"],
+  [homeSpheres, "home-dock", "一级功能坞"],
+]) {
+  assert.ok(src.includes('data-coach="' + anchor + '"'), where + " 上没有引导锚点（" + anchor + "）");
+}
+/* 新画布的引导已不再逐卡指认（TIPS 只指画布/添加/功能坞），data-card 断言随旧卡片外壳退役。 */
+assert.ok(/<HomeCoachMarks \/>/.test(homeTab), "首页没有挂上引导组件");
 // ④ 卡片摆位：必须贴着目标，且让开底部导航（霖反馈：窄屏退化成底部卡片，既被挡又挡导航）
 assert.ok(/scrollIntoView\(\{ block: "center", behavior: "smooth" \}\)/.test(coach), "目标在屏幕外要先滚过去演示，不能只画个框");
 assert.ok(/bottom-nav/.test(coach), "卡片要让开底部导航栏（量它的实际位置，不写死高度）");
@@ -77,10 +86,11 @@ for (const id of cardTargets) {
 }
 const coachTargets = [...coachCode.matchAll(/data-coach="([^"]+)"/g)].map((m) => m[1]);
 assert.ok(coachTargets.length >= 2, "引导锚点太少：" + coachTargets.length);
+const homeSrc = freeboard + "\n" + homeSpheres + "\n" + homeTab;
 for (const name of coachTargets) {
   assert.ok(
-    today.includes('data-coach="' + name + '"'),
-    "引导指着 data-coach=\"" + name + "\"，但「今日」页没有这个锚点",
+    homeSrc.includes('data-coach="' + name + '"'),
+    "引导指着 data-coach=\"" + name + "\"，但首页画布/功能坞上没有这个锚点",
   );
 }
 assert.ok(

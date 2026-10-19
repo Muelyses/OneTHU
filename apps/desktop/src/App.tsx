@@ -133,7 +133,7 @@ function Routed() {
       <PluginBridge />
       <NotifyBridge />
       {(status === "ready") && <ChatDock />}
-      {/* 挂载分流（A8）：手机=简版五步 OnboardingTourMobile，桌面=V3 七步（组件内部判） */}
+      {/* 首启导览（2026-10-19 起）：统一模式向导 OnboardingTour——先选极简/实用/完整，再按模式走课程（组件内部判是否首启） */}
       {status === "ready" ? <OnboardingTourGate /> : null}
       <FilePreviewHost />
       <ToastHost />

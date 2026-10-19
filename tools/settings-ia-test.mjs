@@ -21,12 +21,14 @@ const plugins = readFileSync("apps/desktop/src/pages/Plugins.tsx", "utf8");
 //    旧 SETTINGS_GROUPS 数组已不存在——按现结构解析，护栏语义不变：TAB_OF 的键必须能命中真实分节标题）
 const sections = [...settings.matchAll(/<SectionHead title="([^"]+)"/g)].map((m) => m[1]);
 const tabOfBody = settings.match(/const SETTINGS_TAB_OF[^=]*=\s*\{([\s\S]*?)\n\};/)?.[1] ?? "";
-const keys = [...tabOfBody.matchAll(/([^\s:,{}]+):\s*"/g)].map((m) => m[1]);
+/* 键可能带空格（如 OneShot 快捷入口）——先试引号键，再退回裸键 */
+const keys = [...tabOfBody.matchAll(/(?:"([^"]+)"|([^\s:,{}"]+)):\s*"/g)].map((m) => m[1] ?? m[2]);
 for (const s of sections) {
   assert.ok(keys.includes(s), `分节「${s}」不在 SETTINGS_TAB_OF 里：它匹配不到页签，会出现在每个页签下面`);
 }
+/* 运行时按「最长前缀匹配」（Section 的 textContent 可能带 hint），所以键允许是分节标题的前缀 */
 for (const k of keys) {
-  assert.ok(sections.includes(k), `SETTINGS_TAB_OF 里的「${k}」没有对应分节（改了标题忘改表？）`);
+  assert.ok(sections.some((x) => x === k || x.startsWith(k)), `SETTINGS_TAB_OF 里的「${k}」没有对应分节（改了标题忘改表？）`);
 }
 
 // ② 标准模式 ≤7 项

@@ -11,6 +11,7 @@ import { openTab } from "../state/explorer.js";
  */
 import { personalNfcCode, personalShareCode } from "../lib/contentExchange.js";
 import { useNfcExchange } from "../lib/useNfcExchange.js";
+import { useVaultReceive } from "../lib/useVaultReceive.js";
 import { IdentityCard } from "./IdentityCard.js";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
@@ -193,6 +194,8 @@ function cloudEmailText(email: string): string {
 function PersonalCardBlock(): ReactNode {
   const { personal, edit, pickAvatar, toVault, busy, cloudEmail } = usePersonalActions();
   const nfc = useNfcExchange();
+  /* 通讯录也应当能直接收名片：粘贴对方的名片口令（或扫码）就进名片夹，不必绕去暂存箱。 */
+  const receive = useVaultReceive();
   const [copying, setCopying] = useState(false);
   const copyCard = async (): Promise<void> => {
     if (copying) return;
@@ -220,6 +223,8 @@ function PersonalCardBlock(): ReactNode {
           <Inline gap={2} wrap>
             <Btn variant="solid" disabled={!nfc.available || nfc.busy || copying} onClick={() => void nfc.send(() => personalNfcCode(personal))}>NFC 分享个人名片</Btn>
             <Btn variant="outline" disabled={copying || nfc.busy} onClick={() => void copyCard()}>{copying ? "正在生成短口令…" : "复制名片口令"}</Btn>
+            <Btn variant="outline" disabled={receive.busy || nfc.busy} onClick={() => void receive.paste()}>粘贴口令收名片</Btn>
+            <Btn variant="ghost" disabled={receive.busy || nfc.busy} onClick={() => void receive.scan()}>扫码收名片</Btn>
           </Inline>
           <Text slot="micro" tone="faint">{nfc.hint}</Text>
         </div>
@@ -447,6 +452,8 @@ export function ContactCabinet(): ReactNode {
   }, [channelId]);
 
   const { personal, edit, pickAvatar, toVault, busy, cloudEmail } = usePersonalActions();
+  /* 通讯录里直接收名片：粘贴对方的名片口令或扫码，不用先绕去暂存箱。 */
+  const receive = useVaultReceive();
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -507,6 +514,8 @@ export function ContactCabinet(): ReactNode {
           <Chip icon={<IconStar size="sm" />} selected={onlyStarred} onClick={() => setOnlyStarred((v) => !v)}>
             星标
           </Chip>
+          <Btn variant="outline" icon={<IconIn size="sm" />} onClick={() => void receive.paste()}>粘贴名片口令</Btn>
+          <Btn variant="ghost" onClick={() => void receive.scan()}>扫码收名片</Btn>
           <Btn variant="outline" icon={<IconIn size="sm" />} onClick={importContacts}>
             从暂存箱收名片
           </Btn>

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-/* 护栏：tab 类条目的"激活态"不得改变影响尺寸的属性（font-weight/font-size/padding/border-width），
+/* 护栏：tab 类条目的"激活态"不得改变影响尺寸的属性（.plg-tab 已随插件页收编 OneGUI Segment 删除）（font-weight/font-size/padding/border-width），
    否则切换 tab 时字宽变化会把整条推走——表现为"tab 条随切换方向轻微左右移位"。
    约定（见 .segmented）：字重/内距恒定，激活只改颜色、底色、投影、下划线。 */
 const CSS = readFileSync("apps/desktop/src/styles/global.css", "utf8");
@@ -16,7 +16,6 @@ function block(selector) {
 
 for (const [name, base, active] of [
   [".tabstrip", ".tabstrip > button,", ".tabstrip > button.is-active,"],
-  [".plg-tab", ".plg-tab {", ".plg-tab.is-on {"],
   [".segmented", ".segmented button {", ".segmented button.is-active {"],
 ]) {
   const b = block(base);

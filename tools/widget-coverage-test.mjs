@@ -44,7 +44,9 @@ for (const [id, text] of described) {
 /* ⑤ 尺寸规则：条目要有 defaultSize/sizeRange，且宽度不超基准单位 */
 /* 尺寸规则在整份文件里判定：rangeFor / defaultWidth 定义在 cardWidgetDefs 之上，
    只从 cardWidgetDefs 起切片会漏掉它们（本护栏第一版就踩了这个）。 */
-ok(/defaultSize: free \? \{ w, h: 1 \} : \{ \.\.\.plan\.def \}/.test(widgets), "卡片条目的默认尺寸没有按「自由控制/挡位控制」分流生成");
+/* services（+homework）有专门默认尺寸、其余走 free/plan 分流；自由控制与挡位两套都要有 */
+ok(/defaultSize:[\s\S]{0,200}free \? \{ w, h: 2 \} : \{ \.\.\.plan\.def \}/.test(widgets), "卡片条目的默认尺寸没有按「自由控制/挡位控制」分流生成");
+ok(/sizeControl: free \? "free" : "tiers"/.test(widgets) && /sizeTiers: free \? undefined : plan\.tiers/.test(widgets), "卡片的 sizeControl/sizeTiers 没有按自由控制分流");
 ok(/maxW: BOARD_UNITS/.test(widgets) && /minW: 1, minH: 1, maxW: BOARD_UNITS/.test(widgets), "卡片条目的 sizeRange 没有受基准单位约束");
 ok(!/description: ""/.test(widgets), "条目里出现了空描述（必须逐卡写）");
 ok(/defaultCol === "rail" \? 1 : 3/.test(widgets), "默认宽度没有按 defaultCol 区分主栏/侧栏");
@@ -58,7 +60,9 @@ const listIds = [...listSeg.matchAll(/"custom:([a-z0-9-]+)"/g)].map((m) => m[1])
 const planSeg = (widgets.match(/export const SIZE_PLANS[\s\S]*?\n\};/) || [""])[0];
 const planKeys = new Set([...planSeg.matchAll(/"?([a-z0-9-]+)"?:\s*\{ tiers:/g)].map((m) => m[1]));
 ok(planKeys.size >= 10, "挡位提案表条目太少（" + planKeys.size + " 条），解析可能失效");
-const needPlan = metaKinds.filter(([id, kind]) => kind === "bespoke" && !listIds.includes(id)).map(([id]) => id);
+/* services 在 widgets.ts 里被点名保留自由控制（def.id === "services" 分支），不要求挡位清单。 */
+const freeBespoke = new Set(["services"]);
+const needPlan = metaKinds.filter(([id, kind]) => kind === "bespoke" && !listIds.includes(id) && !freeBespoke.has(id)).map(([id]) => id);
 const noPlan = needPlan.filter((id) => !planKeys.has(id));
 ok(noPlan.length === 0, "这些卡片取消了自由控制却没有登记尺寸档位（用户无法改变大小）：" + noPlan.join(", "));
 /* 页面自带组件里的数字卡/统计卡也要有档位；成绩明细是列表，保留自由控制。 */

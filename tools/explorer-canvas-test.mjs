@@ -30,16 +30,16 @@ assert.match(layout, /activePageTab\?\.page === "board"[\s\S]*?is-onepage-canvas
    （画布的一部分）里；Layout **不许**再渲染一份（两份 = 双时钟 + 双坞，且那层没有画布上下文）。
    注意别把它挪到任何**持久** transform/contain 的祖先下面：那会造出包含块，内部固定层会相对该祖先定位。
    （page-in 的末帧是 transform:none，只在 260ms 入场动画期间短暂形成包含块，属可接受。） */
-assert.doesNotMatch(layout, /<HomeChrome\s*\/>/, "HomeChrome 只许在 HomeTab 渲染一份，Layout 不许有");
-assert.match(homeTab, /<HomeChrome\s*\/>/, "HomeTab 必须渲染固定层（时钟 + 一级坞）");
+/* 首页固定钟/功能坞那层（.home-chrome-layer）已随首页画布改版退役（2026-10-19）：
+   现在只钉「首页导览标记只挂 HomeTab 一份」。 */
+assert.doesNotMatch(layout, /<HomeCoachMarks\s*\/>/, "HomeCoachMarks 只许在 HomeTab 渲染一份，Layout 不许有");
+assert.match(homeTab, /<HomeCoachMarks\s*\/>/, "HomeTab 必须渲染首页导览标记（HomeCoachMarks）");
 const homeCanvas = block(homeCss, ".explorer-shell > .explorer-content.is-home-canvas", "explorer-home.css");
 assert.match(homeCanvas, /width:\s*100%/);
 assert.match(homeCanvas, /max-width:\s*none/);
 assert.match(homeCanvas, /padding:\s*104px 0 0 !important/);
-assert.match(homeCss, /html\.is-phone \.explorer-shell > \.explorer-content\.is-home-canvas[\s\S]*?padding: 46px 0/);
+assert.match(homeCss, /html\.is-phone \.explorer-shell > \.explorer-content\.is-home-canvas[\s\S]*?padding: var\(--explorer-top-h, 46px\) 0/);
 assert.match(homeCss, /html\.is-phone \.explorer-panel\.is-home-canvas\s*\{\s*overflow: auto/);
-assert.match(homeCss, /\.home-chrome-layer\s*\{[\s\S]*?position: fixed/);
-assert.match(homeCss, /html\.is-phone \.home-chrome-layer \.chrome-time\s*\{\s*top: calc\(var\(--home-canvas-top\) \+ 16px\)/);
 
 /* Glass needs a controlled translucent fill; a tint-only gradient reads as an empty shadow frame.
    断言按**意图**写、不锁具体令牌名与排版：曾经锁 `--glass-fill-regular` + 两行选择器列表，
@@ -70,8 +70,9 @@ assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.explorer-topbar/);
 assert.match(explorerCss, /data-wallpaper-lum="light"\] \.ex-bbar/);
 assert.match(explorerCss, /data-wallpaper-lum="light"\] \.explorer-topbar/);
 assert.doesNotMatch(explorerCss, /\.explorer-shell\[data-wallpaper-lum="dark"\] \.explorer-content h2/);
-assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.home-chrome-layer[\s\S]*?--text-1: #f2f4f8/);
-assert.match(explorerCss, /data-wallpaper-lum="light"\] \.home-chrome-layer[\s\S]*?--text-1: #1c1f28/);
+/* 壁纸亮度档的可读兜底（原固定钟层的令牌重映射随该层退役）：现在钉全屏壁纸的反差纱唯一源自这两条。 */
+assert.match(explorerCss, /data-wallpaper-lum="dark"\] \.explorer-content::before/);
+assert.match(explorerCss, /data-wallpaper-lum="light"\] \.explorer-content::before/);
 
 /* 壁纸模型（2026-10-15 校正）：已从"按 tab 存壁纸"演进为**单一 global 全屏档 + library**，
    旧 per-tab 文档在迁移时把一张提升为全屏档（优先常驻 home 键），绝不丢用户壁纸。

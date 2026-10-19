@@ -94,10 +94,9 @@ function jumpToSection(titles: string[]): void {
 const SETTINGS_TAB_OF: Record<string, string> = {
   关于: "关于", 账户: "账号", 账号与绑定: "账号", 安全: "账号",
   云同步: "数据与同步", 外部作业源: "数据与同步",
-  OneShot: "外观与布局", 首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
+  "OneShot 快捷入口": "外观与布局", 首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
   工作空间: "外观与布局", /* dev-explorer：缺键会让工作空间分节在所有页签恒显（用户实测「其他 设置多了个不动的分节/触发不一致」） */
-  /* OneGUI Section 的 textContent 含 hint（「搜索与胶囊底栏胶囊…」），下面按最长前缀匹配 */
-  搜索与胶囊: "外观与布局",
+  /* OneGUI Section 的 textContent 可能含 hint，匹配按最长前缀（见下方 SETTINGS_TAB_OF[prefix] 兜底） */
   极客模式: "桌面小组件",
   通知: "通知与提醒",
   /* 2026-10-11 重构：桌面小组件独立成栏；语音合成/悬浮球迁到 OH 页；插件改成独立入口 */

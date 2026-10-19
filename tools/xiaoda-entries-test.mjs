@@ -75,7 +75,7 @@ assert.ok(
   /const TOP_PAGES = new Set\(\[[\s\S]*?"xiaoda"[\s\S]*?\]\);/.test(facade),
   "facade.TOP_PAGES 必须含 xiaoda（OH/插件经 ext_tab open 才开得了这一页）",
 );
-assert.ok(/if \(page === "xiaoda"\) return IconXiaoda/.test(tabStrip), "标签条图标表要给清小搭自己的图标");
+assert.ok(/if \(page === "xiaoda"\) return IconXiaoda|case "xiaoda": return IconXiaoda/.test(tabStrip), "标签条图标表要给清小搭自己的图标");
 
 /* ── ⑤ 读档行为（真模块 + 假 localStorage）：补停靠一次 / 移除不回填 / 新装默认坞 ── */
 const KEY = "onethu.home.spheres.v3";
@@ -109,9 +109,9 @@ assert.ok(!JSON.parse(store.get(KEY)).docked.includes("xiaoda"), "移除要落�
 const removed = await fresh("removed");
 assert.ok(!removed.spheresSnapshot().docked.includes("xiaoda"), "用户手动移除过就不再回填（added 是最终态）");
 
-/* C. 新装（无任何存档）→ 前八颗默认球 + 清小搭追加在尾 */
+/* C. 新装（无任何存档）→ 前八颗默认球 + AUTO_DOCK（清小搭、通讯录）追加在尾 */
 put(null);
 const installed = await fresh("fresh");
-assert.deepEqual(installed.spheresSnapshot().docked, [...FIRST8, "xiaoda"], "新装默认坞 = 前八颗 + 清小搭（追加在尾）");
+assert.deepEqual(installed.spheresSnapshot().docked, [...FIRST8, "xiaoda", "contacts"], "新装默认坞 = 前八颗 + 清小搭 + 通讯录（AUTO_DOCK 追加在尾）");
 
 console.log("结果：清小搭四处入口（程序坞 / 补停靠 / 搜索栏 / OH）注册齐，且读档补停靠行为正确 ✓");

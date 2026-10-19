@@ -5,6 +5,7 @@
  */
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
+import { installFakeCloud } from './lib/fake-cloud.mjs';
 
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
 let checks = 0;
@@ -15,7 +16,9 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?
 try {
   const p = await browser.newPage({ viewport: { width: 1280, height: 840 } });
   p.on('pageerror', (e) => errors.push(e.message));
-  await p.addInitScript(() => localStorage.setItem('onethu.onboarded.phone', '1'));
+  await p.addInitScript(() => { performance.setResourceTimingBufferSize(10000); localStorage.setItem('onethu.onboarded.phone', '1'); });
+  /* 假云盘：名片口令是联网短码（publishExchangeCode），不联网也要能验「通讯录直接粘贴收名片」。 */
+  await installFakeCloud(p);
   await p.route('**/src/state/data.ts*', async (route) => {
     const r = await route.fetch();
     let b = await r.text();
@@ -77,6 +80,24 @@ try {
     return { first: first.ok, dup: dup.reason, n: m.cardsSnapshot().contacts.length };
   });
   check(model.first && model.dup === 'duplicate' && model.n === 1, 'contacts dedupe by name+phone');
+
+  /* 通讯录直接收名片（用户 2026-10-19 点名）：「粘贴名片口令 / 扫码收名片」就在名片夹工具条上，不用先绕暂存箱 */
+  await call('/src/state/explorer.ts', 'explorerNavigate', ['contacts']);
+  await p.waitForTimeout(800);
+  await p.locator('.contact-toolbar').first().waitFor();
+  const toolbar = await p.locator('.contact-toolbar button').allTextContents();
+  check(toolbar.includes('粘贴名片口令') && toolbar.includes('扫码收名片') && toolbar.includes('从暂存箱收名片'), 'contacts toolbar offers 粘贴/扫码/从暂存箱 收名片');
+  const friendCode = await call('/src/lib/contentExchange.ts', 'personalShareCode', [
+    { name: '外部朋友', avatar: '', website: '', social: '', phone: '', bio: '走廊认识的', cloudEmail: '' },
+  ]);
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test(friendCode), 'fake friend card code is a short code: ' + friendCode);
+  await p.getByRole('button', { name: '粘贴名片口令' }).click();
+  await p.waitForSelector('.plg-form-modal');
+  await p.locator('.plg-form-modal textarea').fill(friendCode);
+  await p.getByRole('button', { name: '提交' }).click();
+  await p.waitForTimeout(900);
+  const received = await call('/src/state/nameCard.ts', 'cardsSnapshot');
+  check(received.contacts.some((c) => c.name === '外部朋友'), 'pasting a card code in contacts adds the contact (no vault detour)');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
   console.log(checks + ' name card assertions passed');
 } finally {

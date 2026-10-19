@@ -1,3 +1,4 @@
+import { useIsSimpleLike } from "../state/experienceMode.js";
 /**
  * 自由图层白板（2026-10-13 定稿，霖：要可以互相重叠盖住的高级白板）。
  *
@@ -342,6 +343,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       放大一次盒子变大、"视口"跟着变大、缩回去盒子再也不缩（真机实测：250% 回到 100% 后
       minW 卡在 2704px，留一大片空滚）。端口尺寸只随窗口变，没有这条路。 */
   const [port, setPort] = useState({ w: 0, h: 0 });
+  const compact = useIsSimpleLike();
   const [toolsVisible, setToolsVisible] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
@@ -1024,7 +1026,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {toolsVisible ? createPortal(<div className="board-viewport-tools" role="toolbar" aria-label="白板工具">
+        {toolsVisible && !compact ? createPortal(<div className="board-viewport-tools" role="toolbar" aria-label="白板工具">
           <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>组件</Btn>
           {stack ? null : <>
             <span className="board-tool-divider" />
@@ -1049,7 +1051,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       </div>
 
       {/* 文件夹入口选择器：一级功能 / OnePage / 工作区 */}
-      {folderPicker
+      {folderPicker && !compact
         ? createPortal(
             <div className="hs-more-mask" onClick={() => setFolderPicker(null)}>
               <div className="hs-more" role="dialog" aria-label="添加入口" onClick={(e) => e.stopPropagation()}>
@@ -1123,7 +1125,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
       {/* 添加组件抽屉：常驻渲染（自己管退场动画）；「改变大小」复用同一个抽屉（自动选中当前档位） */}
       <BoardAddDrawer
-        open={addOpen || !!resizeFor || !!resizeDef}
+        open={!compact && (addOpen || !!resizeFor || !!resizeDef)}
         defs={defs}
         renderers={renderers}
         mode={resizeFor ? "resize" : "add"}

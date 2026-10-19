@@ -11,6 +11,7 @@
  *    从 allSearchRows() 还原——同一份注册表，天然同源。
  */
 import { useEffect, useRef, useState } from "react";
+import { useExperienceMode } from "../state/experienceMode.js";
 import { searchAll, type SearchAllResult } from "../state/searchAll.js";
 import { openTab, openSettings } from "../state/explorer.js";
 import { recordSearchJump } from "../state/explorerPrefs.js";
@@ -153,6 +154,7 @@ export interface OhSearchState {
 
 /** 160ms 防抖的 searchAll（两处搜索模式共用；输入变化丢弃过期结果） */
 export function useOhSearch(query: string, delayMs = 160): OhSearchState {
+  const mode = useExperienceMode();
   const [st, setSt] = useState<OhSearchState>({ result: null, total: 0 });
   const seq = useRef(0);
   useEffect(() => {
@@ -169,6 +171,6 @@ export function useOhSearch(query: string, delayMs = 160): OhSearchState {
       setSt({ result: r, total });
     }, delayMs);
     return () => window.clearTimeout(t);
-  }, [query, delayMs]);
+  }, [query, delayMs, mode]);
   return st;
 }

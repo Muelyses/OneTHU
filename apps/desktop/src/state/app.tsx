@@ -55,6 +55,8 @@ export interface BackTarget {
 
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
 export interface LearnNav {
+  /** 通讯录内的组织直达入口。 */
+  section?: "cards" | "friends" | "orgs";
   traceTarget?: {title:string;location:string;date?:string;startTime?:string;endTime?:string};
   courseId?: string;
   itemId?: string;

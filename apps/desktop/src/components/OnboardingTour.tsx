@@ -1,3 +1,5 @@
+import { TourIllustration } from "./TourIllustration.js";
+import { ExperienceModePicker } from "./ExperienceModePicker.js";
 import { useEffect, useState } from "react";
 import { Btn, Modal, Stack, Text, Inline, Spacer, Progress } from "@onethu/gui";
 import { experienceMode, setExperienceMode, type ExperienceMode } from "../state/experienceMode.js";
@@ -20,30 +22,34 @@ const SIMPLE_LESSONS:Lesson[]=[
  {id:"today",title:"首页，只关心今天",lead:"打开就看到待办与要上的课程。没有需要整理的标签和白板。",steps:["点一条待办查看详情，点课程进入课程内容。","随时点左上角「首页」回来。"]},
  {id:"quick",title:"五个入口，直接到达",lead:"学习、预约、生活、信息、课表，始终在底部。",steps:["学习里看课程与作业，预约里找场馆和研讨间。","生活与信息汇集校园服务，课表里查看时间安排。","OH 与搜索胶囊保持可用；在设置中填写自己的 API。"]},
 ];
+/* 实用模式：和极简一样干净，但第五格是「更多功能」——展开全部功能，还能把常用功能换进左边四个入口。 */
+const PRACTICAL_LESSONS:Lesson[]=[
+ {id:"today",title:"首页，只关心今天",lead:"打开就看到待办与要上的课程。没有需要整理的标签和白板。",steps:["点一条待办查看详情，点课程进入课程内容。","随时点左上角「首页」回来。"]},
+ {id:"more",title:"更多功能，一屏展开",lead:"底部最右边是「更多功能」：点开按目录列出全部功能，点名称直接打开。",steps:["功能按学习、日程、生活、预约等目录分组，先找目录再点功能。","暂存箱、通讯录、白板等完整模式功能不在此列，切回完整模式即可用。"]},
+ {id:"swap",title:"四个入口，随你安排",lead:"学习、预约、生活、课表默认在下排；想把哪个功能放在手边，就换进去。",steps:["在「更多功能」里点功能右侧的 + 号。","选择要替换的入口（入口 1 到 4），该功能就固定在底部。","换过的入口在实用模式里一直保持，切到其他模式不受影响。"]},
+];
 function shouldStart(){try{return !localStorage.getItem(KEY)&&!localStorage.getItem("onethu.onboarded.flow3")&&!localStorage.getItem("onethu.onboarded.phone");}catch{return false;}}
 export function OnboardingTour(){
  const [open,setOpen]=useState(shouldStart),[chosen,setChosen]=useState<ExperienceMode>(experienceMode),[step,setStep]=useState(-1),[practice,setPractice]=useState(false),[connect,setConnect]=useState(false);
- const lessons=chosen==="simple"?SIMPLE_LESSONS:FULL_LESSONS;
+ const lessons=chosen==="simple"?SIMPLE_LESSONS:chosen==="practical"?PRACTICAL_LESSONS:FULL_LESSONS;
  const last=step===lessons.length, lesson=lessons[step] ?? lessons[0]!;
  useEffect(()=>{const replay=()=>{setChosen(experienceMode());setStep(-1);setPractice(false);setConnect(false);setOpen(true);};window.addEventListener(REPLAY,replay);return()=>window.removeEventListener(REPLAY,replay);},[]);
  const finish=()=>{try{localStorage.setItem(KEY,"1");}catch{}setOpen(false);setPractice(false);};
  if(!open)return null;
  defineOnboardingScopes();
  if(practice)return <aside className="tour-resume" role="status"><Text>正在体验：{lesson?.title}</Text><Btn variant="solid" onClick={()=>setPractice(false)}>继续导览</Btn><Btn variant="ghost" onClick={finish}>结束导览</Btn></aside>;
- return <Modal open onClose={finish} closeButton={false} size="md" scope={TOUR_CARD_SCOPE} aria-label="OneTHU 使用导览" foot={<Inline gap={2} wrap>
+ return <Modal open onClose={finish} closeButton={false} size={step<0?"lg":"md"} className="experience-tour" scope={TOUR_CARD_SCOPE} aria-label="OneTHU 使用导览" foot={<Inline gap={2} wrap>
  <Btn variant="outline" disabled={step<0} onClick={()=>{setStep(s=>s-1);setConnect(false);}}>上一步</Btn><Spacer/>
  <Btn variant="ghost" onClick={finish}>跳过导览</Btn>
  <Btn variant="solid" onClick={()=>{if(step===-1)setExperienceMode(chosen);if(last)finish();else setStep(s=>s+1);}}>{step===-1?"按此模式开始":last?"开始使用":"下一步"}</Btn>
  </Inline>}>
  <Stack gap={4}>
- <Text slot="micro" tone="faint">{step<0?"欢迎来到 OneTHU":`${chosen==="simple"?"极简":"完整"}模式 · ${step+1} / ${lessons.length+1}`}</Text>
+ <Text slot="micro" tone="faint">{step<0?"欢迎来到 OneTHU":`${chosen==="simple"?"极简":chosen==="practical"?"实用":"完整"}模式 · ${step+1} / ${lessons.length+1}`}</Text>
  <Progress size="sm" value={step<0?0:(step+1)/(lessons.length+1)}/>
- {step<0?<><Text as="h2" slot="title">你想怎样使用 OneTHU？</Text><div className="tour-mode-options">
- {(["simple","full"] as const).map(m=><Btn key={m} variant={chosen===m?"solid":"outline"} aria-pressed={chosen===m} onClick={()=>setChosen(m)}><span><strong>{m==="simple"?"极简模式":"完整模式"}</strong><small>{m==="simple"?"只看今天 · 五个快捷入口":"自由白板 · 内容传递 · 组织管理"}</small></span></Btn>)}
- </div><Text tone="faint">以后可以在设置里切换。已有标签、白板和完整模式设置都会原样保留。</Text></>:last?<>
- <Text as="h2" slot="title">需要时，再连接</Text><Text>可选连接雨课堂同步作业，或扫码连接微信、飞书，在熟悉的聊天里使用 OH。现在不连接，也可以直接开始。</Text>
+ {step<0?<><Text as="h2" slot="title">你想怎样使用 OneTHU？</Text><ExperienceModePicker value={chosen} onChange={setChosen}/><Text tone="faint">以后可以在设置里切换。已有标签、白板和完整模式设置都会原样保留。</Text></>:last?<>
+ <Text as="h2" slot="title">需要时，再连接</Text><Text>可选：连雨课堂同步作业，扫码接微信/飞书用 OH。现在跳过也行。</Text>
  <Btn variant="outline" onClick={()=>setConnect(!connect)}>{connect?"收起连接选项":"选择扫码连接"}</Btn>{connect?<OptionalConnections/>:null}
- </>:<><Text as="h2" slot="title">{lesson.title}</Text><Text>{lesson.lead}</Text><ol className="tour-steps">{lesson.steps.map(s=><li key={s}>{s}</li>)}</ol>
+ </>:<><Text as="h2" slot="title">{lesson.title}</Text><Text>{lesson.lead}</Text><TourIllustration lesson={lesson.id}/><ol className="tour-steps">{lesson.steps.map(s=><li key={s}>{s}</li>)}</ol>
  {lesson.page?<Btn variant="outline" onClick={()=>{openTab(lesson.page!, lesson.page==="contacts"?{section:"orgs"} as never:null);setPractice(true);}}>{lesson.action}</Btn>:null}</>}
  </Stack></Modal>;
 }

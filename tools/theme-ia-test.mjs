@@ -22,7 +22,8 @@ ok(/ThemePickerModal/.test(SETTINGS), "设置 → 外观 没有挂 ThemePickerMo
 /* 2026-10-15：小节标题由 .setting-title div 改为 SettingsRow（带「安装 / 管理」两个动作），
    断言随设计更新——找「主题」这一行的 title 属性。 */
 ok(/title="主题"/.test(SETTINGS), "设置 → 外观 缺少「主题」小节");
-ok(/ThemeSwatch/.test(SETTINGS) && /activateTheme\(/.test(SETTINGS), "设置 → 外观 缺少主题板就地切换（色卡 + 应用）");
+/* 2026-10-19：就地主题板改用共享 ThemeChoice（与 ThemePickerModal 同排版），断言跟着组件名走。 */
+ok(/ThemeChoice/.test(SETTINGS) && /activateTheme\(/.test(SETTINGS), "设置 → 外观 缺少主题板就地切换（色卡 + 应用）");
 ok(/安装主题/.test(SETTINGS) && /view: "market", category: "theme"/.test(SETTINGS), "设置 → 外观 缺少「安装主题」（市场 + 主题筛选）");
 ok(/管理主题/.test(SETTINGS) && /view: "mine", category: "theme"/.test(SETTINGS), "设置 → 外观 缺少「管理主题」（插件页启用/停用）");
 ok(/跟随系统昼夜/.test(SETTINGS) && /setFollowSystem/.test(SETTINGS), "设置 → 外观 缺少「跟随系统昼夜」");

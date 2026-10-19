@@ -1,5 +1,5 @@
 import { SimpleSettings } from "../SimpleSettings.js";
-import { useExperienceMode } from "../../state/experienceMode.js";
+import { useIsSimpleLike } from "../../state/experienceMode.js";
 import { IconBtn, IconUser } from "@onethu/gui";
 /**
  * 设置浮层（dev-explorer）：个人设置 / 插件 / OneTHU Harness 三段合一。
@@ -29,7 +29,7 @@ const SEGMENTS: Array<{ id: OverlayEntry; label: string; icon: ReactNode }> = [
 ];
 
 export function SettingsOverlay(): ReactNode {
-  const simple = useExperienceMode() === "simple";
+  const simple = useIsSimpleLike();
   const entry = useOverlayEntry(); // null = 关闭
   const expanded = useExpanded();
   /** 退场动画（TabManageModal 同款：先播淡出再卸载） */

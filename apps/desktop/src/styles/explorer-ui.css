@@ -653,10 +653,6 @@
   text-align: left;
   font-size: 13px;
 }
-/* 底栏安全区：全面屏手势条不压内容 */
-.ex-bbar {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
 
 /* 底栏安全区：全面屏手势条不压内容 */
 .ex-bbar {

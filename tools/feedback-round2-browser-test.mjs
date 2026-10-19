@@ -76,7 +76,8 @@ async function white(p, label) {
   check(await p.locator('.schedule-block[data-tx="keep"]').count() === await p.locator('.schedule-block').count(), label + ': 日程块明确豁免自动文字取色');
 }
 const card = name => ({ name, avatar: '', website: 'https://example.org', social: '', phone: '123', bio: '交换测试', updatedAt: Date.now() });
-async function openRadar(p) { if (!await p.locator('.vault-radar').isVisible()) await p.getByRole('button', { name: /^暂存箱，/ }).click(); await p.locator('.vault-radar').waitFor(); await p.waitForTimeout(400); }
+async function openRadar(p) { for(const title of ['接收内容',/^分享「/]){const dialog=p.getByRole('dialog',{name:title});if(await dialog.isVisible()){await p.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});}} if (!await p.locator('.vault-radar').isVisible()) await p.getByRole('button', { name: /^暂存箱，/ }).click(); await p.locator('.vault-radar').waitFor(); await p.waitForTimeout(400); }
+async function receiveRadar(p) { await openRadar(p);await p.locator('.vault-radar').getByRole('button',{name:'接收',exact:true}).click();await p.getByRole('dialog',{name:'接收内容'}).waitFor(); }
 async function closeFeedback(p) { await p.locator('.exchange-feedback button').click(); await p.waitForTimeout(350); }
 try {
   for (const [w,h,label] of [[1280,860,'desktop'], [390,844,'phone'], [320,700,'phone-small'], [844,390,'landscape']]) {
@@ -142,7 +143,8 @@ try {
   await openRadar(p);
   /* 清空剪贴板记录再点：否则上一段名片口令的短码还留在 __copied 里，会把失败蒙混过关 */
   await p.evaluate(() => { window.__copied.length = 0; });
-  await p.getByRole('button',{name:'复制口令',exact:true}).click();
+  await p.locator('.vault-radar').getByRole('button',{name:'分享口令',exact:true}).click();
+  await p.locator('.vault-share-code').waitFor();
   await p.waitForFunction(() => /^ON(-[0-9A-Z]{4}){4}$/.test(window.__copied.at(-1) ?? ''));
   check(await p.evaluate(() => window.__copied.length === 1), '雷达第一次分享就生成口令（适配器在小形态也会装）');
   const code = await p.evaluate(() => window.__copied.at(-1));
@@ -153,36 +155,36 @@ try {
   await p.locator('.exchange-feedback.is-ready').waitFor();
   check(await p.evaluate(code=>window.__nfc.sent.at(-1)===code,code),'雷达直接开启 NFC 传送');
   check(await p.locator('.ex-tab').count()===tabs,'交换过程无需打开暂存箱二级页面');
-  await closeFeedback(p); await openRadar(p);
+  await closeFeedback(p); await receiveRadar(p);
   const incoming = await call(p,'/src/lib/contentExchange.ts','personalShareCode',[card('新朋友')]);
   await p.evaluate(t=>window.__nfc.text=t,incoming);
   await p.getByRole('button',{name:'NFC 接收',exact:true}).click();
   await p.locator('.exchange-feedback.is-success').waitFor();
   const cards = await call(p,'/src/state/nameCard.ts','cardsSnapshot');
   check(JSON.stringify(cards.contacts).includes('新朋友'),'雷达直接接收名片并保存进通讯录');
-  await closeFeedback(p); await openRadar(p);
+  await closeFeedback(p); await receiveRadar(p);
   await p.evaluate(t=>window.__nfc.text=t,code);
   await p.getByRole('button',{name:'NFC 接收',exact:true}).click();
   await p.locator('.exchange-feedback.is-success').waitFor();
   const boxes = await call(p,'/src/state/vault.ts','vaultSnapshot');
   check(boxes.activeId!==original.id && boxes.boxes.find(b=>b.id===original.id).items[0].text==='保留我的内容','收到内容放入新箱，原箱及笔记仍完整保留');
-  await closeFeedback(p); await openRadar(p);
+  await closeFeedback(p); await receiveRadar(p);
   await p.evaluate(()=>window.__nfc.text='invalid');
   await p.getByRole('button',{name:'NFC 接收',exact:true}).click(); await p.locator('.exchange-feedback.is-error').waitFor();
   check((await call(p,'/src/state/vault.ts','vaultSnapshot')).boxes.length===boxes.boxes.length,'无效 NFC 内容显示失败，不新增空箱');
-  await closeFeedback(p); await openRadar(p);
+  await closeFeedback(p); await receiveRadar(p);
   await p.evaluate(()=>{window.__nfc.error='超时：10 秒内没有读到 NFC 内容'});
   await p.getByRole('button',{name:'NFC 接收',exact:true}).click(); await p.locator('.exchange-feedback.is-error').waitFor();
   check((await p.locator('.exchange-feedback').innerText()).includes('超时'),'桥接超时显示真实错误，可重试');
-  await closeFeedback(p); await openRadar(p);
+  await closeFeedback(p); await receiveRadar(p);
   await p.evaluate(()=>{window.__nfc.error='';window.__nfc.enabled=false;window.dispatchEvent(new Event('focus'))}); await p.waitForTimeout(200);
-  check(await p.getByRole('button',{name:'NFC 接收',exact:true}).isDisabled() && (await p.locator('.vault-radar').innerText()).includes('系统设置开启 NFC'),'NFC 未开启有明确提示');
+  check(await p.getByRole('button',{name:'NFC 接收',exact:true}).isDisabled() && (await p.getByRole('dialog',{name:'接收内容'}).innerText()).includes('系统设置开启 NFC'),'NFC 未开启有明确提示');
   await p.screenshot({path:`${out}/radar-desktop.png`});
   await call(p,'/src/state/vault.ts','addToVault',[{type:'text',title:'更新',text:'新的内容'}]);
   check(!(await call(p,'/src/state/vault.ts','activeVault')).lastShareCode,'编辑箱子后旧口令失效，避免发送旧快照');
   await p.close();
-  const m=await page(390,844);await go(m,'home');await openRadar(m);
-  check(await m.getByRole('button',{name:'NFC 接收',exact:true}).isDisabled() && (await m.locator('.vault-radar').innerText()).includes('此设备不支持 NFC'),'无 NFC 的真实浏览器保留入口并解释复制替代方式');
+  const m=await page(390,844);await go(m,'home');await receiveRadar(m);
+  check(await m.getByRole('button',{name:'NFC 接收',exact:true}).isDisabled() && (await m.getByRole('dialog',{name:'接收内容'}).innerText()).includes('此设备不支持 NFC'),'无 NFC 的真实浏览器保留入口并解释复制替代方式');
   const radar=await m.locator('.vault-radar').boundingBox();
   check(radar.x>=0&&radar.x+radar.width<=390&&radar.y+radar.height<=844,'手机雷达与新增操作完整在屏内');
   await m.screenshot({path:`${out}/radar-phone.png`});await m.close();

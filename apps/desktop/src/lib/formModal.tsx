@@ -1,4 +1,4 @@
-import { Input } from "@onethu/gui";
+import { Input, Modal, Stack } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -7,7 +7,7 @@ import { Btn } from "@onethu/gui";
  * 原生 window.prompt 静默返回 null，同 confirm.tsx 的教训）。
  * <FormModalHost/> 挂在应用根部一次即可。
  */
-import { useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 
 export type FormField =
@@ -40,6 +40,7 @@ export function FormModalHost(): ReactNode {
     () => pending,
     () => null,
   );
+  const draft = useMemo<Record<string,string>>(()=>Object.fromEntries((pending?.fields??[]).map(f=>[f.key,f.default??(f.kind==="select"?f.options[0]?.value??"":"")])),[pending]);
   if (!pending) return null;
   const close = (v: Record<string, string> | null): void => {
     pending?.resolve(v);
@@ -48,12 +49,9 @@ export function FormModalHost(): ReactNode {
   };
   const fields = pending.fields;
   const title = pending.title;
-  const draft: Record<string, string> = {};
-  for (const f of fields) draft[f.key] = f.default ?? (f.kind === "select" ? f.options[0]?.value ?? "" : "");
   return (
-    <div className="plg-form-overlay" onClick={() => close(null)}>
-      <div className="plg-form-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="plg-form-title">{title}</div>
+    <Modal open title={title} onClose={()=>close(null)} className="plg-form-modal" size="sm">
+      <Stack gap={3}>
         {fields.map((f) => (
           <label key={f.key} className="plg-form-field">
             <span className="plg-form-label">
@@ -87,7 +85,7 @@ export function FormModalHost(): ReactNode {
             }}>提交
           </Btn>
         </div>
-      </div>
-    </div>
+      </Stack>
+    </Modal>
   );
 }

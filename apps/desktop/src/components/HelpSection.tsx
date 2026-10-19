@@ -1,5 +1,5 @@
 import { replayOnboarding } from "./OnboardingTour.js";
-import { Btn } from "@onethu/gui";
+import { Btn, SettingsRow } from "@onethu/gui";
 /**
  * 使用帮助（§4.6）：按「我想做什么」组织，不做功能罗列。
  *
@@ -65,7 +65,7 @@ export function HelpSection(): ReactNode {
   const { navigate } = useApp();
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      <div className="setting-row"><div><div className="setting-title">白板、暂存箱与组织怎么用？</div><div className="setting-desc">按模式查看导览，学习整理白板、暂存内容、分享短口令和 NFC 碰一碰，以及管理组织。</div></div><Btn variant="outline" onClick={replayOnboarding}>打开导览</Btn></div>
+      <SettingsRow title="白板、暂存箱与组织怎么用？" sub="按模式查看导览，学习整理白板、暂存内容、分享短口令和 NFC 碰一碰，以及管理组织。" control={<Btn variant="outline" onClick={replayOnboarding}>打开导览</Btn>}/>
       {TASKS.map((task) => {
         const entries = task.ids
           .map((id) => byId.get(id))

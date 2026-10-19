@@ -31,6 +31,7 @@ import {
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { openTab, useExplorerState } from "../state/explorer.js";
+import { useIsSimpleLike } from "../state/experienceMode.js";
 import { openHomeworkRow } from "../lib/homeworkEntry.js";
 import type { Homework } from "@onethu/core";
 import { PageAtomStar } from "../components/Collect.js";
@@ -115,7 +116,7 @@ interface GridEntry {
   /** 作业 DDL 元数据（src==="hw"） */
   homework?: Homework;
   courseId?: string;
-  hwMeta?: { submitted: boolean; source?: string; externalUrl?: string; ext: boolean };
+  hwMeta?: { submitted: boolean; source?: string; externalUrl?: string; ext: boolean; courseName?: string };
   /** 重叠簇内的原始条目（src==="cluster"，详情弹层列表展开） */
   clusterItems?: GridEntry[];
   /** 云/本事件可编辑定位 */
@@ -345,6 +346,8 @@ export function SchedulePage() {
   const extHw = useExternalHomework();
   const cal = useCloudCal();
   const { status } = useApp();
+  /** 极简/实用壳：云同步与寻迹是完整模式能力，简洁壳不出现入口（连提示文案一起藏）。 */
+  const simple = useIsSimpleLike();
   /** 本机有没有桌面小组件（只有 Android 有承载）：决定「在桌面小组件显示」是否出现在编辑器 */
   const widgetHere = useNotifyBackend() === "android";
 
@@ -539,9 +542,10 @@ export function SchedulePage() {
       const b = new Date(t - 2 * 3_600_000);
       const hmOf = (x: Date): string => `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}`;
       const wd = (new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).getUTCDay() + 6) % 7;
+      const hwCourse = h.courseName || campus.data?.courses?.find((c) => c.name && c.id === h.courseId)?.name || undefined;
       inWeek.push({
         courseName: h.title,
-        location: h.courseName || undefined,
+        location: hwCourse,
         date: ymdOf(d),
         dayOfWeek: wd + 1,
         startTime: hmOf(b),
@@ -551,6 +555,7 @@ export function SchedulePage() {
         hwMeta: {
           submitted: !!h.submitted,
           source: h.source,
+          courseName: hwCourse,
           ext: !!h.source,
           // 外源用自带链接；learn 作业拼官方作业详情页（浏览器已登录即可看）
           externalUrl: h.externalUrl || h.url || (h.baseId ? learnUrls.LEARN_HOMEWORK_PAGE(h.courseId, h.baseId) : undefined),
@@ -1161,16 +1166,16 @@ export function SchedulePage() {
                 </div>
               ) : null}
 
-              {/* 同步 / 系统日历 / 刷新 */}
+              {/* 同步 / 系统日历 / 刷新（云同步与系统日历是完整模式能力；简洁壳只留刷新） */}
               <div className="schedule-panel-block">
-                <Text slot="micro" tone="faint">{canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置（设置页开启）"}</Text>
+                {simple ? null : <Text slot="micro" tone="faint">{canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置（设置页开启）"}</Text>}
                 <div className="schedule-panel-row">
-                  <Btn size="sm" variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing} icon={<IconRefresh width={14} height={14} />}>
+                  {simple ? null : <Btn size="sm" variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing} icon={<IconRefresh width={14} height={14} />}>
                     {cal.syncing ? "同步中…" : "同步云日历"}
-                  </Btn>
-                  <Btn size="sm" variant="outline" onClick={() => void onSystemCal()} disabled={busy}>
+                  </Btn>}
+                  {simple ? null : <Btn size="sm" variant="outline" onClick={() => void onSystemCal()} disabled={busy}>
                     {sysNative === false ? "导出 .ics" : "同步到系统日历"}
-                  </Btn>
+                  </Btn>}
                   <Btn size="sm" variant="outline" disabled={winLoading} icon={<IconRefresh width={14} height={14} />} onClick={() => {
                     setReloadTick((t) => t + 1);
                     if (!calendar.data) void calendar.reload();
@@ -1181,7 +1186,7 @@ export function SchedulePage() {
 
               {/* 新建 + 收藏本页 */}
               <div className="schedule-panel-row">
-                <Btn variant="solid" tone="brand" size="sm" onClick={() => { setDraft(emptyDraft(defaultDraftDate, canCloud)); setPanelOpen(false); }}>＋ 添加日程</Btn>
+                <Btn variant="solid" tone="brand" size="sm" onClick={() => { setDraft(emptyDraft(defaultDraftDate, simple ? false : canCloud)); setPanelOpen(false); }}>＋ 添加日程</Btn>
                 <Spacer />
                 <PageAtomStar atomKey="schedule" title="日程" />
               </div>
@@ -1211,6 +1216,8 @@ export function SchedulePage() {
           ? `${d.date}${d.startTime && d.endTime ? ` ${d.startTime}–${d.endTime}` : ""}`
           : d.startSection ? `第 ${d.startSection}–${d.endSection ?? d.startSection} 节` : "";
         const srcText = d.hwMeta?.ext ? (d.hwMeta.source ?? "外部") : "网络学堂";
+        /** 作业所属课程：网络学堂作业的 courseName 由 courseId 映射补全（hwMeta.courseName） */
+        const hwCourse = isHw ? (d.hwMeta?.courseName || d.homework?.courseName || d.location || "") : "";
         return (
           <Modal open onClose={() => setDetail(null)} title={title} size="md" closeButton={false}
             foot={
@@ -1220,7 +1227,7 @@ export function SchedulePage() {
                 ) : (
                   <>
                     <Btn variant="solid" tone="brand" onClick={() => gotoDetail(d)}>前往</Btn>
-                    <Btn variant="outline" disabled={!d.location} titleAttr={d.location ? `寻迹 ${d.location}` : "没有地点，无法寻迹"} onClick={() => gotoDetail(d, true)}>寻迹</Btn>
+                    {simple ? null : <Btn variant="outline" disabled={!d.location} titleAttr={d.location ? `寻迹 ${d.location}` : "没有地点，无法寻迹"} onClick={() => gotoDetail(d, true)}>寻迹</Btn>}
                   </>
                 )}
                 <Btn variant="outline" onClick={() => setDetail(null)}>关闭</Btn>
@@ -1262,11 +1269,10 @@ export function SchedulePage() {
               <Stack gap={2}>
                 <KeyValue rows={[
                   { k: "名称", v: <Text slot="body" weight="semibold">{d.courseName}</Text> },
-                  ...(timeText ? [{ k: "时间", v: <Text slot="body">{timeText}</Text> }] : []),
-                  ...(d.location ? [{ k: "地点", v: <Text slot="body">{d.location}</Text> }] : []),
-                  ...(d.teacher ? [{ k: "教师", v: <Text slot="body">{d.teacher}</Text> }] : []),
                   ...(isHw
                     ? [
+                        ...(hwCourse ? [{ k: "课程", v: <Text slot="body">{hwCourse}</Text> }] : []),
+                        ...(d.date ? [{ k: "截止", v: <Text slot="body">{`${d.date} ${d.endTime ?? ""}`.trim()}</Text> }] : []),
                         { k: "来源", v: <Text slot="body">{srcText}</Text> },
                         {
                           k: "状态",
@@ -1277,7 +1283,12 @@ export function SchedulePage() {
                           ),
                         },
                       ]
-                    : [{ k: "来源", v: <Text slot="body">教务系统{d.src === "exam" ? " · 考试" : " · 课程表"}</Text> }]),
+                    : [
+                        ...(timeText ? [{ k: "时间", v: <Text slot="body">{timeText}</Text> }] : []),
+                        ...(d.location ? [{ k: "地点", v: <Text slot="body">{d.location}</Text> }] : []),
+                        ...(d.teacher ? [{ k: "教师", v: <Text slot="body">{d.teacher}</Text> }] : []),
+                        { k: "来源", v: <Text slot="body">教务系统{d.src === "exam" ? " · 考试" : " · 课程表"}</Text> },
+                      ]),
                 ]} />
                 {/* 备注：作业给课程名提示，课程给"能否编辑"的说明 */}
                 <Text slot="label" tone="faint">
@@ -1348,12 +1359,14 @@ export function SchedulePage() {
               <Field label="备注">
                 <Input value={sd.note} placeholder="可选" onChange={(value) => setDraft({ ...sd, note: value })} />
               </Field>
-              <Checkbox
-                checked={sd.toCloud}
-                disabled={!canCloud}
-                onChange={(v2) => setDraft({ ...sd, toCloud: v2 })}
-                label={`同步到云日历${canCloud ? "（其他设备 / 系统日历可见）" : "（未配置——设置页开启云同步）"}`}
-              />
+              {simple ? null : (
+                <Checkbox
+                  checked={sd.toCloud}
+                  disabled={!canCloud}
+                  onChange={(v2) => setDraft({ ...sd, toCloud: v2 })}
+                  label={`同步到云日历${canCloud ? "（其他设备 / 系统日历可见）" : "（未配置——设置页开启云同步）"}`}
+                />
+              )}
               {widgetHere ? (
                 <Checkbox checked={sd.widget} onChange={(v2) => setDraft({ ...sd, widget: v2 })} label="在桌面小组件显示" />
               ) : null}

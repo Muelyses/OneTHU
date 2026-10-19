@@ -310,7 +310,7 @@ export function SettingsPage() {
       />
 
 
-      <ExperienceModeControl/>
+      <div className="workbench-settings-mode"><ExperienceModeControl/></div>
       <div className="workbench-settings-layout">
       <nav className="workbench-settings-nav" aria-label="设置栏目">
       <div className="workbench-settings-tabs" role="tablist" aria-label="设置栏目" onKeyDown={event => {

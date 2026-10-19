@@ -1927,9 +1927,14 @@ select.input:focus {
    不再压住设置浮层里的开关行（2026-10-13 用户反复点名「声音开关被硬刷新遮住」） */
 .hard-refresh-fab {
   position: fixed;
-  right: 18px;
-  bottom: 18px;
+  /* 位置由 HardRefreshButton 算好（自动避让右下其它浮件 / 用户拖动），CSS 只留兜底 */
+  right: var(--refresh-fab-right, 18px);
+  bottom: var(--refresh-fab-bottom, 18px);
   z-index: 90;
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
   width: var(--ctl-size);
   height: var(--ctl-size);
   border-radius: var(--ctl-radius);
@@ -1950,6 +1955,7 @@ select.input:focus {
     color var(--dur-2) var(--ease-out),
     box-shadow var(--dur-2) var(--ease-out);
 }
+html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
 /* §3.5 B1：FAB 也走统一模型——状态层叠色 + 触摸涟漪 + 令牌焦点环，不再"换色 + 缩放" */
 .hard-refresh-fab::after {
   content: "";
@@ -4285,18 +4291,6 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
 /* z-index 必须高于 OneGUI 模态面板（--og-z-modal 11010）：组织弹窗里再开
    「添加成员 / 新建项目 / 发布公告」这类表单，否则整块被下面的模态盖住点不动。
    仍低于确认框（--og-z-confirm 12500）：表单里弹确认要盖在表单上。 */
-.plg-form-overlay {
-  position: fixed; inset: 0; z-index: var(--og-z-menu);
-  background: rgba(0, 0, 0, .35); backdrop-filter: var(--glass-scrim-blur);
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-}
-.plg-form-modal {
-  width: min(440px, 92vw); max-height: 80vh; overflow: auto;
-  background: var(--md-sys-color-surface-container-lowest); border: 1px solid var(--border-strong);
-  border-radius: var(--r-lg); box-shadow: var(--shadow-3); padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.plg-form-title { font-size: 14px; font-weight: 700; color: var(--text-1); }
 .plg-form-field { display: flex; flex-direction: column; gap: 4px; }
 .plg-form-label { font-size: 11px; color: var(--text-3); }
 .plg-form-ops { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }

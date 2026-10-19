@@ -7,7 +7,8 @@ const browser=await chromium.launch({executablePath:'/Applications/Google Chrome
 const checks=[],errors=[];const check=(v,n)=>{assert.ok(v,n);checks.push(n);console.log('✓ '+n);};
 const call=(p,path,name,args=[])=>p.evaluate(async({path,name,args})=>{const url=performance.getEntriesByType('resource').map(x=>x.name).find(x=>new URL(x).pathname.endsWith(path));if(!url)throw Error(path);return (await import(url))[name](...args);},{path,name,args});
 async function setup(width=1280,height=860){const p=await browser.newPage({viewport:{width,height},hasTouch:width<600});p.setDefaultTimeout(10000);p.on('pageerror',e=>{if(!/reading 'invoke'/.test(e.message))errors.push(e.message);});await installFakeCloud(p);await p.addInitScript(()=>{performance.setResourceTimingBufferSize(10000);localStorage.setItem('onethu.onboarded.phone','1');Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async t=>window.__copied=t}});});await p.route('**/src/state/data.ts*',async route=>{const r=await route.fetch();let body=await r.text();for(const n of ['useLearnData','useCampusData'])body=body.replace(`export function ${n}() {`,`export function ${n}() {return {data:{semester:{id:'x'},courses:[],homework:[],notifications:[],files:[],schedule:[]},state:'ready',error:null,reload:async()=>{}};`);await route.fulfill({response:r,body});});await p.goto('http://127.0.0.1:5180/?explorer-preview=home');await p.locator('.explorer-shell').waitFor();await p.waitForTimeout(800);return p;}
-const mode=(p,m)=>call(p,'/src/state/experienceMode.ts','setExperienceMode',[m]);const nav=(p,page,params=null)=>call(p,'/src/state/explorer.ts','openTab',[page,params]);
+const mode=(p,m)=>call(p,'/src/state/experienceMode.ts','setExperienceMode',[m]);
+const toastWait=(p,text)=>p.locator('.toast-host').filter({hasText:text}).first().waitFor({timeout:6000});const nav=(p,page,params=null)=>call(p,'/src/state/explorer.ts','openTab',[page,params]);
 try{
  const p=await setup();
  check(await p.locator('.oneshot button').count()===5,'完整模式五个 OneShot');
@@ -21,6 +22,31 @@ try{
  await p.locator('.oneshot button').nth(4).click();await p.locator('[data-simple-page="schedule"]').waitFor();
  check(await p.locator('.simple-panel .schedule-workspace').isVisible(),'极简课表可导航');
  await p.screenshot({path:out+'/simple-schedule.png'});
+ /* 课表页：OneShot 收成一枚小按钮，浮在「日程设置」上方，不压住底部日程；点开可展开、可拖动 */
+ check(await p.locator('.oneshot.is-schedule.is-collapsed .oneshot-schedule-toggle').count()===1,'课表页 OneShot 默认收起成小按钮');
+ const slotH=()=>p.locator('.oneshot-slots').evaluate(e=>e.getBoundingClientRect().height);
+ check((await slotH())<1,'收起时五连条高度归零');
+ const oneshotGeo=await p.evaluate(()=>{const t=document.querySelector('.oneshot-schedule-toggle')?.getBoundingClientRect();const d=document.querySelector('.schedule-dock')?.getBoundingClientRect();return t&&d?{toggleBottom:Math.round(t.bottom),dockTop:Math.round(d.top)}:null;});
+ check(!!oneshotGeo&&oneshotGeo.toggleBottom<=oneshotGeo.dockTop,'收起按钮在日程设置上方，未压住日程');
+ await p.screenshot({path:out+'/simple-schedule-oneshot-collapsed.png'});
+ await p.locator('.oneshot-schedule-toggle').click();await p.waitForTimeout(90);
+ const midH=await slotH();await p.waitForTimeout(420);
+ const openH=await slotH();
+ check(openH>16&&midH>0.5&&midH<openH-1,'展开有过渡动效（中途高度在两者之间）');
+ check(await p.locator('.oneshot-slots .oneshot-button').count()===5,'点开小按钮恢复五连条');
+ await p.screenshot({path:out+'/simple-schedule-oneshot-expanded.png'});
+ await p.locator('.oneshot-schedule-toggle').click();await p.waitForTimeout(450);
+ check((await slotH())<1,'再点一次可收起');
+ const oneshotTop=()=>p.locator('.oneshot-schedule-toggle').evaluate(e=>e.getBoundingClientRect().top);
+ const topBeforeDrag=await oneshotTop();
+ const tb=await p.locator('.oneshot-schedule-toggle').boundingBox();
+ await p.mouse.move(tb.x+tb.width/2,tb.y+tb.height/2);await p.mouse.down();
+ for(let i=1;i<=6;i++){await p.mouse.move(tb.x+tb.width/2,tb.y+tb.height/2-20*i,{steps:2});await p.waitForTimeout(20);}
+ await p.mouse.up();await p.waitForTimeout(400);
+ const topAfterDrag=await oneshotTop();
+ const savedOffset=Number(await p.evaluate(()=>localStorage.getItem('onethu.quickbar.schedule-offset.v1')));
+ check(topBeforeDrag-topAfterDrag>80&&savedOffset>80,'快捷按钮可上下拖动并记住位置');
+ check((await slotH())<1,'拖动不会误触发展开');
  await nav(p,'vault');check(await p.locator('[data-simple-page="schedule"]').count()===1,'完整模式专属页不会泄露到极简');
  await p.getByRole('button',{name:'设置',exact:true}).click();await p.locator('.simple-settings').waitFor();
  check(await p.locator('.settings-seg').count()===0,'极简设置无名片或插件分栏');
@@ -50,7 +76,88 @@ try{
  check(/^ON(-[A-Z0-9]{4}){4}$/.test(await p.locator('.vault-share-code').innerText()),'标签页共享入口生成短口令');await p.keyboard.press('Escape');await p.waitForTimeout(300);
  await p.getByRole('button',{name:/^暂存箱，/}).click();await p.locator('.vault-radar').waitFor();await p.locator('.vault-radar').getByRole('button',{name:'分享口令',exact:true}).click();await p.locator('.vault-share-code').waitFor();check(await p.locator('.vault-share-code').isVisible(),'雷达共享入口生成短口令');await p.keyboard.press('Escape');await p.waitForTimeout(300);
  await p.locator('.vault-radar').getByRole('button',{name:'整理暂存箱'}).click();await p.locator('.vault-sheet').waitFor();await p.locator('.vault-sheet').getByRole('button',{name:'分享口令'}).click();await p.locator('.vault-share-code').waitFor();check(await p.locator('.vault-share-code').isVisible(),'抽屉共享入口生成短口令');
+ /* ── 实用模式：极简壳 + 第五格「更多功能」 ── */
+ await call(p,'/src/state/experienceMode.ts','navigateSimple',['homepage']);await p.waitForTimeout(350);
+ await mode(p,'practical');await p.waitForTimeout(450);
+ check(JSON.stringify(await p.locator('.oneshot button').allTextContents())===JSON.stringify(['学习','预约','生活','课表','更多功能']),'实用模式五入口：「信息」换成「更多功能」且在最右');
+ check(await p.locator('.explorer-topbar,.ex-rail,.onego-bookmarks,.vault-box-button').count()===0,'实用模式同样隐藏标签、OneGO 和暂存箱（其余与极简一致）');
+ await p.getByRole('button',{name:'首页',exact:true}).click();await p.waitForTimeout(400);
+ check(await p.locator('.simple-home section').count()===2,'实用模式首页仍只有待办和课程');
+ check(await p.locator('#ex-bbar-tabs-btn,#ex-bbar-onego-btn,.board-viewport-tools').count()===0,'实用模式无残留标签按钮及白板浮动工具');
+ await p.locator('.oneshot button').nth(4).click();
+ const more=p.getByRole('dialog',{name:'更多功能'});await more.waitFor();
+ check(await more.getByRole('heading',{name:'学习'}).count()===1&&await more.getByRole('heading',{name:'生活'}).count()===1,'更多功能按功能目录分组展开');
+ check(await more.getByText('暂存箱、通讯录、白板、插件页与清小搭是完整模式功能').count()===1,'完整模式专属功能不进面板（脚注说明）');
+ check(await more.locator('.workbench-catalog-entry').filter({hasText:'校园卡'}).count()===1,'功能目录里的功能可点开');
+ await p.waitForTimeout(400);await p.screenshot({path:out+'/practical-library-desktop.png'});
+ await more.getByRole('textbox',{name:'搜索功能'}).fill('研讨间');
+ check(await more.locator('.practical-feature-row').count()===1,'功能目录搜索收敛到对应服务');
+ await more.getByRole('textbox',{name:'搜索功能'}).fill('不存在的功能xyz');
+ check(await more.getByText('没有找到“').count()===1,'无匹配显示清楚的空结果');
+ await more.getByRole('button',{name:'查看全部',exact:true}).click();
+ check(await more.locator('.practical-feature-row').count()>20,'清空筛选恢复目录');
+ await p.keyboard.press('Escape');await p.waitForTimeout(300);
+ /* 把任意功能换进四个入口里的任意一个 */
+ await p.locator('.oneshot button').nth(4).click();await more.waitFor();
+ await more.getByRole('button',{name:'把宿舍电费放进快捷入口'}).click();
+ /* 面板收起，底部四入口亮编号；点哪个放哪个 */
+ await p.locator('.oneshot.is-placing').waitFor();
+ check(await p.locator('.oneshot.is-placing .oneshot-place-badge').count()===4,'四个入口亮出放置编号');
+ await p.locator('.oneshot > button').nth(1).click();
+ await toastWait(p,'已放进入口 2');
+ /* 提示条正好悬在入口条上方：等它退场，否则会吃掉下一次点击 */
+ await p.waitForSelector('.toast-host', { state: 'detached', timeout: 6000 }).catch(() => {});
+ check((await p.locator('.oneshot button').allTextContents())[1]==='宿舍电费','功能换进入口 2 生效');
+ await p.reload({waitUntil:'domcontentloaded'});await p.locator('.explorer-shell').waitFor();await p.waitForTimeout(600);
+ check((await p.locator('.oneshot button').allTextContents())[1]==='宿舍电费','实用模式入口配置持久化（独立存档）');
+ const routeSeq=await p.evaluate(async()=>{
+   const url=performance.getEntriesByType('resource').map(x=>x.name).find(x=>new URL(x).pathname.endsWith('/src/state/experienceMode.ts'));
+   const m=await import(url);const seq=[];
+   for(let i=0;i<20;i++){const pg=m.simpleRoute().page;if(seq[seq.length-1]!==pg)seq.push(pg);await new Promise(r=>setTimeout(r,60));}
+   return seq;
+ });
+ await p.locator('.oneshot > button').nth(1).click();await p.waitForTimeout(600);
+ const routeAfter=await call(p,'/src/state/experienceMode.ts','simpleRoute');
+ if(await p.locator('[data-simple-page="life"]').count()===0){
+   const probe=await p.evaluate(()=>{const b=[...document.querySelectorAll('.oneshot button')][1];const r=b.getBoundingClientRect();const el=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return{rect:{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height)},top:el?(el.className||el.tagName).toString().slice(0,60):null,fixed: [...document.querySelectorAll('body > *')].map(e=>({cls:(e.className||e.tagName).toString().slice(0,40),pe:getComputedStyle(e).pointerEvents,z:getComputedStyle(e).zIndex})).filter(x=>x.pe!=='none')};});
+   console.log('   [诊断] data-simple-page=',await p.locator('.simple-panel').getAttribute('data-simple-page'),'| oneshot=',JSON.stringify(await p.locator('.oneshot button').allTextContents()));
+   console.log('   [诊断] 点击前后 route 序列=',JSON.stringify(routeSeq),'→ 现在',routeAfter.page,'| 命中:',JSON.stringify(probe));
+ }
+ check(await p.locator('[data-simple-page="life"]').count()===1,'换过的入口可正常打开对应页');
+ /* 面板里点功能直接打开 */
+ await p.locator('.oneshot button').nth(4).click();await more.waitFor();
+ await more.locator('.workbench-catalog-entry').filter({hasText:'图书馆座位'}).click();
+ check(await p.locator('[data-simple-page="reserve"]').count()===1,'更多功能里点名称直接打开该功能');
+ /* 切回极简/完整：各自的入口互不被污染 */
+ await mode(p,'simple');await p.waitForTimeout(400);
+ check(JSON.stringify(await p.locator('.oneshot button').allTextContents())===JSON.stringify(['学习','预约','生活','信息','课表']),'极简五入口不受实用模式配置影响');
+ await mode(p,'full');await p.waitForTimeout(400);
+ check(await p.locator('.oneshot button').count()===5,'完整模式仍是五个自选入口');
+ await mode(p,'practical');await p.waitForTimeout(400);
+ check((await p.locator('.oneshot button').allTextContents())[1]==='宿舍电费','切回实用模式配置还在');
+ /* 实用模式导览 */
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');
+ await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();
+ await p.waitForTimeout(400);await p.screenshot({path:out+'/mode-picker-desktop.png'});
+ check(await p.getByRole('button',{name:/实用模式/}).count()===1,'导览提供实用模式选项');
+ await p.getByRole('button',{name:/实用模式/}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
+ await p.getByRole('heading',{name:'首页，只关心今天'}).waitFor();check(true,'实用导览第 1 课');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'更多功能，一屏展开'}).waitFor();check(true,'实用导览第 2 课：更多功能');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'四个入口，随你安排'}).waitFor();check(true,'实用导览第 3 课：换入口');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'需要时，再连接'}).waitFor();check(true,'实用导览接入步骤可选');
+ await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
+ await p.getByRole('button',{name:'首页',exact:true}).click();await p.waitForTimeout(450);await p.screenshot({path:out+'/practical-desktop.png'});
  await p.close();
- for(const width of [390,320]){const p=await setup(width,844);await mode(p,'simple');await p.waitForTimeout(350);const geom=await p.locator('.oneshot button').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return{x:r.x,right:r.right,bottom:r.bottom,width:r.width,text:e.innerText};}));check(geom.length===5&&geom.every(r=>r.x>=0&&r.right<=width&&r.width>40),width+' 手机五入口可见');check(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' 无横向溢出');await p.screenshot({path:out+'/simple-phone-'+width+'.png'});await p.close();}
+ for(const width of [390,320]){const p=await setup(width,844);await mode(p,'simple');await p.waitForTimeout(350);const geom=await p.locator('.oneshot button').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return{x:r.x,right:r.right,bottom:r.bottom,width:r.width,text:e.innerText};}));check(geom.length===5&&geom.every(r=>r.x>=0&&r.right<=width&&r.width>40),width+' 手机五入口可见');check(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' 无横向溢出');await p.screenshot({path:out+'/simple-phone-'+width+'.png'});
+ check(await p.locator('.board-viewport-tools').count()===0,width+' 手机无白板工具泄露');
+ const labels=await p.locator('.oneshot-button .og-btn-label').evaluateAll(es=>es.map(e=>({sw:e.scrollWidth,cw:e.clientWidth})));
+ check(labels.every(r=>r.sw<=r.cw+1),width+' 默认五入口文字无截断');
+ await mode(p,'practical');await p.locator('.oneshot > button').last().click();
+ await p.getByRole('dialog',{name:'更多功能'}).waitFor();await p.waitForTimeout(300);
+ await p.screenshot({path:out+'/practical-library-phone-'+width+'.png'});
+ const fits=await p.getByRole('dialog',{name:'更多功能'}).evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&r.top>=0;});check(fits,width+' 手机功能目录完整位于屏幕内');
+ await p.keyboard.press('Escape');await p.waitForTimeout(300);
+ await p.getByRole('button',{name:'设置',exact:true}).click();check(await p.locator('.simple-settings').count()===1,width+' 实用模式设置同样精简');await p.getByRole('button',{name:'关闭设置',exact:true}).click();await p.waitForTimeout(300);
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();await p.waitForTimeout(300);await p.screenshot({path:out+'/mode-picker-phone-'+width+'.png'});await p.close();}
  check(errors.length===0,'无新增浏览器错误 '+JSON.stringify(errors));
 }finally{writeFileSync(out+'/report.json',JSON.stringify({checks,errors},null,2));await browser.close();}

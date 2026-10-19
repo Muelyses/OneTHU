@@ -76,10 +76,13 @@ try {
   const org = await call(a, '/src/state/org.ts', 'createOrg', [{ name: '短码组织', brief: '一起验证', joinUrl: 'https://git.tsinghua.edu.cn/groups/short', ownerName: '我' }]);
   check(!!org?.id, 'A 建好组织（邀请按需生成）');
 
-  /* 暂存箱 → 生成口令（真实 UI）；重复生成复用同一个口令，不重复上传 */
+  /* 暂存箱 → 分享口令（真实 UI，统一收发弹窗）；重复分享复用同一个口令 */
   const firstBoxId = (await call(a, '/src/state/vault.ts', 'activeVault')).id;
-  await a.getByRole('button', { name: '生成口令' }).click();
-  await a.waitForTimeout(1200);
+  const shareBtn = a.getByRole('button', { name: '分享口令', exact: true });
+  await shareBtn.click();
+  const sendModal = a.getByRole('dialog', { name: '分享「我的暂存箱」' });
+  await sendModal.waitFor();
+  await a.waitForTimeout(1000);
   const code = (await a.locator('.vault-share-code').innerText()).trim();
   check(SHORT.test(code), '暂存箱口令是 22 字符短码：' + code);
   check(await a.locator('.vault-qr svg').count() >= 1, '短码配二维码（NFC/扫码同码）');
@@ -87,11 +90,12 @@ try {
   const decoded = await call(a, '/src/state/vaultShare.ts', 'decodeShareAsync', [code]);
   check(decoded.ok && decoded.payload?.name === '我的暂存箱', '短码经云盘 manifest 解析回箱子名');
   check(!!decoded.payload?.cloud?.shareUrl && !!decoded.payload?.cloud?.shareToken, '解析结果带分享凭据（撤销可用）');
+  await a.keyboard.press('Escape'); await a.waitForTimeout(400);
   const sharesAfterVault = await shareCount(a);
-  await a.getByRole('button', { name: '生成口令' }).click();
-  await a.waitForTimeout(1000);
-  check((await a.locator('.vault-share-code').innerText()).trim() === code, '箱子没改：再点生成口令复用同一个短码');
+  await shareBtn.click(); await sendModal.waitFor(); await a.waitForTimeout(900);
+  check((await a.locator('.vault-share-code').innerText()).trim() === code, '箱子没改：再点分享口令复用同一个短码');
   check(await shareCount(a) === sharesAfterVault, '箱子没改：不重复上传 manifest');
+  await a.keyboard.press('Escape'); await a.waitForTimeout(400);
 
   await a.screenshot({ path: `${out}/sender-vault-short-code.png` });
   /* 名片：稳定分享位——改内容就地更新，口令不变、不堆目录 */
@@ -139,31 +143,36 @@ try {
   await b.waitForSelector('.explorer-shell');
   await b.waitForTimeout(1000);
   check(await b.getByText('本版本要求连接清华盘').count() >= 1 || await b.getByText('本版本要求连接清华云盘').count() >= 1, 'B 未连接云盘：显示连接引导卡片');
-  check(await b.locator('.vault-action-row').last().innerText().then((t) => t.includes('先连接清华云盘')), 'B 的发出口令区提示先连接云盘');
+  check(await b.locator('.vault-action-row').last().getByRole('button', { name: '接收', exact: true }).count() === 1, 'B 的动作条上有统一「接收」入口');
 
-  /* 未连接不能生成新口令：按钮层禁用 + 运行时会话守卫双保险 */
-  const genBtn = b.getByRole('button', { name: '生成口令' });
-  check(await genBtn.isDisabled(), 'B 未连接云盘且箱子为空：生成口令按钮禁用');
-  check(await genBtn.getAttribute('title') === '先连接清华云盘', '禁用原因写明先连接清华云盘');
+  /* 未连接不能生成新口令：空箱禁用 + 运行时会话守卫兜底 */
+  const genBtn = b.getByRole('button', { name: '分享口令', exact: true });
+  check(await genBtn.isDisabled(), 'B 未连接云盘且箱子为空：分享口令按钮禁用');
   await call(b, '/src/state/vault.ts', 'addToVault', [{ type: 'text', title: 'B 的条目', text: '有内容也发不出去' }]);
   check(await genBtn.isEnabled(), 'B 有内容后按钮可点（守卫在点击时兜底）');
   await genBtn.click();
-  await toast(b, '本版本要求先连接清华云盘，再生成分享口令').waitFor();
-  check(await b.locator('.vault-share-code').count() === 0, 'B 未连接云盘时生成口令被拒绝，不产生口令');
+  await toast(b, '请先连接清华云盘，再分享暂存箱').waitFor();
+  await b.keyboard.press('Escape'); await b.waitForTimeout(350);
+  if(await b.locator('.toast-host').count()) await b.locator('.toast-host').click();
+  check(await b.locator('.vault-share-code').count() === 0, 'B 未连接云盘时分享被拒绝，不产生口令');
 
-  /* B 通过真实 UI 导入口令（匿名读云盘 manifest）——暂存箱口令 */
-  await b.getByRole('button', { name: '导入口令' }).click();
+  /* B 通过真实 UI「接收 → 粘贴口令」（匿名读云盘 manifest）——暂存箱口令 */
+  await b.getByRole('button', { name: '接收', exact: true }).click();
+  const recvModal = b.getByRole('dialog', { name: '接收内容' });
+  await recvModal.waitFor();
+  await recvModal.getByRole('button', { name: '粘贴口令' }).click();
   await b.waitForSelector('.plg-form-modal');
   await b.locator('.plg-form-modal textarea').fill(code);
   await b.getByRole('button', { name: '提交' }).click();
-  await toast(b, '已导入 1 项').waitFor();
+  await toast(b, '已收到 1 项内容').waitFor();
   await closeFeedback(b); /* 成功动效自带遮罩，先关掉再点下一个入口 */
   const bVault = await call(b, '/src/state/vault.ts', 'vaultSnapshot');
   const imported = bVault.boxes.find((x) => x.id === bVault.activeId);
   check(imported.items.length === 1 && imported.items[0].title === '短口令笔记', 'B 匿名导入暂存箱内容（跨独立客户端读取）');
 
   /* 同一个「导入口令」入口也要认名片口令——以前只会报「应以 ONV1. 开头」 */
-  await b.getByRole('button', { name: '导入口令' }).click();
+  if(!await b.getByRole('dialog',{name:'接收内容'}).isVisible()) await b.getByRole('button',{name:'接收',exact:true}).click();
+  await b.getByRole('dialog',{name:'接收内容'}).getByRole('button',{name:'粘贴口令'}).click();
   await b.waitForSelector('.plg-form-modal');
   await b.locator('.plg-form-modal textarea').fill(cardCode1);
   await b.getByRole('button', { name: '提交' }).click();
@@ -234,10 +243,12 @@ try {
     localStorage.setItem('onethu.test.cloud.v1', JSON.stringify({ fs: window.__cloud.fs, shares: window.__cloud.shares, seq: window.__cloud.seq }));
   });
   await call(a, '/src/state/vault.ts', 'setActiveVault', [firstBoxId]);
+  await a.keyboard.press('Escape');await a.waitForTimeout(300);
+  await a.getByRole('button',{name:'分享口令',exact:true}).click();
   await a.locator('.vault-share-code').waitFor();
   await a.waitForTimeout(600);
-  await a.getByRole('button', { name: '撤销云分享' }).click();
-  await toast(a, '云分享已撤销').waitFor();
+  await a.getByRole('button', { name: '撤销分享' }).click();
+  await toast(a, '分享已撤销').waitFor();
   await b.reload({ waitUntil: 'domcontentloaded' });
   await b.waitForSelector('.explorer-shell');
   await b.waitForTimeout(900);
@@ -251,9 +262,12 @@ try {
   await a.getByRole('button', { name: /^暂存箱，/ }).click();
   await a.locator('.vault-radar').waitFor();
   await a.waitForTimeout(400);
-  check(await a.getByRole('button', { name: '收口令', exact: true }).count() === 1, '雷达面板有「收口令」入口（可直接粘贴）');
-  check(await a.getByRole('button', { name: '扫码', exact: true }).count() === 1, '雷达面板有「扫码」入口（选二维码截图）');
-  await a.getByRole('button', { name: '收口令', exact: true }).click();
+  await a.locator('.vault-radar').getByRole('button',{name:'接收',exact:true}).click();
+  const radarReceive=a.getByRole('dialog',{name:'接收内容'});
+  await radarReceive.waitFor();
+  check(await radarReceive.getByRole('button',{name:'粘贴口令'}).count()===1,'雷达接收面板有粘贴口令入口');
+  check(await radarReceive.getByRole('button',{name:'识别二维码'}).count()===1,'雷达接收面板有二维码入口');
+  await radarReceive.getByRole('button',{name:'粘贴口令'}).click();
   await a.waitForSelector('.plg-form-modal');
   await a.locator('.plg-form-modal textarea').fill(cardCode1);
   await a.getByRole('button', { name: '提交' }).click();

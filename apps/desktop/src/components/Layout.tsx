@@ -1,4 +1,4 @@
-import { useExperienceMode, useSimpleRoute } from "../state/experienceMode.js";
+import { useExperienceMode, useIsSimpleLike, useSimpleRoute } from "../state/experienceMode.js";
 import { SimpleHeader } from "./SimpleExperience.js";
 import { IconBtn, IconUser } from "@onethu/gui";
 /** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
@@ -6,7 +6,7 @@ import { IconBtn, IconUser } from "@onethu/gui";
  *  顶栏 = 首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮；底栏三入口（标签页 | OH | OneGO）
  *  在 explorer/BottomBar；设置/插件/OH 是高于任何标签页的浮层（state/explorer.ts 的
  *  overlay store 即旧 Entry 状态机，goEntry/useEntry 在此薄重导出保持全库兼容）。 */
-import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
@@ -416,8 +416,9 @@ export function Slogan({ size = 13 }: { size?: number }) {
 
 /** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
-  const simple = useExperienceMode() === "simple";
-  useEffect(() => { document.documentElement.dataset.experience = simple ? "simple" : "full"; return () => { delete document.documentElement.dataset.experience; }; }, [simple]);
+  const mode = useExperienceMode();
+  const simple = useIsSimpleLike(); /* 极简与实用共用简洁壳 */
+  useEffect(() => { document.documentElement.dataset.experience = mode; return () => { delete document.documentElement.dataset.experience; }; }, [mode]);
   const explorer = useExplorerState();
   const activePageTab = explorer.tabs.find((t) => t.id === explorer.activeId);
   const simpleRoute = useSimpleRoute();
@@ -445,7 +446,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </ContextMenuLayer>
       <BottomBar />
       {!simple && <OneGoBar />}
-      <OneShot />
+      <OneShot scheduleMode={scheduleActive} />
       {!simple && <><VaultSheetHost />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />
@@ -474,22 +475,145 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-/** 硬刷新悬浮按钮：固定右下角，所有页面可见（含登录/双因素页）。
+/** 硬刷新悬浮按钮：一直贴右下角，但**自动避开右下的其他浮层按钮**
+ *  （OneShot、日程设置、白板工具栏、暂存箱、回到顶层…），永远落在最靠右下的空位；
+ *  按住可拖动（位置按设备记住，存在 onethu.ui.refreshFab.v1）。
  *  生产环境 tauri 资源走自定义协议不进 HTTP 缓存，reload 即全量重载；
  *  移动端没有右键/⌘R，这是页面卡死/白屏后的唯一恢复出口。 */
+const REFRESH_POS_KEY = "onethu.ui.refreshFab.v1";
+type FabPos = { right: number; bottom: number };
+function readFabPos(): FabPos | null {
+  try {
+    const raw = localStorage.getItem(REFRESH_POS_KEY);
+    if (!raw) return null;
+    const v = JSON.parse(raw) as Partial<FabPos>;
+    if (Number.isFinite(v.right) && Number.isFinite(v.bottom)) return { right: Number(v.right), bottom: Number(v.bottom) };
+  } catch { /* 坏数据就当没摆过 */ }
+  return null;
+}
+/** 右下角可能出现的浮件：自动找位的避让清单（只认真正压在同一象限里的）。 */
+const FAB_OBSTACLES = ".ex-bbar, .oneshot, .schedule-dock, .board-viewport-tools, .free-fab-col, .vault-dock, .vault-anchor, .top-fab, .chat-dock, .dock-panel, .ex-mini";
+
 export function HardRefreshButton() {
   const [showTop, setShowTop] = useState(false);
+  const [stored, setStored] = useState<FabPos | null>(readFabPos);
+  const [auto, setAuto] = useState<FabPos | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const fabRef = useRef<HTMLButtonElement | null>(null);
+  const dragRef = useRef<{ x: number; y: number; right: number; bottom: number; moved: boolean } | null>(null);
+  const skipClick = useRef(false);
+  const posRef = useRef<FabPos | null>(null);
+  const explorer = useExplorerState();
+  const pos = stored ?? auto ?? { right: 18, bottom: 18 };
+  posRef.current = pos;
+
   useEffect(() => {
-    const on = () => setShowTop(window.scrollY > 240);
+    const on = (): void => setShowTop(window.scrollY > 240);
     window.addEventListener("scroll", on, { passive: true });
     on();
     return () => window.removeEventListener("scroll", on);
   }, []);
+
+  /** 找「最靠右下又谁都不压」的位置：从右下角起步，撞上谁就往上让，实在挤再往左挪。 */
+  const compute = useCallback((): FabPos => {
+    const btn = fabRef.current;
+    const w = btn?.offsetWidth || 40;
+    const h = btn?.offsetHeight || 40;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 14;
+    const obstacles = Array.from(document.querySelectorAll<HTMLElement>(FAB_OBSTACLES))
+      .filter((el) => el !== btn && !el.contains(btn) && !btn?.contains(el))
+      .map((el) => el.getBoundingClientRect())
+      .filter((r) => r.width > 1 && r.height > 1 && r.bottom > vh * 0.5 && r.right > vw * 0.4);
+    let right = margin;
+    let bottom = margin;
+    for (let i = 0; i < 12; i++) {
+      const box = { left: vw - right - w, right: vw - right, top: vh - bottom - h, bottom: vh - bottom };
+      const hit = obstacles.find((r) => !(r.right <= box.left || r.left >= box.right || r.bottom <= box.top || r.top >= box.bottom));
+      if (!hit) break;
+      const above = vh - hit.top + 8;
+      if (above + h > vh * 0.7) { right += w + 10; bottom = margin; }
+      else bottom = above;
+      if (right > vw * 0.7) break;
+    }
+    return { right, bottom };
+  }, []);
+
+  /* 没手动摆过就自动找位：首帧、布局稳定后、窗口变化、切换标签页（浮件随之增减）都重找。 */
+  useEffect(() => {
+    if (stored) return;
+    const place = (): void => setAuto(compute());
+    place();
+    const timers = [200, 700, 1600].map((ms) => window.setTimeout(place, ms));
+    window.addEventListener("resize", place);
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      window.removeEventListener("resize", place);
+    };
+  }, [stored, compute, explorer.activeId, showTop]);
+
+  /* 手动摆过之后，窗口变小/旋转也要留在屏幕里。 */
+  useEffect(() => {
+    if (!stored) return;
+    const clamp = (): void => {
+      const btn = fabRef.current;
+      const w = btn?.offsetWidth || 40;
+      const h = btn?.offsetHeight || 40;
+      setStored((p) => p && (p.right > window.innerWidth - w - 4 || p.bottom > window.innerHeight - h - 4)
+        ? { right: Math.max(4, Math.min(p.right, window.innerWidth - w - 4)), bottom: Math.max(4, Math.min(p.bottom, window.innerHeight - h - 4)) }
+        : p);
+    };
+    window.addEventListener("resize", clamp);
+    return () => window.removeEventListener("resize", clamp);
+  }, [stored]);
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    if (e.button !== 0) return;
+    const el = e.currentTarget;
+    dragRef.current = { x: e.clientX, y: e.clientY, right: pos.right, bottom: pos.bottom, moved: false };
+    el.setPointerCapture(e.pointerId);
+    setDragging(true);
+  };
+  const onPointerMove = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dx = e.clientX - d.x;
+    const dy = e.clientY - d.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) d.moved = true;
+    const btn = fabRef.current;
+    const w = btn?.offsetWidth || 40;
+    const h = btn?.offsetHeight || 40;
+    setStored({
+      right: Math.max(4, Math.min(d.right - dx, window.innerWidth - w - 4)),
+      bottom: Math.max(4, Math.min(d.bottom - dy, window.innerHeight - h - 4)),
+    });
+  };
+  const onPointerUp = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    const d = dragRef.current;
+    if (!d) return;
+    dragRef.current = null;
+    setDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    if (!d.moved) return;
+    skipClick.current = true;
+    try { localStorage.setItem(REFRESH_POS_KEY, JSON.stringify(posRef.current ?? pos)); } catch { /* 存不下就只记内存 */ }
+  };
+  const fabStyle = {
+    "--refresh-fab-right": `${pos.right}px`,
+    "--refresh-fab-bottom": `${pos.bottom}px`,
+  } as CSSProperties;
+  const fabH = fabRef.current?.offsetHeight || 40;
+  const topStyle = {
+    "--refresh-fab-right": `${pos.right}px`,
+    "--refresh-fab-bottom": `${pos.bottom + fabH + 8}px`,
+  } as CSSProperties;
   return (
     <>
       {showTop ? (
         <button
           className="hard-refresh-fab top-fab"
+          style={topStyle}
           title="回到顶层"
           aria-label="回到顶层"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -498,13 +622,22 @@ export function HardRefreshButton() {
         </button>
       ) : null}
       <button
-      className="hard-refresh-fab"
-      title="硬刷新（整页重载）"
-      aria-label="硬刷新"
-      onClick={() => window.location.reload()}
-    >
-      <IconRefresh width={18} height={18} />
-    </button>
+        ref={fabRef}
+        className={"hard-refresh-fab" + (dragging ? " is-dragging" : "")}
+        style={fabStyle}
+        title="硬刷新（整页重载）· 按住可拖动位置"
+        aria-label="硬刷新"
+        onClick={() => {
+          if (skipClick.current) { skipClick.current = false; return; }
+          window.location.reload();
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <IconRefresh width={18} height={18} />
+      </button>
     </>
   );
 }

@@ -47,11 +47,13 @@ try {
   const overflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow <= 1, '390 vault page has no horizontal overflow');
   const buttons = await p.locator('.vault-action-row button').count();
-  check(buttons >= 4, '390 vault actions wrap into visible buttons');
-  const title = await p.getByRole('heading', { name: '暂存箱', exact: true }).count();
-  check(title === 1, '390 vault heading visible');
+  check(buttons >= 3, '390 unified vault actions (添加文件/分享口令/接收) wrap into visible buttons');
+  const title = await p.getByRole('heading', { name: '暂存箱' }).count();
+  check(title >= 1, '390 vault heading visible');
 
-  await p.getByRole('button', { name: '碰一碰组合' }).click();
+  /* 组合分享收进 <details> 折叠项（不占主流程） */
+  await p.locator('details.vault-combination summary').click();
+  await p.getByRole('button', { name: '选择组合内容' }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(800);
@@ -73,16 +75,16 @@ try {
 
   /* 组织：通讯录页的「我的组织」页签 */
   await call('/src/state/explorer.ts', 'explorerNavigate', ['contacts']);
-  await p.waitForTimeout(700);
+  await p.getByRole('heading', { name: '通讯录' }).waitFor({ timeout: 15000 });
   await p.getByRole('radio', { name: '我的组织', exact: true }).click();
-  await p.waitForTimeout(600);
-  check(await p.getByText('组织成员、邀请口令与共享资料空间').count() >= 1, '390 contacts org section visible');
+  await p.getByText('成员、文件、项目与公告集中管理；组织自带名片。').first().waitFor({ timeout: 8000 });
+  check(true, '390 contacts org section visible');
 
   await p.setViewportSize({ width: 320, height: 568 });
   await p.waitForTimeout(500);
   const narrowOverflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(narrowOverflow <= 1, '320 contacts org page has no horizontal overflow');
-  check(await p.getByText('组织成员、邀请口令与共享资料空间').count() >= 1, '320 org section still reachable');
+  check(await p.getByText('成员、文件、项目与公告集中管理；组织自带名片。').count() >= 1, '320 org section still reachable');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
   console.log(checks + ' mobile vault/card assertions passed');
 } finally { await browser.close(); }

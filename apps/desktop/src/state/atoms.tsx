@@ -209,7 +209,7 @@ export const PAGE_ATOMS: StaticAtom[] = [
   { kind: "page", key: "info-root", title: "信息", sub: "信息门户聚合页", icon: IconInfo, group: "页面", page: "info" },
   { kind: "page", key: "life-root", title: "生活", sub: "生活聚合页", icon: IconToday, group: "页面", page: "life" },
   { kind: "page", key: "reserve-root", title: "预约", sub: "预约聚合页", icon: IconCalendar, group: "页面", page: "reserve" },
-  { kind: "page", key: "schedule", title: "日程", sub: "时间轴与日程列表 · 云同步", icon: IconSchedule, group: "页面", page: "schedule" },
+  { kind: "page", key: "schedule", title: "日程", sub: "时间轴与日程列表", icon: IconSchedule, group: "页面", page: "schedule" },
   { kind: "page", key: "trace", title: "寻迹", sub: "今日日程地图 · 紧迫度标注 · 一键前往", icon: IconTrace, group: "页面", page: "trace" },
   { kind: "page", key: "mail", title: "邮箱", sub: "收件箱 · 已发送 · 读信 · 全箱搜索", icon: IconMail, group: "页面", page: "mail" },
   { kind: "page", key: "mail-compose", title: "写信", sub: "邮箱 · 新邮件", icon: IconPen, group: "页面", page: "mail", params: { mailCompose: true } },

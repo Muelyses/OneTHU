@@ -1,4 +1,4 @@
-import { useExperienceMode } from "../state/experienceMode.js";
+import { isSimpleLike, useExperienceMode } from "../state/experienceMode.js";
 /**
  * 命令面板（§2.8.4）：⌘/Ctrl+K 唤起的居中搜索，输入即搜、回车直达。
  *
@@ -79,7 +79,7 @@ export function CommandPalette(): ReactNode {
   const rows = useMemo<Row[]>(() => {
     if (!query) {
       // 空查询给「常用」兜底（注册表 core 顺序），省得对着一片空白不知道能搜什么
-      return coreDefaults().filter(e=>mode!=="simple"||!["board","vault","contacts","plugins","xiaoda"].includes(e.page)).map((entry) => ({ kind: "entry" as const, key: "n:" + entry.id, entry }));
+      return coreDefaults().filter(e=>!isSimpleLike(mode)||!["board","vault","contacts","plugins","xiaoda"].includes(e.page)).map((entry) => ({ kind: "entry" as const, key: "n:" + entry.id, entry }));
     }
     const r = searchAll(query);
     const base: Row[] = [

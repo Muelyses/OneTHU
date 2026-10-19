@@ -1,4 +1,4 @@
-import { useExperienceMode } from "../../state/experienceMode.js";
+import { useIsSimpleLike } from "../../state/experienceMode.js";
 /**
  * 底栏三入口（dev-explorer）：标签页 | OH 胶囊 | OneGO。
  * 所有平台恒显示（革命口径：手机与桌面同一套交互架构，桌面顶栏另有 TabStrip）。
@@ -18,7 +18,7 @@ import { openTabDrawer, useTabDrawerOpen } from "./TabDrawer.js";
 import { useExplorerTabs } from "./TabStrip.js";
 
 export function BottomBar(): ReactNode {
-  const simple = useExperienceMode() === "simple";
+  const simple = useIsSimpleLike();
   const phone = useIsPhone();
   const { tabs } = useExplorerTabs();
   const count = tabs.filter((t) => t.kind === "page").length;

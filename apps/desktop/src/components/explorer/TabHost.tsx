@@ -1,4 +1,4 @@
-import { useExperienceMode, experienceMode } from "../../state/experienceMode.js";
+import { useExperienceMode, useIsSimpleLike, experienceMode, isSimpleLike } from "../../state/experienceMode.js";
 import { SimpleHost } from "../SimpleExperience.js";
 /**
  * Explorer 标签页宿主（dev-explorer 革命核心）：所有标签页常驻挂载、display 切换。
@@ -207,7 +207,7 @@ function WallPickerCard({
 /* ══════════ 宿主 ══════════ */
 
 export function TabHost(): ReactNode {
-  const simple = useExperienceMode() === "simple";
+  const simple = useIsSimpleLike(); /* 极简与实用都走简洁壳（无标签页） */
   const st = useExplorerState();
   const activeId = st.activeId;
   const mounted = useMountedTabs(activeId, st.tabs);
@@ -218,7 +218,7 @@ export function TabHost(): ReactNode {
   const scrollingTab = useRef(activeId);
   useEffect(() => {
     const save = (): void => {
-      if(experienceMode()==="simple")return;
+      if(isSimpleLike(experienceMode()))return; /* 简洁壳不记标签滚动位 */
       scrollPositions.current.set(scrollingTab.current, { x: window.scrollX, y: window.scrollY });
     };
     window.addEventListener("scroll", save, { passive: true });

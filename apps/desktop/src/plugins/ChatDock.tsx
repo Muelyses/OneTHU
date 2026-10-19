@@ -1,4 +1,4 @@
-import { useExperienceMode } from "../state/experienceMode.js";
+import { compactPageAllowed, useIsSimpleLike } from "../state/experienceMode.js";
 /** 常驻对话面板（宿主胶水，R2/R4/R5 的 dock 面）：
  *  发现 activate 返回 dock:true 命令的已启用 rust 插件 → 显示常驻气泡；
  *  对话/会话/导出/用量全部走该插件的 JSON-RPC run 命令（结构化契约见
@@ -939,7 +939,9 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
   onNotice: (n: string | null) => void;
 }): ReactNode {
   const { result, total } = useOhSearch(query);
-  const hist = useSearchHistory();
+  const history = useSearchHistory();
+  const compact = useIsSimpleLike();
+  const hist = compact ? history.filter(h => compactPageAllowed(h.page) && h.page !== "settings") : history;
   const q = query.trim();
 
   const jumpTab = (page: Parameters<typeof jumpTabPayload>[0], params: Parameters<typeof jumpTabPayload>[1], title: string): void => {
@@ -1022,7 +1024,7 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
 }
 
 export function ChatDock(): ReactNode {
-  const simple = useExperienceMode() === "simple";
+  const simple = useIsSimpleLike(); /* 极简与实用都保留 OH 胶囊 */
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
   const dockCmd = cmds.find((c) => c.dock && c.id === "chat");
   const pid = dockCmd?.pluginId ?? null;

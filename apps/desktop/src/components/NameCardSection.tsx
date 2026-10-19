@@ -329,13 +329,15 @@ export function OrgCardsSection(): ReactNode {
                 <Btn size="sm" variant="ghost" disabled={!shown.joinUrl} onClick={() => copyJoin(shown)}>
                   复制加入方式
                 </Btn>
-                <Btn
+                {organizations.orgs.some(o => o.id === shown.id) ? <Btn size="sm" variant="ghost" onClick={() => {
+                  setOpenId(null);
+                  openTab("contacts", { section: "orgs" });
+                }}>管理组织</Btn> : <Btn
                   size="sm"
                   variant="ghost"
                   tone="error"
                   icon={<IconTrash size="sm" />}
                   onClick={() => {
-                    if(organizations.orgs.some(o=>o.id===shown.id)){showToast("这张名片与组织绑定，请在组织中管理");return;}
                     void confirmOk(`删除组织名片「${shown.name}」？`).then((ok) => {
                       if (!ok) return;
                       removeOrgCard(shown.id);
@@ -345,7 +347,7 @@ export function OrgCardsSection(): ReactNode {
                   }}
                 >
                   删除
-                </Btn>
+                </Btn>}
               </Inline>
             </Stack>
           </div>

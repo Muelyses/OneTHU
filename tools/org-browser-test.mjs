@@ -27,13 +27,14 @@ try {
   });
   await p.goto(base + '/?explorer-preview=page&page=contacts', { waitUntil: 'domcontentloaded' });
   await p.waitForSelector('.explorer-shell');
-  await p.waitForTimeout(1000);
-  check(await p.getByRole('heading', { name: '通讯录', exact: true }).count() === 1, 'contacts page route works');
+  /* 预览场景要等 ChatDock 整流后才 openTab，等标题而不是死等固定毫秒 */
+  await p.getByRole('heading', { name: '通讯录', exact: true }).waitFor({ timeout: 15000 });
+  check(true, 'contacts page route works');
 
   /* 组织页签（组织成员/邀请口令已从设置页搬到通讯录） */
   await p.getByRole('radio', { name: '我的组织', exact: true }).click();
   await p.waitForTimeout(500);
-  check(await p.getByText('组织成员、邀请口令与共享资料空间').count() >= 1, 'org tab shows member/invite section');
+  check(await p.getByText('成员、文件、项目与公告集中管理；组织自带名片。').count() >= 1, 'org tab shows the unified workspace intro');
 
   await p.getByRole('button', { name: '新建组织', exact: true }).click();
   await p.waitForSelector('.plg-form-modal');
@@ -41,19 +42,22 @@ try {
   await inputs.nth(0).fill('开源小组');
   await p.locator('.plg-form-modal textarea').fill('一起做点东西');
   await p.locator('.plg-form-modal input').nth(1).fill('https://git.tsinghua.edu.cn/groups/open');
-  await p.getByRole('button', { name: '提交' }).click(); await p.waitForTimeout(500);
+  await p.getByRole('button', { name: '提交' }).click(); await p.waitForTimeout(600);
   let org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
   check(org.name === '开源小组' && org.members.length === 1, 'organization created with owner');
-  await p.getByRole('button', { name: '加成员', exact: true }).first().click();
+  /* 建组织自动进工作区弹窗（成员/文件/项目/公告/组织名片） */
+  const dialog = p.getByRole('dialog', { name: '开源小组', exact: true });
+  await dialog.waitFor();
+  await dialog.getByRole('button', { name: '添加成员', exact: true }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.locator('.plg-form-modal input').first().fill('李四');
-  await p.getByRole('button', { name: '提交' }).click(); await p.waitForTimeout(500);
+  await p.getByRole('button', { name: '提交' }).click(); await p.waitForTimeout(600);
   org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
   check(org.members.some((m) => m.name === '李四'), 'member added');
 
   /* 邀请：云盘发布后拿 22 字符短码 + 二维码 */
-  await p.getByRole('button', { name: '邀请', exact: true }).first().click(); await p.waitForTimeout(1000);
-  const code = (await p.locator('.vault-share-code').innerText()).trim();
+  await dialog.getByRole('button', { name: '邀请口令', exact: true }).click(); await p.waitForTimeout(1200);
+  const code = (await p.locator('.vault-share-code').first().innerText()).trim();
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(code), 'org invite is a short code: ' + code);
   check(await p.locator('.vault-qr svg').count() >= 1, 'org invite shows a scannable QR');
   const decoded = await p.evaluate(async (c) => {
@@ -76,6 +80,7 @@ try {
     return m.orgInviteCode(m.orgSnapshot().orgs[0]);
   });
   check(again === code, 're-inviting the same org reuses the same short code');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(400); /* 关工作区，回组织列表 */
 
   await p.getByRole('button', { name: '删除', exact: true }).first().click();
   await p.waitForSelector('.confirm-card');

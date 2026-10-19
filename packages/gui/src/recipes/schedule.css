@@ -39,6 +39,11 @@ html:root.is-schedule-page .explorer-shell > .explorer-content {
   padding-bottom: 0 !important;
 }
 html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content { padding-top: var(--explorer-top-h) !important; }
+/* 手机档底栏常驻在屏幕底部：课表铺满时也要停在底栏上面——
+   否则最后一节课/最后几行小时被底栏盖住看不见（用户 2026-10-19 口径）。 */
+html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content {
+  padding-bottom: calc(var(--explorer-bar-h, 48px) + 8px + env(safe-area-inset-bottom, 0px)) !important;
+}
 html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) {
   display: flex;
   flex: 1 1 0;

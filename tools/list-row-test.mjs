@@ -17,7 +17,8 @@ function block(sel) {
   return CSS.slice(i + sel.length + 3, j);
 }
 
-const ROWS = [".mail-row", ".cloud-row", ".svc-row", ".task-row", ".wb-row", ".home-modal-row"];
+/* .cloud-row 已随云盘页收编 OneGUI List/Row 删除独占 CSS（2026-10-19）；其余行仍逐个核对。 */
+const ROWS = [".mail-row", ".svc-row", ".task-row", ".wb-row", ".home-modal-row"];
 
 for (const sel of ROWS) {
   const body = block(sel);
@@ -29,7 +30,7 @@ for (const sel of ROWS) {
 }
 
 /* 交互行必须有 hover（触摸端另有 :active 反馈） */
-for (const sel of [".mail-row", ".cloud-row", ".svc-row", ".task-row", ".wb-row"]) {
+for (const sel of [".mail-row", ".svc-row", ".task-row", ".wb-row"]) {
   const pat = new RegExp(sel.replace(".", "\\.") + ":(hover|active)");
   ok(pat.test(CSS), sel + " 没有任何 hover/active 状态反馈");
 }

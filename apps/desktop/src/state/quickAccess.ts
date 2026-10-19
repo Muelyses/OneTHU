@@ -12,6 +12,22 @@ const stored=read(KEY,defaults);
 const legacy=["page:learn","page:schedule","page:tasks","page:life"];
 let shot=(JSON.stringify(stored)===JSON.stringify(legacy)?defaults:stored).slice(0,5);
 while(shot.length<5)shot.push(defaults.find(x=>!shot.includes(x))??defaults[shot.length]!);
+
+/* ── 实用模式：极简五入口里的「信息」换成「更多功能」，左边四个可自由改 ── */
+export const MORE_FEATURES_SLOT="more";
+const PRACTICAL_KEY="onethu.oneshot.practical.v1";
+/** 实用模式四个可配置入口的默认值（极简五入口去掉「信息」；第五格固定「更多功能」）。 */
+export const PRACTICAL_DEFAULTS=["page:learn","page:reserve","page:life","page:schedule"];
+let practical=read(PRACTICAL_KEY,PRACTICAL_DEFAULTS).slice(0,4);
+while(practical.length<4)practical.push(PRACTICAL_DEFAULTS.find(x=>!practical.includes(x))??PRACTICAL_DEFAULTS[practical.length]!);
+export function practicalSlots():string[]{return practical;}
+/** 把任意功能放进实用模式的第 index 个入口（0..3；第五格固定是「更多功能」）。 */
+export function setPracticalOneShot(index:number,id:string):void{
+  if(index<0||index>3||!id||id===MORE_FEATURES_SLOT)return;
+  practical=practical.map((x,i)=>i===index?id:x);
+  try{localStorage.setItem(PRACTICAL_KEY,JSON.stringify(practical));}catch{}
+  emit();
+}
 let order=read(ORDER,[]);
 const listeners=new Set<()=>void>();
 const emit=()=>listeners.forEach(f=>f());
@@ -26,9 +42,18 @@ export function quickEntries():QuickEntry[]{
  return [...pages,...saved];
 }
 export function useQuickEntries():{entries:QuickEntry[];slots:string[]}{
- const slots=useSyncExternalStore(subscribeQuick,()=>shot,()=>shot);const [,tick]=useState(0);
- useEffect(()=>{const f=()=>tick(x=>x+1);const a=subscribeExplorer(f),b=subscribeQuick(f);window.addEventListener('onethu.boards.changed',f);return()=>{a();b();window.removeEventListener('onethu.boards.changed',f);};},[]);
+ const slots=useSyncExternalStore(subscribeQuick,()=>shot,()=>shot);useEntryListVersion();
  return {entries:quickEntries(),slots};
+}
+/** 实用模式的四个入口 + 全量功能清单（第五格「更多功能」不参与配置）。 */
+export function usePracticalEntries():{entries:QuickEntry[];slots:string[]}{
+ const slots=useSyncExternalStore(subscribeQuick,practicalSlots,practicalSlots);useEntryListVersion();
+ return {entries:quickEntries(),slots};
+}
+/** 功能清单会随 explorer（工作区）/ OnePage / 快捷变化，订阅一次供两个 hook 共用。 */
+function useEntryListVersion():void{
+ const [,tick]=useState(0);
+ useEffect(()=>{const f=()=>tick(x=>x+1);const a=subscribeExplorer(f),b=subscribeQuick(f);window.addEventListener('onethu.boards.changed',f);return()=>{a();b();window.removeEventListener('onethu.boards.changed',f);};},[]);
 }
 export function openQuickEntry(e:QuickEntry):void{
  if(e.kind==='workspace'&&e.target)openWorkspace(e.target);

@@ -63,13 +63,15 @@
    和同处右下的 FAB 横向重叠（用户反馈「右侧工具栏图标意义不明」修好后暴露出来的遮挡）。
    让位量 = 工具栏一列的高度（--og-space-9）+ 一拍间隙。 */
 .hard-refresh-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px) !important;
+  right: var(--refresh-fab-right, 18px) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px)) !important;
 }
 html:root.is-phone .hard-refresh-fab:not(.top-fab) {
-  bottom: calc(var(--explorer-bar-h, 48px) + var(--og-mobile-tools-gap, 76px) + var(--og-space-9) + var(--og-space-2) + env(safe-area-inset-bottom, 0px)) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + var(--og-mobile-tools-gap, 76px) + var(--og-space-9) + var(--og-space-2) + env(safe-area-inset-bottom, 0px))) !important;
 }
 .hard-refresh-fab.top-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px) !important;
+  right: var(--refresh-fab-right, 18px) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px)) !important;
 }
 
 /* ══════════ 桌面/横屏（≥841px）：两行顶置（底栏上移第一行 / TopBar 其下第二行），
@@ -90,8 +92,8 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
   }
   html:not(.is-phone) .explorer-topbar { top: 48px; }
   html:not(.is-phone) .explorer-content { padding-top: 104px !important; padding-bottom: 28px; } /* 94+10：内容与标签栏留一拍呼吸空隙（用户实测「有点挤」） */
-  html:not(.is-phone) .hard-refresh-fab { bottom: 18px !important; }
-  html:not(.is-phone) .hard-refresh-fab.top-fab { bottom: 74px !important; }
+  html:not(.is-phone) .hard-refresh-fab { bottom: var(--refresh-fab-bottom, 18px) !important; }
+  html:not(.is-phone) .hard-refresh-fab.top-fab { bottom: var(--refresh-fab-bottom, 74px) !important; }
 }
 
 /* ── 设置浮层：高于任何标签页（手机全屏 / 桌面右侧推入） ── */

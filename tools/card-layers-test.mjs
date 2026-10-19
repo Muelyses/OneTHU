@@ -56,14 +56,13 @@ ok(body.includes("var(--md-sys-color-surface-container-low)"), "页面底应为 
 ok(!/background:\s*var\(--bg\)/.test(body), "页面底不该再和卡片同色（--bg = surface = 白）");
 
 /* [2] 已迁移家族（B2 卡片 + B2b 列表/面板） */
+/* 插件页 / 更多 info / 市场等旧独占卡面（plg-*、app-card）已收编 OneGUI Card，
+   独占 CSS 自 76d486ce 起删除；本护栏只核对仍在 global.css 里的卡面家族，
+   收编后的卡面由 OneGUI Card 自身契约保证。 */
 const FAMILY = [
   [".card {", "通用卡"],
   [".home-card {", "今日卡"],
-  [".plg-stat {", "插件统计卡"],
-  [".plg-card {", "插件模块卡"],
-  [".app-card {", "更多 info 应用卡"],
   [".week-course {", "课表课程块"],
-  [".plg-install {", "插件安装面板"],
   [".mail-list {", "邮件列表面板"],
   [".mail-detail {", "邮件详情面板"],
 ];

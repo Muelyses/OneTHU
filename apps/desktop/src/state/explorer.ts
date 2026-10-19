@@ -1,4 +1,4 @@
-import { experienceMode, navigateSimple } from "./experienceMode.js";
+import { experienceMode, isSimpleLike, navigateSimple } from "./experienceMode.js";
 /**
  * Explorer（工作空间革命 · dev-explorer）核心状态机：标签页 / 工作区 / 设置浮层。
  *
@@ -395,7 +395,7 @@ export interface OpenTabOptions {
  *   只有 forceNew（「复制」）才出第二个实例。
  */
 export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOptions): string {
-  if (experienceMode() === "simple") {
+  if (isSimpleLike(experienceMode())) {
     if (OVERLAY_PAGES.has(page)) openSettings("settings");
     else navigateSimple(isKnownPage(page) ? page : "homepage", params);
     return "simple";
@@ -447,7 +447,7 @@ export function duplicateTab(id: string): string {
 }
 
 export function focusTab(id: string): boolean {
-  if (experienceMode() === "simple") {
+  if (isSimpleLike(experienceMode())) {
     const target = getTab(id); if (!target) return false;
     navigateSimple(target.page, target.params); return true;
   }
@@ -491,7 +491,7 @@ export function closeOtherTabs(keepId: string): void {
 /** 标签页内导航（更新 page/params，标签身份不变——工作上下文保留）。
  *  只作用于该标签页自己的路由上下文（TabHost 的 Ctx 覆盖），互不串台。 */
 export function navigateInTab(id: string, page: Page, params?: LearnNav | null, title?: string): void {
-  if (experienceMode() === "simple") return; // dormant full-mode pages must not rewrite their routes
+  if (isSimpleLike(experienceMode())) return; // dormant full-mode pages must not rewrite their routes
   if (page === "homepage") {
     /* 「回首页」= 聚焦首页标签：homepage 不是可多开的普通页——跳 HOME，不是把本标签
        改写成旧 TodayPage（用户实测重登后被历史还原成一个「古老旧今日页」）。 */

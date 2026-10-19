@@ -31,7 +31,9 @@ function hasDivider(sel, re) {
   if (i < 0) return false;
   return re.test(CSS.slice(i, CSS.indexOf("}", i)));
 }
-for (const sel of [".row {", ".setting-row {", ".mail-row {", ".cloud-row {", ".tl-item {"]) {
+/* 云盘行/时间线行已收编 OneGUI List/Row（.cloud-row/.tl-item 独占 CSS 删除，2026-10-19）；
+   分隔线语义由 .row 与 OneGUI List divided 承担，这里只核对仍在 global.css 的行。 */
+for (const sel of [".row {", ".setting-row {", ".mail-row {"]) {
   ok(hasDivider(sel, /border-(top|bottom): 1px solid var\(--md-sys-color-outline-variant\)/), sel + " 的功能性分隔线被误删");
 }
 /* 装饰性分隔线（卡片头/浮层头脚）应已删除——这些容器有自己的底色分层 */

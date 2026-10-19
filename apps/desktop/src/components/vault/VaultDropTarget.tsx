@@ -153,9 +153,17 @@ export function VaultButton(): ReactNode {
 
   useEffect(() => {
     if (!pinned) return;
-    const onKey = (e: KeyboardEvent): void => { if (e.key === "Escape") setPinned(false); };
+    /* 雷达里的「分享口令 / 接收」弹窗是 portal 到 body 的，点它、按 Esc 关它都不该把雷达一起收掉——
+       否则弹窗会在 pointerdown 那一下随雷达卸载，里面的按钮点了没反应。 */
+    const inOverlay = (el: Element | null): boolean => !!el?.closest(".og-scrim, [role='dialog'], .plg-form-modal");
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== "Escape") return;
+      if (document.querySelector(".og-scrim, [role='dialog']")) return;
+      setPinned(false);
+    };
     const onDown = (e: PointerEvent): void => {
       const el = e.target as Element | null;
+      if (inOverlay(el)) return;
       if (!el?.closest(".vault-anchor, .vault-radar")) setPinned(false);
     };
     window.addEventListener("keydown", onKey);

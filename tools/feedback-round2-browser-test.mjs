@@ -60,12 +60,15 @@ async function measure(p, label, expectedLeft = 0) {
   const m = await p.evaluate(() => {
     const r = s => document.querySelector(s).getBoundingClientRect().toJSON();
     const t = document.querySelector('.schedule-timeline');
-    return { viewport: [innerWidth, innerHeight], timeline: r('.schedule-timeline'), canvas: r('.schedule-canvas'), content: r('.explorer-content'), chrome: r(document.documentElement.classList.contains('is-phone') ? '.explorer-topbar' : '.onego-bookmarks'), columns: [...document.querySelectorAll('.schedule-col')].map(e => e.getBoundingClientRect().toJSON()), scroll: t.scrollHeight - t.clientHeight, rootScroll: document.documentElement.scrollWidth - innerWidth };
+    return { viewport: [innerWidth, innerHeight], timeline: r('.schedule-timeline'), canvas: r('.schedule-canvas'), content: r('.explorer-content'), chrome: r(document.documentElement.classList.contains('is-phone') ? '.explorer-topbar' : '.onego-bookmarks'), columns: [...document.querySelectorAll('.schedule-col')].map(e => e.getBoundingClientRect().toJSON()), scroll: t.scrollHeight - t.clientHeight, rootScroll: document.documentElement.scrollWidth - innerWidth, padBottom: parseFloat(getComputedStyle(document.querySelector('.explorer-content')).paddingBottom) || 0 };
   });
   geometry.push({ label, ...m });
   check(Math.abs(m.timeline.top - m.chrome.bottom) <= 1, label + ': 表头紧接导航，没有空标题或额外顶边');
   check(Math.abs(m.timeline.left - expectedLeft) <= 1 && Math.abs(m.timeline.right - m.viewport[0]) <= 1, label + ': 日程左右到内容区边缘');
-  check(Math.abs(m.timeline.bottom - m.viewport[1]) <= 1 && Math.abs(m.canvas.bottom - m.viewport[1]) <= 2, label + ': 行高撑满到窗口底边');
+  // 手机档给底栏留了净空（schedule.css 的 is-phone.is-schedule-page padding-bottom，
+  // 让最后一节课不被底栏盖住），所以「撑满」的终点是内容盒底部，不是窗口底部。
+  const bottomEdge = m.content.bottom - m.padBottom;
+  check(Math.abs(m.timeline.bottom - bottomEdge) <= 1 && Math.abs(m.canvas.bottom - bottomEdge) <= 2, label + ': 行高撑满到窗口底边');
   check(m.columns.length === 7 && m.columns.every(c => Math.abs(c.width - m.canvas.width / 7) <= 1), label + ': 七列均分画布');
   check(m.scroll <= 1 && m.rootScroll <= 1, label + ': 没有溢出与伪滚动');
 }

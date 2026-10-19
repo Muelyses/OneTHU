@@ -34,7 +34,7 @@ try{
  for(const [tag,w,h]of [['desktop',1280,800],['phone',390,844]]){
  const p=await browser.newPage({viewport:{width:w,height:h},isMobile:w<600,hasTouch:w<600});p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>localStorage.setItem('onethu.onboarded.phone','1'));
  await go(p,'home');
- await p.getByRole('button',{name:'添加组件',exact:true}).click();await p.locator('[data-widget-option="custom:note"]').filter({hasText:'便笺'}).click();await p.locator('[data-add-confirm="custom:note"]').click();
+ await p.getByRole('button',{name:'组件',exact:true}).click();await p.locator('[data-widget-option="custom:note"]').filter({hasText:'便笺'}).click();await p.locator('[data-add-confirm="custom:note"]').click();
  const note=p.locator('.free-item.is-note').last();await note.scrollIntoViewIfNeeded();
  check(await note.evaluate(e=>getComputedStyle(e).backgroundColor)==='rgb(246, 231, 168)',tag+' note paper is yellow');
  await note.dblclick();const editor=p.getByRole('textbox',{name:'便笺内容'});await editor.fill('第一行：明天讨论\n第二行：不要丢掉草稿');

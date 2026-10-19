@@ -76,6 +76,9 @@ try {
   await p.waitForTimeout(600);
   const code = await p.locator('.vault-share-code').innerText();
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(code.trim()), 'share code is a fixed-length short code: ' + code.trim());
+  /* 口令台账：发出去的口令要留一条记录，并带上授权范围（内容项数 + 类型分布） */
+  const ledger = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vault.shares.v1') || '{"entries":[]}').entries);
+  check(ledger.length === 1 && ledger[0].code === code.trim() && ledger[0].scope.total >= 1, 'issued share is recorded with its authorization scope');
   const decoded = await p.evaluate(async (c) => {
     /* codec 是纯函数；直接按 Vite 原路径 import 不影响应用状态。 */
     const m = await import('/src/state/vaultShare.ts');

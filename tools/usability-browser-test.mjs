@@ -52,7 +52,7 @@ try {
  await drawer.locator('.add-grid .add-card').first().click();await p.waitForTimeout(150);
  await drawer.locator('[data-add-confirm]').click();await p.waitForTimeout(350);
  check(await p.locator('.free-item').count()===cardsBefore+1,'picker adds the chosen widget');
- await p.locator('.board-viewport-tools').getByRole('button',{name:'添加组件'}).click();await p.waitForSelector('.add-drawer[data-add-drawer]');await p.waitForTimeout(500);
+ await p.locator('.board-viewport-tools').getByRole('button',{name:'组件',exact:true}).click();await p.waitForSelector('.add-drawer[data-add-drawer]');await p.waitForTimeout(500);
  check(await p.locator('.add-drawer').getByPlaceholder('搜索组件').count()===1&&await p.locator('.add-drawer').locator('.add-grid .add-card').count()===optionCount,'plus button opens the same picker');
  const drawerEl=p.locator('.add-drawer');const h0=await drawerEl.evaluate(e=>e.getBoundingClientRect().height);
  const grip=await p.locator('.add-drawer-grip').boundingBox();
@@ -62,12 +62,12 @@ try {
  await p.screenshot({path:`${out}/add-picker.png`});
  await p.locator('.add-drawer').getByRole('button',{name:'关闭'}).click();await p.waitForTimeout(250);
  // Pen palette: three ink colors + undo/clear, floating above the tool bar.
- await tools.getByRole('button',{name:'开启画笔'}).click();await p.waitForTimeout(250);
+ await tools.getByRole('button',{name:'画笔',exact:true}).click();await p.waitForTimeout(250);
  check(await p.locator('.free-pen-panel .board-pen-swatch').count()===3,'pen palette has three ink colors');
  await p.locator('.free-pen-panel .board-pen-swatch').nth(1).click();await p.waitForTimeout(100);
  check(await p.locator('.free-pen-panel .board-pen-swatch').nth(1).getAttribute('aria-pressed')==='true','pen palette selects ink color');
  await p.screenshot({path:`${out}/pen-palette.png`});
- await tools.getByRole('button',{name:'关闭画笔'}).click();await p.waitForTimeout(150);
+ await tools.getByRole('button',{name:'画笔',exact:true}).click();await p.waitForTimeout(150);
  // A note must exist before the wallpaper/glass section to prove its paper follows the material.
  await p.mouse.dblclick(blank.x,blank.y);await p.waitForTimeout(300);
  const note=p.locator('.free-item.is-note');check(await note.count()===1,'double-click blank creates a note');

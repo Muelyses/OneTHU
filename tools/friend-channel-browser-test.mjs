@@ -22,12 +22,12 @@ try {
     for (const n of ['useLearnData', 'useCampusData']) b = b.replace(`export function ${n}() {`, `export function ${n}() { return {data:{semester:{id:'x'},courses:[],homework:[],notifications:[],files:[],schedule:[]},state:'ready',error:null,reload:async()=>{}};`);
     await route.fulfill({ response: r, body: b });
   });
-  await p.goto(base + '/?explorer-preview=home', { waitUntil: 'domcontentloaded' });
-  await p.waitForSelector('.explorer-shell'); await p.waitForTimeout(800);
-  await p.getByRole('button', { name: '设置' }).first().click(); await p.waitForTimeout(400);
-  await p.getByRole('tab', { name: '账号' }).click(); await p.waitForTimeout(600);
+  // 入口已从「设置 → 账号」搬到通讯录名片详情：设置升级成「我的」，好友通道跟着名片走
+  await p.goto(base + '/?explorer-preview=page&page=contacts', { waitUntil: 'domcontentloaded' });
+  await p.waitForSelector('.explorer-shell'); await p.waitForTimeout(1200);
   check(await p.getByText('好友甲').count() >= 1, 'seeded contact visible');
-  await p.getByRole('button', { name: '通道', exact: true }).click(); await p.waitForTimeout(300);
+  await p.getByRole('button', { name: '打开好友甲的名片' }).click(); await p.waitForTimeout(500);
+  await p.getByRole('button', { name: '好友通道', exact: true }).click(); await p.waitForTimeout(400);
   check(await p.getByText('好友通道').count() === 1, 'friend channel opens');
   await p.getByRole('button', { name: '留言', exact: true }).click();
   await p.waitForSelector('.plg-form-modal');

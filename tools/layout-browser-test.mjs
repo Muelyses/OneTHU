@@ -90,8 +90,11 @@ try {
     await page.locator('.dock-panel').getByRole('tab',{name:'OH',exact:true}).click();
     await page.waitForSelector('.dock-oh-missing');
     await headCheck(page);
-    const clamp = await page.locator('.dock-panel').evaluate(e=>({h:e.getBoundingClientRect().height,sh:e.scrollHeight,ch:e.clientHeight}));
-    check(clamp.sh<=clamp.ch+2,name+' OH shell does not crop chrome');
+    // 「不裁」= 每一段都够得到：要么内容装得下，要么面板自己可滚。
+    // 矮视口（横屏 844×390）面板被胶囊夹到 ~230px，头 + 输入区就要 270px+，
+    // 现在按 @media (max-height:520px) 放开成 overflow-y:auto —— 可滚即不裁。
+    const clamp = await page.locator('.dock-panel').evaluate(e=>({h:e.getBoundingClientRect().height,sh:e.scrollHeight,ch:e.clientHeight,oy:getComputedStyle(e).overflowY}));
+    check(clamp.sh<=clamp.ch+2 || clamp.oy==='auto' || clamp.oy==='scroll',name+' OH shell does not crop chrome');
     // Dragging must respect available room as well as a saved height.
     const grip = await page.locator('.dock-handle').boundingBox();
     await page.mouse.move(grip.x+grip.width/2,grip.y+grip.height/2);await page.mouse.down();
@@ -159,7 +162,7 @@ try {
   await go(penPage,'home');
   const originalBoard = await penPage.evaluate(()=>localStorage.getItem('onethu.board.v1'));
   check(await penPage.locator('.board-pen').count()===0,'inactive empty pen does not create invisible scroll overflow');
-  await penPage.getByRole('button',{name:/^(开启|关闭)画笔$/}).click();
+  await penPage.getByRole('button',{name:'画笔',exact:true}).click();
   const pen = penPage.locator('.board-pen');
   check((await pen.evaluate(rect)).h===2400,'pen keeps its existing coordinate height');
   await penPage.mouse.move(200,610);await penPage.mouse.down();await penPage.mouse.move(260,640,{steps:6});await penPage.mouse.up();
@@ -167,12 +170,12 @@ try {
   check(await pen.locator('polyline').count()>0,'pen drawing persists a stroke');
   await penPage.getByRole('button',{name:'放大',exact:true}).click();
   check((await pen.evaluate(rect)).h===2400,'zoom does not stretch stored pen coordinates');
-  await penPage.getByRole('button',{name:/^(开启|关闭)画笔$/}).click();
+  await penPage.getByRole('button',{name:'画笔',exact:true}).click();
   check(await pen.isVisible(),'stored marks remain visible with pen off');
   check(await penPage.evaluate(()=>localStorage.getItem('onethu.board.v1'))===originalBoard,'pen and zoom preserve saved card positions');
-  await penPage.getByRole('button',{name:/^(开启|关闭)画笔$/}).click();
+  await penPage.getByRole('button',{name:'画笔',exact:true}).click();
   await penPage.locator('.free-pen-panel').getByRole('button',{name:'清空',exact:true}).click();
-  await penPage.getByRole('button',{name:/^(开启|关闭)画笔$/}).click();
+  await penPage.getByRole('button',{name:'画笔',exact:true}).click();
   check(await penPage.locator('.board-pen').count()===0,'cleared inactive pen releases blank scroll area');
   await penPage.close();
   check(errors.length===0,'no runtime errors '+JSON.stringify(errors));

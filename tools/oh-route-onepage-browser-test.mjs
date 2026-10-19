@@ -57,7 +57,7 @@ try {
     focus: document.querySelector('.row-focus')?.textContent?.trim() ?? '',
     advanced: (document.querySelector('.explorer-settings-body')?.textContent ?? '').includes('模型 / MCP / 日志'),
   }));
-  check(oh.seg?.includes('OneTHU Harness'), 'OH row lands the OneTHU Harness entry (not 插件)');
+  check(oh.seg?.includes('Harness'), 'OH row lands the OneTHU Harness entry (not 插件)');
   check(oh.advanced, 'OH advanced row switches to advanced tier');
   check(oh.focus.includes('MCP'), 'OH row is focused/highlighted');
 

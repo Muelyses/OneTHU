@@ -116,7 +116,9 @@ try {
     await p.waitForTimeout(200);
     await p.getByRole('radio', {name:'组织', exact:true}).click();
     await p.waitForTimeout(250);
-    ok(await p.locator('.contact-slot:not(.is-mine)').count() === 1, label + ' organization filter works');
+    // 组织卡并进同一牌堆后（3cabc79b），按组织筛出 = 自己的 2 张组织卡 + 1 张组织联系人
+    const orgSlots = await p.locator('.contact-slot:not(.is-mine)').allInnerTexts();
+    ok(orgSlots.length === 3 && ['学生科协','晨跑社','开源镜像站'].every(n => orgSlots.some(t => t.includes(n))), label + ' organization filter works');
     await p.getByRole('radio', {name:'全部', exact:true}).click();
     // 星标
     const star = p.getByRole('button', {name:/^星标：王雨桐$/});
@@ -126,8 +128,9 @@ try {
     // 我的组织页签
     await p.getByRole('radio', {name:'我的组织', exact:true}).click();
     await p.waitForTimeout(400);
-    ok(await p.getByText('新建组织名片', {exact:false}).first().isVisible(), label + ' org tab reachable');
-    ok(await p.getByText('组织名片', {exact:true}).first().isVisible(), label + ' org cards section');
+    // 我的组织页签：组织卡已并进名片夹牌堆，这个页签现在管「建组织 / 用口令加入」
+    ok(await p.getByRole('button', {name:'新建组织'}).first().isVisible(), label + ' org tab reachable');
+    ok(await p.getByText('用邀请口令加入', {exact:false}).first().isVisible(), label + ' org entry actions');
     await p.screenshot({path: out + '/' + label + '-orgs.png'});
     await p.getByRole('radio', {name:'名片夹', exact:true}).click();
     await p.waitForTimeout(300);

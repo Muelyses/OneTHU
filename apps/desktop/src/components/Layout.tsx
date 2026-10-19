@@ -1,3 +1,4 @@
+import { BrandLogo } from "./BrandLogo.js";
 import { useExperienceMode, useIsSimpleLike, useSimpleRoute } from "../state/experienceMode.js";
 import { SimpleHeader } from "./SimpleExperience.js";
 import { IconBtn, IconUser } from "@onethu/gui";
@@ -131,34 +132,7 @@ function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: obj
   }));
 }
 
-/** (One / THU) 品牌标识：五列网格，括号代码体，One 衬线紧凑撑满与 THU 逐列对齐。
- *  主题插件可整体替换（theme.logo 提供 inline SVG 时优先渲染）。 */
-export function BrandLogo({ size = 14 }: { size?: number }) {
-  const themed = useThemes().logoSvg;
-  if (themed) {
-    return (
-      <span
-        className="brand-logo brand-logo-themed"
-        style={{ fontSize: size, display: "inline-flex", alignItems: "center" }}
-        aria-label="OneTHU"
-        /* 主题受信代码，同插件边界 */
-        dangerouslySetInnerHTML={{ __html: themed }}
-      />
-    );
-  }
-  return (
-    <span className="brand-logo" style={{ fontSize: size }} aria-label="OneTHU">
-      <span className="p">(</span>
-      <span className="word"><i>O</i><i>n</i><i>e</i></span>
-      <span />
-      <span className="p"> </span>
-      <span className="u">T</span>
-      <span className="u">H</span>
-      <span className="u">U</span>
-      <span className="p">)</span>
-    </span>
-  );
-}
+export { BrandLogo } from "./BrandLogo.js";
 
 /** 顶栏：首页 Logo（点击回首页，恒在不变）+ 标签条 + 搜索 + 设置齿轮（恒在不变）。
  *  滚过 8px 浮起阴影（沿用旧顶栏的层次手法）。 */

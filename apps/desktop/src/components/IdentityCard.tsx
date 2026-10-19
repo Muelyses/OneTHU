@@ -9,6 +9,7 @@
  */
 import type { ReactNode } from "react";
 import type { OrgCard, PersonalCard } from "../state/nameCard.js";
+import { BrandLogo } from "./BrandLogo.js";
 
 export type IdentityCardVariant = "deck" | "hero" | "detail";
 
@@ -52,7 +53,8 @@ export function IdentityCard({
         {Array.from(name)[0]}
       </span>
       <div className="identity-card-top">
-        <span className="identity-card-brand">OneTHU</span>
+        {/* 品牌只留这一处：标准 (One / THU) logo，底部钢印那枚 THU 已去掉 */}
+        <span className="identity-card-brand"><BrandLogo size={variant === "deck" ? 10 : 13} /></span>
         <span className="identity-card-kind">{organization ? "ORGANIZATION" : "PERSONAL CARD"}</span>
       </div>
       <div className="identity-card-middle">
@@ -74,9 +76,6 @@ export function IdentityCard({
       <div className="identity-card-bottom">
         <span className="identity-card-details">
           {details.length ? details.join(" · ") : "点击编辑，写下你的介绍"}
-        </span>
-        <span className="identity-seal" aria-hidden="true">
-          THU
         </span>
       </div>
     </article>

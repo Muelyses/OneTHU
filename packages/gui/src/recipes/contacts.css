@@ -166,11 +166,14 @@ html[data-og-scheme="dark"] .identity-card {
   min-width: 0;
 }
 .identity-card-brand {
-  font-size: var(--og-text-label);
-  font-weight: var(--og-weight-bold);
-  letter-spacing: 0.14em;
+  display: inline-flex;
+  align-items: center;
   color: var(--og-content-1);
 }
+/* 卡片里的标准品牌 logo：就是全局那个上下两排的 (One / THU) 字标，
+   颜色跟随卡片字色（封面方案下由 .has-cover 覆盖）。 */
+.identity-card .brand-logo { color: inherit; }
+.identity-card.has-cover .identity-card-brand .brand-logo { color: var(--og-c-cover-ink-strong) !important; }
 .identity-card-kind {
   flex: none;
   font-size: var(--og-text-micro);

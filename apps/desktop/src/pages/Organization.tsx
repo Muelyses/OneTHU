@@ -21,7 +21,8 @@ import { openTab } from "../state/explorer.js";
 import {
   acceptOrgInvite, addOrgLibrary, addOrgMember, createOrg, currentOrgEmail, deleteOrg, deleteOrgAnnouncement, deleteOrgProject,
   linkOrgGitlab, markOrgLibraryShared, orgIdentityCard, orgInviteCode, orgSnapshot, removeOrgLibrary, removeOrgMember,
-  saveOrgAnnouncement, saveOrgProject, setOrgGitlabGroup, setOrgMemberRole, unlinkOrgGitlab, updateOrg, updateOrgMember,
+  revokeOrgInvite, saveOrgAnnouncement, saveOrgProject, setOrgGitlabGroup, setOrgMemberRole, unlinkOrgGitlab,
+  updateOrg, updateOrgMember,
   useOrgs, type Org, type OrgAnnouncement, type OrgProject, type OrgRole,
 } from "../state/org.js";
 import {
@@ -41,6 +42,28 @@ const ROLE_LABEL: Record<OrgRole, string> = { owner: "负责人", member: "成�
 
 function isEmail(v: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+}
+
+const INVITE_EXPIRES = [
+  { value: "1", label: "1 天" },
+  { value: "7", label: "7 天" },
+  { value: "30", label: "30 天" },
+  { value: "0", label: "不过期" },
+];
+
+/** 当前邀请口令的有效期 → 表单默认值（尽量取最接近的档位）。 */
+function inviteExpireDays(invite?: { expiresAt?: number }): string {
+  if (!invite) return "7";
+  if (!invite.expiresAt) return "0";
+  const days = Math.max(1, Math.round((invite.expiresAt - Date.now()) / 86400_000));
+  const nearest = [1, 7, 30].reduce((a, b) => (Math.abs(b - days) < Math.abs(a - days) ? b : a), 7);
+  return String(nearest);
+}
+
+function expireText(at?: number): string {
+  if (!at) return "不过期";
+  const d = new Date(at);
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 /** GitLab path 规则：小写字母/数字/_/-/.；中文名转不出就退回 org-<时间>。 */
@@ -308,6 +331,7 @@ export function OrganizationPage(): ReactNode {
     const f = await openFormModal("邀请成员", [
       { key: "label", label: "口令名（如「算法组招新」，可选）", default: target.invite?.label ?? "" },
       { key: "allowEmail", label: "只允许这个清华云盘邮箱接受（可选）", default: target.invite?.allowEmail ?? "" },
+      { key: "expireDays", label: "有效期（改了会换一条新口令）", kind: "select", options: INVITE_EXPIRES, default: inviteExpireDays(target.invite) },
     ]);
     if (!f) return;
     const email = (f.allowEmail ?? "").trim();
@@ -315,10 +339,12 @@ export function OrganizationPage(): ReactNode {
       showToast("邮箱格式不对");
       return;
     }
+    const expireDays = Number(f.expireDays ?? "7") === 0 ? 0 : Number(f.expireDays ?? "7");
     try {
-      const code = await orgInviteCode(target, "我", { label: f.label ?? "", allowEmail: email });
+      const code = await orgInviteCode(target, "我", { label: f.label ?? "", allowEmail: email, expireDays });
       setInvite({ code, ...(f.label ? { label: f.label } : {}), ...(email ? { allowEmail: email } : {}) });
-      await navigator.clipboard.writeText(code).then(() => showToast("邀请口令已复制")).catch(() => showToast("邀请口令已生成"));
+      const lifetime = expireDays > 0 ? `${expireDays} 天有效` : "不过期";
+      await navigator.clipboard.writeText(code).then(() => showToast(`邀请口令已复制（${lifetime}）`)).catch(() => showToast(`邀请口令已生成（${lifetime}）`));
     } catch (e) {
       showToast(`生成邀请失败：${e instanceof Error ? e.message : String(e)}`);
     }
@@ -733,13 +759,24 @@ export function OrganizationPage(): ReactNode {
               <Section title="最近邀请口令" hint="口令可起名，也可限定某个云盘邮箱才能接受" />
               <div className="vault-share">
                 <Text slot="micro" tone="faint">
-                  {org.invite.label ? `「${org.invite.label}」` : "邀请口令"}　接收人：{org.invite.allowEmail ?? "任何人"}
+                  {org.invite.label ? `「${org.invite.label}」` : "邀请口令"}　接收人：{org.invite.allowEmail ?? "任何人"}　有效期：{expireText(org.invite.expiresAt)}
                 </Text>
                 <code className="vault-share-code">{org.invite.code}</code>
                 <Inline gap={2} wrap>
                   <Btn size="sm" variant="outline" onClick={() => void navigator.clipboard.writeText(org.invite!.code).then(() => showToast("已复制")).catch(() => showToast("请手动复制"))}>复制口令</Btn>
                   <Btn size="sm" variant="ghost" onClick={() => setInvite(org.invite!)}>显示二维码</Btn>
-                  <Btn size="sm" variant="ghost" onClick={() => void makeInvite(org)}>改名称 / 接收人</Btn>
+                  <Btn size="sm" variant="ghost" onClick={() => void makeInvite(org)}>改名称 / 接收人 / 有效期</Btn>
+                  <Btn
+                    size="sm"
+                    variant="ghost"
+                    tone="error"
+                    onClick={() => void confirmOk("删除这个组织邀请口令？删除后对方将无法再用它加入。").then((ok) => {
+                      if (!ok) return;
+                      void revokeOrgInvite(org.id).then((r) => showToast(r.ok ? (r.reason ?? "邀请口令已删除") : r.reason ?? "删除失败：到设置里检查云盘登录后重试"));
+                    })}
+                  >
+                    删除口令
+                  </Btn>
                 </Inline>
               </div>
             </Card>
@@ -947,7 +984,7 @@ export function OrganizationPage(): ReactNode {
         {invite ? (
           <Stack gap={3}>
             <Text slot="micro" tone="faint">
-              {invite.label ? `「${invite.label}」　` : ""}接收人：{invite.allowEmail ?? "任何人（拿到口令就能接受）"}
+              {invite.label ? `「${invite.label}」　` : ""}接收人：{invite.allowEmail ?? "任何人（拿到口令就能接受）"}　有效期：{expireText(org.invite?.expiresAt)}
             </Text>
             <code className="vault-share-code">{invite.code}</code>
             <div className="vault-qr"><QRCodeSVG value={invite.code} size={180} /></div>

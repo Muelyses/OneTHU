@@ -50,14 +50,14 @@ async function writeTemp(name: string, text: string): Promise<string> {
 }
 
 /** 所有交换类型共用上传、七天分享与撤销记录。 */
-async function uploadSharedManifest(token: string, repoId: string, dir: string, manifest: string, shareFiles: ShareFileRef[] = []): Promise<VaultCloudRef> {
+async function uploadSharedManifest(token: string, repoId: string, dir: string, manifest: string, shareFiles: ShareFileRef[] = [], expireDays = EXPIRE_DAYS): Promise<VaultCloudRef> {
   const localPath = await writeTemp("manifest.json", manifest);
   const manifestPath = `${dir}/manifest.json`;
   await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
   let path = dir;
   try {
-    const share = await invoke<ShareOut>("seafile_share", { token, repoId, path: dir, expireDays: EXPIRE_DAYS, password: "" });
-    const expiresAt = Date.now() + EXPIRE_DAYS * 24 * 3600 * 1000;
+    const share = await invoke<ShareOut>("seafile_share", { token, repoId, path: dir, expireDays, password: "" });
+    const expiresAt = expireDays > 0 ? Date.now() + expireDays * 24 * 3600 * 1000 : 0;
     rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path, manifestName: "manifest.json", files: shareFiles, expiresAt });
     return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
   } catch {
@@ -65,20 +65,20 @@ async function uploadSharedManifest(token: string, repoId: string, dir: string, 
     path = manifestPath;
   }
   const share = await invoke<ShareOut>("seafile_share", {
-    token, repoId, path, expireDays: EXPIRE_DAYS, password: "",
+    token, repoId, path, expireDays, password: "",
   });
-  const expiresAt = Date.now() + EXPIRE_DAYS * 24 * 3600 * 1000;
+  const expiresAt = expireDays > 0 ? Date.now() + expireDays * 24 * 3600 * 1000 : 0;
   rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path: dir, manifestName: "manifest.json", files: shareFiles, expiresAt });
   return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
 }
 
-export async function uploadExchangeManifest(code: string): Promise<VaultCloudRef> {
+export async function uploadExchangeManifest(code: string, expireDays = EXPIRE_DAYS): Promise<VaultCloudRef> {
   await ensureSeafileLoaded();
   const token = tokenOrThrow();
   const repoId = await ensureRepo(token);
   const dir = `${ROOT}/${shareId()}`;
   await invoke("seafile_mkdir", { token, repoId, path: dir });
-  return uploadSharedManifest(token, repoId, dir, JSON.stringify({ v: 1, kind: "onethu-exchange", code }));
+  return uploadSharedManifest(token, repoId, dir, JSON.stringify({ v: 1, kind: "onethu-exchange", code }), [], expireDays);
 }
 
 /**

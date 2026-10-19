@@ -64,7 +64,7 @@ export interface Org {
   announcements?: OrgAnnouncement[];
   /** 最近一次生成的邀请口令（含口令名/限定邮箱） */
   lastInviteCode?: string;
-  invite?: { code: string; label?: string; allowEmail?: string; issuedAt: number };
+  invite?: { code: string; label?: string; allowEmail?: string; issuedAt: number; expiresAt?: number };
   createdAt: number;
   updatedAt: number;
 }
@@ -314,9 +314,15 @@ function fromB64Url(s: string): Uint8Array {
   return out;
 }
 
-export async function orgInviteCode(org: Org, inviter = "我", meta?: { label?: string; allowEmail?: string }): Promise<string> {
+export async function orgInviteCode(
+  org: Org,
+  inviter = "我",
+  meta?: { label?: string; allowEmail?: string; expireDays?: number },
+): Promise<string> {
   const label = String(meta?.label ?? "").trim().slice(0, 60);
   const allowEmail = normalizeOrgEmail(meta?.allowEmail ?? "");
+  const expireDays = meta?.expireDays === 0 ? 0 : (meta?.expireDays ?? 7);
+  const wantExpires = expireDays > 0 ? Date.now() + expireDays * 86400_000 : 0;
   const payload: OrgInvitePayload = {
     v: 1, kind: "org-invite", orgId: org.id, name: org.name, brief: org.brief, joinUrl: org.joinUrl,
     inviter, issuedAt: Date.now(),
@@ -328,18 +334,40 @@ export async function orgInviteCode(org: Org, inviter = "我", meta?: { label?: 
    *  稳定分享位按组织 id 分：组织资料改了就地更新同一个目录，口令不变；
    *  改口令名/限定邮箱也走这里 —— 短码不换，manifest 内容就地更新。 */
   const contentKey = JSON.stringify([org.id, org.name, org.brief, org.joinUrl, inviter, label, allowEmail]);
-  const code = await (await import("./cloudExchange.js")).publishExchangeCode(`${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`, contentKey, `org:${org.id}`);
+  /* 云盘分享的有效期是创建时定死的：有效期变了只能撤旧分享重建（短码随之更新），
+     没变则继续复用同一个稳定位（同一条短码）。2 小时容差避免每次都重建。 */
+  const forceNew = Boolean(org.invite) && Math.abs((org.invite?.expiresAt ?? 0) - wantExpires) > 2 * 3600_000;
+  const code = await (await import("./cloudExchange.js")).publishExchangeCode(
+    `${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`,
+    contentKey,
+    `org:${org.id}`,
+    { expireDays, forceNew },
+  );
   doc = {
     ...doc,
     orgs: doc.orgs.map((o) => (o.id === org.id ? {
       ...o,
       lastInviteCode: code,
-      invite: { code, issuedAt: Date.now(), ...(label ? { label } : {}), ...(allowEmail ? { allowEmail } : {}) },
+      invite: { code, issuedAt: Date.now(), expiresAt: wantExpires, ...(label ? { label } : {}), ...(allowEmail ? { allowEmail } : {}) },
       updatedAt: Date.now(),
     } : o)),
   };
   commit();
   return code;
+}
+
+/** 删除组织邀请口令：撤销云盘分享 + 清掉本地记录。 */
+export async function revokeOrgInvite(id: string): Promise<{ ok: boolean; reason?: string }> {
+  const org = doc.orgs.find((o) => o.id === id);
+  if (!org?.invite?.code) return { ok: false, reason: "当前没有可删除的邀请口令" };
+  const { revokeShareSlot } = await import("./cloudExchange.js");
+  const ok = await revokeShareSlot(`org:${id}`);
+  doc = {
+    ...doc,
+    orgs: doc.orgs.map((o) => (o.id === id ? { ...o, invite: undefined, lastInviteCode: undefined, updatedAt: Date.now() } : o)),
+  };
+  commit();
+  return ok ? { ok: true } : { ok: true, reason: "本地记录已删除；云盘分享撤销未成功（可能已过期）" };
 }
 
 export function decodeOrgInvite(code: string): { ok: boolean; payload?: OrgInvitePayload; reason?: string } {

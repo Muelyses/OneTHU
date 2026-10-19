@@ -1,5 +1,5 @@
 import { isShortCode, linkForShortCode, shortCodeForLink } from '../lib/shortCode.js';
-import { seafileShareRead } from './seafile.js';
+import { seafileShareDelete, seafileShareRead } from './seafile.js';
 import { updateExchangeManifest, uploadExchangeManifest } from './vaultCloud.js';
 import { checksum, encodeShareV2, type VaultSharePayload } from './vaultShare.js';
 
@@ -44,19 +44,36 @@ async function stillReadable(code: string): Promise<boolean> {
   try { await resolveExchangeCode(code); return true; } catch { return false; }
 }
 
+/** 发布时可选项：有效期（天，0/缺省 = 7 天；显式传 0 表示不过期）与强制重建分享。 */
+export interface PublishOptions {
+  /** 有效期天数：>0 按天；0 = 不过期（缺省 7 天） */
+  expireDays?: number;
+  /** true = 不复用稳定位，撤销旧分享后重新建（改有效期/换接收范围用） */
+  forceNew?: boolean;
+}
+
 /** 发布内容全文到云盘，用户只拿到固定长度的分享凭据。
  *  contentKey：内容摘要键——同一份内容再次分享时复用旧短码，不重复上传。
- *  slotName：稳定分享位——名片/组织用；就地覆盖 manifest，口令不变、内容最新。 */
-export async function publishExchangeCode(code: string, contentKey?: string, slotName?: string): Promise<string> {
+ *  slotName：稳定分享位——名片/组织用；就地覆盖 manifest，口令不变、内容最新。
+ *  opts.forceNew：有效期/范围变了必须重建分享（云盘分享的过期时间不可改），
+ *  先撤旧分享再建新的，短码随之更新。 */
+export async function publishExchangeCode(
+  code: string,
+  contentKey?: string,
+  slotName?: string,
+  opts: PublishOptions = {},
+): Promise<string> {
   if (isShortCode(code)) return code;
+  const expireDays = opts.expireDays === 0 ? 0 : (opts.expireDays ?? 7);
+  const slots = readJson<Slot>(SLOT_KEY);
+  const slot = slotName ? slots[slotName] : undefined;
   const key = contentKey ? await cacheKeyOf(contentKey) : '';
-  if (key) {
-    const hit = readJson<CacheEntry>(CACHE_KEY)[key];
-    if (hit && Date.now() - hit.at < CACHE_TTL && await stillReadable(hit.code)) return hit.code;
-  }
-  if (slotName) {
-    const slot = readJson<Slot>(SLOT_KEY)[slotName];
-    if (slot && slot.expiresAt > Date.now() && slot.dir) {
+  if (!opts.forceNew) {
+    if (key) {
+      const hit = readJson<CacheEntry>(CACHE_KEY)[key];
+      if (hit && Date.now() - hit.at < CACHE_TTL && await stillReadable(hit.code)) return hit.code;
+    }
+    if (slotName && slot && (slot.expiresAt === 0 || slot.expiresAt > Date.now()) && slot.dir) {
       try {
         await updateExchangeManifest(slot.repoId, slot.dir, code);
         if (await stillReadable(slot.code)) {
@@ -65,8 +82,11 @@ export async function publishExchangeCode(code: string, contentKey?: string, slo
         }
       } catch { /* 目录/分享已不可用：落到下面新建 */ }
     }
+  } else if (slot && slotName) {
+    /* 改有效期/范围：旧分享必须撤掉，否则它按旧有效期继续活着。 */
+    await revokeShareSlot(slotName);
   }
-  const ref = await uploadExchangeManifest(code);
+  const ref = await uploadExchangeManifest(code, expireDays);
   if (!ref.shareUrl) throw new Error('云盘没有返回分享链接');
   const short = shortCodeForLink(ref.shareUrl);
   if (slotName) {
@@ -76,6 +96,37 @@ export async function publishExchangeCode(code: string, contentKey?: string, slo
   }
   if (key) cachePut(key, short);
   return short;
+}
+
+function slotShareToken(shareUrl: string | undefined): string {
+  const m = /\/(?:d|f)\/([A-Za-z0-9_-]+)/.exec(String(shareUrl ?? ''));
+  return m ? m[1]! : '';
+}
+
+/** 撤销某个稳定分享位的云盘分享并清掉槽位（名片/组织口令的「删除」用）。 */
+export async function revokeShareSlot(slotName: string): Promise<boolean> {
+  const slots = readJson<Slot>(SLOT_KEY);
+  const slot = slots[slotName];
+  if (!slot) return false;
+  let ok = true;
+  const token = slotShareToken(slot.shareUrl);
+  if (token) {
+    try { await seafileShareDelete(token); }
+    catch { ok = false; }
+  }
+  /* 清槽位 + 清掉指向这条短码的内容缓存，避免下次「复用」到已删的分享。 */
+  delete slots[slotName];
+  writeJson(SLOT_KEY, slots);
+  const cache = readJson<CacheEntry>(CACHE_KEY);
+  for (const [k, v] of Object.entries(cache)) if (v.code === slot.code) delete cache[k];
+  writeJson(CACHE_KEY, cache);
+  return ok;
+}
+
+/** 读稳定分享位（组织口令的有效期展示用）。 */
+export function shareSlotOf(slotName: string): { code: string; expiresAt: number } | null {
+  const slot = readJson<Slot>(SLOT_KEY)[slotName];
+  return slot ? { code: slot.code, expiresAt: slot.expiresAt } : null;
 }
 
 /** 保留旧口令兼容；新口令匿名联网取清单后交给各领域已有校验与导入。 */

@@ -102,6 +102,29 @@ try {
   check(!guard.wrong && /限定/.test(guard.wrongReason ?? ''), 'invite restricted to another email is rejected: ' + (guard.wrongReason ?? ''));
   check(guard.right && guard.members === guard.before + 1, 'invite accepted by the bound email joins as new member');
 
+  /* 组织口令：可改有效期（换新码 + 新到期时间）、可删除（撤分享 + 清记录） */
+  const sharesBefore = await p.evaluate(() => Object.keys(window.__cloud.shares).length);
+  await p.getByRole('button', { name: '邀请成员', exact: true }).click();
+  await p.waitForSelector('.plg-form-modal');
+  await p.locator('.plg-form-modal select').selectOption('30');
+  await p.getByRole('button', { name: '提交' }).click();
+  await p.waitForTimeout(1500);
+  org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
+  check(org.invite.code !== code, 'changing expiry re-issues a new invite code');
+  check((org.invite.expiresAt ?? 0) > Date.now() + 29 * 86400_000, 'invite expiry is now 30 days');
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(400);
+  await p.getByRole('radio', { name: '概览', exact: true }).click();
+  await p.waitForTimeout(400);
+  await p.getByRole('button', { name: '删除口令', exact: true }).click();
+  await p.waitForSelector('.confirm-card');
+  await p.getByRole('button', { name: '确定', exact: true }).click();
+  await p.waitForTimeout(1200);
+  org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
+  const sharesAfter = await p.evaluate(() => Object.keys(window.__cloud.shares).length);
+  check(!org.invite && !org.lastInviteCode, 'org invite can be deleted (local record cleared)');
+  check(sharesAfter === sharesBefore - 1, 'deleting the invite revokes its cloud share');
+
   /* 资料库：新建云盘资料库（repo）并共享给成员邮箱 */
   await p.getByRole('radio', { name: '资料库', exact: true }).click();
   await p.waitForTimeout(400);

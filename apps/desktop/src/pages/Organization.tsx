@@ -371,7 +371,7 @@ export function OrganizationPage(): ReactNode {
                 <Inline gap={2} wrap>
                   <Btn size="sm" variant="outline" onClick={() => void navigator.clipboard.writeText(org.invite!.code).then(() => showToast("已复制")).catch(() => showToast("请手动复制"))}>复制口令</Btn>
                   <Btn size="sm" variant="ghost" onClick={() => setInvite(org.invite!)}>显示二维码</Btn>
-                  <Btn size="sm" variant="ghost" onClick={() => void makeInvite(org)}>重新生成</Btn>
+                  <Btn size="sm" variant="ghost" onClick={() => void makeInvite(org)}>改名称 / 接收人</Btn>
                 </Inline>
               </div>
             </Card>

@@ -24,6 +24,15 @@ export interface VaultCatch {
   payload?: unknown;
   /** 来源提示（首页/搜索/邮件…），用于清单副行 */
   source?: string;
+  /** 远端文件来源：拖入后自动下载并缓存到暂存箱（云盘/附件）。 */
+  remote?: {
+    kind: "seafile" | "learn" | "news";
+    repoId?: string;
+    path?: string;
+    url?: string;
+    /** 云端已知大小（可选，缓存完以实际字节为准） */
+    size?: number;
+  };
 }
 
 export interface VaultFileRef {
@@ -178,6 +187,20 @@ export function addToVault(c: VaultCatch, boxId?: string): { ok: boolean; reason
   };
   commit();
   return { ok: true, item };
+}
+
+/** 更新箱内某条目（用于远端文件缓存完成后补 hash/stagedPath/cloudPath）。 */
+export function updateVaultItem(itemId: string, patch: Partial<VaultItem>): void {
+  let hit = false;
+  doc = {
+    ...doc,
+    boxes: doc.boxes.map((b) => {
+      if (!b.items.some((x) => x.id === itemId)) return b;
+      hit = true;
+      return { ...b, items: b.items.map((x) => (x.id === itemId ? { ...x, ...patch } : x)), updatedAt: Date.now() };
+    }),
+  };
+  if (hit) commit();
 }
 
 export function removeFromVault(boxId: string, itemId: string): void {

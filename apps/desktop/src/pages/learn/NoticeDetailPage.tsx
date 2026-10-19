@@ -1,3 +1,4 @@
+import { vaultCatchAttachment } from "../../lib/vaultCatch.js";
 import { Btn } from "@onethu/gui";
 /**
  * 通知只读详情（learnX NoticeDetail）：标题/发布者/正文富文本 + 附件下载。
@@ -242,7 +243,7 @@ export function NoticeDetailPage() {
           ) : null}
           {attState === "ok" ? (
             att ? (
-              <div className="kv kv-wide">
+              <div className="kv kv-wide" data-vault-catch={vaultCatchAttachment({ kind: "learn", name: att.name || n.attachmentName || "通知附件", url: att.downloadUrl, label: "通知附件" })}>
                 <span>{att.name || n.attachmentName}{att.size ? `（${att.size}）` : ""}</span>
                 <Btn variant="ghost" onClick={() => openFilePreview({ name: att.name || n.attachmentName || "通知附件", url: att.downloadUrl })}>预览
                 </Btn>

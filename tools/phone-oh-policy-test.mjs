@@ -65,4 +65,51 @@ assert.ok(/phone-canvas/.test(freeBoard) && /freeboard-wrap\.phone-canvas \.free
 const platform = read("apps/desktop/src/state/platform.ts");
 assert.ok(/横屏（宽大于高、且宽已过手机断点）不再算手机形态/.test(platform), "横屏手机应切桌面形态（platform.ts 注释/逻辑未更新）");
 
+/* 暂存箱长按来源：日程/云盘/GitLab/附件/新闻/标签页/工作区 */
+const catchFiles = [
+  ["apps/desktop/src/pages/Schedule.tsx", "vaultCatchSchedule"],
+  ["apps/desktop/src/pages/ScheduleAgenda.tsx", "vaultCatchSchedule"],
+  ["apps/desktop/src/pages/CloudPage.tsx", "vaultCatchCloudFile"],
+  ["apps/desktop/src/pages/GitLabPage.tsx", "vaultCatchGitlabProject"],
+  ["apps/desktop/src/pages/learn/NoticeDetailPage.tsx", "vaultCatchAttachment"],
+  ["apps/desktop/src/pages/learn/AssignmentDetailPage.tsx", "vaultCatchAttachment"],
+  ["apps/desktop/src/pages/info/NewsTab.tsx", "vaultCatchAttachment"],
+  ["apps/desktop/src/components/explorer/TabStrip.tsx", "vaultCatchTab"],
+  ["apps/desktop/src/components/explorer/TabDrawer.tsx", "vaultCatchWorkspace"],
+  ["apps/desktop/src/components/explorer/OneGoSheet.tsx", "vaultCatchWorkspace"],
+];
+for (const [file, fn] of catchFiles) {
+  const txt = read(file);
+  assert.ok(txt.includes(fn) && txt.includes("data-vault-catch"), `${file} 缺少 data-vault-catch（${fn}）`);
+}
+const registry = read("apps/desktop/src/state/vaultRegistry.ts");
+for (const kind of ["cloud-file", "cloud-folder", "learn-notice", "learn-attachment", "news-file", "gitlab-project", "workspace", "tab", "schedule"]) {
+  assert.ok(registry.includes(`"${kind}"`), `vaultRegistry 缺少 ${kind} 打开方式`);
+}
+/* 手机长按：触摸抖动放宽 + 吞原生 contextmenu */
+const vaultDrag = read("apps/desktop/src/components/vault/vaultDrag.ts");
+assert.ok(/pointerType === "touch" \? 14/.test(vaultDrag), "触摸长按抖动上限仍为 8px（手机易被取消）");
+assert.ok(/onContextMenu/.test(vaultDrag) && /data-vault-catch/.test(vaultDrag), "手机长按缺少原生菜单抑制");
+
+/* 来访报备：autosubmit + OH 工具 */
+const visitDraft = read("apps/desktop/src/state/visitDraft.ts");
+const facade = read("apps/desktop/src/plugins/facade.ts");
+const visitTab = read("apps/desktop/src/pages/info/VisitTab.tsx");
+const rustTools = read("plugins/OneTHU-Harness/core/src/tools.rs");
+assert.ok(/pendingSubmit/.test(visitDraft) && /opts\?\.submit/.test(visitDraft), "visitDraft 缺少自动提交标记");
+assert.ok(/submit: opts\?\.submit === true/.test(facade), "facade.visit.fill 缺少 submit 透传");
+assert.ok(/autoSubmit/.test(visitTab) && /AUTO_SUBMIT_FROM_OH/.test(visitTab), "VisitTab 缺少自动提交");
+assert.ok(/name: "visit_fill"/.test(rustTools) && /"visit", "fill"/.test(rustTools), "OH 缺少 visit_fill 工具");
+
+/* 拖入暂存箱 = 文件自动缓存到云盘；日程可选加入我的日程 */
+const catches = read("apps/desktop/src/lib/vaultCatch.ts");
+const vaultRemote = read("apps/desktop/src/lib/vaultRemote.ts");
+const vaultCloudTs = read("apps/desktop/src/state/vaultCloud.ts");
+const vaultDragTs = read("apps/desktop/src/components/vault/vaultDrag.ts");
+assert.ok(/remote: \{ kind: "seafile"/.test(catches), "云盘文件拖入应带 seafile remote（自动下载缓存）");
+assert.ok(/remote: \{ kind: a\.kind, url: a\.url \}/.test(catches), "附件拖入应带 remote url（自动下载缓存）");
+assert.ok(/cacheRemoteFileToVault/.test(vaultDragTs), "拖入后未触发自动缓存");
+assert.ok(/cacheVaultFiles/.test(vaultRemote) && /\/Vault\/cache/.test(vaultCloudTs), "缺少暂存箱云盘缓存实现");
+assert.ok(/offerScheduleToCalendar/.test(vaultRemote) && /offerScheduleToCalendar/.test(read("apps/desktop/src/state/vaultRegistry.ts")), "日程条目缺少「是否加入我的日程」选择");
+
 console.log("✓ 手机策略 + OH 限额卡静态守卫通过");

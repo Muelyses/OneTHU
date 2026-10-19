@@ -9,6 +9,7 @@
  * 松手时命中目标 → addToVault + 吸入动画；未命中 → 回弹消失。
  */
 import { GESTURE, claimGesture, releaseGesture } from "../../lib/gestureArena.js";
+import { cacheRemoteFileToVault } from "../../lib/vaultRemote.js";
 import { addToVault, type VaultCatch } from "../../state/vault.js";
 import { ohAsk } from "../../plugins/ChatDock.js";
 import { showToast } from "../../state/toast.js";
@@ -118,7 +119,14 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
     return;
   }
   const r = addToVault(cat);
-  if (r.ok) showToast(`已收进暂存箱：${cat.title}`);
+  if (r.ok) {
+    if (cat.remote && r.item) {
+      showToast(`已收进暂存箱：${cat.title}（正在缓存到云盘…）`);
+      void cacheRemoteFileToVault(r.item.id, cat.remote, cat.title);
+    } else {
+      showToast(`已收进暂存箱：${cat.title}`);
+    }
+  }
   else if (r.reason === "duplicate") showToast(`暂存箱里已经有「${cat.title}」了`);
   else showToast("暂存箱暂时不可用：稍后再试");
 }
@@ -187,6 +195,7 @@ export function installVaultDragSources(): () => void {
   };
 
   const onDown = (e: PointerEvent): void => {
+    lastPointerType = e.pointerType || "mouse";
     if (e.button !== undefined && e.button !== 0) return;
     if (dragState.active) return;
     const target = e.target as Element | null;
@@ -233,12 +242,24 @@ export function installVaultDragSources(): () => void {
     if (!pending || e.pointerId !== pending.pointerId) return;
     if (pending.armed) return;
     const dist = Math.hypot(e.clientX - pending.x, e.clientY - pending.y);
-    if (dist > GESTURE.longPressSlop) clear(); // 手指先滑动 = 页面滚动，不拖
+    /* 触摸端手指会抖：8px 太紧，长按还没到就被当滚动取消（手机上「长按没反应」的主因之一）。
+       触摸放宽到 14px；鼠标仍是 8px。真正滑动 scrolling 仍会超过它。 */
+    const slop = e.pointerType === "touch" ? 14 : GESTURE.longPressSlop;
+    if (dist > slop) clear();
+  };
+  /** 安卓 WebView 长按会弹原生「复制/全选」菜单并取消指针：在可拖元素上直接吞掉 contextmenu。
+      桌面右键菜单不在这里管（只有 touch 指针的 contextmenu 才吞）。 */
+  let lastPointerType = "mouse";
+  const onContextMenu = (e: MouseEvent): void => {
+    if (lastPointerType !== "touch") return;
+    const el = e.target as Element | null;
+    if (el?.closest("[data-vault-catch]")) e.preventDefault();
   };
   const onUp = (): void => clear();
   const lockTouch = (e: TouchEvent): void => {if (dragState.active && e.cancelable) e.preventDefault();};
   const escape = (e: KeyboardEvent): void => {if(e.key === "Escape"){clear();if(dragState.active)endDrag(false,startX,startY,null);}};
   document.addEventListener("touchmove",lockTouch,{passive:false});
+  document.addEventListener("contextmenu",onContextMenu,{capture:true});
   window.addEventListener("keydown",escape);
   document.addEventListener("pointerdown", onDown, true);
   document.addEventListener("pointermove", onPointerMove, true);
@@ -251,6 +272,7 @@ export function installVaultDragSources(): () => void {
     document.removeEventListener("pointerup", onUp, true);
     document.removeEventListener("pointercancel", onUp, true);
     document.removeEventListener("touchmove",lockTouch);
+    document.removeEventListener("contextmenu",onContextMenu,{capture:true} as never);
     window.removeEventListener("keydown",escape);
     if(dragState.active)endDrag(false,startX,startY,null);
     moveHooked = false;

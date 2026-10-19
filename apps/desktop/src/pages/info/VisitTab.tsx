@@ -6,8 +6,9 @@
  * 表单结构、下拉选项、必填要求都以服务端下发的表单模型为准，不自己编。
  *
  * 三条守则：
- *  ① 提交是**真写**（校外人员据此可入校）：只有用户自己点「提交报备」并在确认框里再点一次才会发出；
- *     OH 送来的内容一律只进草稿（见 state/visitDraft.ts）。
+ *  ① 提交是**真写**（校外人员据此可入校）：默认只有用户点「提交报备」并在确认框里再点一次才会发出；
+ *     OH 默认只填草稿（见 state/visitDraft.ts）；用户显式要求「自动报备」时，OH 可带 submit 请求，
+ *     本页在草稿填好后自动提交（2026-10-19 用户拍板）。
  *  ② 样式零旁路：全部 @onethu/gui 组件 —— 无页面 CSS、无内联样式、无自造控件。
  *  ③ 卡片区只读官方：我的报备列表按服务端返回原样显示，不做状态文案推测。
  */
@@ -20,7 +21,7 @@ import {
   VISIT_MOBILE_ENTRY, VISIT_REPORT_FLOW, VisitApiError, VisitAuthRequiredError, VisitLoginError,
   type VisitFormModel, type VisitOption, type VisitReportDraft, type VisitReportRow, type VisitVisitorInput,
 } from "@onethu/core";
-import { clearVisitDraft, peekVisitDraft, subscribeVisitDraft, visitDraftVersion } from "../../state/visitDraft.js";
+import { clearVisitDraft, peekVisitAutoSubmit, peekVisitDraft, subscribeVisitDraft, visitDraftVersion } from "../../state/visitDraft.js";
 import { visitClient, visitEnsureLogin, visitHasSession } from "../../lib/visit.js";
 import { logLine } from "../../lib/clients.js";
 import { openExternal } from "./openExternal.js";
@@ -30,6 +31,7 @@ const LOGIN_HINT = "本页要用统一身份登录一次；本机记住过密码
 const LOGIN_HINT_2 = "没记住密码时，也可以先到官方页面登录一次，再回到这里刷新。";
 const SUBMIT_HINT = "提交后学校系统会生成报备记录，来访亲友凭身份证件从所选校门入校。";
 const DRAFT_FROM_OH = "已按你的说明填好草稿：核对后点「提交报备」。";
+const AUTO_SUBMIT_FROM_OH = "已按你的要求填好并自动提交报备。";
 const CONFIRM_TITLE = "确认提交这条报备？";
 const LOAD_FAIL = "读取报备信息失败：请点「重新加载」再试一次。";
 const SUBMIT_FAIL = "提交没有成功：请检查填写内容后重试，或到官方页面提交。";
@@ -61,19 +63,24 @@ export function VisitTab() {
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [askSubmit, setAskSubmit] = useState(false);
+  /** OH 请求了自动提交：等表单/模型就绪后直接走 submit()，不弹确认框 */
+  const [autoSubmit, setAutoSubmit] = useState(false);
 
   /** OH 送来的草稿：只填不提交；勾选确认一律由用户自己完成 */
   const draftVersion = useSyncExternalStore(subscribeVisitDraft, visitDraftVersion);
   useEffect(() => {
     const patch = peekVisitDraft();
+    const wantAuto = peekVisitAutoSubmit();
     if (!patch) return;
     setForm((f) => ({
       ...f,
       ...patch,
-      confirmed: false,
+      /* 自动报备：勾选确认由系统代表用户完成（用户已显式要求自动提交） */
+      confirmed: wantAuto ? true : false,
       visitors: patch.visitors?.length ? patch.visitors : f.visitors,
     }));
-    setNote(DRAFT_FROM_OH);
+    setNote(wantAuto ? AUTO_SUBMIT_FROM_OH : DRAFT_FROM_OH);
+    if (wantAuto) setAutoSubmit(true);
     clearVisitDraft();
   }, [draftVersion]);
 
@@ -159,6 +166,13 @@ export function VisitTab() {
       setBusy(false);
     }
   };
+
+  /** 草稿要求自动提交：模型就绪后提交一次（submit 内部会 setAskSubmit(false)/清理提示） */
+  useEffect(() => {
+    if (!autoSubmit || phase !== "ready" || !model || busy) return;
+    setAutoSubmit(false);
+    void submit();
+  }, [autoSubmit, phase, model, busy, submit]);
 
   if (phase === "need_login") {
     return (

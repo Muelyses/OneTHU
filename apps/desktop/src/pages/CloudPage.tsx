@@ -18,6 +18,7 @@
  * .cloud-search-result-head/.cloud-row.skeleton-row 私有 CSS；
  * .cloud-list/.cloud-row/.cloud-kind/.cloud-name/.cloud-meta 仍被 GitLabPage 共用，待其迁移再烧。
  */
+import { vaultCatchCloudFile } from "../lib/vaultCatch.js";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useApp } from "../state/context.js";
@@ -519,6 +520,7 @@ export default function CloudPage(): ReactNode {
                   key={e.name}
                   flush
                   role="button"
+                  data-vault-catch={vaultCatchCloudFile({ name: e.name, kind: e.kind, repoId: repo.id, repoName: repo.name, path: `${path === "/" ? "" : path}/${e.name}`, size: e.size })}
                   onClick={() => {
                     if (e.kind === "dir") setPath(`${path === "/" ? "" : path}/${e.name}`);
                     else previewCloudFile(repo.id, `${path === "/" ? "" : path}/${e.name}`, e.name);
@@ -630,6 +632,7 @@ export default function CloudPage(): ReactNode {
               interactive
               role="button"
               tabIndex={0}
+              data-vault-catch={vaultCatchCloudFile({ name: r.name, kind: "dir", repoId: r.id, repoName: r.name, path: "/", size: r.size })}
               onClick={() => { setRepo(r); setPath("/"); setSearchHits(null); exitSel(); }}
               onKeyDown={(ev) => { if (ev.key === "Enter") { setRepo(r); setPath("/"); } }}
             >

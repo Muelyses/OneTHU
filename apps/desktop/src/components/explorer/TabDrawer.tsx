@@ -1,3 +1,4 @@
+import { vaultCatchWorkspace } from "../../lib/vaultCatch.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -766,7 +767,7 @@ export function WorkspacePanel(): ReactNode {
             const preview = names.slice(0, 4).join("、");
             return (
               /* data-ws-id：拖「标签头」到工作区块上并组的解析锚点（B） */
-              <div className="ex-row" key={w.id} data-ws-id={w.id}>
+              <div className="ex-row" key={w.id} data-ws-id={w.id} data-vault-catch={vaultCatchWorkspace({ id: w.id, name: w.name, count })}>
                 <div className="ex-row-main">
                   <span className="ex-row-title">{w.name}</span>
                   <span className="ex-row-sub">

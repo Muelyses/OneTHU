@@ -1,5 +1,6 @@
 /* OneGUI · 面与卡：唯一的"块"入口（面阶/浮起/圆角/内边距全是枚举） */
 import type { ReactNode } from "react";
+import { pickDataAttrs } from "./kit.js";
 import { cx, one, scopeProps, type OneBase } from "./kit.js";
 
 export type SurfacePad = "none" | "sm" | "md" | "lg" | "xl";
@@ -70,10 +71,10 @@ export function Surface({ as: Tag = "div", scope, className, pos, children, ...r
 }
 
 /** 只把 DOM 事件透传给标签，其余（枚举 prop）不进 DOM */
-function pickDom(p: SurfaceProps): { role?: string; tabIndex?: number; "aria-label"?: string; onClick?: (e: React.MouseEvent<HTMLElement>) => void; onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void; onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void } {
+function pickDom(p: SurfaceProps): { role?: string; tabIndex?: number; "aria-label"?: string; onClick?: (e: React.MouseEvent<HTMLElement>) => void; onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void; onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void } & Record<string, string | undefined> {
   const { role, tabIndex } = p;
   const aria = p["aria-label"];
-  const out: ReturnType<typeof pickDom> = {};
+  const out: ReturnType<typeof pickDom> = { ...pickDataAttrs(p as unknown as Record<string, unknown>) };
   if (role) out.role = role;
   if (tabIndex !== undefined) out.tabIndex = tabIndex;
   if (aria) out["aria-label"] = aria;

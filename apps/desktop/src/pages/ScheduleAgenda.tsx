@@ -9,6 +9,7 @@ import type { ScheduleEntry } from "@onethu/core";
 import { Card, Empty } from "../components/Layout.js";
 import { useCloudCal } from "../state/cloudCal.js";
 import { useApp } from "../state/context.js";
+import { vaultCatchSchedule } from "../lib/vaultCatch.js";
 import { info } from "../lib/clients.js";
 
 const TZ = "Asia/Shanghai";
@@ -208,6 +209,7 @@ export function ScheduleAgenda({
           {dayItems.map((it, i) => (
             <button
               key={`${it.kind}-${it.uid ?? it.title}-${i}`}
+              data-vault-catch={vaultCatchSchedule({ title: it.title, kind: KIND_LABEL[it.kind], date: selected, location: it.location, note: it.note, startMs: it.startMs, endMs: it.endMs })}
               onClick={() => onEdit(it)}
               disabled={!it.uid}
               style={{

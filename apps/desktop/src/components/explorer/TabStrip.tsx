@@ -1,3 +1,4 @@
+import { vaultCatchTab } from "../../lib/vaultCatch.js";
 import { Input, Text } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -1070,6 +1071,7 @@ export function TabStrip(): ReactNode {
           <div
             key={t.id}
             data-tab-id={t.id}
+            data-vault-catch={isHome ? undefined : vaultCatchTab({ title: label, page: t.page, params: t.params as Record<string, unknown> | null })}
             className={"ex-tab" + (active ? " is-active" : "") + (isHome ? " is-home" : "") + (drag.dragId === t.id ? " is-dragging" : "")}
             role="tab"
             aria-selected={active}

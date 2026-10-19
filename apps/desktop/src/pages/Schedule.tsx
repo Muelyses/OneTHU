@@ -1,3 +1,4 @@
+import { vaultCatchSchedule } from "../lib/vaultCatch.js";
 import {
   Badge,
   Banner,
@@ -984,6 +985,7 @@ export function SchedulePage() {
                     <div
                       key={`b-${ymdOf(weekStart)}-${i}`}
                       data-tx="keep"
+                      data-vault-catch={vaultCatchSchedule({ title: p.entry.courseName, kind: p.entry.src === "hw" ? "作业截止" : "课程", date: ymdOf(weekStart), location: p.entry.location, note: `${hhmm(p.beginMin)}–${hhmm(p.endMin)}` })}
                       className={
                         "schedule-block"
                         + (compact ? " is-compact" : "")

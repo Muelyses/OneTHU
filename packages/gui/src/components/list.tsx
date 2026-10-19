@@ -1,6 +1,6 @@
 /* OneGUI · 行与列表：全站唯一"一行东西"的模型（List / Row / EmptyState） */
 import type { ReactNode } from "react";
-import { cx, one, scopeProps, type OneBase } from "./kit.js";
+import { cx, one, pickDataAttrs, scopeProps, type OneBase } from "./kit.js";
 
 export type RowSize = "sm" | "md" | "lg";
 
@@ -89,9 +89,10 @@ export function Row({
       {caret ? <span className="og-row-caret" aria-hidden="true">›</span> : null}
     </>
   );
+  const dataAttrs = pickDataAttrs(dom as unknown as Record<string, unknown>);
   if (href && !disabled) {
     return (
-      <a {...scopeProps(scope)} className={cls} href={href} title={titleAttr} role={dom.role ?? "listitem"} {...pick(dom)}>
+      <a {...scopeProps(scope)} {...dataAttrs} className={cls} href={href} title={titleAttr} role={dom.role ?? "listitem"} {...pick(dom)}>
         {inner}
       </a>
     );
@@ -99,6 +100,7 @@ export function Row({
   return (
     <div
       {...scopeProps(scope)}
+      {...dataAttrs}
       className={cls}
       title={titleAttr}
       role={dom.role ?? "listitem"}

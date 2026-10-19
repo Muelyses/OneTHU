@@ -20,6 +20,7 @@
  * 行为/数据零改动：仓库切换（分片 noteAtomCache / 深链）、文件树导航、Issue/MR 读写、评论、
  * 流水线触发/重试、API 错误流（重置统一认证）全部原样保留。
  */
+import { vaultCatchGitlabProject } from "../lib/vaultCatch.js";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -261,6 +262,7 @@ function ProjectList({ onOpen }: { onOpen: (id: number) => void }): ReactNode {
           interactive
           role="button"
           tabIndex={0}
+          data-vault-catch={vaultCatchGitlabProject({ id: p.id, name: p.name_with_namespace, path: p.path_with_namespace })}
           onClick={() => onOpen(p.id)}
           onKeyDown={(e) => { if (e.key === "Enter") onOpen(p.id); }}
         >

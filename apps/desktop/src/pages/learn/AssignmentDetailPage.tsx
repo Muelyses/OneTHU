@@ -1,3 +1,4 @@
+import { vaultCatchAttachment } from "../../lib/vaultCatch.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /** 作业只读详情（learnX AssignmentDetail）：提交/批改情况 + 说明富文本 + 四类附件；提交/撤回已移植（tjzy）*/
@@ -370,7 +371,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
           {attFound.map(({ label, a }) => {
             const key = a!.id || a!.downloadUrl;
             return (
-              <div className="kv kv-wide" key={label}>
+              <div className="kv kv-wide" key={label} data-vault-catch={vaultCatchAttachment({ kind: "learn", name: a!.name || `附件 ${key}`, url: a!.downloadUrl, label })}>
                 <span>{label}</span>
                 <b>{a!.name || `附件 ${key}`}{a!.size ? `（${a!.size}）` : ""}</b>
                 <Btn variant="ghost" onClick={() => openFilePreview({ name: a!.name || `附件 ${key}`, url: a!.downloadUrl })}>预览

@@ -42,6 +42,7 @@
  * 详情正文仍是 RichContent（门户远端富文本 HTML + 图片代理抓取，MailPage 同判例
  * 豁免：站外 HTML 不可令牌化）。
  */
+import { vaultCatchAttachment } from "../../lib/vaultCatch.js";
 import { useEffect, useMemo, useRef, useState, Fragment, type ReactNode } from "react";
 import type { NewsDetail, NewsItem } from "@onethu/core";
 import {
@@ -799,6 +800,7 @@ export function NewsTab({
                             key={`${i}-${a.url}`}
                             flush
                             size="sm"
+                            data-vault-catch={vaultCatchAttachment({ kind: "news", name: a.name, url: a.url, label: "新闻附件" })}
                             leading={<IconFile size="sm" title="附件" />}
                             titleAttr={a.name}
                             trailing={

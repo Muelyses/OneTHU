@@ -1,3 +1,4 @@
+import { vaultCatchWorkspace } from "../../lib/vaultCatch.js";
 import { Input, Row } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -320,7 +321,7 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
           </div>
           <div className="ex-row-list">
             {wsHits.map((w) => (
-              <div className="ex-row" key={w.id}>
+              <div className="ex-row" key={w.id} data-vault-catch={vaultCatchWorkspace({ id: w.id, name: w.name, count: w.tabs.length })}>
                 <div className="ex-row-main">
                   <span className="ex-row-title">{w.name}</span>
                   <span className="ex-row-sub">{w.tabs.length} 个标签页</span>

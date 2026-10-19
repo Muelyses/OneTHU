@@ -468,12 +468,13 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
    *  WHY 不在这里直接提交：报备内容的真实性由申请人负责（学校须知原文），代提交会让人误以为
    *  「系统替他背书」。与 venue.jump「预约在官方页面完成」同一条边界。 */
   visit: {
-    fill: (patch_: unknown, opts?: { open?: boolean }): { ok: boolean; opened: boolean; filled: string[] } => {
+    /** 默认只填草稿 + 打开页面；submit: true = 用户已授权自动报备（页面填完直接提交）。 */
+    fill: (patch_: unknown, opts?: { open?: boolean; submit?: boolean }): { ok: boolean; opened: boolean; submit: boolean; filled: string[] } => {
       gate(perms, "nav", "visit.fill");
       const p = (patch_ ?? {}) as Record<string, unknown>;
-      requestVisitDraft(p as never);
+      requestVisitDraft(p as never, { submit: opts?.submit === true });
       const opened = opts?.open === false ? false : navGo("reserve", { reserveTab: "visit" });
-      return { ok: true, opened, filled: Object.keys(p) };
+      return { ok: true, opened, submit: opts?.submit === true, filled: Object.keys(p) };
     },
   },
   gitlab: { ...gitlabRead, ...gitlabWrite } as unknown as OnethuApi["gitlab"],

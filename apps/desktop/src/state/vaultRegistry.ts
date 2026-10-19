@@ -72,6 +72,42 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
       env.toast("壁纸已应用");
       return true;
     }
+    /* ── 长按拖入的页面对象（日程/云盘/课程/新闻/GitLab/标签页/工作区）── */
+    const pageMeta = it.payload as {
+      kind?: string; repoId?: string; path?: string; date?: string; courseId?: string; itemId?: string;
+      url?: string; projectId?: number; page?: string; params?: Record<string, unknown> | null; workspaceId?: string;
+    } | undefined;
+    const kind = pageMeta?.kind;
+    if (kind === "schedule") {
+      void import("../lib/vaultRemote.js").then((m) => m.offerScheduleToCalendar(pageMeta as { title?: string; date?: string; startMs?: number; endMs?: number; location?: string; note?: string }));
+      return true;
+    }
+    if (kind === "cloud-file" || kind === "cloud-folder") {
+      env.navigate("cloud", pageMeta?.repoId ? { cloudRepo: pageMeta.repoId } : undefined);
+      env.toast("已打开云盘资料库，文件位置见条目说明");
+      return true;
+    }
+    if (kind === "learn-notice") {
+      env.navigate("learn-notice-detail", { courseId: pageMeta?.courseId, itemId: pageMeta?.itemId, from: "learn-notices" });
+      return true;
+    }
+    if (kind === "learn-attachment" || kind === "news-file") {
+      if (pageMeta?.url) void import("../pages/info/openExternal.js").then((m) => m.openExternal(pageMeta.url!));
+      else env.toast("附件地址已失效；可到原页面重新下载");
+      return true;
+    }
+    if (kind === "gitlab-project" && pageMeta?.projectId != null) {
+      env.navigate("gitlab", { gitlabProject: Number(pageMeta.projectId) });
+      return true;
+    }
+    if (kind === "tab" && pageMeta?.page) {
+      env.navigate(pageMeta.page, (pageMeta.params ?? undefined) as Record<string, unknown> | undefined);
+      return true;
+    }
+    if (kind === "workspace" && pageMeta?.workspaceId) {
+      void import("./explorer.js").then((m) => m.openWorkspace(pageMeta.workspaceId!));
+      return true;
+    }
     const routeId = pmeta?.routeId ?? pmeta?.settingTitle;
     if (routeId) {
       void (async () => {

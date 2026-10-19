@@ -32,6 +32,17 @@ export interface OneBase {
   titleAttr?: string;
   "aria-label"?: string;
   "data-testid"?: string;
+  /** 允许把 data-* 透传到 DOM（暂存箱长按来源、拖拽锚点等） */
+  [dataAttr: `data-${string}`]: string | undefined;
+}
+
+/** 收集 data-* 透传属性（React 组件默认不展开到 DOM） */
+export function pickDataAttrs(p: Record<string, unknown>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(p)) {
+    if (k.startsWith("data-") && typeof v === "string") out[k] = v;
+  }
+  return out;
 }
 
 /** 样式对象：一次 class 生成，不做字符串拼接散布在各处 */

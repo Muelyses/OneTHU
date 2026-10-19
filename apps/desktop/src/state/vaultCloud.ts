@@ -166,6 +166,31 @@ const adapter: VaultCloudAdapter = {
 };
 
 /** 启动时清理过期分享：先撤链接，再删无引用文件（尽力而为；失败留给下次）。 */
+/** 把暂存箱里「已落本机、还没上云」的文件上传到 OneTHU 资料库 /Vault/cache 并回写 cloudPath。 */
+export async function cacheVaultFiles(): Promise<{ ok: boolean; uploaded: number; reason?: string }> {
+  await ensureSeafileLoaded();
+  const token = getSeafileToken();
+  if (!token) return { ok: false, uploaded: 0, reason: "云盘未连接" };
+  const repoId = await ensureRepo(token);
+  const cacheDir = "/Vault/cache";
+  try { await invoke("seafile_mkdir", { token, repoId, path: cacheDir }); } catch { /* 已存在 */ }
+  let uploaded = 0;
+  const { vaultSnapshot, updateVaultItem } = await import("./vault.js");
+  for (const box of vaultSnapshot().boxes) {
+    for (const it of box.items) {
+      const f = it.file;
+      if (!f?.stagedPath || f.cloudPath) continue;
+      const safe = (f.hash ? f.hash.slice(0, 8) + "-" : "") + f.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
+      try {
+        await invoke("seafile_upload", { token, repoId, parentDir: cacheDir, localPath: f.stagedPath, replace: true });
+        updateVaultItem(it.id, { file: { ...f, cloudPath: `${cacheDir}/${safe}`, stagedPath: undefined } });
+        uploaded += 1;
+      } catch { /* 单个失败不拖垮其它 */ }
+    }
+  }
+  return { ok: uploaded > 0, uploaded };
+}
+
 export async function cleanupExpiredVaultShares(): Promise<number> {
   const expired = expiredShareRefs();
   if (expired.length === 0) return 0;

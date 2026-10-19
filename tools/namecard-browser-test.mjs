@@ -88,6 +88,17 @@ try {
   const toolbar = await p.locator('.contact-toolbar button').allTextContents();
   /* 收名片入口收成一个「接收名片」，工具条不再三颗按钮并排（用户 2026-10-19「太拥挤」） */
   check(toolbar.includes('接收名片') && !toolbar.includes('粘贴名片口令') && toolbar.length <= 8, 'contacts toolbar keeps a single 接收名片 entry');
+  /* 名片夹要能看到自己创建的组织（用户 2026-10-19 点名「为什么名片夹里没有自己创建的组织」） */
+  await call('/src/state/org.ts', 'createOrg', [{ name: '测试组织' }]);
+  await p.waitForTimeout(600);
+  check(await p.locator('.contact-deck .contact-slot').count() >= 2, 'own organization card shares the 名片夹 deck');
+  check(await p.getByRole('button', { name: '打开测试组织的组织名片' }).count() === 1, 'own organization card appears in 名片夹 deck');
+  await p.getByRole('button', { name: '打开测试组织的组织名片' }).click();
+  const orgPanel = p.getByRole('dialog', { name: '组织名片' });
+  await orgPanel.waitFor();
+  check(await orgPanel.getByRole('button', { name: '管理组织' }).count() === 1, 'org card detail offers 管理组织');
+  await p.keyboard.press('Escape');
+  await p.waitForTimeout(300);
   await p.locator('.contact-toolbar').getByRole('button', { name: '接收名片' }).click();
   const recvPanel = p.getByRole('dialog', { name: '接收名片' });
   await recvPanel.waitFor();
@@ -98,11 +109,6 @@ try {
     'receive panel offers 粘贴/扫码/从暂存箱 三选',
   );
   await recvPanel.getByRole('button', { name: '粘贴口令' }).click();
-  /* 名片夹要能看到自己创建的组织（用户 2026-10-19 点名「为什么名片夹里没有自己创建的组织」） */
-  await call('/src/state/org.ts', 'createOrg', [{ name: '测试组织' }]);
-  await p.waitForTimeout(600);
-  check(await p.getByText('组织名片', { exact: true }).count() >= 1, 'contacts card deck shows 组织名片 section');
-  check(await p.getByText('测试组织', { exact: false }).count() >= 1, 'own organization card appears in 名片夹');
   const friendCode = await call('/src/lib/contentExchange.ts', 'personalShareCode', [
     { name: '外部朋友', avatar: '', website: '', social: '', phone: '', bio: '走廊认识的', cloudEmail: '' },
   ]);

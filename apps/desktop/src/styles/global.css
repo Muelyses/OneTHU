@@ -4282,8 +4282,11 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
    本页同语义已走 Tag tone=success */
 
 /* ── 插件表单弹窗 ── */
+/* z-index 必须高于 OneGUI 模态面板（--og-z-modal 11010）：组织弹窗里再开
+   「添加成员 / 新建项目 / 发布公告」这类表单，否则整块被下面的模态盖住点不动。
+   仍低于确认框（--og-z-confirm 12500）：表单里弹确认要盖在表单上。 */
 .plg-form-overlay {
-  position: fixed; inset: 0; z-index: 9999;
+  position: fixed; inset: 0; z-index: var(--og-z-menu);
   background: rgba(0, 0, 0, .35); backdrop-filter: var(--glass-scrim-blur);
   display: flex; align-items: center; justify-content: center; padding: 20px;
 }

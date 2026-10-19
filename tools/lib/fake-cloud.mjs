@@ -143,7 +143,7 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
       }
     };
   }, token);
-  for (const mod of ['**/src/state/seafile.ts*', '**/src/state/vaultCloud.ts*']) {
+  for (const mod of ['**/src/state/seafile.ts*', '**/src/state/vaultCloud.ts*', '**/src/lib/cardCover.ts*', '**/src/lib/cloudFolder.ts*']) {
     await page.route(mod, async (route) => {
       const response = await route.fetch();
       let body = await response.text();

@@ -34,9 +34,11 @@ import { addToVault, vaultSnapshot, type VaultCatch } from "../state/vault.js";
 import {
   CARD_LIMITS, addContact, orgCardCatch, personalCardCatch, removeContact,
   resolveCloudEmail, savePersonalCard, setContactShare, upsertOrgCard, useCards,
-  type ContactCard, type OrgCard, type PersonalCard,
+  type CardCover, type ContactCard, type OrgCard, type PersonalCard,
 } from "../state/nameCard.js";
 import { prepareAndShareFolder } from "../lib/cloudFolder.js";
+import { deleteCardCover, uploadCardCover } from "../lib/cardCover.js";
+import { CardCoverEditor } from "./CardCoverEditor.js";
 import {
   openBidirectionalShare, sendFriendFile, sendFriendText, useFriendMessages,
 } from "../state/friendChannel.js";
@@ -197,6 +199,7 @@ function PersonalCardBlock(): ReactNode {
   /* 通讯录也应当能直接收名片：粘贴对方的名片口令（或扫码）就进名片夹，不必绕去暂存箱。 */
   const receive = useVaultReceive();
   const [copying, setCopying] = useState(false);
+  const [coverOpen, setCoverOpen] = useState(false);
   const copyCard = async (): Promise<void> => {
     if (copying) return;
     setCopying(true);
@@ -204,6 +207,27 @@ function PersonalCardBlock(): ReactNode {
     catch (e) { showToast(e instanceof Error ? e.message : "复制失败，请重试"); }
     finally { setCopying(false); }
   };
+  const saveCover = (cover: CardCover): void => {
+    savePersonalCard({ cover });
+    showToast("卡面已保存");
+    /* 云盘备份异步进行：失败只说备份失败，本地卡面不受影响。 */
+    void (async () => {
+      try {
+        const cloud = await uploadCardCover(cover.src);
+        savePersonalCard({ cover: { ...cover, cloud } });
+        showToast("卡面已备份到云盘");
+      } catch {
+        showToast("卡面已保存；云盘备份失败：请到云盘页确认登录后重试");
+      }
+    })();
+  };
+  const removeCover = (): void => {
+    const old = personal.cover?.cloud;
+    savePersonalCard({ cover: null });
+    if (old) void deleteCardCover(old);
+    showToast("已恢复默认纸卡");
+  };
+
   return (
     <div className="identity-panel">
       <div className="identity-panel-show">
@@ -218,6 +242,7 @@ function PersonalCardBlock(): ReactNode {
           <Btn variant="ghost" icon={<IconIn size="sm" />} onClick={toVault}>
             放进暂存箱
           </Btn>
+          <Btn variant="outline" onClick={() => setCoverOpen(true)}>{personal.cover ? "换卡面" : "自定义卡面"}</Btn>
         </Inline>
         <div className="identity-panel-exchange">
           <Inline gap={2} wrap>
@@ -230,6 +255,13 @@ function PersonalCardBlock(): ReactNode {
         </div>
       </div>
       {nfc.feedback}
+      <CardCoverEditor
+        open={coverOpen}
+        card={personal}
+        onClose={() => setCoverOpen(false)}
+        onSave={saveCover}
+        onRemove={removeCover}
+      />
       <Card className="identity-panel-meta">
         <Section title="名片信息" hint="碰一碰 / 分享口令都用这一张" />
         <KeyValue

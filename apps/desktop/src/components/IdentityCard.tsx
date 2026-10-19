@@ -25,11 +25,28 @@ export function IdentityCard({
   const person = card as PersonalCard;
   const org = card as OrgCard;
   const name = (card.name || "").trim() || (organization ? "未命名组织" : "我的名片");
+  const cover = organization ? undefined : person.cover;
   const headline = organization ? org.brief || "组织邀请" : person.bio || "在清华，与你相遇。";
   const details = (organization ? [org.joinUrl] : [person.website, person.social, person.phone])
     .filter((s): s is string => Boolean(s && s.trim()));
   return (
-    <article className={`identity-card identity-card--${variant}${organization ? " is-organization" : ""}`}>
+    <article
+      className={`identity-card identity-card--${variant}${organization ? " is-organization" : ""}${cover ? ` has-cover is-cover-${cover.ink}` : ""}`}
+      /* 有自定义卡面时字色由卡面自己算（黑/白 + 蒙层），不让全局「按页面底色自动字色」再插一脚。 */
+      {...(cover ? { "data-tx": "keep" } : {})}
+    >
+      {cover ? (
+        <span className="identity-card-cover" aria-hidden="true">
+          <img
+            src={cover.src}
+            alt=""
+            style={{
+              objectPosition: `${cover.focusX * 100}% ${cover.focusY * 100}%`,
+              transform: `scale(${cover.zoom})`,
+            }}
+          />
+        </span>
+      ) : null}
       <span className="identity-card-stock" aria-hidden="true" />
       <span className="identity-card-watermark" aria-hidden="true">
         {Array.from(name)[0]}

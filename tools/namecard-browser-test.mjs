@@ -56,6 +56,74 @@ try {
   check(card.name === '张三' && card.website === 'https://example.com/zhangsan' && card.phone === '13800000000' && card.cloudEmail === '2025013332@tsinghua.edu.cn', 'personal card fields saved (incl. cloud email)');
   check(Array.from(card.bio).length === 120, 'bio is clamped to 120 chars for NFC length');
 
+  /* 自定义卡面：选图 → 拖动/缩放 → 自动字色（白底图应选黑字）→ 存进名片 */
+  await p.getByRole('button', { name: '自定义卡面', exact: true }).click();
+  await p.getByRole('dialog', { name: '自定义卡面' }).waitFor();
+  const chooser = p.waitForEvent('filechooser');
+  await p.getByRole('button', { name: '选择照片', exact: true }).click();
+  const fc = await chooser;
+  const whitePng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PzWvWQAAAABJRU5ErkJggg==', 'base64');
+  await fc.setFiles({ name: 'white.png', mimeType: 'image/png', buffer: whitePng });
+  await p.locator('.cover-editor-stage .identity-card.has-cover').waitFor({ timeout: 8000 });
+  /* 手动字色：白字/黑字必须真的生效（此前会被全局文字自动对比度写死成黑字） */
+  await p.getByRole('button', { name: '白字', exact: true }).click();
+  await p.waitForTimeout(200);
+  const manualLight = await p.evaluate(() => {
+    const n = document.querySelector('.cover-editor-stage .identity-card-name');
+    return { cls: document.querySelector('.cover-editor-stage .identity-card')?.className, color: n ? getComputedStyle(n).color : '' };
+  });
+  check(manualLight.cls.includes('is-cover-light') && manualLight.color === 'rgb(255, 255, 255)', 'manual white ink really renders white in preview: ' + manualLight.color);
+  await p.getByRole('button', { name: '黑字', exact: true }).click();
+  await p.waitForTimeout(200);
+  const manualDark = await p.evaluate(() => {
+    const n = document.querySelector('.cover-editor-stage .identity-card-name');
+    return { cls: document.querySelector('.cover-editor-stage .identity-card')?.className, color: n ? getComputedStyle(n).color : '' };
+  });
+  check(manualDark.cls.includes('is-cover-dark') && manualDark.color === 'rgb(16, 19, 26)', 'manual black ink really renders black in preview: ' + manualDark.color);
+  await p.getByRole('button', { name: '自动', exact: true }).click();
+  await p.waitForTimeout(200);
+  await p.locator('.cover-editor-zoom input[type=range]').fill('1.6');
+  await p.getByRole('button', { name: '保存卡面', exact: true }).click();
+  await p.waitForTimeout(800);
+  const withCover = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.cards.v1')).personal.cover);
+  check(withCover?.src?.startsWith('data:image/jpeg') && withCover.ink === 'dark', 'card cover saved with auto ink (white image -> dark ink)');
+  check(withCover.zoom === 1.6 && withCover.focusX >= 0 && withCover.focusY >= 0, 'card cover keeps focus/zoom');
+  check(await p.locator('.identity-panel .identity-card.has-cover.is-cover-dark').count() === 1, 'identity card renders the custom cover with contrast class');
+  /* 卡面「存到云盘」：异步上传后名片里记 cloud 引用，云盘里真有这个文件 */
+  await p.waitForFunction(() => Boolean(JSON.parse(localStorage.getItem('onethu.cards.v1')).personal.cover?.cloud?.repoId), null, { timeout: 10000 });
+  const coverCloud = await p.evaluate(() => {
+    const c = JSON.parse(localStorage.getItem('onethu.cards.v1')).personal.cover.cloud;
+    return { ...c, exists: Boolean(window.__cloud.fs[c.repoId]?.[c.path]) };
+  });
+  check(/^\/Cards\/cover-.*\.jpg$/.test(coverCloud.path) && coverCloud.exists, 'card cover is uploaded to the cloud drive (/Cards/...)');
+  await p.screenshot({ path: 'docs/onegui/experience-mode/card-cover-editor.png' });
+  /* 深色照片 → 自动换成白字（对比度反向） */
+  await p.getByRole('button', { name: '换卡面', exact: true }).click();
+  await p.getByRole('dialog', { name: '自定义卡面' }).waitFor();
+  const chooser2 = p.waitForEvent('filechooser');
+  await p.getByRole('button', { name: '换一张照片', exact: true }).click();
+  const fc2 = await chooser2;
+  await fc2.setFiles({ name: 'black.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAgElEQVR4nNXOMREAIBDAsNKRY8S/VkT8wDUKsva5lEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxEmcxPk7MPUAK44AqoR+gzgAAAAASUVORK5CYII=', 'base64') });
+  await p.locator('.cover-editor-stage .identity-card.has-cover').waitFor({ timeout: 8000 });
+  await p.waitForTimeout(300);
+  await p.getByRole('button', { name: '保存卡面', exact: true }).click();
+  await p.waitForTimeout(600);
+  const darkCover = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.cards.v1')).personal.cover);
+  check(darkCover?.ink === 'light', 'dark image flips the card text to white automatically');
+  /* 「上亮下暗」的照片：整图平均不暗，但文字区（下半）黑 → 仍应白字 */
+  await p.getByRole('button', { name: '换卡面', exact: true }).click();
+  await p.getByRole('dialog', { name: '自定义卡面' }).waitFor();
+  const chooser3 = p.waitForEvent('filechooser');
+  await p.getByRole('button', { name: '换一张照片', exact: true }).click();
+  const fc3 = await chooser3;
+  await fc3.setFiles({ name: 'split.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAGAAAAA8CAIAAAAWtijjAAAAmElEQVR4nO3SsRHAIBAEMXDEuP9qiVwBbAGW0v9o5+bee3D2XG4I1CwoCBQECgIFgYJAQaAgUBAoCBQECgIFgYJAQaAgUBAoCBQECgIFgYJAQaAgUBAoCBQECgIFgYJAQaAgUBAoCBQECgIFgYJAQaAw13rr59csKAgUBAoCBYGCQEGgIFAQKAgUBAoCBYGCQEGgIFAQaNx9lywDf5A/dsMAAAAASUVORK5CYII=', 'base64') });
+  await p.locator('.cover-editor-stage .identity-card.has-cover').waitFor({ timeout: 8000 });
+  await p.getByRole('button', { name: '保存卡面', exact: true }).click();
+  await p.waitForTimeout(600);
+  const splitCover = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.cards.v1')).personal.cover);
+  check(splitCover?.ink === 'light', 'bright-top/dark-bottom photo still gets white text (name band wins)');
+  check(await p.locator('.identity-panel .identity-card.has-cover.is-cover-light').count() === 1, 'identity card uses light-ink contrast class on dark cover');
+
   await p.getByRole('button', { name: '放进暂存箱' }).first().click();
   await p.waitForTimeout(600);
   const inVault = await p.evaluate(() => {

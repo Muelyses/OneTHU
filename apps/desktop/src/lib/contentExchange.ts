@@ -13,7 +13,7 @@ export async function personalShareCode(personal: PersonalCard = cardsSnapshot()
   if (!personal.name.trim()) throw new Error('请先填写名片上的名字');
   /* 名片走稳定分享位：改了就地道更新同一个目录——口令不变，对方读到的永远是最新名片；
    *  没改则复用旧码，不重复上传。 */
-  const contentKey = JSON.stringify([personal.name, personal.avatar, personal.website, personal.social, personal.phone, personal.bio, personal.cloudEmail]);
+  const contentKey = JSON.stringify([personal.name, personal.avatar, personal.website, personal.social, personal.phone, personal.bio, personal.cloudEmail, personal.cover?.updatedAt ?? 0]);
   return publishExchangeCode(encodeTouch({ v: 1, kind: 'onethu-touch', issuedAt: Date.now(), personal: { ...personal } }), contentKey, 'card');
 }
 

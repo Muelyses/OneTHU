@@ -12,10 +12,28 @@ import { getCloudCalEmail } from "./cloudCal.js";
 import { useSyncExternalStore } from "react";
 import type { VaultCatch } from "./vault.js";
 
+/** 名片卡面自定义封面：图片 + 取景（焦点/缩放）+ 自动字色 + 云盘备份。 */
+export interface CardCover {
+  /** data URL（压缩后的卡面图；给卡片本体与名片口令一起带出去） */
+  src: string;
+  /** 取景焦点：0..1（图片里对准卡片中心的位置） */
+  focusX: number;
+  focusY: number;
+  /** 缩放 1..2.5 */
+  zoom: number;
+  /** 根据背景亮度自动选的字色：light = 白字 / dark = 黑字 */
+  ink: "light" | "dark";
+  /** 存到云盘的位置（备份/多设备；失败时可缺省） */
+  cloud?: { repoId: string; path: string; shareUrl?: string };
+  updatedAt: number;
+}
+
 export interface PersonalCard {
   name: string;
   /** data: URL（≤200KB）或空串 */
   avatar: string;
+  /** 自定义卡面（可选）；没有就是默认纸卡 */
+  cover?: CardCover;
   website: string;
   social: string;
   phone: string;
@@ -66,6 +84,8 @@ export interface CardDoc {
 const KEY = "onethu.cards.v1";
 
 export const CARD_LIMITS = { name: 40, website: 200, social: 120, phone: 40, bio: 120, orgName: 60, orgBrief: 200, joinUrl: 300 } as const;
+/** 卡面图上限：压缩后 dataURL 长度（约 1.5MB 字符 ≈ 1.1MB 图片） */
+const MAX_COVER_CHARS = 1_500_000;
 
 function empty(): CardDoc {
   return {
@@ -129,8 +149,31 @@ export function resolveCloudEmail(): string {
   return cal;
 }
 
-export function savePersonalCard(patch: Partial<PersonalCard>): PersonalCard {
+function normalizeCover(raw: CardCover | null | undefined): CardCover | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const src = typeof raw.src === "string" ? raw.src.trim() : "";
+  if (!src.startsWith("data:image/") || src.length > MAX_COVER_CHARS) return undefined;
+  const clamp01 = (v: unknown, fallback: number): number => {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : fallback;
+  };
+  const zoom = Number(raw.zoom);
+  return {
+    src,
+    focusX: clamp01(raw.focusX, 0.5),
+    focusY: clamp01(raw.focusY, 0.5),
+    zoom: Number.isFinite(zoom) ? Math.min(2.5, Math.max(1, zoom)) : 1,
+    ink: raw.ink === "dark" ? "dark" : "light",
+    ...(raw.cloud && typeof raw.cloud.repoId === "string" && raw.cloud.repoId
+      ? { cloud: { repoId: raw.cloud.repoId, path: String(raw.cloud.path ?? ""), ...(raw.cloud.shareUrl ? { shareUrl: raw.cloud.shareUrl } : {}) } }
+      : {}),
+    updatedAt: Number(raw.updatedAt) || Date.now(),
+  };
+}
+
+export function savePersonalCard(patch: Omit<Partial<PersonalCard>, "cover"> & { cover?: CardCover | null }): PersonalCard {
   const cur = doc.personal;
+  const cover = patch.cover === undefined ? cur.cover : normalizeCover(patch.cover);
   const next: PersonalCard = {
     name: clamp(patch.name ?? cur.name, CARD_LIMITS.name),
     avatar: patch.avatar !== undefined ? String(patch.avatar ?? "") : cur.avatar,
@@ -139,6 +182,7 @@ export function savePersonalCard(patch: Partial<PersonalCard>): PersonalCard {
     phone: clamp(patch.phone ?? cur.phone, CARD_LIMITS.phone),
     cloudEmail: clamp(patch.cloudEmail ?? cur.cloudEmail ?? "", 120).trim(),
     bio: clamp(patch.bio ?? cur.bio, CARD_LIMITS.bio),
+    ...(cover ? { cover } : {}),
     updatedAt: Date.now(),
   };
   doc = { ...doc, personal: next };

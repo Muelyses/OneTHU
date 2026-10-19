@@ -98,6 +98,25 @@ export async function overlayPushUi(state: unknown): Promise<void> {
   }
 }
 
+/** 启动/进入设置时按偏好真正把球显示出来（原生端不会自己 show，默认开关曾因此名不副实）。
+ *  - 用户「本次关闭」→ 不自动显示；
+ *  - 安卓未授权时不弹窗打扰，交给设置页里的开关/授权流程。 */
+export async function syncOverlayPreference(): Promise<boolean> {
+  try {
+    if (!(await overlaySupported())) return false;
+    if (isOverlayClosedByUser()) return false;
+    if (isAndroid) {
+      const { hasOverlayPermission } = await import("./overlayAndroid.js");
+      const ok = await hasOverlayPermission().catch(() => false);
+      if (!ok) return false;
+    }
+    await overlayShow();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** 悬浮球是否处于「本次已关闭」状态（用户在本体里重新打开前一直保持） */
 const CLOSED_KEY = "onethu.overlay.closed";
 export function isOverlayClosedByUser(): boolean {

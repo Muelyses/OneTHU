@@ -35,6 +35,9 @@ installScrollReveal();
 installTextContrast();
 // 按钮涟漪（§3.5 B1）：全局单监听，认类名不认调用点；触摸/笔出涟漪，鼠标只走状态层（§2.8.3）
 installRipple();
+/* 悬浮球默认开：原生端不会自己 show，启动时按偏好真正显示一次（用户「本次关闭」则跳过） */
+import { syncOverlayPreference } from "./lib/overlay.js";
+void syncOverlayPreference();
 
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";

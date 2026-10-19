@@ -112,4 +112,11 @@ assert.ok(/cacheRemoteFileToVault/.test(vaultDragTs), "拖入后未触发自动�
 assert.ok(/cacheVaultFiles/.test(vaultRemote) && /\/Vault\/cache/.test(vaultCloudTs), "缺少暂存箱云盘缓存实现");
 assert.ok(/offerScheduleToCalendar/.test(vaultRemote) && /offerScheduleToCalendar/.test(read("apps/desktop/src/state/vaultRegistry.ts")), "日程条目缺少「是否加入我的日程」选择");
 
+/* 悬浮球默认开却看不见的 bug：启动要真正 show，设置页进入时同步 */
+const overlayLib = read("apps/desktop/src/lib/overlay.ts");
+const mainTs = read("apps/desktop/src/main.tsx");
+assert.ok(/export async function syncOverlayPreference/.test(overlayLib), "overlay.ts 缺少启动同步函数");
+assert.ok(/syncOverlayPreference\(\)/.test(mainTs), "启动未调用 syncOverlayPreference（默认开的球不会显示）");
+assert.ok(/syncOverlayPreference/.test(read("apps/desktop/src/components/OverlaySettingsSection.tsx")), "设置页进入时未同步真实显示状态");
+
 console.log("✓ 手机策略 + OH 限额卡静态守卫通过");

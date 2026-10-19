@@ -1,11 +1,12 @@
 import { TourIllustration } from "./TourIllustration.js";
 import { ExperienceModePicker } from "./ExperienceModePicker.js";
 import { useEffect, useState } from "react";
-import { Btn, Modal, Stack, Text, Inline, Spacer, Progress } from "@onethu/gui";
+import { Btn, Modal, Stack, Text, Inline, Spacer, Progress, SettingsList, SettingsRow, Switch } from "@onethu/gui";
 import { experienceMode, setExperienceMode, type ExperienceMode } from "../state/experienceMode.js";
 import { openTab } from "../state/explorer.js";
 import { OptionalConnections } from "./SimpleSettings.js";
 import { TOUR_CARD_SCOPE, defineOnboardingScopes } from "./OnboardingTourScope.js";
+import { mcpServerEnabled, setMcpServer } from "../state/userext.js";
 
 const KEY="onethu.onboarded.flow4";
 const REPLAY="onethu.onboarding.replay";
@@ -19,7 +20,7 @@ export const FULL_LESSONS:Lesson[]=[
  {id:"nfc",title:"碰一碰：名片与内容接力",lead:"有 NFC 可贴近传送口令，没有也能用口令。",steps:["两台设备分别选 NFC 传送与接收。","看到成功反馈再分开。","失败请手动改用口令或二维码。"],page:"vault",action:"查看设备支持"},
  {id:"organization",title:"组织：人、文件、项目一处管",lead:"建组织后成员共享云盘与 GitLab 项目。",steps:["邀请成员时可用口令，并设有效期。","组织里共享资料库、建项目、发公告。","组织名片与个人名片分开管理。"],page:"contacts",action:"打开组织"},
  {id:"onego",title:"OneGO!：全局入口与自动化",lead:"搜索、快捷指令、工作区和 OneFlow 都在这里。",steps:["⌘/Ctrl+K 唤出搜索，直跳页面或内容。","OneFlow 把一串操作固化成步骤。","可按需触发：手动、定时或事件。"],page:"homepage",action:"打开 OneGO!"},
- {id:"plugin",title:"插件与 OH：把能力装进来",lead:"装插件扩展组件、主题与 MCP 工具。",steps:["插件页安装管理，给 OH 配模型源。","悬浮球默认关闭，可在 OH 设置里开启。","自制内容可发布为 OnePage 或组件。","OH 支持语音、多模态与 IM 接入。"],page:"homepage",action:"看看插件页"},
+ {id:"plugin",title:"插件与 OH：把能力装进来",lead:"装插件扩展组件、主题与 MCP 工具。",steps:["插件页安装管理，给 OH 配模型源。","悬浮球默认关闭，可在 OH 设置里开启。","可给本机应用开放 OH MCP（默认关闭）。","自制内容可发布为 OnePage 或组件。","OH 支持语音、多模态与 IM 接入。"],page:"homepage",action:"看看插件页"},
  {id:"customize",title:"外观与工作台：全都可调",lead:"主题、壁纸、密度和入口排布都能改。",steps:["设置→外观与布局：主题、壁纸、字号。","小组件、Dock、标签栏、OneShot 可调。","改坏可恢复默认布局，不动数据。"],page:"homepage",action:"打开外观设置"},
  {id:"campus",title:"校园服务：完整模式的聚合",lead:"学习、生活、预约、云盘、GitLab 全聚合。",steps:["学习：作业/通知/文件/成绩/讨论。","生活：校园卡、电费网费、洗衣、场馆。","云盘、邮箱、GitLab、寻迹都在这一层。"],page:"homepage",action:"去学习页"},
  {id:"data",title:"数据与同步：跨设备继续",lead:"日程、暂存箱和组织资料都能跨设备带走。",steps:["日程支持云日历与系统日历同步。","口令与 NFC 让内容跨设备接力。","切换模式不清数据，设置里可导出。"],page:"vault",action:"查看数据设置"},
@@ -41,7 +42,7 @@ function shouldStart(){
  }catch{return false;}
 }
 export function OnboardingTour(){
- const [open,setOpen]=useState(shouldStart),[chosen,setChosen]=useState<ExperienceMode>(experienceMode),[step,setStep]=useState(-1),[practice,setPractice]=useState(false),[connect,setConnect]=useState(false);
+ const [open,setOpen]=useState(shouldStart),[chosen,setChosen]=useState<ExperienceMode>(experienceMode),[step,setStep]=useState(-1),[practice,setPractice]=useState(false),[connect,setConnect]=useState(false),[mcpOn,setMcpOn]=useState(()=>mcpServerEnabled());
  const lessons=chosen==="simple"?SIMPLE_LESSONS:chosen==="practical"?PRACTICAL_LESSONS:FULL_LESSONS;
  const last=step===lessons.length, lesson=lessons[step] ?? lessons[0]!;
  useEffect(()=>{const replay=()=>{setChosen(experienceMode());setStep(-1);setPractice(false);setConnect(false);setOpen(true);};window.addEventListener(REPLAY,replay);return()=>window.removeEventListener(REPLAY,replay);},[]);
@@ -62,6 +63,13 @@ export function OnboardingTour(){
  <ExperienceModePicker value={chosen} onChange={setChosen}/>
  <Text tone="faint">以后可以在设置里切换。已有标签、白板、暂存箱与完整模式设置都会原样保留。</Text></>:last?<>
  <Text as="h2" slot="title">需要时，再连接</Text><Text>可选：连雨课堂同步作业，扫码接微信/飞书用 OH。现在跳过也行。</Text>
+ <SettingsList>
+  <SettingsRow
+   title="向本机应用开放 OH MCP"
+   sub={mcpOn ? "已开启：本机客户端可连 127.0.0.1:8787" : "默认关闭；开启后本机其他应用可把 OneTHU 当工具调用"}
+   control={<Switch checked={mcpOn} aria-label="OH MCP 服务器开关" onChange={(v)=>{setMcpServer(v);setMcpOn(v);}}/>}
+  />
+ </SettingsList>
  <Btn variant="outline" onClick={()=>setConnect(!connect)}>{connect?"收起连接选项":"选择扫码连接"}</Btn>{connect?<OptionalConnections/>:null}
  </>:<><Text as="h2" slot="title">{lesson.title}</Text><Text>{lesson.lead}</Text><TourIllustration lesson={lesson.id}/><ol className="tour-steps">{lesson.steps.map(s=><li key={s}>{s}</li>)}</ol>
  {lesson.page?<Btn variant="outline" onClick={()=>{openTab(lesson.page!, lesson.page==="contacts"?{section:"orgs"} as never:null);setPractice(true);}}>{lesson.action}</Btn>:null}</>}

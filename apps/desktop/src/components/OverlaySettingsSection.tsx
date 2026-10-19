@@ -10,7 +10,7 @@
 import { defineSearchRows } from "../state/searchRows.js";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Btn, SettingsList, SettingsRow, Switch } from "@onethu/gui";
-import { isOverlayClosedByUser, overlayHide, setOverlayClosedByUser, overlayShow, overlaySupported } from "../lib/overlay.js";
+import { isOverlayClosedByUser, overlayHide, setOverlayClosedByUser, overlayShow, overlaySupported, syncOverlayPreference } from "../lib/overlay.js";
 import { hasOverlayPermission, requestOverlayPermission } from "../lib/overlayAndroid.js";
 import { isAndroidNavigator } from "../lib/androidHost.js";
 import { goOhRow } from "./OhSettingsPage.js";
@@ -41,8 +41,15 @@ export function OverlaySettingsSection(): ReactNode {
 
   useEffect(() => {
     void (async () => {
-      setSupported(await overlaySupported());
+      const sup = await overlaySupported();
+      setSupported(sup);
       setPerm(await hasOverlayPermission().catch(() => null));
+      /* 开关默认按偏好显示「开」，但原生端不会自己 show：进来时补一次真正的显示，
+         并把状态回写（安卓未授权 → 如实显示为关，避免「开了却看不见」）。 */
+      if (sup && !isOverlayClosedByUser()) {
+        const shown = await syncOverlayPreference();
+        setOpen(shown);
+      }
     })();
   }, []);
 

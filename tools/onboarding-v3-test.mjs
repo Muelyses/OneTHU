@@ -44,6 +44,8 @@ for (const t of [
   assert.ok(tour.includes(t), "完整模式缺一课：" + t);
 }
 assert.ok(tour.includes("悬浮球默认关闭，可在 OH 设置里开启。"), "完整模式导览缺少「悬浮球默认关闭、可手动开启」提示");
+assert.ok(tour.includes("向本机应用开放 OH MCP") && tour.includes("setMcpServer") && tour.includes("mcpServerEnabled"), "导览缺少 OH MCP 说明/开关");
+assert.ok(/syncOverlayPreference/.test(tour) === false, "导览不应负责悬浮球启动同步（由 boot 干）");
 for (const t of ["首页，只关心今天", "五个功能，固定在手边"]) assert.ok(tour.includes(t), "极简模式缺一课：" + t);
 for (const t of ["首页，只关心今天", "更多功能：所有基础功能都在这里", "四个入口，随你安排"]) assert.ok(tour.includes(t), "实用模式缺一课：" + t);
 /* 开场模式口径（用户 2026-10-19 给定原话） */

@@ -1026,7 +1026,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {toolsVisible && !compact ? createPortal(<div className="board-viewport-tools" role="toolbar" aria-label="白板工具">
+        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label="白板工具">
           <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>组件</Btn>
           {stack ? null : <>
             <span className="board-tool-divider" />

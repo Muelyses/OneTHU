@@ -548,6 +548,10 @@ html:root:not(.is-phone).tabs-vertical .explorer-shell > .explorer-content { pad
 html:root .oneshot-button { height:var(--og-space-9); min-width:0; border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); pointer-events:auto; border:1px solid var(--og-line-2); gap:var(--og-space-2); }
 .oneshot-button .og-btn-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 html:root .board-viewport-tools { left:auto; right:var(--og-space-3); bottom:var(--og-board-tools-bottom); transform:none; flex-direction:column; flex-wrap:nowrap; width:auto; max-height:calc(100dvh - var(--og-bookmark-menu-width)); overflow:auto; }
+/* 画笔色板/撤销/清空是浮在工具栏**上方**的绝对定位面板（bottom:100%+gap）。
+   工具栏 overflow:auto 会把它整块裁掉 → 笔一开就「色板不见了」且点不到
+   （2026-10-19 用户实测）。开笔时放开裁切，让面板能溢出到工具栏外面。 */
+html:root .board-viewport-tools.is-pen-open { overflow:visible; }
 html:root .hard-refresh-fab { bottom:var(--refresh-fab-bottom, var(--og-refresh-bottom)); }
 html:root .top-fab { bottom:var(--og-top-button-bottom); }
 html:root.is-phone .oneshot { bottom:calc(var(--explorer-bar-h) + var(--og-space-5) + env(safe-area-inset-bottom)); width:calc(100vw - var(--og-space-4)); gap:calc(var(--og-space-1) * 1.25); }

@@ -37,6 +37,19 @@ export function BoardPenLayer({
   const [live, setLive] = useState<number[] | null>(null); // 正在画的那笔
   const liveRef = useRef<number[] | null>(null);
   liveRef.current = live;
+  /** 画布宽度：只在挂载与窗口尺寸变化时取样，**不跟内容走**。
+      曾经写 100%，卡片拖出右边界会把 .freeboard 撑宽（1120 → 1565），
+      画笔层跟着变宽 → 归一化坐标被横向拉伸，画好的线整条错位（2026-10-19 用户实测）。 */
+  const [canvasW, setCanvasW] = useState<number | null>(null);
+  useEffect(() => {
+    const sync = (): void => {
+      const board = hostRef.current?.parentElement;
+      if (board) setCanvasW(board.clientWidth);
+    };
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, []);
 
   useEffect(() => {
     if (!penOn) return;
@@ -108,8 +121,9 @@ export function BoardPenLayer({
       preserveAspectRatio="none"
       /* 画布尺寸**固定**，与内容无关（用户点名）：
          曾经用「最下面那张卡的底边」推算高度，结果拖一下卡片画布就变长/变短，
-         笔迹的归一化坐标被一起拉伸重映射 —— 画布不是内容的一部分，它是一块固定的地。 */
-      style={{ height: BOARD_CANVAS_H + "px" }}
+         笔迹的归一化坐标被一起拉伸重映射 —— 画布不是内容的一部分，它是一块固定的地。
+         宽度同理：只跟窗口走，卡片拖出边界撑宽 .freeboard 时画布不能跟着变宽。 */
+      style={{ width: canvasW ? canvasW + "px" : "100%", height: BOARD_CANVAS_H + "px" }}
       aria-hidden="true"
     >
       {all.map((s) => (

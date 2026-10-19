@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 /**
  * 组织主页（page=org，navParams.orgId）：组织是完整页面，不是一张卡片。
  *
@@ -25,7 +25,8 @@ import {
   useOrgs, type Org, type OrgAnnouncement, type OrgProject, type OrgRole,
 } from "../state/org.js";
 import {
-  getSeafileToken, seafileCreateRepo, seafileShareRepo, seafileShareRepoToUser, useSeafile,
+  ensureSeafileLoaded, getSeafileToken, refreshRepos, seafileCreateRepo, seafileShareRepo,
+  seafileShareRepoToUser, useSeafile,
 } from "../state/seafile.js";
 import { gitlabCreateProject, gitlabProjectByPath } from "../state/gitlab.js";
 import { addToVault } from "../state/vault.js";
@@ -95,6 +96,17 @@ export function OrganizationPage(): ReactNode {
   const [invite, setInvite] = useState<{ code: string; label?: string; allowEmail?: string } | null>(null);
   const [sharing, setSharing] = useState("");
   const seafile = useSeafile();
+  /* 云盘配置是懒加载的：进组织页先把 token / 资料库列表拉起来，
+     否则「新建资料库」会拿空 token 直接跳云盘页（用户观感=报错）。 */
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      await ensureSeafileLoaded();
+      if (!alive || !getSeafileToken()) return;
+      await refreshRepos();
+    })();
+    return () => { alive = false; };
+  }, []);
   const noticeList = useMemo(
     () => [...(org?.announcements ?? [])].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt),
     [org?.announcements],
@@ -164,6 +176,7 @@ export function OrganizationPage(): ReactNode {
 
   /* ── 资料库 ── */
   const createLibrary = async (target: Org): Promise<void> => {
+    await ensureSeafileLoaded();
     if (!getSeafileToken()) {
       showToast("先连接清华云盘再建资料库");
       openTab("cloud");
@@ -177,7 +190,7 @@ export function OrganizationPage(): ReactNode {
       const r = addOrgLibrary(target.id, { repoId, name: f.name.trim() });
       showToast(r.ok ? `资料库「${f.name}」已建好并挂到组织上` : "这个资料库已经关联过了");
     } catch (e) {
-      showToast(`建资料库失败：${e instanceof Error ? e.message : String(e)}`);
+      showToast(`建资料库失败：${e instanceof Error ? e.message : String(e)}（可到云盘页确认登录后重试）`);
     } finally {
       setSharing("");
     }
@@ -204,6 +217,7 @@ export function OrganizationPage(): ReactNode {
       showToast("成员还没有绑定邮箱：先在「成员」里补上邮箱再共享");
       return;
     }
+    await ensureSeafileLoaded();
     if (!getSeafileToken()) {
       showToast("先连接清华云盘再共享资料库");
       openTab("cloud");
@@ -229,11 +243,14 @@ export function OrganizationPage(): ReactNode {
   const copyLibraryLink = async (repoId: string, name: string): Promise<void> => {
     setSharing(repoId);
     try {
+      await ensureSeafileLoaded();
+      if (!getSeafileToken()) throw new Error("清华云盘未连接：先到云盘页登录");
+
       const share = await seafileShareRepo(repoId, 7);
       await navigator.clipboard.writeText(share.shareUrl).catch(() => undefined);
       showToast(`「${name}」的分享链接已复制（7 天有效）`);
     } catch (e) {
-      showToast(`生成分享链接失败：${e instanceof Error ? e.message : String(e)}`);
+      showToast(`生成分享链接失败：${e instanceof Error ? e.message : String(e)}（可在云盘页确认登录后重试）`);
     } finally {
       setSharing("");
     }

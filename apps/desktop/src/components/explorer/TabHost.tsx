@@ -1,3 +1,5 @@
+import { useExperienceMode, experienceMode } from "../../state/experienceMode.js";
+import { SimpleHost } from "../SimpleExperience.js";
 /**
  * Explorer 标签页宿主（dev-explorer 革命核心）：所有标签页常驻挂载、display 切换。
  *
@@ -205,6 +207,7 @@ function WallPickerCard({
 /* ══════════ 宿主 ══════════ */
 
 export function TabHost(): ReactNode {
+  const simple = useExperienceMode() === "simple";
   const st = useExplorerState();
   const activeId = st.activeId;
   const mounted = useMountedTabs(activeId, st.tabs);
@@ -215,6 +218,7 @@ export function TabHost(): ReactNode {
   const scrollingTab = useRef(activeId);
   useEffect(() => {
     const save = (): void => {
+      if(experienceMode()==="simple")return;
       scrollPositions.current.set(scrollingTab.current, { x: window.scrollX, y: window.scrollY });
     };
     window.addEventListener("scroll", save, { passive: true });
@@ -222,12 +226,13 @@ export function TabHost(): ReactNode {
   }, []);
   useLayoutEffect(() => {
     scrollingTab.current = activeId;
+    if(simple)return;
     const pos = scrollPositions.current.get(activeId);
     const restore = (): void => window.scrollTo({ left: pos?.x ?? 0, top: pos?.y ?? 0, behavior: "instant" });
     restore();
     const frame = requestAnimationFrame(restore);
     return () => cancelAnimationFrame(frame);
-  }, [activeId]);
+  }, [activeId, simple]);
 
   const [menu, setMenu] = useState<MenuPos | null>(null);
   /* 壁纸库选择卡（右键菜单「换壁纸 · 从库选」）：菜单关、选择卡接着开——坐标沿用发起菜单的 pos */
@@ -276,7 +281,7 @@ export function TabHost(): ReactNode {
   return (
     <>
       {all.map((t) => {
-        const active = t.id === activeId;
+        const active = !simple && t.id === activeId;
         return (
           <div
             key={t.id}
@@ -319,7 +324,8 @@ export function TabHost(): ReactNode {
           </div>
         );
       })}
-      {menu ? <TabContextMenu pos={menu} onClose={() => setMenu(null)} onPick={() => openPicker(menu)} /> : null}
+      {simple ? <SimpleHost/> : null}
+      {!simple && menu ? <TabContextMenu pos={menu} onClose={() => setMenu(null)} onPick={() => openPicker(menu)} /> : null}
       {picker
         ? <WallPickerCard
             /* 夹取视口内：卡片宽约 360（窄屏用 vw 收窄），高按 320 起步；Math.max 防极小窗口 */

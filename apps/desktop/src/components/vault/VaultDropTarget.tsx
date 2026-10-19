@@ -1,3 +1,4 @@
+import { VaultExchangeActions } from "./VaultExchangeActions.js";
 /**
  * 常驻「暂存箱」入口 + 半圆雷达。
  *
@@ -137,18 +138,6 @@ export function VaultButton(): ReactNode {
   const phone = useIsPhone();
   const [pinned, setPinned] = useState(false);
   const open = pinned || drag.active;
-  const nfc = useNfcExchange(open);
-  const receive = useVaultReceive();
-  const [copying, setCopying] = useState(false);
-  const copyCode = async (): Promise<void> => {
-    if (copying) return;
-    setCopying(true);
-    try {
-      await navigator.clipboard.writeText(await vaultShareCode(box));
-      showToast("暂存箱口令已复制");
-    } catch (e) { showToast(e instanceof Error ? e.message : "复制失败，请重试"); }
-    finally { setCopying(false); }
-  };
   const visible = items.slice(0, RADAR_SLOTS);
   const extra = items.length - visible.length;
   const slots = arcSlots(visible.length + (extra > 0 ? 1 : 0));
@@ -212,21 +201,11 @@ export function VaultButton(): ReactNode {
         {drag.active ? <span className="vault-drop-pad" data-vault-drop aria-hidden="true" /> : null}
       </div>
       {!drag.active ? <div className="vault-radar-exchange">
-        <Btn variant="solid" disabled={copying || nfc.busy || receive.busy || !items.length} onClick={() => void copyCode()}>{copying ? "正在复制…" : "复制口令"}</Btn>
-        <div className="vault-radar-nfc">
-          <Btn variant="outline" disabled={!nfc.available || nfc.busy || copying || receive.busy} onClick={() => void nfc.receive()}>NFC 接收</Btn>
-          <Btn variant="outline" disabled={!nfc.available || nfc.busy || copying || receive.busy || !items.length} onClick={() => void nfc.send(() => vaultShareCode(box))}>NFC 传送</Btn>
-        </div>
-        {/* 小形态也要能直接收：粘贴口令 / 选二维码截图，不用绕去整页。 */}
-        <div className="vault-radar-nfc">
-          <Btn variant="outline" disabled={receive.busy || nfc.busy || copying} onClick={() => void receive.paste()}>收口令</Btn>
-          <Btn variant="outline" disabled={receive.busy || nfc.busy || copying} onClick={() => void receive.scan()} titleAttr="选一张二维码截图识别">扫码</Btn>
-        </div>
-        <Text slot="micro" tone="faint">{receive.busy ? "正在接收…" : nfc.hint}</Text>
+        <VaultExchangeActions box={box}/>
       </div> : null}
       <div className="vault-radar-foot">
         <span className="vault-radar-meta"><span className="vault-radar-hint-line">{items.length ? "点条目直接打开" : "长按任意内容，拖进来"}</span></span>
-        <Btn size="sm" variant="ghost" onClick={openVaultPage}>打开展示柜</Btn>
+        <Btn size="sm" variant="ghost" onClick={openVaultPage}>整理暂存箱</Btn>
       </div>
     </div>
   ) : null;
@@ -250,7 +229,7 @@ export function VaultButton(): ReactNode {
         {phone ? null : panel}
       </div>
       {phone && panel ? createPortal(panel, document.body) : null}
-      {nfc.feedback}
+      
       {drag.active ? <TransferHint target={drag.target} /> : null}
     </>
   );

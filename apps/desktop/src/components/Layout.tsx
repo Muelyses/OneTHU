@@ -1,3 +1,5 @@
+import { useExperienceMode, useSimpleRoute } from "../state/experienceMode.js";
+import { SimpleHeader } from "./SimpleExperience.js";
 import { IconBtn, IconUser } from "@onethu/gui";
 /** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
  *  dev-explorer 革命（2026-10-12）：侧边栏、移动抽屉、五格底栏整体退役——
@@ -414,8 +416,13 @@ export function Slogan({ size = 13 }: { size?: number }) {
 
 /** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
+  const simple = useExperienceMode() === "simple";
+  useEffect(() => { document.documentElement.dataset.experience = simple ? "simple" : "full"; return () => { delete document.documentElement.dataset.experience; }; }, [simple]);
   const explorer = useExplorerState();
   const activePageTab = explorer.tabs.find((t) => t.id === explorer.activeId);
+  const simpleRoute = useSimpleRoute();
+  const scheduleActive = (simple ? simpleRoute.page : activePageTab?.page) === "schedule";
+  useEffect(() => { document.documentElement.classList.toggle("is-schedule-page", scheduleActive); return () => document.documentElement.classList.remove("is-schedule-page"); }, [scheduleActive]);
   const contentCanvasClass = explorer.activeId === HOME_TAB_ID
     ? " is-home-canvas"
     : activePageTab?.page === "board"
@@ -427,27 +434,26 @@ export function Shell({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div className="shell explorer-shell">
+    <div className={"shell explorer-shell" + (simple ? " is-simple" : "")}>
       {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
       <ShellWallpaperLayer />
       {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
           Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
       <ContextMenuLayer>
-      <TopBar />
-      <TabRail />
-      <main className={"content explorer-content" + contentCanvasClass}>{children}</main>
+      {simple ? <SimpleHeader/> : <><TopBar /><TabRail /></>}
+      <main className={"content explorer-content" + (simple ? "" : contentCanvasClass)}>{children}</main>
       </ContextMenuLayer>
       <BottomBar />
-      <OneGoBar />
+      {!simple && <OneGoBar />}
       <OneShot />
-      <VaultSheetHost />
+      {!simple && <><VaultSheetHost />
       {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
       <TabDrawer />
       <OneGoSheet />
       <ContextMenuHost />
       <WorkspaceEditorHost />
       <FolderIconPickerHost />
-      <VaultDropTarget />
+      <VaultDropTarget /></>}
       {/* 命令面板：⌘/Ctrl+K 或顶栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
       <CommandPalette />
       {/* 设置浮层（个人设置 / 插件 / OneTHU Harness）：不是标签页，高于任何标签页 */}
@@ -458,7 +464,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <SearchLandingSelfcheck />
         </Suspense>
       ) : null}
-      <HardRefreshButton />
+      {!simple && <HardRefreshButton />}
       {DevPanel ? (
         <Suspense fallback={null}>
           <DevPanel />

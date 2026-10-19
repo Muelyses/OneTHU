@@ -4,7 +4,7 @@ import { NotifyBridge } from "./components/NotifyBridge.js";
 import { lazy, Suspense, useEffect } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LoginPage, TwoFactorPage } from "./pages/Login.js";
-import { OnboardingTourGate } from "./components/OnboardingTourMobile.js";
+import { OnboardingTour as OnboardingTourGate } from "./components/OnboardingTour.js";
 import { useToastHost, hideToast } from "./state/toast.js";
 import type { ReactNode } from "react";
 import { BrandLogo } from "./components/Layout.js";

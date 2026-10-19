@@ -369,13 +369,6 @@ export function SchedulePage() {
      给 <html> 挂 is-schedule-page，把应用壳收成"视口减壳"的定高 flex 列，事件区吃掉
      全部剩余高度。不用嵌套 :has()（规范禁止），也不写死像素偏移（换顶栏高度会错位）。
      注意：非当前标签页的面板仍挂载在 DOM 里，所以必须按"当前页"而不是"曾打开过"来挂。 */
-  const explorer = useExplorerState();
-  const pageActive = explorer.tabs.find((t) => t.id === explorer.activeId)?.page === "schedule";
-  useEffect(() => {
-    const el = document.documentElement;
-    el.classList.toggle("is-schedule-page", pageActive);
-    return () => el.classList.remove("is-schedule-page");
-  }, [pageActive]);
   /** 日期锚点：任意日期，导航无边界（1970–2099） */
   const [anchor, setAnchor] = useState<Date>(new Date());
   const [selected, setSelected] = useState<string>(ymdOf(new Date()));

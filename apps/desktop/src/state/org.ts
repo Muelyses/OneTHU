@@ -19,6 +19,8 @@ export interface OrgMember {
   joinedAt: number;
 }
 
+export interface OrgProject { id: string; name: string; description: string; status: "planned" | "active" | "done"; owner: string; updatedAt: number }
+export interface OrgAnnouncement { id: string; title: string; body: string; pinned: boolean; updatedAt: number }
 export interface Org {
   id: string;
   name: string;
@@ -31,6 +33,8 @@ export interface Org {
   /** 已创建的组织共享空间（云盘目录 + 分享链接） */
   shared?: { repoId: string; path: string; shareUrl: string; shareToken: string; expiresAt: number; createdAt: number };
   members: OrgMember[];
+  projects?: OrgProject[];
+  announcements?: OrgAnnouncement[];
   /** 最近一次生成的邀请口令（仅提示） */
   lastInviteCode?: string;
   createdAt: number;
@@ -136,12 +140,15 @@ export function setOrgShare(id: string, shared: NonNullable<Org["shared"]>): voi
   commit();
 }
 
-export function removeOrgMember(id: string, memberId: string): void {
+export function removeOrgMember(id: string, memberId: string): boolean {
+  const org=doc.orgs.find(o=>o.id===id), member=org?.members.find(m=>m.id===memberId);
+  if(!org || !member || (member.role==="owner" && org.members.filter(m=>m.role==="owner").length===1)) return false;
   doc = {
     ...doc,
     orgs: doc.orgs.map((o) => (o.id === id ? { ...o, members: o.members.filter((m) => m.id !== memberId), updatedAt: Date.now() } : o)),
   };
   commit();
+  return true;
 }
 
 /* ── 邀请口令：ONORG1.<base64url(json)>.<checksum> ── */
@@ -211,8 +218,30 @@ export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ o
   const p = dec.payload;
   const exist = doc.orgs.find((o) => o.name === p.name && o.joinUrl === p.joinUrl);
   const org = exist ?? createOrg({ name: p.name, brief: p.brief, joinUrl: p.joinUrl, ownerName: p.inviter || "邀请人" });
-  if (exist && !exist.members.some((m) => m.name === String(myName))) {
-    addOrgMember(exist.id, String(myName), "member");
+  if (!org.members.some((m) => m.name === String(myName))) {
+    addOrgMember(org.id, String(myName), "member");
   }
   return { ok: true, orgId: org.id };
 }
+
+/** Organization record is the only source of its card. */
+export function orgIdentityCard(org: Org) { return {id:org.id,name:org.name,brief:org.brief,joinUrl:org.joinUrl || org.shared?.shareUrl || "",updatedAt:org.updatedAt}; }
+function changeOrg(id:string, change:(o:Org)=>Org):void {doc={...doc,orgs:doc.orgs.map(o=>o.id===id?{...change(o),updatedAt:Date.now()}:o)};commit();}
+export function setOrgMemberRole(id:string,memberId:string,role:OrgRole):boolean {
+ const org=doc.orgs.find(o=>o.id===id), m=org?.members.find(m=>m.id===memberId);
+ if(!org||!m||(!["owner","member","guest"].includes(role)))return false;
+ if(m.role==="owner"&&role!=="owner"&&org.members.filter(m=>m.role==="owner").length===1)return false;
+ changeOrg(id,o=>({...o,members:o.members.map(m=>m.id===memberId?{...m,role}:m)}));return true;
+}
+export function saveOrgProject(id:string,input:Omit<OrgProject,"id"|"updatedAt"> & {id?:string}):void {
+ if(!input.name.trim())return;
+ const project:OrgProject={...input,id:input.id??newId("project."),name:input.name.trim().slice(0,120),description:input.description.slice(0,4000),updatedAt:Date.now()};
+ changeOrg(id,o=>({...o,projects:[...(o.projects??[]).filter(p=>p.id!==project.id),project]}));
+}
+export function deleteOrgProject(id:string,projectId:string):void{changeOrg(id,o=>({...o,projects:(o.projects??[]).filter(p=>p.id!==projectId)}));}
+export function saveOrgAnnouncement(id:string,input:Omit<OrgAnnouncement,"id"|"updatedAt"> & {id?:string}):void {
+ if(!input.title.trim())return;
+ const item:OrgAnnouncement={...input,id:input.id??newId("notice."),title:input.title.trim().slice(0,120),body:input.body.slice(0,10000),updatedAt:Date.now()};
+ changeOrg(id,o=>({...o,announcements:[item,...(o.announcements??[]).filter(p=>p.id!==item.id)]}));
+}
+export function deleteOrgAnnouncement(id:string,noticeId:string):void{changeOrg(id,o=>({...o,announcements:(o.announcements??[]).filter(p=>p.id!==noticeId)}));}

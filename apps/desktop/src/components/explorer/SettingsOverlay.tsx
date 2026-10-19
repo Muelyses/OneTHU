@@ -1,3 +1,5 @@
+import { SimpleSettings } from "../SimpleSettings.js";
+import { useExperienceMode } from "../../state/experienceMode.js";
 import { IconBtn, IconUser } from "@onethu/gui";
 /**
  * 设置浮层（dev-explorer）：个人设置 / 插件 / OneTHU Harness 三段合一。
@@ -27,6 +29,7 @@ const SEGMENTS: Array<{ id: OverlayEntry; label: string; icon: ReactNode }> = [
 ];
 
 export function SettingsOverlay(): ReactNode {
+  const simple = useExperienceMode() === "simple";
   const entry = useOverlayEntry(); // null = 关闭
   const expanded = useExpanded();
   /** 退场动画（TabManageModal 同款：先播淡出再卸载） */
@@ -59,7 +62,7 @@ export function SettingsOverlay(): ReactNode {
       <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="我的">
         <div className="settings-head">
           <span className="workbench-settings-brand">OneTHU</span>
-          <div className="settings-seg" role="tablist" aria-label="设置分段">
+          {!simple && <div className="settings-seg" role="tablist" aria-label="设置分段">
             {SEGMENTS.map((s) => (
               <button
                 key={s.id}
@@ -72,11 +75,11 @@ export function SettingsOverlay(): ReactNode {
                 <span>{s.label}</span>
               </button>
             ))}
-          </div>
+          </div>}
           <IconBtn label="关闭设置" size="sm" variant="outline" titleAttr="关闭设置（Esc）" icon={<IconX width={14} height={14} />} onClick={requestClose} />
         </div>
         <div className={"explorer-settings-body" + (entry === "settings" ? "" : " workbench-plugin-settings")}>
-          {entry === "profile" ? <NameCardSection view="personal" /> : entry === "settings" ? <SettingsPage /> : <PluginsPage />}
+          {simple ? <SimpleSettings/> : entry === "profile" ? <NameCardSection view="personal" /> : entry === "settings" ? <SettingsPage /> : <PluginsPage />}
         </div>
       </div>
     </div>,

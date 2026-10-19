@@ -1,3 +1,4 @@
+import { useApp } from "../state/context.js";
 /**
  * 通讯录：一级功能区页面（名片夹 + 我的组织）。
  *
@@ -16,7 +17,8 @@ import { OrganizationSection } from "../components/OrganizationSection.js";
 type ContactsTab = "cards" | "orgs";
 
 export function ContactsPage() {
-  const [tab, setTab] = useState<ContactsTab>("cards");
+  const { navParams } = useApp();
+  const [tab, setTab] = useState<ContactsTab>((navParams as {section?:string}|null)?.section==="orgs"?"orgs":"cards");
   return (
     <div className="contacts-page">
       <PageHead
@@ -38,10 +40,10 @@ export function ContactsPage() {
         <NameCardSection view="contacts" />
       ) : (
         <Stack gap={6}>
-          <OrgCardsSection />
+
           <div className="contacts-orgs">
             <Text slot="label" tone="faint">
-              组织成员、邀请口令与共享资料空间
+              成员、文件、项目与公告集中管理；组织自带名片。
             </Text>
             <OrganizationSection />
           </div>

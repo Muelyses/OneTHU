@@ -1,3 +1,4 @@
+import { ExperienceModeControl } from "../components/SimpleExperience.js";
 declare const __APP_VERSION__: string;
 import { Btn, Inline, Input, List, Row, Segment, Select, SettingsList, SettingsRow, Stack, Tag, Text as OGText, TextArea } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
@@ -309,6 +310,7 @@ export function SettingsPage() {
       />
 
 
+      <ExperienceModeControl/>
       <div className="workbench-settings-layout">
       <nav className="workbench-settings-nav" aria-label="设置栏目">
       <div className="workbench-settings-tabs" role="tablist" aria-label="设置栏目" onKeyDown={event => {

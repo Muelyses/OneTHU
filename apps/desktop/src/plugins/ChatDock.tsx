@@ -1,3 +1,4 @@
+import { useExperienceMode } from "../state/experienceMode.js";
 /** 常驻对话面板（宿主胶水，R2/R4/R5 的 dock 面）：
  *  发现 activate 返回 dock:true 命令的已启用 rust 插件 → 显示常驻气泡；
  *  对话/会话/导出/用量全部走该插件的 JSON-RPC run 命令（结构化契约见
@@ -1021,6 +1022,7 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
 }
 
 export function ChatDock(): ReactNode {
+  const simple = useExperienceMode() === "simple";
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
   const dockCmd = cmds.find((c) => c.dock && c.id === "chat");
   const pid = dockCmd?.pluginId ?? null;
@@ -1196,6 +1198,7 @@ export function ChatDock(): ReactNode {
      mode = 面板当前形态（search=搜索 / oh=对话）；searchQuery 只在 search 态有意义。
      开/收辅助与 toggle 同一套持久化与时序（水合标记、退场定时器），供命令总线复用。 */
   const [mode, setMode] = useState<OhMode>("oh");
+  useEffect(() => { if(simple && mode === "xiaoda") setMode("oh"); }, [simple, mode]);
   const modeRef = useRef<OhMode>("search");
   modeRef.current = mode;
 
@@ -2398,7 +2401,7 @@ export function ChatDock(): ReactNode {
                   OOSE 预览契约以 `.dock-panel [role='tab']` 的**第二个** tab 命中 OH，顺序不能动。 */}
               {/* 用 OG Btn 出本体（不新增裸控件计数），但保留 role=tab —— OOSE 预览契约按
                   `.dock-panel [role='tab']` 找页签，顺序仍是 搜索 / OH / 清小搭。 */}
-              <Btn
+              {!simple && <Btn
                 variant="ghost"
                 size="sm"
                 role="tab"
@@ -2407,13 +2410,13 @@ export function ChatDock(): ReactNode {
                 onClick={() => setMode("xiaoda")}
               >
                 清小搭
-              </Btn>
+              </Btn>}
             </div>
             <div className="dock-ops" style={matOps}>
               {mode === "oh" ? <>
               {/* 创造模式（2026-10-13）：图标+文字开关钮（用户拍板：不能只是一颗星，旁边要写字）。
                   开=OG brand tone 描边点亮；引擎下轮对话收到 creativeMode=true，系统提示词追加「主动创造」段 */}
-              <Btn
+              {!simple && <Btn
                 variant="ghost" size="sm"
                 tone={creative ? "brand" : "default"}
                 titleAttr="创造模式：开启后小OH更主动动手创建插件、主题、OnePage 与脚本工具"
@@ -2424,7 +2427,7 @@ export function ChatDock(): ReactNode {
                 onClick={() => setCreative(!creative)}
               >
                 创造模式
-              </Btn>
+              </Btn>}
               <IconBtn label="新会话" variant="outline" size="sm" titleAttr="新会话" icon={<IconPlus />} onClick={() => void newSession()} />
               <IconBtn label="历史会话" variant="outline" size="sm" titleAttr="历史会话" icon={<IconClock />} onClick={() => void openHistory()} />
               <IconBtn label="导出会话" variant="outline" size="sm" titleAttr="导出当前会话 JSON" icon={<IconDownload />} onClick={() => void exportSession()} />

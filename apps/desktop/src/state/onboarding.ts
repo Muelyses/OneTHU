@@ -245,6 +245,7 @@ function resetOnboardingV3(): void {
 /** 设置页「导览」按钮：清 v3 完成标记，下次启动（或刷新）重新走一遍 */
 export function resetActiveOnboarding(): void {
   resetOnboardingV3();
+  try { localStorage.removeItem("onethu.onboarded.flow4"); } catch {}
 }
 
 /** 宿舍楼/园区（§4.2 问题 3）：P0 只问不消费，P2 供今日卡与洗衣机、电费的上下文用 */

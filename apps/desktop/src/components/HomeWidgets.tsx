@@ -631,7 +631,7 @@ export function TodayResvWidget(): ReactNode {
 }
 
 /** 今日课程（自持取数版） */
-export function TodayClassesWidget(): ReactNode {
+export function TodayClassesWidget({ upcoming = false }: { upcoming?: boolean } = {}): ReactNode {
   const { navigate } = useApp();
   const { data } = useCampusData();
   const now = new Date();
@@ -641,12 +641,13 @@ export function TodayClassesWidget(): ReactNode {
     () =>
       (data?.schedule ?? [])
         .filter((s) => (s.date ? s.date === today : s.dayOfWeek === wd))
+        .filter(s => !upcoming || (hhmmMin(s.endTime ?? "") ?? ((sectionStartMin(s.endSection ?? s.startSection ?? 1) ?? 0) + 45)) > now.getHours()*60+now.getMinutes())
         .sort((a, b) => {
           const ta = a.startTime ?? SECTION_OF[a.startSection ?? 1] ?? "99:99";
           const tb = b.startTime ?? SECTION_OF[b.startSection ?? 1] ?? "99:99";
           return ta.localeCompare(tb);
         }),
-    [data, today, wd],
+    [data, today, wd, upcoming, now.getHours(), now.getMinutes()],
   );
   return <ClassRows events={events} navigate={navigate} />;
 }

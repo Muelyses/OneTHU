@@ -1,9 +1,10 @@
+import { OrganizationWorkspace } from "./OrganizationWorkspace.js";
 /**
  * 设置页「我的组织」：建组织、成员、邀请口令、加入邀请。
  * 资源空间（GitLab/云盘）字段已留在 Org 上，orgCloud 接入后由这里展示入口。
  */
 import { useCallback, useState, type ReactNode } from "react";
-import { Btn, Card, List, Row, Text } from "@onethu/gui";
+import { Btn, Card, List, Row, Text, Modal } from "@onethu/gui";
 import { QRCodeSVG } from "qrcode.react";
 import { defineSearchRows } from "../state/searchRows.js";
 import { openFormModal } from "../lib/formModal.js";
@@ -29,6 +30,8 @@ defineSearchRows([
 
 export function OrganizationSection(): ReactNode {
   const doc = useOrgs();
+  const [selected,setSelected]=useState<string|null>(null);
+  const org=doc.orgs.find(o=>o.id===selected);
   const [invite, setInvite] = useState<{ org: string; code: string } | null>(null);
   const [sharing, setSharing] = useState<string | null>(null);
 
@@ -40,6 +43,7 @@ export function OrganizationSection(): ReactNode {
     ]);
     if (!f?.name) return;
     const org = createOrg({ name: f.name, brief: f.brief, joinUrl: f.joinUrl });
+    setSelected(org.id);
     showToast(`已创建「${org.name}」`);
   }, []);
 
@@ -87,6 +91,7 @@ export function OrganizationSection(): ReactNode {
   }, []);
 
   return (
+    <>
     <Card>
       <div className="name-card">
         <div className="name-card-actions">
@@ -102,16 +107,11 @@ export function OrganizationSection(): ReactNode {
                 key={o.id}
                 flush
                 title={o.name}
+                onClick={()=>setSelected(o.id)}
                 sub={`${o.members.length} 名成员${o.brief ? " · " + o.brief : ""}${o.joinUrl ? " · 已设加入方式" : ""}`}
                 trailing={
                   <span className="name-card-actions">
-                    {o.shared?.shareUrl ? (
-                      <Btn variant="ghost" size="sm" onClick={() => void navigator.clipboard.writeText(o.shared!.shareUrl).then(() => showToast("共享空间链接已复制")).catch(() => showToast("复制失败，请手动复制"))}>复制空间链接</Btn>
-                    ) : (
-                      <Btn variant="ghost" size="sm" disabled={sharing === o.id} onClick={() => void shareSpace(o.id, o.name)}>{sharing === o.id ? "创建中…" : "共享空间"}</Btn>
-                    )}
-                    <Btn variant="ghost" size="sm" disabled={sharing === o.id} onClick={() => void inviteOrg(o.id, o.name)}>邀请</Btn>
-                    <Btn variant="ghost" size="sm" onClick={() => void addMember(o.id)}>加成员</Btn>
+                    <Btn variant="outline" size="sm" onClick={(e)=>{e.stopPropagation();setSelected(o.id);}}>管理组织</Btn>
                     <Btn variant="ghost" size="sm" tone="error" onClick={() => void confirmOk(`删除组织「${o.name}」？成员清单会一起删除（云盘资料不动）。`).then((ok) => { if (ok) deleteOrg(o.id); })}>删除</Btn>
                   </span>
                 }
@@ -132,5 +132,9 @@ export function OrganizationSection(): ReactNode {
         ) : null}
       </div>
     </Card>
+    <Modal open={!!org} onClose={()=>setSelected(null)} title={org?.name??"组织"} size="lg">
+      {org?<OrganizationWorkspace key={org.id} org={org} onInvite={()=>void inviteOrg(org.id,org.name)} onCreateSpace={()=>void shareSpace(org.id,org.name)}/>:null}
+      {invite && org && invite.org===org.name?<div className="vault-share"><code className="vault-share-code">{invite.code}</code><div className="vault-qr"><QRCodeSVG value={invite.code} size={200}/></div><Btn variant="outline" onClick={()=>void navigator.clipboard.writeText(invite.code).then(()=>showToast("已复制")).catch(()=>showToast("请手动复制口令"))}>复制口令</Btn></div>:null}
+    </Modal></>
   );
 }

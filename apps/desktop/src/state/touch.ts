@@ -90,7 +90,7 @@ export async function buildTouchCode(opts: TouchOptions): Promise<{ code: string
     if (org) {
       payload.orgName = org.name;
       /* 没生成过邀请就地生成（云盘上传后拿短码）；已有邀请原样复用。 */
-      payload.orgCode = org.lastInviteCode ?? (await orgInviteCode(org));
+      payload.orgCode = await orgInviteCode(org);
     }
   }
   /* issuedAt 不进内容键：同样的选择再点一次，复用同一个短码而不是又上传一份。 */

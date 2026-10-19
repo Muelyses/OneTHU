@@ -1,3 +1,4 @@
+import { experienceMode } from "./experienceMode.js";
 /**
  * 全量搜索的组合层（§2.2 / §2.8.4）：功能（注册表）+ 原子（页面/实体/在线服务）+ 设置页签。
  *
@@ -35,5 +36,9 @@ export function searchAll(q: string, limit = 14): SearchAllResult {
   // 高级模式退役后页签不再分层（2026-10-11）：全量即可
   const standard = SETTINGS_TAB_ORDER;
   const tabs = query ? standard.filter((t) => t.includes(query)) : [];
+  if(experienceMode()==="simple") {
+    const hidden=new Set(["board","vault","contacts","plugins","xiaoda"]);
+    return {rows:[],tabs:[],entries:entries.filter(e=>!hidden.has(e.page)),atoms:atoms.filter(a=>a.kind!=="widget"&&!hidden.has(a.key)&&!['onepage','workspace'].includes(a.kind))};
+  }
   return { rows, entries, atoms, tabs };
 }

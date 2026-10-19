@@ -1,3 +1,5 @@
+import { useOrgs, orgIdentityCard, createOrg } from "../state/org.js";
+import { openTab } from "../state/explorer.js";
 /**
  * 通讯录与名片：我的名片、名片夹（好友 / 组织）、组织名片。
  *
@@ -245,7 +247,9 @@ function PersonalCardBlock(): ReactNode {
 /* ══════════════ 组织名片 ══════════════ */
 
 export function OrgCardsSection(): ReactNode {
-  const doc = useCards();
+  const legacy = useCards();
+  const organizations = useOrgs();
+  const doc = {orgs: [...organizations.orgs.map(orgIdentityCard), ...legacy.orgs.filter(c=>!organizations.orgs.some(o=>o.id===c.id))]};
   const [openId, setOpenId] = useState<string | null>(null);
   const openOrg = doc.orgs.find((o) => o.id === openId) ?? null;
   /* 关闭动画期间还要画上一张卡：内容先留在 ref 里，等 Modal 退场完再自然换掉 */
@@ -254,18 +258,6 @@ export function OrgCardsSection(): ReactNode {
     if (openOrg) shownRef.current = openOrg;
   }, [openOrg]);
   const shown = openOrg ?? shownRef.current;
-
-  const addOrg = useCallback(async (): Promise<void> => {
-    const f = await openFormModal("新建组织名片", [
-      { key: "name", label: "组织名称", required: true },
-      { key: "brief", label: `一句话简介（≤${CARD_LIMITS.orgBrief} 字）`, kind: "textarea" },
-      { key: "joinUrl", label: "加入方式 / 邀请链接" },
-    ]);
-    if (f?.name) {
-      upsertOrgCard({ name: f.name, brief: f.brief, joinUrl: f.joinUrl });
-      showToast("组织名片已保存");
-    }
-  }, []);
 
   const stageOrg = useCallback((org: OrgCard): void => {
     const r = addToVault(orgCardCatch(org));
@@ -285,23 +277,14 @@ export function OrgCardsSection(): ReactNode {
       <Section
         className="org-cards-head"
         title="组织名片"
-        hint="把组织邀请做成一张递得出去的卡"
-        aside={
-          <Btn size="sm" variant="outline" icon={<IconPlus size="sm" />} onClick={() => void addOrg()}>
-            新建组织名片
-          </Btn>
-        }
+        hint="与组织资料同步；历史独立名片仍保留"
+        aside={<Btn size="sm" variant="outline" onClick={()=>openTab("contacts", { section: "orgs" } as never)}>管理组织</Btn>}
       />
       {doc.orgs.length === 0 ? (
         <EmptyState
           icon={<IconIn size="lg" />}
-          title="还没有组织名片"
-          hint="写名称、简介和加入方式，就得到一张可以放进暂存箱递给别人的组织卡。"
-          action={
-            <Btn variant="solid" tone="brand" onClick={() => void addOrg()}>
-              新建组织名片
-            </Btn>
-          }
+          title="创建组织后，这里会出现它的名片"
+          hint="在通讯录的「我的组织」中创建组织即可。"
         />
       ) : (
         <div className="contact-deck">
@@ -352,6 +335,7 @@ export function OrgCardsSection(): ReactNode {
                   tone="error"
                   icon={<IconTrash size="sm" />}
                   onClick={() => {
+                    if(organizations.orgs.some(o=>o.id===shown.id)){showToast("这张名片与组织绑定，请在组织中管理");return;}
                     void confirmOk(`删除组织名片「${shown.name}」？`).then((ok) => {
                       if (!ok) return;
                       removeOrgCard(shown.id);

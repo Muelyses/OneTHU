@@ -1,7 +1,9 @@
+import {useExperienceMode} from "../../state/experienceMode.js";
+import {DEFAULT_ONESHOT} from "../../state/quickAccess.js";
 import {Btn, Select, SettingsRow} from '@onethu/gui';
 import {NAV} from '../Layout.js';
 import {FolderIcon} from '../Icons.js';
 import {openQuickEntry,setOneShot,useQuickEntries,type QuickEntry} from '../../state/quickAccess.js';
 export function QuickIcon({entry}:{entry?:QuickEntry}){const Icon=NAV.find(n=>n.page===entry?.page)?.icon;return Icon?<Icon/>:<FolderIcon name={entry?.kind==='workspace'?'folder':'star'} width={18} height={18}/>;}
-export function OneShot(){const {entries,slots}=useQuickEntries();return <nav className="oneshot" aria-label="OneShot 超级快捷">{slots.map((id,i)=>{const e=entries.find(x=>x.id===id);return <Btn key={i} className="oneshot-button" icon={<QuickIcon entry={e}/>} onClick={()=>e&&openQuickEntry(e)} disabled={!e} titleAttr={e?.title??'此快捷入口已删除，请在我的中重新选择'}>{e?.title??'入口已删除'}</Btn>;})}</nav>;}
+export function OneShot(){const {entries,slots:saved}=useQuickEntries();const mode=useExperienceMode();const slots=mode==="simple"?DEFAULT_ONESHOT:saved;return <nav className="oneshot" aria-label="OneShot 超级快捷">{slots.map((id,i)=>{const e=entries.find(x=>x.id===id);return <Btn key={i} className="oneshot-button" icon={<QuickIcon entry={e}/>} onClick={()=>e&&openQuickEntry(e)} disabled={!e} titleAttr={e?.title??'此快捷入口已删除，请在我的中重新选择'}>{e?.title??'入口已删除'}</Btn>;})}</nav>;}
 export function OneShotSettings(){const {entries,slots}=useQuickEntries();return <div className="oneshot-settings">{slots.map((id,i)=><SettingsRow key={i} title={`快捷按钮 ${i+1}`} control={<Select aria-label={`OneShot 快捷按钮 ${i+1}`} value={id} onChange={v=>setOneShot(i,v)}>{!entries.some(e=>e.id===id)?<option value={id}>入口已删除</option>:null}{(['page','board','workspace'] as const).map(kind=><optgroup key={kind} label={kind==='page'?'功能与服务':kind==='board'?'OnePage':'工作区'}>{entries.filter(e=>e.kind===kind).map(e=><option key={e.id} value={e.id}>{e.title}</option>)}</optgroup>)}</Select>}/> )}</div>;}

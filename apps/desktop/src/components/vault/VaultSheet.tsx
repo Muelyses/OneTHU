@@ -1,3 +1,4 @@
+import { VaultExchangeActions } from "./VaultExchangeActions.js";
 /**
  * 暂存箱「下弹抽屉」：这是暂存箱的**完全展开**形态。
  *
@@ -123,10 +124,7 @@ export function VaultSheetHost(): ReactNode {
         </div>
         <footer className="vault-sheet-foot">
           {/* 抽屉也是完整形态：不用绕去整页就能粘贴口令 / 扫码收内容。 */}
-          <div className="vault-sheet-receive">
-            <Btn size="sm" variant="outline" disabled={receive.busy} onClick={() => void receive.paste()}>收口令</Btn>
-            <Btn size="sm" variant="outline" disabled={receive.busy} onClick={() => void receive.scan()} titleAttr="选一张二维码截图识别">扫码</Btn>
-          </div>
+          <VaultExchangeActions box={box}/>
           <Text slot="micro" tone="faint">拖进来只需要按住内容 0.4 秒；发给小OH 就拖到 OH 胶囊上。</Text>
         </footer>
       </section>

@@ -11,12 +11,16 @@
  */
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { installFakeCloud, freshClientState } from './lib/fake-cloud.mjs';
 
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
+const out = 'docs/onegui/short-share-codes';
+mkdirSync(out, { recursive: true });
 let checks = 0;
 const errors = [];
-const check = (cond, msg) => { assert.ok(cond, msg); checks++; console.log('✓ ' + msg); };
+const results = [];
+const check = (cond, msg) => { assert.ok(cond, msg); checks++; results.push(msg); console.log('✓ ' + msg); };
 const SHORT = /^ON(-[0-9A-Z]{4}){4}$/;
 const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
 
@@ -89,6 +93,7 @@ try {
   check((await a.locator('.vault-share-code').innerText()).trim() === code, '箱子没改：再点生成口令复用同一个短码');
   check(await shareCount(a) === sharesAfterVault, '箱子没改：不重复上传 manifest');
 
+  await a.screenshot({ path: `${out}/sender-vault-short-code.png` });
   /* 名片：稳定分享位——改内容就地更新，口令不变、不堆目录 */
   const cardCode1 = await call(a, '/src/lib/contentExchange.ts', 'personalShareCode', []);
   check(SHORT.test(cardCode1), '个人名片口令是短码：' + cardCode1);
@@ -240,6 +245,7 @@ try {
   check(!revoked.ok && /无法读取分享/.test(revoked.reason ?? ''), '撤销后短码立即失效：' + (revoked.reason ?? ''));
   check(/撤销|不存在/.test(revoked.reason ?? ''), '撤销的失败原因说的是「已撤销/不存在」，不是过期：' + (revoked.reason ?? ''));
 
+  await b.screenshot({ path: `${out}/receiver-anonymous-import.png` });
   /* 小形态（雷达）也要能直接收：粘贴口令 + 扫码入口在位 */
   await a.bringToFront();
   await a.getByRole('button', { name: /^暂存箱，/ }).click();
@@ -253,9 +259,11 @@ try {
   await a.getByRole('button', { name: '提交' }).click();
   await toast(a, /个人名片|本地已有/).waitFor();
   check(true, '雷达「收口令」走通统一接收入口');
+  await a.screenshot({ path: `${out}/radar-receive-entries.png` });
 
   check(errors.length === 0, '无新增运行时异常：' + errors.join(';'));
   await a.close(); await b.close(); await context.close();
+  writeFileSync(`${out}/report.json`, JSON.stringify({ checks, results, errors, cloud: '假云盘夹具（tools/lib/fake-cloud.mjs），不联网、不写真实云盘', clients: '发送方 A 已连接云盘；接收方 B 全新本地状态且完全没有云盘登录（同一 BrowserContext 两个页面，只共享假云盘）' }, null, 1));
   console.log(checks + ' short-share assertions passed');
 } finally {
   await browser.close();

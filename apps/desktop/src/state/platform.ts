@@ -35,9 +35,6 @@ export function hasCoarsePointer(): boolean {
   return (navigator.maxTouchPoints ?? 0) > 0 || window.matchMedia?.("(pointer: coarse)").matches === true;
 }
 
-/** 横屏手机的宽度上限（iPhone 15 Pro Max 932 / Pixel 8 Pro 915，取 960 留余量）。 */
-const LANDSCAPE_PHONE_MAX_W = 960;
-
 const PHONE_FORCE: boolean | null = (() => {
   if (typeof window === "undefined") return null;
   if (!import.meta.env?.DEV) return null;
@@ -49,8 +46,9 @@ export function isPhoneViewport(): boolean {
   if (typeof window === "undefined") return false;
   if (PHONE_FORCE !== null) return PHONE_FORCE;
   const w = window.innerWidth;
-  const h = window.innerHeight;
   if (w < BP.medium) return true;
-  /* 宽而不高 = 横屏手机；但桌面窗压矮也这样，所以宽度必须压在手机上限内 */
-  return h < BP.medium && w <= LANDSCAPE_PHONE_MAX_W;
+  /* 2026-10-19 用户拍板：「手机横屏模式直接切换成和电脑一模一样视图」——
+     横屏（宽大于高、且宽已过手机断点）不再算手机形态，整应用按桌面布局渲染。
+     旧的「宽而不高 = 横屏手机」（若 w≤960）已退役；桌面窗压矮本来也按桌面走。 */
+  return false;
 }

@@ -23,11 +23,11 @@ export interface BoardView {
 }
 
 export const ZOOM_MIN = 0.4;
-export const ZOOM_MAX = 4;
+export const ZOOM_MAX = 5;
 export const ZOOM_DEFAULT = 1;
 
 /** 「＋/－」按钮走的档位（捏合是连续的，不吸附到它）。 */
-export const ZOOM_STEPS: readonly number[] = [0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3, 4];
+export const ZOOM_STEPS: readonly number[] = [0.4, 0.5, 0.65, 0.8, 1, 1.25, 1.5, 2, 2.5, 3, 4, 5];
 
 export const DEFAULT_VIEW: BoardView = { z: ZOOM_DEFAULT };
 

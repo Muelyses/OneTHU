@@ -365,7 +365,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       const next = !prev;
       try { localStorage.setItem(PHONE_CANVAS_KEY, next ? "1" : "0"); } catch { /* 配额满：仅本次生效 */ }
       if (next) {
-        setZoom(3);
+        setZoom(5);
         window.setTimeout(() => sayRef.current("自由摆放：拖动卡片，点选后拉角点调大小"), 30);
       } else {
         sayRef.current("已回到阅读顺序");
@@ -589,7 +589,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   useEffect(() => {
     if (zoomBooted.current) return;
     zoomBooted.current = true;
-    if (phonePortrait && phoneCanvas && viewRef.current.z < 2.5) setZoomRef.current(3);
+    if (phonePortrait && phoneCanvas && viewRef.current.z < 4.5) setZoomRef.current(5);
   }, [phonePortrait, phoneCanvas]);
 
   useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释

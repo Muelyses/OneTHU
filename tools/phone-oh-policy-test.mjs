@@ -61,4 +61,8 @@ assert.ok(/onethu\.board\.phoneCanvas\.v1/.test(freeBoard), "手机白板自由�
 assert.ok(/const stack = phonePortrait && orientation === "portrait" && !penOn && !phoneCanvas;/.test(freeBoard), "手机白板 stack 条件未接入自由摆放/横屏判定");
 assert.ok(/phone-canvas/.test(freeBoard) && /freeboard-wrap\.phone-canvas \.free-item \{ touch-action: none; \}/.test(wbCss), "手机自由摆放缺少 touch-action 规则");
 
+/* 横屏手机 = 桌面形态（用户 2026-10-19 拍板） */
+const platform = read("apps/desktop/src/state/platform.ts");
+assert.ok(/横屏（宽大于高、且宽已过手机断点）不再算手机形态/.test(platform), "横屏手机应切桌面形态（platform.ts 注释/逻辑未更新）");
+
 console.log("✓ 手机策略 + OH 限额卡静态守卫通过");

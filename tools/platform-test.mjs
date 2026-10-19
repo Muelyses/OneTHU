@@ -83,10 +83,10 @@ const cases = [
   [744, 1133, false, "平板竖屏（宽高都不窄）：桌面形态"],
   [390, 844, true, "竖屏手机：手机形态"],
   [320, 568, true, "窄手机：手机形态"],
-  [844, 390, true, "横屏手机（iPhone 15 Pro）：手机形态"],
-  [932, 430, true, "横屏手机（15 Pro Max）：手机形态"],
-  [915, 412, true, "横屏手机（Pixel 8 Pro）：手机形态"],
-  [900, 560, true, "窄窗压矮：仍按手机形态（窄窗预览口径）"],
+  [844, 390, false, "横屏手机（iPhone 15）：直接桌面形态（2026-10-19 用户拍板）"],
+  [932, 430, false, "横屏手机（15 Pro Max）：桌面形态"],
+  [915, 412, false, "横屏手机（Pixel 8 Pro）：桌面形态"],
+  [900, 560, false, "宽窗压矮：桌面形态"],
 ];
 const realWindow = globalThis.window;
 for (const [w, h, want, label] of cases) {

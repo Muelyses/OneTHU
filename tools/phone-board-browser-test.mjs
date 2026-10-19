@@ -37,8 +37,8 @@ try {
     await p.waitForTimeout(700);
     check(await p.locator('.freeboard-wrap.phone-canvas').count() === 1, '切到自由摆放画布');
     check((await p.getByRole('button', { name: '阅读顺序', exact: true }).count()) === 1, '可切回阅读顺序');
-    /* 自由摆放默认 300%（用户嫌 200% 太小） */
-    check((await p.locator('.board-viewport-tools').innerText()).includes('300%'), '自由摆放默认放大到 300%');
+    /* 自由摆放默认 500%（用户 2026-10-19 最终口径） */
+    check((await p.locator('.board-viewport-tools').innerText()).includes('500%'), '自由摆放默认放大到 500%');
     /* 双击空白不再创建便笺（用户要求删掉这个 feature） */
     const itemsBeforeDbl = await p.locator('.free-item').count();
     const fbBox = await p.locator('.freeboard').boundingBox();
@@ -46,24 +46,27 @@ try {
     await p.waitForTimeout(500);
     check((await p.locator('.free-item').count()) === itemsBeforeDbl, '双击空白不再创建便笺');
 
-    /* 拖动：选一个条目，按住非交互区域拖 60/40 */
-    const item = p.locator('.free-item').first();
-    await item.scrollIntoViewIfNeeded();
-    const box = await item.boundingBox();
-    check(Boolean(box), '自由摆放里有可操作条目');
+    /* 拖动：直接派发指针事件到条目本体（避免浮层挡住鼠标坐标；与真实触摸同一条管线） */
     const before = await p.evaluate(() => {
       const el = document.querySelector('.free-item');
       return { left: parseFloat(getComputedStyle(el).left), top: parseFloat(getComputedStyle(el).top) };
     });
-    if (box) {
-      const sx = box.x + 10;
-      const sy = box.y + 10;
-      await p.mouse.move(sx, sy);
-      await p.mouse.down();
-      await p.mouse.move(sx + 60, sy + 40, { steps: 6 });
-      await p.mouse.up();
-      await p.waitForTimeout(500);
-    }
+    const dragged = await p.evaluate(() => {
+      const el = document.querySelector('.free-item');
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      const x = r.x + Math.min(40, r.width / 2);
+      const y = r.y + Math.min(40, r.height / 2);
+      const opts = { bubbles: true, cancelable: true, button: 0, pointerId: 9, pointerType: 'touch', isPrimary: true };
+      el.dispatchEvent(new PointerEvent('pointerdown', { ...opts, clientX: x, clientY: y }));
+      for (const [dx, dy] of [[12, 8], [35, 24], [60, 40]]) {
+        document.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: x + dx, clientY: y + dy }));
+      }
+      document.dispatchEvent(new PointerEvent('pointerup', { ...opts, clientX: x + 60, clientY: y + 40 }));
+      return true;
+    });
+    check(dragged, '拖动事件可派发到条目');
+    await p.waitForTimeout(500);
     const after = await p.evaluate(() => {
       const el = document.querySelector('.free-item');
       return { left: parseFloat(getComputedStyle(el).left), top: parseFloat(getComputedStyle(el).top) };
@@ -71,8 +74,14 @@ try {
     check(after.left > before.left + 5 || after.top > before.top + 5, `拖动改变位置（${before.left},${before.top} → ${after.left},${after.top}）`);
 
     /* 缩放：选中后拖右下角把手 */
-    await item.click({ position: { x: 6, y: 6 } }).catch(() => undefined);
-    await p.waitForTimeout(300);
+    await p.evaluate(() => {
+      const el = document.querySelector('.free-item');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, pointerId: 11, pointerType: 'touch', isPrimary: true, clientX: r.x + 20, clientY: r.y + 20 }));
+      document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, pointerId: 11, pointerType: 'touch', isPrimary: true, clientX: r.x + 20, clientY: r.y + 20 }));
+    });
+    await p.waitForTimeout(400);
     const handle = p.locator('.free-item.is-selected .free-handle.fh-se').first();
     check(await handle.count() === 1, '选中后出现缩放手柄');
     await handle.scrollIntoViewIfNeeded();
@@ -88,7 +97,7 @@ try {
       const opts = { bubbles: true, cancelable: true, button: 0, pointerId: 7, pointerType: 'touch', isPrimary: true };
       handle.dispatchEvent(new PointerEvent('pointerdown', { ...opts, clientX: x, clientY: y }));
       for (const [dx, dy] of [[10, 8], [25, 20], [45, 36]]) {
-        window.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: x + dx, clientY: y + dy }));
+        document.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: x + dx, clientY: y + dy }));
       }
       window.dispatchEvent(new PointerEvent('pointerup', { ...opts, clientX: x + 45, clientY: y + 36 }));
       return true;
@@ -116,7 +125,9 @@ try {
     await l.goto(base + '/?explorer-preview=home', { waitUntil: 'domcontentloaded' });
     await l.waitForSelector('.explorer-shell'); await l.waitForTimeout(1100);
     try {
-      check((await l.locator('.freeboard-wrap.phone-canvas').count()) === 1, '横屏直接进入自由画布');
+      /* 横屏 = 桌面形态：html 不再 is-phone，顶栏是桌面标签条，白板按世界坐标 */
+      check(!(await l.evaluate(() => document.documentElement.classList.contains('is-phone'))), '横屏手机切到桌面形态（不再 is-phone）');
+      check((await l.locator('.ex-bbar').count()) >= 1 && (await l.locator('.ex-tabstrip').count()) >= 1, '横屏有桌面标签条（ex-bbar/ex-tabstrip）');
       check((await l.getByRole('button', { name: /自由摆放|阅读顺序/ }).count()) === 0, '横屏不再显示阅读顺序开关');
       const xs = await l.evaluate(() => [...document.querySelectorAll('.free-item')].slice(0, 5).map((el) => Math.round(el.getBoundingClientRect().x)));
       check(xs.length > 1 && new Set(xs).size > 1, `横屏按世界坐标摆放（不堆叠）：${JSON.stringify(xs)}`);

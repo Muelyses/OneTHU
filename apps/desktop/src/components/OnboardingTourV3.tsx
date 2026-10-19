@@ -105,7 +105,7 @@ const DOCS_BASE: Doc[] = [
       "底栏「OneGO!」→ 我的 OnePage：起名后点「新建」。",
       "新建即得白板页，与首页同一套手势，摆什么都行。",
       "标签页右键「一星」：把内容收成一块 OnePage。",
-      "OneGO 里还有 OneFlow：在 OH 对话里说「创建一个流程」。",
+      "OneGO! 里还有 OneFlow：在 OH 对话里说「创建一个流程」。",
     ],
     foot: "命令面板（Ctrl+K）里也能直达你的白板。",
   },

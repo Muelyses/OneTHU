@@ -35,11 +35,22 @@ assert.ok(settings.includes("resetActiveOnboarding();"), "设置页保留「导�
 assert.ok(/ExperienceModePicker/.test(tour), "第一步要有模式选择器");
 for (const s of ["极简模式", "实用模式", "完整模式"]) assert.ok(picker.includes(s), "模式选择器缺 " + s);
 assert.ok(/chosen==="simple"\?SIMPLE_LESSONS:chosen==="practical"\?PRACTICAL_LESSONS:FULL_LESSONS/.test(tour), "三种模式必须各走自己的课程");
-for (const t of ["白板，把常用内容放到手边", "暂存箱，先收起来再处理", "一个短口令，传递一组内容", "碰一碰，让内容接力", "组织，把人和事情放在一起"]) {
+for (const t of [
+  "白板与 OnePage：首页由你摆", "标签页与工作区：多任务不打架", "暂存箱：什么都能先收进来",
+  "一个短口令，传递一组内容", "碰一碰：名片与内容接力", "组织：人、文件、项目一处管",
+  "OneGO!：全局入口与自动化", "插件与 OH：把能力装进来", "外观与工作台：全都可调",
+  "校园服务：完整模式的聚合", "数据与同步：跨设备继续",
+]) {
   assert.ok(tour.includes(t), "完整模式缺一课：" + t);
 }
-for (const t of ["首页，只关心今天", "五个入口，直接到达"]) assert.ok(tour.includes(t), "极简模式缺一课：" + t);
-for (const t of ["更多功能，一屏展开", "四个入口，随你安排"]) assert.ok(tour.includes(t), "实用模式缺一课：" + t);
+for (const t of ["首页，只关心今天", "五个功能，固定在手边"]) assert.ok(tour.includes(t), "极简模式缺一课：" + t);
+for (const t of ["首页，只关心今天", "更多功能：所有基础功能都在这里", "四个入口，随你安排"]) assert.ok(tour.includes(t), "实用模式缺一课：" + t);
+/* 开场模式口径（用户 2026-10-19 给定原话） */
+for (const t of [
+  "仅保留学习、预约、生活、课表、信息五个功能。",
+  "包含所有基础功能。",
+  "充分体验 OneTHU 系列服务带来的高度便利性与可定制化。",
+]) assert.ok(picker.includes(t), "模式卡描述缺：" + t);
 
 /* ---------- ④ 结束/跳过/回退 + 弹层语义 + 演练返回 ---------- */
 assert.ok(/localStorage\.setItem\(KEY,"1"\)/.test(tour), "结束必须写完成标记（否则下次启动又弹）");

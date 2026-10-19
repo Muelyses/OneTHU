@@ -13,7 +13,7 @@ import {addToVault,type VaultCatch} from '../../state/vault.js';
 import {showToast} from '../../state/toast.js';
 import {IconFist,IconTriangleDown} from '../Icons.js';
 import {QuickIcon} from './OneShot.js';
-export function quickCatch(e:QuickEntry):VaultCatch{return {type:'payload',title:e.title,sub:e.kind==='board'?'OnePage':'工作区',payload:{kind:'quick-entry',entry:e},source:'OneGO'};}
+export function quickCatch(e:QuickEntry):VaultCatch{return {type:'payload',title:e.title,sub:e.kind==='board'?'OnePage':'工作区',payload:{kind:'quick-entry',entry:e},source:'OneGO!'};}
 export function OneGoBar(){
  const phone=useIsPhone();const {entries}=useQuickEntries();const saved=entries.filter(e=>e.kind!=='page');
  const ref=useRef<HTMLDivElement>(null);const measure=useRef<HTMLDivElement>(null);const [limit,setLimit]=useState(0);const [overflow,setOverflow]=useState(false);const dragged=useRef<string|null>(null);
@@ -27,7 +27,7 @@ export function OneGoBar(){
   {label:'移到最前',onSelect:()=>{if(saved[0])moveQuickEntry(e.id,saved[0].id);}},
  ]);
  const item=(e:QuickEntry,measuring=false)=><Btn key={e.id} className="onego-bookmark" size="sm" icon={<QuickIcon entry={e}/>} titleAttr={e.title} tabIndex={measuring?-1:0} draggable={!measuring} data-vault-catch={measuring?undefined:JSON.stringify(quickCatch(e))} data-vault-reorder={measuring?undefined:'true'} onClick={()=>{openQuickEntry(e);setOverflow(false);}} onContextMenu={ev=>{ev.preventDefault();menu(e,ev.clientX,ev.clientY);}} onDragStart={ev=>{dragged.current=e.id;ev.dataTransfer.setData('text/onethu-onego',e.id);ev.dataTransfer.effectAllowed='move';}} onDragOver={ev=>{if(dragged.current)ev.preventDefault();}} onDrop={ev=>{ev.preventDefault();if(dragged.current)moveQuickEntry(dragged.current,e.id);dragged.current=null;}} onDragEnd={()=>{dragged.current=null;}}>{e.title}</Btn>;
- return <nav className="onego-bookmarks" aria-label="OneGO 收藏栏">
+ return <nav className="onego-bookmarks" aria-label="OneGO! 收藏栏">
  <Btn className="onego-manager" variant="solid" size="sm" icon={<IconFist width={16} height={16}/>} onClick={openOneGoSheet}>OneGO!</Btn>
  <div className="onego-bookmark-track" ref={ref}>{saved.slice(0,limit).map(e=>item(e))}{saved.length===0?<span className="onego-bookmark-empty">收藏的 OnePage 和工作区会放在这里</span>:null}</div>
  {saved.length>limit?<IconBtn size="sm" label="更多收藏" aria-expanded={overflow} icon={<IconTriangleDown width={12} height={12}/>} onClick={()=>setOverflow(v=>!v)}/>:null}

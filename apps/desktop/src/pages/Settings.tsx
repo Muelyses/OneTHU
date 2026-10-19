@@ -1,5 +1,4 @@
 import { ExperienceModeControl } from "../components/SimpleExperience.js";
-declare const __APP_VERSION__: string;
 import { Btn, Inline, Input, List, Row, Segment, Select, SettingsList, SettingsRow, Stack, Tag, Text as OGText, TextArea } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import {
@@ -52,7 +51,7 @@ import {
   removeSystemCalendar,
   syncSystemCalendar,
 } from "../state/systemCal.js";
-import { APP_CODENAME } from "../lib/update.js";
+import { APP_CODENAME, APP_VERSION_LABEL } from "../lib/update.js";
 import { YktQrPanel, YktWebLoginPanel } from "../components/ExtHwLoginModal.js";
 import { YKT_WEB_LOGIN_AVAILABLE } from "../lib/yktWebview.js";
 import {
@@ -373,7 +372,7 @@ export function SettingsPage() {
       <SoftwareUpdateSection />
       <Card>
         <SettingsRow
-          title={<>OneTHU {__APP_VERSION__} “{APP_CODENAME}”</>}
+          title={<>OneTHU {APP_VERSION_LABEL} “{APP_CODENAME}”</>}
           sub="清华园随身工具箱 · 开源于 GitHub"
           control={<Btn variant="outline" size="sm" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>GitHub 项目页</Btn>}
         />

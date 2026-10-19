@@ -12,23 +12,34 @@ const REPLAY="onethu.onboarding.replay";
 export function replayOnboarding(){window.dispatchEvent(new Event(REPLAY));}
 type Lesson={id:string;title:string;lead:string;steps:string[];page?:"homepage"|"vault"|"contacts";action?:string};
 export const FULL_LESSONS:Lesson[]=[
- {id:"board",title:"白板，把常用内容放到手边",lead:"首页也是一块白板。布局由你决定，不用每次从目录里找。",steps:["进入首页的编辑状态，添加课程、待办、便笺等组件。","拖动组件的把手调整位置，拖动边角改变大小；退出编辑即可正常使用。","OneGO 可以保存和打开独立白板与工作区。"],page:"homepage",action:"去看看白板"},
- {id:"vault",title:"暂存箱，先收起来再处理",lead:"课程、文字、文件或名片，都可以先放进同一个箱子。",steps:["按住内容，等箱子与 OH 胶囊亮起，再开始拖动。","拖到箱子上是暂存，拖到 OH 胶囊上是交给小 OH。","点击箱子展开雷达；打开清单可以整理内容或切换箱子。"],page:"vault",action:"打开暂存箱"},
- {id:"code",title:"一个短口令，传递一组内容",lead:"口令是联网取回内容的钥匙。接收方不必自己拼装白板或文件。",steps:["在暂存箱点击「分享口令」，生成后复制给对方。","对方点「接收」粘贴口令，或识别分享二维码。","分享前确认箱子里的内容；收到的内容会进入暂存箱。"],page:"vault",action:"查看收发入口"},
- {id:"nfc",title:"碰一碰，让内容接力",lead:"有 NFC 的设备，可以用触碰传递同一份分享口令。",steps:["先准备分享内容，再选择 NFC 传送；另一台设备选择 NFC 接收。","按设备提示靠近，看到成功反馈后再分开。","NFC 需要设备和系统支持。没有 NFC 时，口令和二维码一样可用。"],page:"vault",action:"查看设备支持"},
- {id:"organization",title:"组织，把人和事情放在一起",lead:"创建组织后，名片与组织绑定，不需要再单独制作一张。",steps:["在通讯录的组织中创建组织，添加成员并管理角色。","用文件、项目和公告整理资料、进度与通知。","通过组织口令邀请他人；名片随组织资料一起更新。"],page:"contacts",action:"打开组织"},
+ {id:"board",title:"白板与 OnePage：首页由你摆",lead:"首页是一块自由画布，位置和大小随手调。",steps:["编辑态从组件抽屉挑卡片，拖动换位置。","拉四角或边把手改大小，双击就地编辑。","底部模板一键套用；OnePage 可另建多块。"],page:"homepage",action:"去看看白板"},
+ {id:"explorer",title:"标签页与工作区：多任务不打架",lead:"每个页面都是一枚标签，工作区存一组状态。",steps:["点顶栏＋或搜索开新标签，拖动可换序。","在 OneGO! 保存工作区，下次一键恢复。","标签栏可横排或竖排，关前先存工作区。"],page:"homepage",action:"打开工作区入口"},
+ {id:"vault",title:"暂存箱：什么都能先收进来",lead:"按住内容拖进暂存箱，文件会自动存到云盘。",steps:["长按文件/日程/项目/标签页，拖到箱子上。","点箱子开雷达：整理、分享或交给小 OH。","日程拖入只是快照，点开再选是否加入日程。"],page:"vault",action:"打开暂存箱"},
+ {id:"code",title:"一个短口令，传递一组内容",lead:"整组内容生成短口令，对方无需云盘账号。",steps:["暂存箱点分享口令并复制，可设有效期。","对方点接收粘贴口令或扫二维码。","分享前先确认内容；口令只是钥匙。"],page:"vault",action:"查看收发入口"},
+ {id:"nfc",title:"碰一碰：名片与内容接力",lead:"有 NFC 可贴近传送口令，没有也能用口令。",steps:["两台设备分别选 NFC 传送与接收。","看到成功反馈再分开。","失败请手动改用口令或二维码。"],page:"vault",action:"查看设备支持"},
+ {id:"organization",title:"组织：人、文件、项目一处管",lead:"建组织后成员共享云盘与 GitLab 项目。",steps:["邀请成员时可用口令，并设有效期。","组织里共享资料库、建项目、发公告。","组织名片与个人名片分开管理。"],page:"contacts",action:"打开组织"},
+ {id:"onego",title:"OneGO!：全局入口与自动化",lead:"搜索、快捷指令、工作区和 OneFlow 都在这里。",steps:["⌘/Ctrl+K 唤出搜索，直跳页面或内容。","OneFlow 把一串操作固化成步骤。","可按需触发：手动、定时或事件。"],page:"homepage",action:"打开 OneGO!"},
+ {id:"plugin",title:"插件与 OH：把能力装进来",lead:"装插件扩展组件、主题与 MCP 工具。",steps:["插件页安装管理，给 OH 配模型源。","自制内容可发布为 OnePage 或组件。","OH 支持语音、多模态与 IM 接入。"],page:"homepage",action:"看看插件页"},
+ {id:"customize",title:"外观与工作台：全都可调",lead:"主题、壁纸、密度和入口排布都能改。",steps:["设置→外观与布局：主题、壁纸、字号。","小组件、Dock、标签栏、OneShot 可调。","改坏可恢复默认布局，不动数据。"],page:"homepage",action:"打开外观设置"},
+ {id:"campus",title:"校园服务：完整模式的聚合",lead:"学习、生活、预约、云盘、GitLab 全聚合。",steps:["学习：作业/通知/文件/成绩/讨论。","生活：校园卡、电费网费、洗衣、场馆。","云盘、邮箱、GitLab、寻迹都在这一层。"],page:"homepage",action:"去学习页"},
+ {id:"data",title:"数据与同步：跨设备继续",lead:"日程、暂存箱和组织资料都能跨设备带走。",steps:["日程支持云日历与系统日历同步。","口令与 NFC 让内容跨设备接力。","切换模式不清数据，设置里可导出。"],page:"vault",action:"查看数据设置"},
 ];
 const SIMPLE_LESSONS:Lesson[]=[
- {id:"today",title:"首页，只关心今天",lead:"打开就看到待办与要上的课程。没有需要整理的标签和白板。",steps:["点一条待办查看详情，点课程进入课程内容。","随时点左上角「首页」回来。"]},
- {id:"quick",title:"五个入口，直接到达",lead:"学习、预约、生活、信息、课表，始终在底部。",steps:["学习里看课程与作业，预约里找场馆和研讨间。","生活与信息汇集校园服务，课表里查看时间安排。","OH 与搜索胶囊保持可用；在设置中填写自己的 API。"]},
+ {id:"today",title:"首页，只关心今天",lead:"打开就看到今日待办与要上的课程，没有需要整理的标签和白板。",steps:["点一条待办查看详情，点课程直接进入课程内容。","随时点左上角「首页」回来，退出再进仍是今天。","想加更多功能时，到设置切「实用模式」或「完整模式」。"]},
+ {id:"quick",title:"五个功能，固定在手边",lead:"极简模式仅保留学习、预约、生活、课表、信息五个功能，全部固定在底部。",steps:["学习里看课程与作业；预约里找场馆、研讨间与来访报备。","生活与信息汇集校园服务；课表里看时间安排。","OH 搜索胶囊始终可用；可在设置里填自己的 API。"],page:"homepage",action:"看看底部五入口"},
 ];
-/* 实用模式：和极简一样干净，但第五格是「更多功能」——展开全部功能，还能把常用功能换进左边四个入口。 */
 const PRACTICAL_LESSONS:Lesson[]=[
- {id:"today",title:"首页，只关心今天",lead:"打开就看到待办与要上的课程。没有需要整理的标签和白板。",steps:["点一条待办查看详情，点课程进入课程内容。","随时点左上角「首页」回来。"]},
- {id:"more",title:"更多功能，一屏展开",lead:"底部最右边是「更多功能」：点开按目录列出全部功能，点名称直接打开。",steps:["功能按学习、日程、生活、预约等目录分组，先找目录再点功能。","暂存箱、通讯录、白板等完整模式功能不在此列，切回完整模式即可用。"]},
- {id:"swap",title:"四个入口，随你安排",lead:"学习、预约、生活、课表默认在下排；想把哪个功能放在手边，就换进去。",steps:["在「更多功能」里点功能右侧的 + 号。","选择要替换的入口（入口 1 到 4），该功能就固定在底部。","换过的入口在实用模式里一直保持，切到其他模式不受影响。"]},
+ {id:"today",title:"首页，只关心今天",lead:"打开就看到今日待办与要上的课程；实用模式包含所有基础功能，但不摆白板。",steps:["点一条待办查看详情，点课程进入课程内容。","随时点左上角「首页」回来，退出再进仍是今天。"]},
+ {id:"more",title:"更多功能：所有基础功能都在这里",lead:"实用模式包含所有基础功能；第五格「更多功能」按目录展开全部，点名称直接打开。",steps:["按学习、日程、生活、预约等目录分组，先找目录再点功能。","暂存箱、通讯录、白板、插件等完整模式专属能力不在此列，切到完整模式即可用。"],page:"homepage",action:"展开更多功能"},
+ {id:"swap",title:"四个入口，随你安排",lead:"学习、预约、生活、课表默认在下排；想把哪个功能放在手边，就换进去。",steps:["在「更多功能」里点功能右侧的 + 号。","选择要替换的入口（入口 1 到 4），该功能就固定在底部。","换过的入口一直保持；切到其他模式也不受影响。"]},
 ];
-function shouldStart(){try{return !localStorage.getItem(KEY)&&!localStorage.getItem("onethu.onboarded.flow3")&&!localStorage.getItem("onethu.onboarded.phone");}catch{return false;}}
+function shouldStart(){
+ try{
+  /* dev/验收：?tour=1 强制打开导览（正式版不受影响，仍看完成标记） */
+  if(typeof location!=="undefined"&&new URLSearchParams(location.search).get("tour")==="1")return true;
+  return !localStorage.getItem(KEY)&&!localStorage.getItem("onethu.onboarded.flow3")&&!localStorage.getItem("onethu.onboarded.phone");
+ }catch{return false;}
+}
 export function OnboardingTour(){
  const [open,setOpen]=useState(shouldStart),[chosen,setChosen]=useState<ExperienceMode>(experienceMode),[step,setStep]=useState(-1),[practice,setPractice]=useState(false),[connect,setConnect]=useState(false);
  const lessons=chosen==="simple"?SIMPLE_LESSONS:chosen==="practical"?PRACTICAL_LESSONS:FULL_LESSONS;
@@ -46,7 +57,10 @@ export function OnboardingTour(){
  <Stack gap={4}>
  <Text slot="micro" tone="faint">{step<0?"欢迎来到 OneTHU":`${chosen==="simple"?"极简":chosen==="practical"?"实用":"完整"}模式 · ${step+1} / ${lessons.length+1}`}</Text>
  <Progress size="sm" value={step<0?0:(step+1)/(lessons.length+1)}/>
- {step<0?<><Text as="h2" slot="title">你想怎样使用 OneTHU？</Text><ExperienceModePicker value={chosen} onChange={setChosen}/><Text tone="faint">以后可以在设置里切换。已有标签、白板和完整模式设置都会原样保留。</Text></>:last?<>
+ {step<0?<><Text as="h2" slot="title">你想怎样使用 OneTHU？</Text>
+ <Text>三种模式随时可换，数据都保留；下面三张卡各自说明能给你什么。</Text>
+ <ExperienceModePicker value={chosen} onChange={setChosen}/>
+ <Text tone="faint">以后可以在设置里切换。已有标签、白板、暂存箱与完整模式设置都会原样保留。</Text></>:last?<>
  <Text as="h2" slot="title">需要时，再连接</Text><Text>可选：连雨课堂同步作业，扫码接微信/飞书用 OH。现在跳过也行。</Text>
  <Btn variant="outline" onClick={()=>setConnect(!connect)}>{connect?"收起连接选项":"选择扫码连接"}</Btn>{connect?<OptionalConnections/>:null}
  </>:<><Text as="h2" slot="title">{lesson.title}</Text><Text>{lesson.lead}</Text><TourIllustration lesson={lesson.id}/><ol className="tour-steps">{lesson.steps.map(s=><li key={s}>{s}</li>)}</ol>

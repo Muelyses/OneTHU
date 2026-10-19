@@ -9,7 +9,9 @@
 import { universalFetch } from "./transport.js";
 
 /** 版本代号（随主版本更新） */
-export const APP_CODENAME = "Complex Variable";
+export const APP_CODENAME = "Revolution";
+/** 关于页展示用的版本名（用户 2026-10-19 指定：0.11-beta） */
+export const APP_VERSION_LABEL = "0.11-beta";
 
 declare const __APP_VERSION__: string;
 

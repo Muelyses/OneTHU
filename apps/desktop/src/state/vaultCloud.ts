@@ -81,6 +81,18 @@ export async function uploadExchangeManifest(code: string): Promise<VaultCloudRe
   return uploadSharedManifest(token, repoId, dir, JSON.stringify({ v: 1, kind: "onethu-exchange", code }));
 }
 
+/**
+ * 稳定分享位（名片/组织邀请）专用：往已存在的分享目录覆盖 manifest。
+ * 同一个短码永远指向最新内容——名片改了就地更新，不新建目录、不换口令，
+ * 也不会每改一次就在云盘堆一个 manifest。分享被撤销/过期后调用方会改走新建。
+ */
+export async function updateExchangeManifest(repoId: string, dir: string, code: string): Promise<void> {
+  await ensureSeafileLoaded();
+  const token = tokenOrThrow();
+  const localPath = await writeTemp("manifest.json", JSON.stringify({ v: 1, kind: "onethu-exchange", code }));
+  await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
+}
+
 const adapter: VaultCloudAdapter = {
   async upload(payload: VaultSharePayload): Promise<VaultCloudRef> {
     const token = tokenOrThrow();

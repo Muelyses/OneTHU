@@ -178,7 +178,10 @@ export async function orgInviteCode(org: Org, inviter = "我"): Promise<string> 
     inviter, issuedAt: Date.now(),
   };
   const json = JSON.stringify(payload);
-  const code = await (await import("./cloudExchange.js")).publishExchangeCode(`${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`);
+  /* 内容键不含 issuedAt：同一个组织重复点「邀请」复用旧短码，不重复上传。
+   *  稳定分享位按组织 id 分：组织资料改了就地更新同一个目录，口令不变。 */
+  const contentKey = JSON.stringify([org.id, org.name, org.brief, org.joinUrl, inviter]);
+  const code = await (await import("./cloudExchange.js")).publishExchangeCode(`${ORG_CODE_PREFIX}.${toB64Url(new TextEncoder().encode(json))}.${checksum(json)}`, contentKey, `org:${org.id}`);
   doc = { ...doc, orgs: doc.orgs.map((o) => (o.id === org.id ? { ...o, lastInviteCode: code, updatedAt: Date.now() } : o)) };
   commit();
   return code;

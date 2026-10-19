@@ -18,13 +18,11 @@ import {
   activeVault, addToVault, clearVault, createVault, deleteVault, renameVault, removeFromVault,
   setActiveVault, subscribeVault, VAULT_TYPE_LABEL, vaultSnapshot, type VaultItem,
 } from "../../state/vault.js";
-import { decodeShareAsync, importShareCodeAsCurrent, mintShareCode, revokeShare, type VaultSharePayload } from "../../state/vaultShare.js";
+import { decodeShareAsync, revokeShare, shareCodeForBox, type VaultSharePayload } from "../../state/vaultShare.js";
 import { installVaultCloudAdapter } from "../../state/vaultCloud.js";
 import { nfcReadText, nfcShareText, nfcStatus } from "../../lib/nfc.js";
-import { decodeQrFile, qrScanSupported } from "../../lib/qrScan.js";
-import { fileToBytes, pickFile } from "../../lib/attach.js";
-import { receiveExchangeCode } from "../../lib/contentExchange.js";
-import { buildTouchCode, importTouchCode, orgOptions } from "../../state/touch.js";
+import { pickAndReceiveQr, receiveExchangeCode } from "../../lib/contentExchange.js";
+import { buildTouchCode, orgOptions } from "../../state/touch.js";
 import { vaultCatchAttr } from "./vaultDrag.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
 import { addAtomToHome } from "../../state/onePage.js";
@@ -158,11 +156,13 @@ export function VaultPage(): ReactNode {
     if (!f?.code) return;
     setBusy(true);
     try {
-      const r = await importTouchCode(f.code);
-      if (!r.ok) { showToast(r.reason ?? "口令无法导入"); return; }
-      const parts = [r.vault ? "暂存箱" : "", r.contact ? "名片" : "", r.org ? "组织" : ""].filter(Boolean).join(" / ");
-      setExchange({phase:"success",message:`已收到 ${parts}`});
-      showToast(`已接收：${parts}`);
+      const message = await receiveExchangeCode(f.code, "current");
+      setExchange({ phase: "success", message });
+      showToast(message);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      setExchange({ phase: "error", message });
+      showToast(message);
     } finally {
       setBusy(false);
     }
@@ -197,24 +197,20 @@ export function VaultPage(): ReactNode {
 
   const scanQr = useCallback(async (): Promise<void> => {
     try {
-      if (!qrScanSupported()) { showToast("当前环境不支持二维码识别"); return; }
-      const f = await pickFile();
-      if (!f) return;
-      if (!f.mime.startsWith("image/")) { showToast("请选择一张二维码图片"); return; }
       setBusy(true);
-      setExchange({phase:"reading",message:"正在识别二维码…"});
-      const bytes = await fileToBytes(f, 8 * 1024 * 1024);
-      const img = new File([bytes], f.name, { type: f.mime });
-      const text = await decodeQrFile(img);
-      if (!text) { setExchange({phase:"error",message:"图片里没有识别到二维码"}); showToast("图片里没有识别到二维码"); return; }
-      await receiveText(text);
+      setExchange({ phase: "reading", message: "正在识别二维码…" });
+      const message = await pickAndReceiveQr();
+      if (!message) return;
+      setExchange({ phase: "success", message });
+      showToast(message);
     } catch (e) {
-      setExchange({phase:"error",message:"扫码失败，请换一张清晰的二维码图片"});
-      showToast(`扫码失败：${e instanceof Error ? e.message : String(e)}`);
+      const message = e instanceof Error ? e.message : String(e);
+      setExchange({ phase: "error", message });
+      showToast(message);
     } finally {
       setBusy(false);
     }
-  }, [receiveText]);
+  }, []);
 
   const readNfc = useCallback(async (): Promise<void> => {
     setBusy(true);
@@ -240,9 +236,14 @@ export function VaultPage(): ReactNode {
     if (!f?.code) return;
     setBusy(true);
     try {
-      const r = await importShareCodeAsCurrent(f.code);
-      if (r.ok) showToast(`已导入 ${r.imported ?? 0} 项，替换为当前暂存箱`);
-      else showToast(r.reason ?? "口令无法导入");
+      /* 统一入口：箱子/名片/组织/碰一碰口令都认，替换为当前暂存箱（老行为）。 */
+      const message = await receiveExchangeCode(f.code, "current");
+      setExchange({ phase: "success", message });
+      showToast(message);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      setExchange({ phase: "error", message });
+      showToast(message);
     } finally {
       setBusy(false);
     }
@@ -255,7 +256,8 @@ export function VaultPage(): ReactNode {
     }
     setBusy(true);
     try {
-      const r = await mintShareCode(box);
+      /* 复用未失效的旧口令，不重复上传；箱子改过才会生成新的。 */
+      const r = await shareCodeForBox(box);
       setCode(r.code);
       setShareInfo(r.payload);
       try { await navigator.clipboard.writeText(r.code); showToast("口令已生成并复制"); }

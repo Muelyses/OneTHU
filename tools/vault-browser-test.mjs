@@ -6,6 +6,7 @@
 import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
+import { installFakeCloud } from './lib/fake-cloud.mjs';
 
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
 let checks = 0;
@@ -16,7 +17,8 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?
 try {
   const p = await browser.newPage({ viewport: { width: 1280, height: 840 } });
   p.on('pageerror', (e) => errors.push(e.message));
-  await p.addInitScript(() => localStorage.setItem('onethu.onboarded.phone', '1'));
+  await p.addInitScript(() => { performance.setResourceTimingBufferSize(10000); localStorage.setItem('onethu.onboarded.phone', '1'); });
+  await installFakeCloud(p, { token: 'test-token' });
   await p.route('**/src/state/data.ts*', async (route) => {
     const r = await route.fetch();
     let b = await r.text();
@@ -40,6 +42,7 @@ try {
   const box = await row.boundingBox();
   await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await p.mouse.down();
+  await p.waitForTimeout(520); /* 长按 400ms 才拾取；先移动超过 8px 会被当成滚动 */
   await p.mouse.move(box.x + box.width / 2 + 24, box.y + box.height / 2 + 24, { steps: 6 });
   await p.waitForTimeout(250);
   check(await p.locator('[data-vault-drop]').count() === 1, 'drop target appears while dragging');
@@ -66,17 +69,17 @@ try {
   await p.getByRole('button', { name: '生成口令' }).click();
   await p.waitForTimeout(600);
   const code = await p.locator('.vault-share-code').innerText();
-  check(/^ONV2\.[A-Za-z0-9_-]+\.[0-9a-f]{32}$/.test(code.trim()), 'share code has ONV2.body.sha256 shape');
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test(code.trim()), 'share code is a fixed-length short code: ' + code.trim());
   const decoded = await p.evaluate(async (c) => {
     /* codec 是纯函数；直接按 Vite 原路径 import 不影响应用状态。 */
     const m = await import('/src/state/vaultShare.ts');
     const ok = await m.decodeShareAsync(c);
-    const bad = await m.decodeShareAsync(c.slice(0, -1) + (c.endsWith('0') ? '1' : '0'));
+    const bad = await m.decodeShareAsync(c.slice(0, -1) + (c.endsWith('A') ? 'B' : 'A'));
     const v1 = m.encodeShare({ v: 1, kind: 'vault-share', issuedAt: Date.now(), name: '旧版口令', items: [] });
     const oldOk = await m.decodeShareAsync(v1);
     return { ok, bad, oldOk };
   }, code.trim());
-  check(decoded.ok.ok && decoded.ok.payload?.name === '我的暂存箱', 'ONV2 code decodes with box name');
+  check(decoded.ok.ok && decoded.ok.payload?.name === '我的暂存箱', 'short code decodes through the cloud manifest to the box name');
   check(decoded.oldOk.ok, 'ONV1 codes remain backward-compatible');
   check(!decoded.bad.ok, 'tampered code is rejected');
   const expired = await p.evaluate(async () => {
@@ -160,14 +163,15 @@ try {
   await p.waitForSelector('.plg-form-modal');
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(800);
-  const touchCode = await p.locator('.vault-share-code').filter({ hasText: 'ONTOUCH1' }).innerText();
-  check(touchCode.trim().startsWith('ONTOUCH1.'), 'touch combo generates ONTOUCH1 code');
+  const touchCode = (await p.locator('.vault-share-code').innerText()).trim();
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test(touchCode), 'touch combo is also a short code: ' + touchCode);
   const touch = await p.evaluate(async (c) => {
     const m = await import('/src/state/touch.ts');
-    const dec = m.decodeTouch(c);
+    const ce = await import('/src/state/cloudExchange.ts');
+    const dec = m.decodeTouch(await ce.resolveExchangeCode(c));
     const r = await m.importTouchCode(c);
     return { ok: dec.ok, hasVault: Boolean(dec.payload?.vaultCode), hasCard: Boolean(dec.payload?.personal), imported: r };
-  }, touchCode.trim());
+  }, touchCode);
   check(touch.ok && touch.hasVault && touch.hasCard, 'touch code carries vault share code + personal card');
   check(touch.imported.ok && touch.imported.vault === true, 'touch code can be imported by receiver');
 
@@ -181,6 +185,7 @@ try {
   const beforeSettings = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vaults.v1')).boxes.flatMap((b) => b.items).length);
   await p.mouse.move(sbox.x + sbox.width / 2, sbox.y + 24);
   await p.mouse.down();
+  await p.waitForTimeout(520); /* 同上：长按拾取 */
   await p.mouse.move(sbox.x + sbox.width / 2 + 20, sbox.y + 50, { steps: 5 });
   await p.waitForTimeout(250);
   const sdrop = await p.locator('[data-vault-drop]').boundingBox();

@@ -4,9 +4,9 @@
  * 后两者较长时统一编码进一个 ONTOUCH1 口令。NFC 落地后 NDEF 只带这个短口令。
  */
 import { publishExchangeCode, resolveExchangeCode } from "./cloudExchange.js";
-import { addContact, type OrgCard, type PersonalCard } from "./nameCard.js";
-import { acceptOrgInvite } from "./org.js";
-import { importShareCodeAsCurrent, mintShareCode, checksum } from "./vaultShare.js";
+import { addContact, cardsSnapshot, type OrgCard, type PersonalCard } from "./nameCard.js";
+import { acceptOrgInvite, orgInviteCode, orgSnapshot } from "./org.js";
+import { checksum, importShareCodeAsCurrent, shareCodeForBox } from "./vaultShare.js";
 import { activeVault } from "./vault.js";
 
 export const TOUCH_PREFIX = "ONTOUCH1";
@@ -69,36 +69,33 @@ export function decodeTouch(code: string): { ok: boolean; payload?: TouchPayload
   } catch { return { ok: false, reason: "口令内容不是合法 JSON" }; }
 }
 
-/** 组装组合口令：暂存箱走完整分享口令（云盘可用时只带云引用）；名片/组织只带摘要。 */
+/** 组装组合口令：暂存箱复用未失效的短码；名片/组织只带摘要。 */
 export async function buildTouchCode(opts: TouchOptions): Promise<{ code: string; payload: TouchPayload }> {
   const payload: TouchPayload = { v: 1, kind: "onethu-touch", issuedAt: Date.now(), from: opts.from };
   if (opts.withVault) {
     const box = activeVault();
     if (box.items.length > 0) {
-      const minted = await mintShareCode(box, opts.from);
+      const minted = await shareCodeForBox(box);
       payload.vaultCode = minted.code;
       payload.vaultName = box.name;
     }
   }
   if (opts.withPersonal) {
-    const raw = localStorage.getItem("onethu.cards.v1");
-    if (raw) {
-      const card = (JSON.parse(raw) as { personal?: PersonalCard }).personal;
-      if (card) payload.personal = card;
-    }
+    /* 空名片（没填名字）不发：接收方通讯录里会多一条没有名字的卡片。 */
+    const personal = cardsSnapshot().personal;
+    if (personal.name.trim()) payload.personal = personal;
   }
   if (opts.withOrgId) {
-    const raw = localStorage.getItem("onethu.orgs.v1");
-    if (raw) {
-      const orgs = (JSON.parse(raw) as { orgs?: Array<{ id: string; name: string; lastInviteCode?: string }> }).orgs ?? [];
-      const org = orgs.find((o) => o.id === opts.withOrgId);
-      if (org) {
-        payload.orgName = org.name;
-        payload.orgCode = org.lastInviteCode;
-      }
+    const org = orgSnapshot().orgs.find((o) => o.id === opts.withOrgId);
+    if (org) {
+      payload.orgName = org.name;
+      /* 没生成过邀请就地生成（云盘上传后拿短码）；已有邀请原样复用。 */
+      payload.orgCode = org.lastInviteCode ?? (await orgInviteCode(org));
     }
   }
-  return { code: await publishExchangeCode(encodeTouch(payload)), payload };
+  /* issuedAt 不进内容键：同样的选择再点一次，复用同一个短码而不是又上传一份。 */
+  const contentKey = JSON.stringify([payload.from, payload.vaultCode, payload.vaultName, payload.personal, payload.orgCode, payload.orgName]);
+  return { code: await publishExchangeCode(encodeTouch(payload), contentKey), payload };
 }
 
 export interface TouchImportResult {
@@ -107,6 +104,8 @@ export interface TouchImportResult {
   vault?: boolean;
   contact?: boolean;
   org?: boolean;
+  /** 内容识别成功，但本地已有（重复接收不会重复添加，也不是失败） */
+  duplicate?: boolean;
 }
 
 /** 接收方：暂存箱按 vaultTarget 落库；名片进通讯录；组织邀请合并成员。 */
@@ -120,6 +119,7 @@ export async function importTouchCode(code: string, myName = "我", vaultTarget:
   let vault = false;
   let contact = false;
   let org = false;
+  let duplicate = false;
   if (p.vaultCode) {
     const r = await importShareCodeAsCurrent(p.vaultCode, vaultTarget);
     if (!r.ok) return { ok: false, reason: r.reason ?? "暂存箱口令无法导入" };
@@ -128,23 +128,21 @@ export async function importTouchCode(code: string, myName = "我", vaultTarget:
   if (p.personal) {
     const r = addContact("personal", p.personal, p.from ? `来自 ${p.from}` : "");
     if (r.ok) contact = true;
+    else if (r.reason === "duplicate") duplicate = true;
   }
   if (p.orgCode && p.orgName) {
     const r = await acceptOrgInvite(p.orgCode, myName);
     if (r.ok) org = true;
   }
-  if (!vault && !contact && !org) return { ok: false, reason: "这个碰一碰口令里没有可导入的内容" };
-  return { ok: true, vault, contact, org };
+  if (!vault && !contact && !org) {
+    /* 重复接收要说明白：内容认出来了，只是本地已经有，不是口令坏。 */
+    if (duplicate) return { ok: true, duplicate: true, reason: "名片已在通讯录里（重复接收不会重复添加）" };
+    return { ok: false, reason: "这个碰一碰口令里没有可导入的内容" };
+  }
+  return { ok: true, vault, contact, org, duplicate };
 }
 
 /** 可选组织列表（UI 用；不 import React，保持纯 store 读取）。 */
 export function orgOptions(): TouchOrgBrief[] {
-  try {
-    const raw = localStorage.getItem("onethu.orgs.v1");
-    if (!raw) return [];
-    const orgs = (JSON.parse(raw) as { orgs?: Array<{ id: string; name: string; lastInviteCode?: string }> }).orgs ?? [];
-    return orgs.map((o) => ({ id: o.id, name: o.name }));
-  } catch {
-    return [];
-  }
+  return orgSnapshot().orgs.map((o) => ({ id: o.id, name: o.name }));
 }

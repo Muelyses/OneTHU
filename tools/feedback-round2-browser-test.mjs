@@ -2,6 +2,7 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { installFakeCloud } from './lib/fake-cloud.mjs';
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
 const out = 'docs/onegui/feedback-round2';
 mkdirSync(out, { recursive: true });
@@ -23,6 +24,7 @@ async function page(width = 1280, height = 860, bridge = false) {
   const p = await browser.newPage({ viewport: { width, height }, hasTouch: width < 600, isMobile: width < 600 });
   p.setDefaultTimeout(10000);
   p.on('pageerror', e => { if (!/reading 'invoke'/.test(e.message)) errors.push(e.message); });
+  await installFakeCloud(p, { token: 'test-token' }); /* 名片口令走云盘发布（短码） */
   await p.addInitScript(() => {
     performance.setResourceTimingBufferSize(10000);
     localStorage.setItem('onethu.onboarded.phone', '1');
@@ -107,12 +109,13 @@ try {
   await p.getByRole('button',{name:'NFC 分享个人名片',exact:true}).click();
   await p.locator('.exchange-feedback.is-ready').waitFor();
   const sent = await p.evaluate(() => window.__nfc.sent);
-  const payload = await call(p,'/src/state/touch.ts','decodeTouch',[sent[0]]);
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test(sent[0]),'名片 NFC 只带 22 字符短码：'+sent[0]);
+  const payload = await call(p,'/src/state/touch.ts','decodeTouch',[await call(p,'/src/state/cloudExchange.ts','resolveExchangeCode',[sent[0]])]);
   check(payload.payload.personal.name === '测试名片' && !payload.payload.vaultCode,'名片按钮直接发送当前名片，不混入暂存箱');
   check((await p.locator('.exchange-feedback').innerText()).includes('尚未收到对方确认'),'发送就绪不会误报对方已收到');
   await p.screenshot({path:`${out}/personal-nfc-ready.png`});
   await closeFeedback(p); await p.getByRole('button',{name:'复制名片口令',exact:true}).click();
-  check((await p.evaluate(() => window.__copied.at(-1))).startsWith('ONTOUCH1.'),'名片同时提供可用的复制口令替代入口');
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test(await p.evaluate(() => window.__copied.at(-1))),'名片同时提供可用的短口令替代入口');
   const avatar = await p.evaluate(() => {
     const c = document.createElement('canvas'); c.width = c.height = 240;
     const ctx=c.getContext('2d'), image=ctx.createImageData(240,240);
@@ -123,9 +126,10 @@ try {
   await call(p,'/src/state/nameCard.ts','savePersonalCard',[{avatar}]);
   await p.getByRole('button',{name:'NFC 分享个人名片',exact:true}).click(); await p.locator('.exchange-feedback.is-ready').waitFor();
   const compact=await p.evaluate(()=>window.__nfc.sent.at(-1));
-  const compactCard=await call(p,'/src/state/touch.ts','decodeTouch',[compact]);
-  check(compact.length<=30000&&!!compactCard.payload.personal.avatar,'大头像自动生成完整可传输的轻量名片');
-  check((await call(p,'/src/state/nameCard.ts','cardsSnapshot')).personal.avatar===avatar,'NFC 缩图不修改本机原名片');
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test(compact),'大头像也只发 22 字符短码（内容在云盘，不在口令里）');
+  const compactCard=await call(p,'/src/state/touch.ts','decodeTouch',[await call(p,'/src/state/cloudExchange.ts','resolveExchangeCode',[compact])]);
+  check(compactCard.ok && compactCard.payload.personal.avatar===avatar,'大头像经云盘 manifest 完整送达，不再需要缩图');
+  check((await call(p,'/src/state/nameCard.ts','cardsSnapshot')).personal.avatar===avatar,'NFC 发送不修改本机原名片');
   await closeFeedback(p);
   const oversized=await p.evaluate(async()=>{
     const url=performance.getEntriesByType('resource').map(x=>x.name).find(x=>new URL(x).pathname.endsWith('/src/lib/nfc.ts'));
@@ -135,8 +139,12 @@ try {
   await p.keyboard.press('Escape'); await p.waitForTimeout(400);
   await call(p,'/src/state/vault.ts','addToVault',[{type:'text',title:'原有笔记',text:'保留我的内容'}]);
   const original = await call(p,'/src/state/vault.ts','activeVault');
-  await openRadar(p); await p.getByRole('button',{name:'复制口令',exact:true}).click();
-  await p.waitForFunction(() => window.__copied.at(-1)?.startsWith('ONV2.'));
+  await openRadar(p);
+  /* 清空剪贴板记录再点：否则上一段名片口令的短码还留在 __copied 里，会把失败蒙混过关 */
+  await p.evaluate(() => { window.__copied.length = 0; });
+  await p.getByRole('button',{name:'复制口令',exact:true}).click();
+  await p.waitForFunction(() => /^ON(-[0-9A-Z]{4}){4}$/.test(window.__copied.at(-1) ?? ''));
+  check(await p.evaluate(() => window.__copied.length === 1), '雷达第一次分享就生成口令（适配器在小形态也会装）');
   const code = await p.evaluate(() => window.__copied.at(-1));
   await p.getByRole('button',{name:'复制口令',exact:true}).click(); await p.waitForTimeout(200);
   check(await p.evaluate(code => window.__copied.at(-1)===code,code),'雷达复制已有口令原样复用');

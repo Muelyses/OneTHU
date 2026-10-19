@@ -7,6 +7,7 @@
  */
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
+import { installFakeCloud } from './lib/fake-cloud.mjs';
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
 let checks = 0;
 const errors = [];
@@ -16,6 +17,7 @@ try {
   const p = await browser.newPage({ viewport: { width: 390, height: 844 } });
   p.on('pageerror', (e) => errors.push(e.message));
   await p.addInitScript(() => {
+    performance.setResourceTimingBufferSize(10000);
     localStorage.setItem('onethu.onboarded.phone', '1');
     localStorage.setItem('onethu.cards.v1', JSON.stringify({
       v: 1,
@@ -23,6 +25,7 @@ try {
       orgs: [], contacts: [],
     }));
   });
+  await installFakeCloud(p, { token: 'test-token' }); /* 碰一碰组合口令要走云盘发布 */
   await p.route('**/src/state/data.ts*', async (route) => {
     const r = await route.fetch(); let b = await r.text();
     for (const n of ['useLearnData', 'useCampusData']) b = b.replace(`export function ${n}() {`, `export function ${n}() { return {data:{semester:{id:'x'},courses:[],homework:[],notifications:[],files:[],schedule:[]},state:'ready',error:null,reload:async()=>{}};`);
@@ -37,13 +40,13 @@ try {
   }, { path, name, args });
   await call('/src/state/explorer.ts', 'explorerNavigate', ['vault']);
   await p.waitForTimeout(700);
-  check(await p.locator('.vault-dock').isVisible(), '390 vault dock visible');
-  const dockBox = await p.locator('.vault-dock').boundingBox();
-  const vp = p.viewportSize();
-  check(dockBox && dockBox.y + dockBox.height <= vp.height - 70, '390 vault dock floats above the bottom bar');
+  /* 手机端箱子入口在顶栏（Layout 的 {phone ? <VaultButton/> : null}），不是浮动 dock */
+  check(await p.locator('.vault-anchor').isVisible(), '390 vault box button visible in topbar');
+  const dockBox = await p.locator('.vault-anchor').boundingBox();
+  check(dockBox && dockBox.y >= 0 && dockBox.y + dockBox.height <= 120, '390 vault box sits in the topbar (not floating over content)');
   const overflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(overflow <= 1, '390 vault page has no horizontal overflow');
-  const buttons = await p.locator('.vault-actions button').count();
+  const buttons = await p.locator('.vault-action-row button').count();
   check(buttons >= 4, '390 vault actions wrap into visible buttons');
   const title = await p.getByRole('heading', { name: '暂存箱', exact: true }).count();
   check(title === 1, '390 vault heading visible');
@@ -56,22 +59,30 @@ try {
   check(await qr.count() >= 1, '390 touch code QR rendered');
   const qrBox = await qr.first().boundingBox();
   check(qrBox && qrBox.width <= 390, 'QR fits phone width');
-  check(await p.locator('.vault-share-code').filter({ hasText: 'ONTOUCH1' }).count() === 1, '390 touch code visible');
+  check(/^ON(-[0-9A-Z]{4}){4}$/.test((await p.locator('.vault-share-code').innerText()).trim()), '390 touch code is a short code (NFC/QR same code)');
 
-  await p.getByRole('button', { name: '设置' }).first().click();
+  /* 个人设置浮层：入口是「我的」，名片在「我的名片」分段（组织已搬到通讯录页） */
+  await p.getByRole('button', { name: '我的' }).first().click();
   await p.waitForTimeout(500);
-  await p.getByRole('tab', { name: '账号' }).click();
+  await p.locator('.settings-seg-item').filter({ hasText: '我的名片' }).first().click();
   await p.waitForTimeout(600);
-  check(await p.getByText('我的 OneTHU 名片').count() >= 1, '390 settings card section visible');
-  check(await p.getByText('我的组织').count() >= 1, '390 settings org section visible');
+  check(await p.getByText('我的名片', { exact: true }).count() >= 1, '390 settings card section visible');
   const settingsOverflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   check(settingsOverflow <= 1, '390 settings page has no horizontal overflow');
+  await p.keyboard.press('Escape'); await p.waitForTimeout(400);
+
+  /* 组织：通讯录页的「我的组织」页签 */
+  await call('/src/state/explorer.ts', 'explorerNavigate', ['contacts']);
+  await p.waitForTimeout(700);
+  await p.getByRole('radio', { name: '我的组织', exact: true }).click();
+  await p.waitForTimeout(600);
+  check(await p.getByText('组织成员、邀请口令与共享资料空间').count() >= 1, '390 contacts org section visible');
 
   await p.setViewportSize({ width: 320, height: 568 });
   await p.waitForTimeout(500);
   const narrowOverflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  check(narrowOverflow <= 1, '320 settings page has no horizontal overflow');
-  check(await p.getByText('我的组织').count() >= 1, '320 org section still reachable');
+  check(narrowOverflow <= 1, '320 contacts org page has no horizontal overflow');
+  check(await p.getByText('组织成员、邀请口令与共享资料空间').count() >= 1, '320 org section still reachable');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
   console.log(checks + ' mobile vault/card assertions passed');
 } finally { await browser.close(); }

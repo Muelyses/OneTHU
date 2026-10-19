@@ -1,11 +1,12 @@
 /**
- * OneTHU 分享口令（Phase 1）：紧凑编码 + 校验 + 云盘适配位。
+ * OneTHU 分享口令（联网短口令阶段）：云盘清单 + 固定长度短码。
  *
- * 口令不是把内容全文塞进长文本，而是：
- *   ONV1.<base64url(payload)>.<checksum>
- * payload 里可以是「清单本身」（小箱子，离线可用）或「云盘清单引用」（正式分享，指向
- * 清华云盘分享文件夹里的 manifest）。适配层没注册时走 inline；注册后 mintShareCode
- * 优先云盘上传并只把引用写进口令。
+ * 口令不再把内容全文塞进长文本：
+ *   - 新分享一律上传清华云盘清单，口令是分享凭据的短写（ON-XXXX-XXXX-XXXX-XXXX，
+ *     见 lib/shortCode.ts；非标准凭据退化为 ONX.<token>），长度与内容大小无关。
+ *   - ONV1.<base64url(payload)>.<checksum> / ONV2.<base64url(payload)>.<sha256>
+ *     仍然完整可解码（旧口令兼容），但不再生成新的 inline 长口令。
+ * 接收方联网匿名读取云盘清单即可，不必先连接自己的云盘。
  */
 import { isShortCode, shortCodeForLink } from "../lib/shortCode.js";
 import type { VaultBox, VaultCatch, VaultItem } from "./vault.js";
@@ -259,21 +260,42 @@ function stripItem(it: VaultItem, includeStaged: boolean): VaultCatch {
   };
 }
 
-/** 生成口令：有云盘适配器时上传清单并只编码引用；否则 inline（离线/未接云盘）。 */
+/** 生成口令：必须连接清华云盘——上传清单，口令只带分享凭据的短码。 */
 export async function mintShareCode(box: VaultBox, from?: string): Promise<{ code: string; payload: VaultSharePayload }> {
   if (!adapter) throw new Error("请先连接清华云盘，再生成分享口令");
   const payload = payloadFromVault(box, from, true);
-  let final = payload;
-  if (adapter) {
-    const cloud = await adapter.upload(payload);
-    final = { ...payload, items: undefined, cloud };
-  }
+  const cloud = await adapter.upload(payload);
+  const final = { ...payload, items: undefined, cloud };
   if (!final.cloud?.shareUrl) throw new Error("云盘没有返回分享链接");
   const code = shortCodeForLink(final.cloud.shareUrl);
   // 上传期间箱子可能已被编辑：旧快照的口令不能冒充当前内容。
   const current = vaultSnapshot().boxes.find(b => b.id === box.id);
   if (current && current.items === box.items && current.name === box.name) markVaultShared(box.id, code);
   return { code, payload: final };
+}
+
+/** 箱子分享口令：已有未失效的短码原样复用（箱子任何变更都会清掉 lastShareCode）；
+ *  旧版云引用口令转成短码；否则上传新清单。 */
+export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; payload: VaultSharePayload }> {
+  if (box.lastShareCode && isShortCode(box.lastShareCode)) {
+    const dec = await decodeShareAsync(box.lastShareCode);
+    return { code: box.lastShareCode, payload: dec.payload ?? payloadFromVault(box) };
+  }
+  if (box.lastShareCode) {
+    const old = await decodeShareAsync(box.lastShareCode);
+    if (old.ok && old.payload?.cloud?.shareUrl) {
+      const code = shortCodeForLink(old.payload.cloud.shareUrl);
+      markVaultShared(box.id, code);
+      return { code, payload: old.payload };
+    }
+  }
+  if (!box.items.length) throw new Error('暂存箱还是空的，先收进一些内容');
+  /* 雷达/名片这些小形态可能没经过暂存箱页（适配器在那儿才装）：这里补一次，
+     已连接云盘才会注册；动态 import 避免 vaultCloud ↔ vaultShare 静态环。 */
+  const { installVaultCloudAdapter } = await import('./vaultCloud.js');
+  await installVaultCloudAdapter();
+  if (!adapter) throw new Error('请先连接清华云盘，再分享暂存箱');
+  return mintShareCode(box);
 }
 
 /** 解析后导入：旧入口默认替换当前箱；直接交换传 new，完整保留已有箱子。 */
@@ -309,13 +331,4 @@ export async function revokeShare(payload: VaultSharePayload): Promise<boolean> 
   if (!payload.cloud || !adapter) return false;
   await adapter.revoke(payload.cloud);
   return true;
-}
-
-/** 是否允许无云盘时生成 inline 口令：正式用户必须连云盘；预览/开发模式保留本地调试能力。 */
-export function allowInlineShare(): boolean {
-  try {
-    return false;
-  } catch {
-    return false;
-  }
 }

@@ -641,6 +641,8 @@ html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-
 .vault-sheet-body { flex:1; min-height:0; overflow:auto; padding:var(--og-space-2) var(--og-space-2) var(--og-space-3); }
 .vault-sheet-body .og-list { border:0; background:transparent; box-shadow:none; }
 .vault-sheet-empty { display:grid; justify-items:center; gap:var(--og-space-2); padding:var(--og-space-8) var(--og-space-5); text-align:center; color:var(--og-content-2); }
+/* 抽屉里的「收口令 / 扫码」：和雷达同口径的两等分按钮行。 */
+.vault-sheet-receive { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:var(--og-space-2); margin-bottom:var(--og-space-2); }
 .vault-sheet-foot { padding:var(--og-space-2) var(--og-space-4) var(--og-space-3); border-top:1px solid var(--og-line-1); }
 @keyframes vault-sheet-rise { from { translate:0 var(--og-space-8); opacity:0; } to { translate:0 0; opacity:1; } }
 @keyframes vault-sheet-drop { to { translate:0 var(--og-space-8); opacity:0; } }

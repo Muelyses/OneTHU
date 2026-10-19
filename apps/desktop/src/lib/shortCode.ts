@@ -2,9 +2,13 @@
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const ORIGIN = 'https://cloud.tsinghua.edu.cn';
 
+/**
+ * 目录分享是 /d/<token>/，单文件分享是 /f/<token>/（目录分享被云盘策略拒绝时的兜底）。
+ * 两者 token 用法相同，读取端按 /d/<token>/ 重建即可（Rust 侧对两种分享都能读）。
+ */
 export function shortCodeForLink(link: string): string {
   const url = new URL(link);
-  const token = url.pathname.match(/^\/d\/([A-Za-z0-9_-]{8,128})\/?$/)?.[1];
+  const token = url.pathname.match(/^\/(?:d|f)\/([A-Za-z0-9_-]{8,128})\/?$/)?.[1];
   if (url.origin !== ORIGIN || !token || url.search || url.hash) throw new Error('云盘返回了不支持的分享链接');
   if (!/^[0-9a-f]{20}$/.test(token)) return `ONX.${token}`;
   let value = BigInt('0x' + token), body = '';

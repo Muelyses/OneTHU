@@ -10,6 +10,7 @@ import { Btn, IconBtn, List, Row, Text } from "@onethu/gui";
 import { IconIn, IconX } from "../Icons.js";
 import { useApp } from "../../state/context.js";
 import { showToast } from "../../state/toast.js";
+import { useVaultReceive } from "../../lib/useVaultReceive.js";
 import {
   activeVault, removeFromVault, subscribeVault, vaultSnapshot, VAULT_TYPE_LABEL, type VaultItem,
 } from "../../state/vault.js";
@@ -47,6 +48,7 @@ export function VaultSheetHost(): ReactNode {
   const doc = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
   const { navigate } = useApp();
   const [closing, setClosing] = useState(false);
+  const receive = useVaultReceive();
   const box = doc.boxes.find((b) => b.id === doc.activeId) ?? doc.boxes[0]!;
 
   const close = (): void => {
@@ -120,6 +122,11 @@ export function VaultSheetHost(): ReactNode {
           )}
         </div>
         <footer className="vault-sheet-foot">
+          {/* 抽屉也是完整形态：不用绕去整页就能粘贴口令 / 扫码收内容。 */}
+          <div className="vault-sheet-receive">
+            <Btn size="sm" variant="outline" disabled={receive.busy} onClick={() => void receive.paste()}>收口令</Btn>
+            <Btn size="sm" variant="outline" disabled={receive.busy} onClick={() => void receive.scan()} titleAttr="选一张二维码截图识别">扫码</Btn>
+          </div>
           <Text slot="micro" tone="faint">拖进来只需要按住内容 0.4 秒；发给小OH 就拖到 OH 胶囊上。</Text>
         </footer>
       </section>

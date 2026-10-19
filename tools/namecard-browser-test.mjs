@@ -32,11 +32,12 @@ try {
     return m[name](...args);
   }, { path, name, args });
 
-  await p.getByRole('button', { name: '设置' }).first().click();
+  /* 设置入口已从「设置齿轮」换成「我的」；个人设置浮层的分段是 .settings-seg-item */
+  await p.getByRole('button', { name: '我的' }).first().click();
   await p.waitForTimeout(500);
-  await p.getByRole('tab', { name: '账号' }).click();
+  await p.locator('.settings-seg-item').filter({ hasText: '我的名片' }).first().click();
   await p.waitForTimeout(600);
-  check(await p.getByText('我的 OneTHU 名片').count() >= 1, 'settings has OneTHU name card section');
+  check(await p.getByText('我的名片', { exact: true }).count() >= 1, 'settings has the name card section');
   await p.getByRole('button', { name: '编辑资料' }).click();
   await p.waitForSelector('.plg-form-modal');
   const inputs = p.locator('.plg-form-modal input');

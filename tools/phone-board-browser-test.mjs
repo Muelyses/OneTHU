@@ -37,6 +37,14 @@ try {
     await p.waitForTimeout(700);
     check(await p.locator('.freeboard-wrap.phone-canvas').count() === 1, '切到自由摆放画布');
     check((await p.getByRole('button', { name: '阅读顺序', exact: true }).count()) === 1, '可切回阅读顺序');
+    /* 自由摆放默认 300%（用户嫌 200% 太小） */
+    check((await p.locator('.board-viewport-tools').innerText()).includes('300%'), '自由摆放默认放大到 300%');
+    /* 双击空白不再创建便笺（用户要求删掉这个 feature） */
+    const itemsBeforeDbl = await p.locator('.free-item').count();
+    const fbBox = await p.locator('.freeboard').boundingBox();
+    await p.mouse.dblclick(10, (fbBox?.y ?? 200) + 120);
+    await p.waitForTimeout(500);
+    check((await p.locator('.free-item').count()) === itemsBeforeDbl, '双击空白不再创建便笺');
 
     /* 拖动：选一个条目，按住非交互区域拖 60/40 */
     const item = p.locator('.free-item').first();
@@ -95,6 +103,25 @@ try {
     await p.waitForTimeout(500);
     check(await p.locator('.freeboard-wrap.phone-canvas').count() === 0, '可切回阅读顺序');
   } finally { await p.close(); }
+
+  /* 手机横屏：直接是电脑那块自由画布（不堆叠、无阅读顺序开关） */
+  {
+    const l = await browser.newPage({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
+    l.on('pageerror', (e) => { if (!/reading 'invoke'/.test(e.message)) errors.push(e.message); });
+    await l.addInitScript(() => {
+      performance.setResourceTimingBufferSize(10000);
+      localStorage.setItem('onethu.onboarded.phone', '1');
+      localStorage.setItem('onethu.experience.v1', 'full');
+    });
+    await l.goto(base + '/?explorer-preview=home', { waitUntil: 'domcontentloaded' });
+    await l.waitForSelector('.explorer-shell'); await l.waitForTimeout(1100);
+    try {
+      check((await l.locator('.freeboard-wrap.phone-canvas').count()) === 1, '横屏直接进入自由画布');
+      check((await l.getByRole('button', { name: /自由摆放|阅读顺序/ }).count()) === 0, '横屏不再显示阅读顺序开关');
+      const xs = await l.evaluate(() => [...document.querySelectorAll('.free-item')].slice(0, 5).map((el) => Math.round(el.getBoundingClientRect().x)));
+      check(xs.length > 1 && new Set(xs).size > 1, `横屏按世界坐标摆放（不堆叠）：${JSON.stringify(xs)}`);
+    } finally { await l.close(); }
+  }
 
   /* 极简/实用模式没有白板交互（仅完整模式） */
   for (const mode of ['simple', 'practical']) {

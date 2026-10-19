@@ -13,8 +13,8 @@ import { useIsSimpleLike } from "../state/experienceMode.js";
  *   - 点选：浮出迷你条（置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除），Delete 删、Esc 取消、方向键微调；
  *   - 图层：选中/拖动即浮到与自己重叠的那簇之上；数组序 = 图层序，后放的在上；
  *   - 右键 / 长按组件：七项菜单（选择条目 / 改变大小 / 编辑 / 固定 / 置顶 / 详情 / 删除）；
- *   - 右键空白 / 「＋」浮钮：添加组件（放在指针处）；双击空白：快速建便笺；
- *   - 双击便笺或文字：就地编辑；画笔恒在最高图层（z 90），RGB 取色 + 撤销/清空。
+ *   - 右键空白 / 「＋」浮钮：添加组件（放在指针处）；（双击空白建便笺已按用户要求删除）
+ *   - 双击便笺或文字：就地编辑（双击空白不再创建便笺）；画笔恒在最高图层（z 90），RGB 取色 + 撤销/清空。
  *
  * 组件体走 WidgetHost（与旧白板页同一套渲染语义：divider / 文字 / 跳转 / 原子入口 / 卡片 /
  * 自定义 + 降级壳），渲染器 = 白板自足实现 + 各页面发布的卡体 + 活数据三层合并
@@ -334,7 +334,17 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   /* ── 无限画布的视口（2026-10-15 模型纠正）──
      画布自创建起就没有边界：内容在世界坐标里，这里只管"看哪一块"。视图按「板+朝向」记，
      存在 onethu.boardview.v1（视图不是文档，见 state/boardView.ts 的口径）。 */
-  const viewKey = boardViewKey(boardId, orientation);
+  const phoneUi = useIsPhone();
+  /** 横屏手机（宽 > 高，且是手机）：直接按电脑画布来，不堆叠。 */
+  const [landscape, setLandscape] = useState<boolean>(() => typeof window !== "undefined" && window.innerWidth > window.innerHeight);
+  useEffect(() => {
+    const on = (): void => setLandscape(window.innerWidth > window.innerHeight);
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  const phonePortrait = phoneUi && !landscape;
+  /* 手机竖屏的缩放单独一份（自由摆放默认 300%，不能把电脑首页也跟着放大）；横屏与电脑共用视图。 */
+  const viewKey = boardViewKey(boardId, orientation) + (phonePortrait ? "|phone" : "");
   const view = useSyncExternalStore(subscribeView, () => readBoardView(viewKey), () => readBoardView(viewKey));
   const viewRef = useRef<BoardView>(view);
   viewRef.current = view;
@@ -355,7 +365,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       const next = !prev;
       try { localStorage.setItem(PHONE_CANVAS_KEY, next ? "1" : "0"); } catch { /* 配额满：仅本次生效 */ }
       if (next) {
-        setZoom(2);
+        setZoom(3);
         window.setTimeout(() => sayRef.current("自由摆放：拖动卡片，点选后拉角点调大小"), 30);
       } else {
         sayRef.current("已回到阅读顺序");
@@ -364,6 +374,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     });
   }, []);
   const sayRef = useRef<(text: string) => void>(() => undefined);
+  /** 持久化恢复自由摆放时视图可能还是旧的 100%：首进补到 300%。 */
+  const zoomBooted = useRef(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -405,8 +417,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      这里只改**渲染坐标**：按阅读顺序（先 y 后 x）从 0 起单列铺开，宽度吃满端口、高度沿用条目
      自己存的高度，间距 12；**存下来的摆位一个字节不动**——横屏与桌面照旧是那块自由画布。
      桌面与手机共用同一块世界坐标；手机竖屏只是把渲染排成阅读顺序，选中后在浮条里上下移/增减高。 */
-  const phoneUi = useIsPhone();
-  const stack = phoneUi && orientation === "portrait" && !penOn && !phoneCanvas;
+  const stack = phonePortrait && orientation === "portrait" && !penOn && !phoneCanvas;
   const needsPenCanvas = !stack && (penOn || penStrokes.length > 0);
   // Both layouts share stored world geometry; phone browsing projects a reading order.
   const stackTop = 0;
@@ -575,6 +586,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const resetView = useCallback((): void => {
     setZoomRef.current(1);
   }, []);
+  useEffect(() => {
+    if (zoomBooted.current) return;
+    zoomBooted.current = true;
+    if (phonePortrait && phoneCanvas && viewRef.current.z < 2.5) setZoomRef.current(3);
+  }, [phonePortrait, phoneCanvas]);
 
   useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释
 
@@ -833,7 +849,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   );
 
   return (
-    <div className={"freeboard-wrap" + (phoneCanvas && phoneUi ? " phone-canvas" : "")} data-coach="home-canvas">
+    <div
+      className={"freeboard-wrap" + (phoneUi && (phoneCanvas || landscape) ? " phone-canvas" : "")}
+      data-coach="home-canvas"
+    >
       {chrome ? (
         <PageHead
           title={chrome.title}
@@ -841,7 +860,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           menu={[
             { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
             { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
-            ...(phoneUi && orientation === "portrait" && !compact
+            ...(phonePortrait && orientation === "portrait" && !compact
               ? [{ key: "phone-canvas", label: phoneCanvas ? "阅读顺序" : "自由摆放", onSelect: togglePhoneCanvas }]
               : []),
             { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
@@ -856,7 +875,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             <span>{stack ? "阅读顺序：点右侧「自由摆放」可拖动、缩放" : "拖动卡片摆放，选中后拖动边角调整大小"}</span>
           </div>
           <div className="workbench-board-actions">
-            {phoneUi && orientation === "portrait" && !compact ? (
+            {phonePortrait && orientation === "portrait" && !compact ? (
               <Btn variant="outline" size="sm" aria-pressed={phoneCanvas} onClick={togglePhoneCanvas}>
                 {phoneCanvas ? "阅读顺序" : "自由摆放"}
               </Btn>
@@ -884,11 +903,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         onPointerDown={(e) => {
           /* 画布空白（含世界层）按下 = 取消选中；组件自身的按下不走这里。 */
           if (!(e.target as HTMLElement).closest(".free-item")) setSelected(null);
-        }}
-        onDoubleClick={(e) => {
-          if ((e.target as HTMLElement).closest(".free-item")) return;
-          const p = canvasPos(e.clientX, e.clientY);
-          ops.addNote(Math.max(0, p.x - 110), Math.max(0, p.y - 80));
         }}
         onContextMenu={(e) => {
           if ((e.target as HTMLElement).closest(".free-item")) return;

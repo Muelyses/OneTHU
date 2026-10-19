@@ -100,6 +100,41 @@ try {
   /* 分享口令现在是弹层（旧版是页面内联区）：拿完码先关掉，否则遮罩会挡住后续点击 */
   await p.keyboard.press('Escape');
   await p.waitForTimeout(400);
+
+  /* ── 口令台账：改名 + 限定接收邮箱（2026-10-19 用户点名） ── */
+  check(await p.getByText('已发出的口令', { exact: true }).count() >= 1, 'issued shares panel lists the code');
+  await p.getByRole('button', { name: '改名', exact: true }).first().click();
+  await p.waitForSelector('.plg-form-modal');
+  await p.locator('.plg-form-modal input').first().fill('室友专用');
+  await p.getByRole('button', { name: '提交' }).click();
+  await p.waitForTimeout(800);
+  const renamed = await p.evaluate(async (c) => {
+    const vs = await import('/src/state/vaultShare.ts');
+    const dec = await vs.decodeShareAsync(c);
+    return { ok: dec.ok, label: dec.payload?.label };
+  }, code.trim());
+  check(renamed.ok && renamed.label === '室友专用', 'share code can be renamed in place (same code): ' + renamed.label);
+  await p.getByRole('button', { name: '限定邮箱', exact: true }).first().click();
+  await p.waitForSelector('.plg-form-modal');
+  await p.locator('.plg-form-modal input').first().fill('tester@mails.tsinghua.edu.cn');
+  await p.getByRole('button', { name: '提交' }).click();
+  await p.waitForTimeout(900);
+  const restricted = await p.evaluate(async (c) => {
+    const vs = await import('/src/state/vaultShare.ts');
+    const dec = await vs.decodeShareAsync(c);
+    return { ok: dec.ok, allowEmail: dec.payload?.allowEmail };
+  }, code.trim());
+  check(restricted.ok && restricted.allowEmail === 'tester@mails.tsinghua.edu.cn', 'share code can be restricted to one email: ' + restricted.allowEmail);
+  const access = await p.evaluate(async (c) => {
+    window.__cloud.email = 'someone-else@mails.tsinghua.edu.cn';
+    const vs = await import('/src/state/vaultShare.ts');
+    const wrong = await vs.importShareCodeAsCurrent(c);
+    window.__cloud.email = 'tester@mails.tsinghua.edu.cn';
+    const right = await vs.importShareCodeAsCurrent(c);
+    return { wrong: wrong.ok, wrongReason: wrong.reason, right: right.ok, rightImported: right.imported };
+  }, code.trim());
+  check(!access.wrong && /限定/.test(access.wrongReason ?? ''), 'receiving from another cloud account is rejected: ' + (access.wrongReason ?? ''));
+  check(access.right && access.rightImported === 1, 'receiving from the bound email works');
   check(readFileSync('apps/desktop/src/components/Collect.tsx', 'utf8').includes('data-vault-catch'), 'CollectStar is a global vault drag source');
   check(readFileSync('apps/desktop/src/plugins/ChatDock.tsx', 'utf8').includes('data-vault-catch'), 'OH search hits are vault drag sources');
   check(readFileSync('apps/desktop/src/pages/Plugins.tsx', 'utf8').includes('data-vault-catch'), 'plugin cards are vault drag sources');

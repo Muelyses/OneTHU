@@ -7,10 +7,11 @@
 import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { Btn, Card, List, Row, Text } from "@onethu/gui";
 import { confirmOk } from "../../lib/confirm.js";
+import { openFormModal } from "../../lib/formModal.js";
 import { showToast } from "../../state/toast.js";
-import { revokeShare } from "../../state/vaultShare.js";
+import { revokeShare, updateShareMeta } from "../../state/vaultShare.js";
 import {
-  forgetIssuedShare, issuedShareState, issuedSharesSnapshot, markIssuedShareRevoked,
+  forgetIssuedShare, issuedShareState, issuedShareTitle, issuedSharesSnapshot, markIssuedShareRevoked,
   payloadOfIssuedShare, scopeLabel, subscribeIssuedShares, type IssuedShare,
 } from "../../state/vaultShareLog.js";
 
@@ -47,6 +48,41 @@ export function IssuedSharesCard(): ReactNode {
     }
   };
 
+  /** 改口令名：云盘清单就地更新，口令本身不变。 */
+  const rename = async (e: IssuedShare): Promise<void> => {
+    const f = await openFormModal("给这条口令起个名字", [
+      { key: "label", label: "口令名（留空 = 用箱子名）", default: e.label ?? "" },
+    ]);
+    if (!f) return;
+    setBusy(e.id);
+    try {
+      const r = await updateShareMeta(e.code, { label: f.label ?? "" });
+      showToast(r.ok ? (f.label ? `已改名为「${f.label}」` : "已恢复用箱子名") : r.reason ?? "改名失败：先连接清华云盘再试");
+    } finally {
+      setBusy("");
+    }
+  };
+
+  /** 限定接收邮箱：只有这个云盘账号能打开；留空 = 谁拿到都能收。 */
+  const restrict = async (e: IssuedShare): Promise<void> => {
+    const f = await openFormModal("限定接收邮箱", [
+      {
+        key: "allowEmail",
+        label: "只允许这个清华云盘邮箱接收（留空 = 不限制）",
+        default: e.allowEmail ?? "",
+      },
+    ]);
+    if (!f) return;
+    const email = (f.allowEmail ?? "").trim();
+    setBusy(e.id);
+    try {
+      const r = await updateShareMeta(e.code, { allowEmail: email });
+      showToast(r.ok ? (email ? `已限定为 ${email} 接收` : "已取消邮箱限制") : r.reason ?? "设置失败：先连接清华云盘再试");
+    } finally {
+      setBusy("");
+    }
+  };
+
   const forget = async (e: IssuedShare): Promise<void> => {
     if (issuedShareState(e) === "active" && !(await confirmOk("这条口令还有效，删除记录后对方仍能读取。确定只删记录？"))) return;
     forgetIssuedShare(e.id);
@@ -60,7 +96,7 @@ export function IssuedSharesCard(): ReactNode {
         <Text slot="micro" tone="faint">{log.entries.length ? `共 ${log.entries.length} 条` : "还没有发出过口令"}</Text>
       </div>
       {log.entries.length === 0 ? (
-        <Text slot="micro" tone="faint">生成后这里会留下记录：哪个箱子、能取到哪些内容、何时过期，可逐条撤销。</Text>
+        <Text slot="micro" tone="faint">生成后这里会留下记录：能取到哪些内容、限定谁接收、何时过期，也能逐条改名或撤销。</Text>
       ) : (
         <List divided>
           {log.entries.map((e) => {
@@ -68,10 +104,12 @@ export function IssuedSharesCard(): ReactNode {
             return (
               <Row
                 key={e.id}
-                title={`${e.boxName} · ${STATE_LABEL[st] ?? st}`}
-                sub={`授权范围：${scopeLabel(e)}　生成于 ${timeText(e.issuedAt)}${e.expiresAt ? `　有效期至 ${timeText(e.expiresAt)}` : "　不过期"}`}
+                title={`${issuedShareTitle(e)} · ${STATE_LABEL[st] ?? st}${e.label ? `（箱子「${e.boxName}」）` : ""}`}
+                sub={`能取到：${scopeLabel(e)}　接收人：${e.allowEmail ?? "任何人"}　生成于 ${timeText(e.issuedAt)}${e.expiresAt ? `　有效期至 ${timeText(e.expiresAt)}` : "　不过期"}`}
                 trailing={
                   <>
+                    <Btn size="sm" variant="ghost" disabled={busy === e.id} onClick={() => void rename(e)}>改名</Btn>
+                    <Btn size="sm" variant="ghost" disabled={busy === e.id || st !== "active"} onClick={() => void restrict(e)}>限定邮箱</Btn>
                     <Btn size="sm" variant="ghost" onClick={() => void navigator.clipboard.writeText(e.code).then(() => showToast("口令已复制")).catch(() => showToast("请手动复制"))}>复制</Btn>
                     <Btn size="sm" variant="ghost" tone="error" disabled={busy === e.id || st !== "active"} onClick={() => void revoke(e)}>{busy === e.id ? "撤销中…" : "撤销"}</Btn>
                     <Btn size="sm" variant="ghost" onClick={() => void forget(e)}>删除记录</Btn>

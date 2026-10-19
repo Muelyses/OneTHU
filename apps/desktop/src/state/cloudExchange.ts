@@ -93,7 +93,17 @@ export async function resolveExchangeCode(code: string): Promise<string> {
   if (payload.kind === 'onethu-exchange' && typeof payload.code === 'string' && /^(ONTOUCH1|ONORG1)\./.test(payload.code)) return payload.code;
   if (payload.kind === 'vault-share' && Array.isArray(payload.items)) {
     // 撤销/文件引用仍需分享链接；私有仓库ID、目录路径不用传给接收方。
-    return encodeShareV2({ v: 1, kind: 'vault-share', name: String(payload.name ?? '收到的暂存箱'), issuedAt: Number(payload.issuedAt) || 0, cloud: { provider: 'seafile', path: '', shareUrl: link, shareToken: token, manifestName: 'manifest.json' } } as VaultSharePayload);
+    return encodeShareV2({
+      v: 1,
+      kind: 'vault-share',
+      name: String(payload.name ?? '收到的暂存箱'),
+      issuedAt: Number(payload.issuedAt) || 0,
+      /* 口令名 / 限定邮箱必须跟着短码走：接收端要用它做展示与权限校验。 */
+      ...(typeof payload.label === 'string' && payload.label.trim() ? { label: payload.label.trim().slice(0, 60) } : {}),
+      ...(typeof payload.allowEmail === 'string' && payload.allowEmail.trim() ? { allowEmail: payload.allowEmail.trim().toLowerCase().slice(0, 120) } : {}),
+      ...(typeof payload.expiresAt === 'number' && payload.expiresAt > 0 ? { expiresAt: payload.expiresAt } : {}),
+      cloud: { provider: 'seafile', path: '', shareUrl: link, shareToken: token, manifestName: 'manifest.json' },
+    } as VaultSharePayload);
   }
   throw new Error('这份分享不包含可接收的 OneTHU 内容');
 }

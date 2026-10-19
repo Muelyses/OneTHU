@@ -32,6 +32,10 @@ export interface IssuedShare {
   scope: { total: number; types: Partial<Record<VaultItemType, number>>; titles: string[] };
   /** 云盘引用（撤销用；旧版 inline 口令没有） */
   cloud?: VaultCloudRef;
+  /** 口令名（发送方自己起的名字；缺省用箱子名展示） */
+  label?: string;
+  /** 限定接收邮箱（空 = 不限制） */
+  allowEmail?: string;
   revokedAt?: number;
 }
 
@@ -113,9 +117,37 @@ export function recordIssuedShare(box: VaultBox, code: string, payload: VaultSha
       : {}),
     scope: scopeOf(box),
     ...(payload.cloud ? { cloud: payload.cloud } : {}),
+    ...(payload.label ? { label: payload.label } : {}),
+    ...(payload.allowEmail ? { allowEmail: payload.allowEmail } : {}),
   };
   doc = { v: 1, entries: [entry, ...doc.entries].slice(0, MAX_ENTRIES) };
   commit();
+}
+
+/** 口令改名 / 限定邮箱后就地更新台账（同一条口令只有一条记录）。 */
+export function updateIssuedShareMeta(code: string, patch: { label?: string; allowEmail?: string }): void {
+  doc = {
+    v: 1,
+    entries: doc.entries.map((e) => {
+      if (e.code !== code) return e;
+      const next: IssuedShare = { ...e };
+      if (patch.label !== undefined) {
+        if (patch.label) next.label = patch.label;
+        else delete next.label;
+      }
+      if (patch.allowEmail !== undefined) {
+        if (patch.allowEmail) next.allowEmail = patch.allowEmail;
+        else delete next.allowEmail;
+      }
+      return next;
+    }),
+  };
+  commit();
+}
+
+/** 台账展示名：口令名优先，没起名就用箱子名。 */
+export function issuedShareTitle(e: IssuedShare): string {
+  return e.label?.trim() || e.boxName;
 }
 
 export function markIssuedShareRevoked(id: string): void {

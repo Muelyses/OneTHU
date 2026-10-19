@@ -52,6 +52,10 @@ export interface VaultSharePayload {
   expiresAt?: number;
   /** 发送者显示名（可选，不包含敏感信息） */
   from?: string;
+  /** 口令名（发送方自己起的名字，接收方也能看到；台账/面板展示用） */
+  label?: string;
+  /** 限定接收邮箱：设置了就只有该清华云盘账号能打开（接收端校验） */
+  allowEmail?: string;
 }
 
 /** 已注册的云盘适配器（清华云盘；未注册 = 本地 inline 模式）。 */
@@ -62,6 +66,8 @@ export interface VaultCloudAdapter {
   resolve(ref: VaultCloudRef): Promise<VaultSharePayload>;
   /** 撤销分享文件夹（口令过期/撤销后的清理）。 */
   revoke(ref: VaultCloudRef): Promise<void>;
+  /** 就地覆盖同一个分享里的清单：改名 / 限定邮箱时用（口令不变，对方读到的就是新清单）。 */
+  update?(ref: VaultCloudRef, payload: VaultSharePayload): Promise<void>;
 }
 
 let adapter: VaultCloudAdapter | null = null;
@@ -135,6 +141,16 @@ export interface DecodeResult {
 function validatePayload(p: VaultSharePayload): DecodeResult {
   if (p?.v !== 1 || p.kind !== "vault-share" || typeof p.name !== "string") return { ok: false, reason: "口令版本或结构不受支持" };
   if (p.expiresAt && Date.now() > p.expiresAt) return { ok: false, reason: "口令已过期；请让分享者重新生成" };
+  /* 口令名 / 限定邮箱是不可信输入：截断 + 只接受像邮箱的值。 */
+  if (p.label !== undefined) {
+    const label = typeof p.label === "string" ? p.label.trim().slice(0, 60) : "";
+    if (label) p.label = label; else delete p.label;
+  }
+  if (p.allowEmail !== undefined) {
+    const email = typeof p.allowEmail === "string" ? p.allowEmail.trim().toLowerCase().slice(0, 120) : "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) delete p.allowEmail;
+    else p.allowEmail = email;
+  }
   if (p.items !== undefined) {
     if (!Array.isArray(p.items) || p.items.length > MAX_ITEMS) return { ok: false, reason: "口令清单超过上限（300 项）" };
     const items = p.items.map(sanitizeCatch).filter((x): x is VaultCatch => x !== null);
@@ -261,10 +277,28 @@ function stripItem(it: VaultItem, includeStaged: boolean): VaultCatch {
   };
 }
 
+/** 生成口令时可选项：口令名 / 限定接收邮箱。 */
+export interface ShareMeta {
+  label?: string;
+  allowEmail?: string;
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** 把口令名/限定邮箱规整后写进 payload（空值 = 不设）。 */
+function applyShareMeta(payload: VaultSharePayload, meta?: ShareMeta): VaultSharePayload {
+  const out = { ...payload };
+  const label = String(meta?.label ?? "").trim().slice(0, 60);
+  if (label) out.label = label;
+  const email = String(meta?.allowEmail ?? "").trim().toLowerCase();
+  if (email && EMAIL_RE.test(email)) out.allowEmail = email;
+  return out;
+}
+
 /** 生成口令：必须连接清华云盘——上传清单，口令只带分享凭据的短码。 */
-export async function mintShareCode(box: VaultBox, from?: string): Promise<{ code: string; payload: VaultSharePayload }> {
+export async function mintShareCode(box: VaultBox, from?: string, meta?: ShareMeta): Promise<{ code: string; payload: VaultSharePayload }> {
   if (!adapter) throw new Error("请先连接清华云盘，再生成分享口令");
-  const payload = payloadFromVault(box, from, true);
+  const payload = applyShareMeta(payloadFromVault(box, from, true), meta);
   const cloud = await adapter.upload(payload);
   const final = { ...payload, items: undefined, cloud };
   if (!final.cloud?.shareUrl) throw new Error("云盘没有返回分享链接");
@@ -307,6 +341,8 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
   const dec = await decodeShareAsync(code);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   let payload = dec.payload;
+  const denied = await shareAccessReason(payload.allowEmail);
+  if (denied) return { ok: false, reason: denied };
   if (!payload.items && payload.cloud) {
     try {
       if (adapter) payload = await adapter.resolve(payload.cloud);
@@ -319,6 +355,9 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
       const checked = validatePayload(payload);
       if (!checked.ok || !checked.payload?.items) return { ok: false, reason: checked.reason || "分享里没有可接收的内容" };
       payload = checked.payload;
+      /* 云盘清单是权威：发送方后来改过限定邮箱，这里以清单为准再拦一次。 */
+      const deniedLate = await shareAccessReason(payload.allowEmail);
+      if (deniedLate) return { ok: false, reason: deniedLate };
     } catch (e) {
       return { ok: false, reason: `云盘读取失败：${e instanceof Error ? e.message : String(e)}` };
     }
@@ -328,6 +367,102 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
   if (!box) return { ok: false, reason: "当前没有暂存箱" };
   replaceVaultItems(box.id, items);
   return { ok: true, imported: items.length };
+}
+
+/**
+ * 改口令名 / 限定接收邮箱（口令本身不变）。
+ *
+ * 新口令是「云盘清单 + 短码」，所以改授权必须把云盘里的清单就地覆盖：
+ * 解出当前清单 → 改字段 → 适配器写回同一个分享目录。旧版本地长口令无法改，
+ * 如实让用户重新生成。
+ */
+export async function updateShareMeta(
+  code: string,
+  patch: { label?: string | null; allowEmail?: string | null },
+): Promise<{ ok: boolean; reason?: string }> {
+  const dec = await decodeShareAsync(code);
+  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
+  const payload: VaultSharePayload = { ...dec.payload };
+  if (patch.label !== undefined) {
+    const label = String(patch.label ?? "").trim().slice(0, 60);
+    if (label) payload.label = label;
+    else delete payload.label;
+  }
+  if (patch.allowEmail !== undefined) {
+    const email = String(patch.allowEmail ?? "").trim().toLowerCase();
+    if (email && !EMAIL_RE.test(email)) return { ok: false, reason: "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样" };
+    if (email) payload.allowEmail = email;
+    else delete payload.allowEmail;
+  }
+  if (!payload.cloud) return { ok: false, reason: "这条是旧版本地口令，内容写在口令里改不了；请重新生成新口令" };
+  if (!adapter) {
+    const { installVaultCloudAdapter } = await import("./vaultCloud.js");
+    await installVaultCloudAdapter();
+  }
+  if (!adapter) return { ok: false, reason: "请先连接清华云盘（改口令要更新云盘里的清单）" };
+  if (!adapter.update) return { ok: false, reason: "当前云盘适配器不支持就地更新，请重新生成口令" };
+  /* 短码解码出的 cloud 引用只有分享链接，缺 repoId/path；从本地台账补全。
+     清单必须整份读回来再改：直接拿解码结果写回去会丢 items。 */
+  const { issuedSharesSnapshot } = await import("./vaultShareLog.js");
+  const entry = issuedSharesSnapshot().entries.find((e) => e.code === code);
+  const ref = { ...payload.cloud, ...(entry?.cloud ?? {}) };
+  if (!ref.repoId) return { ok: false, reason: "找不到这条口令的云盘位置，请在暂存箱里重新生成口令" };
+  let full: VaultSharePayload = { ...payload, cloud: ref };
+  try {
+    const resolved = await adapter.resolve(ref);
+    full = { ...resolved, cloud: resolved.cloud ?? ref };
+    if (patch.label !== undefined) {
+      if (payload.label) full.label = payload.label;
+      else delete full.label;
+    }
+    if (patch.allowEmail !== undefined) {
+      if (payload.allowEmail) full.allowEmail = payload.allowEmail;
+      else delete full.allowEmail;
+    }
+  } catch (e) {
+    return { ok: false, reason: `读取云盘清单失败：${e instanceof Error ? e.message : String(e)}` };
+  }
+  try {
+    await adapter.update(ref, full);
+  } catch (e) {
+    return { ok: false, reason: `更新云盘清单失败：${e instanceof Error ? e.message : String(e)}` };
+  }
+  const { updateIssuedShareMeta } = await import("./vaultShareLog.js");
+  updateIssuedShareMeta(code, { label: payload.label, allowEmail: payload.allowEmail });
+  return { ok: true };
+}
+
+/**
+ * 限定邮箱校验：返回 null = 可以接收；否则返回给用户看的原因。
+ * 身份唯一事实源 = 当前连接的清华云盘账号邮箱（分享本来就落在云盘上）。
+ */
+export async function shareAccessReason(allowEmail?: string): Promise<string | null> {
+  const want = String(allowEmail ?? "").trim().toLowerCase();
+  if (!want) return null;
+  const seafile = await import("./seafile.js");
+  await seafile.ensureSeafileLoaded();
+  let account = seafile.getSeafileAccount();
+  if (!account) {
+    try {
+      await seafile.refreshSeafileAccount();
+    } catch {
+      /* 未连接云盘：下面统一报错 */
+    }
+    account = seafile.getSeafileAccount();
+  }
+  let mine = String(account?.email ?? "").trim().toLowerCase();
+  /* 缓存账号可能是切号/重新登录之前的：不匹配时强制刷新一次再判，避免拿旧邮箱误拒。 */
+  if (mine && mine !== want) {
+    try {
+      await seafile.refreshSeafileAccount();
+      mine = String(seafile.getSeafileAccount()?.email ?? "").trim().toLowerCase();
+    } catch {
+      /* 刷新失败：按当前缓存判 */
+    }
+  }
+  if (!mine) return `这条口令限定给 ${want} 接收：请先用该邮箱连接清华云盘，再打开这条口令`;
+  if (mine !== want) return `这条口令限定给 ${want} 接收；当前连接的云盘账号是 ${mine}`;
+  return null;
 }
 
 /** 过期/撤销清理：交给适配器；没有引用后文件删除也由适配器按引用计数处理。 */

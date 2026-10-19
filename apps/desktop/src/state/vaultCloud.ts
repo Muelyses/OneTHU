@@ -129,6 +129,18 @@ const adapter: VaultCloudAdapter = {
     return p;
   },
 
+  /** 就地覆盖同一个分享里的清单（改名 / 限定邮箱）；口令与分享链接都不变。 */
+  async update(ref: VaultCloudRef, payload: VaultSharePayload): Promise<void> {
+    const token = tokenOrThrow();
+    if (!ref.repoId) throw new Error("这条分享缺少云盘定位（repoId）");
+    const manifest = JSON.stringify(payload);
+    const localPath = await writeTemp("manifest.json", manifest);
+    /* 目录分享时 ref.path 是目录；退化成单文件分享时 path 指向 manifest.json，取父目录写回。 */
+    const parentDir = /\/manifest\.json$/.test(ref.path) ? ref.path.replace(/\/manifest\.json$/, "") : ref.path;
+    if (!parentDir) throw new Error("这条分享没有可写的目录");
+    await invoke("seafile_upload", { token, repoId: ref.repoId, parentDir, localPath, replace: true });
+  },
+
   async revoke(ref: VaultCloudRef): Promise<void> {
     const st = ref.shareToken?.trim();
     if (!st) throw new Error("没有可撤销的分享 token");

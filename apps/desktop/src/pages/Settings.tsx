@@ -212,14 +212,19 @@ export function SettingsPage() {
    *     显隐 effect 空转（querySelectorAll 找到 0 个），所有分节在**每个页签**下都可见
    *     （网格在 2026-10-14 用户实测「设置栏各自不对应了」——即为它）。 */
   useEffect(() => {
-    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
-    for (const head of heads) {
+    /* 分节头 → 页签分组。精确优先；OneGUI 的 .og-section textContent = 标题 + hint，
+       按最长已注册前缀兜底；未登记的一律 null。 */
+    const groupOf = (head: HTMLElement): string | null => {
       const title = (head.textContent ?? "").trim();
-      /* 精确优先；OneGUI 的 .og-section textContent = 标题 + hint，按最长已注册前缀兜底。 */
       const prefix = Object.keys(SETTINGS_TAB_OF)
         .filter((k) => title.startsWith(k))
         .sort((a, b) => b.length - a.length)[0];
-      const group = SETTINGS_TAB_OF[title] ?? (prefix ? SETTINGS_TAB_OF[prefix] : null) ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+      return SETTINGS_TAB_OF[title] ?? (prefix ? SETTINGS_TAB_OF[prefix] : null) ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+    };
+    const isHead = (el: Element): boolean => el.classList.contains("section-head") || el.classList.contains("og-section");
+    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
+    for (const head of heads) {
+      const group = groupOf(head);
       if (!group) continue;
       const show = group === tab;
       /* show/hide 两支都必须走兄弟收拢：只收拢 hide 支时，先前隐藏轮留下的
@@ -229,7 +234,11 @@ export function SettingsPage() {
       };
       apply(head);
       let sib = head.nextElementSibling as HTMLElement | null;
-      while (sib && !sib.classList.contains("section-head") && !sib.classList.contains("og-section")) {
+      /* 收拢到「下一个已登记页签的分节头」为止。未登记的分节头（如 ExplorerPrefsSection
+         里的「搜索与胶囊」，它是 .og-section 且 children 装在头节点内）属于上一节的正文，
+         必须跟着一起收 —— 否则父级「工作空间」一收就停在它身上，它会漏在所有页签下
+         （2026-10-19 用户实测：账号页签也冒出「搜索与胶囊」）。 */
+      while (sib && !(isHead(sib) && groupOf(sib))) {
         apply(sib);
         sib = sib.nextElementSibling as HTMLElement | null;
       }

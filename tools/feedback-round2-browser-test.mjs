@@ -110,7 +110,7 @@ try {
   const p = await page(1280,860,true); await go(p,'home');
   await call(p,'/src/state/nameCard.ts','savePersonalCard',[card('测试名片')]);
   await p.getByRole('button',{name:'我的',exact:true}).last().click();
-  await p.getByRole('button',{name:'NFC 分享个人名片',exact:true}).click();
+  await p.getByRole('button',{name:'NFC 分享',exact:true}).click();
   await p.locator('.exchange-feedback.is-ready').waitFor();
   const sent = await p.evaluate(() => window.__nfc.sent);
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(sent[0]),'名片 NFC 只带 22 字符短码：'+sent[0]);
@@ -128,7 +128,7 @@ try {
   });
   check(avatar.length>30000,'大头像夹具超过 NFC 原始容量');
   await call(p,'/src/state/nameCard.ts','savePersonalCard',[{avatar}]);
-  await p.getByRole('button',{name:'NFC 分享个人名片',exact:true}).click(); await p.locator('.exchange-feedback.is-ready').waitFor();
+  await p.getByRole('button',{name:'NFC 分享',exact:true}).click(); await p.locator('.exchange-feedback.is-ready').waitFor();
   const compact=await p.evaluate(()=>window.__nfc.sent.at(-1));
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(compact),'大头像也只发 22 字符短码（内容在云盘，不在口令里）');
   const compactCard=await call(p,'/src/state/touch.ts','decodeTouch',[await call(p,'/src/state/cloudExchange.ts','resolveExchangeCode',[compact])]);

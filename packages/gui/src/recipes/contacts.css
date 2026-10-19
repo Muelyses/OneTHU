@@ -326,7 +326,24 @@ html[data-og-scheme="dark"] .identity-card {
   justify-items: center;
   min-width: 0;
 }
-.identity-panel-actions { justify-content: center; }
+/* 名片按钮组：等宽网格（桌面各一排四列、手机两列），不再参差换行 */
+.identity-panel-actions {
+  display: grid;
+  /* 桌面优先排 4 列（两组各 4 个动作各占一排），窄一点自动落 2–3 列 */
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: var(--og-space-2);
+  width: 100%;
+}
+.identity-panel-actions > .og-btn { width: 100%; justify-content: center; }
+/* 等宽格子里宁可两行也不省略：按钮文字允许换行（全端一致） */
+.identity-panel-actions .og-btn-label {
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+  line-height: 1.25;
+  text-align: center;
+}
+html:root.is-phone .identity-panel-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .identity-panel-exchange { display: grid; gap: var(--og-space-2); width: 100%; text-align: center; }
 .identity-panel-exchange > .og-inline { justify-content: center; }
 .identity-panel-meta { min-width: 0; }
@@ -553,3 +570,13 @@ html[data-og-motion="reduced"] .contact-slot:hover,
 html[data-og-motion="reduced"] .contact-slot:focus-within {
   transform: rotate(var(--og-c-contact-tilt));
 }
+/* 设置里的「使用模式」：默认一行摘要，点「切换模式」才展开（用户 2026-10-19：别一大块挡着） */
+.experience-mode-control { width: 100%; }
+.experience-mode-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--og-space-3);
+  flex-wrap: wrap;
+}
+.experience-mode-summary-text { display: grid; gap: var(--og-space-1); min-width: 0; }

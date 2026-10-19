@@ -161,7 +161,7 @@ function MadModelRow(): ReactNode {
   return (
     <SettingsRow
       title="MadModel 免费档"
-      sub={busy ? "正在重新签…" : checking ? "正在检查免费模型连接…" : !madmodelActive() ? "当前使用自费 API；切换模型源后检查免费档。" : warn ? warn : "免费模型连接已就绪；剩余额度以服务端返回为准。"}
+      sub={busy ? "正在续签…" : checking ? "正在检查免费模型连接…" : !madmodelActive() ? "当前使用自费 API；切换模型源后检查免费档。" : warn ? warn : "自动续签已开（到期前约 1 小时、每 10 分钟巡检）。"}
       control={
         <Btn variant="outline" size="sm" disabled={busy} onClick={() => {
             setBusy(true);
@@ -171,7 +171,7 @@ function MadModelRow(): ReactNode {
                 setBusy(false);
                 setDone((v) => !v);
               });
-          }}>重新签
+          }}>一键续签
         </Btn>
       }
     />
@@ -293,6 +293,9 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
           <SubHead>IM 通道（进阶）</SubHead>
           {/* 同一份实现的 advanced 档：通道开关、手工凭据、微信灰置说明 */}
           <ImSettingsSection tier="advanced" />
+
+          <SubHead>免费额度（MadModel）</SubHead>
+          <MadModelRow />
 
           <SubHead id="sec-模型MCP日志">模型 / MCP / 日志</SubHead>
           {advancedPanels ?? <OhAdvancedSlot />}

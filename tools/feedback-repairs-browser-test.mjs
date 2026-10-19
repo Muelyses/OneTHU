@@ -38,10 +38,11 @@ check(await p.locator('.confirm-card').evaluate(e=>{let r=e.getBoundingClientRec
 await p.locator('.confirm-mask').getByRole('button',{name:'取消',exact:true}).click();check(await p.getByRole('dialog').isVisible(),'取消删除保留名片详情');await p.keyboard.press('Escape');
 await go(p,'settings-tab&settings-tab=通知与提醒');
 check(await p.locator('.settings-panel').getByText('我的组织',{exact:true}).count()===0,'设置不再重复显示我的组织');
-await go(p,'search-oh');await p.getByRole('textbox',{name:'给小OH发消息'}).waitFor({state:'visible'});
-check(await p.getByRole('textbox',{name:'给小OH发消息'}).isVisible(),'OH 面板内有可见输入框');
-await p.getByRole('textbox',{name:'给小OH发消息'}).fill('回归草稿，不发送');
-check(await p.locator('.ohx-input input').inputValue()==='回归草稿，不发送','OH 面板和胶囊共享同一草稿');
+await go(p,'search-oh');await p.getByRole('textbox',{name:'搜索或问小OH'}).waitFor({state:'visible'});
+check(await p.getByRole('textbox',{name:'搜索或问小OH'}).isVisible(),'OH 输入在底栏胶囊里（用户 2026-10-19 拍板删掉面板内第二个输入框）');
+check(await p.locator('.dock-panel .dock-composer').count()===0,'OH 面板内不再有独立输入框');
+await p.getByRole('textbox',{name:'搜索或问小OH'}).fill('回归草稿，不发送');
+check(await p.locator('.ohx-input input').inputValue()==='回归草稿，不发送','胶囊是唯一输入口，草稿直接进胶囊');
 await p.screenshot({path:out+'/oh-composer.png'});
 // Mount actual shared controls in an isolated fixture within the same CSS environment.
 await go(p);

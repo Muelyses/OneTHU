@@ -1,0 +1,131 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 手机端文字/排布统一策略（html.is-phone 才生效）
+ *
+ * 背景：手机宽度下很多「一行：左边文字 + 右边控件」会把文字压成很窄一列，
+ * 再靠单行省略号收尾——用户看到的就是「省略号回来了 / 文字挤成一堆、右边一个控件」。
+ * 这里做三条统一规则，让各页面不再各自打补丁：
+ *
+ *  ① 列表行（.og-row）：允许换行；标题/副题最多两行、不再单行省略；
+ *     右件放不下时整件落到下一行，文字始终有 ≥10ch 的可用宽度。
+ *  ② 设置行（.og-settings-row）：主列给足最小宽度；右值可换行、控件可换行，
+ *     放不下时控件/值整体落到下一行（靠右），不把标题挤成竖条。
+ *  ③ 页头/工具条/内联组：保持 wrap，禁止子项把容器撑出横向滚动。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+html:root.is-phone .og-row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  row-gap: var(--og-space-1);
+}
+
+html:root.is-phone .og-row-main {
+  /* 文字至少占一半行宽：右件（角色选择/按钮组等）放不下就整体换到下一行，
+     不再出现「左边文字被挤成 100 多 px、右边一大块控件」的局面。 */
+  flex: 1 1 55%;
+  min-width: 0;
+}
+
+html:root.is-phone .og-row-line {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+
+/* 标题/副题：手机端最多两行，超出省略；不再用单行 nowrap 硬裁 */
+html:root.is-phone .og-row-title,
+html:root.is-phone .og-row-sub {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* 右件：能同行就同行（右对齐）；放不下整块换行到底部右侧，不再挤压文字 */
+html:root.is-phone .og-row-trailing {
+  flex: 0 1 auto;
+  max-width: 100%;
+  margin-left: auto;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+html:root.is-phone .og-row-caret { align-self: center; }
+
+/* ── 设置行 ── */
+html:root.is-phone .og-settings-row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  row-gap: var(--og-space-2);
+}
+
+html:root.is-phone .og-settings-row-main {
+  flex: 1 1 55%;
+  min-width: 0;
+}
+
+html:root.is-phone .og-settings-row-title {
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+
+html:root.is-phone .og-settings-row-sub {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+html:root.is-phone .og-settings-row-value {
+  flex: 0 1 auto;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+html:root.is-phone .og-settings-row-control {
+  flex: 0 1 auto;
+  max-width: 100%;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* ── 页头 / 工具条 / 内联组：一律可换行，避免横向溢出 ── */
+html:root.is-phone .og-pagehead,
+html:root.is-phone .og-toolbar,
+html:root.is-phone .og-inline,
+html:root.is-phone .og-settings-head {
+  flex-wrap: wrap;
+}
+html:root.is-phone .og-pagehead-main { flex: 1 1 100%; }
+html:root.is-phone .og-pagehead-actions { flex: 1 1 auto; justify-content: flex-end; }
+
+/* 手机端不出现横向滚动条：这些容器允许内部收缩（文字走换行） */
+html:root.is-phone .og-row,
+html:root.is-phone .og-settings-row,
+html:root.is-phone .og-pagehead,
+html:root.is-phone .og-toolbar { max-width: 100%; }
+
+/* ── 键值对：手机上「标签 → 值」上下排，不再左右两列把值挤到右边缘 ── */
+html:root.is-phone .og-kv {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--og-space-1);
+}
+html:root.is-phone .og-kv-val {
+  justify-self: start;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* ── 页头行（标题 + 元信息 + 右侧按钮）手机端上下排：标题一行、元信息一行、操作一行 ── */
+html:root.is-phone .og-inline:has(> h1, > h2, > .og-text--title) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: var(--og-space-2);
+  width: 100%;
+}
+html:root.is-phone .og-inline:has(> h1, > h2, > .og-text--title) > .og-spacer { display: none; }

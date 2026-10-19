@@ -29,6 +29,7 @@ import {
 } from "react";
 import Markdown from "react-markdown";
 import { navGo } from "./bridges.js";
+import { openSettings } from "../state/explorer.js";
 import remarkGfm from "remark-gfm";
 import {
   AccordionItem, Banner, Btn, Chip, IconBtn, Row, Spinner, Text, TextArea,
@@ -48,6 +49,9 @@ import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, spee
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
+import { ensureMadModelToken } from "../state/madmodel.js";
+import { goOhRow } from "../components/OhSettingsPage.js";
+import { showToast } from "../state/toast.js";
 import { onOhCommand, type OhCommand, type OhMode } from "./ohControl.js";
 import { useOhSearch, jumpEntry, jumpAtom, jumpSearchRow, jumpSettingsTab, jumpTabPayload } from "./ohSearch.js";
 import { explorerPrefsSnapshot, useSearchHistory, type SearchJump } from "../state/explorerPrefs.js";
@@ -640,6 +644,8 @@ function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
 interface ViewMsg {
   role: "user" | "assistant";
   text: string;
+  /** 「额度被限流」动作卡：不再把 429 原文塞进气泡，改成可操作提示（续签 / 自己的 API） */
+  notice?: "madmodel-429";
   /** 图片附件（选中的那一拍读成 data URL；会话文本里的本地路径在重水合后补上） */
   images?: ViewImage[];
   /** 链元数据（R7）：本条回答的思考链与工具调用链，折叠可展开回看 */
@@ -730,6 +736,8 @@ interface MsgListProps {
   /** 正在朗读的那一条（按文本认；null = 没在念） */
   speakingText: string | null;
   onSpeak: (t: string) => void;
+  onRenewMadModel: () => void;
+  onOpenOwnApi: () => void;
   scrollRef: React.RefObject<HTMLDivElement | null>;
   onSend: (t: string) => void;
   onPick: (t: string) => void;
@@ -780,17 +788,32 @@ function DockSuggestedChips({ onPick }: { onPick: (t: string) => void }): ReactN
 }
 
 /** 单条气泡（OneGUI 收编：材质走 --og-*；最新一条走旧 msg-pop 时间轴的相位直译——历史不动画）。 */
-function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak }: {
+function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRenewMadModel, onOpenOwnApi }: {
   m: ViewMsg;
   isNew: boolean;
   ttsOk: boolean;
   autoSpeak: boolean;
   speakingText: string | null;
   onSpeak: (t: string) => void;
+  onRenewMadModel: () => void;
+  onOpenOwnApi: () => void;
 }): ReactNode {
   const settled = useMountPhase();
   const phone = isPhoneNow();
   const mat = m.role === "user" ? matBubbleUser(phone) : matBubbleOh(phone);
+  /* 学校 MadModel 限流（429）：不显示原始报错气泡，给一张能点的动作卡 */
+  if (m.role === "assistant" && m.notice === "madmodel-429") {
+    return (
+      <div className={"dock-msg-assistant dock-notice" + (isNew ? " is-new" : "")} style={mat} role="status">
+        <div className="dock-notice-title">免费额度被限流了（429 · 同时请求过多）</div>
+        <div className="dock-notice-sub">可以一键续签 MadModel 免费额度；也可以改用你自己的 API。</div>
+        <div className="dock-notice-actions">
+          <Btn variant="solid" tone="brand" onClick={onRenewMadModel}>一键续签</Btn>
+          <Btn variant="outline" onClick={onOpenOwnApi}>设置自己的 API</Btn>
+        </div>
+      </div>
+    );
+  }
   if (m.role === "assistant") {
     return (
       <div
@@ -877,6 +900,8 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             autoSpeak={p.autoSpeak}
             speakingText={p.speakingText}
             onSpeak={p.onSpeak}
+            onRenewMadModel={p.onRenewMadModel}
+            onOpenOwnApi={p.onOpenOwnApi}
           />
         );
       })}
@@ -1412,7 +1437,12 @@ export function ChatDock(): ReactNode {
     deltaBuf.current = "";
     /* 文案规范：不用 emoji/符号当图标（用户 2026-10-11 质量红线）→ 纯文字前缀 */
     const answer = typeof r?.answer === "string" ? r.answer : r?.error != null ? `回答出错：${r.error}` : "(空响应)";
-    setMsgs((v) => [...v, { role: "assistant", text: answer, meta: { think: thinkRef.current, trace: traceRef.current } }]);
+    /* 学校 MadModel 限流/额度类报错：不把原始报错塞进气泡，改成「续签 / 换自己的 API」动作卡。 */
+    const rawError = r?.error == null ? "" : String(r.error);
+    const limited = /429|请求过多|rate.?limit|too many requests|额度|重新签/i.test(rawError);
+    setMsgs((v) => [...v, limited
+      ? { role: "assistant", text: "", notice: "madmodel-429" as const }
+      : { role: "assistant", text: answer, meta: { think: thinkRef.current, trace: traceRef.current } }]);
     /* 需求 4 自动朗读的**触发点**：就在「回复完成」这一步（紧随回答入列）。
        只念真回答（报错/空响应不念）；静音保证＝speakReply 内部**现读** voicePrefs.autoSpeak
        （默认 false）后直接 return false，连 TTS 引擎都不问。这里刻意不读组件的 prefs 快照：
@@ -1436,6 +1466,23 @@ export function ChatDock(): ReactNode {
     if (!open) setUnread((n) => n + 1);
     stickBottom();
   };
+
+  /** 429 动作卡：一键续签 MadModel 免费额度 */
+  const renewMadModel = useCallback((): void => {
+    void (async () => {
+      try {
+        await ensureMadModelToken(true);
+        showToast("已重新续签 MadModel 免费额度，稍后重试");
+      } catch (e) {
+        showToast(`续签失败：${e instanceof Error ? e.message : String(e)}（可改用你自己的 API）`);
+      }
+    })();
+  }, []);
+  /** 429 动作卡：直接去 OH 高级配置里调模型源/Key */
+  const openOwnApi = useCallback((): void => {
+    openSettings("oh");
+    goOhRow("模型 / MCP / 日志", "advanced");
+  }, []);
 
   /** 强制收尾：清 busy + 作废迟到回包（打断超时/插件死亡/换插件时的 UI 兜底） */
   const hardStop = (note: string): void => {
@@ -2503,6 +2550,8 @@ export function ChatDock(): ReactNode {
             autoSpeak={prefs.autoSpeak}
             speakingText={speakingText}
             onSpeak={speakOne}
+            onRenewMadModel={renewMadModel}
+            onOpenOwnApi={openOwnApi}
             scrollRef={scrollRef}
             onSend={(t) => void send(t)}
             onPick={(t) => setDockInputValue(t)}
@@ -2513,27 +2562,13 @@ export function ChatDock(): ReactNode {
           {sheetFiles ? (
             <AttachActionsSheet files={sheetFiles} onClose={attachClosed} onDone={attachDone} />
           ) : null}
-          {/* 一体化底栏（本轮 07 → dev-explorer 二轮）：文本输入已上移进底栏胶囊（ohx-input
-              是唯一输入口），这行只剩附件三入口 + 发送/打断；长按语音照旧（胶囊与这里都行）。
-              search 态整行收起（无可发之物）。 */}
+          {/* 输入框已删（用户 2026-10-19：「胶囊自带接管所有这个地方的文字输入，删了 OH 自己的输入框」）：
+              文本输入唯一入口 = 底栏胶囊 ohx-input。这行只剩附件入口；search 态整行收起。 */}
           {mode === "oh" ? (
           <div className="dock-input-row" ref={rowRef}>
-            <div className="dock-composer">
-              <TextArea aria-label="给小OH发消息" placeholder="给小OH发消息…" rows={2} value={draft}
-                onChange={setDockInputValue} onKeyDown={e => {
-                  if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                    e.preventDefault();
-                    if (!busy && draft.trim()) { void send(draft); setDockInputValue(""); }
-                  }
-                }} />
-              <Btn variant="solid" disabled={busy || !draft.trim()} onClick={() => { void send(draft); setDockInputValue(""); }}>发送</Btn>
-            </div>
-            {/* dev-explorer：语音/输入全在下方胶囊（唯一输入组件），这里只剩附件三入口+发送/打断；
-                旧「长按这里也能说话」空白是冗余，用户拍板删除 */}
             <div className="dock-attach">
               <AttachTray onPicked={attachPicked} />
             </div>
-            {/* 发送/打断按钮已删（用户拍板）：胶囊 Enter=发送，胶囊是唯一输入口 */}
           </div>
           ) : null}
           {history != null ? (

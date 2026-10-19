@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Btn, Card, Input, Stack, Text, SettingsRow } from "@onethu/gui";
 import { ExperienceModeControl } from "./SimpleExperience.js";
+import { OhModelSourceCard } from "./OhModelSourceCard.js";
 import { ImSettingsSection } from "./ImSettingsSection.js";
 import { YktQrPanel, saveYuketang } from "./ExtHwLoginModal.js";
 import { getPlugin, updatePlugin } from "../plugins/registry.js";
@@ -24,6 +25,7 @@ export function SimpleSettings() {
  const [model,setModel]=useState(String(initial.model??""));
  return <div className="simple-settings"><Stack gap={4}>
  <ExperienceModeControl/>
+ <OhModelSourceCard/>
  <Card><SettingsRow title="使用导览" sub="重新选择模式，或了解当前模式。" control={<Btn variant="outline" onClick={replayOnboarding}>重新查看</Btn>}/>
  <SettingsRow title="统一认证" sub={user?.displayName??"已登录"} control={<Btn variant="ghost" onClick={()=>void logout()}>退出登录</Btn>}/></Card>
  <Card><Stack gap={3}><Text slot="title">小 OH · 自己的 API</Text>

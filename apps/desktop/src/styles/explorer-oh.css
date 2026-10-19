@@ -324,3 +324,32 @@ html.is-phone .dock-panel {
    呼吸缝仍在（「弹一下」的语义不变）。 */
 /* Grow panels measure the actual bar and visual viewport in ChatDock. No CSS
    bottom override: it would defeat the keyboard/orientation viewport clamp. */
+
+/* ══ OH 限额动作卡（429）════════════════════════════════════════════════════
+   学校 MadModel 免费档被限流时不显示原始报错，给一张能点的卡：
+   一键续签 / 去设置自己的 API。 */
+.dock-notice {
+  display: grid;
+  gap: var(--og-space-2);
+  width: fit-content;
+  max-width: min(460px, 100%);
+  padding: var(--og-space-3) var(--og-space-4);
+  border: 1px solid var(--og-warning-line);
+  border-radius: var(--og-radius-lg);
+  background: var(--og-warning-soft);
+}
+.dock-notice-title {
+  font-size: var(--og-text-body);
+  font-weight: var(--og-weight-semibold);
+  color: var(--og-content-1);
+}
+.dock-notice-sub {
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-2);
+}
+.dock-notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--og-space-2);
+}

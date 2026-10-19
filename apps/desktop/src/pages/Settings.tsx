@@ -11,6 +11,7 @@ import { useExplorerState, allTabs } from "../state/explorer.js";
 import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
 import { getGlassLevel, glassLevels, setGlassLevel, subscribeGlassLevel, type GlassLevel } from "../lib/glassLevel.js";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useIsPhone } from "../state/phoneSheets.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, Switch } from "../components/Layout.js";
@@ -300,6 +301,9 @@ export function SettingsPage() {
     }
   };
 
+  const isPhone = useIsPhone();
+  const visibleSettingTabs = settingsTabLayout.order.filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t));
+
   return (
     <div className="workbench-settings">
       <PageHead
@@ -319,8 +323,19 @@ export function SettingsPage() {
 
 
       <div className="workbench-settings-mode"><ExperienceModeControl/></div>
+      {/* 完整模式的续签/模型源都在 OH 高级配置里调，这里不再放模型源条（用户 2026-10-19 拍板） */}
+      {isPhone ? (
+        <div className="workbench-settings-phone-nav">
+          <Select
+            aria-label="设置栏目"
+            value={tab}
+            options={visibleSettingTabs.map((t) => ({ value: t, label: t }))}
+            onChange={setTab}
+          />
+        </div>
+      ) : null}
       <div className="workbench-settings-layout">
-      <nav className="workbench-settings-nav" aria-label="设置栏目">
+      {isPhone ? null : <nav className="workbench-settings-nav" aria-label="设置栏目">
       <div className="workbench-settings-tabs" role="tablist" aria-label="设置栏目" onKeyDown={event => {
         if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
         const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]"));
@@ -331,8 +346,7 @@ export function SettingsPage() {
           : (index + (["ArrowUp", "ArrowLeft"].includes(event.key) ? -1 : 1) + tabs.length) % tabs.length;
         tabs[next]?.focus(); tabs[next]?.click();
       }}>
-        {settingsTabLayout.order
-          .filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t))
+        {visibleSettingTabs
           .map((t) => (
             <Btn
               key={t}
@@ -347,7 +361,7 @@ export function SettingsPage() {
             </Btn>
           ))}
       </div>
-      </nav>
+      </nav>}
       <div className="workbench-settings-content" id="workbench-settings-panel" role="tabpanel" aria-label={tab}>
       <div className="workbench-settings-title"><h2>{tab}</h2><p>按你的习惯，调整 OneTHU。</p></div>
       <SectionHead title="帮助" />

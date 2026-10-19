@@ -232,25 +232,26 @@ function PersonalCardBlock(): ReactNode {
     <div className="identity-panel">
       <div className="identity-panel-show">
         <IdentityCard card={personal} variant="hero" />
-        <Inline gap={2} wrap className="identity-panel-actions">
+        {/* 两排等宽按钮：编辑一排、分享一排；手机端各自两列，桌面端各四列，排版一致不参差 */}
+        <div className="identity-panel-actions identity-panel-actions--edit">
           <Btn variant="solid" tone="brand" icon={<IconPen size="sm" />} onClick={() => void edit()}>
             编辑资料
           </Btn>
           <Btn variant="outline" icon={<IconCamera size="sm" />} disabled={busy} onClick={() => void pickAvatar()}>
             换头像
           </Btn>
-          <Btn variant="ghost" icon={<IconIn size="sm" />} onClick={toVault}>
+          <Btn variant="outline" onClick={() => setCoverOpen(true)}>{personal.cover ? "换卡面" : "自定义卡面"}</Btn>
+          <Btn variant="ghost" onClick={toVault}>
             放进暂存箱
           </Btn>
-          <Btn variant="outline" onClick={() => setCoverOpen(true)}>{personal.cover ? "换卡面" : "自定义卡面"}</Btn>
-        </Inline>
+        </div>
         <div className="identity-panel-exchange">
-          <Inline gap={2} wrap>
-            <Btn variant="solid" disabled={!nfc.available || nfc.busy || copying} onClick={() => void nfc.send(() => personalNfcCode(personal))}>NFC 分享个人名片</Btn>
-            <Btn variant="outline" disabled={copying || nfc.busy} onClick={() => void copyCard()}>{copying ? "正在生成短口令…" : "复制名片口令"}</Btn>
-            <Btn variant="outline" disabled={receive.busy || nfc.busy} onClick={() => void receive.paste()}>粘贴口令收名片</Btn>
+          <div className="identity-panel-actions identity-panel-actions--share">
+            <Btn variant="outline" disabled={copying || nfc.busy} onClick={() => void copyCard()}>{copying ? "正在生成…" : "复制名片口令"}</Btn>
+            <Btn variant="outline" disabled={receive.busy || nfc.busy} onClick={() => void receive.paste()}>粘贴口令</Btn>
+            <Btn variant="solid" disabled={!nfc.available || nfc.busy || copying} onClick={() => void nfc.send(() => personalNfcCode(personal))}>NFC 分享</Btn>
             <Btn variant="ghost" disabled={receive.busy || nfc.busy} onClick={() => void receive.scan()}>扫码收名片</Btn>
-          </Inline>
+          </div>
           <Text slot="micro" tone="faint">{nfc.hint}</Text>
         </div>
       </div>

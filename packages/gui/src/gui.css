@@ -29,3 +29,5 @@
 @import "./styles/overlay.css";
 @import "./styles/pattern.css";
 @import "./styles/shell.css";
+/* ⑤ 手机统一策略：必须最后（同选择器压过组件默认） */
+@import "./styles/phone.css";

@@ -149,7 +149,7 @@ html:root:not([data-og-skin]) {
 html:root :is(
   .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
   .dl-open-btn, .fav-tile-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
-  .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
+  .gitlab-code-btn, .plg-repo-btn, .collect-new-btn, .home-entry-btn
 ) {
   display: inline-flex;
   align-items: center;
@@ -177,7 +177,7 @@ html:root :is(
   html:root :is(
     .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
     .dl-open-btn, .fav-tile-btn, .filter-dd-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
-    .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
+    .gitlab-code-btn, .plg-repo-btn, .collect-new-btn, .home-entry-btn
   ):hover {
     background-color: var(--og-hover);
     color: var(--og-content-1);
@@ -187,7 +187,7 @@ html:root :is(
 html:root :is(
   .icon-btn, .dock-btn, .ex-bbar-btn, .ex-btn, .hs-dock-btn, .hs-detail-btn,
   .dl-open-btn, .fav-tile-btn, .filter-dd-btn, .heb-btn, .ykt-ext-btn, .ykt-img-btn,
-  .gitlab-code-btn, .plg-repo-btn, .course-card-btn, .collect-new-btn, .home-entry-btn
+  .gitlab-code-btn, .plg-repo-btn, .collect-new-btn, .home-entry-btn
 ):active {
   background-color: var(--og-press);
 }

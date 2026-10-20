@@ -1,0 +1,7270 @@
+{
+  "scope": "Real template ActionSheet and real card renderers with built-in preview data, isolated storage/fake cloud. Chromium and available Playwright WebKit at 1280/900/390 CSS px. Browser viewport emulation, not a physical phone/macOS application claim.",
+  "checks": [
+    "chromium-390 tpl-home: real ActionSheet replaces the current layout",
+    "chromium-390 tpl-home: persisted authored width uses 1104px with readable cards",
+    "chromium-390 tpl-home: explicit template resets viewport zoom",
+    "chromium-390 tpl-home: first card stays below fixed chrome and is hit-testable",
+    "chromium-390 tpl-home: rendered card bodies do not overlap",
+    "chromium-390 tpl-home: canvas contains the entire rendered layout",
+    "chromium-390 tpl-home: each actual card fits its component width",
+    "chromium-390 tpl-home: populated real course component, not empty placeholders",
+    "chromium-390 tpl-home: mobile stays in reading order",
+    "chromium-390 tpl-home: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "chromium-390 tpl-home: reading order follows authored rows",
+    "chromium-390 tpl-home: no horizontal card-body clipping on mobile",
+    "chromium-390 tpl-home: applying home template preserves independent OnePage",
+    "chromium-390 tpl-today: real ActionSheet replaces the current layout",
+    "chromium-390 tpl-today: persisted authored width uses 1104px with readable cards",
+    "chromium-390 tpl-today: explicit template resets viewport zoom",
+    "chromium-390 tpl-today: first card stays below fixed chrome and is hit-testable",
+    "chromium-390 tpl-today: rendered card bodies do not overlap",
+    "chromium-390 tpl-today: canvas contains the entire rendered layout",
+    "chromium-390 tpl-today: each actual card fits its component width",
+    "chromium-390 tpl-today: populated real course component, not empty placeholders",
+    "chromium-390 tpl-today: mobile stays in reading order",
+    "chromium-390 tpl-today: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "chromium-390 tpl-today: reading order follows authored rows",
+    "chromium-390 tpl-today: no horizontal card-body clipping on mobile",
+    "chromium-390 tpl-today: applying home template preserves independent OnePage",
+    "chromium-390 tpl-learn: real ActionSheet replaces the current layout",
+    "chromium-390 tpl-learn: persisted authored width uses 1104px with readable cards",
+    "chromium-390 tpl-learn: explicit template resets viewport zoom",
+    "chromium-390 tpl-learn: first card stays below fixed chrome and is hit-testable",
+    "chromium-390 tpl-learn: rendered card bodies do not overlap",
+    "chromium-390 tpl-learn: canvas contains the entire rendered layout",
+    "chromium-390 tpl-learn: each actual card fits its component width",
+    "chromium-390 tpl-learn: populated real course component, not empty placeholders",
+    "chromium-390 tpl-learn: mobile stays in reading order",
+    "chromium-390 tpl-learn: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "chromium-390 tpl-learn: reading order follows authored rows",
+    "chromium-390 tpl-learn: no horizontal card-body clipping on mobile",
+    "chromium-390 tpl-learn: applying home template preserves independent OnePage",
+    "chromium-390 tpl-min: real ActionSheet replaces the current layout",
+    "chromium-390 tpl-min: persisted authored width uses 1104px with readable cards",
+    "chromium-390 tpl-min: explicit template resets viewport zoom",
+    "chromium-390 tpl-min: first card stays below fixed chrome and is hit-testable",
+    "chromium-390 tpl-min: rendered card bodies do not overlap",
+    "chromium-390 tpl-min: canvas contains the entire rendered layout",
+    "chromium-390 tpl-min: each actual card fits its component width",
+    "chromium-390 tpl-min: populated real course component, not empty placeholders",
+    "chromium-390 tpl-min: mobile stays in reading order",
+    "chromium-390 tpl-min: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "chromium-390 tpl-min: reading order follows authored rows",
+    "chromium-390 tpl-min: no horizontal card-body clipping on mobile",
+    "chromium-390 tpl-min: applying home template preserves independent OnePage",
+    "chromium-1280 tpl-home: real ActionSheet replaces the current layout",
+    "chromium-1280 tpl-home: persisted authored width uses 1104px with readable cards",
+    "chromium-1280 tpl-home: explicit template resets viewport zoom",
+    "chromium-1280 tpl-home: first card stays below fixed chrome and is hit-testable",
+    "chromium-1280 tpl-home: rendered card bodies do not overlap",
+    "chromium-1280 tpl-home: canvas contains the entire rendered layout",
+    "chromium-1280 tpl-home: each actual card fits its component width",
+    "chromium-1280 tpl-home: populated real course component, not empty placeholders",
+    "chromium-1280 tpl-home: desktop keeps independent canvas coordinates",
+    "chromium-1280 tpl-home: rendered geometry matches saved free coordinates",
+    "chromium-1280 tpl-home: previous oversized board does not shrink new layout",
+    "chromium-1280 tpl-home: applying home template preserves independent OnePage",
+    "chromium-1280 tpl-today: real ActionSheet replaces the current layout",
+    "chromium-1280 tpl-today: persisted authored width uses 1104px with readable cards",
+    "chromium-1280 tpl-today: explicit template resets viewport zoom",
+    "chromium-1280 tpl-today: first card stays below fixed chrome and is hit-testable",
+    "chromium-1280 tpl-today: rendered card bodies do not overlap",
+    "chromium-1280 tpl-today: canvas contains the entire rendered layout",
+    "chromium-1280 tpl-today: each actual card fits its component width",
+    "chromium-1280 tpl-today: populated real course component, not empty placeholders",
+    "chromium-1280 tpl-today: desktop keeps independent canvas coordinates",
+    "chromium-1280 tpl-today: rendered geometry matches saved free coordinates",
+    "chromium-1280 tpl-today: previous oversized board does not shrink new layout",
+    "chromium-1280 tpl-today: applying home template preserves independent OnePage",
+    "chromium-1280 tpl-learn: real ActionSheet replaces the current layout",
+    "chromium-1280 tpl-learn: persisted authored width uses 1104px with readable cards",
+    "chromium-1280 tpl-learn: explicit template resets viewport zoom",
+    "chromium-1280 tpl-learn: first card stays below fixed chrome and is hit-testable",
+    "chromium-1280 tpl-learn: rendered card bodies do not overlap",
+    "chromium-1280 tpl-learn: canvas contains the entire rendered layout",
+    "chromium-1280 tpl-learn: each actual card fits its component width",
+    "chromium-1280 tpl-learn: populated real course component, not empty placeholders",
+    "chromium-1280 tpl-learn: desktop keeps independent canvas coordinates",
+    "chromium-1280 tpl-learn: rendered geometry matches saved free coordinates",
+    "chromium-1280 tpl-learn: previous oversized board does not shrink new layout",
+    "chromium-1280 tpl-learn: applying home template preserves independent OnePage",
+    "chromium-1280 tpl-min: real ActionSheet replaces the current layout",
+    "chromium-1280 tpl-min: persisted authored width uses 1104px with readable cards",
+    "chromium-1280 tpl-min: explicit template resets viewport zoom",
+    "chromium-1280 tpl-min: first card stays below fixed chrome and is hit-testable",
+    "chromium-1280 tpl-min: rendered card bodies do not overlap",
+    "chromium-1280 tpl-min: canvas contains the entire rendered layout",
+    "chromium-1280 tpl-min: each actual card fits its component width",
+    "chromium-1280 tpl-min: populated real course component, not empty placeholders",
+    "chromium-1280 tpl-min: desktop keeps independent canvas coordinates",
+    "chromium-1280 tpl-min: rendered geometry matches saved free coordinates",
+    "chromium-1280 tpl-min: previous oversized board does not shrink new layout",
+    "chromium-1280 tpl-min: applying home template preserves independent OnePage",
+    "chromium-1280: real mouse drag follows arbitrary displacement without snapping",
+    "chromium-1280: selecting exposes the real resize handle",
+    "chromium-1280: real corner drag changes both dimensions freely",
+    "chromium-1280: explicit resizing takes ownership of component size",
+    "chromium-1280: user can freely change canvas zoom after template",
+    "chromium-1280: drag and resize used trusted browser pointer events",
+    "chromium-1280: arbitrary moved/resized geometry persists after reload",
+    "chromium-1280: reload preserves user-selected zoom",
+    "chromium-1280: keyboard activates viewport reset",
+    "chromium-900 tpl-home: real ActionSheet replaces the current layout",
+    "chromium-900 tpl-home: persisted authored width uses 1104px with readable cards",
+    "chromium-900 tpl-home: explicit template resets viewport zoom",
+    "chromium-900 tpl-home: first card stays below fixed chrome and is hit-testable",
+    "chromium-900 tpl-home: rendered card bodies do not overlap",
+    "chromium-900 tpl-home: canvas contains the entire rendered layout",
+    "chromium-900 tpl-home: each actual card fits its component width",
+    "chromium-900 tpl-home: populated real course component, not empty placeholders",
+    "chromium-900 tpl-home: desktop keeps independent canvas coordinates",
+    "chromium-900 tpl-home: rendered geometry matches saved free coordinates",
+    "chromium-900 tpl-home: previous oversized board does not shrink new layout",
+    "chromium-900 tpl-home: applying home template preserves independent OnePage",
+    "chromium-900 tpl-today: real ActionSheet replaces the current layout",
+    "chromium-900 tpl-today: persisted authored width uses 1104px with readable cards",
+    "chromium-900 tpl-today: explicit template resets viewport zoom",
+    "chromium-900 tpl-today: first card stays below fixed chrome and is hit-testable",
+    "chromium-900 tpl-today: rendered card bodies do not overlap",
+    "chromium-900 tpl-today: canvas contains the entire rendered layout",
+    "chromium-900 tpl-today: each actual card fits its component width",
+    "chromium-900 tpl-today: populated real course component, not empty placeholders",
+    "chromium-900 tpl-today: desktop keeps independent canvas coordinates",
+    "chromium-900 tpl-today: rendered geometry matches saved free coordinates",
+    "chromium-900 tpl-today: previous oversized board does not shrink new layout",
+    "chromium-900 tpl-today: applying home template preserves independent OnePage",
+    "chromium-900 tpl-learn: real ActionSheet replaces the current layout",
+    "chromium-900 tpl-learn: persisted authored width uses 1104px with readable cards",
+    "chromium-900 tpl-learn: explicit template resets viewport zoom",
+    "chromium-900 tpl-learn: first card stays below fixed chrome and is hit-testable",
+    "chromium-900 tpl-learn: rendered card bodies do not overlap",
+    "chromium-900 tpl-learn: canvas contains the entire rendered layout",
+    "chromium-900 tpl-learn: each actual card fits its component width",
+    "chromium-900 tpl-learn: populated real course component, not empty placeholders",
+    "chromium-900 tpl-learn: desktop keeps independent canvas coordinates",
+    "chromium-900 tpl-learn: rendered geometry matches saved free coordinates",
+    "chromium-900 tpl-learn: previous oversized board does not shrink new layout",
+    "chromium-900 tpl-learn: applying home template preserves independent OnePage",
+    "chromium-900 tpl-min: real ActionSheet replaces the current layout",
+    "chromium-900 tpl-min: persisted authored width uses 1104px with readable cards",
+    "chromium-900 tpl-min: explicit template resets viewport zoom",
+    "chromium-900 tpl-min: first card stays below fixed chrome and is hit-testable",
+    "chromium-900 tpl-min: rendered card bodies do not overlap",
+    "chromium-900 tpl-min: canvas contains the entire rendered layout",
+    "chromium-900 tpl-min: each actual card fits its component width",
+    "chromium-900 tpl-min: populated real course component, not empty placeholders",
+    "chromium-900 tpl-min: desktop keeps independent canvas coordinates",
+    "chromium-900 tpl-min: rendered geometry matches saved free coordinates",
+    "chromium-900 tpl-min: previous oversized board does not shrink new layout",
+    "chromium-900 tpl-min: applying home template preserves independent OnePage",
+    "webkit-390 tpl-home: real ActionSheet replaces the current layout",
+    "webkit-390 tpl-home: persisted authored width uses 1104px with readable cards",
+    "webkit-390 tpl-home: explicit template resets viewport zoom",
+    "webkit-390 tpl-home: first card stays below fixed chrome and is hit-testable",
+    "webkit-390 tpl-home: rendered card bodies do not overlap",
+    "webkit-390 tpl-home: canvas contains the entire rendered layout",
+    "webkit-390 tpl-home: each actual card fits its component width",
+    "webkit-390 tpl-home: populated real course component, not empty placeholders",
+    "webkit-390 tpl-home: mobile stays in reading order",
+    "webkit-390 tpl-home: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "webkit-390 tpl-home: reading order follows authored rows",
+    "webkit-390 tpl-home: no horizontal card-body clipping on mobile",
+    "webkit-390 tpl-home: applying home template preserves independent OnePage",
+    "webkit-390 tpl-today: real ActionSheet replaces the current layout",
+    "webkit-390 tpl-today: persisted authored width uses 1104px with readable cards",
+    "webkit-390 tpl-today: explicit template resets viewport zoom",
+    "webkit-390 tpl-today: first card stays below fixed chrome and is hit-testable",
+    "webkit-390 tpl-today: rendered card bodies do not overlap",
+    "webkit-390 tpl-today: canvas contains the entire rendered layout",
+    "webkit-390 tpl-today: each actual card fits its component width",
+    "webkit-390 tpl-today: populated real course component, not empty placeholders",
+    "webkit-390 tpl-today: mobile stays in reading order",
+    "webkit-390 tpl-today: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "webkit-390 tpl-today: reading order follows authored rows",
+    "webkit-390 tpl-today: no horizontal card-body clipping on mobile",
+    "webkit-390 tpl-today: applying home template preserves independent OnePage",
+    "webkit-390 tpl-learn: real ActionSheet replaces the current layout",
+    "webkit-390 tpl-learn: persisted authored width uses 1104px with readable cards",
+    "webkit-390 tpl-learn: explicit template resets viewport zoom",
+    "webkit-390 tpl-learn: first card stays below fixed chrome and is hit-testable",
+    "webkit-390 tpl-learn: rendered card bodies do not overlap",
+    "webkit-390 tpl-learn: canvas contains the entire rendered layout",
+    "webkit-390 tpl-learn: each actual card fits its component width",
+    "webkit-390 tpl-learn: populated real course component, not empty placeholders",
+    "webkit-390 tpl-learn: mobile stays in reading order",
+    "webkit-390 tpl-learn: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "webkit-390 tpl-learn: reading order follows authored rows",
+    "webkit-390 tpl-learn: no horizontal card-body clipping on mobile",
+    "webkit-390 tpl-learn: applying home template preserves independent OnePage",
+    "webkit-390 tpl-min: real ActionSheet replaces the current layout",
+    "webkit-390 tpl-min: persisted authored width uses 1104px with readable cards",
+    "webkit-390 tpl-min: explicit template resets viewport zoom",
+    "webkit-390 tpl-min: first card stays below fixed chrome and is hit-testable",
+    "webkit-390 tpl-min: rendered card bodies do not overlap",
+    "webkit-390 tpl-min: canvas contains the entire rendered layout",
+    "webkit-390 tpl-min: each actual card fits its component width",
+    "webkit-390 tpl-min: populated real course component, not empty placeholders",
+    "webkit-390 tpl-min: mobile stays in reading order",
+    "webkit-390 tpl-min: mobile projects to full-width readable cards, not scaled miniature tiles",
+    "webkit-390 tpl-min: reading order follows authored rows",
+    "webkit-390 tpl-min: no horizontal card-body clipping on mobile",
+    "webkit-390 tpl-min: applying home template preserves independent OnePage",
+    "webkit-1280 tpl-home: real ActionSheet replaces the current layout",
+    "webkit-1280 tpl-home: persisted authored width uses 1104px with readable cards",
+    "webkit-1280 tpl-home: explicit template resets viewport zoom",
+    "webkit-1280 tpl-home: first card stays below fixed chrome and is hit-testable",
+    "webkit-1280 tpl-home: rendered card bodies do not overlap",
+    "webkit-1280 tpl-home: canvas contains the entire rendered layout",
+    "webkit-1280 tpl-home: each actual card fits its component width",
+    "webkit-1280 tpl-home: populated real course component, not empty placeholders",
+    "webkit-1280 tpl-home: desktop keeps independent canvas coordinates",
+    "webkit-1280 tpl-home: rendered geometry matches saved free coordinates",
+    "webkit-1280 tpl-home: previous oversized board does not shrink new layout",
+    "webkit-1280 tpl-home: applying home template preserves independent OnePage",
+    "webkit-1280 tpl-today: real ActionSheet replaces the current layout",
+    "webkit-1280 tpl-today: persisted authored width uses 1104px with readable cards",
+    "webkit-1280 tpl-today: explicit template resets viewport zoom",
+    "webkit-1280 tpl-today: first card stays below fixed chrome and is hit-testable",
+    "webkit-1280 tpl-today: rendered card bodies do not overlap",
+    "webkit-1280 tpl-today: canvas contains the entire rendered layout",
+    "webkit-1280 tpl-today: each actual card fits its component width",
+    "webkit-1280 tpl-today: populated real course component, not empty placeholders",
+    "webkit-1280 tpl-today: desktop keeps independent canvas coordinates",
+    "webkit-1280 tpl-today: rendered geometry matches saved free coordinates",
+    "webkit-1280 tpl-today: previous oversized board does not shrink new layout",
+    "webkit-1280 tpl-today: applying home template preserves independent OnePage",
+    "webkit-1280 tpl-learn: real ActionSheet replaces the current layout",
+    "webkit-1280 tpl-learn: persisted authored width uses 1104px with readable cards",
+    "webkit-1280 tpl-learn: explicit template resets viewport zoom",
+    "webkit-1280 tpl-learn: first card stays below fixed chrome and is hit-testable",
+    "webkit-1280 tpl-learn: rendered card bodies do not overlap",
+    "webkit-1280 tpl-learn: canvas contains the entire rendered layout",
+    "webkit-1280 tpl-learn: each actual card fits its component width",
+    "webkit-1280 tpl-learn: populated real course component, not empty placeholders",
+    "webkit-1280 tpl-learn: desktop keeps independent canvas coordinates",
+    "webkit-1280 tpl-learn: rendered geometry matches saved free coordinates",
+    "webkit-1280 tpl-learn: previous oversized board does not shrink new layout",
+    "webkit-1280 tpl-learn: applying home template preserves independent OnePage",
+    "webkit-1280 tpl-min: real ActionSheet replaces the current layout",
+    "webkit-1280 tpl-min: persisted authored width uses 1104px with readable cards",
+    "webkit-1280 tpl-min: explicit template resets viewport zoom",
+    "webkit-1280 tpl-min: first card stays below fixed chrome and is hit-testable",
+    "webkit-1280 tpl-min: rendered card bodies do not overlap",
+    "webkit-1280 tpl-min: canvas contains the entire rendered layout",
+    "webkit-1280 tpl-min: each actual card fits its component width",
+    "webkit-1280 tpl-min: populated real course component, not empty placeholders",
+    "webkit-1280 tpl-min: desktop keeps independent canvas coordinates",
+    "webkit-1280 tpl-min: rendered geometry matches saved free coordinates",
+    "webkit-1280 tpl-min: previous oversized board does not shrink new layout",
+    "webkit-1280 tpl-min: applying home template preserves independent OnePage",
+    "webkit-1280: real mouse drag follows arbitrary displacement without snapping",
+    "webkit-1280: selecting exposes the real resize handle",
+    "webkit-1280: real corner drag changes both dimensions freely",
+    "webkit-1280: explicit resizing takes ownership of component size",
+    "webkit-1280: user can freely change canvas zoom after template",
+    "webkit-1280: drag and resize used trusted browser pointer events",
+    "webkit-1280: arbitrary moved/resized geometry persists after reload",
+    "webkit-1280: reload preserves user-selected zoom",
+    "webkit-1280: keyboard activates viewport reset",
+    "webkit-900 tpl-home: real ActionSheet replaces the current layout",
+    "webkit-900 tpl-home: persisted authored width uses 1104px with readable cards",
+    "webkit-900 tpl-home: explicit template resets viewport zoom",
+    "webkit-900 tpl-home: first card stays below fixed chrome and is hit-testable",
+    "webkit-900 tpl-home: rendered card bodies do not overlap",
+    "webkit-900 tpl-home: canvas contains the entire rendered layout",
+    "webkit-900 tpl-home: each actual card fits its component width",
+    "webkit-900 tpl-home: populated real course component, not empty placeholders",
+    "webkit-900 tpl-home: desktop keeps independent canvas coordinates",
+    "webkit-900 tpl-home: rendered geometry matches saved free coordinates",
+    "webkit-900 tpl-home: previous oversized board does not shrink new layout",
+    "webkit-900 tpl-home: applying home template preserves independent OnePage",
+    "webkit-900 tpl-today: real ActionSheet replaces the current layout",
+    "webkit-900 tpl-today: persisted authored width uses 1104px with readable cards",
+    "webkit-900 tpl-today: explicit template resets viewport zoom",
+    "webkit-900 tpl-today: first card stays below fixed chrome and is hit-testable",
+    "webkit-900 tpl-today: rendered card bodies do not overlap",
+    "webkit-900 tpl-today: canvas contains the entire rendered layout",
+    "webkit-900 tpl-today: each actual card fits its component width",
+    "webkit-900 tpl-today: populated real course component, not empty placeholders",
+    "webkit-900 tpl-today: desktop keeps independent canvas coordinates",
+    "webkit-900 tpl-today: rendered geometry matches saved free coordinates",
+    "webkit-900 tpl-today: previous oversized board does not shrink new layout",
+    "webkit-900 tpl-today: applying home template preserves independent OnePage",
+    "webkit-900 tpl-learn: real ActionSheet replaces the current layout",
+    "webkit-900 tpl-learn: persisted authored width uses 1104px with readable cards",
+    "webkit-900 tpl-learn: explicit template resets viewport zoom",
+    "webkit-900 tpl-learn: first card stays below fixed chrome and is hit-testable",
+    "webkit-900 tpl-learn: rendered card bodies do not overlap",
+    "webkit-900 tpl-learn: canvas contains the entire rendered layout",
+    "webkit-900 tpl-learn: each actual card fits its component width",
+    "webkit-900 tpl-learn: populated real course component, not empty placeholders",
+    "webkit-900 tpl-learn: desktop keeps independent canvas coordinates",
+    "webkit-900 tpl-learn: rendered geometry matches saved free coordinates",
+    "webkit-900 tpl-learn: previous oversized board does not shrink new layout",
+    "webkit-900 tpl-learn: applying home template preserves independent OnePage",
+    "webkit-900 tpl-min: real ActionSheet replaces the current layout",
+    "webkit-900 tpl-min: persisted authored width uses 1104px with readable cards",
+    "webkit-900 tpl-min: explicit template resets viewport zoom",
+    "webkit-900 tpl-min: first card stays below fixed chrome and is hit-testable",
+    "webkit-900 tpl-min: rendered card bodies do not overlap",
+    "webkit-900 tpl-min: canvas contains the entire rendered layout",
+    "webkit-900 tpl-min: each actual card fits its component width",
+    "webkit-900 tpl-min: populated real course component, not empty placeholders",
+    "webkit-900 tpl-min: desktop keeps independent canvas coordinates",
+    "webkit-900 tpl-min: rendered geometry matches saved free coordinates",
+    "webkit-900 tpl-min: previous oversized board does not shrink new layout",
+    "webkit-900 tpl-min: applying home template preserves independent OnePage",
+    "No browser page errors across both rendering engines"
+  ],
+  "geometries": [
+    {
+      "label": "chromium-390",
+      "template": "tpl-home",
+      "saved": [
+        {
+          "id": "home.clock",
+          "spec": {
+            "kind": "custom",
+            "id": "clock"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.greeting",
+          "spec": {
+            "kind": "text",
+            "text": "把今天，安排好。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 1,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.services",
+          "spec": {
+            "kind": "custom",
+            "id": "services"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "manual": true
+        },
+        {
+          "id": "home.tasks",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.classes",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.news",
+          "spec": {
+            "kind": "custom",
+            "id": "news"
+          },
+          "cell": {
+            "x": 0,
+            "y": 12,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        },
+        {
+          "id": "home.balance",
+          "spec": {
+            "kind": "custom",
+            "id": "cardEntry"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 1908,
+        "top": 140,
+        "right": 374,
+        "bottom": 2048,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "home.clock",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 356,
+            "height": 132,
+            "top": 140,
+            "right": 372,
+            "bottom": 272,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 356,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 354,
+              "height": 122,
+              "top": 145,
+              "right": 371,
+              "bottom": 267,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 122,
+            "scrollHeight": 122,
+            "overflowY": "hidden"
+          }
+        },
+        {
+          "id": "home.greeting",
+          "rect": {
+            "x": 16,
+            "y": 284,
+            "width": 356,
+            "height": 132,
+            "top": 284,
+            "right": 372,
+            "bottom": 416,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 144,
+            "w": 356,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 289,
+              "width": 354,
+              "height": 122,
+              "top": 289,
+              "right": 371,
+              "bottom": 411,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 122,
+            "scrollHeight": 122,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.services",
+          "rect": {
+            "x": 16,
+            "y": 428,
+            "width": 356,
+            "height": 340,
+            "top": 428,
+            "right": 372,
+            "bottom": 768,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 288,
+            "w": 356,
+            "h": 340
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 433,
+              "width": 354,
+              "height": 330,
+              "top": 433,
+              "right": 371,
+              "bottom": 763,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 330,
+            "scrollHeight": 330,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.tasks",
+          "rect": {
+            "x": 16,
+            "y": 780,
+            "width": 356,
+            "height": 356,
+            "top": 780,
+            "right": 372,
+            "bottom": 1136,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 640,
+            "w": 356,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 785,
+              "width": 354,
+              "height": 346,
+              "top": 785,
+              "right": 371,
+              "bottom": 1131,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 346,
+            "scrollHeight": 346,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.classes",
+          "rect": {
+            "x": 16,
+            "y": 1148,
+            "width": 356,
+            "height": 356,
+            "top": 1148,
+            "right": 372,
+            "bottom": 1504,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1008,
+            "w": 356,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1153,
+              "width": 354,
+              "height": 346,
+              "top": 1153,
+              "right": 371,
+              "bottom": 1499,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 346,
+            "scrollHeight": 346,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.news",
+          "rect": {
+            "x": 16,
+            "y": 1516,
+            "width": 356,
+            "height": 248,
+            "top": 1516,
+            "right": 372,
+            "bottom": 1764,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1376,
+            "w": 356,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1521,
+              "width": 354,
+              "height": 238,
+              "top": 1521,
+              "right": 371,
+              "bottom": 1759,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 238,
+            "scrollHeight": 238,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.balance",
+          "rect": {
+            "x": 16,
+            "y": 1776,
+            "width": 356,
+            "height": 248,
+            "top": 1776,
+            "right": 372,
+            "bottom": 2024,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1636,
+            "w": 356,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1781,
+              "width": 354,
+              "height": 238,
+              "top": 1781,
+              "right": 371,
+              "bottom": 2019,
+              "left": 17
+            },
+            "clientWidth": 354,
+            "scrollWidth": 354,
+            "clientHeight": 238,
+            "scrollHeight": 238,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-390",
+      "template": "tpl-today",
+      "saved": [
+        {
+          "id": "it.tpl-today.0.mvggs5yz",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggs5yz",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggs5yz",
+          "spec": {
+            "kind": "custom",
+            "id": "notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggs5yz",
+          "spec": {
+            "kind": "custom",
+            "id": "next-class"
+          },
+          "cell": {
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggs5yz",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 16,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          }
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 1792,
+        "top": 140,
+        "right": 374,
+        "bottom": 1932,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-today.0.mvggs5yz",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 358,
+            "height": 480,
+            "top": 140,
+            "right": 374,
+            "bottom": 620,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 356,
+              "height": 470,
+              "top": 145,
+              "right": 373,
+              "bottom": 615,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggs5yz",
+          "rect": {
+            "x": 16,
+            "y": 632,
+            "width": 358,
+            "height": 480,
+            "top": 632,
+            "right": 374,
+            "bottom": 1112,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 492,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 637,
+              "width": 356,
+              "height": 470,
+              "top": 637,
+              "right": 373,
+              "bottom": 1107,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggs5yz",
+          "rect": {
+            "x": 16,
+            "y": 1124,
+            "width": 358,
+            "height": 392,
+            "top": 1124,
+            "right": 374,
+            "bottom": 1516,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 984,
+            "w": 358,
+            "h": 392
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1129,
+              "width": 356,
+              "height": 382,
+              "top": 1129,
+              "right": 373,
+              "bottom": 1511,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 382,
+            "scrollHeight": 382,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggs5yz",
+          "rect": {
+            "x": 16,
+            "y": 1528,
+            "width": 358,
+            "height": 192,
+            "top": 1528,
+            "right": 374,
+            "bottom": 1720,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1388,
+            "w": 358,
+            "h": 192
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1533,
+              "width": 356,
+              "height": 182,
+              "top": 1533,
+              "right": 373,
+              "bottom": 1715,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 182,
+            "scrollHeight": 182,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggs5yz",
+          "rect": {
+            "x": 16,
+            "y": 1732,
+            "width": 358,
+            "height": 176,
+            "top": 1732,
+            "right": 374,
+            "bottom": 1908,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1592,
+            "w": 358,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1737,
+              "width": 356,
+              "height": 166,
+              "top": 1737,
+              "right": 373,
+              "bottom": 1903,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 166,
+            "scrollHeight": 166,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-390",
+      "template": "tpl-learn",
+      "saved": [
+        {
+          "id": "it.tpl-learn.0.mvggs6u2",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-assignments"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggs6u2",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggs6u2",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-files"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggs6u2",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 1900,
+        "top": 140,
+        "right": 374,
+        "bottom": 2040,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-learn.0.mvggs6u2",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 358,
+            "height": 480,
+            "top": 140,
+            "right": 374,
+            "bottom": 620,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 356,
+              "height": 470,
+              "top": 145,
+              "right": 373,
+              "bottom": 615,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggs6u2",
+          "rect": {
+            "x": 16,
+            "y": 632,
+            "width": 358,
+            "height": 480,
+            "top": 632,
+            "right": 374,
+            "bottom": 1112,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 492,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 637,
+              "width": 356,
+              "height": 470,
+              "top": 637,
+              "right": 373,
+              "bottom": 1107,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggs6u2",
+          "rect": {
+            "x": 16,
+            "y": 1124,
+            "width": 358,
+            "height": 440,
+            "top": 1124,
+            "right": 374,
+            "bottom": 1564,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 984,
+            "w": 358,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1129,
+              "width": 356,
+              "height": 430,
+              "top": 1129,
+              "right": 373,
+              "bottom": 1559,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 430,
+            "scrollHeight": 430,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggs6u2",
+          "rect": {
+            "x": 16,
+            "y": 1576,
+            "width": 358,
+            "height": 440,
+            "top": 1576,
+            "right": 374,
+            "bottom": 2016,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1436,
+            "w": 358,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1581,
+              "width": 356,
+              "height": 430,
+              "top": 1581,
+              "right": 373,
+              "bottom": 2011,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 430,
+            "scrollHeight": 430,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-390",
+      "template": "tpl-min",
+      "saved": [
+        {
+          "id": "it.tpl-min.0.mvggs7ph",
+          "spec": {
+            "kind": "text",
+            "text": "今天，从容一点。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggs7ph",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggs7ph",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 7,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          }
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 836,
+        "top": 140,
+        "right": 374,
+        "bottom": 976,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-min.0.mvggs7ph",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 358,
+            "height": 132,
+            "top": 140,
+            "right": 374,
+            "bottom": 272,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 358,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 356,
+              "height": 122,
+              "top": 145,
+              "right": 373,
+              "bottom": 267,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 122,
+            "scrollHeight": 122,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggs7ph",
+          "rect": {
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 480,
+            "top": 284,
+            "right": 374,
+            "bottom": 764,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 144,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 289,
+              "width": 356,
+              "height": 470,
+              "top": 289,
+              "right": 373,
+              "bottom": 759,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggs7ph",
+          "rect": {
+            "x": 16,
+            "y": 776,
+            "width": 358,
+            "height": 176,
+            "top": 776,
+            "right": 374,
+            "bottom": 952,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 636,
+            "w": 358,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 781,
+              "width": 356,
+              "height": 166,
+              "top": 781,
+              "right": 373,
+              "bottom": 947,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 166,
+            "scrollHeight": 166,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-1280",
+      "template": "tpl-home",
+      "saved": [
+        {
+          "id": "home.clock",
+          "spec": {
+            "kind": "custom",
+            "id": "clock"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.greeting",
+          "spec": {
+            "kind": "text",
+            "text": "把今天，安排好。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 1,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.services",
+          "spec": {
+            "kind": "custom",
+            "id": "services"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "manual": true
+        },
+        {
+          "id": "home.tasks",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.classes",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.news",
+          "spec": {
+            "kind": "custom",
+            "id": "news"
+          },
+          "cell": {
+            "x": 0,
+            "y": 12,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        },
+        {
+          "id": "home.balance",
+          "spec": {
+            "kind": "custom",
+            "id": "cardEntry"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248,
+        "width": 1120,
+        "height": 1004,
+        "top": 248,
+        "right": 1195,
+        "bottom": 1252,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "home.clock",
+          "rect": {
+            "x": 75,
+            "y": 248,
+            "width": 280,
+            "height": 132,
+            "top": 248,
+            "right": 355,
+            "bottom": 380,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249,
+              "width": 278,
+              "height": 130,
+              "top": 249,
+              "right": 354,
+              "bottom": 379,
+              "left": 76
+            },
+            "clientWidth": 278,
+            "scrollWidth": 278,
+            "clientHeight": 130,
+            "scrollHeight": 132,
+            "overflowY": "hidden"
+          }
+        },
+        {
+          "id": "home.greeting",
+          "rect": {
+            "x": 379,
+            "y": 248,
+            "width": 800,
+            "height": 132,
+            "top": 248,
+            "right": 1179,
+            "bottom": 380,
+            "left": 379
+          },
+          "authored": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 380,
+              "y": 249,
+              "width": 798,
+              "height": 130,
+              "top": 249,
+              "right": 1178,
+              "bottom": 379,
+              "left": 380
+            },
+            "clientWidth": 798,
+            "scrollWidth": 798,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.services",
+          "rect": {
+            "x": 75,
+            "y": 404,
+            "width": 1104,
+            "height": 196,
+            "top": 404,
+            "right": 1179,
+            "bottom": 600,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 405,
+              "width": 1102,
+              "height": 194,
+              "top": 405,
+              "right": 1178,
+              "bottom": 599,
+              "left": 76
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 194,
+            "scrollHeight": 194,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.tasks",
+          "rect": {
+            "x": 75,
+            "y": 624,
+            "width": 540,
+            "height": 356,
+            "top": 624,
+            "right": 615,
+            "bottom": 980,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 625,
+              "width": 538,
+              "height": 354,
+              "top": 625,
+              "right": 614,
+              "bottom": 979,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.classes",
+          "rect": {
+            "x": 639,
+            "y": 624,
+            "width": 540,
+            "height": 356,
+            "top": 624,
+            "right": 1179,
+            "bottom": 980,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 625,
+              "width": 538,
+              "height": 354,
+              "top": 625,
+              "right": 1178,
+              "bottom": 979,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.news",
+          "rect": {
+            "x": 75,
+            "y": 1004,
+            "width": 540,
+            "height": 248,
+            "top": 1004,
+            "right": 615,
+            "bottom": 1252,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 1005,
+              "width": 538,
+              "height": 246,
+              "top": 1005,
+              "right": 614,
+              "bottom": 1251,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.balance",
+          "rect": {
+            "x": 639,
+            "y": 1004,
+            "width": 540,
+            "height": 248,
+            "top": 1004,
+            "right": 1179,
+            "bottom": 1252,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 1005,
+              "width": 538,
+              "height": 246,
+              "top": 1005,
+              "right": 1178,
+              "bottom": 1251,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-1280",
+      "template": "tpl-today",
+      "saved": [
+        {
+          "id": "it.tpl-today.0.mvggsanb",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsanb",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsanb",
+          "spec": {
+            "kind": "custom",
+            "id": "notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsanb",
+          "spec": {
+            "kind": "custom",
+            "id": "next-class"
+          },
+          "cell": {
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsanb",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 16,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248,
+        "width": 1120,
+        "height": 896,
+        "top": 248,
+        "right": 1195,
+        "bottom": 1144,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-today.0.mvggsanb",
+          "rect": {
+            "x": 75,
+            "y": 248,
+            "width": 540,
+            "height": 480,
+            "top": 248,
+            "right": 615,
+            "bottom": 728,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249,
+              "width": 538,
+              "height": 478,
+              "top": 249,
+              "right": 614,
+              "bottom": 727,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsanb",
+          "rect": {
+            "x": 639,
+            "y": 248,
+            "width": 540,
+            "height": 480,
+            "top": 248,
+            "right": 1179,
+            "bottom": 728,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 249,
+              "width": 538,
+              "height": 478,
+              "top": 249,
+              "right": 1178,
+              "bottom": 727,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsanb",
+          "rect": {
+            "x": 75,
+            "y": 752,
+            "width": 540,
+            "height": 392,
+            "top": 752,
+            "right": 615,
+            "bottom": 1144,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 753,
+              "width": 538,
+              "height": 390,
+              "top": 753,
+              "right": 614,
+              "bottom": 1143,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 390,
+            "scrollHeight": 390,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsanb",
+          "rect": {
+            "x": 639,
+            "y": 752,
+            "width": 540,
+            "height": 192,
+            "top": 752,
+            "right": 1179,
+            "bottom": 944,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 753,
+              "width": 538,
+              "height": 190,
+              "top": 753,
+              "right": 1178,
+              "bottom": 943,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 190,
+            "scrollHeight": 190,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsanb",
+          "rect": {
+            "x": 639,
+            "y": 968,
+            "width": 540,
+            "height": 176,
+            "top": 968,
+            "right": 1179,
+            "bottom": 1144,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 969,
+              "width": 538,
+              "height": 174,
+              "top": 969,
+              "right": 1178,
+              "bottom": 1143,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-1280",
+      "template": "tpl-learn",
+      "saved": [
+        {
+          "id": "it.tpl-learn.0.mvggsbf2",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-assignments"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsbf2",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsbf2",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-files"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsbf2",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248,
+        "width": 1120,
+        "height": 944,
+        "top": 248,
+        "right": 1195,
+        "bottom": 1192,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-learn.0.mvggsbf2",
+          "rect": {
+            "x": 75,
+            "y": 248,
+            "width": 540,
+            "height": 480,
+            "top": 248,
+            "right": 615,
+            "bottom": 728,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249,
+              "width": 538,
+              "height": 478,
+              "top": 249,
+              "right": 614,
+              "bottom": 727,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsbf2",
+          "rect": {
+            "x": 639,
+            "y": 248,
+            "width": 540,
+            "height": 480,
+            "top": 248,
+            "right": 1179,
+            "bottom": 728,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 249,
+              "width": 538,
+              "height": 478,
+              "top": 249,
+              "right": 1178,
+              "bottom": 727,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsbf2",
+          "rect": {
+            "x": 75,
+            "y": 752,
+            "width": 540,
+            "height": 440,
+            "top": 752,
+            "right": 615,
+            "bottom": 1192,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 753,
+              "width": 538,
+              "height": 438,
+              "top": 753,
+              "right": 614,
+              "bottom": 1191,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsbf2",
+          "rect": {
+            "x": 639,
+            "y": 752,
+            "width": 540,
+            "height": 440,
+            "top": 752,
+            "right": 1179,
+            "bottom": 1192,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 753,
+              "width": 538,
+              "height": 438,
+              "top": 753,
+              "right": 1178,
+              "bottom": 1191,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-1280",
+      "template": "tpl-min",
+      "saved": [
+        {
+          "id": "it.tpl-min.0.mvggsc6e",
+          "spec": {
+            "kind": "text",
+            "text": "今天，从容一点。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsc6e",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsc6e",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 7,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248,
+        "width": 1120,
+        "height": 792,
+        "top": 248,
+        "right": 1195,
+        "bottom": 1040,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-min.0.mvggsc6e",
+          "rect": {
+            "x": 75,
+            "y": 248,
+            "width": 1104,
+            "height": 132,
+            "top": 248,
+            "right": 1179,
+            "bottom": 380,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249,
+              "width": 1102,
+              "height": 130,
+              "top": 249,
+              "right": 1178,
+              "bottom": 379,
+              "left": 76
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsc6e",
+          "rect": {
+            "x": 75,
+            "y": 404,
+            "width": 740,
+            "height": 480,
+            "top": 404,
+            "right": 815,
+            "bottom": 884,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 405,
+              "width": 738,
+              "height": 478,
+              "top": 405,
+              "right": 814,
+              "bottom": 883,
+              "left": 76
+            },
+            "clientWidth": 738,
+            "scrollWidth": 738,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsc6e",
+          "rect": {
+            "x": 839,
+            "y": 404,
+            "width": 340,
+            "height": 176,
+            "top": 404,
+            "right": 1179,
+            "bottom": 580,
+            "left": 839
+          },
+          "authored": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 840,
+              "y": 405,
+              "width": 338,
+              "height": 174,
+              "top": 405,
+              "right": 1178,
+              "bottom": 579,
+              "left": 840
+            },
+            "clientWidth": 338,
+            "scrollWidth": 338,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-900",
+      "template": "tpl-home",
+      "saved": [
+        {
+          "id": "home.clock",
+          "spec": {
+            "kind": "custom",
+            "id": "clock"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.greeting",
+          "spec": {
+            "kind": "text",
+            "text": "把今天，安排好。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 1,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.services",
+          "spec": {
+            "kind": "custom",
+            "id": "services"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "manual": true
+        },
+        {
+          "id": "home.tasks",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.classes",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.news",
+          "spec": {
+            "kind": "custom",
+            "id": "news"
+          },
+          "cell": {
+            "x": 0,
+            "y": 12,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        },
+        {
+          "id": "home.balance",
+          "spec": {
+            "kind": "custom",
+            "id": "cardEntry"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248,
+        "width": 810,
+        "height": 792,
+        "top": 248,
+        "right": 850,
+        "bottom": 1040,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "home.clock",
+          "rect": {
+            "x": 40,
+            "y": 248,
+            "width": 203.9568328857422,
+            "height": 96.15106201171875,
+            "top": 248,
+            "right": 243.9568328857422,
+            "bottom": 344.15106201171875,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 248.72842407226562,
+              "width": 202.5,
+              "height": 94.69424438476562,
+              "top": 248.72842407226562,
+              "right": 243.2284164428711,
+              "bottom": 343.42266845703125,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 278,
+            "scrollWidth": 278,
+            "clientHeight": 130,
+            "scrollHeight": 132,
+            "overflowY": "hidden"
+          }
+        },
+        {
+          "id": "home.greeting",
+          "rect": {
+            "x": 261.4388427734375,
+            "y": 248,
+            "width": 582.7338256835938,
+            "height": 96.15106201171875,
+            "top": 248,
+            "right": 844.1726684570312,
+            "bottom": 344.15106201171875,
+            "left": 261.4388427734375
+          },
+          "authored": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 262.1672668457031,
+              "y": 248.72842407226562,
+              "width": 581.2769775390625,
+              "height": 94.69424438476562,
+              "top": 248.72842407226562,
+              "right": 843.4442443847656,
+              "bottom": 343.42266845703125,
+              "left": 262.1672668457031
+            },
+            "clientWidth": 798,
+            "scrollWidth": 798,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.services",
+          "rect": {
+            "x": 40,
+            "y": 361.6330871582031,
+            "width": 804.1726684570312,
+            "height": 142.76980590820312,
+            "top": 361.6330871582031,
+            "right": 844.1726684570312,
+            "bottom": 504.40289306640625,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 362.36151123046875,
+              "width": 802.7158813476562,
+              "height": 141.31295776367188,
+              "top": 362.36151123046875,
+              "right": 843.4442977905273,
+              "bottom": 503.6744689941406,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 194,
+            "scrollHeight": 194,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.tasks",
+          "rect": {
+            "x": 40,
+            "y": 521.8848876953125,
+            "width": 393.3453369140625,
+            "height": 259.31658935546875,
+            "top": 521.8848876953125,
+            "right": 433.3453369140625,
+            "bottom": 781.2014770507812,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 522.61328125,
+              "width": 391.88848876953125,
+              "height": 257.8597412109375,
+              "top": 522.61328125,
+              "right": 432.61690521240234,
+              "bottom": 780.4730224609375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.classes",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 521.8848876953125,
+            "width": 393.3453369140625,
+            "height": 259.31658935546875,
+            "top": 521.8848876953125,
+            "right": 844.1726684570312,
+            "bottom": 781.2014770507812,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 522.61328125,
+              "width": 391.8885192871094,
+              "height": 257.8597412109375,
+              "top": 522.61328125,
+              "right": 843.4442749023438,
+              "bottom": 780.4730224609375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.news",
+          "rect": {
+            "x": 40,
+            "y": 798.6834716796875,
+            "width": 393.3453369140625,
+            "height": 180.6474609375,
+            "top": 798.6834716796875,
+            "right": 433.3453369140625,
+            "bottom": 979.3309326171875,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 799.411865234375,
+              "width": 391.88848876953125,
+              "height": 179.190673828125,
+              "top": 799.411865234375,
+              "right": 432.61690521240234,
+              "bottom": 978.6025390625,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.balance",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 798.6834716796875,
+            "width": 393.3453369140625,
+            "height": 180.6474609375,
+            "top": 798.6834716796875,
+            "right": 844.1726684570312,
+            "bottom": 979.3309326171875,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 799.411865234375,
+              "width": 391.8885192871094,
+              "height": 179.190673828125,
+              "top": 799.411865234375,
+              "right": 843.4442749023438,
+              "bottom": 978.6025390625,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-900",
+      "template": "tpl-today",
+      "saved": [
+        {
+          "id": "it.tpl-today.0.mvggsgla",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsgla",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsgla",
+          "spec": {
+            "kind": "custom",
+            "id": "notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsgla",
+          "spec": {
+            "kind": "custom",
+            "id": "next-class"
+          },
+          "cell": {
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsgla",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 16,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248,
+        "width": 810,
+        "height": 792,
+        "top": 248,
+        "right": 850,
+        "bottom": 1040,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-today.0.mvggsgla",
+          "rect": {
+            "x": 40,
+            "y": 248,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248,
+            "right": 433.3453369140625,
+            "bottom": 597.6402587890625,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 248.72842407226562,
+              "width": 391.88848876953125,
+              "height": 348.1834411621094,
+              "top": 248.72842407226562,
+              "right": 432.61690521240234,
+              "bottom": 596.911865234375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsgla",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 248,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248,
+            "right": 844.1726684570312,
+            "bottom": 597.6402587890625,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 248.72842407226562,
+              "width": 391.8885192871094,
+              "height": 348.1834411621094,
+              "top": 248.72842407226562,
+              "right": 843.4442749023438,
+              "bottom": 596.911865234375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsgla",
+          "rect": {
+            "x": 40,
+            "y": 615.122314453125,
+            "width": 393.3453369140625,
+            "height": 285.53955078125,
+            "top": 615.122314453125,
+            "right": 433.3453369140625,
+            "bottom": 900.661865234375,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 615.8507080078125,
+              "width": 391.88848876953125,
+              "height": 284.082763671875,
+              "top": 615.8507080078125,
+              "right": 432.61690521240234,
+              "bottom": 899.9334716796875,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 390,
+            "scrollHeight": 390,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsgla",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 615.122314453125,
+            "width": 393.3453369140625,
+            "height": 139.8560791015625,
+            "top": 615.122314453125,
+            "right": 844.1726684570312,
+            "bottom": 754.9783935546875,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 615.8507080078125,
+              "width": 391.8885192871094,
+              "height": 138.3992919921875,
+              "top": 615.8507080078125,
+              "right": 843.4442749023438,
+              "bottom": 754.25,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 190,
+            "scrollHeight": 190,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsgla",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 772.46044921875,
+            "width": 393.3453369140625,
+            "height": 128.201416015625,
+            "top": 772.46044921875,
+            "right": 844.1726684570312,
+            "bottom": 900.661865234375,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 773.1888427734375,
+              "width": 391.8885192871094,
+              "height": 126.74462890625,
+              "top": 773.1888427734375,
+              "right": 843.4442749023438,
+              "bottom": 899.9334716796875,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-900",
+      "template": "tpl-learn",
+      "saved": [
+        {
+          "id": "it.tpl-learn.0.mvggshez",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-assignments"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggshez",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggshez",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-files"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggshez",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248,
+        "width": 810,
+        "height": 792,
+        "top": 248,
+        "right": 850,
+        "bottom": 1040,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-learn.0.mvggshez",
+          "rect": {
+            "x": 40,
+            "y": 248,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248,
+            "right": 433.3453369140625,
+            "bottom": 597.6402587890625,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 248.72842407226562,
+              "width": 391.88848876953125,
+              "height": 348.1834411621094,
+              "top": 248.72842407226562,
+              "right": 432.61690521240234,
+              "bottom": 596.911865234375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggshez",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 248,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248,
+            "right": 844.1726684570312,
+            "bottom": 597.6402587890625,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 248.72842407226562,
+              "width": 391.8885192871094,
+              "height": 348.1834411621094,
+              "top": 248.72842407226562,
+              "right": 843.4442749023438,
+              "bottom": 596.911865234375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggshez",
+          "rect": {
+            "x": 40,
+            "y": 615.122314453125,
+            "width": 393.3453369140625,
+            "height": 320.50360107421875,
+            "top": 615.122314453125,
+            "right": 433.3453369140625,
+            "bottom": 935.6259155273438,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 615.8507080078125,
+              "width": 391.88848876953125,
+              "height": 319.04681396484375,
+              "top": 615.8507080078125,
+              "right": 432.61690521240234,
+              "bottom": 934.8975219726562,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggshez",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 615.122314453125,
+            "width": 393.3453369140625,
+            "height": 320.50360107421875,
+            "top": 615.122314453125,
+            "right": 844.1726684570312,
+            "bottom": 935.6259155273438,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 615.8507080078125,
+              "width": 391.8885192871094,
+              "height": 319.04681396484375,
+              "top": 615.8507080078125,
+              "right": 843.4442749023438,
+              "bottom": 934.8975219726562,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "chromium-900",
+      "template": "tpl-min",
+      "saved": [
+        {
+          "id": "it.tpl-min.0.mvggsi6q",
+          "spec": {
+            "kind": "text",
+            "text": "今天，从容一点。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsi6q",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsi6q",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 7,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248,
+        "width": 810,
+        "height": 792,
+        "top": 248,
+        "right": 850,
+        "bottom": 1040,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-min.0.mvggsi6q",
+          "rect": {
+            "x": 40,
+            "y": 248,
+            "width": 804.1726684570312,
+            "height": 96.15106201171875,
+            "top": 248,
+            "right": 844.1726684570312,
+            "bottom": 344.15106201171875,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 248.72842407226562,
+              "width": 802.7158813476562,
+              "height": 94.69424438476562,
+              "top": 248.72842407226562,
+              "right": 843.4442977905273,
+              "bottom": 343.42266845703125,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsi6q",
+          "rect": {
+            "x": 40,
+            "y": 361.6330871582031,
+            "width": 539.02880859375,
+            "height": 349.6402893066406,
+            "top": 361.6330871582031,
+            "right": 579.02880859375,
+            "bottom": 711.2733764648438,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 362.36151123046875,
+              "width": 537.5719604492188,
+              "height": 348.1834716796875,
+              "top": 362.36151123046875,
+              "right": 578.3003768920898,
+              "bottom": 710.5449829101562,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 738,
+            "scrollWidth": 738,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsi6q",
+          "rect": {
+            "x": 596.5108032226562,
+            "y": 361.6330871582031,
+            "width": 247.661865234375,
+            "height": 128.20144653320312,
+            "top": 361.6330871582031,
+            "right": 844.1726684570312,
+            "bottom": 489.83453369140625,
+            "left": 596.5108032226562
+          },
+          "authored": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 597.2391967773438,
+              "y": 362.36151123046875,
+              "width": 246.205078125,
+              "height": 126.74462890625,
+              "top": 362.36151123046875,
+              "right": 843.4442749023438,
+              "bottom": 489.10614013671875,
+              "left": 597.2391967773438
+            },
+            "clientWidth": 338,
+            "scrollWidth": 338,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-390",
+      "template": "tpl-home",
+      "saved": [
+        {
+          "id": "home.clock",
+          "spec": {
+            "kind": "custom",
+            "id": "clock"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.greeting",
+          "spec": {
+            "kind": "text",
+            "text": "把今天，安排好。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 1,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.services",
+          "spec": {
+            "kind": "custom",
+            "id": "services"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "manual": true
+        },
+        {
+          "id": "home.tasks",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.classes",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.news",
+          "spec": {
+            "kind": "custom",
+            "id": "news"
+          },
+          "cell": {
+            "x": 0,
+            "y": 12,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        },
+        {
+          "id": "home.balance",
+          "spec": {
+            "kind": "custom",
+            "id": "cardEntry"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 1908,
+        "top": 140,
+        "right": 374,
+        "bottom": 2048,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "home.clock",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 357,
+            "height": 132,
+            "top": 140,
+            "right": 373,
+            "bottom": 272,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 357,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 355,
+              "height": 122,
+              "top": 145,
+              "right": 372,
+              "bottom": 267,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 122,
+            "scrollHeight": 122,
+            "overflowY": "hidden"
+          }
+        },
+        {
+          "id": "home.greeting",
+          "rect": {
+            "x": 16,
+            "y": 284,
+            "width": 357,
+            "height": 132,
+            "top": 284,
+            "right": 373,
+            "bottom": 416,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 144,
+            "w": 357,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 289,
+              "width": 355,
+              "height": 122,
+              "top": 289,
+              "right": 372,
+              "bottom": 411,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 122,
+            "scrollHeight": 122,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.services",
+          "rect": {
+            "x": 16,
+            "y": 428,
+            "width": 357,
+            "height": 340,
+            "top": 428,
+            "right": 373,
+            "bottom": 768,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 288,
+            "w": 357,
+            "h": 340
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 433,
+              "width": 355,
+              "height": 330,
+              "top": 433,
+              "right": 372,
+              "bottom": 763,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 330,
+            "scrollHeight": 330,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.tasks",
+          "rect": {
+            "x": 16,
+            "y": 780,
+            "width": 357,
+            "height": 356,
+            "top": 780,
+            "right": 373,
+            "bottom": 1136,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 640,
+            "w": 357,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 785,
+              "width": 355,
+              "height": 346,
+              "top": 785,
+              "right": 372,
+              "bottom": 1131,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 346,
+            "scrollHeight": 346,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.classes",
+          "rect": {
+            "x": 16,
+            "y": 1148,
+            "width": 357,
+            "height": 356,
+            "top": 1148,
+            "right": 373,
+            "bottom": 1504,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1008,
+            "w": 357,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1153,
+              "width": 355,
+              "height": 346,
+              "top": 1153,
+              "right": 372,
+              "bottom": 1499,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 346,
+            "scrollHeight": 346,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.news",
+          "rect": {
+            "x": 16,
+            "y": 1516,
+            "width": 357,
+            "height": 248,
+            "top": 1516,
+            "right": 373,
+            "bottom": 1764,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1376,
+            "w": 357,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1521,
+              "width": 355,
+              "height": 238,
+              "top": 1521,
+              "right": 372,
+              "bottom": 1759,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 238,
+            "scrollHeight": 238,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.balance",
+          "rect": {
+            "x": 16,
+            "y": 1776,
+            "width": 357,
+            "height": 248,
+            "top": 1776,
+            "right": 373,
+            "bottom": 2024,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1636,
+            "w": 357,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1781,
+              "width": 355,
+              "height": 238,
+              "top": 1781,
+              "right": 372,
+              "bottom": 2019,
+              "left": 17
+            },
+            "clientWidth": 355,
+            "scrollWidth": 355,
+            "clientHeight": 238,
+            "scrollHeight": 238,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-390",
+      "template": "tpl-today",
+      "saved": [
+        {
+          "id": "it.tpl-today.0.mvggsm1b",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsm1b",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsm1b",
+          "spec": {
+            "kind": "custom",
+            "id": "notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsm1b",
+          "spec": {
+            "kind": "custom",
+            "id": "next-class"
+          },
+          "cell": {
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsm1b",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 16,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          }
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 1792,
+        "top": 140,
+        "right": 374,
+        "bottom": 1932,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-today.0.mvggsm1b",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 358,
+            "height": 480,
+            "top": 140,
+            "right": 374,
+            "bottom": 620,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 356,
+              "height": 470,
+              "top": 145,
+              "right": 373,
+              "bottom": 615,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsm1b",
+          "rect": {
+            "x": 16,
+            "y": 632,
+            "width": 358,
+            "height": 480,
+            "top": 632,
+            "right": 374,
+            "bottom": 1112,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 492,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 637,
+              "width": 356,
+              "height": 470,
+              "top": 637,
+              "right": 373,
+              "bottom": 1107,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsm1b",
+          "rect": {
+            "x": 16,
+            "y": 1124,
+            "width": 358,
+            "height": 392,
+            "top": 1124,
+            "right": 374,
+            "bottom": 1516,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 984,
+            "w": 358,
+            "h": 392
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1129,
+              "width": 356,
+              "height": 382,
+              "top": 1129,
+              "right": 373,
+              "bottom": 1511,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 382,
+            "scrollHeight": 382,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsm1b",
+          "rect": {
+            "x": 16,
+            "y": 1528,
+            "width": 358,
+            "height": 192,
+            "top": 1528,
+            "right": 374,
+            "bottom": 1720,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1388,
+            "w": 358,
+            "h": 192
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1533,
+              "width": 356,
+              "height": 182,
+              "top": 1533,
+              "right": 373,
+              "bottom": 1715,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 182,
+            "scrollHeight": 182,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsm1b",
+          "rect": {
+            "x": 16,
+            "y": 1732,
+            "width": 358,
+            "height": 176,
+            "top": 1732,
+            "right": 374,
+            "bottom": 1908,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1592,
+            "w": 358,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1737,
+              "width": 356,
+              "height": 166,
+              "top": 1737,
+              "right": 373,
+              "bottom": 1903,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 166,
+            "scrollHeight": 166,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-390",
+      "template": "tpl-learn",
+      "saved": [
+        {
+          "id": "it.tpl-learn.0.mvggsmwb",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-assignments"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsmwb",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsmwb",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-files"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsmwb",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 1900,
+        "top": 140,
+        "right": 374,
+        "bottom": 2040,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-learn.0.mvggsmwb",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 358,
+            "height": 480,
+            "top": 140,
+            "right": 374,
+            "bottom": 620,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 356,
+              "height": 470,
+              "top": 145,
+              "right": 373,
+              "bottom": 615,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsmwb",
+          "rect": {
+            "x": 16,
+            "y": 632,
+            "width": 358,
+            "height": 480,
+            "top": 632,
+            "right": 374,
+            "bottom": 1112,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 492,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 637,
+              "width": 356,
+              "height": 470,
+              "top": 637,
+              "right": 373,
+              "bottom": 1107,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsmwb",
+          "rect": {
+            "x": 16,
+            "y": 1124,
+            "width": 358,
+            "height": 440,
+            "top": 1124,
+            "right": 374,
+            "bottom": 1564,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 984,
+            "w": 358,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1129,
+              "width": 356,
+              "height": 430,
+              "top": 1129,
+              "right": 373,
+              "bottom": 1559,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 430,
+            "scrollHeight": 430,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsmwb",
+          "rect": {
+            "x": 16,
+            "y": 1576,
+            "width": 358,
+            "height": 440,
+            "top": 1576,
+            "right": 374,
+            "bottom": 2016,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 1436,
+            "w": 358,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 1581,
+              "width": 356,
+              "height": 430,
+              "top": 1581,
+              "right": 373,
+              "bottom": 2011,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 430,
+            "scrollHeight": 430,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-390",
+      "template": "tpl-min",
+      "saved": [
+        {
+          "id": "it.tpl-min.0.mvggsnrp",
+          "spec": {
+            "kind": "text",
+            "text": "今天，从容一点。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsnrp",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsnrp",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 7,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          }
+        }
+      ],
+      "reading": true,
+      "host": {
+        "x": 16,
+        "y": 140,
+        "width": 358,
+        "height": 836,
+        "top": 140,
+        "right": 374,
+        "bottom": 976,
+        "left": 16
+      },
+      "viewport": {
+        "w": 390,
+        "h": 844
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-min.0.mvggsnrp",
+          "rect": {
+            "x": 16,
+            "y": 140,
+            "width": 358,
+            "height": 132,
+            "top": 140,
+            "right": 374,
+            "bottom": 272,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 358,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 145,
+              "width": 356,
+              "height": 122,
+              "top": 145,
+              "right": 373,
+              "bottom": 267,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 122,
+            "scrollHeight": 122,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsnrp",
+          "rect": {
+            "x": 16,
+            "y": 284,
+            "width": 358,
+            "height": 480,
+            "top": 284,
+            "right": 374,
+            "bottom": 764,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 144,
+            "w": 358,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 289,
+              "width": 356,
+              "height": 470,
+              "top": 289,
+              "right": 373,
+              "bottom": 759,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 470,
+            "scrollHeight": 470,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsnrp",
+          "rect": {
+            "x": 16,
+            "y": 776,
+            "width": 358,
+            "height": 176,
+            "top": 776,
+            "right": 374,
+            "bottom": 952,
+            "left": 16
+          },
+          "authored": {
+            "x": 0,
+            "y": 636,
+            "w": 358,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 17,
+              "y": 781,
+              "width": 356,
+              "height": 166,
+              "top": 781,
+              "right": 373,
+              "bottom": 947,
+              "left": 17
+            },
+            "clientWidth": 356,
+            "scrollWidth": 356,
+            "clientHeight": 166,
+            "scrollHeight": 166,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-1280",
+      "template": "tpl-home",
+      "saved": [
+        {
+          "id": "home.clock",
+          "spec": {
+            "kind": "custom",
+            "id": "clock"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.greeting",
+          "spec": {
+            "kind": "text",
+            "text": "把今天，安排好。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 1,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.services",
+          "spec": {
+            "kind": "custom",
+            "id": "services"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "manual": true
+        },
+        {
+          "id": "home.tasks",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.classes",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.news",
+          "spec": {
+            "kind": "custom",
+            "id": "news"
+          },
+          "cell": {
+            "x": 0,
+            "y": 12,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        },
+        {
+          "id": "home.balance",
+          "spec": {
+            "kind": "custom",
+            "id": "cardEntry"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248.375,
+        "width": 1120,
+        "height": 1004,
+        "top": 248.375,
+        "right": 1195,
+        "bottom": 1252.375,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "home.clock",
+          "rect": {
+            "x": 75,
+            "y": 248.375,
+            "width": 280,
+            "height": 132,
+            "top": 248.375,
+            "right": 355,
+            "bottom": 380.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249.375,
+              "width": 278,
+              "height": 130,
+              "top": 249.375,
+              "right": 354,
+              "bottom": 379.375,
+              "left": 76
+            },
+            "clientWidth": 278,
+            "scrollWidth": 278,
+            "clientHeight": 130,
+            "scrollHeight": 132,
+            "overflowY": "hidden"
+          }
+        },
+        {
+          "id": "home.greeting",
+          "rect": {
+            "x": 379,
+            "y": 248.375,
+            "width": 800,
+            "height": 132,
+            "top": 248.375,
+            "right": 1179,
+            "bottom": 380.375,
+            "left": 379
+          },
+          "authored": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 380,
+              "y": 249.375,
+              "width": 798,
+              "height": 130,
+              "top": 249.375,
+              "right": 1178,
+              "bottom": 379.375,
+              "left": 380
+            },
+            "clientWidth": 798,
+            "scrollWidth": 798,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.services",
+          "rect": {
+            "x": 75,
+            "y": 404.375,
+            "width": 1104,
+            "height": 196,
+            "top": 404.375,
+            "right": 1179,
+            "bottom": 600.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 405.375,
+              "width": 1102,
+              "height": 194,
+              "top": 405.375,
+              "right": 1178,
+              "bottom": 599.375,
+              "left": 76
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 194,
+            "scrollHeight": 194,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.tasks",
+          "rect": {
+            "x": 75,
+            "y": 624.375,
+            "width": 540,
+            "height": 356,
+            "top": 624.375,
+            "right": 615,
+            "bottom": 980.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 625.375,
+              "width": 538,
+              "height": 354,
+              "top": 625.375,
+              "right": 614,
+              "bottom": 979.375,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.classes",
+          "rect": {
+            "x": 639,
+            "y": 624.375,
+            "width": 540,
+            "height": 356,
+            "top": 624.375,
+            "right": 1179,
+            "bottom": 980.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 625.375,
+              "width": 538,
+              "height": 354,
+              "top": 625.375,
+              "right": 1178,
+              "bottom": 979.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.news",
+          "rect": {
+            "x": 75,
+            "y": 1004.375,
+            "width": 540,
+            "height": 248,
+            "top": 1004.375,
+            "right": 615,
+            "bottom": 1252.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 1005.375,
+              "width": 538,
+              "height": 246,
+              "top": 1005.375,
+              "right": 614,
+              "bottom": 1251.375,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.balance",
+          "rect": {
+            "x": 639,
+            "y": 1004.375,
+            "width": 540,
+            "height": 248,
+            "top": 1004.375,
+            "right": 1179,
+            "bottom": 1252.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 1005.375,
+              "width": 538,
+              "height": 246,
+              "top": 1005.375,
+              "right": 1178,
+              "bottom": 1251.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-1280",
+      "template": "tpl-today",
+      "saved": [
+        {
+          "id": "it.tpl-today.0.mvggsqwy",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsqwy",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsqwy",
+          "spec": {
+            "kind": "custom",
+            "id": "notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsqwy",
+          "spec": {
+            "kind": "custom",
+            "id": "next-class"
+          },
+          "cell": {
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsqwy",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 16,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248.375,
+        "width": 1120,
+        "height": 896,
+        "top": 248.375,
+        "right": 1195,
+        "bottom": 1144.375,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-today.0.mvggsqwy",
+          "rect": {
+            "x": 75,
+            "y": 248.375,
+            "width": 540,
+            "height": 480,
+            "top": 248.375,
+            "right": 615,
+            "bottom": 728.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249.375,
+              "width": 538,
+              "height": 478,
+              "top": 249.375,
+              "right": 614,
+              "bottom": 727.375,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsqwy",
+          "rect": {
+            "x": 639,
+            "y": 248.375,
+            "width": 540,
+            "height": 480,
+            "top": 248.375,
+            "right": 1179,
+            "bottom": 728.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 249.375,
+              "width": 538,
+              "height": 478,
+              "top": 249.375,
+              "right": 1178,
+              "bottom": 727.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsqwy",
+          "rect": {
+            "x": 75,
+            "y": 752.375,
+            "width": 540,
+            "height": 392,
+            "top": 752.375,
+            "right": 615,
+            "bottom": 1144.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 753.375,
+              "width": 538,
+              "height": 390,
+              "top": 753.375,
+              "right": 614,
+              "bottom": 1143.375,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 390,
+            "scrollHeight": 390,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsqwy",
+          "rect": {
+            "x": 639,
+            "y": 752.375,
+            "width": 540,
+            "height": 192,
+            "top": 752.375,
+            "right": 1179,
+            "bottom": 944.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 753.375,
+              "width": 538,
+              "height": 190,
+              "top": 753.375,
+              "right": 1178,
+              "bottom": 943.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 190,
+            "scrollHeight": 190,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsqwy",
+          "rect": {
+            "x": 639,
+            "y": 968.375,
+            "width": 540,
+            "height": 176,
+            "top": 968.375,
+            "right": 1179,
+            "bottom": 1144.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 969.375,
+              "width": 538,
+              "height": 174,
+              "top": 969.375,
+              "right": 1178,
+              "bottom": 1143.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-1280",
+      "template": "tpl-learn",
+      "saved": [
+        {
+          "id": "it.tpl-learn.0.mvggsron",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-assignments"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsron",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsron",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-files"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsron",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248.375,
+        "width": 1120,
+        "height": 944,
+        "top": 248.375,
+        "right": 1195,
+        "bottom": 1192.375,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-learn.0.mvggsron",
+          "rect": {
+            "x": 75,
+            "y": 248.375,
+            "width": 540,
+            "height": 480,
+            "top": 248.375,
+            "right": 615,
+            "bottom": 728.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249.375,
+              "width": 538,
+              "height": 478,
+              "top": 249.375,
+              "right": 614,
+              "bottom": 727.375,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsron",
+          "rect": {
+            "x": 639,
+            "y": 248.375,
+            "width": 540,
+            "height": 480,
+            "top": 248.375,
+            "right": 1179,
+            "bottom": 728.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 249.375,
+              "width": 538,
+              "height": 478,
+              "top": 249.375,
+              "right": 1178,
+              "bottom": 727.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsron",
+          "rect": {
+            "x": 75,
+            "y": 752.375,
+            "width": 540,
+            "height": 440,
+            "top": 752.375,
+            "right": 615,
+            "bottom": 1192.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 753.375,
+              "width": 538,
+              "height": 438,
+              "top": 753.375,
+              "right": 614,
+              "bottom": 1191.375,
+              "left": 76
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsron",
+          "rect": {
+            "x": 639,
+            "y": 752.375,
+            "width": 540,
+            "height": 440,
+            "top": 752.375,
+            "right": 1179,
+            "bottom": 1192.375,
+            "left": 639
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 640,
+              "y": 753.375,
+              "width": 538,
+              "height": 438,
+              "top": 753.375,
+              "right": 1178,
+              "bottom": 1191.375,
+              "left": 640
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-1280",
+      "template": "tpl-min",
+      "saved": [
+        {
+          "id": "it.tpl-min.0.mvggssfy",
+          "spec": {
+            "kind": "text",
+            "text": "今天，从容一点。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggssfy",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggssfy",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 7,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 75,
+        "y": 248.375,
+        "width": 1120,
+        "height": 792,
+        "top": 248.375,
+        "right": 1195,
+        "bottom": 1040.375,
+        "left": 75
+      },
+      "viewport": {
+        "w": 1280,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-min.0.mvggssfy",
+          "rect": {
+            "x": 75,
+            "y": 248.375,
+            "width": 1104,
+            "height": 132,
+            "top": 248.375,
+            "right": 1179,
+            "bottom": 380.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 249.375,
+              "width": 1102,
+              "height": 130,
+              "top": 249.375,
+              "right": 1178,
+              "bottom": 379.375,
+              "left": 76
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggssfy",
+          "rect": {
+            "x": 75,
+            "y": 404.375,
+            "width": 740,
+            "height": 480,
+            "top": 404.375,
+            "right": 815,
+            "bottom": 884.375,
+            "left": 75
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 76,
+              "y": 405.375,
+              "width": 738,
+              "height": 478,
+              "top": 405.375,
+              "right": 814,
+              "bottom": 883.375,
+              "left": 76
+            },
+            "clientWidth": 738,
+            "scrollWidth": 738,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggssfy",
+          "rect": {
+            "x": 839,
+            "y": 404.375,
+            "width": 340,
+            "height": 176,
+            "top": 404.375,
+            "right": 1179,
+            "bottom": 580.375,
+            "left": 839
+          },
+          "authored": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 840,
+              "y": 405.375,
+              "width": 338,
+              "height": 174,
+              "top": 405.375,
+              "right": 1178,
+              "bottom": 579.375,
+              "left": 840
+            },
+            "clientWidth": 338,
+            "scrollWidth": 338,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-900",
+      "template": "tpl-home",
+      "saved": [
+        {
+          "id": "home.clock",
+          "spec": {
+            "kind": "custom",
+            "id": "clock"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 3,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.greeting",
+          "spec": {
+            "kind": "text",
+            "text": "把今天，安排好。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 1,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "manual": true
+        },
+        {
+          "id": "home.services",
+          "spec": {
+            "kind": "custom",
+            "id": "services"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "manual": true
+        },
+        {
+          "id": "home.tasks",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 4,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.classes",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 8,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "manual": true
+        },
+        {
+          "id": "home.news",
+          "spec": {
+            "kind": "custom",
+            "id": "news"
+          },
+          "cell": {
+            "x": 0,
+            "y": 12,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        },
+        {
+          "id": "home.balance",
+          "spec": {
+            "kind": "custom",
+            "id": "cardEntry"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 3
+          },
+          "rect": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "manual": true
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248.375,
+        "width": 810,
+        "height": 792,
+        "top": 248.375,
+        "right": 850,
+        "bottom": 1040.375,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "home.clock",
+          "rect": {
+            "x": 40,
+            "y": 248.375,
+            "width": 203.9568328857422,
+            "height": 96.15109252929688,
+            "top": 248.375,
+            "right": 243.9568328857422,
+            "bottom": 344.5260925292969,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 280,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 249.10342407226562,
+              "width": 202.5,
+              "height": 94.69424438476562,
+              "top": 249.10342407226562,
+              "right": 243.2284164428711,
+              "bottom": 343.79766845703125,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 278,
+            "scrollWidth": 278,
+            "clientHeight": 130,
+            "scrollHeight": 132,
+            "overflowY": "hidden"
+          }
+        },
+        {
+          "id": "home.greeting",
+          "rect": {
+            "x": 261.4388427734375,
+            "y": 248.375,
+            "width": 582.7338256835938,
+            "height": 96.15109252929688,
+            "top": 248.375,
+            "right": 844.1726684570312,
+            "bottom": 344.5260925292969,
+            "left": 261.4388427734375
+          },
+          "authored": {
+            "x": 304,
+            "y": 0,
+            "w": 800,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 262.1672668457031,
+              "y": 249.10342407226562,
+              "width": 581.2769775390625,
+              "height": 94.69424438476562,
+              "top": 249.10342407226562,
+              "right": 843.4442443847656,
+              "bottom": 343.79766845703125,
+              "left": 262.1672668457031
+            },
+            "clientWidth": 798,
+            "scrollWidth": 798,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.services",
+          "rect": {
+            "x": 40,
+            "y": 362.0080871582031,
+            "width": 804.1726684570312,
+            "height": 142.769775390625,
+            "top": 362.0080871582031,
+            "right": 844.1726684570312,
+            "bottom": 504.7778625488281,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 1104,
+            "h": 196
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 362.73651123046875,
+              "width": 802.7158813476562,
+              "height": 141.31295776367188,
+              "top": 362.73651123046875,
+              "right": 843.4442977905273,
+              "bottom": 504.0494689941406,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 194,
+            "scrollHeight": 194,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.tasks",
+          "rect": {
+            "x": 40,
+            "y": 522.2598876953125,
+            "width": 393.3453369140625,
+            "height": 259.3165283203125,
+            "top": 522.2598876953125,
+            "right": 433.3453369140625,
+            "bottom": 781.576416015625,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 522.98828125,
+              "width": 391.88848876953125,
+              "height": 257.8597412109375,
+              "top": 522.98828125,
+              "right": 432.61690521240234,
+              "bottom": 780.8480224609375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.classes",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 522.2598876953125,
+            "width": 393.3453369140625,
+            "height": 259.3165283203125,
+            "top": 522.2598876953125,
+            "right": 844.1726684570312,
+            "bottom": 781.576416015625,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 376,
+            "w": 540,
+            "h": 356
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 522.98828125,
+              "width": 391.8885192871094,
+              "height": 257.8597412109375,
+              "top": 522.98828125,
+              "right": 843.4442749023438,
+              "bottom": 780.8480224609375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 354,
+            "scrollHeight": 354,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.news",
+          "rect": {
+            "x": 40,
+            "y": 799.0584716796875,
+            "width": 393.3453369140625,
+            "height": 180.6474609375,
+            "top": 799.0584716796875,
+            "right": 433.3453369140625,
+            "bottom": 979.7059326171875,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 799.786865234375,
+              "width": 391.88848876953125,
+              "height": 179.190673828125,
+              "top": 799.786865234375,
+              "right": 432.61690521240234,
+              "bottom": 978.9775390625,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "home.balance",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 799.0584716796875,
+            "width": 393.3453369140625,
+            "height": 180.6474609375,
+            "top": 799.0584716796875,
+            "right": 844.1726684570312,
+            "bottom": 979.7059326171875,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 756,
+            "w": 540,
+            "h": 248
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 799.786865234375,
+              "width": 391.8885192871094,
+              "height": 179.190673828125,
+              "top": 799.786865234375,
+              "right": 843.4442749023438,
+              "bottom": 978.9775390625,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 246,
+            "scrollHeight": 246,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-900",
+      "template": "tpl-today",
+      "saved": [
+        {
+          "id": "it.tpl-today.0.mvggsx16",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsx16",
+          "spec": {
+            "kind": "custom",
+            "id": "homework"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsx16",
+          "spec": {
+            "kind": "custom",
+            "id": "notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 4
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsx16",
+          "spec": {
+            "kind": "custom",
+            "id": "next-class"
+          },
+          "cell": {
+            "x": 0,
+            "y": 14,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsx16",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 16,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248.375,
+        "width": 810,
+        "height": 792,
+        "top": 248.375,
+        "right": 850,
+        "bottom": 1040.375,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-today.0.mvggsx16",
+          "rect": {
+            "x": 40,
+            "y": 248.375,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248.375,
+            "right": 433.3453369140625,
+            "bottom": 598.0152587890625,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 249.10342407226562,
+              "width": 391.88848876953125,
+              "height": 348.1834411621094,
+              "top": 249.10342407226562,
+              "right": 432.61690521240234,
+              "bottom": 597.286865234375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.1.mvggsx16",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 248.375,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248.375,
+            "right": 844.1726684570312,
+            "bottom": 598.0152587890625,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 249.10342407226562,
+              "width": 391.8885192871094,
+              "height": 348.1834411621094,
+              "top": 249.10342407226562,
+              "right": 843.4442749023438,
+              "bottom": 597.286865234375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.2.mvggsx16",
+          "rect": {
+            "x": 40,
+            "y": 615.497314453125,
+            "width": 393.3453369140625,
+            "height": 285.53955078125,
+            "top": 615.497314453125,
+            "right": 433.3453369140625,
+            "bottom": 901.036865234375,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 392
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 616.2257080078125,
+              "width": 391.88848876953125,
+              "height": 284.082763671875,
+              "top": 616.2257080078125,
+              "right": 432.61690521240234,
+              "bottom": 900.3084716796875,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 390,
+            "scrollHeight": 390,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.3.mvggsx16",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 615.497314453125,
+            "width": 393.3453369140625,
+            "height": 139.8560791015625,
+            "top": 615.497314453125,
+            "right": 844.1726684570312,
+            "bottom": 755.3533935546875,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 192
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 616.2257080078125,
+              "width": 391.8885192871094,
+              "height": 138.3992919921875,
+              "top": 616.2257080078125,
+              "right": 843.4442749023438,
+              "bottom": 754.625,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 190,
+            "scrollHeight": 190,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-today.4.mvggsx16",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 772.83544921875,
+            "width": 393.3453369140625,
+            "height": 128.201416015625,
+            "top": 772.83544921875,
+            "right": 844.1726684570312,
+            "bottom": 901.036865234375,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 720,
+            "w": 540,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 773.5638427734375,
+              "width": 391.8885192871094,
+              "height": 126.74462890625,
+              "top": 773.5638427734375,
+              "right": 843.4442749023438,
+              "bottom": 900.3084716796875,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-900",
+      "template": "tpl-learn",
+      "saved": [
+        {
+          "id": "it.tpl-learn.0.mvggsxrm",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-assignments"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsxrm",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-notices"
+          },
+          "cell": {
+            "x": 0,
+            "y": 5,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsxrm",
+          "spec": {
+            "kind": "custom",
+            "id": "learn-files"
+          },
+          "cell": {
+            "x": 0,
+            "y": 10,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsxrm",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 15,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248.375,
+        "width": 810,
+        "height": 792,
+        "top": 248.375,
+        "right": 850,
+        "bottom": 1040.375,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-learn.0.mvggsxrm",
+          "rect": {
+            "x": 40,
+            "y": 248.375,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248.375,
+            "right": 433.3453369140625,
+            "bottom": 598.0152587890625,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 249.10342407226562,
+              "width": 391.88848876953125,
+              "height": 348.1834411621094,
+              "top": 249.10342407226562,
+              "right": 432.61690521240234,
+              "bottom": 597.286865234375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.1.mvggsxrm",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 248.375,
+            "width": 393.3453369140625,
+            "height": 349.6402587890625,
+            "top": 248.375,
+            "right": 844.1726684570312,
+            "bottom": 598.0152587890625,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 0,
+            "w": 540,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 249.10342407226562,
+              "width": 391.8885192871094,
+              "height": 348.1834411621094,
+              "top": 249.10342407226562,
+              "right": 843.4442749023438,
+              "bottom": 597.286865234375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.2.mvggsxrm",
+          "rect": {
+            "x": 40,
+            "y": 615.497314453125,
+            "width": 393.3453369140625,
+            "height": 320.50360107421875,
+            "top": 615.497314453125,
+            "right": 433.3453369140625,
+            "bottom": 936.0009155273438,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 616.2257080078125,
+              "width": 391.88848876953125,
+              "height": 319.0467529296875,
+              "top": 616.2257080078125,
+              "right": 432.61690521240234,
+              "bottom": 935.2724609375,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-learn.3.mvggsxrm",
+          "rect": {
+            "x": 450.82733154296875,
+            "y": 615.497314453125,
+            "width": 393.3453369140625,
+            "height": 320.50360107421875,
+            "top": 615.497314453125,
+            "right": 844.1726684570312,
+            "bottom": 936.0009155273438,
+            "left": 450.82733154296875
+          },
+          "authored": {
+            "x": 564,
+            "y": 504,
+            "w": 540,
+            "h": 440
+          },
+          "card": {
+            "rect": {
+              "x": 451.5557556152344,
+              "y": 616.2257080078125,
+              "width": 391.8885192871094,
+              "height": 319.0467529296875,
+              "top": 616.2257080078125,
+              "right": 843.4442749023438,
+              "bottom": 935.2724609375,
+              "left": 451.5557556152344
+            },
+            "clientWidth": 538,
+            "scrollWidth": 538,
+            "clientHeight": 438,
+            "scrollHeight": 438,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "label": "webkit-900",
+      "template": "tpl-min",
+      "saved": [
+        {
+          "id": "it.tpl-min.0.mvggsyhs",
+          "spec": {
+            "kind": "text",
+            "text": "今天，从容一点。",
+            "variant": "title"
+          },
+          "cell": {
+            "x": 0,
+            "y": 0,
+            "w": 4,
+            "h": 1
+          },
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsyhs",
+          "spec": {
+            "kind": "custom",
+            "id": "classes"
+          },
+          "cell": {
+            "x": 0,
+            "y": 2,
+            "w": 4,
+            "h": 5
+          },
+          "rect": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsyhs",
+          "spec": {
+            "kind": "custom",
+            "id": "balance-strip"
+          },
+          "cell": {
+            "x": 0,
+            "y": 7,
+            "w": 4,
+            "h": 2
+          },
+          "rect": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          }
+        }
+      ],
+      "reading": false,
+      "host": {
+        "x": 40,
+        "y": 248.375,
+        "width": 810,
+        "height": 792,
+        "top": 248.375,
+        "right": 850,
+        "bottom": 1040.375,
+        "left": 40
+      },
+      "viewport": {
+        "w": 900,
+        "h": 900
+      },
+      "topReachable": true,
+      "items": [
+        {
+          "id": "it.tpl-min.0.mvggsyhs",
+          "rect": {
+            "x": 40,
+            "y": 248.375,
+            "width": 804.1726684570312,
+            "height": 96.15109252929688,
+            "top": 248.375,
+            "right": 844.1726684570312,
+            "bottom": 344.5260925292969,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 0,
+            "w": 1104,
+            "h": 132
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 249.10342407226562,
+              "width": 802.7158813476562,
+              "height": 94.69424438476562,
+              "top": 249.10342407226562,
+              "right": 843.4442977905273,
+              "bottom": 343.79766845703125,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 1102,
+            "scrollWidth": 1102,
+            "clientHeight": 130,
+            "scrollHeight": 130,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.1.mvggsyhs",
+          "rect": {
+            "x": 40,
+            "y": 362.0080871582031,
+            "width": 539.0287475585938,
+            "height": 349.6402893066406,
+            "top": 362.0080871582031,
+            "right": 579.0287475585938,
+            "bottom": 711.6483764648438,
+            "left": 40
+          },
+          "authored": {
+            "x": 0,
+            "y": 156,
+            "w": 740,
+            "h": 480
+          },
+          "card": {
+            "rect": {
+              "x": 40.728416442871094,
+              "y": 362.73651123046875,
+              "width": 537.5719604492188,
+              "height": 348.1834716796875,
+              "top": 362.73651123046875,
+              "right": 578.3003768920898,
+              "bottom": 710.9199829101562,
+              "left": 40.728416442871094
+            },
+            "clientWidth": 738,
+            "scrollWidth": 738,
+            "clientHeight": 478,
+            "scrollHeight": 478,
+            "overflowY": "auto"
+          }
+        },
+        {
+          "id": "it.tpl-min.2.mvggsyhs",
+          "rect": {
+            "x": 596.5108032226562,
+            "y": 362.0080871582031,
+            "width": 247.661865234375,
+            "height": 128.20144653320312,
+            "top": 362.0080871582031,
+            "right": 844.1726684570312,
+            "bottom": 490.20953369140625,
+            "left": 596.5108032226562
+          },
+          "authored": {
+            "x": 764,
+            "y": 156,
+            "w": 340,
+            "h": 176
+          },
+          "card": {
+            "rect": {
+              "x": 597.2391967773438,
+              "y": 362.73651123046875,
+              "width": 246.205078125,
+              "height": 126.74459838867188,
+              "top": 362.73651123046875,
+              "right": 843.4442749023438,
+              "bottom": 489.4811096191406,
+              "left": 597.2391967773438
+            },
+            "clientWidth": 338,
+            "scrollWidth": 338,
+            "clientHeight": 174,
+            "scrollHeight": 174,
+            "overflowY": "auto"
+          }
+        }
+      ]
+    }
+  ],
+  "engines": [
+    {
+      "name": "chromium",
+      "naturalCleanup": true
+    },
+    {
+      "name": "webkit",
+      "naturalCleanup": true
+    }
+  ],
+  "screenshots": [
+    "/tmp/onethu-pr57-board/chromium-390-tpl-home-top.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-home-bottom.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-today-top.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-today-bottom.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-learn-top.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-learn-bottom.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-min-top.png",
+    "/tmp/onethu-pr57-board/chromium-390-tpl-min-bottom.png",
+    "/tmp/onethu-pr57-board/chromium-1280-tpl-home-top.png",
+    "/tmp/onethu-pr57-board/chromium-1280-tpl-today-top.png",
+    "/tmp/onethu-pr57-board/chromium-1280-tpl-learn-top.png",
+    "/tmp/onethu-pr57-board/chromium-1280-tpl-min-top.png",
+    "/tmp/onethu-pr57-board/chromium-1280-free-drag-resize.png",
+    "/tmp/onethu-pr57-board/chromium-900-tpl-home-top.png",
+    "/tmp/onethu-pr57-board/chromium-900-tpl-today-top.png",
+    "/tmp/onethu-pr57-board/chromium-900-tpl-learn-top.png",
+    "/tmp/onethu-pr57-board/chromium-900-tpl-min-top.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-home-top.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-home-bottom.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-today-top.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-today-bottom.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-learn-top.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-learn-bottom.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-min-top.png",
+    "/tmp/onethu-pr57-board/webkit-390-tpl-min-bottom.png",
+    "/tmp/onethu-pr57-board/webkit-1280-tpl-home-top.png",
+    "/tmp/onethu-pr57-board/webkit-1280-tpl-today-top.png",
+    "/tmp/onethu-pr57-board/webkit-1280-tpl-learn-top.png",
+    "/tmp/onethu-pr57-board/webkit-1280-tpl-min-top.png",
+    "/tmp/onethu-pr57-board/webkit-1280-free-drag-resize.png",
+    "/tmp/onethu-pr57-board/webkit-900-tpl-home-top.png",
+    "/tmp/onethu-pr57-board/webkit-900-tpl-today-top.png",
+    "/tmp/onethu-pr57-board/webkit-900-tpl-learn-top.png",
+    "/tmp/onethu-pr57-board/webkit-900-tpl-min-top.png"
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -169,7 +169,9 @@ ok(packed[2].cell.h === 2 && packed[2].cell.x === 0, "重排不该改动 x/w/h")
 ok(/data-template=\{tpl\.id\}/.test(pageR), "空板没有模板按钮（用户面对空白板无从下手）");
 ok(/key: "apply-tpl", label: "套用模板"/.test(pageR), "右上菜单缺「套用模板」入口");
 ok(/BOARD_TEMPLATES\.map/.test(pageR) && /tpl\.description/.test(pageR), "模板选择面板没有列出说明（用户不知道选的是什么）");
-ok(/templateItems\(tpl\)/.test(pageR) && /rectFromCell\(it\.cell\)/.test(pageR), "套用模板没有走纯逻辑 templateItems + px 映射");
+const applyTemplateSrc = pageR.slice(pageR.indexOf("const applyTemplate ="), pageR.indexOf("const applyTemplate =") + 700);
+ok(/templateItems\(tpl\)/.test(applyTemplateSrc) && !/rectFromCell/.test(applyTemplateSrc),
+  "套用模板必须保留原生 rect；不能再将宽卡压回兼容 cell 尺寸（尺寸值由 board-templates-test 验证）");
 /* ⑭ 白板页必须渲染当前板（写死 systemBoard 会让用户板永远打不开，本轮实测踩过） */
 ok(/const board = activeBoard\(doc\);/.test(pageR), "OnePage 面写死了系统板（用户在收藏夹里选的板打不开）");
 const boardWrapSrc = readFileSync("apps/desktop/src/state/boardCore.ts", "utf8");

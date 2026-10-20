@@ -4,10 +4,11 @@
  *
  * 方案：docs/原子收藏-可行性与实现方案.md §3 / §6.1。
  */
-import { HOME_CARD_META, loadLayout, resolveLayout } from "../lib/homeCards.js";
+import { HOME_CARD_META, clearHomeLayout, loadLayout, resolveLayout } from "../lib/homeCards.js";
 import { loadHomeOrder, saveHomeOrder } from "./homeOrder.js";
+import { boardViewKey, setView } from "./boardView.js";
 import {
-  BOARD_KEY, cellsOf, loadBoard as coreLoadBoard, saveBoard as coreSaveBoard, systemBoard,
+  BOARD_KEY, SYSTEM_BOARD_ID, cellsOf, homeStarterItems, loadBoard as coreLoadBoard, saveBoard as coreSaveBoard, systemBoard,
   type Board, type BoardDeps, type BoardDoc, type Orientation,
 } from "./boardCore.js";
 
@@ -37,6 +38,34 @@ export function loadBoard(): BoardDoc {
 
 export function saveBoard(doc: BoardDoc): void {
   coreSaveBoard(doc, boardDeps);
+}
+
+/** 仅显式恢复默认首页才发；普通存档/拖动不能重置画布的缩放或参考宽度。 */
+export const HOME_BOARD_RESET_EVENT = "onethu.home-board.reset";
+
+/** 恢复真实系统白板；用户 OnePage、当前板选择和排序偏好保持原样。 */
+export function resetHomeBoard(): void {
+  const doc = loadBoard();
+  clearHomeLayout();
+  saveBoard({
+    ...doc,
+    homeLayoutVersion: 2,
+    boards: doc.boards.map(board => board.id === SYSTEM_BOARD_ID ? {
+      ...board,
+      cells: { portrait: homeStarterItems(), landscape: homeStarterItems() },
+    } : board),
+  });
+  // 未进过首页时也能从设置重置：旧自由板留作回退资料，不能随后再合并回默认首页。
+  try { globalThis.localStorage?.setItem("onethu.freeboard.merged.v1", "1"); } catch { /* 存储不可用 */ }
+  for (const orientation of ["portrait", "landscape"]) {
+    const key = boardViewKey(SYSTEM_BOARD_ID, orientation);
+    setView(key, { z: 1 });
+    setView(key + "|phone", { z: 1 });
+  }
+  try {
+    globalThis.dispatchEvent?.(new Event("onethu.boards.changed"));
+    globalThis.dispatchEvent?.(new Event(HOME_BOARD_RESET_EVENT));
+  } catch { /* 非浏览器环境 */ }
 }
 
 /** 渲染适配：系统板某朝向的单元格。 */

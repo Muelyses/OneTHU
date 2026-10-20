@@ -4,8 +4,8 @@
  *
  * 盯住四条：
  *   ① 至少两套模板，且每套有名称与说明（用户要知道选的是什么）；
- *   ② 展开后**同列不重叠**、y 紧凑（模板只写列与高，y 由展开函数算，这里就是验这段）；
- *   ③ 条目宽度不越列宽、高度不小于 1；
+ *   ② 原生像素版式不重叠、留出间距；兼容 cell 仍不重叠；
+ *   ③ 模板共享 1104px 阅读基准，不退回 90/286px 的旧四格宽度；
  *   ④ id 唯一（同一模板连展开两次也不撞车）。
  *
  * 跑法：node --import ./tools/ts-resolve-register.mjs tools/board-templates-test.mjs ｜ 0 通过 / 1 违规
@@ -27,7 +27,14 @@ for (const tpl of T.BOARD_TEMPLATES) {
   for (const it of items) {
     ok(it.cell.w >= 1 && it.cell.x + it.cell.w <= B.BOARD_COLS, "条目越出列宽：" + tpl.id);
     ok(it.cell.h >= 1 && it.cell.y >= 0, "条目高度或 y 非法：" + tpl.id);
+    ok(B.isRect(it.rect), "模板缺少原生像素矩形：" + tpl.id);
+    ok(it.rect.w >= 280 && it.rect.h >= 132, "模板恢复成过窄/过矮的旧瓦片：" + tpl.id);
+    ok(it.rect.x >= 0 && it.rect.y >= 0 && it.rect.x + it.rect.w <= 1104, "模板超出原生1104px宽度：" + tpl.id);
+    const authored = tpl.items[items.indexOf(it)];
+    ok(JSON.stringify(it.rect) === JSON.stringify(authored.rect), "兼容网格修复不应改变作者给出的像素排版：" + tpl.id);
+    ok(it.manual === authored.manual, "展开时不应覆盖预设的尺寸归属：" + tpl.id);
   }
+  ok(Math.max(...items.map(it => it.rect.x + it.rect.w)) === 1104, "模板没有利用完整首页宽度：" + tpl.id);
   /* 同列两两不重叠 */
   for (let i = 0; i < items.length; i += 1) {
     for (let j = i + 1; j < items.length; j += 1) {
@@ -35,21 +42,33 @@ for (const tpl of T.BOARD_TEMPLATES) {
       const b = items[j].cell;
       const hit = a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
       ok(!hit, "模板展开后同列重叠：" + tpl.id);
+      const ar = items[i].rect;
+      const br = items[j].rect;
+      const hGap = Math.max(br.x - ar.x - ar.w, ar.x - br.x - br.w);
+      const vGap = Math.max(br.y - ar.y - ar.h, ar.y - br.y - br.h);
+      ok(hGap >= 24 || vGap >= 24, "模板像素卡片重叠或间距不足24px：" + tpl.id);
     }
   }
-  /* 同列 y 紧凑：排序后每项 y 等于前一项 y + h */
-  for (const key of ["main", "rail"]) {
-    const col = items.filter((it) => (key === "rail" ? it.cell.x >= 3 : it.cell.x < 3)).sort((a, b) => a.cell.y - b.cell.y);
-    col.forEach((it, idx) => {
-      if (idx === 0) return;
-      const prev = col[idx - 1];
-      ok(it.cell.y === prev.cell.y + prev.cell.h, "模板同列没有紧凑排布（" + tpl.id + "/" + key + "）");
-    });
+  /* 卡体真正需要阅读的列表，不能被塞回旧模板90px侧栏。 */
+  for (const it of items.filter(it => it.spec.kind === "custom" && ["classes", "homework", "notices", "learn-assignments", "learn-notices", "learn-files"].includes(it.spec.id))) {
+    ok(it.rect.w >= 480 && it.rect.h >= 320, "列表没有足够阅读空间：" + tpl.id + "/" + it.spec.id);
   }
   const again = T.templateItems(tpl, 2000);
   const ids = new Set([...items, ...again].map((x) => x.id));
   ok(ids.size === items.length * 2, "展开两次出现重复 id：" + tpl.id);
+  items[0].rect.w = 123;
+  items[0].cell.h = 99;
+  items[0].spec.kind = "divider";
+  const isolated = T.templateItems(tpl, 3000);
+  ok(isolated[0].rect.w === tpl.items[0].rect.w && isolated[0].spec.kind === tpl.items[0].spec.kind && isolated[0].cell.h !== 99,
+    "模板/两次套用之间共享了可变数据：" + tpl.id);
 }
+
+const fit = await import("../apps/desktop/src/state/boardFit.ts");
+const freshList = T.templateItems(T.templateById("tpl-learn"), 1000)[0];
+ok(freshList.manual !== true && fit.fitTarget(freshList.rect.h, freshList.rect.h + 40, freshList) !== null, "新模板默认仍可按内容拟合");
+const resized = B.withRect(freshList, { ...freshList.rect, h: 160 });
+ok(resized.manual === true && fit.fitTarget(160, 600, resized) === null, "用户主动固定大小后必须交还尺寸控制权");
 
 ok(T.templateById("nope") === null, "未找到的模板应返回 null");
 ok(T.templateById(T.BOARD_TEMPLATES[0].id)?.id === T.BOARD_TEMPLATES[0].id, "按 id 查模板失败");
@@ -139,4 +158,4 @@ if (fails.length) {
   for (const f of fails) console.error("  ✗ " + f);
   process.exit(1);
 }
-console.log("起步模板护栏（P2.5）：三套模板齐全 ✓ ｜ 展开后同列不重叠且紧凑 ✓ ｜ 列宽与高度合法 ✓ ｜ id 唯一 ✓ ｜ 不依赖视图 ✓");
+console.log("起步模板护栏（P2.5）：四套模板齐全 ✓ ｜ 原生宽卡与间距 ✓ ｜ 兼容网格合法 ✓ ｜ 数据与尺寸归属独立 ✓ ｜ 不依赖视图 ✓");

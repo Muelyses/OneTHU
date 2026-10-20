@@ -926,7 +926,7 @@ html:root.is-phone :is(
 }
 /* 卡片/区块头：左标题 + 右操作 一律允许换行，操作不挤标题 */
 html:root.is-phone :is(
-  .home-card-head, .course-card-head, .section-head, .page-head,
+  .home-card-head, .section-head, .page-head,
   .mail-row-top, .overview-line, .balance-row, .wg-card-line,
   .setting-row, .identity-panel-actions, .name-card-actions
 ) {

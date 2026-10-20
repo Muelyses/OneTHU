@@ -1018,68 +1018,6 @@
 }
 .segmented button.is-active .tab-count { background: var(--accent-soft); color: var(--accent); }
 
-/* 课程卡片网格 */
-.course-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--gap-3);
-}
-
-.course-card { transition: border-color 100ms ease, box-shadow 100ms ease; }
-.course-card:hover { border-color: var(--accent-border); box-shadow: var(--shadow-1); }
-
-.course-card-btn {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  width: 100%;
-  padding: 14px 16px;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-}
-
-.course-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.course-card-head b {
-  font-size: var(--text-base);
-  line-height: 22px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.course-card-btn:hover .row-caret { color: var(--accent); }
-
-.course-card-sub {
-  font-size: var(--text-xs);
-  line-height: 18px;
-  color: var(--text-2); /* 用户反馈 text-3 太浅 */
-  font-variant-numeric: tabular-nums;
-  white-space: normal;
-  word-break: break-all;
-}
-
-.course-card-time {
-  font-size: var(--text-xs);
-  line-height: 18px;
-  color: var(--text-2);
-  white-space: normal; /* 用户反馈省略号吞信息，允许完整展示 */
-  word-break: break-all;
-}
-
-.course-card-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.course-card-chips .chip { height: 22px; }
-
 /* 入口统计卡（整卡可点） */
 .stat-click { padding: 0; }
 .stat-link {
@@ -1235,7 +1173,6 @@ select.input:focus {
 }
 
 @media (max-width: 700px) {
-  .course-grid { grid-template-columns: 1fr; }
 }
 
 /* 通知行首的重要标记 */
@@ -2486,10 +2423,6 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
   .stat-card { padding: 9px 12px; gap: 10px; }
   .stat-link { padding: 9px 12px; gap: 10px; }
   .stat-icon { width: 28px; height: 28px; border-radius: 8px; }
-  .course-card-btn { padding: 9px 12px; gap: 4px; }
-  .course-card-head { gap: 6px; }
-  .course-card-chips { gap: 4px; margin-top: 4px; }
-  .course-card-chips .chip { height: 20px; font-size: 10.5px; }
   /* 今日 home 卡：头部行与卡体收紧 */
   .home-card-head { padding: 7px 10px 7px 12px; gap: 6px; }
   .home-card-title h2 { font-size: var(--text-base); line-height: 20px; }
@@ -2530,7 +2463,6 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
   .card { margin-bottom: 6px; }
   .stat-card, .stat-link { padding: 8px 10px; gap: 8px; }
   .stat-icon { width: 26px; height: 26px; }
-  .course-card-btn { padding: 8px 10px; }
   .home-card-head { padding: 6px 10px 6px 10px; }
   .home-card-body { padding: 6px 8px 8px; }
 
@@ -2728,9 +2660,7 @@ html.is-phone .stats:not(.stats-hero) .stat-card .og-card-body { padding: 0; }
 html.is-phone .stats:not(.stats-hero) .stat-link { flex-direction: column; align-items: flex-start; gap: 8px; padding: 0; width: 100%; }
 html.is-phone .stats:not(.stats-hero) .stat-num { white-space: nowrap; }
 /* 课程卡标题：手机上宁可两行截断也不"程序设计…" */
-html.is-phone .course-card-head b { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 /* 副标题（教师 · 学号班号）：不在数字编号中间断词 */
-html.is-phone .course-card-sub { overflow-wrap: normal; }
 
 /* ===== 0.7.11 日程行手机两行式 =====
    flex 收缩在 CJK 文本下无解（min-content 恒为单字宽），直接改网格：

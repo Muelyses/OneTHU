@@ -1,4 +1,4 @@
-import { Btn } from "@onethu/gui";
+import { Btn, Segment } from "@onethu/gui";
 /**
  * 雨课堂课程内容页（R25，learn-ykt-course）：把一门雨课堂课发布过的**全部内容**
  * 按类型列出来 —— 不止作业与试卷，还有课件、投票，以及接口将来新增的类型
@@ -13,9 +13,9 @@ import { Btn } from "@onethu/gui";
  * 数据：state/exthw.ts 的 contents（全部内容）+ items（作业，带提交状态）。
  * 两者与「全部作业」同一轮刷新落地，本页**不额外打接口**。
  */
-import { Fragment, useCallback, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import type { ExternalContent, Homework, YkLeafDetail, YkNoticeDetail } from "@onethu/core";
-import { Card, Empty, ErrorNote, PageHead, SegmentedOverflow, SkeletonRows } from "../../components/Layout.js";
+import { Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
 import { IconChevron, IconRefresh } from "../../components/Icons.js";
 import { useApp } from "../../state/context.js";
 import {
@@ -31,15 +31,24 @@ import { getYktCourse } from "../../state/yktCourse.js";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { YktContentBody } from "../../components/exthw/YktContentBody.js";
 import { BackButton, HomeworkRow, fmtWhenParts } from "./shared.js";
+import { yktKindToCourseTab, type CourseTabKey } from "./courseMerge.js";
 
 /** 已确认类型的展示顺序（未知类型排在其后，按类型名排序） */
 const KNOWN_TAB_ORDER = ["作业", "试卷", "课件", "投票"];
+const COURSE_TABS: Array<{ key: CourseTabKey; label: string }> = [
+  { key: "assignments", label: "作业" },
+  { key: "notices", label: "通知" },
+  { key: "files", label: "文件" },
+];
+function courseEntryTab(tab?: string): string {
+  return COURSE_TABS.some((entry) => entry.key === tab) ? `course:${tab}` : "all";
+}
 
 export function YktCoursePage() {
   const { navigate, navParams } = useApp();
   const ext = useExternalHomework();
   const ignored = useIgnoredHw();
-  const [tab, setTab] = useState<string>("all");
+  const [tab, setTab] = useState<string>(() => courseEntryTab(navParams?.courseTab));
   /** 内联展开的内容（点行展开，正文就在行下方渲染——不打开官方页、不新开窗口） */
   const [open, setOpen] = useState<{
     id: string;
@@ -53,6 +62,9 @@ export function YktCoursePage() {
   // （详情页返回不带参数，见 state/yktCourse.ts 的说明）
   const remembered = getYktCourse();
   const courseId = navParams?.extCourseId ?? remembered?.id ?? "";
+  useEffect(() => {
+    setTab(courseEntryTab(navParams?.courseTab));
+  }, [courseId, navParams?.courseTab]);
   const fallbackName = navParams?.extCourseName ?? remembered?.name ?? "";
   const course = ext.courses.find((c) => c.source === "yuketang" && c.id === courseId);
   const courseName = course?.name || fallbackName || "雨课堂课程";
@@ -65,6 +77,11 @@ export function YktCoursePage() {
     () => ext.contents.filter((c) => c.source === "yuketang" && c.courseId === courseId),
     [ext.contents, courseId],
   );
+  const courseGroups = useMemo(() => {
+    const result: Record<CourseTabKey, ExternalContent[]> = { assignments: [], notices: [], files: [] };
+    for (const content of contents) result[yktKindToCourseTab(content.kind)].push(content);
+    return result;
+  }, [contents]);
   /** 本课作业（带提交状态/分数；点开走站内原生详情） */
   const homework = useMemo(
     () => ext.items.filter((i) => i.source === "yuketang" && i.classroomId === courseId).map(toHomework),
@@ -108,10 +125,14 @@ export function YktCoursePage() {
   }, [contents]);
 
   const shown = useMemo(() => {
-    const list = tab === "all" ? contents : (groups.map.get(tab) ?? []);
+    const list = tab === "all"
+      ? contents
+      : tab.startsWith("course:")
+        ? courseGroups[tab.slice("course:".length) as CourseTabKey] ?? []
+        : groups.map.get(tab) ?? [];
     // 有时间的按时间倒序（新内容在前），无时间的保持原顺序排在后面
     return [...list].sort((a, b) => (b.deadline ?? "").localeCompare(a.deadline ?? ""));
-  }, [contents, groups, tab]);
+  }, [contents, courseGroups, groups, tab]);
 
   const unfinished = homework.filter((h) => !h.submitted && !h.audited && !ignored.has(h.id)).length;
   const loading = ext.state !== "ready" && contents.length === 0;
@@ -212,26 +233,21 @@ export function YktCoursePage() {
 
       {ext.errors.yuketang ? <ErrorNote text={ext.errors.yuketang} onRetry={() => ext.reload()} /> : null}
 
-      {contents.length > 0 ? (
-        <SegmentedOverflow>
-          <button role="tab" aria-selected={tab === "all"} className={tab === "all" ? "is-active" : ""} onClick={() => setTab("all")}>
-            全部
-            <span className="tab-count">{contents.length}</span>
-          </button>
-          {groups.texts.map((text) => (
-            <button
-              key={text}
-              role="tab"
-              aria-selected={tab === text}
-              className={tab === text ? "is-active" : ""}
-              onClick={() => setTab(text)}
-            >
-              {text}
-              <span className="tab-count">{groups.map.get(text)?.length ?? 0}</span>
-            </button>
-          ))}
-        </SegmentedOverflow>
-      ) : null}
+      <Segment
+        value={tab}
+        onChange={setTab}
+        options={[
+          { value: "all", label: `全部 ${contents.length}` },
+          ...COURSE_TABS.map(({ key, label }) => ({
+            value: `course:${key}`,
+            label: `${label} ${courseGroups[key].length}`,
+          })),
+          ...groups.texts.map((text) => ({
+            value: text,
+            label: `${COURSE_TABS.some((entry) => entry.label === text) ? `仅${text}` : text} ${groups.map.get(text)?.length ?? 0}`,
+          })),
+        ]}
+      />
 
       {loading ? (
         <SkeletonRows rows={5} />

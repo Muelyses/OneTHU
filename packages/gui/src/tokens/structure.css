@@ -124,6 +124,7 @@
   --og-grid-min-sm: 148px;
   --og-grid-min-md: 200px;
   --og-grid-min-lg: 264px;
+  --og-grid-min-xl: 320px;
 
   /* ── 图标：四档尺寸 + 两档描边 ── */
   --og-icon-sm: 16px;

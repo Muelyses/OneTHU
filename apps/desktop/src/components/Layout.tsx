@@ -415,7 +415,10 @@ export function Shell({ children }: { children: ReactNode }) {
           Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
       <ContextMenuLayer>
       {simple ? <SimpleHeader/> : <><TopBar /><TabRail /></>}
-      <main className={"content explorer-content" + (simple ? "" : contentCanvasClass)}>{children}</main>
+      <main
+        className={"content explorer-content" + (simple ? "" : contentCanvasClass)}
+        data-active-page={simple ? simpleRoute.page : (activePageTab?.page ?? "homepage")}
+      >{children}</main>
       </ContextMenuLayer>
       <BottomBar />
       {!simple && <OneGoBar />}

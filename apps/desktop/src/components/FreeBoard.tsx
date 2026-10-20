@@ -50,7 +50,7 @@ import { resolveAtom } from "../state/atoms.js";
 import { atomRefFromKey } from "../state/favorites.js";
 import { useApp } from "../state/context.js";
 import { homeStarterItems } from "../state/boardCore.js";
-import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
+import { HOME_BOARD_RESET_EVENT, activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
 import { openOnePage } from "../state/onePage.js";
 import { gestureOwner, subscribeGesture } from "../lib/gestureArena.js";
 import { addToVault } from "../state/vault.js";
@@ -455,6 +455,27 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
   sayRef.current = say;
 
+  /** 套用新排版时重新适配窗口；普通拖动、缩放和重新读取存档都不走这里。 */
+  const resetLayoutView = useCallback((): void => {
+    reference.current = { key: viewKey, width: 1104 };
+    setBoardView(viewKey, { z: 1 });
+    setSelected(null);
+    setAddAt(null);
+    requestAnimationFrame(() => {
+      const host = hostRef.current;
+      if (!host?.getClientRects().length) return;
+      // 保留页面顶栏与首页标题的自然留白；scrollIntoView(start) 会把第一张卡送进固定顶栏后面。
+      for (let el = host.parentElement; el; el = el.parentElement) {
+        if (el.scrollTop || el.scrollLeft) el.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
+    });
+  }, [viewKey]);
+  useEffect(() => {
+    if (boardId !== HOME_BOARD_ID) return;
+    window.addEventListener(HOME_BOARD_RESET_EVENT, resetLayoutView);
+    return () => window.removeEventListener(HOME_BOARD_RESET_EVENT, resetLayoutView);
+  }, [boardId, resetLayoutView]);
+
   /* 按内容拟合 v3（2026-10-15）：旧白板有、新画布一直缺的能力 —— 用户报「不稳定，很多时候还会截断」。
      量体目标 = 条目盒的**直接子元素**（CSS `.free-item > :first-child { overflow:auto }` 就是它，
      card/custom 类外面还多套了一层 .wg-card，也就是它）——它的 scrollHeight 才是内容的自然高。
@@ -830,15 +851,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   };
 
   const applyTemplate = (tpl: BoardTemplate): void => {
-    /* 模板给的是格单位排版，落到自由画布上要映成 px（rectFromCell 同一套换算）。 */
-    const next: BoardItem[] = tpl.id === "tpl-home" ? homeStarterItems() : templateItems(tpl).map((it) => {
-      const rect = rectFromCell(it.cell);
-      return { id: it.id, spec: it.spec, cell: it.cell, rect, manual: true };
-    });
+    /* rect 是实际排版；cell 只保留兼容用途。不能把原生宽卡再压回旧四格，也不能一律伪装成手调尺寸。 */
+    const next: BoardItem[] = tpl.id === "tpl-home" ? homeStarterItems() : templateItems(tpl);
     if (freeBoardOps(boardId, orientation).replace(next)) {
+      resetLayoutView();
       setTplOpen(false);
-      setAddAt(null);
-      setSelected(null);
       say("已套用模板：" + tpl.name);
     }
   };

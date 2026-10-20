@@ -64,6 +64,10 @@ export function CourseDetailPage() {
   const [groupsNonce, setGroupsNonce] = useState(0);
 
   const courseId = navParams?.courseId ?? "";
+  useEffect(() => {
+    const t = navParams?.courseTab;
+    setTab(t === "assignments" || t === "files" || t === "groups" || t === "forum" ? t : "notices");
+  }, [courseId, navParams?.courseTab]);
   const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [data, courseId]);
 
   const notices = useMemo(

@@ -170,7 +170,7 @@ console.log("[4] courses/list 死会话 → YktSessionError");
 console.log("[5] 接线静态审计");
 {
   const learn = readFileSync("apps/desktop/src/pages/Learn.tsx", "utf8");
-  ok(learn.includes("雨课堂课程"), "网络学堂页有「雨课堂课程」一节");
+  ok(learn.includes("merge.unmatchedYkt.map"), "网络学堂页保留未合并的雨课堂课程");
   ok(/extCourseId:\s*c\.id/.test(learn), "课程卡片带 extCourseId 跳转");
   ok(learn.includes('navigate("learn-ykt-course"'), "课程卡片进「全部内容」页");
 
@@ -188,8 +188,15 @@ console.log("[5] 接线静态审计");
   const page = readFileSync("apps/desktop/src/pages/learn/YktCoursePage.tsx", "utf8");
   ok(page.includes("ext.contents"), "课程内容页用 contents 渲染");
   ok(page.includes("HomeworkRow"), "作业/试卷行复用作业行组件");
-  const appTsx = readFileSync("apps/desktop/src/App.tsx", "utf8");
-  ok(appTsx.includes('page === "learn-ykt-course"'), "路由挂载课程内容页");
+  const route = readFileSync("apps/desktop/src/components/explorer/renderPage.tsx", "utf8");
+  ok(/case "learn-ykt-course":\s*return <YktCoursePage/.test(route), "标签页路由挂载课程内容页");
+  ok(/onOpenSection=\{\(courseTab\) => navigate\("learn-course", \{ courseId: c.id, courseTab \}\)\}/.test(learn), "网络学堂卡片快捷入口携带课内页签");
+  ok(learn.includes('navigate("learn-ykt-course", { extCourseId: c.id, extCourseName: c.name, courseTab })'), "雨课堂卡片快捷入口携带课内页签");
+  ok(page.includes("courseEntryTab(navParams?.courseTab)"), "雨课堂详情读取快捷入口页签");
+  ok(page.includes("yktKindToCourseTab(content.kind)"), "雨课堂详情按同源规则分作业、通知与文件");
+  const card = readFileSync("apps/desktop/src/pages/learn/LearnCourseCard.tsx", "utf8");
+  ok(['onOpenSection("assignments")', 'onOpenSection("notices")', 'onOpenSection("files")'].every((entry) => card.includes(entry)), "两种来源的卡片均保留三项直达动作");
+  ok(!/stats\.(hw|notices|files)\s*>\s*0\s*\?\s*</.test(card), "零条目不会隐藏课程快捷入口");
 }
 
 console.log("[6] fetchContents：全部内容（不只作业）");
@@ -410,13 +417,15 @@ console.log("[8] 雨课堂公告并入通知聚合（接线审计）");
   ok(!pages.includes("ykt-content-panel"), "公告不再在列表行下方内联展开");
   ok(!/onOpen/.test(pages), "公告行不再自带打开方式（统一走详情页路由）");
 
-  const today = readFileSync("apps/desktop/src/pages/Today.tsx", "utf8");
-  ok(today.includes("noticesMerged"), "今日页「最近通知」合并两来源");
-  ok(!today.includes("isExternalNoticeId"), "今日页不再按来源分流点击");
-  ok(!today.includes("openYktInApp"), "今日页不再打开官方页");
+  const boardCards = readFileSync("apps/desktop/src/components/boardCards.tsx", "utf8");
+  const noticesCard = boardCards.slice(boardCards.indexOf("function NoticesCard()"), boardCards.indexOf("/* ══════════ 环境/时钟组件"));
+  ok(noticesCard.includes("useExternalNotices()") && noticesCard.includes("...(data?.notifications ?? []), ...extNotices"), "首页通知组件合并网络学堂与雨课堂通知");
+  ok(noticesCard.includes("<NoticeRows items={merged}"), "首页通知组件交给同一个通知行渲染器");
+  ok(!noticesCard.includes("openYktInApp"), "首页通知组件不再打开官方页");
 
   const widgets = readFileSync("apps/desktop/src/components/HomeWidgets.tsx", "utf8");
   ok(!/onOpen\?\.\(n\)/.test(widgets), "通知卡体不再按来源分流，统一进详情页");
+  ok(widgets.includes('navigate("learn-notice-detail", { courseId: n.courseId, itemId: n.id, from: "homepage" })'), "首页通知实际点击进入对应站内详情");
 
   // R32：雨课堂公告进**同一个**站内通知详情页（同一套 UI）
   const noticeDetail = readFileSync("apps/desktop/src/pages/learn/NoticeDetailPage.tsx", "utf8");

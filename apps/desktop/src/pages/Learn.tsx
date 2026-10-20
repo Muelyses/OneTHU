@@ -6,7 +6,7 @@ import { Btn } from "@onethu/gui";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PageAtomStar } from "..//components/Collect.js";
 import { Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../components/Layout.js";
-import { IconBell, IconCalendar, IconChevron, IconFile, IconPen, IconRefresh, IconSearch } from "../components/Icons.js";
+import { IconBell, IconCalendar, IconFile, IconPen, IconRefresh, IconSearch } from "../components/Icons.js";
 import { useApp } from "../state/context.js";
 import { CollectStar } from "../components/Collect.js";
 import { enc } from "../state/atoms.js";
@@ -15,6 +15,7 @@ import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { useIgnoredHw } from "../state/hwIgnore.js";
 import { setYktCourse } from "../state/yktCourse.js";
 import { mergeCoursesByName } from "./learn/courseMerge.js";
+import { LearnCourseCard } from "./learn/LearnCourseCard.js";
 import { fmtRemindOffset, setHwDefault, useHwDefault } from "../state/hwRemind.js";
 import { HwRemindPop, semesterText } from "./learn/shared.js";
 
@@ -145,10 +146,10 @@ export function LearnPage() {
   };
 
   return (
-    <>
+    <div className="learn-page">
       <PageHead
         title="课程"
-        meta={data ? `${semesterText(data.semester.id)} · ${data.courses.length} 门课程` : "加载中…"}
+        meta={data ? `${semesterText(data.semester.id)} · ${data.courses.length + merge.unmatchedYkt.length} 门课程` : "加载中…"}
         actions={
           <>
             <PageAtomStar atomKey="learn" title="课程" />
@@ -161,7 +162,7 @@ export function LearnPage() {
           </>
         }
       />
-      <div className="row-sub" style={{ margin: "0 0 10px" }}>
+      <div className="learn-page-note">
         雨课堂与 OJ 的作业同步在「设置 → 数据与同步」里配置（登录一次后作业会自动并入「全部作业」）。
       </div>
 
@@ -215,7 +216,7 @@ export function LearnPage() {
         state === "error" ? null : (
           <Card>
             <Empty text={state === "loading" ? "正在重新加载本学期课程…" : "本学期暂无课程，或数据未就绪。"} />
-            <div style={{ display: "flex", justifyContent: "center", paddingBottom: 14 }}>
+            <div className="learn-empty-actions">
               <Btn variant="ghost" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />重新加载
               </Btn>
             </div>
@@ -223,118 +224,53 @@ export function LearnPage() {
         )
       ) : (
         /* R31：网络学堂课程与「网络学堂没有对应课」的雨课堂课程**同处一个网格**（不再分段标题） */
-        <div className="course-grid">
-          {data.courses.map((c, i) => {
+        <div className="learn-course-list">
+          {data.courses.map((c) => {
             const ykt = merge.byLearnId.get(c.id);
-            // R31：计数与课程详情页一致（网络学堂 + 同名雨课堂）
             const s = cardStats(c.id, courseStats.get(c.id));
             return (
-              <Card
+              <LearnCourseCard
                 key={c.id}
-                className="course-card"
-                style={{ animationDelay: `${i * 30}ms` }}
-              >
-                {/* div+role 而非 <button>：卡内要嵌「雨课堂」徽标按钮（button 不能嵌套） */}
-                <div
-                  className="course-card-btn"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => navigate("learn-course", { courseId: c.id })}
-                  onKeyDown={(e) => e.key === "Enter" && navigate("learn-course", { courseId: c.id })}
-                  aria-label={`打开课程 ${c.name}`}
-                >
-                  <div className="course-card-head">
-                    <b>{c.name}</b>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flex: "0 0 auto" }}>
-                      <CollectStar atom={{ kind: "course", key: enc(c.id, c.name, c.teacherName) }} title={c.name} />
-                      <IconChevron width={15} height={15} className="row-caret" />
-                    </span>
-                  </div>
-                  <div className="course-card-sub">
-                    {c.teacherName} · {c.courseNumber}
-                    {c.courseIndex ? `-${c.courseIndex}` : ""}
-                  </div>
-                  {c.timeAndLocation.length > 0 ? (
-                    <div className="course-card-time">{c.timeAndLocation.join(" · ")}</div>
-                  ) : null}
-                  <div className="course-card-chips">
-                    {/* R31：两个来源徽标都是蓝标、且排在最前（先来源，后计数） */}
-                    <span className="chip chip-blue">网络学堂</span>
-                    {ykt ? (
-                      <button
-                        type="button"
-                        className="chip chip-blue"
-                        title={`打开雨课堂课程 ${ykt.title ?? ykt.name}`}
-                        aria-label={`打开雨课堂课程 ${ykt.title ?? ykt.name}`}
-                        onClick={(e) => {
-                          e.stopPropagation(); // 不触发「进网络学堂课程」
-                          setYktCourse({ id: ykt.id, name: ykt.name });
-                          navigate("learn-ykt-course", { extCourseId: ykt.id, extCourseName: ykt.name });
-                        }}
-                        onKeyDown={(e) => e.stopPropagation()}
-                      >
-                        雨课堂 ›
-                      </button>
-                    ) : null}
-                    {s.hw > 0 ? <span className="chip chip-red"><span className="dot" />未交 {s.hw}</span> : null}
-                    {s.notices > 0 ? <span className="chip chip-gray">通知 {s.notices}</span> : null}
-                    {s.files > 0 ? <span className="chip chip-gray">文件 {s.files}</span> : null}
-                    {s.hw === 0 && s.notices === 0 && s.files === 0 ? (
-                      <span className="chip chip-gray">暂无动态</span>
-                    ) : null}
-                  </div>
-                </div>
-              </Card>
+                courseId={c.id}
+                title={c.name}
+                details={[c.teacherName, `${c.courseNumber}${c.courseIndex ? `-${c.courseIndex}` : ""}`].filter(Boolean).join(" · ")}
+                schedule={c.timeAndLocation.join(" · ")}
+                source="learn"
+                stats={s}
+                aside={<CollectStar atom={{ kind: "course", key: enc(c.id, c.name, c.teacherName) }} title={c.name} />}
+                onOpen={() => navigate("learn-course", { courseId: c.id })}
+                onOpenSection={(courseTab) => navigate("learn-course", { courseId: c.id, courseTab })}
+                yktEntry={ykt ? {
+                  title: ykt.title ?? ykt.name,
+                  onOpen: () => {
+                    setYktCourse({ id: ykt.id, name: ykt.name });
+                    navigate("learn-ykt-course", { extCourseId: ykt.id, extCourseName: ykt.name });
+                  },
+                } : undefined}
+              />
             );
           })}
-          {merge.unmatchedYkt.map((c, i) => {
-            const s = yktCardStats.get(c.id) ?? { hw: 0, notices: 0, files: 0 };
-            return (
-              <Card key={`ykt-${c.id}`} className="course-card" style={{ animationDelay: `${(data.courses.length + i) * 30}ms` }}>
-                <div
-                  className="course-card-btn"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    // 记住本课：课程内容页的详情返回路径不带参数，靠它还原上下文
-                    setYktCourse({ id: c.id, name: c.name });
-                    navigate("learn-ykt-course", { extCourseId: c.id, extCourseName: c.name });
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key !== "Enter") return;
-                    setYktCourse({ id: c.id, name: c.name });
-                    navigate("learn-ykt-course", { extCourseId: c.id, extCourseName: c.name });
-                  }}
-                  aria-label={`查看雨课堂课程 ${c.name} 的全部内容`}
-                >
-                  <div className="course-card-head">
-                    {/* 仿官方卡片：大标题=课程本名，小标题=教师 + 课堂全名 */}
-                    <b>{c.title ?? c.name}</b>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flex: "0 0 auto" }}>
-                      <IconChevron width={15} height={15} className="row-caret" />
-                    </span>
-                  </div>
-                  {c.teacher || c.title ? (
-                    <div className="course-card-sub">
-                      {[c.teacher, c.title ? c.name : undefined].filter(Boolean).join(" · ")}
-                    </div>
-                  ) : null}
-                  <div className="course-card-chips">
-                    <span className="chip chip-blue">雨课堂</span>
-                    {c.audited ? <span className="chip chip-gray">旁听</span> : null}
-                    {s.hw > 0 ? <span className="chip chip-red"><span className="dot" />未交 {s.hw}</span> : null}
-                    {s.notices > 0 ? <span className="chip chip-gray">通知 {s.notices}</span> : null}
-                    {s.files > 0 ? <span className="chip chip-gray">文件 {s.files}</span> : null}
-                    {s.hw === 0 && s.notices === 0 && s.files === 0 ? (
-                      <span className="chip chip-gray">暂无动态</span>
-                    ) : null}
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
+          {merge.unmatchedYkt.map((c) => (
+            <LearnCourseCard
+              key={`ykt-${c.id}`}
+              courseId={c.id}
+              title={c.title ?? c.name}
+              details={[c.teacher, c.title ? c.name : undefined].filter(Boolean).join(" · ")}
+              source="yuketang"
+              stats={yktCardStats.get(c.id) ?? { hw: 0, notices: 0, files: 0 }}
+              audited={c.audited}
+              onOpen={() => {
+                setYktCourse({ id: c.id, name: c.name });
+                navigate("learn-ykt-course", { extCourseId: c.id, extCourseName: c.name });
+              }}
+              onOpenSection={(courseTab) => {
+                setYktCourse({ id: c.id, name: c.name });
+                navigate("learn-ykt-course", { extCourseId: c.id, extCourseName: c.name, courseTab });
+              }}
+            />
+          ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

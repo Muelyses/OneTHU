@@ -2,7 +2,7 @@
  * 插件事件泵：Rust 进程的 progress/log/exit 通知 → 内存环形缓冲 + 订阅。
  * R4：实时进度渲染的数据源（UI 用 useSyncExternalStore 订阅）。
  */
-type PluginEvent = { at: number; method: string; text: string; step?: number; total?: number; kind?: string; payload?: unknown };
+type PluginEvent = { sequence: number; at: number; method: string; text: string; runId?: string; step?: number; total?: number; kind?: string; payload?: unknown };
 
 const MAX = 300;
 /** 稳定空快照：useSyncExternalStore 的 getSnapshot 必须可缓存 */
@@ -10,12 +10,14 @@ export const EMPTY_EVENTS: PluginEvent[] = [];
 const buf = new Map<string, PluginEvent[]>();
 const listeners = new Set<() => void>();
 let started = false;
+let sequence = 0;
 
-function push(id: string, ev: PluginEvent): void {
+function push(id: string, ev: Omit<PluginEvent, "sequence">): void {
   // R9 关键修复：必须换新数组引用——useSyncExternalStore 按引用比较快照，
   // 原地 push 会让 React 认为什么都没发生（dock 流式/思考链从第一天起就没触发过）
   const arr = buf.get(id) ?? [];
-  const next = arr.length >= MAX ? [...arr.slice(arr.length - MAX + 1), ev] : [...arr, ev];
+  const event = { ...ev, sequence: ++sequence };
+  const next = arr.length >= MAX ? [...arr.slice(arr.length - MAX + 1), event] : [...arr, event];
   buf.set(id, next);
   for (const l of listeners) l();
 }
@@ -38,12 +40,12 @@ export async function ensurePluginEventListener(): Promise<void> {
   if (started) return;
   started = true;
   const { listen } = await import("@tauri-apps/api/event");
-  await listen<{ pluginId: string; method: string; params: { line?: string; text?: string; step?: number; total?: number; kind?: string; payload?: unknown } }>(
+  await listen<{ pluginId: string; method: string; params: { line?: string; text?: string; runId?: string; step?: number; total?: number; kind?: string; payload?: unknown } }>(
     "plugin-event",
     (ev) => {
       const { pluginId, method, params } = ev.payload;
       const text = params?.text ?? params?.line ?? "";
-      push(pluginId, { at: Date.now(), method, text, step: params?.step, total: params?.total, kind: params?.kind, payload: params?.payload });
+      push(pluginId, { at: Date.now(), method, text, runId: params?.runId, step: params?.step, total: params?.total, kind: params?.kind, payload: params?.payload });
     },
   );
 }

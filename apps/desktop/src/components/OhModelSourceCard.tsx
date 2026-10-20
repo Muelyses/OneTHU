@@ -1,7 +1,7 @@
 /**
  * 小 OH 模型源卡片（设置里通用，完整/极简/实用模式共用）：
  *  - 选择模型源：学校 MadModel 免费档 / 自己的 API；
- *  - 免费档下显示有效期与「一键续签」（不再等 429 才处理）；
+ *  - 免费档下显示有效期与「一键续签」（仅更新登录凭证）；
  *  - 自费档下给出 API Key 配置状态与入口。
  */
 import { useCallback, useEffect, useState, type ReactNode } from "react";
@@ -42,7 +42,7 @@ export function OhModelSourceCard(): ReactNode {
     void ensureMadModelToken(true)
       .then(() => {
         force((v) => v + 1);
-        showToast("已重新续签 MadModel 免费额度");
+        showToast("学校登录状态已更新");
       })
       .catch((e) => {
         showToast(`续签失败：${e instanceof Error ? e.message : String(e)}（可改用自己的 API）`);
@@ -76,7 +76,7 @@ export function OhModelSourceCard(): ReactNode {
         />
         <Text slot="micro" tone="faint">
           {isMad
-            ? `续签后自动生效；${expireText(token)}。遇到 429 就点一键续签或换自己的 API。`
+            ? `${expireText(token)}。请求限流时请稍后重试。`
             : apiKey
               ? `已配置 API Key；地址与模型在下方「小 OH · 自己的 API」里调整。`
               : "自己的 API 的地址、Key 与模型在下方「小 OH · 自己的 API」里填写。"}

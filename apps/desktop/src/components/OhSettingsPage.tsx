@@ -161,7 +161,7 @@ function MadModelRow(): ReactNode {
   return (
     <SettingsRow
       title="MadModel 免费档"
-      sub={busy ? "正在续签…" : checking ? "正在检查免费模型连接…" : !madmodelActive() ? "当前使用自费 API；切换模型源后检查免费档。" : warn ? warn : "自动续签已开（到期前约 1 小时、每 10 分钟巡检）。"}
+      sub={busy ? "正在续签…" : checking ? "正在检查免费模型连接…" : !madmodelActive() ? "当前使用自费 API；切换模型源后检查免费档。" : warn ? warn : "学校登录状态会在到期前自动更新。"}
       control={
         <Btn variant="outline" size="sm" disabled={busy} onClick={() => {
             setBusy(true);

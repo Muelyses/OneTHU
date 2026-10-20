@@ -20,6 +20,7 @@
 //! 回写（期间被别处改过就丢弃，绝不覆盖新数据）。工具面是真·实时数据，照旧实时调用。
 
 use onethu_harness_core::{activate_commands, dispatch_run, Emit, Host};
+use onethu_harness_core::host::{chat_busy_result, requires_run_permit, ChatRunGate, ChatRunPermit, RunEmit};
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -345,10 +346,6 @@ impl Host for AgentCtx {
         self.interrupt.load(Ordering::SeqCst)
     }
 
-    fn reset_interrupt(&self) {
-        self.interrupt.store(false, Ordering::SeqCst);
-    }
-
     /// 短超时调用（task-22 ui_navigate）：内嵌侧尊重传入窗口（默认 Host 实现会退化到
     /// BRIDGE_TIMEOUT 长等）。1.8s 内收口：webview 挂起/退后台时立刻显形，不拖对话轮。
     fn call_timeout(&mut self, ns: &str, method: &str, args: Value, timeout_ms: u64) -> Result<Value, String> {
@@ -488,13 +485,14 @@ impl Emit for AgentEmit {
 }
 
 enum AgentMsg {
-    Run { method: String, params: Value, reply: mpsc::Sender<Result<Value, String>> },
+    Run { method: String, params: Value, reply: mpsc::Sender<Result<Value, String>>, chat: Option<ChatRunPermit> },
     Dispose,
 }
 
 struct HarnessLive {
     tx: mpsc::Sender<AgentMsg>,
-    interrupt: Arc<AtomicBool>,
+    chat_runs: ChatRunGate,
+    stopped: AtomicBool,
     bridge: Arc<BridgeState>,
     /// 控制命令快速路用：调用线程以独立 AgentCtx 直发桥（不经 agent 串行队列）
     call_tx: mpsc::Sender<CallReq>,
@@ -581,6 +579,8 @@ pub async fn harness_bridge_take(
 #[derive(Default)]
 pub struct HarnessHost {
     live: Mutex<HashMap<String, Arc<HarnessLive>>>,
+    /// 停用后仍保留门禁：旧请求退出前重启插件也不能绕过互斥。
+    chat_runs: Mutex<HashMap<String, ChatRunGate>>,
 }
 
 /// 启动内嵌 agent：起 agent 线程 + 门面桥线程，返回 activate 应答（commands 清单）。
@@ -590,10 +590,14 @@ pub async fn harness_start(
     state: tauri::State<'_, HarnessHost>,
     plugin_id: String,
 ) -> Result<Value, String> {
+    let chat_runs = state.chat_runs.lock().map_err(|_| "对话状态锁中毒")?
+        .entry(plugin_id.clone()).or_default().clone();
+    if chat_runs.is_busy() {
+        return Err("上一轮对话尚未结束，请先打断并等待请求结束后重试。".into());
+    }
     // 幂等：已存活先摘（旧线程随通道关闭自行退场）
     harness_stop_inner(&state, &plugin_id);
 
-    let interrupt = Arc::new(AtomicBool::new(false));
     let bridge = Arc::new(BridgeState {
         next_id: AtomicU64::new(1),
         pending: Arc::new(Mutex::new(HashMap::new())),
@@ -663,21 +667,26 @@ pub async fn harness_start(
     {
         let app = app.clone();
         let pid = plugin_id.clone();
-        let flag = interrupt.clone();
         let tx = call_tx.clone();
         let cache = cache.clone();
         std::thread::spawn(move || {
             let emit = AgentEmit { app, plugin_id: pid };
-            let mut ctx = AgentCtx { call_tx: tx, interrupt: flag, cache };
             eprintln!("[harness:embedded] agent 线程就绪");
             while let Ok(msg) = msg_rx.recv() {
                 match msg {
-                    AgentMsg::Run { method, params, reply } => match method.as_str() {
+                    AgentMsg::Run { method, params, reply, chat } => match method.as_str() {
                         "run" => {
-                            ctx.reset_interrupt();
+                            let mut ctx = AgentCtx {
+                                call_tx: tx.clone(),
+                                interrupt: chat.as_ref().map(ChatRunPermit::interrupt_flag)
+                                    .unwrap_or_else(|| Arc::new(AtomicBool::new(false))),
+                                cache: cache.clone(),
+                            };
                             // command/input/attachments（可选多模态附件）的解析统一在
                             // core::dispatch_run——两个宿主共用同一份参数解析
-                            let out = dispatch_run(&mut ctx, &emit, &params);
+                            let scoped_emit = RunEmit::new(&emit, params.get("runId").and_then(Value::as_str));
+                            let out = dispatch_run(&mut ctx, &scoped_emit, &params);
+                            drop(chat);
                             let _ = reply.send(Ok(out));
                         }
                         "activate" => {
@@ -700,7 +709,7 @@ pub async fn harness_start(
         .map_err(|_| "状态锁中毒".to_string())?
         .insert(
             plugin_id.clone(),
-            Arc::new(HarnessLive { tx: msg_tx, interrupt, bridge, call_tx: call_tx.clone(), cache }),
+            Arc::new(HarnessLive { tx: msg_tx, chat_runs, stopped: AtomicBool::new(false), bridge, call_tx: call_tx.clone(), cache }),
         );
     let _ = app.emit(
         "plugin-event",
@@ -729,25 +738,39 @@ pub async fn harness_call(
         .get(&plugin_id)
         .cloned()
         .ok_or(format!("内嵌插件未运行：{plugin_id}"))?;
+    if live.stopped.load(Ordering::SeqCst) {
+        return Err("内嵌插件已停止".into());
+    }
+    let requires_permit = method == "run" && params.get("command").and_then(Value::as_str).is_some_and(requires_run_permit);
+    let chat = if requires_permit {
+        let Some(permit) = live.chat_runs.try_begin_for(params.get("runId").and_then(Value::as_str)) else {
+            return Ok(chat_busy_result());
+        };
+        Some(permit)
+    } else {
+        None
+    };
+    if live.stopped.load(Ordering::SeqCst) {
+        return Err("内嵌插件已停止".into());
+    }
     tauri::async_runtime::spawn_blocking(move || {
-        // 控制命令快速路：chat 之外的 run 直接分发——不被在跑的长任务卡住，
-        // 否则新会话/历史/导入导出在 chat 进行中形同死键（与 sidecar 旁路线程同语义）。
-        // 绝不 reset_interrupt：会清掉在跑 chat 的打断标志。
+        // 非 chat 控制命令直接分发；取消票在排队/切线程前已认领。
         if method == "run" {
             let command = params.get("command").and_then(|v| v.as_str()).unwrap_or("");
             if command != "chat" && !command.is_empty() {
                 let mut ctx = AgentCtx {
                     call_tx: live.call_tx.clone(),
-                    interrupt: live.interrupt.clone(),
+                    interrupt: Arc::new(AtomicBool::new(false)),
                     cache: live.cache.clone(),
                 };
                 let emit = AgentEmit { app, plugin_id: plugin_id.clone() };
-                return Ok(dispatch_run(&mut ctx, &emit, &params));
+                let scoped_emit = RunEmit::new(&emit, params.get("runId").and_then(Value::as_str));
+                return Ok(dispatch_run(&mut ctx, &scoped_emit, &params));
             }
         }
         let (tx, rx) = mpsc::channel::<Result<Value, String>>();
         live.tx
-            .send(AgentMsg::Run { method, params, reply: tx })
+            .send(AgentMsg::Run { method, params, reply: tx, chat })
             .map_err(|_| "内嵌 agent 已退出".to_string())?;
         match rx.recv_timeout(Duration::from_millis(timeout_ms.unwrap_or(600_000))) {
             Ok(res) => res,
@@ -766,7 +789,6 @@ pub async fn harness_notify(
     method: String,
     params: Value,
 ) -> Result<(), String> {
-    let _ = params;
     let live = state
         .live
         .lock()
@@ -775,7 +797,7 @@ pub async fn harness_notify(
         .cloned()
         .ok_or(format!("内嵌插件未运行：{plugin_id}"))?;
     if method == "interrupt" {
-        live.interrupt.store(true, Ordering::SeqCst);
+        live.chat_runs.cancel_for(params.get("runId").and_then(Value::as_str));
     }
     Ok(())
 }
@@ -835,7 +857,8 @@ fn harness_stop_inner(state: &tauri::State<'_, HarnessHost>, plugin_id: &str) ->
         .ok()
         .and_then(|mut m| m.remove(plugin_id))
         .map(|live| {
-            live.interrupt.store(true, Ordering::SeqCst);
+            live.stopped.store(true, Ordering::SeqCst);
+            live.chat_runs.cancel();
             let _ = live.tx.send(AgentMsg::Dispose);
         })
         .is_some()

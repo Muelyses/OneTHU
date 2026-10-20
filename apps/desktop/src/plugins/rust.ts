@@ -9,6 +9,7 @@ import { buildApi } from "./facade.js";
 import { getPlugin } from "./registry.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi } from "./types.js";
+import { runCancellable } from "./runLifecycle.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type RpcHandler = (ns: string, method: string, args: unknown[]) => Promise<unknown>;
@@ -151,16 +152,25 @@ export function unbindRustApi(id: string): void {
   rpcHandlers.delete(id);
 }
 
-export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000): Promise<unknown> {
-  if (id === "onethu.harness" && method === "run" && (params as { command?: string } | null)?.command === "chat") {
-    const { preflightMadModel } = await import("../state/madmodel.js");
-    const warning = await preflightMadModel();
-    if (warning) return { type: "chat", ok: false, error: warning };
-  }
-  if (embeddedIds.has(id)) {
-    return invoke("harness_call", { pluginId: id, method, params, timeoutMs });
-  }
-  return invoke("plugin_call", { pluginId: id, method, params, timeoutMs });
+export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000, signal?: AbortSignal): Promise<unknown> {
+  const chat = method === "run" && (params as { command?: string } | null)?.command === "chat";
+  const suppliedRunId = (params as { runId?: unknown } | null)?.runId;
+  const runId = chat ? (typeof suppliedRunId === "string" && suppliedRunId ? suppliedRunId : crypto.randomUUID()) : undefined;
+  const runParams = runId ? { ...(params as Record<string, unknown>), runId } : params;
+  return runCancellable({
+    signal,
+    prepare: async () => {
+      if (id === "onethu.harness" && chat) {
+        const { preflightMadModel } = await import("../state/madmodel.js");
+        const warning = await preflightMadModel();
+        if (warning) return { type: "chat", ok: false, error: warning };
+      }
+      return null;
+    },
+    run: () => invoke(embeddedIds.has(id) ? "harness_call" : "plugin_call", { pluginId: id, method, params: runParams, timeoutMs }),
+    interrupt: () => notifyRust(id, "interrupt", runId ? { runId } : {}),
+    cancelled: () => ({ type: "chat", ok: true, answer: "（已打断）", interrupted: true }),
+  });
 }
 
 export async function notifyRust(id: string, method: string, params: unknown = {}): Promise<void> {

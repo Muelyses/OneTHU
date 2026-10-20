@@ -13,7 +13,6 @@
  * 入站排队串行执行，超队直接以忙回执（用户体感=排队叫号）。
  */
 import { callRust } from "../plugins/rust.js";
-import { preflightMadModel } from "../state/madmodel.js";
 import { logLine } from "../lib/clients.js";
 import type { OhChatResult } from "./types.js";
 
@@ -54,14 +53,7 @@ export function runParams(
 }
 
 async function runOne(input: string, attachments?: OhAttachment[]): Promise<OhChatResult> {
-  // MadModel 免费档预检（与 loader 的 chat 闭包同款）：token 缺失时直接给出
-  // 准确原因，而不是让 Rust 侧报「未配置 Key」误导排查。
-  try {
-    const warn = await preflightMadModel();
-    if (warn) return { error: warn };
-  } catch {
-    /* 预检失败不拦路：交给 run 本身去报真实错误 */
-  }
+  // 与桌面对话共用 callRust 的一次预检及后台运行门禁。
   try {
     const out = await callRust(OH_ID, "run", runParams("chat", input, attachments));
     // 主对话云盘同步：每轮 chat 完成后 debounce push（跨设备共享 active 会话）

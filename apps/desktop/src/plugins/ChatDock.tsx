@@ -36,6 +36,7 @@ import {
 } from "@onethu/gui";
 import "./dockScope.js"; // OH 对话坞专属档位登记（scope: oh.dock，dockScope.ts，受 OneGUI StyleDirector 调度）
 import { callRust, notifyRust } from "./rust.js";
+import { isLlmRateLimit } from "./runLifecycle.js";
 import { commandsSnapshot, subscribeCommands } from "./loader.js";
 import { EMPTY_EVENTS, pluginEvents, subscribePluginEvents } from "./events.js";
 import { IconClock, IconDownload, IconPlus, IconSpark, IconSpeak, IconSpeakOff, IconUpload, IconX } from "../components/Icons";
@@ -49,7 +50,6 @@ import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, spee
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
 import { readVoicePrefs, setVoicePrefs, useVoicePrefs } from "../state/voicePrefs.js";
 import { requestSettingsTab } from "../state/settingsMode.js";
-import { ensureMadModelToken } from "../state/madmodel.js";
 import { goOhRow } from "../components/OhSettingsPage.js";
 import { showToast } from "../state/toast.js";
 import { onOhCommand, type OhCommand, type OhMode } from "./ohControl.js";
@@ -644,8 +644,9 @@ function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
 interface ViewMsg {
   role: "user" | "assistant";
   text: string;
-  /** 「额度被限流」动作卡：不再把 429 原文塞进气泡，改成可操作提示（续签 / 自己的 API） */
-  notice?: "madmodel-429";
+  /** 限流可稍后重试，保留服务端原因；不与登录凭证续签混淆。 */
+  notice?: "rate-limit";
+  retryInput?: string;
   /** 图片附件（选中的那一拍读成 data URL；会话文本里的本地路径在重水合后补上） */
   images?: ViewImage[];
   /** 链元数据（R7）：本条回答的思考链与工具调用链，折叠可展开回看 */
@@ -736,7 +737,6 @@ interface MsgListProps {
   /** 正在朗读的那一条（按文本认；null = 没在念） */
   speakingText: string | null;
   onSpeak: (t: string) => void;
-  onRenewMadModel: () => void;
   onOpenOwnApi: () => void;
   scrollRef: React.RefObject<HTMLDivElement | null>;
   onSend: (t: string) => void;
@@ -788,27 +788,31 @@ function DockSuggestedChips({ onPick }: { onPick: (t: string) => void }): ReactN
 }
 
 /** 单条气泡（OneGUI 收编：材质走 --og-*；最新一条走旧 msg-pop 时间轴的相位直译——历史不动画）。 */
-function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRenewMadModel, onOpenOwnApi }: {
+function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRetry, busy, onOpenOwnApi }: {
   m: ViewMsg;
   isNew: boolean;
   ttsOk: boolean;
   autoSpeak: boolean;
   speakingText: string | null;
   onSpeak: (t: string) => void;
-  onRenewMadModel: () => void;
+  onRetry: (text: string) => void;
+  busy: boolean;
   onOpenOwnApi: () => void;
 }): ReactNode {
   const settled = useMountPhase();
+  const [responseOpen, setResponseOpen] = useState(false);
   const phone = isPhoneNow();
   const mat = m.role === "user" ? matBubbleUser(phone) : matBubbleOh(phone);
-  /* 学校 MadModel 限流（429）：不显示原始报错气泡，给一张能点的动作卡 */
-  if (m.role === "assistant" && m.notice === "madmodel-429") {
+  if (m.role === "assistant" && m.notice === "rate-limit") {
     return (
       <div className={"dock-msg-assistant dock-notice" + (isNew ? " is-new" : "")} style={mat} role="status">
-        <div className="dock-notice-title">免费额度被限流了（429 · 同时请求过多）</div>
-        <div className="dock-notice-sub">可以一键续签 MadModel 免费额度；也可以改用你自己的 API。</div>
+        <div className="dock-notice-title">请求暂时受限</div>
+        <div className="dock-notice-sub">服务暂时限制了请求，请稍后重试。</div>
+        <AccordionItem id="rate-limit-response" title="查看服务响应" open={responseOpen} onToggle={() => setResponseOpen((value) => !value)}>
+          <div>{m.text}</div>
+        </AccordionItem>
         <div className="dock-notice-actions">
-          <Btn variant="solid" tone="brand" onClick={onRenewMadModel}>一键续签</Btn>
+          {m.retryInput ? <Btn variant="solid" tone="brand" disabled={busy} onClick={() => onRetry(m.retryInput!)}>重试这条消息</Btn> : null}
           <Btn variant="outline" onClick={onOpenOwnApi}>设置自己的 API</Btn>
         </div>
       </div>
@@ -900,7 +904,8 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
             autoSpeak={p.autoSpeak}
             speakingText={p.speakingText}
             onSpeak={p.onSpeak}
-            onRenewMadModel={p.onRenewMadModel}
+            onRetry={p.onSend}
+            busy={p.busy}
             onOpenOwnApi={p.onOpenOwnApi}
           />
         );
@@ -1172,24 +1177,24 @@ export function ChatDock(): ReactNode {
       ro.disconnect();
     };
   }, [open]);
-  /* 运行代次：打断/强停/换插件后作废迟到回包；busyRef 是 busy 的即时镜像（异步闭包防陈旧） */
+  /* 运行代次防迟到回包；停止后仍等待后台确认退出再解除 busy。 */
   const runSeq = useRef(0);
   const busyRef = useRef(false);
-  const deadman = useRef<number | null>(null);
+  const runController = useRef<AbortController | null>(null);
+  const activeRunId = useRef<string | null>(null);
+  const sessionChanging = useRef(false);
+  const lastInput = useRef("");
   /* 链镜像：finalize 时随回答落库为 meta；delta 节流缓冲（markdown 逐帧重解析会卡 UI） */
   const thinkRef = useRef("");
   const traceRef = useRef<string[]>([]);
   const deltaBuf = useRef("");
   const deltaTimer = useRef<number | null>(null);
-  /* 自愈看门狗：流式文本镜像 + 最后事件时刻 + 本代次是否已落定（防回复链路丢失后永久 busy） */
+  /* 流式镜像保留部分回答；是否结束以后台回执为准。 */
   const streamRef = useRef("");
-  const lastEvAt = useRef(Date.now());
   const finalizedFor = useRef(0);
   const closeTimer = useRef<number | null>(null);
   /* 导入会话：真按钮 + 隐藏 input（label 方案在触屏密度层下渲染高度与 button 不一致） */
   const fileRef = useRef<HTMLInputElement>(null);
-  /* 外部运行标记：IM 入口的对话事件不进本地视图（见事件泵 foreignRun 分支） */
-  const foreignRun = useRef(false);
 
   const flushDelta = (): void => {
     deltaTimer.current = null;
@@ -1290,10 +1295,9 @@ export function ChatDock(): ReactNode {
     seenEv.current = 0;
     setHistory(null);
     runSeq.current++;
-    if (deadman.current) {
-      clearTimeout(deadman.current);
-      deadman.current = null;
-    }
+    runController.current?.abort();
+    runController.current = null;
+    activeRunId.current = null;
     busyRef.current = false;
     setBusy(false);
     return () => {
@@ -1310,7 +1314,7 @@ export function ChatDock(): ReactNode {
   // 不重水合主界面就永远看不到 IM 的新轮次；2026-10-10 用户实录）。
   const [foreignTick, setForeignTick] = useState(0);
   useEffect(() => {
-    if (!pid || !open || hydratedFor.current === pid) return;
+    if (!pid || !open || busy || hydratedFor.current === pid) return;
     hydratedFor.current = pid;
     // 重水合先清流式残影：此刻若 busy 必为本地在途（foreignTick 分支只在 !busy 时打点），
     // 若非 busy 则 stream/think 里只可能是外部入口（IM）事件的残留——一并冲掉
@@ -1355,27 +1359,32 @@ export function ChatDock(): ReactNode {
         }
       } catch { /* 保留现值 */ }
     })();
-  }, [pid, open, foreignTick]);
+  }, [pid, open, foreignTick, busy]);
 
   // 事件泵：流式增量 / 工具轨迹 / 用量（R4）
   const events = useSyncExternalStore(subscribePluginEvents, pid ? () => pluginEvents(pid) : () => EMPTY_EVENTS);
   useEffect(() => {
     if (!pid) return;
-    const fresh = events.slice(seenEv.current);
-    seenEv.current = events.length;
+    // 环形缓冲满 300 条后长度不再增加，必须以事件序号追踪，不能拿长度当游标。
+    const fresh = events.filter((event) => event.sequence > seenEv.current);
+    seenEv.current = events.at(-1)?.sequence ?? seenEv.current;
     if (fresh.length === 0) return;
-    lastEvAt.current = Date.now();
     for (const e of fresh) {
       if (e.method === "exit") {
         hardStop("插件已停止");
         return;
       }
       const kind = (e as any).kind;
-      // 外部运行（IM 微信/飞书入口的对话）：本地无运行在途时收到的 delta/think/tool/log
-      // 一律不进本地视图——否则 IM 回复会流进本地流式气泡（永不 finalize → 幽灵光标
-      // 常闪、多轮拼成一长串，2026-10-10 用户实录）。轮次由 usage 事件后的重水合并入。
-      if (!busyRef.current && (kind === "delta" || kind === "think" || kind === "tool" || kind === "log" || kind === "notice")) {
-        foreignRun.current = true;
+      // 本地预检也会 busy；必须核对请求 ID，不能把此时到达的 IM 回答当成本轮。
+      // 第三方插件可保留旧的无 ID 协议，内置 OH 则要求每轮事件明确归属。
+      const belongsToLocal = busyRef.current && (e.runId
+        ? e.runId === activeRunId.current
+        : pid !== "onethu.harness");
+      if (!belongsToLocal) {
+        if (kind === "usage") {
+          hydratedFor.current = null;
+          setForeignTick((t) => t + 1);
+        }
         continue;
       }
       // R10：已落定的对话不得再吃迟到事件——Tauri 事件通道与 invoke 回执无顺序保证，
@@ -1403,45 +1412,29 @@ export function ChatDock(): ReactNode {
       else if (kind === "notice" && e.text) setStatus(e.text);
       else if (kind === "usage" && (e as any).payload) {
         setUsage((u) => ({ ...u, ...(e as any).payload }));
-        // 外部入口（IM）对话完成：清掉其残留（不进气泡的保证 + 兜底清 stream/think），
-        // 静默重水合把新轮次（含 IM 侧的用户消息）并入视图
-        if (foreignRun.current || !busyRef.current) {
-          foreignRun.current = false;
-          if (!busyRef.current) {
-            if (deltaTimer.current) {
-              clearTimeout(deltaTimer.current);
-              deltaTimer.current = null;
-            }
-            deltaBuf.current = "";
-            streamRef.current = "";
-            setStream(null);
-            thinkRef.current = "";
-            setThink("");
-            hydratedFor.current = null;
-            setForeignTick((t) => t + 1);
-          }
-        }
       }
     }
     stickBottom();
   }, [events, pid]);
 
   const finalize = (r: any): void => {
-    if (finalizedFor.current === runSeq.current && runSeq.current > 0) return; // 已落定（看门狗兜底后真回复迟到）
+    if (finalizedFor.current === runSeq.current && runSeq.current > 0) return;
     finalizedFor.current = runSeq.current;
     // 冲掉在途 delta 缓冲：否则落定后迟到的定时器会把残余增量拼回 stream，冒出幽灵流式气泡
     if (deltaTimer.current) {
       clearTimeout(deltaTimer.current);
       deltaTimer.current = null;
     }
+    const partialAnswer = streamRef.current + deltaBuf.current;
     deltaBuf.current = "";
     /* 文案规范：不用 emoji/符号当图标（用户 2026-10-11 质量红线）→ 纯文字前缀 */
-    const answer = typeof r?.answer === "string" ? r.answer : r?.error != null ? `回答出错：${r.error}` : "(空响应)";
-    /* 学校 MadModel 限流/额度类报错：不把原始报错塞进气泡，改成「续签 / 换自己的 API」动作卡。 */
+    const answer = r?.error != null
+      ? `${partialAnswer ? partialAnswer + "\n\n" : ""}回答出错：${r.error}`
+      : typeof r?.answer === "string" ? r.answer : "(空响应)";
     const rawError = r?.error == null ? "" : String(r.error);
-    const limited = /429|请求过多|rate.?limit|too many requests|额度|重新签/i.test(rawError);
+    const limited = isLlmRateLimit(rawError);
     setMsgs((v) => [...v, limited
-      ? { role: "assistant", text: "", notice: "madmodel-429" as const }
+      ? { role: "assistant", text: answer, notice: "rate-limit" as const, retryInput: lastInput.current }
       : { role: "assistant", text: answer, meta: { think: thinkRef.current, trace: traceRef.current } }]);
     /* 需求 4 自动朗读的**触发点**：就在「回复完成」这一步（紧随回答入列）。
        只念真回答（报错/空响应不念）；静音保证＝speakReply 内部**现读** voicePrefs.autoSpeak
@@ -1467,30 +1460,18 @@ export function ChatDock(): ReactNode {
     stickBottom();
   };
 
-  /** 429 动作卡：一键续签 MadModel 免费额度 */
-  const renewMadModel = useCallback((): void => {
-    void (async () => {
-      try {
-        await ensureMadModelToken(true);
-        showToast("已重新续签 MadModel 免费额度，稍后重试");
-      } catch (e) {
-        showToast(`续签失败：${e instanceof Error ? e.message : String(e)}（可改用你自己的 API）`);
-      }
-    })();
-  }, []);
   /** 429 动作卡：直接去 OH 高级配置里调模型源/Key */
   const openOwnApi = useCallback((): void => {
     openSettings("oh");
     goOhRow("模型 / MCP / 日志", "advanced");
   }, []);
 
-  /** 强制收尾：清 busy + 作废迟到回包（打断超时/插件死亡/换插件时的 UI 兜底） */
+  /** 插件进程已退出时才强制收尾。 */
   const hardStop = (note: string): void => {
-    if (deadman.current) {
-      clearTimeout(deadman.current);
-      deadman.current = null;
-    }
     if (!busyRef.current) return;
+    runController.current?.abort();
+    runController.current = null;
+    activeRunId.current = null;
     runSeq.current++;
     busyRef.current = false;
     setBusy(false);
@@ -1503,14 +1484,17 @@ export function ChatDock(): ReactNode {
 
   const send = useCallback(async (raw: string, bubble?: string): Promise<void> => {
     const text = raw.trim();
-    if (!pid || busyRef.current || !text) return;
+    if (!pid || busyRef.current || sessionChanging.current || !text) return;
     void ttsStop(); // 朗读中用户发新消息：先掐掉，别和新回答抢耳朵
     setSpeakingText(null);
     const seq = ++runSeq.current;
+    const controller = new AbortController();
+    runController.current = controller;
+    const runId = crypto.randomUUID();
+    activeRunId.current = runId;
+    lastInput.current = text;
     finalizedFor.current = 0;
-    foreignRun.current = false; // 本地运行启动：此后的事件都属本地（IM 单飞队列不会并发进来）
     streamRef.current = "";
-    lastEvAt.current = Date.now();
     busyRef.current = true;
     setBusy(true);
     setMsgs((v) => [...v, { role: "user", text: bubble?.trim() || text }]);
@@ -1523,39 +1507,19 @@ export function ChatDock(): ReactNode {
     traceRef.current = [];
     setConfirmCard(null);
     setStatus("思考中…");
-    // 自愈看门狗（R9）：流式文本已非空且 8s 无任何新事件 → 视为已完成，
-    // 用已流出的内容落定并解锁——无论 run 应答卡在链路哪一环，UI 都不再永久 busy
-    const watchdog = window.setInterval(() => {
-      if (seq !== runSeq.current || !busyRef.current) {
-        window.clearInterval(watchdog);
-        return;
-      }
-      const idle = Date.now() - lastEvAt.current;
-      if (streamRef.current && idle > 8_000) {
-        window.clearInterval(watchdog);
-        console.warn("[dock] 应答链路超时，看门狗按已流出内容落定");
-        if (seq === runSeq.current) finalize({ answer: streamRef.current });
-        busyRef.current = false;
-        setBusy(false);
-      }
-    }, 1000);
     try {
-      const res: any = await callRust(pid, "run", { command: "chat", input: text });
-      window.clearInterval(watchdog);
+      const res: any = await callRust(pid, "run", { command: "chat", input: text, runId }, 600_000, controller.signal);
       if (seq !== runSeq.current) return; // 已被打断/强停：迟到回包作废
       finalize(res);
     } catch (e) {
-      window.clearInterval(watchdog);
       if (seq !== runSeq.current) return;
       finalize({ answer: "", error: e instanceof Error ? e.message : String(e) });
     } finally {
       if (seq === runSeq.current) {
+        runController.current = null;
+        activeRunId.current = null;
         busyRef.current = false;
         setBusy(false);
-      }
-      if (deadman.current) {
-        clearTimeout(deadman.current);
-        deadman.current = null;
       }
     }
   }, [pid, open]);
@@ -1715,6 +1679,7 @@ export function ChatDock(): ReactNode {
         setNotice("小OH 还没就绪（Harness 插件未加载）——对话需要完整桌面环境");
         return;
       }
+      if (busyRef.current || sessionChanging.current) return;
       setDockInputValue("");
       void send(t);
     };
@@ -1729,11 +1694,20 @@ export function ChatDock(): ReactNode {
 
   const runCmd = async (command: string, input = ""): Promise<any> => {
     if (!pid) return null;
+    const changesSession = ["new_session", "switch_session", "delete_session", "import_session", "restore_main"].includes(command);
+    if (changesSession && (busyRef.current || sessionChanging.current)) {
+      const error = "请先停止当前回答，结束后再操作会话";
+      setNotice(error);
+      return { ok: false, error };
+    }
+    if (changesSession) sessionChanging.current = true;
     try {
       return await callRust(pid, "run", { command, input });
     } catch (e) {
       setNotice(e instanceof Error ? e.message : String(e));
       return null;
+    } finally {
+      if (changesSession) sessionChanging.current = false;
     }
   };
 
@@ -1755,12 +1729,11 @@ export function ChatDock(): ReactNode {
   const newSession = async (): Promise<void> => {
     void ttsStop(); // 会话换掉了：正在念的那条一起停，图标状态同步收
     setSpeakingText(null);
-    if (busyRef.current) {
-      // 打断中也能开新会话：强制解锁，迟到回包作废
-      hardStop("已打断，开新会话");
-      await new Promise((r) => setTimeout(r, 60));
+    const r = await runCmd("new_session");
+    if (!r?.ok) {
+      setNotice(r?.error ?? "新建会话失败");
+      return;
     }
-    await runCmd("new_session");
     hydratedFor.current = pid;
     setMsgs([]);
     setConfirmCard(null);
@@ -1777,11 +1750,11 @@ export function ChatDock(): ReactNode {
   const switchSession = async (id: string): Promise<void> => {
     void ttsStop();
     setSpeakingText(null);
-    if (busyRef.current) {
-      hardStop("已打断，切换会话");
-      await new Promise((r) => setTimeout(r, 60));
+    const r = await runCmd("switch_session", id);
+    if (!r?.ok) {
+      setNotice(r?.error ?? "切换会话失败");
+      return;
     }
-    await runCmd("switch_session", id);
     hydratedFor.current = pid;
     setMsgs([]);
     setConfirmCard(null);
@@ -1798,7 +1771,7 @@ export function ChatDock(): ReactNode {
           if (m.role === "user" && m.content) view.push({ role: "user", text: m.content });
           else if (m.role === "assistant" && m.content) view.push({ role: "assistant", text: m.content });
         }
-        setMsgs(view);
+        setMsgs((cur) => mergeHydrated(view, cur));
         if (s.usage) setUsage((u) => ({ ...u, sessionPrompt: s.usage.prompt, sessionCompletion: s.usage.completion, sessionCostUsd: s.cost_usd }));
       }
     } catch {
@@ -1808,8 +1781,8 @@ export function ChatDock(): ReactNode {
 
   const deleteSession = async (id: string): Promise<void> => {
     const r = await runCmd("delete_session", id);
-    setHistory(Array.isArray(r?.sessions) ? r.sessions : []);
     if (r?.ok) {
+      setHistory(Array.isArray(r?.sessions) ? r.sessions : []);
       // 修（老 bug，云盘之前就存在）：删除的若是当前显示会话，视图会残留旧对话——
       // 关开面板也不重水合（hydratedFor 已等于 pid 短路了 345 行的 effect）。
       // 删除成功即重置水合标记，让 effect 按 core 返回的新 active 立即重建视图。
@@ -1857,16 +1830,10 @@ export function ChatDock(): ReactNode {
   };
 
   const stop = (): void => {
-    if (!pid) return;
-    void notifyRust(pid, "interrupt").catch(() => undefined);
-    setStatus("正在打断…");
-    // 死人开关：插件 12s 内没自行收尾就强制解锁——打断永不卡死 UI
-    if (!deadman.current && busyRef.current) {
-      deadman.current = window.setTimeout(() => {
-        deadman.current = null;
-        hardStop("已打断（插件未及时响应，已强制解锁）");
-      }, 12_000);
-    }
+    if (!pid || !busyRef.current) return;
+    if (runController.current) runController.current.abort();
+    else void notifyRust(pid, "interrupt").catch(() => undefined);
+    setStatus("正在停止请求…");
   };
 
   /** 消息区链接一律外跳系统浏览器（webview 内导航会带走整个应用） */
@@ -2550,7 +2517,6 @@ export function ChatDock(): ReactNode {
             autoSpeak={prefs.autoSpeak}
             speakingText={speakingText}
             onSpeak={speakOne}
-            onRenewMadModel={renewMadModel}
             onOpenOwnApi={openOwnApi}
             scrollRef={scrollRef}
             onSend={(t) => void send(t)}

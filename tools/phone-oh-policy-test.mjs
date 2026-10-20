@@ -29,9 +29,10 @@ assert.ok(/workbench-settings-phone-nav/.test(settings) && /aria-label="设置�
 assert.ok(/useState\(false\)/.test(modeControl) && /open\?<Stack/.test(modeControl), "「使用模式」应默认收起（open 初值 false）");
 
 /* OH：429 动作卡 + 面板输入框删除 */
-assert.ok(/notice\?: "madmodel-429"/.test(chat), "429 动作卡消息类型缺失");
-assert.ok(/一键续签/.test(chat) && /设置自己的 API/.test(chat), "429 动作卡按钮缺失");
-assert.ok(/ensureMadModelToken\(true\)/.test(chat), "「一键续签」没有调用 MadModel 续签");
+assert.ok(/notice\?: "rate-limit"/.test(chat), "429 动作卡消息类型缺失");
+assert.ok(/重试这条消息/.test(chat) && /设置自己的 API/.test(chat), "429 动作卡按钮缺失");
+assert.ok(!/ensureMadModelToken/.test(chat), "429 不能通过续签登录凭证来恢复额度");
+assert.ok(/查看服务响应/.test(chat), "限流卡必须保留服务端真实原因");
 assert.ok(/goOhRow\("模型 \/ MCP \/ 日志", "advanced"\)/.test(chat), "「设置自己的 API」没有跳到 OH 高级配置");
 assert.ok(!/aria-label="给小OH发消息"/.test(chat), "OH 面板内不应再有独立输入框（胶囊是唯一输入口）");
 assert.ok(/\.dock-notice \{/.test(wbCss), "429 动作卡共享样式缺失");

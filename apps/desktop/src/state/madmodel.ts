@@ -39,6 +39,25 @@ const BACKOFF_MIN = [1, 5, 15, 30];
 let inflight: Promise<string> | null = null;
 /** 服务端校验节流：复用 token 前最多每 REACH_TTL 问一次站点 */
 const VERIFY_TTL_MS = 10 * 60_000;
+const TRANSIENT_RETRY_MS = 60_000;
+let preflightInflight: Promise<string | null> | null = null;
+let routeInflight: Promise<boolean> | null = null;
+let routeRetryAt = 0;
+let routeRevision = 0;
+let pumpStarted = false;
+type TokenVerdict = "valid" | "invalid" | "temporary";
+let validation: { token: string; base: string; verdict: TokenVerdict; until: number } | null = null;
+
+class TemporaryMadModelError extends Error {
+  constructor(message: string, readonly retryAfterAt = 0) { super(message); }
+}
+
+function retryAt(res: Response): number {
+  const value = res.headers.get("retry-after") ?? "";
+  const seconds = Number(value);
+  const requested = value && Number.isFinite(seconds) ? Date.now() + seconds * 1000 : Date.parse(value);
+  return Math.max(Date.now() + TRANSIENT_RETRY_MS, Number.isFinite(requested) ? requested : 0);
+}
 
 /** 是否处于 madmodel 免费档语义（显式 custom 或「未显式但已填 key」则免打扰） */
 export function madmodelActive(): boolean {
@@ -77,45 +96,136 @@ export function madmodelDue(): boolean {
   return !at || Date.now() - at > REFRESH_MS;
 }
 
-/** 校内可达性探针：直连 GET /check（绕 webvpn 包装、不跟随重定向）。
- *  200=校内可达；30x=IP 门禁（校外）；异常=网络不通，同样按校外处理。 */
-async function probeReachable(): Promise<boolean> {
-  try {
-    const res = await http.request(`${SITE}/model-api/auth-login/check`, { redirect: "manual", direct: true });
-    const ok = res.status === 200;
-    void logLine(`[MADMODEL] 可达性探针：HTTP ${res.status} → ${ok ? "校内" : "校外（IP 门禁）"}`).catch(() => undefined);
-    return ok;
-  } catch (e) {
-    void logLine(`[MADMODEL] 可达性探针异常（按校外处理）：${e instanceof Error ? e.message : e}`).catch(() => undefined);
-    return false;
-  }
+/** 请求可能耗时数十秒；允许沿用旧凭证前必须重新读当前有效期。 */
+function currentTokenUsable(): boolean {
+  const token = String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "");
+  if (!token) return false;
+  const exp = jwtExpiresAt(token);
+  return exp === null ? !madmodelDue() : exp > Date.now();
+}
+
+/** 只认站点的 JSON 响应，HTTP 200 登录页/代理页不算连通。 */
+async function isSiteResponse(res: Response): Promise<boolean> {
+  if (res.status !== 200) return false;
+  const body = await res.json().catch(() => null) as { success?: unknown } | null;
+  return typeof body?.success === "boolean";
 }
 
 function writeSettings(patch: Record<string, string>): void {
   const prev = getPlugin(HARNESS_ID)?.settings ?? {};
+  if (Object.entries(patch).every(([key, value]) => prev[key] === value)) return;
   updatePlugin(HARNESS_ID, { settings: { ...prev, ...patch } });
 }
 
-/** 续签入口（单飞）。进行中则直接复用其 Promise；force=true 绕过退避但不计入退避。 */
+function syncRouteCookie(): void {
+  const base = String(getPlugin(HARNESS_ID)?.settings?.madmodelBase ?? "");
+  writeSettings({ madmodelCookie: base ? http.cookieHeaderFor(base) ?? "" : "" });
+}
+
+function markRoute(base: string): void {
+  writeSettings({
+    madmodelBase: base,
+    madmodelCookie: base ? http.cookieHeaderFor(base) ?? "" : "",
+    madmodelReachable: base ? "0" : "1",
+    madmodelReachableAt: String(Date.now()),
+  });
+  routeRetryAt = 0;
+}
+
+/** 路由更新与凭证续签独立：网络切换后探测直连/隧道，临时失败保留最近的已知路线。
+ * true 仅表示本次或缓存已有探测结果；false 不会被冒充为“校外可达”。 */
+export function refreshMadModelRoute(force = false): Promise<boolean> {
+  if (!madmodelActive()) return Promise.resolve(false);
+  syncRouteCookie(); // cookie jar 会独立轮换，不等 token 续签或 10 分钟 TTL
+  if (routeInflight) return routeInflight;
+  const st = getPlugin(HARNESS_ID)?.settings ?? {};
+  const at = Number(st.madmodelReachableAt ?? 0);
+  if (!force && Date.now() < routeRetryAt) return Promise.resolve(false);
+  if (!force && at && Date.now() - at < REACH_TTL_MS) return Promise.resolve(true);
+  const revision = routeRevision;
+  routeInflight = (async () => {
+    try {
+      const direct = await http.request(`${SITE}/model-api/auth-login/check`, { redirect: "manual", direct: true });
+      if (!madmodelActive() || revision !== routeRevision) return false;
+      const confirmed = await isSiteResponse(direct);
+      if (!madmodelActive() || revision !== routeRevision) return false;
+      if (confirmed) {
+        markRoute("");
+        return true;
+      }
+      if (direct.status === 429 || direct.status >= 500) {
+        routeRetryAt = retryAt(direct);
+        void logLine(`[MADMODEL] 路由探测暂缓：HTTP ${direct.status}`).catch(() => undefined);
+        return false;
+      }
+    } catch {
+      // 直连不通可能刚离开校园；只在隧道也实际返回站点 JSON 后才切换。
+    }
+    if (!madmodelActive() || revision !== routeRevision) return false;
+    const base = webvpnWrap(`${SITE}/v1`);
+    try {
+      const tunnel = await http.request(webvpnWrap(`${SITE}/model-api/auth-login/check`), { redirect: "manual" });
+      if (!madmodelActive() || revision !== routeRevision) return false;
+      const confirmed = await isSiteResponse(tunnel);
+      if (!madmodelActive() || revision !== routeRevision) return false;
+      if (confirmed) {
+        markRoute(base);
+        return true;
+      }
+      routeRetryAt = retryAt(tunnel);
+      void logLine(`[MADMODEL] 路由尚未确认：隧道 HTTP ${tunnel.status}`).catch(() => undefined);
+    } catch {
+      if (!madmodelActive() || revision !== routeRevision) return false;
+      routeRetryAt = Date.now() + TRANSIENT_RETRY_MS;
+      void logLine("[MADMODEL] 路由探测暂时失败，保留已有路线").catch(() => undefined);
+    }
+    syncRouteCookie();
+    return false;
+  })().finally(() => { routeInflight = null; });
+  return routeInflight;
+}
+
+/** 续签入口（单飞）。force 只供用户显式更新凭证，自动校验失效仍遵守退避。 */
 export function ensureMadModelToken(force = false): Promise<string> {
   if (inflight) return inflight;
-  inflight = acquireMadModelToken(force).finally(() => {
-    inflight = null;
-  });
+  inflight = acquireMadModelToken(force).catch((error) => {
+    if (!force && !(Number(getPlugin(HARNESS_ID)?.settings?.madmodelNextAttemptAt ?? 0) > Date.now())) {
+      bumpBackoff(error instanceof TemporaryMadModelError ? error.retryAfterAt : 0);
+    }
+    throw error;
+  }).finally(() => { inflight = null; });
   return inflight;
 }
 
-/** 服务端是否仍认这张 token（插件 validateToken 同语义：鉴权接口挂站点根，成功 = success:true） */
-async function serverAccepts(token: string, base: string): Promise<boolean> {
+/** 限流、5xx、网络故障、HTML 与未知响应都不能证明凭证无效。 */
+async function serverAccepts(token: string, base: string): Promise<TokenVerdict> {
+  if (validation?.token === token && validation.base === base && Date.now() < validation.until) return validation.verdict;
+  let verdict: TokenVerdict = "temporary";
+  let until = Date.now() + TRANSIENT_RETRY_MS;
   try {
     const root = (base || SITE).replace(/\/v1\/?$/, "");
-    const url = base ? webvpnWrap(`${root}/model-api/auth-login`) : `${root}/model-api/auth-login`;
-    const res = await http.request(url, { redirect: "manual", direct: !base, headers: { authorization: `Bearer ${token}` } });
-    const j = (await res.json().catch(() => null)) as { success?: boolean } | null;
-    return j?.success === true;
+    const res = await http.request(`${root}/model-api/auth-login`, {
+      redirect: "manual", direct: !base, headers: { authorization: `Bearer ${token}` },
+    });
+    if (res.status === 401) verdict = "invalid";
+    else if (res.status >= 200 && res.status < 300) {
+      const body = await res.json().catch(() => null) as { success?: unknown } | null;
+      if (body?.success === true) verdict = "valid";
+      else if (body?.success === false) verdict = "invalid";
+    }
+    if (verdict === "temporary") until = retryAt(res);
+    else until = Date.now() + VERIFY_TTL_MS;
+    void logLine(`[MADMODEL] 凭证校验：HTTP ${res.status} ${verdict}`).catch(() => undefined);
   } catch {
-    return false;
+    void logLine("[MADMODEL] 凭证校验暂时失败，保留当前凭证").catch(() => undefined);
   }
+  const current = getPlugin(HARNESS_ID)?.settings ?? {};
+  // 用户换账号/路线或显式续签时，旧请求的结果不得覆盖新的凭证状态。
+  if (String(current.madmodelToken ?? "") !== token || String(current.madmodelBase ?? "") !== base || !madmodelActive()) return "temporary";
+  validation = { token, base, verdict, until };
+  if (verdict === "valid") writeSettings({ madmodelVerifiedAt: String(Date.now()) });
+  syncRouteCookie();
+  return verdict;
 }
 
 async function acquireMadModelToken(force: boolean): Promise<string> {
@@ -180,7 +290,6 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
     // 强制重签失败不计入退避（与插件一致：用户显式操作不该把自动路径也卡住）
     // 不覆盖 madmodelReachable：它只表示 IP 探针结果，票据兑换失败不等于网络不可达
     // （否则会让预检误判「直连被门禁 + webvpn 未就绪」，见 2026-10-12 事故）
-    if (!force) bumpBackoff();
     throw new Error(
       "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。" +
       "请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
@@ -194,14 +303,14 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
 async function exchangeCheck(url: string, opts: { direct?: boolean }): Promise<string | null> {
   try {
     const res = await http.request(url, { redirect: "manual", ...opts });
+    if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(`学校登录服务暂不可用（HTTP ${res.status}），请稍后重试`, retryAt(res));
     const j = (await res.json().catch(() => null)) as { success?: boolean; data?: unknown } | null;
     if (res.status === 200 && j?.success === true && typeof j.data === "string" && j.data) return j.data;
-    if (j && typeof j.data === "string" && j.data) void logLine(`[MADMODEL] check 业务失败：${j.data}`).catch(() => undefined);
-    // 无 data 字符串时也要留痕（之前只有异常分支有日志，兑换被拒原因无从查）
-    else void logLine(`[MADMODEL] check 未返回 token：HTTP ${res.status} success=${String(j?.success)} msg=${String((j as { msg?: unknown } | null)?.msg ?? "").slice(0, 120)} path=${url.slice(0, url.indexOf("?") < 0 ? url.length : url.indexOf("?")).slice(-60)}`).catch(() => undefined);
+    void logLine(`[MADMODEL] check 未签发凭证：HTTP ${res.status} success=${String(j?.success)}`).catch(() => undefined);
     return null;
   } catch (e) {
-    void logLine(`[MADMODEL] check 异常：${e instanceof Error ? e.message : e}`).catch(() => undefined);
+    if (e instanceof TemporaryMadModelError) throw e;
+    void logLine("[MADMODEL] check 网络异常").catch(() => undefined);
     return null;
   }
 }
@@ -218,6 +327,7 @@ const TICKET_RE = /[?&]ticket=([^&\s"']+)/;
 async function fetchSsoTicket(): Promise<TicketResult> {
   try {
     const res = await http.request(SSO_FORM, { redirect: "follow" });
+    if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(`统一认证暂不可用（HTTP ${res.status}），请稍后重试`, retryAt(res));
     const finalUrl = res.headers.get("x-onethu-final-url") ?? "";
     const body = await res.text();
     const m = TICKET_RE.exec(finalUrl) ?? TICKET_RE.exec(body);
@@ -230,10 +340,11 @@ async function fetchSsoTicket(): Promise<TicketResult> {
     }
 
     const loginPage = /id="sm2publicKey"|name="i_pass"/i.test(body);
-    void logLine(`[MADMODEL] SSO 取票：${loginPage ? "id 会话已死（真登录页）" : `未识别页面（finalUrl=${finalUrl.slice(0, 80)}）`}`).catch(() => undefined);
-    return { ticket: null, noSession: true };
+    void logLine(`[MADMODEL] SSO 取票：${loginPage ? "需要重新登录" : "未识别页面，保留会话"}`).catch(() => undefined);
+    return { ticket: null, noSession: loginPage };
   } catch (e) {
-    void logLine(`[MADMODEL] SSO 取票异常：${e instanceof Error ? e.message : e}`).catch(() => undefined);
+    if (e instanceof TemporaryMadModelError) throw e;
+    void logLine("[MADMODEL] SSO 取票网络异常").catch(() => undefined);
     return { ticket: null, noSession: false };
   }
 }
@@ -257,7 +368,7 @@ async function confirmCheckSingle(): Promise<string | null> {
     const m = TICKET_RE.exec(finalUrl) ?? TICKET_RE.exec(html) ?? /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(html);
     return m?.[1] ? decodeURIComponent(m[1]) : null;
   } catch (e) {
-    void logLine(`[MADMODEL] checkSingle 确认异常：${e instanceof Error ? e.message : e}`).catch(() => undefined);
+    void logLine("[MADMODEL] checkSingle 确认网络异常").catch(() => undefined);
     return null;
   }
 }
@@ -265,6 +376,7 @@ async function confirmCheckSingle(): Promise<string | null> {
 /** 成功路径统一写 settings 并清退避 */
 function markFreeTierOk(p: { token: string; base: string; cookie: string }): void {
   const prev = String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "");
+  const dueSoon = (jwtExpiresAt(p.token) ?? Infinity) <= Date.now() + RENEW_BEFORE_EXP_MS;
   if (prev && prev === p.token && (jwtExpiresAt(p.token) ?? 0) <= Date.now() + RENEW_BEFORE_EXP_MS) {
     // 站点会话没变时会原样返回同一张 token——不算真正续期，留痕便于排查
     void logLine("[MADMODEL] 服务端返回了同一张 token（未真正续期）").catch(() => undefined);
@@ -272,23 +384,26 @@ function markFreeTierOk(p: { token: string; base: string; cookie: string }): voi
   writeSettings({
     madmodelToken: p.token,
     madmodelAt: String(Date.now()),
+    madmodelVerifiedAt: String(Date.now()),
     madmodelReachable: p.base ? "0" : "1",
     madmodelReachableAt: String(Date.now()),
     madmodelBase: p.base,
     madmodelCookie: p.cookie,
-    madmodelNextAttemptAt: "",
+    // 站点可能原样返回仍在提前续签窗口内的 token；不能每条消息都再次请求 SSO。
+    madmodelNextAttemptAt: dueSoon ? String(Date.now() + VERIFY_TTL_MS) : "",
     madmodelFailStreak: "0",
   });
+  validation = { token: p.token, base: p.base, verdict: "valid", until: Date.now() + VERIFY_TTL_MS };
 }
 
 /** 失败退避：1/5/15/30 分钟封顶（DSH 插件经验：防反复撞统一认证锁账号） */
-function bumpBackoff(): void {
+function bumpBackoff(serverRetryAt = 0): void {
   const st = getPlugin(HARNESS_ID)?.settings ?? {};
   const streak = Number(st.madmodelFailStreak ?? 0) + 1;
   const min = BACKOFF_MIN[Math.min(streak - 1, BACKOFF_MIN.length - 1)]!;
   writeSettings({
     madmodelFailStreak: String(streak),
-    madmodelNextAttemptAt: String(Date.now() + min * 60_000),
+    madmodelNextAttemptAt: String(Math.max(Date.now() + min * 60_000, serverRetryAt)),
   });
   void logLine(`[MADMODEL] 续签失败第 ${streak} 次，退避 ${min} 分钟`).catch(() => undefined);
 }
@@ -389,64 +504,53 @@ function mirrorModelsToSettings(ids: string[]): void {
   writeSettings(patch);
 }
 
-/** 对话前兜底：免费档语义下保证「可达性状态新鲜 + token 到期即续」。
- *  - token 到期：完整重签（顺带刷新可达性）；
- *  - token 新鲜但可达性判定超 10 分钟：轻探针刷新（网络切换 10 分钟内自动纠正）。 */
-export async function preflightMadModel(): Promise<string | null> {
+/** 设置页、启动巡检与对话共用一次预检，避免同时校验/探测/续签。 */
+export function preflightMadModel(): Promise<string | null> {
+  if (!madmodelActive()) return Promise.resolve(null);
+  if (preflightInflight) return preflightInflight;
+  preflightInflight = runPreflight().finally(() => { preflightInflight = null; });
+  return preflightInflight;
+}
+
+async function runPreflight(): Promise<string | null> {
+  void ensureModels().catch(() => undefined);
+  const revision = routeRevision;
+  await refreshMadModelRoute();
+  if (revision !== routeRevision) await refreshMadModelRoute();
   if (!madmodelActive()) return null;
-  void ensureModels().catch(() => undefined); // 名单保鲜（6h TTL，失败静默沿用）
   const st = getPlugin(HARNESS_ID)?.settings ?? {};
-  const nextAt = Number(st.madmodelNextAttemptAt ?? 0);
   const tok = String(st.madmodelToken ?? "");
-  // 退避窗口内静默跳过（插件 tick 同款）：不每分钟重撞统一认证、不刷日志
-  if (!madmodelDue() && tok) {
-    // 复用 token 前按节流向服务端校验一次：本地没过期但站点已作废（换号/会话被踢）→ 立即转续签
-    if (Date.now() - Number(st.madmodelVerifiedAt ?? 0) > VERIFY_TTL_MS) {
-      const ok = await serverAccepts(tok, String(st.madmodelBase ?? ""));
-      writeSettings({ madmodelVerifiedAt: String(Date.now()) });
-      if (!ok) {
-        void logLine("[MADMODEL] 服务端已不认当前 token，转入续签").catch(() => undefined);
-        if (nextAt && Date.now() < nextAt) return freeTierHint("续签退避中，稍后自动重试");
-        try {
-          await ensureMadModelToken(true);
-          return null;
-        } catch (e) {
-          const why = e instanceof Error ? e.message : String(e);
-          void logLine(`[MADMODEL] 续期失败：${why}`).catch(() => undefined);
-          return freeTierHint(why);
-        }
-      }
-    }
-    const at = Number(st.madmodelReachableAt ?? 0);
-    if (!at || Date.now() - at > REACH_TTL_MS) {
-      const ok = await probeReachable();
-      writeSettings({ madmodelReachable: ok ? "1" : "0", madmodelReachableAt: String(Date.now()) });
-    }
-    return null;
+  const usable = currentTokenUsable();
+  let verdict: TokenVerdict = "invalid";
+  if (usable) {
+    verdict = await serverAccepts(tok, String(st.madmodelBase ?? ""));
+    if (String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "") !== tok || !madmodelActive()) return null;
+    // 临时故障不是续签信号；保留旧凭证/成功时间，由本次聊天报告真实网络状态。
+    if (verdict === "temporary") return currentTokenUsable() ? null : freeTierHint("学校登录状态已过期，暂时无法完成校验");
+    if (verdict === "valid" && !madmodelDue()) return null;
   }
-  // 到期或没有 token：走续签（退避窗口内只给提示，不再撞统一认证）
-  if (nextAt && Date.now() < nextAt) return freeTierHint("续签退避中，稍后自动重试");
+  const nextAt = Number(getPlugin(HARNESS_ID)?.settings?.madmodelNextAttemptAt ?? 0);
+  const canReuseCurrent = (): boolean =>
+    verdict === "valid" && String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "") === tok && currentTokenUsable();
+  if (Date.now() < nextAt) return canReuseCurrent() ? null : freeTierHint("更新学校登录状态暂缓，请稍后重试");
   try {
     await ensureMadModelToken();
-    return null;
+    return currentTokenUsable() ? null : freeTierHint("学校登录状态已过期，请重新登录");
   } catch (e) {
-    const why = e instanceof Error ? e.message : String(e);
-    void logLine(`[MADMODEL] 续期失败：${why}`).catch(() => undefined);
+    // 临近过期的提前续签失败，不应使尚有效的凭证立即停止工作。
+    if (canReuseCurrent()) return null;
+    const why = e instanceof Error ? e.message : "更新登录凭证失败";
+    void logLine(`[MADMODEL] 续期未完成：${e instanceof TemporaryMadModelError ? "临时服务故障" : "未取得新凭证"}`).catch(() => undefined);
     return freeTierHint(why);
   }
 }
 
 /** 免费档不可用时的用户可读说明：把真实原因说清楚，而不是让人以为「没填 API Key」。 */
 function freeTierHint(why: string): string {
-  return [
-    "清华免费档（MadModel）暂不可用：" + why + "。",
-    "· 校园网内会自动签发 token（本应用每 10 分钟自动续期），可稍候重试；",
-    "· 校外 / 走了代理或 VPN 时 IP 门禁会拦（MadModel 仅限校内 IP）——请连校园网或学校 VPN（EasyConnect），",
-    "  或在 设置 → 插件 → OneTHU Harness 填入自费 API Key 并把模型源切到「自费 API」。",
-  ].join("\n");
+  return `学校模型暂不可用：${why}。登录状态失效时请重新登录清华账号；网络或限流问题请稍后重试。`;
 }
 
-/** 外部强制重签（run 遇 307 漏判兜底）：刷新 token/可达性，下一条对话即恢复正确通道 */
+/** 用户显式更新登录凭证；IP 门禁改走 refreshMadModelRoute，不触发续签。 */
 export async function forceRemint(): Promise<void> {
   await ensureMadModelToken(true).catch((e) =>
     void logLine(`[MADMODEL] 强制重签：${e instanceof Error ? e.message : String(e)}`).catch(() => undefined),
@@ -455,6 +559,18 @@ export async function forceRemint(): Promise<void> {
 
 /** 续期泵：启动即试一枚 + 每 10 分钟巡检（到期才真拉；顺带保持可达性新鲜） */
 export function startMadModelPump(): void {
+  if (pumpStarted) return;
+  pumpStarted = true;
+  const networkChanged = (): void => {
+    routeRevision++;
+    routeRetryAt = 0;
+    validation = null;
+    writeSettings({ madmodelReachableAt: "" });
+    void preflightMadModel().catch(() => undefined);
+  };
+  window.addEventListener("online", networkChanged);
+  const connection = (navigator as Navigator & { connection?: EventTarget }).connection;
+  connection?.addEventListener("change", networkChanged);
   const tick = (): void => {
     void preflightMadModel().catch((e) =>
       void logLine(`[MADMODEL] 泵巡检：${e instanceof Error ? e.message : String(e)}`).catch(() => undefined),

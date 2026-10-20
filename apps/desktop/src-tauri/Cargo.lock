@@ -2826,8 +2826,11 @@ name = "onethu-harness-core"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "httpdate",
+ "reqwest 0.12.28",
  "serde",
  "serde_json",
+ "tokio",
  "ureq",
 ]
 

@@ -5,8 +5,7 @@ import { installTheme, removePluginThemes, type ThemeDef } from "../state/theme.
 import { isThemeEntry } from "../lib/market.js";
 import { registerPluginWidget, unregisterPluginWidgets } from "./pluginWidgets.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
-import { preflightMadModel, startMadModelPump } from "../state/madmodel.js";
-import { forceRemint } from "../state/madmodel.js";
+import { refreshMadModelRoute, startMadModelPump } from "../state/madmodel.js";
 import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe, updatePlugin } from "./registry.js";
 import { registerPluginTab, unregisterPluginTabs } from "./tabs.js";
 /** ctx 方法的权限门禁：manifest.permissions 未声明即抛错（安装确认向用户说明过这些权限） */
@@ -189,19 +188,12 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
             dock: Boolean(c.dock),
             pluginId: id,
             run: async (input: string) => {
-              // MadModel 免费档对话前兜底：token 到期即续 + 可达性探针（10 分钟缓存）——
-              // 校外时把 reachable=0 写进 settings，Rust config 自动回退自费或出提醒文案
-              if (id === "onethu.harness") {
-                // 免费档 token 没签出来时直接回准确原因——Rust 侧 api_key 为空只会说
-                // 「尚未配置 API Key」，会把人误导到手填 key 上（用户实录）。
-                const warn = await preflightMadModel().catch(() => null);
-                if (warn) return { type: "chat", ok: false, error: warn };
-              }
+              // 所有 chat 入口的预检统一由 callRust 负责。
               const out = await callRust(id, "run", { command: c.id, input });
-              // 漏判兜底：免费档请求仍被 IP 门禁弹掉（307）→ 强制重签 + 刷新可达性
+              // IP 门禁属于路由问题，不能据此废弃仍有效的登录凭证。
               const errMsg = String((out as { error?: string })?.error ?? "");
               if (id === "onethu.harness" && errMsg.includes("307")) {
-                void forceRemint();
+                void refreshMadModelRoute(true).catch(() => undefined);
               }
               return out;
             },
@@ -392,7 +384,7 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
   id: "onethu.harness",
   kind: "rust",
   name: "OneTHU Harness",
-  version: "0.1.1",
+  version: "0.1.5",
   author: "smartThise",
   description: "大模型驱动的清华校园助手（Rust 骨干·内嵌核心）：对话式查课表/日程/成绩/新闻/空教室/校园卡/电费/校园网，日程云同步（查/建/改/删），图书馆座位与研讨间查询预约（两段式确认），左下角常驻对话面板，实时进度与打断，多会话历史与对话导出，用量与花费控制。",
   permissions: [

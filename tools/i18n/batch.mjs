@@ -35,7 +35,7 @@ export function checkBatch({ batch, source, target, before, changedFiles = [], t
 export function dataStructure(text) {
   const ast=ts.createSourceFile("locale.ts",text,99,true),edits=[];
   function visit(n){
-    if(ts.isPropertyAssignment(n)&&n.name.getText(ast)==="messages"&&ts.isObjectLiteralExpression(n.initializer)){
+    if(ts.isPropertyAssignment(n)&&(ts.isIdentifier(n.name)||ts.isStringLiteral(n.name))&&n.name.text==="messages"&&ts.isObjectLiteralExpression(n.initializer)){
       for(const p of n.initializer.properties)if(ts.isPropertyAssignment(p)&&ts.isStringLiteral(p.initializer))edits.push({start:p.initializer.getStart(ast),end:p.initializer.end});
     }ts.forEachChild(n,visit);
   }visit(ast);

@@ -60,6 +60,8 @@ Android 桌面小组件也接入同一词典：快照携带语言和 62 条模�
 
 最终集成命令：`pnpm test:i18n`、`pnpm guard`、`pnpm guard:onegui`、`pnpm typecheck`、`pnpm test`、`pnpm --filter @onethu/desktop build` 和 `git diff --check`。词典检查也验证未知语言参数会失败；开发 Vite 和正式构建均拒绝可执行的译文文件。正式构建保留原有大 chunk 警告。
 
+提交后的交接实测还修复了检查器对 `"messages"` 带引号属性名的误判：原比较器只接受 `messages` 写法，会拒绝生成词典中的合法译文修改。新增回归在独立临时 Git 仓库复制真实词典和首批清单，实际运行生产 CLI；只填本批译文成功，越批改值与改结构仍失败。修复前复现拒绝，修复后整套 `pnpm test:i18n` 通过，未改应用或译文。
+
 ## 仍然存在的边界
 
 1. 英文仍待批次翻译；最终长译文、其他语言、实体手机与 Windows WebView2 尚需发布验收。390 视口的浏览器点击不冒充手机真机。

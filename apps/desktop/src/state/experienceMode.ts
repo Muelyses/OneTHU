@@ -11,12 +11,12 @@ function read(): ExperienceMode {
 let mode = read();
 let route: { page: Page; params: LearnNav | null } = { page: "homepage", params: null };
 const listeners = new Set<() => void>();
-const subscribe = (f: () => void) => { listeners.add(f); return () => listeners.delete(f); };
+export const subscribeExperience = (f: () => void) => { listeners.add(f); return () => listeners.delete(f); };
 function emit() { listeners.forEach(f => f()); }
 export const experienceMode = () => mode;
 export const simpleRoute = () => route;
-export const useExperienceMode = () => useSyncExternalStore(subscribe, experienceMode, experienceMode);
-export const useSimpleRoute = () => useSyncExternalStore(subscribe, simpleRoute, simpleRoute);
+export const useExperienceMode = () => useSyncExternalStore(subscribeExperience, experienceMode, experienceMode);
+export const useSimpleRoute = () => useSyncExternalStore(subscribeExperience, simpleRoute, simpleRoute);
 /** 极简与实用共用简洁壳（无标签页/OneGO/白板/暂存箱入口），区别只在 OneShot 第五格。 */
 export const isSimpleLike = (m: ExperienceMode): boolean => m !== "full";
 export function useIsSimpleLike(): boolean {

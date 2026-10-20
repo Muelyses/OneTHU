@@ -1,3 +1,4 @@
+import { useOverlayBack } from "../../state/navStack.js";
 import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { SimpleSettings } from "../SimpleSettings.js";
 import { useIsSimpleLike } from "../../state/experienceMode.js";
@@ -37,6 +38,7 @@ export function SettingsOverlay(): ReactNode {
   const expanded = useExpanded();
   /** 退场动画（TabManageModal 同款：先播淡出再卸载） */
   const [closing, requestClose] = useExitPhase(closeSettings, entry !== null);
+  useOverlayBack("explorer-settings", entry !== null, requestClose);
 
   /* Esc 关闭 */
   useEffect(() => {

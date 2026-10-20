@@ -1,3 +1,4 @@
+import { useOverlayBack } from "../state/navStack.js";
 import { labelForId } from "../i18n/staticLabels.js";
 import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { compactPageAllowed, useIsSimpleLike } from "../state/experienceMode.js";
@@ -1657,6 +1658,10 @@ export function ChatDock(): ReactNode {
     void finishVoice(cancelArmedRef.current);
   };
   useEffect(() => onOhCommand((c) => cmdHandler.current(c)), []);
+  useOverlayBack("oh-panel", open, () => {
+    if (voicePhaseRef.current !== "idle") void finishVoice(true);
+    if (!closing) closePanelNow();
+  });
   /* 点外部自然关闭：胶囊与小窗之外的任何按-down 都收窗（语音中除外） */
   useEffect(() => {
     if (!open || voice !== "off") return;

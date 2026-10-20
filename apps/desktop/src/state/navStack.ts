@@ -80,7 +80,7 @@ let debugSnapshot: NavDebugState = { depth: 0, canGoBack: false, listening: fals
 
 /** 只在状态真变时重建快照：useSyncExternalStore 的 getSnapshot 每次返回新对象会死循环（React #185） */
 function refreshDebugSnapshot(): void {
-  debugSnapshot = { depth: frames.length, canGoBack: canGoBack(), listening: backListener !== null, error: backError };
+  debugSnapshot = { depth: frames.length + (navigationBack?.depth() ?? 0), canGoBack: canGoBack(), listening: backListener !== null, error: backError };
 }
 
 export function navDebugState(): NavDebugState {
@@ -132,12 +132,31 @@ export function stackDepth(): number {
 
 /** 有可退的历史（页帧 >1 或栈顶是浮层）——返回键是否被本栈消费 */
 export function canGoBack(): boolean {
-  return frames.length > 1 || topFrame()?.kind === "overlay";
+  return frames.length > 1 || topFrame()?.kind === "overlay" || navigationBack?.canGoBack() === true;
 }
 
 /* ── Android 返回键监听（按需注册） ───────────────────────────────── */
 
+interface NavigationBack {
+  depth: () => number;
+  back: () => boolean;
+  canGoBack: () => boolean;
+}
+let navigationBack: NavigationBack | null = null;
+/** Refresh diagnostics when the external route history changes. */
+export function refreshNavigationBack(): void { notify(); }
+/** Explorer/三模式导航接入同一返回通道；overlay 帧始终优先。 */
+export function registerNavigationBack(handler: NavigationBack): () => void {
+  navigationBack = handler;
+  notify();
+  return () => {
+    if (navigationBack === handler) navigationBack = null;
+    refreshDebugSnapshot();
+  };
+}
+
 let backListener: { unregister: () => Promise<void> } | null = null;
+let backRegistration: Promise<void> | null = null;
 let backError: string | null = null;
 let exiting = false;
 
@@ -174,6 +193,12 @@ async function exitApp(): Promise<void> {
  */
 async function installBackListener(): Promise<void> {
   if (backListener !== null || !isAndroidHost()) return;
+  if (backRegistration) return backRegistration;
+  backRegistration = registerBackListener();
+  try { await backRegistration; } finally { backRegistration = null; }
+}
+
+async function registerBackListener(): Promise<void> {
   try {
     const { onBackButtonPress } = await import("@tauri-apps/api/app");
     backListener = await onBackButtonPress(() => {
@@ -213,7 +238,7 @@ function sameRoute(a: NavPageFrame, b: Omit<NavPageFrame, "kind">): boolean {
 
 /**
  * 退一步。返回 true 表示本栈消费了这次返回（浮层已关或页帧已退）；
- * false 表示已在根上（此时监听应当已摘除，返回键由原生退出应用）。
+ * false 表示已在根上，监听器通过 mobile_exit 退出应用。
  */
 export function back(): boolean {
   const top = topFrame();
@@ -225,6 +250,10 @@ export function back(): boolean {
       /* 关闭回调抛错也要让栈继续一致 */
     }
     syncUrl();
+    notify();
+    return true;
+  }
+  if (navigationBack?.back()) {
     notify();
     return true;
   }

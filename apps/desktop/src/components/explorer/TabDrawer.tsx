@@ -1,3 +1,4 @@
+import { useOverlayBack } from "../../state/navStack.js";
 import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchWorkspace } from "../../lib/vaultCatch.js";
 import { Input } from "@onethu/gui";
@@ -866,6 +867,7 @@ function TabDrawerInner(): ReactNode {
   const sheetRef = useRef<HTMLElement | null>(null);
   const sheet = useSheetDrag(sheetRef, { id: "tabdrawer" });
   const [closing, requestClose] = useExitPhase(closeTabDrawer, open);
+  useOverlayBack("explorer-tabs", open, requestClose);
   const expanded = useExpanded();
   const anchor = useAnchorPos("ex-bbar-tabs-btn", open, expanded);
   const snap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);

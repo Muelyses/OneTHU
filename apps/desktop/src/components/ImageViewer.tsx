@@ -1,3 +1,4 @@
+import { useOverlayBack } from "../state/navStack.js";
 import { msg as i18nMsg, t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
@@ -19,18 +20,12 @@ import { Btn } from "@onethu/gui";
  *  4) 富文本编辑器（contenteditable）里的图片不参与——那里的长按是选词与图片操作；
  *  5) 长按开图这一下必须吞掉后续 click，否则松手会把底下的行/卡片一并点开（同 TextPeek）。
  *
- * 安卓返回键：wry 的返回回调只做 `webView.goBack()`（没有给 JS 的钩子），而应用路由只听
- * `hashchange`。因此开图时压入一层**URL 与当前完全相同**的历史条目：返回键弹回这层时
- * hash 没变、路由不动，却有一个 `popstate` 可用来关浮层——返回键先退出看图，再按才回上一级。
- * 点按关闭时要把这层弹掉（history.back），否则下一次返回键会被这层空条目吃掉。
+ * 安卓返回键通过统一 overlay 帧关闭看图，与设置/文件预览同一返回通道。
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { saveImageToGallery } from "../lib/imageSave.js";
 import { showToast } from "../state/toast.js";
-
-/** 写在 history.state 里的看图标记：返回键靠它认出「弹掉的是看图这一层」 */
-const VIEWER_STATE = "onethu-imgview";
 
 /** 按住多久算长按：原生上下文菜单约 500ms 弹出，必须更早接管 */
 const LONGPRESS_MS = 400;
@@ -92,8 +87,6 @@ export function ImageViewerHost(): ReactNode {
   const [shot, setShot] = useState<Shot | null>(null);
   /** 浮层是否开着：事件回调里要同步读，不能等 state 回流 */
   const openRef = useRef(false);
-  /** 是否压着一层看图历史条目（返回键靠它接住） */
-  const pushedRef = useRef(false);
 
   /** 收起浮层本身（不碰历史） */
   const hide = useCallback((): void => {
@@ -104,14 +97,6 @@ export function ImageViewerHost(): ReactNode {
   const openSrc = useCallback((src: string, alt: string): void => {
     openRef.current = true;
     setShot({ src, alt });
-    // 同 URL 的历史条目：返回键弹回它时路由不变，只多出一个 popstate（见文件头说明）
-    try {
-      history.pushState(VIEWER_STATE, "", location.href);
-      pushedRef.current = true;
-    } catch {
-      // 历史不可用（极端情况）：退化成只能点按关闭，不影响看图
-      pushedRef.current = false;
-    }
   }, []);
 
   /** 手势入口（长按）复用上面那条：从 <img> 取 src/alt */
@@ -127,32 +112,8 @@ export function ImageViewerHost(): ReactNode {
     };
   }, [openSrc]);
 
-  const close = useCallback((): void => {
-    // 点按关闭：把刚压进去的那层弹掉，否则下一次返回键会被这层空条目吃掉。
-    // 先确认栈顶确实是看图条目——看图期间若被程序化导航压了别的条目，弹它就会误改页面。
-    if (pushedRef.current) {
-      pushedRef.current = false;
-      if (history.state === VIEWER_STATE) history.back();
-    }
-    hide();
-  }, [hide]);
-
-  /** 安卓返回键：弹掉看图这一层就退出看图，再按才回上一级 */
-  useEffect(() => {
-    // 上次运行留下的空条目（例如看图时进程被杀、重启后恢复历史）：先清掉，别吃返回键
-    if (history.state === VIEWER_STATE) history.replaceState(null, "", location.href);
-    const onPop = (e: PopStateEvent): void => {
-      if (e.state === VIEWER_STATE) return; // 前进回到看图条目：不关
-      if (!openRef.current) {
-        pushedRef.current = false;
-        return;
-      }
-      pushedRef.current = false; // 条目已由返回键弹掉，这里不能再 back()
-      hide();
-    };
-    addEventListener("popstate", onPop);
-    return () => removeEventListener("popstate", onPop);
-  }, [hide]);
+  const close = hide;
+  useOverlayBack("image-viewer", shot !== null, close);
 
   /** 看图期间在 <html> 上打标记：右下角常驻的刷新按钮层级高于浮层，靠这个类把它收起来 */
   useEffect(() => {

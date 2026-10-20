@@ -1,3 +1,4 @@
+import { startMobileNavigation } from "../state/mobileNavigation.js";
 import { allSearchRows } from "../state/searchRows.js";
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { BrandLogo } from "./BrandLogo.js";
@@ -403,6 +404,7 @@ export function Slogan({ size = 13 }: { size?: number }) {
 export function Shell({ children }: { children: ReactNode }) {
   const uiLocale = useUiLocale();
 
+  useEffect(startMobileNavigation, []);
   const mode = useExperienceMode();
   const simple = useIsSimpleLike(); /* 极简与实用共用简洁壳 */
   useEffect(() => { document.documentElement.dataset.experience = mode; return () => { delete document.documentElement.dataset.experience; }; }, [mode]);

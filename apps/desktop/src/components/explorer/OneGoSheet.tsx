@@ -1,3 +1,4 @@
+import { useOverlayBack } from "../../state/navStack.js";
 import { msg as i18nMsg, t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchWorkspace } from "../../lib/vaultCatch.js";
 import { Input, Row } from "@onethu/gui";
@@ -377,6 +378,7 @@ function OneGoSheetInner(): ReactNode {
   const sheetRef = useRef<HTMLElement | null>(null);
   const sheet = useSheetDrag(sheetRef, { id: "onego" });
   const [closing, requestClose] = useExitPhase(closeOneGoSheet, open);
+  useOverlayBack("explorer-onego", open, requestClose);
   const expanded = useExpanded();
   const anchor = useAnchorPos("ex-bbar-onego-btn", open, expanded);
 

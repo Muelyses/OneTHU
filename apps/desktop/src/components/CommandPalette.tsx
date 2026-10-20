@@ -1,3 +1,4 @@
+import { useOverlayBack } from "../state/navStack.js";
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { isSimpleLike, useExperienceMode } from "../state/experienceMode.js";
 /**
@@ -51,6 +52,7 @@ export function CommandPalette(): ReactNode {
 
   const mode = useExperienceMode();
   const open = usePaletteOpen();
+  useOverlayBack("command-palette", open, closePalette);
   const { navigate } = useApp();
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);

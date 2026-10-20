@@ -1,151 +1,157 @@
-/**
- * 手机白板：完整模式下默认阅读顺序，可切「自由摆放」后直接拖动/缩放；
- * 阅读顺序模式仍然保留（只上下调整）。
- */
+/** Browser-level mobile acceptance. Inputs go through Chrome's trusted touch
+ * pipeline and its actual hit testing; no element.dispatchEvent / force click.
+ * This is a WebView-sized browser check, not physical Android device coverage. */
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
-let checks = 0;
-const errors = [];
-const check = (c, m) => { assert.ok(c, m); checks++; console.log('✓ ' + m); };
+const out = new URL('../docs/onegui/mobile-touch-2026-10-20/', import.meta.url);
+await mkdir(out, { recursive: true });
+const checks = [], errors = [];
+const check = (c, m) => { assert.ok(c, m); checks.push(m); console.log('✓ ' + m); };
 const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
 
-async function setup(mode = 'full') {
-  const p = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+async function setup(width, mode = 'full') {
+  const p = await browser.newPage({ viewport: { width, height: width === 320 ? 740 : 844 }, hasTouch: true, isMobile: true });
   p.setDefaultTimeout(12000);
-  p.on('pageerror', (e) => { if (!/reading 'invoke'/.test(e.message)) errors.push(e.message); });
-  await p.addInitScript((mode) => {
+  p.on('pageerror', e => { if (!/reading 'invoke'/.test(e.message)) errors.push(e.message); });
+  await p.addInitScript(mode => {
     performance.setResourceTimingBufferSize(10000);
     localStorage.setItem('onethu.onboarded.phone', '1');
     localStorage.setItem('onethu.experience.v1', mode);
+    if (mode !== 'full') localStorage.setItem('onethu.board.phoneCanvas.v1', '1');
+    window.__touchLog = [];
+    for (const type of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'])
+      window.addEventListener(type, e => window.__touchLog.push({ type, trusted: e.isTrusted, pointerType: e.pointerType }), true);
   }, mode);
   await p.goto(base + '/?explorer-preview=home', { waitUntil: 'domcontentloaded' });
   await p.waitForSelector('.explorer-shell');
-  await p.waitForTimeout(1100);
+  if (mode === 'full') await p.waitForSelector('.freeboard-wrap.is-reading');
+  await p.waitForTimeout(1000);
   return p;
 }
+async function touchDrag(p, from, dx, dy, steps = 8) {
+  const cdp = await p.context().newCDPSession(p);
+  const point = (x, y) => ({ x, y, id: 1, radiusX: 4, radiusY: 4, force: 1 });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [point(from.x, from.y)] });
+  for (let i = 1; i <= steps; i++) {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [point(from.x + dx * i / steps, from.y + dy * i / steps)] });
+    await p.waitForTimeout(24);
+  }
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await cdp.detach(); await p.waitForTimeout(220);
+}
+async function itemRect(p) {
+  return p.locator('[data-item-id="home.clock"]').evaluate(el => {
+    const s = getComputedStyle(el), b = el.getBoundingClientRect();
+    return { x: parseFloat(s.left), y: parseFloat(s.top), w: parseFloat(s.width), h: parseFloat(s.height), scale: b.width / parseFloat(s.width) };
+  });
+}
+async function bodyPoint(p) {
+  return p.locator('[data-item-id="home.clock"]').evaluate(el => {
+    const r = el.getBoundingClientRect();
+    const shortcuts = document.querySelector(".oneshot")?.getBoundingClientRect();
+    const bottom = shortcuts && shortcuts.top > innerHeight / 2 ? shortcuts.top - 12 : innerHeight - 16;
+    for (let y = Math.min(bottom, r.bottom - 20); y > Math.max(70, r.top + 8); y -= 16) {
+      for (let x = Math.max(24, r.left + 24); x < Math.min(innerWidth - 40, r.right - 16); x += 20) {
+        const hit = document.elementFromPoint(x, y);
+        if (hit?.closest('[data-item-id="home.clock"]') === el && !hit.closest('.free-toolbar,.free-handle,button,a,input,textarea,[role=button]')) return { x, y };
+      }
+    }
+    throw new Error('Clock has no uncovered body point in the actual viewport');
+  });
+}
+const shot = (p, name) => p.screenshot({ path: new URL(name + '.png', out).pathname });
+const zoom = p => p.locator('.board-viewport-tools').getByRole('button', { name: /^\d+%$/ });
 
 try {
-  const p = await setup('full');
-  try {
-    /* 默认阅读顺序：没有自由摆放标记，有切换按钮 */
-    check(await p.locator('.freeboard-wrap').count() === 1, '完整模式手机首页有白板');
-    check(await p.locator('.freeboard-wrap.phone-canvas').count() === 0, '默认是阅读顺序（不是自由摆放）');
-    const toggle = p.getByRole('button', { name: '自由摆放', exact: true });
-    check(await toggle.count() === 1, '阅读顺序下有「自由摆放」切换');
-    await toggle.click();
-    await p.waitForTimeout(700);
-    check(await p.locator('.freeboard-wrap.phone-canvas').count() === 1, '切到自由摆放画布');
-    check((await p.getByRole('button', { name: '阅读顺序', exact: true }).count()) === 1, '可切回阅读顺序');
-    /* 自由摆放默认 500%（用户 2026-10-19 最终口径） */
-    check((await p.locator('.board-viewport-tools').innerText()).includes('500%'), '自由摆放默认放大到 500%');
-    /* 双击空白不再创建便笺（用户要求删掉这个 feature） */
-    const itemsBeforeDbl = await p.locator('.free-item').count();
-    const fbBox = await p.locator('.freeboard').boundingBox();
-    await p.mouse.dblclick(10, (fbBox?.y ?? 200) + 120);
-    await p.waitForTimeout(500);
-    check((await p.locator('.free-item').count()) === itemsBeforeDbl, '双击空白不再创建便笺');
-
-    /* 拖动：直接派发指针事件到条目本体（避免浮层挡住鼠标坐标；与真实触摸同一条管线） */
-    const before = await p.evaluate(() => {
-      const el = document.querySelector('.free-item');
-      return { left: parseFloat(getComputedStyle(el).left), top: parseFloat(getComputedStyle(el).top) };
-    });
-    const dragged = await p.evaluate(() => {
-      const el = document.querySelector('.free-item');
-      if (!el) return false;
-      const r = el.getBoundingClientRect();
-      const x = r.x + Math.min(40, r.width / 2);
-      const y = r.y + Math.min(40, r.height / 2);
-      const opts = { bubbles: true, cancelable: true, button: 0, pointerId: 9, pointerType: 'touch', isPrimary: true };
-      el.dispatchEvent(new PointerEvent('pointerdown', { ...opts, clientX: x, clientY: y }));
-      for (const [dx, dy] of [[12, 8], [35, 24], [60, 40]]) {
-        document.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: x + dx, clientY: y + dy }));
-      }
-      document.dispatchEvent(new PointerEvent('pointerup', { ...opts, clientX: x + 60, clientY: y + 40 }));
-      return true;
-    });
-    check(dragged, '拖动事件可派发到条目');
-    await p.waitForTimeout(500);
-    const after = await p.evaluate(() => {
-      const el = document.querySelector('.free-item');
-      return { left: parseFloat(getComputedStyle(el).left), top: parseFloat(getComputedStyle(el).top) };
-    });
-    check(after.left > before.left + 5 || after.top > before.top + 5, `拖动改变位置（${before.left},${before.top} → ${after.left},${after.top}）`);
-
-    /* 缩放：选中后拖右下角把手 */
-    await p.evaluate(() => {
-      const el = document.querySelector('.free-item');
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, pointerId: 11, pointerType: 'touch', isPrimary: true, clientX: r.x + 20, clientY: r.y + 20 }));
-      document.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0, pointerId: 11, pointerType: 'touch', isPrimary: true, clientX: r.x + 20, clientY: r.y + 20 }));
-    });
-    await p.waitForTimeout(400);
-    const handle = p.locator('.free-item.is-selected .free-handle.fh-se').first();
-    check(await handle.count() === 1, '选中后出现缩放手柄');
-    await handle.scrollIntoViewIfNeeded();
-    const sizeBefore = await p.evaluate(() => { const el = document.querySelector('.free-item.is-selected'); return { w: el.getBoundingClientRect().width, h: el.getBoundingClientRect().height }; });
-    /* 手柄可能被底部工具栏等浮层压住：直接对着手柄派发指针事件，
-       验证的是 beginPointer 管线（真实触摸同一条链路）。 */
-    const resized = await p.evaluate(() => {
-      const handle = document.querySelector('.free-item.is-selected .free-handle.fh-se');
-      if (!handle) return false;
-      const r = handle.getBoundingClientRect();
-      const x = r.x + r.width / 2;
-      const y = r.y + r.height / 2;
-      const opts = { bubbles: true, cancelable: true, button: 0, pointerId: 7, pointerType: 'touch', isPrimary: true };
-      handle.dispatchEvent(new PointerEvent('pointerdown', { ...opts, clientX: x, clientY: y }));
-      for (const [dx, dy] of [[10, 8], [25, 20], [45, 36]]) {
-        document.dispatchEvent(new PointerEvent('pointermove', { ...opts, clientX: x + dx, clientY: y + dy }));
-      }
-      window.dispatchEvent(new PointerEvent('pointerup', { ...opts, clientX: x + 45, clientY: y + 36 }));
-      return true;
-    });
-    check(resized, '缩放手柄可派发指针事件');
-    await p.waitForTimeout(600);
-    const sizeAfter = await p.evaluate(() => { const el = document.querySelector('.free-item.is-selected'); return { w: el.getBoundingClientRect().width, h: el.getBoundingClientRect().height }; });
-    check(sizeAfter.w > sizeBefore.w + 5 || sizeAfter.h > sizeBefore.h + 5, `缩放改变尺寸（${Math.round(sizeBefore.w)}×${Math.round(sizeBefore.h)} → ${Math.round(sizeAfter.w)}×${Math.round(sizeAfter.h)}）`);
-
-    /* 回到阅读顺序 */
-    await p.getByRole('button', { name: '阅读顺序', exact: true }).click();
-    await p.waitForTimeout(500);
-    check(await p.locator('.freeboard-wrap.phone-canvas').count() === 0, '可切回阅读顺序');
-  } finally { await p.close(); }
-
-  /* 手机横屏：直接是电脑那块自由画布（不堆叠、无阅读顺序开关） */
-  {
-    const l = await browser.newPage({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
-    l.on('pageerror', (e) => { if (!/reading 'invoke'/.test(e.message)) errors.push(e.message); });
-    await l.addInitScript(() => {
-      performance.setResourceTimingBufferSize(10000);
-      localStorage.setItem('onethu.onboarded.phone', '1');
-      localStorage.setItem('onethu.experience.v1', 'full');
-    });
-    await l.goto(base + '/?explorer-preview=home', { waitUntil: 'domcontentloaded' });
-    await l.waitForSelector('.explorer-shell'); await l.waitForTimeout(1100);
+  for (const width of [390, 320]) {
+    const p = await setup(width);
     try {
-      /* 横屏 = 桌面形态：html 不再 is-phone，顶栏是桌面标签条，白板按世界坐标 */
-      check(!(await l.evaluate(() => document.documentElement.classList.contains('is-phone'))), '横屏手机切到桌面形态（不再 is-phone）');
-      check((await l.locator('.ex-bbar').count()) >= 1 && (await l.locator('.ex-tabstrip').count()) >= 1, '横屏有桌面标签条（ex-bbar/ex-tabstrip）');
-      check((await l.getByRole('button', { name: /自由摆放|阅读顺序/ }).count()) === 0, '横屏不再显示阅读顺序开关');
-      const xs = await l.evaluate(() => [...document.querySelectorAll('.free-item')].slice(0, 5).map((el) => Math.round(el.getBoundingClientRect().x)));
-      check(xs.length > 1 && new Set(xs).size > 1, `横屏按世界坐标摆放（不堆叠）：${JSON.stringify(xs)}`);
-    } finally { await l.close(); }
-  }
-
-  /* 极简/实用模式没有白板交互（仅完整模式） */
-  for (const mode of ['simple', 'practical']) {
-    const s = await setup(mode);
-    try {
-      const visible = await s.evaluate(() => [...document.querySelectorAll('.freeboard-wrap')].some((el) => {
+      check(await p.locator('.freeboard-wrap.is-reading').count() === 1, `${width}: default reading order`);
+      await shot(p, `${width}-reading`);
+      await p.getByRole('button', { name: '自由摆放', exact: true }).tap(); await p.waitForTimeout(400);
+      check(await zoom(p).innerText() === '500%', `${width}: first free-canvas visit defaults to 500%`);
+      const feedback = await p.locator('.board-note').boundingBox(), shortcutsBefore = await p.locator('.oneshot').boundingBox();
+      check(feedback && shortcutsBefore && feedback.y + feedback.height < shortcutsBefore.y, `${width}: canvas status is readable above shortcut navigation`);
+      const gap = await p.evaluate(() => {
+        const clock = document.querySelector('[data-item-id="home.clock"]').getBoundingClientRect();
+        const services = document.querySelector('[data-item-id="home.services"]').getBoundingClientRect();
+        const y = (clock.bottom + services.top) / 2, x = innerWidth / 2;
+        return { x, y, clear: !document.elementFromPoint(x, y)?.closest('.free-item,button') };
+      });
+      check(gap.clear, `${width}: horizontal pan starts on a visible blank canvas gap`);
+      await touchDrag(p, gap, -(width / 2 - 32), 0);
+      check(await p.locator('.explorer-panel.is-home-canvas').evaluate(el => el.scrollLeft) > 80, `${width}: native horizontal swipe reaches off-screen canvas content`);
+      await shot(p, `${width}-panned`);
+      check(await p.getByRole('button', { name: '阅读顺序', exact: true }).evaluate(el => {
         const r = el.getBoundingClientRect();
-        return r.width > 2 && r.height > 2 && getComputedStyle(el).visibility !== 'hidden';
-      }));
-      check(!visible && (await s.getByRole('button', { name: '自由摆放', exact: true }).count()) === 0, `${mode} 模式没有可见的白板自由摆放`);
-    } finally { await s.close(); }
+        return el.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+      }), `${width}: reading-mode control stays visible and reachable after horizontal panning`);
+      for (let i = 0; i < 4 && await p.locator('.explorer-panel.is-home-canvas').evaluate(el => el.scrollLeft) > 1; i++) {
+        await touchDrag(p, { x: 40, y: gap.y }, width - 80, 0);
+      }
+      check(await p.locator('.explorer-panel.is-home-canvas').evaluate(el => el.scrollLeft) < 2, `${width}: reverse swipe returns to the left edge`);
+      const start = await bodyPoint(p), before = await itemRect(p);
+      await p.evaluate(() => window.__touchLog.length = 0);
+      await touchDrag(p, start, 48, 36);
+      const moved = await itemRect(p), log = await p.evaluate(() => window.__touchLog);
+      check(log.length > 3 && log.every(e => e.trusted && e.pointerType === 'touch'), `${width}: drag uses trusted touch events`);
+      check(!log.some(e => e.type === 'pointercancel'), `${width}: nested card scrolling does not cancel drag`);
+      check(Math.abs(moved.x - before.x - 48 / before.scale) < 2 && Math.abs(moved.y - before.y - 36 / before.scale) < 2, `${width}: complete finger displacement reaches saved card coordinates`);
+      // Explicit user choice, followed by reload/toggle/orientation changes.
+      await p.getByRole('button', { name: '缩小', exact: true }).tap();
+      await p.getByRole('button', { name: '缩小', exact: true }).tap(); await p.waitForTimeout(300);
+      check(await zoom(p).innerText() === '300%', `${width}: user can reduce zoom`);
+      const bp = await bodyPoint(p); await p.touchscreen.tap(bp.x, bp.y); await p.waitForTimeout(250);
+      check(!(await p.locator('[data-item-id="home.clock"]').getAttribute('class')).includes('is-pinned'), `${width}: selecting does not activate a toolbar button underneath the finger`);
+      const handle = p.locator('[data-item-id="home.clock"] .fh-se');
+      const hit = await handle.evaluate(el => { const b = el.getBoundingClientRect(); const x = b.x + b.width / 2, y = b.y + b.height / 2; return { x, y, reachable: document.elementFromPoint(x, y) === el, width: b.width, height: b.height }; });
+      check(hit.width >= 43 && hit.height >= 43, `${width}: corner touch target stays at least 44 screen pixels`);
+      check(hit.reachable, `${width}: resize handle is really on top at its screen coordinate`);
+      const sizeBefore = await itemRect(p);
+      await touchDrag(p, hit, 36, 30);
+      const resized = await itemRect(p);
+      check(Math.abs(resized.w - sizeBefore.w - 36 / sizeBefore.scale) < 2 && Math.abs(resized.h - sizeBefore.h - 30 / sizeBefore.scale) < 2, `${width}: native corner drag changes width and height`);
+      await shot(p, `${width}-resized`);
+      await p.reload(); await p.waitForSelector('.freeboard-wrap.phone-canvas'); await p.waitForTimeout(600);
+      check(await zoom(p).innerText() === '300%', `${width}: reload keeps the saved 300%`);
+      const restored = await itemRect(p);
+      check(restored.x === resized.x && restored.y === resized.y && restored.w === resized.w && restored.h === resized.h, `${width}: move and resize persist on reload`);
+      await p.getByRole('button', { name: '阅读顺序', exact: true }).tap();
+      await p.getByRole('button', { name: '自由摆放', exact: true }).tap();
+      check(await zoom(p).innerText() === '300%', `${width}: toggling reading order preserves chosen zoom`);
+      await zoom(p).tap();
+      await p.getByRole('button', { name: '阅读顺序', exact: true }).tap();
+      await p.getByRole('button', { name: '自由摆放', exact: true }).tap();
+      check(await zoom(p).innerText() === '100%', `${width}: explicitly saved 100% is not mistaken for an uninitialized view`);
+      // Phone portrait and desktop/landscape store independent views.
+      await p.setViewportSize({ width: 844, height: 390 }); await p.waitForTimeout(700);
+      check(!(await p.evaluate(() => document.documentElement.classList.contains('is-phone'))), `${width}: landscape adopts desktop layout`);
+      check(await zoom(p).innerText() === '100%', `${width}: portrait zoom does not overwrite landscape`);
+      await shot(p, `${width}-landscape`);
+      const lp = await bodyPoint(p), lb = await itemRect(p);
+      await touchDrag(p, lp, 32, 24);
+      const la = await itemRect(p);
+      check(Math.abs(la.x - lb.x - 32 / lb.scale) < 2 && Math.abs(la.y - lb.y - 24 / lb.scale) < 2, `${width}: landscape finger drag also reaches its destination`);
+      await p.setViewportSize({ width, height: width === 320 ? 740 : 844 }); await p.waitForTimeout(650);
+      check(await zoom(p).innerText() === '100%', `${width}: rotating back retains portrait choice`);
+      await p.getByRole('button', { name: '阅读顺序', exact: true }).tap();
+      const scrollBefore = await p.evaluate(() => scrollY);
+      await touchDrag(p, { x: 90, y: Math.min(500, p.viewportSize().height - 240) }, 0, -180);
+      check(await p.evaluate(() => scrollY) > scrollBefore + 40, `${width}: reading order scrolls naturally with a finger`);
+      await shot(p, `${width}-scrolled`);
+      const bar = await p.locator('.oneshot').boundingBox(), tools = await p.locator('.board-viewport-tools').boundingBox(), oh = await p.locator('.ex-bbar').boundingBox();
+      check(bar && tools && oh && tools.y + tools.height <= bar.y && bar.y + bar.height <= oh.y + 1, `${width}: board tools, five shortcuts and OH do not cover each other`);
+    } finally { await p.close(); }
   }
-
-  check(errors.length === 0, '无运行时错误 ' + JSON.stringify(errors.slice(0, 3)));
-  console.log(`\n${checks} phone board assertions passed`);
+  for (const mode of ['simple', 'practical']) {
+    const p = await setup(390, mode);
+    check(await p.locator('.freeboard-wrap:visible').count() === 0, `${mode}: no active board manipulation surfaces`);
+    check(await p.evaluate(() => localStorage.getItem('onethu.boardview.v2')) === null, `${mode}: hidden full-mode board does not initialize or modify saved zoom`);
+    await p.close();
+  }
+  check(errors.length === 0, 'No runtime errors: ' + JSON.stringify(errors.slice(0, 3)));
+  await writeFile(new URL('report.json', out), JSON.stringify({ kind: 'Chrome mobile emulation using trusted CDP touch', physicalAndroid: false, checks }, null, 2) + '\n');
+  console.log(`\n${checks.length} real-input browser checks passed`);
 } finally { await browser.close(); }

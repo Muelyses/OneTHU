@@ -26,6 +26,8 @@ const MAX_PAYLOAD_CHARS = 4096;
 
 export interface VaultCloudRef {
   provider: "seafile";
+  /** Private key library for server-authorized encrypted sharing. */
+  keyRepoId?: string;
   /** 云盘仓库 id / 共享路径（由适配层填） */
   repoId?: string;
   path: string;
@@ -226,7 +228,7 @@ function sanitizeCatch(raw: unknown): VaultCatch | null {
         ...(typeof f.size === "number" ? { size: f.size } : {}),
         ...(typeof f.mime === "string" ? { mime: f.mime.slice(0, 120) } : {}),
         ...(typeof f.hash === "string" ? { hash: f.hash.slice(0, 64) } : {}),
-        cloudPath: null,
+        cloudPath: typeof f.cloudPath==="string"&&/^files\/[^/\\]{1,240}$/.test(f.cloudPath)?f.cloudPath:null,
       };
     }
   }
@@ -268,7 +270,13 @@ function stripItem(it: VaultItem, includeStaged: boolean): VaultCatch {
     ...(it.file ? {
       file: {
         name: it.file.name, size: it.file.size, mime: it.file.mime, hash: it.file.hash, cloudPath: null,
-        ...(includeStaged && it.file.stagedPath ? { stagedPath: it.file.stagedPath } : {}),
+        ...(includeStaged ? {
+          stagedPath: it.file.stagedPath,
+          cloudPath: it.file.cloudPath,
+          cloudRepoId: it.file.cloudRepoId,
+          shareUrl: it.file.shareUrl,
+          shareKeyRepoId: it.file.shareKeyRepoId,
+        } : {}),
       },
     } : {}),
     ...(it.board ? { board: it.board } : {}),
@@ -291,7 +299,8 @@ function applyShareMeta(payload: VaultSharePayload, meta?: ShareMeta): VaultShar
   const label = String(meta?.label ?? "").trim().slice(0, 60);
   if (label) out.label = label;
   const email = String(meta?.allowEmail ?? "").trim().toLowerCase();
-  if (email && EMAIL_RE.test(email)) out.allowEmail = email;
+  if (email && !EMAIL_RE.test(email)) throw new Error("接收邮箱格式不正确");
+  if (email) out.allowEmail = email;
   return out;
 }
 
@@ -314,10 +323,20 @@ export async function mintShareCode(box: VaultBox, from?: string, meta?: ShareMe
  *  旧版云引用口令转成短码；否则上传新清单。 */
 export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; payload: VaultSharePayload }> {
   if (box.lastShareCode && isShortCode(box.lastShareCode)) {
-    const dec = await decodeShareAsync(box.lastShareCode);
-    const payload = dec.payload ?? payloadFromVault(box);
-    recordIssuedShare(box, box.lastShareCode, payload);
-    return { code: box.lastShareCode, payload };
+    const pending=pendingRotations()[box.lastShareCode];
+    const code=pending?await finishRotation(box.lastShareCode,pending):box.lastShareCode;
+    const dec = await decodeShareAsync(code);
+    if (!dec.ok || !dec.payload) throw new Error(dec.reason ?? "旧口令已失效，请重新生成分享");
+    const payload = dec.payload;
+    if(payload.allowEmail&&!payload.cloud?.keyRepoId){
+      const upgraded=await updateShareMeta(code,{allowEmail:payload.allowEmail});
+      if(!upgraded.ok||!upgraded.code)throw new Error(upgraded.reason??"旧私密分享尚未升级，请重试");
+      const secured=await decodeShareAsync(upgraded.code);
+      if(!secured.ok||!secured.payload)throw new Error(secured.reason??"升级后的分享不可读取");
+      return {code:upgraded.code,payload:secured.payload};
+    }
+    recordIssuedShare(box, code, payload);
+    return { code, payload };
   }
   if (box.lastShareCode) {
     const old = await decodeShareAsync(box.lastShareCode);
@@ -350,7 +369,7 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
         if (!payload.cloud.shareUrl) return { ok: false, reason: "分享缺少读取链接" };
         const text = await (await import("./seafile.js")).seafileShareRead(payload.cloud.shareUrl, payload.cloud.manifestName);
         if (text.length > 2 * 1024 * 1024) throw new Error("分享内容超过支持的大小");
-        payload = JSON.parse(text) as VaultSharePayload;
+        payload = await (await import("./sealedShare.js")).readSharedJson(text) as VaultSharePayload;
       }
       const checked = validatePayload(payload);
       if (!checked.ok || !checked.payload?.items) return { ok: false, reason: checked.reason || "分享里没有可接收的内容" };
@@ -363,10 +382,34 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
     }
   }
   const items = payload.items ?? [];
+  for(const item of items)if(item.file?.cloudPath&&dec.payload?.cloud?.shareUrl){item.file.shareUrl=dec.payload.cloud.shareUrl;item.file.shareKeyRepoId=dec.payload.cloud.keyRepoId;}
   const box = target === "new" ? createVault(payload.name || "收到的暂存箱") : vaultSnapshot().boxes.find((b) => b.id === vaultSnapshot().activeId);
   if (!box) return { ok: false, reason: "当前没有暂存箱" };
   replaceVaultItems(box.id, items);
   return { ok: true, imported: items.length };
+}
+
+/** A recipient rotation must survive a key-deleted/link-delete-failed interruption.
+ * Only references and metadata are persisted here; never content or encryption keys. */
+const ROTATIONS_KEY = "onethu.share.rotations.v1";
+interface ShareRotation { old:VaultCloudRef; next:VaultCloudRef; payload:VaultSharePayload }
+export function hasPendingShareRotation(code:string):boolean{return Boolean(pendingRotations()[code]);}
+function pendingRotations():Record<string,ShareRotation>{
+  try{return JSON.parse(localStorage.getItem(ROTATIONS_KEY)??"{}");}catch{return {};}
+}
+function saveRotation(code:string,rotation?:ShareRotation):void{
+  const pending=pendingRotations();if(rotation)pending[code]=rotation;else delete pending[code];
+  localStorage.setItem(ROTATIONS_KEY,JSON.stringify(pending));
+}
+async function finishRotation(code:string,rotation:ShareRotation):Promise<string>{
+  if(!adapter)await(await import("./vaultCloud.js")).installVaultCloudAdapter();
+  if(!adapter)throw new Error("请先连接清华云盘");
+  await adapter.revoke(rotation.old);
+  const updated=shortCodeForLink(rotation.next.shareUrl!);
+  (await import("./vaultShareLog.js")).replaceIssuedShareCode(code,updated,rotation.payload);
+  for(const box of vaultSnapshot().boxes)if(box.lastShareCode===code)markVaultShared(box.id,updated);
+  saveRotation(code);
+  return updated;
 }
 
 /**
@@ -379,7 +422,15 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
 export async function updateShareMeta(
   code: string,
   patch: { label?: string | null; allowEmail?: string | null },
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<{ ok: boolean; reason?: string; code?:string }> {
+  const pending=pendingRotations()[code];
+  if(pending){
+    try{
+      const updated=await finishRotation(code,pending);
+      const result=await updateShareMeta(updated,patch);
+      return result.ok?{...result,code:result.code??updated}:result;
+    }catch(e){return {ok:false,reason:`更换接收范围仍待完成，请重试：${e instanceof Error?e.message:String(e)}`};}
+  }
   const dec = await decodeShareAsync(code);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   const payload: VaultSharePayload = { ...dec.payload };
@@ -422,13 +473,33 @@ export async function updateShareMeta(
   } catch (e) {
     return { ok: false, reason: `读取云盘清单失败：${e instanceof Error ? e.message : String(e)}` };
   }
+  // Changing recipients rotates the key and shortcode; old recipients must not keep
+  // access through a previously public link or an old private key library.
+  if(patch.allowEmail!==undefined && ((dec.payload.allowEmail??"")!==(full.allowEmail??"") || Boolean(ref.keyRepoId)!==Boolean(full.allowEmail))){
+    let next:VaultCloudRef|undefined;
+    try {
+      const {materializeSharedFile}=await import("./vaultCloud.js");
+      for(const item of full.items??[]){if(item.file?.cloudPath){item.file.stagedPath=await materializeSharedFile(ref,item.file.cloudPath,item.file.name);delete item.file.cloudPath;}}
+      delete full.cloud;
+      next=await adapter.upload(full);
+      if(!next.shareUrl)throw new Error("云盘未返回新分享链接");
+      const rotation:ShareRotation={old:ref,next,payload:{...full,items:undefined,cloud:next}};
+      saveRotation(code,rotation);
+      return {ok:true,code:await finishRotation(code,rotation)};
+    }catch(e){
+      // Once journaled, preserve the new encrypted share for a retry. A partially
+      // revoked old share must never make both copies irrecoverable.
+      if(next&&!pendingRotations()[code])await adapter.revoke(next).catch(()=>undefined);
+      return {ok:false,reason:`更换接收范围未完成，请重试：${e instanceof Error?e.message:String(e)}`};
+    }
+  }
   try {
     await adapter.update(ref, full);
   } catch (e) {
     return { ok: false, reason: `更新云盘清单失败：${e instanceof Error ? e.message : String(e)}` };
   }
   const { updateIssuedShareMeta } = await import("./vaultShareLog.js");
-  updateIssuedShareMeta(code, { label: payload.label, allowEmail: payload.allowEmail });
+  updateIssuedShareMeta(code, { label: payload.label??"", allowEmail: payload.allowEmail??"" });
   return { ok: true };
 }
 
@@ -468,6 +539,12 @@ export async function shareAccessReason(allowEmail?: string): Promise<string | n
 /** 过期/撤销清理：交给适配器；没有引用后文件删除也由适配器按引用计数处理。 */
 export async function revokeShare(payload: VaultSharePayload): Promise<boolean> {
   if (!payload.cloud || !adapter) return false;
+  for(const [code,pending] of Object.entries(pendingRotations()))if(pending.old.shareUrl===payload.cloud.shareUrl){
+    await adapter.revoke(pending.next);
+    await adapter.revoke(pending.old);
+    saveRotation(code);
+    return true;
+  }
   await adapter.revoke(payload.cloud);
   return true;
 }

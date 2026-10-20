@@ -2,11 +2,12 @@
  * 组织回归（2026-10-19 重构：组织是完整页面，不是卡片/弹层）：
  * 通讯录「我的组织」建组织 → 打开组织页 → 成员（真实邮箱）→ 邀请口令（可起名、可限定邮箱）
  * → 资料库（云盘 repo：新建/共享给成员邮箱）→ 删除组织。
- * 云盘走假云盘夹具（不联网）；真实云盘互传见 short-share-browser-test。
+ * 云盘走假云盘夹具（不联网）；GitLab 和云盘均为模拟；真实验证由 org-collaboration-live 显式执行。
  */
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { installFakeCloud } from './lib/fake-cloud.mjs';
+import { installFakeOrganization } from './lib/fake-org.mjs';
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
 let checks = 0;
 const errors = [];
@@ -17,6 +18,8 @@ try {
   p.on('pageerror', (e) => errors.push(e.message));
   await p.addInitScript(() => { performance.setResourceTimingBufferSize(10000); localStorage.setItem('onethu.onboarded.phone', '1'); });
   await installFakeCloud(p, { token: 'test-token' });
+  await installFakeOrganization(p);
+  await p.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/,()=>{});
   await p.route('**/src/state/data.ts*', async (route) => {
     const r = await route.fetch();
     const body = (await r.text()).replace(
@@ -48,12 +51,16 @@ try {
   check(org.name === '开源小组' && org.members.length === 1 && org.members[0].role === 'owner', 'organization created with owner member');
   check(org.members[0].email === 'tester@mails.tsinghua.edu.cn', 'owner is bound to the real cloud email');
 
-  /* 成员：真实邮箱 + 邮箱去重 */
+  await p.getByRole('button',{name:'启用多人协作',exact:true}).click();
+  await p.waitForFunction(()=>JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]?.collaboration?.status==='ready');
+  check(true,'existing organization initializes private collaborative metadata');
+
+  /* 成员：服务器 GitLab 身份 + 云盘邮箱 */
   await p.getByRole('radio', { name: '成员', exact: true }).click();
   await p.getByRole('button', { name: '添加成员', exact: true }).click();
   await p.waitForSelector('.plg-form-modal');
-  await p.locator('.plg-form-modal input').nth(0).fill('lisi@mails.tsinghua.edu.cn');
-  await p.locator('.plg-form-modal input').nth(1).fill('李四');
+  await p.locator('.plg-form-modal input').nth(0).fill('lisi');
+  await p.locator('.plg-form-modal input').nth(1).fill('lisi@mails.tsinghua.edu.cn');
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(600);
   org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
@@ -68,22 +75,22 @@ try {
   await p.getByRole('button', { name: '邀请成员', exact: true }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.locator('.plg-form-modal input').nth(0).fill('招新口令');
-  await p.locator('.plg-form-modal input').nth(1).fill('zhaoliu@mails.tsinghua.edu.cn');
+  await p.locator('.plg-form-modal input').nth(1).fill('tester@mails.tsinghua.edu.cn');
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(1400);
   const code = (await p.locator('.vault-share-code').first().innerText()).trim();
-  check(/^ON(-[0-9A-Z]{4}){4}$/.test(code), 'org invite is a short code: ' + code);
+  check(/^(ON(-[0-9A-Z]{4}){4}|ONP-)/.test(code), 'org invite is a short code: ' + code);
   check(await p.locator('.vault-qr svg').count() >= 1, 'org invite shows a scannable QR');
   const decoded = await p.evaluate(async (c) => {
     const org = await import('/src/state/org.ts');
     const ex = await import('/src/state/cloudExchange.ts');
     return org.decodeOrgInvite(await ex.resolveExchangeCode(c));
   }, code);
-  check(decoded.ok && decoded.payload?.name === '开源小组' && decoded.payload?.label === '招新口令' && decoded.payload?.allowEmail === 'zhaoliu@mails.tsinghua.edu.cn', 'invite resolves with label + allowEmail in the cloud manifest');
+  check(decoded.ok && decoded.payload?.name === '开源小组' && decoded.payload?.label === '招新口令' && decoded.payload?.allowEmail === 'tester@mails.tsinghua.edu.cn', 'invite resolves with label + allowEmail in the cloud manifest');
   const again = await p.evaluate(async () => {
     const m = await import('/src/state/org.ts');
     const o = m.orgSnapshot().orgs[0];
-    return m.orgInviteCode(o, '我', { label: '招新口令', allowEmail: 'zhaoliu@mails.tsinghua.edu.cn' });
+    return m.orgInviteCode(o, '我', { label: '招新口令', allowEmail: 'tester@mails.tsinghua.edu.cn' });
   });
   check(again === code, 're-inviting the same org reuses the same short code');
   await p.getByRole('button', { name: '收起' }).click();
@@ -95,12 +102,12 @@ try {
     const before = m.orgSnapshot().orgs[0].members.length;
     window.__cloud.email = 'wangwu@mails.tsinghua.edu.cn';
     const wrong = await m.acceptOrgInvite(c, '王五');
-    window.__cloud.email = 'zhaoliu@mails.tsinghua.edu.cn';
+    window.__cloud.email = 'tester@mails.tsinghua.edu.cn';
     const right = await m.acceptOrgInvite(c, '赵六');
     return { before, wrong: wrong.ok, wrongReason: wrong.reason, right: right.ok, members: m.orgSnapshot().orgs[0].members.length };
   }, code);
-  check(!guard.wrong && /限定/.test(guard.wrongReason ?? ''), 'invite restricted to another email is rejected: ' + (guard.wrongReason ?? ''));
-  check(guard.right && guard.members === guard.before + 1, 'invite accepted by the bound email joins as new member');
+  check(!guard.wrong && /限定|无权|私密/.test(guard.wrongReason ?? ''), 'invite restricted to another email is rejected: ' + (guard.wrongReason ?? ''));
+  check(guard.right && guard.members === guard.before, 'authorized invite opens remote organization without fabricating a local member');
 
   /* 组织口令：可改有效期（换新码 + 新到期时间）、可删除（撤分享 + 清记录） */
   const sharesBefore = await p.evaluate(() => Object.keys(window.__cloud.shares).length);
@@ -138,15 +145,13 @@ try {
   check(repoIds.includes(org.libraries[0].repoId), 'library points at a real cloud repo, not a folder inside the org');
   /* 新建资料库后自动共享给全体有邮箱成员（不用再点按钮） */
   const autoShared = await p.evaluate((repoId) => window.__cloud.sharedTo.filter((s) => s.repoId === repoId).map((s) => s.email).sort(), org.libraries[0].repoId);
-  check(autoShared.includes('lisi@mails.tsinghua.edu.cn') && autoShared.includes('tester@mails.tsinghua.edu.cn'), 'new library is auto-shared to member emails: ' + autoShared.join(','));
+  check(autoShared.includes('lisi@mails.tsinghua.edu.cn'), 'new library grants member access while owner retains intrinsic ownership: ' + autoShared.join(','));
   await p.getByRole('button', { name: '共享给成员', exact: true }).click();
-  await p.waitForSelector('.confirm-card');
-  await p.getByRole('button', { name: '确定', exact: true }).click();
   await p.waitForTimeout(1200);
   org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
   const shared = await p.evaluate(() => window.__cloud.sharedTo);
   check(shared.length >= 1 && shared.every((s) => s.repoId && s.path === '/' && s.email.includes('@')), 'library shared to cloud accounts by email (root of the repo)');
-  check((org.libraries[0].sharedWith ?? []).includes('lisi@mails.tsinghua.edu.cn'), 'member email recorded as shared');
+  check(!org.collaboration.pending && shared.some(s=>s.email==='lisi@mails.tsinghua.edu.cn'&&s.permission==='rw'), 'permission intent clears only after verified cloud access');
 
   /* 组织云盘文件：资料库内联列出 + 文件预览（不跳云盘页） */
   await p.evaluate((repoId) => { window.__cloud.fs[repoId] = { '/README.md': '# 组织资料\n欢迎加入开源小组' }; }, org.libraries[0].repoId);

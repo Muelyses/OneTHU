@@ -68,6 +68,7 @@ import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
 import { fitTarget } from "../state/boardFit.js";
 import {
   boardViewKey,
+  hasSavedView,
   boxSize,
   contentRect,
   stepZoom,
@@ -343,7 +344,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     return () => window.removeEventListener("resize", on);
   }, []);
   const phonePortrait = phoneUi && !landscape;
-  /* 手机竖屏的缩放单独一份（自由摆放默认 300%，不能把电脑首页也跟着放大）；横屏与电脑共用视图。 */
+  /* 手机竖屏的缩放单独一份（自由摆放首次默认 500%，不能把电脑首页也跟着放大）；横屏与电脑共用视图。 */
   const viewKey = boardViewKey(boardId, orientation) + (phonePortrait ? "|phone" : "");
   const view = useSyncExternalStore(subscribeView, () => readBoardView(viewKey), () => readBoardView(viewKey));
   const viewRef = useRef<BoardView>(view);
@@ -365,17 +366,15 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       const next = !prev;
       try { localStorage.setItem(PHONE_CANVAS_KEY, next ? "1" : "0"); } catch { /* 配额满：仅本次生效 */ }
       if (next) {
-        setZoom(5);
+        if (!hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
         window.setTimeout(() => sayRef.current("自由摆放：拖动卡片，点选后拉角点调大小"), 30);
       } else {
         sayRef.current("已回到阅读顺序");
       }
       return next;
     });
-  }, []);
+  }, [viewKey]);
   const sayRef = useRef<(text: string) => void>(() => undefined);
-  /** 持久化恢复自由摆放时视图可能还是旧的 100%：首进补到 300%。 */
-  const zoomBooted = useRef(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [penOn, setPenOn] = useState(false);
   const [penColor, setPenColor] = useState<string>(PEN_COLORS[0]);
@@ -570,7 +569,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const setZoom = useCallback((z: number): void => {
     const before = viewRef.current.z;
     const next = Math.min(ZOOM_MAX, Math.max(0.4, Number.isFinite(z) ? z : 1));
-    if (next === before) return;
+    if (next === before && hasSavedView(viewKey)) return;
     setBoardView(viewKey, { z: next });
     const host = hostRef.current;
     if (!host) return;
@@ -587,10 +586,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     setZoomRef.current(1);
   }, []);
   useEffect(() => {
-    if (zoomBooted.current) return;
-    zoomBooted.current = true;
-    if (phonePortrait && phoneCanvas && viewRef.current.z < 4.5) setZoomRef.current(5);
-  }, [phonePortrait, phoneCanvas]);
+    if (!compact && phonePortrait && phoneCanvas && !hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
+  }, [compact, phonePortrait, phoneCanvas, viewKey]);
 
   useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释
 
@@ -708,6 +705,27 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const it = itemsRef.current.find((x) => x.id === id);
     if (!it) return;
     e.stopPropagation();
+    // Selecting inserts the toolbar immediately. A real touch release can then
+    // target a newly appeared button under the finger (e.g. pin/delete). Consume
+    // this gesture's click, including a selection without movement; the next
+    // pointerdown starts an intentional new action and clears the guard.
+    const killClick = (ev: MouseEvent): void => {
+      if (ev.detail === 0) { clearClickGuard(); return; } // keyboard activation is independent
+      ev.stopPropagation();
+      ev.preventDefault();
+      clearClickGuard();
+    };
+    let clickGuardTimer: number | undefined;
+    const clearClickGuard = (): void => {
+      window.removeEventListener("click", killClick, true);
+      window.removeEventListener("pointerdown", clearClickGuard, true);
+      if (clickGuardTimer !== undefined) window.clearTimeout(clickGuardTimer);
+    };
+    const finishClickGuard = (): void => {
+      window.addEventListener("pointerdown", clearClickGuard, { capture: true, once: true });
+      clickGuardTimer = window.setTimeout(clearClickGuard, 400);
+    };
+    window.addEventListener("click", killClick, { capture: true, once: true });
     /* Only non-interactive bodies/handles enter this path. Capture keeps pen/touch
        gestures alive outside the item; the threshold suppresses drag-generated clicks. */
     setSelected(id);
@@ -723,6 +741,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         window.removeEventListener("pointerup", onUpPinned);
         window.removeEventListener("pointercancel", onUpPinned);
         if (timer !== null) window.clearTimeout(timer);
+        finishClickGuard();
       };
       window.addEventListener("pointerup", onUpPinned);
       window.addEventListener("pointercancel", onUpPinned);
@@ -750,9 +769,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         armed = true;
         if (timer !== null) window.clearTimeout(timer);
         if (longFired) menu.close();
-        /* 拖拽武装后吞掉本次手势派生的 click（capture 相位，先于一切目标）：
-           否则拖完松手会误触组件内的按钮/链接。 */
-        window.addEventListener("click", killClick, true);
       }
       if (m === "move") {
         /* 跟手的矩形也要夹（与 clampRect/落库同口径）：拖出画布时视觉停在边界上，
@@ -773,17 +789,12 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         liveRef.current = next; setLive(next);
       }
     };
-    const killClick = (ev: MouseEvent): void => {
-      ev.stopPropagation();
-      ev.preventDefault();
-    };
     const onUp = (): void => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
       if (timer !== null) window.clearTimeout(timer);
-      /* click 在 pointerup 之后派发：延迟一拍再摘抑制器 */
-      window.setTimeout(() => window.removeEventListener("click", killClick, true), 0);
+      finishClickGuard();
       const cur = liveRef.current;
       if (cur && cur.id === id) {
         const r = clampRect(cur.rect);
@@ -850,7 +861,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
   return (
     <div
-      className={"freeboard-wrap" + (phoneUi && (phoneCanvas || landscape) ? " phone-canvas" : "")}
+      className={"freeboard-wrap" + (stack ? " is-reading" : "") + (phoneUi && (phoneCanvas || landscape) ? " phone-canvas" : "")}
       data-coach="home-canvas"
     >
       {chrome ? (
@@ -875,11 +886,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             <span>{stack ? "阅读顺序：点右侧「自由摆放」可拖动、缩放" : "拖动卡片摆放，选中后拖动边角调整大小"}</span>
           </div>
           <div className="workbench-board-actions">
-            {phonePortrait && orientation === "portrait" && !compact ? (
-              <Btn variant="outline" size="sm" aria-pressed={phoneCanvas} onClick={togglePhoneCanvas}>
-                {phoneCanvas ? "阅读顺序" : "自由摆放"}
-              </Btn>
-            ) : null}
             <Btn variant="ghost" onClick={() => setTplOpen(true)}>模板</Btn>
           </div>
         </div>
@@ -1009,7 +1015,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 {/* 选中浮条：置顶 / 折叠（便笺）/ 透明度 / 固定 / 删除 */}
                 {isSel && !penOn ? (
                   <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
-                    {phoneUi ? <>
+                    {stack ? <>
                       {[-1, 1].map(dir => <button key={dir} type="button" title={dir < 0 ? "上移" : "下移"} onClick={() => {
                         const sorted = [...itemsRef.current].sort((a, b) => a.y - b.y || a.x - b.x);
                         const at = sorted.findIndex(x => x.id === it.id); const other = sorted[at + dir];
@@ -1074,6 +1080,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
         {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label="白板工具">
           <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>组件</Btn>
+          {phonePortrait && orientation === "portrait" ? (
+            <Btn variant="outline" size="sm" aria-pressed={phoneCanvas} onClick={togglePhoneCanvas}>
+              {phoneCanvas ? "阅读顺序" : "自由摆放"}
+            </Btn>
+          ) : null}
           {stack ? null : <>
             <span className="board-tool-divider" />
             <IconBtn label="缩小" icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
@@ -1244,7 +1255,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         />
       ) : null}
 
-      {note ? <div className="board-note" role="status">{note}</div> : null}
+      {note && toolsVisible && !compact ? createPortal(<div className="board-note" role="status">{note}</div>, document.body) : null}
     </div>
   );
 }

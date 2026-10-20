@@ -9,7 +9,7 @@ import { Btn, Card, List, Row, Text } from "@onethu/gui";
 import { confirmOk } from "../../lib/confirm.js";
 import { openFormModal } from "../../lib/formModal.js";
 import { showToast } from "../../state/toast.js";
-import { revokeShare, updateShareMeta } from "../../state/vaultShare.js";
+import { hasPendingShareRotation, revokeShare, updateShareMeta } from "../../state/vaultShare.js";
 import {
   forgetIssuedShare, issuedShareState, issuedShareTitle, issuedSharesSnapshot, markIssuedShareRevoked,
   payloadOfIssuedShare, scopeLabel, subscribeIssuedShares, type IssuedShare,
@@ -77,10 +77,26 @@ export function IssuedSharesCard(): ReactNode {
     setBusy(e.id);
     try {
       const r = await updateShareMeta(e.code, { allowEmail: email });
-      showToast(r.ok ? (email ? `已限定为 ${email} 接收` : "已取消邮箱限制") : r.reason ?? "设置失败：先连接清华云盘再试");
+      if(r.ok&&r.code)await navigator.clipboard.writeText(r.code).catch(()=>undefined);
+      showToast(r.ok ? (r.code?"接收范围已更新，新口令已生成，旧口令已撤销":email ? `已限定为 ${email} 接收` : "已取消邮箱限制") : r.reason ?? "设置失败：先连接清华云盘再试");
     } finally {
       setBusy("");
     }
+  };
+
+  const copy = async (entry:IssuedShare):Promise<void> => {
+    setBusy(entry.id);
+    try {
+      let code=entry.code;
+      if(hasPendingShareRotation(code)||(entry.allowEmail&&!entry.cloud?.keyRepoId)){
+        const result=await updateShareMeta(code,entry.allowEmail&&!entry.cloud?.keyRepoId?{allowEmail:entry.allowEmail}:{});
+        if(!result.ok){showToast(result.reason??"分享升级未完成，请重试");return;}
+        code=result.code??code;
+      }
+      await navigator.clipboard.writeText(code);
+      showToast(code===entry.code?"口令已复制":"私密分享已升级，新口令已复制");
+    }catch(error){showToast(error instanceof Error?error.message:"复制失败，请重试");}
+    finally{setBusy("");}
   };
 
   const forget = async (e: IssuedShare): Promise<void> => {
@@ -110,7 +126,7 @@ export function IssuedSharesCard(): ReactNode {
                   <>
                     <Btn size="sm" variant="ghost" disabled={busy === e.id} onClick={() => void rename(e)}>改名</Btn>
                     <Btn size="sm" variant="ghost" disabled={busy === e.id || st !== "active"} onClick={() => void restrict(e)}>限定邮箱</Btn>
-                    <Btn size="sm" variant="ghost" onClick={() => void navigator.clipboard.writeText(e.code).then(() => showToast("口令已复制")).catch(() => showToast("请手动复制"))}>复制</Btn>
+                    <Btn size="sm" variant="ghost" disabled={busy === e.id || st !== "active"} onClick={() => void copy(e)}>{e.allowEmail&&!e.cloud?.keyRepoId?"升级并复制":"复制"}</Btn>
                     <Btn size="sm" variant="ghost" tone="error" disabled={busy === e.id || st !== "active"} onClick={() => void revoke(e)}>{busy === e.id ? "撤销中…" : "撤销"}</Btn>
                     <Btn size="sm" variant="ghost" onClick={() => void forget(e)}>删除记录</Btn>
                   </>

@@ -19,23 +19,21 @@ import { showToast } from "../state/toast.js";
 import { useApp } from "../state/context.js";
 import { openTab } from "../state/explorer.js";
 import {
-  acceptOrgInvite, addOrgLibrary, addOrgMember, createOrg, currentOrgEmail, deleteOrg, deleteOrgAnnouncement, deleteOrgProject,
-  linkOrgGitlab, markOrgLibraryShared, orgIdentityCard, orgInviteCode, orgSnapshot, removeOrgLibrary, removeOrgMember,
-  revokeOrgInvite, saveOrgAnnouncement, saveOrgProject, setOrgGitlabGroup, setOrgMemberRole, unlinkOrgGitlab,
-  updateOrg, updateOrgMember,
+  acceptOrgInvite, createOrg, currentOrgEmail, deleteOrg, orgIdentityCard, orgInviteCode, orgSnapshot,
+  revokeOrgInvite, setOrgGitlabGroup, updateOrg,
   useOrgs, type Org, type OrgAnnouncement, type OrgProject, type OrgRole,
 } from "../state/org.js";
 import {
   ensureSeafileLoaded, getSeafileToken, openDir, refreshRepos, seafileCreateRepo, seafileDownload,
-  seafilePreview, seafileShareRepo, seafileShareRepoToUser, useSeafile,
+  seafilePreview, useSeafile,
   type SeafileEntry, type SeafilePreview,
 } from "../state/seafile.js";
 import {
-  gitlabAddGroupMember, gitlabAddProjectMember, gitlabCreateGroup, gitlabCreateProject, gitlabProject,
-  gitlabProjectByPath, gitlabSearchUsers,
+  gitlabCreateGroup, gitlabCreateProject, gitlabProject, gitlabProjectByPath,
 } from "../state/gitlab.js";
 import { openExternal } from "./info/openExternal.js";
 import { addToVault } from "../state/vault.js";
+import { assertOrgManager, changeRemoteMember, enableOrgCollaboration, refreshRemoteOrg, resolveOrgUser, retryOrgPermissions, saveRemoteContent, updateRemoteOrg, updateRemoteResources } from "../state/orgSync.js";
 import { orgCardCatch } from "../state/nameCard.js";
 
 const ROLE_LABEL: Record<OrgRole, string> = { owner: "负责人", member: "成员", guest: "访客" };
@@ -298,6 +296,27 @@ export function OrganizationPage(): ReactNode {
   const [openLib, setOpenLib] = useState<string | null>(null);
   const [openRepo, setOpenRepo] = useState<number | null>(null);
   const seafile = useSeafile();
+  const [collabBusy, setCollabBusy] = useState(false);
+  const [collabError, setCollabError] = useState("");
+  const [retainedDraft, setRetainedDraft] = useState<{label: string; text: string; reopen: () => void} | null>(null);
+  const runRemote = async (action: () => Promise<void>, success?: string): Promise<void> => {
+    setCollabBusy(true); setCollabError("");
+    try { await action(); if (success) showToast(success); }
+    catch (e) { setCollabError(e instanceof Error ? e.message : String(e)); }
+    finally { setCollabBusy(false); }
+  };
+  const needsCollaboration = (target: Org): boolean => {
+    if (!target.collaboration) { setCollabError("请先启用多人协作；成员身份与共享资料需要服务器确认。"); return true; }
+    return false;
+  };
+  useEffect(() => {
+    if (!orgId || !org?.collaboration || org.collaboration.status === "initializing") return;
+    const refresh = () => { if (document.visibilityState !== "hidden") void refreshRemoteOrg(orgId).catch(e => setCollabError(e instanceof Error ? e.message : String(e))); };
+    refresh();
+    const timer = window.setInterval(refresh, 30000);
+    window.addEventListener("focus", refresh);
+    return () => { window.clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, [orgId, Boolean(org?.collaboration)]);
   /* 云盘配置是懒加载的：进组织页先把 token / 资料库列表拉起来，
      否则「新建资料库」会拿空 token 直接跳云盘页（用户观感=报错）。 */
   useEffect(() => {
@@ -322,8 +341,8 @@ export function OrganizationPage(): ReactNode {
       { key: "joinUrl", label: "加入链接（GitLab 组织 / 云盘资料库，可选）", default: target.joinUrl },
     ]);
     if (!f?.name) return;
-    updateOrg(target.id, { name: f.name, brief: f.brief ?? "", joinUrl: f.joinUrl ?? "" });
-    showToast("组织资料已更新");
+    if (target.collaboration) await runRemote(() => updateRemoteOrg(target.id, {name:target.name,brief:target.brief,joinUrl:target.joinUrl}, {name:f.name!,brief:f.brief??"",joinUrl:f.joinUrl??""}), "组织资料已同步");
+    else { updateOrg(target.id, { name: f.name, brief: f.brief ?? "", joinUrl: f.joinUrl ?? "" }); showToast("本机组织资料已更新；启用多人协作后会上传"); }
   };
 
   /* ── 邀请 ── */
@@ -352,40 +371,38 @@ export function OrganizationPage(): ReactNode {
 
   /* ── 成员 ── */
   const addMember = async (target: Org): Promise<void> => {
-    const f = await openFormModal("添加成员", [
-      { key: "email", label: "清华云盘邮箱", required: true, placeholder: "学号@mails.tsinghua.edu.cn" },
-      { key: "name", label: "显示名（留空用邮箱前缀）" },
-      { key: "role", label: "角色", kind: "select", options: [{ value: "member", label: "成员" }, { value: "guest", label: "访客" }, { value: "owner", label: "负责人" }] },
-    ]);
-    if (!f?.email) return;
-    if (!isEmail(f.email)) {
-      showToast("邮箱格式不对");
-      return;
-    }
-    const name = f.name?.trim() || f.email.split("@")[0] || "成员";
-    const role = (f.role as OrgRole) ?? "member";
-    const email = f.email.trim().toLowerCase();
-    const r = addOrgMember(target.id, name, email, role);
-    showToast(r.ok ? "成员已加入" : r.reason === "duplicate" ? "这个邮箱已经在组织里了" : "成员信息不合法");
-    if (r.ok) autoSyncMember(target.id, email, role);
-  };
-
-  const editMember = async (target: Org, memberId: string): Promise<void> => {
-    const m = target.members.find((x) => x.id === memberId);
-    if (!m) return;
-    const f = await openFormModal("编辑成员", [
-      { key: "name", label: "显示名", default: m.name },
-      { key: "email", label: "清华云盘邮箱", default: m.email, placeholder: "学号@mails.tsinghua.edu.cn" },
+    if (needsCollaboration(target)) return;
+    const f = await openFormModal("添加组织成员", [
+      {key:"username",label:"GitLab 用户名（个人资料中的 @用户名）",required:true},
+      {key:"email",label:"清华云盘邮箱",required:true},
+      {key:"role",label:"角色",kind:"select",options:[{value:"member",label:"成员：编辑项目和公告"},{value:"guest",label:"访客：只读"},{value:"owner",label:"负责人：管理组织与权限"}]},
     ]);
     if (!f) return;
-    const r = updateOrgMember(target.id, memberId, { name: f.name ?? m.name, email: f.email ?? m.email });
-    showToast(r.ok ? "成员资料已更新" : r.reason === "duplicate" ? "这个邮箱已经在组织里了" : "邮箱格式不对");
-    const nextEmail = (f.email ?? m.email).trim().toLowerCase();
-    if (r.ok && nextEmail && nextEmail !== m.email) autoSyncMember(target.id, nextEmail, m.role);
+    await runRemote(async () => { const binding = await resolveOrgUser(f.username!,f.email!); await changeRemoteMember(target.id,undefined,{...binding,role:(f.role??"member") as OrgRole}); }, "成员及共享权限已验证完成");
+  };
+  const editMember = async (target: Org, memberId: string): Promise<void> => {
+    if (needsCollaboration(target)) return;
+    const member = target.members.find(m=>m.id===memberId);
+    if (!member?.gitlabUserId || !member.username) { setCollabError("这个成员尚未绑定服务器身份，请用 GitLab 用户名重新添加"); return; }
+    const f = await openFormModal("修改云盘邮箱", [{key:"email",label:`${member.username} 的清华云盘邮箱`,default:member.email,required:true}]);
+    if (!f) return;
+    await runRemote(async () => { const binding = await resolveOrgUser(member.username!,f.email!); await changeRemoteMember(target.id,member.gitlabUserId,{...binding,role:member.role},{email:member.email,role:member.role}); }, "新邮箱已授权，旧邮箱权限已撤销");
+  };
+  const changeRole = async (target: Org, memberId: string, role: OrgRole): Promise<void> => {
+    if (needsCollaboration(target)) return;
+    const member = target.members.find(m=>m.id===memberId); if (!member?.gitlabUserId || !member.username) return;
+    await runRemote(() => changeRemoteMember(target.id,member.gitlabUserId,{userId:member.gitlabUserId!,username:member.username!,name:member.name,email:member.email,role},{email:member.email,role:member.role}), "角色与资源权限已验证完成");
+  };
+  const removeMember = async (target: Org, memberId: string): Promise<void> => {
+    if (needsCollaboration(target)) return;
+    const member = target.members.find(m=>m.id===memberId); if (!member?.gitlabUserId) return;
+    if (!await confirmOk(`从服务器移除「${member.name}」并撤销关联资料库与仓库的权限？`)) return;
+    await runRemote(()=>changeRemoteMember(target.id,member.gitlabUserId,undefined,{email:member.email,role:member.role}),"成员与关联资源权限已移除");
   };
 
   /* ── 资料库 ── */
   const createLibrary = async (target: Org): Promise<void> => {
+    if (needsCollaboration(target)) return;
     await ensureSeafileLoaded();
     if (!getSeafileToken()) {
       showToast("先连接清华云盘再建资料库");
@@ -396,10 +413,10 @@ export function OrganizationPage(): ReactNode {
     if (!f?.name) return;
     setSharing("create-lib");
     try {
+      await assertOrgManager(target.id);
       const repoId = await seafileCreateRepo(f.name);
-      const r = addOrgLibrary(target.id, { repoId, name: f.name.trim() });
-      showToast(r.ok ? `资料库「${f.name}」已建好并挂到组织上` : "这个资料库已经关联过了");
-      if (r.ok) void autoShareLibraries(target.id);
+      await updateRemoteResources(target.id,"libraries",target.libraries??[],[...(target.libraries??[]),{repoId,name:f.name.trim(),addedAt:Date.now()}]);
+      showToast(`资料库「${f.name}」已创建、关联并核对成员权限`);
     } catch (e) {
       showToast(`建资料库失败：${e instanceof Error ? e.message : String(e)}（可到云盘页确认登录后重试）`);
     } finally {
@@ -408,6 +425,7 @@ export function OrganizationPage(): ReactNode {
   };
 
   const linkLibrary = async (target: Org): Promise<void> => {
+    if (needsCollaboration(target)) return;
     const repos = seafile.repos.filter((r) => !(target.libraries ?? []).some((l) => l.repoId === r.id));
     if (!repos.length) {
       showToast(seafile.repos.length ? "云盘里的资料库都已关联" : "云盘里还没有资料库：先新建一个");
@@ -418,39 +436,10 @@ export function OrganizationPage(): ReactNode {
     ]);
     if (!f?.repoId) return;
     const hit = repos.find((r) => r.id === f.repoId);
-    const r = addOrgLibrary(target.id, { repoId: f.repoId, name: hit?.name ?? f.repoId });
-    showToast(r.ok ? "资料库已关联" : "这个资料库已经关联过了");
-    if (r.ok) void autoShareLibraries(target.id);
+    await runRemote(()=>updateRemoteResources(target.id,"libraries",target.libraries??[],[...(target.libraries??[]),{repoId:f.repoId!,name:hit?.name??f.repoId!,addedAt:Date.now()}]),"资料库已关联并核对成员权限");
   };
 
-  const shareLibrary = async (target: Org, repoId: string, name: string): Promise<void> => {
-    const targets = target.members.filter((m) => m.email);
-    if (!targets.length) {
-      showToast("成员还没有绑定邮箱：先在「成员」里补上邮箱再共享");
-      return;
-    }
-    await ensureSeafileLoaded();
-    if (!getSeafileToken()) {
-      showToast("先连接清华云盘再共享资料库");
-      openTab("cloud");
-      return;
-    }
-    if (!(await confirmOk(`把资料库「${name}」共享给 ${targets.length} 位成员的云盘账号？`))) return;
-    setSharing(repoId);
-    let ok = 0;
-    const failed: string[] = [];
-    for (const m of targets) {
-      try {
-        await seafileShareRepoToUser(repoId, m.email, m.role === "guest" ? "r" : "rw");
-        ok += 1;
-      } catch {
-        failed.push(m.email);
-      }
-    }
-    if (ok) markOrgLibraryShared(target.id, repoId, targets.filter((m) => !failed.includes(m.email)).map((m) => m.email));
-    setSharing("");
-    showToast(ok ? `已共享给 ${ok} 位成员${failed.length ? `；${failed.length} 位失败（可在云盘里手动补）` : ""}` : "共享失败：检查云盘登录与成员邮箱");
-  };
+  const shareLibrary = async (target: Org, _repoId: string, _name: string): Promise<void> => { await syncAllPermissions(target); };
 
   const copyLibraryLink = async (repoId: string, name: string): Promise<void> => {
     setSharing(repoId);
@@ -458,171 +447,34 @@ export function OrganizationPage(): ReactNode {
       await ensureSeafileLoaded();
       if (!getSeafileToken()) throw new Error("清华云盘未连接：先到云盘页登录");
 
-      const share = await seafileShareRepo(repoId, 7);
-      await navigator.clipboard.writeText(share.shareUrl).catch(() => undefined);
-      showToast(`「${name}」的分享链接已复制（7 天有效）`);
+      await navigator.clipboard.writeText(`https://cloud.tsinghua.edu.cn/library/${encodeURIComponent(repoId)}/`);
+      showToast(`「${name}」的成员入口已复制，需要登录并拥有资料库权限`);
     } catch (e) {
-      showToast(`生成分享链接失败：${e instanceof Error ? e.message : String(e)}（可在云盘页确认登录后重试）`);
+      showToast(`复制成员入口失败：${e instanceof Error ? e.message : String(e)}（可在云盘页确认登录后重试）`);
     } finally {
       setSharing("");
     }
   };
 
-  /* ── 自动共享：资料库按邮箱、GitLab 仓库按邮箱查账号加成员 ── */
-
-  /** 把组织的所有资料库共享给这些邮箱（已共享过的不重复发）。 */
-  const shareLibrariesToEmails = async (orgId: string, targets: Array<{ email: string; role: OrgRole }>): Promise<{ ok: number; failed: number }> => {
-    await ensureSeafileLoaded();
-    if (!getSeafileToken() || !targets.length) return { ok: 0, failed: 0 };
-    const latest = orgSnapshot().orgs.find((o) => o.id === orgId);
-    let ok = 0;
-    let failed = 0;
-    for (const lib of latest?.libraries ?? []) {
-      const pending = targets.filter((m) => m.email && !(lib.sharedWith ?? []).includes(m.email));
-      const done: string[] = [];
-      for (const m of pending) {
-        try {
-          await seafileShareRepoToUser(lib.repoId, m.email, m.role === "guest" ? "r" : "rw");
-          done.push(m.email);
-          ok += 1;
-        } catch {
-          failed += 1;
-        }
-      }
-      if (done.length) markOrgLibraryShared(orgId, lib.repoId, done);
-    }
-    return { ok, failed };
-  };
-
-  /**
-   * 按成员邮箱搜 GitLab 账号，先邀请进「GitLab 组织（群组）」，再加进组织的每个仓库。
-   * 已是成员（409/400）当作成功；搜不到就记进 skipped 让用户手动加。
-   */
-  const syncGitlabMembers = async (orgId: string, targets: Array<{ email: string; role: OrgRole }>): Promise<{ ok: number; skipped: string[] }> => {
-    const latest = orgSnapshot().orgs.find((o) => o.id === orgId);
-    const repos = latest?.gitlabRepos ?? [];
-    const group = latest?.gitlabGroup;
-    if ((!repos.length && !group) || !targets.length) return { ok: 0, skipped: [] };
-    let ok = 0;
-    const skipped: string[] = [];
-    const tolerate = (e: unknown): boolean => /already|409|400|member/i.test(e instanceof Error ? e.message : String(e));
-    for (const m of targets) {
-      try {
-        const users = await gitlabSearchUsers(m.email);
-        const hit = users.find((u) => u.email === m.email.toLowerCase());
-        if (!hit) {
-          skipped.push(m.email);
-          continue;
-        }
-        const level = m.role === "guest" ? 20 : 30;
-        if (group) {
-          try {
-            await gitlabAddGroupMember(group.id, hit.id, level);
-            ok += 1;
-          } catch (e) {
-            if (tolerate(e)) ok += 1;
-            else skipped.push(m.email);
-          }
-        }
-        for (const repo of repos) {
-          try {
-            await gitlabAddProjectMember(repo.id, hit.id, level);
-            if (!group) ok += 1;
-          } catch (e) {
-            if (!tolerate(e) && !group) skipped.push(m.email);
-          }
-        }
-      } catch {
-        skipped.push(m.email);
-      }
-    }
-    return { ok, skipped: Array.from(new Set(skipped)) };
-  };
-
-  /** 新成员 / 改邮箱后自动同步两边权限；失败只提示，不挡操作。 */
-  const autoSyncMember = (orgId: string, email: string, role: OrgRole): void => {
-    void (async () => {
-      try {
-        const r = await shareLibrariesToEmails(orgId, [{ email, role }]);
-        if (r.ok) showToast(`资料库已共享给 ${email}`);
-      } catch {
-        /* 未连云盘：不打扰 */
-      }
-      try {
-        const g = await syncGitlabMembers(orgId, [{ email, role }]);
-        if (g.ok) showToast(`GitLab 仓库权限已给 ${email}`);
-      } catch {
-        /* GitLab 未登录：不打扰 */
-      }
-    })();
-  };
-
-  /** 新建/关联资料库后自动共享给全体有邮箱的成员。 */
-  const autoShareLibraries = (orgId: string): void => {
-    void (async () => {
-      const latest = orgSnapshot().orgs.find((o) => o.id === orgId);
-      const targets = (latest?.members ?? []).filter((m) => m.email).map((m) => ({ email: m.email, role: m.role }));
-      if (!targets.length) return;
-      try {
-        const r = await shareLibrariesToEmails(orgId, targets);
-        if (r.ok) showToast(`资料库已自动共享给 ${r.ok} 次`);
-        else if (r.failed) showToast(`有 ${r.failed} 次共享失败：可在云盘页确认登录后重试`);
-      } catch {
-        /* 未连云盘：页面已有提示，不重复打扰 */
-      }
-    })();
-  };
-
-  /** 新建/关联仓库后自动把成员按邮箱加进 GitLab 仓库。 */
-  const autoSyncGitlab = (orgId: string): void => {
-    void (async () => {
-      const latest = orgSnapshot().orgs.find((o) => o.id === orgId);
-      const targets = (latest?.members ?? []).filter((m) => m.email).map((m) => ({ email: m.email, role: m.role }));
-      if (!targets.length || !(latest?.gitlabRepos ?? []).length) return;
-      try {
-        const g = await syncGitlabMembers(orgId, targets);
-        if (g.ok) showToast(`已把 ${g.ok} 位成员加进 GitLab 仓库`);
-        else if (g.skipped.length) showToast("成员邮箱在 GitLab 搜不到：可手动加仓库成员");
-      } catch {
-        showToast("GitLab 未登录：仓库已关联，登录后点「同步权限」");
-      }
-    })();
-  };
-
-  /** 「同步权限」：资料库与 GitLab 仓库一起同步给所有有邮箱的成员。 */
   const syncAllPermissions = async (target: Org): Promise<void> => {
-    const latest = orgSnapshot().orgs.find((o) => o.id === target.id) ?? target;
-    const targets = latest.members.filter((m) => m.email).map((m) => ({ email: m.email, role: m.role }));
-    if (!targets.length) {
-      showToast("成员还没有绑定邮箱：先补邮箱再同步");
-      return;
-    }
-    setSharing("sync-all");
-    try {
-      const r = await shareLibrariesToEmails(latest.id, targets);
-      const g = await syncGitlabMembers(latest.id, targets);
-      setSharing("");
-      showToast(`资料库 ${r.ok} 次共享；GitLab ${g.ok} 次授权${g.skipped.length ? `；${g.skipped.length} 位在 GitLab 搜不到（可手动加）` : ""}`);
-    } catch (e) {
-      setSharing("");
-      showToast(`同步失败：${e instanceof Error ? e.message : String(e)}（确认云盘与 GitLab 登录）`);
-    }
+    if (needsCollaboration(target)) return;
+    await runRemote(()=>retryOrgPermissions(target.id),"所有关联资源的权限已回读核对");
   };
 
   /* ── GitLab ── */
   const linkGitlab = async (target: Org): Promise<void> => {
+    if (needsCollaboration(target)) return;
     const f = await openFormModal("关联 GitLab 仓库", [
-      { key: "path", label: "仓库完整路径", required: true, placeholder: "group/project" },
+      { key: "path", label: "本组织私有仓库完整路径", required: true, placeholder: "group/project" },
     ]);
     if (!f?.path) return;
     setSharing("gitlab");
     try {
       const repo = await gitlabProjectByPath(f.path);
-      const r = linkOrgGitlab(target.id, repo);
-      showToast(r.ok ? `已关联「${repo.name}」` : "这个仓库已经关联过了");
-      if (r.ok) void autoSyncGitlab(target.id);
+      await updateRemoteResources(target.id,"gitlabRepos",target.gitlabRepos??[],[...(target.gitlabRepos??[]),{...repo,addedAt:Date.now()}]);
+      showToast(`「${repo.name}」已关联并核对成员权限`);
     } catch (e) {
-      showToast(`找不到仓库（GitLab 未登录也会这样）：${e instanceof Error ? e.message : String(e)}`);
+      showToast(`关联仓库失败：${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setSharing("");
     }
@@ -633,24 +485,20 @@ export function OrganizationPage(): ReactNode {
    * 把成员都邀请进去，再把仓库建在这个组织下面 —— 不是孤立地在个人命名空间建仓库。
    */
   const createGitlab = async (target: Org): Promise<void> => {
+    if (needsCollaboration(target)) return;
     const latest = orgSnapshot().orgs.find((o) => o.id === target.id) ?? target;
     const group = latest.gitlabGroup;
     const fields = [
       ...(group ? [] : [{ key: "groupName", label: "GitLab 组织名", default: target.name, required: true } as const]),
       { key: "name", label: group ? "新仓库名" : "第一个仓库名", default: gitlabSlug(target.name), required: true } as const,
       { key: "description", label: "描述（可选）" } as const,
-      {
-        key: "visibility",
-        label: "可见性",
-        kind: "select" as const,
-        options: [{ value: "private", label: "私有" }, { value: "internal", label: "内部" }, { value: "public", label: "公开" }],
-      },
     ];
     const f = await openFormModal(group ? "在 GitLab 组织下新建仓库" : "创建 GitLab 组织与仓库", fields);
     if (!f?.name) return;
-    const visibility = (f.visibility as "private" | "internal" | "public") ?? "private";
+    const visibility = "private" as const;
     setSharing("gitlab");
     try {
+      await assertOrgManager(target.id);
       let groupRef = group;
       if (!groupRef) {
         const groupName = (f.groupName ?? target.name).trim();
@@ -668,9 +516,8 @@ export function OrganizationPage(): ReactNode {
         visibility,
         namespaceId: groupRef.id,
       });
-      linkOrgGitlab(target.id, repo);
-      showToast(group ? `仓库「${repo.name}」已建在 GitLab 组织下` : `GitLab 组织「${groupRef.name}」与仓库「${repo.name}」已创建`);
-      void autoSyncGitlab(target.id);
+      await updateRemoteResources(target.id,"gitlabRepos",target.gitlabRepos??[],[...(target.gitlabRepos??[]),{...repo,addedAt:Date.now()}]);
+      showToast(`仓库「${repo.name}」已创建并核对成员权限`);
     } catch (e) {
       showToast(`创建 GitLab 组织/仓库失败：${e instanceof Error ? e.message : String(e)}（可在 GitLab 页确认登录与组织名占用）`);
     } finally {
@@ -679,23 +526,30 @@ export function OrganizationPage(): ReactNode {
   };
 
   /* ── 项目 / 公告 ── */
-  const editProject = async (target: Org, project?: OrgProject): Promise<void> => {
+  const editProject = async (target: Org, project?: OrgProject, draft?: Record<string,string>): Promise<void> => {
+    if (needsCollaboration(target)) return;
     const f = await openFormModal(project ? "编辑项目" : "新建项目", [
-      { key: "name", label: "项目名称", required: true, default: project?.name },
-      { key: "description", label: "项目说明", kind: "textarea", default: project?.description },
-      { key: "owner", label: "负责人", default: project?.owner },
+      {key:"name",label:"项目名称",required:true,default:draft?.name??project?.name},
+      {key:"description",label:"项目说明",kind:"textarea",default:draft?.description??project?.description},
+      {key:"owner",label:"负责人",default:draft?.owner??project?.owner},
     ]);
     if (!f) return;
-    saveOrgProject(target.id, { id: project?.id, name: f.name!, description: f.description ?? "", owner: f.owner ?? "", status: project?.status ?? "planned" });
+    await runRemote(async()=>{
+      try { await saveRemoteContent(target.id,"projects",project,{id:project?.id??crypto.randomUUID(),name:f.name!,description:f.description??"",owner:f.owner??"",status:project?.status??"planned",updatedAt:Date.now()}); setRetainedDraft(null); }
+      catch(e) { setRetainedDraft({label:"尚未保存的项目",text:JSON.stringify(f,null,2),reopen:()=>void editProject(orgSnapshot().orgs.find(o=>o.id===target.id)??target,orgSnapshot().orgs.find(o=>o.id===target.id)?.projects?.find(p=>p.id===project?.id),f)}); throw e; }
+    },"项目已同步给组织成员");
   };
-
-  const editNotice = async (target: Org, notice?: OrgAnnouncement): Promise<void> => {
+  const editNotice = async (target: Org, notice?: OrgAnnouncement, draft?: Record<string,string>): Promise<void> => {
+    if (needsCollaboration(target)) return;
     const f = await openFormModal(notice ? "编辑公告" : "发布公告", [
-      { key: "title", label: "公告标题", required: true, default: notice?.title },
-      { key: "body", label: "公告内容", kind: "textarea", required: true, default: notice?.body },
+      {key:"title",label:"公告标题",required:true,default:draft?.title??notice?.title},
+      {key:"body",label:"公告内容",kind:"textarea",required:true,default:draft?.body??notice?.body},
     ]);
     if (!f) return;
-    saveOrgAnnouncement(target.id, { id: notice?.id, title: f.title!, body: f.body!, pinned: notice?.pinned ?? false });
+    await runRemote(async()=>{
+      try { await saveRemoteContent(target.id,"announcements",notice,{id:notice?.id??crypto.randomUUID(),title:f.title!,body:f.body!,pinned:notice?.pinned??false,updatedAt:Date.now()}); setRetainedDraft(null); }
+      catch(e) { setRetainedDraft({label:"尚未保存的公告",text:JSON.stringify(f,null,2),reopen:()=>void editNotice(orgSnapshot().orgs.find(o=>o.id===target.id)??target,orgSnapshot().orgs.find(o=>o.id===target.id)?.announcements?.find(n=>n.id===notice?.id),f)}); throw e; }
+    },"公告已同步给组织成员");
   };
 
   if (!org) return orgId ? <OrgMissing /> : <OrgPicker />;
@@ -707,6 +561,21 @@ export function OrganizationPage(): ReactNode {
 
   return (
     <div className="org-page">
+      <Card>
+        <Stack gap={2}>
+          <Text slot="title">{org.collaboration ? "组织多人协作" : "启用组织多人协作"}</Text>
+          <Text tone="faint">{org.collaboration ? `成员权限由 GitLab 服务器确认，项目和公告共享给成员。${org.collaboration.lastReadAt ? `最近读取 ${new Date(org.collaboration.lastReadAt).toLocaleTimeString()}` : ""}` : "将现有项目和公告迁入私有组织空间。历史成员资料保留，需补绑 GitLab 用户名。"}</Text>
+          <Inline gap={2} wrap>
+            {!org.collaboration || org.collaboration.status === "initializing" ? <Btn disabled={collabBusy} variant="solid" onClick={()=>void runRemote(()=>enableOrgCollaboration(org.id),"组织多人协作已启用")}>{collabBusy?"正在连接…":"启用多人协作"}</Btn> : null}
+            {org.collaboration ? <Btn disabled={collabBusy} variant="outline" onClick={()=>void runRemote(async()=>{await refreshRemoteOrg(org.id);})}>刷新组织</Btn> : null}
+            {org.collaboration?.pending ? <Btn disabled={collabBusy} variant="solid" onClick={()=>void runRemote(()=>retryOrgPermissions(org.id),"权限变更已全部核对完成")}>重试未完成的权限变更</Btn> : null}
+            {org.collaboration?.status === "error" && !org.collaboration.lastReadAt ? <Btn disabled={collabBusy} variant="outline" onClick={()=>void runRemote(()=>enableOrgCollaboration(org.id))}>继续初始化</Btn> : null}
+          </Inline>
+          {org.legacyMembers?.length ? <Text tone="faint">待绑定 GitLab 账号的历史成员：{org.legacyMembers.map(m=>`${m.name} ${m.email}`).join("、")}。原资料已保留，请在成员页添加对应用户名。</Text> : null}
+          {collabError || org.collaboration?.error ? <div role="alert"><Text tone="error">{collabError || org.collaboration?.error}</Text></div> : null}
+          {retainedDraft ? <Card><Text slot="title">{retainedDraft.label}</Text><Text slot="micro">{retainedDraft.text}</Text><Btn onClick={retainedDraft.reopen}>带着这些输入重新编辑</Btn></Card> : null}
+        </Stack>
+      </Card>
       <PageHead
         title={org.name}
         meta={org.brief || "成员、资料库与 GitLab 仓库都挂在这个组织上。"}
@@ -818,7 +687,7 @@ export function OrganizationPage(): ReactNode {
               {sharing === "sync-all" ? "同步中…" : "同步云盘与 GitLab 权限"}
             </Btn>
           </Inline>
-          <Text slot="micro" tone="faint">资料库共享按成员的清华云盘邮箱发送；改邮箱后记得重新共享。</Text>
+          <Text slot="micro" tone="faint">成员身份来自 GitLab。权限变更未完成时，可先编辑缺失或错误的云盘邮箱，再重试。</Text>
           <List divided>
             {org.members.map((m) => (
               <Row
@@ -827,13 +696,13 @@ export function OrganizationPage(): ReactNode {
                 sub={m.email || "还没绑定邮箱 · 点「编辑」补上"}
                 trailing={
                   <div className="name-card-actions">
-                    <Select aria-label={`${m.name}的角色`} value={m.role} onChange={(v) => { if (!setOrgMemberRole(org.id, m.id, v as OrgRole)) showToast("至少保留一位组织负责人"); }}>
+                    <Select aria-label={`${m.name}的角色`} value={m.role} disabled={collabBusy} onChange={(v) => void changeRole(org, m.id, v as OrgRole)}>
                       <option value="owner">{ROLE_LABEL.owner}</option>
                       <option value="member">{ROLE_LABEL.member}</option>
                       <option value="guest">{ROLE_LABEL.guest}</option>
                     </Select>
                     <Btn size="sm" variant="ghost" onClick={() => void editMember(org, m.id)}>编辑</Btn>
-                    <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`移除成员「${m.name}」？`).then((ok) => { if (ok && !removeOrgMember(org.id, m.id)) showToast("至少保留一位组织负责人"); })}>移除</Btn>
+                    <Btn size="sm" variant="ghost" tone="error" onClick={() => void removeMember(org, m.id)}>移除</Btn>
                   </div>
                 }
               />
@@ -868,14 +737,14 @@ export function OrganizationPage(): ReactNode {
                   <Stack gap={2}>
                     <Text slot="title">{lib.name}</Text>
                     <Text slot="micro" tone="faint">
-                      已共享：{lib.sharedWith?.length ? lib.sharedWith.join("、") : "还没有共享给成员"}
+                      {org.collaboration ? "权限根据服务器成员和云盘回读核对" : `已共享：${lib.sharedWith?.join("、") || "还没有共享给成员"}`}
                     </Text>
                     <div className="name-card-actions">
                       <Btn size="sm" variant="outline" onClick={() => openTab("cloud", { cloudRepo: lib.repoId })}>打开资料库</Btn>
                       <Btn size="sm" variant="outline" disabled={sharing === lib.repoId} onClick={() => void shareLibrary(org, lib.repoId, lib.name)}>共享给成员</Btn>
-                      <Btn size="sm" variant="ghost" disabled={sharing === lib.repoId} onClick={() => void copyLibraryLink(lib.repoId, lib.name)}>复制分享链接</Btn>
+                      <Btn size="sm" variant="ghost" disabled={sharing === lib.repoId} onClick={() => void copyLibraryLink(lib.repoId, lib.name)}>复制成员入口</Btn>
                       <Btn size="sm" variant="ghost" onClick={() => setOpenLib(openLib === lib.repoId ? null : lib.repoId)}>{openLib === lib.repoId ? "收起文件" : "预览文件"}</Btn>
-                      <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`解除资料库「${lib.name}」与组织的关联？云盘里的资料库不会被删除。`).then((ok) => { if (ok) { removeOrgLibrary(org.id, lib.repoId); showToast("已解除关联"); } })}>解除关联</Btn>
+                      <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`解除资料库「${lib.name}」与组织的关联？云盘里的资料库不会被删除。`).then((ok) => { if (ok) { void runRemote(()=>updateRemoteResources(org.id,"libraries",libraries,libraries.filter(x=>x.repoId!==lib.repoId)),"已解除关联"); } })}>解除关联</Btn>
                     </div>
                     {openLib === lib.repoId ? <LibraryFiles repoId={lib.repoId} name={lib.name} /> : null}
                   </Stack>
@@ -924,7 +793,7 @@ export function OrganizationPage(): ReactNode {
                       <Btn size="sm" variant="outline" onClick={() => openTab("gitlab", { gitlabProject: repo.id }, { title: `${org.name} · ${repo.name}` })}>打开仓库</Btn>
                       <Btn size="sm" variant="ghost" onClick={() => setOpenRepo(openRepo === repo.id ? null : repo.id)}>{openRepo === repo.id ? "收起详情" : "预览项目"}</Btn>
                       <Btn size="sm" variant="ghost" onClick={() => void openExternal(repo.webUrl ?? `https://git.tsinghua.edu.cn/${repo.path}`)}>浏览器打开</Btn>
-                      <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`解除仓库「${repo.name}」与组织的关联？GitLab 上的仓库不会被删除。`).then((ok) => { if (ok) { unlinkOrgGitlab(org.id, repo.id); showToast("已解除关联"); } })}>解除关联</Btn>
+                      <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`解除仓库「${repo.name}」与组织的关联？GitLab 上的仓库不会被删除。`).then((ok) => { if (ok) { void runRemote(()=>updateRemoteResources(org.id,"gitlabRepos",gitlabRepos,gitlabRepos.filter(x=>x.id!==repo.id)),"已解除关联"); } })}>解除关联</Btn>
                     </div>
                     {openRepo === repo.id ? <RepoPreview projectId={repo.id} /> : null}
                   </Stack>
@@ -946,13 +815,13 @@ export function OrganizationPage(): ReactNode {
                 <Text>{p.description || "暂无说明"}</Text>
                 <Text slot="micro">负责人：{p.owner || "待分配"}</Text>
                 <div className="name-card-actions">
-                  <Select aria-label={`${p.name}的进度`} value={p.status} onChange={(v) => saveOrgProject(org.id, { ...p, status: v as OrgProject["status"] })}>
+                  <Select aria-label={`${p.name}的进度`} value={p.status} onChange={(v) => void runRemote(()=>saveRemoteContent(org.id,"projects",p,{...p,status:v as OrgProject["status"],updatedAt:Date.now()}))}>
                     <option value="planned">计划中</option>
                     <option value="active">进行中</option>
                     <option value="done">已完成</option>
                   </Select>
                   <Btn size="sm" variant="ghost" onClick={() => void editProject(org, p)}>编辑</Btn>
-                  <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`删除项目「${p.name}」？`).then((ok) => { if (ok) deleteOrgProject(org.id, p.id); })}>删除</Btn>
+                  <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`删除项目「${p.name}」？`).then((ok) => { if (ok) void runRemote(()=>saveRemoteContent(org.id,"projects",p,undefined)); })}>删除</Btn>
                 </div>
               </Stack>
             </Card>
@@ -970,9 +839,9 @@ export function OrganizationPage(): ReactNode {
                 <Text slot="title">{n.pinned ? "置顶 · " : ""}{n.title}</Text>
                 <div className="org-notice-body">{n.body}</div>
                 <div className="name-card-actions">
-                  <Btn size="sm" variant="ghost" onClick={() => saveOrgAnnouncement(org.id, { ...n, pinned: !n.pinned })}>{n.pinned ? "取消置顶" : "置顶"}</Btn>
+                  <Btn size="sm" variant="ghost" onClick={() => void runRemote(()=>saveRemoteContent(org.id,"announcements",n,{...n,pinned:!n.pinned,updatedAt:Date.now()}))}>{n.pinned ? "取消置顶" : "置顶"}</Btn>
                   <Btn size="sm" variant="ghost" onClick={() => void editNotice(org, n)}>编辑</Btn>
-                  <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`删除公告「${n.title}」？`).then((ok) => { if (ok) deleteOrgAnnouncement(org.id, n.id); })}>删除</Btn>
+                  <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(`删除公告「${n.title}」？`).then((ok) => { if (ok) void runRemote(()=>saveRemoteContent(org.id,"announcements",n,undefined)); })}>删除</Btn>
                 </div>
               </Stack>
             </Card>

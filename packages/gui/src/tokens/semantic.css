@@ -48,6 +48,11 @@
   --og-workbench-paper: var(--og-fill-surface);
   --og-workbench-well: var(--og-surface-3);
   --og-workbench-grid-ink: var(--og-line-1);
+  /* Photo media keeps stable ink and underlay across application themes. */
+  --og-media-underlay: var(--og-ref-ink-0);
+  --og-media-ink-light: var(--og-ref-ink-0);
+  --og-media-ink-dark: var(--og-ref-neutral-1000);
+  --og-media-shadow: var(--og-ref-ink-1000);
   --og-contrast-ink-light: var(--og-ref-contrast-ink-light);
   --og-contrast-ink-dark: var(--og-ref-contrast-ink-dark);
   --og-video-fallback: var(--og-ref-video-fallback);

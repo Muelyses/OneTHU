@@ -10,7 +10,7 @@
  */
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  Accordion, AccordionItem, AppShell, Avatar, Badge, Banner, Breadcrumb, Btn, Card, Checkbox, Chip, CodeBlock, Divider,
+  FocalImage, Accordion, AccordionItem, AppShell, Avatar, Badge, Banner, Breadcrumb, Btn, Card, Checkbox, Chip, CodeBlock, Divider,
   Drawer, EmptyState, Fab, Field, Grid, Icon, IconBtn, Inline, Input, KeyValue, List, LoadingBlock, Modal, MobileTabBar, NavRail,
   BtnGroup, ContextMenu, DataList, Grow, Menu, NumberField, Page, PageHead, Pagination, Popover, Progress, Radio, RadioGroup, RangeSlider, Ring, Row, SearchField, Section,
   SectionCard, Segment, Select, SettingsList, Sheet, SettingsRow, Skeleton, Slider, Spacer, Spinner, Stack, StatTile,
@@ -108,6 +108,10 @@ function CatalogExtra(): ReactNode {
             <Radio value="c" label="丙" disabled />
           </RadioGroup>
         </Stack>
+      </Group>
+
+      <Group title="FocalImage" hint="图片取景由受控焦点与缩放决定，外观沿用媒体令牌">
+        <FocalImage src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 160'%3E%3Crect width='320' height='160' fill='silver'/%3E%3Ccircle cx='110' cy='80' r='48' fill='white'/%3E%3C/svg%3E" alt="OneTHU" focusX={.5} focusY={.5} zoom={1} className="og-w-320" />
       </Group>
 
       <Group title="Switch / Slider / RangeSlider" hint="拖拽用 pointer capture；方向键可调">

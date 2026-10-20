@@ -44,7 +44,10 @@ import { openFormModal } from "../../lib/formModal.js";
 
 /* ══════════ 抽屉开合 store（palette.ts 同款） ══════════ */
 
+type SheetTab = "favs" | "ws";
 let sheetOpen = false;
+let sheetTab: SheetTab = "favs";
+let sectionRequest = 0;
 const sheetListeners = new Set<() => void>();
 
 function emitSheet(): void {
@@ -56,6 +59,14 @@ export function openOneGoSheet(): void {
     sheetOpen = true;
     emitSheet();
   }
+}
+
+/** Open the requested section even when the sheet was already mounted. */
+export function openOneGoSection(tab: SheetTab): void {
+  sheetTab = tab;
+  sectionRequest++;
+  sheetOpen = true;
+  emitSheet();
 }
 
 export function closeOneGoSheet(): void {
@@ -350,8 +361,6 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
 
 /* ══════════ 抽屉本体 ══════════ */
 
-type SheetTab = "favs" | "ws";
-
 function OneGoSheetInner(): ReactNode {
   const open = useOneGoSheetOpen();
   /* 手机端（A4 同手柄）：seeking 抽屉（0.6vh ⟷ 0.94vh 两档） */
@@ -391,8 +400,11 @@ function OneGoSheetInner(): ReactNode {
     onWsMenu: openWsMenuAt,
     onGroupDrop: () => undefined,
   });
-  const [seg, setSeg] = useState<SheetTab>("favs");
+  const seg = useSyncExternalStore(subscribeSheet, () => sheetTab, () => "favs" as SheetTab);
+  const setSeg = (tab: SheetTab): void => { sheetTab = tab; emitSheet(); };
   const [query, setQuery] = useState("");
+  const requestedSection = useSyncExternalStore(subscribeSheet, () => sectionRequest, () => 0);
+  useEffect(() => { if (open) setQuery(""); }, [open, requestedSection]);
   const q = query.trim().toLowerCase();
 
   useEffect(() => {

@@ -5536,11 +5536,7 @@ html.is-phone .card-warn-label { width: auto; }
   background: var(--surface); color: var(--text-1); font-size: 14px;
 }
 .board-drawer-actions { display: flex; justify-content: flex-end; gap: 8px; }
-.board-note {
-  position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%); z-index: 60;
-  padding: 8px 16px; border-radius: var(--md-sys-shape-corner-large, 16px);
-  background: var(--surface-3); color: var(--text-1); font-size: 12px;
-}
+
 
 .board-sheet-head { display: flex; align-items: center; justify-content: space-between; }
 .board-sheet-title { font-size: 16px; color: var(--text-1); }
@@ -6379,85 +6375,3 @@ html.is-sheet-open, html.is-sheet-open body { overflow: hidden; }
   border: 0;
   box-shadow: none;
 }
-
-/* ════════════════════════════════════════════════════════════════════════════
-   手机端文字/排布统一策略（2026-10-19）
-   ----------------------------------------------------------------------------
-   用户反馈：「手机版很多文字省略号回来了」「很多文字在左边挤成一堆，右边单独放一个组件」。
-   根因是历史手机档把行布局钉成单行 nowrap + 单行省略（见上面 839 档的
-   `.row { flex-wrap: nowrap !important }`），再叠加若干「一行文字 + 右件」的容器。
-   这里在文件末尾统一收口（晚于所有默认规则、含手机旧档，故能覆盖）：
-    ① 列表行允许换行，文字最多两行、不再单行省略；
-    ② 旧版各类「标题/副题/摘要」文本不再 nowrap，改为两行（或三行）截断；
-    ③ 页面/卡片头等「左标题 + 右操作」容器一律 wrap，操作放不下就换行。
-   ══════════════════════════════════════════════════════════════════════════ */
-html:root.is-phone .row {
-  flex-wrap: wrap !important;
-  align-items: flex-start;
-  row-gap: 2px;
-}
-html:root.is-phone .row-main { flex: 1 1 10ch; min-width: 0; }
-html:root.is-phone .row-title,
-html:root.is-phone .row-sub {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  text-overflow: clip;
-  white-space: normal !important;
-  overflow-wrap: anywhere;
-}
-html:root.is-phone .row-title { font-size: 13px; line-height: 18px; }
-html:root.is-phone .row-sub { margin-top: 0; font-size: 11px; line-height: 16px; }
-
-/* 旧版列表/卡片里的各类文本：手机端两行封顶，替换单行省略 */
-html:root.is-phone :is(
-  .tl-title, .tl-sub,
-  .washer-name, .washer-sub,
-  .home-entry-name, .home-entry-hint,
-  .fav-tile-sub,
-  .mail-row-from, .mail-row-subject,
-  .mail-detail-from, .mail-detail-to, .mail-detail-subject,
-  .svc-row-sub,
-  .mine-name, .mine-meta-value,
-  .overview-line-title,
-  .ex-row-title, .ex-row-sub, .ex-sec-head-note, .ex-tip, .wall-name,
-  .ohx-hit-name, .ohx-hit-sub,
-  .sphere-name,
-  .identity-card-details,
-  .pal-row-sub,
-  .error-line
-) {
-  white-space: normal !important;
-  text-overflow: clip !important;
-  overflow-wrap: anywhere;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-/* 卡片/区块头：左标题 + 右操作 一律允许换行，操作不挤标题 */
-html:root.is-phone :is(
-  .home-card-head, .course-card-head, .section-head, .page-head,
-  .mail-row-top, .overview-line, .balance-row, .wg-card-line,
-  .setting-row, .identity-panel-actions, .name-card-actions
-) {
-  flex-wrap: wrap;
-  row-gap: 6px;
-}
-html:root.is-phone .section-head > :first-child,
-html:root.is-phone .page-head > :first-child {
-  flex: 1 1 100%;
-}
-/* 手机端不出现横向滚动：这些容器允许收缩 */
-html:root.is-phone :is(.row, .section-head, .page-head, .setting-row) { max-width: 100%; }
-
-/* 手机端设置栏目：横向 segment 换成下拉（用户 2026-10-19：外观与布局/数据与下载那个 segment 不直观） */
-.workbench-settings-phone-nav { display: none; }
-html:root.is-phone .workbench-settings-phone-nav {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-html:root.is-phone .workbench-settings-phone-nav .og-select { flex: 1 1 auto; min-width: 0; }

@@ -1,8 +1,18 @@
 /** Small illustrative scenes explain the action without creating or changing user content. */
 export function TourIllustration({lesson}:{lesson:string}) {
+ const featureScenes:Record<string,{title:string;items:string[]}>= {
+  explorer:{title:"保存一组正在进行的事",items:["课程标签","资料标签","工作区"]},
+  onego:{title:"从 OneGO! 接着做",items:["OnePage","工作区","OneFlow"]},
+  plugin:{title:"按需要扩展能力",items:["插件","小 OH","模型设置"]},
+  customize:{title:"换成你习惯的样子",items:["主题","壁纸","字号","入口"]},
+  campus:{title:"校园服务，一处进入",items:["学习","生活","预约","云盘"]},
+  data:{title:"换台设备，继续使用",items:["同步日程","导出数据","恢复设置"]},
+ };
+ const scene=featureScenes[lesson];
  return <div className={"tour-scene tour-scene--"+lesson} aria-label="操作示意">
  <span className="tour-scene-caption">操作示意</span>
- {lesson==="board"?<div className="tour-board-demo"><div><small>拖动把手调整位置</small><strong>今日待办</strong><span>课程作业 · 项目进度</span></div><div><strong>便笺</strong><span>记下刚想到的事</span><i aria-hidden="true">↘</i></div></div>
+ {scene?<div className="tour-org-demo"><strong>{scene.title}</strong><div>{scene.items.map(item=><span key={item}>{item}</span>)}</div></div>
+ :lesson==="board"?<div className="tour-board-demo"><div><small>拖动把手调整位置</small><strong>今日待办</strong><span>课程作业 · 项目进度</span></div><div><strong>便笺</strong><span>记下刚想到的事</span><i aria-hidden="true">↘</i></div></div>
  :lesson==="vault"?<div className="tour-flow"><span className="tour-demo-card">课程 / 文字 / 文件</span><span className="tour-flow-arrow">→</span><span className="tour-demo-box">暂存箱<small>按住，再拖进来</small></span></div>
  :lesson==="code"?<div className="tour-flow"><span className="tour-demo-card">准备内容</span><span className="tour-flow-arrow">→</span><span className="tour-demo-code">ON-XXXX-XXXX-XXXX-XXXX<small>分享短口令</small></span><span className="tour-flow-arrow">→</span><span className="tour-demo-card">接收</span></div>
  :lesson==="nfc"?<div className="tour-flow"><span className="tour-demo-phone">传送方<small>准备内容</small></span><span className="tour-nfc-pulse" aria-hidden="true">)))</span><span className="tour-demo-phone">接收方<small>开启接收</small></span></div>

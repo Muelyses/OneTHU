@@ -1,12 +1,14 @@
+import { installFakeOrganization } from './lib/fake-org.mjs';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {installFakeCloud} from './lib/fake-cloud.mjs';
+import {walkFullOnboarding,closeTestBrowser} from './lib/onboarding-browser-steps.mjs';
 const out='docs/onegui/experience-mode';mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
-const checks=[],errors=[];const check=(v,n)=>{assert.ok(v,n);checks.push(n);console.log('✓ '+n);};
+let passed=false;const checks=[],errors=[];const check=(v,n)=>{assert.ok(v,n);checks.push(n);console.log('✓ '+n);};
 const call=(p,path,name,args=[])=>p.evaluate(async({path,name,args})=>{const url=performance.getEntriesByType('resource').map(x=>x.name).find(x=>new URL(x).pathname.endsWith(path));if(!url)throw Error(path);return (await import(url))[name](...args);},{path,name,args});
-async function setup(width=1280,height=860){const p=await browser.newPage({viewport:{width,height},hasTouch:width<600});p.setDefaultTimeout(10000);p.on('pageerror',e=>{if(!/reading 'invoke'/.test(e.message))errors.push(e.message);});await installFakeCloud(p);await p.addInitScript(()=>{performance.setResourceTimingBufferSize(10000);localStorage.setItem('onethu.onboarded.phone','1');Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async t=>window.__copied=t}});});await p.route('**/src/state/data.ts*',async route=>{const r=await route.fetch();let body=await r.text();for(const n of ['useLearnData','useCampusData'])body=body.replace(`export function ${n}() {`,`export function ${n}() {return {data:{semester:{id:'x'},courses:[],homework:[],notifications:[],files:[],schedule:[]},state:'ready',error:null,reload:async()=>{}};`);await route.fulfill({response:r,body});});await p.goto('http://127.0.0.1:5180/?explorer-preview=home');await p.locator('.explorer-shell').waitFor();await p.waitForTimeout(800);return p;}
+async function setup(width=1280,height=860){const p=await browser.newPage({viewport:{width,height},hasTouch:width<600});p.setDefaultTimeout(10000);await p.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/,()=>{});p.on('pageerror',e=>{if(!/reading 'invoke'/.test(e.message))errors.push(e.message);});await installFakeCloud(p);await installFakeOrganization(p);await p.addInitScript(()=>{performance.setResourceTimingBufferSize(10000);localStorage.setItem('onethu.onboarded.phone','1');Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async t=>window.__copied=t}});});await p.route('**/src/state/data.ts*',async route=>{const r=await route.fetch();let body=await r.text();for(const n of ['useLearnData','useCampusData'])body=body.replace(`export function ${n}() {`,`export function ${n}() {return {data:{semester:{id:'x'},courses:[],homework:[],notifications:[],files:[],schedule:[]},state:'ready',error:null,reload:async()=>{}};`);await route.fulfill({response:r,body});});await p.goto('http://127.0.0.1:5180/?explorer-preview=home');await p.locator('.explorer-shell').waitFor();await p.waitForTimeout(800);return p;}
 const mode=(p,m)=>call(p,'/src/state/experienceMode.ts','setExperienceMode',[m]);
 const toastWait=(p,text)=>p.locator('.toast-host').filter({hasText:text}).first().waitFor({timeout:6000});const nav=(p,page,params=null)=>call(p,'/src/state/explorer.ts','openTab',[page,params]);
 try{
@@ -58,17 +60,18 @@ try{
  await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();
  await p.getByRole('button',{name:/极简模式/}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
  check(await p.getByRole('heading',{name:'首页，只关心今天'}).isVisible(),'极简导览正确分流');
- await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'五个入口，直接到达'}).isVisible(),'极简导览精简');
- await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'需要时，再连接'}).isVisible(),'接入步骤可选');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'五个功能，固定在手边'}).isVisible(),'极简导览精简');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'需要时，再连接'}).isVisible(),'接入步骤可选');check(await p.getByRole('switch',{name:'OH MCP 服务器开关'}).count()===0,'极简导览隐藏高级 MCP 开关');
  await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
  await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('button',{name:/完整模式/}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
- for(const title of ['白板，把常用内容放到手边','暂存箱，先收起来再处理','一个短口令，传递一组内容','碰一碰，让内容接力','组织，把人和事情放在一起']){check(await p.getByRole('heading',{name:title}).isVisible(),'完整导览 '+title);await p.getByRole('button',{name:'下一步',exact:true}).click();}
+ await walkFullOnboarding(p,check);
  await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
  await nav(p,'contacts',{section:'orgs'});await p.getByRole('button',{name:'新建组织',exact:true}).click();await p.locator('.plg-form-modal input').first().fill('测试组织');await p.getByRole('button',{name:'提交',exact:true}).click();
  /* 组织是完整页面（2026-10-19）：不再有管理弹层 */
  await p.getByRole('heading',{name:'测试组织',exact:true}).waitFor({timeout:10000});
+ await p.getByRole('button',{name:'启用多人协作',exact:true}).click();await p.waitForFunction(()=>JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]?.collaboration?.status==='ready');
  await p.getByRole('radio',{name:'成员',exact:true}).click();
- await p.getByRole('button',{name:'添加成员',exact:true}).click();await p.locator('.plg-form-modal input').nth(0).fill('xiaoming@mails.tsinghua.edu.cn');await p.locator('.plg-form-modal input').nth(1).fill('小明');await p.getByRole('button',{name:'提交',exact:true}).click();await p.waitForTimeout(400);check(await p.getByText('xiaoming@mails.tsinghua.edu.cn',{exact:false}).isVisible(),'组织成员按真实邮箱管理');
+ await p.getByRole('button',{name:'添加成员',exact:true}).click();await p.locator('.plg-form-modal input').nth(0).fill('lisi');await p.locator('.plg-form-modal input').nth(1).fill('lisi@mails.tsinghua.edu.cn');await p.getByRole('button',{name:'提交',exact:true}).click();await p.waitForTimeout(400);check(await p.getByText('lisi@mails.tsinghua.edu.cn',{exact:false}).isVisible(),'组织成员按真实邮箱管理');
  await p.getByRole('radio',{name:'项目',exact:true}).click();await p.getByRole('button',{name:'新建项目'}).click();await p.locator('.plg-form-modal input').first().fill('迎新活动');await p.getByRole('button',{name:'提交',exact:true}).click();await p.waitForTimeout(300);check(await p.getByText('迎新活动',{exact:true}).isVisible(),'组织项目创建');
  await p.getByRole('radio',{name:'公告',exact:true}).click();await p.getByRole('button',{name:'发布公告'}).click();await p.locator('.plg-form-modal input').first().fill('会议安排');await p.locator('.plg-form-modal textarea').fill('周五见');await p.getByRole('button',{name:'提交',exact:true}).click();await p.waitForTimeout(300);check(await p.getByText('周五见',{exact:true}).isVisible(),'组织公告保存');
  await p.getByRole('radio',{name:'概览',exact:true}).click();check(await p.locator('.identity-card-name').innerText()==='测试组织','组织自动绑定名片');await p.screenshot({path:out+'/organization.png'});
@@ -143,12 +146,12 @@ try{
  check(await p.getByRole('button',{name:/实用模式/}).count()===1,'导览提供实用模式选项');
  await p.getByRole('button',{name:/实用模式/}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
  await p.getByRole('heading',{name:'首页，只关心今天'}).waitFor();check(true,'实用导览第 1 课');
- await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'更多功能，一屏展开'}).waitFor();check(true,'实用导览第 2 课：更多功能');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'更多功能：所有基础功能都在这里'}).waitFor();check(true,'实用导览第 2 课：更多功能');await p.getByRole('button',{name:'展开更多功能',exact:true}).click();await more.waitFor();check(await more.getByRole('textbox',{name:'搜索功能'}).isVisible(),'实用导览真实展开更多功能');await p.keyboard.press('Escape');await more.waitFor({state:'hidden'});await p.getByRole('button',{name:'继续导览',exact:true}).click();
  await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'四个入口，随你安排'}).waitFor();check(true,'实用导览第 3 课：换入口');
- await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'需要时，再连接'}).waitFor();check(true,'实用导览接入步骤可选');
+ await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'需要时，再连接'}).waitFor();check(true,'实用导览接入步骤可选');check(await p.getByRole('switch',{name:'OH MCP 服务器开关'}).count()===0,'实用导览隐藏高级 MCP 开关');
  await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
  await p.getByRole('button',{name:'首页',exact:true}).click();await p.waitForTimeout(450);await p.screenshot({path:out+'/practical-desktop.png'});
- await p.close();
+ await p.unrouteAll({behavior:"ignoreErrors"});await p.request.dispose();await p.close();
  for(const width of [390,320]){const p=await setup(width,844);await mode(p,'simple');await p.waitForTimeout(350);const geom=await p.locator('.oneshot button').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return{x:r.x,right:r.right,bottom:r.bottom,width:r.width,text:e.innerText};}));check(geom.length===5&&geom.every(r=>r.x>=0&&r.right<=width&&r.width>40),width+' 手机五入口可见');check(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' 无横向溢出');await p.screenshot({path:out+'/simple-phone-'+width+'.png'});
  check(await p.locator('.board-viewport-tools').count()===0,width+' 手机无白板工具泄露');
  const labels=await p.locator('.oneshot-button .og-btn-label').evaluateAll(es=>es.map(e=>({sw:e.scrollWidth,cw:e.clientWidth})));
@@ -159,6 +162,6 @@ try{
  const fits=await p.getByRole('dialog',{name:'更多功能'}).evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&r.top>=0;});check(fits,width+' 手机功能目录完整位于屏幕内');
  await p.keyboard.press('Escape');await p.waitForTimeout(300);
  await p.getByRole('button',{name:'设置',exact:true}).click();check(await p.locator('.simple-settings').count()===1,width+' 实用模式设置同样精简');await p.getByRole('button',{name:'关闭设置',exact:true}).click();await p.waitForTimeout(300);
- await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();await p.waitForTimeout(300);await p.screenshot({path:out+'/mode-picker-phone-'+width+'.png'});await p.close();}
- check(errors.length===0,'无新增浏览器错误 '+JSON.stringify(errors));
-}finally{writeFileSync(out+'/report.json',JSON.stringify({checks,errors},null,2));await browser.close();}
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();await p.waitForTimeout(300);await p.screenshot({path:out+'/mode-picker-phone-'+width+'.png'});await p.unrouteAll({behavior:"ignoreErrors"});await p.request.dispose();await p.close();}
+ check(errors.length===0,'无新增浏览器错误 '+JSON.stringify(errors));passed=true;
+}catch(error){errors.push(String(error));console.error(error);console.error("Browser errors:",errors);throw error;}finally{try{await closeTestBrowser(browser);}catch(error){passed=false;errors.push(String(error));throw error;}finally{writeFileSync(out+'/report.json',JSON.stringify({passed,checks,errors},null,2));}}

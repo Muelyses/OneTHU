@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Btn, Inline, Modal, Stack, Text } from "@onethu/gui";
+import { Btn, Inline, Modal, Slider, Stack, Text } from "@onethu/gui";
 import { fileToBytes, pickFile } from "../lib/attach.js";
 import { showToast } from "../state/toast.js";
 import type { CardCover, PersonalCard } from "../state/nameCard.js";
@@ -102,7 +102,7 @@ async function prepareImage(file: Awaited<ReturnType<typeof pickFile>>): Promise
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("当前环境不支持图片处理");
     /* 透明 PNG 铺白底，避免 JPEG 把透明区压成黑块。 */
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--og-media-underlay").trim();
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(bitmap, 0, 0, w, h);
     let quality = 0.84;
@@ -182,7 +182,6 @@ export function CardCoverEditor({
               className="cover-editor-stage"
               /* 预览必须和「我的名片」里那张卡同尺寸：用 hero 档固定 540px 上限，
                  否则弹层里卡片被拉宽/压窄都会让字号看起来不对。 */
-              style={{ width: "min(540px, 100%)" }}
               role="presentation"
               onPointerDown={(e) => {
                 drag.current = { x: e.clientX, y: e.clientY, fx: draft.focusX, fy: draft.focusY };
@@ -212,17 +211,17 @@ export function CardCoverEditor({
                 <Btn key={v} size="sm" variant={inkMode === v ? "solid" : "ghost"} tone={inkMode === v ? "brand" : undefined} onClick={() => setInkMode(v)}>{label}</Btn>
               ))}
             </Inline>
-            <label className="cover-editor-zoom">
+            <div className="cover-editor-zoom">
               <Text slot="micro" tone="faint">缩放 {shown?.zoom.toFixed(2) ?? "1.00"}×</Text>
-              <input
-                type="range"
+              <Slider
+                aria-label="卡面缩放"
                 min={1}
                 max={2.5}
                 step={0.05}
                 value={shown?.zoom ?? 1}
-                onChange={(e) => setDraft((prev) => (prev ? { ...prev, zoom: Number(e.target.value) } : prev))}
+                onChange={(zoom) => setDraft((prev) => (prev ? { ...prev, zoom } : prev))}
               />
-            </label>
+            </div>
             <Inline gap={2} wrap>
               <Btn variant="outline" disabled={busy} onClick={() => void choose()}>{busy ? "处理中…" : "换一张照片"}</Btn>
               <Btn variant="ghost" tone="error" onClick={() => { onRemove(); onClose(); }}>移除封面</Btn>

@@ -4,6 +4,7 @@
  * 来源组件只负责给出 `data-vault-catch`（或调用 addToVault），不要各自实现「点开这个对象」；
  * 打开、失效提示、以后要接入的云盘/文件预览都从这里走。
  */
+import { invoke } from "@tauri-apps/api/core";
 import type { VaultItem } from "./vault.js";
 import { resolveAtom } from "./atoms.js";
 import { addContact } from "./nameCard.js";
@@ -34,7 +35,31 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
     return true;
   }
   if (it.type === "file") {
-    env.toast("文件预览/下载随统一文件通道接入；当前先保留引用");
+    if (!it.file) { env.toast("文件引用缺失，请重新添加"); return true; }
+    const file = it.file;
+    const local = async (): Promise<string> => {
+      if (file.stagedPath) return file.stagedPath;
+      if (file.shareUrl && file.cloudPath) {
+        const { materializeSharedFile } = await import("./vaultCloud.js");
+        return materializeSharedFile({provider:"seafile",path:"",shareUrl:file.shareUrl,keyRepoId:file.shareKeyRepoId},file.cloudPath,file.name);
+      }
+      throw new Error("文件尚未保存，请从来源重新加入");
+    };
+    void import("../components/FilePreview.js").then(({openFilePreview}) => openFilePreview({
+      name:file.name, url:"",
+      fetchB64:async()=>{
+        let b64:string;
+        if(file.cloudRepoId&&file.cloudPath&&!file.shareUrl){
+          const cloud=await import("./seafile.js");await cloud.ensureSeafileLoaded();
+          b64=await invoke<string>("seafile_read_bytes",{token:cloud.getSeafileToken(),repoId:file.cloudRepoId,path:file.cloudPath,maxBytes:48*1024*1024});
+        } else b64=await invoke<string>("read_file_base64",{path:await local(),maxBytes:48*1024*1024});
+        return {b64,mime:file.mime||"application/octet-stream"};
+      },
+      download:async()=>{
+        if(file.cloudRepoId&&file.cloudPath&&!file.shareUrl){const cloud=await import("./seafile.js");await cloud.ensureSeafileLoaded();return cloud.seafileDownload(file.cloudRepoId,file.cloudPath);}
+        return invoke<string>("save_local_download",{path:await local(),name:file.name});
+      },
+    })).catch(error=>env.toast(error instanceof Error?error.message:String(error)));
     return true;
   }
   if (it.type === "payload") {

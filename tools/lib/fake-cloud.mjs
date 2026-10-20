@@ -5,8 +5,9 @@
  *   共享，从而模拟「发送方已连接云盘、接收方完全没有云盘登录」的两个独立客户端；
  * - route 拦截把 seafile.ts / vaultCloud.ts 里的 invoke 换成 window.__cloudInvoke，
  *   并让 getSeafileToken 读 window.__cloud.token（空串 = 未连接云盘 → 匿名接收路径）；
- * - 只实现分享口令真实用到的几个命令：repos/create_repo/mkdir/upload/share/
- *   share_read/share_delete/delete/write_temp_file。
+ * - 支持公开/密文分享、资料库权限和组织页面所需命令。
+ * - 这是旧浏览器流程夹具，账号用可变的 cloud.email 模拟，不能作为真实身份隔离证据；
+ *   安全性另由 private-cloud 夹具和显式真实服务测试验证。
  *
  * window.__cloud.rejectDirShare = true 时第一次目录分享被拒，强制走
  * 「退化为分享 manifest.json 文件」的兜底分支（对应云盘 /f/ 文件分享链接）。
@@ -24,7 +25,7 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
       seq: saved?.seq ?? 0,
       rejectDirShare: false,
       /* 组织页用：资料库（repo）台账、当前账号邮箱、按邮箱共享记录 */
-      repos: saved?.repos ?? [{ id: 'repo-one', name: 'OneTHU' }],
+      repos: saved?.repos ?? [{ id: 'repo-one', name: 'OneTHU', owner: 'tester@mails.tsinghua.edu.cn' }],
       email: saved?.email ?? 'tester@mails.tsinghua.edu.cn',
       sharedTo: saved?.sharedTo ?? [],
     };
@@ -46,10 +47,27 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
           const name = String(args?.name ?? '').trim() || '未命名资料库';
           const hit = cloud.repos.find((r) => r.name === name);
           if (hit) return { id: hit.id };
-          const repo = { id: 'repo-' + hex(8), name };
+          const repo = { id: crypto.randomUUID(), name, owner:cloud.email };
           cloud.repos.push(repo);
           save();
           return { id: repo.id };
+        }
+        case 'seafile_assert_account_acl': return null;
+        case 'seafile_repo_owner': return cloud.repos.find(r=>r.id===args.repoId)?.owner ?? 'tester@mails.tsinghua.edu.cn';
+        case 'seafile_repo_user_shares': return cloud.sharedTo.filter(s=>s.repoId===args.repoId).map(s=>({email:s.email,permission:s.permission}));
+        case 'seafile_set_repo_user_permission': return window.__cloudInvoke('seafile_share_folder_to_user',{...args,path:'/'});
+        case 'seafile_remove_repo_user_share': {
+          cloud.sharedTo=cloud.sharedTo.filter(s=>!(s.repoId===args.repoId && s.email===args.email));save();return null;
+        }
+        case 'seafile_delete_repo': {
+          cloud.repos=cloud.repos.filter(r=>r.id!==args.repoId);delete cloud.fs[args.repoId];cloud.sharedTo=cloud.sharedTo.filter(s=>s.repoId!==args.repoId);save();return null;
+        }
+        case 'seafile_upload_text': {
+          (cloud.fs[args.repoId]??={})[`${String(args.parentDir).replace(/\/$/,'')}/${args.name}`]=args.content;save();return String(args.content).length;
+        }
+        case 'read_file_base64': {
+          const text=cloud.temps[args.path]??`假文件内容:${args.path}`;
+          return btoa(String.fromCharCode(...new TextEncoder().encode(text)));
         }
         case 'seafile_share_folder_to_user': {
           const email = String(args?.email ?? '');
@@ -63,6 +81,8 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
           return null;
         }
         case 'seafile_read_bytes': {
+          const owner=cloud.repos.find(r=>r.id===args.repoId)?.owner;
+          if(!args.token || owner && owner!==cloud.email && !cloud.sharedTo.some(s=>s.repoId===args.repoId&&s.email===cloud.email))throw new Error('403 Forbidden');
           const repo = cloud.fs[String(args?.repoId ?? '')] ?? {};
           const text = repo[String(args?.path ?? '')];
           if (text === undefined) throw new Error('分享里没有这个文件');
@@ -108,9 +128,10 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
           if (cloud.rejectDirShare && !p.endsWith('.json')) throw new Error('目录分享被云盘策略拒绝（假云盘夹具）');
           const token = hex(20);
           cloud.shares[token] = {
+            repoId:args.repoId,
             dir: p.replace(/\/manifest\.json$/, ''),
             file: p.endsWith('.json') ? p : null,
-            expiresAt: Date.now() + (args.expireDays > 0 ? args.expireDays * 86400_000 : 0),
+            expiresAt: args.expireDays > 0 ? Date.now() + args.expireDays * 86400_000 : 0,
           };
           cloud.seq++;
           save();
@@ -121,10 +142,17 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
           const share = token && cloud.shares[token];
           if (!share) throw new Error('分享不存在或已被撤销');
           if (share.expiresAt && Date.now() > share.expiresAt) throw new Error('分享链接已过期');
-          const fs = cloud.fs[REPO] ?? {};
+          const fs = cloud.fs[share.repoId??REPO] ?? {};
           const text = share.file ? fs[share.file] : fs[`${share.dir}/${args.name ?? 'manifest.json'}`];
           if (text === undefined) throw new Error('分享里没有这个文件');
           return text;
+        }
+        case 'seafile_share_read_bytes': {
+          const token=tokenOfLink(args.link),share=token&&cloud.shares[token];
+          if(!share || share.expiresAt && Date.now()>share.expiresAt)throw Error('分享不存在或已被撤销');
+          const text=(cloud.fs[share.repoId??REPO]??{})[`${share.dir}/${String(args.path).replace(/^\//,'')}`];
+          if(text===undefined)throw Error('分享里没有这个文件');
+          return btoa(String.fromCharCode(...new TextEncoder().encode(text)));
         }
         case 'seafile_share_delete': {
           delete cloud.shares[String(args.shareToken)];
@@ -133,7 +161,7 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
         }
         case 'seafile_delete': {
           const prefix = String(args.path).replace(/\/$/, '');
-          for (const repo of Object.values(cloud.fs)) {
+          for (const repo of [cloud.fs[args.repoId]??{}]) {
             for (const key of Object.keys(repo)) if (key === prefix || key.startsWith(prefix + '/')) delete repo[key];
           }
           save();
@@ -143,11 +171,14 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
       }
     };
   }, token);
-  for (const mod of ['**/src/state/seafile.ts*', '**/src/state/vaultCloud.ts*', '**/src/lib/cardCover.ts*', '**/src/lib/cloudFolder.ts*']) {
+  for (const mod of ['**/src/state/seafile.ts*', '**/src/state/vaultCloud.ts*', '**/src/state/sealedShare.ts*', '**/src/state/cloudExchange.ts*', '**/src/lib/fileChannel.ts*', '**/src/lib/cardCover.ts*', '**/src/lib/cloudFolder.ts*']) {
     await page.route(mod, async (route) => {
       const response = await route.fetch();
       let body = await response.text();
       body = body.replace(/import \{ invoke \} from [^;]+;/, 'const invoke = window.__cloudInvoke;');
+      // Browser file selection still follows the app's native staging contract.
+      // Keep the bytes in fixture temps instead of dropping the attachment path.
+      body = body.replace('!localPath && isTauri', '!localPath');
       /* 未连接云盘 = token 空串；getSeafileToken 改读夹具状态 */
       body = body.replace('return cfg?.token ?? "";', 'return window.__cloud.token ?? cfg?.token ?? "";');
       /* 让 seafile 模块认为自己已配置（cfg 是模块私有）：否则 seafileShareDelete 等

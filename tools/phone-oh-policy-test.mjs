@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 const read = (p) => fs.readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const gui = read("packages/gui/src/gui.css");
 const phone = read("packages/gui/src/styles/phone.css");
-const appCss = read("apps/desktop/src/styles/global.css");
+const wbCss = read("packages/gui/src/recipes/workbench.css");
 const chat = read("apps/desktop/src/plugins/ChatDock.tsx");
 const ohCss = read("apps/desktop/src/styles/explorer-oh.css");
 const settings = read("apps/desktop/src/pages/Settings.tsx");
@@ -21,8 +21,8 @@ assert.ok(/html:root\.is-phone \.og-row \{/.test(phone), "手机行布局规则�
 assert.ok(/html:root\.is-phone \.og-kv \{/.test(phone), "手机键值对改为上下排的规则缺失（.og-kv）");
 assert.ok(/html:root\.is-phone \.og-settings-row \{/.test(phone), "手机设置行规则缺失");
 assert.ok(/html:root\.is-phone \.og-pagehead-main \{ flex: 1 1 100%; \}/.test(phone), "手机页头上下排规则缺失");
-assert.ok(/html:root\.is-phone \.row \{\s*flex-wrap: wrap !important;/.test(appCss), "旧版 .row 仍被钉成单行 nowrap");
-assert.ok(/html:root\.is-phone \.row-title,[\s\S]{0,200}-webkit-line-clamp: 2/.test(appCss), "旧版 .row-title 手机端缺少两行截断规则");
+assert.ok(/html:root\.is-phone \.row \{\s*flex-wrap: wrap !important;/.test(wbCss), "旧版 .row 仍被钉成单行 nowrap");
+assert.ok(/html:root\.is-phone \.row-title,[\s\S]{0,200}-webkit-line-clamp: 2/.test(wbCss), "旧版 .row-title 手机端缺少两行截断规则");
 
 /* 设置：手机栏目下拉；「使用模式」默认收起 */
 assert.ok(/workbench-settings-phone-nav/.test(settings) && /aria-label="设置栏目"/.test(settings), "设置栏目手机下拉缺失");
@@ -34,7 +34,8 @@ assert.ok(/一键续签/.test(chat) && /设置自己的 API/.test(chat), "429 �
 assert.ok(/ensureMadModelToken\(true\)/.test(chat), "「一键续签」没有调用 MadModel 续签");
 assert.ok(/goOhRow\("模型 \/ MCP \/ 日志", "advanced"\)/.test(chat), "「设置自己的 API」没有跳到 OH 高级配置");
 assert.ok(!/aria-label="给小OH发消息"/.test(chat), "OH 面板内不应再有独立输入框（胶囊是唯一输入口）");
-assert.ok(/\.dock-notice \{/.test(ohCss), "429 动作卡样式缺失");
+assert.ok(/\.dock-notice \{/.test(wbCss), "429 动作卡共享样式缺失");
+assert.ok(!/\.dock-notice \{/.test(ohCss), "429 动作卡不应回流到旧应用样式表");
 
 /* OH 高级配置也要有一键续签；自动续期泵确实存在 */
 const ohSettings = read("apps/desktop/src/components/OhSettingsPage.tsx");
@@ -56,7 +57,6 @@ assert.ok(/OhModelSourceCard/.test(read("apps/desktop/src/components/SimpleSetti
 
 /* 手机白板：完整模式可切自由摆放（拖动/缩放），默认阅读顺序 */
 const freeBoard = read("apps/desktop/src/components/FreeBoard.tsx");
-const wbCss = read("packages/gui/src/recipes/workbench.css");
 assert.ok(/onethu\.board\.phoneCanvas\.v1/.test(freeBoard), "手机白板自由摆放开关未持久化");
 assert.ok(/const stack = phonePortrait && orientation === "portrait" && !penOn && !phoneCanvas;/.test(freeBoard), "手机白板 stack 条件未接入自由摆放/横屏判定");
 assert.ok(/phone-canvas/.test(freeBoard) && /freeboard-wrap\.phone-canvas \.free-item \{ touch-action: none; \}/.test(wbCss), "手机自由摆放缺少 touch-action 规则");

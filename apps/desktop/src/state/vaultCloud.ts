@@ -7,7 +7,8 @@
  * 未连接云盘不能生成新口令；接收公开分享不需要自己的云盘登录。
  */
 import { invoke } from "@tauri-apps/api/core";
-import { ensureSeafileLoaded, getSeafileToken, seafileShareDelete, seafileShareRead } from "./seafile.js";
+import { assertRepoOwner, ensureSeafileLoaded, getSeafileToken, seafileShareDelete, seafileShareRead } from "./seafile.js";
+import { isSealed, newShareKey, readShareKey, readSharedJson, sealBytes, unsealBytes, type ShareKey } from "./sealedShare.js";
 import { bytesToBase64 } from "../lib/imageSave.js";
 import {
   registerVaultCloudAdapter, type VaultCloudAdapter, type VaultCloudRef, type VaultSharePayload,
@@ -50,7 +51,7 @@ async function writeTemp(name: string, text: string): Promise<string> {
 }
 
 /** 所有交换类型共用上传、七天分享与撤销记录。 */
-async function uploadSharedManifest(token: string, repoId: string, dir: string, manifest: string, shareFiles: ShareFileRef[] = [], expireDays = EXPIRE_DAYS): Promise<VaultCloudRef> {
+async function uploadSharedManifest(token: string, repoId: string, dir: string, manifest: string, shareFiles: ShareFileRef[] = [], expireDays = EXPIRE_DAYS, keyRepoId?:string): Promise<VaultCloudRef> {
   const localPath = await writeTemp("manifest.json", manifest);
   const manifestPath = `${dir}/manifest.json`;
   await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
@@ -58,9 +59,10 @@ async function uploadSharedManifest(token: string, repoId: string, dir: string, 
   try {
     const share = await invoke<ShareOut>("seafile_share", { token, repoId, path: dir, expireDays, password: "" });
     const expiresAt = expireDays > 0 ? Date.now() + expireDays * 24 * 3600 * 1000 : 0;
-    rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path, manifestName: "manifest.json", files: shareFiles, expiresAt });
-    return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
-  } catch {
+    rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path, manifestName: "manifest.json", files: shareFiles, expiresAt, keyRepoId });
+    return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt, keyRepoId };
+  } catch (error) {
+    if (shareFiles.length) throw new Error(`无法分享附件目录：${String(error)}`);
     /* 目录分享被云盘策略拒绝：退化为分享清单文件（文件条目不可直接下载） */
     path = manifestPath;
   }
@@ -68,17 +70,24 @@ async function uploadSharedManifest(token: string, repoId: string, dir: string, 
     token, repoId, path, expireDays, password: "",
   });
   const expiresAt = expireDays > 0 ? Date.now() + expireDays * 24 * 3600 * 1000 : 0;
-  rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path: dir, manifestName: "manifest.json", files: shareFiles, expiresAt });
-  return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt };
+  rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path: dir, manifestName: "manifest.json", files: shareFiles, expiresAt, keyRepoId });
+  return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt, keyRepoId };
 }
 
-export async function uploadExchangeManifest(code: string, expireDays = EXPIRE_DAYS): Promise<VaultCloudRef> {
+export async function uploadExchangeManifest(code: string, expireDays = EXPIRE_DAYS, allowEmail?:string): Promise<VaultCloudRef> {
   await ensureSeafileLoaded();
   const token = tokenOrThrow();
   const repoId = await ensureRepo(token);
   const dir = `${ROOT}/${shareId()}`;
   await invoke("seafile_mkdir", { token, repoId, path: dir });
-  return uploadSharedManifest(token, repoId, dir, JSON.stringify({ v: 1, kind: "onethu-exchange", code }), [], expireDays);
+  const key=allowEmail?await newShareKey(token,allowEmail):undefined;
+  const raw=JSON.stringify({v:1,kind:"onethu-exchange",code});
+  try{return await uploadSharedManifest(token,repoId,dir,key?JSON.stringify(await sealBytes(new TextEncoder().encode(raw),key)):raw,[],expireDays,key?.repoId);}
+  catch(e){
+    if(key)await invoke("seafile_delete_repo",{token,repoId:key.repoId}).catch(()=>undefined);
+    await invoke("seafile_delete",{token,repoId,path:dir,kind:"dir"}).catch(()=>undefined);
+    throw e;
+  }
 }
 
 /**
@@ -86,10 +95,13 @@ export async function uploadExchangeManifest(code: string, expireDays = EXPIRE_D
  * 同一个短码永远指向最新内容——名片改了就地更新，不新建目录、不换口令，
  * 也不会每改一次就在云盘堆一个 manifest。分享被撤销/过期后调用方会改走新建。
  */
-export async function updateExchangeManifest(repoId: string, dir: string, code: string): Promise<void> {
+export async function updateExchangeManifest(repoId: string, dir: string, code: string, keyRepoId?:string): Promise<void> {
   await ensureSeafileLoaded();
   const token = tokenOrThrow();
-  const localPath = await writeTemp("manifest.json", JSON.stringify({ v: 1, kind: "onethu-exchange", code }));
+  await assertRepoOwner(repoId);
+  const raw=JSON.stringify({v:1,kind:"onethu-exchange",code});
+  const key=keyRepoId?await readShareKey({v:1,kind:"onethu-sealed",keyRepoId,keyPath:"/key.json",iv:"",data:""}):undefined;
+  const localPath = await writeTemp("manifest.json", key?JSON.stringify(await sealBytes(new TextEncoder().encode(raw),key)):raw);
   await invoke("seafile_upload", { token, repoId, parentDir: dir, localPath, replace: true });
 }
 
@@ -102,29 +114,50 @@ const adapter: VaultCloudAdapter = {
     await invoke("seafile_mkdir", { token, repoId, path: dir });
     /* 文件条目先上传到分享目录（同一目录一起分享）；清单里只留相对路径。 */
     const cloud = JSON.parse(JSON.stringify(payload)) as VaultSharePayload;
+    const key=payload.allowEmail?await newShareKey(token,payload.allowEmail):undefined;
     const filesDir = `${dir}/files`;
     const shareFiles: ShareFileRef[] = [];
     let filesReady = false;
+    try {
     for (const it of cloud.items ?? []) {
       const f = it.file;
-      if (!f?.stagedPath) continue;
+      if (!f) continue;
+      let data: string;
+      if (f.stagedPath) data = await invoke<string>("read_file_base64", { path:f.stagedPath, maxBytes:128*1024*1024 });
+      else if (f.shareUrl && f.cloudPath) {
+        const path = await materializeSharedFile({provider:"seafile",path:"",shareUrl:f.shareUrl,keyRepoId:f.shareKeyRepoId}, f.cloudPath, f.name);
+        data = await invoke<string>("read_file_base64", {path,maxBytes:128*1024*1024});
+      } else if (f.cloudPath?.startsWith("/")) {
+        data = await invoke<string>("seafile_read_bytes", {token,repoId:f.cloudRepoId ?? repoId,path:f.cloudPath,maxBytes:128*1024*1024});
+      } else throw new Error(`文件「${f.name}」没有可读取的内容，请重新添加`);
       if (!filesReady) {
         await invoke("seafile_mkdir", { token, repoId, path: filesDir });
         filesReady = true;
       }
-      const safe = (f.hash ? f.hash.slice(0, 8) + "-" : "") + f.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
-      await invoke("seafile_upload", { token, repoId, parentDir: filesDir, localPath: f.stagedPath, replace: true });
+      const safe = crypto.randomUUID()+ (key?".enc":"-"+f.name.replace(/[\\/:*?"<>|]+/g,"_").slice(0,120));
+      const bytes=Uint8Array.from(atob(data),c=>c.charCodeAt(0));
+      const output=key?new TextEncoder().encode(JSON.stringify(await sealBytes(bytes,key))):bytes;
+      const localPath=await invoke<string>("write_temp_file",{name:safe,dataBase64:bytesToBase64(output)});
+      await invoke("seafile_upload", { token, repoId, parentDir: filesDir, localPath, replace: true });
       f.cloudPath = `files/${safe}`;
-      delete f.stagedPath; /* 本机私有路径绝不进清单 */
-      if (f.hash) shareFiles.push({ hash: f.hash, path: `files/${safe}` });
+      delete f.stagedPath;
+      delete f.cloudRepoId;
+      delete f.shareUrl;
+      delete f.shareKeyRepoId;
+      shareFiles.push({ hash: f.hash || safe, path: `files/${safe}` });
     }
-    return uploadSharedManifest(token, repoId, dir, JSON.stringify(cloud), shareFiles);
+    return await uploadSharedManifest(token,repoId,dir,key?JSON.stringify(await sealBytes(new TextEncoder().encode(JSON.stringify(cloud)),key)):JSON.stringify(cloud),shareFiles,EXPIRE_DAYS,key?.repoId);
+    } catch (error) {
+      if (key) await invoke("seafile_delete_repo", {token,repoId:key.repoId}).catch(() => undefined);
+      await invoke("seafile_delete", {token,repoId,path:dir,kind:"dir"}).catch(() => undefined);
+      throw error;
+    }
   },
 
   async resolve(ref: VaultCloudRef): Promise<VaultSharePayload> {
     if (!ref.shareUrl) throw new Error("这条云分享口令没有分享链接");
     const text = await seafileShareRead(ref.shareUrl, ref.manifestName ?? "manifest.json");
-    const p = JSON.parse(text) as VaultSharePayload;
+    const p = await readSharedJson(text) as VaultSharePayload;
     if (p?.kind !== "vault-share" || p.v !== 1) throw new Error("云盘清单格式不受支持");
     return p;
   },
@@ -133,8 +166,11 @@ const adapter: VaultCloudAdapter = {
   async update(ref: VaultCloudRef, payload: VaultSharePayload): Promise<void> {
     const token = tokenOrThrow();
     if (!ref.repoId) throw new Error("这条分享缺少云盘定位（repoId）");
+    await assertRepoOwner(ref.repoId);
     const manifest = JSON.stringify(payload);
-    const localPath = await writeTemp("manifest.json", manifest);
+    const key=ref.keyRepoId?await readShareKey({v:1,kind:"onethu-sealed",keyRepoId:ref.keyRepoId,keyPath:"/key.json",iv:"",data:""}):undefined;
+    if(Boolean(payload.allowEmail)!==Boolean(key))throw new Error("改变接收范围需要重新生成分享");
+    const localPath = await writeTemp("manifest.json", key?JSON.stringify(await sealBytes(new TextEncoder().encode(manifest),key)):manifest);
     /* 目录分享时 ref.path 是目录；退化成单文件分享时 path 指向 manifest.json，取父目录写回。 */
     const parentDir = /\/manifest\.json$/.test(ref.path) ? ref.path.replace(/\/manifest\.json$/, "") : ref.path;
     if (!parentDir) throw new Error("这条分享没有可写的目录");
@@ -145,6 +181,13 @@ const adapter: VaultCloudAdapter = {
     const st = ref.shareToken?.trim();
     if (!st) throw new Error("没有可撤销的分享 token");
     const record = shareRefsSnapshot().refs.find((r) => r.shareUrl === ref.shareUrl || r.shareToken === st);
+    const ownerRepo=ref.repoId??record?.repoId;
+    if(!ownerRepo)throw new Error("找不到分享的发送方资料库，请在发送设备上撤销");
+    await assertRepoOwner(ownerRepo);
+    // Remove key first: if the subsequent link deletion fails the content stays inaccessible.
+    if(ref.keyRepoId ?? record?.keyRepoId){
+      await invoke("seafile_delete_repo",{token:tokenOrThrow(),repoId:ref.keyRepoId??record?.keyRepoId});
+    }
     await seafileShareDelete(st);
     if (!record) return;
     markShareRevoked(record.id);
@@ -182,8 +225,10 @@ export async function cacheVaultFiles(): Promise<{ ok: boolean; uploaded: number
       if (!f?.stagedPath || f.cloudPath) continue;
       const safe = (f.hash ? f.hash.slice(0, 8) + "-" : "") + f.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
       try {
-        await invoke("seafile_upload", { token, repoId, parentDir: cacheDir, localPath: f.stagedPath, replace: true });
-        updateVaultItem(it.id, { file: { ...f, cloudPath: `${cacheDir}/${safe}`, stagedPath: undefined } });
+        const dataBase64=await invoke<string>("read_file_base64",{path:f.stagedPath,maxBytes:128*1024*1024});
+        const localPath=await invoke<string>("write_temp_file",{name:safe,dataBase64});
+        await invoke("seafile_upload", { token, repoId, parentDir: cacheDir, localPath, replace: true });
+        updateVaultItem(it.id, { file: { ...f, cloudPath: `${cacheDir}/${safe}`, cloudRepoId:repoId, stagedPath: undefined } });
         uploaded += 1;
       } catch { /* 单个失败不拖垮其它 */ }
     }
@@ -197,7 +242,7 @@ export async function cleanupExpiredVaultShares(): Promise<number> {
   let n = 0;
   for (const r of expired) {
     try {
-      await adapter.revoke({ provider: "seafile", repoId: r.repoId, path: r.path, manifestName: r.manifestName, shareUrl: r.shareUrl, shareToken: r.shareToken, expiresAt: r.expiresAt });
+      await adapter.revoke({ provider: "seafile", repoId: r.repoId, path: r.path, manifestName: r.manifestName, shareUrl: r.shareUrl, shareToken: r.shareToken, expiresAt: r.expiresAt, keyRepoId:r.keyRepoId });
       n++;
     } catch {
       /* 网络/权限问题：保留待下次 */
@@ -224,4 +269,12 @@ export async function installVaultCloudAdapter(): Promise<boolean> {
 
 export function vaultCloudConnected(): boolean {
   return installed;
+}
+
+export async function materializeSharedFile(ref:VaultCloudRef,path:string,name:string):Promise<string>{
+ if(!ref.shareUrl||!/^files\/[^/\\]{1,240}$/.test(path))throw new Error("分享文件路径无效");
+ const b64=await invoke<string>("seafile_share_read_bytes",{link:ref.shareUrl,path,maxBytes:180*1024*1024});
+ let bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+ if(ref.keyRepoId){const envelope=JSON.parse(new TextDecoder().decode(bytes));if(!isSealed(envelope)||envelope.keyRepoId!==ref.keyRepoId)throw new Error("分享文件校验失败");bytes=new Uint8Array(await unsealBytes(envelope));}
+ return invoke<string>("write_temp_file",{name:name.replace(/[\\/:*?"<>|]+/g,"_").slice(0,120),dataBase64:bytesToBase64(bytes)});
 }

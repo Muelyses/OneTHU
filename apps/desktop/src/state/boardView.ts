@@ -202,10 +202,14 @@ export function viewOf(key: string): BoardView {
   return v;
 }
 
+export function hasSavedView(key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(readAll(), key);
+}
+
 export function setView(key: string, next: BoardView): void {
   const v: BoardView = { z: clampZoom(next.z) };
   const prev = snaps.get(key);
-  if (prev && prev.z === v.z) return;
+  if (prev && prev.z === v.z && hasSavedView(key)) return;
   snaps.set(key, v);
   readAll()[key] = v;
   persist();

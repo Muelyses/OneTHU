@@ -14,6 +14,7 @@ export interface ShareRef {
   id: string;
   shareUrl: string;
   shareToken: string;
+  keyRepoId?: string;
   repoId: string;
   /** 分享的目录或清单路径 */
   path: string;

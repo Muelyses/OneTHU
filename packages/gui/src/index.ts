@@ -29,11 +29,11 @@ export { AppShell, NavRail, TabStrip, MobileTabBar } from "./components/shell.js
 export type { AppShellProps, NavRailProps, TabStripProps, MobileTabBarProps, ShellTab } from "./components/shell.js";
 
 export {
-  Avatar, Tile, StatTile, Table, Accordion, AccordionItem, Progress, Ring, Skeleton, Spinner,
+  FocalImage, Avatar, Tile, StatTile, Table, Accordion, AccordionItem, Progress, Ring, Skeleton, Spinner,
   Timeline, Breadcrumb, Pagination, CodeBlock,
 } from "./components/display.js";
 export type {
-  AvatarProps, AvatarTone, TileProps, StatTileProps, TableProps, TableColumn, AccordionProps,
+  FocalImageProps, AvatarProps, AvatarTone, TileProps, StatTileProps, TableProps, TableColumn, AccordionProps,
   AccordionItemProps, ProgressProps, RingProps, SkeletonProps, SkeletonSize, SpinnerProps,
   TimelineItem, BreadcrumbProps, PaginationProps, CodeBlockProps,
 } from "./components/display.js";

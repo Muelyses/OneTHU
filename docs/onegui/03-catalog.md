@@ -25,6 +25,7 @@
 - `AccordionItem`
 - `ActionSheet`
 - `Avatar`
+- `FocalImage` — 受控图片取景（焦点/缩放），供名片封面等复用
 - `Badge`
 - `Banner`
 - `Breadcrumb`

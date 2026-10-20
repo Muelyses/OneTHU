@@ -45,6 +45,8 @@ export interface VaultFileRef {
   cloudPath?: string | null;
   /** 云盘分享链接（可选提示） */
   shareUrl?: string;
+  shareKeyRepoId?: string;
+  cloudRepoId?: string;
   /** 本地暂存路径（仅本机；分享清单会剔除） */
   stagedPath?: string;
 }

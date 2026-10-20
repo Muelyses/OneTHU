@@ -9,6 +9,7 @@
  *   加入本地成员清单，再按 joinUrl 去云盘/GitLab 加入真正的共享空间。
  */
 import { useSyncExternalStore } from "react";
+import type { OrgRemoteRef } from "./orgSyncCore.js";
 import { checksum } from "./vaultShare.js";
 
 export type OrgRole = "owner" | "member" | "guest";
@@ -20,6 +21,8 @@ export interface OrgMember {
   email: string;
   role: OrgRole;
   joinedAt: number;
+  gitlabUserId?: number;
+  username?: string;
 }
 
 /** 组织关联的清华云盘「资料库」（repo，不是文件夹）。 */
@@ -65,6 +68,8 @@ export interface Org {
   /** 最近一次生成的邀请口令（含口令名/限定邮箱） */
   lastInviteCode?: string;
   invite?: { code: string; label?: string; allowEmail?: string; issuedAt: number; expiresAt?: number };
+  legacyMembers?: Array<{id:string;name:string;email:string;role:OrgRole}>;
+  collaboration?: OrgRemoteRef & { status: "initializing" | "ready" | "error"; accountId?: number; accessLevel?: number; lastReadAt?: number; error?: string; pending?: boolean };
   createdAt: number;
   updatedAt: number;
 }
@@ -299,6 +304,7 @@ interface OrgInvitePayload {
   label?: string;
   /** 限定接收邮箱：只有这个清华云盘账号能接受邀请 */
   allowEmail?: string;
+  collaboration?: OrgRemoteRef;
 }
 
 function toB64Url(bytes: Uint8Array): string {
@@ -326,6 +332,7 @@ export async function orgInviteCode(
   const payload: OrgInvitePayload = {
     v: 1, kind: "org-invite", orgId: org.id, name: org.name, brief: org.brief, joinUrl: org.joinUrl,
     inviter, issuedAt: Date.now(),
+    ...(org.collaboration?.status === "ready" ? { collaboration: { groupId: org.collaboration.groupId, projectId: org.collaboration.projectId, adminBranch: org.collaboration.adminBranch, contentBranch: org.collaboration.contentBranch } } : {}),
     ...(label ? { label } : {}),
     ...(allowEmail ? { allowEmail } : {}),
   };
@@ -333,7 +340,7 @@ export async function orgInviteCode(
   /* 内容键不含 issuedAt：同一个组织重复点「邀请」复用旧短码，不重复上传。
    *  稳定分享位按组织 id 分：组织资料改了就地更新同一个目录，口令不变；
    *  改口令名/限定邮箱也走这里 —— 短码不换，manifest 内容就地更新。 */
-  const contentKey = JSON.stringify([org.id, org.name, org.brief, org.joinUrl, inviter, label, allowEmail]);
+  const contentKey = JSON.stringify([org.id, org.name, org.brief, org.joinUrl, inviter, label, allowEmail, payload.collaboration]);
   /* 云盘分享的有效期是创建时定死的：有效期变了只能撤旧分享重建（短码随之更新），
      没变则继续复用同一个稳定位（同一条短码）。2 小时容差避免每次都重建。 */
   const forceNew = Boolean(org.invite) && Math.abs((org.invite?.expiresAt ?? 0) - wantExpires) > 2 * 3600_000;
@@ -417,6 +424,10 @@ export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ o
   const dec = decodeOrgInvite(resolved);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
   const p = dec.payload;
+  if (p.collaboration) {
+    try { return { ok: true, orgId: await (await import("./orgSync.js")).joinRemoteOrg(p.collaboration) }; }
+    catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
+  }
   /* 限定邮箱：组织邀请也能只让某个云盘账号接受。 */
   const email = await currentOrgEmail();
   const denied = await (await import("./vaultShare.js")).shareAccessReason(p.allowEmail);
@@ -450,3 +461,14 @@ export function saveOrgAnnouncement(id:string,input:Omit<OrgAnnouncement,"id"|"u
  changeOrg(id,o=>({...o,announcements:[item,...(o.announcements??[]).filter(p=>p.id!==item.id)]}));
 }
 export function deleteOrgAnnouncement(id:string,noticeId:string):void{changeOrg(id,o=>({...o,announcements:(o.announcements??[]).filter(p=>p.id!==noticeId)}));}
+
+/** Only a server-verified snapshot may replace the collaboration cache. */
+export function cacheRemoteOrg(org: Org): void {
+  const existing = doc.orgs.find(o => o.id === org.id);
+  doc = { ...doc, orgs: existing ? doc.orgs.map(o => o.id === org.id ? org : o) : [org, ...doc.orgs] };
+  commit();
+}
+export function markOrgRemote(id: string, collaboration: NonNullable<Org["collaboration"]>): void {
+  doc = {...doc, orgs: doc.orgs.map(o => o.id === id ? {...o, collaboration} : o)};
+  commit();
+}

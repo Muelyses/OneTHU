@@ -685,3 +685,10 @@ export function useGitlabQuery<T>(key: string | null, load: () => Promise<T>): G
     },
   };
 }
+
+/** Fresh authenticated organization API: caller cannot bypass session restoration. */
+export async function gitlabOrganizationApi() {
+  await requireSession();
+  const { organizationGitApi } = await import("@onethu/info-lib");
+  return organizationGitApi(helper);
+}

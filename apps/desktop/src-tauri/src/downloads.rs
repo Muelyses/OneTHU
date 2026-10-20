@@ -155,3 +155,28 @@ fn from_mobile(raw: serde_json::Value) -> Option<DownloadDirectory> {
         is_default: raw.get("isDefault").and_then(|v| v.as_bool()).unwrap_or(true),
     })
 }
+
+/// Export an already materialized attachment through the same download destination
+/// as cloud files. Android must use MediaStore/SAF, never xdg-open on a temp path.
+#[tauri::command]
+pub async fn save_local_download(app: tauri::AppHandle, path: String, name: String) -> Result<String, String> {
+    let source=std::path::Path::new(&path);
+    if !source.is_absolute() || !source.is_file() { return Err("下载源文件不存在".into()); }
+    let name=std::path::Path::new(&name).file_name().map(|n|n.to_string_lossy().replace(['\\',':'],"_")).filter(|n|!n.is_empty()).ok_or("下载文件名无效")?;
+    #[cfg(target_os="android")]
+    {
+        use tauri::Manager;
+        let handle=app.state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>().0.clone();
+        let result:serde_json::Value=handle.run_mobile_plugin("saveDownload",serde_json::json!({"path":path,"name":name})).map_err(|e|e.to_string())?;
+        if result.get("name").is_none(){return Err("系统未确认文件已保存，请重试".into());}
+        Ok(format!("下载/{name}"))
+    }
+    #[cfg(not(target_os="android"))]
+    {
+        let dir=directory(&app)?;std::fs::create_dir_all(&dir).map_err(|e|e.to_string())?;
+        let mut dest=dir.join(&name);let mut n=1;
+        while dest.exists(){dest=dir.join(format!("{n}-{name}"));n+=1;}
+        std::fs::copy(source,&dest).map_err(|e|format!("保存下载失败：{e}"))?;
+        Ok(dest.to_string_lossy().into_owned())
+    }
+}

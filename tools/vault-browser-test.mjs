@@ -7,15 +7,24 @@ import { chromium } from 'playwright';
 import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { installFakeCloud } from './lib/fake-cloud.mjs';
+import { closeTestBrowser } from './lib/onboarding-browser-steps.mjs';
 
 const base = process.argv[2] ?? 'http://127.0.0.1:5180';
 let checks = 0;
 const errors = [];
 const check = (cond, msg) => { assert.ok(cond, msg); checks++; console.log('✓ ' + msg); };
 
-const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+const browser = await chromium.launch({
+  executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  headless: true,
+  // macOS GoogleUpdater can inherit Chrome's stderr after Chrome exits, leaving
+  // Playwright waiting for the child-process "close" event. Keep this test's
+  // browser from starting the updater; no installed browser setting is changed.
+  args: ['--disable-updater-scheduler'],
+});
 try {
   const p = await browser.newPage({ viewport: { width: 1280, height: 840 } });
+  await p.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/,()=>{});
   p.on('pageerror', (e) => errors.push(e.message));
   await p.addInitScript(() => { performance.setResourceTimingBufferSize(10000); localStorage.setItem('onethu.onboarded.phone', '1'); });
   await installFakeCloud(p, { token: 'test-token' });
@@ -74,7 +83,7 @@ try {
   /* 口令生成 + 校验 */
   await p.getByRole('button', { name: '分享口令', exact: true }).click();
   await p.waitForTimeout(600);
-  const code = await p.locator('.vault-share-code').innerText();
+  let code = await p.locator('.vault-share-code').innerText();
   check(/^ON(-[0-9A-Z]{4}){4}$/.test(code.trim()), 'share code is a fixed-length short code: ' + code.trim());
   /* 口令台账：发出去的口令要留一条记录，并带上授权范围（内容项数 + 类型分布） */
   const ledger = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vault.shares.v1') || '{"entries":[]}').entries);
@@ -119,11 +128,16 @@ try {
   await p.locator('.plg-form-modal input').first().fill('tester@mails.tsinghua.edu.cn');
   await p.getByRole('button', { name: '提交' }).click();
   await p.waitForTimeout(900);
-  const restricted = await p.evaluate(async (c) => {
+  const previousCode = code.trim();
+  code = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.vault.shares.v1')).entries.find(e => !e.revokedAt).code);
+  check(code !== previousCode, 'changing recipient rotates the shortcode');
+  const restricted = await p.evaluate(async ({code,previousCode}) => {
     const vs = await import('/src/state/vaultShare.ts');
-    const dec = await vs.decodeShareAsync(c);
-    return { ok: dec.ok, allowEmail: dec.payload?.allowEmail };
-  }, code.trim());
+    const dec = await vs.decodeShareAsync(code);
+    const old = await vs.decodeShareAsync(previousCode);
+    return { ok: dec.ok, allowEmail: dec.payload?.allowEmail, protected: !!dec.payload?.cloud?.keyRepoId, oldRejected:!old.ok };
+  }, {code,previousCode});
+  check(restricted.protected && restricted.oldRejected, 'private share has a server-protected key and old public code is revoked');
   check(restricted.ok && restricted.allowEmail === 'tester@mails.tsinghua.edu.cn', 'share code can be restricted to one email: ' + restricted.allowEmail);
   const access = await p.evaluate(async (c) => {
     window.__cloud.email = 'someone-else@mails.tsinghua.edu.cn';
@@ -133,7 +147,7 @@ try {
     const right = await vs.importShareCodeAsCurrent(c);
     return { wrong: wrong.ok, wrongReason: wrong.reason, right: right.ok, rightImported: right.imported };
   }, code.trim());
-  check(!access.wrong && /限定/.test(access.wrongReason ?? ''), 'receiving from another cloud account is rejected: ' + (access.wrongReason ?? ''));
+  check(!access.wrong && /限定|无权/.test(access.wrongReason ?? ''), 'receiving from another cloud account is rejected: ' + (access.wrongReason ?? ''));
   check(access.right && access.rightImported === 1, 'receiving from the bound email works');
   check(readFileSync('apps/desktop/src/components/Collect.tsx', 'utf8').includes('data-vault-catch'), 'CollectStar is a global vault drag source');
   check(readFileSync('apps/desktop/src/plugins/ChatDock.tsx', 'utf8').includes('data-vault-catch'), 'OH search hits are vault drag sources');
@@ -353,7 +367,7 @@ try {
   check(cloud.imported && cloud.n === 1 && cloud.title === '云端对象', 'cloud ref resolves back into current vault via adapter');
   check(cloud.rv && cloud.revoked, 'share revocation goes through the adapter');
   check(errors.length === 0, 'no runtime errors' + (errors.length ? ': ' + errors.join(';') : ''));
-  console.log(checks + ' vault assertions passed');
 } finally {
-  await browser.close();
+  await closeTestBrowser(browser);
 }
+console.log(checks + ' vault assertions passed; browser cleanup complete');

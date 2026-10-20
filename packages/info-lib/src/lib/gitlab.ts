@@ -675,3 +675,45 @@ export const mergeMergeRequest = async (
 ): Promise<MergeRequest> =>
     roamingWrapper(helper, "gitlab", "", async () =>
         fetchGitLabWrite(`/projects/${id}/merge_requests/${iid}/merge`, "PUT"));
+
+/** Organization collaboration uses authenticated APIs only, never preview mocks. */
+export interface GitOrgMember {
+    id: number; username: string; name: string; access_level: number;
+    email?: string; public_email?: string; state?: string;
+}
+export interface GitOrgGroup extends GitGroupBrief { visibility: string; parent_id?: number | null }
+export interface GitOrgProject { id: number; name: string; path_with_namespace: string; web_url: string; visibility: string; default_branch: string; namespace: {id: number}; shared_with_groups?: Array<{group_id:number}> }
+export interface GitOrgFile { content: string; encoding: string; last_commit_id: string; size: number }
+export interface GitOrgProtection { name: string; allow_force_push: boolean; push_access_levels: Array<{access_level: number; user_id?: number; group_id?: number; deploy_key_id?:number}>; merge_access_levels: Array<{access_level: number; user_id?:number;group_id?:number;deploy_key_id?:number}> }
+export const organizationGitApi = (helper: InfoHelper) => {
+    const read = <T>(path: string, query?: object): Promise<T> => roamingWrapper(helper, "gitlab", "", () => fetchGitLab(path, query));
+    const write = <T>(path: string, method: "POST" | "PUT" | "DELETE", body: object = {}): Promise<T> => roamingWrapper(helper, "gitlab", "", () => fetchGitLabWrite(path, method, body));
+    const members = async (kind: "groups" | "projects", id: number, inherited = true): Promise<GitOrgMember[]> => {
+        const all: GitOrgMember[] = [];
+        for (let page = 1; page <= 100; page++) {
+            const next = await read<GitOrgMember[]>(`/${kind}/${id}/members${inherited ? "/all" : ""}`, {page, per_page: 100});
+            if (!Array.isArray(next)) throw new Error("GitLab 成员响应格式不正确");
+            all.push(...next);
+            if (next.length < 100) return all;
+        }
+        throw new Error("成员列表超过本次可安全处理的范围");
+    };
+    return {
+        me: () => read<GitOrgMember>("/user"),
+        group: (id: number | string) => read<GitOrgGroup>(`/groups/${encodeURIComponent(String(id))}`),
+        project: (id: number | string) => read<GitOrgProject>(`/projects/${encodeURIComponent(String(id))}`),
+        members,
+        searchUsers: (username: string) => read<GitOrgMember[]>("/users", {username, per_page: 100}),
+        setMember: (kind: "groups" | "projects", id: number, userId: number, level: number, exists: boolean) => exists
+            ? write(`/${kind}/${id}/members/${userId}`, "PUT", {access_level: level})
+            : write(`/${kind}/${id}/members`, "POST", {user_id: userId, access_level: level}),
+        removeMember: (kind: "groups" | "projects", id: number, userId: number) => write(`/${kind}/${id}/members/${userId}`, "DELETE"),
+        createMetadataProject: (groupId: number, path: string) => write<GitOrgProject>("/projects", "POST", {name: "OneTHU 组织协作", path, namespace_id: groupId, visibility: "private", initialize_with_readme: true, default_branch: "main"}),
+        file: (projectId: number, branch: string, path: string) => read<GitOrgFile>(`/projects/${projectId}/repository/files/${encodeURIComponent(path)}`, {ref: branch}),
+        createFile: (projectId: number, branch: string, path: string, content: string) => write(`/projects/${projectId}/repository/files/${encodeURIComponent(path)}`, "POST", {branch, content, commit_message: "Initialize OneTHU organization"}),
+        updateFile: (projectId: number, branch: string, path: string, content: string, lastCommit: string) => write(`/projects/${projectId}/repository/files/${encodeURIComponent(path)}`, "PUT", {branch, content, last_commit_id: lastCommit, commit_message: "Update OneTHU organization"}),
+        createBranch: (projectId: number, branch: string, ref: string) => write(`/projects/${projectId}/repository/branches`, "POST", {branch, ref}),
+        protections: (projectId: number) => read<GitOrgProtection[]>(`/projects/${projectId}/protected_branches`, {per_page: 100}),
+        protect: (projectId: number, branch: string, pushLevel: number) => write(`/projects/${projectId}/protected_branches`, "POST", {name: branch, push_access_level: pushLevel, merge_access_level: pushLevel, allow_force_push: false}),
+    };
+};

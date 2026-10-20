@@ -150,9 +150,9 @@ pub async fn seafile_create_repo(token: String, name: String) -> Result<SeafileR
     .json()
     .await
     .map_err(|e| e.to_string())?;
-    let id = v.get("id").and_then(|x| x.as_str()).unwrap_or("").to_string();
+    let id = v.get("id").or_else(|| v.get("repo_id")).and_then(|x| x.as_str()).unwrap_or("").to_string();
     if id.is_empty() {
-        return Err(format!("建库响应缺 id：{}", serde_json::to_string(&v).unwrap_or_default().chars().take(160).collect::<String>()));
+        return Err("云盘已接收建库请求但未返回资料库标识，请刷新库列表确认".into());
     }
     Ok(SeafileRepo {
         id,
@@ -281,12 +281,22 @@ async fn seafile_upload_inner(
     local_path: &std::path::Path,
     replace: bool,
 ) -> Result<i64, String> {
-    let pd = if parent_dir.starts_with('/') { parent_dir.to_string() } else { format!("/{parent_dir}") };
     let data = std::fs::read(local_path).map_err(|e| format!("读本地文件失败：{e}"))?;
     let filename = local_path
         .file_name()
         .map(|n| n.to_string_lossy().into_owned())
         .unwrap_or_else(|| "upload.bin".into());
+    seafile_upload_data(token, repo_id, parent_dir, filename, data, replace).await
+}
+
+/// Small text uploads (especially private share keys) never touch the filesystem.
+#[tauri::command]
+pub async fn seafile_upload_text(token:String, repo_id:String, parent_dir:String, name:String, content:String)->Result<i64,String>{
+    if content.len()>2*1024*1024 || name.is_empty() || name.contains('/') || name.contains('\\') || name==".." {return Err("上传文本或文件名无效".into());}
+    seafile_upload_data(&token,&repo_id,&parent_dir,name,content.into_bytes(),true).await
+}
+async fn seafile_upload_data(token:&str,repo_id:&str,parent_dir:&str,filename:String,data:Vec<u8>,replace:bool)->Result<i64,String>{
+    let pd = if parent_dir.starts_with('/') { parent_dir.to_string() } else { format!("/{parent_dir}") };
     // ① 取 upload-link（返回带引号的裸字符串，trim '"' —— thufs 同款）
     let link: String = check(
         client()?
@@ -493,15 +503,8 @@ pub async fn seafile_share_delete(token: String, share_token: String) -> Result<
     if t.is_empty() {
         return Err("分享 token 为空".into());
     }
-    check(
-        client()?
-            .delete(format!("{BASE}/api/v2.1/share-links/{t}/"))
-            .bearer_auth(token)
-            .send()
-            .await
-            .map_err(|e| e.to_string())?,
-    )
-    .await?;
+    let response = client()?.delete(format!("{BASE}/api/v2.1/share-links/{t}/")).bearer_auth(token).send().await.map_err(|e|e.to_string())?;
+    if response.status() != reqwest::StatusCode::NOT_FOUND { check(response).await?; }
     Ok(())
 }
 
@@ -948,6 +951,75 @@ mod tests {
         assert!(!repos.is_empty(), "至少应有一个库（个人云盘）");
     }
 
+    /// Real single-account boundary smoke. Uses isolated disposable libraries only.
+    #[tokio::test]
+    #[ignore]
+    async fn live_private_share_boundary() {
+        let t=token();
+        let stamp=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+        let key=seafile_create_repo(t.clone(),format!("OneTHU 私密分享 smoke-key-{stamp}")).await.expect("create private key library");
+        let public=match seafile_create_repo(t.clone(),format!("OneTHU 私密分享 smoke-envelope-{stamp}")).await {
+            Ok(repo)=>repo,Err(e)=>{seafile_delete_repo(t.clone(),key.id).await.expect("cleanup key");panic!("create envelope library: {e}");}
+        };
+        let mut share_token=None;
+        let result:Result<(),String>=async {
+            let owner=seafile_repo_owner(t.clone(),key.id.clone()).await?;
+            let account=seafile_account(t.clone()).await?;
+            if owner.to_lowercase()!=account.email.to_lowercase(){return Err("repository owner differs from account email; resolve identity mapping before release".into());}
+            seafile_assert_account_acl(t.clone(),key.id.clone()).await?;
+            if !seafile_repo_user_shares(t.clone(),key.id.clone()).await?.is_empty(){return Err("new private library unexpectedly has grants".into());}
+            seafile_upload_text(t.clone(),key.id.clone(),"/".into(),"key.json".into(),r#"{"v":1,"key":"disposable-smoke-key"}"#.into()).await?;
+            let bytes=seafile_read_bytes(t.clone(),key.id.clone(),"/key.json".into(),4096).await?;
+            if bytes.is_empty(){return Err("owner read returned no bytes".into());}
+            let response=client()?.get(format!("{BASE}/api2/repos/{}/file/",key.id)).query(&[("p","/key.json"),("dl","1")]).send().await.map_err(|e|e.to_string())?;
+            if response.status().is_success(){return Err("anonymous private key read unexpectedly succeeded".into());}
+            let manifest=r#"{"v":1,"kind":"onethu-sealed","data":"disposable-ciphertext-only"}"#;
+            seafile_upload_text(t.clone(),public.id.clone(),"/".into(),"manifest.json".into(),manifest.into()).await?;
+            let share=seafile_share(t.clone(),public.id.clone(),"/".into(),1,String::new()).await?;
+            share_token=Some(share.token.clone());
+            if seafile_assert_account_acl(t.clone(),public.id.clone()).await.is_ok(){return Err("public-link bypass was not detected by ACL audit".into());}
+            if seafile_share_read(share.link.clone(),None).await?!=manifest{return Err("public envelope read mismatch".into());}
+            if seafile_share_read_bytes(share.link,"manifest.json".into(),4096).await?.is_empty(){return Err("bounded share byte endpoint failed".into());}
+            seafile_share_delete(t.clone(),share.token.clone()).await?;
+            seafile_share_delete(t.clone(),share.token).await?;
+            share_token=None;
+            Ok(())
+        }.await;
+        if let Some(st)=share_token {seafile_share_delete(t.clone(),st).await.expect("cleanup public link");}
+        seafile_delete_repo(t.clone(),key.id.clone()).await.expect("cleanup key library");
+        seafile_delete_repo(t.clone(),key.id).await.expect("idempotent key cleanup");
+        seafile_delete_repo(t,public.id).await.expect("cleanup envelope library");
+        result.expect("private sharing live boundary");
+        println!("PASS: owner identity, ACL read, memory text upload, authenticated key read, anonymous deny, public ciphertext, bounded file read, idempotent cleanup");
+    }
+
+    /// Opt-in dual-account entry; no credentials are printed or persisted by this test.
+    #[tokio::test]
+    #[ignore]
+    async fn live_two_account_permissions() {
+        let t=token();
+        let recipient=std::env::var("TSINGHUA_SEAFILE_RECIPIENT_TOKEN").expect("second test account required");
+        let email=seafile_account(recipient.clone()).await.expect("recipient account").email;
+        assert_ne!(email,seafile_account(t.clone()).await.expect("owner account").email,"must use distinct accounts");
+        let stamp=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+        let repo=seafile_create_repo(t.clone(),format!("OneTHU 私密分享 dual-{stamp}")).await.expect("create disposable library");
+        let result:Result<(),String>=async {
+            seafile_upload_text(t.clone(),repo.id.clone(),"/".into(),"key.json".into(),"disposable".into()).await?;
+            if seafile_read_bytes(recipient.clone(),repo.id.clone(),"/key.json".into(),4096).await.is_ok(){return Err("ungranted recipient can read".into());}
+            seafile_set_repo_user_permission(t.clone(),repo.id.clone(),email.clone(),"rw".into()).await?;
+            seafile_upload_text(recipient.clone(),repo.id.clone(),"/".into(),"write-check.txt".into(),"write allowed".into()).await?;
+            seafile_set_repo_user_permission(t.clone(),repo.id.clone(),email.clone(),"r".into()).await?;
+            seafile_read_bytes(recipient.clone(),repo.id.clone(),"/key.json".into(),4096).await?;
+            if seafile_upload_text(recipient.clone(),repo.id.clone(),"/".into(),"write-check.txt".into(),"must fail".into()).await.is_ok(){return Err("read-only recipient can write".into());}
+            seafile_remove_repo_user_share(t.clone(),repo.id.clone(),email.clone()).await?;
+            if seafile_read_bytes(recipient,repo.id.clone(),"/key.json".into(),4096).await.is_ok(){return Err("revoked recipient can read".into());}
+            seafile_remove_repo_user_share(t.clone(),repo.id.clone(),email).await?;
+            Ok(())
+        }.await;
+        seafile_delete_repo(t,repo.id).await.expect("cleanup dual-account library");
+        result.expect("dual-account grant/downgrade/revoke");
+    }
+
     /// 实测目录分享能被匿名读取；文件分享走 direct fallback 也能读。
     #[tokio::test]
     #[ignore]
@@ -1079,4 +1151,103 @@ mod tests {
         assert!(content.starts_with("OneTHU seafile live test"), "下载内容应为上传原文");
         println!("下载回读校验通过：{local}");
     }
+}
+
+/// Server account grants. Do not infer successful authorization from a local roster.
+#[derive(Debug, Clone, Serialize)]
+pub struct SeafileUserGrant { pub email: String, pub permission: String }
+
+#[tauri::command]
+pub async fn seafile_repo_owner(token: String, repo_id: String) -> Result<String, String> {
+    // The detail endpoint's owner is a display name on the deployed Seafile 11.
+    // The authenticated repository list carries the actual account identifier.
+    let repos: Vec<Value> = check(client()?.get(format!("{BASE}/api2/repos/")).bearer_auth(token).send().await.map_err(|e| e.to_string())?).await?.json().await.map_err(|e| e.to_string())?;
+    repos.iter().find(|r| r.get("id").and_then(Value::as_str)==Some(repo_id.as_str()))
+        .and_then(|r|r.get("owner")).and_then(Value::as_str).filter(|s|s.contains('@')).map(str::to_owned)
+        .ok_or_else(|| "云盘没有返回资料库所有者账号，无法安全修改权限".into())
+}
+
+#[tauri::command]
+pub async fn seafile_repo_user_shares(token: String, repo_id: String) -> Result<Vec<SeafileUserGrant>, String> {
+    let v: Value = check(client()?.get(format!("{BASE}/api2/repos/{repo_id}/dir/shared_items/")).bearer_auth(token).query(&[("p", "/"), ("share_type", "user")]).send().await.map_err(|e| e.to_string())?).await?.json().await.map_err(|e| e.to_string())?;
+    let rows = v.as_array().ok_or("云盘返回的权限列表格式不正确")?;
+    rows.iter().map(|r| {
+        let email = r.pointer("/user_info/name").or_else(|| r.get("username")).or_else(|| r.get("email")).and_then(Value::as_str).ok_or("云盘权限记录缺少邮箱")?;
+        let permission = r.get("permission").and_then(Value::as_str).ok_or("云盘权限记录缺少角色")?;
+        Ok(SeafileUserGrant { email: email.to_lowercase(), permission: permission.into() })
+    }).collect()
+}
+
+#[tauri::command]
+pub async fn seafile_set_repo_user_permission(token: String, repo_id: String, email: String, permission: String) -> Result<(), String> {
+    let email = email.trim().to_lowercase();
+    if !email.contains('@') || !matches!(permission.as_str(), "r" | "rw") { return Err("邮箱或权限无效".into()); }
+    let before = seafile_repo_user_shares(token.clone(), repo_id.clone()).await?;
+    if before.iter().any(|r| r.email == email && r.permission == permission) { return Ok(()); }
+    let exists = before.iter().any(|r| r.email == email);
+    let http = client()?;
+    let url = format!("{BASE}/api2/repos/{repo_id}/dir/shared_items/");
+    let req = if exists {
+        http.post(url).query(&[("p", "/"), ("share_type", "user"), ("username", email.as_str())]).form(&[("permission", permission.as_str())])
+    } else {
+        http.put(url).query(&[("p", "/")]).form(&[("share_type", "user"), ("username", email.as_str()), ("permission", permission.as_str())])
+    };
+    check(req.bearer_auth(&token).send().await.map_err(|e| e.to_string())?).await?;
+    // PUT can return HTTP 200 with a per-user failure; the authoritative read detects it.
+    if !seafile_repo_user_shares(token, repo_id).await?.iter().any(|r| r.email == email && r.permission == permission) { return Err("云盘没有确认权限更新，请重试".into()); }
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn seafile_remove_repo_user_share(token: String, repo_id: String, email: String) -> Result<(), String> {
+    let email = email.trim().to_lowercase();
+    if !email.contains('@') { return Err("邮箱无效".into()); }
+    if !seafile_repo_user_shares(token.clone(), repo_id.clone()).await?.iter().any(|r| r.email == email) { return Ok(()); }
+    check(client()?.delete(format!("{BASE}/api2/repos/{repo_id}/dir/shared_items/")).bearer_auth(&token).query(&[("p", "/"), ("share_type", "user"), ("username", email.as_str())]).send().await.map_err(|e| e.to_string())?).await?;
+    if seafile_repo_user_shares(token, repo_id).await?.iter().any(|r| r.email == email) { return Err("云盘尚未撤销该成员权限，请重试".into()); }
+    Ok(())
+}
+
+/// Deletes only a private key library created for OneTHU sharing.
+#[tauri::command]
+pub async fn seafile_delete_repo(token: String, repo_id: String) -> Result<(), String> {
+    let response = client()?.get(format!("{BASE}/api2/repos/{repo_id}/")).bearer_auth(&token).send().await.map_err(|e| e.to_string())?;
+    // A previous attempt may have removed the key before link deletion failed.
+    // Only an explicit absence is idempotent; authentication errors still fail.
+    if response.status() == reqwest::StatusCode::NOT_FOUND { return Ok(()); }
+    let v: Value = check(response).await?.json().await.map_err(|e| e.to_string())?;
+    if !v.get("name").and_then(Value::as_str).unwrap_or("").starts_with("OneTHU 私密分享 ") { return Err("只允许清理 OneTHU 私密分享资料库".into()); }
+    check(client()?.delete(format!("{BASE}/api2/repos/{repo_id}/")).bearer_auth(token).send().await.map_err(|e| e.to_string())?).await?;
+    Ok(())
+}
+
+/// Public share files are bounded and paths cannot escape the share root.
+#[tauri::command]
+pub async fn seafile_share_read_bytes(link:String, path:String, max_bytes:i64)->Result<String,String>{
+    if path.split('/').any(|s|s=="..") || path.contains('\\') {return Err("分享文件路径无效".into());}
+    let token=share_token_of(&link).ok_or("分享链接无效")?;
+    let p=format!("/{}",path.trim_start_matches('/'));
+    let response=check(client()?.get(format!("{BASE}/d/{token}/files/")).query(&[("p",p),("dl","1".into())]).send().await.map_err(|e|e.to_string())?).await?;
+    let limit=max_bytes.clamp(1,180*1024*1024) as usize;
+    if response.content_length().unwrap_or(0)>limit as u64{return Err("分享文件超过支持的大小".into());}
+    let mut response=response;let mut bytes=Vec::new();
+    while let Some(chunk)=response.chunk().await.map_err(|e|e.to_string())?{if bytes.len()+chunk.len()>limit{return Err("分享文件超过支持的大小".into());}bytes.extend_from_slice(&chunk);}
+    use base64::Engine as _;
+    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
+}
+
+/// Organization ACL reconciliation cannot override an independent broad or folder grant.
+/// Refuse to claim a complete downgrade until the owner has resolved those grants.
+#[tauri::command]
+pub async fn seafile_assert_account_acl(token:String,repo_id:String)->Result<(),String>{
+    let account=seafile_account(token.clone()).await?;
+    if seafile_repo_owner(token.clone(),repo_id.clone()).await?.to_lowercase()!=account.email.to_lowercase(){return Err("请连接此资料库所有者的云盘账号后同步权限".into());}
+    let http=client()?;
+    for (endpoint,kind) in [("shared-repos","群组或全员共享"),("shared-folders","子目录共享")] {
+        let rows:Vec<Value>=check(http.get(format!("{BASE}/api/v2.1/{endpoint}/")).bearer_auth(&token).send().await.map_err(|e|e.to_string())?).await?.json().await.map_err(|e|e.to_string())?;
+        if rows.iter().any(|r|r.get("repo_id").and_then(Value::as_str)==Some(repo_id.as_str()) && (endpoint=="shared-folders" || r.get("share_type").and_then(Value::as_str)!=Some("personal"))){return Err(format!("此资料库还有独立的{kind}，请先在云盘处理，组织不能保证仅靠成员权限撤回访问"));}
+    }
+    let links:Vec<Value>=check(http.get(format!("{BASE}/api/v2.1/share-links/")).bearer_auth(&token).query(&[("repo_id",repo_id.as_str()),("per_page","1")]).send().await.map_err(|e|e.to_string())?).await?.json().await.map_err(|e|e.to_string())?;
+    if !links.is_empty(){return Err("此资料库还有公开分享链接，请先撤销；组织成员权限无法撤销独立的公开链接".into());}
+    Ok(())
 }

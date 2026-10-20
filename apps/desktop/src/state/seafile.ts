@@ -297,3 +297,34 @@ export function useSeafileDir(repoId: string | null, path: string | null) {
   }, [repoId, path, ver]);
   return state;
 }
+
+/** Explicit grants are verified by the server after every change. */
+async function permissionsToken(): Promise<string> {
+  await ensureSeafileLoaded();
+  const token = getSeafileToken();
+  if (!token) throw new Error("请先连接清华云盘");
+  return token;
+}
+export async function repoOwnerEmail(repoId: string): Promise<string> {
+  return invoke<string>("seafile_repo_owner", {token: await permissionsToken(), repoId});
+}
+export async function listRepoUserShares(repoId: string): Promise<{email:string;permission:string}[]> {
+  return invoke("seafile_repo_user_shares", {token: await permissionsToken(), repoId});
+}
+export async function setRepoUserPermission(repoId:string,email:string,permission:"r"|"rw"):Promise<void> {
+  await invoke("seafile_set_repo_user_permission", {token:await permissionsToken(),repoId,email,permission});
+}
+export async function removeRepoUserShare(repoId:string,email:string):Promise<void> {
+  await invoke("seafile_remove_repo_user_share", {token:await permissionsToken(),repoId,email});
+}
+
+export async function assertRepoAccountAcl(repoId:string):Promise<void>{
+  await invoke("seafile_assert_account_acl",{token:await permissionsToken(),repoId});
+}
+
+/** A hidden-resource 404 from a different account is not proof of deletion. */
+export async function assertRepoOwner(repoId:string):Promise<void>{
+  const token=await permissionsToken();
+  const [owner,account]=await Promise.all([repoOwnerEmail(repoId),invoke<SeafileAccount>("seafile_account",{token})]);
+  if(owner.toLowerCase()!==account.email.toLowerCase())throw new Error("请切换到创建这条分享的云盘账号后再修改或撤销");
+}

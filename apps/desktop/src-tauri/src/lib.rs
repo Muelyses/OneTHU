@@ -92,7 +92,7 @@ fn read_file_text(path: String) -> Result<String, String> {
 
 /// 写临时文件（附件通路的反向：JS 侧字节 → 本地路径）。
 /// 经 <input>/相机/滤镜拿到的字节没有路径，而 seafile_upload、作业提交、讨论区发帖都吃 localPath；
-/// 落点 = 系统临时目录/onethu-tmp/，只取文件名（防目录穿越），同名覆盖，返回绝对路径。
+/// 每次写入使用独立临时目录，保留 basename 供云盘上传使用，避免并发分享相互覆盖。
 #[tauri::command]
 fn write_temp_file(name: String, data_base64: String) -> Result<String, String> {
     use base64::Engine as _;
@@ -100,7 +100,10 @@ fn write_temp_file(name: String, data_base64: String) -> Result<String, String> 
         .file_name()
         .map(|s| s.to_string_lossy().to_string())
         .unwrap_or_else(|| "attach.bin".to_string());
-    let dir = std::env::temp_dir().join("onethu-tmp");
+    static NEXT_TEMP: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let nonce = NEXT_TEMP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_err(|e| e.to_string())?.as_nanos();
+    let dir = std::env::temp_dir().join("onethu-tmp").join(format!("{}-{stamp}-{nonce}", std::process::id()));
     std::fs::create_dir_all(&dir).map_err(|e| format!("建目录失败：{e}"))?;
     let bytes = base64::engine::general_purpose::STANDARD
         .decode(data_base64.as_bytes())
@@ -4663,10 +4666,10 @@ tauri::Builder::default()
             http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
-            downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
+            downloads::save_local_download,downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
             log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_delete,geek_browser_probe,geek_browser_launch,geek_browser_close,geek_playwright_install,
             overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,updater::updater_download,updater::updater_cancel_download,updater::updater_open_installer,overlay_win::overlay_set_panel_height,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
-            seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_share_delete,seafile::seafile_share_read,seafile::seafile_share_folder_to_user,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
+            seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_share_delete,seafile::seafile_share_read,seafile::seafile_share_folder_to_user,seafile::seafile_delete_repo,seafile::seafile_share_read_bytes,seafile::seafile_assert_account_acl,seafile::seafile_upload_text,seafile::seafile_repo_owner,seafile::seafile_repo_user_shares,seafile::seafile_set_repo_user_permission,seafile::seafile_remove_repo_user_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,
             im_media::im_peek_text,
             im_media::im_stat_file,

@@ -6,6 +6,7 @@ import {NAV} from '../Layout.js';
 import {FolderIcon, IconSpark} from '../Icons.js';
 import {IconMore} from '../Icons.js';
 import {PracticalFeaturesPanel} from './PracticalFeatures.js';
+import {PRACTICAL_FEATURES_EVENT} from "../../state/practicalFeatures.js";
 import {showToast} from '../../state/toast.js';
 export function QuickIcon({entry}:{entry?:QuickEntry}){const Icon=NAV.find(n=>n.page===entry?.page)?.icon;return Icon?<Icon/>:<FolderIcon name={entry?.kind==='workspace'?'folder':'star'} width={18} height={18}/>;}
 
@@ -45,6 +46,11 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
     return()=>window.removeEventListener("keydown",onKey);
   },[placing]);
   useEffect(()=>{setMoreOpen(false);setPlacing(null);},[mode]);
+  useEffect(()=>{
+    const show=(event:Event)=>{if(mode==="practical"){setPlacing(null);setMoreOpen((event as CustomEvent<boolean>).detail);}};
+    window.addEventListener(PRACTICAL_FEATURES_EVENT,show);
+    return()=>window.removeEventListener(PRACTICAL_FEATURES_EVENT,show);
+  },[mode]);
   /* 窗口变小/旋转时把拖动位置收回可用范围（按钮顶部不低于 TOGGLE_TOP_MARGIN） */
   useEffect(()=>{
     if(!scheduleMode)return;

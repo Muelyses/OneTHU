@@ -165,3 +165,10 @@ export function forgetIssuedShare(id: string): void {
 export function payloadOfIssuedShare(e: IssuedShare): VaultSharePayload {
   return { v: 1, kind: "vault-share", issuedAt: e.issuedAt, name: e.boxName, ...(e.cloud ? { cloud: e.cloud } : {}) };
 }
+
+/** Rotation is recorded only after the old server share has been revoked. */
+export function replaceIssuedShareCode(oldCode:string,code:string,payload:VaultSharePayload):void{
+ const old=doc.entries.find(e=>e.code===oldCode);if(!old)return;
+ const entry={...old,id:"sh."+crypto.randomUUID(),code,issuedAt:Date.now(),cloud:payload.cloud,label:payload.label,allowEmail:payload.allowEmail,expiresAt:payload.cloud?.expiresAt,revokedAt:undefined};
+ doc={v:1,entries:[entry,...doc.entries.map(e=>e.code===oldCode?{...e,revokedAt:Date.now()}:e)].slice(0,MAX_ENTRIES)};commit();
+}

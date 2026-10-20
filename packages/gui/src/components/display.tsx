@@ -3,7 +3,7 @@
  *
  * 进度条与骨架屏的皮肤在 styles/chip.css（.og-progress / .og-skeleton），这里只给结构与 API。
  */
-import { useState, type ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { cx, one, scopeProps, type OGSize, type OneBase } from "./kit.js";
 
 /* ── Avatar ─────────────────────────────────────────────────────────── */
@@ -435,4 +435,29 @@ export function CodeBlock({ code, lang, onCopy, scope, className }: CodeBlockPro
       </button>
     </pre>
   );
+}
+
+/** A cropped media image. Only focal point and zoom are dynamic geometry;
+ * colors and layout remain owned by OneGUI. */
+export interface FocalImageProps extends Omit<OneBase, "size"> {
+  src: string;
+  alt?: string;
+  focusX?: number;
+  focusY?: number;
+  zoom?: number;
+}
+
+export function FocalImage({ src, alt = "", focusX = .5, focusY = .5, zoom = 1, scope, className }: FocalImageProps): ReactNode {
+  const bounded = (v: number, fallback: number, min: number, max: number): number => Number.isFinite(v) ? Math.max(min, Math.min(max, v)) : fallback;
+  return <img
+    {...scopeProps(scope)}
+    className={cx(one("focal-image").toString(), className)}
+    src={src} alt={alt} draggable={false}
+    data-og-dynamic="focal-image"
+    style={{
+      "--og-c-image-x": `${bounded(focusX, .5, 0, 1) * 100}%`,
+      "--og-c-image-y": `${bounded(focusY, .5, 0, 1) * 100}%`,
+      "--og-c-image-zoom": bounded(zoom, 1, 1, 5),
+    } as CSSProperties}
+  />;
 }

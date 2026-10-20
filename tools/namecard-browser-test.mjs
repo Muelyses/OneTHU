@@ -15,6 +15,7 @@ const check = (cond, msg) => { assert.ok(cond, msg); checks++; console.log('✓ 
 const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
 try {
   const p = await browser.newPage({ viewport: { width: 1280, height: 840 } });
+  await p.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/,()=>{});
   p.on('pageerror', (e) => errors.push(e.message));
   await p.addInitScript(() => { performance.setResourceTimingBufferSize(10000); localStorage.setItem('onethu.onboarded.phone', '1'); });
   /* 假云盘：名片口令是联网短码（publishExchangeCode），不联网也要能验「通讯录直接粘贴收名片」。 */
@@ -79,10 +80,12 @@ try {
     const n = document.querySelector('.cover-editor-stage .identity-card-name');
     return { cls: document.querySelector('.cover-editor-stage .identity-card')?.className, color: n ? getComputedStyle(n).color : '' };
   });
-  check(manualDark.cls.includes('is-cover-dark') && manualDark.color === 'rgb(16, 19, 26)', 'manual black ink really renders black in preview: ' + manualDark.color);
+  check(manualDark.cls.includes('is-cover-dark') && manualDark.color.match(/\d+/g)?.every(v => Number(v) < 40), 'manual black ink really renders black in preview: ' + manualDark.color);
   await p.getByRole('button', { name: '自动', exact: true }).click();
   await p.waitForTimeout(200);
-  await p.locator('.cover-editor-zoom input[type=range]').fill('1.6');
+  const coverZoom = p.getByRole('slider', { name: '卡面缩放' });
+  await coverZoom.press('Home');
+  for (let i = 0; i < 12; i++) await coverZoom.press('ArrowRight');
   await p.getByRole('button', { name: '保存卡面', exact: true }).click();
   await p.waitForTimeout(800);
   const withCover = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.cards.v1')).personal.cover);

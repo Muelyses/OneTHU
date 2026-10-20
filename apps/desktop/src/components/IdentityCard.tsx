@@ -7,6 +7,7 @@
  * - deck（卡片夹里的实物）/ hero（我的名片）/ detail（弹出的大卡）三档由 class 决定，
  *   比例、层叠阴影与深浅主题对比都写在 recipes/contacts.css。
  */
+import { FocalImage } from "@onethu/gui";
 import type { ReactNode } from "react";
 import type { OrgCard, PersonalCard } from "../state/nameCard.js";
 import { BrandLogo } from "./BrandLogo.js";
@@ -38,14 +39,7 @@ export function IdentityCard({
     >
       {cover ? (
         <span className="identity-card-cover" aria-hidden="true">
-          <img
-            src={cover.src}
-            alt=""
-            style={{
-              objectPosition: `${cover.focusX * 100}% ${cover.focusY * 100}%`,
-              transform: `scale(${cover.zoom})`,
-            }}
-          />
+          <FocalImage src={cover.src} focusX={cover.focusX} focusY={cover.focusY} zoom={cover.zoom} />
         </span>
       ) : null}
       <span className="identity-card-stock" aria-hidden="true" />

@@ -44,7 +44,7 @@ export function readDataSource(source,file="locale.ts",exportName) {
 export const slots=text=>[...text.matchAll(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g)].map(m=>m[1]).sort();
 export function sourceCalls(root="apps/desktop/src"){
   const out=[];
-  for(const f of fs.readdirSync(root,{recursive:true}).filter(f=>/\.tsx?$/.test(f)&&!f.startsWith("._")&&!f.startsWith("i18n/locales/"))){
+  for(const f of fs.readdirSync(root,{recursive:true}).map(f=>f.replaceAll("\\","/")).filter(f=>/\.tsx?$/.test(f)&&!f.startsWith("._")&&!f.startsWith("i18n/locales/"))){
     const path=`${root}/${f}`,s=fs.readFileSync(path,"utf8"),a=ts.createSourceFile(path,s,99,true);
     const binds=new Set();
     for(const st of a.statements){

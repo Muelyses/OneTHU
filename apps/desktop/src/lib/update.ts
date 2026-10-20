@@ -11,10 +11,10 @@ import { universalFetch } from "./transport.js";
 
 /** 版本代号（随主版本更新） */
 export const APP_CODENAME = "Revolution";
-/** 关于页展示用的版本名（用户 2026-10-19 指定：0.11-beta） */
-export const APP_VERSION_LABEL = "0.11-beta";
-
 declare const __APP_VERSION__: string;
+
+/** 关于页与构建元数据共用 package.json 注入的版本。 */
+export const APP_VERSION_LABEL = __APP_VERSION__;
 
 export interface ReleaseInfo {
   tag: string;

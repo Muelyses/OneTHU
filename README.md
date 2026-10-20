@@ -1,4 +1,4 @@
-> 最后更新：2026-10-08 23:58
+> 最后更新：2026-10-20
 
 <div align="center">
 
@@ -17,7 +17,8 @@
 **One THU in OneTHU.**
 
 OneTHU 是面向清华学生的校园应用：统一身份、统一数据、统一界面，覆盖 macOS / Windows / Android，
-并内置 AI Agent（OneTHU Harness）。项目是对 thu-info-app / learnX / NextTHUxk 的整合重构。
+并内置 AI Agent（OneTHU Harness）。0.11.0「Revolution」带来统一的 OneGUI 界面、极简 / 实用 / 完整三种使用模式，
+以及支持语言选择的全新导览。项目是对 thu-info-app / learnX / NextTHUxk 的整合重构。
 
 ## 为什么是 OneTHU
 
@@ -28,7 +29,7 @@ OneTHU 是面向清华学生的校园应用：统一身份、统一数据、统�
 - **数据可靠**：只读取校方公开接口；数据未取到时如实显示，不会提前标记为已提交。
 - **全平台**：macOS / Windows / Android 功能对齐，通知、小组件与下载位置在三端均可用。
 
-## 功能总览（0.10.0）
+## 功能总览（0.11.0）
 
 - **统一身份**：统一认证账号登录一次，全部模块共用登录状态，支持二次验证。
 - **网络学堂**：课程、作业、通知、文件与讨论区集中管理；作业截止时间与提交状态与学校系统保持一致。
@@ -192,7 +193,7 @@ OneTHU 自有代码以 **MIT** 许可开源（见 [LICENSE](./LICENSE)），**�
 
 ## 版本
 
-当前版本 **0.10.0**（详见 [Releases](https://github.com/smartThise/OneTHU/releases)）。
+当前版本 **0.11.0**（详见 [Releases](https://github.com/smartThise/OneTHU/releases)）。
 
 ## 用户交流群
 

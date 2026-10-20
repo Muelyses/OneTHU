@@ -44,8 +44,8 @@
 ## 其他
 
 - 品牌名一律 **OneGO!**（感叹号不可省）：导览、收藏栏 aria、「来源」字段；
-- 关于页版本名：`OneTHU 0.11-beta “Revolution”`（`APP_VERSION_LABEL` + `APP_CODENAME`），
-  软件更新行仍显示实际构建版本，其他不动；
+- 关于页版本名：`OneTHU 0.11.0 “Revolution”`（2026-10-20 更新：移除 beta 标识，
+  `APP_VERSION_LABEL` 与软件更新行均使用构建配置版本）；
 - dev/验收可用 `?tour=1` 强制打开导览（正式版仍看完成标记）。
 - 截图：`tour-modes-intro-desktop/phone.png`、`tour-full-board.png`、`tour-full-onego.png`、
   `settings-about-version.png`。

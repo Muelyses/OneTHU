@@ -28,7 +28,7 @@ try {
   check(await p.getByText('好友甲').count() >= 1, 'seeded contact visible');
   await p.getByRole('button', { name: '打开好友甲的名片' }).click(); await p.waitForTimeout(500);
   await p.getByRole('button', { name: '好友通道', exact: true }).click(); await p.waitForTimeout(400);
-  check(await p.getByText('好友通道').count() === 1, 'friend channel opens');
+  check(await p.locator('.contact-channel').isVisible(), 'friend channel opens');
   await p.getByRole('button', { name: '留言', exact: true }).click();
   await p.waitForSelector('.plg-form-modal');
   await p.locator('.plg-form-modal textarea').fill('一起做项目');

@@ -10,6 +10,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 import { fileRead, fileWrite, fileDelete, obfuscateSecret, deobfuscateSecret } from "../lib/clients.js";
 import { showToast } from "./toast.js";
+import { ensureOwnedCloudRepo, hasOwnedRepoMetadata } from "../lib/ownedCloudRepo.js";
 
 const CFG_FILE = "seafile.cfg";
 /** 旧版（fileWrite 自动补 .json）写成了 seafile.cfg.json.json——读取迁移用 */
@@ -17,7 +18,10 @@ const CFG_FILE_LEGACY = "seafile.cfg.json"; // Rust state_read/write 自动补 .
 /** 混淆密钥绑定词（token 属于云盘本身，不需要用户名绑定） */
 const KEY_ID = "seafile";
 
-export interface SeafileRepo { id: string; name: string; mtime: number; size: number }
+export interface SeafileRepo {
+  id: string; name: string; mtime: number; size: number;
+  repoType?: string; owner?: string; ownerName?: string; permission?: string; isVirtual?: boolean;
+}
 export interface SeafileEntry { name: string; kind: "dir" | "file"; size: number; mtime: number }
 export interface SeafileAccount { name: string; email: string; usage: number; total: number }
 
@@ -44,7 +48,7 @@ function persistCfg(value: {token:string} | null, version: number): Promise<void
   return operation;
 }
 function resetAccountCache(): void {
-  account = null; repos = []; dirs.clear(); dirVersion++;
+  account = null; repos = []; reposVersion++; dirs.clear(); dirVersion++;
   busy = false; lastError = null;
 }
 
@@ -101,6 +105,8 @@ export function seafileRepoName(id: string): string | null {
   return repos.find((r) => r.id === id)?.name ?? null;
 }
 
+export function getSeafileCredentialVersion(): number { return credentialVersion; }
+
 export function getSeafileToken(): string {
   return cfg?.token ?? "";
 }
@@ -108,6 +114,7 @@ export function getSeafileToken(): string {
 /* ── 数据面（内存缓存） ── */
 let account: SeafileAccount | null = null;
 let repos: SeafileRepo[] = [];
+let reposVersion = 0;
 /** 目录缓存（带 TTL）：key=repoId|path。15s 内命中走缓存，过期自动重取——
  * 上传后的强刷是即时路径；TTL 是兜底（错过强刷/外部变更，重进目录自愈） */
 const DIR_TTL_MS = 15_000;
@@ -134,17 +141,59 @@ export async function refreshSeafileAccount(): Promise<void> {
 export async function refreshRepos(): Promise<void> {
   if (!cfg) return;
   const version = credentialVersion;
+  const request = ++reposVersion;
   busy = true;
   lastError = null;
   emit();
   try {
     const next = await invoke<SeafileRepo[]>("seafile_repos", { token: cfg.token });
-    if (version === credentialVersion) repos = next;
+    if (version === credentialVersion && request === reposVersion) repos = next;
   } catch (e) {
-    if (version === credentialVersion) lastError = String(e);
+    if (version === credentialVersion && request === reposVersion) lastError = String(e);
   } finally {
-    if (version === credentialVersion) { busy = false; emit(); }
+    if (version === credentialVersion && request === reposVersion) { busy = false; emit(); }
   }
+}
+
+/** A write grant on a shared library never authorizes deleting the library itself. */
+export function canDeleteSeafileRepo(repo: SeafileRepo, email = account?.email ?? ""): boolean {
+  return repo.repoType === "mine" && repo.isVirtual === false && !!email
+    && repo.owner?.toLowerCase() === email.toLowerCase();
+}
+
+/** Older desktop hosts omit these fields entirely. Missing is not "not virtual"
+ * or "not found": reads can still work, but ownership-sensitive writes must stop. */
+export function hasSeafileRepoOwnershipMetadata(repo: SeafileRepo): boolean {
+  return hasOwnedRepoMetadata(repo);
+}
+
+export async function deleteSeafileRepo(repoId: string): Promise<void> {
+  if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
+  const version = credentialVersion;
+  const token = cfg.token;
+  const repo = repos.find((entry) => entry.id === repoId);
+  if (repo && !hasSeafileRepoOwnershipMetadata(repo)) throw new Error(i18n("state.seafile.nativeRestartRequired"));
+  if (!repo || !canDeleteSeafileRepo(repo)) throw new Error(i18n("state.seafile.deleteOwnerOnly"));
+  try {
+    await invoke("seafile_delete_owned_repo", {token, repoId});
+  } catch (error) {
+    // Never fall back to the differently scoped private-share cleanup command.
+    if (/command .*seafile_delete_owned_repo.*not found|unknown command.*seafile_delete_owned_repo/i.test(String(error))) {
+      throw new Error(i18n("state.seafile.nativeRestartRequired"));
+    }
+    throw error;
+  }
+  if (version !== credentialVersion) throw changedAccount();
+  // Invalidate pending list requests too, so a response started before deletion
+  // cannot put the removed library straight back into the current account's UI.
+  reposVersion++;
+  repos = repos.filter((entry) => entry.id !== repoId);
+  for (const key of dirs.keys()) if (key.startsWith(`${repoId}|`)) dirs.delete(key);
+  dirVersion++;
+  busy = false;
+  lastError = null;
+  emit();
+  await Promise.allSettled([refreshRepos(), refreshSeafileAccount()]);
 }
 
 /** 目录列表（缓存优先，force 强刷） */
@@ -257,15 +306,10 @@ export async function seafileCreateRepo(name: string): Promise<string> {
   const token = getSeafileToken();
   if (!token) throw new Error(i18n("state.seafile.0507dadfda6a"));
   const wanted = String(name ?? "").trim().slice(0, 80) || "组织资料库";
-  let list = await invoke<SeafileRepo[]>("seafile_repos", { token });
-  const hit = list.find((r) => r.name === wanted);
-  if (hit) return hit.id;
-  await invoke("seafile_create_repo", { token, name: wanted });
-  list = await invoke<SeafileRepo[]>("seafile_repos", { token });
-  const made = list.find((r) => r.name === wanted);
-  if (!made) throw new Error(i18n("state.seafile.a84f939c0666"));
+  const repo = await ensureOwnedCloudRepo(token, wanted);
+  if (token !== getSeafileToken()) throw changedAccount();
   await refreshRepos();
-  return made.id;
+  return repo.id;
 }
 
 /** 把整个资料库（根目录）共享给云盘账号邮箱；permission="r"|"rw"|"admin"。 */

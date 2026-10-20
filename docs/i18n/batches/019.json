@@ -1,171 +1,7 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.ohsettingspage.d09e846cd4ab",
-      "source": "系统设置 → 应用 → 应用启动管理 → OneTHU 设「手动管理」，并允许自启动、关联启动、后台活动； 再把 OneTHU 加入电池优化白名单。设置完悬浮球与语音在后台才不会被系统掐掉。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 218,
-          "context": "{i18nRich(\"components.ohsettingspage.d09e846cd4ab\", { value: jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\" })}"
-        }
-      ],
-      "translation": "In System Settings → Apps → App launch management, set OneTHU to “Manage manually” and allow auto-launch, associated launch, and background activity; then add OneTHU to the battery-optimization whitelist. Only after this will the floating ball and voice keep running in the background instead of being killed by the system. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.d121e4ba4f4c",
-      "source": "正在续签…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
-          "context": "busy ? i18n(\"components.ohsettingspage.d121e4ba4f4c\") : checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
-        }
-      ],
-      "translation": "Renewing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.dc1d05f60500",
-      "source": "历史超长自动收成要点清单，重要内容不再丢",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 51,
-          "context": "return i18n(\"components.ohsettingspage.dc1d05f60500\");"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 279,
-          "context": "{i18n(\"components.ohsettingspage.dc1d05f60500\")}"
-        }
-      ],
-      "translation": "Overlong history is auto-condensed into key points so important content is never lost",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.f204a61ba9f0",
-      "source": "免费额度（MadModel）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 296,
-          "context": "{i18n(\"components.ohsettingspage.f204a61ba9f0\")}"
-        }
-      ],
-      "translation": "Free quota (MadModel)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.f2b78947c49a",
-      "source": "MadModel 免费档",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 49,
-          "context": "return i18n(\"components.ohsettingspage.f2b78947c49a\");"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 171,
-          "context": "{i18n(\"components.ohsettingspage.f2b78947c49a\")}"
-        }
-      ],
-      "translation": "MadModel free tier",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.f96003eb203c",
-      "source": "正在检查免费模型连接…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
-          "context": "checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
-        }
-      ],
-      "translation": "Checking free model connection…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.fbf9575ea3c9",
-      "source": "上下文记忆模式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 51,
-          "context": "return i18n(\"components.ohsettingspage.fbf9575ea3c9\");"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 278,
-          "context": "{i18n(\"components.ohsettingspage.fbf9575ea3c9\")}"
-        }
-      ],
-      "translation": "Context memory mode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.fc7d3e679982",
-      "source": "学校登录状态会在到期前自动更新。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
-          "context": "warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
-        }
-      ],
-      "translation": "School sign-in status renews automatically before expiry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardinglanguage.continue",
-      "source": "继续",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
-          "line": 13,
-          "context": "continue: msg(\"components.onboardinglanguage.continue\")"
-        }
-      ],
-      "translation": "Continue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.onboardinglanguage.hint",
       "source": "之后可在设置中更改。",
@@ -1322,6 +1158,143 @@
         }
       ],
       "translation": "Tap “Tabs” in the bottom bar — it is all in the drawer.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.514adbf12726",
+      "source": "在对话里说，它就动手。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 92,
+          "context": "return i18n(\"components.onboardingtourmobile.514adbf12726\");"
+        }
+      ],
+      "translation": "Just tell it in the conversation and it gets to work.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.55a3f02850c2",
+      "source": "点「编」进编辑，再点「＋」选组件放到白板上。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 76
+        }
+      ],
+      "translation": "Tap “Edit” to enter edit mode, then tap “＋” to pick widgets and place them on the board.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.59acb966c21f",
+      "source": "底栏右侧「OneGO!」→ 我的 OnePage：起名后「新建」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 82
+        }
+      ],
+      "translation": "In the bottom bar’s right side, “OneGO!” → My OnePage: name it, then “New”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.60a2e62fe82d",
+      "source": "按住一个标签拖一拖，就换了顺序。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Press and drag a tab to reorder it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.67ab2cc6012c",
+      "source": "工具箱自己会长：说到哪，就长到哪。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 94,
+          "context": "return i18n(\"components.onboardingtourmobile.67ab2cc6012c\");"
+        }
+      ],
+      "translation": "The toolbox grows on its own: wherever the conversation goes, it grows there.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.6957eb34bc44",
+      "source": "点一下：从底部长出半屏搜索窗，可拉满全屏。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 87
+        }
+      ],
+      "translation": "Tap once: a half-screen search panel grows from the bottom; you can stretch it to full screen.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.6aebf4025ba6",
+      "source": "新建即得一块白板，跟首页同一套手势。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 82
+        }
+      ],
+      "translation": "A new tab is a fresh board, using the same gestures as Home.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.70297c6559a9",
+      "source": "长按 0.45 秒开始说话；松手直发，上划取消。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 87
+        }
+      ],
+      "translation": "Press and hold for 0.45 seconds to start speaking; release to send, swipe up to cancel.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.70bec8e88b2c",
+      "source": "按住 0.5 秒不动出菜单：聚焦、复制、关闭、解散工作区。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Press and hold for 0.5 seconds without moving to open the menu: focus, copy, close, disband workspace.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

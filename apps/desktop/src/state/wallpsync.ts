@@ -14,6 +14,7 @@ import { t as i18n } from "../i18n/index.js";
  * 声音开关是本机偏好，不随档案同步。
  */
 import { invoke } from "@tauri-apps/api/core";
+import { ensureOwnedCloudRepo } from "../lib/ownedCloudRepo.js";
 import { ensureSeafileLoaded, getSeafileToken } from "./seafile.js";
 import { replaceWallpaperDoc, wallpaperSnapshot } from "./wallpaper.js";
 
@@ -40,28 +41,11 @@ async function cloudToken(): Promise<string | null> {
 
 /** 找到（或建出）《OneTHU》资料库；建库响应形态不一，建后无论如何按名复查 */
 async function ensureRepo(tk: string): Promise<string> {
-  try {
-    const cached = localStorage.getItem(REPO_KEY);
-    if (cached) {
-      const repos = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
-      if (repos.some((r) => r.id === cached)) return cached;
-    }
-  } catch {
-    /* 缓存失效走全量查找 */
-  }
-  const repos = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
-  let repo = repos.find((r) => r.name === REPO_NAME);
-  if (!repo) {
-    await invoke("seafile_create_repo", { token: tk, name: REPO_NAME }).catch(() => undefined);
-    const repos2 = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
-    repo = repos2.find((r) => r.name === REPO_NAME);
-  }
-  if (!repo) throw new Error(i18n("state.wallpsync.e00e3a63ff07"));
-  try {
-    localStorage.setItem(REPO_KEY, repo.id);
-  } catch {
-    /* 存不进就每次重查 */
-  }
+  let cached: string | undefined;
+  try { cached = localStorage.getItem(REPO_KEY) ?? undefined; } catch { /* Optional cache. */ }
+  const repo = await ensureOwnedCloudRepo(tk, REPO_NAME, cached);
+  if (tk !== getSeafileToken()) throw new Error(i18n("state.seafile.accountChanged"));
+  try { localStorage.setItem(REPO_KEY, repo.id); } catch { /* Optional cache. */ }
   return repo.id;
 }
 

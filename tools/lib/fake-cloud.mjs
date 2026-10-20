@@ -41,7 +41,7 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
     };
     window.__cloudInvoke = async (cmd, args) => {
       switch (cmd) {
-        case 'seafile_repos': return cloud.repos.map((r) => ({ ...r, mtime: 0, size: 0 }));
+        case 'seafile_repos': return cloud.repos.map((r) => ({ ...r, mtime: 0, size: 0, repoType:r.owner===cloud.email?'mine':'shared', permission:r.owner===cloud.email?'rw':'r', isVirtual:false }));
         case 'seafile_account': return { name: '测试用户', email: cloud.email, usage: 0, total: 1024 * 1024 };
         case 'seafile_create_repo': {
           const name = String(args?.name ?? '').trim() || '未命名资料库';
@@ -171,7 +171,7 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
       }
     };
   }, token);
-  for (const mod of ['**/src/state/seafile.ts*', '**/src/state/vaultCloud.ts*', '**/src/state/sealedShare.ts*', '**/src/state/cloudExchange.ts*', '**/src/lib/fileChannel.ts*', '**/src/lib/cardCover.ts*', '**/src/lib/cloudFolder.ts*']) {
+  for (const mod of ['**/src/state/seafile.ts*', '**/src/state/vaultCloud.ts*', '**/src/state/sealedShare.ts*', '**/src/state/cloudExchange.ts*', '**/src/lib/fileChannel.ts*', '**/src/lib/cardCover.ts*', '**/src/lib/cloudFolder.ts*', '**/src/lib/ownedCloudRepo.ts*']) {
     await page.route(mod, async (route) => {
       const response = await route.fetch();
       let body = await response.text();

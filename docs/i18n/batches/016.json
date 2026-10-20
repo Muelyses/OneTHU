@@ -1,5 +1,5 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -10,7 +10,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 194,
+          "line": 197,
           "context": "{i18n(\"components.layout.a626aad412b7\")}"
         }
       ],
@@ -26,7 +26,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 112,
+          "line": 114,
           "context": "return i18n(\"components.layout.b1abb3dc2271\");"
         }
       ],
@@ -42,7 +42,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 156,
+          "line": 159,
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ],
@@ -58,7 +58,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 915,
+          "line": 947,
           "context": "{i18n(\"components.layout.b8784c8dd563\")}"
         }
       ],
@@ -74,7 +74,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 773,
+          "line": 805,
           "context": "label: i18n(\"components.layout.df3d58c7d84b\")"
         }
       ],
@@ -90,7 +90,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 113,
+          "line": 115,
           "context": "return i18n(\"components.layout.e7028601e7da\");"
         }
       ],
@@ -106,7 +106,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 774,
+          "line": 806,
           "context": "label: i18n(\"components.layout.e806fbbe8ec6\")"
         }
       ],
@@ -122,7 +122,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 106,
+          "line": 108,
           "context": "return i18n(\"components.layout.f75562426e77\");"
         }
       ],
@@ -138,7 +138,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 621,
+          "line": 652,
           "context": "{i18n(\"components.layout.f9e31e1d63d5\")}"
         }
       ],
@@ -154,12 +154,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 150,
+          "line": 153,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 231,
+          "line": 234,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         }
       ],
@@ -175,7 +175,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 116,
+          "line": 118,
           "context": "return i18n(\"components.layout.fd17d86dd268\");"
         }
       ],
@@ -686,7 +686,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 171,
+          "line": 172,
           "context": "new Error(i18n(\"components.namecardsection.032ff20471ee\"))"
         }
       ],
@@ -702,7 +702,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 378,
+          "line": 399,
           "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
         }
       ],
@@ -718,27 +718,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 640,
+          "line": 656,
           "context": "{i18n(\"components.namecardsection.12f63705ed44\")}"
         }
       ],
       "translation": "Copy joining info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.1322cdf5af8a",
-      "source": "已开通双向写入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 629,
-          "context": "r.ok ? i18nMsg(\"components.namecardsection.1322cdf5af8a\") : i18nMsg(\"components.namecardsection.2e31444feed1\", { reason: String(r.reason) })"
-        }
-      ],
-      "translation": "Two-way write enabled",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -750,7 +734,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 83,
+          "line": 84,
           "context": "(c.card as PersonalCard).bio || i18n(\"components.namecardsection.140181c90ccb\")"
         }
       ],
@@ -766,7 +750,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 298,
+          "line": 299,
           "context": "{i18n(\"components.namecardsection.16b12866400d\")}"
         }
       ],
@@ -787,7 +771,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 521,
+          "line": 539,
           "context": "{i18n(\"components.namecardsection.16c88a1bd8a9\", { name: String(c.name) })}"
         }
       ],
@@ -803,7 +787,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 401,
+          "line": 418,
           "context": "label: i18nMsg(\"components.namecardsection.1aadd1661e1d\")"
         }
       ],
@@ -819,12 +803,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 632,
+          "line": 648,
           "context": "channelId === shown.id ? i18n(\"components.namecardsection.e1bb8719dfa4\") : i18n(\"components.namecardsection.1ce1f2806523\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 655,
+          "line": 671,
           "context": "{i18n(\"components.namecardsection.1ce1f2806523\")}"
         }
       ],
@@ -840,7 +824,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 558,
+          "line": 576,
           "context": "{i18n(\"components.namecardsection.1da923d22b2f\")}"
         }
       ],
@@ -856,12 +840,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 151,
+          "line": 152,
           "context": "label: i18nMsg(\"components.namecardsection.22530f991560\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 268,
+          "line": 269,
           "context": "k: i18n(\"components.namecardsection.22530f991560\")"
         }
       ],
@@ -877,7 +861,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 674,
+          "line": 696,
           "context": "{i18n(\"components.namecardsection.2335399f1fa8\")}"
         }
       ],
@@ -893,7 +877,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 539,
+          "line": 557,
           "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
         }
       ],
@@ -909,7 +893,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 668,
+          "line": 688,
           "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
         }
       ],
@@ -925,7 +909,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 659,
+          "line": 679,
           "context": "{i18n(\"components.namecardsection.2a7be7efb999\")}"
         }
       ],
@@ -941,7 +925,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 194,
+          "line": 195,
           "context": "email || i18n(\"components.namecardsection.2b80886afc39\")"
         }
       ],
@@ -957,32 +941,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 223,
+          "line": 224,
           "context": "showToast(i18nMsg(\"components.namecardsection.2da6ab45cd99\"))"
         }
       ],
       "translation": "Card saved; cloud drive backup failed. Go to the cloud drive page, make sure you're signed in, and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.2e31444feed1",
-      "source": "开通失败：{reason}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "reason",
-          "expression": "String(r.reason)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 629,
-          "context": "r.ok ? i18nMsg(\"components.namecardsection.1322cdf5af8a\") : i18nMsg(\"components.namecardsection.2e31444feed1\", { reason: String(r.reason) })"
-        }
-      ],
-      "translation": "Failed to enable: {reason}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -994,7 +957,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 649,
+          "line": 665,
           "context": "{i18n(\"components.namecardsection.2f9daa828907\")}"
         }
       ],
@@ -1010,12 +973,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 574,
+          "line": 592,
           "context": "k: i18n(\"components.namecardsection.323a881ebd47\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 607,
+          "line": 625,
           "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
         }
       ],
@@ -1031,7 +994,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 247,
+          "line": 248,
           "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
         }
       ],
@@ -1047,17 +1010,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 486,
+          "line": 504,
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 543,
+          "line": 561,
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 552,
+          "line": 570,
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         }
       ],
@@ -1073,7 +1036,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 264,
+          "line": 265,
           "context": "{i18n(\"components.namecardsection.381574fa5f7b\")}"
         }
       ],
@@ -1089,7 +1052,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 535,
+          "line": 553,
           "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
         }
       ],
@@ -1105,7 +1068,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 401,
+          "line": 418,
           "context": "openFormModal(i18nMsg(\"components.namecardsection.385d439d3e16\"), [{ key: \"text\", label: i18nMsg(\"components.namecardsection.1aadd1661e1d\"), kind: \"textarea\", required: true }])"
         }
       ],
@@ -1121,7 +1084,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 495,
+          "line": 513,
           "context": "{i18n(\"components.namecardsection.3e21bceb6dc5\")}"
         }
       ],
@@ -1137,43 +1100,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 656,
+          "line": 674,
           "context": "{i18n(\"components.namecardsection.3fd47edce45b\")}"
         }
       ],
       "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.409bad7496cf",
-      "source": "共享云盘已创建，并已开通好友双向写入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 391,
-          "context": "twoWay.ok ? i18nMsg(\"components.namecardsection.409bad7496cf\") : i18nMsg(\"components.namecardsection.53c31c534b2e\")"
-        }
-      ],
-      "translation": "Shared cloud drive created, with two-way friend write enabled",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.4300017090d2",
-      "source": "复制共享链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 622,
-          "context": "{i18n(\"components.namecardsection.4300017090d2\")}"
-        }
-      ],
-      "translation": "Copy share link",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1185,7 +1116,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 250,
+          "line": 251,
           "context": "{i18n(\"components.namecardsection.48659c30cb24\")}"
         }
       ],
@@ -1201,12 +1132,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 50,
+          "line": 51,
           "context": "return i18n(\"components.namecardsection.487e926379fe\");"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 564,
+          "line": 582,
           "context": "{i18n(\"components.namecardsection.487e926379fe\")}"
         }
       ],
@@ -1222,7 +1153,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 378,
+          "line": 399,
           "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
         }
       ],
@@ -1238,27 +1169,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 299,
+          "line": 300,
           "context": "{i18n(\"components.namecardsection.4dd6695c0a10\")}"
         }
       ],
       "translation": "Manage organizations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.53c31c534b2e",
-      "source": "共享云盘已创建：链接已复制；对方填云盘邮箱后可开通双向",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 391,
-          "context": "twoWay.ok ? i18nMsg(\"components.namecardsection.409bad7496cf\") : i18nMsg(\"components.namecardsection.53c31c534b2e\")"
-        }
-      ],
-      "translation": "Shared cloud drive created: link copied. Once the other person fills in their cloud drive email, two-way access can be enabled",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1270,8 +1185,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 625,
-          "context": "sharingId === shown.id ? i18n(\"components.namecardsection.56b63def0e29\") : i18n(\"components.namecardsection.79d504ee7bef\")"
+          "line": 643,
+          "context": "sharingId === shown.id ? i18n(\"components.namecardsection.56b63def0e29\")\n                      : shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ],
       "translation": "Creating…",
@@ -1286,12 +1201,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 185,
+          "line": 186,
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 614,
+          "line": 634,
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         }
       ],
@@ -1307,7 +1222,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 668,
+          "line": 688,
           "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
         }
       ],
@@ -1323,7 +1238,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 480,
+          "line": 498,
           "context": "label: i18n(\"components.namecardsection.5c55a67935af\")"
         }
       ],
@@ -1339,32 +1254,16 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 248,
+          "line": 249,
           "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 556,
+          "line": 574,
           "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
         }
       ],
       "translation": "Paste share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.675b3c608daf",
-      "source": "已创建（链接可复制）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 608,
-          "context": "shown.shared?.shareUrl ? i18n(\"components.namecardsection.675b3c608daf\") : i18n(\"components.namecardsection.90b310149a74\")"
-        }
-      ],
-      "translation": "Created (link can be copied)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1376,23 +1275,129 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 150,
+          "line": 151,
           "context": "label: i18nMsg(\"components.namecardsection.6773310492a9\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 267,
+          "line": 268,
           "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 572,
+          "line": 590,
           "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
         }
       ],
       "translation": "Name",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.6a7ab670dbb4",
+      "source": "从通讯录删除「{name}」？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(shown.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 660,
+          "context": "confirmOk(i18nMsg(\"components.namecardsection.6a7ab670dbb4\", { name: String(shown.name) }))"
+        }
+      ],
+      "translation": "Remove {name} from Contacts?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6b70038c3f75",
+      "source": "卡面已备份到云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 222,
+          "context": "showToast(i18nMsg(\"components.namecardsection.6b70038c3f75\"))"
+        }
+      ],
+      "translation": "Card backed up to the cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6d434210c5bf",
+      "source": "搜索好友、组织或简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 490,
+          "context": "{i18n(\"components.namecardsection.6d434210c5bf\")}"
+        }
+      ],
+      "translation": "Search friends, organizations, or bios",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6e7ecbfdeb6c",
+      "source": "编辑资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 241,
+          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 597,
+          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
+        }
+      ],
+      "translation": "Edit profile",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6ebb64384907",
+      "source": "识别二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 575,
+          "context": "{i18n(\"components.namecardsection.6ebb64384907\")}"
+        }
+      ],
+      "translation": "Scan QR code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6eeeec8e5551",
+      "source": "还没有收到别人的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 553,
+          "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
+        }
+      ],
+      "translation": "No cards received yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

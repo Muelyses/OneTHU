@@ -1,5 +1,5 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -196,7 +196,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 349,
+          "line": 350,
           "context": "{i18n(\"components.explorer.onegosheet.051836569928\")}"
         }
       ],
@@ -212,7 +212,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 148,
+          "line": 149,
           "context": "label: i18n(\"components.explorer.onegosheet.0552e329ccf8\")"
         }
       ],
@@ -228,7 +228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 389,
+          "line": 391,
           "context": "label: i18n(\"components.explorer.onegosheet.05cc68bdf7ae\")"
         }
       ],
@@ -244,7 +244,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 326,
+          "line": 327,
           "context": "b.kind === \"system\" ? i18n(\"components.explorer.onegosheet.08c9a0baa828\") : i18n(\"components.explorer.onegosheet.55add4b94983\")"
         }
       ],
@@ -260,7 +260,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 446,
+          "line": 448,
           "context": "{i18n(\"components.explorer.onegosheet.0a02de34e600\")}"
         }
       ],
@@ -276,7 +276,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 251,
+          "line": 252,
           "context": "i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes"
         }
       ],
@@ -292,7 +292,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 136,
+          "line": 137,
           "context": "openFormModal(i18nMsg(\"components.explorer.onegosheet.0c898fe25ba6\"), [\n      { key: \"name\", label: i18nMsg(\"components.explorer.onegosheet.6773310492a9\"), required: true, default: b.name },\n    ])"
         }
       ],
@@ -308,7 +308,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 199,
+          "line": 200,
           "context": "{i18n(\"components.explorer.onegosheet.0f591af87c35\")}"
         }
       ],
@@ -324,7 +324,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 230,
+          "line": 231,
           "context": "r.error ?? i18n(\"components.explorer.onegosheet.13a46616e16f\")"
         }
       ],
@@ -340,7 +340,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 250,
+          "line": 251,
           "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.191605f81453\") : \"\""
         }
       ],
@@ -356,7 +356,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 307,
+          "line": 308,
           "context": "{i18n(\"components.explorer.onegosheet.1b1e801f448e\")}"
         }
       ],
@@ -372,7 +372,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 162,
+          "line": 163,
           "context": "{i18n(\"components.explorer.onegosheet.1e8cdaa51b97\")}"
         }
       ],
@@ -388,7 +388,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 443,
+          "line": 445,
           "context": "{i18n(\"components.explorer.onegosheet.1f5c44171ba4\")}"
         }
       ],
@@ -404,7 +404,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 161,
+          "line": 162,
           "context": "{i18n(\"components.explorer.onegosheet.203c08e0d44a\")}"
         }
       ],
@@ -420,7 +420,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 471,
+          "line": 473,
           "context": "{i18n(\"components.explorer.onegosheet.24fc53052dd6\")}"
         }
       ],
@@ -436,7 +436,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 281,
+          "line": 282,
           "context": "activeTheme === t.id ? i18n(\"components.explorer.onegosheet.2ce3ff19d6ac\") : i18n(\"components.explorer.onegosheet.6630af4e3a3e\")"
         }
       ],
@@ -452,7 +452,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 205,
+          "line": 206,
           "context": "{i18n(\"components.explorer.onegosheet.2ea06cb193ec\")}"
         }
       ],
@@ -468,12 +468,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 261,
+          "line": 262,
           "context": "{i18n(\"components.explorer.onegosheet.2f9daa828907\")}"
         },
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 284,
+          "line": 285,
           "context": "{i18n(\"components.explorer.onegosheet.2f9daa828907\")}"
         }
       ],
@@ -489,7 +489,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 200,
+          "line": 201,
           "context": "{i18n(\"components.explorer.onegosheet.2fffc7ba053b\")}"
         }
       ],
@@ -514,7 +514,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 230,
+          "line": 231,
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.30344364115f\", { name: String(name), value: String(r.error ?? i18n(\"components.explorer.onegosheet.13a46616e16f\")) }))"
         }
       ],
@@ -530,12 +530,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 337,
+          "line": 338,
           "context": "{i18n(\"components.explorer.onegosheet.37979829426b\")}"
         },
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 452,
+          "line": 454,
           "context": "{i18n(\"components.explorer.onegosheet.37979829426b\")}"
         }
       ],
@@ -551,7 +551,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 147,
+          "line": 148,
           "context": "label: i18n(\"components.explorer.onegosheet.3a32f6df621a\")"
         }
       ],
@@ -572,7 +572,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 130,
+          "line": 131,
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.3c09b64b68ca\", { name: String(b.name) }))"
         }
       ],
@@ -588,7 +588,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 391,
+          "line": 393,
           "context": "label: i18n(\"components.explorer.onegosheet.40561d059752\")"
         }
       ],
@@ -604,7 +604,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 251,
+          "line": 252,
           "context": "i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes + i18n(\"components.explorer.onegosheet.40de54344d22\")"
         }
       ],
@@ -620,7 +620,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 252,
+          "line": 253,
           "context": "i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")"
         }
       ],
@@ -636,7 +636,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 256,
+          "line": 257,
           "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.f4f0ead1116b\") : i18n(\"components.explorer.onegosheet.4e6fd0e28c55\")"
         }
       ],
@@ -652,7 +652,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 172,
+          "line": 173,
           "context": "{i18n(\"components.explorer.onegosheet.50ef2f4cf6a4\")}"
         }
       ],
@@ -673,7 +673,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 258,
+          "line": 259,
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.512385d31c57\", { name: String(f.name) }))"
         }
       ],
@@ -689,7 +689,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 450,
+          "line": 452,
           "context": "{i18n(\"components.explorer.onegosheet.51c73468645c\")}"
         }
       ],
@@ -710,7 +710,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 147,
+          "line": 148,
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.54b5026aad0d\", { name: String(b.name) }))"
         }
       ],
@@ -726,7 +726,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 326,
+          "line": 327,
           "context": "b.kind === \"system\" ? i18n(\"components.explorer.onegosheet.08c9a0baa828\") : i18n(\"components.explorer.onegosheet.55add4b94983\")"
         }
       ],
@@ -742,7 +742,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 457,
+          "line": 459,
           "context": "{i18n(\"components.explorer.onegosheet.588a734ec8a5\")}"
         }
       ],
@@ -758,7 +758,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 351,
+          "line": 352,
           "context": "{i18n(\"components.explorer.onegosheet.5c551062c8a5\")}"
         }
       ],
@@ -774,7 +774,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 281,
+          "line": 282,
           "context": "activeTheme === t.id ? i18n(\"components.explorer.onegosheet.2ce3ff19d6ac\") : i18n(\"components.explorer.onegosheet.6630af4e3a3e\")"
         }
       ],
@@ -790,7 +790,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 137,
+          "line": 138,
           "context": "label: i18nMsg(\"components.explorer.onegosheet.6773310492a9\")"
         }
       ],
@@ -811,7 +811,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 354,
+          "line": 355,
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.68070021bd6a\", { name: String(w.name) }))"
         }
       ],
@@ -827,7 +827,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 269,
+          "line": 270,
           "context": "{i18n(\"components.explorer.onegosheet.6afc8b735d6d\")}"
         }
       ],
@@ -848,7 +848,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 227,
+          "line": 228,
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.73e756dbfa1a\", { name: String(name) }))"
         }
       ],
@@ -864,7 +864,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 303,
+          "line": 304,
           "context": "{i18n(\"components.explorer.onegosheet.7825abf8e9da\")}"
         }
       ],
@@ -880,7 +880,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 357,
+          "line": 358,
           "context": "{i18n(\"components.explorer.onegosheet.7aa6d0ef5feb\")}"
         }
       ],
@@ -896,7 +896,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 204,
+          "line": 205,
           "context": "{i18n(\"components.explorer.onegosheet.804002a9c49a\")}"
         }
       ],
@@ -912,7 +912,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 252,
+          "line": 253,
           "context": "f.lastRun ? (f.lastOk ? i18n(\"components.explorer.onegosheet.ef6db76ef5a8\") : i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")) : i18n(\"components.explorer.onegosheet.8d812d3abb5a\")"
         }
       ],
@@ -928,7 +928,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 146,
+          "line": 147,
           "context": "label: i18n(\"components.explorer.onegosheet.9201642820f0\")"
         }
       ],
@@ -944,7 +944,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 451,
+          "line": 453,
           "context": "{i18n(\"components.explorer.onegosheet.9385bfefca58\")}"
         }
       ],
@@ -960,7 +960,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 208,
+          "line": 209,
           "context": "{i18n(\"components.explorer.onegosheet.940e1639d05d\")}"
         }
       ],
@@ -976,7 +976,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 251,
+          "line": 252,
           "context": "f.trigger.kind === \"manual\" ? i18n(\"components.explorer.onegosheet.962f41ef825b\") : f.trigger.kind === \"cron\" ? i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes + i18n(\"components.explorer.onegosheet.40de54344d22\") : i18n(\"components.explorer.onegosheet.c560201b331c\")"
         }
       ],
@@ -992,7 +992,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 188,
+          "line": 189,
           "context": "b.kind === \"system\" ? i18n(\"components.explorer.onegosheet.97778650b3ab\") : \"OnePage\""
         }
       ],
@@ -1017,7 +1017,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 395,
+          "line": 397,
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
         }
       ],
@@ -1033,7 +1033,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 240,
+          "line": 241,
           "context": "{i18n(\"components.explorer.onegosheet.a41b60d0727e\")}"
         }
       ],
@@ -1049,7 +1049,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 169,
+          "line": 170,
           "context": "{i18n(\"components.explorer.onegosheet.b666a22dbc56\")}"
         }
       ],
@@ -1065,7 +1065,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 175,
+          "line": 176,
           "context": "{i18n(\"components.explorer.onegosheet.b7c9f326f03e\")}"
         }
       ],
@@ -1081,7 +1081,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 447,
+          "line": 449,
           "context": "{i18n(\"components.explorer.onegosheet.c0b3fbff51cc\")}"
         }
       ],
@@ -1097,7 +1097,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 251,
+          "line": 252,
           "context": "f.trigger.kind === \"cron\" ? i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes + i18n(\"components.explorer.onegosheet.40de54344d22\") : i18n(\"components.explorer.onegosheet.c560201b331c\")"
         }
       ],
@@ -1113,7 +1113,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 390,
+          "line": 392,
           "context": "label: i18n(\"components.explorer.onegosheet.c6d80849d9f5\")"
         }
       ],
@@ -1129,7 +1129,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 348,
+          "line": 349,
           "context": "{i18n(\"components.explorer.onegosheet.c771248e511f\")}"
         }
       ],
@@ -1145,7 +1145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 353,
+          "line": 354,
           "context": "{i18n(\"components.explorer.onegosheet.d4b82994b06a\")}"
         }
       ],
@@ -1161,7 +1161,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 351,
+          "line": 352,
           "context": "{i18n(\"components.explorer.onegosheet.dc04bd26995b\")}"
         }
       ],
@@ -1182,7 +1182,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 229,
+          "line": 230,
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.dd85b3f9c981\", { name: String(name) }))"
         }
       ],
@@ -1203,7 +1203,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 259,
+          "line": 260,
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.e6d7b9ff838f\", { name: String(f.name) }))"
         }
       ],
@@ -1219,7 +1219,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 393,
+          "line": 395,
           "context": "label: i18n(\"components.explorer.onegosheet.e9a95effb2f5\")"
         }
       ],
@@ -1235,12 +1235,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 153,
+          "line": 154,
           "context": "{i18n(\"components.explorer.onegosheet.eb597c54b6b0\")}"
         },
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 155,
+          "line": 156,
           "context": "{i18n(\"components.explorer.onegosheet.eb597c54b6b0\")}"
         }
       ],
@@ -1256,7 +1256,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 145,
+          "line": 146,
           "context": "label: i18n(\"components.explorer.onegosheet.ec4cd05f5147\")"
         }
       ],
@@ -1272,7 +1272,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 252,
+          "line": 253,
           "context": "f.lastOk ? i18n(\"components.explorer.onegosheet.ef6db76ef5a8\") : i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")"
         }
       ],
@@ -1288,7 +1288,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 256,
+          "line": 257,
           "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.f4f0ead1116b\") : i18n(\"components.explorer.onegosheet.4e6fd0e28c55\")"
         }
       ],
@@ -1304,7 +1304,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 335,
+          "line": 336,
           "context": "{i18n(\"components.explorer.onegosheet.fbf2cea571ab\")}"
         }
       ],
@@ -1325,7 +1325,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 345,
+          "line": 346,
           "context": "{i18nRich(\"components.explorer.onegosheet.ff83dbf31107\", { length: w.tabs.length })}"
         }
       ],

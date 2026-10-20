@@ -62,6 +62,13 @@ export interface FriendShare {
   createdAt: number;
   /** 已把该文件夹以读写权限共享给好友账号（双向通道前提） */
   sharedWith?: { email: string; permission: string; at: number };
+  /** Account-scoped authenticated channel, shared once and mounted by both peers. */
+  channelId?: string;
+  accountEmail?: string;
+  ownerEmail?: string;
+  peerEmail?: string;
+  invitationPublishedAt?: number;
+  acceptedAt?: number;
 }
 
 export type ContactCard = {
@@ -73,6 +80,8 @@ export type ContactCard = {
   addedAt: number;
   /** 与这位好友的共享云盘（创建后写入；以后放文件/作业/口令） */
   shared?: FriendShare;
+  /** Previous channel locations retained when explicitly switching an invitation. */
+  previousShares?: FriendShare[];
 };
 
 export interface CardDoc {
@@ -233,6 +242,26 @@ export function removeContact(id: string): void {
 export function setContactShare(id: string, shared: FriendShare): void {
   doc = { ...doc, contacts: doc.contacts.map((c) => (c.id === id ? { ...c, shared } : c)) };
   commit();
+}
+
+/** Receiving a channel never overwrites a person's existing card or local notes. */
+export function attachFriendChannel(email: string, name: string, shared: FriendShare): string {
+  const existing = doc.contacts.find((c) => c.kind === "personal"
+    && (c.card as PersonalCard).cloudEmail?.trim().toLowerCase() === email.toLowerCase()
+    && (!c.shared?.accountEmail || c.shared.accountEmail === shared.accountEmail));
+  if (existing) {
+    const previousShares = existing.shared && existing.shared.channelId !== shared.channelId
+      ? [...(existing.previousShares ?? []), existing.shared] : existing.previousShares;
+    doc = { ...doc, contacts: doc.contacts.map((c) => c.id === existing.id ? { ...c, shared, previousShares } : c) };
+    commit();
+    return existing.id;
+  }
+  const id = "ct." + crypto.randomUUID();
+  const card: PersonalCard = { name: clamp(name, CARD_LIMITS.name) || email, cloudEmail: email,
+    avatar: "", website: "", social: "", phone: "", bio: "", updatedAt: Date.now() };
+  doc = { ...doc, contacts: [{ id, kind: "personal", name: card.name, card, note: "", addedAt: Date.now(), shared }, ...doc.contacts] };
+  commit();
+  return id;
 }
 
 /** 名片进暂存箱的 catch（payload 型；分享口令/碰一碰共用）。 */

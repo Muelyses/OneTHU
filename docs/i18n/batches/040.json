@@ -1,7 +1,439 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.trace.3a8b5cef5790",
+      "source": "步行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 247,
+          "context": "return i18n(\"lib.trace.3a8b5cef5790\");"
+        }
+      ],
+      "translation": "Walk",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.455ece81de56",
+      "source": "百度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 287,
+          "context": "return i18n(\"lib.trace.455ece81de56\");"
+        }
+      ],
+      "translation": "Baidu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.50537dab7650",
+      "source": "苹果",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 288,
+          "context": "return i18n(\"lib.trace.50537dab7650\");"
+        }
+      ],
+      "translation": "Apple Maps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.53874092e000",
+      "source": "腾讯",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 286,
+          "context": "return i18n(\"lib.trace.53874092e000\");"
+        }
+      ],
+      "translation": "Tencent",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.7c25d6aa499e",
+      "source": "高德",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 285,
+          "context": "return i18n(\"lib.trace.7c25d6aa499e\");"
+        }
+      ],
+      "translation": "Amap",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.7f21257362cb",
+      "source": "驾车",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 249,
+          "context": "return i18n(\"lib.trace.7f21257362cb\");"
+        }
+      ],
+      "translation": "Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.a02caf9878b5",
+      "source": "<1分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 356,
+          "context": "return i18n(\"lib.trace.a02caf9878b5\");"
+        }
+      ],
+      "translation": "<1 min",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.c76e20944989",
+      "source": "{value}时{value2}分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(m / 60))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(m % 60)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 358,
+          "context": "return i18n(\"lib.trace.c76e20944989\", { value: String(Math.floor(m / 60)), value2: String(m % 60) });"
+        }
+      ],
+      "translation": "{value} h {value2} min",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.d5b54d668a13",
+      "source": "{m}分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "m",
+          "expression": "String(m)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 357,
+          "context": "return i18n(\"lib.trace.d5b54d668a13\", { m: String(m) });"
+        }
+      ],
+      "translation": "{m} min",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.e81f910c0f2b",
+      "source": "骑行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 248,
+          "context": "return i18n(\"lib.trace.e81f910c0f2b\");"
+        }
+      ],
+      "translation": "Bike",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.53480e72e233",
+      "source": "重定向次数超限（{maxHops}）末跳={value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "maxHops",
+          "expression": "String(maxHops)"
+        },
+        {
+          "name": "value",
+          "expression": "String(currentUrl.slice(0, 140))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 417,
+          "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
+        }
+      ],
+      "translation": "Too many redirects ({maxHops}), last hop = {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.81870141c552",
+      "source": "请求超时（90s）：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(url.slice(0, 120))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 214,
+          "context": "new Error(i18n(\"lib.transport.81870141c552\", { value: networkLogUrl(url) }))"
+        }
+      ],
+      "translation": "Request timed out (90s): {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.browserCors",
+      "source": "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 478,
+          "context": "return i18n(\"lib.transport.browserCors\");"
+        }
+      ],
+      "translation": "Browser preview can't connect to the campus network directly (blocked by CORS). Run the desktop app instead: pnpm tauri:dev.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.cancelled",
+      "source": "请求已取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 80,
+          "context": "new DOMException(i18n(\"lib.transport.cancelled\"), \"AbortError\")"
+        }
+      ],
+      "translation": "Request cancelled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.cd880977cdbd",
+      "source": "请求超时（{value}s）：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(guardMs / 1000)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(url.slice(0, 120))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 94,
+          "context": "new Error(i18n(\"lib.transport.cd880977cdbd\", { value: String(guardMs / 1000), value2: networkLogUrl(url) }))"
+        }
+      ],
+      "translation": "Request timed out ({value}s): {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.fileTooLarge",
+      "source": "文件较大（{size}），应用内预览上限 {limit}——请改用「下载」或「另存为」。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "limit"
+        },
+        {
+          "name": "size"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 462,
+          "context": "return i18n(\"lib.transport.fileTooLarge\", {size:mb(big[1]!),limit:mb(big[2]!)});"
+        }
+      ],
+      "translation": "File is large ({size}); in-app preview is limited to {limit} — please use \"Download\" or \"Save as\" instead.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.noReason",
+      "source": "操作失败（原生未给出原因，可到「设置 → 诊断」看日志）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 457,
+          "context": "return i18n(\"lib.transport.noReason\");"
+        }
+      ],
+      "translation": "Operation failed (the native side gave no reason; check logs in \"Settings → Diagnostics\")",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.reloginAdvice",
+      "source": "下拉刷新即可重试；若持续出现，到「设置 → 账户」重新登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 468,
+          "context": "advice = i18n(\"lib.transport.reloginAdvice\")"
+        }
+      ],
+      "translation": "Pull down to refresh to retry; if this keeps happening, sign in again in \"Settings → Accounts\".",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.serverRejected",
+      "source": "{error}：服务端拒绝了这次请求（登录态过期或该文件无权限）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 475,
+          "context": "return i18n(\"lib.transport.serverRejected\", {error:raw});"
+        }
+      ],
+      "translation": "{error}: the server rejected this request (login session expired, or no permission for this file)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.timeoutAdvice",
+      "source": "网络超时：请确认校园网 / WebVPN 可达。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 481,
+          "context": "return i18n(\"lib.transport.timeoutAdvice\");"
+        }
+      ],
+      "translation": "Network timed out: check that campus network / WebVPN is reachable.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.305378ddd2b8",
+      "source": "链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 246,
+          "context": "() => i18n(\"lib.tts.305378ddd2b8\")"
+        }
+      ],
+      "translation": "Link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.56b01b7faa9d",
+      "source": " （代码略） ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 242,
+          "context": "() => i18n(\"lib.tts.56b01b7faa9d\")"
+        }
+      ],
+      "translation": " (code omitted) ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.9138d2ecd64e",
+      "source": "引擎默认音色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 266,
+          "context": "return i18n(\"lib.tts.9138d2ecd64e\");"
+        }
+      ],
+      "translation": "Engine default voice",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.98f963cb664a",
+      "source": "空文本",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 151,
+          "context": "new Error(i18n(\"lib.tts.98f963cb664a\"))"
+        }
+      ],
+      "translation": "Empty text",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.tts.c031b065a3a3",
       "source": "……（内容较长，剩下的看屏幕吧）",
@@ -1038,413 +1470,6 @@
       "translation": "No file URL was returned",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.vaultremote.c2ffc377da9f",
-      "source": "已缓存到暂存箱；云盘备份失败：{error}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "error",
-          "expression": "cached.reason ?? i18n(\"lib.vaultremote.7b0fe85cc2ee\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/vaultRemote.ts",
-          "line": 53,
-          "context": "cached.ok ? i18n(\"lib.vaultremote.0e41e88fae37\", { title: title }) : i18n(\"lib.vaultremote.c2ffc377da9f\", { error: cached.reason ?? i18n(\"lib.vaultremote.7b0fe85cc2ee\") })"
-        }
-      ],
-      "translation": "Cached to Stash; cloud drive backup failed: {error}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "lib.vaultremote.ffccb4633b09",
-      "source": "{byteLength} B · 已缓存",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "byteLength",
-          "expression": "String(bytes.byteLength)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/vaultRemote.ts",
-          "line": 50,
-          "context": "sub: i18n(\"lib.vaultremote.ffccb4633b09\", { byteLength: String(bytes.byteLength) })"
-        }
-      ],
-      "translation": "{byteLength} B · Cached",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.62fb79046777",
-      "source": "验证码错误或已过期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 348,
-          "context": "json.msg ?? i18n(\"lib.venue.62fb79046777\")"
-        }
-      ],
-      "translation": "Verification code is wrong or expired",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.7f658db5a72c",
-      "source": "本机无记住的统一身份凭证",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 165,
-          "context": "new VenueAuthRequiredError(i18n(\"lib.venue.7f658db5a72c\"))"
-        }
-      ],
-      "translation": "No remembered unified identity credentials on this device",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.85e08a6d9846",
-      "source": "CAS 链尾不是登录表单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 247,
-          "context": "new VenueAuthRequiredError(i18n(\"lib.venue.85e08a6d9846\"))"
-        }
-      ],
-      "translation": "The CAS chain doesn't end at a login form",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.93692dc0f921",
-      "source": "二次认证接口返回异常",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 346,
-          "context": "new VenueApiError(i18n(\"lib.venue.93692dc0f921\"), \"2FA\")"
-        }
-      ],
-      "translation": "Second-factor authentication endpoint returned an error",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.9ae22ae4d71c",
-      "source": "该账号需要二次认证",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 37,
-          "context": "super(i18n(\"lib.venue.9ae22ae4d71c\"))"
-        }
-      ],
-      "translation": "This account requires second-factor authentication",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.cb8fdb80eef2",
-      "source": "二次认证未返回跳转地址",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 350,
-          "context": "new VenueApiError(i18n(\"lib.venue.cb8fdb80eef2\"), \"2FA\")"
-        }
-      ],
-      "translation": "Second-factor authentication didn't return a redirect URL",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.424cb0668f46",
-      "source": "AI 返回为空",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 40,
-          "context": "new Error(i18n(\"lib.xkai.424cb0668f46\"))"
-        }
-      ],
-      "translation": "AI returned an empty response",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.ae5755213df2",
-      "source": "AI 接口 {status}: {value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "status",
-          "expression": "String(res.status)"
-        },
-        {
-          "name": "value",
-          "expression": "String(t.slice(0, 160))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 36,
-          "context": "new Error(i18n(\"lib.xkai.ae5755213df2\", { status: String(res.status), value: String(t.slice(0, 160)) }))"
-        }
-      ],
-      "translation": "AI API {status}: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.cf3dc6fdc4c8",
-      "source": "请先在 AI 配置里填写 API Base URL 和模型名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 20,
-          "context": "new Error(i18n(\"lib.xkai.cf3dc6fdc4c8\"))"
-        }
-      ],
-      "translation": "Fill in the API Base URL and model name in AI settings first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.f2b841973f26",
-      "source": "AI 输出里没有 JSON 数组",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 47,
-          "context": "new Error(i18n(\"lib.xkai.f2b841973f26\"))"
-        }
-      ],
-      "translation": "No JSON array found in the AI output",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.1eb8d1843c31",
-      "source": "9-10节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 15
-        }
-      ],
-      "translation": "Periods 9-10",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.2961168962be",
-      "source": "周三",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Wed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.2b7a88e2d1e1",
-      "source": "(第二外国语替代)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 519,
-          "context": "coveredBy = i18n(\"lib.xklogic.2b7a88e2d1e1\")"
-        }
-      ],
-      "translation": "(Second foreign language substitute)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.4aa68593661e",
-      "source": "限选",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 63,
-          "context": "return i18n(\"lib.xklogic.4aa68593661e\");"
-        }
-      ],
-      "translation": "Restricted elective",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.4df6a2625554",
-      "source": "3-4节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 15
-        }
-      ],
-      "translation": "Periods 3-4",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.572388f3b096",
-      "source": "周五",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Fri",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.5def9905e85f",
-      "source": "必修",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 63,
-          "context": "return i18n(\"lib.xklogic.5def9905e85f\");"
-        }
-      ],
-      "translation": "Required",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.5e35c673a5a7",
-      "source": "5-6节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 15
-        }
-      ],
-      "translation": "Periods 5-6",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.749cef85dc5e",
-      "source": "7-8节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 15
-        }
-      ],
-      "translation": "Periods 7-8",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.8a480b042260",
-      "source": "(已有体育课)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 514,
-          "context": "coveredBy = i18n(\"lib.xklogic.8a480b042260\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 515,
-          "context": "coveredBy = i18n(\"lib.xklogic.8a480b042260\")"
-        }
-      ],
-      "translation": "(PE course already present)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.a0e7e080aa5e",
-      "source": "任选",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 63,
-          "context": "return i18n(\"lib.xklogic.a0e7e080aa5e\");"
-        }
-      ],
-      "translation": "Free elective",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.ab9ba6d10394",
-      "source": "无数据",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 86,
-          "context": "label: i18n(\"lib.xklogic.ab9ba6d10394\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 90,
-          "context": "label: i18n(\"lib.xklogic.ab9ba6d10394\")"
-        }
-      ],
-      "translation": "No data",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

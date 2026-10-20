@@ -1,7 +1,568 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.settings.8f655a35cb99",
+      "source": "本机保存的登录密码（可清除）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 111,
+          "context": "return i18n(\"pages.settings.8f655a35cb99\");"
+        }
+      ],
+      "translation": "Sign-in passwords saved on this machine (can be cleared)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.92094cd0c4c7",
+      "source": "未保存；登录时勾选「记住密码」即可启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 455,
+          "context": "hasSaved ? i18n(\"pages.settings.f5f631c6c63e\") : i18n(\"pages.settings.92094cd0c4c7\")"
+        }
+      ],
+      "translation": "Not saved; check \"Remember password\" at sign-in to enable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.92dd1d1f77db",
+      "source": "设置栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 224,
+          "context": "{i18n(\"pages.settings.92dd1d1f77db\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 232,
+          "context": "{i18n(\"pages.settings.92dd1d1f77db\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 233,
+          "context": "{i18n(\"pages.settings.92dd1d1f77db\")}"
+        }
+      ],
+      "translation": "Settings sections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.931d5e245827",
+      "source": "浏览器探索开关、环境下载与启动方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 99,
+          "context": "return i18n(\"pages.settings.931d5e245827\");"
+        }
+      ],
+      "translation": "Browser exploration toggle, environment download, and launch method",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.96f1584f9196",
+      "source": "系统浏览器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 886,
+          "context": "label: i18n(\"pages.settings.96f1584f9196\")"
+        }
+      ],
+      "translation": "System browser",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.settings.99e398c6de5c",
+      "source": "统一认证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 290,
+          "context": "{i18n(\"pages.settings.99e398c6de5c\")}"
+        }
+      ],
+      "translation": "Unified identity",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.9c5584655501",
+      "source": "已恢复默认下载位置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 523,
+          "context": "reset ? i18n(\"pages.settings.9c5584655501\") : i18n(\"pages.settings.52de8e2d0c2c\")"
+        }
+      ],
+      "translation": "Default download location restored.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.a52019e2a526",
+      "source": "登录入口按作业源分卡：OJ 类收在「OJ 平台登录」折叠卡里，雨课堂等各卡有自己的登录入口；已带到「外部作业源」分节。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 116,
+          "context": "return i18n(\"pages.settings.a52019e2a526\");"
+        }
+      ],
+      "translation": "Sign-in entries are one card per assignment source: OJ-type sources are in the collapsed \"OJ platform sign-in\" card, and Rain Classroom and others each have their own sign-in entry; brought you to the \"External assignment sources\" section.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.a57cfcb8428d",
+      "source": "帮助",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 118,
+          "context": "return i18n(\"pages.settings.a57cfcb8428d\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 262,
+          "context": "{i18n(\"pages.settings.a57cfcb8428d\")}"
+        }
+      ],
+      "translation": "Help",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.a614894c6a8c",
+      "source": "横版：标签在顶部一排；竖版：标签在左侧栏。标签栏上的切换钮可随时改，这里设的是默认值。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 695,
+          "context": "{i18n(\"pages.settings.a614894c6a8c\")}"
+        }
+      ],
+      "translation": "Horizontal: tabs in a row on top; vertical: tabs in the left sidebar. The toggle on the tab bar can change this anytime; this sets the default.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.a6514da1828c",
+      "source": "横版顶部标签 / 竖版左侧标签",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 94,
+          "context": "return i18n(\"pages.settings.a6514da1828c\");"
+        }
+      ],
+      "translation": "Horizontal top tabs / vertical side tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.a6b75d068032",
+      "source": "深色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 752,
+          "context": "snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\")"
+        }
+      ],
+      "translation": "Dark",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.a770b8f58676",
+      "source": "专用版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 886,
+          "context": "label: i18n(\"pages.settings.a770b8f58676\")"
+        }
+      ],
+      "translation": "Dedicated build",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.settings.a94d4e09776c",
+      "source": "默认静音；视频壁纸有声时才需手势放开（浏览器自动播放策略）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 632,
+          "context": "{i18n(\"pages.settings.a94d4e09776c\")}"
+        }
+      ],
+      "translation": "Muted by default; a gesture is needed to unmute when a video wallpaper has audio (browser autoplay policy).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.aa0819dfc4d8",
+      "source": "浅色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 752,
+          "context": "snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\")"
+        }
+      ],
+      "translation": "Light",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.ac32447aadc3",
+      "source": "OneShot 快捷入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 427,
+          "context": "{i18n(\"pages.settings.ac32447aadc3\")}"
+        }
+      ],
+      "translation": "OneShot shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.afb63a620bdc",
+      "source": "安全",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 108,
+          "context": "return i18n(\"pages.settings.afb63a620bdc\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 451,
+          "context": "{i18n(\"pages.settings.afb63a620bdc\")}"
+        }
+      ],
+      "translation": "Security",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b047bf296ada",
+      "source": "已恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 350,
+          "context": "homeResetAt ? i18n(\"pages.settings.b047bf296ada\") : i18n(\"pages.settings.77ef57e1d1d3\")"
+        }
+      ],
+      "translation": "Restored",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b073567bc2e0",
+      "source": "跟随系统昼夜",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 90,
+          "context": "return i18n(\"pages.settings.b073567bc2e0\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 750,
+          "context": "{i18n(\"pages.settings.b073567bc2e0\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 754,
+          "context": "{i18n(\"pages.settings.b073567bc2e0\")}"
+        }
+      ],
+      "translation": "Follow system day/night",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b07a37146f79",
+      "source": "检查应用本体更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 114,
+          "context": "return i18n(\"pages.settings.b07a37146f79\");"
+        }
+      ],
+      "translation": "Check for app updates",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b34bc798190c",
+      "source": "动态壁纸声音",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 93,
+          "context": "return i18n(\"pages.settings.b34bc798190c\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 631,
+          "context": "{i18n(\"pages.settings.b34bc798190c\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 634,
+          "context": "{i18n(\"pages.settings.b34bc798190c\")}"
+        }
+      ],
+      "translation": "Dynamic wallpaper sound",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b34d6b6c1193",
+      "source": "检查 OneTHU 更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 114,
+          "context": "return i18n(\"pages.settings.b34d6b6c1193\");"
+        }
+      ],
+      "translation": "Check for OneTHU updates",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b3aa4945927f",
+      "source": "{name}（暗色）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(t.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 687,
+          "context": "t.dark ? i18n(\"pages.settings.b3aa4945927f\", { name: String(t.name) }) : t.name"
+        }
+      ],
+      "translation": "{name} (dark)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b5e1a19b3c87",
+      "source": "读取下载位置失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 504,
+          "context": "setMessage(i18n(\"pages.settings.b5e1a19b3c87\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Failed to read the download location: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b7d8cb31eeb8",
+      "source": "记住的密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 111,
+          "context": "return i18n(\"pages.settings.b7d8cb31eeb8\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 454,
+          "context": "{i18n(\"pages.settings.b7d8cb31eeb8\")}"
+        }
+      ],
+      "translation": "Remembered passwords",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b8f32d284848",
+      "source": "导出日志",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 580,
+          "context": "busy ? i18n(\"pages.settings.dce6e572314e\") : i18n(\"pages.settings.b8f32d284848\")"
+        }
+      ],
+      "translation": "Export logs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.b953890db0b9",
+      "source": "保留最近 10 条搜索记录，可清空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 98,
+          "context": "return i18n(\"pages.settings.b953890db0b9\");"
+        }
+      ],
+      "translation": "Keeps the 10 most recent searches; can be cleared",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.ba2e93e73037",
+      "source": "恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 389,
+          "context": "{i18n(\"pages.settings.ba2e93e73037\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 549,
+          "context": "{i18n(\"pages.settings.ba2e93e73037\")}"
+        }
+      ],
+      "translation": "Restore defaults",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.ba9385e7fd13",
+      "source": "设置栏目的显隐与排序",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 112,
+          "context": "return i18n(\"pages.settings.ba9385e7fd13\");"
+        }
+      ],
+      "translation": "Settings section visibility & ordering",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.bbaa9f06378b",
+      "source": "壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 92,
+          "context": "return i18n(\"pages.settings.bbaa9f06378b\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 626,
+          "context": "{i18n(\"pages.settings.bbaa9f06378b\")}"
+        }
+      ],
+      "translation": "Wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.bc5c3d6b77d8",
+      "source": "默认档是无玻璃的中性面；其余三档是三种玻璃取向。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 712,
+          "context": "{i18n(\"pages.settings.bc5c3d6b77d8\")}"
+        }
+      ],
+      "translation": "The default level is a neutral, glass-free surface; the other three are three glass styles.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.settings.bcc2333dc631",
       "source": "下载中…",
@@ -838,532 +1399,6 @@
         }
       ],
       "translation": "What to handle today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.091a3375f53e",
-      "source": "返回生活 →",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 315,
-          "context": "{i18n(\"pages.taskspage.091a3375f53e\")}"
-        }
-      ],
-      "translation": "Back to Life →",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.0d1d9183d7d0",
-      "source": "收起 ⤡",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 307,
-          "context": "pcFull ? i18n(\"pages.taskspage.0d1d9183d7d0\") : i18n(\"pages.taskspage.d9d9d95f3a25\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 326,
-          "context": "{i18n(\"pages.taskspage.0d1d9183d7d0\")}"
-        }
-      ],
-      "translation": "Collapse ⤡",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.0d261d034491",
-      "source": "全部通知 →",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 296,
-          "context": "{i18n(\"pages.taskspage.0d261d034491\")}"
-        }
-      ],
-      "translation": "All notifications →",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.1281738c7a2b",
-      "source": "按课程筛选作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 229,
-          "context": "{i18n(\"pages.taskspage.1281738c7a2b\")}"
-        }
-      ],
-      "translation": "Filter assignments by course",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.13239e085f0a",
-      "source": "去充值 →",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 357,
-          "context": "{i18n(\"pages.taskspage.13239e085f0a\")}"
-        }
-      ],
-      "translation": "Top up →",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.1522cf51a469",
-      "source": "全部作业 →",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 280,
-          "context": "{i18n(\"pages.taskspage.1522cf51a469\")}"
-        }
-      ],
-      "translation": "All assignments →",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 211,
-          "context": "{i18n(\"pages.taskspage.15d208d1b4c9\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 348,
-          "context": "{i18n(\"pages.taskspage.15d208d1b4c9\")}"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.2118cbc10988",
-      "source": "学习",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 210,
-          "context": "{i18n(\"pages.taskspage.2118cbc10988\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 217,
-          "context": "{i18n(\"pages.taskspage.2118cbc10988\")}"
-        }
-      ],
-      "translation": "Study",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.2ebabbe9e7d7",
-      "source": "课程通知：",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 289,
-          "context": "{i18n(\"pages.taskspage.2ebabbe9e7d7\")}"
-        }
-      ],
-      "translation": "Course notifications:",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.2f7e202b64d3",
-      "source": "3 日内截止",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 276,
-          "context": "{i18n(\"pages.taskspage.2f7e202b64d3\")}"
-        }
-      ],
-      "translation": "Due within 3 days",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.4706dde1fb19",
-      "source": "新闻还在路上，稍后再来看看。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 368,
-          "context": "{i18n(\"pages.taskspage.4706dde1fb19\")}"
-        }
-      ],
-      "translation": "News is on the way — check back a little later.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.52fdbbaeda4c",
-      "source": "待办",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 199,
-          "context": "{i18n(\"pages.taskspage.52fdbbaeda4c\")}"
-        }
-      ],
-      "translation": "Tasks",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.60db1afb4022",
-      "source": "课程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 68,
-          "context": "courseMap.get(id) ?? i18n(\"pages.taskspage.60db1afb4022\")"
-        }
-      ],
-      "translation": "Courses",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.625aecb7d77b",
-      "source": "{length} 条未读",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "unread.length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 289,
-          "context": "{i18nRich(\"pages.taskspage.625aecb7d77b\", { length: unread.length })}"
-        }
-      ],
-      "translation": "{length} unread",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.6f3b6788c68c",
-      "source": "正在取作业…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 254,
-          "context": "{i18n(\"pages.taskspage.6f3b6788c68c\")}"
-        }
-      ],
-      "translation": "Fetching assignments…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.7bd83a8ffaff",
-      "source": "重要未读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 290,
-          "context": "{i18n(\"pages.taskspage.7bd83a8ffaff\")}"
-        }
-      ],
-      "translation": "Important unread",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.873399e71de9",
-      "source": "进入网络学堂 →",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 281,
-          "context": "{i18n(\"pages.taskspage.873399e71de9\")}"
-        }
-      ],
-      "translation": "Open Web Learning →",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.8c75e6d5e446",
-      "source": "校园卡余额不足",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 354,
-          "context": "{i18n(\"pages.taskspage.8c75e6d5e446\")}"
-        }
-      ],
-      "translation": "Campus card balance low",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.aa39cac2b409",
-      "source": "网络学堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 233,
-          "context": "{i18n(\"pages.taskspage.aa39cac2b409\")}"
-        }
-      ],
-      "translation": "Web Learning",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.aed87d6c236b",
-      "source": "课程通知：暂无未读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 293,
-          "context": "{i18n(\"pages.taskspage.aed87d6c236b\")}"
-        }
-      ],
-      "translation": "Course notifications: nothing unread",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.aee887434131",
-      "source": "刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 203,
-          "context": "{i18n(\"pages.taskspage.aee887434131\")}"
-        }
-      ],
-      "translation": "Refresh",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.b457a3c1c9a1",
-      "source": "全部新闻 →",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 363,
-          "context": "{i18n(\"pages.taskspage.b457a3c1c9a1\")}"
-        }
-      ],
-      "translation": "All news →",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.b6ac37044ccd",
-      "source": "最近新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 362,
-          "context": "{i18n(\"pages.taskspage.b6ac37044ccd\")}"
-        }
-      ],
-      "translation": "Recent news",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.b8a9cf5d2a77",
-      "source": "当前 ¥{balance}，建议充值",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "balance",
-          "expression": "card.data?.info.balance"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 355,
-          "context": "{i18nRich(\"pages.taskspage.b8a9cf5d2a77\", { balance: card.data?.info.balance })}"
-        }
-      ],
-      "translation": "Currently ¥{balance}, top up recommended",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.bce2377283c2",
-      "source": "清除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 248,
-          "context": "{i18n(\"pages.taskspage.bce2377283c2\")}"
-        }
-      ],
-      "translation": "Clear",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.d4af30a738c7",
-      "source": "作业详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 304,
-          "context": "{i18n(\"pages.taskspage.d4af30a738c7\")}"
-        }
-      ],
-      "translation": "Assignment details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.d9a72ce83c42",
-      "source": "全部课程（{length}）",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "flowAll.length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 231,
-          "context": "{i18nRich(\"pages.taskspage.d9a72ce83c42\", { length: flowAll.length })}"
-        }
-      ],
-      "translation": "All courses ({length})",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.d9d9d95f3a25",
-      "source": "展开 ⤢",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 307,
-          "context": "pcFull ? i18n(\"pages.taskspage.0d1d9183d7d0\") : i18n(\"pages.taskspage.d9d9d95f3a25\")"
-        }
-      ],
-      "translation": "Expand ⤢",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.dd67ab4b0109",
-      "source": "行政类通知（报到、党团活动等）暂无稳定数据源，接入后补充到这里。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 370,
-          "context": "{i18n(\"pages.taskspage.dd67ab4b0109\")}"
-        }
-      ],
-      "translation": "Administrative notifications (registration, party/league activities, etc.) have no stable data source yet; they will be added here once connected.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.e7b5dca4c106",
-      "source": "还剩作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 272,
-          "context": "{i18n(\"pages.taskspage.e7b5dca4c106\")}"
-        }
-      ],
-      "translation": "Assignments left",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.thubookpage.281cf61ea21e",
-      "source": "左侧选择一页开始阅读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/ThubookPage.tsx",
-          "line": 213,
-          "context": "{i18n(\"pages.thubookpage.281cf61ea21e\")}"
-        }
-      ],
-      "translation": "Pick a page on the left to start reading",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -27,16 +27,17 @@ import { openExternal } from "./info/openExternal.js";
 import {
   ensureSeafileLoaded, getSeafileToken,
   refreshSeafileAccount, refreshRepos, useSeafile, useSeafileDir,
-  seafileDownload, seafileShare, seafileSearch, refreshDir,
+  seafileDownload, seafileShare, seafileSearch, refreshDir, canDeleteSeafileRepo, deleteSeafileRepo, hasSeafileRepoOwnershipMetadata,
   type SeafileEntry, type SeafileRepo,
 } from "../state/seafile.js";
 import { ConnectGate } from "../components/ConnectGate.js";
 import { openFilePreview } from "../components/FilePreview.js";
 import { showToast } from "../state/toast.js";
+import { orgSnapshot } from "../state/org.js";
 import { confirmDanger, promptText } from "../lib/confirm.js";
 import {
   Breadcrumb, Btn, Card, Checkbox, EmptyState, Grid, Grow, IconChevron, IconExternal, IconFile,
-  IconFolder, IconFolderPlus, IconRefresh, IconSearch, IconUpload, Inline, Input, List, LoadingBlock,
+  IconFolder, IconFolderPlus, IconRefresh, IconSearch, IconUpload, IconTrash, Inline, Input, List, LoadingBlock,
   Modal, Progress, Row, Select, Spacer, Spinner, Stack, Surface, Tag, Text,
 } from "@onethu/gui";
 
@@ -208,15 +209,19 @@ export default function CloudPage(): ReactNode {
 
   const { navParams } = useApp();
   const { configured, account, repos, busy, lastError } = useSeafile();
+  const missingOwnershipMetadata = repos.some((entry) => !hasSeafileRepoOwnershipMetadata(entry));
   const [bindOpen, setBindOpen] = useState(false); // §4.3：口令输入统一走 ConnectGate
   const [repo, setRepo] = useState<SeafileRepo | null>(null);
   const [path, setPath] = useState("/");
   const [sharing, setSharing] = useState<string | null>(null);
+  const [deletingRepo, setDeletingRepo] = useState<string | null>(null);
+  const deleteRepoPending = useRef(false);
   const [searchText, setSearchText] = useState("");
   const [searchHits, setSearchHits] = useState<SeafileEntry[] | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchMeta, setSearchMeta] = useState<{ q: string; ms: number } | null>(null);
   const searchSeqRef = useRef(0);
+  const appliedDeepLink = useRef("");
   const dir = useSeafileDir(repo?.id ?? null, repo ? path : null);
 
   /* 批量选择模式 */
@@ -237,16 +242,60 @@ export default function CloudPage(): ReactNode {
     })();
   }, [configured]);
 
-  // 深链：cloudRepo 指定库
+  // Apply each deep link once; a background library refresh must not reset a
+  // directory the user has since navigated into.
   useEffect(() => {
     const rid = navParams?.cloudRepo;
-    if (rid && repo?.id !== rid) {
-      const r = repos.find((x) => x.id === rid);
-      if (r) { setRepo(r); setPath("/"); }
+    if (!rid) { appliedDeepLink.current = ""; return; }
+    const requestedPath = typeof navParams?.cloudPath === "string" ? navParams.cloudPath : "/";
+    const safePath = requestedPath.startsWith("/") && !requestedPath.includes("\\")
+      && !requestedPath.includes("\0") && !requestedPath.split("/").includes("..")
+      ? "/" + requestedPath.split("/").filter((part) => part && part !== ".").join("/") : "/";
+    const key = `${rid}|${safePath}`;
+    if (appliedDeepLink.current === key) return;
+    const target = repos.find((entry) => entry.id === rid);
+    if (target) {
+      appliedDeepLink.current = key;
+      setRepo(target); setPath(safePath); setSearchHits(null); setSearchText("");
+      setSelMode(false); setSelSet(new Set());
     }
-  }, [navParams?.cloudRepo, repos]);
+  }, [navParams?.cloudRepo, navParams?.cloudPath, repos]);
 
   const exitSel = (): void => { setSelMode(false); setSelSet(new Set()); };
+
+  const removeLibrary = async (target: SeafileRepo): Promise<void> => {
+    if (deleteRepoPending.current || !canDeleteSeafileRepo(target, account?.email)) return;
+    deleteRepoPending.current = true;
+    setDeletingRepo(target.id);
+    try {
+      const linked = orgSnapshot().orgs.filter((org) => org.cloudRepoId === target.id
+        || org.shared?.repoId === target.id || org.libraries?.some((library) => library.repoId === target.id));
+      const ok = await confirmDanger(
+        linked.length
+          ? i18nMsg("pages.cloudpage.deleteLibraryOrgConfirm", {name: target.name, organizations: linked.map((org) => org.name).join("、")})
+          : i18nMsg("pages.cloudpage.deleteLibraryConfirm", {name: target.name}),
+        {title: i18nMsg("pages.cloudpage.deleteLibrary"), confirmText: i18nMsg("pages.cloudpage.deleteLibrary")},
+      );
+      if (!ok) return;
+      await deleteSeafileRepo(target.id);
+      if (repo?.id === target.id) { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }
+      showToast(i18nMsg("pages.cloudpage.libraryDeleted", {name: target.name}));
+    } catch (error) {
+      showToast(i18nMsg("pages.cloudpage.5e9e9ab95a7b", {value: String(error).slice(0, 100)}));
+    } finally {
+      deleteRepoPending.current = false;
+      setDeletingRepo(null);
+    }
+  };
+
+  // Other cloud tabs subscribe to the same repository snapshot.
+  useEffect(() => {
+    if (!repo || busy) return;
+    const current = repos.find((entry) => entry.id === repo.id);
+    if (!current) {
+      setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel();
+    } else if (current !== repo) setRepo(current);
+  }, [repos, busy, repo]);
 
   /** 库内搜索：服务器端整库扫描秒级耗时——立即反馈「搜索中」+ 完成显示耗时，过期响应丢弃 */
   const runSearch = async (): Promise<void> => {
@@ -387,6 +436,9 @@ export default function CloudPage(): ReactNode {
       <Stack gap={2}>
         <Inline gap={2} wrap>
           <Btn variant="outline" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>{i18n("pages.cloudpage.1c7ec14c5804")}</Btn>
+          {(canDeleteSeafileRepo(repo, account?.email) || !hasSeafileRepoOwnershipMetadata(repo)) && <Btn variant="ghost" tone="error" icon={<IconTrash size="sm" />}
+            titleAttr={!hasSeafileRepoOwnershipMetadata(repo) ? i18n("state.seafile.nativeRestartRequired") : undefined}
+            disabled={deletingRepo !== null || batchBusy || !hasSeafileRepoOwnershipMetadata(repo)} onClick={() => void removeLibrary(repo)}>{i18n("pages.cloudpage.deleteLibrary")}</Btn>}
           <Grow>
             <Breadcrumb
               items={[
@@ -425,6 +477,7 @@ export default function CloudPage(): ReactNode {
             }}>{i18n("pages.cloudpage.9e07e3c0532d")}</Btn>
         </Inline>
 
+        {!hasSeafileRepoOwnershipMetadata(repo) && <div role="status"><Text as="p" slot="micro" tone="error">{i18n("state.seafile.nativeRestartRequired")}</Text></div>}
         {!selMode && (
           <Inline gap={2} wrap>
             <div style={{ flex: "1 1 auto", minWidth: 0, maxWidth: "min(520px, 100%)" }}>
@@ -618,28 +671,32 @@ export default function CloudPage(): ReactNode {
         <Progress value={account.usage / Math.max(account.total, 1)} size="sm" />
       )}
       {lastError && <Text as="p" slot="micro" tone="error">{lastError}</Text>}
+      {missingOwnershipMetadata && <div role="status"><Text as="p" slot="micro" tone="error">{i18n("state.seafile.nativeRestartRequired")}</Text></div>}
       {busy && <Text as="p" tone="faint">{i18n("pages.cloudpage.f369bd636d02")}</Text>}
       {repos.length === 0 && !busy ? (
         <EmptyState title={i18n("pages.cloudpage.99b4882003c8")} />
       ) : (
         <Grid min="md">
           {repos.map((r) => (
-            <Card
-              key={r.id}
-              flush
-              interactive
-              role="button"
-              tabIndex={0}
+            <Card key={r.id} flush
               data-vault-catch={vaultCatchCloudFile({ name: r.name, kind: "dir", repoId: r.id, repoName: r.name, path: "/", size: r.size })}
-              onClick={() => { setRepo(r); setPath("/"); setSearchHits(null); exitSel(); }}
-              onKeyDown={(ev) => { if (ev.key === "Enter") { setRepo(r); setPath("/"); } }}
             >
-              <Row
-                flush
-                leading={<IconFolder size="lg" className="og-text--t-brand" title={i18n("pages.cloudpage.433bdcb25776")} />}
-                title={r.name}
-                sub={`${fmtSize(r.size)}${r.mtime ? ` · ${fmtMtime(r.mtime)}` : ""}`}
-              />
+              <Inline gap={1}>
+                <Grow>
+                  <Row flush role="button" tabIndex={0}
+                    onClick={() => { setRepo(r); setPath("/"); setSearchHits(null); exitSel(); }}
+                    onKeyDown={(ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); setRepo(r); setPath("/"); setSearchHits(null); exitSel(); } }}
+                    leading={<IconFolder size="lg" className="og-text--t-brand" title={i18n("pages.cloudpage.433bdcb25776")} />}
+                    title={r.name}
+                    sub={`${fmtSize(r.size)}${r.mtime ? ` · ${fmtMtime(r.mtime)}` : ""}`}
+                  />
+                </Grow>
+                {(canDeleteSeafileRepo(r, account?.email) || !hasSeafileRepoOwnershipMetadata(r)) && <Btn size="sm" variant="ghost" tone="error" icon={<IconTrash size="sm" />}
+                  aria-label={i18n("pages.cloudpage.deleteLibraryNamed", {name: r.name})}
+                  titleAttr={!hasSeafileRepoOwnershipMetadata(r) ? i18n("state.seafile.nativeRestartRequired") : undefined}
+                  disabled={deletingRepo !== null || !hasSeafileRepoOwnershipMetadata(r)} loading={deletingRepo === r.id}
+                  onClick={() => void removeLibrary(r)}>{i18n("pages.cloudpage.2f9daa828907")}</Btn>}
+              </Inline>
             </Card>
           ))}
         </Grid>

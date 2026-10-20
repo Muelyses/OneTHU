@@ -21,7 +21,7 @@
  * - getLibraryList/FloorList/SectionList/SeatList ← library.ts（api.php 统一 {data:{list}}）
  * - bookLibrarySeat / getLibBookRecords / cancelLibBooking ← library.ts（roam("id")
  *   ef84f6d6…/0?/api/id_tsinghua_callback 同款两段建立会话；access_token =
- *   LIBRARY_HOME 页内首个 "access_token" 后第一个引号串，无 token 重走 roam 再取）
+ *   LIBRARY_HOME 页内明确 token 字面量，无 token 重走 roam 再取）
  * - getLibRoomInfoList/ResourceList/Records、bookLibRoom、cancelLibRoomBooking、
  *   fuzzySearchLibRoomMember、updateLibRoomEmail ← library.ts cabLogin/ic-web 链
  *   （cab.lib.tsinghua.edu.cn 研讨间，独立于座位系统的 cab 会话：auth/address →
@@ -43,6 +43,7 @@ import * as finance from "./finance.js";
 import * as hygiene from "./hygiene.js";
 import * as neth from "./neth.js";
 import * as schoolCalendar from "./calendar.js";
+import { parseLibrarySession } from "./librarySession.js";
 import { parseCRSchedule } from "./crSchedule.js";
 import { fetchZhjwxkPage, type ZhjwxkSession } from "../zhjwxk/client.js";
 import type {
@@ -291,7 +292,7 @@ export class InfoClient {
     this.#hotCache.delete("libBookRecords");
   }
 
-  /** 登录/登出后调用：清全部静态会话缓存（libToken 跨重登录存活 10 分钟——
+  /** 登录/登出后调用：清全部静态会话缓存（libToken 不得跨重登录存活——
    *  旧 token 配新会话 = 订座恒报「没有登录或登录已超时」的元凶） */
   resetStaticSessionCaches(): void {
     InfoClient.libToken = "";
@@ -1845,10 +1846,9 @@ export class InfoClient {
     return false;
   }
 
-  /** 座位系统会话探针：馆列表接口能出 JSON = 可用 */
+  /** 馆列表对匿名访客也返回 JSON，不能作为已登录证据。以首页实际 token 判活。 */
   async #libAlive(): Promise<boolean> {
-    const body = await this.#http.text(urls.LIBRARY_LIST(), this.#campusInit()).catch(() => "");
-    return /^\s*\{/.test(body) && /"list"/.test(body);
+    return Boolean(await this.#readLibraryToken().catch(() => ""));
   }
 
   /**
@@ -1895,18 +1895,27 @@ export class InfoClient {
    *  注意只有含 ticket= 的 Location 才是票据兑付地址（其余 Location 消费了也白搭）。 */
   async #roamIdTicket(formUrl: string): Promise<boolean> {
     let res: Awaited<ReturnType<HttpClient["request"]>>;
+    let viaWrap = false;
     try {
       res = await this.#http.request(formUrl, { redirect: "manual", direct: true });
     } catch {
       // id 直连不可达（部分 ISP 校外把清华域名解析到校内 IP，直连必死——
       // 2026-09-06 学弟实证：校外仅研讨间进不去，因 cab 是唯一硬依赖 id 表单的链）。
       // 回退 webvpn 包装形态：wengine 公网必达，id 会话在包装流内部自洽。
+      viaWrap = true;
       res = await this.#http.request(webvpnWrap(formUrl), { redirect: "manual" });
     }
     let ticketUrl = res.headers.get("location") ?? undefined;
     if (ticketUrl && !/ticket=/.test(ticketUrl)) ticketUrl = undefined;
     if (!ticketUrl) {
       const html = await res.text().catch(() => "");
+      // A restored ID session can ask only for confirmation. This is still SSO:
+      // it must work without an in-memory password, before the credential fallback.
+      if (/checkSingle/.test(html)) {
+        const confirmed = await this.#idCheckSingle(viaWrap ? webvpnWrap(formUrl) : formUrl, viaWrap);
+        if (confirmed.ticketUrl) return this.#consumeIdTicketUrl(confirmed.ticketUrl, formUrl);
+        return false;
+      }
       // 成功页形态 = 「登录成功。正在重定向到」+ <a href="…ticket=…">（dorm.ts 同判据）
       ticketUrl = /<a[^>]+href="([^"]*ticket=[^"]*)"/i.exec(html)?.[1];
       if (!ticketUrl && !/<form|sm2publicKey/i.test(html)) {
@@ -2473,71 +2482,50 @@ export class InfoClient {
     });
   }
 
-  /**
-   * 首页内嵌 access_token（library.ts getAccessToken 逐行对照）：
-   * uFetch(LIBRARY_HOME_URL) 页内首个 "access_token" 后第一个引号串；lib 的
-   * getAccessToken 每次调用前都先 roam("id") 重建 id→座位系统会话 —— 首页无
-   * token 时 core 同样重走 #roamIdService 再取一次。失败带抓取页 URL 前 120 字符。
-   */
+  /** Read and cache an authenticated page. Empty literals and JS references are not tokens. */
+  async #readLibraryToken(): Promise<string> {
+    const home = urls.LIBRARY_HOME();
+    const page = await this.#http.text(home, this.#campusInit());
+    const session = parseLibrarySession(page);
+    // 仅在成功提取到非空 token 时记录抓取页（命中≠提取成功，避免误导）
+    if (session) {
+      InfoClient.libToken = session.token;
+      InfoClient.libUserid = session.userId;
+      InfoClient.libTokenTs = Date.now();
+      this.#lastTokenPage = home;
+      this.lastDebug = `lib-token present=true userid=${session.userId ? "present" : "absent"}`;
+    } else {
+      this.lastDebug = `lib-token 未提取（页面 ${page.length}B，含 ska=${page.includes("ska.")}）`;
+    }
+    InfoClient.onDebugDump?.("lib-home", page);
+    return session?.token ?? "";
+  }
+
+  /** 两分钟 token 缓存 + 单飞；首页无 token 时重走 ID 漫游，最多重取一次。 */
   async #libraryAccessToken(): Promise<string> {
-    // 10 分钟模块级缓存 + 单飞：access_token 每次都整页抓 LIBRARY_HOME 是预约区加载慢的根因之一
     if (InfoClient.libToken && Date.now() - InfoClient.libTokenTs < 120_000) return InfoClient.libToken;
     if (InfoClient.libTokenInflight) return InfoClient.libTokenInflight;
-    const home = urls.LIBRARY_HOME();
-    const grab = async (): Promise<string> => {
-      const page = await this.#http.text(home, this.#campusInit());
-      // R10 真根因：newweb 版首页 token 在 window.ska.access_token（JS 变量），而
-      // 页面里更早出现的「首个 access_token + 引号串」是 logout 函数体的 JS 代码
-      // 碎片——旧取法把代码碎片当 token，后端恒报「没有登录或登录已超时」。
-      // 现在优先 ska 赋值形态，再退化到通用赋值/URL 参数形态，引号取法殿底。
-      const token =
-        /ska\.access_token\s*=\s*["']([A-Za-z0-9._-]{16,})["']/.exec(page)?.[1] ??
-        /["']?access_token["']?\s*[:=]\s*["']([A-Za-z0-9._-]{16,})["']/.exec(page)?.[1] ??
-        /access_token=([A-Za-z0-9._-]{16,})/.exec(page)?.[1] ??
-        (() => {
-          const leftmost = page.indexOf("access_token");
-          if (leftmost < 0) return "";
-          const left = page.indexOf('"', leftmost) + 1;
-          const right = page.indexOf('"', left);
-          return left > 0 && right > left ? page.slice(left, right).trim() : "";
-        })();
-      // 同页提取权威 userid（订座 POST 的 userid 必须与 token 配对，错配=「没有登录」）
-      const skaUser =
-        /'userid'\s*:\s*"([^"\s]{4,32})"/.exec(page)?.[1] ??
-        /ska\.userid\s*=\s*["']([^"\s]{4,32})["']/.exec(page)?.[1] ??
-        "";
-      if (skaUser) InfoClient.libUserid = skaUser;
-      // 仅在成功提取到非空 token 时记录抓取页（命中≠提取成功，避免误导）
-      if (token) {
-        this.#lastTokenPage = home;
-        this.lastDebug = `lib-token len=${token.length} head=${token.slice(0, 4)}… uid=${InfoClient.libUserid || "?"}`;
-      } else {
-        this.lastDebug = `lib-token 未提取（页面 ${page.length}B，含 ska=${page.includes("ska.")}）`;
-      }
-      InfoClient.onDebugDump?.("lib-home", page);
-      return token;
-    };
     const run2 = async (): Promise<string> => {
-    let token = await grab();
-    if (!token) {
-      // lib roam("id") 语义：会话未落地就重建（ef84f6d6…/0?/api/id_tsinghua_callback）。
-      // 不做根页 fallback：GET / 会 302 并下发新 PHPSESSID，污染 jar 里的座位系统会话，
-      // 导致其后的 api.php（馆/楼层/区域）整体降级为匿名态（下拉全空的根因之一）。
-      this.#libRoamed = false;
-      await this.#roamIdService(urls.LIBRARY_CAS_FORM());
-      if (await this.#libAlive()) this.#libRoamed = true;
-      token = await grab();
-    }
-    if (!token) {
-      const pageUrl = (this.#lastTokenPage || home).slice(0, 120);
-      this.lastDebug = `lib-home ${pageUrl} → ${String(this.#http.lastDebug).slice(0, 200)}`;
-      throw new AuthRequiredError(
-        `图书馆 access_token 获取失败（首页无 token，会话可能已失效；抓取页 URL: ${pageUrl}）。建议：退出 OneTHU 重新登录一次后重试`,
-      );
-    }
-    InfoClient.libToken = token;
-    InfoClient.libTokenTs = Date.now();
-    return token;
+      let token = await this.#readLibraryToken();
+      if (!token) {
+        // lib roam("id") 语义：会话未落地就重建（ef84f6d6…/0?/api/id_tsinghua_callback）。
+        // 不做根页 fallback：GET / 会 302 并下发新 PHPSESSID，污染 jar 里的座位系统会话，
+        // 导致其后的 api.php（馆/楼层/区域）整体降级为匿名态（下拉全空的根因之一）。
+        this.#libRoamed = false;
+        await this.#roamIdService(urls.LIBRARY_CAS_FORM());
+        token = await this.#readLibraryToken();
+        if (token) this.#libRoamed = true;
+      }
+      if (!token) {
+        const pageUrl = (this.#lastTokenPage || urls.LIBRARY_HOME()).slice(0, 120);
+        this.lastDebug = `lib-home ${pageUrl} → ${String(this.#http.lastDebug).slice(0, 200)}`;
+        throw new AuthRequiredError(
+          "图书馆登录状态未能恢复，请先重试；若仍失败，请在设置中重新登录",
+        );
+      }
+      InfoClient.libToken = token;
+      InfoClient.libTokenTs = Date.now();
+      return token;
     };
     InfoClient.libTokenInflight = run2().finally(() => { InfoClient.libTokenInflight = null; });
     return InfoClient.libTokenInflight;

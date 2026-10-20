@@ -1,7 +1,552 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.learn.yktassignmentdetailpage.a37e4b89ed66",
+      "source": "作答 / 提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 509,
+          "context": "submitBusy ? i18n(\"pages.learn.yktassignmentdetailpage.16d60e1c096a\") : i18n(\"pages.learn.yktassignmentdetailpage.a37e4b89ed66\")"
+        }
+      ],
+      "translation": "Answer / Submit",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.a811a7884353",
+      "source": "详情拉取失败不影响列表状态；可用右上角「浏览器打开」走官方页面（R20-A 通道）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 404,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.a811a7884353\")}"
+        }
+      ],
+      "translation": "A detail fetch failure does not affect list status; use \"Open in browser\" at the top right to go through the official page (R20-A channel).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.afd4b783536b",
+      "source": "收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 113,
+          "context": "open ? i18n(\"pages.learn.yktassignmentdetailpage.afd4b783536b\") : i18n(\"pages.learn.yktassignmentdetailpage.00bd3960fea8\")"
+        }
+      ],
+      "translation": "Collapse",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.b231587899f3",
+      "source": "浏览器打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 512,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.b231587899f3\")}"
+        }
+      ],
+      "translation": "Open in browser",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.b5f241af1539",
+      "source": "未作答",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 268,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.b5f241af1539\")}"
+        }
+      ],
+      "translation": "Not answered",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.baf3903dacce",
+      "source": "{n} 次",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "n",
+          "expression": "String(n)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 73,
+          "context": "n !== undefined && n > 0 ? i18n(\"pages.learn.yktassignmentdetailpage.baf3903dacce\", { n: String(n) }) : i18n(\"pages.learn.yktassignmentdetailpage.639756756c8c\")"
+        }
+      ],
+      "translation": "{n} attempts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.c430a009a3e5",
+      "source": "外链题目：未取到外链地址，请从雨课堂网页版打开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 248,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.c430a009a3e5\")}"
+        }
+      ],
+      "translation": "External question: no external link was retrieved. Please open it from the Rain Classroom website.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.c7660cd558a7",
+      "source": " · {deadline} 截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "deadline",
+          "expression": "String(ykt.deadline)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 354,
+          "context": "ykt.deadline ? i18n(\"pages.learn.yktassignmentdetailpage.c7660cd558a7\", { deadline: String(ykt.deadline) }) : \"\""
+        }
+      ],
+      "translation": " · due {deadline}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.c906ec514546",
+      "source": "{answered}/{total} 题",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "answered",
+          "expression": "summary.answered"
+        },
+        {
+          "name": "total",
+          "expression": "summary.total"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 453,
+          "context": "{i18nRich(\"pages.learn.yktassignmentdetailpage.c906ec514546\", { answered: summary.answered, total: summary.total })}"
+        }
+      ],
+      "translation": "{answered}/{total} questions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.ca26fadbd353",
+      "source": "不允许补交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 449,
+          "context": "d.lateAllowed ? i18n(\"pages.learn.yktassignmentdetailpage.3b88527a375d\") : i18n(\"pages.learn.yktassignmentdetailpage.ca26fadbd353\")"
+        }
+      ],
+      "translation": "No late submission",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.d069d4f0d22a",
+      "source": "提交作答",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 210,
+          "context": "unlimited ? i18n(\"pages.learn.yktassignmentdetailpage.d069d4f0d22a\") : i18n(\"pages.learn.yktassignmentdetailpage.13c3562806dd\", { remaining: String(remaining) })"
+        }
+      ],
+      "translation": "Submit answer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.d26ef0190d6c",
+      "source": "考试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 423,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.d26ef0190d6c\")}"
+        }
+      ],
+      "translation": "Exams",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.d809649e3802",
+      "source": "R20-C1 打开官方作答页失败: {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(msg.slice(0, 300))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 388,
+          "context": "line: i18n(\"pages.learn.yktassignmentdetailpage.d809649e3802\", { value: String(msg.slice(0, 300)) })"
+        }
+      ],
+      "translation": "R20-C1 failed to open the official answer page: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.f0cd4338679e",
+      "source": "雨课堂作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 346,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.f0cd4338679e\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 500,
+          "context": "ykt.title || i18n(\"pages.learn.yktassignmentdetailpage.f0cd4338679e\")"
+        }
+      ],
+      "translation": "Rain Classroom assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.f3be30c77097",
+      "source": "作业说明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 465,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.f3be30c77097\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 467,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.f3be30c77097\")}"
+        }
+      ],
+      "translation": "Assignment description",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.f53b3eda058b",
+      "source": "第 {index} 题我的作答",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "index",
+          "expression": "String(p.index)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 263,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.f53b3eda058b\", { index: String(p.index) })}"
+        }
+      ],
+      "translation": "My answer to question {index}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.ff55b37a770a",
+      "source": "我的得分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 457,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.ff55b37a770a\")}"
+        }
+      ],
+      "translation": "My score",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.21bd738e0d71",
+      "source": "正在加载…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 309,
+          "context": "isOpen && open?.state === \"loading\"\n                        ? i18n(\"pages.learn.yktcoursepage.21bd738e0d71\")\n                        : isOpen\n                          ? i18n(\"pages.learn.yktcoursepage.3afccd0197f6\")\n                          : i18n(\"pages.learn.yktcoursepage.9d7ed987c913\")"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.261255a76c11",
+      "source": "雨课堂课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 73,
+          "context": "course?.name || fallbackName || i18n(\"pages.learn.yktcoursepage.261255a76c11\")"
+        }
+      ],
+      "translation": "Rain Classroom course",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.2b1fde913dc6",
+      "source": "正在加载内容…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 321,
+          "context": "{i18n(\"pages.learn.yktcoursepage.2b1fde913dc6\")}"
+        }
+      ],
+      "translation": "Loading content…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.39932f24fe11",
+      "source": "文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 42,
+          "context": "return i18n(\"pages.learn.yktcoursepage.39932f24fe11\");"
+        }
+      ],
+      "translation": "Files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.3afccd0197f6",
+      "source": "点击收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 311,
+          "context": "isOpen\n                          ? i18n(\"pages.learn.yktcoursepage.3afccd0197f6\")\n                          : i18n(\"pages.learn.yktcoursepage.9d7ed987c913\")"
+        }
+      ],
+      "translation": "Tap to collapse",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.3f41bfa8628f",
+      "source": " · 未交 {unfinished}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "unfinished",
+          "expression": "String(unfinished)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 219,
+          "context": "unfinished > 0 ? i18n(\"pages.learn.yktcoursepage.3f41bfa8628f\", { unfinished: String(unfinished) }) : \"\""
+        }
+      ],
+      "translation": " · {unfinished} unsubmitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.4b6ded8a7f18",
+      "source": "通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.learn.yktcoursepage.4b6ded8a7f18\");"
+        }
+      ],
+      "translation": "Notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.6cc82444b5de",
+      "source": "点击查看公告",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 307,
+          "context": "noticeNavId\n                      ? i18n(\"pages.learn.yktcoursepage.6cc82444b5de\")\n                      : isOpen && open?.state === \"loading\"\n                        ? i18n(\"pages.learn.yktcoursepage.21bd738e0d71\")\n                        : isOpen\n                          ? i18n(\"pages.learn.yktcoursepage.3afccd0197f6\")\n                          : i18n(\"pages.learn.yktcoursepage.9d7ed987c913\")"
+        }
+      ],
+      "translation": "Tap to view the notice",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.775809537dc4",
+      "source": "只看作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 223,
+          "context": "{i18n(\"pages.learn.yktcoursepage.775809537dc4\")}"
+        }
+      ],
+      "translation": "Assignments only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.7965aadb4537",
+      "source": "这条公告没有取到可用的内容标识。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 175,
+          "context": "error: i18n(\"pages.learn.yktcoursepage.7965aadb4537\")"
+        }
+      ],
+      "translation": "No usable content identifier was retrieved for this notice.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.8f6a68a79b19",
+      "source": "该类型暂无内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 257,
+          "context": "contents.length === 0\n                ? i18n(\"pages.learn.yktcoursepage.f9ba60504ac2\")\n                : i18n(\"pages.learn.yktcoursepage.8f6a68a79b19\")"
+        }
+      ],
+      "translation": "No content of this type yet.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.9d7ed987c913",
+      "source": "点击内嵌预览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 312,
+          "context": "isOpen\n                          ? i18n(\"pages.learn.yktcoursepage.3afccd0197f6\")\n                          : i18n(\"pages.learn.yktcoursepage.9d7ed987c913\")"
+        }
+      ],
+      "translation": "Tap for inline preview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.ab8bbc103e33",
+      "source": "仅{text}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "text",
+          "expression": "String(text)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 244,
+          "context": "COURSE_TABS.some((entry) => entry.label === text) ? i18n(\"pages.learn.yktcoursepage.ab8bbc103e33\", { text: String(text) }) : text"
+        }
+      ],
+      "translation": "{text} only",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.learn.yktcoursepage.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktCoursePage.tsx",
+          "line": 224,
+          "context": "{i18n(\"pages.learn.yktcoursepage.aee887434131\")}"
+        }
+      ],
+      "translation": "Refresh",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.yktcoursepage.b0dff016ff17",
       "source": "作业",
@@ -839,549 +1384,6 @@
         }
       ],
       "translation": "Unread",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.4e2238b74ec7",
-      "source": "同步中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 309,
-          "context": "mail.loading ? i18n(\"pages.mailpage.4e2238b74ec7\") : i18n(\"pages.mailpage.aee887434131\")"
-        }
-      ],
-      "translation": "Syncing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.4ee153002e7b",
-      "source": "全箱搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 332,
-          "context": "{i18n(\"pages.mailpage.4ee153002e7b\")}"
-        }
-      ],
-      "translation": "Search all folders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.51c306bd3174",
-      "source": "(无发件人)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 43,
-          "context": "from.split(\"@\")[0] || from || i18n(\"pages.mailpage.51c306bd3174\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 201,
-          "context": "body.from || i18n(\"pages.mailpage.51c306bd3174\")"
-        }
-      ],
-      "translation": "(No sender)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.537352400c49",
-      "source": "可选",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 131,
-          "context": "{i18n(\"pages.mailpage.537352400c49\")}"
-        }
-      ],
-      "translation": "Optional",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.54c015dde43f",
-      "source": "收件人：{to}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "to",
-          "expression": "body.to"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 202,
-          "context": "{i18nRich(\"pages.mailpage.54c015dde43f\", { to: body.to })}"
-        }
-      ],
-      "translation": "To: {to}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.56a81f01d218",
-      "source": "user@mails.tsinghua.edu.cn（多个用逗号分隔）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 128,
-          "context": "{i18n(\"pages.mailpage.56a81f01d218\")}"
-        }
-      ],
-      "translation": "user@mails.tsinghua.edu.cn (separate multiple with commas)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.57209d3256b5",
-      "source": "(正文为空)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 213,
-          "context": "body.text || i18n(\"pages.mailpage.57209d3256b5\")"
-        }
-      ],
-      "translation": "(Empty body)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.572cf45ba436",
-      "source": "返回",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 183,
-          "context": "{i18n(\"pages.mailpage.572cf45ba436\")}"
-        }
-      ],
-      "translation": "Back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.5ee87e65261b",
-      "source": "退出搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 330,
-          "context": "searching ? i18n(\"pages.mailpage.8aaa866240c3\") : i18n(\"pages.mailpage.5ee87e65261b\")"
-        }
-      ],
-      "translation": "Exit search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.60823aaec73b",
-      "source": "已发送",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 104,
-          "context": "onSent(i18n(\"pages.mailpage.60823aaec73b\"))"
-        }
-      ],
-      "translation": "Sent",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.6b437e170641",
-      "source": "正文（纯文本）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 137,
-          "context": "{i18n(\"pages.mailpage.6b437e170641\")}"
-        }
-      ],
-      "translation": "Body (plain text)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.6d4b7dce1ee6",
-      "source": "绑定邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 292,
-          "context": "{i18n(\"pages.mailpage.6d4b7dce1ee6\")}"
-        }
-      ],
-      "translation": "Bind mailbox",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.73075237fd0f",
-      "source": "邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 305,
-          "context": "{i18n(\"pages.mailpage.73075237fd0f\")}"
-        }
-      ],
-      "translation": "Mail",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.788db1cfec2a",
-      "source": "主题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 133,
-          "context": "{i18n(\"pages.mailpage.788db1cfec2a\")}"
-        }
-      ],
-      "translation": "Subject",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.7c930c7b544e",
-      "source": "没有邮件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 342,
-          "context": "{i18n(\"pages.mailpage.7c930c7b544e\")}"
-        }
-      ],
-      "translation": "No mail",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.88a5ec063718",
-      "source": "没有匹配「{query}」的邮件",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "query",
-          "expression": "searchResult?.query"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 341,
-          "context": "{i18nRich(\"pages.mailpage.88a5ec063718\", { query: searchResult?.query })}"
-        }
-      ],
-      "translation": "No mail matching \"{query}\"",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.8aaa866240c3",
-      "source": "取消搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 330,
-          "context": "searching ? i18n(\"pages.mailpage.8aaa866240c3\") : i18n(\"pages.mailpage.5ee87e65261b\")"
-        }
-      ],
-      "translation": "Cancel search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.93112c231d6a",
-      "source": "去设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 294,
-          "context": "{i18n(\"pages.mailpage.93112c231d6a\")}"
-        }
-      ],
-      "translation": "Go to Settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.9aa24002fe73",
-      "source": "邮件正文",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 210,
-          "context": "{i18n(\"pages.mailpage.9aa24002fe73\")}"
-        }
-      ],
-      "translation": "Email body",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.ad9a65f0c351",
-      "source": "已显示最新 {length} / 共 {total} 封",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(mail.heads.length)"
-        },
-        {
-          "name": "total",
-          "expression": "String(mail.total)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 349,
-          "context": "mail.loading ? i18n(\"pages.mailpage.4927a53bcc88\") : i18n(\"pages.mailpage.ad9a65f0c351\", { length: String(mail.heads.length), total: String(mail.total) })"
-        }
-      ],
-      "translation": "Showing the latest {length} of {total}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.aee887434131",
-      "source": "刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 309,
-          "context": "mail.loading ? i18n(\"pages.mailpage.4e2238b74ec7\") : i18n(\"pages.mailpage.aee887434131\")"
-        }
-      ],
-      "translation": "Refresh",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.b92d3082a65a",
-      "source": "{value}年{value2}月{value3}日",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(d.getFullYear())"
-        },
-        {
-          "name": "value2",
-          "expression": "String(d.getMonth() + 1)"
-        },
-        {
-          "name": "value3",
-          "expression": "String(d.getDate())"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 29,
-          "context": "return i18n(\"pages.mailpage.b92d3082a65a\", { value: String(d.getFullYear()), value2: String(d.getMonth() + 1), value3: String(d.getDate()) });"
-        }
-      ],
-      "translation": "{value2}/{value3}/{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.c237b665a6d8",
-      "source": "收件人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 127,
-          "context": "{i18n(\"pages.mailpage.c237b665a6d8\")}"
-        }
-      ],
-      "translation": "To",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.c3266e411ea3",
-      "source": "加载更早",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 352,
-          "context": "{i18n(\"pages.mailpage.c3266e411ea3\")}"
-        }
-      ],
-      "translation": "Load earlier",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.c38db86e9aab",
-      "source": "读取失败：{error}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "error",
-          "expression": "error"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 192,
-          "context": "{i18nRich(\"pages.mailpage.c38db86e9aab\", { error: error })}"
-        }
-      ],
-      "translation": "Failed to load: {error}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.c96e7731f214",
-      "source": "搜",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 332,
-          "context": "searching ? \"…\" : i18n(\"pages.mailpage.c96e7731f214\")"
-        }
-      ],
-      "translation": "Search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.cc50237edca2",
-      "source": "搜索中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 340,
-          "context": "{i18n(\"pages.mailpage.cc50237edca2\")}"
-        }
-      ],
-      "translation": "Searching…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.d626dbe6715e",
-      "source": "邮件主题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 134,
-          "context": "{i18n(\"pages.mailpage.d626dbe6715e\")}"
-        }
-      ],
-      "translation": "Email subject",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.d661c3d96d53",
-      "source": "正文",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 136,
-          "context": "{i18n(\"pages.mailpage.d661c3d96d53\")}"
-        }
-      ],
-      "translation": "Body",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.df7392cc96be",
-      "source": "重新读取",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 293,
-          "context": "{i18n(\"pages.mailpage.df7392cc96be\")}"
-        }
-      ],
-      "translation": "Reload",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.e26a7fcdf47b",
-      "source": "搜索结果 {length} 封",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "results.length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 356,
-          "context": "{i18nRich(\"pages.mailpage.e26a7fcdf47b\", { length: results.length })}"
-        }
-      ],
-      "translation": "{length} search results",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

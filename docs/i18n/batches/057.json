@@ -1,7 +1,522 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.visittab.f733797ef61a",
+      "source": "确认提交这条报备？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 37,
+          "context": "() => i18n(\"pages.info.visittab.f733797ef61a\")"
+        }
+      ],
+      "translation": "Submit this registration?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.f7c356bbe1c2",
+      "source": "提交报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 367,
+          "context": "{i18n(\"pages.info.visittab.f7c356bbe1c2\")}"
+        }
+      ],
+      "translation": "Submit registration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.f8a7bfe03fb8",
+      "source": "来访人身份证号不能为空，请补齐后再提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 56,
+          "context": "return i18n(\"pages.info.visittab.f8a7bfe03fb8\");"
+        }
+      ],
+      "translation": "A visitor ID number is empty. Fill it in and submit again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.fcafad5054ea",
+      "source": "统一身份认证跳转次数过多，请稍后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.info.visittab.fcafad5054ea\");"
+        }
+      ],
+      "translation": "Too many identity-authentication redirects. Please try again later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.fd9918edd55e",
+      "source": "登录并读取报备信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 228,
+          "context": "{i18n(\"pages.info.visittab.fd9918edd55e\")}"
+        }
+      ],
+      "translation": "Sign in and read registration info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.14f31582e7ec",
+      "source": "更新 {updateTime}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "updateTime",
+          "expression": "String(w.updateTime)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 270,
+          "context": "w.updateTime ? i18n(\"pages.info.washertab.14f31582e7ec\", { updateTime: String(w.updateTime) }) : \"\""
+        }
+      ],
+      "translation": "Updated {updateTime}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.1f0eb99b7ed0",
+      "source": "运行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 37,
+          "context": "w.eta > 0 ? i18n(\"pages.info.washertab.4d5ffe182d08\", { eta: String(w.eta) }) : i18n(\"pages.info.washertab.1f0eb99b7ed0\")"
+        }
+      ],
+      "translation": "Running",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.20f1ae81c877",
+      "source": "选择楼栋…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 198,
+          "context": "sel ? sel.name : i18n(\"pages.info.washertab.20f1ae81c877\")"
+        }
+      ],
+      "translation": "Select building…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.4d5ffe182d08",
+      "source": "剩余 {eta} 分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "eta",
+          "expression": "String(w.eta)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 37,
+          "context": "w.eta > 0 ? i18n(\"pages.info.washertab.4d5ffe182d08\", { eta: String(w.eta) }) : i18n(\"pages.info.washertab.1f0eb99b7ed0\")"
+        }
+      ],
+      "translation": "{eta} min left",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.5a0cc6c04776",
+      "source": "故障",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 41,
+          "context": "text: i18n(\"pages.info.washertab.5a0cc6c04776\")"
+        }
+      ],
+      "translation": "Fault",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 164,
+          "context": "{i18n(\"pages.info.washertab.6acfa1db6a62\")}"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.883871884efe",
+      "source": "无匹配楼栋",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 208,
+          "context": "{i18n(\"pages.info.washertab.883871884efe\")}"
+        }
+      ],
+      "translation": "No matching building",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.93e474c68ed5",
+      "source": "状态未知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 40,
+          "context": "text: i18n(\"pages.info.washertab.93e474c68ed5\")"
+        }
+      ],
+      "translation": "Status unknown",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.a537eecd2300",
+      "source": "搜索楼栋…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 205,
+          "context": "{i18n(\"pages.info.washertab.a537eecd2300\")}"
+        }
+      ],
+      "translation": "Search buildings…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.be1b4f3c6c1c",
+      "source": "离线",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 39,
+          "context": "text: i18n(\"pages.info.washertab.be1b4f3c6c1c\")"
+        }
+      ],
+      "translation": "Offline",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.bed4c87f1838",
+      "source": "待机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 38,
+          "context": "text: i18n(\"pages.info.washertab.bed4c87f1838\")"
+        }
+      ],
+      "translation": "Idle",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.d98a7674edd7",
+      "source": "该楼栋暂无设备数据。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 253,
+          "context": "{i18n(\"pages.info.washertab.d98a7674edd7\")}"
+        }
+      ],
+      "translation": "No device data for this building.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.dae661d17c2d",
+      "source": "空闲",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 35,
+          "context": "text: i18n(\"pages.info.washertab.dae661d17c2d\")"
+        }
+      ],
+      "translation": "Free",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.e1506406a5bd",
+      "source": "设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 266,
+          "context": "w.name || w.location || w.type || i18n(\"pages.info.washertab.e1506406a5bd\")"
+        }
+      ],
+      "translation": "Devices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.eb6e062fe2c4",
+      "source": "数据来自三家：捷利 · 海乐生活 · 小兰智慧",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 165,
+          "context": "{i18n(\"pages.info.washertab.eb6e062fe2c4\")}"
+        }
+      ],
+      "translation": "Data from three providers: Jiel · Haile Life · Xiaolan Smart",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.washertab.f2ac9226cb38",
+      "source": "{length} 台设备 · 空闲 {free} 台",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(f.washers.length)"
+        },
+        {
+          "name": "free",
+          "expression": "String(free)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/WasherTab.tsx",
+          "line": 260,
+          "context": "{i18n(\"pages.info.washertab.f2ac9226cb38\", { length: String(f.washers.length), free: String(free) })}"
+        }
+      ],
+      "translation": "{length} devices · {free} free",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.0cebfcb94425",
+      "source": "作业 DDL 提醒设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 36,
+          "context": "{i18n(\"pages.learn.0cebfcb94425\")}"
+        }
+      ],
+      "translation": "Assignment deadline reminder settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.1236edf41da0",
+      "source": "未交作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 180,
+          "context": "{i18n(\"pages.learn.1236edf41da0\")}"
+        }
+      ],
+      "translation": "Unsubmitted assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.2079ef6b94d0",
+      "source": "雨课堂与 OJ 的作业同步在「设置 → 数据与同步」里配置（登录一次后作业会自动并入「全部作业」）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 168,
+          "context": "{i18n(\"pages.learn.2079ef6b94d0\")}"
+        }
+      ],
+      "translation": "Rain Classroom and OJ assignment sync is configured in \"Settings → Data & Sync\" (after one sign-in, assignments are merged into \"All assignments\" automatically).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.2a81fbaa67a8",
+      "source": "查看全部文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 196,
+          "context": "{i18n(\"pages.learn.2a81fbaa67a8\")}"
+        }
+      ],
+      "translation": "View all files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.2bb745fb2e6f",
+      "source": "课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 202,
+          "context": "{i18n(\"pages.learn.2bb745fb2e6f\")}"
+        }
+      ],
+      "translation": "Course files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.4005ca86f6e8",
+      "source": "所有作业共用：截止前提醒（写入系统日历闹钟，改完即同步）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 48,
+          "context": "{i18n(\"pages.learn.4005ca86f6e8\")}"
+        }
+      ],
+      "translation": "Shared by all assignments: reminder before deadline (written to the system calendar alarm; synced as soon as changed)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.41319c365478",
+      "source": "单个作业想单独改 → 作业行/课程详情页的铃铛（覆盖此默认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 49,
+          "context": "{i18n(\"pages.learn.41319c365478\")}"
+        }
+      ],
+      "translation": "To override for a single assignment → the bell on the assignment row/course detail page (overrides this default)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.44ce7ae909bb",
+      "source": "搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 162,
+          "context": "{i18n(\"pages.learn.44ce7ae909bb\")}"
+        }
+      ],
+      "translation": "Search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.4927a53bcc88",
+      "source": "加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 158,
+          "context": "data ? i18n(\"pages.learn.c58fe880cfb6\", { value: String(semesterText(data.semester.id)), value2: String(data.courses.length + merge.unmatchedYkt.length) }) : i18n(\"pages.learn.4927a53bcc88\")"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.568090ece667",
+      "source": "查看全部通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Learn.tsx",
+          "line": 185,
+          "context": "{i18n(\"pages.learn.568090ece667\")}"
+        }
+      ],
+      "translation": "View all notifications",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.60db1afb4022",
       "source": "课程",
@@ -847,530 +1362,6 @@
         }
       ],
       "translation": "Downloading…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.bce2377283c2",
-      "source": "清除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 453,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.bce2377283c2\")}"
-        }
-      ],
-      "translation": "Clear",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.bd33e412694b",
-      "source": "再次提交 / 修改附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 417,
-          "context": "h.submitted ? i18n(\"pages.learn.assignmentdetailpage.bd33e412694b\") : i18n(\"pages.learn.assignmentdetailpage.dfb054a0aec6\")"
-        }
-      ],
-      "translation": "Resubmit / Update attachment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.c118a2400f5a",
-      "source": "已过截止时间（mobile 同款禁用提交）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 474,
-          "context": "pastDeadline ? i18n(\"pages.learn.assignmentdetailpage.c118a2400f5a\") : undefined"
-        }
-      ],
-      "translation": "Past the deadline (submission disabled, same as mobile)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.c35e5710ecdb",
-      "source": "提交情况",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 316,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.c35e5710ecdb\")}"
-        }
-      ],
-      "translation": "Submission status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.c44cbffc601a",
-      "source": "撤回附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 459,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.c44cbffc601a\")}"
-        }
-      ],
-      "translation": "Withdraw attachment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.c514d7c4f9f2",
-      "source": "上次提交于 {value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "fmtDateTime(h.submitTime)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 480,
-          "context": "{i18nRich(\"pages.learn.assignmentdetailpage.c514d7c4f9f2\", { value: fmtDateTime(h.submitTime) })}"
-        }
-      ],
-      "translation": "Last submitted {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.c7225dbf105e",
-      "source": "附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 347,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.c7225dbf105e\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 351,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.c7225dbf105e\")}"
-        }
-      ],
-      "translation": "Attachment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.c9521a639f12",
-      "source": "回网络学堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 156,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.c9521a639f12\")}"
-        }
-      ],
-      "translation": "Back to Web Learning",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.cf532be09add",
-      "source": "批改情况",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 331,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.cf532be09add\")}"
-        }
-      ],
-      "translation": "Grading status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.d262ea7dc366",
-      "source": "作业附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 178,
-          "context": "label: i18n(\"pages.learn.assignmentdetailpage.d262ea7dc366\")"
-        }
-      ],
-      "translation": "Assignment attachment",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.d42baf1647c8",
-      "source": "已批改",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 332,
-          "context": "gradeLabel(h.grade) || i18n(\"pages.learn.assignmentdetailpage.d42baf1647c8\")"
-        }
-      ],
-      "translation": "Graded",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.d4af30a738c7",
-      "source": "作业详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 148,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.d4af30a738c7\")}"
-        }
-      ],
-      "translation": "Assignment details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.dd6352fd16c7",
-      "source": "答案附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 179,
-          "context": "label: i18n(\"pages.learn.assignmentdetailpage.dd6352fd16c7\")"
-        }
-      ],
-      "translation": "Answer attachment",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.deeb0897ac4a",
-      "source": "该作业要求必须带附件，网络学堂不允许只删不传——请直接选新附件提交替换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 271,
-          "context": "/请上传附件/.test(why)\n            ? i18n(\"pages.learn.assignmentdetailpage.deeb0897ac4a\")\n            : why || i18n(\"pages.learn.assignmentdetailpage.b45762984aa4\")"
-        }
-      ],
-      "translation": "This assignment requires an attachment, and Web Learning does not allow deleting without uploading — select a new attachment and submit to replace it",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.df26c6e8713c",
-      "source": "已撤回附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 276,
-          "context": "setSubMsg(i18n(\"pages.learn.assignmentdetailpage.df26c6e8713c\"))"
-        }
-      ],
-      "translation": "Attachment withdrawn",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.dfb054a0aec6",
-      "source": "提交作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 417,
-          "context": "h.submitted ? i18n(\"pages.learn.assignmentdetailpage.bd33e412694b\") : i18n(\"pages.learn.assignmentdetailpage.dfb054a0aec6\")"
-        }
-      ],
-      "translation": "Submit assignment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.e17b3089f7be",
-      "source": "{value} · {value2} 截止",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(course?.name ?? i18n(\"pages.learn.assignmentdetailpage.60db1afb4022\"))"
-        },
-        {
-          "name": "value2",
-          "expression": "String(fmtDateTime(h.deadline))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 289,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.e17b3089f7be\", { value: String(courseDisplayName(course) ?? i18n(\"pages.learn.assignmentdetailpage.60db1afb4022\")), value2: String(fmtDateTime(h.deadline)) })}"
-        }
-      ],
-      "translation": "{value} · due {value2}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.eb587d998b72",
-      "source": "提交内容（可留空，附件可选）…支持格式与图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 423,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.eb587d998b72\")}"
-        }
-      ],
-      "translation": "Submission content (optional; attachments optional)… supported formats and images",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.f2b212ab6bd2",
-      "source": "暂无作业说明。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 407,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.f2b212ab6bd2\")}"
-        }
-      ],
-      "translation": "No assignment description yet.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.f3be30c77097",
-      "source": "作业说明",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 394,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.f3be30c77097\")}"
-        }
-      ],
-      "translation": "Assignment description",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.f6343b8cf8f0",
-      "source": "LEARN-OPFAIL {msg} | 现场：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "msg",
-          "expression": "String(msg)"
-        },
-        {
-          "name": "value",
-          "expression": "String(dbg.slice(0, 400))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 207,
-          "context": "m.logLine(i18n(\"pages.learn.assignmentdetailpage.f6343b8cf8f0\", { msg: String(msg), value: String(dbg.slice(0, 400)) }))"
-        }
-      ],
-      "translation": "LEARN-OPFAIL {msg} | Context: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.fa9362087d80",
-      "source": "提交后新附件将替换已上传附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 463,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.fa9362087d80\")}"
-        }
-      ],
-      "translation": "After submitting, the new attachment will replace the uploaded one",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.fdcd1bd074c9",
-      "source": "成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 332,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.fdcd1bd074c9\")}"
-        }
-      ],
-      "translation": "Grades",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.ffaca36e997c",
-      "source": "请填写提交内容或选择附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 216,
-          "context": "setSubMsg(i18n(\"pages.learn.assignmentdetailpage.ffaca36e997c\"))"
-        }
-      ],
-      "translation": "Enter your submission or select an attachment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.13c68d134847",
-      "source": "已逾期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 28,
-          "context": "return i18n(\"pages.learn.assignmentspage.13c68d134847\");"
-        }
-      ],
-      "translation": "Overdue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.174b6eabff32",
-      "source": "没有已忽略的作业。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 252,
-          "context": "filter === \"ignored\" ? i18n(\"pages.learn.assignmentspage.174b6eabff32\") : i18n(\"pages.learn.assignmentspage.5c018f6106a3\")"
-        }
-      ],
-      "translation": "No ignored assignments.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.1dd9120b2b30",
-      "source": "去设置重新登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 127,
-          "context": "{i18n(\"pages.learn.assignmentspage.1dd9120b2b30\")}"
-        }
-      ],
-      "translation": "Go to Settings to sign in again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.1ee8c573d98e",
-      "source": "雨课堂人人可用；OJ 平台（TUOJ、Tyche 等）按个人情况在设置页登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 64,
-          "context": "{i18n(\"pages.learn.assignmentspage.1ee8c573d98e\")}"
-        }
-      ],
-      "translation": "Rain Classroom is available to everyone; sign in to OJ platforms (TUOJ, Tyche, etc.) in Settings as needed.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.40c77cac9724",
-      "source": "已交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 29,
-          "context": "return i18n(\"pages.learn.assignmentspage.40c77cac9724\");"
-        }
-      ],
-      "translation": "Submitted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.42338b60a3ea",
-      "source": "TUOJ 重新登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 122,
-          "context": "{i18n(\"pages.learn.assignmentspage.42338b60a3ea\")}"
-        }
-      ],
-      "translation": "Sign in to TUOJ again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentspage.4ea07768437b",
-      "source": "没有进行中的作业。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 252,
-          "context": "filter === \"unfinished\" ? i18n(\"pages.learn.assignmentspage.4ea07768437b\") : filter === \"overdue\" ? i18n(\"pages.learn.assignmentspage.f67f9df18e46\") : filter === \"ignored\" ? i18n(\"pages.learn.assignmentspage.174b6eabff32\") : i18n(\"pages.learn.assignmentspage.5c018f6106a3\")"
-        }
-      ],
-      "translation": "No in-progress assignments.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -64,5 +64,29 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 PLIST
 
 codesign -f -s - "$APP" >/dev/null 2>&1
+# `open` alone only activates an existing process, even after its executable
+# has been replaced. Stop only this dev wrapper so new Rust commands are loaded.
+# Installed /Applications/OneTHU.app and its data are not touched.
+ONETHU_DEV_PIDS=""
+while read -r pid executable; do
+  if [ "$executable" = "$APP/Contents/MacOS/onethu" ]; then
+    ONETHU_DEV_PIDS="$ONETHU_DEV_PIDS $pid"
+  fi
+done < <(ps -axo pid=,comm=)
+for pid in $ONETHU_DEV_PIDS; do
+  kill -TERM "$pid" 2>/dev/null || true
+done
+for _ in $(seq 1 50); do
+  ONETHU_DEV_ALIVE=0
+  for pid in $ONETHU_DEV_PIDS; do
+    if kill -0 "$pid" 2>/dev/null; then ONETHU_DEV_ALIVE=1; fi
+  done
+  if [ "$ONETHU_DEV_ALIVE" -eq 0 ]; then break; fi
+  sleep 0.1
+done
+if [ "${ONETHU_DEV_ALIVE:-0}" -ne 0 ]; then
+  echo "✗ 旧 dev App 尚未退出，请关闭后重试；新二进制已准备好。"
+  exit 1
+fi
 open "$APP"
 echo "✓ 已启动 OneTHU.app（定位可用）。首次会弹定位授权窗，点【允许】。"

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -366,7 +366,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 247,
+          "line": 249,
           "context": "row.kind === \"entry\" ? i18n(\"components.commandpalette.25f5ce57a190\") : row.kind === \"atom\" ? i18n(\"components.commandpalette.452c7b10d57a\") : row.kind === \"row\" ? (familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")) : i18n(\"components.commandpalette.df3d58c7d84b\")"
         }
       ],
@@ -382,7 +382,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 242,
+          "line": 244,
           "context": "row.sub ? row.sub : i18n(\"components.commandpalette.2aedc9c279c5\")"
         }
       ],
@@ -403,7 +403,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 207,
+          "line": 209,
           "context": "/^(怎么|如何|是什么)/.test(query.trim())\n                  ? i18n(\"components.commandpalette.30f7c7c3a13f\", { value: String(query.trim()) })\n                  : i18n(\"components.commandpalette.c1acb64eaa4e\", { value: String(query.trim()) })"
         }
       ],
@@ -419,7 +419,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 198,
+          "line": 200,
           "context": "{i18n(\"components.commandpalette.38e250de311e\")}"
         }
       ],
@@ -435,7 +435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 240,
+          "line": 242,
           "context": "row.sub ?? i18n(\"components.commandpalette.3c1917e1c662\")"
         }
       ],
@@ -451,7 +451,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 247,
+          "line": 249,
           "context": "row.kind === \"atom\" ? i18n(\"components.commandpalette.452c7b10d57a\") : row.kind === \"row\" ? (familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")) : i18n(\"components.commandpalette.df3d58c7d84b\")"
         }
       ],
@@ -467,7 +467,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 189,
+          "line": 191,
           "context": "{i18n(\"components.commandpalette.4563c57b5143\")}"
         }
       ],
@@ -483,7 +483,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 209,
+          "line": 211,
           "context": "query.trim()\n                ? /^(怎么|如何|是什么)/.test(query.trim())\n                  ? i18n(\"components.commandpalette.30f7c7c3a13f\", { value: String(query.trim()) })\n                  : i18n(\"components.commandpalette.c1acb64eaa4e\", { value: String(query.trim()) })\n                : i18n(\"components.commandpalette.4c32fa9d2ed5\")"
         }
       ],
@@ -499,12 +499,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 155,
+          "line": 157,
           "context": "{i18n(\"components.commandpalette.505ea9c9f199\")}"
         },
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 185,
+          "line": 187,
           "context": "{i18n(\"components.commandpalette.505ea9c9f199\")}"
         }
       ],
@@ -520,7 +520,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 230,
+          "line": 232,
           "context": "i18n(\"components.commandpalette.5214e0bc5dce\") + row.tab"
         }
       ],
@@ -536,7 +536,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 193,
+          "line": 195,
           "context": "{i18n(\"components.commandpalette.618857afe202\")}"
         }
       ],
@@ -557,7 +557,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 208,
+          "line": 210,
           "context": "/^(怎么|如何|是什么)/.test(query.trim())\n                  ? i18n(\"components.commandpalette.30f7c7c3a13f\", { value: String(query.trim()) })\n                  : i18n(\"components.commandpalette.c1acb64eaa4e\", { value: String(query.trim()) })"
         }
       ],
@@ -573,12 +573,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 247,
+          "line": 249,
           "context": "familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")"
         },
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 247,
+          "line": 249,
           "context": "row.kind === \"row\" ? (familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")) : i18n(\"components.commandpalette.df3d58c7d84b\")"
         }
       ],
@@ -594,7 +594,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 243,
+          "line": 245,
           "context": "row.kind === \"row\"\n                          ? (row.sub ? row.sub : i18n(\"components.commandpalette.2aedc9c279c5\"))\n                          : i18n(\"components.commandpalette.e205315fe020\")"
         }
       ],
@@ -610,7 +610,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 247,
+          "line": 249,
           "context": "familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")"
         }
       ],
@@ -626,7 +626,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/CommandPalette.tsx",
-          "line": 166,
+          "line": 168,
           "context": "{i18n(\"components.commandpalette.eccc7050c50c\")}"
         }
       ],

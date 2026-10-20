@@ -9,6 +9,21 @@
  */
 
 /* ══ 名片纸卡：真实银行卡比例 1.586 : 1 ═══════════════════════════════════ */
+.friend-inbox-entry { position: relative; display: inline-flex; flex-shrink: 0; }
+.friend-inbox-badge {
+  position: absolute; inset-block-start: 0; inset-inline-end: 0;
+  min-width: var(--og-space-4); padding-inline: var(--og-space-1);
+  border-radius: var(--og-radius-full); background: var(--og-accent);
+  color: var(--og-content-on-accent); font-size: var(--og-text-micro); text-align: center;
+  pointer-events: none;
+}
+.friend-invitations { margin-block-end: var(--og-space-4); }
+.friend-invitation {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--og-space-3); flex-wrap: wrap;
+  padding-block-start: var(--og-space-3); border-top: var(--og-geo-hairline) solid var(--og-line-2);
+  overflow-wrap: anywhere;
+}
 .identity-card {
   --og-c-identity-pad: clamp(var(--og-space-3), 3.2vw, var(--og-space-5));
   --og-c-identity-name: clamp(var(--og-text-subtitle), 4.4vw, var(--og-text-title));

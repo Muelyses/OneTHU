@@ -8,6 +8,7 @@ import { t as i18n } from "../i18n/index.js";
  * 未连接云盘不能生成新口令；接收公开分享不需要自己的云盘登录。
  */
 import { invoke } from "@tauri-apps/api/core";
+import { ensureOwnedCloudRepo } from "../lib/ownedCloudRepo.js";
 import { assertRepoOwner, ensureSeafileLoaded, getSeafileToken, seafileShareDelete, seafileShareRead } from "./seafile.js";
 import { isSealed, newShareKey, readShareKey, readSharedJson, sealBytes, unsealBytes, type ShareKey } from "./sealedShare.js";
 import { bytesToBase64 } from "../lib/imageSave.js";
@@ -18,7 +19,6 @@ import {
   expiredShareRefs, markShareRevoked, rememberShare, shareRefsSnapshot, unreferencedFilesOf, type ShareFileRef,
 } from "./shareRefs.js";
 
-interface Repo { id: string; name: string }
 interface ShareOut { link: string; token: string }
 
 const REPO_NAME = "OneTHU";
@@ -36,14 +36,9 @@ function shareId(): string {
 }
 
 async function ensureRepo(token: string): Promise<string> {
-  const repos = await invoke<Repo[]>("seafile_repos", { token });
-  const hit = repos.find((r) => r.name === REPO_NAME);
-  if (hit) return hit.id;
-  await invoke("seafile_create_repo", { token, name: REPO_NAME });
-  const again = await invoke<Repo[]>("seafile_repos", { token });
-  const made = again.find((r) => r.name === REPO_NAME);
-  if (!made) throw new Error(i18n("state.vaultcloud.9fc6ff2f9450"));
-  return made.id;
+  const repo = await ensureOwnedCloudRepo(token, REPO_NAME);
+  if (token !== getSeafileToken()) throw new Error(i18n("state.seafile.accountChanged"));
+  return repo.id;
 }
 
 async function writeTemp(name: string, text: string): Promise<string> {

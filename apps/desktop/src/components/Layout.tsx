@@ -1,4 +1,5 @@
 import { startMobileNavigation } from "../state/mobileNavigation.js";
+import { FriendInboxButton, FriendInboxMonitor } from "./FriendInvitations.js";
 import { allSearchRows } from "../state/searchRows.js";
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { BrandLogo } from "./BrandLogo.js";
@@ -148,6 +149,7 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
   const canDup = activeId !== HOME_TAB_ID;
   return (
     <div className="ex-rail-actions">
+      <FriendInboxButton />
       <IconBtn label={i18n("components.layout.fb32cf481c29")} icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
       <IconBtn label={i18n("components.layout.7f1d9dd04cd1")} icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
       <button
@@ -235,6 +237,7 @@ function TopBar(): ReactNode {
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
       <ChromeMore />
+      <FriendInboxButton />
       <IconBtn label={i18n("components.layout.7f1d9dd04cd1")} icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
     </header>
   );
@@ -427,6 +430,7 @@ export function Shell({ children }: { children: ReactNode }) {
     <div className={"shell explorer-shell" + (simple ? " is-simple" : "")}>
       {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
       <ShellWallpaperLayer />
+      {!simple && <FriendInboxMonitor />}
       {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
           Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
       <ContextMenuLayer>
@@ -457,7 +461,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <SearchLandingSelfcheck />
         </Suspense>
       ) : null}
-      {!simple && <HardRefreshButton />}
+      <HardRefreshButton />
       {DevPanel ? (
         <Suspense fallback={null}>
           <DevPanel />
@@ -467,13 +471,17 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-/** 硬刷新悬浮按钮：一直贴右下角，但**自动避开右下的其他浮层按钮**
+/** 硬刷新悬浮按钮：默认右下角，自动避开右下的其他浮层按钮
  *  （OneShot、日程设置、白板工具栏、暂存箱、回到顶层…），永远落在最靠右下的空位；
  *  按住可拖动（位置按设备记住，存在 onethu.ui.refreshFab.v1）。
  *  生产环境 tauri 资源走自定义协议不进 HTTP 缓存，reload 即全量重载；
  *  移动端没有右键/⌘R，这是页面卡死/白屏后的唯一恢复出口。 */
 const REFRESH_POS_KEY = "onethu.ui.refreshFab.v1";
 type FabPos = { right: number; bottom: number };
+/** Stable scrollbar gutters may shrink the root box without changing clientWidth. */
+const fabViewportWidth = (): number => Math.min(window.innerWidth,
+  document.documentElement.clientWidth || window.innerWidth,
+  document.documentElement.getBoundingClientRect().width || window.innerWidth);
 function readFabPos(): FabPos | null {
   try {
     const raw = localStorage.getItem(REFRESH_POS_KEY);
@@ -494,10 +502,12 @@ export function HardRefreshButton() {
   const [auto, setAuto] = useState<FabPos | null>(null);
   const [dragging, setDragging] = useState(false);
   const fabRef = useRef<HTMLButtonElement | null>(null);
-  const dragRef = useRef<{ x: number; y: number; right: number; bottom: number; moved: boolean } | null>(null);
+  const dragRef = useRef<{ x: number; y: number; right: number; bottom: number; moved: boolean; pointerId: number } | null>(null);
   const skipClick = useRef(false);
   const posRef = useRef<FabPos | null>(null);
   const explorer = useExplorerState();
+  const mode = useExperienceMode();
+  const simpleRoute = useSimpleRoute();
   const pos = stored ?? auto ?? { right: 18, bottom: 18 };
   posRef.current = pos;
 
@@ -513,7 +523,7 @@ export function HardRefreshButton() {
     const btn = fabRef.current;
     const w = btn?.offsetWidth || 40;
     const h = btn?.offsetHeight || 40;
-    const vw = window.innerWidth;
+    const vw = fabViewportWidth();
     const vh = window.innerHeight;
     const margin = 14;
     const obstacles = Array.from(document.querySelectorAll<HTMLElement>(FAB_OBSTACLES))
@@ -537,7 +547,7 @@ export function HardRefreshButton() {
   /* 没手动摆过就自动找位：首帧、布局稳定后、窗口变化、切换标签页（浮件随之增减）都重找。 */
   useEffect(() => {
     if (stored) return;
-    const place = (): void => setAuto(compute());
+    const place = (): void => { if (!dragRef.current) setAuto(compute()); };
     place();
     const timers = [200, 700, 1600].map((ms) => window.setTimeout(place, ms));
     window.addEventListener("resize", place);
@@ -545,7 +555,7 @@ export function HardRefreshButton() {
       timers.forEach((t) => window.clearTimeout(t));
       window.removeEventListener("resize", place);
     };
-  }, [stored, compute, explorer.activeId, showTop]);
+  }, [stored, compute, explorer.activeId, mode, simpleRoute.page, showTop]);
 
   /* 手动摆过之后，窗口变小/旋转也要留在屏幕里。 */
   useEffect(() => {
@@ -554,38 +564,57 @@ export function HardRefreshButton() {
       const btn = fabRef.current;
       const w = btn?.offsetWidth || 40;
       const h = btn?.offsetHeight || 40;
-      setStored((p) => p && (p.right > window.innerWidth - w - 4 || p.bottom > window.innerHeight - h - 4)
-        ? { right: Math.max(4, Math.min(p.right, window.innerWidth - w - 4)), bottom: Math.max(4, Math.min(p.bottom, window.innerHeight - h - 4)) }
-        : p);
+      setStored((p) => {
+        if (!p) return p;
+        const next = {
+          right: Math.max(4, Math.min(p.right, fabViewportWidth() - w - 4)),
+          bottom: Math.max(4, Math.min(p.bottom, window.innerHeight - h - 4)),
+        };
+        if (next.right === p.right && next.bottom === p.bottom) return p;
+        try { localStorage.setItem(REFRESH_POS_KEY, JSON.stringify(next)); } catch { /* memory still updates */ }
+        return next;
+      });
     };
+    clamp(); // A position from another window size must be visible on the first mount too.
+    const observer = new ResizeObserver(clamp);
+    if (fabRef.current) observer.observe(fabRef.current);
+    observer.observe(document.documentElement);
     window.addEventListener("resize", clamp);
-    return () => window.removeEventListener("resize", clamp);
+    return () => { observer.disconnect(); window.removeEventListener("resize", clamp); };
   }, [stored]);
 
   const onPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     if (e.button !== 0) return;
-    const el = e.currentTarget;
-    dragRef.current = { x: e.clientX, y: e.clientY, right: pos.right, bottom: pos.bottom, moved: false };
-    el.setPointerCapture(e.pointerId);
-    setDragging(true);
+    skipClick.current = false;
+    dragRef.current = { x: e.clientX, y: e.clientY, right: pos.right, bottom: pos.bottom, moved: false, pointerId: e.pointerId };
+    // Capture keeps fast movements outside this small button attached to it.
+    // Until the drag threshold is crossed, leave its position and click alone.
+    e.currentTarget.setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     const d = dragRef.current;
-    if (!d) return;
+    if (!d || d.pointerId !== e.pointerId) return;
     const dx = e.clientX - d.x;
     const dy = e.clientY - d.y;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) d.moved = true;
+    if (!d.moved) {
+      if (Math.hypot(dx, dy) < (e.pointerType === "touch" ? 12 : 10)) return;
+      d.moved = true;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setDragging(true);
+    }
     const btn = fabRef.current;
     const w = btn?.offsetWidth || 40;
     const h = btn?.offsetHeight || 40;
-    setStored({
-      right: Math.max(4, Math.min(d.right - dx, window.innerWidth - w - 4)),
+    const next = {
+      right: Math.max(4, Math.min(d.right - dx, fabViewportWidth() - w - 4)),
       bottom: Math.max(4, Math.min(d.bottom - dy, window.innerHeight - h - 4)),
-    });
+    };
+    posRef.current = next;
+    setStored(next);
   };
   const onPointerUp = (e: ReactPointerEvent<HTMLButtonElement>): void => {
     const d = dragRef.current;
-    if (!d) return;
+    if (!d || d.pointerId !== e.pointerId) return;
     dragRef.current = null;
     setDragging(false);
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
@@ -621,8 +650,9 @@ export function HardRefreshButton() {
         style={fabStyle}
         title={i18n("components.layout.7a007b29bf56")}
         aria-label={i18n("components.layout.f9e31e1d63d5")}
-        onClick={() => {
-          if (skipClick.current) { skipClick.current = false; return; }
+        onClick={(e) => {
+          if (skipClick.current && e.detail !== 0) { skipClick.current = false; return; }
+          skipClick.current = false;
           window.location.reload();
         }}
         onPointerDown={onPointerDown}

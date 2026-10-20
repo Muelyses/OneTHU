@@ -1,7 +1,544 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.cardtab.de6785d99e02",
+      "source": "刚刚",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.info.cardtab.de6785d99e02\");"
+        }
+      ],
+      "translation": "Just now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.de7d16d37942",
+      "source": "充值金额需在 10 ~ 1000 元之间（全渠道下限统一 10 元，官方收银台同样起步 10 元）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 186,
+          "context": "{i18n(\"pages.info.cardtab.de7d16d37942\")}"
+        }
+      ],
+      "translation": "The top-up amount must be between 10 and 1000 CNY (all channels share the 10 CNY minimum; the official cashier also starts at 10 CNY)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.e22e82c70130",
+      "source": "更新于 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "fmtAgo(updatedAt)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 413,
+          "context": "{i18nRich(\"pages.info.cardtab.e22e82c70130\", { value: fmtAgo(updatedAt) })}"
+        }
+      ],
+      "translation": "Updated {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.e84d5394f0a6",
+      "source": "余额 / 流水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 252,
+          "context": "{i18n(\"pages.info.cardtab.e84d5394f0a6\")}"
+        }
+      ],
+      "translation": "Balance / transactions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.e8adeabba93d",
+      "source": "近 30 天没有消费记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 465,
+          "context": "{i18n(\"pages.info.cardtab.e8adeabba93d\")}"
+        }
+      ],
+      "translation": "No transactions in the last 30 days.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.eb095f18e602",
+      "source": "流水笔数",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 439,
+          "context": "{i18n(\"pages.info.cardtab.eb095f18e602\")}"
+        }
+      ],
+      "translation": "Transaction count",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.ef4019825558",
+      "source": "银行卡圈存最低 10 元；金额需 1 ~ 1000 元（最多两位小数）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 204,
+          "context": "channel === \"bank\" ? i18n(\"pages.info.cardtab.ef4019825558\") : i18n(\"pages.info.cardtab.648616c62275\")"
+        }
+      ],
+      "translation": "Bank-card deposits start at 10 CNY; the amount must be 1–1000 CNY (at most two decimal places)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.f629fc7ac825",
+      "source": "卡号 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "data?.info.cardId || \"–\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 411,
+          "context": "{i18nRich(\"pages.info.cardtab.f629fc7ac825\", { value: data?.info.cardId || \"–\" })}"
+        }
+      ],
+      "translation": "Card number {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.f664edd9036b",
+      "source": "上次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 450,
+          "context": "updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")"
+        }
+      ],
+      "translation": "Last",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.02773293c3fd",
+      "source": "第 {currentWeekNumber} 教学周 · 今日空闲 {freeToday} 间{value}（下表为今日）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "currentWeekNumber",
+          "expression": "String(result.currentWeekNumber)"
+        },
+        {
+          "name": "freeToday",
+          "expression": "String(freeToday)"
+        },
+        {
+          "name": "value",
+          "expression": "String(selSlots.size > 0 ? i18n(\"pages.info.classroomtab.e9805d3099de\", { size: String(selSlots.size), length: String(rows.length) }) : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 208,
+          "context": "result?.currentWeekNumber\n                ? i18n(\"pages.info.classroomtab.02773293c3fd\", { currentWeekNumber: String(result.currentWeekNumber), freeToday: String(freeToday), value: String(selSlots.size > 0 ? i18n(\"pages.info.classroomtab.e9805d3099de\", { size: String(selSlots.size), length: String(rows.length) }) : \"\") })\n                : undefined"
+        }
+      ],
+      "translation": "Teaching week {currentWeekNumber} · {freeToday} rooms free today{value} (the table below shows today)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.02a2307c8310",
+      "source": "第3节",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 23
+        }
+      ],
+      "translation": "Period 3",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.2dd165667e41",
+      "source": "第2节",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 23
+        }
+      ],
+      "translation": "Period 2",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.3214411c2d00",
+      "source": "选择教学楼…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 196,
+          "context": "{i18n(\"pages.info.classroomtab.3214411c2d00\")}"
+        }
+      ],
+      "translation": "Choose a teaching building…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.3301179d613a",
+      "source": "没有教室在所选大节全部空闲——试着少选几节或清空筛选。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 228,
+          "context": "selSlots.size > 0\n                      ? i18n(\"pages.info.classroomtab.3301179d613a\")\n                      : i18n(\"pages.info.classroomtab.e484707c2386\")"
+        }
+      ],
+      "translation": "No room is free for all selected periods — try selecting fewer periods or clearing the filter.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.5c8d010fd9a3",
+      "source": "教学楼",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 179,
+          "context": "{i18n(\"pages.info.classroomtab.5c8d010fd9a3\")}"
+        }
+      ],
+      "translation": "Teaching buildings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.5e1fc6ee5293",
+      "source": "第4节",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 23
+        }
+      ],
+      "translation": "Period 4",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.66491a8adc2f",
+      "source": "{name} · 本周",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(sel.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 204,
+          "context": "{i18n(\"pages.info.classroomtab.66491a8adc2f\", { name: String(sel.name) })}"
+        }
+      ],
+      "translation": "{name} · this week",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.80ef6265f230",
+      "source": "第5节",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 23
+        }
+      ],
+      "translation": "Period 5",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.8c4cb748dde9",
+      "source": "清空（显示全部）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 62,
+          "context": "{i18n(\"pages.info.classroomtab.8c4cb748dde9\")}"
+        }
+      ],
+      "translation": "Clear (show all)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.a56b6a95398f",
+      "source": "第1节",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 23
+        }
+      ],
+      "translation": "Period 1",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.baa795a5668d",
+      "source": "{value} 栋 · 点击查询本周状态",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(buildings?.length ?? 0)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 180,
+          "context": "bState === \"ready\" ? i18n(\"pages.info.classroomtab.baa795a5668d\", { value: String(buildings?.length ?? 0) }) : i18n(\"pages.info.classroomtab.ed844405c301\")"
+        }
+      ],
+      "translation": "{value} · tap to check this week's status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.c0aa76aebce6",
+      "source": "占用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 258,
+          "context": "free ? i18n(\"pages.info.classroomtab.dae661d17c2d\") : i18n(\"pages.info.classroomtab.c0aa76aebce6\")"
+        }
+      ],
+      "translation": "Occupied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.d3151b17255b",
+      "source": "大节筛选：全部教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 32,
+          "context": "value.size === 0\n      ? i18n(\"pages.info.classroomtab.d3151b17255b\")\n      : i18n(\"pages.info.classroomtab.ee90805b2f64\", { value: String([...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join(\"、\")) })"
+        }
+      ],
+      "translation": "Period filter: all rooms",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.classroomtab.d8403e58a242",
+      "source": "第6节",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 23
+        }
+      ],
+      "translation": "Period 6",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.dae661d17c2d",
+      "source": "空闲",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 258,
+          "context": "free ? i18n(\"pages.info.classroomtab.dae661d17c2d\") : i18n(\"pages.info.classroomtab.c0aa76aebce6\")"
+        }
+      ],
+      "translation": "Free",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.df7a65bb1371",
+      "source": "教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 237,
+          "context": "{i18n(\"pages.info.classroomtab.df7a65bb1371\")}"
+        }
+      ],
+      "translation": "Room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.e484707c2386",
+      "source": "该教学楼本周暂无教室状态数据（可能不在上课周期）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 229,
+          "context": "selSlots.size > 0\n                      ? i18n(\"pages.info.classroomtab.3301179d613a\")\n                      : i18n(\"pages.info.classroomtab.e484707c2386\")"
+        }
+      ],
+      "translation": "No room status data for this teaching building this week (it may not be in a teaching period).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.e9805d3099de",
+      "source": " · 所选 {size} 节全空闲 {length} 间",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "size",
+          "expression": "String(selSlots.size)"
+        },
+        {
+          "name": "length",
+          "expression": "String(rows.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 208,
+          "context": "selSlots.size > 0 ? i18n(\"pages.info.classroomtab.e9805d3099de\", { size: String(selSlots.size), length: String(rows.length) }) : \"\""
+        }
+      ],
+      "translation": " · {length} rooms free for all {size} selected periods",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.ed844405c301",
+      "source": "教学 Tina · 教室资源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 180,
+          "context": "bState === \"ready\" ? i18n(\"pages.info.classroomtab.baa795a5668d\", { value: String(buildings?.length ?? 0) }) : i18n(\"pages.info.classroomtab.ed844405c301\")"
+        }
+      ],
+      "translation": "教学 Tina · Classroom resources",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.classroomtab.ee90805b2f64",
+      "source": "大节筛选：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String([...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 33,
+          "context": "value.size === 0\n      ? i18n(\"pages.info.classroomtab.d3151b17255b\")\n      : i18n(\"pages.info.classroomtab.ee90805b2f64\", { value: String([...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join(\"、\")) })"
+        }
+      ],
+      "translation": "Period filter: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.classroomtab.fb523dfd65ce",
+      "source": "暂无教室资源数据（可能不在上课周期，或服务暂未开放）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ClassroomTab.tsx",
+          "line": 188,
+          "context": "{i18n(\"pages.info.classroomtab.fb523dfd65ce\")}"
+        }
+      ],
+      "translation": "No classroom resource data yet (it may not be a teaching period, or the service is not open yet).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.courseinfotab.2ac0f59489ba",
       "source": "正在加载时间地点…",
@@ -799,541 +1336,6 @@
         }
       ],
       "translation": "Mon",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.754a9d5828d5",
-      "source": "四",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 12
-        }
-      ],
-      "translation": "Thu",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.7736a85c89ff",
-      "source": "至 {value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "e.endTime ?? \"--:--\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 87,
-          "context": "{i18nRich(\"pages.info.examstab.7736a85c89ff\", { value: e.endTime ?? \"--:--\" })}"
-        }
-      ],
-      "translation": "to {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.85217f7aff77",
-      "source": "日",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 12
-        }
-      ],
-      "translation": "Sun",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.88df420f8207",
-      "source": "考试安排",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 62,
-          "context": "{i18n(\"pages.info.examstab.88df420f8207\")}"
-        }
-      ],
-      "translation": "Exam schedule",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.9491e7091592",
-      "source": "周{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(WEEKDAYS[d.getDay()])"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 16,
-          "context": "Number.isNaN(d.getTime()) ? \"\" : i18n(\"pages.info.examstab.9491e7091592\", { value: String(WEEKDAYS[d.getDay()]) })"
-        }
-      ],
-      "translation": "Week {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.9dec2ce0d8fc",
-      "source": "{length} 场 · {upcoming} 场待考 · 本学年",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(data.length)"
-        },
-        {
-          "name": "upcoming",
-          "expression": "String(upcoming)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 63,
-          "context": "state === \"ready\" && data ? i18n(\"pages.info.examstab.9dec2ce0d8fc\", { length: String(data.length), upcoming: String(upcoming) }) : i18n(\"pages.info.examstab.3cdc60a174f2\")"
-        }
-      ],
-      "translation": "{length} exams · {upcoming} upcoming · this academic year",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.a4c3313deb18",
-      "source": "三",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 12
-        }
-      ],
-      "translation": "Wed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.aa9435b82109",
-      "source": "{days} 天后",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "days",
-          "expression": "String(days)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 26,
-          "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 27,
-          "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 28,
-          "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
-        }
-      ],
-      "translation": "in {days} days",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.b10b29ca43f2",
-      "source": "时间待定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 22,
-          "context": "text: i18n(\"pages.info.examstab.b10b29ca43f2\")"
-        }
-      ],
-      "translation": "Time TBD",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.c490e6cc45d9",
-      "source": "本学年暂无考试安排。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 70,
-          "context": "{i18n(\"pages.info.examstab.c490e6cc45d9\")}"
-        }
-      ],
-      "translation": "No exam schedule for this academic year.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.c9b87f516a38",
-      "source": "五",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 12
-        }
-      ],
-      "translation": "Fri",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.d4b794824720",
-      "source": "地点待定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 91,
-          "context": "e.location || i18n(\"pages.info.examstab.d4b794824720\")"
-        }
-      ],
-      "translation": "Location TBD",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.d5f5a7a01073",
-      "source": "今天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 25,
-          "context": "text: i18n(\"pages.info.examstab.d5f5a7a01073\")"
-        }
-      ],
-      "translation": "Today",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.d79b1d0e5c61",
-      "source": "已结束",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 24,
-          "context": "text: i18n(\"pages.info.examstab.d79b1d0e5c61\")"
-        }
-      ],
-      "translation": "Ended",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.dac4254b777c",
-      "source": "{length} 场",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(exams.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 75,
-          "context": "{i18n(\"pages.info.examstab.dac4254b777c\", { length: String(exams.length) })}"
-        }
-      ],
-      "translation": "{length} exams",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.de07b5383874",
-      "source": "六",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 12
-        }
-      ],
-      "translation": "Sat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.fitnesstab.79f326be4409",
-      "source": "项目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/FitnessTab.tsx",
-          "line": 61,
-          "context": "{i18n(\"pages.info.fitnesstab.79f326be4409\")}"
-        }
-      ],
-      "translation": "Item",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.fitnesstab.e460bd4bfafb",
-      "source": "暂无成绩（本学期体测成绩可能尚未发布）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/FitnessTab.tsx",
-          "line": 55,
-          "context": "{i18n(\"pages.info.fitnesstab.e460bd4bfafb\")}"
-        }
-      ],
-      "translation": "No results yet (this semester's fitness test results may not be released).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.fitnesstab.fdcd1bd074c9",
-      "source": "成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/FitnessTab.tsx",
-          "line": 62,
-          "context": "{i18n(\"pages.info.fitnesstab.fdcd1bd074c9\")}"
-        }
-      ],
-      "translation": "Grades",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.02dede2858a3",
-      "source": "发放",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 95,
-          "context": "r.name || i18n(\"pages.info.gradincometab.02dede2858a3\")"
-        }
-      ],
-      "translation": "Issued",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.215db61815eb",
-      "source": "财务系统 · 计税后实发",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 69,
-          "context": "{i18n(\"pages.info.gradincometab.215db61815eb\")}"
-        }
-      ],
-      "translation": "Finance system · net pay after tax",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.3fcc227e6ab6",
-      "source": "暂无收入记录（助研津贴等发放后才可查询）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 79,
-          "context": "{i18n(\"pages.info.gradincometab.3fcc227e6ab6\")}"
-        }
-      ],
-      "translation": "No income records yet (queryable only after payments such as research assistantships are issued).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.9416e865d2ff",
-      "source": "近 12 个月实发合计",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 85,
-          "context": "{i18n(\"pages.info.gradincometab.9416e865d2ff\")}"
-        }
-      ],
-      "translation": "Net pay total for the last 12 months",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.ac0b8e78172e",
-      "source": "研究生专项目，本科生无此数据。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 77,
-          "context": "{i18n(\"pages.info.gradincometab.ac0b8e78172e\")}"
-        }
-      ],
-      "translation": "Graduate-only item; undergraduate accounts have no such data.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.e603089879c7",
-      "source": "仅展示近 12 个月记录；更早记录请在财务系统查询。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 109,
-          "context": "{i18n(\"pages.info.gradincometab.e603089879c7\")}"
-        }
-      ],
-      "translation": "Only the last 12 months are shown; query earlier records in the finance system.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.fc240ea62ae1",
-      "source": "近 12 个月发放记录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 69,
-          "context": "{i18n(\"pages.info.gradincometab.fc240ea62ae1\")}"
-        }
-      ],
-      "translation": "Payment records for the last 12 months",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.gradincometab.fea0225bbfc4",
-      "source": " · 计税 ¥{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(r.tax.toFixed(2))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
-          "line": 98,
-          "context": "r.tax ? i18n(\"pages.info.gradincometab.fea0225bbfc4\", { value: String(r.tax.toFixed(2)) }) : \"\""
-        }
-      ],
-      "translation": " · tax ¥{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.hygienetab.01a1a12a8cc2",
-      "source": "宿舍卫生成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
-          "line": 60,
-          "context": "{i18n(\"pages.info.hygienetab.01a1a12a8cc2\")}"
-        }
-      ],
-      "translation": "Dorm hygiene score",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.hygienetab.07c7e78ab1eb",
-      "source": "暂无卫生检查记录（本学期尚未开始检查）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
-          "line": 68,
-          "context": "{i18n(\"pages.info.hygienetab.07c7e78ab1eb\")}"
-        }
-      ],
-      "translation": "No hygiene inspection records yet (inspections have not started this semester).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.hygienetab.b0c4ef246a16",
-      "source": "家园网 myhome · 卫生检查成绩单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
-          "line": 60,
-          "context": "{i18n(\"pages.info.hygienetab.b0c4ef246a16\")}"
-        }
-      ],
-      "translation": "MyHome · dorm hygiene inspection report",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.hygienetab.cb5d682bac3d",
-      "source": "重置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
-          "line": 77,
-          "context": "{i18n(\"pages.info.hygienetab.cb5d682bac3d\")}"
-        }
-      ],
-      "translation": "Reset",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

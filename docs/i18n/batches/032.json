@@ -1,7 +1,447 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "im.wechat.4c408d3226a4",
+      "source": "未扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 46,
+          "context": "new Error(i18n(\"im.wechat.4c408d3226a4\"))"
+        }
+      ],
+      "translation": "Not signed in by QR scan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.c383c734a8c7",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 149,
+          "context": "note: i18n(\"im.wechat.c383c734a8c7\")"
+        }
+      ],
+      "translation": "The QR code has expired; please start again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.channelLabel",
+      "source": "微信（iLink 官方 Bot）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 25,
+          "context": "return i18n(\"im.wechat.channelLabel\");"
+        }
+      ],
+      "translation": "WeChat (official iLink bot)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "im.wechat.e3fe9d7adf2c",
+      "source": "未发起登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 146,
+          "context": "note: i18n(\"im.wechat.e3fe9d7adf2c\")"
+        }
+      ],
+      "translation": "Sign-in not started",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.ed04656fa8e1",
+      "source": "登录成功，通道已启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 172,
+          "context": "note: i18n(\"im.wechat.ed04656fa8e1\")"
+        }
+      ],
+      "translation": "Signed in; channel enabled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.f1ffea5c8b09",
+      "source": "微信通道未登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 59,
+          "context": "new Error(i18n(\"im.wechat.f1ffea5c8b09\"))"
+        }
+      ],
+      "translation": "The WeChat channel is not signed in",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.bound",
+      "source": "该 Bot 已绑定到本机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 180,
+          "context": "binded_redirect: i18n(\"im.wechat.qr.bound\")"
+        }
+      ],
+      "translation": "This bot is already linked to this device.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.expired",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 178,
+          "context": "expired: i18n(\"im.wechat.qr.expired\")"
+        }
+      ],
+      "translation": "QR code expired. Start again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.needVerifyCode",
+      "source": "需要在手机上输入验证码后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 177,
+          "context": "need_verifycode: i18n(\"im.wechat.qr.needVerifyCode\")"
+        }
+      ],
+      "translation": "Enter the verification code on your phone, then retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.redirect",
+      "source": "已扫码（切换接入点）…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 181,
+          "context": "scaned_but_redirect: i18n(\"im.wechat.qr.redirect\")"
+        }
+      ],
+      "translation": "Scanned. Switching connection…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.scaned",
+      "source": "已扫码，请在手机上确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 176,
+          "context": "scaned: i18n(\"im.wechat.qr.scaned\")"
+        }
+      ],
+      "translation": "Scanned. Confirm on your phone.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.verifyBlocked",
+      "source": "验证失败次数过多，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 179,
+          "context": "verify_code_blocked: i18n(\"im.wechat.qr.verifyBlocked\")"
+        }
+      ],
+      "translation": "Too many failed attempts. Start again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.wait",
+      "source": "等待扫码…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 175,
+          "context": "wait: i18n(\"im.wechat.qr.wait\")"
+        }
+      ],
+      "translation": "Waiting for scan…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.scanRequired",
+      "source": "未扫码登录（设置页点「扫码登录」）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 41,
+          "context": "missing: i18n(\"im.wechat.scanRequired\")"
+        }
+      ],
+      "translation": "Not signed in. Choose Scan to sign in in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.suspended",
+      "source": "微信风控（-14）：暂停 1 小时后自动恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 73,
+          "context": "reportChannelStatus(this.id, \"suspended\", i18n(\"im.wechat.suspended\"))"
+        }
+      ],
+      "translation": "WeChat restriction (-14): paused for 1 hour, then resumes automatically.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.0e36df52d6f5",
+      "source": "这份附件读不到内容，请重新选择文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 271,
+          "context": "new Error(i18n(\"lib.attach.0e36df52d6f5\"))"
+        }
+      ],
+      "translation": "This attachment cannot be read; please choose the file again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.822fb37dba29",
+      "source": "选择文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 212,
+          "context": "title: i18n(\"lib.attach.822fb37dba29\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 213,
+          "context": "title: i18n(\"lib.attach.822fb37dba29\")"
+        }
+      ],
+      "translation": "Choose file",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.attach.9155bd07598c",
+      "source": "当前环境没有取件界面，请在应用内操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 125,
+          "context": "new Error(i18n(\"lib.attach.9155bd07598c\"))"
+        }
+      ],
+      "translation": "No file picker is available in the current environment; please do this inside the app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.d82cecc3a306",
+      "source": "读不到内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 364,
+          "context": "e instanceof Error ? e.message : i18n(\"lib.attach.d82cecc3a306\")"
+        }
+      ],
+      "translation": "Content unreadable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.f8f5f153c20d",
+      "source": "大小未知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 99,
+          "context": "return i18n(\"lib.attach.f8f5f153c20d\");"
+        }
+      ],
+      "translation": "Unknown size",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.00b064455e5c",
+      "source": "已取消（没有提交任何内容）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 386,
+          "context": "fail(i18n(\"lib.attachactions.00b064455e5c\"))"
+        }
+      ],
+      "translation": "Canceled (nothing was submitted)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.010bbf334fe2",
+      "source": "【发新话题 · 网络学堂】\n课程：{value}\n板块：{value2}\n标题：{title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(ctx.courseName?.trim() || courseId)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(ctx.boardName?.trim() || boardId)"
+        },
+        {
+          "name": "title",
+          "expression": "String(title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 550,
+          "context": "threadId\n      ? i18n(\"lib.attachactions.942ac1d181f7\", { value: String(ctx.courseName?.trim() || courseId), threadId: String(threadId) })\n      : i18n(\"lib.attachactions.010bbf334fe2\", { value: String(ctx.courseName?.trim() || courseId), value2: String(ctx.boardName?.trim() || boardId), title: String(title) })"
+        }
+      ],
+      "translation": "[New topic · Web Learning]\nCourse: {value}\nSection: {value2}\nTitle: {title}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.attachactions.08afcfb429f3",
+      "source": "{head}\n正文：{value}\n附件：{attachNote}\n\n点「确定」= 立刻发布（全班可见，撤不回来）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "head",
+          "expression": "String(head)"
+        },
+        {
+          "name": "value",
+          "expression": "String(clip(plain, 80) || i18n(\"lib.attachactions.ed90d3f61ee5\"))"
+        },
+        {
+          "name": "attachNote",
+          "expression": "String(attachNote)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 552,
+          "context": "(ctx.confirm ?? confirmOk)(\n      i18n(\"lib.attachactions.08afcfb429f3\", { head: String(head), value: String(clip(plain, 80) || i18n(\"lib.attachactions.ed90d3f61ee5\")), attachNote: String(attachNote) }),\n    )"
+        }
+      ],
+      "translation": "{head}\nBody: {value}\nAttachments: {attachNote}\n\nTap “OK” = publish immediately (visible to the whole class; it cannot be undone).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.0cf370f0a1db",
+      "source": "去云盘页重新选资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 203,
+          "context": "message: i18n(\"lib.attachactions.0cf370f0a1db\")"
+        }
+      ],
+      "translation": "Pick the library again on the Cloud Drive page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.0ef92e23f85c",
+      "source": "附件-{value}.{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Date.now())"
+        },
+        {
+          "name": "value2",
+          "expression": "String(extForMime(mime))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 104,
+          "context": "cleaned || i18n(\"lib.attachactions.0ef92e23f85c\", { value: String(Date.now()), value2: String(extForMime(mime)) })"
+        }
+      ],
+      "translation": "Attachment-{value}.{value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.attachactions.164926abb768",
       "source": "没有附件可提交",
@@ -965,27 +1405,11 @@
         },
         {
           "file": "apps/desktop/src/lib/cloudFolder.ts",
-          "line": 36,
+          "line": 31,
           "context": "new Error(i18n(\"lib.cloudfolder.0507dadfda6a\"))"
         }
       ],
       "translation": "Tsinghua Cloud Drive is not connected: paste the token on the Cloud Drive page first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudfolder.eb7894f3378f",
-      "source": "创建 OneTHU 资料库失败",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudFolder.ts",
-          "line": 22,
-          "context": "new Error(i18n(\"lib.cloudfolder.eb7894f3378f\"))"
-        }
-      ],
-      "translation": "Failed to create the OneTHU library",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1050,408 +1474,6 @@
         }
       ],
       "translation": "In-app cloud drive sign-in only works inside OneTHU.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudtokenwebview.cancelled",
-      "source": "已取消读取云盘访问口令。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
-          "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
-        }
-      ],
-      "translation": "Reading the cloud drive access token was canceled.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudtokenwebview.pageTimeout",
-      "source": "等待云盘页面超时，请确认已登录后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
-          "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
-        }
-      ],
-      "translation": "Timed out waiting for the cloud drive page; confirm you are signed in and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.045720f46a17",
-      "source": "这个口令里没有新内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 45,
-          "context": "r.duplicate ? i18n(\"lib.contentexchange.290e61e70691\") : i18n(\"lib.contentexchange.045720f46a17\")"
-        }
-      ],
-      "translation": "This share code contains no new content",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.17fa33d72406",
-      "source": "当前暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 41,
-          "context": "vaultTarget === 'new' ? i18n(\"lib.contentexchange.4dc6d8e7a87a\") : i18n(\"lib.contentexchange.17fa33d72406\")"
-        }
-      ],
-      "translation": "Current Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.290e61e70691",
-      "source": "本地已有这张名片（未重复添加）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 45,
-          "context": "r.duplicate ? i18n(\"lib.contentexchange.290e61e70691\") : i18n(\"lib.contentexchange.045720f46a17\")"
-        }
-      ],
-      "translation": "This card already exists locally (not added again)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.2c608891c3c4",
-      "source": "组织已添加到通讯录；成员身份和访问权限由服务器确认。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 61,
-          "context": "return i18n(\"lib.contentexchange.2c608891c3c4\");"
-        }
-      ],
-      "translation": "The organization has been added to Contacts; membership and access permissions are confirmed by the server.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.354191707f33",
-      "source": "暂存箱口令无法导入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 53,
-          "context": "r.reason || i18n(\"lib.contentexchange.354191707f33\")"
-        }
-      ],
-      "translation": "Stash share codes cannot be imported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.36987ff12d5e",
-      "source": "已收到 {count} 项内容，已存入新暂存箱",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count",
-          "expression": "r.imported ?? 0"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 55,
-          "context": "vaultTarget === 'new'\n      ? i18n(\"lib.contentexchange.36987ff12d5e\", { count: r.imported ?? 0 })\n      : i18n(\"lib.contentexchange.9111f2690fbb\", { count: r.imported ?? 0 })"
-        }
-      ],
-      "translation": "Received {count} items, saved into a new Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.39815ac69fb6",
-      "source": "先粘贴收到的口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 87,
-          "context": "new Error(i18n(\"lib.contentexchange.39815ac69fb6\"))"
-        }
-      ],
-      "translation": "Paste the received share code first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.3bdb847af08f",
-      "source": "已收到 {contents}（部分内容本地已有）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "contents",
-          "expression": "new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 47,
-          "context": "r.duplicate\n      ? i18n(\"lib.contentexchange.3bdb847af08f\", { contents: new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts) })\n      : i18n(\"lib.contentexchange.b3cbed6586bd\", { contents: new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts) })"
-        }
-      ],
-      "translation": "Received {contents} (some content already existed locally)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.4dc6d8e7a87a",
-      "source": "新暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 41,
-          "context": "vaultTarget === 'new' ? i18n(\"lib.contentexchange.4dc6d8e7a87a\") : i18n(\"lib.contentexchange.17fa33d72406\")"
-        }
-      ],
-      "translation": "New Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.563bc0abe5ef",
-      "source": "当前环境不支持二维码识别",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 78,
-          "context": "new Error(i18n(\"lib.contentexchange.563bc0abe5ef\"))"
-        }
-      ],
-      "translation": "QR code scanning is not supported in the current environment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.5ccdc18fde7a",
-      "source": "请选择一张二维码图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 68,
-          "context": "new Error(i18n(\"lib.contentexchange.5ccdc18fde7a\"))"
-        }
-      ],
-      "translation": "Please choose a QR code image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.67a52d762038",
-      "source": "请先填写名片上的名字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 14,
-          "context": "new Error(i18n(\"lib.contentexchange.67a52d762038\"))"
-        }
-      ],
-      "translation": "Please fill in the name on your card first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.9111f2690fbb",
-      "source": "已导入 {count} 项，替换为当前暂存箱",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count",
-          "expression": "r.imported ?? 0"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 56,
-          "context": "vaultTarget === 'new'\n      ? i18n(\"lib.contentexchange.36987ff12d5e\", { count: r.imported ?? 0 })\n      : i18n(\"lib.contentexchange.9111f2690fbb\", { count: r.imported ?? 0 })"
-        }
-      ],
-      "translation": "Imported {count} items, replacing the current Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.97ca5653783f",
-      "source": "碰一碰口令无法导入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 39,
-          "context": "r.reason || i18n(\"lib.contentexchange.97ca5653783f\")"
-        }
-      ],
-      "translation": "Tap-to-share codes cannot be imported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.b3cbed6586bd",
-      "source": "已收到 {contents}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "contents",
-          "expression": "new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 48,
-          "context": "r.duplicate\n      ? i18n(\"lib.contentexchange.3bdb847af08f\", { contents: new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts) })\n      : i18n(\"lib.contentexchange.b3cbed6586bd\", { contents: new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts) })"
-        }
-      ],
-      "translation": "Received {contents}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.b8fde21bc2ca",
-      "source": "组织邀请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 43,
-          "context": "r.org ? i18n(\"lib.contentexchange.b8fde21bc2ca\") : ''"
-        }
-      ],
-      "translation": "Organization invitation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.d1957be29bf9",
-      "source": "这不是有效的 OneTHU 分享口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 63,
-          "context": "new Error(i18n(\"lib.contentexchange.d1957be29bf9\"))"
-        }
-      ],
-      "translation": "This is not a valid OneTHU share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.ed909fbcd134",
-      "source": "图片里没有识别到二维码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 72,
-          "context": "new Error(i18n(\"lib.contentexchange.ed909fbcd134\"))"
-        }
-      ],
-      "translation": "No QR code was detected in the image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.f69fb628aaab",
-      "source": "组织邀请无法识别",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 60,
-          "context": "r.reason || i18n(\"lib.contentexchange.f69fb628aaab\")"
-        }
-      ],
-      "translation": "The organization invitation cannot be recognized",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.fd5394f29856",
-      "source": "个人名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 42,
-          "context": "r.contact ? i18n(\"lib.contentexchange.fd5394f29856\") : ''"
-        }
-      ],
-      "translation": "Personal card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.datetext.084b42f6e95e",
-      "source": "二",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/dateText.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Tue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.datetext.51a75f4634df",
-      "source": "一",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/dateText.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Mon",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

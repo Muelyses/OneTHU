@@ -319,6 +319,42 @@
     "pages.info.visittab.34c680feb9c9": {
       "zh-CN": "发送成功",
       "en-US": "Sent"
+    },
+    "state.seafile.deleteOwnerOnly": {
+      "zh-CN": "只有资料库所有者可以删除整个资料库",
+      "en-US": "Only the library owner can delete the entire library."
+    },
+    "pages.cloudpage.deleteLibrary": {
+      "zh-CN": "删除资料库",
+      "en-US": "Delete library"
+    },
+    "pages.cloudpage.deleteLibraryNamed": {
+      "zh-CN": "删除资料库「{name}」",
+      "en-US": "Delete library “{name}”"
+    },
+    "pages.cloudpage.deleteLibraryConfirm": {
+      "zh-CN": "确定删除资料库「{name}」及其中的全部文件吗？这会删除云端资料库，所有共享给好友或组织成员的访问也会失效。",
+      "en-US": "Delete the library “{name}” and all its files? This deletes the cloud library and removes access for every friend or organization member it was shared with."
+    },
+    "pages.cloudpage.deleteLibraryOrgConfirm": {
+      "zh-CN": "「{name}」已关联组织：{organizations}。删除的是整个云端资料库及其中的全部文件，不只是移除组织中的关联；所有成员会失去访问。确定删除吗？",
+      "en-US": "“{name}” is linked to these organizations: {organizations}. This deletes the entire cloud library and all its files, not just its organization links. All members will lose access. Delete it?"
+    },
+    "pages.cloudpage.libraryDeleted": {
+      "zh-CN": "已删除资料库「{name}」",
+      "en-US": "Deleted library “{name}”."
+    },
+    "state.seafile.nativeRestartRequired": {
+      "zh-CN": "当前程序无法确认资料库归属，已暂停自动建库、删除与同步。请更新并重新启动 OneTHU 后重试。",
+      "en-US": "The app cannot verify library ownership. Automatic library creation, deletion and syncing are paused. Update and restart OneTHU, then try again."
+    },
+    "state.seafile.duplicatePersonalLibraries": {
+      "zh-CN": "发现多个同名且有内容的个人资料库，无法安全选择。请先在云盘确认要使用的资料库。",
+      "en-US": "Several personal libraries have the same name and contain data. Review them in cloud storage before choosing which one to use."
+    },
+    "state.seafile.libraryCreationUnconfirmed": {
+      "zh-CN": "上次建库结果尚未确认，已暂停自动创建，避免重复。请刷新云盘确认，或手动创建所需资料库后重试。",
+      "en-US": "The previous library creation is still unconfirmed. Automatic creation is paused to prevent duplicates. Refresh cloud storage to check, or create the required library manually, then retry."
     }
   }
 }

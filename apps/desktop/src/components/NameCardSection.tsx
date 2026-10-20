@@ -14,6 +14,8 @@ import { personalNfcCode, personalShareCode } from "../lib/contentExchange.js";
 import { useNfcExchange } from "../lib/useNfcExchange.js";
 import { useVaultReceive } from "../lib/useVaultReceive.js";
 import { IdentityCard } from "./IdentityCard.js";
+import { FriendInvitations } from "./FriendInvitations.js";
+import { publishFriendInvitation } from "../state/friendInbox.js";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Btn, Card, Chip, EmptyState, IconBtn, IconCamera, IconCloud, IconFile, IconIn, IconMail, IconPen,
@@ -23,7 +25,7 @@ import {
 import { defineSearchRows } from "../state/searchRows.js";
 import { getCampusSnapshot, subscribeCampusData } from "../state/data.js";
 import {
-  ensureSeafileLoaded, refreshSeafileAccount, useSeafile,
+  ensureSeafileLoaded, refreshSeafileAccount, useSeafile, seafileDownload,
 } from "../state/seafile.js";
 import { goEntry } from "./Layout.js";
 import { openFormModal } from "../lib/formModal.js";
@@ -34,14 +36,13 @@ import { bytesToBase64 } from "../lib/imageSave.js";
 import { addToVault, vaultSnapshot, type VaultCatch } from "../state/vault.js";
 import {
   CARD_LIMITS, addContact, orgCardCatch, personalCardCatch, removeContact,
-  resolveCloudEmail, savePersonalCard, setContactShare, upsertOrgCard, useCards,
+  resolveCloudEmail, savePersonalCard, upsertOrgCard, useCards,
   type CardCover, type ContactCard, type OrgCard, type PersonalCard,
 } from "../state/nameCard.js";
-import { prepareAndShareFolder } from "../lib/cloudFolder.js";
 import { deleteCardCover, uploadCardCover } from "../lib/cardCover.js";
 import { CardCoverEditor } from "./CardCoverEditor.js";
 import {
-  openBidirectionalShare, sendFriendFile, sendFriendText, useFriendMessages,
+  refreshFriendMessages, sendFriendFile, sendFriendText, useFriendMessages,
 } from "../state/friendChannel.js";
 import { stageFromPicker } from "../lib/fileChannel.js";
 
@@ -351,6 +352,26 @@ export function ContactCabinet(): ReactNode {
   }, [focused]);
   const shown = focused ?? shownRef.current;
   const channelMessages = useFriendMessages(channelId ?? "");
+  const [channelError, setChannelError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!channelId) { setChannelError(null); return; }
+    let alive = true;
+    let running = false;
+    const refresh = async (): Promise<void> => {
+      if (running || document.visibilityState !== "visible") return;
+      running = true;
+      try {
+        const r = await refreshFriendMessages(channelId);
+        if (alive) setChannelError(r.ok ? null : r.reason ?? null);
+      } finally { running = false; }
+    };
+    void refresh();
+    const timer = setInterval(() => void refresh(), 15_000);
+    const focus = (): void => { void refresh(); };
+    window.addEventListener("focus", focus);
+    document.addEventListener("visibilitychange", focus);
+    return () => { alive = false; clearInterval(timer); window.removeEventListener("focus", focus); document.removeEventListener("visibilitychange", focus); };
+  }, [channelId]);
 
   const toggleStar = useCallback((id: string): void => {
     setStarred((prev) => {
@@ -378,23 +399,19 @@ export function ContactCabinet(): ReactNode {
     else showToast(dup ? i18nMsg("components.namecardsection.4a49d50fc1ad") : i18nMsg("components.namecardsection.0c557ff432a7"));
   }, []);
 
-  const shareCloud = useCallback(async (contactId: string, name: string): Promise<void> => {
+  const shareCloud = useCallback(async (contactId: string): Promise<void> => {
+    const old = doc.contacts.find((c) => c.id === contactId)?.shared;
+    if (old?.shareUrl && !await confirmOk(i18nMsg("friends.upgradeLegacy"))) return;
     setSharingId(contactId);
     try {
-      const share = await prepareAndShareFolder(`/Friends/${contactId}`, i18n("components.namecardsection.a6f084e2fe02", { name: String(name) }));
-      setContactShare(contactId, {
-        repoId: share.repoId, path: share.path, shareUrl: share.shareUrl, shareToken: share.shareToken,
-        expiresAt: share.expiresAt, createdAt: Date.now(),
-      });
-      await navigator.clipboard.writeText(share.shareUrl).catch(() => undefined);
-      const twoWay = await openBidirectionalShare(contactId);
-      showToast(twoWay.ok ? i18nMsg("components.namecardsection.409bad7496cf") : i18nMsg("components.namecardsection.53c31c534b2e"));
+      await publishFriendInvitation(contactId);
+      showToast(i18nMsg("friends.published"), 7000);
     } catch (e) {
       showToast(i18nMsg("components.namecardsection.a24929811487", { value: String(e instanceof Error ? e.message : String(e)) }));
     } finally {
       setSharingId(null);
     }
-  }, []);
+  }, [doc.contacts]);
 
   const sendMessage = useCallback(async (): Promise<void> => {
     if (!channelId) return;
@@ -464,6 +481,7 @@ export function ContactCabinet(): ReactNode {
 
   return (
     <div className="contact-cabinet">
+      <FriendInvitations onConnected={(id) => { setFocusedId(id); setChannelId(id); }} />
       <div className="contact-toolbar">
         <SearchField
           className="contact-search"
@@ -605,7 +623,9 @@ export function ContactCabinet(): ReactNode {
                   { k: i18n("components.namecardsection.daede9881787"), v: shown.note || i18n("components.namecardsection.7f05190592e5") },
                   { k: i18n("components.namecardsection.8131eafd0239"), v: contactBrief(shown) },
                   { k: shown.kind === "organization" ? i18n("components.namecardsection.b52ea6d355c2") : i18n("components.namecardsection.323a881ebd47"), v: contactLink(shown) || i18n("components.namecardsection.7f05190592e5") },
-                  { k: i18n("components.namecardsection.79d504ee7bef"), v: shown.shared?.shareUrl ? i18n("components.namecardsection.675b3c608daf") : i18n("components.namecardsection.90b310149a74") },
+                  { k: i18n("components.namecardsection.79d504ee7bef"), v: shown.shared?.acceptedAt
+                    ? i18n("friends.connected") : shown.shared?.invitationPublishedAt ? i18n("friends.awaitingPeer")
+                    : shown.shared ? i18n("friends.legacyChannel") : i18n("components.namecardsection.90b310149a74") },
                 ]}
               />
               <Inline gap={2} wrap>
@@ -613,21 +633,17 @@ export function ContactCabinet(): ReactNode {
                   const r = addToVault(contactCatch(shown));
                   showToast(r.ok ? i18nMsg("components.namecardsection.98a4e5fe3ab0") : r.reason === "duplicate" ? i18nMsg("components.namecardsection.9e7804614304") : i18nMsg("components.namecardsection.57ce97c584ca"));
                 }}>{i18n("components.namecardsection.8e5ba1de0a5c")}</Btn>
-                {shown.shared?.shareUrl ? (
-                  <Btn size="sm" variant="outline" icon={<IconCloud size="sm" />} onClick={() => {
-                    void navigator.clipboard.writeText(shown.shared!.shareUrl!).then(
-                      () => showToast(i18nMsg("components.namecardsection.e180400bc837")),
-                      () => showToast(i18nMsg("components.namecardsection.97f4308501ff")),
-                    );
-                  }}>{i18n("components.namecardsection.4300017090d2")}</Btn>
-                ) : (
-                  <Btn size="sm" variant="outline" icon={<IconCloud size="sm" />} disabled={sharingId === shown.id} onClick={() => void shareCloud(shown.id, shown.name)}>
-                    {sharingId === shown.id ? i18n("components.namecardsection.56b63def0e29") : i18n("components.namecardsection.79d504ee7bef")}
+                {shown.shared && <Btn size="sm" variant="outline" icon={<IconCloud size="sm" />}
+                  onClick={() => openTab("cloud", { cloudRepo: shown.shared!.repoId, cloudPath: shown.shared!.path })}>
+                  {i18n("friends.openFiles")}
+                </Btn>}
+                {shown.kind === "personal" && (!shown.shared?.acceptedAt || shown.shared.ownerEmail === shown.shared.accountEmail) && (
+                  <Btn size="sm" variant="outline" icon={<IconMail size="sm" />} disabled={sharingId === shown.id}
+                    onClick={() => void shareCloud(shown.id)}>
+                    {sharingId === shown.id ? i18n("components.namecardsection.56b63def0e29")
+                      : shown.shared ? i18n("friends.resend") : i18n("friends.create")}
                   </Btn>
                 )}
-                {shown.shared && !shown.shared.sharedWith && (shown.card as { cloudEmail?: string }).cloudEmail ? (
-                  <Btn size="sm" variant="ghost" onClick={() => void openBidirectionalShare(shown.id).then((r) => showToast(r.ok ? i18nMsg("components.namecardsection.1322cdf5af8a") : i18nMsg("components.namecardsection.2e31444feed1", { reason: String(r.reason) })))}>{i18n("components.namecardsection.72198cd82905")}</Btn>
-                ) : null}
                 <Btn size="sm" variant="ghost" icon={<IconMail size="sm" />} onClick={() => setChannelId(channelId === shown.id ? null : shown.id)}>
                   {channelId === shown.id ? i18n("components.namecardsection.e1bb8719dfa4") : i18n("components.namecardsection.1ce1f2806523")}
                 </Btn>
@@ -653,8 +669,12 @@ export function ContactCabinet(): ReactNode {
                 <div className="contact-channel">
                   <Inline justify="between" gap={2}>
                     <Text slot="label" weight="semibold">{i18n("components.namecardsection.1ce1f2806523")}</Text>
-                    <Btn variant="plain" onClick={() => setChannelId(null)}>{i18n("components.namecardsection.3fd47edce45b")}</Btn>
+                    <Inline gap={2}>
+                      <Btn size="sm" variant="ghost" onClick={() => void refreshFriendMessages(shown.id).then((r) => setChannelError(r.ok ? null : r.reason ?? null))}>{i18n("friends.refreshMessages")}</Btn>
+                      <Btn variant="plain" onClick={() => setChannelId(null)}>{i18n("components.namecardsection.3fd47edce45b")}</Btn>
+                    </Inline>
                   </Inline>
+                  {channelError && <div role="alert"><Text slot="micro" tone="error">{channelError}</Text></div>}
                   {channelMessages.length === 0 ? (
                     <Text slot="micro" tone="faint">{i18n("components.namecardsection.2a7be7efb999")}</Text>
                   ) : (
@@ -665,7 +685,9 @@ export function ContactCabinet(): ReactNode {
                           flush
                           leading={m.kind === "file" ? <IconFile size="sm" /> : <IconMail size="sm" />}
                           title={m.kind === "file" ? i18n("components.namecardsection.9491ade2781f") + m.text : m.text}
-                          sub={m.cloudPath ? i18n("components.namecardsection.28603f7d8ab4") : i18n("components.namecardsection.5a51f9817528")}
+                          sub={(m.mine ? i18n("friends.fromMe") : shown.name) + " · " + (m.cloudPath ? i18n("components.namecardsection.28603f7d8ab4") : i18n("components.namecardsection.5a51f9817528"))}
+                          trailing={m.kind === "file" && m.cloudPath && shown.shared ? <Btn size="sm" variant="ghost"
+                            onClick={() => void seafileDownload(shown.shared!.repoId, m.cloudPath!).catch((e) => showToast(String(e)))}>{i18n("friends.download")}</Btn> : undefined}
                         />
                       ))}
                     </List>

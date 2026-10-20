@@ -4,23 +4,18 @@ import { t as i18n } from "../i18n/index.js";
  * 只做「确保资料库/目录 → 上传一个说明文件 → 分享」；失败如实抛错，调用方决定降级。
  */
 import { invoke } from "@tauri-apps/api/core";
+import { ensureOwnedCloudRepo } from "./ownedCloudRepo.js";
 import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
 
-interface Repo { id: string; name: string }
 export interface CloudShare { repoId: string; path: string; shareUrl: string; shareToken: string; expiresAt: number }
 
 export async function ensureOneThuRepo(): Promise<string> {
   await ensureSeafileLoaded();
   const token = getSeafileToken();
   if (!token) throw new Error(i18n("lib.cloudfolder.0507dadfda6a"));
-  const repos = await invoke<Repo[]>("seafile_repos", { token });
-  const hit = repos.find((r) => r.name === "OneTHU");
-  if (hit) return hit.id;
-  await invoke("seafile_create_repo", { token, name: "OneTHU" });
-  const again = await invoke<Repo[]>("seafile_repos", { token });
-  const made = again.find((r) => r.name === "OneTHU");
-  if (!made) throw new Error(i18n("lib.cloudfolder.eb7894f3378f"));
-  return made.id;
+  const repo = await ensureOwnedCloudRepo(token, "OneTHU");
+  if (token !== getSeafileToken()) throw new Error(i18n("state.seafile.accountChanged"));
+  return repo.id;
 }
 
 async function writeTemp(name: string, text: string): Promise<string> {

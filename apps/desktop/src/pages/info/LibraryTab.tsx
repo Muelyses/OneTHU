@@ -34,6 +34,7 @@ import { fetchImageByUrl, info, logLine, session } from "../../lib/clients.js";
 import { explainNetworkError } from "../../lib/transport.js";
 import { softRecover } from "../../lib/reload.js";
 import { useApp } from "../../state/context.js";
+import { localizeLibraryError } from "./libraryErrorText.js";
 
 function logErr(tag: string, err: unknown): void {
   void logLine(
@@ -584,7 +585,7 @@ export function LibraryTab({
             >{i18n("pages.info.librarytab.b8784c8dd563")}</Btn>
           }
         >
-          {libError ?? ""}
+          {localizeLibraryError(libError ?? "")}
         </Banner>
       ) : null}
       {libState === "loading" && !libs ? <LoadingBlock rows={2} /> : null}
@@ -720,7 +721,7 @@ export function LibraryTab({
             >{i18n("pages.info.librarytab.b8784c8dd563")}</Btn>
           }
         >
-          {seatError ?? ""}
+          {localizeLibraryError(seatError ?? "")}
         </Banner>
       ) : null}
       {seatState === "ready" && seatList.length === 0 ? (
@@ -780,9 +781,9 @@ export function LibraryTab({
         </Card>
       ) : null}
 
-      {bookError ? <Banner tone="error">{bookError}</Banner> : null}
+      {bookError ? <Banner tone="error">{localizeLibraryError(bookError)}</Banner> : null}
 
-      {action ? <Banner tone={action.ok ? "success" : "error"}>{action.text}</Banner> : null}
+      {action ? <Banner tone={action.ok ? "success" : "error"}>{localizeLibraryError(action.text)}</Banner> : null}
 
       <Section title={i18n("pages.info.librarytab.1a558735ea57")} aside={i18n("pages.info.librarytab.cdbc73064158")} />
       {recState === "loading" ? <LoadingBlock rows={2} /> : null}
@@ -801,7 +802,7 @@ export function LibraryTab({
             >{i18n("pages.info.librarytab.b8784c8dd563")}</Btn>
           }
         >
-          {recError ?? ""}
+          {localizeLibraryError(recError ?? "")}
         </Banner>
       ) : null}
       {recState === "ready" && (records ?? []).length === 0 ? (

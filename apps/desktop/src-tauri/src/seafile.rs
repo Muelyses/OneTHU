@@ -62,6 +62,11 @@ pub struct SeafileRepo {
     /// 秒级时间戳（缺省 0）
     pub mtime: i64,
     pub size: i64,
+    pub repo_type: String,
+    pub owner: String,
+    pub owner_name: String,
+    pub permission: String,
+    pub is_virtual: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -103,31 +108,56 @@ pub async fn seafile_account(token: String) -> Result<SeafileAccount, String> {
 /// 资料库列表（含共享给我的库）
 #[tauri::command]
 pub async fn seafile_repos(token: String) -> Result<Vec<SeafileRepo>, String> {
+    // Tsinghua's /api2/repos/ returns type="repo"/"grepo", not "mine".
+    // Resolve personal ownership using the authenticated account, never write
+    // permission or a familiar library name. Unknown metadata remains unknown.
+    let account = seafile_account(token.clone()).await?;
     let v: Vec<Value> = check(client()?.get(format!("{BASE}/api2/repos/")).bearer_auth(token).send().await.map_err(|e| e.to_string())?)
         .await?
         .json()
         .await
         .map_err(|e| e.to_string())?;
-    // seahub /api2/repos/ 是 mine+shared+group+public 四路平铺合并、服务端不去重
-    //（源码 ReposView：repo_list 逐路 append）——同一库经群组+分享双通道进来会重复。
-    // 保留首个出现（mine 通道在前 → rw 权优先）；virtual 子库（子目录分享出的虚拟库，
-    // 表现为「重复的文件夹」）整条滤除。
-    let mut seen = std::collections::HashSet::new();
-    Ok(v.into_iter()
-        .filter(|r| {
-            if r.get("virtual").and_then(|x| x.as_bool()).unwrap_or(false) {
-                return false;
-            }
-            let id = r.get("id").and_then(|x| x.as_str()).unwrap_or("");
-            !id.is_empty() && seen.insert(id.to_string())
-        })
-        .map(|r| SeafileRepo {
-            id: r.get("id").and_then(|x| x.as_str()).unwrap_or("").into(),
-            name: r.get("name").and_then(|x| x.as_str()).unwrap_or("").into(),
-            mtime: r.get("mtime").and_then(|x| x.as_i64()).unwrap_or(0),
-            size: r.get("size").and_then(|x| x.as_i64()).unwrap_or(0),
-        })
-        .collect())
+    Ok(parse_repos(v, &account.email))
+}
+
+/// Preserve shared subdirectories: they are real incoming resources even though
+/// Seafile calls them virtual libraries. Only the owner's redundant virtual rows
+/// are hidden. Prefer the authoritative owned row when a library appears twice.
+fn parse_repos(rows: Vec<Value>, account_email: &str) -> Vec<SeafileRepo> {
+    let mut output: Vec<SeafileRepo> = Vec::new();
+    for row in rows {
+        let id = row.get("id").and_then(Value::as_str).unwrap_or("");
+        let raw_type = row.get("type").and_then(Value::as_str).unwrap_or("");
+        let owner = row.get("owner").and_then(Value::as_str).unwrap_or("");
+        let owned = !account_email.is_empty() && owner.eq_ignore_ascii_case(account_email);
+        let repo_type = match raw_type {
+            "repo" | "mine" if owned => "mine",
+            "repo" if !owner.is_empty() && !account_email.is_empty() => "shared",
+            "shared" | "srepo" => "shared",
+            "group" | "grepo" => "group",
+            "org" => "org",
+            _ => "",
+        };
+        let is_virtual = row.get("virtual").and_then(Value::as_bool);
+        if id.is_empty() || (is_virtual == Some(true) && repo_type == "mine") { continue; }
+        let repo = SeafileRepo {
+            id: id.into(),
+            name: row.get("name").and_then(Value::as_str).unwrap_or("").into(),
+            mtime: row.get("mtime").and_then(Value::as_i64).unwrap_or(0),
+            size: row.get("size").and_then(Value::as_i64).unwrap_or(0),
+            repo_type: repo_type.into(),
+            owner: owner.into(),
+            owner_name: row.get("owner_name").and_then(Value::as_str).unwrap_or("").into(),
+            permission: row.get("permission").and_then(Value::as_str).unwrap_or("").into(),
+            is_virtual,
+        };
+        if let Some(previous) = output.iter_mut().find(|r| r.id == id) {
+            // A direct received share must not be hidden by the same group's row.
+            let rank = |kind: &str| match kind { "mine" => 3, "shared" => 2, "group" | "org" => 1, _ => 0 };
+            if rank(&repo.repo_type) > rank(&previous.repo_type) { *previous = repo; }
+        } else { output.push(repo); }
+    }
+    output
 }
 
 /// 创建资料库（POST /api2/repos/，form: name；同名已存在时 Seafile 会新建重名库——
@@ -159,6 +189,11 @@ pub async fn seafile_create_repo(token: String, name: String) -> Result<SeafileR
         name: v.get("name").and_then(|x| x.as_str()).unwrap_or(n).to_string(),
         mtime: v.get("mtime").and_then(|x| x.as_i64()).unwrap_or(0),
         size: v.get("size").and_then(|x| x.as_i64()).unwrap_or(0),
+        repo_type: "mine".into(),
+        owner: v.get("owner").and_then(Value::as_str).unwrap_or("").into(),
+        owner_name: v.get("owner_name").and_then(Value::as_str).unwrap_or("").into(),
+        permission: "rw".into(),
+        is_virtual: Some(false),
     })
 }
 
@@ -932,6 +967,51 @@ fn expand_home(local_path: &str) -> Result<String, String> {
 mod tests {
     use super::*;
 
+    #[test]
+    fn repository_metadata_preserves_incoming_virtual_libraries() {
+        let repos = parse_repos(serde_json::json!([
+            {"id":"incoming","type":"grepo","virtual":true,"owner":"friend@example.test","permission":"r"},
+            {"id":"incoming","type":"shared","virtual":true,"owner":"friend@example.test","owner_name":"Friend","permission":"rw"},
+            {"id":"owned-virtual","type":"mine","virtual":true,"owner":"me@example.test"},
+            {"id":"duplicate","type":"shared","virtual":false,"owner":"me@example.test","permission":"r"},
+            {"id":"duplicate","type":"mine","virtual":false,"owner":"me@example.test","permission":"rw"}
+        ]).as_array().unwrap().clone(), "me@example.test");
+        assert_eq!(repos.len(), 2);
+        assert_eq!(repos[0].is_virtual, Some(true));
+        assert_eq!(repos[0].owner, "friend@example.test");
+        assert_eq!(repos[0].owner_name, "Friend");
+        assert_eq!(repos[1].repo_type, "mine");
+        assert_eq!(repos[1].permission, "rw");
+        assert!(!can_delete_owned_repo(&repos[0], "friend@example.test"));
+        assert!(can_delete_owned_repo(&repos[1], "ME@example.test"));
+        assert!(!can_delete_owned_repo(&repos[1], "other@example.test"));
+        assert!(!can_delete_owned_repo(&repos[1], ""));
+    }
+
+    #[test]
+    fn tsinghua_repository_types_use_authenticated_ownership() {
+        let repos = parse_repos(serde_json::json!([
+            {"id":"memory","name":"OH-Memory","type":"repo","virtual":false,"owner":"ME@example.test","permission":"rw","size":19177},
+            {"id":"received","name":"OH-Memory","type":"repo","virtual":false,"owner":"other@example.test","permission":"rw"},
+            {"id":"group","type":"grepo","virtual":false,"owner":"me@example.test","permission":"rw"},
+            {"id":"missing-owner","type":"repo","virtual":false},
+            {"id":"missing-virtual","type":"repo","owner":"me@example.test"},
+            {"id":"unknown-type","type":"new-server-type","virtual":false,"owner":"me@example.test"}
+        ]).as_array().unwrap().clone(), "me@example.test");
+        assert_eq!(repos[0].repo_type, "mine");
+        assert!(can_delete_owned_repo(&repos[0], "me@example.test"));
+        assert_eq!(repos[1].repo_type, "shared");
+        assert!(!can_delete_owned_repo(&repos[1], "me@example.test"));
+        assert_eq!(repos[2].repo_type, "group");
+        assert!(!can_delete_owned_repo(&repos[2], "me@example.test"));
+        assert_eq!(repos[3].repo_type, "");
+        assert_eq!(repos[4].is_virtual, None);
+        assert!(!can_delete_owned_repo(&repos[4], "me@example.test"));
+        assert_eq!(repos[5].repo_type, "");
+        assert!(!can_delete_owned_repo(&repos[5], "me@example.test"));
+        assert!(repos.iter().all(|r| !can_delete_owned_repo(r, "")));
+    }
+
     fn token() -> String {
         std::env::var("TSINGHUA_SEAFILE_TOKEN").expect("需要 TSINGHUA_SEAFILE_TOKEN 环境变量（云盘 profile 页生成）")
     }
@@ -1206,6 +1286,28 @@ pub async fn seafile_remove_repo_user_share(token: String, repo_id: String, emai
     check(client()?.delete(format!("{BASE}/api2/repos/{repo_id}/dir/shared_items/")).bearer_auth(&token).query(&[("p", "/"), ("share_type", "user"), ("username", email.as_str())]).send().await.map_err(|e| e.to_string())?).await?;
     if seafile_repo_user_shares(token, repo_id).await?.iter().any(|r| r.email == email) { return Err("云盘尚未撤销该成员权限，请重试".into()); }
     Ok(())
+}
+
+/// Explicit user deletion; the private-share cleanup command below stays scoped.
+/// Recheck ownership against the live server immediately before deletion. A write
+/// grant is not ownership, and deleting a received subfolder must never delete the
+/// source library belonging to somebody else.
+#[tauri::command]
+pub async fn seafile_delete_owned_repo(token: String, repo_id: String) -> Result<(), String> {
+    if repo_id.len() != 36 || !repo_id.bytes().all(|b| b.is_ascii_hexdigit() || b == b'-') {
+        return Err("资料库标识无效".into());
+    }
+    let account = seafile_account(token.clone()).await?;
+    let repos = seafile_repos(token.clone()).await?;
+    let repo = repos.iter().find(|r| r.id == repo_id).ok_or("资料库已不存在或当前账号无权访问，请刷新列表")?;
+    if !can_delete_owned_repo(repo, &account.email) { return Err("只有资料库所有者可以删除整个资料库".into()); }
+    check(client()?.delete(format!("{BASE}/api2/repos/{repo_id}/")).bearer_auth(token).send().await.map_err(|e| e.to_string())?).await?;
+    Ok(())
+}
+
+fn can_delete_owned_repo(repo: &SeafileRepo, account_email: &str) -> bool {
+    repo.repo_type == "mine" && repo.is_virtual == Some(false) && !account_email.is_empty()
+        && repo.owner.eq_ignore_ascii_case(account_email)
 }
 
 /// Deletes only a private key library created for OneTHU sharing.

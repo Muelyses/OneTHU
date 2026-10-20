@@ -13,6 +13,7 @@ import { t as i18n } from "../i18n/index.js";
  * 云盘未连接时全部静默降级（本地记忆照常可用，绝不阻塞对话）。
  */
 import { invoke } from "@tauri-apps/api/core";
+import { ensureOwnedCloudRepo } from "../lib/ownedCloudRepo.js";
 import { logLine } from "../lib/clients.js";
 import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
 import { ledgerLoad, ledgerPut, listAllNotes } from "./mirror.js";
@@ -33,21 +34,13 @@ async function token(): Promise<string | null> {
 
 /** 确保 OH-Memory 资料库存在（找到或新建），返回 repoId；云盘未连接返回 null */
 export async function ensureMemoryRepo(): Promise<string | null> {
-  const cached = localStorage.getItem(REPO_KEY);
-  if (cached) return cached;
   const tk = await token();
   if (!tk) return null;
-  const repos = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
-  let repo = repos.find((r) => r.name === REPO_NAME);
-  if (!repo) {
-    // 建库响应的 id 字段在不同 Seafile 版本形态不一（清华实例实测缺 id）——
-    // create 之后**无论成败都列表复查**：建出了就能按名找到，解析失败也不丢、不重复建
-    await invoke("seafile_create_repo", { token: tk, name: REPO_NAME }).catch(() => undefined);
-    const repos2 = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
-    repo = repos2.find((r) => r.name === REPO_NAME);
-  }
-  if (!repo) throw new Error(i18n("memory.sync.9f1773200fb8"));
-  localStorage.setItem(REPO_KEY, repo.id);
+  let cached: string | undefined;
+  try { cached = localStorage.getItem(REPO_KEY) ?? undefined; } catch { /* Optional cache. */ }
+  const repo = await ensureOwnedCloudRepo(tk, REPO_NAME, cached);
+  if (tk !== getSeafileToken()) throw new Error(i18n("state.seafile.accountChanged"));
+  try { localStorage.setItem(REPO_KEY, repo.id); } catch { /* Optional cache. */ }
   void logLine(`[MEMORY] 云盘记忆库就绪：《${repo.name}》(${repo.id.slice(0, 8)}…)`).catch(() => undefined);
   return repo.id;
 }

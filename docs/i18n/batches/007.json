@@ -1,5 +1,5 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -738,7 +738,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 26,
+          "line": 27,
           "context": "return i18n(\"components.explorer.settingsoverlay.487e926379fe\");"
         }
       ],
@@ -754,7 +754,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 82,
+          "line": 84,
           "context": "{i18n(\"components.explorer.settingsoverlay.51f560817509\")}"
         }
       ],
@@ -770,7 +770,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 82,
+          "line": 84,
           "context": "{i18n(\"components.explorer.settingsoverlay.77b17fc4a52a\")}"
         }
       ],
@@ -786,7 +786,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 65,
+          "line": 67,
           "context": "{i18n(\"components.explorer.settingsoverlay.7f1d9dd04cd1\")}"
         }
       ],
@@ -802,7 +802,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 68,
+          "line": 70,
           "context": "{i18n(\"components.explorer.settingsoverlay.b31841ccaf3d\")}"
         }
       ],
@@ -818,7 +818,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 27,
+          "line": 28,
           "context": "return i18n(\"components.explorer.settingsoverlay.c2952a5ffcc3\");"
         }
       ],
@@ -834,7 +834,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/SettingsOverlay.tsx",
-          "line": 28,
+          "line": 29,
           "context": "return i18n(\"components.explorer.settingsoverlay.e806fbbe8ec6\");"
         }
       ],
@@ -850,7 +850,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 777,
+          "line": 778,
           "context": "{i18n(\"components.explorer.tabdrawer.051836569928\")}"
         }
       ],
@@ -866,7 +866,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 901,
+          "line": 903,
           "context": "label: i18n(\"components.explorer.tabdrawer.05cc68bdf7ae\")"
         }
       ],
@@ -882,7 +882,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 884,
+          "line": 886,
           "context": "label: i18n(\"components.explorer.tabdrawer.0bd930dcb332\")"
         }
       ],
@@ -903,7 +903,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 824,
+          "line": 825,
           "context": "{i18n(\"components.explorer.tabdrawer.0bfa64848a64\", { label: String(label) })}"
         }
       ],
@@ -919,7 +919,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 755,
+          "line": 756,
           "context": "{i18n(\"components.explorer.tabdrawer.0f0e5de771d4\")}"
         }
       ],
@@ -940,7 +940,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 698,
+          "line": 699,
           "context": "{i18nRich(\"components.explorer.tabdrawer.179bb9615b50\", { name: w.name })}"
         }
       ],
@@ -961,7 +961,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 611,
+          "line": 612,
           "context": "return i18n(\"components.explorer.tabdrawer.1bdf469558d6\", { value: String(Math.floor(d / 60_000)) });"
         }
       ],
@@ -977,7 +977,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 818,
+          "line": 819,
           "context": "isHome ? i18n(\"components.explorer.tabdrawer.1cff7673a712\") : `${full} · ${relTime(tab.lastActiveAt)}`"
         }
       ],
@@ -993,7 +993,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 967,
+          "line": 969,
           "context": "{i18n(\"components.explorer.tabdrawer.1f5c44171ba4\")}"
         }
       ],
@@ -1009,27 +1009,27 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 762,
+          "line": 763,
           "context": "t.kind === \"home\" ? i18n(\"components.explorer.tabdrawer.203c08e0d44a\") : resolveTabTitle(t.page, t.params).label"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 809,
+          "line": 810,
           "context": "label: i18n(\"components.explorer.tabdrawer.203c08e0d44a\")"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 809,
+          "line": 810,
           "context": "full: i18n(\"components.explorer.tabdrawer.203c08e0d44a\")"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 843,
+          "line": 844,
           "context": "label: i18n(\"components.explorer.tabdrawer.203c08e0d44a\")"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 843,
+          "line": 844,
           "context": "full: i18n(\"components.explorer.tabdrawer.203c08e0d44a\")"
         }
       ],
@@ -1045,12 +1045,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 690,
+          "line": 691,
           "context": "{i18n(\"components.explorer.tabdrawer.22dc6ee0c645\")}"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 742,
+          "line": 743,
           "context": "{i18n(\"components.explorer.tabdrawer.22dc6ee0c645\")}"
         }
       ],
@@ -1066,7 +1066,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 747,
+          "line": 748,
           "context": "{i18n(\"components.explorer.tabdrawer.2cd0f3be8738\")}"
         }
       ],
@@ -1082,7 +1082,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 700,
+          "line": 701,
           "context": "{i18n(\"components.explorer.tabdrawer.35e7242f8826\")}"
         }
       ],
@@ -1098,12 +1098,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 735,
+          "line": 736,
           "context": "{i18n(\"components.explorer.tabdrawer.37979829426b\")}"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 737,
+          "line": 738,
           "context": "{i18n(\"components.explorer.tabdrawer.37979829426b\")}"
         }
       ],
@@ -1119,7 +1119,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 826,
+          "line": 827,
           "context": "{i18n(\"components.explorer.tabdrawer.3fd47edce45b\")}"
         }
       ],
@@ -1135,12 +1135,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 890,
+          "line": 892,
           "context": "label: i18n(\"components.explorer.tabdrawer.40561d059752\")"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 903,
+          "line": 905,
           "context": "label: i18n(\"components.explorer.tabdrawer.40561d059752\")"
         }
       ],
@@ -1156,7 +1156,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 779,
+          "line": 780,
           "context": "{i18n(\"components.explorer.tabdrawer.5c551062c8a5\")}"
         }
       ],
@@ -1177,7 +1177,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 825,
+          "line": 826,
           "context": "{i18n(\"components.explorer.tabdrawer.609072c18c11\", { label: String(label) })}"
         }
       ],
@@ -1193,7 +1193,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 846,
+          "line": 847,
           "context": "{i18n(\"components.explorer.tabdrawer.60dd2bf62494\")}"
         }
       ],
@@ -1209,7 +1209,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 976,
+          "line": 978,
           "context": "{i18n(\"components.explorer.tabdrawer.6527f59a6589\")}"
         }
       ],
@@ -1225,7 +1225,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 785,
+          "line": 786,
           "context": "{i18n(\"components.explorer.tabdrawer.7aa6d0ef5feb\")}"
         }
       ],
@@ -1241,7 +1241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 987,
+          "line": 989,
           "context": "{i18n(\"components.explorer.tabdrawer.88d72ece7cf7\")}"
         }
       ],
@@ -1257,7 +1257,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 888,
+          "line": 890,
           "context": "label: i18n(\"components.explorer.tabdrawer.8bcb372db593\")"
         }
       ],
@@ -1278,7 +1278,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 750,
+          "line": 751,
           "context": "{i18nRich(\"components.explorer.tabdrawer.8f82afeb9cd5\", { length: snap.tabs.length })}"
         }
       ],
@@ -1307,7 +1307,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 772,
+          "line": 773,
           "context": "count > 0 ? i18n(\"components.explorer.tabdrawer.96163ffaeeac\", { count: String(count), preview: String(preview), value: String(count > 4 ? \"…\" : \"\") }) : i18n(\"components.explorer.tabdrawer.d12be229eea4\")"
         }
       ],
@@ -1328,7 +1328,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 970,
+          "line": 972,
           "context": "{i18nRich(\"components.explorer.tabdrawer.961f0edb859e\", { length: pageTabs.length })}"
         }
       ],
@@ -1344,7 +1344,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 702,
+          "line": 703,
           "context": "{i18n(\"components.explorer.tabdrawer.9b62e2597e5b\")}"
         }
       ],
@@ -1365,7 +1365,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 826,
+          "line": 827,
           "context": "{i18n(\"components.explorer.tabdrawer.9da364f29a6e\", { label: String(label) })}"
         }
       ],
@@ -1390,12 +1390,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 782,
+          "line": 783,
           "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(w.name), count: String(count) }))"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 907,
+          "line": 909,
           "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
         }
       ],
@@ -1411,7 +1411,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 693,
+          "line": 694,
           "context": "{i18n(\"components.explorer.tabdrawer.a0fb6bc1d3c5\")}"
         }
       ],
@@ -1427,7 +1427,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 746,
+          "line": 747,
           "context": "{i18n(\"components.explorer.tabdrawer.a3030bf8f16d\")}"
         }
       ],
@@ -1443,12 +1443,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 958,
+          "line": 960,
           "context": "{i18n(\"components.explorer.tabdrawer.a626aad412b7\")}"
         },
         {
           "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 969,
+          "line": 971,
           "context": "{i18n(\"components.explorer.tabdrawer.a626aad412b7\")}"
         }
       ],

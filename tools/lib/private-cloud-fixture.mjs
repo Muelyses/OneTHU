@@ -11,13 +11,15 @@ export function privateCloudServer() {
   if(fail===cmd){fail='';throw Error('injected transient network failure');}
   switch(cmd){
    case 'seafile_account':return {email:actor(a.token),name:'Test account',usage:0,total:100000};
-   case 'seafile_repos':return [...repos].filter(([,r])=>r.owner===actor(a.token)||r.grants.has(actor(a.token))).map(([id,r])=>({id,name:r.name}));
+   case 'seafile_repos':return [...repos].filter(([,r])=>r.owner===actor(a.token)||r.grants.has(actor(a.token))).map(([id,r])=>({id,name:r.name,owner:r.owner,repoType:r.owner===actor(a.token)?'mine':'shared',permission:r.owner===actor(a.token)?'rw':r.grants.get(actor(a.token)),mtime:0,size:0,isVirtual:false}));
    case 'seafile_create_repo':{const id=randomUUID();repos.set(id,{name:a.name,owner:actor(a.token),grants:new Map(),files:new Map()});return {id};}
    case 'seafile_repo_owner':return repo(a).owner;
    case 'seafile_repo_user_shares':return [...own(a).grants].map(([email,permission])=>({email,permission}));
    case 'seafile_set_repo_user_permission':own(a).grants.set(a.email,a.permission);return null;
    case 'seafile_remove_repo_user_share':own(a).grants.delete(a.email);return null;
    case 'seafile_delete_repo':{actor(a.token);if(!repos.has(a.repoId))return null;const r=own(a);if(!r.name.startsWith('OneTHU 私密分享 '))throw Error('not a private key library');repos.delete(a.repoId);return null;}
+   case 'seafile_delete_owned_repo':{own(a);repos.delete(a.repoId);return null;}
+   case 'seafile_dir':{repo(a);return [];}
    case 'seafile_mkdir':repo(a,true);return null;
    case 'write_temp_file':{const path='/tmp/'+randomUUID()+'/'+a.name;temps.set(path,Buffer.from(a.dataBase64,'base64'));return path;}
    case 'save_local_download':return '/Downloads/'+a.name;
@@ -39,7 +41,7 @@ export async function installPrivateCloud(page,server,token){
  await page.exposeFunction('__privateCloudInvoke',server.invoke);
  await page.addInitScript(token=>{window.__cloudToken=token;performance.setResourceTimingBufferSize(10000);localStorage.setItem('onethu.onboarded.phone','1');},token);
  await page.routeWebSocket(/(?:localhost|127\.0\.0\.1):5180/,()=>{});
- for(const name of ['seafile','vaultCloud','sealedShare','cloudExchange','vaultRegistry'])await page.route(`**/src/state/${name}.ts*`,async route=>{
+ for(const path of ['state/seafile','state/vaultCloud','state/sealedShare','state/cloudExchange','state/vaultRegistry','lib/ownedCloudRepo'])await page.route(`**/src/${path}.ts*`,async route=>{
   const r=await route.fetch();let body=await r.text();
   body=body.replace(/import \{ invoke \} from [^;]+;/,'const invoke = window.__privateCloudInvoke;');
   body=body.replace('return cfg?.token ?? "";','return window.__cloudToken;');

@@ -83,6 +83,8 @@ export interface LearnNav {
   semesterId?: string;
   /** 云盘直达资料库：进入云盘页时自动打开该库（原子深链） */
   cloudRepo?: string;
+  /** Optional folder within an authenticated shared library. */
+  cloudPath?: string;
   /** GitLab 直达项目（原子深链） */
   gitlabProject?: number;
   /** GitLab 项目内页签（缺省 code） */

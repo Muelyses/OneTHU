@@ -1,7 +1,466 @@
 {
-  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "gui.tabs.close",
+      "source": "关闭标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Close tab",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.tabs.label",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.1b07b50af2fc",
+      "source": "飞书应用信息未配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 43,
+          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 83,
+          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
+        }
+      ],
+      "translation": "Feishu app information is not configured",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.6852f9c70747",
+      "source": "飞书登录失败(code={value})：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(j.code ?? res.status)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(j.msg ?? \"请检查 App ID / App Secret\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 51,
+          "context": "new Error(i18n(\"im.feishu.6852f9c70747\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.checkAppCredentials\")) }))"
+        }
+      ],
+      "translation": "Feishu sign-in failed (code={value}): {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.922f42820916",
+      "source": "飞书发送失败(code={value})：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(j.code ?? res.status)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(j.msg ?? \"未知原因\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 404,
+          "context": "new Error(i18n(\"im.feishu.922f42820916\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.unknownReason\")) }))"
+        }
+      ],
+      "translation": "Feishu send failed (code={value}): {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.ae1ef2c16037",
+      "source": "飞书长连接建立失败(code={code})：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "code",
+          "expression": "String(j.code)"
+        },
+        {
+          "name": "value",
+          "expression": "String(j.msg ?? \"请检查应用信息与长连接权限\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 91,
+          "context": "new Error(i18n(\"im.feishu.ae1ef2c16037\", { code: String(j.code), value: String(j.msg ?? i18n(\"im.feishu.checkConnectionPermissions\")) }))"
+        }
+      ],
+      "translation": "Failed to establish the Feishu long connection (code={code}): {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.cd5f46094a61",
+      "source": "飞书长连接无法建立：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String((e as Event)?.type ?? e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 138,
+          "context": "new Error(i18n(\"im.feishu.cd5f46094a61\", { value: String(String((e as Event)?.type ?? e)) }))"
+        }
+      ],
+      "translation": "The Feishu long connection cannot be established: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.channelLabel",
+      "source": "飞书",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 100,
+          "context": "return i18n(\"im.feishu.channelLabel\");"
+        }
+      ],
+      "translation": "Feishu",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "im.feishu.checkAppCredentials",
+      "source": "请检查 App ID / App Secret",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 51,
+          "context": "j.msg ?? i18n(\"im.feishu.checkAppCredentials\")"
+        }
+      ],
+      "translation": "Check the App ID and App Secret.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.checkConnectionPermissions",
+      "source": "请检查应用信息与长连接权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 91,
+          "context": "j.msg ?? i18n(\"im.feishu.checkConnectionPermissions\")"
+        }
+      ],
+      "translation": "Check the app details and long-connection permissions.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.reconnectDelay",
+      "source": "连接断开，{seconds} 秒后重连",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "seconds"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 419,
+          "context": "reportChannelStatus(\"feishu\", \"reconnecting\", i18n(\"im.feishu.reconnectDelay\", { seconds: Math.round(delay / 1000) }))"
+        }
+      ],
+      "translation": "Disconnected. Reconnecting in {seconds} seconds.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.unknownReason",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 404,
+          "context": "j.msg ?? i18n(\"im.feishu.unknownReason\")"
+        }
+      ],
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.34a35aa8ee74",
+      "source": "protobuf: varint 越界",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 84,
+          "context": "new Error(i18n(\"im.feishuproto.34a35aa8ee74\"))"
+        }
+      ],
+      "translation": "protobuf: varint out of range",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.566a4335284f",
+      "source": "protobuf: 未知 wire type {wireType}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "wireType",
+          "expression": "String(wireType)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 108,
+          "context": "new Error(i18n(\"im.feishuproto.566a4335284f\", { wireType: String(wireType) }))"
+        }
+      ],
+      "translation": "protobuf: unknown wire type {wireType}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.6c3a6e0bd105",
+      "source": "protobuf: varint 过长",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 89,
+          "context": "new Error(i18n(\"im.feishuproto.6c3a6e0bd105\"))"
+        }
+      ],
+      "translation": "protobuf: varint too long",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.df3efc2fd559",
+      "source": "protobuf: bytes 越界",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 96,
+          "context": "new Error(i18n(\"im.feishuproto.df3efc2fd559\"))"
+        }
+      ],
+      "translation": "protobuf: bytes out of range",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.3e58ad192505",
+      "source": "请求过频，稍后继续…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 115,
+          "context": "note: i18n(\"im.feishureg.3e58ad192505\")"
+        }
+      ],
+      "translation": "Requests are too frequent; continuing later…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.7e5f803b7990",
+      "source": "应用创建成功",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 107,
+          "context": "note: i18n(\"im.feishureg.7e5f803b7990\")"
+        }
+      ],
+      "translation": "App created successfully",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.b8a04f9752fe",
+      "source": "等待手机确认创建…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 113,
+          "context": "note: i18n(\"im.feishureg.b8a04f9752fe\")"
+        }
+      ],
+      "translation": "Waiting for confirmation on your phone…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.c383c734a8c7",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 119,
+          "context": "note: i18n(\"im.feishureg.c383c734a8c7\")"
+        }
+      ],
+      "translation": "The QR code has expired; please start again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.d170f4a5cb1e",
+      "source": "检测到 Lark（海外）租户，正在切换接入点…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 99,
+          "context": "note: i18n(\"im.feishureg.d170f4a5cb1e\")"
+        }
+      ],
+      "translation": "Lark (international) tenant detected; switching endpoint…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.e5de60029f1b",
+      "source": "begin 未返回二维码地址：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(JSON.stringify(r).slice(0, 160))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 61,
+          "context": "new Error(i18n(\"im.feishureg.e5de60029f1b\", { value: String(JSON.stringify(r).slice(0, 160)) }))"
+        }
+      ],
+      "translation": "begin did not return a QR code URL: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.f9b4efe03903",
+      "source": "你在手机上取消了创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 117,
+          "context": "note: i18n(\"im.feishureg.f9b4efe03903\")"
+        }
+      ],
+      "translation": "You canceled the creation on your phone",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.unknownReason",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 121,
+          "context": "r.error_description ?? i18n(\"im.feishureg.unknownReason\")"
+        }
+      ],
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.imstorage.15b8b711a27d",
+      "source": "当前环境不支持 WebCrypto",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/imStorage.ts",
+          "line": 117,
+          "context": "new Error(i18n(\"im.imstorage.15b8b711a27d\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/imStorage.ts",
+          "line": 131,
+          "context": "new Error(i18n(\"im.imstorage.15b8b711a27d\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/imStorage.ts",
+          "line": 141,
+          "context": "new Error(i18n(\"im.imstorage.15b8b711a27d\"))"
+        }
+      ],
+      "translation": "The current environment does not support WebCrypto",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "im.mediapipe.734edfaaa263",
       "source": "云盘未配置：先在应用的「云盘」页连接",
@@ -988,446 +1447,6 @@
         }
       ],
       "translation": "· /detail N [x-y] —— view rounds x through y of conversation number N (defaults to 1-5)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.4c408d3226a4",
-      "source": "未扫码登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 46,
-          "context": "new Error(i18n(\"im.wechat.4c408d3226a4\"))"
-        }
-      ],
-      "translation": "Not signed in by QR scan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.c383c734a8c7",
-      "source": "二维码已过期，请重新发起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 149,
-          "context": "note: i18n(\"im.wechat.c383c734a8c7\")"
-        }
-      ],
-      "translation": "The QR code has expired; please start again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.channelLabel",
-      "source": "微信（iLink 官方 Bot）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 25,
-          "context": "return i18n(\"im.wechat.channelLabel\");"
-        }
-      ],
-      "translation": "WeChat (official iLink bot)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "im.wechat.e3fe9d7adf2c",
-      "source": "未发起登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 146,
-          "context": "note: i18n(\"im.wechat.e3fe9d7adf2c\")"
-        }
-      ],
-      "translation": "Sign-in not started",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.ed04656fa8e1",
-      "source": "登录成功，通道已启用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 172,
-          "context": "note: i18n(\"im.wechat.ed04656fa8e1\")"
-        }
-      ],
-      "translation": "Signed in; channel enabled",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.f1ffea5c8b09",
-      "source": "微信通道未登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 59,
-          "context": "new Error(i18n(\"im.wechat.f1ffea5c8b09\"))"
-        }
-      ],
-      "translation": "The WeChat channel is not signed in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.bound",
-      "source": "该 Bot 已绑定到本机",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 180,
-          "context": "binded_redirect: i18n(\"im.wechat.qr.bound\")"
-        }
-      ],
-      "translation": "This bot is already linked to this device.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.expired",
-      "source": "二维码已过期，请重新发起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 178,
-          "context": "expired: i18n(\"im.wechat.qr.expired\")"
-        }
-      ],
-      "translation": "QR code expired. Start again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.needVerifyCode",
-      "source": "需要在手机上输入验证码后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 177,
-          "context": "need_verifycode: i18n(\"im.wechat.qr.needVerifyCode\")"
-        }
-      ],
-      "translation": "Enter the verification code on your phone, then retry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.redirect",
-      "source": "已扫码（切换接入点）…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 181,
-          "context": "scaned_but_redirect: i18n(\"im.wechat.qr.redirect\")"
-        }
-      ],
-      "translation": "Scanned. Switching connection…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.scaned",
-      "source": "已扫码，请在手机上确认",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 176,
-          "context": "scaned: i18n(\"im.wechat.qr.scaned\")"
-        }
-      ],
-      "translation": "Scanned. Confirm on your phone.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.verifyBlocked",
-      "source": "验证失败次数过多，请重新发起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 179,
-          "context": "verify_code_blocked: i18n(\"im.wechat.qr.verifyBlocked\")"
-        }
-      ],
-      "translation": "Too many failed attempts. Start again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.qr.wait",
-      "source": "等待扫码…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 175,
-          "context": "wait: i18n(\"im.wechat.qr.wait\")"
-        }
-      ],
-      "translation": "Waiting for scan…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.scanRequired",
-      "source": "未扫码登录（设置页点「扫码登录」）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 41,
-          "context": "missing: i18n(\"im.wechat.scanRequired\")"
-        }
-      ],
-      "translation": "Not signed in. Choose Scan to sign in in Settings.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.suspended",
-      "source": "微信风控（-14）：暂停 1 小时后自动恢复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 73,
-          "context": "reportChannelStatus(this.id, \"suspended\", i18n(\"im.wechat.suspended\"))"
-        }
-      ],
-      "translation": "WeChat restriction (-14): paused for 1 hour, then resumes automatically.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attach.0e36df52d6f5",
-      "source": "这份附件读不到内容，请重新选择文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attach.ts",
-          "line": 271,
-          "context": "new Error(i18n(\"lib.attach.0e36df52d6f5\"))"
-        }
-      ],
-      "translation": "This attachment cannot be read; please choose the file again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attach.822fb37dba29",
-      "source": "选择文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attach.ts",
-          "line": 212,
-          "context": "title: i18n(\"lib.attach.822fb37dba29\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/attach.ts",
-          "line": 213,
-          "context": "title: i18n(\"lib.attach.822fb37dba29\")"
-        }
-      ],
-      "translation": "Choose file",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "lib.attach.9155bd07598c",
-      "source": "当前环境没有取件界面，请在应用内操作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attach.ts",
-          "line": 125,
-          "context": "new Error(i18n(\"lib.attach.9155bd07598c\"))"
-        }
-      ],
-      "translation": "No file picker is available in the current environment; please do this inside the app",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attach.d82cecc3a306",
-      "source": "读不到内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attach.ts",
-          "line": 364,
-          "context": "e instanceof Error ? e.message : i18n(\"lib.attach.d82cecc3a306\")"
-        }
-      ],
-      "translation": "Content unreadable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attach.f8f5f153c20d",
-      "source": "大小未知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attach.ts",
-          "line": 99,
-          "context": "return i18n(\"lib.attach.f8f5f153c20d\");"
-        }
-      ],
-      "translation": "Unknown size",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attachactions.00b064455e5c",
-      "source": "已取消（没有提交任何内容）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attachActions.ts",
-          "line": 386,
-          "context": "fail(i18n(\"lib.attachactions.00b064455e5c\"))"
-        }
-      ],
-      "translation": "Canceled (nothing was submitted)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attachactions.010bbf334fe2",
-      "source": "【发新话题 · 网络学堂】\n课程：{value}\n板块：{value2}\n标题：{title}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(ctx.courseName?.trim() || courseId)"
-        },
-        {
-          "name": "value2",
-          "expression": "String(ctx.boardName?.trim() || boardId)"
-        },
-        {
-          "name": "title",
-          "expression": "String(title)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attachActions.ts",
-          "line": 550,
-          "context": "threadId\n      ? i18n(\"lib.attachactions.942ac1d181f7\", { value: String(ctx.courseName?.trim() || courseId), threadId: String(threadId) })\n      : i18n(\"lib.attachactions.010bbf334fe2\", { value: String(ctx.courseName?.trim() || courseId), value2: String(ctx.boardName?.trim() || boardId), title: String(title) })"
-        }
-      ],
-      "translation": "[New topic · Web Learning]\nCourse: {value}\nSection: {value2}\nTitle: {title}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "lib.attachactions.08afcfb429f3",
-      "source": "{head}\n正文：{value}\n附件：{attachNote}\n\n点「确定」= 立刻发布（全班可见，撤不回来）。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "head",
-          "expression": "String(head)"
-        },
-        {
-          "name": "value",
-          "expression": "String(clip(plain, 80) || i18n(\"lib.attachactions.ed90d3f61ee5\"))"
-        },
-        {
-          "name": "attachNote",
-          "expression": "String(attachNote)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attachActions.ts",
-          "line": 552,
-          "context": "(ctx.confirm ?? confirmOk)(\n      i18n(\"lib.attachactions.08afcfb429f3\", { head: String(head), value: String(clip(plain, 80) || i18n(\"lib.attachactions.ed90d3f61ee5\")), attachNote: String(attachNote) }),\n    )"
-        }
-      ],
-      "translation": "{head}\nBody: {value}\nAttachments: {attachNote}\n\nTap “OK” = publish immediately (visible to the whole class; it cannot be undone).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attachactions.0cf370f0a1db",
-      "source": "去云盘页重新选资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attachActions.ts",
-          "line": 203,
-          "context": "message: i18n(\"lib.attachactions.0cf370f0a1db\")"
-        }
-      ],
-      "translation": "Pick the library again on the Cloud Drive page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.attachactions.0ef92e23f85c",
-      "source": "附件-{value}.{value2}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(Date.now())"
-        },
-        {
-          "name": "value2",
-          "expression": "String(extForMime(mime))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/attachActions.ts",
-          "line": 104,
-          "context": "cleaned || i18n(\"lib.attachactions.0ef92e23f85c\", { value: String(Date.now()), value2: String(extForMime(mime)) })"
-        }
-      ],
-      "translation": "Attachment-{value}.{value2}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -36,6 +36,7 @@ import { CollectModal } from "./Collect.js";
 import { IconStar } from "./Icons.js";
 import { haptic } from "../lib/haptics.js";
 import { prefersReducedMotion } from "../lib/motion.js";
+import { gestureOwner, subscribeGesture } from "../lib/gestureArena.js";
 import type { AtomRef } from "../state/favorites.js";
 
 /** 长按判定口径（与施工图 A3 一致）：按住 500ms 触发；位移超过 10px 即取消 */
@@ -373,6 +374,7 @@ interface LongPressCtl {
 
 function createLongPress(fire: (x: number, y: number) => void, target?: () => HTMLElement | null): LongPressCtl {
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let unsubscribe: (() => void) | undefined;
   let sx = 0;
   let sy = 0;
   /** 长按已经呼出菜单：这一轮按压的目标要保持 1.1 与遮罩，直到菜单关闭 */
@@ -382,6 +384,8 @@ function createLongPress(fire: (x: number, y: number) => void, target?: () => HT
   const stop = (): void => {
     if (timer !== undefined) clearTimeout(timer);
     timer = undefined;
+    unsubscribe?.();
+    unsubscribe = undefined;
   };
   const cancel = (): void => {
     stop();
@@ -391,6 +395,7 @@ function createLongPress(fire: (x: number, y: number) => void, target?: () => HT
   return {
     begin(x, y) {
       stop();
+      if (gestureOwner()) return;
       held = false;
       sx = x;
       sy = y;
@@ -403,6 +408,9 @@ function createLongPress(fire: (x: number, y: number) => void, target?: () => HT
       if (el) pressDown(el);
       timer = setTimeout(() => {
         timer = undefined;
+        unsubscribe?.();
+        unsubscribe = undefined;
+        if (gestureOwner()) { cancel(); return; }
         held = true;
         if (dupEntry) return; // 同一手势的另一路入口：不震、不弹，但保持 held
         haptic("longPress"); // 触发瞬间先给触感（系统那条已在宿主侧关掉，见上方注释）
@@ -410,6 +418,7 @@ function createLongPress(fire: (x: number, y: number) => void, target?: () => HT
         if (hitEl) pressHold(hitEl);
         fire(sx, sy);
       }, LONG_PRESS_MS);
+      unsubscribe = subscribeGesture(owner => { if (owner) cancel(); });
     },
     move(x, y) {
       if (timer === undefined) return;
@@ -484,6 +493,7 @@ export function useLongPressZone<T extends HTMLElement>(opts: ZoneOpts): RefObje
        只是坐标来自鼠标。不装「吞点击」：右键不产生 click，装了会误吞随后的左键。
        文本选区的放行在 Layout 的全局拦截里（唯一放行口），这里不再判一次。 */
     const onCtx = (e: MouseEvent): void => {
+      if (e.defaultPrevented || gestureOwner()) return;
       const found = e.target instanceof Element ? e.target.closest<HTMLElement>(selector) : null;
       if (!found || !zone.contains(found) || inTextZone(e.target)) return;
       cb.current(found, e.clientX, e.clientY);
@@ -888,6 +898,7 @@ export function ContextMenuLayer({ children }: { children: ReactNode }): ReactNo
     /* PC 右键（P 批）：与长按同一条判定（find 已排除页面自带长按区，避免两套菜单同弹），
        只是坐标来自鼠标；不装「吞点击」（右键不产生 click）。 */
     const onCtx = (e: MouseEvent): void => {
+      if (e.defaultPrevented || gestureOwner()) return;
       if (inTextZone(e.target)) return;
       const el = find(e.target);
       if (el) openAtomMenu(el, e.clientX, e.clientY, false);

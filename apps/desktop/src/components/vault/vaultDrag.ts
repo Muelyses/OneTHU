@@ -1,12 +1,12 @@
 /**
- * 全局「拖入暂存箱」交互层（Phase 1）。
+ * 全局「长按内容 → 拖入暂存箱 / 发给 OH」交互层。
  *
  * 任何元素只要带 `data-vault-catch`（JSON: VaultCatch）就能被拖：
  * - 鼠标与触屏：按住 400ms 拾取，先移动则交给排序/滚动；
  * - 触屏：长按 400ms 启动（避免和滚动/点击冲突），启动后 pointermove 阻止默认滚动。
  *
  * 拖动中在 body 上挂一个跟随指针的 ghost，并显示 [data-vault-drop] 目标；
- * 松手时命中目标 → addToVault + 吸入动画；未命中 → 回弹消失。
+ * 松手时命中目标 → addToVault + 吸入动画；取消只退场，不投递或保留高亮。
  */
 import { GESTURE, claimGesture, releaseGesture } from "../../lib/gestureArena.js";
 import { cacheRemoteFileToVault } from "../../lib/vaultRemote.js";
@@ -48,9 +48,7 @@ let targetEl: HTMLElement | null = null;
 /** 拾取后必须掐断浏览器原生 HTML5 拖拽：否则 pointercancel 会中断我们的投递。 */
 const blockNativeDrag = (e: DragEvent): void => { e.preventDefault(); };
 let pointerId = -1;
-let startX = 0;
-let startY = 0;
-let moveHooked = false;
+let sourcesInstalled = false;
 
 function dropTargetRect(el: HTMLElement): DOMRect {
   return el.getBoundingClientRect();
@@ -78,16 +76,21 @@ function paint(x: number, y: number): void {
 
 function onMove(e: PointerEvent): void {
   if (e.pointerId !== pointerId) return;
+  // A release outside the WebView may not deliver pointerup.
+  if (e.pointerType === "mouse" && e.buttons === 0) { cancelActiveDrag(); return; }
   /* 触屏：拖动开始后必须阻止页面滚动；鼠标无副作用。 */
   if (e.pointerType !== "mouse" && e.cancelable) e.preventDefault();
   paint(e.clientX, e.clientY);
 }
 
 function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null): void {
-  const target = hitDrop(x, y);
+  const target = commit ? hitDrop(x, y) : null;
   window.removeEventListener("pointermove", onMove, true);
   window.removeEventListener("pointerup", onUp, true);
   window.removeEventListener("pointercancel", onCancel, true);
+  window.removeEventListener("lostpointercapture", onCancel, true);
+  window.removeEventListener("blur", cancelActiveDrag);
+  document.removeEventListener("visibilitychange", cancelHiddenDrag);
   document.removeEventListener("dragstart", blockNativeDrag, true);
   document.body.classList.remove(BODY_CLASS);
   targetEl?.classList.remove(HOVER_CLASS);
@@ -107,8 +110,10 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
     ghost = null;
   }
   const wasHover = Boolean(target);
+  pointerId = -1;
+  pendingCat = null;
   releaseGesture("vault-drag");
-  setDrag({ active: false, hover: false, title: "" });
+  setDrag({ active: false, hover: false, title: "", target: undefined });
   if (!commit || !cat) return;
   if (!wasHover) {
     showToast("没放进暂存箱：拖到「暂存箱」目标上再松手");
@@ -134,23 +139,25 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
 function onUp(e: PointerEvent): void {
   if (e.pointerId !== pointerId) return;
   endDrag(true, e.clientX, e.clientY, pendingCat);
-  pendingCat = null;
 }
 
 function onCancel(e: PointerEvent): void {
   if (e.pointerId !== pointerId) return;
-  endDrag(false, startX, startY, null);
-  pendingCat = null;
+  cancelActiveDrag();
 }
 
 let pendingCat: VaultCatch | null = null;
+function cancelActiveDrag(): void {
+  if (dragState.active) endDrag(false, 0, 0, null);
+}
+function cancelHiddenDrag(): void {
+  if (document.visibilityState === "hidden") cancelActiveDrag();
+}
 
 /** 从一次 pointer 位置启动拖动（供内部/测试调用；任意元素走 data-vault-catch 自动接线）。 */
-export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): void {
-  if (dragState.active || !claimGesture("vault-drag")) return;
+export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): boolean {
+  if (dragState.active || !claimGesture("vault-drag")) return false;
   pointerId = id;
-  startX = x;
-  startY = y;
   pendingCat = cat;
   ghost = document.createElement("div");
   ghost.className = GHOST_CLASS;
@@ -163,41 +170,71 @@ export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): 
   ghost.append(badge, title);
   document.body.appendChild(ghost);
   document.body.classList.add(BODY_CLASS);
-  setDrag({ active: true, hover: false, title: cat.title });
+  setDrag({ active: true, hover: false, title: cat.title, target: undefined });
   paint(x, y);
   window.addEventListener("pointermove", onMove, { capture: true });
   window.addEventListener("pointerup", onUp, { capture: true });
   window.addEventListener("pointercancel", onCancel, { capture: true });
+  window.addEventListener("lostpointercapture", onCancel, { capture: true });
+  window.addEventListener("blur", cancelActiveDrag);
+  document.addEventListener("visibilitychange", cancelHiddenDrag);
   document.addEventListener("dragstart", blockNativeDrag, true);
-  moveHooked = true;
+  return true;
 }
 
 /** 安装全局拖拽源识别（Layout 挂一次；返回清理）。 */
 export function installVaultDragSources(): () => void {
-  if (moveHooked) return () => undefined;
-  moveHooked = true;
+  if (sourcesInstalled) return () => undefined;
+  sourcesInstalled = true;
   let pending: { cat: VaultCatch; el: HTMLElement; x: number; y: number; pointerId: number; timer: number | null; armed: boolean } | null = null;
+  let clickGuard: { el: HTMLElement; pointerId: number; swallow: (event: MouseEvent) => void; timer?: number } | null = null;
 
   const clear = (): void => {
-    if (pending?.timer) window.clearTimeout(pending.timer);
+    if (pending?.timer != null) window.clearTimeout(pending.timer);
     pending = null;
+  };
+  const clearClickGuard = (): void => {
+    if (!clickGuard) return;
+    clickGuard.el.removeEventListener("click", clickGuard.swallow, true);
+    window.clearTimeout(clickGuard.timer);
+    clickGuard = null;
+  };
+  const cancelSession = (): void => {
+    clear(); cancelActiveDrag();
+    // Blur/hidden can be followed by this very press's up/click when focus
+    // returns. Keep its guard; a new pointerdown always clears it first.
+  };
+  const cancelHidden = (): void => {
+    if (document.visibilityState === "hidden") cancelSession();
   };
   const arm = (): void => {
     if (!pending || pending.armed) return;
+    if (!pending.el.isConnected || !beginVaultDrag(pending.cat, pending.x, pending.y, pending.pointerId)) { clear(); return; }
     pending.armed = true;
-    beginVaultDrag(pending.cat, pending.x, pending.y, pending.pointerId);
     /* 拖动已经开始：吞掉这次元素自己的 click（否则松手会触发原按钮动作）。 */
     const el = pending.el;
-    const swallow = (ev: Event): void => { ev.stopPropagation(); ev.preventDefault(); };
-    el.addEventListener("click", swallow, { capture: true, once: true });
-    const finish = (): void => { window.setTimeout(() => el.removeEventListener("click", swallow, true), 80); };
-    window.addEventListener("pointerup", finish, {once:true});
+    clearClickGuard();
+    const swallow = (event: MouseEvent): void => {
+      // Keyboard activation is a separate action, never the drag's compatibility click.
+      if (event.detail === 0) return;
+      event.stopPropagation(); event.preventDefault(); clearClickGuard();
+    };
+    clickGuard = { el, pointerId: pending.pointerId, swallow };
+    el.addEventListener("click", swallow, true);
   };
 
   const onDown = (e: PointerEvent): void => {
+    if (e.isPrimary === false) {
+      // A second finger belongs to scrolling/zooming, not a second pick-up.
+      if (e.pointerType !== "mouse") { clear(); cancelActiveDrag(); }
+      return;
+    }
     lastPointerType = e.pointerType || "mouse";
     if (e.button !== undefined && e.button !== 0) return;
     if (dragState.active) return;
+    // A new physical press must never inherit a cancelled drag's click guard.
+    clearClickGuard();
+    clear();
     const target = e.target as Element | null;
     let el = target?.closest<HTMLElement>("[data-vault-catch]") ?? null;
     let cat: VaultCatch | null = null;
@@ -234,7 +271,6 @@ export function installVaultDragSources(): () => void {
       }
     }
     if (!el || !cat?.title || target?.closest("input, textarea, select, [contenteditable=true], .free-toolbar, .free-handle, .free-drag-handle")) return;
-    clear();
     pending = { cat, el, x: e.clientX, y: e.clientY, pointerId: e.pointerId, timer: null, armed: false };
     pending.timer = window.setTimeout(arm, GESTURE.longPressMs);
   };
@@ -253,29 +289,52 @@ export function installVaultDragSources(): () => void {
   const onContextMenu = (e: MouseEvent): void => {
     if (lastPointerType !== "touch") return;
     const el = e.target as Element | null;
-    if (el?.closest("[data-vault-catch]")) e.preventDefault();
+    if (pending?.el.contains(el) || el?.closest("[data-vault-catch]")) {
+      e.preventDefault(); e.stopPropagation();
+    }
   };
-  const onUp = (): void => clear();
+  const onRelease = (e: PointerEvent): void => {
+    if (pending?.pointerId === e.pointerId) clear();
+    if (clickGuard?.pointerId !== e.pointerId) return;
+    // Losing capture can precede the same press's eventual up/click. An automatic
+    // lostpointercapture after pointerup must not remove its compatibility guard.
+    if (e.type === "lostpointercapture") return;
+    if (e.type !== "pointerup") clearClickGuard();
+    else {
+      // Keep the guard through the compatibility click dispatched after pointerup.
+      const guard = clickGuard;
+      guard.timer = window.setTimeout(() => { if (clickGuard === guard) clearClickGuard(); }, 80);
+    }
+  };
   const lockTouch = (e: TouchEvent): void => {if (dragState.active && e.cancelable) e.preventDefault();};
-  const escape = (e: KeyboardEvent): void => {if(e.key === "Escape"){clear();if(dragState.active)endDrag(false,startX,startY,null);}};
+  const escape = (e: KeyboardEvent): void => {
+    if (e.key !== "Escape") return;
+    clear(); cancelActiveDrag();
+    // Retain only this press's click guard until release or the next pointerdown.
+  };
   document.addEventListener("touchmove",lockTouch,{passive:false});
   document.addEventListener("contextmenu",onContextMenu,{capture:true});
   window.addEventListener("keydown",escape);
+  window.addEventListener("blur", cancelSession);
+  document.addEventListener("visibilitychange", cancelHidden);
   document.addEventListener("pointerdown", onDown, true);
   document.addEventListener("pointermove", onPointerMove, true);
-  document.addEventListener("pointerup", onUp, true);
-  document.addEventListener("pointercancel", onUp, true);
+  document.addEventListener("pointerup", onRelease, true);
+  document.addEventListener("pointercancel", onRelease, true);
+  document.addEventListener("lostpointercapture", onRelease, true);
   return () => {
-    clear();
+    cancelSession(); clearClickGuard();
     document.removeEventListener("pointerdown", onDown, true);
     document.removeEventListener("pointermove", onPointerMove, true);
-    document.removeEventListener("pointerup", onUp, true);
-    document.removeEventListener("pointercancel", onUp, true);
+    document.removeEventListener("pointerup", onRelease, true);
+    document.removeEventListener("pointercancel", onRelease, true);
+    document.removeEventListener("lostpointercapture", onRelease, true);
     document.removeEventListener("touchmove",lockTouch);
     document.removeEventListener("contextmenu",onContextMenu,{capture:true} as never);
     window.removeEventListener("keydown",escape);
-    if(dragState.active)endDrag(false,startX,startY,null);
-    moveHooked = false;
+    window.removeEventListener("blur", cancelSession);
+    document.removeEventListener("visibilitychange", cancelHidden);
+    sourcesInstalled = false;
   };
 }
 

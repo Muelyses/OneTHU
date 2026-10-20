@@ -6,7 +6,7 @@ import { clamp, DEFAULT_VAULT_ANCHOR, readVaultAnchor, resolveVaultAnchor, saveV
 export const VAULT_OBSTACLES = ".explorer-topbar, .ex-bbar, .onego-bookmarks, .oneshot, .board-viewport-tools, .hard-refresh-fab, .top-fab, [data-oh-drop], .dock-panel, .ex-rail";
 const OWNER = "vault-anchor", HOLD_MS = 300, MOVE_SLOP = 8, SWIPE_DISTANCE = 32;
 type Placement = { left: number; top: number; side: "left" | "right" };
-type Gesture = { pointerId: number; touch: boolean; x: number; y: number; left: number; top: number; width: number; height: number; side: "left" | "right"; held: boolean; moved: boolean; swipe: boolean; cancelled: boolean; timer?: ReturnType<typeof setTimeout> };
+type Gesture = { pointerId: number; element: HTMLElement; touch: boolean; x: number; y: number; left: number; top: number; width: number; height: number; side: "left" | "right"; held: boolean; moved: boolean; swipe: boolean; cancelled: boolean; timer?: ReturnType<typeof setTimeout> };
 const profileNow = (): VaultAnchorProfile => isPhoneViewport() || (hasCoarsePointer() && Math.min(innerWidth, innerHeight) < 600) ? "phone" : "desktop";
 
 export function visibleVaultObstacles(selector = VAULT_OBSTACLES): AnchorRect[] {
@@ -26,7 +26,7 @@ export function vaultViewport(safe: HTMLElement | null): AnchorRect {
     bottom: top + (view?.height ?? innerHeight) - inset("paddingBottom") - gutter };
 }
 
-/** Only the handle owns these gestures; no page-edge listener can steal system Back. */
+/** Handle hold moves the entrance; content hold belongs to vaultDrag and opens the radar. */
 export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, openManager: () => void, closePreview: () => void) {
   const safe = useRef<HTMLSpanElement>(null);
   const [profile, setProfile] = useState(profileNow);
@@ -35,9 +35,19 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, openMan
   const [ready, setReady] = useState(false), [moving, setMoving] = useState(false);
   const gesture = useRef<Gesture | null>(null), suppressClickUntil = useRef(0), touchUntil = useRef(0);
   const measureRef = useRef<() => void>(() => {});
-  const clearGesture = (): void => {
-    if (gesture.current?.timer) clearTimeout(gesture.current.timer);
-    gesture.current = null; releaseGesture(OWNER); setMoving(false);
+  const clearGesture = (notify = true): void => {
+    const g = gesture.current;
+    if (g?.timer) clearTimeout(g.timer);
+    gesture.current = null;
+    if (g?.element.hasPointerCapture(g.pointerId)) g.element.releasePointerCapture(g.pointerId);
+    releaseGesture(OWNER); if (notify) setMoving(false);
+  };
+  const cancelGesture = (): void => {
+    if (!gesture.current) return;
+    // The cancelled press can remain down while the app is unfocused. Its
+    // eventual click is suppressed until a new physical pointerdown resets it.
+    suppressClickUntil.current = Number.POSITIVE_INFINITY;
+    clearGesture(); measureRef.current();
   };
   useLayoutEffect(() => {
     let frame = 0;
@@ -63,10 +73,21 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, openMan
     window.visualViewport?.addEventListener("resize", schedule); window.visualViewport?.addEventListener("scroll", schedule);
     return () => { cancelAnimationFrame(frame); resize.disconnect(); mutation.disconnect(); window.removeEventListener("resize", schedule); window.removeEventListener("scroll", schedule, true); window.visualViewport?.removeEventListener("resize", schedule); window.visualViewport?.removeEventListener("scroll", schedule); };
   }, [profile, preference, anchor]);
-  useEffect(() => () => { if (gesture.current?.timer) clearTimeout(gesture.current.timer); releaseGesture(OWNER); }, []);
   useEffect(() => {
-    const cancel = (event: KeyboardEvent): void => { if (event.key === "Escape" && gesture.current) { suppressClickUntil.current = Date.now() + 600; clearGesture(); measureRef.current(); } };
-    window.addEventListener("keydown", cancel); return () => window.removeEventListener("keydown", cancel);
+    const escape = (event: KeyboardEvent): void => { if (event.key === "Escape") cancelGesture(); };
+    const hidden = (): void => { if (document.visibilityState === "hidden") cancelGesture(); };
+    const lost = (event: PointerEvent): void => { if (event.pointerId === gesture.current?.pointerId) cancelGesture(); };
+    const additionalPointer = (event: PointerEvent): void => {
+      if (gesture.current && event.pointerId !== gesture.current.pointerId && event.pointerType !== "mouse") cancelGesture();
+    };
+    window.addEventListener("keydown", escape); window.addEventListener("blur", cancelGesture);
+    window.addEventListener("lostpointercapture", lost, true); window.addEventListener("pointerdown", additionalPointer, true);
+    document.addEventListener("visibilitychange", hidden);
+    return () => {
+      window.removeEventListener("keydown", escape); window.removeEventListener("blur", cancelGesture);
+      window.removeEventListener("lostpointercapture", lost, true); window.removeEventListener("pointerdown", additionalPointer, true);
+      document.removeEventListener("visibilitychange", hidden); clearGesture(false);
+    };
   }, []);
   const startMove = (g: Gesture): void => {
     if (!claimGesture(OWNER)) { g.cancelled = true; return; }
@@ -76,12 +97,14 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, openMan
     if (event.button !== 0 || !event.isPrimary || gesture.current) return;
     suppressClickUntil.current = 0;
     const rect = anchor.current!.getBoundingClientRect();
-    const g: Gesture = { pointerId: event.pointerId, touch: event.pointerType !== "mouse", x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, width: rect.width, height: rect.height, side: placement.side, held: false, moved: false, swipe: false, cancelled: false };
+    const g: Gesture = { pointerId: event.pointerId, element: event.currentTarget, touch: event.pointerType !== "mouse", x: event.clientX, y: event.clientY, left: rect.left, top: rect.top, width: rect.width, height: rect.height, side: placement.side, held: false, moved: false, swipe: false, cancelled: false };
     gesture.current = g; event.currentTarget.setPointerCapture(event.pointerId);
-    if (g.touch) { touchUntil.current = Date.now() + 1200; g.timer = setTimeout(() => { if (gesture.current === g && !g.cancelled && !g.swipe) startMove(g); }, HOLD_MS); }
+    if (g.touch) touchUntil.current = Date.now() + 1200;
+    g.timer = setTimeout(() => { if (gesture.current === g && !g.cancelled && !g.swipe && !g.held) startMove(g); }, HOLD_MS);
   };
   const onPointerMove = (event: ReactPointerEvent<HTMLElement>): void => {
     const g = gesture.current; if (!g || g.pointerId !== event.pointerId || g.cancelled) return;
+    if (!g.touch && event.buttons === 0) { cancelGesture(); return; }
     const dx = event.clientX - g.x, dy = event.clientY - g.y, distance = Math.hypot(dx, dy);
     if (!g.held) {
       if (!g.touch && distance > MOVE_SLOP) startMove(g);
@@ -110,10 +133,10 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, openMan
       saveVaultAnchor(profile, next); setPreference(next);
     }
     const shouldOpen = !g.held && g.swipe && !g.cancelled;
-    clearGesture(); if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    clearGesture();
     measureRef.current(); if (shouldOpen) openManager();
   };
-  const onPointerCancel = (): void => { suppressClickUntil.current = Date.now() + 700; clearGesture(); measureRef.current(); };
+  const onPointerCancel = (event: ReactPointerEvent<HTMLElement>): void => { if (event.pointerId === gesture.current?.pointerId) cancelGesture(); };
   const reset = (): void => { const next = { ...DEFAULT_VAULT_ANCHOR }; saveVaultAnchor(profile, next); setPreference(next); };
   return { safe, placement, ready, moving, reset, touchUntil, suppressClickUntil, onPointerDown, onPointerMove, onPointerUp, onPointerCancel };
 }

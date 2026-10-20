@@ -37,6 +37,7 @@ import {
 } from "../../state/wallpaper.js";
 import { WallpaperLibrary } from "./WallpaperLibrary.js";
 import { useNavDirection } from "../../lib/motion.js";
+import { gestureOwner, subscribeGesture } from "../../lib/gestureArena.js";
 
 /* ══════════ tab 局部路由上下文 ══════════ */
 
@@ -250,6 +251,8 @@ export function TabHost(): ReactNode {
     }
   }, []);
   useEffect(() => clearPress, [clearPress]);
+  // A content pick-up owns the press; the blank-page menu must not fire behind it.
+  useEffect(() => subscribeGesture(owner => { if (owner) clearPress(); }), [clearPress]);
 
   const all = useMemo(() => {
     const home: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
@@ -261,12 +264,13 @@ export function TabHost(): ReactNode {
 
   /* 长按（触屏）统一口径与右键一致：首页白板区域的菜单归白板自己，长按不再弹宿主菜单 */
   const panelPointerDown = useCallback((e: React.PointerEvent, tabId: string) => {
-    if (e.pointerType === "mouse") return; // 鼠标走 contextmenu
+    if (e.pointerType === "mouse" || !e.isPrimary) return; // 鼠标走 contextmenu
     if (onInteractive(e.target) || (tabId === HOME_TAB_ID && onHomeFree(e.target))) return;
     clearPress();
     const { clientX, clientY } = e;
     const timer = window.setTimeout(() => {
       press.current = null;
+      if (gestureOwner()) return;
       setMenu({ x: clientX, y: clientY, tabId });
     }, 550);
     press.current = { x: clientX, y: clientY, id: tabId, timer };
@@ -294,6 +298,7 @@ export function TabHost(): ReactNode {
             data-tab-page={t.page}
             style={active ? undefined : { display: "none" }}
             onContextMenu={(e) => {
+              if (e.defaultPrevented || gestureOwner()) return;
               if (onInteractive(e.target)) return;
               /* 首页右键统一（用户点名：不要一右键弹两个菜单）——首页自由白板区域
                  的右键/长按是白板自己的「添加组件/便笺」就地菜单（FreeBoard 在

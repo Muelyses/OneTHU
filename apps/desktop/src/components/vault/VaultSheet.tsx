@@ -19,7 +19,10 @@ export function VaultSheetHost(): ReactNode {
   const open = useSyncExternalStore(subscribeVaultSheet, vaultSheetSnapshot, vaultSheetSnapshot);
   const { navigate } = useApp();
   useOverlayBack("vault-manager", open, closeVaultSheet);
-  return <><VaultTextPreviewHost /><Modal open={open} onClose={closeVaultSheet} size="lg" className="vault-manager" title={<span className="vault-manager-title"><IconIn /><b>暂存箱</b></span>} foot={<Btn size="sm" variant="ghost" icon={<IconExternal />} onClick={() => { closeVaultSheet(); navigate("vault"); }}>在标签页打开</Btn>}>
+  return <><VaultTextPreviewHost /><Modal open={open} onClose={closeVaultSheet} size="lg" className="vault-manager" title={<span className="vault-manager-title"><IconIn /><b>暂存箱</b></span>} foot={<>
+    <Btn size="sm" variant="ghost" onClick={() => { closeVaultSheet(); requestAnimationFrame(() => window.dispatchEvent(new Event("onethu:vault-anchor-menu"))); }}>入口位置</Btn>
+    <Btn size="sm" variant="ghost" icon={<IconExternal />} onClick={() => { closeVaultSheet(); navigate("vault"); }}>在标签页打开</Btn>
+  </>}>
     <VaultWorkspace compact onNavigate={closeVaultSheet} />
   </Modal></>;
 }

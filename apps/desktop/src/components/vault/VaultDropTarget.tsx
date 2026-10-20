@@ -1,30 +1,26 @@
-import { VaultExchangeActions } from "./VaultExchangeActions.js";
 /**
  * 常驻「暂存箱」入口 + 半圆雷达。
  *
- * - 桌面和手机：独立记住贴边入口位置；点开预览、向内滑动打开管理、长按拖动换位。
- * - 点一下箱子展开雷达：半圆收纳示意与静止的最近条目，文字不随动画移动；
- *   拖到箱子上松手 = 收进来，拖到底部/顶部的 OH 胶囊 = 发给小OH。
+ * - 点入口直接打开管理，向内滑动同样打开管理；长按入口拖动换位。
+ * - 雷达只在长按内容进行传输时出现；拖到箱子/扫描盘收进来，拖到 OH 发给小OH。
  * - 长按任意带 `data-vault-catch` 的内容自动展开雷达并成为投递目标（vaultDrag.ts 驱动）。
  */
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Btn, IconBtn, IconVault } from "@onethu/gui";
-import { IconIn, IconX } from "../Icons.js";
-import { useApp } from "../../state/context.js";
+import { Btn, IconVault } from "@onethu/gui";
+import { IconIn, IconCheck } from "../Icons.js";
 import { useOverlayBack } from "../../state/navStack.js";
 import { useVaultAnchor, vaultViewport, visibleVaultObstacles, VAULT_OBSTACLES } from "./useVaultAnchor.js";
 import { clamp } from "../../state/vaultAnchor.js";
-import { activeVault, addToVault, subscribeVault, vaultSnapshot, VAULT_TYPE_LABEL, type VaultItem } from "../../state/vault.js";
-import { openVaultItem } from "../../state/vaultRegistry.js";
+import { activeVault, addToVault, subscribeVault, vaultSnapshot } from "../../state/vault.js";
 import { openVaultSheet } from "./VaultSheet.js";
 import { stageFromFiles } from "../../lib/fileChannel.js";
 import { showToast } from "../../state/toast.js";
 import { installVaultDragSources, subscribeVaultDrag, vaultDragSnapshot } from "./vaultDrag.js";
+import { VaultRadarScope } from "./VaultRadarScope.js";
 
-const RECENT_ITEMS = 3;
 type AnchorPoint = { left: number; top: number };
-type RadarPosition = AnchorPoint & { width: number; maxHeight: number; compact: boolean; tight: boolean };
+type RadarPosition = AnchorPoint & { width: number; maxHeight: number; tight: boolean };
 
 export function VaultDropTarget(): ReactNode {
   const [fileDrag, setFileDrag] = useState(false);
@@ -130,24 +126,24 @@ function VaultButton(): ReactNode {
   const doc = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
   const box = doc.boxes.find((b) => b.id === doc.activeId) ?? doc.boxes[0]!;
   const items = box.items;
-  const { navigate } = useApp();
-  const [pinned, setPinned] = useState(false);
   const anchor = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<RadarPosition>();
-  const open = pinned || drag.active;
-  const visible = items.slice(0, RECENT_ITEMS);
+  const open = drag.active;
   const [menu, setMenu] = useState(false);
-  const closePreview = (): void => { setPinned(false); anchor.current?.querySelector("button")?.focus(); };
   const openVaultPage = (): void => {
-    // Modal focus restoration must remember this persistent handle, not a disappearing preview button.
-    anchor.current?.querySelector("button")?.focus(); setPinned(false); setMenu(false); openVaultSheet();
+    anchor.current?.querySelector("button")?.focus(); setMenu(false); openVaultSheet();
   };
-  const edge = useVaultAnchor(anchor, openVaultPage, () => { setPinned(false); setMenu(false); });
+  const edge = useVaultAnchor(anchor, openVaultPage, () => setMenu(false));
   const closeMenu = (): void => { setMenu(false); anchor.current?.querySelector("button")?.focus(); };
-  useOverlayBack("vault-preview", pinned, closePreview);
   useOverlayBack("vault-anchor-position", menu, closeMenu);
+  useEffect(() => { if (drag.active) setMenu(false); }, [drag.active]);
+  useEffect(() => {
+    const showPositionMenu = (): void => setMenu(true);
+    window.addEventListener("onethu:vault-anchor-menu", showPositionMenu);
+    return () => window.removeEventListener("onethu:vault-anchor-menu", showPositionMenu);
+  }, []);
 
   useLayoutEffect(() => {
     if (!open && !menu) return;
@@ -172,7 +168,7 @@ function VaultButton(): ReactNode {
       const panelHeight = Math.min(maxHeight, (menu ? menuRef.current?.offsetHeight : panelRef.current?.offsetHeight) || maxHeight);
       const top = clamp(rect.top + rect.height / 2 - panelHeight * .35, topLimit, bottom - panelHeight);
       const next: RadarPosition = {left, top, width, maxHeight,
-        compact: maxHeight < parseFloat(tokens.getPropertyValue("--og-vault-radar-comfort-h")), tight: maxHeight < parseFloat(tokens.getPropertyValue("--og-vault-radar-compact-h"))};
+        tight: maxHeight < parseFloat(tokens.getPropertyValue("--og-vault-radar-compact-h"))};
       setPosition(old => old && Object.keys(next).every(key => old[key as keyof RadarPosition] === next[key as keyof RadarPosition]) ? old : next);
     };
     const schedule = (): void => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
@@ -186,30 +182,19 @@ function VaultButton(): ReactNode {
     return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener("resize", schedule); window.removeEventListener("scroll", schedule, true); window.visualViewport?.removeEventListener("resize", schedule); window.visualViewport?.removeEventListener("scroll", schedule); };
   }, [open, menu, drag.active, edge.placement]);
   useEffect(() => { if (menu) menuRef.current?.querySelector("button")?.focus(); }, [menu]);
-  const openItem = (it: VaultItem): void => {
-    anchor.current?.querySelector("button")?.focus();
-    setPinned(false);
-    openVaultItem(it, {
-      navigate: (page, params) => navigate(page as never, params as never),
-      toast: showToast,
-    });
-  };
-
   useEffect(() => {
-    if (!pinned && !menu) return;
-    /* 雷达里的「分享口令 / 接收」弹窗是 portal 到 body 的，点它、按 Esc 关它都不该把雷达一起收掉——
-       否则弹窗会在 pointerdown 那一下随雷达卸载，里面的按钮点了没反应。 */
+    if (!menu) return;
     const inOverlay = (el: Element | null): boolean => !!el?.closest(".og-scrim, [role='dialog'], .plg-form-modal");
     const onKey = (e: KeyboardEvent): void => {
       if (e.key !== "Escape") return;
       if (document.querySelector(".og-scrim, [role='dialog']")) return;
-      if (menu) setMenu(false); else setPinned(false);
+      setMenu(false);
       anchor.current?.querySelector("button")?.focus();
     };
     const onDown = (e: PointerEvent): void => {
       const el = e.target as Element | null;
       if (inOverlay(el)) return;
-      if (!el?.closest(".vault-anchor, .vault-radar, .vault-anchor-menu")) { setPinned(false); setMenu(false); }
+      if (!el?.closest(".vault-anchor, .vault-anchor-menu")) setMenu(false);
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onDown, true);
@@ -217,39 +202,23 @@ function VaultButton(): ReactNode {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("pointerdown", onDown, true);
     };
-  }, [pinned, menu]);
+  }, [menu]);
 
   const panel = open ? (
     <div
       ref={panelRef}
-      className={"vault-radar" + (drag.active ? " is-transfer" : "") + (drag.target === "vault" ? " is-hover" : "") + (position?.compact ? " is-compact" : "") + (position?.tight ? " is-tight" : "")}
+      className={"vault-radar is-transfer" + (drag.target === "vault" ? " is-hover" : "") + (position?.tight ? " is-tight" : "")}
       style={position ? {left: position.left, top: position.top, width: position.width, maxHeight: position.maxHeight} : undefined}
-      data-vault-drop={drag.active ? "" : undefined}
+      data-vault-drop
       role="region"
       aria-label={`暂存箱雷达：${box.name}，共 ${items.length} 项`}
     >
-      {!drag.active ? <div className="vault-radar-head"><div><b>{box.name}</b><small>最近收纳 · 共 {items.length} 项</small></div><IconBtn label="关闭暂存箱预览" size="sm" icon={<IconX width={16} height={16} />} onClick={closePreview} /></div> : null}
-      <div className="vault-radar-body">
-      <div className="vault-radar-disc" aria-hidden={!drag.active}>
-        <span className="vault-radar-plane" aria-hidden="true">
-          <span className="vault-radar-band" />
-          <span className="vault-radar-sweep" />
-          <span className="vault-radar-ticks" />
-        </span>
-        <div className="vault-radar-center">
-          <IconIn width={22} height={22} />
-          <b>{drag.active ? (drag.target === "vault" ? "松手存入暂存箱" : "存入暂存箱") : "先收好，稍后继续"}</b>
-          {drag.active ? <small>{drag.title}</small> : null}
-        </div>
+      <div className="vault-radar-heading"><span>{box.name}</span><span>{items.length} 项已暂存</span></div>
+      <VaultRadarScope items={items} />
+      <div className="vault-radar-center" role="status" aria-live="polite">
+        <span className="vault-radar-target">{drag.target === "vault" ? <IconCheck /> : <IconIn />}</span>
+        <div><b>{drag.target === "vault" ? "松手存入暂存箱" : "拖到这里，存入暂存箱"}</b><small>{drag.title}</small></div>
       </div>
-      {!drag.active ? <>
-        {visible.length ? <div className="vault-radar-recent">{visible.map(it => <Btn key={it.id} className="vault-radar-item" variant="ghost" titleAttr={it.title} aria-label={`打开暂存项：${it.title}`} onClick={() => openItem(it)}><span className="vault-radar-item-copy"><b>{it.title}</b><small>{VAULT_TYPE_LABEL[it.type] ?? "内容"}</small></span><span className="vault-radar-item-open" aria-hidden="true">打开</span></Btn>)}</div> : <div className="vault-radar-empty"><b>还没有收纳内容</b><span>长按内容，再拖到边缘的暂存箱。</span></div>}
-      </> : null}
-      {!drag.active ? <div className="vault-radar-exchange">
-        <VaultExchangeActions box={box}/>
-      </div> : null}
-      </div>
-      {!drag.active ? <div className="vault-radar-foot"><Btn variant="outline" onClick={openVaultPage}>整理暂存箱</Btn><Btn variant="ghost" size="sm" onClick={() => { setPinned(false); setMenu(true); }} aria-label="调整暂存箱入口位置">入口位置</Btn></div> : null}
     </div>
   ) : null;
 
@@ -261,19 +230,17 @@ function VaultButton(): ReactNode {
           className="vault-box-button"
           variant="solid"
           data-vault-drop
-          aria-expanded={open}
+          aria-haspopup="dialog"
           aria-label={`暂存箱，${items.length} 项`}
-          titleAttr="暂存箱 · 点击预览，向内轻滑打开，长按拖动换位"
+          titleAttr="暂存箱 · 点击打开，长按拖动换位"
           onPointerDown={edge.onPointerDown}
           onPointerMove={edge.onPointerMove}
           onPointerUp={edge.onPointerUp}
           onPointerCancel={edge.onPointerCancel}
-          onContextMenu={e => { e.preventDefault(); if (Date.now() > edge.touchUntil.current) { setPinned(false); setMenu(true); } }}
+          onContextMenu={e => { e.preventDefault(); if (!edge.moving && Date.now() > edge.touchUntil.current) setMenu(true); }}
           onClick={(e) => {
             if (e.detail !== 0 && Date.now() < edge.suppressClickUntil.current) { e.preventDefault(); return; }
-            setMenu(false);
-            setPinned((v) => !v);
-            if (!pinned && e.detail === 0) requestAnimationFrame(() => panelRef.current?.querySelector("button")?.focus());
+            openVaultPage();
           }}
         >
           <IconVault size="md" />

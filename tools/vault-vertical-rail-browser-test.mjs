@@ -5,11 +5,11 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { installFakeCloud } from './lib/fake-cloud.mjs';
 import { closeTestBrowser } from './lib/onboarding-browser-steps.mjs';
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
-const out = 'docs/onegui/vault-refinement-2026-10-20';
+const out = process.env.ONETHU_TEST_OUT ?? process.env.ONETHU_VAULT_OUT ?? 'docs/onegui/vault-refinement-2026-10-20';
 mkdirSync(out, { recursive: true });
 const checks = [], geometry = [];
 const check = (ok, message) => { assert.ok(ok, message); checks.push(message); console.log('✓ ' + message); };
-const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--disable-updater-scheduler'] });
 let passed = false;
 try {
   for (const narrow of [false, true]) {
@@ -39,26 +39,24 @@ try {
     const measure = async () => page.evaluate(() => {
       const handle = document.querySelector('.vault-box-button');
       const a = handle.getBoundingClientRect(), rail = document.querySelector('.ex-rail').getBoundingClientRect();
-      const preview = document.querySelector('.vault-radar')?.getBoundingClientRect();
+      const manager = document.querySelector('.vault-manager')?.getBoundingClientRect();
       const box = r => r ? ({x:r.x,y:r.y,width:r.width,height:r.height}) : null;
       const overlap = (a,b) => Math.min(a.right,b.right)>Math.max(a.left,b.left) && Math.min(a.bottom,b.bottom)>Math.max(a.top,b.top);
-      return {anchor:box(a),rail:box(rail),preview:box(preview), anchorHit:handle.contains(document.elementFromPoint(a.x+a.width/2,a.y+a.height/2)),anchorOverlapsRail:overlap(a,rail),previewOverlapsRail:preview ? overlap(preview,rail):false, saved:JSON.parse(localStorage.getItem('onethu.vault-anchor.desktop.v1'))};
+      return {anchor:box(a),rail:box(rail),manager:box(manager), anchorHit:handle.contains(document.elementFromPoint(a.x+a.width/2,a.y+a.height/2)),anchorOverlapsRail:overlap(a,rail), saved:JSON.parse(localStorage.getItem('onethu.vault-anchor.desktop.v1'))};
     });
     let result = await measure();
     check(result.rail.width > 180, label + ' 验收时竖栏实际展开');
     check(!result.anchorOverlapsRail && result.anchorHit, label + ' 左侧保存位置自动避开竖栏且入口可命中');
     check(result.saved.side === 'left' && result.saved.ratio === .4, label + ' 避障未篡改用户保存的left/40%');
-    await anchor.click(); await page.locator('.vault-radar').waitFor();
-    await page.waitForFunction(() => getComputedStyle(document.querySelector('.vault-radar')).opacity === '1');
-    if (narrow) { await rail.hover(); await page.waitForFunction(() => document.querySelector('.ex-rail').getBoundingClientRect().width >= parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--og-rail-full-width')) - .5); }
+    await anchor.click(); await page.locator('.vault-manager').waitFor();
+    check(await page.locator('.vault-radar').count() === 0, label + ' 普通点击直接管理，不出现雷达');
     result = await measure(); geometry.push({mode:label,...result});
-    check(!result.previewOverlapsRail && result.preview.x>=0 && result.preview.y>=0 && result.preview.x+result.preview.width<=1280 && result.preview.y+result.preview.height<=900, label + ' 预览不被展开竖栏遮住且完整在屏内');
-    const manage = page.locator('.vault-radar').getByRole('button',{name:'整理暂存箱',exact:true});
-    check(await manage.evaluate(el => {const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}), label + ' 整理按钮在竖栏展开时真实命中');
+    check(result.manager.x>=0 && result.manager.y>=0 && result.manager.x+result.manager.width<=1280 && result.manager.y+result.manager.height<=900, label + ' 管理面板完整在屏内');
+    const close = page.locator('.vault-manager').getByRole('button',{name:'关闭',exact:true});
+    check(await close.evaluate(el => {const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}), label + ' 管理按钮位于竖栏上层并真实命中');
     if (narrow) await page.screenshot({animations:'disabled',path:`${out}/edge-vertical-rail.png`});
-    await manage.click(); await page.locator('.vault-manager').waitFor();
-    check(true, label + ' 真实点击整理打开管理面板');
-    await page.locator('.vault-manager').getByRole('button',{name:'关闭',exact:true}).click();
+    check(await page.locator('.vault-manager .vault-workspace').count() === 1, label + ' 直接进入完整共享管理组件');
+    await close.click();
     await page.locator('.vault-manager').waitFor({state:'hidden'});
     await page.waitForFunction(() => document.activeElement?.matches('.vault-box-button'));
     check(true, label + ' 关闭管理后焦点回入口');

@@ -275,21 +275,21 @@ try {
   check(/撤销|不存在/.test(revoked.reason ?? ''), '撤销的失败原因说的是「已撤销/不存在」，不是过期：' + (revoked.reason ?? ''));
 
   await b.screenshot({ path: `${out}/receiver-anonymous-import.png` });
-  /* 小形态（雷达）也要能直接收：粘贴口令 + 扫码入口在位 */
+  /* 点击入口打开的管理面板也要能直接收：粘贴口令 + 扫码入口在位 */
   await a.bringToFront();
   await a.getByRole('button', { name: /^暂存箱，/ }).click();
-  await a.locator('.vault-radar').waitFor();
+  await a.locator('.vault-manager').waitFor();
   await a.waitForTimeout(400);
-  await a.locator('.vault-radar').getByRole('button',{name:'接收',exact:true}).click();
-  const radarReceive=a.getByRole('dialog',{name:'接收内容'});
-  await radarReceive.waitFor();
-  check(await radarReceive.getByLabel('收到的口令', { exact: true }).count() === 1 && await radarReceive.getByRole('button', { name: '粘贴剪贴板', exact: true }).count() === 1, '雷达接收面板有直接输入及粘贴口令入口');
-  check(await radarReceive.getByRole('button',{name:'识别二维码'}).count()===1,'雷达接收面板有二维码入口');
-  await radarReceive.getByLabel('收到的口令', { exact: true }).fill(cardCode1);
-  await radarReceive.getByRole('button', { name: '接收口令', exact: true }).click();
-  await radarReceive.getByRole('status').waitFor();
+  await a.locator('.vault-manager').getByRole('button',{name:'接收',exact:true}).click();
+  const managerReceive=a.getByRole('dialog',{name:'接收内容'});
+  await managerReceive.waitFor();
+  check(await managerReceive.getByLabel('收到的口令', { exact: true }).count() === 1 && await managerReceive.getByRole('button', { name: '粘贴剪贴板', exact: true }).count() === 1, '暂存箱接收面板有直接输入及粘贴口令入口');
+  check(await managerReceive.getByRole('button',{name:'识别二维码'}).count()===1,'暂存箱接收面板有二维码入口');
+  await managerReceive.getByLabel('收到的口令', { exact: true }).fill(cardCode1);
+  await managerReceive.getByRole('button', { name: '接收口令', exact: true }).click();
+  await managerReceive.getByRole('status').waitFor();
   await toast(a, /个人名片|本地已有/).waitFor();
-  check(true, '雷达「收口令」走通统一接收入口');
+  check(true, '暂存箱「收口令」走通统一接收入口');
   await a.screenshot({ path: `${out}/radar-receive-entries.png` });
 
   check(errors.length === 0, '无新增运行时异常：' + errors.join(';'));

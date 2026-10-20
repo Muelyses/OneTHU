@@ -54,6 +54,10 @@
   --og-media-ink-dark: var(--og-ref-neutral-1000);
   --og-media-shadow: var(--og-ref-ink-1000);
   /* Product models keep physical material colors, like photographs within a themed surface. */
+  /* The scanner is a physical display, with a stable phosphor/ink pair in every theme. */
+  --og-vault-scope-surface: var(--og-ref-neutral-950);
+  --og-vault-scope-signal: var(--og-ref-dark-success);
+  --og-vault-scope-ink: var(--og-ref-neutral-0);
   --og-studio-body: var(--og-ref-neutral-300);
   --og-studio-edge: var(--og-ref-neutral-500);
   --og-studio-glass: var(--og-ref-neutral-1000);

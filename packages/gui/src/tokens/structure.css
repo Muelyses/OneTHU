@@ -304,15 +304,14 @@
   --og-vault-anchor-w: 64px;
   --og-vault-anchor-h: 48px;
   --og-vault-anchor-gap: 6px;
-  --og-vault-radar-disc: 216px;
+  --og-vault-radar-disc: 320px;
+  --og-vault-radar-period: 3200ms;
   --og-bookmark-menu-width: 260px;
   --og-schedule-page-offset: 290px;
   --og-schedule-min-mobile: 300px;
   --og-contact-card-min: 320px;
   --og-vault-radar-w: 352px;
-  --og-vault-radar-comfort-h: 420px;
-  --og-vault-radar-compact-h: 220px;
-  --og-vault-recent-row-h: 52px;
+  --og-vault-radar-compact-h: 280px;
   --og-vault-sheet-w: 560px;
   --og-vault-sheet-h: 460px;
   --og-vault-manager-w: 880px;

@@ -26,42 +26,42 @@ import {
  * 日程页 —— 时间轴（周网格，课表+云/本日程，24h）与列表（月历+所选日清单）。
  * 日期模型：单一 anchor 任意日期，不受学期边界限制（1970 起）；
  * 时间轴取 anchor 所在周、列表取 anchor 所在月；筛选器自绘（无原生日期控件）。
- * 共用层：同步云日历 / 课表上云 / 同步到系统日历（不支持平台退 .ics）/ 添加日程 / 事件编辑器。
+ * 三种模式共用：作业 DDL / 云日历 / 系统日历与 .ics / 日程编辑器。
  * UI：OneGUI（Modal/Popover/Chip/Checkbox/Field/Text/Surface/Divider/Banner），
  * 内联样式只保留几何定位、网格线令牌与课块数据色（lib/courseColor 口径）。
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { openTab, useExplorerState } from "../state/explorer.js";
+import { openTab } from "../state/explorer.js";
 import { useIsSimpleLike } from "../state/experienceMode.js";
 import { openHomeworkRow } from "../lib/homeworkEntry.js";
 import type { Homework } from "@onethu/core";
 import { PageAtomStar } from "../components/Collect.js";
 import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
-import { useCalendar, useCampusData } from "../state/data.js";
-import { ignoredHwList } from "../state/hwIgnore.js";
+import { useCalendar, getCampusSnapshot, useLearnData, invalidateLearnCache } from "../state/data.js";
+import { useIgnoredHw } from "../state/hwIgnore.js";
 import { useScheduleWindow, WINDOW_PRESETS, FULL_DAY, hhmm as hhmmWin } from "../state/scheduleWindow.js";
 import { cacheSet } from "../state/cache.js";
-import { isAuthError, learnUrls } from "@onethu/core";
+import { isAuthError } from "@onethu/core";
 import { softRecover } from "../lib/reload.js";
 import { ScheduleAgenda } from "./ScheduleAgenda.js";
 import type { AgendaItem } from "./ScheduleAgenda.js";
 import { caldav } from "@onethu/core";
 import type { ScheduleEntry } from "@onethu/core";
-import { syncSystemCalendar, systemCalSupported } from "../state/systemCal.js";
+import { syncSystemCalendar, systemCalSupported, exportSystemCalendarIcs } from "../state/systemCal.js";
 import {
-  useCloudCal, syncCloudCal, getCloudCalConfig,
-  putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent, buildSemesterEvents,
+  useCloudCal, syncCloudCal, getCloudCalConfig, ensureCloudCalLoaded,
+  saveCalendarEvent, deleteCloudEvent, deleteLocalEvent,
 } from "../state/cloudCal.js";
-import { info, logLine } from "../lib/clients.js";
+import { info } from "../lib/clients.js";
 import { toHomework, useExternalHomework } from "../state/exthw.js";
 import { useApp } from "../state/context.js";
 import { usePlatformLayout } from "../state/usePlatformLayout.js";
 import { courseColor, SRC_COLOR } from "../lib/courseColor.js";
-import { confirmOk } from "../lib/confirm.js";
 import { useNotifyBackend } from "../components/useNotifyBackend.js";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { openLocalPath } from "../lib/localFile.js";
+import { scheduleHomework, type ScheduleHomework } from "../lib/scheduleHomework.js";
+import { calendarDraftRange } from "../lib/calendarDraft.js";
 
 const DAY_NAMES = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 /** 时间轴的列数：**恒为一周 7 列**（用户 2026-10-18：日程的时间轴完全以周为单位，
@@ -319,8 +319,11 @@ function detectSemester(d: Date, list: SemInfo[]): { sem: SemInfo; weekNo: numbe
 /* ---------- 事件编辑器草稿（页面级：两视图共用的底部编辑卡） ---------- */
 interface Draft {
   uid?: string;
+  source?: caldav.IcsEvent;
+  sourceEmail?: string | null;
   title: string;
   date: string; // YYYY-MM-DD
+  endDate: string; // inclusive for all-day, actual end date for timed events
   start: string; // HH:MM
   end: string; // HH:MM
   allDay: boolean;
@@ -333,7 +336,7 @@ interface Draft {
 }
 
 const emptyDraft = (date: string, canCloud: boolean): Draft => ({
-  title: "", date, start: "08:00", end: "09:35", allDay: false, location: "", note: "",
+  title: "", date, endDate: date, start: "08:00", end: "09:35", allDay: false, location: "", note: "",
   toCloud: canCloud, originalCloud: false,
   // 默认不勾：自定义日程一直不上小组件，勾了才上（保持既有行为，避免存量日程突然挤进卡片）
   widget: false,
@@ -342,19 +345,25 @@ const emptyDraft = (date: string, canCloud: boolean): Draft => ({
 export function SchedulePage() {
   // 展示时段（用户可选；默认全天）。放在最前：下面所有 y()/刻度都依赖它
   const [win, setWin] = useScheduleWindow();
-  const campus = useCampusData();
+  // Reuse any campus snapshot as fallback; do not start a second full-campus
+  // crawl alongside the shared Learn request just to render this page.
+  const campus = { data: getCampusSnapshot() };
   const calendar = useCalendar();
+  const learn = useLearnData();
+  const ignored = useIgnoredHw();
   const extHw = useExternalHomework();
   const cal = useCloudCal();
-  const { status } = useApp();
-  /** 极简/实用壳：云同步与寻迹是完整模式能力，简洁壳不出现入口（连提示文案一起藏）。 */
+  const { status, navigate } = useApp();
+  /** 三种模式共享日程与同步；简洁壳使用自己的导航出口。 */
   const simple = useIsSimpleLike();
   /** 本机有没有桌面小组件（只有 Android 有承载）：决定「在桌面小组件显示」是否出现在编辑器 */
   const widgetHere = useNotifyBackend() === "android";
 
   // 每次打开日程页自动云同步一次（失败静默——工具栏有手动入口与状态）
   useEffect(() => {
-    if (getCloudCalConfig()) void syncCloudCal().catch(() => undefined);
+    void ensureCloudCalLoaded().then(() => {
+      if (getCloudCalConfig()) return syncCloudCal();
+    }).catch(() => undefined);
   }, []);
 
   /** 设置浮层开关：本页唯一常驻控件是事件区上那颗悬浮圆钮，点开就是这份设置面板 */
@@ -394,8 +403,7 @@ export function SchedulePage() {
   );
   /** anchor 自动检测：哪一年哪个学期第几周 */
   const detected = useMemo(() => detectSemester(anchor, semesters), [anchor, semesters]);
-  /** 课表上云的目标学期：检测到的优先，否则当前学期 */
-  const exportSemester = detected?.sem ?? calendar.data ?? null;
+
 
   /* ---------- 视图窗口 ---------- */
   const weekStart = useMemo(() => mondayOf(anchor), [anchor]);
@@ -486,6 +494,21 @@ export function SchedulePage() {
     };
   }, [mode, windowKey, reloadTick, status]);
 
+  // Learn is the live source also used by the homework page. Campus is only a cold-cache fallback.
+  const deadlines = useMemo(() => {
+    const bundle = learn.data ?? campus.data;
+    const courseNames = new Map(bundle?.courses.map((c) => [c.id, c.name]) ?? []);
+    return scheduleHomework([...(bundle?.homework ?? []), ...extHw.items.map(toHomework)]
+      .map((h) => ({ ...h, courseName: h.courseName || courseNames.get(h.courseId) })), ignored);
+  }, [learn.data, campus.data, extHw.items, ignored]);
+  const homeworkEntry = (item: ScheduleHomework): GridEntry => ({
+    courseName: item.homework.title, location: item.homework.courseName,
+    date: item.date, dayOfWeek: item.dayOfWeek, startTime: item.startTime, endTime: item.endTime,
+    src: "hw", homework: item.homework,
+    hwMeta: { submitted: !!item.homework.submitted, source: item.homework.source,
+      courseName: item.homework.courseName, ext: !!item.homework.source },
+  });
+
   const hmOfMs = (ms: number): string => {
     const w = caldav.epochToWall("Asia/Shanghai", ms);
     return `${padN(w.h)}:${padN(w.mi)}`;
@@ -514,60 +537,27 @@ export function SchedulePage() {
           chips.push({ label: o.summary, src, uid: o.uid });
           continue;
         }
-        inWeek.push({
-          courseName: o.summary,
-          location: o.location,
-          date: ymdOf(new Date(o.start)),
-          dayOfWeek: WD_INDEX(o.start) + 1,
-          startTime: hmOfMs(o.start),
-          endTime: hmOfMs(o.end),
-          src,
-          uid: o.uid,
-        });
+        for (let start = Math.max(o.start, lo); start < Math.min(o.end, hi + 1);) {
+          const date = new Date(start);
+          const nextDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).getTime();
+          const end = Math.min(o.end, nextDay, hi + 1);
+          inWeek.push({
+            courseName: o.summary, location: o.location, date: ymdOf(date),
+            dayOfWeek: WD_INDEX(start) + 1, startTime: hmOfMs(start),
+            endTime: end === nextDay ? "24:00" : hmOfMs(end), src, uid: o.uid,
+          });
+          start = end;
+        }
       }
     }
-    // 作业 DDL 入格：learn + 外源（雨课堂/TUOJ/Tyche/DSA OJ）统一 Homework，
-    // deadline 前 2h → deadline 画成一个 DDL 块（橙色；已提交降透明由渲染层处理）
-    // R21c：已忽略的作业不进日程格（用户口径：忽略后不在日程显示）
-    const ignoredIds = new Set(ignoredHwList().map((e) => e.id));
-    const hwAll = [...(campus.data?.homework ?? []), ...extHw.items.map(toHomework)].filter(
-      // R23：已忽略 + 旁听都不进日程格（旁听不评分、非正式课程）
-      (h) => !ignoredIds.has(h.id) && !h.audited,
-    );
-    for (const h of hwAll) {
-      if (!h.deadline) continue;
-      const d = new Date(String(h.deadline).replace(/-/g, "/"));
-      if (isNaN(d.getTime())) continue;
-      const t = d.getTime();
-      if (t < lo || t > hi) continue;
-      const b = new Date(t - 2 * 3_600_000);
-      const hmOf = (x: Date): string => `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}`;
-      const wd = (new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).getUTCDay() + 6) % 7;
-      const hwCourse = h.courseName || campus.data?.courses?.find((c) => c.name && c.id === h.courseId)?.name || undefined;
-      inWeek.push({
-        courseName: h.title,
-        location: hwCourse,
-        date: ymdOf(d),
-        dayOfWeek: wd + 1,
-        startTime: hmOf(b),
-        endTime: hmOf(d),
-        src: "hw",
-        homework: h,
-        hwMeta: {
-          submitted: !!h.submitted,
-          source: h.source,
-          courseName: hwCourse,
-          ext: !!h.source,
-          // 外源用自带链接；learn 作业拼官方作业详情页（浏览器已登录即可看）
-          externalUrl: h.externalUrl || h.url || (h.baseId ? learnUrls.LEARN_HOMEWORK_PAGE(h.courseId, h.baseId) : undefined),
-        },
-      });
+    for (const item of deadlines) {
+      if (item.deadline < lo || item.deadline > hi) continue;
+      inWeek.push(homeworkEntry(item));
     }
     // 重叠缩略：≥3 件重叠合并成"N 件事"簇块（扫描线极大区间）
     const clustered = clusterize(inWeek);
-    void logLine(`HW-CLUSTER in=${inWeek.length} hw=${inWeek.filter((e) => e.src === "hw").length} out=${clustered.length} clusters=${clustered.filter((e) => e.src === "cluster").map((e) => `${e.courseName}@${e.startTime}-${e.endTime}`).join("|")}`).catch(() => undefined);
     return { entries: clustered, allDayChips: chips };
-  }, [viewWindow, windowRows, campus.data, cal.cloudEvents, cal.localEvents, extHw.items]);
+  }, [viewWindow, windowRows, campus.data, cal.cloudEvents, cal.localEvents, deadlines]);
 
   /* ── 铺满：可用高度 → 坐标轴（先定轴，layout/裁剪/渲染都跟着走） ── */
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -713,23 +703,15 @@ export function SchedulePage() {
         }
         return;
       }
-      const events: caldav.IcsEvent[] = [...cal.cloudEvents, ...cal.localEvents];
-      if (exportSemester) {
-        const r = await buildSemesterEvents(exportSemester, (st, en) => info.getSchedule(st, en));
-        events.push(...r.events);
-      }
-      if (events.length === 0) {
-        setMsg("没有可导出的日程。");
-        return;
-      }
+      const contents = await exportSystemCalendarIcs();
       const { invoke } = await import("@tauri-apps/api/core");
       const path = await invoke<string | null>("save_text_file", {
         filename: "OneTHU-日程.ics",
-        contents: caldav.serializeCalendar(events),
+        contents,
       });
       if (!path) return; // 用户取消
       await openLocalPath(path);
-      setMsg(`已导出 ${events.length} 条日程，系统日历导入窗口应已打开（选择要写入的日历）。iPhone 上想自动同步：设置 → 云同步 → 在 iPhone 上查看。`);
+      setMsg("已导出课表、作业截止时间与日程，系统日历导入窗口应已打开（选择要写入的日历）。");
     } catch (err) {
       setMsg(`导出失败：${err instanceof Error ? err.message : String(err)}`);
     } finally {
@@ -738,13 +720,19 @@ export function SchedulePage() {
   };
 
   const openEditByUid = (uid: string, kind: "cloud" | "local"): void => {
-    const src = kind === "cloud" ? cal.cloudEvents.find((e) => e.uid === uid) : cal.localEvents.find((e) => e.uid === uid);
+    const events = kind === "cloud" ? cal.cloudEvents : cal.localEvents;
+    const src = events.find((e) => e.uid === uid && e.recurrenceId === undefined) ?? events.find((e) => e.uid === uid);
     if (!src) return;
+    setMsg(null);
     setDetail(null); // 详情/编辑互斥
     const w = caldav.epochToWall("Asia/Shanghai", src.start);
     const we = caldav.epochToWall("Asia/Shanghai", src.end);
+    const lastDay = caldav.epochToWall("Asia/Shanghai", src.allDay ? src.end - 1 : src.end);
     setDraft({
-      uid: src.uid, title: src.summary, date: ymdOf(new Date(src.start)),
+      source: { ...src },
+      sourceEmail: kind === "cloud" ? cal.email : undefined,
+      uid: src.uid, title: src.summary, date: `${w.y}-${padN(w.mo)}-${padN(w.d)}`,
+      endDate: `${lastDay.y}-${padN(lastDay.mo)}-${padN(lastDay.d)}`,
       start: `${padN(w.h)}:${padN(w.mi)}`, end: `${padN(we.h)}:${padN(we.mi)}`,
       allDay: !!src.allDay, location: src.location ?? "", note: src.description ?? "",
       toCloud: kind === "cloud", originalCloud: kind === "cloud",
@@ -752,9 +740,11 @@ export function SchedulePage() {
       widget: src.onethuWidget === true,
     });
   };
-  /** 列表行点击（云/本可编辑；课程/考试无 uid 不可编辑） */
+  /** 列表行：云/本可编辑，课程/考试/作业打开详情。 */
   const onAgendaEdit = (it: AgendaItem): void => {
     if (it.uid && (it.kind === "cloud" || it.kind === "local")) openEditByUid(it.uid, it.kind);
+    else if (it.homework) setDetail(homeworkEntry(it.homework));
+    else if (it.course) setDetail({ ...it.course, src: it.kind === "exam" ? "exam" : undefined });
   };
   /** 时间轴块点击：云/本 → 编辑器；课程/考试 → 只读详情 */
   const onBlockClick = (e: GridEntry): void => {
@@ -770,15 +760,12 @@ export function SchedulePage() {
     setBusy(true);
     setMsg(null);
     try {
-      const d = new Date(Number(draft.date.slice(0, 4)), Number(draft.date.slice(5, 7)) - 1, Number(draft.date.slice(8, 10)));
-      const [sh, sm] = draft.start.split(":").map(Number);
-      const [eh, em] = draft.end.split(":").map(Number);
+      if (draft.originalCloud && draft.sourceEmail !== cal.email) throw new Error("云同步账号已变更，请重新打开日程后编辑");
       const allDay = draft.allDay;
-      const start = allDay ? new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() : new Date(d.getFullYear(), d.getMonth(), d.getDate(), sh ?? 0, sm ?? 0).getTime();
-      let end = allDay ? start + 86_400_000 : new Date(d.getFullYear(), d.getMonth(), d.getDate(), eh ?? 23, em ?? 59).getTime();
-      if (!allDay && end <= start) end = start + 45 * 60_000;
+      const { start, end } = calendarDraftRange(draft);
       const uid = draft.uid ?? `onethu-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}@onethu`;
       const ev: caldav.IcsEvent = {
+        ...draft.source,
         uid, summary: draft.title.trim(), start, end, allDay,
         location: draft.location.trim() || undefined,
         description: draft.note.trim() || undefined,
@@ -786,11 +773,7 @@ export function SchedulePage() {
         // 桌面小组件「今天」卡片：勾了才带上这个私有标记（缺省不写 = 不上卡片）
         onethuWidget: draft.widget || undefined,
       };
-      // 跨集合移动（云↔本地）：先删原侧再写新侧
-      if (draft.uid && draft.originalCloud && !draft.toCloud) await deleteCloudEvent(draft.uid);
-      if (draft.uid && !draft.originalCloud && draft.toCloud) await deleteLocalEvent(draft.uid);
-      if (draft.toCloud) await putCloudEvent(ev);
-      else await putLocalEvent(ev);
+      await saveCalendarEvent(ev, { cloud: draft.toCloud, originalCloud: draft.uid ? draft.originalCloud : undefined });
       setDraft(null);
       setMsg("已保存。");
     } catch (err) {
@@ -804,7 +787,8 @@ export function SchedulePage() {
     if (!draft?.uid || busy) return;
     setBusy(true);
     try {
-      if (draft.originalCloud) await deleteCloudEvent(draft.uid);
+      if (draft.originalCloud && draft.sourceEmail !== cal.email) throw new Error("云同步账号已变更，请重新打开日程后删除");
+      if (draft.originalCloud) await deleteCloudEvent(draft.uid, draft.source?.etag);
       else await deleteLocalEvent(draft.uid);
       setDraft(null);
       setMsg("已删除。");
@@ -833,7 +817,8 @@ export function SchedulePage() {
   const gotoDetail = (d: GridEntry, trace = false): void => {
     /** 统一出口：标题来自条目本身，forceNew 恒真（绝不顶掉当前日程标签） */
     const newTab = (page: Parameters<typeof openTab>[0], params?: Parameters<typeof openTab>[1], title?: string): void => {
-      openTab(page, params, { title, forceNew: true });
+      if (simple) navigate(page, params ?? undefined);
+      else openTab(page, params, { title, forceNew: true });
     };
     setDetail(null); // 动作一律先关弹层，避免两个浮层叠着
     if (trace) {
@@ -848,7 +833,7 @@ export function SchedulePage() {
       });
       return;
     }
-    const course = campus.data?.courses.find((c) => c.id === d.courseId || c.name === d.courseName);
+    const course = (learn.data ?? campus.data)?.courses.find((c) => c.id === d.courseId || c.name === d.courseName);
     if (course) {
       newTab("learn-course", { courseId: course.id }, course.name);
       return;
@@ -865,7 +850,7 @@ export function SchedulePage() {
       {/* 事件区：铺满中间全部内容区。所有控件都悬浮在它上面（右下/手机上右上的小圆钮） */}
       <div className="schedule-stage">
         {/* 通知浮层：取数失败/同步结果不占高度，不挤事件区 */}
-        {msg || (winError && mode === "timetable") || calendar.state === "error" ? (
+        {msg || (winError && mode === "timetable") || calendar.state === "error" || learn.state === "error" ? (
           <div className="schedule-floats">
             {msg ? <Banner tone="info">{msg}</Banner> : null}
             {winError && mode === "timetable" ? (
@@ -874,6 +859,9 @@ export function SchedulePage() {
             {calendar.state === "error" ? (
               <ErrorNote text={`校历加载失败（学期检测/跳转不可用）：${calendar.error ?? ""}`} onRetry={() => void calendar.reload()} />
             ) : null}
+            {learn.state === "error" ? (
+              <ErrorNote text={`作业刷新失败，当前截止时间可能不完整：${learn.error ?? ""}`} onRetry={() => void learn.reload()} />
+            ) : null}
           </div>
         ) : null}
 
@@ -881,6 +869,8 @@ export function SchedulePage() {
           <div className="schedule-scroll">
             <ScheduleAgenda
               courses={campus.data?.schedule ?? []}
+              homework={deadlines}
+              refreshKey={reloadTick}
               monthAnchor={new Date(anchor.getFullYear(), anchor.getMonth(), 1)}
               onMonthAnchor={(d) => setAnchor(d)}
               selected={selected}
@@ -1168,27 +1158,32 @@ export function SchedulePage() {
                 </div>
               ) : null}
 
-              {/* 同步 / 系统日历 / 刷新（云同步与系统日历是完整模式能力；简洁壳只留刷新） */}
+              {/* 同步在三种模式共用；切换模式不改变保存目标与同步配置。 */}
               <div className="schedule-panel-block">
-                {simple ? null : <Text slot="micro" tone="faint">{canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置（设置页开启）"}</Text>}
+                <Text slot="micro" tone="faint">{canCloud ? `${cal.email} · ${lastSyncText}` : "云同步未配置（设置页开启）"}</Text>
+                {cal.error ? <Text slot="micro" tone="error">{cal.error}</Text> : null}
+                {learn.error ? <Text slot="micro" tone="error">作业刷新失败：{learn.error}</Text> : null}
+                {Object.keys(extHw.errors).length ? <Text slot="micro" tone="error">部分外部作业刷新失败，请在作业页检查连接。</Text> : null}
                 <div className="schedule-panel-row">
-                  {simple ? null : <Btn size="sm" variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing} icon={<IconRefresh width={14} height={14} />}>
+                  <Btn size="sm" variant="outline" onClick={() => void onSync()} disabled={!canCloud || cal.syncing} icon={<IconRefresh width={14} height={14} />}>
                     {cal.syncing ? "同步中…" : "同步云日历"}
-                  </Btn>}
-                  {simple ? null : <Btn size="sm" variant="outline" onClick={() => void onSystemCal()} disabled={busy}>
+                  </Btn>
+                  <Btn size="sm" variant="outline" onClick={() => void onSystemCal()} disabled={busy}>
                     {sysNative === false ? "导出 .ics" : "同步到系统日历"}
-                  </Btn>}
+                  </Btn>
                   <Btn size="sm" variant="outline" disabled={winLoading} icon={<IconRefresh width={14} height={14} />} onClick={() => {
                     setReloadTick((t) => t + 1);
                     if (!calendar.data) void calendar.reload();
-                    else void campus.reload();
+                    invalidateLearnCache();
+                    void learn.reload();
+                    extHw.reload();
                   }}>刷新</Btn>
                 </div>
               </div>
 
               {/* 新建 + 收藏本页 */}
               <div className="schedule-panel-row">
-                <Btn variant="solid" tone="brand" size="sm" onClick={() => { setDraft(emptyDraft(defaultDraftDate, simple ? false : canCloud)); setPanelOpen(false); }}>＋ 添加日程</Btn>
+                <Btn variant="solid" tone="brand" size="sm" onClick={() => { setMsg(null); setDraft(emptyDraft(defaultDraftDate, canCloud)); setPanelOpen(false); }}>＋ 添加日程</Btn>
                 <Spacer />
                 <PageAtomStar atomKey="schedule" title="日程" />
               </div>
@@ -1214,7 +1209,8 @@ export function SchedulePage() {
             ? `⏰ ${d.courseName}`
             : d.src === "exam" ? "考试详情" : "课程详情";
         /** 时间行：真实时刻优先，退到节次 */
-        const timeText = d.date && (d.startTime || d.endTime)
+        const ddl = d.homework ? deadlines.find((item) => item.homework.id === d.homework?.id) : undefined;
+        const timeText = ddl ? `${ddl.date} ${ddl.time} 截止` : d.date && (d.startTime || d.endTime)
           ? `${d.date}${d.startTime && d.endTime ? ` ${d.startTime}–${d.endTime}` : ""}`
           : d.startSection ? `第 ${d.startSection}–${d.endSection ?? d.startSection} 节` : "";
         const srcText = d.hwMeta?.ext ? (d.hwMeta.source ?? "外部") : "网络学堂";
@@ -1274,7 +1270,7 @@ export function SchedulePage() {
                   ...(isHw
                     ? [
                         ...(hwCourse ? [{ k: "课程", v: <Text slot="body">{hwCourse}</Text> }] : []),
-                        ...(d.date ? [{ k: "截止", v: <Text slot="body">{`${d.date} ${d.endTime ?? ""}`.trim()}</Text> }] : []),
+                        ...(ddl ? [{ k: "截止", v: <Text slot="body">{`${ddl.date} ${ddl.time} 截止`}</Text> }] : []),
                         { k: "来源", v: <Text slot="body">{srcText}</Text> },
                         {
                           k: "状态",
@@ -1295,7 +1291,7 @@ export function SchedulePage() {
                 {/* 备注：作业给课程名提示，课程给"能否编辑"的说明 */}
                 <Text slot="label" tone="faint">
                   {isHw
-                    ? "作业来自网络学堂 / 外部作业源；「前往」会在新标签页打开这条作业。"
+                    ? `作业来自网络学堂 / 外部作业源；「前往」会${simple ? "" : "在新标签页"}打开这条作业。`
                     : "课程与考试来自教务系统数据，不能在此修改；自建日程点击即可编辑。"}
                 </Text>
               </Stack>
@@ -1319,7 +1315,7 @@ export function SchedulePage() {
             foot={
               <Inline gap={2}>
                 <Btn variant="solid" tone="brand" disabled={!sd.title.trim() || busy} onClick={() => void onSaveDraft()}>{busy ? "保存中…" : "保存"}</Btn>
-                <Btn variant="outline" onClick={() => setDraft(null)}>取消</Btn>
+                <Btn variant="outline" disabled={busy} onClick={() => setDraft(null)}>取消</Btn>
                 <Spacer />
                 {sd.uid ? (
                   <Btn variant="outline" disabled={busy} onClick={() => void onDeleteDraft()}>删除</Btn>
@@ -1328,15 +1324,20 @@ export function SchedulePage() {
             }
           >
             <Stack gap={2}>
+              {msg ? <Banner tone="info">{msg}</Banner> : null}
+              {sd.source?.rrule ? <Text slot="label" tone="quiet">这是重复日程，保存和删除会作用于整个系列。</Text> : null}
               <Field label="标题">
                 <Input value={sd.title} placeholder="要做什么…" onChange={(value) => setDraft({ ...sd, title: value })} />
               </Field>
               <Inline gap={2} wrap vAlign="end">
                 <Grow>
-                  {/* 原生 date/time 控件原样保留（OneGUI Input 的 type 枚举不含 date/time；
-                      语义/取值格式 YYYY-MM-DD / HH:MM 零改动，外观走浏览器原生件） */}
-                  <Field label="日期">
-                    <input type="date" style={{ width: "100%" }} value={sd.date} onChange={(e) => setDraft({ ...sd, date: e.target.value })} aria-label="日期" />
+                  <Field label="开始日期">
+                    <Input type="date" value={sd.date} onChange={(value) => setDraft({ ...sd, date: value, endDate: sd.endDate < value ? value : sd.endDate })} aria-label="开始日期" />
+                  </Field>
+                </Grow>
+                <Grow>
+                  <Field label={sd.allDay ? "最后一天" : "结束日期"}>
+                    <Input type="date" value={sd.endDate} min={sd.date} onChange={(value) => setDraft({ ...sd, endDate: value })} aria-label="结束日期" />
                   </Field>
                 </Grow>
                 <Checkbox checked={sd.allDay} onChange={(v2) => setDraft({ ...sd, allDay: v2 })} label="全天" />
@@ -1345,12 +1346,12 @@ export function SchedulePage() {
                 <Inline gap={2} wrap>
                   <Grow>
                     <Field label="开始">
-                      <input type="time" style={{ width: "100%" }} value={sd.start} onChange={(e) => setDraft({ ...sd, start: e.target.value })} aria-label="开始时间" />
+                      <Input type="time" value={sd.start} onChange={(value) => setDraft({ ...sd, start: value })} aria-label="开始时间" />
                     </Field>
                   </Grow>
                   <Grow>
                     <Field label="结束">
-                      <input type="time" style={{ width: "100%" }} value={sd.end} onChange={(e) => setDraft({ ...sd, end: e.target.value })} aria-label="结束时间" />
+                      <Input type="time" value={sd.end} onChange={(value) => setDraft({ ...sd, end: value })} aria-label="结束时间" />
                     </Field>
                   </Grow>
                 </Inline>
@@ -1361,14 +1362,12 @@ export function SchedulePage() {
               <Field label="备注">
                 <Input value={sd.note} placeholder="可选" onChange={(value) => setDraft({ ...sd, note: value })} />
               </Field>
-              {simple ? null : (
-                <Checkbox
+              <Checkbox
                   checked={sd.toCloud}
                   disabled={!canCloud}
                   onChange={(v2) => setDraft({ ...sd, toCloud: v2 })}
                   label={`同步到云日历${canCloud ? "（其他设备 / 系统日历可见）" : "（未配置——设置页开启云同步）"}`}
                 />
-              )}
               {widgetHere ? (
                 <Checkbox checked={sd.widget} onChange={(v2) => setDraft({ ...sd, widget: v2 })} label="在桌面小组件显示" />
               ) : null}

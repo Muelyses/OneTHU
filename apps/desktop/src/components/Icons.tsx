@@ -1,5 +1,6 @@
 /** 内联线性图标 —— 1.6px 描边，墨色，克制 */
 import type { ReactElement, SVGProps } from "react";
+import { CONTENT_ICON_PATHS } from "./contentIconPaths.js";
 
 function base(props: SVGProps<SVGSVGElement>) {
   return {
@@ -14,6 +15,12 @@ function base(props: SVGProps<SVGSVGElement>) {
     "aria-hidden": true,
     ...props,
   };
+}
+
+/** Content-type glyphs share their paths with the non-React drag preview. */
+export function IconContentType({ kind, ...props }: { kind: string } & SVGProps<SVGSVGElement>) {
+  const path = Object.hasOwn(CONTENT_ICON_PATHS, kind) ? CONTENT_ICON_PATHS[kind] : CONTENT_ICON_PATHS.inbox;
+  return <svg {...base({ focusable: "false", ...props })}><path d={path} /></svg>;
 }
 
 /** 首页（房子）：手机顶栏那个圆形首页钮用它——用户 2026-10-16 点名「房子形状，不是 OneTHU 形状」 */

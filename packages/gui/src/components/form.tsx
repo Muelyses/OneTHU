@@ -66,7 +66,7 @@ export interface InputProps extends OneBase {
   onEscape?: (value: string) => void;
   onFocusChange?: (focused: boolean) => void;
   placeholder?: string;
-  type?: "text" | "password" | "email" | "tel" | "url" | "search" | "number";
+  type?: "text" | "password" | "email" | "tel" | "url" | "search" | "number" | "date" | "time";
   size?: OGSize;
   disabled?: boolean;
   readOnly?: boolean;
@@ -78,6 +78,8 @@ export interface InputProps extends OneBase {
   autoComplete?: string;
   autoFocus?: boolean;
   maxLength?: number;
+  min?: string | number;
+  max?: string | number;
   spellCheck?: boolean;
   /** 键盘处理：用方法语法声明 —— 参数按双变检查，既接受按具体元素注解的处理器，也能上下文推断 */
   onKeyDown?(e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): void;
@@ -87,7 +89,7 @@ export interface InputProps extends OneBase {
 export function Input({
   value, defaultValue, onChange, onEnter, onEscape, onFocusChange, placeholder, type = "text", size = "md",
   disabled, readOnly, invalid, icon, trailing, scope, className, name, inputMode, autoComplete, autoFocus, maxLength,
-  spellCheck, onKeyDown, ...aria
+  spellCheck, onKeyDown, min, max, ...aria
 }: InputProps): ReactNode {
   const [focused, setFocused] = useState(false);
   return (
@@ -107,6 +109,8 @@ export function Input({
         autoComplete={autoComplete}
         autoFocus={autoFocus}
         maxLength={maxLength}
+        min={min}
+        max={max}
         spellCheck={spellCheck}
         aria-invalid={invalid || undefined}
         aria-label={aria["aria-label"]}

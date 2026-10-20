@@ -561,7 +561,8 @@ html:root.is-phone .oneshot-button svg { width:var(--og-space-4); height:var(--o
    小按钮可上下拖动（--oneshot-drag 记忆位置），展开/收起走网格行高动效。 */
 html:root.is-schedule-page .explorer-shell .oneshot.is-schedule {
   left:auto; right:var(--og-space-3); transform:none;
-  bottom:calc(var(--og-space-10) + var(--og-ctl-h-sm) + var(--og-space-3) + env(safe-area-inset-bottom) + var(--oneshot-drag, 0px));
+  /* 设置钮相对日程 stage，OneShot 相对视口；使用同一份底栏和浮钮净空。 */
+  bottom:calc(var(--og-c-schedule-chrome-bottom, 0px) + var(--og-c-schedule-dock-bottom, var(--og-space-10)) + var(--og-ctl-h-sm) + var(--og-space-3) + var(--oneshot-drag, 0px));
   width:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0;
   transition:bottom var(--og-dur-3) var(--og-ease-spring);
 }
@@ -587,9 +588,6 @@ html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-schedul
 html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging .oneshot-schedule-drag { cursor:grabbing; }
 html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging .oneshot-schedule-toggle { box-shadow:var(--og-elev-3); }
 html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-placement { bottom:calc(100% + var(--og-space-2)); }
-html:root.is-phone.is-schedule-page .explorer-shell .oneshot.is-schedule {
-  bottom:calc(var(--og-workbench-header-h) + var(--og-space-10) + var(--og-space-3) + var(--og-ctl-h-sm) + var(--og-space-2) + env(safe-area-inset-bottom) + var(--oneshot-drag, 0px));
-}
 html:root.is-phone .explorer-shell > .explorer-content { padding-bottom:var(--og-mobile-content-clearance) !important; }
 html:root.is-phone .board-viewport-tools { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + env(safe-area-inset-bottom)); max-height:42dvh; right:calc(var(--og-space-1) * 1.25); }
 html:root.is-phone .hard-refresh-fab { bottom:var(--refresh-fab-bottom, calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + var(--og-space-8) + env(safe-area-inset-bottom))); right:var(--refresh-fab-right, calc(var(--og-space-10) - 6px)); }

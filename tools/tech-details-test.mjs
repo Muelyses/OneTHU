@@ -14,6 +14,8 @@ const src = readFileSync("apps/desktop/src/components/Details.tsx", "utf8");
 const layout = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8");
 const thubook = readFileSync("apps/desktop/src/pages/ThubookPage.tsx", "utf8");
 const settings = readFileSync("apps/desktop/src/pages/Settings.tsx", "utf8");
+const calendarSettings = readFileSync("apps/desktop/src/components/CalendarSyncSettings.tsx", "utf8");
+const simpleSettings = readFileSync("apps/desktop/src/components/SimpleSettings.tsx", "utf8");
 const css = readFileSync("apps/desktop/src/styles/global.css", "utf8");
 
 // ① 原生 details：键盘可达、无脚本能开、内容可选中
@@ -44,7 +46,11 @@ const humanHttp = [...thubook.matchAll(/暂时打不开，请稍后再试：HTTP
 assert.equal(humanHttp, 2, "THUBook 两处 HTTP 报错都要写成「人话：HTTP <码>」，现在 " + humanHttp + " 处");
 const httpMentions = [...thubook.matchAll(/HTTP/g)].length;
 assert.equal(httpMentions, humanHttp, "THUBook 里还有裸 HTTP 状态码没包上人话（" + httpMentions + " 处 HTTP / " + humanHttp + " 处带人话）");
-const settingsUses = [...settings.matchAll(/<ErrorLine /g)].length;
+// Calendar controls are shared by all modes; keep the same coverage floor
+// across the component boundary and verify both settings hosts render it.
+assert.ok(/<CalendarSyncSettings\s*\/>/.test(settings), "完整模式必须接入共享日历设置");
+assert.ok(/<CalendarSyncSettings\s*\/>/.test(simpleSettings), "简洁模式必须接入共享日历设置");
+const settingsUses = [...(settings + calendarSettings).matchAll(/<ErrorLine /g)].length;
 assert.ok(settingsUses >= 5, "设置页用拆分渲染的地方太少（" + settingsUses + " 处）");
 
 console.log(

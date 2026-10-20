@@ -1,5 +1,4 @@
-import { Input } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import { Btn, Field, Input, Modal, Stack, TextArea } from "@onethu/gui";
 /**
  * 邮箱页 —— 复用云日历凭据（IMAP 收 / SMTP 发，Rust 直连）。
  *
@@ -7,14 +6,14 @@ import { Btn } from "@onethu/gui";
  * 正文：text/plain 直排；html-only 走 sandbox iframe（禁脚本/禁跳转，外链
  * 只能手动复制——学生邮件场景够用且安全）。写信：弹层表单（to/cc/主题/正文）。
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../state/context.js";
-import { MAIL_FOLDERS, useMail, useMailCounts, useMailBody, sendMail, mailSearch, type MailHead } from "../state/mail.js"
-import { ConnectGate } from "../components/ConnectGate.js";;
+import { MAIL_FOLDERS, useMail, useMailCounts, useMailBody, sendMail, mailSearch, type MailHead } from "../state/mail.js";
+import { ConnectGate } from "../components/ConnectGate.js";
 import { IconMail, IconRefresh, IconPen, IconChevron } from "../components/Icons.js";
 import { CollectStar } from "../components/Collect.js";
 import { showToast } from "../state/toast.js";
-import { useExitHold, useSegPill } from "../lib/motion.js";
+import { useSegPill } from "../lib/motion.js";
 import { vaultCatchAttr } from "../components/vault/vaultDrag.js";
 
 /** 邮件时间：今天 14:05 / 昨天 / 9月5日 / 2025年12月3日 */
@@ -52,7 +51,10 @@ function Row({ h, folder, active, onClick }: { h: MailHead; folder: string; acti
       role="button"
       tabIndex={0}
       onClick={onClick}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick(); }}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); }
+      }}
     >
       <span className="mail-avatar" style={{ background: `hsl(${avatarHue(name)} 55% 45%)` }}>
         {[...name][0]?.toUpperCase() ?? "?"}
@@ -70,58 +72,68 @@ function Row({ h, folder, active, onClick }: { h: MailHead; folder: string; acti
   );
 }
 
-function Compose({ closing, onClose, onSent }: { closing: boolean; onClose: () => void; onSent: (msg: string) => void }): React.ReactNode {
+function Compose({ open, onClose, onSent }: { open: boolean; onClose: () => void; onSent: (msg: string) => void }): React.ReactNode {
   const [to, setTo] = useState("");
   const [cc, setCc] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const active = useRef(true);
+  const inFlight = useRef(false);
+  useEffect(() => {
+    active.current = true;
+    return () => { active.current = false; };
+  }, []);
+  useEffect(() => {
+    if (open) { setTo(""); setCc(""); setSubject(""); setBody(""); setErr(null); }
+  }, [open]);
   const send = async (): Promise<void> => {
-    if (sending) return;
+    if (inFlight.current) return;
+    inFlight.current = true;
     setSending(true);
     setErr(null);
     try {
       await sendMail(to, cc, subject, body);
+      if (!active.current) return;
       onSent("已发送");
       onClose();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
+      if (active.current) setErr(e instanceof Error ? e.message : String(e));
     } finally {
-      setSending(false);
+      inFlight.current = false;
+      if (active.current) setSending(false);
     }
   };
   return (
-    <div className={"mail-compose-mask" + (closing ? " is-closing" : "")} onClick={(e) => { if (e.target === e.currentTarget && !sending) onClose(); }}>
-      <div className={"mail-compose" + (closing ? " is-closing" : "")}>
-        <div className="mail-compose-head">
-          <h2>写信</h2>
-          <Btn variant="ghost" onClick={onClose} disabled={sending}>取消</Btn>
-        </div>
-        <div className="mail-compose-fields">
-          <label>
-            收件人
-            <input value={to} onChange={(e) => setTo(e.target.value)} placeholder="user@mails.tsinghua.edu.cn（多个用逗号分隔）" autoFocus />
-          </label>
-          <label>
-            抄送
-            <input value={cc} onChange={(e) => setCc(e.target.value)} placeholder="可选" />
-          </label>
-          <label>
-            主题
-            <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="邮件主题" />
-          </label>
-          <label>
-            正文
-            <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={10} placeholder="正文（纯文本）" />
-          </label>
-        </div>
-        {err && <div className="mail-compose-err">{err}</div>}
-        <div className="mail-compose-foot">
-          <Btn variant="solid" tone="brand" onClick={() => void send()} disabled={sending || to.trim().length === 0}>{sending ? "发送中…" : "发送"}</Btn>
-        </div>
-      </div>
-    </div>
+    <Modal
+      open={open}
+      onClose={() => { if (!inFlight.current) onClose(); }}
+      title="写信"
+      className="mail-compose-dialog"
+      closeButton={!sending}
+      maskClose={!sending}
+      foot={<>
+        <Btn variant="ghost" onClick={onClose} disabled={sending}>取消</Btn>
+        <Btn variant="solid" tone="brand" onClick={() => void send()} disabled={sending || to.trim().length === 0}>{sending ? "发送中…" : "发送"}</Btn>
+      </>}
+    >
+      <Stack gap={3}>
+        <Field label="收件人">
+          <Input value={to} onChange={setTo} disabled={sending} placeholder="user@mails.tsinghua.edu.cn（多个用逗号分隔）" />
+        </Field>
+        <Field label="抄送">
+          <Input value={cc} onChange={setCc} disabled={sending} placeholder="可选" />
+        </Field>
+        <Field label="主题">
+          <Input value={subject} onChange={setSubject} disabled={sending} placeholder="邮件主题" />
+        </Field>
+        <Field label="正文">
+          <TextArea value={body} onChange={setBody} disabled={sending} rows={8} placeholder="正文（纯文本）" />
+        </Field>
+        {err && <div role="alert" className="mail-error">{err}</div>}
+      </Stack>
+    </Modal>
   );
 }
 
@@ -206,32 +218,58 @@ export function MailPage(): React.ReactNode {
   const [openUid, setOpenUid] = useState<number | null>(navParams?.mailUid ?? null);
   const [composing, setComposing] = useState(false);
   const [q, setQ] = useState("");
-  const [results, setResults] = useState<MailHead[] | null>(null);
+  const [searchResult, setSearchResult] = useState<{ account: number; folder: string; query: string; heads: MailHead[] } | null>(null);
   const [searching, setSearching] = useState(false);
   const mail = useMail(folder);
+  const searchGeneration = useRef(0);
+  const previousAccount = useRef<{ email: string; revision: number } | null>(null);
+  const results = searchResult?.account === mail.accountRevision && searchResult.folder === folder ? searchResult.heads : null;
+  const clearSearch = (): void => {
+    searchGeneration.current++;
+    setSearchResult(null);
+    setSearching(false);
+    setQ("");
+  };
   const [bindOpen, setBindOpen] = useState(false); // §4.3：未配置时在原地绑，不必先去设置
   const unreadCounts = useMailCounts();
   const [segRef, pillRef] = useSegPill();
-  /* 写信弹层：关闭时多挂 220ms 播完退场，而不是瞬间消失 */
-  const composeHold = useExitHold(composing ? "compose" : null, 220);
 
   // 原子深链：写信 / 邮件实体（先弹层再落位，双触发幂等）
   useEffect(() => {
     if (navParams?.mailCompose) setComposing(true);
     if (navParams?.mailFolder) setFolder(navParams.mailFolder);
     if (navParams?.mailUid !== undefined && navParams.mailUid !== null) setOpenUid(navParams.mailUid);
-    if (navParams?.mailCompose || navParams?.mailFolder) setResults(null);
+    if (navParams?.mailCompose || navParams?.mailFolder) clearSearch();
   }, [navParams?.mailCompose, navParams?.mailFolder, navParams?.mailUid]);
 
+  useEffect(() => {
+    searchGeneration.current++;
+    setSearchResult(null);
+    setSearching(false);
+    setQ("");
+    return () => { searchGeneration.current++; };
+  }, [folder, mail.accountRevision]);
+  useEffect(() => {
+    const previous = previousAccount.current;
+    if (previous && (previous.email !== mail.email || previous.revision !== mail.accountRevision)) {
+      setOpenUid(null);
+      setComposing(false);
+    }
+    if (mail.email && mail.accountRevision > 0) previousAccount.current = { email: mail.email, revision: mail.accountRevision };
+  }, [mail.email, mail.accountRevision]);
+
   const doSearch = async (): Promise<void> => {
-    if (searching) return;
+    const query = q.trim();
+    if (!query || searching) return;
+    const generation = ++searchGeneration.current;
     setSearching(true);
     try {
-      setResults(await mailSearch(folder, q));
+      const heads = await mailSearch(folder, query);
+      if (generation === searchGeneration.current) setSearchResult({ account: mail.accountRevision, folder, query, heads });
     } catch (e) {
-      showToast(e instanceof Error ? e.message : String(e));
+      if (generation === searchGeneration.current) showToast(e instanceof Error ? e.message : String(e));
     } finally {
-      setSearching(false);
+      if (generation === searchGeneration.current) setSearching(false);
     }
   };
 
@@ -241,8 +279,10 @@ export function MailPage(): React.ReactNode {
         <IconMail style={{ width: 40, height: 40 }} />
         <h2>邮箱待配置</h2>
         <p>邮箱与云日历共用同一个清华邮箱，绑一次两处都能用。</p>
+        {mail.error ? <p role="alert">{mail.error}</p> : null}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <Btn variant="solid" tone="brand" onClick={() => setBindOpen(true)}>绑定邮箱</Btn>
+          {mail.error ? <Btn variant="ghost" onClick={() => void mail.refresh()}>重新读取</Btn> : null}
           <Btn variant="outline" onClick={() => navigate("settings")}>去设置</Btn>
         </div>
         <ConnectGate need="mail" open={bindOpen} onClose={() => setBindOpen(false)} />
@@ -270,7 +310,7 @@ export function MailPage(): React.ReactNode {
             <button
               key={f.id}
               className={folder === f.id ? "is-active" : ""}
-              onClick={() => { setFolder(f.id); setOpenUid(null); setResults(null); setQ(""); }}
+              onClick={() => { setFolder(f.id); setOpenUid(null); clearSearch(); }}
             >
               {f.label}
               {(unreadCounts[f.id] ?? 0) > 0 && <span className="tab-count" title="未读">{unreadCounts[f.id]}</span>}
@@ -279,8 +319,8 @@ export function MailPage(): React.ReactNode {
         </div>
         <span className="mail-toolbar-search">
           <Input value={q} onChange={(value) => setQ(value)} onKeyDown={(e) => { if (e.key === "Enter" && q.trim()) void doSearch(); }} placeholder="搜索邮件（回车全箱搜）" />
-          {results !== null ? (
-            <Btn variant="ghost" titleAttr="退出搜索" onClick={() => { setResults(null); setQ(""); }}>×</Btn>
+          {results !== null || searching ? (
+            <Btn variant="ghost" titleAttr={searching ? "取消搜索" : "退出搜索"} onClick={clearSearch}>×</Btn>
           ) : (
             <Btn variant="ghost" titleAttr="全箱搜索" onClick={() => void doSearch()} disabled={!q.trim() || searching}>{searching ? "…" : "搜"}</Btn>
           )}
@@ -290,8 +330,9 @@ export function MailPage(): React.ReactNode {
       <div className={`mail-layout${openUid !== null ? " detail-open" : ""}`}>
         <div className="mail-list">
           {results === null && mail.loading && mail.heads.length === 0 && <div className="mail-empty">加载中…</div>}
-          {results !== null && results.length === 0 && <div className="mail-empty">没有匹配「{q}」的邮件</div>}
-          {results === null && !mail.loading && mail.heads.length === 0 && <div className="mail-empty">没有邮件</div>}
+          {searching && <div className="mail-empty">搜索中…</div>}
+          {results !== null && results.length === 0 && <div className="mail-empty">没有匹配「{searchResult?.query}」的邮件</div>}
+          {results === null && !mail.loading && !mail.error && mail.heads.length === 0 && <div className="mail-empty">没有邮件</div>}
           {(results ?? mail.heads).map((h) => (
             <Row key={h.uid} h={h} folder={folder} active={openUid === h.uid} onClick={() => setOpenUid(h.uid)} />
           ))}
@@ -317,16 +358,15 @@ export function MailPage(): React.ReactNode {
           </div>
         )}
       </div>
-      {composeHold.mounted && composeHold.held ? (
-        <Compose
-          closing={composeHold.closing}
+      <Compose
+          key={mail.accountRevision}
+          open={composing}
           onClose={() => setComposing(false)}
           onSent={(m) => {
             showToast(m);
             void mail.refresh();
           }}
-        />
-      ) : null}
+      />
     </>
   );
 }

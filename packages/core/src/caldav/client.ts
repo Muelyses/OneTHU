@@ -35,6 +35,12 @@ export interface EventMeta {
   uid: string;
 }
 
+export interface EventWriteOptions {
+  href?: string;
+  etag?: string;
+  createOnly?: boolean;
+}
+
 export class CalDavError extends Error {
   readonly status?: number;
   constructor(message: string, status?: number) {
@@ -59,6 +65,8 @@ function xmlText(xml: string, local: string): string | undefined {
   return m && m[1] !== undefined ? xmlDecode(m[1]) : undefined;
 }
 
+const quoteEtag = (etag: string): string => /^(W\/)?"/.test(etag) ? etag : `"${etag}"`;
+
 export class CalDavClient {
   readonly #fetch: FetchLike;
   readonly #account: CalDavAccount;
@@ -77,7 +85,9 @@ export class CalDavClient {
     return { Authorization: "Basic " + btoa(this.#account.email + ":" + this.#account.authCode) };
   }
 
-  async #request(method: string, url: string, body?: string, headers: Record<string, string> = {}, manual = true): Promise<Response> {
+  async #request(method: string, url: string, body?: string, headers: Record<string, string> = {}): Promise<Response> {
+    // DAV href/Location 不得把 Basic 凭据导向另一个站点。
+    if (new URL(url).origin !== new URL(this.#host).origin) throw new CalDavError("日历返回了其他站点的地址，已停止发送凭据");
     const res = await this.#fetch(url, {
       method,
       headers: { ...this.#authHeader, ...headers },
@@ -138,7 +148,7 @@ export class CalDavClient {
     const xml = await res.text();
     const out: CalendarInfo[] = [];
     for (const block of xml.split(/<(?:[A-Za-z0-9]+:)?response[\s>]/i).slice(1)) {
-      if (!/<(?:[A-Za-z0-9]+:)?calendar\s*\/>/i.test(block)) continue;
+      if (!/<(?:[A-Za-z0-9]+:)?calendar(?:\s*\/>|>[\s\S]*?<\/(?:[A-Za-z0-9]+:)?calendar>)/i.test(block)) continue;
       const href = /<(?:[A-Za-z0-9]+:)?href[^>]*>([^<]*)</i.exec(block)?.[1];
       if (!href) continue;
       const url = new URL(xmlDecode(href.trim()), home).toString();
@@ -167,13 +177,15 @@ export class CalDavClient {
       { Depth: "1", "Content-Type": "application/xml" });
     if (res.status !== 207) throw new CalDavError(`事件清单读取失败（HTTP ${res.status}）`, res.status);
     const xml = await res.text();
+    if (!/<(?:[A-Za-z0-9]+:)?multistatus(?:\s|>|\/)/i.test(xml)) throw new CalDavError("服务器返回了无效日历清单");
     const base = cal.url;
     const out: EventMeta[] = [];
     for (const block of xml.split(/<(?:[A-Za-z0-9]+:)?response[\s>]/i).slice(1)) {
       const href = /<(?:[A-Za-z0-9]+:)?href[^>]*>([^<]*)</i.exec(block)?.[1];
-      if (!href || !href.endsWith(".ics")) continue;
+      if (!href) continue;
       const clean = xmlDecode(href.trim());
-      const etag = (xmlText(block, "getetag") ?? "").replace(/^"|"$/g, "");
+      if (!new URL(clean, base).pathname.endsWith(".ics")) continue;
+      const etag = xmlText(block, "getetag") ?? "";
       const name = clean.split("/").pop() ?? "";
       const uid = decodeURIComponent(name.replace(/\.ics$/, ""));
       out.push({ href: new URL(clean, base).toString(), etag, uid });
@@ -189,26 +201,29 @@ export class CalDavClient {
   }
 
   /** 写入/覆盖事件（资源名=UID，服务器按 UID 落盘） */
-  async putIcs(uid: string, ics: string): Promise<void> {
+  async putIcs(uid: string, ics: string, options: EventWriteOptions = {}): Promise<{ href: string; etag: string }> {
     const cal = await this.mainCalendar();
-    const res = await this.#request("PUT", `${cal.url.replace(/\/?$/, "/")}${encodeURIComponent(uid)}.ics`, ics,
-      { "Content-Type": "text/calendar; charset=utf-8" });
-    if (res.status !== 201 && res.status !== 204 && res.status !== 200) {
-      throw new CalDavError(`事件写入失败（HTTP ${res.status}）`, res.status);
-    }
+    const href = options.href ?? `${cal.url.replace(/\/?$/, "/")}${encodeURIComponent(uid)}.ics`;
+    const headers: Record<string, string> = { "Content-Type": "text/calendar; charset=utf-8" };
+    if (options.etag) headers["If-Match"] = quoteEtag(options.etag);
+    else if (options.createOnly) headers["If-None-Match"] = "*";
+    const res = await this.#request("PUT", href, ics, headers);
+    if (res.status === 412) throw new CalDavError("日程已在其他设备更新，请先同步再编辑", 412);
+    if (![200, 201, 204].includes(res.status)) throw new CalDavError(`事件写入失败（HTTP ${res.status}）`, res.status);
+    return { href, etag: res.headers.get("ETag") ?? "" };
   }
 
-  /** 删除事件 */
-  async deleteEvent(href: string): Promise<void> {
-    const res = await this.#request("DELETE", href);
-    if (res.status !== 204 && res.status !== 200 && res.status !== 404) {
-      throw new CalDavError(`事件删除失败（HTTP ${res.status}）`, res.status);
-    }
+  /** 带版本删除；404 表示目标已不存在。 */
+  async deleteEvent(href: string, etag?: string): Promise<void> {
+    const res = await this.#request("DELETE", href, undefined, etag ? { "If-Match": quoteEtag(etag) } : {});
+    if (res.status === 412) throw new CalDavError("日程已在其他设备更新，请先同步再删除", 412);
+    if (![200, 204, 404].includes(res.status)) throw new CalDavError(`事件删除失败（HTTP ${res.status}）`, res.status);
   }
 
   /** 连接测试：发现+列日历，返回日历名（供设置页展示） */
   async testConnection(): Promise<{ ok: true; calendars: string[] }> {
     const list = await this.listCalendars();
+    if (list.length === 0) throw new CalDavError("账号下没有可用日历集合");
     return { ok: true, calendars: list.map((c) => c.displayName) };
   }
 }

@@ -1,0 +1,7301 @@
+{
+  "passed": true,
+  "checks": [
+    "chromium-1280-full: actual phone/desktop layout matches viewport",
+    "chromium-1280-full cold: visible workspace has actual height",
+    "chromium-1280-full cold: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-full cold: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-full cold: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-full cold: visible coordinate click opens exact DDL detail",
+    "chromium-1280-full cold: all 20 same-day homework rows exist",
+    "chromium-1280-full cold: real wheel/touch scrolled the agenda",
+    "chromium-1280-full cold: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-full cold: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-full cold: actual final-row click/tap opens actionable details",
+    "chromium-1280-full returned: visible workspace has actual height",
+    "chromium-1280-full returned: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-full returned: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-full returned: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-full returned: visible coordinate click opens exact DDL detail",
+    "chromium-1280-full returned: all 20 same-day homework rows exist",
+    "chromium-1280-full returned: real wheel/touch scrolled the agenda",
+    "chromium-1280-full returned: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-full returned: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-full returned: actual final-row click/tap opens actionable details",
+    "chromium-1280-simple: actual phone/desktop layout matches viewport",
+    "chromium-1280-simple cold: visible workspace has actual height",
+    "chromium-1280-simple cold: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-simple cold: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-simple cold: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-simple cold: visible coordinate click opens exact DDL detail",
+    "chromium-1280-simple cold: all 20 same-day homework rows exist",
+    "chromium-1280-simple cold: real wheel/touch scrolled the agenda",
+    "chromium-1280-simple cold: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-simple cold: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-simple cold: actual final-row click/tap opens actionable details",
+    "chromium-1280-simple returned: visible workspace has actual height",
+    "chromium-1280-simple returned: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-simple returned: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-simple returned: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-simple returned: visible coordinate click opens exact DDL detail",
+    "chromium-1280-simple returned: all 20 same-day homework rows exist",
+    "chromium-1280-simple returned: real wheel/touch scrolled the agenda",
+    "chromium-1280-simple returned: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-simple returned: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-simple returned: actual final-row click/tap opens actionable details",
+    "chromium-1280-simple switch practical: visible workspace has actual height",
+    "chromium-1280-simple switch practical: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-simple switch practical: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-simple switch practical: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-simple switch practical: visible coordinate click opens exact DDL detail",
+    "chromium-1280-simple switch practical: all 20 same-day homework rows exist",
+    "chromium-1280-simple switch practical: real wheel/touch scrolled the agenda",
+    "chromium-1280-simple switch practical: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-simple switch practical: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-simple switch practical: actual final-row click/tap opens actionable details",
+    "chromium-1280-simple switch back: visible workspace has actual height",
+    "chromium-1280-simple switch back: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-simple switch back: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-simple switch back: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-simple switch back: visible coordinate click opens exact DDL detail",
+    "chromium-1280-practical: actual phone/desktop layout matches viewport",
+    "chromium-1280-practical cold: visible workspace has actual height",
+    "chromium-1280-practical cold: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-practical cold: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-practical cold: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-practical cold: visible coordinate click opens exact DDL detail",
+    "chromium-1280-practical cold: all 20 same-day homework rows exist",
+    "chromium-1280-practical cold: real wheel/touch scrolled the agenda",
+    "chromium-1280-practical cold: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-practical cold: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-practical cold: actual final-row click/tap opens actionable details",
+    "chromium-1280-practical returned: visible workspace has actual height",
+    "chromium-1280-practical returned: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-1280-practical returned: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-1280-practical returned: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-1280-practical returned: visible coordinate click opens exact DDL detail",
+    "chromium-1280-practical returned: all 20 same-day homework rows exist",
+    "chromium-1280-practical returned: real wheel/touch scrolled the agenda",
+    "chromium-1280-practical returned: entire last row is inside actual ancestor scroll clip",
+    "chromium-1280-practical returned: final row center hits itself rather than footer/OneShot",
+    "chromium-1280-practical returned: actual final-row click/tap opens actionable details",
+    "chromium-390-full: actual phone/desktop layout matches viewport",
+    "chromium-390-full cold: visible workspace has actual height",
+    "chromium-390-full cold: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-full cold: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-full cold: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-full cold: visible coordinate click opens exact DDL detail",
+    "chromium-390-full cold: all 20 same-day homework rows exist",
+    "chromium-390-full cold: real wheel/touch scrolled the agenda",
+    "chromium-390-full cold: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-full cold: final row center hits itself rather than footer/OneShot",
+    "chromium-390-full cold: actual final-row click/tap opens actionable details",
+    "chromium-390-full returned: visible workspace has actual height",
+    "chromium-390-full returned: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-full returned: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-full returned: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-full returned: visible coordinate click opens exact DDL detail",
+    "chromium-390-full returned: all 20 same-day homework rows exist",
+    "chromium-390-full returned: real wheel/touch scrolled the agenda",
+    "chromium-390-full returned: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-full returned: final row center hits itself rather than footer/OneShot",
+    "chromium-390-full returned: actual final-row click/tap opens actionable details",
+    "chromium-390-simple: actual phone/desktop layout matches viewport",
+    "chromium-390-simple cold: visible workspace has actual height",
+    "chromium-390-simple cold: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-simple cold: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-simple cold: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-simple cold: visible coordinate click opens exact DDL detail",
+    "chromium-390-simple cold: all 20 same-day homework rows exist",
+    "chromium-390-simple cold: real wheel/touch scrolled the agenda",
+    "chromium-390-simple cold: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-simple cold: final row center hits itself rather than footer/OneShot",
+    "chromium-390-simple cold: actual final-row click/tap opens actionable details",
+    "chromium-390-simple returned: visible workspace has actual height",
+    "chromium-390-simple returned: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-simple returned: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-simple returned: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-simple returned: visible coordinate click opens exact DDL detail",
+    "chromium-390-simple returned: all 20 same-day homework rows exist",
+    "chromium-390-simple returned: real wheel/touch scrolled the agenda",
+    "chromium-390-simple returned: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-simple returned: final row center hits itself rather than footer/OneShot",
+    "chromium-390-simple returned: actual final-row click/tap opens actionable details",
+    "chromium-390-simple switch practical: visible workspace has actual height",
+    "chromium-390-simple switch practical: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-simple switch practical: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-simple switch practical: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-simple switch practical: visible coordinate click opens exact DDL detail",
+    "chromium-390-simple switch practical: all 20 same-day homework rows exist",
+    "chromium-390-simple switch practical: real wheel/touch scrolled the agenda",
+    "chromium-390-simple switch practical: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-simple switch practical: final row center hits itself rather than footer/OneShot",
+    "chromium-390-simple switch practical: actual final-row click/tap opens actionable details",
+    "chromium-390-simple switch back: visible workspace has actual height",
+    "chromium-390-simple switch back: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-simple switch back: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-simple switch back: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-simple switch back: visible coordinate click opens exact DDL detail",
+    "chromium-390-practical: actual phone/desktop layout matches viewport",
+    "chromium-390-practical cold: visible workspace has actual height",
+    "chromium-390-practical cold: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-practical cold: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-practical cold: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-practical cold: visible coordinate click opens exact DDL detail",
+    "chromium-390-practical cold: all 20 same-day homework rows exist",
+    "chromium-390-practical cold: real wheel/touch scrolled the agenda",
+    "chromium-390-practical cold: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-practical cold: final row center hits itself rather than footer/OneShot",
+    "chromium-390-practical cold: actual final-row click/tap opens actionable details",
+    "chromium-390-practical returned: visible workspace has actual height",
+    "chromium-390-practical returned: 08:00–09:35 course rendered alongside late DDL",
+    "chromium-390-practical returned: late DDL center lies inside actual ancestor scroll clip",
+    "chromium-390-practical returned: late DDL center actually hits the block (no auto-scroll)",
+    "chromium-390-practical returned: visible coordinate click opens exact DDL detail",
+    "chromium-390-practical returned: all 20 same-day homework rows exist",
+    "chromium-390-practical returned: real wheel/touch scrolled the agenda",
+    "chromium-390-practical returned: entire last row is inside actual ancestor scroll clip",
+    "chromium-390-practical returned: final row center hits itself rather than footer/OneShot",
+    "chromium-390-practical returned: actual final-row click/tap opens actionable details",
+    "webkit-1280-full: actual phone/desktop layout matches viewport",
+    "webkit-1280-full cold: visible workspace has actual height",
+    "webkit-1280-full cold: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-full cold: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-full cold: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-full cold: visible coordinate click opens exact DDL detail",
+    "webkit-1280-full cold: all 20 same-day homework rows exist",
+    "webkit-1280-full cold: real wheel/touch scrolled the agenda",
+    "webkit-1280-full cold: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-full cold: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-full cold: actual final-row click/tap opens actionable details",
+    "webkit-1280-full returned: visible workspace has actual height",
+    "webkit-1280-full returned: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-full returned: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-full returned: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-full returned: visible coordinate click opens exact DDL detail",
+    "webkit-1280-full returned: all 20 same-day homework rows exist",
+    "webkit-1280-full returned: real wheel/touch scrolled the agenda",
+    "webkit-1280-full returned: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-full returned: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-full returned: actual final-row click/tap opens actionable details",
+    "webkit-1280-simple: actual phone/desktop layout matches viewport",
+    "webkit-1280-simple cold: visible workspace has actual height",
+    "webkit-1280-simple cold: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-simple cold: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-simple cold: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-simple cold: visible coordinate click opens exact DDL detail",
+    "webkit-1280-simple cold: all 20 same-day homework rows exist",
+    "webkit-1280-simple cold: real wheel/touch scrolled the agenda",
+    "webkit-1280-simple cold: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-simple cold: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-simple cold: actual final-row click/tap opens actionable details",
+    "webkit-1280-simple returned: visible workspace has actual height",
+    "webkit-1280-simple returned: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-simple returned: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-simple returned: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-simple returned: visible coordinate click opens exact DDL detail",
+    "webkit-1280-simple returned: all 20 same-day homework rows exist",
+    "webkit-1280-simple returned: real wheel/touch scrolled the agenda",
+    "webkit-1280-simple returned: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-simple returned: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-simple returned: actual final-row click/tap opens actionable details",
+    "webkit-1280-simple switch practical: visible workspace has actual height",
+    "webkit-1280-simple switch practical: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-simple switch practical: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-simple switch practical: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-simple switch practical: visible coordinate click opens exact DDL detail",
+    "webkit-1280-simple switch practical: all 20 same-day homework rows exist",
+    "webkit-1280-simple switch practical: real wheel/touch scrolled the agenda",
+    "webkit-1280-simple switch practical: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-simple switch practical: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-simple switch practical: actual final-row click/tap opens actionable details",
+    "webkit-1280-simple switch back: visible workspace has actual height",
+    "webkit-1280-simple switch back: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-simple switch back: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-simple switch back: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-simple switch back: visible coordinate click opens exact DDL detail",
+    "webkit-1280-practical: actual phone/desktop layout matches viewport",
+    "webkit-1280-practical cold: visible workspace has actual height",
+    "webkit-1280-practical cold: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-practical cold: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-practical cold: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-practical cold: visible coordinate click opens exact DDL detail",
+    "webkit-1280-practical cold: all 20 same-day homework rows exist",
+    "webkit-1280-practical cold: real wheel/touch scrolled the agenda",
+    "webkit-1280-practical cold: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-practical cold: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-practical cold: actual final-row click/tap opens actionable details",
+    "webkit-1280-practical returned: visible workspace has actual height",
+    "webkit-1280-practical returned: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-1280-practical returned: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-1280-practical returned: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-1280-practical returned: visible coordinate click opens exact DDL detail",
+    "webkit-1280-practical returned: all 20 same-day homework rows exist",
+    "webkit-1280-practical returned: real wheel/touch scrolled the agenda",
+    "webkit-1280-practical returned: entire last row is inside actual ancestor scroll clip",
+    "webkit-1280-practical returned: final row center hits itself rather than footer/OneShot",
+    "webkit-1280-practical returned: actual final-row click/tap opens actionable details",
+    "webkit-390-full: actual phone/desktop layout matches viewport",
+    "webkit-390-full cold: visible workspace has actual height",
+    "webkit-390-full cold: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-full cold: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-full cold: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-full cold: visible coordinate click opens exact DDL detail",
+    "webkit-390-full cold: all 20 same-day homework rows exist",
+    "webkit-390-full cold: real wheel/touch scrolled the agenda",
+    "webkit-390-full cold: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-full cold: final row center hits itself rather than footer/OneShot",
+    "webkit-390-full cold: actual final-row click/tap opens actionable details",
+    "webkit-390-full returned: visible workspace has actual height",
+    "webkit-390-full returned: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-full returned: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-full returned: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-full returned: visible coordinate click opens exact DDL detail",
+    "webkit-390-full returned: all 20 same-day homework rows exist",
+    "webkit-390-full returned: real wheel/touch scrolled the agenda",
+    "webkit-390-full returned: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-full returned: final row center hits itself rather than footer/OneShot",
+    "webkit-390-full returned: actual final-row click/tap opens actionable details",
+    "webkit-390-simple: actual phone/desktop layout matches viewport",
+    "webkit-390-simple cold: visible workspace has actual height",
+    "webkit-390-simple cold: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-simple cold: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-simple cold: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-simple cold: visible coordinate click opens exact DDL detail",
+    "webkit-390-simple cold: all 20 same-day homework rows exist",
+    "webkit-390-simple cold: real wheel/touch scrolled the agenda",
+    "webkit-390-simple cold: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-simple cold: final row center hits itself rather than footer/OneShot",
+    "webkit-390-simple cold: actual final-row click/tap opens actionable details",
+    "webkit-390-simple returned: visible workspace has actual height",
+    "webkit-390-simple returned: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-simple returned: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-simple returned: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-simple returned: visible coordinate click opens exact DDL detail",
+    "webkit-390-simple returned: all 20 same-day homework rows exist",
+    "webkit-390-simple returned: real wheel/touch scrolled the agenda",
+    "webkit-390-simple returned: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-simple returned: final row center hits itself rather than footer/OneShot",
+    "webkit-390-simple returned: actual final-row click/tap opens actionable details",
+    "webkit-390-simple switch practical: visible workspace has actual height",
+    "webkit-390-simple switch practical: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-simple switch practical: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-simple switch practical: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-simple switch practical: visible coordinate click opens exact DDL detail",
+    "webkit-390-simple switch practical: all 20 same-day homework rows exist",
+    "webkit-390-simple switch practical: real wheel/touch scrolled the agenda",
+    "webkit-390-simple switch practical: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-simple switch practical: final row center hits itself rather than footer/OneShot",
+    "webkit-390-simple switch practical: actual final-row click/tap opens actionable details",
+    "webkit-390-simple switch back: visible workspace has actual height",
+    "webkit-390-simple switch back: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-simple switch back: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-simple switch back: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-simple switch back: visible coordinate click opens exact DDL detail",
+    "webkit-390-practical: actual phone/desktop layout matches viewport",
+    "webkit-390-practical cold: visible workspace has actual height",
+    "webkit-390-practical cold: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-practical cold: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-practical cold: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-practical cold: visible coordinate click opens exact DDL detail",
+    "webkit-390-practical cold: all 20 same-day homework rows exist",
+    "webkit-390-practical cold: real wheel/touch scrolled the agenda",
+    "webkit-390-practical cold: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-practical cold: final row center hits itself rather than footer/OneShot",
+    "webkit-390-practical cold: actual final-row click/tap opens actionable details",
+    "webkit-390-practical returned: visible workspace has actual height",
+    "webkit-390-practical returned: 08:00–09:35 course rendered alongside late DDL",
+    "webkit-390-practical returned: late DDL center lies inside actual ancestor scroll clip",
+    "webkit-390-practical returned: late DDL center actually hits the block (no auto-scroll)",
+    "webkit-390-practical returned: visible coordinate click opens exact DDL detail",
+    "webkit-390-practical returned: all 20 same-day homework rows exist",
+    "webkit-390-practical returned: real wheel/touch scrolled the agenda",
+    "webkit-390-practical returned: entire last row is inside actual ancestor scroll clip",
+    "webkit-390-practical returned: final row center hits itself rather than footer/OneShot",
+    "webkit-390-practical returned: actual final-row click/tap opens actionable details",
+    "No browser runtime errors: "
+  ],
+  "samples": [
+    {
+      "label": "chromium-1280-full cold timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 552.296875,
+        "right": 392.28125,
+        "bottom": 596.578125,
+        "w": 173.140625,
+        "h": 44.28125
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1280,
+        "bottom": 600
+      },
+      "x": 305.7109375,
+      "y": 574.4375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1280,
+        "bottom": 600,
+        "w": 1280,
+        "h": 460
+      }
+    },
+    {
+      "label": "chromium-1280-full cold agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 404,
+        "right": 1251,
+        "bottom": 477,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1280,
+        "bottom": 600
+      },
+      "x": 640,
+      "y": 440.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 1943,
+          "top": 1483,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1280,
+        "bottom": 600,
+        "w": 1280,
+        "h": 460
+      }
+    },
+    {
+      "label": "chromium-1280-full returned timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 552.296875,
+        "right": 392.28125,
+        "bottom": 596.578125,
+        "w": 173.140625,
+        "h": 44.28125
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1280,
+        "bottom": 600
+      },
+      "x": 305.7109375,
+      "y": 574.4375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1280,
+        "bottom": 600,
+        "w": 1280,
+        "h": 460
+      }
+    },
+    {
+      "label": "chromium-1280-full returned agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 404,
+        "right": 1251,
+        "bottom": 477,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1280,
+        "bottom": 600
+      },
+      "x": 640,
+      "y": 440.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 1943,
+          "top": 1483,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1280,
+        "bottom": 600,
+        "w": 1280,
+        "h": 460
+      }
+    },
+    {
+      "label": "chromium-1280-simple cold timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 489.9375,
+        "right": 392.28125,
+        "bottom": 536.578125,
+        "w": 173.140625,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 305.7109375,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-simple cold agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 344,
+        "right": 1251,
+        "bottom": 417,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 640,
+      "y": 380.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1943,
+          "top": 1463,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-simple returned timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 489.9375,
+        "right": 392.28125,
+        "bottom": 536.578125,
+        "w": 173.140625,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 305.7109375,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-simple returned agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 344,
+        "right": 1251,
+        "bottom": 417,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 640,
+      "y": 380.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1943,
+          "top": 1463,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-simple switch practical timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 489.9375,
+        "right": 392.28125,
+        "bottom": 536.578125,
+        "w": 173.140625,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 305.7109375,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-simple switch practical agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 344,
+        "right": 1251,
+        "bottom": 417,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 640,
+      "y": 380.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1943,
+          "top": 1463,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-simple switch back timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 489.9375,
+        "right": 392.28125,
+        "bottom": 536.578125,
+        "w": 173.140625,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 305.7109375,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-practical cold timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 489.9375,
+        "right": 392.28125,
+        "bottom": 536.578125,
+        "w": 173.140625,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 305.7109375,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-practical cold agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 344,
+        "right": 1251,
+        "bottom": 417,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 640,
+      "y": 380.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1943,
+          "top": 1463,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-practical returned timeline",
+      "rect": {
+        "x": 219.140625,
+        "y": 489.9375,
+        "right": 392.28125,
+        "bottom": 536.578125,
+        "w": 173.140625,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 305.7109375,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-1280-practical returned agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 344,
+        "right": 1251,
+        "bottom": 417,
+        "w": 1222,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1280,
+        "bottom": 540
+      },
+      "x": 640,
+      "y": 380.5,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1943,
+          "top": 1463,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1280,
+            "bottom": 540,
+            "w": 1280,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1280,
+            "bottom": 600,
+            "w": 1280,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1280,
+        "bottom": 540,
+        "w": 1280,
+        "h": 480
+      }
+    },
+    {
+      "label": "chromium-390-full cold timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 692.1875,
+        "right": 132.28125,
+        "bottom": 768.125,
+        "w": 47.140625,
+        "h": 75.9375
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 390,
+        "bottom": 772
+      },
+      "x": 108.7109375,
+      "y": 730.15625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 390,
+        "bottom": 772,
+        "w": 390,
+        "h": 720
+      }
+    },
+    {
+      "label": "chromium-390-full cold agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 485.59375,
+        "right": 357,
+        "bottom": 558.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 390,
+        "bottom": 772
+      },
+      "x": 195,
+      "y": 522.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 2072,
+          "top": 1352,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 390,
+        "bottom": 772,
+        "w": 390,
+        "h": 720
+      }
+    },
+    {
+      "label": "chromium-390-full returned timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 692.1875,
+        "right": 132.28125,
+        "bottom": 768.125,
+        "w": 47.140625,
+        "h": 75.9375
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 390,
+        "bottom": 772
+      },
+      "x": 108.7109375,
+      "y": 730.15625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 390,
+        "bottom": 772,
+        "w": 390,
+        "h": 720
+      }
+    },
+    {
+      "label": "chromium-390-full returned agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 485.59375,
+        "right": 357,
+        "bottom": 558.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 390,
+        "bottom": 772
+      },
+      "x": 195,
+      "y": 522.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 2072,
+          "top": 1352,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 390,
+            "bottom": 772,
+            "w": 390,
+            "h": 720
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 390,
+        "bottom": 772,
+        "w": 390,
+        "h": 720
+      }
+    },
+    {
+      "label": "chromium-390-simple cold timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 700.671875,
+        "right": 132.28125,
+        "bottom": 776.140625,
+        "w": 47.140625,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 108.7109375,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-simple cold agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 493.59375,
+        "right": 357,
+        "bottom": 566.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 195,
+      "y": 530.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 2072,
+          "top": 1356,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-simple returned timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 700.671875,
+        "right": 132.28125,
+        "bottom": 776.140625,
+        "w": 47.140625,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 108.7109375,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-simple returned agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 493.59375,
+        "right": 357,
+        "bottom": 566.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 195,
+      "y": 530.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 2072,
+          "top": 1356,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-simple switch practical timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 700.671875,
+        "right": 132.28125,
+        "bottom": 776.140625,
+        "w": 47.140625,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 108.7109375,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-simple switch practical agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 493.59375,
+        "right": 357,
+        "bottom": 566.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 195,
+      "y": 530.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 2072,
+          "top": 1356,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-simple switch back timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 700.671875,
+        "right": 132.28125,
+        "bottom": 776.140625,
+        "w": 47.140625,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 108.7109375,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-practical cold timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 700.671875,
+        "right": 132.28125,
+        "bottom": 776.140625,
+        "w": 47.140625,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 108.7109375,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-practical cold agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 493.59375,
+        "right": 357,
+        "bottom": 566.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 195,
+      "y": 530.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 2072,
+          "top": 1356,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-practical returned timeline",
+      "rect": {
+        "x": 85.140625,
+        "y": 700.671875,
+        "right": 132.28125,
+        "bottom": 776.140625,
+        "w": 47.140625,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 108.7109375,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "chromium-390-practical returned agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 493.59375,
+        "right": 357,
+        "bottom": 566.59375,
+        "w": 324,
+        "h": 73
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 390,
+        "bottom": 780
+      },
+      "x": 195,
+      "y": 530.09375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 2072,
+          "top": 1356,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 390,
+            "bottom": 780,
+            "w": 390,
+            "h": 716
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 390,
+            "bottom": 844,
+            "w": 390,
+            "h": 844
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 390,
+        "bottom": 780,
+        "w": 390,
+        "h": 716
+      }
+    },
+    {
+      "label": "webkit-1280-full cold timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 552.296875,
+        "right": 389.40625,
+        "bottom": 596.578125,
+        "w": 171.703125,
+        "h": 44.28125
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1270,
+        "bottom": 600
+      },
+      "x": 303.5546875,
+      "y": 574.4375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1270,
+        "bottom": 600,
+        "w": 1270,
+        "h": 460
+      }
+    },
+    {
+      "label": "webkit-1280-full cold agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 415.125,
+        "right": 1231,
+        "bottom": 477.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1260,
+        "bottom": 600
+      },
+      "x": 630,
+      "y": 446.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 1714,
+          "top": 1254,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1270,
+        "bottom": 600,
+        "w": 1270,
+        "h": 460
+      }
+    },
+    {
+      "label": "webkit-1280-full returned timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 552.296875,
+        "right": 389.40625,
+        "bottom": 596.578125,
+        "w": 171.703125,
+        "h": 44.28125
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1270,
+        "bottom": 600
+      },
+      "x": 303.5546875,
+      "y": 574.4375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1270,
+        "bottom": 600,
+        "w": 1270,
+        "h": 460
+      }
+    },
+    {
+      "label": "webkit-1280-full returned agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 415.125,
+        "right": 1231,
+        "bottom": 477.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 140,
+        "right": 1260,
+        "bottom": 600
+      },
+      "x": 630,
+      "y": 446.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 1714,
+          "top": 1254,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 140,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 460
+          },
+          "client": 460,
+          "scroll": 460,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 140,
+        "right": 1270,
+        "bottom": 600,
+        "w": 1270,
+        "h": 460
+      }
+    },
+    {
+      "label": "webkit-1280-simple cold timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 489.9375,
+        "right": 389.40625,
+        "bottom": 536.578125,
+        "w": 171.703125,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1270,
+        "bottom": 540
+      },
+      "x": 303.5546875,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-simple cold agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 355.125,
+        "right": 1231,
+        "bottom": 417.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1260,
+        "bottom": 540
+      },
+      "x": 630,
+      "y": 386.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1714,
+          "top": 1234,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-simple returned timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 489.9375,
+        "right": 389.40625,
+        "bottom": 536.578125,
+        "w": 171.703125,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1270,
+        "bottom": 540
+      },
+      "x": 303.5546875,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-simple returned agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 355.125,
+        "right": 1231,
+        "bottom": 417.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1260,
+        "bottom": 540
+      },
+      "x": 630,
+      "y": 386.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1714,
+          "top": 1234,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-simple switch practical timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 489.9375,
+        "right": 389.40625,
+        "bottom": 536.578125,
+        "w": 171.703125,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1270,
+        "bottom": 540
+      },
+      "x": 303.5546875,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-simple switch practical agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 355.125,
+        "right": 1231,
+        "bottom": 417.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1260,
+        "bottom": 540
+      },
+      "x": 630,
+      "y": 386.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1714,
+          "top": 1234,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-simple switch back timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 489.9375,
+        "right": 389.40625,
+        "bottom": 536.578125,
+        "w": 171.703125,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1270,
+        "bottom": 540
+      },
+      "x": 303.5546875,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-practical cold timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 489.9375,
+        "right": 389.40625,
+        "bottom": 536.578125,
+        "w": 171.703125,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1270,
+        "bottom": 540
+      },
+      "x": 303.5546875,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-practical cold agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 355.125,
+        "right": 1231,
+        "bottom": 417.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1260,
+        "bottom": 540
+      },
+      "x": 630,
+      "y": 386.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1714,
+          "top": 1234,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-practical returned timeline",
+      "rect": {
+        "x": 217.703125,
+        "y": 489.9375,
+        "right": 389.40625,
+        "bottom": 536.578125,
+        "w": 171.703125,
+        "h": 46.640625
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1270,
+        "bottom": 540
+      },
+      "x": 303.5546875,
+      "y": 513.2578125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "og-text og-text--micro og-text--clamp2",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-1280-practical returned agenda-last",
+      "rect": {
+        "x": 29,
+        "y": 355.125,
+        "right": 1231,
+        "bottom": 417.125,
+        "w": 1202,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 60,
+        "right": 1260,
+        "bottom": 540
+      },
+      "x": 630,
+      "y": 386.125,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 1714,
+          "top": 1234,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 60,
+            "right": 1270,
+            "bottom": 540,
+            "w": 1270,
+            "h": 480
+          },
+          "client": 480,
+          "scroll": 480,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 1270,
+            "bottom": 600,
+            "w": 1270,
+            "h": 600
+          },
+          "client": 600,
+          "scroll": 600,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 60,
+        "right": 1270,
+        "bottom": 540,
+        "w": 1270,
+        "h": 480
+      }
+    },
+    {
+      "label": "webkit-390-full cold timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 692.1875,
+        "right": 129.40625,
+        "bottom": 768.125,
+        "w": 45.703125,
+        "h": 75.9375
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 380,
+        "bottom": 772
+      },
+      "x": 106.5546875,
+      "y": 730.15625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 380,
+        "bottom": 771.984375,
+        "w": 380,
+        "h": 719.984375
+      }
+    },
+    {
+      "label": "webkit-390-full cold agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 496.59375,
+        "right": 337,
+        "bottom": 558.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 370,
+        "bottom": 772
+      },
+      "x": 185,
+      "y": 527.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 1852,
+          "top": 1132,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 380,
+        "bottom": 771.984375,
+        "w": 380,
+        "h": 719.984375
+      }
+    },
+    {
+      "label": "webkit-390-full returned timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 692.1875,
+        "right": 129.40625,
+        "bottom": 768.125,
+        "w": 45.703125,
+        "h": 75.9375
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 380,
+        "bottom": 772
+      },
+      "x": 106.5546875,
+      "y": 730.15625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 380,
+        "bottom": 771.984375,
+        "w": 380,
+        "h": 719.984375
+      }
+    },
+    {
+      "label": "webkit-390-full returned agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 496.59375,
+        "right": 337,
+        "bottom": 558.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 52,
+        "right": 370,
+        "bottom": 772
+      },
+      "x": 185,
+      "y": 527.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 1852,
+          "top": 1132,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel",
+          "rect": {
+            "x": 0,
+            "y": 52,
+            "right": 380,
+            "bottom": 771.984375,
+            "w": 380,
+            "h": 719.984375
+          },
+          "client": 720,
+          "scroll": 720,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 52,
+        "right": 380,
+        "bottom": 771.984375,
+        "w": 380,
+        "h": 719.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple cold timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 700.671875,
+        "right": 129.40625,
+        "bottom": 776.140625,
+        "w": 45.703125,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 380,
+        "bottom": 780
+      },
+      "x": 106.5546875,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple cold agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 504.59375,
+        "right": 337,
+        "bottom": 566.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 370,
+        "bottom": 780
+      },
+      "x": 185,
+      "y": 535.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 1852,
+          "top": 1136,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple returned timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 700.671875,
+        "right": 129.40625,
+        "bottom": 776.140625,
+        "w": 45.703125,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 380,
+        "bottom": 780
+      },
+      "x": 106.5546875,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple returned agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 504.59375,
+        "right": 337,
+        "bottom": 566.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 370,
+        "bottom": 780
+      },
+      "x": 185,
+      "y": 535.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 1852,
+          "top": 1136,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple switch practical timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 700.671875,
+        "right": 129.40625,
+        "bottom": 776.140625,
+        "w": 45.703125,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 380,
+        "bottom": 780
+      },
+      "x": 106.5546875,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple switch practical agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 504.59375,
+        "right": 337,
+        "bottom": 566.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 370,
+        "bottom": 780
+      },
+      "x": 185,
+      "y": 535.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 1852,
+          "top": 1136,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-simple switch back timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 700.671875,
+        "right": 129.40625,
+        "bottom": 776.140625,
+        "w": 45.703125,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 380,
+        "bottom": 780
+      },
+      "x": 106.5546875,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-practical cold timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 700.671875,
+        "right": 129.40625,
+        "bottom": 776.140625,
+        "w": 45.703125,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 380,
+        "bottom": 780
+      },
+      "x": 106.5546875,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-practical cold agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 504.59375,
+        "right": 337,
+        "bottom": 566.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 370,
+        "bottom": 780
+      },
+      "x": 185,
+      "y": 535.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 1852,
+          "top": 1136,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-practical returned timeline",
+      "rect": {
+        "x": 83.703125,
+        "y": 700.671875,
+        "right": 129.40625,
+        "bottom": 776.140625,
+        "w": 45.703125,
+        "h": 75.46875
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 380,
+        "bottom": 780
+      },
+      "x": 106.5546875,
+      "y": 738.40625,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "schedule-block-title",
+      "ancestors": [
+        {
+          "cls": "schedule-timeline",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    },
+    {
+      "label": "webkit-390-practical returned agenda-last",
+      "rect": {
+        "x": 33,
+        "y": 504.59375,
+        "right": 337,
+        "bottom": 566.59375,
+        "w": 304,
+        "h": 62
+      },
+      "clip": {
+        "left": 0,
+        "top": 64,
+        "right": 370,
+        "bottom": 780
+      },
+      "x": 185,
+      "y": 535.59375,
+      "centerInside": true,
+      "fullyInside": true,
+      "hit": true,
+      "hitClass": "",
+      "ancestors": [
+        {
+          "cls": "schedule-scroll",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 1852,
+          "top": 1136,
+          "overflowY": "auto"
+        },
+        {
+          "cls": "explorer-panel simple-panel",
+          "rect": {
+            "x": 0,
+            "y": 64,
+            "right": 380,
+            "bottom": 779.984375,
+            "w": 380,
+            "h": 715.984375
+          },
+          "client": 716,
+          "scroll": 716,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "content explorer-content",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "shell explorer-shell is-simple",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "hidden"
+        },
+        {
+          "cls": "",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "visible"
+        },
+        {
+          "cls": "is-phone has-reveal is-schedule-page",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "right": 380,
+            "bottom": 843.984375,
+            "w": 380,
+            "h": 843.984375
+          },
+          "client": 844,
+          "scroll": 844,
+          "top": 0,
+          "overflowY": "scroll"
+        }
+      ],
+      "workspace": {
+        "x": 0,
+        "y": 64,
+        "right": 380,
+        "bottom": 779.984375,
+        "w": 380,
+        "h": 715.984375
+      }
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "/tmp/onethu-schedule-layout-final-complete/chromium-1280-full-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-1280-full-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-1280-simple-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-1280-simple-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-1280-practical-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-1280-practical-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-390-full-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-390-full-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-390-simple-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-390-simple-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-390-practical-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/chromium-390-practical-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-1280-full-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-1280-full-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-1280-simple-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-1280-simple-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-1280-practical-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-1280-practical-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-390-full-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-390-full-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-390-simple-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-390-simple-agenda-end.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-390-practical-timeline.png",
+    "/tmp/onethu-schedule-layout-final-complete/webkit-390-practical-agenda-end.png"
+  ],
+  "environment": {
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "modes": [
+      "full",
+      "simple",
+      "practical"
+    ],
+    "widths": [
+      1280,
+      390
+    ],
+    "chromiumPhone": "mobile emulation, trusted CDP swipe and tap",
+    "webkitPhone": "390px touch viewport, desktop-backend wheel and native tap",
+    "physicalDevice": false
+  },
+  "fixture": {
+    "course": "Tuesday 08:00–09:35",
+    "deadline": "Tuesday 23:59",
+    "agendaRows": 20
+  },
+  "css": "4532a4a89b86ae4199c93cff1ed9fbd4c686917c1299c6e09f679b1ae19ee63b"
+}

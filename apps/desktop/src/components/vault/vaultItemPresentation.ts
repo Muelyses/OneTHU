@@ -1,34 +1,6 @@
 import type { VaultCatch } from "../../state/vault.js";
 
-/** Shared 24 × 24 stroke paths for React cards and the pointer-following DOM ghost. */
-export const VAULT_ICON_PATHS: Record<string, string> = {
-  file: "M6 2.5h8L19 8v13.5H6z M13.5 3v5.5H19",
-  text: "M5 5h14M5 10h14M5 15h14M5 20h9",
-  image: "M5.3 4.5h13.4a1.8 1.8 0 0 1 1.8 1.8v11.4a1.8 1.8 0 0 1-1.8 1.8H5.3a1.8 1.8 0 0 1-1.8-1.8V6.3a1.8 1.8 0 0 1 1.8-1.8Z M10.6 10a1.6 1.6 0 1 1-3.2 0 1.6 1.6 0 0 1 3.2 0 M4.5 18l5-5 3.2 3.2 2.6-2.6 4.2 4.4",
-  video: "M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z M10 8l6 4-6 4Z",
-  audio: "M9 17V5l11-2v12 M9 7l11-2 M9 17a3 2.5 0 1 1-6 0 3 2.5 0 0 1 6 0 M20 15a3 2.5 0 1 1-6 0 3 2.5 0 0 1 6 0",
-  archive: "M4 3h16v5H4Z M5 8v13h14V8 M10 12h4",
-  table: "M3 4h18v16H3Z M3 9h18M9 9v11M15 9v11M3 15h18",
-  slides: "M3 4h18v13H3Z M12 17v4M8 21h8M7 12l3-3 3 2 4-4",
-  code: "M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16",
-  folder: "M3.5 6.5A1.5 1.5 0 0 1 5 5h4l2 2.5h8A1.5 1.5 0 0 1 20.5 9v9A1.5 1.5 0 0 1 19 19.5H5A1.5 1.5 0 0 1 3.5 18Z",
-  board: "M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z M8 4v16M8 11h13",
-  workspace: "M3 4h13v12H3Z M8 20h13V9",
-  calendar: "M5 5h14a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 19 21H5a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 5 5Z M3.5 10h17M8 2.5v4M16 2.5v4",
-  card: "M5 5.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2Z M10 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0 M5 16a3 3 0 0 1 6 0 M14 10h4M14 14h4",
-  organization: "M9 3h6v5H9Z M3 16h6v5H3Z M15 16h6v5h-6Z M12 8v4M6 16v-4h12v4",
-  book: "M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15.5H6.5A2.5 2.5 0 0 0 4 21Z M20 18.5H6.5A2.5 2.5 0 0 0 4 21",
-  mail: "M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z M3 7l9 6 9-6",
-  bell: "M6 16v-5.5a6 6 0 0 1 12 0V16l1.5 2.5h-15Z M10 21h4",
-  gitlab: "M12 21.5 3.6 9.9l1.6-6.4 2.6 4h8.4l2.6-4 1.6 6.4Z M7.8 7.5 12 21.5l4.2-14",
-  cloud: "M17.5 19a4.5 4.5 0 0 0 .4-8.98A7 7 0 0 0 4.3 12.1 4 4 0 0 0 6 19.9h11.5Z",
-  theme: "M20 12a8 8 0 1 1-8-8v16M12 4a8 8 0 0 1 8 8",
-  plugin: "M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0Z M12 17v4",
-  location: "M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0c0 4.8-6.5 10-6.5 10Z M14.3 10.6a2.3 2.3 0 1 1-4.6 0 2.3 2.3 0 0 1 4.6 0",
-  link: "M13.5 5H19v5.5M19 5l-8 8 M18 14.5v4a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6h4",
-  check: "M4.5 12.5l5 5L19.5 7",
-  inbox: "M12 3v10.5M7.5 9.5 12 14l4.5-4.5 M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17",
-};
+export { CONTENT_ICON_PATHS as VAULT_ICON_PATHS } from "../contentIconPaths.js";
 
 export interface VaultItemPresentation {
   /** Type label; the caller displays the item's original title separately. */

@@ -79,7 +79,7 @@ const TOP_PAGES = new Set([
 ]);
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
-  putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
+  putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent, saveCalendarEvent,
 } from "../state/cloudCal.js";
 import { refreshMail, readMail, mailSearch, sendMail, mailFolderTotal } from "../state/mail.js";
 import {
@@ -328,12 +328,8 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           location: ch.location !== undefined ? (ch.location.trim() || undefined) : src.location,
           description: ch.note !== undefined ? (ch.note.trim() || undefined) : src.description,
         };
-        // 云↔本地迁移（同 UI 编辑器语义）：先删原侧再写新侧；toCloud 缺省=保持原侧
         const toCloud = ch.toCloud ?? originalCloud;
-        if (originalCloud && !toCloud) await deleteCloudEvent(uid);
-        if (!originalCloud && toCloud) await deleteLocalEvent(uid);
-        if (toCloud) await putCloudEvent(ev);
-        else await putLocalEvent(ev);
+        await saveCalendarEvent(ev, { cloud: toCloud, originalCloud });
         return { uid, where: toCloud ? "cloud" : "local" };
       })();
     },

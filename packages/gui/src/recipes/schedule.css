@@ -11,7 +11,7 @@
  * 同步、筛选（显示时段 / 学期周跳）、跳转、增删改、导出、系统日历、收藏全在浮层里，
  * 作业「前往」开新作业标签，课程给「前往（网络学堂该课）/ 寻迹」——都 forceNew。
  *
- * 高度链靠 html.is-schedule-page 驱动（由 Schedule.tsx 在"本页是当前标签页"时挂到
+ * 高度链靠 html.is-schedule-page 驱动（由 Shell 在"本页是当前页面"时挂到
  * documentElement）：规范禁止嵌套 :has()，而写死像素偏移一换顶栏高度就错位。
  * 类名：schedule-* 是宿主页唯一外观出处（应用侧零 CSS 文件，契约 G1）。
  * ══════════════════════════════════════════════════════════════════════════ */
@@ -21,6 +21,10 @@ html:root.is-schedule-page { scrollbar-gutter: auto; }
 
 /* ── 1. 高度链：只有日程页把面板钉成"视口减应用壳"的定高容器 ── */
 html:root.is-schedule-page .explorer-shell {
+  --og-c-schedule-chrome-bottom: 0px;
+  --og-c-schedule-dock-bottom: var(--og-space-10);
+  display: flex;
+  flex-direction: column;
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
@@ -33,16 +37,25 @@ html:root.is-schedule-page .explorer-shell > .explorer-content {
   /* 这一页是特例（用户 2026-10-18「可以为他设置专门的，甚至不需要被与屏幕边缘空隙
      这种规则束缚」）：课表自己贴着窗口四周画，不再吃壳层那套"内容留白 + 导航净空"
      的通用内边距；顶部只留真实 chrome（桌面 = 底栏上移的第一行 + 标签条；手机 = 标签条），
-     底部与左右一律归课表本身，浮件让位由 --og-c-schedule-bottom-reserve 在页面内处理。 */
+     底部常驻 OH 栏与浮件共用壳上的净空变量；简洁桌面也有底栏。 */
   max-width: none;
   padding-inline: 0 !important;
-  padding-bottom: 0 !important;
+  padding-bottom: var(--og-c-schedule-chrome-bottom) !important;
 }
 html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content { padding-top: var(--explorer-top-h) !important; }
 /* 手机档底栏常驻在屏幕底部：课表铺满时也要停在底栏上面——
    否则最后一节课/最后几行小时被底栏盖住看不见（用户 2026-10-19 口径）。 */
-html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content {
-  padding-bottom: calc(var(--explorer-bar-h, 48px) + 8px + env(safe-area-inset-bottom, 0px)) !important;
+html:root.is-phone.is-schedule-page .explorer-shell {
+  --og-c-schedule-chrome-bottom: calc(var(--explorer-bar-h, 48px) + var(--og-space-2) + env(safe-area-inset-bottom, 0px));
+  --og-c-schedule-dock-bottom: calc(var(--og-workbench-header-h) + var(--og-space-10) + var(--og-space-3));
+}
+/* 极简/实用在电脑上也把 OH 放底部；不能继承完整桌面的零净空。
+   顶部同样按简洁壳的 header 高度计算，不继承手机完整模式的标签条高度。 */
+html:root.is-schedule-page .explorer-shell.is-simple {
+  --og-c-schedule-chrome-bottom: calc(var(--og-workbench-header-h) + env(safe-area-inset-bottom, 0px));
+}
+html:root.is-schedule-page .explorer-shell.is-simple > .explorer-content {
+  padding-top: var(--og-workbench-header-h) !important;
 }
 html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) {
   display: flex;
@@ -102,6 +115,9 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
+  /* 最后一项可继续滚到悬浮操作钮上方，不在滚动终点被控件盖住。 */
+  padding: var(--og-space-3) var(--og-space-3) calc(var(--og-c-schedule-dock-bottom) + var(--og-ctl-h-sm) + var(--og-space-3));
+  scroll-padding-block: var(--og-space-3);
 }
 
 .schedule-day-head {
@@ -232,11 +248,8 @@ html:root.is-phone .schedule-floats { left: var(--og-space-2); bottom: calc(var(
   position: absolute;
   right: var(--og-space-3);
   /* 浮钮躲到 OneShot 胶囊之上：课表铺满到窗口底边，但控件不会被胶囊压住 */
-  bottom: var(--og-space-10);
+  bottom: var(--og-c-schedule-dock-bottom);
   z-index: var(--og-z-board-tools);
-}
-html:root.is-phone .schedule-dock {
-  bottom: calc(var(--og-workbench-header-h) + var(--og-space-10) + var(--og-space-3));
 }
 
 /* ── 5. 设置浮层：周切换 / 视图 / 筛选 / 学期周 / 同步导出 / 新建 / 收藏 ── */

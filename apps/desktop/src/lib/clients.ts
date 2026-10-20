@@ -49,33 +49,37 @@ export const store = localStorageStore();
 const SESSION_FILE = "session";
 const SECRET_FILE = "credentials";
 
-export async function fileRead(name: string): Promise<string | null> {
-  if (!isTauri) return null;
+/** strict 供日历/邮箱等不能把 I/O 失败当成功的事务使用；其他调用保持旧兜底。 */
+export interface StateFileOptions { strict?: boolean }
+export async function fileRead(name: string, options: StateFileOptions = {}): Promise<string | null> {
+  if (!isTauri) return options.strict ? globalThis.localStorage.getItem(`onethu.state-file.${name}`) : null;
   try {
     const { invoke } = await import("@tauri-apps/api/core");
+    // state_read 对 NotFound 返回 null，其他真实 I/O 错误拒绝。
     return await invoke<string | null>("state_read", { name });
-  } catch {
+  } catch (error) {
+    if (options.strict) throw error;
     return null;
   }
 }
 
-export async function fileWrite(name: string, content: string): Promise<void> {
-  if (!isTauri) return;
+export async function fileWrite(name: string, content: string, options: StateFileOptions = {}): Promise<void> {
+  if (!isTauri) { if (options.strict) globalThis.localStorage.setItem(`onethu.state-file.${name}`, content); return; }
   try {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("state_write", { name, content });
-  } catch {
-    /* 文件存储尽力而为：失败不阻塞主流程 */
+  } catch (error) {
+    if (options.strict) throw error;
   }
 }
 
-export async function fileDelete(name: string): Promise<void> {
-  if (!isTauri) return;
+export async function fileDelete(name: string, options: StateFileOptions = {}): Promise<void> {
+  if (!isTauri) { if (options.strict) globalThis.localStorage.removeItem(`onethu.state-file.${name}`); return; }
   try {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("state_delete", { name });
-  } catch {
-    /* ignore */
+  } catch (error) {
+    if (options.strict) throw error;
   }
 }
 

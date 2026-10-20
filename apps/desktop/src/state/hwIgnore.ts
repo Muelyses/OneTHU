@@ -88,14 +88,14 @@ export function ignoredHwList(): IgnoredHw[] {
   return read();
 }
 
-function subscribe(fn: () => void): () => void {
+export function subscribeIgnoredHw(fn: () => void): () => void {
   listeners.add(fn);
   return () => listeners.delete(fn);
 }
 
 /** 列表/提醒过滤用：当前被忽略的 id 映射（含标题，供「已忽略」分组展示） */
 export function useIgnoredHw(): Map<string, IgnoredHw> {
-  return useSyncExternalStore(subscribe, ensureSnapshot, () => snapshot);
+  return useSyncExternalStore(subscribeIgnoredHw, ensureSnapshot, () => snapshot);
 }
 
 /** 单条判定（行组件用；订阅同一份快照，忽略/恢复立刻反映到所有列表） */

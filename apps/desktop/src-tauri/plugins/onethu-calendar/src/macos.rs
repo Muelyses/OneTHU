@@ -2,23 +2,28 @@
 //!
 //! - 权限：优先 requestFullAccessToEventsWithCompletion:（macOS 14+），
 //!   老系统回退 requestAccessToEntityType:completion:（废弃但可用）。
-//! - 专属日历：EKSourceType::Local 下找/建 `OneTHU 日程`（不写入 iCloud/CalDAV，
-//!   避免与用户已添加的清华 CalDAV 账户重复同步）。
+//! - 专属日历：仅操作应用私有文件中绑定的日历标识；不认领同名日历。
+//!   可用账户源优先 iCloud，其次本地；账户自身可能同步到其他设备。
 //! - 幂等：fetch 窗口内该日历全部事件 → removeEvent(commit=false) → 逐条
 //!   saveEvent(commit=false) → 一次 commit()（大批量只落一次盘）。
 
-use std::sync::mpsc;
+use std::sync::{mpsc, Mutex};
+use std::path::Path;
+use std::collections::HashSet;
 use std::time::Duration;
 
 use objc2::rc::Retained;
 use objc2::runtime::Bool;
 use objc2::AnyThread;
-use objc2_foundation::{NSDate, NSString};
+use objc2_foundation::{NSArray, NSDate, NSString};
 use objc2_event_kit::{
     EKAlarm, EKCalendar, EKEntityType, EKEvent, EKEventStore, EKSpan, EKSourceType,
 };
 
-use crate::{SyncPayload, SyncResult, CALENDAR_TITLE};
+use crate::{SyncPayload, SyncResult};
+use crate::ownership::CalendarBinding;
+
+static MUTATION_LOCK: Mutex<()> = Mutex::new(());
 
 /// 等待权限回调的时长（首次弹 TCC 框，给足时间）
 const PERMISSION_TIMEOUT: Duration = Duration::from_secs(180);
@@ -69,16 +74,20 @@ pub fn request_permission() -> Result<bool, String> {
 ///   2) 本地 On My Mac；
 ///   3) 默认日历的源。
 /// 逐个尝试，谁接受用谁；全部失败才报错。
-fn find_or_create_calendar(store: &EKEventStore, title: &str) -> Result<Retained<EKCalendar>, String> {
+fn find_or_create_calendar(store: &EKEventStore, title: &str, binding: &mut CalendarBinding, path: &Path) -> Result<(Retained<EKCalendar>, Option<String>), String> {
     let title_ns = nsstr(title);
 
-    // 已有：按标题找
-    let cals = unsafe { store.calendarsForEntityType(EKEntityType::Event) };
-    for cal in cals.iter() {
-        if unsafe { cal.title() }.to_string() == title {
-            return Ok(cal);
+    // Only the saved opaque identifier grants ownership. A same-name calendar in
+    // another account (or from a legacy installation) is never adopted or cleared.
+    if let Some(id) = &binding.id {
+        if let Some(cal) = unsafe { store.calendarWithIdentifier(&nsstr(id)) } {
+            if !unsafe { cal.allowsContentModifications() } { return Err("已绑定日历不可写，请检查账户权限".into()); }
+            return Ok((cal, None));
         }
     }
+    let had_legacy = unsafe { store.calendarsForEntityType(EKEntityType::Event) }.iter()
+        .any(|cal| unsafe { cal.title() }.to_string() == title);
+    let warning = had_legacy.then(|| "已创建并绑定新的专属日历；旧版或其他账户的同名日历未修改，请在系统日历中核对后自行清理".to_string());
 
     // 候选源排序：iCloud 优先，其次本地，再次默认日历的源
     let mut sources: Vec<Retained<objc2_event_kit::EKSource>> =
@@ -106,7 +115,11 @@ fn find_or_create_calendar(store: &EKEventStore, title: &str) -> Result<Retained
                     "[onethu-calendar] 已在源「{}」创建系统日历「{title}」",
                     unsafe { source.title() }.to_string()
                 );
-                return Ok(cal);
+                binding.id = Some(unsafe { cal.calendarIdentifier() }.to_string());
+                binding.window_start_ms = None;
+                binding.window_end_ms = None;
+                binding.save(path)?;
+                return Ok((cal, warning));
             }
             Err(e) => {
                 last_err = format!("{e:?}");
@@ -115,42 +128,43 @@ fn find_or_create_calendar(store: &EKEventStore, title: &str) -> Result<Retained
         }
     }
     Err(format!(
-        "创建日历失败（已尝试 {} 个账户源，均拒绝）：{last_err}。可在系统日历 App 里手动新建名为「{title}」的日历后重试。",
+        "创建日历失败（已尝试 {} 个账户源，均拒绝）：{last_err}。请检查系统日历账户是否允许创建日历后重试。",
         sources.len()
     ))
 }
 
 /// 幂等同步：窗口清旧 + 全量重写 + 单次 commit
-pub fn sync(payload: SyncPayload) -> Result<SyncResult, String> {
+pub fn sync(payload: SyncPayload, path: &Path) -> Result<SyncResult, String> {
+    let _guard = MUTATION_LOCK.lock().map_err(|_| "系统日历锁异常".to_string())?;
+    let mut binding = CalendarBinding::read(path)?;
     let store = unsafe { EKEventStore::new() };
 
     if !request_permission()? {
         return Err("没有系统日历权限（请在 系统设置→隐私与安全性→日历 里允许 OneTHU）".into());
     }
 
-    let cal = find_or_create_calendar(&store, &payload.calendar_title)?;
-
-    // 清窗口旧事件（fetch 限四年窗口，同步窗口远小于此）
-    let start = nsdate(payload.window_start_ms);
-    let end = nsdate(payload.window_end_ms);
-    let predicate =
-        unsafe { store.predicateForEventsWithStartDate_endDate_calendars(&start, &end, None) };
-    // 清旧：按日历标题过滤（EventKit 跨查询返回的对象实例不保证同一，
-    // 指针比较会漏判 → 重复事件；标题匹配还能把同名日历里的脏数据一并清掉）
-    let existing = unsafe { store.eventsMatchingPredicate(&predicate) };
+    let (cal, warning) = find_or_create_calendar(&store, &payload.calendar_title, &mut binding, path)?;
+    let (start_ms, end_ms) = binding.include_window(payload.window_start_ms, payload.window_end_ms);
+    binding.save(path)?;
+    let calendars = NSArray::from_slice(&[&*cal]);
+    // EventKit silently caps one predicate to four years. Split long saved ranges
+    // and deduplicate crossing events; query only our bound calendar, never all accounts.
+    let mut cursor = start_ms;
+    let chunk = 3 * 365 * 86_400_000_i64;
+    let mut seen = HashSet::new();
     let mut removed: u32 = 0;
-    for ev in existing.iter() {
-        let ours = unsafe { ev.calendar() }
-            .map(|c| unsafe { c.title() }.to_string() == payload.calendar_title)
-            .unwrap_or(false);
-        if ours {
-            unsafe {
-                store
-                    .removeEvent_span_commit_error(&ev, EKSpan::ThisEvent, false)
-                    .map_err(|e| format!("清理旧事件失败：{e:?}"))?;
-            }
+    while cursor < end_ms {
+        let limit = cursor.saturating_add(chunk).min(end_ms);
+        let predicate = unsafe { store.predicateForEventsWithStartDate_endDate_calendars(
+            &nsdate(cursor), &nsdate(limit), Some(&calendars)) };
+        for ev in unsafe { store.eventsMatchingPredicate(&predicate) }.iter() {
+            let id = unsafe { ev.calendarItemIdentifier() }.to_string();
+            if !seen.insert(id) { continue; }
+            unsafe { store.removeEvent_span_commit_error(&ev, EKSpan::ThisEvent, false) }
+                .map_err(|e| format!("清理旧事件失败：{e:?}"))?;
             removed += 1;
         }
+        cursor = limit;
     }
 
     // 全量写入（不逐条 commit，最后一次落盘）
@@ -182,27 +196,22 @@ pub fn sync(payload: SyncPayload) -> Result<SyncResult, String> {
 
     unsafe { store.commit() }.map_err(|e| format!("提交系统日历变更失败：{e:?}"))?;
 
-    Ok(SyncResult { added, removed })
+    Ok(SyncResult { added, removed, warning })
 }
 
 /// 移除专属日历（连同事件）
-pub fn remove_calendar() -> Result<(), String> {
+pub fn remove_calendar(path: &Path) -> Result<(), String> {
+    let _guard = MUTATION_LOCK.lock().map_err(|_| "系统日历锁异常".to_string())?;
+    let binding = CalendarBinding::read(path)?;
+    let Some(id) = binding.id else {
+        return Err("没有本机绑定的专属日历；旧版同名日历请在系统日历中核对后自行移除".into());
+    };
     let store = unsafe { EKEventStore::new() };
-    if !request_permission()? {
-        return Err("没有系统日历权限".into());
+    if !request_permission()? { return Err("没有系统日历权限".into()); }
+    if let Some(cal) = unsafe { store.calendarWithIdentifier(&nsstr(&id)) } {
+        unsafe { store.removeCalendar_commit_error(&cal, true) }
+            .map_err(|e| format!("移除日历失败：{e:?}"))?;
     }
-    let cals = unsafe { store.calendarsForEntityType(EKEntityType::Event) };
-    let mut removed = 0;
-    for cal in cals.iter() {
-        if unsafe { cal.title() }.to_string() == CALENDAR_TITLE {
-            unsafe {
-                store
-                    .removeCalendar_commit_error(&cal, true)
-                    .map_err(|e| format!("移除日历失败：{e:?}"))?;
-            }
-            removed += 1;
-        }
-    }
-    log::info!("[onethu-calendar] 已移除 {removed} 个系统日历");
+    CalendarBinding::default().save(path)?;
     Ok(())
 }

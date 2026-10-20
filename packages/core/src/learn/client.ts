@@ -824,7 +824,9 @@ export class LearnClient {
           (["new", "submitted", "graded"] as const).map((kind) =>
             this.#fetchHomeworkKind(courseId, kind).catch((e) => {
               this.#http.debug?.(`LEARN-HW 单项失败 course=${courseId} kind=${kind} ${String(e).slice(0, 90)}`);
-              return [] as Homework[];
+              // Callers publish this as a complete snapshot (including system
+              // calendar reconciliation). A partial failure is not an empty list.
+              throw e;
             }),
           ),
         ),

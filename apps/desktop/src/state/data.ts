@@ -197,6 +197,10 @@ export interface LearnBundle {
 
 /** 用户选择的学期（null = 跟随当前学期）；模块级共享，切换后清缓存 */
 let selectedSemester: string | null = null;
+let learnGeneration = 0;
+function invalidateLearnSelection(): void {
+  learnGeneration++;
+}
 
 export function getSelectedSemester(): string | null {
   return selectedSemester;
@@ -222,6 +226,7 @@ export function setSelectedSemester(id: string | null): void {
   if (selectedSemester === id) return;
   selectedSemester = id;
   cache = null;
+  invalidateLearnSelection();
 }
 
 /** 模块级缓存：learn 子页间跳转不重复拉全量数据（切学期/刷新时失效）。
@@ -233,7 +238,10 @@ const CACHE_TTL = 5 * 60 * 1000;
  *  （TTL 内 reload 会直接命中缓存，状态永远不会刷新——mobile 提交后
  *  dispatch(getAssignmentsForCourse) 的对应物）。 */
 export function invalidateLearnCache(): void {
-  cache = null;
+  // Keep the last complete snapshot while revalidating; failed requests must
+  // not erase known deadlines or make system-calendar consumers infer deletion.
+  if (cache) cache.ts = 0;
+  invalidateLearnSelection();
 }
 
 /** 会话失效后的免密重建去重：lib 单管线里 learn 经 wengine 透明 SSO，无独立
@@ -373,9 +381,10 @@ export function getCampusSnapshot(): CampusData | null {
  * 失败完全静默（会话过期先免密重漫游一次），用户打开页面照常走 loading 流程。 */
 
 let refreshInflight: Promise<LearnBundle | null> | null = null;
+let refreshGeneration = -1;
 
-async function fetchLearnBundleFresh(): Promise<LearnBundle> {
-  const semester = selectedSemester ? { id: selectedSemester } : await learn.getCurrentSemester();
+async function fetchLearnBundleFresh(key: string): Promise<LearnBundle> {
+  const semester = key !== "current" ? { id: key } : await learn.getCurrentSemester();
   return loadLearnBundle(semester.id);
 }
 
@@ -409,29 +418,37 @@ function adoptLearnBundle(key: string, d: LearnBundle): void {
 
 /** 后台静默刷新当前学期 learn 数据（失败返回 null，绝不打扰用户） */
 export function refreshLearnDataSilently(): Promise<LearnBundle | null> {
-  if (refreshInflight) return refreshInflight;
-  refreshInflight = (async () => {
-    const key = selectedSemester ?? "current";
+  const generation = learnGeneration;
+  if (refreshInflight && refreshGeneration === generation) return refreshInflight;
+  const key = selectedSemester ?? "current";
+  const active = (): boolean => generation === learnGeneration && key === (selectedSemester ?? "current");
+  const pending: Promise<LearnBundle | null> = Promise.resolve().then(async () => {
     try {
-      adoptLearnBundle(key, await fetchLearnBundleFresh());
-      return cache?.data ?? null;
+      const next = await fetchLearnBundleFresh(key);
+      if (!active()) return null;
+      adoptLearnBundle(key, next);
+      return next;
     } catch (err) {
+      if (!active()) return null;
       if (err instanceof Error && err.name === "AuthRequiredError") {
         try {
           if (await relearnRoamOnce()) {
-            adoptLearnBundle(key, await fetchLearnBundleFresh());
-            return cache?.data ?? null;
+            if (!active()) return null;
+            const next = await fetchLearnBundleFresh(key);
+            if (!active()) return null;
+            adoptLearnBundle(key, next);
+            return next;
           }
-        } catch {
-          /* 静默 */
-        }
+        } catch { /* Keep the last complete snapshot. */ }
       }
       return null;
     } finally {
-      refreshInflight = null;
+      if (refreshInflight === pending) refreshInflight = null;
     }
-  })();
-  return refreshInflight;
+  });
+  refreshGeneration = generation;
+  refreshInflight = pending;
+  return pending;
 }
 
 let autoRefreshTimer: ReturnType<typeof setInterval> | null = null;
@@ -458,17 +475,22 @@ export function useLearnData() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    const at = learnGeneration;
+    const key = selectedSemester ?? "current";
+    const active = (): boolean => at === learnGeneration && key === (selectedSemester ?? "current");
     setState("loading");
     setError(null);
+    if (cache?.key !== key) setData(null);
     try {
-      const key = selectedSemester ?? "current";
       if (!cache || cache.key !== key || Date.now() - cache.ts > CACHE_TTL) {
+        const previous = cache?.key === key ? cache : null;
         const entry: NonNullable<typeof cache> = {
           key,
           ts: Date.now(),
+          data: previous?.data,
           promise: (async () => {
-            const semester = selectedSemester
-              ? { id: selectedSemester }
+            const semester = key !== "current"
+              ? { id: key }
               : await learn.getCurrentSemester();
             return loadLearnBundle(semester.id);
           })(),
@@ -476,6 +498,7 @@ export function useLearnData() {
         cache = entry;
         entry.promise.then(
           (d) => {
+            if (!active() || cache !== entry) return;
             entry.data = d;
             // 空学期包不配长缓存：会话半死时 loadCourseBySemesterId 可能吐一次
             // 空 resultList（HTTP 200 + 可解析 JSON，不抛错），把"0 门课程"毒进
@@ -483,20 +506,27 @@ export function useLearnData() {
             // 下次挂载 learn 必重校验（真实空学期也只是多一次轻量重拉）。
             if (d.courses.length === 0) entry.ts = 0;
           },
-          () => { if (cache === entry) cache = null; }, // 失败不驻留缓存，重试才有可能
+          () => {
+            if (cache !== entry || !active()) return;
+            cache = previous?.data ? { ...previous, ts: 0, promise: Promise.resolve(previous.data) } : null;
+          }, // Failed requests are retryable; an existing complete snapshot remains readable.
         );
       }
       const entry = cache; // 局部引用：等待期间 cache 被置空也不受影响
-      setData(await entry.promise);
+      const next = await entry.promise;
+      if (!active() || cache !== entry) return;
+      setData(next);
       setState("ready");
       notifyLearnData();
     } catch (err) {
+      if (!active()) return;
       // 会话失效（AuthRequiredError）：先用持久化 id 主会话重漫游一次（learn 漫游会话
       // 约 8 分钟过期是常态，免密可重建）；仍失败才送回登录页
       if (err instanceof Error && err.name === "AuthRequiredError") {
         logPageError("LEARN-AUTH", err);
-        cache = null;
+        if (cache) cache.ts = 0;
         const reRoamed = await relearnRoamOnce();
+        if (!active()) return;
         if (reRoamed) {
           await load(); // 递归一次：缓存已清，重走数据链；再失败走下一轮分支
           return;
@@ -520,7 +550,11 @@ export function useLearnData() {
     () =>
       subscribeLearnData(() => {
         const d = getLearnSnapshot();
-        if (d) setData((prev) => (prev === d ? prev : d));
+        if (d) {
+          setData((prev) => (prev === d ? prev : d));
+          setState("ready");
+          setError(null);
+        }
       }),
     [],
   );

@@ -17,6 +17,7 @@ use tauri::{
 use tauri::Manager;
 
 pub mod commands;
+mod ownership;
 
 /// 专属日历名（与 learnX「learnX 课表」同思路，两平台一致）
 pub const CALENDAR_TITLE: &str = "OneTHU 日程";
@@ -56,6 +57,8 @@ pub struct SyncPayload {
 pub struct SyncResult {
     pub added: u32,
     pub removed: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub warning: Option<String>,
 }
 
 /* ---------- 插件入口 ---------- */

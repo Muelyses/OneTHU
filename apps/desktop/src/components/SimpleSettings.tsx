@@ -1,3 +1,4 @@
+import { CalendarSyncSettings } from "./CalendarSyncSettings.js";
 import { useState } from "react";
 import { Btn, Card, Input, Stack, Text, SettingsRow } from "@onethu/gui";
 import { ExperienceModeControl } from "./SimpleExperience.js";
@@ -19,6 +20,7 @@ export function OptionalConnections() {
 }
 export function SimpleSettings() {
  const { user, logout }=useApp();
+ const [calendarOpen,setCalendarOpen]=useState(false);
  const initial=getPlugin("onethu.harness")?.settings??{};
  const [baseUrl,setBaseUrl]=useState(String(initial.baseUrl??""));
  const [apiKey,setApiKey]=useState(String(initial.apiKey??""));
@@ -38,6 +40,8 @@ export function SimpleSettings() {
  if(!apiKey.trim()||!model.trim()){showToast("请填写 API Key 和模型名称");return;}
  updatePlugin("onethu.harness",{settings:{...plugin.settings,provider:"custom",baseUrl:baseUrl.trim(),apiKey:apiKey.trim(),model:model.trim()}});showToast("API 配置已保存");
  }}>保存 API</Btn></Stack></Card>
+ <Card><SettingsRow title="日历同步" sub="连接清华邮箱日历，或同步课表、作业与日程到系统日历。" control={<Btn variant="outline" onClick={()=>setCalendarOpen(v=>!v)}>{calendarOpen?"收起":"管理同步"}</Btn>}/></Card>
+ {calendarOpen?<CalendarSyncSettings/>:null}
  <OptionalConnections/>
  </Stack></div>;
 }

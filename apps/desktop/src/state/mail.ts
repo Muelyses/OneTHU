@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { fileRead, fileWrite } from "../lib/clients.js";
-import { getCloudCalConfig, onCloudCalChange, ensureCloudCalLoaded } from "./cloudCal.js";
+import { getCloudCalConfig, onCloudCalConfigChange, ensureCloudCalCredentialsLoaded } from "./cloudCal.js";
 
 export interface MailHead {
   uid: number;
@@ -39,160 +39,238 @@ export const MAIL_FOLDERS: Array<{ id: string; label: string }> = [
 const CACHE_FILE = "mail.cache";
 const FETCH_LIMIT = 50;
 
-/* -------------- 模块级单例 -------------- */
+/* -------------- Account-scoped singleton -------------- */
 
+type Credential = { email: string; auth: string; revision: number };
+type ListReply = { total: number; minSeq: number; heads: MailHead[] };
+let account: { email: string; auth: string } | null = null;
+let accountKnown = false;
+let revision = 0;
 let headsByFolder: Record<string, MailHead[]> = {};
-const lastRefreshAt: Record<string, number> = {};
-/** 分页游标（服务器序列号口径）：文件夹总封数 + 本批最小 seq */
-const totalsByFolder: Record<string, number> = {};
-const minSeqsByFolder: Record<string, number> = {};
-const bodies = new Map<string, MailBody>(); // `${folder}#${uid}`，读完留内存
-let loadingFolder: string | null = null;
-let lastError: string | null = null;
-let loaded = false;
+let lastRefreshAt: Record<string, number> = {};
+let totalsByFolder: Record<string, number> = {};
+let minSeqsByFolder: Record<string, number> = {};
+let errorsByFolder: Record<string, string | null> = {};
+const bodies = new Map<string, MailBody>();
+const reading = new Map<string, Promise<MailBody>>();
+const listing = new Map<string, { more: boolean; revision: number; promise: Promise<MailHead[]> }>();
+let cacheLoad: { revision: number; promise: Promise<void> } | null = null;
+let cacheTail: Promise<void> = Promise.resolve();
+let initializationError: string | null = null;
 const listeners = new Set<() => void>();
 const emit = (): void => listeners.forEach((fn) => fn());
+const normalizedEmail = (email: string): string => email.trim().toLowerCase();
 
-async function persistCache(): Promise<void> {
-  await fileWrite(CACHE_FILE, JSON.stringify({ headsByFolder, totalsByFolder, minSeqsByFolder }));
+function matchesConfig(): boolean {
+  const cfg = getCloudCalConfig();
+  return !!account && !!cfg && account.email === normalizedEmail(cfg.email) && account.auth === cfg.authCode;
 }
+function current(c: Credential): boolean {
+  return c.revision === revision && matchesConfig();
+}
+function assertCurrent(c: Credential): void {
+  if (!current(c)) throw new Error("邮箱账号已改变，请重新打开邮件");
+}
+
+/** Serialize disk writes so an old account's slow write cannot replace the new
+ * account's cache. Auth codes and bodies are never included in this file. */
+function persistCache(): Promise<void> {
+  const at = revision;
+  const raw = JSON.stringify({ version: 2, account: account?.email ?? null, headsByFolder, totalsByFolder, minSeqsByFolder });
+  const next = cacheTail.catch(() => {}).then(async () => {
+    if (at === revision) await fileWrite(CACHE_FILE, raw, { strict: true });
+  });
+  cacheTail = next.catch(() => {});
+  return next;
+}
+
+function acceptConfig(): void {
+  const cfg = getCloudCalConfig();
+  const next = cfg?.email.trim() && cfg.authCode ? { email: normalizedEmail(cfg.email), auth: cfg.authCode } : null;
+  if (accountKnown && next?.email === account?.email && next?.auth === account?.auth) return;
+  const hadAccount = accountKnown;
+  accountKnown = true;
+  account = next;
+  revision++;
+  headsByFolder = {}; lastRefreshAt = {}; totalsByFolder = {}; minSeqsByFolder = {}; errorsByFolder = {};
+  bodies.clear(); reading.clear(); listing.clear(); cacheLoad = null;
+  // Initial configuration hydration must read the owner-tagged cache first.
+  if (hadAccount) void persistCache().catch(() => {});
+  emit();
+}
+// One module-level configuration subscription; mounted views only subscribe to
+// mail state and always remove those subscriptions on unmount.
+onCloudCalConfigChange(acceptConfig);
 
 async function ensureLoaded(): Promise<void> {
-  if (loaded) return;
-  loaded = true;
   try {
-    const raw = await fileRead(CACHE_FILE);
-    if (raw) {
-      const j = JSON.parse(raw) as { headsByFolder?: Record<string, MailHead[]>; totalsByFolder?: Record<string, number>; minSeqsByFolder?: Record<string, number> };
-      if (j.headsByFolder) headsByFolder = j.headsByFolder;
-      if (j.totalsByFolder) Object.assign(totalsByFolder, j.totalsByFolder);
-      if (j.minSeqsByFolder) Object.assign(minSeqsByFolder, j.minSeqsByFolder);
-    }
+    await ensureCloudCalCredentialsLoaded();
+    if (initializationError) { initializationError = null; emit(); }
   } catch {
-    /* 坏文件视作空 */
+    const message = "邮箱连接信息读取失败，请重试";
+    if (initializationError !== message) { initializationError = message; emit(); }
+    throw new Error(message);
   }
-  emit();
+  acceptConfig();
+  if (cacheLoad?.revision === revision) return cacheLoad.promise;
+  const at = revision;
+  const owner = account?.email;
+  const promise: Promise<void> = (async () => {
+    try {
+      await cacheTail;
+      const raw = await fileRead(CACHE_FILE, { strict: true });
+      if (at !== revision || !owner || !raw) return;
+      const parsed = JSON.parse(raw) as {
+        version?: number; account?: string; headsByFolder?: Record<string, MailHead[]>;
+        totalsByFolder?: Record<string, number>; minSeqsByFolder?: Record<string, number>;
+      };
+      // Legacy caches have no owner and cannot safely be attributed to a user.
+      if (parsed.version !== 2 || parsed.account !== owner) return;
+      for (const folder of MAIL_FOLDERS) {
+        const rows = parsed.headsByFolder?.[folder.id];
+        if (Array.isArray(rows)) headsByFolder[folder.id] = rows.filter((row) =>
+          row && Number.isInteger(row.uid) && row.uid > 0 && typeof row.subject === "string"
+          && typeof row.from === "string" && Number.isFinite(row.dateMs) && typeof row.seen === "boolean");
+        const total = parsed.totalsByFolder?.[folder.id], minSeq = parsed.minSeqsByFolder?.[folder.id];
+        if (typeof total === "number" && Number.isFinite(total) && total >= 0) totalsByFolder[folder.id] = total;
+        if (typeof minSeq === "number" && Number.isFinite(minSeq) && minSeq >= 0) minSeqsByFolder[folder.id] = minSeq;
+      }
+    } catch { /* Invalid or legacy cache is treated as empty. */ }
+    finally { if (at === revision) emit(); }
+  })();
+  cacheLoad = { revision: at, promise };
+  await promise;
+  if (at !== revision) await ensureLoaded();
 }
 
-/** 云配置就绪后取凭据（未配置返回 null） */
-async function cred(): Promise<{ email: string; auth: string } | null> {
-  await Promise.all([ensureLoaded(), ensureCloudCalLoaded()]);
-  const cfg = getCloudCalConfig();
-  return cfg ? { email: cfg.email, auth: cfg.authCode } : null;
+async function cred(): Promise<Credential> {
+  await ensureLoaded();
+  if (!account || !matchesConfig()) throw new Error("请先绑定邮箱与客户端专用密码");
+  return { ...account, revision };
 }
 
-/** 拉取某文件夹最新一页（头 + 已读标记 + 分页游标） */
-export async function refreshMail(folder: string): Promise<MailHead[]> {
+async function listMail(folder: string, more: boolean): Promise<MailHead[]> {
   const c = await cred();
-  if (!c) throw new Error("未配置邮箱：设置 → 云同步（邮箱与授权码）");
-  loadingFolder = folder;
-  lastError = null;
-  emit();
-  try {
-    const out = await invoke<{ total: number; minSeq: number; heads: MailHead[] }>("mail_list", { email: c.email, auth: c.auth, folder, limit: FETCH_LIMIT });
-    headsByFolder[folder] = out.heads;
-    totalsByFolder[folder] = out.total;
-    minSeqsByFolder[folder] = out.minSeq;
-    lastRefreshAt[folder] = Date.now();
-    await persistCache();
-    return out.heads;
-  } catch (err) {
-    lastError = err instanceof Error ? err.message : String(err);
-    throw err;
-  } finally {
-    loadingFolder = null;
-    emit();
+  const existing = listing.get(folder);
+  if (existing?.revision === c.revision) {
+    if (existing.more === more) return existing.promise;
+    await existing.promise.catch(() => {});
+    assertCurrent(c);
+    return listMail(folder, more);
   }
-}
-
-/** 下一页（更旧 50 封；追加去重） */
-export async function loadMoreMail(folder: string): Promise<MailHead[]> {
-  const c = await cred();
-  if (!c) throw new Error("未配置邮箱：设置 → 云同步（邮箱与授权码）");
   const before = minSeqsByFolder[folder];
-  if (!before || before <= 1) return headsByFolder[folder] ?? [];
-  loadingFolder = folder;
-  lastError = null;
+  if (more && (!before || before <= 1)) return headsByFolder[folder] ?? [];
+  errorsByFolder[folder] = null;
+  const promise: Promise<MailHead[]> = Promise.resolve().then(async () => {
+    try {
+      const out = await invoke<ListReply>("mail_list", {
+        email: c.email, auth: c.auth, folder, limit: FETCH_LIMIT,
+        ...(more ? { beforeSeq: before } : {}),
+      });
+      assertCurrent(c);
+      const seen = new Set((headsByFolder[folder] ?? []).map((head) => head.uid));
+      headsByFolder[folder] = more
+        ? [...(headsByFolder[folder] ?? []), ...out.heads.filter((head) => !seen.has(head.uid))]
+        : out.heads;
+      totalsByFolder[folder] = out.total;
+      minSeqsByFolder[folder] = out.minSeq;
+      if (!more) lastRefreshAt[folder] = Date.now();
+      await persistCache().catch(() => {
+        if (current(c)) errorsByFolder[folder] = "邮件已更新，但本地缓存未能保存";
+      });
+      assertCurrent(c);
+      return out.heads;
+    } catch (err) {
+      if (current(c)) errorsByFolder[folder] = err instanceof Error ? err.message : String(err);
+      throw err;
+    } finally {
+      if (listing.get(folder)?.promise === promise) listing.delete(folder);
+      if (current(c)) emit();
+    }
+  });
+  listing.set(folder, { more, revision: c.revision, promise });
   emit();
-  try {
-    const out = await invoke<{ total: number; minSeq: number; heads: MailHead[] }>("mail_list", { email: c.email, auth: c.auth, folder, limit: FETCH_LIMIT, beforeSeq: before });
-    const seen = new Set((headsByFolder[folder] ?? []).map((h) => h.uid));
-    headsByFolder[folder] = [...(headsByFolder[folder] ?? []), ...out.heads.filter((h) => !seen.has(h.uid))];
-    totalsByFolder[folder] = out.total;
-    minSeqsByFolder[folder] = out.minSeq;
-    await persistCache();
-    return out.heads;
-  } catch (err) {
-    lastError = err instanceof Error ? err.message : String(err);
-    throw err;
-  } finally {
-    loadingFolder = null;
-    emit();
-  }
+  return promise;
 }
 
-/** 读一封（正文内存缓存；顺带标已读，失败静默） */
+export const refreshMail = (folder: string): Promise<MailHead[]> => listMail(folder, false);
+export const loadMoreMail = (folder: string): Promise<MailHead[]> => listMail(folder, true);
+
+/** Native requests may finish after a view closes; only the matching account
+ * may receive or cache their results. Reading a cached UID still checks auth. */
 export async function readMail(folder: string, uid: number): Promise<MailBody> {
+  const c = await cred();
   const key = `${folder}#${uid}`;
   const cached = bodies.get(key);
   if (cached) return cached;
-  const c = await cred();
-  if (!c) throw new Error("未配置邮箱：设置 → 云同步（邮箱与授权码）");
-  const body = await invoke<MailBody>("mail_read", { email: c.email, auth: c.auth, folder, uid });
-  if (bodies.size > 24) bodies.clear(); // 简单防涨：超 24 封清空重来
-  bodies.set(key, body);
-  void invoke("mail_mark_seen", { email: c.email, auth: c.auth, folder, uid })
-    .then(() => {
-      const h = headsByFolder[folder]?.find((x) => x.uid === uid);
-      if (h && !h.seen) {
-        h.seen = true;
-        emit();
-        void persistCache();
-      }
-    })
-    .catch(() => {
-      /* 下次列表自然带回来 */
-    });
-  return body;
+  const pending = reading.get(key);
+  if (pending) return pending;
+  const promise: Promise<MailBody> = Promise.resolve().then(async () => {
+    try {
+      const body = await invoke<MailBody>("mail_read", { email: c.email, auth: c.auth, folder, uid });
+      assertCurrent(c);
+      if (bodies.size >= 24) bodies.clear();
+      bodies.set(key, body);
+      void invoke("mail_mark_seen", { email: c.email, auth: c.auth, folder, uid }).then(() => {
+        if (!current(c)) return;
+        const head = headsByFolder[folder]?.find((row) => row.uid === uid);
+        if (head && !head.seen) {
+          headsByFolder[folder] = headsByFolder[folder]!.map((row) => row.uid === uid ? { ...row, seen: true } : row);
+          emit();
+          void persistCache().catch(() => {});
+        }
+      }).catch(() => {});
+      return body;
+    } finally {
+      if (reading.get(key) === promise) reading.delete(key);
+    }
+  });
+  reading.set(key, promise);
+  return promise;
 }
 
-/** 文件夹总封数（OH 门面 mail.list 返回给 harness 用；无游标时回退列表长度） */
 export function mailFolderTotal(folder: string): number {
-  return totalsByFolder[folder] ?? (headsByFolder[folder] ?? []).length;
+  return matchesConfig() ? totalsByFolder[folder] ?? headsByFolder[folder]?.length ?? 0 : 0;
 }
-
-/** 单封邮件头（原子解析用；缓存冷时 null） */
 export function getMailHead(folder: string, uid: number): MailHead | null {
-  return headsByFolder[folder]?.find((h) => h.uid === uid) ?? null;
+  return matchesConfig() ? headsByFolder[folder]?.find((head) => head.uid === uid) ?? null : null;
 }
-
-/** 全箱搜索（IMAP 服务端 SUBJECT OR FROM；Enter 触发，非本地过滤） */
 export async function mailSearch(folder: string, query: string): Promise<MailHead[]> {
+  if (!query.trim()) return [];
   const c = await cred();
-  if (!c) throw new Error("未配置邮箱：设置 → 云同步（邮箱与授权码）");
-  return invoke<MailHead[]>("mail_search", { email: c.email, auth: c.auth, folder, query, limit: 30 });
+  const out = await invoke<MailHead[]>("mail_search", { email: c.email, auth: c.auth, folder, query: query.trim(), limit: 30 });
+  assertCurrent(c);
+  return out;
 }
-
-/** 发信（to/cc 支持逗号、分号、空白混排多址） */
 export async function sendMail(to: string, cc: string, subject: string, body: string): Promise<void> {
+  const tos = to.split(/[,;\s]+/).filter(Boolean), ccs = cc.split(/[,;\s]+/).filter(Boolean);
+  if (!tos.length) throw new Error("收件人不能为空");
   const c = await cred();
-  if (!c) throw new Error("未配置邮箱：设置 → 云同步（邮箱与授权码）");
-  const tos = to.split(/[,;\s]+/).filter(Boolean);
-  const ccs = cc.split(/[,;\s]+/).filter(Boolean);
-  if (tos.length === 0) throw new Error("收件人不能为空");
   await invoke("mail_send", { args: { email: c.email, auth: c.auth, to: tos, cc: ccs, subject, body } });
+  if (current(c)) lastRefreshAt["Sent Items"] = 0;
+  // SMTP cannot be recalled after dispatch; never retry automatically.
 }
 
 /* -------------- Hooks -------------- */
 
+function useMailRevision(): number {
+  const [, bump] = useState(0);
+  useEffect(() => {
+    const fn = (): void => bump((value) => value + 1);
+    listeners.add(fn);
+    void ensureLoaded().catch(() => {});
+    return () => { listeners.delete(fn); };
+  }, []);
+  return revision;
+}
+
 export interface MailState {
   configured: boolean;
   email: string | null;
+  accountRevision: number;
   heads: MailHead[];
   unread: number;
-  /** 文件夹总封数（服务器口径；列表底部分页条显示用） */
   total: number;
-  /** 还有更旧的可翻页 */
   canMore: boolean;
   loading: boolean;
   error: string | null;
@@ -201,96 +279,58 @@ export interface MailState {
 }
 
 export function useMail(folder: string): MailState {
-  const [, bump] = useState(0);
-  useEffect(() => {
-    const fn = (): void => bump((n) => n + 1);
-    listeners.add(fn);
-    onCloudCalChange(fn);
-    return () => {
-      listeners.delete(fn);
-    };
-  }, []);
-  const refresh = useCallback(async (): Promise<void> => {
-    await refreshMail(folder).catch(() => {});
-  }, [folder]);
-  const loadMore = useCallback(async (): Promise<void> => {
-    await loadMoreMail(folder).catch(() => {});
-  }, [folder]);
-  // 挂载 + 切文件夹：配置就绪且（无缓存或超过 3 分钟）时自动拉
+  const accountRevision = useMailRevision();
+  const refresh = useCallback(async (): Promise<void> => { await refreshMail(folder).catch(() => {}); }, [folder]);
+  const loadMore = useCallback(async (): Promise<void> => { await loadMoreMail(folder).catch(() => {}); }, [folder]);
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const c = await cred();
-      if (!alive || !c) return;
-      const cached = headsByFolder[folder];
-      // 旧缓存无分页游标（total 缺失）也视作不新鲜：补一次拉取拿到游标
-      const fresh = cached && (lastRefreshAt[folder] ?? 0) > Date.now() - 180_000 && totalsByFolder[folder] !== undefined;
-      if (!cached || !fresh) await refreshMail(folder).catch(() => {});
+      try {
+        await cred();
+        if (!alive) return;
+        const fresh = headsByFolder[folder] && (lastRefreshAt[folder] ?? 0) > Date.now() - 180_000 && totalsByFolder[folder] !== undefined;
+        if (!fresh) await refreshMail(folder);
+      } catch { /* State carries list errors; unconfigured views show the gate. */ }
     })();
-    return () => {
-      alive = false;
-    };
-  }, [folder]);
+    return () => { alive = false; };
+  }, [folder, accountRevision]);
   const cfg = getCloudCalConfig();
-  const heads = headsByFolder[folder] ?? [];
-  const total = totalsByFolder[folder] ?? heads.length;
-  const minSeq = minSeqsByFolder[folder];
+  const valid = matchesConfig();
+  const heads = valid ? headsByFolder[folder] ?? [] : [];
+  const total = valid ? totalsByFolder[folder] ?? heads.length : 0;
+  const minSeq = valid ? minSeqsByFolder[folder] : undefined;
   return {
-    configured: cfg !== null,
+    configured: !!cfg?.email.trim() && !!cfg.authCode,
     email: cfg?.email ?? null,
-    heads,
-    unread: heads.filter((h) => !h.seen).length,
-    total,
+    accountRevision,
+    heads, unread: heads.filter((head) => !head.seen).length, total,
     canMore: minSeq !== undefined && minSeq > 1 && heads.length < total,
-    loading: loadingFolder === folder,
-    error: lastError,
-    refresh,
-    loadMore,
+    loading: listing.get(folder)?.revision === accountRevision,
+    error: initializationError ?? (valid ? errorsByFolder[folder] ?? null : null),
+    refresh, loadMore,
   };
 }
 
-
-/** 全部文件夹的未读数（folder chips 用，避免 map 里调 hook） */
 export function useMailCounts(): Record<string, number> {
-  const [, bump] = useState(0);
-  useEffect(() => {
-    const fn = (): void => bump((n) => n + 1);
-    listeners.add(fn);
-    return () => {
-      listeners.delete(fn);
-    };
-  }, []);
+  useMailRevision();
   const out: Record<string, number> = {};
-  for (const f of MAIL_FOLDERS) out[f.id] = (headsByFolder[f.id] ?? []).filter((h) => !h.seen).length;
+  for (const folder of MAIL_FOLDERS) out[folder.id] = matchesConfig() ? (headsByFolder[folder.id] ?? []).filter((head) => !head.seen).length : 0;
   return out;
 }
 
 export function useMailBody(folder: string, uid: number | null): { body: MailBody | null; loading: boolean; error: string | null } {
-  const [body, setBody] = useState<MailBody | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const accountRevision = useMailRevision();
+  const key = `${accountRevision}:${folder}:${uid}`;
+  const [result, setResult] = useState<{ key: string; body: MailBody | null; loading: boolean; error: string | null }>({ key, body: null, loading: uid !== null, error: null });
   useEffect(() => {
-    if (uid === null) {
-      setBody(null);
-      setError(null);
-      return;
-    }
     let alive = true;
-    setLoading(true);
-    setError(null);
-    readMail(folder, uid)
-      .then((b) => {
-        if (alive) setBody(b);
-      })
-      .catch((err: unknown) => {
-        if (alive) setError(err instanceof Error ? err.message : String(err));
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [folder, uid]);
-  return { body, loading, error };
+    setResult({ key, body: null, loading: uid !== null, error: null });
+    if (uid === null) return () => { alive = false; };
+    void readMail(folder, uid).then(
+      (body) => { if (alive) setResult({ key, body, loading: false, error: null }); },
+      (err: unknown) => { if (alive) setResult({ key, body: null, loading: false, error: err instanceof Error ? err.message : String(err) }); },
+    );
+    return () => { alive = false; };
+  }, [folder, uid, key]);
+  return result.key === key ? result : { body: null, loading: uid !== null, error: null };
 }

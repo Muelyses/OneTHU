@@ -1,6 +1,6 @@
 /**
- * 暂存箱「长按拖入」来源补充 + 手机长按雷达回归：
- * ① 手机云盘文件行有 data-vault-catch；CDP 触摸长按 → 拖到雷达 → 松手进暂存箱；
+ * 暂存箱「长按拖入」来源补充 + 手机长按接收光环回归：
+ * ① 手机云盘文件行有 data-vault-catch；CDP 触摸长按 → 拖到入口 → 松手进暂存箱；
  * ② 日程时间块有 data-vault-catch；
  * ③ 桌面标签页有 data-vault-catch；
  * ④ 其它来源（GitLab/附件/工作区/新闻）由静态守卫盯属性。
@@ -77,10 +77,15 @@ try {
     await p.waitForTimeout(650);
     await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: sx + 4, y: sy + 4, id: 1 }] });
     await p.waitForTimeout(150);
-    check(await p.locator('.vault-radar').isVisible().catch(() => false), '手机长按后雷达浮出');
-    /* 拖到雷达中心松手 */
-    const radar = await p.locator('.vault-radar').boundingBox();
-    await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: radar.x + radar.width / 2, y: radar.y + radar.height / 2, id: 1 }] });
+    check(await p.locator('.vault-accept-halo').isVisible(), '手机长按后入口出现局部接收光环');
+    /* Use continuous touch samples to reach the visible button, including at viewport edges. */
+    const target = await p.locator('.vault-floating-anchor .vault-box-button').boundingBox();
+    const tx = target.x + target.width / 2, ty = target.y + target.height / 2;
+    const steps = Math.max(1, Math.ceil(Math.hypot(tx - sx - 4, ty - sy - 4) / 6));
+    for (let step = 1; step <= steps; step++) {
+      await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: sx + 4 + (tx - sx - 4) * step / steps, y: sy + 4 + (ty - sy - 4) * step / steps, id: 1 }] });
+      await p.waitForTimeout(16);
+    }
     await p.waitForTimeout(150);
     await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
     await p.waitForTimeout(700);

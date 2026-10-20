@@ -76,3 +76,14 @@ html:root.is-phone .vault-manager .vault-workspace-main { flex:1; }
   .vault-manager .vault-collection-head > div > .og-text { display:none; }
 }
 html:root[data-og-skin="glass"] .vault-workspace { backdrop-filter:var(--og-surface-blur); }
+
+/* Content is picked up as a visual copy; the source remains in its collection. */
+html:root .vault-drag-ghost { display:block; position:fixed; left:0; top:0; z-index:var(--og-z-tooltip); width:min(var(--og-vault-drag-card-w),calc(100vw - var(--og-space-8))); max-width:none; padding:0; border:0; border-radius:0; background:none; box-shadow:none; color:var(--og-content-1); pointer-events:none; user-select:none; white-space:normal; will-change:transform,opacity; }
+.vault-drag-card { display:flex; align-items:flex-start; gap:var(--og-space-3); padding:var(--og-space-3); background:var(--og-surface-1); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); box-shadow:var(--og-elev-3); }
+.vault-drag-ghost-icon { display:grid; place-items:center; flex:none; width:var(--og-ctl-h-sm); height:var(--og-ctl-h-sm); background:var(--og-surface-2); border:1px solid var(--og-line-1); border-radius:var(--og-radius-md); color:var(--og-content-2); }
+.vault-drag-ghost-icon svg { width:var(--og-space-6); height:var(--og-space-6); }
+.vault-drag-ghost-content { display:grid; gap:var(--og-space-1); min-width:0; flex:1; }
+html:root .vault-drag-ghost-type { background:none; padding:0; color:var(--og-content-3); font-size:var(--og-text-micro); line-height:var(--og-text-micro-lh); font-weight:var(--og-weight-medium); }
+html:root .vault-drag-ghost-title { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; overflow-wrap:anywhere; white-space:normal; color:var(--og-content-1); font-size:var(--og-text-label); line-height:var(--og-text-label-lh); font-weight:var(--og-weight-semibold); }
+.vault-drag-ghost-detail { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; overflow:hidden; overflow-wrap:anywhere; color:var(--og-content-3); font-size:var(--og-text-micro); line-height:var(--og-text-micro-lh); }
+html:root [data-vault-catch].is-vault-lifted { animation:none; opacity:.48; }

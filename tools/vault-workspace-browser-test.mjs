@@ -1,4 +1,4 @@
-/** Shared vault page/manager + edge entry, against fake cloud and browser events only. */
+/** Shared vault page/manager + directly draggable entry, against fake cloud and browser events only. */
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -53,7 +53,7 @@ try {
     const cdp = await page.context().newCDPSession(page);
     const touch = async (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, radiusX: 3, radiusY: 3, force: 1, id: 1 }] });
     if (phone) {
-      await touch('touchStart', start.x, start.y); await page.waitForTimeout(360);
+      await touch('touchStart', start.x, start.y);
       for (let step = 1; step <= 8; step++) await touch('touchMove', start.x + (target.x - start.x) * step / 8, start.y + (target.y - start.y) * step / 8);
       await touch('touchEnd');
     } else {
@@ -62,20 +62,18 @@ try {
     }
     await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) ?? 'null')?.side === 'left', positionKey);
     const saved = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), positionKey);
-    check(saved.ratio >= 0 && saved.ratio <= 1, prefix + ' 拖动入口贴到另一侧并保存归一化高度');
-    check(await page.locator('.vault-manager, .vault-radar').count() === 0, prefix + ' 移动入口不会误开预览或管理面板');
+    check(saved.ratio >= 0 && saved.ratio <= 1 && saved.xRatio >= 0 && saved.xRatio <= 1, prefix + ' 拖动入口保留自由位置并保存归一化坐标');
+    check(await page.locator('.vault-manager, .vault-accept-halo').count() === 0, prefix + ' 移动入口不会误开预览或管理面板');
     await page.reload({ waitUntil: 'domcontentloaded' }); await anchor.waitFor();
     await page.waitForFunction(() => document.querySelector('.vault-floating-anchor')?.classList.contains('is-left'));
     const restored = await anchor.boundingBox();
-    check(restored.x < width / 2 && Math.abs(restored.y + restored.height / 2 - target.y) < 45, prefix + ' 刷新后保留入口边缘与高度');
+    check(restored.x < width / 2 && Math.abs(restored.y + restored.height / 2 - target.y) < 45, prefix + ' 刷新后保留入口自由位置');
     if (phone) {
       const center = { x: restored.x + restored.width / 2, y: restored.y + restored.height / 2 };
       await touch('touchStart', center.x, center.y);
       await touch('touchMove', center.x + 60, center.y + 2); await touch('touchEnd');
-      await page.locator('.vault-manager').waitFor();
-      check(true, prefix + ' 入口向内短滑直接打开完整管理面板');
-      await page.locator('.vault-manager').getByRole('button', { name: '关闭', exact: true }).click();
-      await page.locator('.vault-manager').waitFor({ state: 'hidden' });
+      await page.waitForFunction(x => document.querySelector('.vault-box-button').getBoundingClientRect().x > x + 30, restored.x);
+      check(await page.locator('.vault-manager,.vault-accept-halo').count() === 0, prefix + ' 入口向内短拖只移动位置，不打开管理或拾取内容');
       await touch('touchStart', 2, Math.round(height * 0.3));
       await touch('touchMove', 66, Math.round(height * 0.3)); await touch('touchEnd');
       check(await page.locator('.vault-manager').count() === 0, prefix + ' 普通页面边缘滑动不会触发暂存箱');
@@ -84,7 +82,7 @@ try {
     await anchor.click();
     const manager = page.locator('.vault-manager');
     await manager.waitFor();
-    check(await page.locator('.vault-radar').count() === 0, prefix + ' 普通点击直接管理，未出现传输雷达');
+    check(await page.locator('.vault-accept-halo').count() === 0, prefix + ' 普通点击直接管理，未出现接收光环');
     check(await manager.evaluate(el => el.closest('.og-scrim')?.parentElement === document.body), prefix + ' 管理面板挂在body，避开导航裁切');
     check(await manager.locator('.vault-item-in').count() === 3, prefix + ' 直接管理显示全部三个条目');
     for (const name of ['课程大纲', '作业清单', '研讨预约']) check(await manager.getByText(name, { exact: true }).isVisible(), prefix + ' 条目标题可读：' + name);

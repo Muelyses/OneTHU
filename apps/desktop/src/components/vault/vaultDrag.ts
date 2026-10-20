@@ -6,13 +6,15 @@
  * - 触屏：长按 400ms 启动（避免和滚动/点击冲突），启动后 pointermove 阻止默认滚动。
  *
  * 拖动中在 body 上挂一个跟随指针的 ghost，并显示 [data-vault-drop] 目标；
- * 松手时命中目标 → addToVault + 吸入动画；取消只退场，不投递或保留高亮。
+ * 松手后确认收纳/交接结果再飞向目标；取消或重复收纳回到来源，不投递或保留高亮。
  */
 import { GESTURE, claimGesture, releaseGesture } from "../../lib/gestureArena.js";
 import { cacheRemoteFileToVault } from "../../lib/vaultRemote.js";
 import { addToVault, type VaultCatch } from "../../state/vault.js";
 import { ohAsk } from "../../plugins/ChatDock.js";
 import { showToast } from "../../state/toast.js";
+import { vaultItemPresentation, VAULT_ICON_PATHS } from "./vaultItemPresentation.js";
+import { beginVaultCardMotion, disposeVaultCardMotions, playVaultTakeout, type VaultDragMotion, type VaultMotionDestination } from "./vaultDragMotion.js";
 
 export interface VaultDragState {
   active: boolean;
@@ -44,6 +46,8 @@ const HOVER_CLASS = "is-vault-drop-hover";
 const BODY_CLASS = "is-vault-dragging";
 
 let ghost: HTMLDivElement | null = null;
+let ghostMotion: VaultDragMotion | null = null;
+let dragFromManager = false;
 let targetEl: HTMLElement | null = null;
 /** 拾取后必须掐断浏览器原生 HTML5 拖拽：否则 pointercancel 会中断我们的投递。 */
 const blockNativeDrag = (e: DragEvent): void => { e.preventDefault(); };
@@ -64,7 +68,7 @@ function hitDrop(x: number, y: number): HTMLElement | null {
 
 function paint(x: number, y: number): void {
   if (!ghost) return;
-  ghost.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0) translate(-50%, -120%) scale(1.02)`;
+  ghostMotion?.move(x, y);
   const hit = hitDrop(x, y);
   if (hit !== targetEl) {
     targetEl?.classList.remove(HOVER_CLASS);
@@ -76,8 +80,6 @@ function paint(x: number, y: number): void {
 
 function onMove(e: PointerEvent): void {
   if (e.pointerId !== pointerId) return;
-  // A release outside the WebView may not deliver pointerup.
-  if (e.pointerType === "mouse" && e.buttons === 0) { cancelActiveDrag(); return; }
   /* 触屏：拖动开始后必须阻止页面滚动；鼠标无副作用。 */
   if (e.pointerType !== "mouse" && e.cancelable) e.preventDefault();
   paint(e.clientX, e.clientY);
@@ -85,55 +87,55 @@ function onMove(e: PointerEvent): void {
 
 function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null): void {
   const target = commit ? hitDrop(x, y) : null;
+  const isOH = target?.hasAttribute("data-oh-drop") === true;
+  // The scan widens the hit area; successful content lands in the actual box.
+  const destinationEl = target && !isOH ? document.querySelector<HTMLElement>(".vault-box-button[data-vault-drop]") ?? target : target;
+  const destination = destinationEl?.getBoundingClientRect();
+  const motion = ghostMotion, fromManager = dragFromManager;
+  ghost = null; ghostMotion = null; dragFromManager = false;
   window.removeEventListener("pointermove", onMove, true);
   window.removeEventListener("pointerup", onUp, true);
   window.removeEventListener("pointercancel", onCancel, true);
-  window.removeEventListener("lostpointercapture", onCancel, true);
   window.removeEventListener("blur", cancelActiveDrag);
   document.removeEventListener("visibilitychange", cancelHiddenDrag);
   document.removeEventListener("dragstart", blockNativeDrag, true);
   document.body.classList.remove(BODY_CLASS);
   targetEl?.classList.remove(HOVER_CLASS);
   targetEl = null;
-  if (ghost) {
-    const g = ghost;
-    g.style.transition = "transform .22s cubic-bezier(.2,.9,.2,1), opacity .18s ease";
-    if (target) {
-      const r = dropTargetRect(target);
-      g.style.transform = `translate3d(${Math.round(r.left + r.width / 2)}px, ${Math.round(r.top + r.height / 2)}px, 0) translate(-50%, -50%) scale(.18)`;
-      g.style.opacity = "0";
-    } else {
-      g.style.opacity = "0";
-      g.style.transform += " scale(.94)";
-    }
-    window.setTimeout(() => g.remove(), 240);
-    ghost = null;
-  }
-  const wasHover = Boolean(target);
   pointerId = -1;
   pendingCat = null;
   releaseGesture("vault-drag");
   setDrag({ active: false, hover: false, title: "", target: undefined });
-  if (!commit || !cat) return;
-  if (!wasHover) {
-    showToast("没放进暂存箱：拖到「暂存箱」目标上再松手");
-    return;
-  }
-  if (target?.hasAttribute("data-oh-drop")) {
-    ohAsk(`请帮我处理这个来自 OneTHU 的内容：${cat.title}\n${JSON.stringify({type:cat.type,atom:cat.atom,board:cat.board,text:cat.text,summary:cat.sub,payload:cat.payload})}`);
-    return;
-  }
-  const r = addToVault(cat);
-  if (r.ok) {
-    if (cat.remote && r.item) {
-      showToast(`已收进暂存箱：${cat.title}（正在缓存到云盘…）`);
-      void cacheRemoteFileToVault(r.item.id, cat.remote, cat.title);
-    } else {
-      showToast(`已收进暂存箱：${cat.title}`);
+  let outcome: "store" | "oh" | "return" = "return";
+  try {
+    if (!commit || !cat) return;
+    if (!target) {
+      showToast("没放进暂存箱：拖到「暂存箱」目标上再松手");
+      return;
     }
+    if (isOH) {
+      ohAsk(`请帮我处理这个来自 OneTHU 的内容：${cat.title}\n${JSON.stringify({type:cat.type,atom:cat.atom,board:cat.board,text:cat.text,summary:cat.sub,payload:cat.payload})}`);
+      outcome = "oh";
+      window.dispatchEvent(new CustomEvent("onethu:vault-handoff", { detail: { target: "oh", fromManager } }));
+      return;
+    }
+    const r = addToVault(cat);
+    if (r.ok) {
+      outcome = "store";
+      if (cat.remote && r.item) {
+        showToast(`已收进暂存箱：${cat.title}（正在缓存到云盘…）`);
+        void cacheRemoteFileToVault(r.item.id, cat.remote, cat.title);
+      } else {
+        showToast(`已收进暂存箱：${cat.title}`);
+      }
+    }
+    else if (r.reason === "duplicate") showToast(`暂存箱里已经有「${cat.title}」了`);
+    else showToast("暂存箱暂时不可用：稍后再试");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "内容交接失败，请重试");
+  } finally {
+    motion?.finish(outcome, destination, destinationEl ?? undefined);
   }
-  else if (r.reason === "duplicate") showToast(`暂存箱里已经有「${cat.title}」了`);
-  else showToast("暂存箱暂时不可用：稍后再试");
 }
 
 function onUp(e: PointerEvent): void {
@@ -155,31 +157,52 @@ function cancelHiddenDrag(): void {
 }
 
 /** 从一次 pointer 位置启动拖动（供内部/测试调用；任意元素走 data-vault-catch 自动接线）。 */
-export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1): boolean {
+export function beginVaultDrag(cat: VaultCatch, x: number, y: number, id = -1, source?: HTMLElement): boolean {
   if (dragState.active || !claimGesture("vault-drag")) return false;
   pointerId = id;
   pendingCat = cat;
-  ghost = document.createElement("div");
-  ghost.className = GHOST_CLASS;
-  const badge = document.createElement("span");
-  badge.className = "vault-drag-ghost-type";
-  badge.textContent = cat.type === "atom" ? "对象" : cat.type === "file" ? "文件" : cat.type === "board-item" ? "组件" : "内容";
-  const title = document.createElement("span");
-  title.className = "vault-drag-ghost-title";
-  title.textContent = cat.title;
-  ghost.append(badge, title);
-  document.body.appendChild(ghost);
+  dragFromManager = !!source?.closest(".vault-manager");
+  ghost = createGhost(cat, source?.closest(".vault-workspace") ? "vault" : "page");
+  ghostMotion = beginVaultCardMotion(ghost, source ?? null, x, y);
   document.body.classList.add(BODY_CLASS);
   setDrag({ active: true, hover: false, title: cat.title, target: undefined });
   paint(x, y);
   window.addEventListener("pointermove", onMove, { capture: true });
   window.addEventListener("pointerup", onUp, { capture: true });
   window.addEventListener("pointercancel", onCancel, { capture: true });
-  window.addEventListener("lostpointercapture", onCancel, { capture: true });
+  // The source may hand off capture while the pointer is still down (WebKit).
+  // Window move/up keep tracking it; only explicit cancellation ends delivery.
   window.addEventListener("blur", cancelActiveDrag);
   document.addEventListener("visibilitychange", cancelHiddenDrag);
   document.addEventListener("dragstart", blockNativeDrag, true);
   return true;
+}
+
+function createGhost(cat: VaultCatch, origin: "vault" | "page"): HTMLDivElement {
+  const presentation = vaultItemPresentation(cat), card = document.createElement("div"), inner = document.createElement("div");
+  card.className = GHOST_CLASS; card.dataset.vaultTitle = cat.title; card.dataset.vaultOrigin = origin; card.setAttribute("aria-hidden", "true");
+  inner.className = "vault-drag-card";
+  const icon = document.createElement("span"), svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"), path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  icon.className = "vault-drag-ghost-icon";
+  svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("fill", "none"); svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "1.6"); svg.setAttribute("stroke-linecap", "round"); svg.setAttribute("stroke-linejoin", "round");
+  path.setAttribute("d", VAULT_ICON_PATHS[presentation.icon] ?? VAULT_ICON_PATHS.inbox!); svg.append(path); icon.append(svg);
+  const content = document.createElement("div"); content.className = "vault-drag-ghost-content";
+  const badge = document.createElement("span");
+  badge.className = "vault-drag-ghost-type";
+  badge.textContent = [presentation.label, presentation.badge].filter(Boolean).join(" · ");
+  const title = document.createElement("span");
+  title.className = "vault-drag-ghost-title";
+  title.textContent = cat.title;
+  const detail = document.createElement("span"); detail.className = "vault-drag-ghost-detail"; detail.textContent = presentation.detail;
+  content.append(badge, title); if (presentation.detail) content.append(detail);
+  inner.append(icon, content); card.append(inner);
+  return card;
+}
+
+/** Opening a stored item picks up a visual copy and keeps the original in its box. */
+export function animateVaultTakeout(item: VaultCatch, origin: VaultMotionDestination): void {
+  playVaultTakeout(createGhost(item, "vault"), origin);
 }
 
 /** 安装全局拖拽源识别（Layout 挂一次；返回清理）。 */
@@ -195,7 +218,7 @@ export function installVaultDragSources(): () => void {
   };
   const clearClickGuard = (): void => {
     if (!clickGuard) return;
-    clickGuard.el.removeEventListener("click", clickGuard.swallow, true);
+    window.removeEventListener("click", clickGuard.swallow, true);
     window.clearTimeout(clickGuard.timer);
     clickGuard = null;
   };
@@ -209,7 +232,7 @@ export function installVaultDragSources(): () => void {
   };
   const arm = (): void => {
     if (!pending || pending.armed) return;
-    if (!pending.el.isConnected || !beginVaultDrag(pending.cat, pending.x, pending.y, pending.pointerId)) { clear(); return; }
+    if (!pending.el.isConnected || !beginVaultDrag(pending.cat, pending.x, pending.y, pending.pointerId, pending.el)) { clear(); return; }
     pending.armed = true;
     /* 拖动已经开始：吞掉这次元素自己的 click（否则松手会触发原按钮动作）。 */
     const el = pending.el;
@@ -217,10 +240,13 @@ export function installVaultDragSources(): () => void {
     const swallow = (event: MouseEvent): void => {
       // Keyboard activation is a separate action, never the drag's compatibility click.
       if (event.detail === 0) return;
+      if (event instanceof PointerEvent && event.pointerId > 0 && event.pointerId !== clickGuard?.pointerId) return;
       event.stopPropagation(); event.preventDefault(); clearClickGuard();
     };
     clickGuard = { el, pointerId: pending.pointerId, swallow };
-    el.addEventListener("click", swallow, true);
+    // A successful handoff can unmount the source before the compatibility click.
+    // Capture globally so that same press cannot click through to the OH capsule.
+    window.addEventListener("click", swallow, true);
   };
 
   const onDown = (e: PointerEvent): void => {
@@ -231,7 +257,8 @@ export function installVaultDragSources(): () => void {
     }
     lastPointerType = e.pointerType || "mouse";
     if (e.button !== undefined && e.button !== 0) return;
-    if (dragState.active) return;
+    // Recover a press whose release occurred outside the WebView.
+    if (dragState.active) cancelActiveDrag();
     // A new physical press must never inherit a cancelled drag's click guard.
     clearClickGuard();
     clear();
@@ -289,7 +316,7 @@ export function installVaultDragSources(): () => void {
   const onContextMenu = (e: MouseEvent): void => {
     if (lastPointerType !== "touch") return;
     const el = e.target as Element | null;
-    if (pending?.el.contains(el) || el?.closest("[data-vault-catch]")) {
+    if (clickGuard || pending?.el.contains(el) || el?.closest("[data-vault-catch]")) {
       e.preventDefault(); e.stopPropagation();
     }
   };
@@ -323,7 +350,7 @@ export function installVaultDragSources(): () => void {
   document.addEventListener("pointercancel", onRelease, true);
   document.addEventListener("lostpointercapture", onRelease, true);
   return () => {
-    cancelSession(); clearClickGuard();
+    cancelSession(); clearClickGuard(); disposeVaultCardMotions();
     document.removeEventListener("pointerdown", onDown, true);
     document.removeEventListener("pointermove", onPointerMove, true);
     document.removeEventListener("pointerup", onRelease, true);

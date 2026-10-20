@@ -52,7 +52,7 @@ import { useApp } from "../state/context.js";
 import { homeStarterItems } from "../state/boardCore.js";
 import { activeBoard, cellFromRect, loadBoard, rectFromCell, type BoardDoc, type BoardItem, type Orientation } from "../state/board.js";
 import { openOnePage } from "../state/onePage.js";
-import { gestureOwner } from "../lib/gestureArena.js";
+import { gestureOwner, subscribeGesture } from "../lib/gestureArena.js";
 import { addToVault } from "../state/vault.js";
 import { openWorkspace, explorerSnapshot, subscribeExplorer } from "../state/explorer.js";
 import { FolderIcon } from "./Icons.js";
@@ -407,6 +407,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const [live, setLive] = useState<{ id: string; rect: Rect } | null>(null);
   const liveRef = useRef(live);
   liveRef.current = live;
+  const pointerCleanup = useRef<(() => void) | null>(null);
+  useEffect(() => () => { pointerCleanup.current?.(); pointerCleanup.current = null; }, []);
 
   const rectOf = (it: FreeItem): Rect =>
     live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
@@ -704,6 +706,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* Window listeners still track the gesture. */ }
     const it = itemsRef.current.find((x) => x.id === id);
     if (!it) return;
+    pointerCleanup.current?.();
+    pointerCleanup.current = null;
+    liveRef.current = null; setLive(null);
     e.stopPropagation();
     // Selecting inserts the toolbar immediately. A real touch release can then
     // target a newly appeared button under the finger (e.g. pin/delete). Consume
@@ -734,31 +739,32 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     let armed = false;
     let longFired = false;
     let timer: number | null = null;
-    /* 固定的组件：位置锁定（挡拖动/缩放），但仍可长按出菜单取消固定——否则就锁死了。 */
-    if (it.pinned && mode === "move") {
-      timer = window.setTimeout(() => openItemMenu(it, sx, sy), LONG_PRESS_MS);
-      const onUpPinned = (): void => {
-        window.removeEventListener("pointerup", onUpPinned);
-        window.removeEventListener("pointercancel", onUpPinned);
-        if (timer !== null) window.clearTimeout(timer);
-        finishClickGuard();
-      };
-      window.addEventListener("pointerup", onUpPinned);
-      window.addEventListener("pointercancel", onUpPinned);
-      return;
-    }
+    const locked = it.pinned && mode === "move";
+    // Transfer ownership is permanent for this press. The global drop handler
+    // releases its owner before our bubbling pointerup, and capture changes can
+    // also end a transfer. Neither may resume this old board move.
+    let transferred = false;
+    const handoff = (owner: string | null): void => {
+      if (owner !== "vault-drag" || transferred) return;
+      transferred = true;
+      if (timer !== null) window.clearTimeout(timer);
+      if (longFired) menu.close();
+      if (liveRef.current?.id === id) { liveRef.current = null; setLive(null); }
+    };
+    const unsubscribeGesture = subscribeGesture(handoff);
+    handoff(gestureOwner());
     /* 长按不动 = 出快捷菜单（与全站长按口径一致）；一旦位移超过阈值就收回菜单并转成拖动。 */
     timer = window.setTimeout(() => {
-      if (gestureOwner() === "vault-drag") return;
+      if (transferred) return;
       longFired = true;
       openItemMenu(it, sx, sy);
     }, LONG_PRESS_MS);
     /* 拖动即浮到与自己重叠的那簇之上（不惊动无关组件的图层序） */
-    ops.raise(id);
+    if (!locked) ops.raise(id);
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
     const m: string = mode; // string 别名：避免 TS 对字面量联合做过强收窄
     const onMove = (ev: PointerEvent): void => {
-      if (gestureOwner() === "vault-drag") return;
+      if (ev.pointerId !== e.pointerId || transferred || locked) return;
       const raw = { x: ev.clientX - sx, y: ev.clientY - sy };
       /* 手指走的是屏幕，条目活在世界上：位移要除以倍率（放大 2 倍时拖 100px = 世界 50px）。 */
       const moved = worldDelta(scaleRef.current, raw.x, raw.y);
@@ -789,14 +795,22 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         liveRef.current = next; setLive(next);
       }
     };
-    const onUp = (): void => {
+    const cleanup = (): void => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
       if (timer !== null) window.clearTimeout(timer);
+      unsubscribeGesture();
+      clearClickGuard();
+      if (pointerCleanup.current === cleanup) pointerCleanup.current = null;
+    };
+    const onUp = (ev: PointerEvent): void => {
+      if (ev.pointerId !== e.pointerId) return;
+      cleanup();
+      window.addEventListener("click", killClick, { capture: true, once: true });
       finishClickGuard();
       const cur = liveRef.current;
-      if (cur && cur.id === id) {
+      if (!transferred && ev.type === "pointerup" && cur && cur.id === id) {
         const r = clampRect(cur.rect);
         if (mode === "move") ops.move(id, r.x, r.y);
         else ops.resize(id, r);
@@ -806,6 +820,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
+    pointerCleanup.current = cleanup;
   };
 
   /** 新条目的落点：右键/＋记下的位置优先，否则放在现有内容下方。 */

@@ -51,7 +51,7 @@ try {
   check(rect.side.includes('is-left'), '旋转切换桌面布局后仍沿用手机入口位置');
   await anchor.tap();
   await page.locator('.vault-manager').waitFor();
-  check(await page.locator('.vault-radar').count() === 0, '普通点击直接管理，不出现传输雷达');
+  check(await page.locator('.vault-accept-halo').count() === 0, '普通点击直接管理，不出现传输雷达');
   const managerBounds = await page.locator('.vault-manager').boundingBox();
   check(managerBounds && managerBounds.y >= 0 && managerBounds.y + managerBounds.height <= 390, '横屏管理面板全高夹紧');
   await page.locator('.vault-manager').getByRole('button', { name: '关闭', exact: true }).tap();
@@ -87,18 +87,22 @@ try {
     await page.evaluate(ratio => localStorage.setItem('onethu.vault-anchor.phone.v1', JSON.stringify({ side:'right', ratio })), ratio);
     await page.reload({ waitUntil: 'domcontentloaded' }); await anchor.waitFor(); await bounds(`极端保存高度${ratio}`);
   }
-  // A real drag cancelled by Escape must not persist or open the preview.
+  // Like the original refresh button, pointercancel ends a drag at its current position.
   const cdp = await page.context().newCDPSession(page);
-  const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y, radiusX: 3, radiusY: 3, force: 1, id: 1 }] });
+  const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' || type === 'touchCancel' ? [] : [{ x, y, radiusX: 3, radiusY: 3, force: 1, id: 1 }] });
   const before = await page.evaluate(() => localStorage.getItem('onethu.vault-anchor.phone.v1'));
   rect = await anchor.boundingBox();
   const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
-  await touch('touchStart', x, y); await page.waitForTimeout(360); await touch('touchMove', 60, 300);
-  await page.keyboard.press('Escape'); await touch('touchEnd');
+  await touch('touchStart', x, y); await touch('touchMove', 60, 300);
+  await page.waitForTimeout(30);
+  const moved = await anchor.boundingBox();
+  await touch('touchCancel');
   await page.waitForTimeout(150);
-  check(before === await page.evaluate(() => localStorage.getItem('onethu.vault-anchor.phone.v1')), '取消拖动不保存中途位置');
-  check(await page.locator('.vault-radar,.vault-manager').count() === 0, '取消拖动不误开面板');
-  await bounds('取消拖动恢复');
+  const after = await page.evaluate(() => localStorage.getItem('onethu.vault-anchor.phone.v1'));
+  const ended = await anchor.boundingBox();
+  check(before !== after && Number.isFinite(JSON.parse(after).xRatio) && Math.hypot(ended.x - moved.x, ended.y - moved.y) < 2, 'pointercancel在当前位置结束并保存，不回到起点');
+  check(await page.locator('.vault-accept-halo,.vault-manager').count() === 0, 'pointercancel结束入口拖动不误开面板');
+  await bounds('pointercancel结束位置');
   await cdp.detach();
   const call = (path, method, args = []) => page.evaluate(async ({path,method,args}) => {
     const resource = performance.getEntriesByType('resource').map(r => r.name).find(url => new URL(url).pathname === path) ?? path;
@@ -119,7 +123,7 @@ try {
     if (theme === 'dark') check(await call('/src/state/theme.ts', 'activateTheme', ['onethu.theme.night']), '真实主题引擎激活夜航');
     else { await call('/src/state/theme.ts','deactivateTheme'); await call('/src/lib/glassLevel.ts','setGlassLevel',['rich']); }
     await anchor.tap(); await page.locator('.vault-manager').waitFor();
-    check(await page.locator('.vault-radar').count() === 0, theme + ' 点击入口不挂载传输雷达');
+    check(await page.locator('.vault-accept-halo').count() === 0, theme + ' 点击入口不挂载传输雷达');
     const colors = await page.evaluate(() => {
       const button = getComputedStyle(document.querySelector('.vault-box-button'));
       const manager = getComputedStyle(document.querySelector('.vault-manager'));

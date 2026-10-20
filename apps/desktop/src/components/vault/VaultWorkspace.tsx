@@ -1,7 +1,7 @@
 /** Drawer and full page share collections, content and exchange actions. */
 import { useEffect, useId, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Btn, IconBtn, Input, List, Menu, Row, Select, Text, type MenuItem } from "@onethu/gui";
-import { IconFile, IconFolder, IconIn, IconMore, IconPlus, IconSearch, IconToday, IconUpload } from "../Icons.js";
+import { IconIn, IconMore, IconPlus, IconSearch, IconUpload } from "../Icons.js";
 import { useApp } from "../../state/context.js";
 import { showToast } from "../../state/toast.js";
 import { openFormModal } from "../../lib/formModal.js";
@@ -13,11 +13,12 @@ import { useSeafile } from "../../state/seafile.js";
 import { openVaultItem } from "../../state/vaultRegistry.js";
 import { addAtomToHome } from "../../state/onePage.js";
 import { useOverlayBack } from "../../state/navStack.js";
-import { vaultCatchAttr } from "./vaultDrag.js";
+import { animateVaultTakeout, vaultCatchAttr } from "./vaultDrag.js";
 import { VaultExchangeActions } from "./VaultExchangeActions.js";
 import { IssuedSharesCard } from "./IssuedSharesCard.js";
+import { VaultItemIcon } from "./VaultItemIcon.js";
+import { vaultItemPresentation } from "./vaultItemPresentation.js";
 
-const TYPE_NAMES = { atom: "快捷入口", text: "文字", file: "文件", "board-item": "白板组件", payload: "已存内容" };
 function sizeText(size?: number): string {
   if (!size) return "文件";
   return size >= 1024 * 1024 ? `${(size / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(size / 1024))} KB`;
@@ -25,10 +26,7 @@ function sizeText(size?: number): string {
 function itemSummary(item: VaultItem): string {
   if (item.file) return [sizeText(item.file.size), item.source].filter(Boolean).join(" · ");
   if (item.text) return item.text.replace(/\s+/g, " ").slice(0, 100);
-  return [TYPE_NAMES[item.type], item.source].filter(Boolean).join(" · ");
-}
-function itemIcon(item: VaultItem): ReactNode {
-  return item.type === "file" ? <IconFile /> : item.type === "text" ? <IconToday /> : item.type === "atom" ? <IconFolder /> : <IconIn />;
+  return [vaultItemPresentation(item).label, item.source].filter(Boolean).join(" · ");
 }
 
 export function VaultWorkspace({ compact = false, onNavigate }: { compact?: boolean; onNavigate?: () => void }): ReactNode {
@@ -48,10 +46,12 @@ export function VaultWorkspace({ compact = false, onNavigate }: { compact?: bool
   useEffect(() => { let active = true; void installVaultCloudAdapter().then(ok => { if (active) setCloudReady(ok); }).catch(() => { if (active) setCloudReady(false); }); return () => { active = false; }; }, [cloudConfigured]);
   useEffect(() => { setQuery(""); setBoxMenu(null); setItemMenu(null); }, [box.id]);
   const go = (page: string, params?: unknown): void => { onNavigate?.(); navigate(page as never, params as never); };
-  const openItem = (item: VaultItem): void => {
+  const openItem = (item: VaultItem, source?: HTMLElement): void => {
+    const origin = source?.getBoundingClientRect();
     // The document viewer owns its own window; leave the manager before opening it.
     if (item.type === "file" && item.file) onNavigate?.();
-    openVaultItem(item, { navigate: go, toast: showToast });
+    const handled = openVaultItem(item, { navigate: go, toast: showToast });
+    if (handled && origin) animateVaultTakeout(item, origin);
   };
   const addFiles = async (read: () => Promise<StagedFile[]>): Promise<void> => {
     if (busy) return;
@@ -117,7 +117,7 @@ export function VaultWorkspace({ compact = false, onNavigate }: { compact?: bool
         event.preventDefault(); event.stopPropagation(); setFileHot(false); window.dispatchEvent(new Event("onethu:vault-file-drop-handled"));
         void addFiles(() => stageFromFiles(files));
       }}>
-        {visible.length ? <List className="vault-content-list" divided>{visible.map(item => <div className="vault-item-in" key={item.id} data-vault-catch={vaultCatchAttr(item)}><Row flush leading={<span className={`vault-item-symbol is-${item.type}`}>{itemIcon(item)}</span>} title={item.title} sub={itemSummary(item)} titleAttr={item.title} onClick={() => openItem(item)} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openItem(item); } }} trailing={<IconBtn label={`更多操作：${item.title}`} icon={<IconMore />} onClick={event => { event.stopPropagation(); setItemMenu({ anchor: event.currentTarget, item, boxId: box.id }); }} />}/></div>)}</List> : <div className="vault-content-empty"><span className="vault-empty-mark"><IconIn /></span><h3>{term ? "没有找到相关内容" : "先放进来，稍后再处理"}</h3><Text tone="faint">{term ? "试试其他关键词，或查看箱内全部内容。" : "文件、文字和页面入口，都可以收在一起。"}</Text>{term ? <Btn variant="outline" onClick={() => setQuery("")}>清除搜索</Btn> : <Text slot="micro" tone="faint">长按内容后拖到箱子；电脑也可以直接拖入文件。</Text>}</div>}
+        {visible.length ? <List className="vault-content-list" divided>{visible.map(item => <div className="vault-item-in" key={item.id} data-vault-catch={vaultCatchAttr(item)}><Row flush leading={<span className={`vault-item-symbol is-${item.type}`}><VaultItemIcon item={item} /></span>} title={item.title} sub={itemSummary(item)} titleAttr={item.title} onClick={event => openItem(item, event.currentTarget)} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openItem(item, event.currentTarget); } }} trailing={<IconBtn label={`更多操作：${item.title}`} icon={<IconMore />} onClick={event => { event.stopPropagation(); setItemMenu({ anchor: event.currentTarget, item, boxId: box.id }); }} />}/></div>)}</List> : <div className="vault-content-empty"><span className="vault-empty-mark"><IconIn /></span><h3>{term ? "没有找到相关内容" : "先放进来，稍后再处理"}</h3><Text tone="faint">{term ? "试试其他关键词，或查看箱内全部内容。" : "文件、文字和页面入口，都可以收在一起。"}</Text>{term ? <Btn variant="outline" onClick={() => setQuery("")}>清除搜索</Btn> : <Text slot="micro" tone="faint">长按内容后拖到箱子；电脑也可以直接拖入文件。</Text>}</div>}
         {fileHot ? <div className="vault-contents-drop"><IconUpload /><b>松手放入「{box.name}」</b></div> : null}
       </div>
       <footer className="vault-workspace-foot"><IssuedSharesCard boxId={box.id} />{cloudReady === false ? <Btn size="sm" variant="ghost" onClick={() => go("cloud")}>连接云盘以分享文件与口令</Btn> : <Text slot="micro" tone="faint">长按收纳 · 拖到 OH 胶囊交给小OH</Text>}</footer>

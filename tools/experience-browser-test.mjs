@@ -80,7 +80,7 @@ try{
  const share=p.getByRole('dialog',{name:'分享内容',exact:true});
  await share.getByRole('button',{name:'生成分享口令',exact:true}).click();await share.locator('.vault-exchange-code').waitFor();
  check(/^ON(-[A-Z0-9]{4}){4}$/.test(await share.locator('.vault-exchange-code').innerText()),'标签页共享入口生成短口令');await p.keyboard.press('Escape');await share.waitFor({state:'hidden'});
- await p.getByRole('button',{name:/^暂存箱，/}).click();await p.locator('.vault-manager').waitFor();check(await p.locator('.vault-radar').count()===0,'点击暂存箱直接打开管理，不弹雷达');await p.locator('.vault-manager').getByRole('button',{name:'分享口令',exact:true}).click();await share.getByRole('button',{name:'生成分享口令',exact:true}).click();await share.locator('.vault-exchange-code').waitFor();check(await share.locator('.vault-exchange-code').isVisible(),'管理面板共享入口生成短口令');
+ await p.getByRole('button',{name:/^暂存箱，/}).click();await p.locator('.vault-manager').waitFor();check(await p.locator('.vault-accept-halo').count()===0,'点击暂存箱直接打开管理，不显示接收光环');await p.locator('.vault-manager').getByRole('button',{name:'分享口令',exact:true}).click();await share.getByRole('button',{name:'生成分享口令',exact:true}).click();await share.locator('.vault-exchange-code').waitFor();check(await share.locator('.vault-exchange-code').isVisible(),'管理面板共享入口生成短口令');
  await p.keyboard.press('Escape');await share.waitFor({state:'hidden'});await p.locator('.vault-manager').getByRole('button',{name:'关闭',exact:true}).click();await p.locator('.vault-manager').waitFor({state:'hidden'});
  /* ── 实用模式：极简壳 + 第五格「更多功能」 ── */
  await call(p,'/src/state/experienceMode.ts','navigateSimple',['homepage']);await p.waitForTimeout(350);

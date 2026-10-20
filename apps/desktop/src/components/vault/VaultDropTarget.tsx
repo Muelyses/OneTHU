@@ -1,14 +1,14 @@
 /**
- * 常驻「暂存箱」入口 + 半圆雷达。
+ * 常驻「暂存箱」入口 + 局部接收扫描。
  *
  * - 点入口直接打开管理，向内滑动同样打开管理；长按入口拖动换位。
- * - 雷达只在长按内容进行传输时出现；拖到箱子/扫描盘收进来，拖到 OH 发给小OH。
+ * - 雷达只在长按内容进行传输时出现；拖到箱子附近收进来，拖到 OH 发给小OH。
  * - 长按任意带 `data-vault-catch` 的内容自动展开雷达并成为投递目标（vaultDrag.ts 驱动）。
  */
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Btn, IconVault } from "@onethu/gui";
-import { IconIn, IconCheck } from "../Icons.js";
+import { IconIn } from "../Icons.js";
 import { useOverlayBack } from "../../state/navStack.js";
 import { useVaultAnchor, vaultViewport, visibleVaultObstacles, VAULT_OBSTACLES } from "./useVaultAnchor.js";
 import { clamp } from "../../state/vaultAnchor.js";
@@ -20,7 +20,7 @@ import { installVaultDragSources, subscribeVaultDrag, vaultDragSnapshot } from "
 import { VaultRadarScope } from "./VaultRadarScope.js";
 
 type AnchorPoint = { left: number; top: number };
-type RadarPosition = AnchorPoint & { width: number; maxHeight: number; tight: boolean };
+type MenuPosition = AnchorPoint & { width: number; maxHeight: number };
 
 export function VaultDropTarget(): ReactNode {
   const [fileDrag, setFileDrag] = useState(false);
@@ -127,15 +127,13 @@ function VaultButton(): ReactNode {
   const box = doc.boxes.find((b) => b.id === doc.activeId) ?? doc.boxes[0]!;
   const items = box.items;
   const anchor = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState<RadarPosition>();
-  const open = drag.active;
+  const [position, setPosition] = useState<MenuPosition>();
   const [menu, setMenu] = useState(false);
   const openVaultPage = (): void => {
     anchor.current?.querySelector("button")?.focus(); setMenu(false); openVaultSheet();
   };
-  const edge = useVaultAnchor(anchor, openVaultPage, () => setMenu(false));
+  const edge = useVaultAnchor(anchor, () => setMenu(false));
   const closeMenu = (): void => { setMenu(false); anchor.current?.querySelector("button")?.focus(); };
   useOverlayBack("vault-anchor-position", menu, closeMenu);
   useEffect(() => { if (drag.active) setMenu(false); }, [drag.active]);
@@ -146,7 +144,7 @@ function VaultButton(): ReactNode {
   }, []);
 
   useLayoutEffect(() => {
-    if (!open && !menu) return;
+    if (!menu) return;
     let frame = 0;
     const measure = (): void => {
       if (!anchor.current) return;
@@ -161,26 +159,24 @@ function VaultButton(): ReactNode {
         if (obstacle.top <= bounds.top + (bounds.bottom - bounds.top) * .35) topLimit = Math.max(topLimit, obstacle.bottom + gap);
         else if (obstacle.bottom >= bounds.bottom - (bounds.bottom - bounds.top) * .35) bottom = Math.min(bottom, obstacle.top - gap);
       }
-      const sideSpace = edge.placement.side === "left" ? bounds.right - rect.right - gap : rect.left - gap - bounds.left;
-      const width = Math.min(parseFloat(tokens.getPropertyValue("--og-vault-radar-w")), sideSpace >= 220 ? sideSpace : bounds.right - bounds.left);
-      const left = clamp(edge.placement.side === "left" ? rect.right + gap : rect.left - gap - width, bounds.left, bounds.right - width);
       const maxHeight = Math.max(0, bottom - topLimit);
-      const panelHeight = Math.min(maxHeight, (menu ? menuRef.current?.offsetHeight : panelRef.current?.offsetHeight) || maxHeight);
+      const sideSpace = edge.placement.side === "left" ? bounds.right - rect.right - gap : rect.left - gap - bounds.left;
+      const width = Math.min(parseFloat(tokens.getPropertyValue("--og-vault-menu-w")), sideSpace >= 220 ? sideSpace : bounds.right - bounds.left);
+      const left = clamp(edge.placement.side === "left" ? rect.right + gap : rect.left - gap - width, bounds.left, bounds.right - width);
+      const panelHeight = Math.min(maxHeight, menuRef.current?.offsetHeight || maxHeight);
       const top = clamp(rect.top + rect.height / 2 - panelHeight * .35, topLimit, bottom - panelHeight);
-      const next: RadarPosition = {left, top, width, maxHeight,
-        tight: maxHeight < parseFloat(tokens.getPropertyValue("--og-vault-radar-compact-h"))};
-      setPosition(old => old && Object.keys(next).every(key => old[key as keyof RadarPosition] === next[key as keyof RadarPosition]) ? old : next);
+      const next: MenuPosition = {left, top, width, maxHeight};
+      setPosition(old => old && Object.keys(next).every(key => old[key as keyof MenuPosition] === next[key as keyof MenuPosition]) ? old : next);
     };
     const schedule = (): void => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
     const resize = new ResizeObserver(schedule);
     resize.observe(anchor.current!);
-    if (panelRef.current) resize.observe(panelRef.current);
     if (menuRef.current) resize.observe(menuRef.current);
     for (const el of document.querySelectorAll(VAULT_OBSTACLES)) resize.observe(el);
     measure(); window.addEventListener("resize", schedule); window.addEventListener("scroll", schedule, true);
     window.visualViewport?.addEventListener("resize", schedule); window.visualViewport?.addEventListener("scroll", schedule);
     return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener("resize", schedule); window.removeEventListener("scroll", schedule, true); window.visualViewport?.removeEventListener("resize", schedule); window.visualViewport?.removeEventListener("scroll", schedule); };
-  }, [open, menu, drag.active, edge.placement]);
+  }, [menu, edge.placement]);
   useEffect(() => { if (menu) menuRef.current?.querySelector("button")?.focus(); }, [menu]);
   useEffect(() => {
     if (!menu) return;
@@ -204,24 +200,6 @@ function VaultButton(): ReactNode {
     };
   }, [menu]);
 
-  const panel = open ? (
-    <div
-      ref={panelRef}
-      className={"vault-radar is-transfer" + (drag.target === "vault" ? " is-hover" : "") + (position?.tight ? " is-tight" : "")}
-      style={position ? {left: position.left, top: position.top, width: position.width, maxHeight: position.maxHeight} : undefined}
-      data-vault-drop
-      role="region"
-      aria-label={`暂存箱雷达：${box.name}，共 ${items.length} 项`}
-    >
-      <div className="vault-radar-heading"><span>{box.name}</span><span>{items.length} 项已暂存</span></div>
-      <VaultRadarScope items={items} />
-      <div className="vault-radar-center" role="status" aria-live="polite">
-        <span className="vault-radar-target">{drag.target === "vault" ? <IconCheck /> : <IconIn />}</span>
-        <div><b>{drag.target === "vault" ? "松手存入暂存箱" : "拖到这里，存入暂存箱"}</b><small>{drag.title}</small></div>
-      </div>
-    </div>
-  ) : null;
-
   return (
     <>
       <span ref={edge.safe} className="vault-safe-area" aria-hidden="true" />
@@ -231,24 +209,28 @@ function VaultButton(): ReactNode {
           variant="solid"
           data-vault-drop
           aria-haspopup="dialog"
+          aria-description={drag.active ? drag.target === "vault" ? "松手存入暂存箱" : "可接收拖动内容" : undefined}
           aria-label={`暂存箱，${items.length} 项`}
-          titleAttr="暂存箱 · 点击打开，长按拖动换位"
+          titleAttr="暂存箱 · 点击打开，拖动换位"
           onPointerDown={edge.onPointerDown}
           onPointerMove={edge.onPointerMove}
           onPointerUp={edge.onPointerUp}
           onPointerCancel={edge.onPointerCancel}
-          onContextMenu={e => { e.preventDefault(); if (!edge.moving && Date.now() > edge.touchUntil.current) setMenu(true); }}
+          onContextMenu={e => { e.preventDefault(); if (!edge.pressedRef.current) setMenu(true); }}
           onClick={(e) => {
-            if (e.detail !== 0 && Date.now() < edge.suppressClickUntil.current) { e.preventDefault(); return; }
-            openVaultPage();
+            if (!edge.consumeClick(e)) openVaultPage();
           }}
         >
           <IconVault size="md" />
           <span className="vault-box-label">暂存箱</span><span className="vault-box-count">{items.length}</span>
         </Btn>
       </div>
-      {menu ? createPortal(<div ref={menuRef} className="vault-anchor-menu" role="menu" aria-label="暂存箱入口位置" style={position ? {left: position.left, top: position.top, width: position.width, maxHeight: position.maxHeight} : undefined}><p>长按拖动换位 · 向内轻滑打开</p><Btn role="menuitem" variant="ghost" onClick={() => { edge.reset(); closeMenu(); }}>恢复默认位置</Btn><Btn role="menuitem" variant="ghost" onClick={closeMenu}>关闭</Btn></div>, document.body) : null}
-      {panel ? createPortal(panel, document.body) : null}
+      {menu ? createPortal(<div ref={menuRef} className="vault-anchor-menu" role="menu" aria-label="暂存箱入口位置" style={position ? {left: position.left, top: position.top, width: position.width, maxHeight: position.maxHeight} : undefined}><p>拖动入口换位 · 点击打开暂存箱</p><Btn role="menuitem" variant="ghost" onClick={() => { edge.reset(); closeMenu(); }}>恢复默认位置</Btn><Btn role="menuitem" variant="ghost" onClick={closeMenu}>关闭</Btn></div>, document.body) : null}
+      {drag.active ? <VaultRadarScope
+        left={edge.placement.left + (anchor.current?.offsetWidth ?? 64) / 2}
+        top={edge.placement.top + (anchor.current?.offsetHeight ?? 48) / 2}
+        hover={drag.target === "vault"}
+      /> : null}
       
       {drag.active ? <TransferHint target={drag.target} /> : null}
     </>

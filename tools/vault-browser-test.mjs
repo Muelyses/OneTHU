@@ -57,10 +57,9 @@ try {
   await p.waitForTimeout(520); /* 长按 400ms 才拾取；先移动超过 8px 会被当成滚动 */
   await p.mouse.move(box.x + box.width / 2 + 24, box.y + box.height / 2 + 24, { steps: 6 });
   await p.waitForTimeout(250);
-  check(await p.locator('[data-vault-drop]').count() >= 1, 'drop target appears while dragging');
-  /* 2026-10-19：雷达里的「松手放入」大板与锚点按钮都带 data-vault-drop —— 落点取大板 */
-  const dropPad = p.locator('.vault-radar[data-vault-drop]');
-  const drop = await (await dropPad.count() ? dropPad : p.locator('[data-vault-drop]').first()).boundingBox();
+  check(await p.locator('.vault-accept-halo[data-vault-drop]').isVisible(), 'acceptance halo appears only while dragging');
+  /* The halo may be clipped at an edge; the real button is the reachable drop point. */
+  const drop = await p.locator('.vault-floating-anchor .vault-box-button[data-vault-drop]').boundingBox();
   await p.mouse.move(drop.x + drop.width / 2, drop.y + drop.height / 2, { steps: 10 });
   await p.waitForTimeout(250);
   await p.mouse.up();
@@ -278,8 +277,8 @@ try {
   await p.waitForTimeout(520); /* 同上：长按拾取 */
   await p.mouse.move(sbox.x + sbox.width / 2 + 20, sbox.y + 50, { steps: 5 });
   await p.waitForTimeout(250);
-  const sPad = p.locator('.vault-radar[data-vault-drop]');
-  const sdrop = await (await sPad.count() ? sPad : p.locator('[data-vault-drop]').first()).boundingBox();
+  await p.locator('.vault-accept-halo[data-vault-drop]').waitFor();
+  const sdrop = await p.locator('.vault-floating-anchor .vault-box-button[data-vault-drop]').boundingBox();
   await p.mouse.move(sdrop.x + sdrop.width / 2, sdrop.y + sdrop.height / 2, { steps: 10 });
   await p.mouse.up();
   await p.waitForTimeout(600);
@@ -333,17 +332,21 @@ try {
     await new Promise((r2) => setTimeout(r2, 520));
     window.dispatchEvent(ev('pointermove', x + 36, y + 70));
     await new Promise((r2) => setTimeout(r2, 260));
-    /* 锚点按钮恒带 data-vault-drop，「拖到哪儿」的大板是 .vault-radar[data-vault-drop]；收手后看大板还在不在 */
-    const drop = document.querySelector('.vault-radar[data-vault-drop]') ?? document.querySelector('[data-vault-drop]');
-    const rect = drop?.getBoundingClientRect();
-    const ok = Boolean(document.querySelector('.vault-radar[data-vault-drop]'));
+    const halo = document.querySelector('.vault-accept-halo[data-vault-drop]');
+    const rect = halo?.getBoundingClientRect();
+    const button = document.querySelector('.vault-floating-anchor .vault-box-button[data-vault-drop]');
+    const target = button?.getBoundingClientRect();
+    const visibleHalo = rect && Math.min(rect.right, innerWidth) > Math.max(rect.left, 0) && Math.min(rect.bottom, innerHeight) > Math.max(rect.top, 0);
+    const visibleButton = target && target.left >= 0 && target.top >= 0 && target.right <= innerWidth && target.bottom <= innerHeight
+      && button.contains(document.elementFromPoint(target.left + target.width / 2, target.top + target.height / 2));
+    const ok = !!halo;
     window.dispatchEvent(ev('pointercancel', x + 36, y + 70));
     await new Promise((r2) => setTimeout(r2, 160));
-    return { ok, bottom: rect?.bottom ?? 0, vh: window.innerHeight, cleared: !document.querySelector('.vault-radar[data-vault-drop]') };
+    return { ok, reachable: !!visibleHalo && !!visibleButton, cleared: !document.querySelector('.vault-accept-halo[data-vault-drop]') };
   });
   check(started.ok, 'mobile long-press starts vault drag and shows drop target');
   check(started.cleared, 'pointercancel dismisses the drop target');
-  check(started.bottom > 0 && started.bottom < started.vh, 'mobile drop target stays inside viewport');
+  check(started.reachable, 'mobile halo has a visible local area and its actual button remains reachable');
   /* 云盘适配器：云分享只编码引用，接收端通过 adapter.resolve 读回 */
   const cloud = await p.evaluate(async () => {
     const vs = await import('/src/state/vaultShare.ts');

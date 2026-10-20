@@ -15,13 +15,13 @@ export interface VaultOpenEnv {
   toast: (msg: string) => void;
 }
 
-/** 打开暂存箱条目；返回 false 表示该类型还没有打开方式（由 UI 给出说明）。 */
+/** 发起打开/取用；false 表示未启动，异步内容的加载结果由其预览处理。 */
 export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
   if (it.atom) {
     const view = resolveAtom(it.atom);
     if (!view) {
       env.toast("这个对象已失效（可能没有权限或已被删除），可移除后重新收录");
-      return true;
+      return false;
     }
     view.open((page, params) => env.navigate(String(page), params as Record<string, unknown> | undefined));
     return true;
@@ -37,7 +37,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
     return true;
   }
   if (it.type === "file") {
-    if (!it.file) { env.toast("文件引用缺失，请重新添加"); return true; }
+    if (!it.file) { env.toast("文件引用缺失，请重新添加"); return false; }
     const file = it.file;
     const local = async (): Promise<string> => {
       if (file.stagedPath) return file.stagedPath;
@@ -119,8 +119,8 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
       return true;
     }
     if (kind === "learn-attachment" || kind === "news-file") {
-      if (pageMeta?.url) void import("../pages/info/openExternal.js").then((m) => m.openExternal(pageMeta.url!));
-      else env.toast("附件地址已失效；可到原页面重新下载");
+      if (!pageMeta?.url) { env.toast("附件地址已失效；可到原页面重新下载"); return false; }
+      void import("../pages/info/openExternal.js").then((m) => m.openExternal(pageMeta.url!));
       return true;
     }
     if (kind === "gitlab-project" && pageMeta?.projectId != null) {

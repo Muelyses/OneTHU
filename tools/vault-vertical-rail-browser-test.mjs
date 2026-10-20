@@ -49,7 +49,7 @@ try {
     check(!result.anchorOverlapsRail && result.anchorHit, label + ' 左侧保存位置自动避开竖栏且入口可命中');
     check(result.saved.side === 'left' && result.saved.ratio === .4, label + ' 避障未篡改用户保存的left/40%');
     await anchor.click(); await page.locator('.vault-manager').waitFor();
-    check(await page.locator('.vault-radar').count() === 0, label + ' 普通点击直接管理，不出现雷达');
+    check(await page.locator('.vault-accept-halo').count() === 0, label + ' 普通点击直接管理，不出现接收光环');
     result = await measure(); geometry.push({mode:label,...result});
     check(result.manager.x>=0 && result.manager.y>=0 && result.manager.x+result.manager.width<=1280 && result.manager.y+result.manager.height<=900, label + ' 管理面板完整在屏内');
     const close = page.locator('.vault-manager').getByRole('button',{name:'关闭',exact:true});

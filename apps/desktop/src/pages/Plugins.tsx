@@ -883,7 +883,6 @@ export function McpBody(): ReactNode {
       {/* 反向（OH → 外部 MCP）的检索锚点：设置检索/OH ui_navigate 落到「连接外部 MCP 服务器」这一行 */}
       <div data-set-id="row-oh-mcp-client">
         <Text as="h4" slot="subtitle" weight="semibold">{i18n("pages.plugins.1dda1d69edf9")}</Text>
-        <Text as="p" slot="micro" tone="faint">{i18n("pages.plugins.6b1ad42dcec2")}</Text>
       </div>
       {list.length === 0 ? (
         <Text as="p" slot="micro" tone="faint">{i18n("pages.plugins.4dbfc40111b5")}</Text>

@@ -5316,7 +5316,6 @@ const locale = {
     "pages.plugins.5dbb87d9720a": "插件 · v",
     "pages.plugins.639372d0bac7": "已有同名 MCP 服务器「{name}」：工具前缀 mcp_{name2}_ 会撞车，请换个名称。",
     "pages.plugins.65e85afce9ed": "开启后，本机其它 MCP 客户端填 ",
-    "pages.plugins.6b1ad42dcec2": "下面是**反向**的：让 OH 去连别人的 MCP 服务器 ——",
     "pages.plugins.715e7d2108f7": "管理 MCP 服务器",
     "pages.plugins.71ca3a5a5605": "查看插件详情（简介图 + 详情正文）",
     "pages.plugins.720f02a99a32": "GitHub 仓库",

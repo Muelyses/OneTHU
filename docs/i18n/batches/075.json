@@ -1,28 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.zhjwxk.courses.2ea763bbee3e",
-      "source": " · {zy}志愿",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "zy",
-          "expression": "String(r.zy)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1130,
-          "context": "r.zy ? i18n(\"pages.zhjwxk.courses.2ea763bbee3e\", { zy: String(r.zy) }) : \"\""
-        }
-      ],
-      "translation": " · Preference {zy}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.zhjwxk.courses.2ef9b1789eaf",
       "source": "自定义占用",
@@ -1549,6 +1528,22 @@
         }
       ],
       "translation": "Staged",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.8490de9e4f0a",
+      "source": "竞争宽松",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1065,
+          "context": "vc.level === \"easy\" ? i18n(\"pages.zhjwxk.courses.8490de9e4f0a\") : vc.level === \"medium\" ? i18n(\"pages.zhjwxk.courses.5ca6cb21cd29\") : vc.level === \"hard\" ? i18n(\"pages.zhjwxk.courses.135fef5e1db6\") : \"\""
+        }
+      ],
+      "translation": "Low competition",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

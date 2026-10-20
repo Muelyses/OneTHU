@@ -1,23 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "plugins.facade.f4466b045d5f",
-      "source": "没找到这块板或这个组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1129,
-          "context": "new Error(i18n(\"plugins.facade.f4466b045d5f\"))"
-        }
-      ],
-      "translation": "Board or widget not found",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "plugins.facade.f6746a5629b0",
       "source": "日程不存在：{uid}",
@@ -1350,6 +1334,22 @@
         }
       ],
       "translation": "Book library resources",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.627dd0f3fd6e",
+      "source": "读取云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 68,
+          "context": "return i18n(\"plugins.types.627dd0f3fd6e\");"
+        }
+      ],
+      "translation": "Read Cloud Drive",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

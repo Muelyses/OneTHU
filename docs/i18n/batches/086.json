@@ -1,23 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "state.navigation.241e209e86bb",
-      "source": "生活服务总览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 102,
-          "context": "return i18n(\"state.navigation.241e209e86bb\");"
-        }
-      ],
-      "translation": "Overview of life services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "state.navigation.24be2018df29",
       "source": "银行代发",
@@ -1368,6 +1352,22 @@
         }
       ],
       "translation": "Delivery test",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 132,
+          "context": "r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "Unknown reason",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

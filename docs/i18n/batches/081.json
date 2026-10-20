@@ -1,22 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "settings.label.route.3f0404bdc67a",
-      "source": "模型 / MCP / 日志",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Models / MCP / logs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "settings.label.route.444fd1f85256",
       "source": "模型与多模态",
@@ -1303,6 +1288,22 @@
         }
       ],
       "translation": "Inbox · Sent · Read mail · Search all mailboxes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.4d8a9ed9bf01",
+      "source": "按开始时间排序",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 313,
+          "context": "return i18n(\"state.atoms.4d8a9ed9bf01\");"
+        }
+      ],
+      "translation": "Sort by start time",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

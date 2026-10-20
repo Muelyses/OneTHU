@@ -1,23 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "state.vaultcloud.21e554dce895",
-      "source": "没有可撤销的分享 token",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultCloud.ts",
-          "line": 178,
-          "context": "new Error(i18n(\"state.vaultcloud.21e554dce895\"))"
-        }
-      ],
-      "translation": "No share token to revoke",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "state.vaultcloud.33798ae55697",
       "source": "清华云盘未连接：到云盘页粘贴 token 后再生成云分享口令",
@@ -1377,6 +1361,22 @@
         }
       ],
       "translation": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.noArchive",
+      "source": "云盘上还没有壁纸档案，请先在别的设备同步一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 115,
+          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
+        }
+      ],
+      "translation": "There is no wallpaper archive on the cloud drive yet. Sync from another device first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

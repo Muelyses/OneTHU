@@ -40660,19 +40660,6 @@
     ]
   },
   {
-    "key": "pages.plugins.6b1ad42dcec2",
-    "source": "下面是**反向**的：让 OH 去连别人的 MCP 服务器 ——",
-    "kind": "text",
-    "parameters": [],
-    "locations": [
-      {
-        "file": "apps/desktop/src/pages/Plugins.tsx",
-        "line": 883,
-        "context": "<Text as=\"p\" slot=\"micro\" tone=\"faint\">\n          下面是**反向**的：让 OH 去连别人的 MCP 服务器 ——\n        </Text>"
-      }
-    ]
-  },
-  {
     "key": "pages.plugins.4dbfc40111b5",
     "source": "尚未添加。点「添加 MCP 服务器」开始。",
     "kind": "text",

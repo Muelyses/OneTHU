@@ -1,32 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.settings.1e4072e67ba7",
-      "source": "本机可用浏览器 {length} 个；playwright 版{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(probe.browsers.length)"
-        },
-        {
-          "name": "value",
-          "expression": "String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 865,
-          "context": "probe.browsers.length > 0\n                ? i18n(\"pages.settings.1e4072e67ba7\", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")) })\n                : i18n(\"pages.settings.4d85ccc9814b\")"
-        }
-      ],
-      "translation": "{length} browsers available on this machine; playwright version{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.settings.1eacd04cef79",
       "source": "白天主题",
@@ -1376,6 +1351,22 @@
         }
       ],
       "translation": "Clipboard unavailable; use the import box to verify instead",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.8f655a35cb99",
+      "source": "本机保存的登录密码（可清除）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 111,
+          "context": "return i18n(\"pages.settings.8f655a35cb99\");"
+        }
+      ],
+      "translation": "Sign-in passwords saved on this machine (can be cleared)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

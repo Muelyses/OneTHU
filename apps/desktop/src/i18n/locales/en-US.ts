@@ -5316,7 +5316,6 @@ const locale = {
     "pages.plugins.5dbb87d9720a": "Plugin · v",
     "pages.plugins.639372d0bac7": "An MCP server named \"{name}\" already exists: the tool prefix mcp_{name2}_ would collide. Please pick a different name.",
     "pages.plugins.65e85afce9ed": "When enabled, other local MCP clients can fill in ",
-    "pages.plugins.6b1ad42dcec2": "Below is the **reverse** direction: have OH connect to someone else's MCP server —",
     "pages.plugins.715e7d2108f7": "Manage MCP servers",
     "pages.plugins.71ca3a5a5605": "View plugin details (cover image + description)",
     "pages.plugins.720f02a99a32": "GitHub repository",

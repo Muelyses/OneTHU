@@ -1,23 +1,7 @@
 {
-  "sourceHash": "a823e96c1d0336058b5ddf43b89caf3eafbbf0bcb90d83b6810be3c868fa5932",
+  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "state.cloudexchange.6e106dfb0757",
-      "source": "云盘没有返回分享链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudExchange.ts",
-          "line": 103,
-          "context": "new Error(i18n(\"state.cloudexchange.6e106dfb0757\"))"
-        }
-      ],
-      "translation": "The cloud drive did not return a share link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "state.cloudexchange.8e54dc8b5387",
       "source": "原分享暂时无法读回，请重试或选择重新生成",
@@ -1549,6 +1533,22 @@
         }
       ],
       "translation": "Library seats",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.336dbe5fd82f",
+      "source": "研究生收入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 257,
+          "context": "return i18n(\"state.explorer.336dbe5fd82f\");"
+        }
+      ],
+      "translation": "Graduate stipend",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
